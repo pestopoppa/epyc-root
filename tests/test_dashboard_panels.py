@@ -154,6 +154,25 @@ class _KernelFile:
         return False
 
 
+class _ProgressionFile:
+    def __init__(self, content):
+        self.content = content
+
+    def __enter__(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        path = Path(self._tmp.name) / "kernel_progression.json"
+        if self.content is not None:
+            path.write_text(json.dumps(self.content), encoding="utf-8")
+        self._orig = server.KERNEL_PROGRESSION_JSON
+        server.KERNEL_PROGRESSION_JSON = path
+        return path
+
+    def __exit__(self, *exc):
+        server.KERNEL_PROGRESSION_JSON = self._orig
+        self._tmp.cleanup()
+        return False
+
+
 def _fake_hub(name="fake_hub", *, funcs=None, routes=None, health_routes=None,
               extra_funcs=(), drop=()):
     """A synthetic module shaped like the hub, for the registry's NEGATIVE controls.
@@ -612,6 +631,62 @@ class KernelContractV1Test(unittest.TestCase):
         self.assertEqual(fr["staleness_class"], "missing")
         self.assertEqual(fr["reporting"], panels.REPORTING_ABSENT)
         self.assertIn("Refusing to guess", fr["detail"])
+
+
+class KernelProgressionTest(unittest.TestCase):
+    def _doc(self):
+        return {
+            "schema": server.KERNEL_PROGRESSION_SCHEMA,
+            "observed_through": _iso(_NOW_DT - timedelta(hours=1)),
+            "promotion_claim": False,
+            "funnel": {"candidate": 1, "strict_keep": 0,
+                       "champion": 0, "promotable": 0},
+            "candidates": [{"lane": "GPU", "candidate": "flash_attention",
+                            "effect_fraction": .04, "promotable": False}],
+            "unexplored": [],
+        }
+
+    def test_progression_is_additive_and_cannot_mint_promotion(self):
+        terminal = _v2_doc(produced_at=_iso(_NOW_DT), observed=_V2_SECTIONS)
+        with _ProgressionFile(self._doc()):
+            with _KernelFile(terminal):
+                out = server.kernel_payload()
+        self.assertEqual(out["_progression"]["funnel"]["candidate"], 1)
+        self.assertFalse(out["_progression"]["promotion_claim"])
+        self.assertEqual(out["sections"], terminal["sections"])
+
+    def test_progression_turns_partial_strict_absence_into_degraded_not_ok(self):
+        observed = tuple(name for name in _V2_SECTIONS if name != "champion")
+        with _ProgressionFile(self._doc()):
+            with _KernelFile(_v2_doc(produced_at=_iso(_NOW_DT), observed=observed)):
+                code, out = server.kernel_data_health()
+        self.assertEqual(code, 503)
+        self.assertEqual(out["status"], panels.STATUS_DEGRADED)
+        self.assertTrue(out["progression"]["available"])
+        self.assertFalse(out["progression"]["promotion_claim"])
+
+    def test_progression_with_promotion_claim_is_refused(self):
+        doc = self._doc()
+        doc["promotion_claim"] = True
+        with _ProgressionFile(doc):
+            out = server._read_kernel_progression()
+        self.assertFalse(out["available"])
+        self.assertIn("promotion_claim", out["error"])
+
+    def test_global_fold_downgrades_only_kernel_gating_absence(self):
+        verdict = {"status": panels.STATUS_ABSENT,
+                   "status_set_by": {"panel": "kernel"},
+                   "worst": {"panel": "kernel"}, "absent": [],
+                   "attention": [
+                       {"panel": "kernel", "verdict": panels.STATUS_ABSENT,
+                        "gates_health": True},
+                       {"panel": "outcome", "verdict": panels.STATUS_ABSENT,
+                        "gates_health": False}]}
+        out = server._supplement_kernel_verdict(verdict, {
+            "available": True, "candidates": [{}], "unexplored": []})
+        self.assertEqual(out["status"], panels.STATUS_DEGRADED)
+        self.assertEqual(out["status_set_by"]["panel"], "kernel")
+        self.assertNotEqual(out["status"], panels.STATUS_OK)
 
 
 class KernelAbsenceOnTheWireTest(unittest.TestCase):
@@ -1332,8 +1407,9 @@ class KernelDataHealthProbeTest(unittest.TestCase):
     """The directory probe reads Kernel-R&D data health, not hub transport."""
 
     def test_absent_export_is_http_503_with_an_absent_verdict(self):
-        with _KernelFile(None):
-            status_code, body = server.kernel_data_health()
+        with _ProgressionFile(None):
+            with _KernelFile(None):
+                status_code, body = server.kernel_data_health()
         self.assertEqual(status_code, 503)
         self.assertEqual(body["status"], panels.STATUS_ABSENT)
         self.assertEqual(body["probe"], "panel-data")
@@ -1345,8 +1421,9 @@ class KernelDataHealthProbeTest(unittest.TestCase):
 
     def test_partial_contract_is_http_503_and_names_unreported_sections(self):
         doc = _v2_doc(produced_at=_iso(_NOW_DT), observed=("campaign",))
-        with _KernelFile(doc):
-            status_code, body = server.kernel_data_health()
+        with _ProgressionFile(None):
+            with _KernelFile(doc):
+                status_code, body = server.kernel_data_health()
         self.assertEqual(status_code, 503)
         self.assertEqual(body["status"], panels.STATUS_ABSENT)
         self.assertEqual(body["freshness"]["reporting"],

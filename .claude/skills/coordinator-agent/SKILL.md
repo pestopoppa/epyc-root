@@ -105,6 +105,16 @@ self-exits). Verified 2026-07-29: supervisor PID 14518 relaunched daemon PID 145
 the relaunch is self-announcing — a higher epoch in the next `status` is the confirmation, not an
 anomaly to investigate.
 
+> **Expect one UNKNOWN cycle on the first bringup after 2026-08-12, and do not treat it as a
+> fault.** The supervisor no longer decides "the daemon is running stale code" from source
+> **mtime** — in a five-writer tree that is true every few minutes, and it restarted a healthy
+> daemon 14 times in 54 minutes (F-38/AUD-6). It now compares the **committed tree SHA** the daemon
+> recorded at startup (`source_tree` in its heartbeat) against `git rev-parse HEAD:scripts/coordination`.
+> A daemon that has not yet run under the new code publishes no `source_tree`, so the supervisor
+> reads **UNKNOWN and correctly refuses to restart it** — cannot-determine never justifies a kill.
+> The reading becomes meaningful once the daemon has started once from this tree. A genuine stale
+> verdict now restarts **at most once per 15 minutes** and then ALARMs rather than looping.
+
 **`status` output is not proof of life.** On 2026-07-29 it reported `state=working epoch=11
 pid=1928027 age=2157s` for a daemon that had died in the reboot: the state file is on disk and
 outlives the process that wrote it. **Always confirm with `ps -p <pid>` before believing it.**
@@ -219,8 +229,8 @@ blocked further spawns while only two mains were alive). Ledger spawn counts are
 enforce nothing** — `probe` prints them with exactly that label.
 
 **Roster ids are model-agnostic as of 2026-07-29.** Renamed on operator direction: `codex` →
-**`inference`** (owns inference tasks), `fable-auditor` → **`auditor`** (miscellaneous work, and the
-DEFAULT main for auditing other mains' work), `claude-main` → **`mainA`** and `claude-gpu-lane` →
+**`inference`** (owns advisory inference compute scheduling), `fable-auditor` → **`auditor`**
+(coordinator-routed audits of completed main work), `claude-main` → **`mainA`** and `claude-gpu-lane` →
 **`mainB`** (both take dispatched handoff/backlog work). `coordinator-agent` keeps its id — it is
 the authority name in `authority.cross_main` / `lease_grant`, not a session label — and its window
 is `agent:coordinator`. Reason: an id pinned to its model meant re-spawning a main on a different
@@ -233,24 +243,34 @@ id is the identity every queue row, cursor, inbox, outbox and triage `corr_id` i
 alias orphans all of it and leaves the old row drawing "LOOKS DEAD" advisories forever. A
 `role: retired` row is a **re-usable slot, not a tombstone**.
 
-**The operator decides.** Do not run `tmux_adapter.py spawn` on your own initiative. When
-authorised, `tmux_adapter.py spawn --agent <id> --dry-run` first.
-
-**Rename the window to the ENDPOINT immediately after spawn.** `cmd_spawn` names the new window
-after the **roster id**, while `resolve_target` verifies the **endpoint's** window name. When the
-two differ the main spawns successfully and is then undeliverable: on 2026-07-29 `codex` (endpoint
-`tmux:agent:codex-inference`) came up as window `codex` and every nudge refused. Filed as **C25**;
-until it is fixed, always follow a spawn with
+**The operator decides.** Do not instantiate a role on your own initiative. Inspect first, present
+the decision package, then use the explicit selected mode:
 
 ```bash
-tmux rename-window -t agent:<id> <endpoint-window-name>
-python3 scripts/coordination/tmux_adapter.py probe --agent <id>   # confirm the target RESOLVES
+python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id>
+# After the operator resets/reseeds the pane's role context:
+python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id> --context-reset-confirmed
+python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode adopt \
+  --target <exact-target> --context-reset-confirmed
+# or, after the operator chooses fresh:
+python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode fresh \
+  --command '<operator-selected launch command>' --dry-run
 ```
 
-**Then verify the pane is still alive.** `cmd_spawn` reports success on `new-window` exit 0 and
-nothing more. On 2026-07-29 a codex pane died instantly and silently because the CLI presented an
-update prompt at startup — spawn reported success and the window was simply gone. A few seconds
-after every spawn, confirm the window still exists and capture the pane to confirm the agent reached
+**Auditor/Inference instantiation has one extra required choice.** Before either role is created,
+inspect any candidate pane and ask the operator whether to **adopt that eligible pane** or **launch
+fresh**. Include identity/runtime evidence, cap impact, and the profile recommendation: Auditor
+`gpt-5.6-sol` xhigh or Fable 5 high; Inference `gpt-5.6-terra` medium or Claude Opus high. These
+profiles are capacity recommendations only. The operator can change model or effort at any time;
+do not diagnose model drift, warn, revoke a lease, or reprovision because of it. Canonical role
+files: `agents/auditor-main.md`, `agents/inference-main.md`.
+
+**The endpoint is the window identity.** C25 is fixed: fresh instantiation derives the window name
+from the roster endpoint and verifies that exact endpoint after launch. Do not add a manual rename
+step; a rename between creation and verification re-opens the identity race the adapter closes.
+
+**Then verify the agent reached its prompt.** C30(b) is fixed: fresh instantiation waits and refuses
+success if the window dies immediately. Capture the surviving pane to verify the TUI itself reached
 its prompt:
 
 ```bash
@@ -269,7 +289,33 @@ coordination failure**, not a resting state.
 Dispatch with a self-contained brief file under `coordination/session-bus/tasks/`, and a short
 nudge that points at the file.
 
+**Every dispatch is a TYPED row now — the shape is enforced, not remembered** (AUD-2, 2026-08-12).
+A `task-assign` carries `task_text` (the identity — `append` refuses without it), `row_ref` as a
+*hint only*, `screened_by` (proof `backlog_row_check.py` ran), `expected_occupancy` (`est_h`,
+basis, gating), and `constraints[]` where each constraint names the `source` line it derives from.
+Payloads over 4 KB must point at a `brief_path`. Two of those fields exist because of specific
+failures: line-keyed dispatch rotted at 34.5% queue-wide while the role's own queue file said
+*"line numbers are a hint, task text is the identity"* (F-22), and a card was fed 40-second sweeps
+all morning while reading idle — **`expected_occupancy` is there to make you ask "hours or
+seconds?" at composition time**, which is where that failure lived (F-14). A screener proves
+WELL-FORMED, never STILL-NEEDED: verify the row's premise against the world before pointing a main
+at it — four of eight screened rows fact-checked on 2026-08-12 were already satisfied in reality.
+
+**Mains spawn into their own lane worktrees** (`/mnt/raid0/llm/worktrees/mains/<id>`, roster key
+`worktree:` in `config.yaml`); `inference` and `coordinator-agent` stay in `/workspace`. A declared
+but missing worktree REFUSES the spawn rather than silently falling back to the shared tree. This
+is what stops five mains from committing over each other; the wrap-up contract does the rest —
+per-agent `progress/YYYY-MM/YYYY-MM-DD-<agent>.md` files, lane-branch commits promoted to `main` at
+**every** wrap-up (lanes that skip promotion rot: measured at 106 and ~302 commits behind), and an
+O_EXCL lease around the genuinely shared surfaces. **Never run `git worktree prune` or `git gc`**
+from either path depth — that is what destroyed all five lanes once.
+
 **4. Begin boundary watching** — drain and refresh your heartbeat at every boundary from here on.
+`drain` now also reports what you would otherwise have to remember to look at: uncommitted work
+under `scripts/`, the `action_required` items *you* owe with their age, and the fleet_watch
+occupancy line behind a staleness guard. Your inbox is split MUST-ACT (you are the `assignee`;
+a disposition is owed) from FYI (`cc`; cursor-cleared, no ack). Before this split, 83% of what sat
+in an inbox belonged to someone else.
 
 ### Nudging — the only safe path
 
@@ -280,8 +326,23 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
 - **Never nudge via raw `tmux send-keys`.** The adapter chunks long messages and verifies
   submission; raw sends blob past ~800–1000 chars (Codex silently truncates at 1024).
 - **Never send `Ctrl-C` to a Codex pane** to clear an input buffer — a second `Ctrl-C` exits the
-  session and destroys the window. `Ctrl-U` alone clears the composer. A blobbed buffer is
-  *cosmetic*: submit it and follow with a correction. Both lessons learned the hard way 2026-07-28.
+  session and destroys the window. A blobbed buffer is *cosmetic*: submit it and follow with a
+  correction. Learned the hard way 2026-07-28.
+- **A BARE key does nothing to a Claude composer holding text — this includes `Ctrl-U`.** Measured
+  2026-08-12 against live panes and re-measured against a disposable TUI: bare `Enter`, `C-m`,
+  `Ctrl-U` and 100×`BSpace` all leave the text exactly where it was. Send an ordinary character
+  first, settle ~1s, *then* the key: that submits (`Enter`) and that clears (`Ctrl-U`). `Escape`
+  does nothing in either form. The adapter's `submit`/`clear` verbs and its failed-delivery
+  rollback all use that sequence — **so use the adapter and never hand-roll the keystrokes.**
+  Re-measure with `scripts/coordination/verify_composer_keys.sh` if the TUI changes. Origin:
+  C55/H-1/H-2 — four mains sat holding undelivered instructions for up to 75 minutes because every
+  delivery path ended in a bare key, and each one reported failure honestly while nothing arrived.
+- **A quiet-check refusal against an idle main is answered by the DOORBELL, not by a looser
+  threshold.** A main whose subagents redraw its pane every second can never satisfy the payload
+  path's quiet-check, so it looks unreachable while being perfectly idle. Put the payload on the
+  bus, then ring: the doorbell carries no quiet-check, no rate limit and no heartbeat guard, and it
+  verifies its own ring against the buffer. `probe` reports `quiet_corroborated_idle` so you can
+  see the condition rather than infer it. Origin: F-37/H-3.
 - Identity before keystrokes: never send keys to a pane whose agent identity is inferred rather
   than confirmed, nor into a pane holding operator-typed input.
 - **Never swallow a refusal reason.** A retry loop that pipes `nudge` through `grep -q 'nudged'`

@@ -73,6 +73,48 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
     classification is a hard validation failure: without it, revocation has no defined fallback
     set and rule 8 cannot be honoured.
 
+11. **SPECIAL ROLE ROUTING IS EXPLICIT.** Auditor Main is excluded from generic backlog
+    scheduling and accepts only a coordinator-routed audit packet for completed `mainA`–`mainD`
+    work. Its verdict never directly assigns or messages the source main; handoff follow-ups
+    return through coordinator dispatch. Inference Main owns advisory resource scheduling for
+    inference-gated work. A typed resource lease is distinct from a task assignment and from the
+    physical claim; model and effort are never part of either role's identity or lease validity.
+
+12. **PERSISTENT IDLE IS ROUTING INPUT.** `fleet_watch` supplies the persistence-gated CPU/GPU
+    receipt; coordinator-agent supplies priority and routing; Inference Main supplies the execute
+    or lease decision. None may replace the others or infer a physical claim from observation.
+
+### Audit and compute-resource wire contracts
+
+- A successful `task-complete` from `mainA`–`mainD` deterministically creates one linked
+  `audit-request`, keyed by source task plus completion-message id. `role_rollout.audit_completion`
+  selects the default and is `shadow`: the source keeps its existing terminal semantics while audit
+  coverage is measured. Each audit row captures that choice in immutable `audit_policy` plus an
+  `audit_question`, so later config changes cannot alter work already sent for review. `required`
+  changes the source to `DONE_PENDING_AUDIT` until an `audit-verdict` of
+  `accept`, `accept-with-followups`, `needs-rework`, or `blocked-evidence` is transcribed. Verdicts
+  address coordinator-agent only; the original main is provenance, never an assignee or CC.
+- Compute-resource messages are `resource-lease-request`, `-grant`, `-decline`, `-activate`,
+  `-renew`, `-revoke-request`, `-draining`, `-release`, `-cancel`, and `-expire`. The reconstructible
+  lifecycle is `REQUESTED → RESERVED → ACTIVE → DRAINING → RELEASED`, with terminal alternatives
+  `DECLINED`, `CANCELLED`, and `EXPIRED`. Only `inference` grants, renews, declines, or expires a
+  resource lease. Coordinator-agent may request cooperative revocation; it cannot grant one.
+- Every compute-resource event is addressed/actionable (`assignee == to`). Requests and grants name
+  exact CPU regions and/or GPU devices and the finite task batch. A CPU+GPU request is atomic.
+  Activation requires provider-qualified physical claim-open receipts (`region-lock` for CPU and
+  the configured device claim for GPU); release requires matching claim-close receipts. An
+  unactivated reservation may expire. An active lease must use revoke, drain, and release, so an
+  expiry never steals a live physical claim. The current config disables delegated GPU grants until
+  a general GPU claim provider is selected and enabled.
+- `role_rollout.resource_leases: observe` records and routes this protocol without changing task
+  admission. `enforce` requires a non-Inference executor to hold a matching live Inference-issued
+  reservation before an inference-gated task can be assigned. The physical claim remains a second,
+  separate prerequisite before execution.
+- `compute-idle` carries the watcher receipt path and exact receipt line, separately for `cpu` and
+  `gpu`. One message is emitted per persistence episode. `persistent_idle_routing: observe` reports
+  to coordinator-agent; `route` additionally assigns the episode to Inference Main for an execute,
+  lease, or queue-empty disposition.
+
 ## Standing instructions change under running sessions
 
 An agent's instruction set is loaded at session start. Editing `CLAUDE.md` /
@@ -201,6 +243,40 @@ no other kind acquires these duties. **The daemon obeys the same vocabulary**: i
 hole in it exactly where the volume is. `queue.jsonl` therefore carries `task_text`, `screened_by`
 and `expected_occupancy`, transcribed at intake from the `task-propose` payload (`summary` is the
 fallback row text).
+
+## The AUTOMATIC dispatch gate (R-16 option B, Phase 6, 2026-08-12)
+
+The daemon's between-turns tick MAY dispatch from its `assign` authority, but **only
+deterministically and only for a queue row that carries the AUD-2 evidence above**. It never
+dispatches on discretion. `dispatch_gate()` in `session_bus_coordinator.py` refuses with one of
+exactly two codes, kept apart because each is fixed by editing a **different** field:
+
+| Code | Condition | The measured failure |
+|---|---|---|
+| `unscreened` | no `screened_by` on the queue row | overnight 2026-08-11/12 the tick emitted **4,602 would-assign picks resolving to 9 distinct rows from ONE file** — nothing in the pick path had ever re-derived whether those rows were still real |
+| `no-occupancy-estimate` | no usable `expected_occupancy.est_h` (absent, unparseable, or ≤ 0) | **F-14**: a card was fed 40-second sweeps while every occupancy instrument read idle |
+
+A refused row is **reported, never skipped**: one `dispatch-refused` advisory row per row per tick
+(not per agent — per-agent emission is how 9 rows became 4,602 records), naming the `task_id`, the
+code and the reason. It is also excluded from the automatic candidate set, so the dispatchable row
+behind it is not starved; and the write path re-checks the gate, so routing around the pick cannot
+land an assignment. Occupancy resolves through `session_bus.row_occupancy_h` — the single
+definition shared by the gate, the pick ordering and the drain depth line, so the three readings
+cannot disagree.
+
+**Human/coordinator-authored dispatch through `append` is unchanged** (warn-only). A human who
+reads the warning and proceeds is making a judgment; an autonomous tick is not allowed to.
+fleet_watch stays detect-only per its own contract.
+
+**Pick ordering** (`_pick`, deterministic, readable off one sort tuple): `priority` rank first,
+then **larger `expected_occupancy.est_h` first** — between otherwise-equal candidates the daemon
+prefers the deeper work, because a tick that hands an idle main six minutes of work leaves it idle
+again inside the same tick interval while the fleet reads busy — then `task_id` as the tiebreak.
+
+**At the boundary**, `drain` prints READY depth per lane plus the summed `est_h` of everything
+in flight (`ASSIGNED`/`CLAIMED`/`RUNNING`). An in-flight row with no estimate is counted and named
+as **unknown depth, never folded in as zero** — summing it as 0 would make a loaded fleet read
+empty, which is the reading the line exists to replace.
 
 ## Corrections are typed, so an omitted one is visible (AUD-4, 2026-08-12)
 

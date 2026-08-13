@@ -3736,6 +3736,43 @@ def _c50_bed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return (stale, live, rot), (latest, {"load_class": "idle"}, "")
 
 
+def test_STALE_REQUEUED_is_assignable_or_the_dispatcher_is_inert(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A requeued row must be pickable again, or "requeued" is a lie.
+
+    The stall ladder writes STALE_REQUEUED when a lease expires AND attempts
+    remain, and writes INFRA_BLOCKED when they are exhausted — so the retry bound
+    lives in the ladder, not in eligibility. Nothing anywhere converts the status
+    back to READY. When `_eligible` demanded READY, a requeued row could never be
+    picked by anything again: measured 2026-08-12, 17 of 19 live queue rows sat in
+    that state, unassignable no matter how well screened or estimated. That is a
+    second, independent way to ship a dispatcher that never dispatches.
+
+    Pinned as a PROPERTY over ASSIGNABLE_STATUSES rather than a spelling, so
+    narrowing the tuple fails here rather than going quiet in production.
+    """
+    (_stale, live, _rot), (latest, snap, tok) = _c50_bed(tmp_path, monkeypatch)
+
+    assert "STALE_REQUEUED" in coordinator.ASSIGNABLE_STATUSES, (
+        "STALE_REQUEUED must remain assignable; if it is ever narrowed back, the "
+        "status needs renaming too — a name that says 'requeued' while nothing can "
+        "dequeue it is the defect, not the fix."
+    )
+
+    for status in coordinator.ASSIGNABLE_STATUSES:
+        row = dict(live, status=status)
+        latest_row = dict(latest, **{row["task_id"]: row})
+        ok, why = coordinator._eligible(row, latest_row, snap, tok)
+        assert ok is True, f"status={status} must be assignable — got {why!r}"
+
+    # And the bound still holds: a terminal status is still refused, so this is a
+    # widening of exactly one state, not a removal of the status gate.
+    blocked = dict(live, status="INFRA_BLOCKED")
+    ok, why = coordinator._eligible(blocked, dict(latest, **{blocked["task_id"]: blocked}),
+                                    snap, tok)
+    assert ok is False and "INFRA_BLOCKED" in why, why
+
+
 def test_C50_probe_the_consumer_refuses_a_READY_row_whose_box_is_closed(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The probe that would have caught the stuck picker.
@@ -4073,3 +4110,767 @@ def test_C50b_spec_ref_survives_a_status_rewrite(tmp_path: Path) -> None:
         {"task_id": "T", "status": "READY", "spec_ref": "h.md#L3,box=a~b"})}
     assert rewritten["spec_ref"] == "h.md#L3,box=a~b", (
         "a status rewrite must carry the reference forward or C50 has nothing to check")
+
+
+# =========================================================== R-16 / Phase 6 ===
+#
+# THE AUTOMATIC-DISPATCH GATE.
+#
+# The daemon holds `assign` authority, so its between-turns tick can dispatch
+# without a human in the loop. Operator decision R-16 (option B, 2026-08-12)
+# permits that ONLY deterministically and ONLY for a row carrying the AUD-2 typed
+# evidence. These probes pin the two refusal codes apart, prove a refused row is
+# REPORTED rather than skipped, prove a fully typed row still goes, and pin the
+# occupancy-aware ordering.
+#
+# Every probe drives `apply_assignment` — the real write path — not the gate
+# predicate alone. A regression that routed around the gate (folding the queue
+# differently, or re-adding the row after the pick) would leave a predicate-only
+# test green, which is the C50 lesson applied one layer up.
+
+def _assign_config(bus_root: Path) -> dict:
+    """The fixture config with the daemon raised to `assign`, on disk and returned."""
+    config = json.loads((bus_root / "config.yaml").read_text())
+    config["coordinator_daemon"]["authority"] = "assign"
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    return config
+
+
+def _typed_row(task_id: str, *, est_h: float = 2.0, priority: str = "P1", **extra: object) -> dict:
+    """A queue row carrying the full AUD-2 evidence the gate demands."""
+    return _queue(task_id, priority=priority,
+                  task_text=f"the backlog row text for {task_id}",
+                  screened_by="backlog_row_check.py @ 2026-08-12T00:00:00Z",
+                  expected_occupancy={"est_h": est_h, "basis": "test fixture"},
+                  **extra)
+
+
+def _refusals(emitted: list[dict], task_id: str) -> list[dict]:
+    return [r for r in emitted if r.get("kind") == "dispatch-refused"
+            and r.get("task_id") == task_id]
+
+
+def _assigned(emitted: list[dict]) -> dict[str, str]:
+    """task_id -> agent, over this tick's real assignments."""
+    return {str(r["task_id"]): str(r["agent"]) for r in emitted if r.get("kind") == "assigned"}
+
+
+def _task_assigns(bus_root: Path, agent: str) -> list[dict]:
+    return [r for r in _read_jsonl(bus_root / "inbox" / f"{agent}.jsonl")
+            if r.get("kind") == "task-assign"]
+
+
+def test_R16_unscreened_row_is_refused_by_name_and_never_dispatched(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """No `screened_by` -> refused as `unscreened`, reported, and NOT assigned.
+
+    The failure this closes: overnight 2026-08-11/12 the tick emitted 4,602
+    would-assign picks resolving to 9 distinct rows out of ONE file, none of which
+    anything had re-derived. A dispatcher acting on an unverified row is the
+    hazard; going quiet about it is the second hazard, so the refusal must be
+    visible and attributable, not a silent skip.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-unscreened")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}, "an unscreened row must not be auto-dispatched"
+    refusals = _refusals(emitted, "T-unscreened")
+    assert refusals, "refused silently — a pass-over with no stated reason is not a refusal"
+    assert {r["gate"] for r in refusals} == {coordinator.DISPATCH_GATE_UNSCREENED}
+    for r in refusals:
+        assert "unscreened" in r["reason"] and "screened_by" in r["reason"], r
+        assert "T-unscreened" in r["reason"], "the refusal must NAME the row"
+    assert bus.fold_queue(bus_root)["T-unscreened"]["status"] == "READY"
+    assert _task_assigns(bus_root, "alice") == [] and _task_assigns(bus_root, "bob") == []
+
+
+def test_R16_screened_row_with_no_occupancy_is_a_DIFFERENT_named_refusal(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Screened but no `est_h` -> refused as `no-occupancy-estimate`, distinctly.
+
+    F-14: a card was fed 40-second sweeps while reading idle, because no dispatch
+    could express how long the work should hold the hardware. Collapsing the two
+    codes into one "not eligible" would make the two defects indistinguishable in
+    the record — and each is fixed by editing a DIFFERENT field.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-no-occ")
+    del row["expected_occupancy"]
+    _append(bus_root / "queue.jsonl", row)
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}
+    refusals = _refusals(emitted, "T-no-occ")
+    assert refusals
+    assert {r["gate"] for r in refusals} == {coordinator.DISPATCH_GATE_NO_OCCUPANCY}
+    assert coordinator.DISPATCH_GATE_NO_OCCUPANCY != coordinator.DISPATCH_GATE_UNSCREENED
+    for r in refusals:
+        assert "occupancy" in r["reason"] and "est_h" in r["reason"], r
+    # est_h present but ZERO is the same refusal: a row claiming no duration at all
+    # is exactly the seconds-long work F-14 is about.
+    assert coordinator.dispatch_gate(
+        {"task_id": "z", "screened_by": "x",
+         "expected_occupancy": {"est_h": 0}})[1] == coordinator.DISPATCH_GATE_NO_OCCUPANCY
+
+
+def test_R16_a_fully_typed_row_IS_dispatched_with_its_evidence_on_the_payload(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The gate must be a gate, not a wall. Fail-direction sentinel for the two above."""
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    _append(bus_root / "queue.jsonl", _typed_row("T-typed", est_h=3.5))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {"T-typed": "alice"}, emitted
+    assert _refusals(emitted, "T-typed") == []
+    assert bus.fold_queue(bus_root)["T-typed"]["status"] == "ASSIGNED"
+    sent = _task_assigns(bus_root, "alice")
+    assert len(sent) == 1
+    payload = sent[0]["payload"]
+    assert payload["task_text"] == "the backlog row text for T-typed"
+    assert payload["screened_by"].startswith("backlog_row_check.py")
+    assert payload["expected_occupancy"]["est_h"] == 3.5
+
+
+def test_R16_between_two_eligible_rows_the_DEEPER_one_is_chosen(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Equal priority -> larger `expected_occupancy.est_h` wins, deterministically.
+
+    F-14 again, from the scheduling side: handing an idle main six minutes of work
+    leaves it idle again inside the same tick interval while every occupancy
+    instrument reads busy. The task_id ordering is deliberately ADVERSARIAL here —
+    the shallow row sorts first alphabetically, so a green result cannot come from
+    the old (priority, task_id) ordering.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    _append(bus_root / "queue.jsonl", _typed_row("T-a-shallow", est_h=0.2))
+    _append(bus_root / "queue.jsonl", _typed_row("T-b-deep", est_h=6.0))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted)["T-b-deep"] == "alice", emitted
+    # Explainable and total, straight off `_pick`: priority still outranks depth.
+    deep_p2 = _typed_row("T-deep", est_h=9.0, priority="P2")
+    shallow_p1 = _typed_row("T-shallow", est_h=0.1, priority="P1")
+    assert coordinator._pick([deep_p2, shallow_p1])["task_id"] == "T-shallow"
+    assert coordinator._pick([shallow_p1, deep_p2])["task_id"] == "T-shallow"
+    # No occupancy sorts LAST within its class, and ties break on task_id.
+    bare = _queue("T-bare", priority="P1")
+    assert coordinator._pick([bare, shallow_p1])["task_id"] == "T-shallow"
+    twin = _typed_row("T-aaa", est_h=0.1, priority="P1")
+    assert coordinator._pick([shallow_p1, twin])["task_id"] == "T-aaa"
+
+
+def test_R16_the_gate_is_specific_to_the_AUTOMATIC_path(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Advisory/manual view keeps showing a human every row they may still dispatch.
+
+    Two rules, one field: the daemon may not act on an unscreened row, but a human
+    author may (`check_task_assign` WARNS and proceeds). If the gate leaked into
+    the ungated advisory path, the coordinator's own reading of the queue would go
+    dark on exactly the rows that need a human decision.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = json.loads((bus_root / "config.yaml").read_text())
+    row = _typed_row("T-unscreened")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+
+    ungated = coordinator.compute_advice(bus_root, config, epoch=1)
+    assert any(r.get("kind") == "would-assign" and r.get("task_id") == "T-unscreened"
+               for r in ungated), "the advisory view must still show the pick"
+    assert not [r for r in ungated if r.get("kind") == "dispatch-refused"]
+
+    gated = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    assert not [r for r in gated if r.get("kind") == "would-assign"
+                and r.get("task_id") == "T-unscreened"]
+    assert [r["gate"] for r in gated if r.get("kind") == "dispatch-refused"] == [
+        coordinator.DISPATCH_GATE_UNSCREENED]
+    # ONE refusal record for ONE row, not one per agent: 4,602 records from 9 rows
+    # is the shape this repo already paid for once.
+    assert len([r for r in gated if r.get("kind") == "dispatch-refused"]) == 1
+
+
+def test_R16_a_gated_row_does_not_starve_the_row_behind_it(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Refusal must EXCLUDE from candidacy, not just veto at the write.
+
+    If the gate only refused after `_pick`, a top-priority unscreened row would
+    consume the pick every tick and the dispatchable row behind it would never go
+    out — a gate that quietly becomes a stop.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    blocker = _typed_row("T-blocker", est_h=8.0, priority="P0")
+    del blocker["screened_by"]
+    _append(bus_root / "queue.jsonl", blocker)
+    _append(bus_root / "queue.jsonl", _typed_row("T-behind", est_h=1.0, priority="P1"))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted).get("T-behind") == "alice", emitted
+    assert "T-blocker" not in _assigned(emitted)
+    assert _refusals(emitted, "T-blocker")
+
+
+# =========================================================== Auditor shadow ===
+
+def _audit_config(bus_root: Path, mode: str = "shadow") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "mainA", "role": "main", "lanes": ["none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"]},
+    ]
+    config["audit"] = {"mode": mode}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "mainA", "auditor", "service")
+    return config
+
+
+def _audit_complete(task: str, *, sender: str = "mainA", seq: int = 1, outcome: str = "pass") -> dict:
+    return _message(sender, "coordinator-agent", "task-complete", task_id=task, seq=seq,
+                    payload={"outcome": outcome, "artifacts": [f"artifacts/{task}.json"],
+                             "acceptance_refs": [f"handoffs/{task}.md#acceptance"]})
+
+
+def test_audit_shadow_preserves_source_done_and_synthesizes_one_targeted_audit(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Shadow mode adds a linked review unit without changing source semantics."""
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "shadow")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    _append(bus_root / "queue.jsonl", source)
+    done = _audit_complete("source-work")
+    _append(bus_root / "outbox" / "mainA.jsonl", done)
+
+    first = coordinator.apply_assignment(bus_root, config, epoch=7)
+    folded = bus.fold_queue(bus_root)
+    audit_id = coordinator._audit_task_id("source-work", done["id"])
+    assert folded["source-work"]["status"] == "DONE_PASS"
+    assert folded[audit_id]["audit_of"] == "source-work"
+    assert folded[audit_id]["completion_msg_id"] == done["id"]
+    assert folded[audit_id]["executor_id"] == "auditor"
+    assert folded[audit_id]["artifact_refs"] == ["artifacts/source-work.json"]
+    assert _assigned(first).get(audit_id) == "auditor"
+    request = [m for m in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+               if m.get("kind") == "audit-request"]
+    assert len(request) == 1
+    bus.validate_row(bus_root, request[0], "msg")
+    assert request[0]["payload"]["completion_msg_id"] == done["id"]
+    assert coordinator.apply_assignment(bus_root, config, epoch=8) == []
+    assert len([r for r in _read_jsonl(bus_root / "queue.jsonl") if r["task_id"] == audit_id]) == 2
+
+
+def test_auditor_and_service_never_receive_generic_backlog(bus_root: Path,
+                                                           monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "off")
+    _append(bus_root / "queue.jsonl", _typed_row("ordinary"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    agents = {r.get("agent") for r in advice if r.get("kind") == "would-assign"}
+    assert "auditor" not in agents and "service" not in agents
+
+
+def test_required_audit_verdict_transitions_without_routing_source_main(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    latest = {"source-work": source}
+    rows = coordinator.transcribe(latest, {"source-work": [done]}, 1, config)
+    pending = next(r for r in rows if r["task_id"] == "source-work")
+    audit = next(r for r in rows if r.get("work_type") == "audit")
+    assert pending["status"] == "DONE_PENDING_AUDIT"
+    assert audit["audit_policy"] == "required"
+    assert "source-work" in audit["audit_question"]
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                       payload={"verdict": "needs-rework", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    # The audit's captured required policy wins even if the global default is
+    # lowered before the auditor returns its verdict.
+    config["audit"] = {"mode": "shadow"}
+    after = coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                   {audit["task_id"]: [verdict]}, 2, config)
+    assert {r["task_id"]: r["status"] for r in after} == {
+        audit["task_id"]: "DONE_PASS", "source-work": "STALE_REQUEUED"}
+    forged = {**verdict, "payload": {**verdict["payload"], "completion_msg_id": "wrong"}}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged]}, 2, config) == []
+    forged_author = {**verdict, "from": "mainA"}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged_author]}, 2, config) == []
+    with pytest.raises(bus.BusError, match="source main"):
+        bus.check_audit_message({**verdict, "cc": ["mainA"]})
+    with pytest.raises(bus.BusError, match="only by the auditor"):
+        bus.check_audit_message(forged_author)
+
+
+def test_audit_ack_and_status_progress_but_task_complete_cannot_close_it(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit = {**audit, "status": "ASSIGNED"}
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"])
+    claimed = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack]}, 2, config)
+    assert claimed[0]["status"] == "CLAIMED"
+    running = {**audit, **claimed[0]}
+    status = _message("auditor", "coordinator-agent", "status", task_id=audit["task_id"])
+    progressed = coordinator.transcribe({audit["task_id"]: running}, {audit["task_id"]: [status]}, 3, config)
+    assert progressed[0]["status"] == "RUNNING"
+    completion = _message("auditor", "coordinator-agent", "task-complete", task_id=audit["task_id"],
+                          payload={"outcome": "pass"})
+    assert coordinator.transcribe({audit["task_id"]: {**running, **progressed[0]}},
+                                  {audit["task_id"]: [completion]}, 4, config) == []
+
+
+def test_valid_audit_verdict_wins_over_historical_ack_in_same_batch(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit["status"] = "ASSIGNED"
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"], seq=1)
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"], seq=2,
+                       payload={"verdict": "accept", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    rows = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack, verdict]}, 2, config)
+    assert [row["status"] for row in rows] == ["DONE_PASS"]
+
+
+def test_validate_rejects_direct_jsonl_forged_audit_verdict(bus_root: Path,
+                                                            capsys: pytest.CaptureFixture[str]) -> None:
+    _audit_config(bus_root, "shadow")
+    forged = _message("mainA", "coordinator-agent", "audit-verdict", task_id="audit-x",
+                      assignee="coordinator-agent", action_required=True,
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": "msg-source"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)  # bypass authoring CLI deliberately
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "only by the auditor" in capsys.readouterr().out
+
+
+def test_daemon_ignores_auditor_identity_forged_inside_another_outbox(
+        bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    created = coordinator.transcribe({"source-work": source}, {"source-work": [done]}, 1, config)
+    pending = next(row for row in created if row["task_id"] == "source-work")
+    audit = next(row for row in created if row.get("work_type") == "audit")
+    _append(bus_root / "queue.jsonl", pending)
+    _append(bus_root / "queue.jsonl", audit)
+    forged = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": done["id"]})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    reports = coordinator._outbox_reports(bus_root, config["roster"])
+    assert audit["task_id"] not in reports
+    assert coordinator.transcribe(bus.fold_queue(bus_root), reports, 2, config) == []
+
+
+# ====================================================== Compute resource leases ===
+
+def _resource_config(bus_root: Path, mode: str = "observe") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "inference", "role": "inference-main", "lanes": ["cpu", "gpu", "none"],
+         "schedulable": True, "resource_owner": ["cpu", "gpu"]},
+        {"id": "mainA", "role": "main", "lanes": ["cpu", "gpu", "none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"],
+         "schedulable": False},
+    ]
+    config["authority"].update({"resource_lease_grant": ["inference"],
+                                "resource_lease_revoke_request": ["coordinator-agent"]})
+    config["role_rollout"] = {"resource_leases": mode, "audit_completion": "shadow"}
+    config["resource_claims"] = {"cpu": {"provider": "region-lock", "enabled": True},
+                                 "gpu": {"provider": "test-device-claim", "enabled": True}}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "inference", "mainA", "auditor", "service")
+    return config
+
+
+def _append_resource(bus_root: Path, agent: str, kind: str, to: str, payload: dict) -> int:
+    return bus.main(["--bus-root", str(bus_root), "append", "--agent", agent,
+                     "--target", "outbox", "--json", json.dumps({
+                         "to": to, "kind": kind, "assignee": to,
+                         "action_required": True, "payload": payload})])
+
+
+def test_resource_lease_lifecycle_is_authoritative_and_rebuildable(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    common = {"lease_id": "rl-1", "holder": "mainA"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "contention_class": "resumable", "safe_drain_point": "persisted-unit"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "REQUESTED"
+
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RESERVED"
+
+    # A reservation is not ACTIVE until a physical claim-open receipt exists.
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": []}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": ["artifacts/test-device-claim/mi210_0-open.json"]}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "ACTIVE"
+
+    assert _append_resource(bus_root, "mainA", "resource-lease-release", "inference", {
+        **common, "physical_claim_close_receipts": ["artifacts/test-device-claim/mi210_0-close.json"],
+        "reason": "batch complete"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RELEASED"
+    assert bus.rebuild_state(bus_root)["resource_leases"]["rl-1"]["state"] == "RELEASED"
+
+
+def test_delegated_gpu_grant_requires_enabled_claim_provider_and_cpu_activation_region_lock(
+        bus_root: Path) -> None:
+    config = _resource_config(bus_root)
+    config["resource_claims"]["gpu"] = {"provider": None, "enabled": False}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    common = {"lease_id": "gpu-gated", "holder": "mainA", "task_ids": ["gpu-work"],
+              "resources": {"gpu_devices": ["mi210_0"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 1
+
+    # CPU receipts are named, not opaque evidence strings. The activation omits
+    # resources deliberately: validation must derive them from the reservation.
+    config["resource_claims"]["gpu"] = {"provider": "test-device-claim", "enabled": True}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    cpu = {"lease_id": "cpu-lock", "holder": "mainA", "task_ids": ["cpu-work"],
+           "resources": {"cpu_regions": ["0-3"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **cpu, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **cpu, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/claims/cpu-open.json"]}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/region-lock/cpu-open.json"]}) == 0
+
+
+def test_only_inference_can_grant_a_compute_resource_lease(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    payload = {"lease_id": "rl-unauthorized", "holder": "mainA", "task_ids": ["gpu-work"],
+               "resources": {"gpu_devices": ["mi210_0"]},
+               "expires_ts": "2030-01-01T00:00:00+00:00",
+               "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "coordinator-agent", "resource-lease-grant",
+                            "mainA", payload) == 1
+
+
+def test_validate_rejects_direct_jsonl_orphan_resource_grant(
+        bus_root: Path, capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    orphan = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "orphan", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "inference.jsonl", orphan)  # bypass authoring CLI deliberately
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(row for row in advice if row.get("agent") == "mainA")
+    assert any("lease ledger is invalid" in str(item.get("reason"))
+               for item in main_a["rejected"])
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "resource lease 'orphan': resource-lease-grant after None" in capsys.readouterr().out
+
+
+def test_resource_fold_ignores_inference_identity_forged_inside_holder_outbox(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    forged = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "forged", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    assert "forged" not in bus.fold_resource_leases(bus_root)
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "single-writer violation" in capsys.readouterr().out
+
+
+def test_resource_grant_is_exact_and_exclusive_in_append_and_replay(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    request = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                   "resources": {"gpu_devices": ["mi210_0"]},
+                                   "contention_class": "resumable", "safe_drain_point": "unit"}
+    grant = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                 "resources": {"gpu_devices": ["mi210_0"]},
+                                 "expires_ts": "2030-01-01T00:00:00+00:00",
+                                 "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-a", "a")) == 0
+    # A grant may not silently alter the requested batch/resources.
+    altered = grant("rl-a", "different")
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", altered) == 1
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", grant("rl-a", "a")) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-b", "b")) == 0
+    # Direct file injection bypasses append but must fail deterministic replay.
+    direct = _message("inference", "mainA", "resource-lease-grant", task_id="b",
+                      assignee="mainA", action_required=True, payload=grant("rl-b", "b"))
+    direct["ts"] = "2031-01-01T00:00:00+00:00"
+    direct["id"] = "msg-20310101T000000Z-1-inference"
+    _append(bus_root / "outbox" / "inference.jsonl", direct)
+    assert any("overlaps live lease 'rl-a'" in problem
+               for problem in bus.resource_lease_history_problems(bus_root))
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "grant overlaps live lease 'rl-a'" in capsys.readouterr().out
+
+
+def test_reassignment_replaces_stale_resource_lease_id(bus_root: Path,
+                                                        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row("gpu-work", lane="gpu", gating="gpu",
+                                                   executor_id="mainA", resource_lease_id="stale"))
+    for lease in ("rl-fresh",):
+        _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+            "safe_drain_point": "unit"})
+        _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "expires_ts": "2030-01-01T00:00:00+00:00",
+            "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=4)
+    assert _assigned(emitted)["gpu-work"] == "mainA"
+    assigned = bus.fold_queue(bus_root)["gpu-work"]
+    assert assigned["resource_lease_id"] == "rl-fresh"
+    payload = _task_assigns(bus_root, "mainA")[0]["payload"]
+    assert payload["resource_lease_id"] == "rl-fresh"
+
+
+def test_enforced_compute_dispatch_requires_inference_or_a_matching_resource_lease(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "inference", "working", task_id="scheduler-duty")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+
+    before = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(r for r in before if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-idle"
+    assert any("resource lease" in str(r.get("reason")) for r in main_a["rejected"])
+
+    # Inference may reserve exact compute for another capable main. Assignment
+    # still does not prove execution; activation requires the physical claim.
+    _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+        "safe_drain_point": "persisted-unit"})
+    _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    after = coordinator.compute_advice(bus_root, config, epoch=2, gate_dispatch=True)
+    main_a = next(r for r in after if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-assign" and main_a["task_id"] == "gpu-work"
+    assert main_a["resource_lease_id"] == "rl-dispatch"
+
+
+def test_persistent_compute_idle_routes_once_per_cpu_or_gpu_episode(bus_root: Path,
+                                                                    tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n", encoding="utf-8")
+
+    first = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert {row["resource"] for row in first} == {"cpu", "gpu"}
+    messages = [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
+    assert len(messages) == 2
+    assert all(row.get("assignee") == "inference" and row.get("action_required") for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_path") == str(log) for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_line_number") in {2, 3}
+               for row in messages)
+    for row in messages:
+        bus.validate_row(bus_root, row, "msg")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state) == []
+
+    # The watcher writes a fresh timestamp/count on every cycle. The episode is
+    # nevertheless the same until a report without that resource intervenes;
+    # durable inbox evidence suppresses duplicates after state-file loss.
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n"
+        "2026-08-13T16:01:30Z STALL REPORT\n"
+        "  GPU-IDLE 4 cycles ~ 360s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 4 cycles ~ 360s: 4 of 4 CPU regions free\n", encoding="utf-8")
+    state.unlink()
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=3, log_path=log, state_path=state) == []
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+
+    # A non-idle report closes both episodes. A later persisted GPU episode is new.
+    log.write_text("2026-08-13T16:05:00Z ok — compute in use\n", encoding="utf-8")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=4, log_path=log, state_path=state) == []
+    log.write_text(
+        "2026-08-13T16:10:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+    again = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=5, log_path=log, state_path=state)
+    assert [row["resource"] for row in again] == ["gpu"]
+
+
+def test_persistent_compute_idle_observe_does_not_assign_inference_but_route_can_follow(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root, "observe")
+    config["role_rollout"]["persistent_idle_routing"] = "observe"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+
+    observed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert [row["resource"] for row in observed] == ["gpu"]
+    coordinator_messages = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+    assert len([row for row in coordinator_messages if row.get("kind") == "compute-idle"]) == 1
+    assert not _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    routed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state)
+    assert [row["resource"] for row in routed] == ["gpu"]
+    inference_messages = _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+    assert len([row for row in inference_messages if row.get("kind") == "compute-idle"]) == 1
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 1
+
+
+def test_persistent_compute_idle_never_routes_warming_or_unknown_reports(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    for body in (
+        "warming — cycle 1/3, persistence not yet accumulated; NOTHING is asserted yet",
+        "UNDETERMINED — 0/4 mains unreadable, compute=unknown; no health is claimed",
+        "STALL REPORT\n  DETECTOR-BLIND 3 cycles: observation is untrustworthy",
+    ):
+        log.write_text(f"2026-08-13T16:00:00Z {body}\n", encoding="utf-8")
+        assert coordinator.route_persistent_compute_idle(
+            bus_root, config, epoch=1, log_path=log, state_path=state) == []
+    assert not [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
+
+
+def test_R16_drain_reports_ready_depth_per_lane_and_hours_in_flight(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The boundary reading: queued depth per lane + hours actually held.
+
+    Sums `est_h` over ASSIGNED/CLAIMED/RUNNING only. Terminal and READY rows are
+    not occupancy, and an in-flight row with NO estimate is reported as unknown
+    depth rather than folded in as zero — summing it as 0 would make a loaded
+    fleet read empty, which is the reading this line exists to replace.
+    """
+    _provision(bus_root, *AGENTS)
+    q = bus_root / "queue.jsonl"
+    _append(q, _typed_row("R-none-1", lane="none"))
+    _append(q, _typed_row("R-none-2", lane="none"))
+    _append(q, _typed_row("R-gpu-1", lane="gpu"))
+    _append(q, _typed_row("F-1", lane="gpu", est_h=4.0, status="ASSIGNED", owner="alice"))
+    _append(q, _typed_row("F-2", lane="cpu", est_h=2.5, status="RUNNING", owner="bob"))
+    _append(q, _typed_row("F-3", lane="none", est_h=99.0, status="DONE_PASS", owner="bob"))
+    unestimated = _typed_row("F-4", lane="none", status="CLAIMED", owner="bob")
+    del unestimated["expected_occupancy"]
+    _append(q, unestimated)
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 0
+    line = [l for l in capsys.readouterr().err.splitlines() if "queue READY by lane" in l]
+    assert len(line) == 1, "exactly one depth line per drain"
+    assert "[gpu=1, none=2]" in line[0], line[0]
+    assert "3 row(s) in flight" in line[0], line[0]
+    assert "6.5h" in line[0], "4.0 + 2.5; the DONE_PASS row's 99h must not be counted"
+    assert "1 of them state NO occupancy" in line[0], line[0]
+    # And the older untyped field is honoured by the same resolver the gate uses.
+    assert bus.row_occupancy_h({"est_wall_clock_h": 1.5}) == 1.5
+    assert bus.row_occupancy_h({"expected_occupancy": {"est_h": 2}, "est_wall_clock_h": 9}) == 2.0
+    assert bus.row_occupancy_h({}) is None
+
+
+def test_R16_the_write_path_refuses_even_when_the_pick_path_is_bypassed(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The second half of the fail-closed pair, pinned on its own.
+
+    The candidate-scan gate and the write-path re-check are defence in depth, and
+    depth that is never exercised is decoration. The regression this models is not
+    hypothetical — it is C50's shape: something upstream of the write hands the
+    write a pick it should not have made (a different fold, a re-added row, a
+    caller that forgets `gate_dispatch=True`). Here `compute_advice` is replaced
+    with one that names an unscreened row, and the write must still refuse.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-bypassed")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+    monkeypatch.setattr(coordinator, "compute_advice", lambda *a, **k: [{
+        "schema_version": coordinator.ADVISORY_SCHEMA, "kind": "would-assign",
+        "agent": "alice", "task_id": "T-bypassed", "lane": "none"}])
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}, "the write path took a pick the gate should refuse"
+    refusals = _refusals(emitted, "T-bypassed")
+    assert refusals and refusals[0]["gate"] == coordinator.DISPATCH_GATE_UNSCREENED
+    assert "write path" in refusals[0]["reason"], refusals[0]
+    assert bus.fold_queue(bus_root)["T-bypassed"]["status"] == "READY"
+    assert _task_assigns(bus_root, "alice") == []

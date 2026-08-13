@@ -2,7 +2,7 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
-> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
+> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. **Narrow standing exception:** `agents/auditor-main.md` authorizes the Auditor Main to run this routine after a completed coordinator-routed audit pass, solely to checkpoint the verdict, evidence, and handoff follow-ups before the next audit. It does not authorize scheduled wrap-ups, unrelated audit-free wrap-ups, or any automatic invocation. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
 
 ## Where this wrap-up runs — read before Step 1
 
@@ -75,6 +75,22 @@ $LEASE --acquire        # exit 2 = someone else is in their shared-surface steps
 $LEASE --release        # ALWAYS, including on failure
 $LEASE --status         # who holds it, since when, and whether it looks like residue
 ```
+
+**Order inside the lease matters — SYNC FIRST.** A generated file (the index block,
+`source_manifest.json`) is rewritten *wholesale from current state*. If you regenerate it on a
+lane that has not seen the wrap-up that just finished, your regen is computed from stale
+inputs and your promotion overwrites theirs with an older answer — the lease serialized the
+writes and still lost one. So, once you hold it:
+
+```bash
+$LEASE --acquire
+git fetch origin --quiet && git merge origin/main      # 1. build on whoever went before you
+#   2. run the shared-surface steps (step 3 regen, step 5 compile) and commit them on your lane
+#   3. promote (the step 7 detach-merge below)
+$LEASE --release
+```
+
+Sync, regenerate, promote, release — in that order, every time.
 
 It is the same O_EXCL primitive as the push lock, keyed on the git **common dir**'s
 device+inode — so all five lane worktrees are one repository and contend for one lease, and

@@ -9,7 +9,10 @@ ORCH_PY="${ORCH_PY:-${ORCH_REPO}/.venv/bin/python}"
 RESEARCH_PY="${RESEARCH_PY:-${RESEARCH_REPO}/.venv/bin/python}"
 ORCH_SITE_PACKAGES="${ORCH_SITE_PACKAGES:-/mnt/raid0/llm/venv/lib/python3.12/site-packages}"
 
-INDEX_DIR="${KBRAG_INDEX_DIR:-${ORCH_REPO}/data/kb_rag/index}"
+# OP-24 (2026-08-12): the live store is the [Q]/[D]-prefixed index. The old
+# prefix-free data/kb_rag/index is retained as the rollback; point
+# KBRAG_INDEX_DIR at it to sweep the pre-migration vectors.
+INDEX_DIR="${KBRAG_INDEX_DIR:-${ORCH_REPO}/data/kb_rag/index-qd-v1}"
 CONFIG_PATH="${KBRAG_CONFIG_PATH:-${ORCH_REPO}/config/kb_rag_config.yaml}"
 CASE_PATH="${KBRAG_CASE_PATH:-${ORCH_REPO}/scripts/kb_rag/k7_cert_cases.json}"
 OUT_BASE="${KBRAG_OUT_BASE:-${ORCH_REPO}/data/kb_rag/eval}"

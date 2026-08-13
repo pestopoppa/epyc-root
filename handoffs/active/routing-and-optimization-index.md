@@ -43,7 +43,7 @@
 | RTG-31 | routing truth restoration | [routing-truth-restoration.md](routing-truth-restoration.md) | Move to completed/ — closed 2026-07-14 with W1–W8 live-attested; relink the 6 active handoffs citing it | — |
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Coordinate with the live autopilot agent. Confirm the daemon is idle/handed-back before any scripts/autopilot/ or registry edit. Get… | — |
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5: Load test — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engi… | — |
-| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | C-OWN — continue the C-series control-plane work (mainD's lane); R1a's bench is inference-gated but does NOT gate the handoff | — |
+| RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — coordinator deploys d7b83ddf9; replay and canary one exact audit plus the full CPU lease lifecycle | — |
 | RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | Fix inverted marker polarity at contention_matrix.py:306-313 — substituted disjoint pairs enter the matrix unmarked (auditor-verified, live) | — |
 | RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | W4 - Consumer migration: continue migrating remaining stack-sensitive consumers to generated stack priors or explicit degraded fallbacks. U… | — |
 | RTG-37 | stack lineup dossier 2026 07 23 | [stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) | Refresh the lineup dossier against the v9 freeze, or mark it a historical snapshot and retire it | — |
@@ -58,6 +58,8 @@
 | RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Populate `Deps` with real dependencies as work reveals them — heuristic import was rejected | — |
 | RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Take the Phase 1b call — fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand | — |
 | RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | Auditor: audit the Mech column — a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it | RTG-34 |
+| RTG-49 | fleet fanout measurement | [fleet-fanout-measurement.md](fleet-fanout-measurement.md) | FM-1 — collect per-subagent start/finish timestamps from Claude Code and Codex transcripts into a durable record | RTG-34, RTG-48 |
+| RTG-50 | decomposition to batch mapping | [decomposition-to-batch-mapping.md](decomposition-to-batch-mapping.md) | DB-1 — establish whether a task decomposition can be expressed as np-batch slots across CPU and GPU instances | RTG-49 |
 
 ## Cross-domain
 

@@ -44,8 +44,22 @@
 # mode.
 set -euo pipefail
 
+# ONE SPELLING FOR THE BUS ROOT (Phase 3, 2026-08-12). `env.sh` resolves the
+# canonical root from the git common dir's dev+inode, so it is correct from any
+# worktree and from either path depth of the bind mount. It exports EPYC_BUS_ROOT
+# using the `/workspace` spelling *deliberately*: that is byte-identical to what
+# `session_bus.get_bus_root()` returns, and the supervisor passes this value to
+# the daemon as `--bus-root`. When the two spellings differed, the supervisor and
+# the agents named the same directory with different strings — same inode, two
+# identities — which is the shape that made the pgrep watchdog blind (C49).
+# Sourcing is best-effort so the supervisor still runs from a bare shell.
+# shellcheck source=../lib/env.sh
+if [[ -r "${BASH_SOURCE[0]%/*}/../lib/env.sh" ]]; then
+  # shellcheck disable=SC1091
+  source "${BASH_SOURCE[0]%/*}/../lib/env.sh" 2>/dev/null || true
+fi
 EPYC_ROOT="${EPYC_ROOT:-/mnt/raid0/llm/epyc-root}"
-BUS_ROOT="${BUS_ROOT:-${EPYC_ROOT}/coordination/session-bus}"
+BUS_ROOT="${BUS_ROOT:-${EPYC_BUS_ROOT:-${EPYC_ROOT}/coordination/session-bus}}"
 HEARTBEAT="${BUS_ROOT}/heartbeats/coordinator-daemon.json"
 DAEMON="${DAEMON:-${EPYC_ROOT}/scripts/coordination/session_bus_coordinator.py}"
 

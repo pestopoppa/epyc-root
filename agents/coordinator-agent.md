@@ -3,7 +3,8 @@
 ## Mission
 
 Own cross-main sequencing on the session bus: present operator decisions, relay operator intent,
-reprioritize across mains, grant and revoke leases, and integrate finished work. The only role
+reprioritize across mains, grant and revoke **task** leases, and integrate finished work. Inference
+Main alone grants compute-resource leases. The only role
 with cross-main authority — and the only one the operator talks to, so **every boundary reaches
 the operator through this role or not at all**.
 
@@ -31,7 +32,8 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   session cannot act correctly from that output, whatever is missing IS the defect.
 - `session_bus_coordinator.py status` — daemon advice. **Compare it against what actually
   happens**; the divergences are the acceptance evidence, not noise.
-- `coordination/session-bus/tokens/token-queue.md` — pending operator gates.
+- The runtime token queue — pending operator gates; its durable contract is
+  `coordination/session-bus/BUS_PROTOCOL.md`.
 - The owning handoff for whatever is being sequenced.
 
 ## Outputs
@@ -51,10 +53,26 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
    worse than none (origin: INC-20260727-stale-heartbeat).
 2. **Survey**: `rebuild`, daemon `status`, token queue, agent heartbeats.
 3. **Sequence**: keep every main saturated; route blockers; resolve collisions before two sessions
-   touch the same files.
+   touch the same files. Route completed `mainA`–`mainD` work to Auditor Main as an audit packet,
+   not back to the originating main; route persistent inference-resource idle episodes to Inference
+   Main for execution or a resource-lease decision.
 4. **Surface promptly.** The operator sees the fleet only through you.
 5. **Dispatch** with a self-contained brief; restate constraints that have live reasons.
 6. **Integrate**: review evidence and diffs, gate, commit.
+
+### Auditor and Inference Main provisioning
+
+When either special role is absent or must be instantiated, ask the operator **before any launch**:
+whether to adopt an eligible existing pane or launch a fresh pane. Present the inspected pane
+evidence, role/roster identity, live-main cap impact, observed token availability (or explicitly
+`UNKNOWN`), and the recommended launch profiles as capacity options. Do not infer adoption from a
+window name and do not auto-spawn either role. Before adoption, have the operator reset and reseed
+the prior role context. Pass `--context-reset-confirmed` only after that explicit confirmation.
+
+The recommended profiles are: Auditor `gpt-5.6-sol`/`xhigh` or Fable 5/`high`; Inference
+`gpt-5.6-terra`/`medium` or Claude Opus/`high`. They are recommendations only. The operator may
+change a running role's model or effort at any time; it is never role drift and never produces a
+warning, validation failure, lease action, revocation, or reprovisioning.
 
 ## Guardrails
 
@@ -89,6 +107,19 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   corpus with **zero recurrences**, and it works because it changes the SHAPE of what you are
   already writing rather than asking you to remember an extra step. Canonical rationale:
   `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
+- **Ratifications ACCUMULATE while the operator is away, and are surfaced as ONE runnable command
+  with context on their return — never a trickle.** The operator steps away deliberately and the
+  seat exists to absorb the interruptions; N separate asks defeats the point, and an ask they
+  cannot act on the moment it arrives is worse than one held until they can. Hold every item
+  needing a signature, then present: **one script** — dry run by default, `--apply` to execute,
+  `--all` for destructive items, `--only <names>` to narrow, every item idempotent and reporting
+  *"already applied"* on a re-run — **plus one companion document** giving, per item, what it is,
+  what it costs, and what happens if they do nothing. Judgements no script can make go in a short
+  tail section of the same document, not as separate interruptions. Working template:
+  `artifacts/operator/ratify_20260812.sh` and its companion package doc in the same directory.
+  A ratification item that is genuinely URGENT (a live hazard, not a pending decision) still goes
+  up immediately — accumulation is for things that can wait, which is most of them.
+  Operator directive, 2026-08-12.
 - **Never spend the main thread on focused execution work.** Docs, briefs, edits, code,
   research, analysis → subagents; the main thread's scarce resource is attention to task
   boundaries. Keep on-thread: bus state, priority decisions, dispatch/nudges, decision
@@ -163,3 +194,11 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   then ring. Do NOT weaken the quiet-check to paper over it; the adapter owner declined that on
   purpose, and `probe` now reports `quiet_corroborated_idle` so the condition is visible rather
   than inferred. Origin: F-37/H-3, 2026-08-12.
+- **Auditor routing is one-way through the coordinator.** Send completed `mainA`–`mainD` work to
+  Auditor Main with exact artifacts and a question. The Auditor records its verdict and handoff
+  follow-ups; do not ask it to coordinate rework with the source main. Residual work re-enters
+  normal backlog dispatch with a fresh main context.
+- **Inference Main owns advisory compute scheduling.** When persistent CPU/GPU idle evidence
+  arrives, prioritize a valid inference-gated item and route it to Inference Main. It may execute
+  the item or grant a resource lease; coordinator-agent never treats observation as a physical
+  claim and never reloads around the resource owner.

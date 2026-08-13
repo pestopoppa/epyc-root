@@ -349,16 +349,17 @@ fw_round() {
     awk -v v="$1" 'BEGIN{printf "%.0f", v}'
 }
 
-# Compute state. Echoes busy|idle|unknown.
-#   $1 gpu%  $2 vram%  $3 regions free  $4 regions total  ('unknown' allowed)
-fw_classify_compute() {
-    local gpu="$1" vram="$2" free="$3" total="$4"
-    case "${gpu}|${vram}|${free}|${total}" in
-        *unknown*) printf 'unknown'; return 0 ;;
-        *[!0-9|]*) printf 'unknown'; return 0 ;;
+# Per-resource compute state. Each probe is three-valued so CPU activity cannot
+# hide an idle GPU and GPU activity cannot hide idle CPU regions.
+fw_classify_gpu() {
+    local gpu="$1" vram="$2"
+    case "${gpu}|${vram}" in
+        *unknown*|*[!0-9|]*) printf 'unknown'; return 0 ;;
     esac
-    [ -n "$gpu" ] && [ -n "$vram" ] && [ -n "$free" ] && [ -n "$total" ] || { printf 'unknown'; return 0; }
-    [ "$total" -gt 0 ] 2>/dev/null || { printf 'unknown'; return 0; }
+    if [ -z "$gpu" ] || [ -z "$vram" ]; then
+        printf 'unknown'
+        return 0
+    fi
     # VRAM IS CHECKED INDEPENDENTLY OF GPU%. A run that silently falls back to
     # CPU shows 0% util AND 0% VRAM — that is how a "GPU benchmark" got measured
     # on 96 CPU threads on 2026-08-12 (root cause: /etc/environment puts the CPU
@@ -367,7 +368,34 @@ fw_classify_compute() {
     # llama-bench EXITS between probes, so the card legitimately reads 0%/0%
     # inside a perfectly healthy sweep, and a single sample landing in that gap
     # is sampling error, not idleness.
-    if [ "$gpu" = "0" ] && [ "$vram" = "0" ] && [ "$free" = "$total" ]; then
+    if [ "$gpu" = "0" ] && [ "$vram" = "0" ]; then
+        printf 'idle'
+    else
+        printf 'busy'
+    fi
+}
+
+fw_classify_cpu() {
+    local free="$1" total="$2"
+    case "${free}|${total}" in
+        *unknown*|*[!0-9|]*) printf 'unknown'; return 0 ;;
+    esac
+    if [ -z "$free" ] || [ -z "$total" ]; then
+        printf 'unknown'
+        return 0
+    fi
+    [ "$total" -gt 0 ] 2>/dev/null || { printf 'unknown'; return 0; }
+    if [ "$free" = "$total" ]; then printf 'idle'; else printf 'busy'; fi
+}
+
+# Compatibility aggregate used by the existing health verdict and log format.
+fw_classify_compute() {
+    local gpu_state cpu_state
+    gpu_state=$(fw_classify_gpu "$1" "$2")
+    cpu_state=$(fw_classify_cpu "$3" "$4")
+    if [ "$gpu_state" = unknown ] || [ "$cpu_state" = unknown ]; then
+        printf 'unknown'
+    elif [ "$gpu_state" = idle ] && [ "$cpu_state" = idle ]; then
         printf 'idle'
     else
         printf 'busy'
@@ -402,12 +430,15 @@ fw_regions_total() { printf '%s\n' "$1" | grep -cE '^[[:space:]]*[A-Za-z0-9_]+[[
 declare -A FW_PEND_TEXT FW_PEND_N FW_IDLE_N
 declare -a FW_FINDINGS=()
 FW_COMPUTE_N=0
+FW_GPU_IDLE_N=0
+FW_CPU_IDLE_N=0
 FW_BLIND_N=0
 FW_CYCLE=0
 
 fw_reset_state() {
     FW_PEND_TEXT=(); FW_PEND_N=(); FW_IDLE_N=(); FW_FINDINGS=()
-    FW_COMPUTE_N=0; FW_BLIND_N=0; FW_CYCLE=0
+    FW_COMPUTE_N=0; FW_GPU_IDLE_N=0; FW_CPU_IDLE_N=0
+    FW_BLIND_N=0; FW_CYCLE=0
 }
 
 # ============================================================================
@@ -524,7 +555,7 @@ fw_run_cycle() {
     fi
 
     # ---- COMPUTE-IDLE ---------------------------------------------------
-    local gpu=unknown vram=unknown free=unknown total=unknown rocm regions compute
+    local gpu=unknown vram=unknown free=unknown total=unknown rocm regions compute gpu_state cpu_state
     if rocm=$(fw_gpu_json); then
         gpu=$(fw_gpu_metric "$rocm" 'GPU use (%)')
         vram=$(fw_gpu_metric "$rocm" 'GPU Memory Allocated (VRAM%)')
@@ -533,7 +564,19 @@ fw_run_cycle() {
         free=$(fw_regions_free "$regions")
         total=$(fw_regions_total "$regions")
     fi
+    gpu_state=$(fw_classify_gpu "$gpu" "$vram")
+    cpu_state=$(fw_classify_cpu "$free" "$total")
     compute=$(fw_classify_compute "$gpu" "$vram" "$free" "$total")
+    if [ "$gpu_state" = "idle" ]; then
+        FW_GPU_IDLE_N=$((FW_GPU_IDLE_N + 1))
+    else
+        FW_GPU_IDLE_N=0
+    fi
+    if [ "$cpu_state" = "idle" ]; then
+        FW_CPU_IDLE_N=$((FW_CPU_IDLE_N + 1))
+    else
+        FW_CPU_IDLE_N=0
+    fi
     if [ "$compute" = "idle" ]; then
         FW_COMPUTE_N=$((FW_COMPUTE_N + 1))
     else
@@ -541,6 +584,12 @@ fw_run_cycle() {
     fi
     if [ "$FW_COMPUTE_N" -ge "$PERSIST_CYCLES" ]; then
         FW_FINDINGS+=("COMPUTE-IDLE ${FW_COMPUTE_N} cycles ~ $((FW_COMPUTE_N * INTERVAL))s: GPU ${gpu}% / VRAM ${vram}% / ${free} of ${total} CPU regions free")
+    fi
+    if [ "$FW_GPU_IDLE_N" -ge "$PERSIST_CYCLES" ]; then
+        FW_FINDINGS+=("GPU-IDLE ${FW_GPU_IDLE_N} cycles ~ $((FW_GPU_IDLE_N * INTERVAL))s: GPU ${gpu}% / VRAM ${vram}%")
+    fi
+    if [ "$FW_CPU_IDLE_N" -ge "$PERSIST_CYCLES" ]; then
+        FW_FINDINGS+=("CPU-IDLE ${FW_CPU_IDLE_N} cycles ~ $((FW_CPU_IDLE_N * INTERVAL))s: ${free} of ${total} CPU regions free")
     fi
 
     # ---- verdict --------------------------------------------------------

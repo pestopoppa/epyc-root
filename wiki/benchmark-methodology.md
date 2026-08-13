@@ -2,8 +2,25 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (fourth pass — the livecodebench oracle was REBUILT from LeetCode's own worked examples (704 rows rebuilt / 1,656 retired, distinct `expected` 1 → 670), the upstream reference corpus shown misaligned to the *wrong problems* (40.08% slug-name match), and a third silent-scoring defect (a zero-arg `entry_point` assertion that fails every correct answer) fixed and pinned — see below; earlier third pass — a retired suite's own verification grew under audit (12→24 tests, all passing, four mutations each failing loudly) and a canonical-solutions acceptance gate PASSED an adopted efficiency instrument while surfacing a fourth, runtime-only correctness-inflation defect — see below; earlier same-day note: kernel-era identity now binds to the executed binary rather than a hard-coded constant, closing four stale era constants — one of them a live tool outage; the E5 top-rung `empty_trimmed_window` diagnosed as a *sample-size* defect and its read-side fix chosen for changing zero banked numbers; an absence-read-as-a-value census across the manifest corpus; a scoring oracle proved vacuous with a cheap generalisable pool-generation guard; the wrong-artefact and prompt-length audits given named enforcement points; and a judge rubric found priming on question identity — see below; earlier 2026-08-11 note: adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained; concurrent-lane compile 2026-08-11: instrument-era registry closes a v9 cutover gap, an eligibility-vs-kernel-identity scope collision, the whole-file-sha-pin anti-pattern against an autonomously-written registry, and a sealed-capture scorer found systematically more permissive than its canonical counterpart — see below; earlier 2026-08-10 note: adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, the correction that the paper this expansion was scoped from generates no tasks, and — second pass — why a regression tester cannot serve as a reward-bearing oracle, the instrument-inside-the-candidate's-tree problem, and five generalisable evaluation rules)
-**Sources**: 113+ documents
+**Last compiled**: 2026-08-13 (matched experiments must replay production semantics and independently initialize mutable state; repeated pairs cannot repair a contaminated or drifting frame)
+**Sources**: 118+ documents
+
+## Compiled Update — 2026-08-13: repetitions can create a trajectory, and an A/B must isolate its mutable state
+
+**Confidence: verified across one CPU matched-pair refusal and one static prompt-harness audit.**
+
+R29 demonstrates that completing the planned number of pairs is not enough: ten intervention pairs reached `DECIDED`, but anchor drift of `15.27%` exceeded the `3.08%` bound, so the result reverted; the A/A arm then refused under external CPU work. Repetitions sampled a changing host trajectory rather than one stable comparison frame. Quiet-host admission, teardown, settling, and fresh attestations are part of the measurement—not cleanup around it.
+
+The prefix-cache harness exposes the software analogue. Its arms shared one pinned slot, so the second inherited cache state; it also used a structured builder instead of the live minimal builder, synthetic state/model spillover instead of executed REPL output, corpus on every turn, missing dynamic suffixes, and fail-open error handling. Cache counters and default-off implementation can be correct while this A/B remains unable to authorize a default flip.
+
+The joint rule is strict: a decision A/B must faithfully replay the production path and independently initialize every mutable state carrier. More samples do not cure cross-arm state, semantic mismatch, contention, or drift; they make the wrong comparison more precise.
+
+### Source References (2026-08-13 matched-frame rule)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — r29 drift/contamination refusal and fresh-pair requirements.
+- [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) — prefix harness defects and repaired semantic gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent audit verdict and focused verification.
+- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — CPU instrument and paired-attempt disposition.
 
 ## Compiled Update — 2026-08-12 (fourth pass): the livecodebench rebuild landed — and the upstream reference corpus was the hidden second defect
 
@@ -2066,3 +2083,57 @@ instrument, so speed does not weaken the proof boundary.
 - [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
 - [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
+
+## Tuning constants are CALL-SHAPE specific, not machine constants (2026-08-12)
+
+Four independent instances in one day, all the same mistake in different clothing: a constant
+measured against one usage was reused for a different usage, and every one degraded silently while
+looking correct.
+
+| constant | measured for | reused for | cost |
+|---|---|---|---|
+| `intra_op=8` (ONNX) | one single-row request-path call | a 28k-chunk bulk sweep | machine ran at **4.6%** of a 192-thread host |
+| `intra_op=8` | single-row encoder | **batched** `score_pairs()` (N rows/`run()`) | ~40% at batch=50 (best is 16) |
+| `-fa 1` | LFM2.5 on MI210 | gemma4 on the **same GPU** | gemma is 12.9% faster at `-fa 0` — opposite optimum |
+| Q4 over Q8 | CPU decode (Q4 1.60× ahead) | GPU decode | ordering **inverts**; Q8 marginally ahead |
+| 176 workers | "saturate 192 cores" | actual throughput | **48 workers are 3× faster** — each carries `1+len(affinity mask)` threads |
+
+**The rule**: a tuning constant is valid only for the call shape it was measured against. Copying it
+to a consumer with a different batch size, device, or process topology is a new experiment, not
+reuse — and it will not announce itself, because every test still passes.
+
+The worker-count case is the sharpest: choosing a pool size from *core count* rather than from
+*measurement* produced a 3× regression, and the bottleneck was not where anyone would look — not
+ONNX, not BLAS, but `tokenizer.encode()`, whose thread pool `OMP/OPENBLAS/RAYON_NUM_THREADS=1` do
+not suppress.
+
+## Four more ways a check passes for the wrong reason (2026-08-12)
+
+Extending the vacuous-verification catalogue with faces found in one day of measurement work:
+
+- **A flag that is ACCEPTED and IGNORED.** `llama-cli`/`llama-completion` parse `-rea off` and do
+  nothing with it (`default_template_kwargs` is consumed only by `common_chat_format_example`);
+  `llama-server` honours it. This produces **thinking-ON numbers labelled thinking-OFF** — it fails
+  in the direction that *flatters* a reasoning model. A flag that errors is safe; one that is
+  accepted and ignored is not. Render the prompt yourself and prove it by **diffing token
+  sequences**, with the tool's own render as the control.
+- **EXISTENCE asserted as VALIDITY.** "Every `emb_path` resolves to a file" passes trivially on a
+  file truncated mid-write. After an unclean reboot the meaningful check is *load every artifact and
+  assert its shape/dtype/finiteness* — and sample **across the failure boundary**, because a sample
+  drawn only from post-event work cannot detect pre-event damage.
+- **The WRONG BASELINE.** A migration read as "855 embeddings short" only because the comparison
+  directory held 2,753 orphaned files beyond its own catalog. Against its own catalog it was
+  complete. Compare a thing to its own manifest, not to a sibling that may have drifted.
+- **A HEADLINE that measures corpus drift, not the change.** A prefix migration read as −4pp recall;
+  restricted to the cases whose evidence existed in **both** catalogs, recall was identical and only
+  ranking moved. Uncontrolled before/after comparison across an index rebuild measures the rebuild.
+
+**Cheaper than the obvious remedy**: when an artifact store is suspect, *validate all* rather than
+*rebuild all* — validation is a load-and-check, rebuilding is a forward pass. 27,405 embeddings
+validated exhaustively in **0.3 s at 7,270% CPU**, versus ~10 minutes to re-embed. Certainty by
+exhaustion, at a fraction of the cost, and it re-does only what fails.
+
+**Source references**
+- `progress/2026-08/2026-08-12.md` — all five constants and all four faces, with measurements
+- `handoffs/active/architect-model-selection-bench.md` — the `-fa`, quant and token-count findings
+- `handoffs/active/shape-keyed-contention-gating.md` — host-health provenance and the timeout-laundering fix

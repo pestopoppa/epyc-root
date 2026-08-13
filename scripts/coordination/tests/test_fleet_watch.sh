@@ -345,6 +345,26 @@ cycles 2; out="$LAST_OUT"
 chk_lacks "COMPUTE-IDLE does not fire on a single sample" "$out" "COMPUTE-IDLE"
 cycles 1; out="$LAST_OUT"
 chk_contains "COMPUTE-IDLE fires on persistence" "$out" "COMPUTE-IDLE"
+chk_contains "GPU-IDLE is detected independently" "$out" "GPU-IDLE"
+chk_contains "CPU-IDLE is detected independently" "$out" "CPU-IDLE"
+
+# CPU work must not hide a persistently idle GPU.
+fw_reset_state
+FIX_GPU='{"card0":{"GPU use (%)":"0","GPU Memory Allocated (VRAM%)":"0"}}'
+FIX_REGIONS=$'  q0  HELD   worker\n  q1  free   \n  q2  free   \n  q3  free   '
+cycles 3; out="$LAST_OUT"
+chk_contains "busy CPU does not hide GPU-IDLE" "$out" "GPU-IDLE"
+chk_lacks "busy CPU suppresses CPU-IDLE" "$out" "CPU-IDLE"
+chk_lacks "partially busy compute is not combined COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
+
+# GPU work must not hide persistently idle CPU regions.
+fw_reset_state
+FIX_GPU='{"card0":{"GPU use (%)":"55","GPU Memory Allocated (VRAM%)":"71"}}'
+FIX_REGIONS=$'  q0  free   \n  q1  free   \n  q2  free   \n  q3  free   '
+cycles 3; out="$LAST_OUT"
+chk_contains "busy GPU does not hide CPU-IDLE" "$out" "CPU-IDLE"
+chk_lacks "busy GPU suppresses GPU-IDLE" "$out" "GPU-IDLE"
+chk_lacks "partially busy compute is not combined COMPUTE-IDLE (GPU)" "$out" "COMPUTE-IDLE"
 
 # THE llama-bench GAP. The card legitimately reads 0%/0% between probes inside a
 # perfectly healthy sweep. One busy sample must reset the counter.
@@ -359,13 +379,16 @@ for pattern in idle idle busy idle idle busy idle idle; do
 done
 out=$(printf '%s\n' ${FW_FINDINGS[@]+"${FW_FINDINGS[@]}"})
 chk_lacks "COMPLIANT: a sweep's inter-probe gaps never fire COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
+chk_lacks "COMPLIANT: a sweep's inter-probe gaps never fire GPU-IDLE" "$out" "GPU-IDLE"
 
 # An unreadable GPU is not an idle GPU.
 fw_reset_state
 FIX_GPU=""
 cycles 6; out="$LAST_OUT"
 chk_lacks "unreadable rocm-smi never fires COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
-chk "unreadable compute -> degraded verdict" "$FW_VERDICT" "degraded"
+chk_lacks "unreadable rocm-smi never fires GPU-IDLE" "$out" "GPU-IDLE"
+chk_contains "known-idle CPU remains reportable with unreadable GPU" "$out" "CPU-IDLE"
+chk "known CPU stall takes precedence while GPU remains unknown" "$FW_VERDICT" "stall"
 FIX_GPU='{"card0":{"GPU use (%)":"55","GPU Memory Allocated (VRAM%)":"71"}}'
 
 # ---- 5e. THE FIRST-CYCLE LIE ----------------------------------------------

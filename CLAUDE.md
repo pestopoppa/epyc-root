@@ -198,3 +198,30 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 
 See **Act, Don't Defer** at the top of this file before escalating anything. When a choice genuinely is
 the operator's, use the canonical [operator decision-package contract](agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
+
+<!-- gitnexus:start -->
+<!-- gitnexus:keep -->
+# GitNexus — Code Intelligence
+
+Indexed as **epyc-root** (42864 nodes, 57165 edges, 462 clusters, 300 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
+
+**Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir and rewrites this block). The wrapper takes a nonblocking per-repo lock at `/tmp/gitnexus-<repo>-analyze.lock`; exit `75` means another analyze is already running — wait/retry, never delete `.gitnexus/` metadata.
+
+## Required before editing
+
+- Run `gitnexus impact <symbol> --direction upstream`. Report blast radius + risk to the user. STOP and warn if HIGH or CRITICAL.
+- Run `gitnexus status` once per session; re-analyze via wrapper if stale.
+
+## Required for renames / refactors
+
+- Run `gitnexus context <symbol>` to enumerate every caller/file BEFORE editing. Find-and-replace alone is unsafe.
+- See the `gitnexus-refactoring` skill for the full workflow.
+
+## Skills (invoke via Skill tool)
+
+`gitnexus-exploring` · `gitnexus-impact-analysis` · `gitnexus-debugging` · `gitnexus-refactoring` · `gitnexus-guide` · `gitnexus-cli`
+
+## Additional CLI
+
+`gitnexus query <concept>` (execution flows) · `gitnexus cypher <query>` (graph) · `gitnexus wiki` (docs)
+<!-- gitnexus:end -->

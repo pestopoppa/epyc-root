@@ -2,8 +2,24 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the spill-pointer audit closed: the live `peek`/`grep` is the file-capable implementation, so spill pointers ARE followable today, with a named latent hazard behind a default-off flag — see below; earlier 2026-07-16 note: harness-local compaction can now conflict with Orch-side compression unless the harness cooperates)
-**Sources**: 28 documents (6 deep-dives, 4 active handoffs, 18 intake entries) + 2026-06-19 K-MEM Tulving run state + 2026-06-22 DCP first live A/B (hold) + 2026-07-02 SPIRAL/recursive self-aggregation intake + 2026-07-05 scaffold-transplant falsification cross-link + DCP-for-consult flag landing
+**Last compiled**: 2026-08-13 (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Sources**: 30+ documents
+
+## Compiled Update — 2026-08-13: prefix-stable rendering landed default-off; its current A/B is not faithful
+
+**Confidence: verified for implementation and static audit; no live cache/semantic verdict.**
+
+The REPL prompt audit verified a cache-hostile ordering and landed two safe implementation pieces: v9 cache telemetry now reads `timings.cache_n` and `/slots` prompt-token fields, and `ORCHESTRATOR_PREFIX_STABLE_ORDER` offers a legacy-byte-preserving, default-off reorder. The focused orchestrator slice passed 353 tests. This is implementation evidence only; enabled task behavior is deliberately unratified.
+
+The current A/B script does not replay the live frontdoor. It uses the default structured builder instead of the live minimal builder, hard-codes state, feeds generated model content instead of executed REPL output, repeats corpus after turn one, omits gathered/workspace/session/budget riders, shares one pinned slot across ordered arms, and catches failures while exiting successfully. Those defects bias cache reuse and sever the semantic link to real turns.
+
+Repair must therefore precede compute: use live builder/state/execution semantics, first-turn-only corpus and all dynamic suffixes, independently reset each arm, map v9 `is_processing`, and fail closed on missing metrics or arm errors. Then report cached/processed tokens and prefill latency together with turns/task, tokens/task, and accuracy. The default stays off unless both cache benefit and neutral-or-better behavior pass.
+
+### Source References (2026-08-13 prefix audit)
+
+- [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) — implementation checkpoints, harness defects, and live semantic gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent primary-source audit and test rerun.
+- [`benchmark-methodology.md`](benchmark-methodology.md) — production-faithful, mutable-state-isolated A/B rule.
 
 ## Compiled Update — 2026-08-12: spill pointers are followable today, and the hazard is a flag away
 

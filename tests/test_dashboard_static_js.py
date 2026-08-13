@@ -302,6 +302,54 @@ if (!__box.innerHTML.includes("host uptime exceeds the ratified ceiling")) {{
             proc.returncode, 0,
             "kernel current-state renderer failed at runtime:\n" + proc.stderr)
 
+    @unittest.skipIf(shutil.which("node") is None, "node unavailable")
+    def test_kernel_progression_headlines_separate_phase_and_lane(self):
+        page = _STATIC / "kernel.html"
+        source = _scripts(page)[0].split("async function load()", 1)[0]
+        harness = f'''
+const __box = {{innerHTML: "", classList: {{remove() {{}}, add() {{}}}}, style: {{}}}};
+globalThis.document = {{
+  querySelector() {{ return __box; }},
+  querySelectorAll() {{ return []; }},
+  createElement() {{ return __box; }}
+}};
+{source}
+renderProgression({{
+  _activity: {{current_state: {{production_kernel: {{available: false}}}}}},
+  _progression: {{available: true, promotion_claim: false,
+    funnel: {{candidate: 3, strict_keep: 0, champion: 0, promotable: 0}},
+    candidates: [
+      {{lane: "CPU", candidate: "IQK prefill", workload: "prefill pp512",
+        metric: "prefill_tokens_per_s", effect_fraction: .31, evidence_tier: "screening",
+        stage: "candidate", transition: "0 → 1", confidence: "screening",
+        current_gate: "strict", next_action: "confirm", evidence: []}},
+      {{lane: "CPU", candidate: "IQK decode", workload: "decode tg128",
+        metric: "decode_tokens_per_s", effect_fraction: .08, evidence_tier: "screening",
+        stage: "candidate", transition: "0 → 1", confidence: "screening",
+        current_gate: "strict", next_action: "confirm", evidence: []}},
+      {{lane: "GPU", candidate: "MFMA", workload: "MI210 prefill pp512",
+        metric: "prefill_tokens_per_s", effect_fraction: .26, evidence_tier: "screening",
+        stage: "candidate", transition: "ON → OFF", confidence: "HIP resident",
+        current_gate: "strict", next_action: "confirm", evidence: []}}
+    ], strategy: {{pursued: [], accepted: [], abandoned: []}}, unexplored: []}}
+}});
+const html=__box.innerHTML;
+for (const expected of ["CPU lane", "GPU lane", "Prompt processing",
+  "Token generation", "prefill · 512 input tokens (pp512)",
+  "decode · 128 generated tokens (tg128)", "technical workload: MI210 prefill pp512"]) {{
+  if (!html.includes(expected)) throw new Error("missing phase/lane distinction: " + expected);
+}}
+if (html.includes("CPU leader") || html.includes("GPU leader")) {{
+  throw new Error("ambiguous lane-only leader label remains");
+}}
+'''
+        proc = subprocess.run(
+            [shutil.which("node"), "-e", harness], capture_output=True,
+            text=True, timeout=60)
+        self.assertEqual(
+            proc.returncode, 0,
+            "kernel progression headline renderer failed at runtime:\n" + proc.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

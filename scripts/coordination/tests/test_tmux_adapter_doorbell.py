@@ -164,6 +164,32 @@ def test_doorbell_text_is_exactly_the_constant_with_only_the_agent_substituted()
     assert adapter.doorbell_text("{agent}") == "Bus: unread inbox for {agent} — drain now."
 
 
+def test_doorbell_string_stays_under_the_single_burst_paste_threshold() -> None:
+    """The doorbell is the ONE send path that skips chunking — so its length is a
+    load-bearing property, not a coincidence.
+
+    `cmd_doorbell` sends the ring with a single unchunked `send-keys -l` because
+    the string is ~45 chars, an order of magnitude under the smallest calibrated
+    single-burst threshold (800 chars, Claude Code CLI v2.1.220; the C45 block
+    records the bisection). Above that threshold the TUI renders a paste
+    attachment, and Codex CAPS THAT ATTACHMENT'S CONTENT AT 1024 CHARS — which is
+    the actual truncation that lost content from long dispatches.
+
+    The exact-string test above would catch a template change today, but it pins a
+    SPELLING: a legitimate reword that updates both the template and that assertion
+    would sail past it while silently re-opening the hazard. This pins the PROPERTY
+    instead. If the doorbell ever needs to carry more text, route it through
+    `_send_message_chunked` rather than raising this bound.
+    """
+    adapter = _load("length")
+    for agent in ("mainA", "codex-inference", "coordinator-agent", "a" * 64):
+        rung = adapter.doorbell_text(agent)
+        assert len(rung) < adapter.NUDGE_CHUNK_CHARS, (
+            f"doorbell string for {agent!r} is {len(rung)} chars; it is sent UNCHUNKED, "
+            f"so it must stay well under the 800-char paste threshold. Chunk it instead."
+        )
+
+
 def test_doorbell_subcommand_has_no_message_parameter() -> None:
     """The design point, made structural: passing --message must not even parse."""
     adapter = _load("noargmsg")

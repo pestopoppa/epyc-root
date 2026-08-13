@@ -85,6 +85,31 @@ TERMINAL_STATES = frozenset(
     {"DONE_PASS", "DONE_MARGINAL_OBS", "FAILED", "CANCELLED"}
 )
 
+# A row someone is holding right now: dispatched and not yet finished. Distinct
+# from TERMINAL_STATES' complement, which also contains READY, INFRA_BLOCKED,
+# HELD_OP_GATE and STALE_REQUEUED — none of which is occupying anybody.
+IN_FLIGHT_STATES = frozenset({"ASSIGNED", "CLAIMED", "RUNNING"})
+
+
+def row_occupancy_h(row: dict) -> Optional[float]:
+    """The queue row's expected occupancy in hours, or None if it states none.
+
+    AUD-2 / F-14. The typed `expected_occupancy.est_h` first, then the queue's
+    own older `est_wall_clock_h`. ONE definition, shared by the coordinator's
+    automatic-dispatch gate, its pick ordering, and the drain depth line — three
+    readings of "how loaded is the fleet" that must not be able to disagree.
+    """
+    occ = row.get("expected_occupancy")
+    raw = occ.get("est_h") if isinstance(occ, dict) else None
+    if raw is None:
+        raw = row.get("est_wall_clock_h")
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
 
 class BusError(RuntimeError):
     """Protocol or validation violation. Message is operator-facing."""
@@ -607,6 +632,287 @@ def fold_queue(bus_root: Path) -> dict[str, dict]:
     return latest
 
 
+# Resource leases are scheduling authority above physical exclusion.  They are
+# deliberately separate from queue/task leases: a task owner does not thereby
+# own a CPU region or GPU, and a resource reservation never proves execution.
+RESOURCE_LEASE_KINDS = frozenset({
+    "resource-lease-request", "resource-lease-grant", "resource-lease-decline",
+    "resource-lease-activate", "resource-lease-renew", "resource-lease-draining",
+    "resource-lease-release", "resource-lease-revoke-request",
+    "resource-lease-cancel", "resource-lease-expire",
+})
+_RESOURCE_STATE = {
+    "resource-lease-request": "REQUESTED",
+    "resource-lease-grant": "RESERVED",
+    "resource-lease-decline": "DECLINED",
+    "resource-lease-activate": "ACTIVE",
+    "resource-lease-draining": "DRAINING",
+    "resource-lease-release": "RELEASED",
+    "resource-lease-cancel": "CANCELLED",
+    "resource-lease-expire": "EXPIRED",
+    "resource-lease-revoke-request": "REVOKE_REQUESTED",
+}
+_RESOURCE_ALLOWED_PRIOR = {
+    "resource-lease-request": {None},
+    "resource-lease-grant": {"REQUESTED"},
+    "resource-lease-decline": {"REQUESTED"},
+    "resource-lease-activate": {"RESERVED"},
+    "resource-lease-renew": {"RESERVED", "ACTIVE"},
+    "resource-lease-draining": {"ACTIVE", "REVOKE_REQUESTED"},
+    "resource-lease-release": {"ACTIVE", "DRAINING", "REVOKE_REQUESTED"},
+    "resource-lease-cancel": {"RESERVED"},
+    # Expiry may clear an unactivated reservation only.  An ACTIVE holder has a
+    # live physical claim and must quiesce through revoke/drain/release instead.
+    "resource-lease-expire": {"RESERVED"},
+    "resource-lease-revoke-request": {"RESERVED", "ACTIVE"},
+}
+
+
+def resource_lease_events(bus_root: Path) -> list[dict]:
+    """Canonical lease events from agent-owned outboxes, in causal time order."""
+    phase = {
+        "resource-lease-request": 0, "resource-lease-grant": 1,
+        "resource-lease-decline": 1, "resource-lease-activate": 2,
+        "resource-lease-renew": 3, "resource-lease-revoke-request": 4,
+        "resource-lease-draining": 5, "resource-lease-release": 6,
+        "resource-lease-cancel": 6, "resource-lease-expire": 6,
+    }
+    events: list[dict] = []
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _ = _read_jsonl(path)
+        # The owning outbox is part of the authority proof. cmd_validate still
+        # reports a mismatched `from`, but scheduling folds must never consume it.
+        events.extend(row for row in rows
+                      if row.get("kind") in RESOURCE_LEASE_KINDS
+                      and row.get("from") == path.stem)
+    # Message timestamps have second precision. Different writers can therefore
+    # produce request/grant/activate within one second, so lexical writer IDs are
+    # not a causal clock. Lifecycle phase breaks same-second ties deterministically.
+    return sorted(events, key=lambda row: (str(row.get("ts") or ""),
+                                           phase.get(str(row.get("kind")), 99),
+                                           str(row.get("id") or "")))
+
+
+def fold_resource_leases(bus_root: Path) -> dict[str, dict]:
+    """Rebuild the latest state of every compute-resource lease from bus files."""
+    latest: dict[str, dict] = {}
+    for event in resource_lease_events(bus_root):
+        payload = event.get("payload") or {}
+        lease_id = str(payload.get("lease_id") or "")
+        if not lease_id:
+            continue
+        previous = latest.get(lease_id) or {}
+        state = previous.get("state") if event.get("kind") == "resource-lease-renew" else (
+            _RESOURCE_STATE.get(str(event.get("kind"))))
+        latest[lease_id] = {
+            **previous,
+            **{k: payload[k] for k in (
+                "holder", "task_ids", "resources", "expires_ts", "activation_deadline_ts",
+                "contention_class", "safe_drain_point", "physical_claim_receipts",
+                "physical_claim_close_receipts", "reason") if payload.get(k) is not None},
+            "lease_id": lease_id,
+            "state": state,
+            "last_kind": event.get("kind"),
+            "last_event_id": event.get("id"),
+            "last_event_ts": event.get("ts"),
+            "last_writer": event.get("from"),
+        }
+    return latest
+
+
+def _resource_overlap(left: dict, right: dict) -> bool:
+    """True when exact named CPU/GPU resources intersect."""
+    left = left if isinstance(left, dict) else {}
+    right = right if isinstance(right, dict) else {}
+    return bool((set(left.get("cpu_regions") or []) & set(right.get("cpu_regions") or [])) or
+                (set(left.get("gpu_devices") or []) & set(right.get("gpu_devices") or [])))
+
+
+def resource_lease_history_problems(bus_root: Path) -> list[str]:
+    """Replay every outbox lease event and report impossible lifecycle order."""
+    state: dict[str, dict] = {}
+    requests: dict[str, dict] = {}
+    problems: list[str] = []
+    for event in resource_lease_events(bus_root):
+        payload = event.get("payload") or {}
+        lease_id = str(payload.get("lease_id") or "")
+        kind = str(event.get("kind") or "")
+        previous = state.get(lease_id) or {}
+        prior = previous.get("state")
+        if prior not in _RESOURCE_ALLOWED_PRIOR.get(kind, set()):
+            problems.append(f"resource lease {lease_id!r}: {kind} after {prior!r} "
+                            f"at {event.get('id')}")
+            continue
+        if kind == "resource-lease-request":
+            requests[lease_id] = payload
+        elif kind == "resource-lease-grant":
+            requested = requests.get(lease_id) or {}
+            if (payload.get("holder") != requested.get("holder") or
+                    payload.get("task_ids") != requested.get("task_ids") or
+                    payload.get("resources") != requested.get("resources")):
+                problems.append(f"resource lease {lease_id!r}: grant changed requested identity "
+                                f"at {event.get('id')}")
+                continue
+            for other_id, other in state.items():
+                if other_id != lease_id and other.get("state") in {"RESERVED", "ACTIVE", "DRAINING", "REVOKE_REQUESTED"} \
+                        and _resource_overlap(payload.get("resources") or {}, other.get("resources") or {}):
+                    problems.append(f"resource lease {lease_id!r}: grant overlaps live lease {other_id!r} "
+                                    f"at {event.get('id')}")
+                    break
+        elif previous and payload.get("holder") != previous.get("holder"):
+            problems.append(f"resource lease {lease_id!r}: {kind} changed holder at {event.get('id')}")
+            continue
+        if kind != "resource-lease-renew":
+            state[lease_id] = {**previous, "state": _RESOURCE_STATE.get(kind),
+                               "holder": payload.get("holder", previous.get("holder")),
+                               "task_ids": payload.get("task_ids", previous.get("task_ids")),
+                               "resources": payload.get("resources", previous.get("resources"))}
+    return problems
+
+
+def _load_bus_config(bus_root: Path) -> dict:
+    try:
+        import yaml
+        value = yaml.safe_load((bus_root / "config.yaml").read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        raise BusError(f"could not read config.yaml for resource authority: {exc}") from exc
+    return value if isinstance(value, dict) else {}
+
+
+def _resource_list(payload: dict, key: str) -> list[str]:
+    resources = payload.get("resources") or {}
+    value = resources.get(key) if isinstance(resources, dict) else None
+    return [str(item) for item in value] if isinstance(value, list) else []
+
+
+def check_resource_lease_message(bus_root: Path, row: dict, *, check_transition: bool = True) -> None:
+    """Fail closed on lease authority, physical receipts, and lifecycle order."""
+    kind = str(row.get("kind") or "")
+    if kind not in RESOURCE_LEASE_KINDS:
+        return
+    payload = row.get("payload") or {}
+    sender, target = str(row.get("from") or ""), str(row.get("to") or "")
+    holder, lease_id = str(payload.get("holder") or ""), str(payload.get("lease_id") or "")
+    config = _load_bus_config(bus_root)
+    authority = config.get("authority") or {}
+    claim_cfg = config.get("resource_claims") or {}
+    grantors = {str(x) for x in authority.get("resource_lease_grant") or ["inference"]}
+    revokers = {str(x) for x in authority.get("resource_lease_revoke_request") or
+                ["coordinator-agent"]}
+    owner = next((str(entry.get("id")) for entry in config.get("roster") or []
+                  if isinstance(entry, dict) and entry.get("resource_owner")), "inference")
+    previous = fold_resource_leases(bus_root).get(lease_id) or {}
+
+    if not lease_id or not holder:
+        raise BusError("resource lease messages require payload.lease_id and payload.holder")
+    if row.get("assignee") != target or row.get("action_required") is not True:
+        raise BusError("resource lease events require action_required=true and assignee equal to `to`")
+    if kind == "resource-lease-request":
+        if sender != holder or target != owner:
+            raise BusError(f"resource-lease-request must be authored by holder and addressed to {owner}")
+        task_ids = payload.get("task_ids")
+        if not isinstance(task_ids, list) or not task_ids:
+            raise BusError("resource-lease-request requires at least one task_id")
+        if not (_resource_list(payload, "cpu_regions") or _resource_list(payload, "gpu_devices")):
+            raise BusError("resource-lease-request must name exact CPU regions and/or GPU devices")
+    elif kind in {"resource-lease-grant", "resource-lease-decline", "resource-lease-renew",
+                  "resource-lease-expire"}:
+        if sender not in grantors:
+            raise BusError(f"only inference resource authority {sorted(grantors)} may {kind}")
+        if target != holder:
+            raise BusError(f"{kind} must be addressed to its holder {holder!r}")
+    elif kind == "resource-lease-revoke-request":
+        if sender not in revokers:
+            raise BusError(f"only {sorted(revokers)} may request resource-lease revocation")
+        if target != holder:
+            raise BusError("resource-lease-revoke-request must be addressed to the holder")
+    else:
+        if sender != holder or target != owner:
+            raise BusError(f"{kind} must be authored by holder and addressed to {owner}")
+
+    if kind == "resource-lease-grant":
+        if not (_resource_list(payload, "cpu_regions") or _resource_list(payload, "gpu_devices")):
+            raise BusError("resource-lease-grant must name exact CPU regions and/or GPU devices")
+        if (payload.get("holder") != previous.get("holder") or
+                payload.get("task_ids") != previous.get("task_ids") or
+                payload.get("resources") != previous.get("resources")):
+            raise BusError("resource-lease-grant must retain the request holder, task_ids, and exact resources")
+        for other_id, other in fold_resource_leases(bus_root).items():
+            if other_id != lease_id and other.get("state") in {"RESERVED", "ACTIVE", "DRAINING", "REVOKE_REQUESTED"} \
+                    and _resource_overlap(payload.get("resources") or {}, other.get("resources") or {}):
+                raise BusError(f"resource-lease-grant overlaps live lease {other_id!r}")
+        # No opaque-string substitute for a GPU lock.  Inference may hold its
+        # own GPU work, but a delegated GPU lease needs an explicitly configured
+        # and enabled physical claim mechanism before it can be granted.
+        if _resource_list(payload, "gpu_devices") and holder != owner:
+            gpu_claim = claim_cfg.get("gpu") if isinstance(claim_cfg, dict) else {}
+            if not isinstance(gpu_claim, dict) or not gpu_claim.get("enabled") or not gpu_claim.get("provider"):
+                raise BusError("delegated GPU resource lease requires an enabled configured GPU physical-claim mechanism")
+        try:
+            activation = datetime.fromisoformat(str(payload.get("activation_deadline_ts")))
+            expiry = datetime.fromisoformat(str(payload.get("expires_ts")))
+            if activation.tzinfo is None:
+                activation = activation.replace(tzinfo=timezone.utc)
+            if expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+            if activation >= expiry:
+                raise BusError("resource lease activation deadline must precede expiry")
+        except (TypeError, ValueError) as exc:
+            raise BusError("resource lease grant timestamps must be ISO-8601") from exc
+    if kind == "resource-lease-activate":
+        receipts = payload.get("physical_claim_receipts") or []
+        if not receipts:
+            raise BusError("resource-lease-activate requires physical claim-open receipt references")
+        resources = previous.get("resources") or payload.get("resources") or {}
+        for resource, key in (("cpu", "cpu_regions"), ("gpu", "gpu_devices")):
+            if not resources.get(key):
+                continue
+            claim = claim_cfg.get(resource) if isinstance(claim_cfg, dict) else {}
+            provider = claim.get("provider") if isinstance(claim, dict) and claim.get("enabled") else None
+            if not provider or not any(str(provider) in str(receipt) for receipt in receipts):
+                raise BusError(f"{resource.upper()} resource-lease-activate requires an enabled "
+                               f"configured claim provider and a provider-qualified open receipt")
+    if kind == "resource-lease-release":
+        receipts = payload.get("physical_claim_close_receipts") or []
+        if not receipts:
+            raise BusError("resource-lease-release requires physical claim-close receipt references")
+        resources = previous.get("resources") or payload.get("resources") or {}
+        for resource, key in (("cpu", "cpu_regions"), ("gpu", "gpu_devices")):
+            if not resources.get(key):
+                continue
+            claim = claim_cfg.get(resource) if isinstance(claim_cfg, dict) else {}
+            provider = claim.get("provider") if isinstance(claim, dict) and claim.get("enabled") else None
+            if not provider or not any(str(provider) in str(receipt) for receipt in receipts):
+                raise BusError(f"{resource.upper()} resource-lease-release requires an enabled "
+                               f"configured claim provider and a provider-qualified close receipt")
+
+    if previous and payload.get("holder") != previous.get("holder"):
+        raise BusError("resource lease lifecycle events must retain the established holder")
+
+    if not check_transition:
+        return
+    prior = previous.get("state") if previous else None
+    allowed = _RESOURCE_ALLOWED_PRIOR[kind]
+    if prior not in allowed:
+        raise BusError(f"invalid {kind} transition for {lease_id}: prior state is {prior!r}")
+
+
+def resource_lease_semantic_problems(bus_root: Path) -> list[str]:
+    """Return all facts that make the lease ledger unsafe for scheduling.
+
+    Whole-bus validation reports these defects, but the live scheduler must also
+    fail closed before a separate validation command runs. A schema-valid orphan
+    grant must never become usable merely because it folds to ``RESERVED``.
+    """
+    problems = resource_lease_history_problems(bus_root)
+    for event in resource_lease_events(bus_root):
+        try:
+            check_resource_lease_message(bus_root, event, check_transition=False)
+        except BusError as exc:
+            problems.append(f"resource lease {event.get('id')}: {exc}")
+    return problems
+
+
 # -------------------------------------------------------------- routing intent
 #
 # 2026-07-29: two routed messages were missed because routing intent lived as
@@ -1090,7 +1396,7 @@ TASK_ASSIGN_PAYLOAD_MAX_BYTES = 4096
 _TASK_ASSIGN_KEYS = frozenset({
     "lane", "lease_expires_ts", "epoch", "spec_ref", "inline_spec",
     "task_text", "row_ref", "screened_by", "expected_occupancy", "constraints",
-    "brief_path", "operator_signature_needed",
+    "brief_path", "operator_signature_needed", "resource_lease_id",
 })
 
 
@@ -1147,6 +1453,24 @@ def check_task_assign(row: dict) -> list[str]:
     return warnings
 
 
+def check_audit_message(row: dict) -> None:
+    """Authoring invariants for the audit loop.
+
+    Verdicts are durable coordinator input, not a conversation with the main
+    that produced the work.  Keeping the source main out of routing is what lets
+    it clear context and receive unrelated backlog normally.
+    """
+    if row.get("kind") != "audit-verdict":
+        return
+    if row.get("from") != "auditor":
+        raise BusError("audit-verdict may be authored only by the auditor roster identity")
+    if row.get("to") != "coordinator-agent" or row.get("assignee") not in {None, "coordinator-agent"}:
+        raise BusError("audit-verdict must be addressed only to coordinator-agent")
+    routed = set(row.get("needs_routing_to") or []) | set(row.get("cc") or [])
+    if routed - {"coordinator-agent"}:
+        raise BusError("audit-verdict may not route or cc a source main; coordinator owns requeue")
+
+
 # ------------------------------------------------------------------ commands
 
 
@@ -1200,6 +1524,8 @@ def cmd_append(args: argparse.Namespace) -> int:
     validate_row(bus_root, row, definition)
     if definition == "msg":
         _check_routing_intent(bus_root, row)
+        check_audit_message(row)
+        check_resource_lease_message(bus_root, row)
         task_assign_warnings = check_task_assign(row)
         try:
             roster = _roster_ids(bus_root)
@@ -1292,6 +1618,11 @@ def cmd_validate(args: argparse.Namespace) -> int:
                     validate_row(bus_root, row, "msg")
                 except BusError as e:
                     problems.append(f"{area}/{path.name}:{i}: {e}")
+                try:
+                    check_audit_message(row)
+                    check_resource_lease_message(bus_root, row, check_transition=False)
+                except BusError as e:
+                    problems.append(f"{area}/{path.name}:{i}: semantic violation: {e}")
                 # Routing-intent-in-prose lint (2026-07-29) — authoring side only
                 # (outbox), so one logical message warns once, not once per relay
                 # copy. The exact shape that lost two routed messages today.
@@ -1304,6 +1635,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
                         f"{area}/{path.name}:{i}: single-writer violation — from="
                         f"{row.get('from')!r} but this file's only writer is {expected!r}"
                     )
+
+    problems.extend(resource_lease_history_problems(bus_root))
 
     for path in sorted((bus_root / "heartbeats").glob("*.json")):
         if path.stem not in roster_ids and path.stem != COORDINATOR_DAEMON:
@@ -1664,6 +1997,47 @@ def _print_fleet_watch_occupancy(bus_root: Path) -> None:
     print(f"   {line}", file=sys.stderr)
 
 
+def _print_queue_depth(bus_root: Path) -> None:
+    """READY depth per lane + the hours currently in flight.
+
+    Phase 6 / F-14. "Is the fleet actually loaded?" was a guess made from pane
+    text and heartbeats, both of which report OCCUPANCY OF AN AGENT, never DEPTH
+    OF WORK — which is how a card was fed 40-second sweeps while every instrument
+    read busy. Two numbers turn it into a reading: how much is queued and
+    dispatchable per lane, and how many hours of work the fleet is actually
+    holding right now.
+
+    `in-flight h` sums `expected_occupancy.est_h` over ASSIGNED/CLAIMED/RUNNING
+    rows only. Rows in flight with no stated occupancy are COUNTED SEPARATELY and
+    named, never folded in as zero: an unestimated row is unknown depth, and
+    silently summing it as 0 would make a loaded fleet read empty — the exact
+    laundering this line exists to stop.
+    """
+    try:
+        latest = fold_queue(bus_root)
+    except Exception as exc:  # noqa: BLE001
+        print(f"boundary: queue depth UNREADABLE ({exc})", file=sys.stderr)
+        return
+    ready: dict[str, int] = {}
+    for row in latest.values():
+        if row.get("status") == "READY":
+            lane = str(row.get("lane") or "?")
+            ready[lane] = ready.get(lane, 0) + 1
+    in_flight = [r for r in latest.values() if r.get("status") in IN_FLIGHT_STATES]
+    hours, unestimated = 0.0, 0
+    for row in in_flight:
+        est = row_occupancy_h(row)
+        if est is None:
+            unestimated += 1
+        else:
+            hours += est
+    lanes = ", ".join(f"{lane}={ready[lane]}" for lane in sorted(ready)) or "none ready"
+    tail = (f" ({unestimated} of them state NO occupancy — that depth is UNKNOWN, "
+            f"not zero)" if unestimated else "")
+    print(f"boundary: queue READY by lane [{lanes}]; {len(in_flight)} row(s) in flight "
+          f"holding {hours:.1f}h of estimated work{tail}.", file=sys.stderr)
+
+
 def cmd_drain(args: argparse.Namespace) -> int:
     """Print this agent's inbox past its cursor and advance. The one-liner
     agents run at every task boundary."""
@@ -1731,6 +2105,7 @@ def cmd_drain(args: argparse.Namespace) -> int:
         _print_scripts_hygiene(bus_root)
         _print_owed_actions(bus_root, args.agent)
         _print_fleet_watch_occupancy(bus_root)
+        _print_queue_depth(bus_root)
     if getattr(args, "triage", False):
         print_triage(bus_root, args.agent)
     return 0
@@ -2007,17 +2382,8 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_rebuild(args: argparse.Namespace) -> int:
-    """R7 reconstructibility — everything a fresh coordinator-agent needs, from files alone.
-
-    `BUS_PROTOCOL.md` rule 9 asserts that coordinator-agent state must be
-    rebuildable from bus files, and that authority living only in a session's
-    context is a design defect. An assertion nobody can run is not a guarantee,
-    so this verb IS the check: if a fresh session can act correctly from this
-    output, the invariant holds. If something it needs is missing here, that
-    absence is the defect.
-    """
-    bus_root = Path(args.bus_root)
+def rebuild_state(bus_root: Path) -> dict:
+    """R7 reconstructibility data for a fresh coordinator, from files alone."""
     latest = fold_queue(bus_root)
     roster_ids = _roster_ids(bus_root)
 
@@ -2038,6 +2404,7 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
             "live": {tid: r for tid, r in sorted(latest.items())
                      if r.get("status") not in TERMINAL_STATES},
         },
+        "resource_leases": fold_resource_leases(bus_root),
         "pending_operator_tokens": [
             line.strip() for line in token_text.splitlines() if line.lstrip().startswith("- [ ]")
         ],
@@ -2059,6 +2426,21 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
         unread, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl", _cursor_get(bus_root, aid))
         state["agents"][aid] = {"heartbeat": hb, "cursor": _cursor_get(bus_root, aid),
                                 "inbox_unread": len(unread)}
+    return state
+
+
+def cmd_rebuild(args: argparse.Namespace) -> int:
+    """R7 reconstructibility — everything a fresh coordinator-agent needs, from files alone.
+
+    `BUS_PROTOCOL.md` rule 9 asserts that coordinator-agent state must be
+    rebuildable from bus files, and that authority living only in a session's
+    context is a design defect. An assertion nobody can run is not a guarantee,
+    so this verb IS the check: if a fresh session can act correctly from this
+    output, the invariant holds. If something it needs is missing here, that
+    absence is the defect.
+    """
+    bus_root = Path(args.bus_root)
+    state = rebuild_state(bus_root)
 
     if args.json:
         print(json.dumps(state, indent=2, sort_keys=True, default=str))
@@ -2066,6 +2448,9 @@ def cmd_rebuild(args: argparse.Namespace) -> int:
     print(f"rebuilt from bus files at {state['rebuilt_at']}")
     print(f"  queue: {state['queue']['count']} rows, {state['queue']['by_status']}")
     print(f"  live (non-terminal): {list(state['queue']['live']) or '(none)'}")
+    leases = state["resource_leases"]
+    print(f"  resource leases: {len(leases)} total, "
+          f"{sum(1 for lease in leases.values() if lease.get('state') in {'RESERVED', 'ACTIVE', 'DRAINING', 'REVOKE_REQUESTED'})} live")
     print(f"  operator tokens: {len(state['pending_operator_tokens'])} pending, "
           f"{len(state['granted_operator_tokens'])} granted")
     for aid, a in state["agents"].items():
