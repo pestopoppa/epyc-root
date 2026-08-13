@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T22:57:20Z",
+  "last_compile": "2026-08-13T08:30:26Z",
   "mode": "full",
-  "scan_time": "2026-08-13T08:25:27Z",
+  "scan_time": "2026-08-13T08:55:05Z",
   "schema_version": 1,
-  "source_set_hash": "03597c003973a7ca2dfbd9e9da564a8adbaa6578eab105895aa059bf56a7f9a5",
+  "source_set_hash": "53e44085d1a657dd2c03545e6c112737135bb566cf2046dd13a9b8fcb093bc14",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -6055,10 +6055,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "12386c7e4b637a95612bd7c1ceafa038bcceffcefbf713bf13538ddc0f3727d5",
-      "modified": "2026-08-13T08:24:17Z",
+      "content_hash": "92b8557b5583d18436cb1d3ed0a36ad15094cbe493ee82a90e49ef4c09e15239",
+      "modified": "2026-08-13T08:54:37Z",
       "path": "progress/2026-08/2026-08-13-research-intake.md",
-      "size": 8447,
+      "size": 8726,
       "title": "2026-08-13 \u2014 research-intake: PARL / Kimi agent-swarm sweep, Stages 1\u20134",
       "type": "progress"
     },
