@@ -55,8 +55,12 @@
             "reprioritize",
             "saturation",
             "lease-revoke",
-            "task-propose"
-          ]
+            "task-propose",
+            "compute-request",
+            "compute-grant",
+            "compute-deny"
+          ],
+          "description": "R11 (2026-08-13): the compute-window dialogue. A main that needs a compute window writes `compute-request` (payload: task, requested window, device/region, est_h, release-condition) routed to `inference`; `inference` answers `compute-grant` (accepted window + boundaries) or `compute-deny` (reason + what to do next). Before these kinds existed the dialogue ran as `kind=status` + `payload.request_kind=compute-request|compute-grant|compute-deny`, which satisfied intent but violated the letter of BUS_PROTOCOL rule 11."
         },
         "corr_id": {
           "type": "string"
@@ -533,6 +537,158 @@
                       "inferred"
                     ],
                     "description": "how the corrected fact is known. `operator-verbatim` = the operator's own words, quotable; `paraphrase` = the operator's meaning in the author's words; `inferred` = the author's conclusion from evidence, which the operator never said."
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "compute-request"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "task",
+                  "window",
+                  "device_region",
+                  "est_h",
+                  "release_condition"
+                ],
+                "description": "R11 (2026-08-13): a requesting main asks `inference` for a compute window. `window` names the requested boundaries (start/end or duration); `device_region` names the region/device; `est_h` the estimated duration; `release_condition` states what the requester will report/do to release the window. Should be authored with `needs_routing_to: [\"inference\"]` (enforced by `_check_routing_intent` for resolvability, not by schema).",
+                "properties": {
+                  "task": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "task identity — the backlog row TEXT, same discipline as task-assign payload.task_text"
+                  },
+                  "window": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "requested window boundaries, e.g. \"now for up to 1h\" or explicit start/end ts"
+                  },
+                  "device_region": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "region/device requested, e.g. \"ROCm0/MI210\" or \"CPU q0-q3\""
+                  },
+                  "est_h": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "estimated duration of the window in hours"
+                  },
+                  "release_condition": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "what the requester will report or do when the window can be released"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "compute-grant"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "task",
+                  "window"
+                ],
+                "description": "R11 (2026-08-13): `inference` accepts a compute-request. `window` states the ACCEPTED boundaries (which may differ from the requested ones); `boundaries` carries any operating constraints on the window.",
+                "properties": {
+                  "task": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "the task this grant covers — mirrors the compute-request's `task`"
+                  },
+                  "window": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "accepted window boundaries, e.g. \"granted immediately for up to 1h\""
+                  },
+                  "device_region": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "confirmed region/device, if narrower or different from the request"
+                  },
+                  "boundaries": {
+                    "type": "string",
+                    "description": "operating constraints on the window (what the requester must/must not do while holding it)"
+                  },
+                  "release_condition": {
+                    "type": "string",
+                    "description": "what the requester must report or do to release the window (echo or refine the request's release_condition)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "compute-deny"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "payload"
+            ],
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "task",
+                  "reason"
+                ],
+                "description": "R11 (2026-08-13): `inference` refuses a compute-request. `reason` explains the refusal; `next` tells the requester what to do instead (retry at a stated time, use a different region, run without compute, ...).",
+                "properties": {
+                  "task": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "the task this denial covers — mirrors the compute-request's `task`"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "why the window was refused"
+                  },
+                  "next": {
+                    "type": "string",
+                    "description": "what to do next — e.g. \"retry after <ts>\", \"use CPU region q0-q3 instead\", \"proceed without compute\""
                   }
                 }
               }

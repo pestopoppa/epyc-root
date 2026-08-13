@@ -266,6 +266,94 @@ def test_c27_needs_routing_to_now_delivers_for_a_stranded_kind(bus_root: Path) -
     assert [r["relayed_src"] for r in routed if r.get("relayed_src")] == [row["id"]]
 
 
+# ------------------------------------------------------------- R11 (2026-08-13)
+#
+# BUS_PROTOCOL rule 11: compute is owned by `inference`; every other main
+# REQUESTS a window with `kind=compute-request` and inference answers
+# `compute-grant` / `compute-deny`. The three kinds were missing from the
+# schema enum, so `append` refused them at authoring and the relay would have
+# refused them even if authored — the directive was STRUCTURALLY undeliverable.
+# These tests prove each kind authors AND relays (premise: mainB
+# msg-20260813T110107Z-25, mainC msg-20260813T110430Z-29, mainA
+# msg-20260813T111333Z-69).
+
+
+def _compute_payload(kind: str) -> dict:
+    return {
+        "compute-request": {"task": "bench-sweep", "window": "now for up to 1h",
+                            "device_region": "ROCm0/MI210", "est_h": 1.0,
+                            "release_condition": "report task-complete and release"},
+        "compute-grant": {"task": "bench-sweep", "window": "granted immediately "
+                                                           "for up to 1h",
+                          "boundaries": "GPU-only"},
+        "compute-deny": {"task": "bench-sweep", "reason": "card busy until 18:00Z",
+                         "next": "retry after 18:00Z"},
+    }[kind]
+
+
+@pytest.mark.parametrize("kind", ["compute-request", "compute-grant", "compute-deny"])
+def test_r11_compute_kind_authors_via_append(bus_root: Path, kind: str,
+                                             capsys: pytest.CaptureFixture[str]) -> None:
+    """Each of the three kinds passes `append` authoring under the documented
+    command shape — the failure the premise measured was AT THIS STEP."""
+    _provision(bus_root, *AGENTS)
+    capsys.readouterr()
+
+    result = bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                       "--target", "outbox", "--json", json.dumps({
+                           "to": "bob", "kind": kind,
+                           "needs_routing_to": ["bob"],
+                           "payload": _compute_payload(kind)})])
+    assert result == 0, f"{kind} refused at authoring"
+    captured = capsys.readouterr()
+    assert "WARNING" not in captured.err, captured.err
+
+    written = _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+    assert len(written) == 1 and written[0]["kind"] == kind
+    # The daemon's full-schema check agrees — authoring and relay cannot diverge.
+    bus.validate_row(bus_root, written[0], "msg")
+
+
+@pytest.mark.parametrize("kind,payload", [
+    ("compute-request", {"task": "t"}),                      # window/device/est_h/release missing
+    ("compute-grant", {}),                                    # task + window missing
+    ("compute-deny", {"task": "t"}),                          # reason missing
+])
+def test_r11_compute_kind_thin_payload_is_refused_at_authoring(
+        bus_root: Path, kind: str, payload: dict) -> None:
+    """The payload shapes are REAL: a request/grant/deny missing its required
+    fields is refused at the author, not silently accepted and later dropped."""
+    _provision(bus_root, *AGENTS)
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json", json.dumps({
+                         "to": "bob", "kind": kind, "payload": payload})]) != 0
+    assert not _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+
+
+@pytest.mark.parametrize("kind", ["compute-request", "compute-grant", "compute-deny"])
+def test_r11_compute_kind_relays_to_the_routed_inbox(bus_root: Path, kind: str) -> None:
+    """Each kind survives the relay: fan-out delivers it to the routed inbox with
+    the author's identity preserved — the step that previously would have
+    REFUSED the row even if an author had gotten it past `append`."""
+    _provision(bus_root, *AGENTS)
+    row = _message("alice", "bob", kind, seq=1,
+                   needs_routing_to=["bob"], payload=_compute_payload(kind))
+    _append(bus_root / "outbox" / "alice.jsonl", row)
+    roster = json.loads((bus_root / "config.yaml").read_text())["roster"]
+
+    advisory = coordinator.relay_outbox_messages(bus_root, roster, epoch=1)
+
+    defects = [a for a in advisory if a.get("kind") == "defect"]
+    assert defects == [], f"{kind} produced relay defects: {defects}"
+    bob_rows = _read_jsonl(bus_root / "inbox" / "bob.jsonl")
+    assert [r["relayed_src"] for r in bob_rows] == [row["id"]]
+    assert bob_rows[0]["from"] == "alice" and bob_rows[0]["kind"] == kind
+    assert bob_rows[0]["payload"] == _compute_payload(kind)
+    # Relay is idempotent: a second tick delivers nothing new.
+    assert coordinator.relay_outbox_messages(bus_root, roster, epoch=1) == []
+    assert len(_read_jsonl(bus_root / "inbox" / "bob.jsonl")) == 1
+
+
 def test_c2_invalid_outbox_row_is_defect_not_delivery(bus_root: Path) -> None:
     """C2: malformed source data is isolated instead of being propagated."""
     _provision(bus_root, *AGENTS)
@@ -2079,6 +2167,40 @@ def _mutants() -> list[tuple[str, str, dict]]:
          {**VALID_MSG, "kind": "task-propose", "task_id": "t",
           "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md#a",
                       "summary": "s", "est_wall_clock_h": -1}}),
+        # R11 (2026-08-13): compute-window dialogue kinds.
+        ("msg", "compute-request:full",
+         {**VALID_MSG, "kind": "compute-request",
+          "payload": {"task": "bench-sweep", "window": "now for up to 1h",
+                      "device_region": "ROCm0/MI210", "est_h": 1.0,
+                      "release_condition": "report task-complete and release"}}),
+        ("msg", "compute-request:thin",
+         {**VALID_MSG, "kind": "compute-request",
+          "payload": {"task": "bench-sweep", "window": "now for up to 1h",
+                      "device_region": "ROCm0/MI210"}}),
+        ("msg", "compute-request:no-payload",
+         {**VALID_MSG, "kind": "compute-request"}),
+        ("msg", "compute-request:est-negative",
+         {**VALID_MSG, "kind": "compute-request",
+          "payload": {"task": "t", "window": "w", "device_region": "d",
+                      "est_h": -0.5, "release_condition": "r"}}),
+        ("msg", "compute-grant:full",
+         {**VALID_MSG, "kind": "compute-grant",
+          "payload": {"task": "bench-sweep", "window": "granted immediately for up to 1h",
+                      "device_region": "ROCm0/MI210",
+                      "boundaries": "GPU-only; kill only your own server PID",
+                      "release_condition": "report task-complete and release"}}),
+        ("msg", "compute-grant:no-window",
+         {**VALID_MSG, "kind": "compute-grant",
+          "payload": {"task": "bench-sweep", "boundaries": "GPU-only"}}),
+        ("msg", "compute-deny:full",
+         {**VALID_MSG, "kind": "compute-deny",
+          "payload": {"task": "bench-sweep", "reason": "card busy until 18:00Z",
+                      "next": "retry after 18:00Z"}}),
+        ("msg", "compute-deny:no-reason",
+         {**VALID_MSG, "kind": "compute-deny",
+          "payload": {"task": "bench-sweep", "next": "retry later"}}),
+        ("msg", "compute-deny:no-payload",
+         {**VALID_MSG, "kind": "compute-deny"}),
         # payload must be an object at all
         ("msg", "payload:string", {**VALID_MSG, "payload": "not an object"}),
         # non-object instances entirely
