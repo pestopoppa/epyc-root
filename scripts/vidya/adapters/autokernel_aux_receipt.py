@@ -37,6 +37,8 @@ SOURCE_SCHEMAS = frozenset({
     "epyc.autokernel.hip_authoring_roundtrip.v1",
     "epyc.autokernel.hip_decision_grade.v1",
     "epyc.autokernel.arena_controller_evaluation.v1",
+    "epyc.autokernel.gpu_screening_baseline.v2",
+    "epyc.autokernel.gpu_candidate_only_screen.v2",
 })
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
@@ -126,6 +128,11 @@ _P2_METRICS = {
         "placement_comparison",
     ),
 }
+_GPU_BANK_SCHEMA = "epyc.autokernel.gpu_screening_baseline.v2"
+_GPU_RESULT_SCHEMA = "epyc.autokernel.gpu_candidate_only_screen.v2"
+_GPU_PRODUCER = "scripts.benchmark.run_autokernel_gpu_discovery/v3"
+_GPU_PRODUCER_PATH = "scripts/benchmark/run_autokernel_gpu_discovery.py"
+_GPU_AUTHORITY = "nonpromotable_candidate_only_discovery"
 
 
 def _canonical_sha256(value: Any) -> str:
@@ -1490,6 +1497,204 @@ def _validate_iq2_model_measurements(receipt: dict, measurements: list[dict]) ->
             "IQ2 model belief rows do not exactly rederive from their formal evidence")
 
 
+def _gpu_samples(value: Any, label: str) -> list[float]:
+    if not isinstance(value, list) or len(value) != 3:
+        raise ProjectionError(f"{label} must contain exactly three samples")
+    result = []
+    for index, item in enumerate(value):
+        if (isinstance(item, bool) or not isinstance(item, (int, float))
+                or not math.isfinite(item) or item <= 0):
+            raise ProjectionError(f"{label}[{index}] must be positive and finite")
+        result.append(float(item))
+    return result
+
+
+def _gpu_expected_row(*, measurement_id: str, metric: str, value: float,
+                      unit: str, category: str, claim: str, reps_basis: str,
+                      extra: dict, protocol_id: str) -> dict:
+    row = {
+        "measurement_id": measurement_id, "metric": metric, "value": value,
+        "unit": unit, "metric_direction": "higher_better", "category": category,
+        "protocol_id": protocol_id, "reps": 3, "reps_basis": reps_basis,
+        "claim": claim, "extra": extra,
+    }
+    row["measurement_sha256"] = _ak_content_sha256(row)
+    return row
+
+
+def _gpu_common(receipt: dict, *, samples: list[float]) -> tuple[dict, dict]:
+    if receipt.get("authority") != _GPU_AUTHORITY:
+        raise ProjectionError("GPU discovery receipt upgrades its non-promotable authority")
+    producer = receipt.get("producer")
+    if (not isinstance(producer, dict)
+            or set(producer) != {"producer_id", "path", "sha256"}
+            or producer.get("producer_id") != _GPU_PRODUCER
+            or producer.get("path") != _GPU_PRODUCER_PATH):
+        raise ProjectionError("GPU discovery receipt lacks its exact producer identity")
+    _sha(producer.get("sha256"), "receipt.producer.sha256")
+    frame = receipt.get("frame")
+    if (not isinstance(frame, dict)
+            or frame.get("backend") != "llama_gpu"
+            or frame.get("recipe") != "pp512-ngl99"
+            or frame.get("metric") != "prefill_tokens_per_s"
+            or frame.get("metric_direction") != "higher_better"
+            or frame.get("device") != "AMD Instinct MI210"
+            or frame.get("architecture") != "gfx90a"
+            or not _COMMIT.fullmatch(str(frame.get("source_commit", "")))
+            or not isinstance(frame.get("cpu_list"), str)
+            or not isinstance(frame.get("model"), str)):
+        raise ProjectionError("GPU discovery receipt is not the sealed MI210 pp512 frame")
+    _sha(frame.get("model_sha256"), "frame.model_sha256")
+    factor = receipt.get("sole_factor")
+    if (not isinstance(factor, dict)
+            or set(factor) != {"name", "anchor", "candidate"}
+            or (factor.get("name"), factor.get("anchor"), factor.get("candidate"))
+            not in {
+                ("GGML_HIP_MMQ_MFMA", "ON", "OFF"),
+                ("flash_attention", "OFF", "ON"),
+                ("GGML_HIP_ROCWMMA_FATTN", "OFF", "ON"),
+            }):
+        raise ProjectionError("GPU discovery sole factor is not an admitted factor transition")
+    evidence = {
+        "campaign_id": receipt.get("campaign_id"), "authority": _GPU_AUTHORITY,
+        "frame": frame, "sole_factor": factor, "samples": samples,
+        "producer_sha256": producer["sha256"],
+    }
+    common = {
+        "authority": _GPU_AUTHORITY, "non_promotable": True,
+        "top_k_discovery_only": True, "promotion_authority": False,
+        "production_tree_touched": False, "frame": frame, "sole_factor": factor,
+        "producer_id": producer["producer_id"],
+        "producer_sha256": producer["sha256"], "evidence_basis": evidence,
+        "evidence_sha256": _ak_content_sha256(evidence),
+    }
+    return common, factor
+
+
+def _gpu_identity(value: Any, *, frame: dict, factor: dict, arm: str) -> dict:
+    if not isinstance(value, dict):
+        raise ProjectionError(f"GPU discovery {arm}_identity must be a dict")
+    if value.get("source_commit") != frame["source_commit"] \
+            or not isinstance(value.get("rocwmma_fattn"), bool) \
+            or not isinstance(value.get("mmq_mfma"), bool):
+        raise ProjectionError(f"GPU discovery {arm} identity does not bind its source/factors")
+    artifacts = value.get("artifacts")
+    if not isinstance(artifacts, dict) or not isinstance(artifacts.get("binary"), str):
+        raise ProjectionError(f"GPU discovery {arm} identity lacks build artifacts")
+    _sha(artifacts.get("binary_sha256"), f"{arm}_identity.artifacts.binary_sha256")
+    libraries = artifacts.get("libraries")
+    if not isinstance(libraries, dict) or not libraries:
+        raise ProjectionError(f"GPU discovery {arm} identity lacks DSO identities")
+    for name, digest in libraries.items():
+        if not isinstance(name, str) or not name:
+            raise ProjectionError(f"GPU discovery {arm} DSO name is invalid")
+        _sha(digest, f"{arm}_identity.artifacts.libraries[{name!r}]")
+    if arm == "candidate":
+        if factor["name"] == "GGML_HIP_MMQ_MFMA" \
+                and (value["rocwmma_fattn"], value["mmq_mfma"]) != (True, False):
+            raise ProjectionError("GPU MMQ candidate identity changes more than its sole factor")
+        if factor["name"] in {"flash_attention", "GGML_HIP_ROCWMMA_FATTN"} \
+                and (value["rocwmma_fattn"], value["mmq_mfma"]) != (True, False):
+            raise ProjectionError("GPU candidate identity does not bind the r1m0 build")
+    return value
+
+
+def _validate_gpu_discovery_measurements(receipt: dict,
+                                         measurements: list[dict]) -> None:
+    schema = receipt.get("schema")
+    if receipt.get("status") != "complete" or not isinstance(receipt.get("campaign_id"), str):
+        raise ProjectionError("GPU discovery belief rows require a complete campaign receipt")
+    self_field = "baseline_sha256" if schema == _GPU_BANK_SCHEMA else "result_sha256"
+    claimed_self = _sha(receipt.get(self_field), f"receipt.{self_field}")
+    if claimed_self != _ak_content_sha256(
+            {key: value for key, value in receipt.items() if key != self_field}):
+        raise ProjectionError(f"GPU discovery {self_field} does not bind its receipt")
+    samples_key = "anchor_samples" if schema == _GPU_BANK_SCHEMA else "candidate_samples"
+    runs_key = "anchor_runs" if schema == _GPU_BANK_SCHEMA else "candidate_runs"
+    samples = _gpu_samples(receipt.get(samples_key), samples_key)
+    runs = receipt.get(runs_key)
+    if (not isinstance(runs, list) or len(runs) != 3
+            or any(not isinstance(run, dict) or run.get("metric") != sample
+                   or run.get("hip_residency_proved") is not True
+                   for run, sample in zip(runs, samples))):
+        raise ProjectionError("GPU discovery runs do not bind three resident samples")
+    common, factor = _gpu_common(receipt, samples=samples)
+    frame = receipt["frame"]
+    if schema == _GPU_BANK_SCHEMA:
+        anchor = _gpu_identity(receipt.get("anchor_identity"), frame=frame,
+                               factor=factor, arm="anchor")
+        candidate = _gpu_identity(receipt.get("candidate_identity"), frame=frame,
+                                  factor=factor, arm="candidate")
+        if factor["name"] == "flash_attention" and anchor != candidate:
+            raise ProjectionError("flash-attention screen changes its build identity")
+        if factor["name"] == "GGML_HIP_MMQ_MFMA" \
+                and (anchor["rocwmma_fattn"], anchor["mmq_mfma"]) != (True, True):
+            raise ProjectionError("MMQ anchor identity does not bind r1m1")
+        if factor["name"] == "GGML_HIP_ROCWMMA_FATTN" \
+                and (anchor["rocwmma_fattn"], anchor["mmq_mfma"]) != (False, False):
+            raise ProjectionError("ROCWMMA anchor identity does not bind r0m0")
+        common.update({"arm": "anchor", "build_identity": anchor,
+                       "arithmetic_baseline_center": sum(samples) / 3})
+        expected = [_gpu_expected_row(
+            measurement_id="gpu_discovery_anchor_pp512_median_tokens_per_s",
+            metric="gpu_prefill_tokens_per_s", value=statistics.median(samples),
+            unit="tokens/s", category="BASELINE",
+            claim=("Non-promotable GPU discovery anchor observed median pp512 "
+                   f"throughput {statistics.median(samples):.9g} tokens/s"),
+            reps_basis="scored:three anchor-bank MI210 llama-bench invocations",
+            extra=common, protocol_id=_GPU_BANK_SCHEMA)]
+    else:
+        if (receipt.get("state") != "decided" or receipt.get("ok") is not True
+                or receipt.get("non_promotable") is not True
+                or receipt.get("nomination") != "top_k_candidate_only_not_a_keep"
+                or receipt.get("hip_residency_proved") is not True):
+            raise ProjectionError("GPU candidate result upgrades or lacks its discovery boundary")
+        candidate = _gpu_identity(receipt.get("candidate_identity"), frame=frame,
+                                  factor=factor, arm="candidate")
+        baseline_sha = _sha(receipt.get("baseline_sha256"), "baseline_sha256")
+        center = receipt.get("baseline_center")
+        if (isinstance(center, bool) or not isinstance(center, (int, float))
+                or not math.isfinite(center) or center <= 0):
+            raise ProjectionError("GPU baseline center must be positive and finite")
+        effects = [(sample - float(center)) / float(center) for sample in samples]
+        declared = receipt.get("relative_effects")
+        if (not isinstance(declared, list) or len(declared) != 3
+                or any(isinstance(item, bool) or not isinstance(item, (int, float))
+                       or not math.isclose(float(item), expected,
+                                           rel_tol=1e-12, abs_tol=1e-12)
+                       for item, expected in zip(declared, effects))
+                or not isinstance(receipt.get("median_relative"), (int, float))
+                or not math.isclose(float(receipt["median_relative"]),
+                                    statistics.median(effects),
+                                    rel_tol=1e-12, abs_tol=1e-12)):
+            raise ProjectionError("GPU relative effect does not rederive from its samples")
+        common.update({
+            "arm": "candidate", "build_identity": candidate,
+            "baseline_sha256": baseline_sha, "baseline_center": float(center),
+            "hip_residency_proved": True,
+        })
+        basis = "scored:three candidate-only MI210 llama-bench invocations"
+        expected = [
+            _gpu_expected_row(
+                measurement_id="gpu_discovery_candidate_pp512_median_tokens_per_s",
+                metric="gpu_prefill_tokens_per_s", value=statistics.median(samples),
+                unit="tokens/s", category="CANDIDATE",
+                claim=("Non-promotable GPU candidate discovery observed median pp512 "
+                       f"throughput {statistics.median(samples):.9g} tokens/s"),
+                reps_basis=basis, extra=common, protocol_id=_GPU_RESULT_SCHEMA),
+            _gpu_expected_row(
+                measurement_id="gpu_discovery_candidate_pp512_median_relative_effect",
+                metric="gpu_prefill_relative_effect_vs_sealed_anchor",
+                value=statistics.median(effects), unit="fraction", category="CANDIDATE",
+                claim=("Non-promotable GPU candidate discovery observed median relative "
+                       f"effect {statistics.median(effects):.9g} versus its sealed anchor bank"),
+                reps_basis=basis, extra={**common, "relative_effects": effects},
+                protocol_id=_GPU_RESULT_SCHEMA),
+        ]
+    if measurements != expected:
+        raise ProjectionError("GPU discovery belief rows do not exactly rederive")
+
+
 def native_rows(receipt: dict, *, receipt_locator: str = "",
                 receipt_sha256: str = "",
                 attestation_present: bool | None = None) -> tuple[dict, ...]:
@@ -1525,6 +1730,11 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         _hip_decision_receipt_identity(receipt)
     if receipt.get("schema") == _ARENA_INTERMEDIATE_SCHEMA:
         _arena_intermediate_receipt_identity(receipt)
+    if receipt.get("schema") in {_GPU_BANK_SCHEMA, _GPU_RESULT_SCHEMA}:
+        if not isinstance(measurements, list) or not measurements:
+            raise ProjectionError(
+                "GPU discovery v2 requires prospective producer-written belief rows")
+        _validate_gpu_discovery_measurements(receipt, measurements)
     return tuple({
         "receipt": receipt,
         "measurement": measurement,
