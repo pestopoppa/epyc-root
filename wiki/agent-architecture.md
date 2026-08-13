@@ -1954,16 +1954,20 @@ should be adopted without an independent dive.
 
 **What survived is narrower than the sweep started with, and lands on a gap we already knew we had.**
 `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* mandates 3–5 concurrent subagents
-on every dispatch, unconditionally — the rule has a width but no negative condition, no completion
-feedback, and (per `handoffs/active/session-bus-thin-dispatcher.md`'s own open item) no way to tell a
-main that actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
+on every dispatch. At the time this round's Stage-3 plan was written the rule had a width but no
+negative condition and no completion feedback — Anthropic's own multi-agent guidance (intake-1121,
+`claude.com/blog`, 2026-01-23) states three conditions FOR multi-agent use and four AGAINST, including
+that decomposition-by-role, rather than by context boundary, measurably shifts spend from work onto
+coordination, none of which our rule encoded. **The operator ratified and applied the negative-condition
+amendment on 2026-08-13** (commit `541d5d4c`) — the rule now states when NOT to fan out, sourced to
+intake-1121, with width 3–5 unchanged. What remains open is the second half of the gap: (per
+`handoffs/active/session-bus-thin-dispatcher.md`'s own item) there is still no way to tell a main that
+actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
 (intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
-citable, the measurement is not. Two structural finding pairs from the wider sweep bear directly on the
-open gap: Anthropic's own multi-agent guidance (intake-1121, `claude.com/blog`, 2026-01-23) states three
-conditions FOR multi-agent use and four AGAINST — including that decomposition-by-role, rather than by
-context boundary, measurably shifts spend from work onto coordination — while our own rule encodes none
-of the negative conditions; and a controlled scaling study (intake-1107, arXiv:2512.08296) finds
+citable, the measurement is not — that detector is the open work in
+[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md). Separately, a
+controlled scaling study (intake-1107, arXiv:2512.08296) finds
 returns from adding agents go structurally negative once a single agent already clears roughly 45%
 accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
 statistically non-significant coefficient to one the paper's own robustness checks discount — so the

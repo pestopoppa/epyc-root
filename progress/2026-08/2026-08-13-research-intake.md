@@ -83,10 +83,12 @@ programmatic-tool-calling conversion, the agent cascade, the MAST repo annotator
 the MAS-Orchestra orchestrator, recitation-as-production-default, full AdaMAST induction,
 re-running the SpecStory scraper — 13 declines, each with a one-line reason in the plan file).
 
-**Blocked, handed to operator, not applied**: `agents/shared/OPERATING_CONSTRAINTS.md` fan-out
-doctrine amendment (adding negative conditions to the fan-out-by-default rule) — refused by the
-`check_trust_boundary_edit.sh` hook, `agents/shared/*.md` being an enumerated human-only write
-path. Exact diff handed to the operator in-conversation; not committed here.
+**Initially blocked, handed to operator, since applied by the operator**: `agents/shared/OPERATING_CONSTRAINTS.md`
+fan-out doctrine amendment (adding negative conditions to the fan-out-by-default rule) — refused by
+the `check_trust_boundary_edit.sh` hook, `agents/shared/*.md` being an enumerated human-only write
+path. Exact diff was handed to the operator in-conversation as a standalone script
+(`tmp/apply-fanout-doctrine-amendment.sh`); the operator ran it directly and committed it as
+`541d5d4c` on 2026-08-13. This progress log's wiki reference to that landing is corrected below.
 
 ## Verification
 
@@ -108,9 +110,10 @@ path. Exact diff handed to the operator in-conversation; not committed here.
 
 ## Deferred work — named blocker
 
-- **`agents/shared/OPERATING_CONSTRAINTS.md` fan-out-doctrine amendment**: blocked on operator
-  token (trust-boundary hook). Diff is in this session's transcript; not reproduced here since
-  the file itself is human-only-write and this progress log is not the channel for it.
+- ~~`agents/shared/OPERATING_CONSTRAINTS.md` fan-out-doctrine amendment~~ — **RESOLVED 2026-08-13**,
+  landed as `541d5d4c` (see above). No longer deferred; `wiki/agent-architecture.md`'s
+  2026-08-13 Compiled Update was corrected in the same follow-up push to stop asserting the rule
+  "encodes none of the negative conditions."
 - **`fleet-fanout-measurement.md` FM-1/FM-2/FM-3/FM-4 and `decomposition-to-batch-mapping.md`
   DB-1/DB-2**: filed as open stubs, zero code landed — correctly so; Stage 4 scope was filing
   the work, not building it.
