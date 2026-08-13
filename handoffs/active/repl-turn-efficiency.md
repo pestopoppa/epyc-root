@@ -2,7 +2,7 @@
 
 **Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gate is S4 Omega A/B.
 **Created**: 2026-04-09
-**Updated**: 2026-06-14
+**Updated**: 2026-08-13
 **Priority**: MEDIUM
 **Categories**: agent_architecture
 **Depends on**: None
@@ -105,6 +105,22 @@ Also correcting two earlier claims: the 4-children / 10-round budgets are **prom
 
 - [ ] **Strategy-prompt-length ablation.** intake-867 measured an explicit task-strategy prompt cutting Sonnet 4.6 rollout time **90s → 30s (3x)**, and a 200-token compressed variant converging *lower and less stably* than the 1500-token original. Both directions matter for us: our agent roles may be under-specified (leaving 3x turn-time on the table) or over-compressed (paying instability for token savings). Pure prompt-side A/B on existing roles — no training, modest inference. Candidate arm alongside the S4 Omega A/B above.
 - [ ] **Prefix-cache audit of our REPL scaffold.** intake-867's scaffold re-appends the user query every turn, so successive turns share NO prefix — every turn is a full-prompt cache miss, which on bandwidth-bound CPU decode is a real per-turn tax. Zero-inference first step: inspect our REPL loop's prompt construction and measure slot-cache hit rate across turns (llama-server `/slots` + `--slot-save-path` already exist). If our scaffold has the same shape, reordering the prompt layout is a free prefill win.
+
+## 2026-08-13 — RTE-Prefix audit (dispatched row, task text above; line hint was L107)
+
+Audit result: our scaffold is **cache-hostile but NOT SkyRL's literal shape**. `RootLMPrompt.to_string()` orders system→tools→rules→**state→context→reference_code→task→instruction** (`epyc-orchestrator/src/prompt_builders/types.py`). The per-turn deltas are `state` ("Turn N", rebuilt each turn), `context` (last output/error spillover), and `reference_code` (corpus, turn-1-only) — so successive turns share only system+tools+rules, and the fixed `## Task` sits PAST the divergence point. Same tax, different mechanism than intake-867's append-at-end.
+
+**Measurement defects found and fixed (commits `d977454e`, `2c4087b7` on orchestrator `main`):**
+1. `get_slots()` read `n_past`/`n_cache` — fields that stopped existing in llama.cpp v9 (always 0). Now reads `n_prompt_tokens`/`n_prompt_tokens_cache` (server-context.cpp `server_slot::to_json`).
+2. Cache-stats collector counted `tokens_cached` (the response field = TOTAL slot KV occupancy `slot.prompt.n_tokens()`) as hits — inflating `cache_hits` on nearly every request. Now counts `timings.cache_n` (= `n_prompt_tokens_cache`, the true KV-reuse count, server-context.cpp:511).
+3. Frontdoor REPL gets NO cache machinery by design: PrefixRouter bypassed by default (`ORCHESTRATOR_PREFIX_CACHE_BYPASS_FRONTDOOR_REPL` default "1") AND content-addressable cache skipped when `stop_sequences` set (REPL uses `["\n```\n"]`). Payload already sends `cache_prompt: true` + `id_slot`; slot persistence is the only lever, so the measurement needs `-np 1`.
+
+**Fix (flag-gated, default OFF — pending live A/B validation):** new feature `ORCHESTRATOR_PREFIX_STABLE_ORDER` reorders `to_string()` to render task+instruction BEFORE state/context/reference_code, so the fixed sections form a shared prefix across turns. Harness: `scripts/benchmark/bench_repl_prefix_stability.py` drives the real per-turn `build_root_lm_prompt` sequence through `/completion` (cache_prompt, pinned slot) sampling `timings.cache_n` per turn, both orders.
+
+- [x] **RTE-Prefix static audit**: prompt-construction shape + `/slots` field semantics verified against v9 source. ✅ 2026-08-13
+- [x] **RTE-Prefix instrumentation fix**: `get_slots()` v9 fields + cache-stats collector reads `timings.cache_n`. ✅ 2026-08-13
+- [x] **RTE-Prefix flag-gated reorder**: `ORCHESTRATOR_PREFIX_STABLE_ORDER` + `to_string(prefix_stable=)` + builder wiring + A/B harness script. ✅ 2026-08-13
+- [ ] **RTE-Prefix live measurement**: run `bench_repl_prefix_stability.py` on a granted inference compute window (requested `msg-20260813T110423Z-28-mainC`); record hit ratio per turn for both orders, decide default flip. Awaits inference grant.
 
 
 ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed)
