@@ -68,8 +68,23 @@
   .state-card .evidence{font-size:10.5px;color:var(--muted);margin-top:9px;overflow-wrap:anywhere}
   .state-card .evidence code{white-space:normal}
   .state-note{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--warn)}
+  .hero{display:grid;grid-template-columns:1.35fr repeat(3,minmax(0,.72fr));gap:10px;margin-bottom:12px}
+  .hero-card,.winner-card,.strategy-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .hero-card.production{border-left:4px solid var(--accent)}
+  .hero-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .hero-value{font-size:21px;font-weight:700;margin:3px 0;line-height:1.2}
+  .lane-grid,.winner-grid,.strategy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+  .winner-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strategy-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .winner-card .effect{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+  .winner-card .meta,.strategy-card .meta{font-size:11px;color:var(--muted);margin-top:5px}
+  .stage{display:inline-block;border:1px solid var(--border);border-radius:12px;padding:1px 7px;font-size:10px;margin-left:5px}
+  .diagnostics{margin-top:20px}.diagnostics>summary{cursor:pointer;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.5px;padding:12px 2px}
+  .diagnostics[open]>summary{margin-bottom:10px}
   @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
   @media(max-width:760px){.state-grid{grid-template-columns:1fr}}
+  @media(max-width:900px){.hero,.winner-grid,.strategy-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.hero,.lane-grid,.winner-grid,.strategy-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -89,6 +104,13 @@
 
   <div class="reporting" id="reporting"></div>
 
+  <section class="panel" id="progression-panel">
+    <h2>Kernel progression <span class="tag">discovery ≠ promotion</span></h2>
+    <div id="progression"><div class="empty">loading CPU/GPU candidate funnel…</div></div>
+  </section>
+
+  <details class="diagnostics">
+  <summary>Evidence &amp; diagnostics — receipts, controls, implementation and raw campaign detail</summary>
   <section class="panel" id="current-state-panel">
     <h2>Current kernel state <span class="tag">evidence snapshot, not liveness</span></h2>
     <div id="current-state"><div class="empty">loading audited kernel state…</div></div>
@@ -121,6 +143,7 @@
     <h2>Run log <span class="muted" id="runcount" style="text-transform:none;font-weight:400"></span></h2>
     <div id="runs"></div>
   </section>
+  </details>
 </main>
 
 <script>
@@ -239,6 +262,56 @@ function shortAge(iso){
 function evidenceLine(row){
   if(!row||!row.evidence) return '<div class="evidence">evidence unavailable</div>';
   return '<div class="evidence">evidence: <code>'+esc(row.evidence)+'</code></div>';
+}
+
+function effectPct(row){
+  const value=row&&row.effect_fraction;
+  if(typeof value!=="number"||!isFinite(value)) return "—";
+  const pct=value*100;
+  return (pct>=0?"+":"")+pct.toFixed(Math.abs(pct)<1?2:1)+"%";
+}
+
+// Ten-second scan: production anchor, CPU/GPU leaders and the evidence funnel.
+// Every value comes from the producer's receipt projection; this view never
+// infers a champion or promotion from a positive screening delta.
+function renderProgression(d){
+  const box=$("#progression"), p=d._progression||{};
+  const state=((d._activity||{}).current_state||{}), prod=state.production_kernel||{};
+  const rows=Array.isArray(p.candidates)?p.candidates:[];
+  const cpu=rows.filter(r=>r.lane==="CPU"), gpu=rows.filter(r=>r.lane==="GPU");
+  const best=list=>list.slice().sort((a,b)=>(b.effect_fraction||-Infinity)-(a.effect_fraction||-Infinity))[0];
+  const funnel=p.funnel||{};
+  let h='<div class="hero">';
+  h+='<div class="hero-card production"><div class="hero-label">Production freeze</div>';
+  if(prod.available) h+='<div class="hero-value">'+esc(prod.branch||"—")+'</div><div><code>'+esc(String(prod.head||"").slice(0,12))+'</code> · '+esc(prod.version||"—")+'</div><div class="muted">'+esc(prod.status||"—")+' · experimental results cannot mutate this anchor</div>';
+  else h+='<div class="hero-value fail">Unverified</div><div class="muted">'+esc(prod.error||"production attestation unavailable")+'</div>';
+  h+='</div>';
+  [["CPU leader",best(cpu)],["GPU leader",best(gpu)]].forEach(function(pair){ const r=pair[1]; h+='<div class="hero-card"><div class="hero-label">'+pair[0]+'</div>'; if(r) h+='<div class="hero-value '+(r.effect_fraction>=0?'ok':'fail')+'">'+esc(effectPct(r))+'</div><div>'+esc(r.candidate)+' · '+esc(r.workload)+'</div><div class="muted">'+esc(r.evidence_tier)+' · '+esc(r.stage)+'</div>'; else h+='<div class="hero-value">—</div><div class="muted">not reported</div>'; h+='</div>'; });
+  h+='<div class="hero-card"><div class="hero-label">Funnel</div><div class="hero-value">'+esc(funnel.candidate||0)+' → '+esc(funnel.strict_keep||0)+' → '+esc(funnel.champion||0)+' → '+esc(funnel.promotable||0)+'</div><div>screen → strict keep → champion → promotable</div><div class="muted">promotion claim: <span class="'+(p.promotion_claim===false?'ok':'fail')+'">'+esc(String(p.promotion_claim===true))+'</span></div></div></div>';
+  if(!p.available){ h+='<div class="fail">Progression producer unavailable: '+esc(p.error||"not exported")+'</div>'; box.innerHTML=h; return; }
+
+  h+='<div class="winner-grid">';
+  rows.slice().sort((a,b)=>(b.effect_fraction||-Infinity)-(a.effect_fraction||-Infinity)).slice(0,5).forEach(function(r){
+    const ev=(r.evidence||[]), last=ev[ev.length-1]||{};
+    h+='<div class="winner-card"><div><b>'+esc(r.lane)+' · '+esc(r.candidate)+'</b><span class="stage">'+esc(r.stage)+'</span></div><div class="effect '+(r.effect_fraction>=0?'ok':'fail')+'">'+esc(effectPct(r))+'</div><div>'+esc(r.workload)+' · '+esc(r.transition)+'</div><div class="meta">'+esc(r.evidence_tier)+' · '+esc(r.confidence)+'</div><div class="meta"><b>Gate:</b> '+esc(r.current_gate)+'<br><b>Next:</b> '+esc(r.next_action)+'</div><div class="evidence"><code>'+esc(last.path||"—")+'</code><br><code>'+esc(String(last.file_sha256||"").slice(0,16))+'…</code></div></div>';
+  });
+  h+='</div>';
+
+  const strategy=p.strategy||{};
+  h+='<div class="strategy-grid">';
+  [["Pursued",strategy.pursued||[]],["Accepted for next gate",strategy.accepted||[]],["Abandoned",strategy.abandoned||[]]].forEach(function(group){
+    h+='<div class="strategy-card"><div class="hero-label">'+group[0]+'</div>';
+    if(!group[1].length) h+='<div class="meta">none evidenced</div>';
+    group[1].forEach(function(r){ const ev=(r.evidence||[]).slice(-1)[0]||{}; h+='<div class="meta"><b>'+esc(r.lane)+' '+esc(r.candidate)+'</b> · '+esc(effectPct(r))+' · '+esc(r.workload)+'<br><code>'+esc(ev.path||"—")+'</code></div>'; });
+    h+='</div>';
+  }); h+='</div>';
+
+  const queue=Array.isArray(p.unexplored)?p.unexplored:[];
+  h+='<div class="strategy-card" style="margin-top:10px"><div class="hero-label">Unexplored / ready hypotheses</div>';
+  if(!queue.length) h+='<div class="meta">no sealed unexplored preflight reported</div>';
+  queue.forEach(function(q){ h+='<div class="meta"><b>'+esc(q.lane)+' · '+esc(q.hypothesis)+'</b> · '+esc(q.workload)+' · '+esc(q.state)+'<br>'+esc(q.next_action)+'<br><code>'+esc((q.evidence||{}).path||"—")+'</code></div>'; });
+  h+='</div><div class="muted" style="margin-top:9px">Projection observed through '+esc(p.observed_through||"—")+' · '+esc((p.freshness||{}).staleness_class||"unknown")+' · strict terminal campaign truth remains in Evidence & diagnostics.</div>';
+  box.innerHTML=h;
 }
 
 // This panel deliberately keeps the operator-ratified production kernel apart
@@ -614,6 +687,7 @@ function render(d){
   $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
   setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
   renderReporting(d);
+  renderProgression(d);
   renderCurrentState(d);
   renderActivity(d);
   renderSections(d);
