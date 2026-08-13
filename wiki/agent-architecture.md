@@ -2,8 +2,55 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (a 23-entry research-intake round on multi-agent fan-out (PARL/Kimi K2.5 Agent Swarm and 21 follow-ons) found our own fan-out doctrine has no negative condition and most of the source literature does not survive a primary-source dive — 9 of 18 dived entries overturned; the round's own self-correcting dive process is filed as the more durable lesson — see below; earlier 2026-08-12 note (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
+**Last compiled**: 2026-08-13 (Auditor and Inference are now dedicated, model-agnostic control-plane roles with typed audit/resource protocols and explicit pane adoption; earlier 2026-08-13 fan-out and 2026-08-12 coordinator findings retained below)
 **Sources**: 85+ documents
+
+## Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
+
+**Confidence: verified for committed policy, state machines, and tests; rollout enforcement remains
+staged.** No live coordinator daemon was restarted as part of this checkpoint.
+
+The session-bus fleet now separates two control-plane responsibilities that previously existed only
+as informal conventions. Auditor is no longer a generic `lane:none` executor: successful
+`mainA`–`mainD` completions deterministically create linked, role-targeted audit work, and only a
+linked Auditor verdict can close that review. Findings return through handoffs and ordinary
+coordinator dispatch rather than directly tasking the source main, so review remains valid after the
+originating session has cleared context or moved on. Small fixes discovered during review are
+delegated to Terra subagents and stay proposed until Auditor accepts them.
+
+Inference now owns the advisory compute schedule independently of ordinary task assignment. Typed
+resource requests and grants preserve holder, task batch, exact CPU/GPU resources, expiry, and
+lifecycle across replay. A task assignment plus a valid resource lease still does not prove physical
+ownership: CPU activation requires a `region-lock` receipt, while delegated GPU grants fail closed
+until a general device-claim provider is configured. Persistent CPU and GPU idle are detected as
+separate multi-sample episodes and routed once to Inference, with durable inbox history preventing a
+daemon restart or lost routing-state file from duplicating the episode.
+
+Role provisioning is explicit as well. Coordinator-agent must present an inspected existing pane
+versus fresh-launch choice to the operator. Adoption requires exact endpoint/worktree identity, a
+positively idle runtime, empty composer, valid heartbeat/cursor/task state, unread/triage evidence,
+and explicit confirmation that the old role context was reset and reseeded. Recommended model and
+effort pairs populate the launch decision only; an operator changing either in-session is silent and
+never invalidates identity, leases, liveness, or the pane.
+
+The staged posture is intentional: audit completion is `shadow`, resource leases are `observe`, and
+persistent-idle transport is `route`. Promotion to required audits or enforced lease admission waits
+for a live-bus replay plus one audit and one CPU canary; delegated GPU leases additionally wait for a
+real physical claim provider. The implementation checkpoint passed 346 non-corpus bus tests, 173
+pane/routing tests, the 51-case M4 authority harness, and the 87-case fleet watcher plus 21 mutation
+checks.
+
+### Source References (2026-08-13 dedicated roles)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR
+  implementation checklist, rollout posture, and remaining canary gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
+  implementation and verification record.
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — typed audit, resource-lease, and
+  persistent-idle wire contracts.
+- [`auditor-main.md`](../agents/auditor-main.md) and
+  [`inference-main.md`](../agents/inference-main.md) — canonical role boundaries, provisioning, and
+  model-agnostic identity rules.
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
 

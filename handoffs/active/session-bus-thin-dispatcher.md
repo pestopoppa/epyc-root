@@ -10,6 +10,31 @@
 
 ---
 
+## Current executor start here — 2026-08-13
+
+The M1–M4 build plan below is historical: the bus is already implemented. The current rollout gate
+is **AIR-6** near the end of this handoff. `coordinator-agent`, as the live coordinator-daemon owner,
+must deploy commit `d7b83ddf93776a56869aee7326c8770602262bc0`, replay the live bus, and retain these canary
+artifacts:
+
+1. One `mainA`–`mainD` completion producing exactly one linked audit request, followed by an
+   Auditor-authored linked verdict and no direct Auditor→source-main assignment or message.
+2. One CPU lease completing request → Inference grant → `region-lock`-receipted activation → renew
+   → drain → close-receipted release, with replay reconstructing the same terminal state and zero
+   overlapping/orphan leases.
+3. `session_bus.py validate` clean of new authority/lifecycle defects and daemon replay idempotent.
+
+Only `coordinator-agent` may then change selected audit policy from `shadow` to `required` and
+resource admission from `observe` to `enforce`, after recording the canary artifacts here. GPU
+delegation is a separate AIR-7 prerequisite and is not part of the CPU canary.
+
+This handoff remains large because it still carries 18 open delivery-plane, observation, and rollout
+tasks; they are indexed by the unchecked checklist entries below. Completed history was not split
+during this wrap-up because doing so without moving those live task contracts out of `active/` would
+make the next-executor surface less complete, not more.
+
+---
+
 ## Nomenclature (operator, 2026-07-27) — one role, two tiers
 
 The original "dispatcher" / "meta-main" pair read as **one** thing from the operator seat and
@@ -34,9 +59,10 @@ and is the only component positioned to audit it deterministically.
 `master-handoff-index.md` and by a `progress/` entry, and progress files are historical records
 that are appended to, never rewritten.
 
-## Executor start here
+## Historical M1 executor start — retired
 
-Zero inference throughout. Build **M1 verbatim from §Skeleton** (files + schema + CLI), run the
+The following was the original build order and is retained as provenance. Do **not** restart M1.
+It required zero inference: build **M1 verbatim from §Skeleton** (files + schema + CLI), run the
 M1 manual round-trip acceptance, then M2→M4 in order. Every M5 item is independently
 flag/grant-gated — do not build any of them until its gate is granted. The coordinator-daemon NEVER
 analyzes, reviews, or edits work products — queue/routing/watchdog only ("the moment it
@@ -2967,12 +2993,20 @@ from that seat.
   `inspect-pane` reports the exact endpoint, runtime, task, unread count, triage count, worktree,
   and durable checkpoint. `instantiate` requires `fresh` or `adopt`. Adoption requires an explicit
   role-context reset confirmation. No model, provider, or effort value is inspected.
-- [ ] **AIR-6 — promote live audit and lease enforcement after a controlled canary.** Deploy this
-  branch under the live daemon owner. Replay the live bus, then canary one completed main task and
-  one CPU lease. Promote selected audits from `shadow` to `required`, and resource leases from
-  `observe` to `enforce`, only if replay has no authority or lifecycle defect. Persistent-idle
-  routing is already `route` because it is transport-only. Delegated GPU leases remain disabled
-  until a general GPU claim provider exists. **Blocker:** live daemon deployment and owner-run canary.
+- [ ] **AIR-6 — deploy and canary live audit plus CPU lease enforcement.** `coordinator-agent`, as
+  live daemon owner, deploys `d7b83ddf93776a56869aee7326c8770602262bc0`, replays the live bus,
+  and preserves the exact audit and CPU lifecycle artifacts specified in **Current executor start
+  here**. It may promote selected audits `shadow` → `required` and resource admission `observe` →
+  `enforce` only after replay is idempotent, validation has no new authority/lifecycle defects,
+  the audit is exactly-once with no direct source-main route, and the CPU lease traverses request →
+  grant → `region-lock` activation → renew → drain → close-receipted release with zero overlap or
+  orphan leases. Persistent-idle routing remains `route`; it is transport-only. **Blocker:** the
+  external live-daemon deployment and owner-run canary have not yet occurred.
+- [ ] **AIR-7 — enable delegated GPU leases only after a general physical-claim provider exists.**
+  Select and configure one provider under `resource_claims.gpu`, add provider-qualified open/close
+  receipt validation and contention tests, then canary a delegated GPU lease separately. Until all
+  three land, `enabled: false` is the required fail-closed state; Inference may still run its own GPU
+  work under the existing inference rules.
 
 Validation: bus tests `346 passed, 2 deselected` because this worktree has no live bus corpus;
 M4 `51/51`; tmux and routing `173 passed`; fleet watcher `87/87`; mutation harness `21/21`.
