@@ -1382,10 +1382,19 @@ Investigation on pickup (13:08Z, this session) found:
   mainD repeatedly failed the adapter's pre-Enter verification and were rolled back,
   but the *doorbell* text was left unsubmitted in the composer (post-Enter buffer check
   read `''` vs the expected `›`). The operator confirmed they pressed Enter manually
-  for the auditor message ("you forgot to submit it"). This is the same class as
-  C55/H-1/H-2 (bare-key submit failures) resurfacing on the opencode backend: the
+  for the auditor message ("you forgot to submit it") and again for the inference
+  doorbell ("Bus: unread inbox for inference — drain now." was found sitting in
+  inference's prompt box: "you wrote but never submitted it"). This is the same class
+  as C55/H-1/H-2 (bare-key submit failures) resurfacing on the opencode backend: the
   opencode composer's placeholder stripping / glyph detection (F-40's patch area)
   still mis-reads the post-Enter state on some panes.
+
+  **Operator-observed behaviour to encode:** when a nudge or doorbell reports a
+  **post-Enter failure**, the text is still in the composer and the delivery is NOT
+  done — the correct follow-up is `tmux_adapter.py pending`, then `submit --expect
+  '<the text>'` if it is the adapter's own doorbell string (never someone else's
+  draft). Treating "verification failed" as "not delivered but harmless" is what
+  leaves rings sitting unsubmitted in live panes.
 
 - Root cause chain: **free-tier model (`deepseek-v4-flash-free`) is not built for
   5-concurrent-session bursts** → rate-limit wedge → coordinator stopped (SIGSTOP) →
