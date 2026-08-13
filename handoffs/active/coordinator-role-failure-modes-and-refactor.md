@@ -1249,3 +1249,158 @@ written — it is the record of what was found and why it mattered — and is no
 The Phase-2 mutation check (garble one site deliberately, assert the harness sees it) is still
 owed, because what is proven so far is that the text is right, not that anything would have caught
 it being wrong.
+
+---
+
+## 2026-08-13 post-reboot cold-start findings — F-39 … F-40
+
+### F-39 — `tmux_adapter` had no opencode backend; the fleet could not be spawned or nudged as opencode mains
+
+The operator's dispatch plan for 2026-08-13 routed mainA–mainD to **opencode
+(DeepSeek V4 Flash Free, max effort)** and the auditor to codex. The adapter's
+`_BACKENDS` tuple was `("codex", "claude")` and its TUI-composer readers were
+codex/claude-specific, so an opencode main could not be identified, probed, or
+nudged: `_BARE_PROMPT_GLYPHS = ("›","❱","❯")` missed opencode's `┃` (U+2503)
+composer glyph, and `_strip_faint_runs` only stripped SGR-2 faint while opencode
+renders its `Ask anything...` placeholder gray `38;5;8`. Measured against a live
+disposable opencode TUI, an empty opencode composer read as NON-EMPTY — which
+would have made every doorbell/nudge composer guard refuse permanently.
+
+Corrected in place (operator-approved): `┃` added to the glyphs, gray-run
+stripping added to `_strip_faint_runs`, `"opencode"` added to `_BACKENDS`, and
+`composer_faint_is_placeholder` extended to opencode. Pinned with two regression
+tests; suite 45/45 green. The remaining gap is honest and visible, not hidden:
+opencode's runtime has **no signal implemented yet** (`runtime UNAVAILABLE — no
+runtime signal implemented yet — falling back to the heartbeat guard chain`),
+which fails **closed** (unreadable runtime is not idle) — safe, but a next-step
+item for the adapter owner.
+
+- Evidence: `progress/2026-08/2026-08-13-coordinator-agent.md`; live calibration in a
+  disposable `ocalib` session; two new tests in `scripts/coordination/tests/test_tmux_adapter_submission.py`.
+- Corrected by: self, at first contact (operator approved the fix).
+- Recur: **0** so far — the class it prevents (dispatch to a runtime the adapter
+  cannot see) was about to happen on the first opencode spawn of the era.
+- Mech: `MECH-UC` — the fix is in the working tree, **not yet committed** (commits
+  are checkpoint-gated at wrap-up per operator instruction).
+
+### F-40 — opencode's TUI silently rejects `--variant`; four spawn attempts died instantly before the cause was found
+
+The first spawn command built for the mains was
+`opencode -m opencode/deepseek-v4-flash-free --variant max`. **`--variant` exists
+only on the `run` subcommand; the default TUI command does not define it**, so
+yargs prints help and exits immediately — four windows created and dead in under
+two seconds, before any diagnostic. The adapter's known-cause hint ("CLI update
+prompt on start") was wrong for this cause; the actual cause was found by hand-running
+the command, then bisecting the flags. Correct launch is `opencode --agent <agent>`
+where the agent file carries `model` + `variant`.
+
+Second, the operator's "max effort" instruction does not map cleanly: the model's
+schema advertises `["low","high","max"]`, but the banner normalizes to `high`, and
+the operator clarified (2026-08-13) that `high` is the intended/highest reliable
+option. The agent file therefore pins `variant: high`.
+
+- Evidence: `progress/2026-08/2026-08-13-coordinator-agent.md`; `/home/node/.config/opencode/agent/main-max.md`.
+- Corrected by: self, by isolating the failing flag; operator clarified the variant.
+- Recur: **0** — launch is now `--agent main-max` (no CLI variant flag).
+- Mech: `MECH-UC` — the working `--agent` recipe is documented in the progress log,
+  but nothing enforces it; a future spawn using `-m ... --variant` would repeat this.
+  Candidate mechanism: the adapter's opencode backend should reject `--variant` in
+  spawn commands it derives, or accept a config-file path instead.
+
+### F-41 — opencode's composer wraps long nudges; the single-row tail-fragment gate refuses them
+
+Opencode's composer wraps a long message across several terminal rows. The
+adapter's pre-Enter gate (`_await_state` with `text_present`) reads **one** composer
+row and demands it end with the message's tail fragment. A long nudge (e.g. the
+compute-ownership directive, ~70 chars) lands wrapped, so no single row ends with
+the fragment and the nudge is refused (`cursor is not at the end of it`), rolled
+back, and never delivered. Short messages (≤ ~60 chars, one row) pass cleanly.
+
+First observed 2026-08-13 ~10:52Z on the first fleet dispatch: the four mains had
+been nudged with the full compute-ownership directive and all four were refused;
+the short "Drain your inbox now." nudges landed immediately and all four mains
+began processing.
+
+- Evidence: four identical `pre-Enter verification ... cursor is not at the end of it`
+  refusals at `msg-…-62..65` dispatch; short-nudge success on the same panes.
+- Corrected by: none yet — workaround is to keep nudge messages to one composer row.
+- Recur: **1** (four refusals in one minute, same cause).
+- Mech: `MECH-UC` — nothing prevents a future long nudge from silently failing.
+  Candidate fix: on `text_absent` where the fragment is present but not at end-of-row,
+  either (a) treat a *multi-row composer* (fragment present in a row other than the
+  last) as `text_present`, or (b) detect wrap and shorten/re-deliver, or (c) verify
+  by reading all composer rows and checking the final row end + no paste blob.
+
+### F-42 — opencode mains stall on per-path permission prompts; the config shipped with no permission rules
+
+The freshly spawned mains hit an opencode permission modal on nearly every path
+they touched (`/workspace/coordination/session-bus/cursors/*`,
+`/mnt/raid0/llm/llama.cpp/*`, `/mnt/raid0/llm/epyc-orchestrator/src/*`). The
+global config `~/.config/opencode/opencode.jsonc` was a bare
+`{"$schema": ...}` — no `permission` block — so opencode defaulted to `ask` and
+each main stalled at a TUI modal until a human pressed keys. mainD stalled on
+its cursor file (its very first bus interaction); mainC/mainB stalled on repo
+paths. Each is a "Allow always / Confirm" modal sequence (Right → Enter →
+Enter). Config is NOT hot-reloaded, so the running sessions kept prompting even
+after the fix was written.
+
+Corrected: `opencode.jsonc` now carries a `permission` block allowing
+`edit`/`bash`/`task`/`read` and `external_directory` for `/workspace/**`,
+`/mnt/raid0/llm/**`, and the mains worktrees — so future spawns start
+permissive. The live sessions were unstuck one-by-one via the modal key
+sequence.
+
+- Evidence: four pane captures showing `△ Permission required` modals (mainB/C/D); config
+  before/after; key sequence verified interactively.
+- Corrected by: self (config + interactive acceptance).
+- Recur: **3** (mainB, mainC, mainD each hit ≥1 modal) within ten minutes of spawn.
+- Mech: `MECH-UC` — nothing in the spawn recipe guarantees a permissive config.
+  Candidate mechanism: the adapter's opencode backend should verify a `permission`
+  block exists (or inject one) before spawning; and/or spawn recipe should create
+  the config when it creates the agent file.
+
+### F-43 — the 2026-08-13 coordinator "crash" was a SIGSTOP, not a crash: free-tier rate-limit wedge + unsubmitted-composer wedge
+
+The prior coordinator session (opencode pid 1598123, run `2e77f75d`) did **not** crash.
+Investigation on pickup (13:08Z, this session) found:
+
+- **Process state: `T` (stopped)**, all 121 threads `T (stopped)`, wchan
+  `do_signal_stop` — a SIGSTOP, not a segfault/exit/OOM (no dmesg/journal entries).
+  Parent `fish` (14147); a fresh opencode was launched in the same window at 13:05:51
+  (this session, pid 804737), which is consistent with the operator (or a wrapper)
+  stopping the wedged session rather than a self-crash.
+- **Trigger sequence (from `~/.local/share/opencode/log/opencode.log`):**
+  1. 12:56–12:57 — the coordinator re-spawned mainA–D (heartbeat-reset + spawn rows in
+     `adapter-ledger.jsonl`) and nudged all four to resume their rows.
+  2. 12:57:58 → 13:00:00 — **`AI_APICallError: Rate limit exceeded` on
+     `opencode/deepseek-v4-flash-free`** hit 4+ sessions back-to-back (mainA, mainB,
+     coordinator's own build session `2e77f75d` at 12:58:05, mainC). The free tier
+     could not keep up with 5 concurrent mains + coordinator.
+  3. The coordinator's last logged act is 12:58:05 (rate-limit error on its own
+     stream). Its heartbeat file last updated 12:55:27. The process then sat stopped.
+- **Second wedge, same window: the opencode composer.** On re-spawn, short nudges to
+  mainD repeatedly failed the adapter's pre-Enter verification and were rolled back,
+  but the *doorbell* text was left unsubmitted in the composer (post-Enter buffer check
+  read `''` vs the expected `›`). The operator confirmed they pressed Enter manually
+  for the auditor message ("you forgot to submit it"). This is the same class as
+  C55/H-1/H-2 (bare-key submit failures) resurfacing on the opencode backend: the
+  opencode composer's placeholder stripping / glyph detection (F-40's patch area)
+  still mis-reads the post-Enter state on some panes.
+
+- Root cause chain: **free-tier model (`deepseek-v4-flash-free`) is not built for
+  5-concurrent-session bursts** → rate-limit wedge → coordinator stopped (SIGSTOP) →
+  fleet left with mains mid-task and no dispatcher → pickup required.
+- Corrected by: **switch mains to the hosted `deepseek/deepseek-v4-flash`** (API key in
+  `~/.local/share/opencode/auth.json`) via the `main-max.md` agent file. The current
+  session's own log (`providerID=deepseek modelID=deepseek-v4-flash`) proves the hosted
+  path works and is rate-resilient.
+- Recur: **1** (the stop) + **1** (unsubmitted doorbell).
+- Mech: `MECH-UC` —
+  (a) the adapter's opencode backend has no runtime signal (falls back to heartbeat
+      guard chain; `runtime UNAVAILABLE`), so a wedged-but-alive pane reads as idle;
+  (b) the doorbell's post-Enter buffer check reads `''` instead of `›` on opencode
+      panes, so ring submission is unverified → silent unsubmitted text;
+  (c) free-tier model has no per-session burst protection.
+  Candidate mechanisms: implement an opencode runtime signal (rollout/transcript tail
+  reader analogous to codex's); fix the doorbell's opencode buffer check; pin hosted
+  model as default in `main-max.md` (done 2026-08-13).
