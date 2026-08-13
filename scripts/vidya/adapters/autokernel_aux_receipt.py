@@ -1652,10 +1652,15 @@ def _validate_gpu_discovery_measurements(receipt: dict,
         candidate = _gpu_identity(receipt.get("candidate_identity"), frame=frame,
                                   factor=factor, arm="candidate")
         baseline_sha = _sha(receipt.get("baseline_sha256"), "baseline_sha256")
+        anchor_samples = _gpu_samples(
+            receipt.get("baseline_anchor_samples"), "baseline_anchor_samples")
         center = receipt.get("baseline_center")
         if (isinstance(center, bool) or not isinstance(center, (int, float))
                 or not math.isfinite(center) or center <= 0):
             raise ProjectionError("GPU baseline center must be positive and finite")
+        if not math.isclose(float(center), sum(anchor_samples) / 3,
+                            rel_tol=1e-12, abs_tol=1e-12):
+            raise ProjectionError("GPU baseline center does not rederive from anchor samples")
         effects = [(sample - float(center)) / float(center) for sample in samples]
         declared = receipt.get("relative_effects")
         if (not isinstance(declared, list) or len(declared) != 3
@@ -1671,6 +1676,7 @@ def _validate_gpu_discovery_measurements(receipt: dict,
         common.update({
             "arm": "candidate", "build_identity": candidate,
             "baseline_sha256": baseline_sha, "baseline_center": float(center),
+            "baseline_anchor_samples": anchor_samples,
             "hip_residency_proved": True,
         })
         basis = "scored:three candidate-only MI210 llama-bench invocations"

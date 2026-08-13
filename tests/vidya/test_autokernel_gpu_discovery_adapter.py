@@ -110,6 +110,7 @@ def result_receipt():
         "state": "decided", "ok": True, "non_promotable": True,
         "nomination": "top_k_candidate_only_not_a_keep",
         "baseline_sha256": bank["baseline_sha256"],
+        "baseline_anchor_samples": bank["anchor_samples"],
         "anchor_invocations": 3, "candidate_invocations": 3,
         "baseline_center": center, "candidate_samples": samples,
         "relative_effects": effects, "median_relative": sorted(effects)[1],
@@ -125,6 +126,7 @@ def result_receipt():
     base = {**common(receipt, samples), "arm": "candidate",
             "build_identity": receipt["candidate_identity"],
             "baseline_sha256": bank["baseline_sha256"],
+            "baseline_anchor_samples": bank["anchor_samples"],
             "baseline_center": center, "hip_residency_proved": True}
     basis = "scored:three candidate-only MI210 llama-bench invocations"
     receipt["belief_measurements"] = [
@@ -167,7 +169,8 @@ def test_projects_baseline_and_candidate_rows_through_the_shared_ladder():
 
 
 @pytest.mark.parametrize("defect", [
-    "row", "self", "effect", "producer", "authority", "residency", "factor", "build",
+    "row", "self", "effect", "anchor_samples", "producer", "authority", "residency",
+    "factor", "build",
 ])
 def test_gpu_discovery_tampering_and_authority_upgrades_fail_closed(defect):
     receipt = result_receipt()
@@ -178,6 +181,9 @@ def test_gpu_discovery_tampering_and_authority_upgrades_fail_closed(defect):
         receipt["result_sha256"] = "0" * 64
     elif defect == "effect":
         receipt["median_relative"] += 0.1
+        resign(receipt)
+    elif defect == "anchor_samples":
+        receipt["baseline_anchor_samples"][0] = 1.0
         resign(receipt)
     elif defect == "producer":
         receipt["producer"]["producer_id"] = "invented"
