@@ -70,7 +70,7 @@ nobody is moving.
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
 | inference-research | 53 | 367 | 12 | 2026-07-29 |
-| pipeline-integration | 5 | 49 | 1 | 2026-07-29 |
+| pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
 | research-evaluation | 49 | 311 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 30 | 11 | 2026-07-29 |
 | routing-and-optimization | 50 | 379 | 18 | 2026-07-29 |
