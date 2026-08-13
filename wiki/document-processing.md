@@ -2,8 +2,24 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the 200-PDF benchmark dataset is finally on disk, all three parenthesised premises of the row that asked for it were false, and the name it is filed under already belonged to a different project — see below; earlier 2026-07-17 pass retained)
-**Sources**: 10+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-08-13 (first-wave ODL metric/parser work was preflight-only; Unlimited-OCR code landed but its default artifact fails the lm_head quant gate)
+**Sources**: 13+ documents
+
+## Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
+
+**Confidence: verified by commit, artifact, source, and focused-test audit.**
+
+The committed `odl_bench` schema does **not** expose the previously attributed NID/TEDS/MHS trio. Its package rows are structural text edit distance, table TEDS, reading-order edit distance, and speed; NID and MHS live in the sibling `document_extraction_adapter.py`. ODL-011 completed only this premise/contract audit. Ekimetrics SC/BI/ICC/DCC and contradictory HOPE scoring remain unimplemented in the accepted tree, and neither family may gate a chunker until both run on one pinned fixture with the same downstream RAG answer-correctness endpoint.
+
+ODL-013 likewise completed harness preflight, not a comparison. The July born-digital artifacts remain useful scaffolding but contain no representative 2026-08-13 structural/table result or fast-path verdict. The Unlimited-OCR producer/adapter/manifest scaffold is real and passed 26 focused tests, yet its default model is not eligible for the planned demo: `output.weight` is Q6_K while the parent contract requires `lm_head >= Q8_0`. No live model result was produced.
+
+This also retires the old PaddleOCR table numbers as quality evidence: they came from an off-label full-page invocation rather than the official layout-plus-cropped-recognition pipeline. The live decision surface remains ODL/LiteParse representative scoring, a corrected full-corpus PDF bridge, architecture-faithful model arms, and explicit routing policy.
+
+### Source References (2026-08-13 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) — compact active gates and exact next work.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
 
 ## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
 
@@ -80,7 +96,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - **Phase 2 (medium effort, biggest win)**: The gated structured consumer path is wired: enrich VL model prompts with figure semantic type, caption, surrounding text, and heading position from ODL JSON; replace PyMuPDF figure extraction with ODL bboxes; use heading hierarchy instead of regex when present; carry ODL table metadata through preprocessing/cache/TaskIR output; suppress unsafe ODL structured metadata under `INJECTION_SCANNING`; expose a default-inert `ORCHESTRATOR_ODL_TABLE_BACKEND` seam; and expose default-off body warnings through `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`. Remaining work: implement the real ODL hybrid table sidecar/client path for 0.93 accuracy.
 - **Phase 3 (medium-large effort)**: The sidecar is now live, so the remaining work is benchmark-backed comparison and routing policy. Experiment with swapping hybrid backend to LightOnOCR-2-1B (already running). Implement three-way routing: ODL local (simple) -> ODL hybrid (tables) -> LightOnOCR (scanned) only if the comparison justifies it. Clone opendataloader-bench, add EPYC pipeline as custom engine, run 200-PDF comparison.
 - **Document-specialist comparison (new)**: run the guarded PaddleOCR-VL producer against LightOnOCR and ODL on the same structural/table/reading-order corpus, and treat the current HTML/post-processing path as a baseline to beat rather than a solution.
-- **Benchmark integration**: Add `document_extraction` suite to `epyc-inference-research/scripts/benchmark/question_pool.py` using opendataloader-bench 200-PDF dataset. Scoring: NID (reading order), TEDS (table DOM), MHS (heading hierarchy).
+- **Benchmark integration**: the committed `odl_bench` package scores structural text edit distance, table TEDS, reading-order edit distance, and speed. NID/MHS are in the sibling document-extraction adapter and must be explicitly bridged or co-reported when the parent contract uses those names.
 - **JVM management**: Pre-warm JVM in persistent subprocess or run ODL as sidecar service on dedicated port.
 
 ## Open Questions
