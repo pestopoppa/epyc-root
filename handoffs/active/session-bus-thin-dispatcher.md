@@ -3007,6 +3007,21 @@ from that seat.
   receipt validation and contention tests, then canary a delegated GPU lease separately. Until all
   three land, `enabled: false` is the required fail-closed state; Inference may still run its own GPU
   work under the existing inference rules.
+- [x] **AIR-8 — independently audit the Rule-11 compute-dialogue schema change.** ✅ 2026-08-13
+  Commit `5aae0c35` adds the three kinds and exercises positive authoring, relay, and idempotency,
+  but the audit verdict is **needs rework**: structural validation accepts a request addressed to a
+  non-Inference target, a grant authored by a non-Inference sender without `boundaries`, a deny
+  without `next`, and an otherwise valid request with a misspelled payload key. Focused upstream
+  tests pass (`133 passed, 215 deselected`), confirming implementation consistency rather than the
+  fail-closed Rule-11 authority contract.
+- [ ] **AIR-9 — fail-close Rule-11 compute-dialogue authority, routing, and payload shape.** Enforce
+  `compute-request` routing to `inference`; restrict `compute-grant` and `compute-deny` authorship to
+  `inference` and correlate/address the requester; require non-empty grant `boundaries` and deny
+  `next`; reject unknown compute payload keys while explicitly retaining intended generic payload
+  fields. Add authoring and relay refusal tests for every wrong-role, wrong-target, missing-field,
+  and unknown-key forgery. `validate_row` has CRITICAL upstream reach (six dependants across five
+  coordinator/append/validation flows), so this needs the focused implementation and mutation
+  battery rather than an audit-lane patch.
 
 Validation: bus tests `346 passed, 2 deselected` because this worktree has no live bus corpus;
 M4 `51/51`; tmux and routing `173 passed`; fleet watcher `87/87`; mutation harness `21/21`.
