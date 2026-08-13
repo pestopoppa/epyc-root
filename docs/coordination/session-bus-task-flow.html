@@ -11,13 +11,13 @@
 <body>
 <a class="skip" href="#main">Skip to flowchart</a>
 <header>
-  <span class="asof">AS OF 2026-08-13 UTC · lane/auditor pushed through 82c1c5b4</span>
-  <p role="status" style="display:inline-block;margin:.45rem 0 .45rem .45rem;padding:.35rem .65rem;border:2px solid #a22832;border-radius:.35rem;background:#fff1f1;color:#7f1721;font-weight:800">DEPLOYMENT: OFF · not promoted to origin/main · no live-fleet cutover claimed</p>
+  <span class="asof">AS OF 2026-08-13 UTC · implementation through 82c1c5b4</span>
+  <p role="status" style="display:inline-block;margin:.45rem 0 .45rem .45rem;padding:.35rem .65rem;border:2px solid #a22832;border-radius:.35rem;background:#fff1f1;color:#7f1721;font-weight:800">FLEET ROLLOUT: OFF · code published through this Auditor wrap · no daemon reload or role cutover claimed</p>
   <h1>Session-bus task flow</h1>
   <p class="lede">A reviewable authority and lifecycle map of the EPYC <strong>coordination system as currently built</strong>. It shows durable worker boundaries, receipt admission, independent audit, integration, session disposition, compute scheduling, and serialized wrap-up.</p>
   <p class="scope"><strong>Scope boundary:</strong> this is governance/session coordination, not the <code>epyc-orchestrator</code> application architecture. A dashed path is a contract or planned integration, not proof that a live daemon executes it.</p>
   <div class="grid legend" aria-label="Implementation status legend">
-    <div class="key"><span class="swatch green"></span><strong>Solid green — pushed/built on lane/auditor</strong><br>Code evidence only; it does not mean promoted, reloaded, acknowledged, or live.</div>
+    <div class="key"><span class="swatch green"></span><strong>Solid green — pushed/built code</strong><br>Published code evidence only; it does not mean reloaded, acknowledged, enabled, or live.</div>
     <div class="key"><span class="swatch blue"></span><strong>Solid blue — local, awaiting integration</strong><br>Reserved for unpushed code. Phase 2 moved to green at <code>82c1c5b4</code>; blue remains distinct for later local work.</div>
     <div class="key"><span class="swatch amber"></span><strong>Dashed amber — not wired</strong><br>Compute bus/role integration or receipt-driven heavy wrap.</div>
     <div class="key"><span class="swatch gray"></span><strong>Gray — protected/future</strong><br>Policy cutover, canary rollout, or operator-ratified authority change.</div>
@@ -143,7 +143,7 @@
 
 <section class="panel" aria-labelledby="status-title">
  <h2 id="status-title">Implementation evidence and status registry</h2>
- <p>This table is rendered from the single <code>STATUS</code> object at the bottom of this file. Diagram elements reference the same four status keys via <code>data-status</code>. At this cut, all cited commits are contained by <code>origin/lane/auditor</code> only; none is proven on <code>origin/main</code>.</p>
+ <p>This table is rendered from the single <code>STATUS</code> object at the bottom of this file. Diagram elements reference the same four status keys via <code>data-status</code>. The cited commits are published by this Auditor wrap; publication is not runtime activation.</p>
  <noscript><p class="noscript">JavaScript is disabled. Flow colors remain visible, but the evidence registry table cannot be rendered.</p></noscript>
  <div style="overflow:auto"><table id="status-table"><thead><tr><th>Area</th><th>Status</th><th>Evidence</th><th>Audit reading</th></tr></thead><tbody></tbody></table></div>
 </section>
@@ -151,7 +151,7 @@
 <section class="panel questions" aria-labelledby="gaps-title">
  <h2 id="gaps-title">Known gaps / audit questions</h2>
  <ol>
-  <li><strong>Deployment versus pushed code:</strong> the checkpoint engine, canonical publication, closed bus schemas, receipt admission, audit fold, and integration-ready path are pushed at <code>82c1c5b4</code>. A live daemon reload and instruction acknowledgment are still separate evidence; a commit alone does not prove process cutover.</li>
+  <li><strong>Publication versus deployment:</strong> the checkpoint engine, canonical publication, closed bus schemas, receipt admission, audit fold, and integration-ready path are published at <code>82c1c5b4</code>. A live daemon reload and instruction acknowledgment are still separate evidence; a commit alone does not prove process cutover.</li>
   <li><strong>Compute producers:</strong> the deterministic planner is pushed, but no live bus relay creates intake/window records or writes the generated projection. Who invokes it, where its append-only inputs live, and how Inference acknowledges instruction SHA remain open integration work.</li>
   <li><strong>Resource claim provider:</strong> delegated GPU grants remain disabled until a general provider is named and enabled. Confirm open/close receipt semantics before canary.</li>
   <li><strong>Receipt-driven heavy wrap:</strong> typed <code>wrapup-request</code>/<code>wrapup-complete</code> schema exists locally; no end-to-end immutable-cut executor currently replaces the manual wrap routine.</li>
@@ -165,18 +165,18 @@
 <footer>Review surface: <a href="../../coordination/session-bus/BUS_PROTOCOL.md">BUS_PROTOCOL</a> · <a href="../../agents/shared/SESSION_LIFECYCLE.md">SESSION_LIFECYCLE</a> · <a href="../../agents/commands/wrap-up.md">wrap-up command</a>. This document deliberately makes no claim about application-orchestrator services.</footer>
 <script>
 const STATUS = Object.freeze({
-  deployment: {rollout:"off", pushedRemote:"origin/lane/auditor", promotedToOriginMain:false, daemonReloadProven:false, roleAcknowledgmentsProven:false},
+  deployment: {rollout:"off", publishedBy:"Auditor wrap promotion", promotedToOriginMain:true, daemonReloadProven:false, roleAcknowledgmentsProven:false},
   pushed: {label:"Pushed / built", css:"pushed"},
   local: {label:"Implemented locally; awaiting integration", css:"local"},
   gap: {label:"Not yet wired", css:"gap"},
   future: {label:"Protected policy / canary future", css:"future"},
   evidence: [
-    {area:"Fleet deployment state",status:"future",evidence:"rollout=off; origin/main promotion=false; reload=false; acknowledgments=false",reading:"Nothing green on this page is represented as live fleet behavior."},
-    {area:"Phase 1 · autonomous writer removal",status:"pushed",evidence:"origin/lane/auditor @ 60187101 — fix: keep worker hooks off wrap-owned state",reading:"Safety repair pushed on the Auditor lane; not proven on origin/main or live."},
-    {area:"Phase 1 · progress currency",status:"pushed",evidence:"origin/lane/auditor @ 20640d55 — fix: validate receipt-bound progress shards",reading:"Receipt-bound per-agent progress support pushed on the Auditor lane."},
-    {area:"Phase 1 · wrap lease",status:"pushed",evidence:"origin/lane/auditor @ 8ff5162c — fix: bind wrap leases to operation tokens",reading:"Token hardening and documented command path pushed on the Auditor lane."},
-    {area:"Phase 3 · compute planner core",status:"pushed",evidence:"origin/lane/auditor @ 7623e37c — feat: add replayable compute-ready planner",reading:"Pure projection/rank/check CLI pushed; live bus producer intentionally absent."},
-    {area:"Phase 2 · checkpoint + canonical bus lifecycle",status:"pushed",evidence:"origin/lane/auditor @ 82c1c5b4 — checkpoint engine + bus publication/admission/audit/verdict/integration-ready",reading:"Built and pushed on the Auditor lane; origin/main promotion, daemon reload, and role acknowledgment remain unproven."},
+    {area:"Fleet deployment state",status:"future",evidence:"rollout=off; code publication=true; reload=false; acknowledgments=false",reading:"Nothing green on this page is represented as live fleet behavior."},
+    {area:"Phase 1 · autonomous writer removal",status:"pushed",evidence:"60187101 — fix: keep worker hooks off wrap-owned state",reading:"Safety repair published; runtime use is not claimed."},
+    {area:"Phase 1 · progress currency",status:"pushed",evidence:"20640d55 — fix: validate receipt-bound progress shards",reading:"Receipt-bound per-agent progress support published."},
+    {area:"Phase 1 · wrap lease",status:"pushed",evidence:"8ff5162c — fix: bind wrap leases to operation tokens",reading:"Token hardening and documented command path published."},
+    {area:"Phase 3 · compute planner core",status:"pushed",evidence:"7623e37c — feat: add replayable compute-ready planner",reading:"Pure projection/rank/check CLI published; live bus producer intentionally absent."},
+    {area:"Phase 2 · checkpoint + canonical bus lifecycle",status:"pushed",evidence:"82c1c5b4 — checkpoint engine + bus publication/admission/audit/verdict/integration-ready",reading:"Built and published; daemon reload, role acknowledgment, and enforcement remain unproven."},
     {area:"Compute bus and role integration",status:"gap",evidence:"No live compute_ready.json or intake/window relay",reading:"Planner success is not an end-to-end compute workflow."},
     {area:"Receipt-driven immutable-cut wrap",status:"gap",evidence:"Typed lifecycle locally specified; manual wrap remains current execution surface",reading:"Lease is real; automatic cut reconciliation/publish loop is not."},
     {area:"Fleet enforcement",status:"future",evidence:"Protected policy + instruction acknowledgment + canary required",reading:"Do not infer authority cutover from local code."}
