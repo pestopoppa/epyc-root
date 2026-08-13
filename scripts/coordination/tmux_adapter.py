@@ -704,7 +704,8 @@ def _await_composer_consumed(target: str, baseline: str, timeout_s: float,
         if failure:
             return False, observed, failure
         observed = row
-        ok = _normalise(row) == _normalise(baseline) and _composer_row_is_empty(row)
+        ok = _composer_row_is_empty(row) and (
+            _normalise(row) == _normalise(baseline) or _normalise(row) == "")
         run = run + 1 if ok else 0
         if run >= max(1, stable_samples):
             return True, observed, None
