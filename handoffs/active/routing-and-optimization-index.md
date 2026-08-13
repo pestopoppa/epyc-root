@@ -60,6 +60,7 @@
 | RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | Auditor: audit the Mech column — a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it | RTG-34 |
 | RTG-49 | fleet fanout measurement | [fleet-fanout-measurement.md](fleet-fanout-measurement.md) | FM-1 — collect per-subagent start/finish timestamps from Claude Code and Codex transcripts into a durable record | RTG-34, RTG-48 |
 | RTG-50 | decomposition to batch mapping | [decomposition-to-batch-mapping.md](decomposition-to-batch-mapping.md) | DB-1 — establish whether a task decomposition can be expressed as np-batch slots across CPU and GPU instances | RTG-49 |
+| RTG-51 | wrap up division of labor | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Encode three-tier wrap-up division in wrap-up.md + auditor-main.md first (worker commit+checkbox, auditor review+wrap-up via subagents) | RTG-48 |
 
 ## Cross-domain
 
