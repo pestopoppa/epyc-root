@@ -2696,6 +2696,12 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   a window, exposed where `probe`/`rebuild` already report liveness. The defect signal is sustained
   zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
   not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
+- [ ] **Adopt "serial collapse" as the name for the condition above, and build the detector ourselves.**
+  The term is Moonshot's (intake-1106, arXiv:2602.02276v2, dive-verified) and the source supplies a
+  DEFINITION ONLY — it occurs exactly once in the paper, in the sentence defining it, with no rate, no
+  threshold and no detection method. Cite it for the name, never for a measurement. The per-subagent
+  timing that would ground a detector is filed in `fleet-fanout-measurement.md` (RTG-49); this box is
+  the naming and the pointer, not the build.
 
 ## Delivery-plane repair — C51–C54 landed, four residuals (filed 2026-08-12 at wrap-up)
 
