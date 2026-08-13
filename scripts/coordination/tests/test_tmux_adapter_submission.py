@@ -536,6 +536,11 @@ RAW_CLAUDE_EMPTY = "\x1b[39m\u276f\u00a0"
 # Codex, disposable `codexcal2` session, created and killed by the measurement.
 RAW_CODEX_PLACEHOLDER = "\x1b[1m\u203a\x1b[0m \x1b[2mImprove documentation in @filename\x1b[0m"
 RAW_CODEX_TYPED = "\x1b[1m\u203a\x1b[0m hello world this is typed"
+# opencode, disposable `ocalib` session, created and killed by the measurement
+# 2026-08-13. The glyph is `┃` (U+2503, blue 38;5;75) and the idle hint is gray
+# (38;5;8) — NOT SGR-2 faint — followed by a white (38;5;15) return to normal.
+RAW_OPENCODE_EMPTY = "\x1b[48;5;232m  \x1b[38;5;75m\u2503\x1b[38;5;15m\x1b[48;5;234m  \x1b[38;5;8mAsk anything... \"Fix a TODO in the codebase\"\x1b[38;5;15m\x1b[48;5;232m"
+RAW_OPENCODE_TYPED = "  \x1b[38;5;75m\u2503\x1b[38;5;15m\x1b[48;5;234m  real instruction text"
 
 
 def test_sgr_is_stripped_and_a_claude_pending_row_survives_as_content():
@@ -580,6 +585,29 @@ def test_a_faint_run_is_closed_by_reset_or_explicit_unfaint(closer):
     row = f"\x1b[1m\u203a\x1b[0m \x1b[2mhint text{closer} kept"
     assert m._strip_faint_runs(row).endswith(" kept")
     assert "hint text" not in m._strip_faint_runs(row)
+
+
+def test_opencode_gray_placeholder_is_stripped_and_typed_input_survives():
+    """MEASURED 2026-08-13 against a live disposable opencode TUI. opencode's idle
+    hint is gray 38;5;8 (NOT SGR-2 faint), so an empty composer must still read empty
+    after stripping — and real typed input, which carries no gray run, must survive."""
+    m = _load()
+    assert m._composer_row_is_empty(m._SGR_RE.sub("", m._strip_faint_runs(RAW_OPENCODE_EMPTY)))
+    kept = m._SGR_RE.sub("", m._strip_faint_runs(RAW_OPENCODE_TYPED))
+    assert "real instruction text" in kept
+    assert not m._composer_row_is_empty(kept)
+
+
+def test_opencode_placeholder_stripping_only_for_an_opencode_pane():
+    """The gate, same polarity as the Codex rule: opencode's gray hint is a
+    placeholder ONLY on a pane positively identified as opencode. Claude stays off
+    (its pending input is faint), unknown stays off (fail closed)."""
+    m = _load()
+    assert m.composer_faint_is_placeholder(
+        {"roster": [{"id": "a", "endpoint": "tmux:x:a", "backend": "opencode"}]}, "a") is True
+    assert m.composer_faint_is_placeholder(
+        {"roster": [{"id": "a", "endpoint": "tmux:x:a", "backend": "claude"}]}, "a") is False
+    assert m.composer_faint_is_placeholder({"roster": []}, "ghost") is False
 
 
 def test_live_pending_text_to_the_right_of_the_cursor_is_seen(live_bus):

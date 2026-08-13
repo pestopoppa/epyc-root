@@ -437,7 +437,9 @@ DOORBELL_TEXT_TEMPLATE = "Bus: unread inbox for {agent} — drain now."
 # glyph knowledge at all and cannot rot. See `_await_composer_consumed`.
 # The Codex placeholder ("› Write tests for @filename") renders to the RIGHT of
 # the cursor and is excluded by the cursor slice, which is why it needs no entry.
-_BARE_PROMPT_GLYPHS = ("›", "❱", "❯")
+# `┃` (U+2503) is opencode's prompt glyph, measured 2026-08-13 against a live
+# disposable opencode TUI (empty composer row: `\x1b[38;5;75m┃\x1b[38;5;15m …`).
+_BARE_PROMPT_GLYPHS = ("›", "❱", "❯", "┃")
 
 
 def doorbell_text(agent: str) -> str:
@@ -542,24 +544,34 @@ _FAINT_ON, _FAINT_OFF = "2", ("0", "22", "")
 
 
 def _strip_faint_runs(row: str) -> str:
-    """Delete every faint (SGR 2) run from an escape-carrying row, keep the rest.
+    """Delete every placeholder run (faint SGR 2, or opencode's gray 38;5;8 / 90)
+    from an escape-carrying row, keep the rest.
 
     Written as a tiny SGR state machine rather than a regex over the whole row: the
-    faint run is ENDED by a reset (`0`) or an explicit un-faint (`22`), and a regex
-    that assumed one particular closing sequence would silently keep the placeholder
-    the first time a TUI closed it with the other.
+    placeholder run is ENDED by a reset (`0`) or an explicit un-faint (`22`), and a
+    regex that assumed one particular closing sequence would silently keep the
+    placeholder the first time a TUI closed it with the other.
+
+    opencode's idle hint ("Ask anything...") renders in 256-color gray (`38;5;8`,
+    and the ANSI bright-black `90`), NOT in SGR 2 — measured 2026-08-13 against a
+    live disposable opencode TUI. Both encodings mean PLACEHOLDER, so both are
+    stripped; a gray run is also closed by any non-gray foreground assignment
+    (`38;5;N` with N != 8), which is how opencode returns the row to normal after
+    the hint.
     """
-    out, pos, faint = [], 0, False
+    out, pos, placeholder = [], 0, False
     for m in _SGR_RE.finditer(row):
-        if not faint:
+        if not placeholder:
             out.append(row[pos:m.start()])
         params = m.group(0)[2:-1].split(";")
-        if _FAINT_ON in params:
-            faint = True
-        if any(p in _FAINT_OFF for p in params):
-            faint = False
+        gray_on = ("38;5;8" in ";".join(params)) or ("90" in params)
+        gray_off = ("38" in params and "5" in params and "8" not in params)
+        if _FAINT_ON in params or gray_on:
+            placeholder = True
+        if any(p in _FAINT_OFF for p in params) or gray_off:
+            placeholder = False
         pos = m.end()
-    if not faint:
+    if not placeholder:
         out.append(row[pos:])
     return "".join(out)
 
@@ -600,12 +612,15 @@ def _read_composer_row(target: str, faint_is_placeholder: bool = False
 def composer_faint_is_placeholder(config: dict, agent: str) -> bool:
     """May faint composer text be discarded as a placeholder for this agent?
 
-    True ONLY for a pane positively identified as Codex. Claude renders PENDING INPUT
-    faint, so answering True for it would discard the very hazard this reads for; an
-    unidentifiable backend gets the same fail-closed answer for the same reason.
+    True ONLY for a pane positively identified as Codex or opencode. Claude renders
+    PENDING INPUT faint, so answering True for it would discard the very hazard this
+    reads for; an unidentifiable backend gets the same fail-closed answer for the
+    same reason. (opencode's hint is gray 38;5;8 rather than SGR-2 faint, and
+    `_strip_faint_runs` strips both encodings; the flag is the gate that says the
+    faint/gray text is a placeholder, not content.)
     """
     backend, _why = agent_backend(config, agent)
-    return backend == "codex"
+    return backend in ("codex", "opencode")
 
 
 # ---------------------------------------------------------------------------
@@ -1245,7 +1260,7 @@ def resolve_spawn_cap(caps: dict) -> tuple[int | None, str]:
 # Every failure path returns None = UNAVAILABLE, and None falls back to the previous
 # behaviour (heartbeat + C35). An unreadable runtime is not an idle runtime.
 _ROLLOUT_TERMINAL = {"task_complete", "turn_aborted"}
-_BACKENDS = ("codex", "claude")
+_BACKENDS = ("codex", "claude", "opencode")
 
 
 def _proc_children(pid: int) -> list[int]:

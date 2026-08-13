@@ -72,6 +72,27 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
 10. **EVERY QUEUE ROW DECLARES ITS GATING** (`cpu` / `gpu` / `both` / `none`). A missing
     classification is a hard validation failure: without it, revocation has no defined fallback
     set and rule 8 cannot be honoured.
+11. **COMPUTE IS OWNED BY ONE MAIN; EVERYONE ELSE REQUESTS WINDOWS.** The `inference` main
+    owns the compute (CPU regions + MI210). Every other main that needs a compute window
+    **requests one from `inference` and waits for its grant**; `inference` grants or refuses
+    at its discretion, scoped to a named window (task, est duration, region/device). The
+    coordinator never grants a compute window on `inference`'s behalf, and no main ever
+    acquires a region or device outside a window `inference` granted. Operator directive,
+    2026-08-13: *"have the inference main own the compute and allow other mains to request
+    compute windows at the inference main's discretion."*
+
+    *Mechanism.* A requesting main writes a `compute-request` message to its own outbox
+    (`kind: compute-request`, `needs_routing_to: [inference]`, payload names task + window +
+    device/region + est_h + release-condition). The coordinator-daemon relays it to
+    `inference`'s inbox; `inference` replies with a `compute-grant` (window accepted,
+    boundaries stated) or a `compute-deny` (refused, reason + what to do next). Both are
+    relayed to the requester's inbox. A request is never blocked on the bus; work on
+    non-compute rows continues meanwhile. An unauthorised `compute-request` (from an agent
+    without a roster row, or one that bypasses the relay) is rejected with a `defect`. This
+    rule subsumes the older *"release at your next boundary if inference asks"* language:
+    windows are granted, not assumed. The `inference-batch/LOOP_PROTOCOL.md` quiet-window
+    gate and the `hardware_backfill.py` "only wedge into a gap the owner released" contract
+    are the execution-side instruments of this same ownership.
 
 ## Standing instructions change under running sessions
 
