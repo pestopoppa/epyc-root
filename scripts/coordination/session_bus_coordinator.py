@@ -80,6 +80,8 @@ from scripts.coordination.session_bus import (  # noqa: E402
     _write_atomic,
     action_addressees,
     fold_queue,
+    fold_resource_leases,
+    resource_lease_semantic_problems,
     routing_targets,
     row_occupancy_h,
     validate_row,
@@ -349,7 +351,10 @@ def _agent_states(bus_root: Path, roster: list[dict]) -> dict[str, dict]:
             hb, age = {}, None
         out[aid] = {"state": hb.get("state"), "task_id": hb.get("task_id"),
                     "age_s": age, "lanes": entry.get("lanes") or [],
-                    "role": entry.get("role")}
+                    "role": entry.get("role"),
+                    "schedulable": entry.get("schedulable"),
+                    "accepts_work_types": entry.get("accepts_work_types") or [],
+                    "resource_owner": entry.get("resource_owner") or []}
     return out
 
 
@@ -747,7 +752,9 @@ def spec_ref_with_content_anchor(spec_ref: str | None,
 #: Fields that are the ROW'S IDENTITY AND ITS RECEIPTS, not its state. Every rewrite
 #: must carry them forward or the fold destroys them — see `_carry_row_identity`.
 _IDENTITY_FIELDS = ("spec_ref", "task_text", "screened_by", "expected_occupancy",
-                    "est_wall_clock_h")
+                    "est_wall_clock_h", "executor_id", "executor_role", "work_type",
+                    "audit_of", "completion_msg_id", "source_agent", "artifact_refs",
+                    "acceptance_refs", "audit_policy", "audit_question")
 
 
 def _carry_row_identity(row: dict | None) -> dict:
@@ -1083,6 +1090,30 @@ def _pick(rows: list[dict]) -> Optional[dict]:
                                        str(r.get("task_id"))))[0]
 
 
+def _resource_lease_current(lease: dict) -> bool:
+    """A reservation is usable for dispatch only while its declared window is live."""
+    if lease.get("state") not in {"RESERVED", "ACTIVE"}:
+        return False
+    stamp = lease.get("expires_ts")
+    if not stamp:
+        return False
+    try:
+        expiry = datetime.fromisoformat(str(stamp))
+        if expiry.tzinfo is None:
+            expiry = expiry.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) >= expiry:
+            return False
+        if lease.get("state") == "RESERVED" and lease.get("activation_deadline_ts"):
+            deadline = datetime.fromisoformat(str(lease["activation_deadline_ts"]))
+            if deadline.tzinfo is None:
+                deadline = deadline.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) >= deadline:
+                return False
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
 def compute_advice(bus_root: Path, config: dict, epoch: int,
                    *, gate_dispatch: bool = False) -> list[dict]:
     """What the daemon WOULD do this tick. Pure — writes nothing.
@@ -1098,6 +1129,10 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     snapshot = lane_snapshot_cached()
     co_ctx = co_residency_cached(config)
     agents = _agent_states(bus_root, roster)
+    resource_mode = str((config.get("role_rollout") or {}).get("resource_leases", "off")).lower()
+    resource_problems = (resource_lease_semantic_problems(bus_root)
+                         if resource_mode == "enforce" else [])
+    resource_leases = {} if resource_problems else fold_resource_leases(bus_root)
     try:
         token_text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
     except Exception:  # noqa: BLE001
@@ -1141,7 +1176,17 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     gate_refusals: dict[str, tuple[str, str]] = {}
 
     for aid, agent in agents.items():
-        if agent.get("role") == "coordinator-agent":
+        # Reviewer/service sessions do not consume ordinary backlog capacity.  An
+        # audit is an explicit, role-targeted exception below; this keeps an idle
+        # auditor from silently becoming a fifth main.
+        accepts = set(agent.get("accepts_work_types") or [])
+        explicitly_targeted = any(
+            r.get("executor_id") == aid and r.get("work_type") in accepts and
+            r.get("status") in ASSIGNABLE_STATUSES for r in latest.values())
+        schedulable = agent.get("schedulable")
+        if schedulable is None:
+            schedulable = agent.get("role") in {"main", "inference-main"}
+        if agent.get("role") == "coordinator-agent" or (not schedulable and not explicitly_targeted):
             continue  # the judgment tier is not scheduled by the daemon
         if aid in busy_owners:
             advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
@@ -1149,6 +1194,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
                            "reason": "already holds a live ASSIGNED/CLAIMED/RUNNING task"})
             continue
         candidates, rejections = [], []
+        candidate_resource_leases: dict[str, str] = {}
         admit_why: dict[str, str] = {}
         for row in latest.values():
             if row.get("task_id") in claimed_this_tick:
@@ -1162,6 +1208,50 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
                 rejections.append({"task_id": row.get("task_id"),
                                    "reason": f"lane {row.get('lane')} not in {aid} roster lanes"})
                 continue
+            target_id = row.get("executor_id")
+            target_role = row.get("executor_role")
+            if target_id and target_id != aid:
+                rejections.append({"task_id": row.get("task_id"),
+                                   "reason": f"targeted to executor_id {target_id}"})
+                continue
+            if not target_id and target_role and target_role != agent.get("role"):
+                rejections.append({"task_id": row.get("task_id"),
+                                   "reason": f"targeted to executor_role {target_role}"})
+                continue
+            if not target_id and not schedulable:
+                rejections.append({"task_id": row.get("task_id"),
+                                   "reason": f"{aid} is not schedulable for generic backlog"})
+                continue
+            if row.get("work_type") and row.get("work_type") not in {"backlog", *accepts}:
+                rejections.append({"task_id": row.get("task_id"),
+                                   "reason": f"work_type {row.get('work_type')} not accepted by {aid}"})
+                continue
+            resource_lease_id = None
+            if resource_mode == "enforce" and row.get("gating") in {"cpu", "gpu", "both"} \
+                    and agent.get("role") != "inference-main":
+                if resource_problems:
+                    rejections.append({"task_id": row.get("task_id"),
+                                       "reason": "resource lease ledger is invalid; run "
+                                                 "session_bus.py validate before dispatch"})
+                    continue
+                for lease_id, lease in resource_leases.items():
+                    resources = lease.get("resources") or {}
+                    need = str(row.get("gating"))
+                    has_cpu = bool(resources.get("cpu_regions"))
+                    has_gpu = bool(resources.get("gpu_devices"))
+                    matches_resource = ((need == "cpu" and has_cpu) or
+                                        (need == "gpu" and has_gpu) or
+                                        (need == "both" and has_cpu and has_gpu))
+                    if (lease.get("holder") == aid and
+                            str(row.get("task_id")) in (lease.get("task_ids") or []) and
+                            _resource_lease_current(lease) and matches_resource):
+                        resource_lease_id = lease_id
+                        break
+                if resource_lease_id is None:
+                    rejections.append({"task_id": row.get("task_id"),
+                                       "reason": "inference-gated work requires an inference-issued resource lease"})
+                    continue
+                candidate_resource_leases[str(row.get("task_id"))] = resource_lease_id
             if gate_dispatch:
                 gate_ok, gate_code, gate_reason = dispatch_gate(row)
                 if not gate_ok:
@@ -1191,6 +1281,7 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
             # warning travels with the pick instead of being dropped on the floor.
             "lane_state": snapshot.get(f"{pick_lane}_state") if pick_lane else None,
             "admission_note": admit_why.get(str((pick or {}).get("task_id")), ""),
+            "resource_lease_id": candidate_resource_leases.get(str((pick or {}).get("task_id"))),
             "top_rejection": _top_rejection(rejections),
         })
     # R-16: one attributable refusal per gated row per tick, AFTER the picks, so a
@@ -1247,7 +1338,12 @@ _STATUS_IMPLIES = {"CLAIMED": "RUNNING", "ASSIGNED": "RUNNING"}
 
 
 def _outbox_reports(bus_root: Path, roster: list[dict]) -> dict[str, list[dict]]:
-    """task_id -> its messages, in file order, across every agent outbox."""
+    """Single-writer task reports, keyed by task id.
+
+    The file owner is part of the authority proof. A hand-written row in
+    ``mainA.jsonl`` cannot become an Auditor verdict by setting ``from`` to
+    ``auditor``, even before a separate whole-bus validation pass reports it.
+    """
     reports: dict[str, list[dict]] = {}
     for entry in roster:
         aid = str(entry.get("id", "")).strip()
@@ -1255,18 +1351,129 @@ def _outbox_reports(bus_root: Path, roster: list[dict]) -> dict[str, list[dict]]
             continue
         rows, _ = _read_jsonl(bus_root / "outbox" / f"{aid}.jsonl")
         for row in rows:
+            if row.get("from") != aid:
+                continue
             tid = row.get("task_id")
             if tid:
                 reports.setdefault(tid, []).append(row)
     return reports
 
 
-def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: int) -> list[dict]:
+_AUDITABLE_MAIN_IDS = frozenset({"mainA", "mainB", "mainC", "mainD"})
+_AUDIT_VERDICTS = frozenset({"accept", "accept-with-followups", "needs-rework", "blocked-evidence"})
+
+
+def _audit_mode(config: dict | None) -> str:
+    """Return the opt-in audit rollout mode; absence preserves historical flow."""
+    cfg = config or {}
+    value = str(((cfg.get("audit") or {}).get("mode") or
+                 (cfg.get("role_rollout") or {}).get("audit_completion") or "off")).lower()
+    return value if value in {"off", "shadow", "required"} else "off"
+
+
+def _audit_task_id(task_id: str, completion_msg_id: str) -> str:
+    digest = hashlib.sha256(completion_msg_id.encode("utf-8")).hexdigest()[:12]
+    return f"audit-{task_id}-{digest}"
+
+
+def _audit_refs(done: dict) -> tuple[list[str], list[str]]:
+    payload = done.get("payload") or {}
+    artifacts = payload.get("artifacts") or payload.get("artifact_refs") or []
+    acceptance = payload.get("acceptance_refs") or payload.get("acceptance") or []
+    return ([str(x) for x in artifacts] if isinstance(artifacts, list) else [],
+            [str(x) for x in acceptance] if isinstance(acceptance, list) else [])
+
+
+def _audit_question(source: dict, done: dict) -> str:
+    identity = source.get("task_text") or source.get("spec_ref") or source.get("task_id")
+    return (f"Does completed work for {identity!s} satisfy its stated acceptance evidence "
+            f"and contain sufficient artifact support? Review completion {done['id']}.")
+
+
+def _audit_row(source: dict, done: dict, epoch: int, policy: str) -> dict:
+    completion_msg_id = str(done["id"])
+    artifacts, acceptance = _audit_refs(done)
+    audit_id = _audit_task_id(str(source["task_id"]), completion_msg_id)
+    return {"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+            "task_id": audit_id, "status": "READY", "lane": "none", "gating": "none",
+            "epoch": epoch, "priority": source.get("priority") or "P2",
+            "executor_id": "auditor", "executor_role": "auditor-main", "work_type": "audit",
+            "audit_of": source["task_id"], "completion_msg_id": completion_msg_id,
+            "source_agent": done.get("from"), "artifact_refs": artifacts,
+            "acceptance_refs": acceptance, "audit_policy": policy,
+            "audit_question": _audit_question(source, done),
+            "task_text": f"Audit completed work {source['task_id']} ({completion_msg_id})",
+            "screened_by": f"task-complete:{completion_msg_id}",
+            "expected_occupancy": {"est_h": 0.25, "basis": "audit shadow default"}}
+
+
+def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: int,
+               config: dict | None = None) -> list[dict]:
     """Queue rows implied by agent reports but not yet reflected in the queue."""
     out: list[dict] = []
     for tid, msgs in reports.items():
         row = latest.get(tid)
-        if not row or row.get("status") in TERMINAL_STATES:
+        if not row:
+            continue
+        # Verdicts are addressed to the coordinator only; they never route back
+        # to the source main.  The required rollout is deliberately opt-in.
+        if row.get("work_type") == "audit":
+            # Only the dedicated Auditor Main may close this review.  Outboxes
+            # are durable shared input, so authoring-side validation alone is not
+            # a trust boundary for a daemon restart or a hand-written row.
+            verdicts = [m for m in msgs if m.get("kind") == "audit-verdict"
+                        and m.get("from") == "auditor"]
+            verdict_applied = False
+            if verdicts:
+                payload = verdicts[-1].get("payload") or {}
+                verdict = str(payload.get("verdict", ""))
+                linked = (payload.get("audit_of") == row.get("audit_of") and
+                          payload.get("completion_msg_id") == row.get("completion_msg_id"))
+                if linked and verdict in _AUDIT_VERDICTS and row.get("status") not in TERMINAL_STATES:
+                    verdict_applied = True
+                    base = {k: row.get(k) for k in ("lane", "gating", "priority", "executor_id",
+                            "executor_role", "work_type", "audit_of", "completion_msg_id",
+                            "source_agent", "artifact_refs", "acceptance_refs", "audit_policy",
+                            "audit_question", "task_text",
+                            "screened_by", "expected_occupancy") if row.get(k) is not None}
+                    out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                                "task_id": tid,
+                                "status": "INFRA_BLOCKED" if verdict == "blocked-evidence" else "DONE_PASS",
+                                "epoch": epoch})
+                    if row.get("audit_policy") == "required" and verdict != "blocked-evidence":
+                        source = latest.get(str(row.get("audit_of")))
+                        if source:
+                            source_base = {k: source.get(k) for k in ("lane", "gating", "priority",
+                                           "owner", "priority_class", "contention_class", "role_affinity",
+                                           "operator_gates", "depends_on", "max_attempts", "attempt",
+                                           "replay_eligible") if source.get(k) is not None}
+                            source_base.update(_carry_row_identity(source))
+                            out.append({**source_base, "schema_version": QUEUE_SCHEMA_VERSION,
+                                        "ts": _utcnow_iso(), "task_id": source["task_id"], "epoch": epoch,
+                                        "status": "DONE_PASS" if verdict in {"accept", "accept-with-followups"}
+                                        else "STALE_REQUEUED", "owner": None if verdict == "needs-rework"
+                                        else source.get("owner")})
+            # Audits may advance through normal receipt/status states, but cannot
+            # complete from task-complete: only a linked auditor verdict closes it.
+            if verdict_applied:
+                continue
+            target = row.get("status")
+            kinds = [m.get("kind") for m in msgs]
+            if "ack" in kinds:
+                target = _ACK_IMPLIES.get(target, target)
+            if "status" in kinds:
+                target = _STATUS_IMPLIES.get(target, target)
+            if target != row.get("status"):
+                base = {k: row.get(k) for k in ("lane", "gating", "priority", "executor_id",
+                        "executor_role", "work_type", "audit_of", "completion_msg_id",
+                        "source_agent", "artifact_refs", "acceptance_refs", "audit_policy",
+                        "audit_question", "task_text", "screened_by", "expected_occupancy")
+                        if row.get(k) is not None}
+                out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                            "task_id": tid, "status": target, "epoch": epoch,
+                            "claim_ts": _utcnow_iso() if target == "CLAIMED" else row.get("claim_ts")})
+            continue
+        if row.get("status") in TERMINAL_STATES:
             continue
         status = row.get("status")
         base = {k: row.get(k) for k in ("lane", "gating", "owner", "priority", "priority_class",
@@ -1277,17 +1484,31 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
         # Identity + receipts ride every rewrite, from ONE list, so transcription
         # cannot drift from the seven other rewrite sites (see _carry_row_identity).
         base.update(_carry_row_identity(row))
+        # A resource reservation belongs to an in-flight assignment, not to the
+        # task identity.  Preserve it through normal live progress only; READY
+        # and STALE_REQUEUED must negotiate a fresh lease.
+        if status in {"ASSIGNED", "CLAIMED", "RUNNING"} and row.get("resource_lease_id"):
+            base["resource_lease_id"] = row["resource_lease_id"]
         kinds = [m.get("kind") for m in msgs]
 
         if "task-complete" in kinds:
             done = [m for m in msgs if m.get("kind") == "task-complete"][-1]
             outcome = str((done.get("payload") or {}).get("outcome", "")).lower()
             new = {"pass": "DONE_PASS", "marginal": "DONE_MARGINAL_OBS"}.get(outcome, "FAILED")
+            audit_enabled = (_audit_mode(config) in {"shadow", "required"}
+                             and done.get("from") in _AUDITABLE_MAIN_IDS and outcome in {"pass", "marginal"})
+            if audit_enabled and _audit_mode(config) == "required":
+                new = "DONE_PENDING_AUDIT"
             if status != new:
                 out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                             "task_id": tid, "status": new, "epoch": epoch,
                             **({"failure_reason": str((done.get("payload") or {}).get("reason", ""))}
                                if new == "FAILED" and (done.get("payload") or {}).get("reason") else {})})
+            if audit_enabled:
+                audit = _audit_row(row, done, epoch, _audit_mode(config))
+                # Latest-fold dedupe makes repeats and daemon restarts harmless.
+                if audit["task_id"] not in latest:
+                    out.append(audit)
             continue
 
         target = status
@@ -4113,6 +4334,8 @@ def _task_assign_payload(row: dict, epoch: int, expires) -> dict:
         payload["row_ref"] = row["spec_ref"]   # HINT only — task_text is the identity
     if row.get("screened_by"):
         payload["screened_by"] = row["screened_by"]
+    if row.get("resource_lease_id"):
+        payload["resource_lease_id"] = row["resource_lease_id"]
     occupancy = row.get("expected_occupancy")
     if isinstance(occupancy, dict) and occupancy:
         payload["expected_occupancy"] = occupancy
@@ -4143,7 +4366,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
 
     # 1. transcribe agent reports into the queue (bookkeeping, no judgment)
     latest = fold_queue(bus_root)
-    for row in transcribe(latest, reports, epoch):
+    for row in transcribe(latest, reports, epoch, config):
         _append_jsonl(bus_root / "queue.jsonl", row)
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "transcribed", "task_id": row["task_id"], "status": row["status"]})
@@ -4234,7 +4457,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         if tid in released_this_tick:
             continue
         row = latest.get(tid) or {}
-        if row.get("status") != "READY":
+        if row.get("status") not in ASSIGNABLE_STATUSES:
             continue
         # Fail closed at the WRITE, not only at the pick. The gate above runs
         # inside compute_advice, which the advisory path also calls with the gate
@@ -4255,12 +4478,28 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "status": "ASSIGNED", "lane": row.get("lane"), "gating": row.get("gating"),
             "epoch": epoch, "owner": agent, "priority": row.get("priority"),
             "lease_expires_ts": expires.isoformat(timespec="seconds"),
+            **({"resource_lease_id": rec["resource_lease_id"]}
+               if rec.get("resource_lease_id") else {}),
             **_carry_row_identity(row),
             "attempt": int(row.get("attempt") or 0)})
-        _append_inbox(bus_root, [{"to": agent, "kind": "task-assign", "task_id": tid,
+        if row.get("work_type") == "audit":
+            payload = {"audit_of": row["audit_of"],
+                       "completion_msg_id": row["completion_msg_id"],
+                       "artifact_refs": row.get("artifact_refs") or [],
+                       "acceptance_refs": row.get("acceptance_refs") or [],
+                       "audit_policy": row.get("audit_policy") or "shadow",
+                       "audit_question": row["audit_question"],
+                       "task_text": row.get("task_text")}
+            msg_kind = "audit-request"
+        else:
+            dispatch_row = {**row, **({"resource_lease_id": rec["resource_lease_id"]}
+                                      if rec.get("resource_lease_id") else {})}
+            payload = _task_assign_payload(dispatch_row, epoch, expires)
+            msg_kind = "task-assign"
+        _append_inbox(bus_root, [{"to": agent, "kind": msg_kind, "task_id": tid,
                                   "assignee": agent, "action_required": True,
                                   "requires_ack": True, "ack_deadline_s": 600,
-                                  "payload": _task_assign_payload(row, epoch, expires)}],
+                                  "payload": payload}],
                       epoch)
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "assigned", "agent": agent, "task_id": tid})
@@ -4309,6 +4548,10 @@ _SCHEDULING_STATE = "scheduling_recommendation_state.json"
 _RECOMMEND_MIN_TICKS = 20            # ~15 min at the 45 s tick
 _RECOMMEND_REEMIT_S = 6 * 3600.0     # a still-unactioned pick-set is re-raised 4x/day
 _RECOMMEND_EVENT = "scheduling-pick-undelivered"
+_COMPUTE_IDLE_STATE = "compute_idle_routing_state.json"
+_COMPUTE_IDLE_RE = re.compile(
+    r"^\s*(?P<resource>GPU|CPU)-IDLE\s+(?P<cycles>[0-9]+)\s+cycles\s+~\s+"
+    r"(?P<duration>[0-9]+)s:")
 
 
 def _pick_signature(advice: list[dict]) -> tuple[str, list[dict]]:
@@ -4468,6 +4711,139 @@ def deliver_scheduling_recommendation(bus_root: Path, config: dict, advice: list
     return emitted
 
 
+def _idle_findings(lines: list[str], start: int, end: int | None = None) -> dict[str, dict]:
+    """Extract per-resource persisted-idle receipts from one watcher report."""
+    current: dict[str, dict] = {}
+    for idx, line in enumerate(lines[start + 1:end], start + 2):
+        match = _COMPUTE_IDLE_RE.match(line)
+        if not match:
+            continue
+        resource = match.group("resource").lower()
+        current[resource] = {"resource": resource,
+                             "cycles": int(match.group("cycles")),
+                             "duration_s": int(match.group("duration")),
+                             "receipt_line": line.strip(),
+                             "receipt_line_number": idx}
+    return current
+
+
+def _idle_episode_starts(lines: list[str], latest_start: int,
+                         current: dict[str, dict]) -> dict[str, str]:
+    """Return each current resource's earliest contiguous persisted-idle report.
+
+    `fleet_watch` reports a new timestamp and a larger cycle count every cycle.
+    The first report in that uninterrupted run, rather than the newest sample,
+    is the durable episode identity. This lets inbox history deduplicate safely
+    even if the daemon restarts or its small state file is lost.
+    """
+    starts = [idx for idx, line in enumerate(lines)
+              if re.match(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T", line)]
+    try:
+        latest_pos = starts.index(latest_start)
+    except ValueError:
+        return {}
+    result = {resource: lines[latest_start].split(maxsplit=1)[0] for resource in current}
+    for resource in current:
+        for pos in range(latest_pos - 1, -1, -1):
+            end = starts[pos + 1] if pos + 1 < len(starts) else None
+            earlier = _idle_findings(lines, starts[pos], end)
+            if resource not in earlier:
+                break
+            result[resource] = lines[starts[pos]].split(maxsplit=1)[0]
+    return result
+
+
+def _idle_episode_delivered(bus_root: Path, recipient: str, episode_id: str) -> bool:
+    """Inbox history is the durable dedupe source when the state file is absent."""
+    try:
+        rows, _ = _read_jsonl(bus_root / "inbox" / f"{recipient}.jsonl")
+    except OSError:
+        return False
+    return any(row.get("kind") == "compute-idle"
+               and (row.get("payload") or {}).get("episode_id") == episode_id
+               for row in rows)
+
+
+def route_persistent_compute_idle(bus_root: Path, config: dict, epoch: int,
+                                  *, log_path: Path | None = None,
+                                  state_path: Path | None = None) -> list[dict]:
+    """Route one bus episode when fleet_watch persistently sees CPU or GPU idle.
+
+    `fleet_watch` owns the measurement and persistence judgment.  This function
+    only transports the newest report block and deduplicates an episode until a
+    subsequent block clears it.  In observe mode coordinator-agent receives an
+    FYI; route mode additionally gives Inference Main the actionable copy.
+    """
+    mode = str((config.get("role_rollout") or {}).get(
+        "persistent_idle_routing", "off")).lower()
+    if mode not in {"observe", "route"}:
+        return []
+    configured = ((config.get("observability") or {}).get("fleet_watch_log"))
+    path = Path(log_path or configured or (bus_root.parent.parent / "logs" / "fleet_watch.log"))
+    ledger = Path(state_path or (bus_root / _COMPUTE_IDLE_STATE))
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    # A report is one timestamped summary followed by un-timestamped indented
+    # findings. Ignore older blocks; persistence is a claim about the latest window.
+    start = next((idx for idx in range(len(lines) - 1, -1, -1)
+                  if re.match(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T", lines[idx])), None)
+    if start is None:
+        return []
+    observed_at = lines[start].split(maxsplit=1)[0]
+    current = _idle_findings(lines, start)
+    episode_starts = _idle_episode_starts(lines, start, current)
+    for resource, payload in current.items():
+        payload.update({"observed_at": observed_at, "receipt_path": str(path)})
+    try:
+        previous = json.loads(ledger.read_text(encoding="utf-8"))
+        if not isinstance(previous, dict):
+            previous = {}
+    except (OSError, ValueError):
+        previous = {}
+    active: dict[str, dict] = {}
+    roster_ids = {str(row.get("id")) for row in config.get("roster") or []
+                  if isinstance(row, dict)}
+    emitted: list[dict] = []
+    for resource, payload in current.items():
+        episode_id = hashlib.sha256(
+            f"{resource}|{path}|{episode_starts[resource]}".encode("utf-8")
+        ).hexdigest()[:16]
+        payload["episode_id"] = episode_id
+        active[resource] = {"episode_id": episode_id,
+                            "started_at": episode_starts[resource]}
+        # Inbox history is authoritative after restart/state-file loss. A mode
+        # change may add the previously absent Inference Main copy, but neither
+        # recipient sees a duplicate of this resource episode.
+        coordinator_seen = _idle_episode_delivered(bus_root, COORDINATOR_AGENT, episode_id)
+        inference_seen = _idle_episode_delivered(bus_root, "inference", episode_id)
+        wrote = False
+        if COORDINATOR_AGENT in roster_ids and not coordinator_seen:
+            _append_inbox(bus_root, [{"to": COORDINATOR_AGENT, "kind": "compute-idle",
+                                      "payload": payload}], epoch)
+            wrote = True
+        if mode == "route" and "inference" in roster_ids and not inference_seen:
+            routed = {"to": "inference", "kind": "compute-idle",
+                      "assignee": "inference", "action_required": True,
+                      "payload": payload}
+            if COORDINATOR_AGENT in roster_ids:
+                routed["cc"] = [COORDINATOR_AGENT]
+            _append_inbox(bus_root, [routed], epoch)
+            wrote = True
+        if not wrote:
+            continue
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "compute-idle-routed",
+                        "resource": resource, "episode_id": episode_id, "mode": mode})
+    try:
+        _write_atomic(ledger, {"active": active, "latest_report_ts": observed_at,
+                               "receipt_path": str(path)})
+    except OSError:
+        pass
+    return emitted
+
+
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
@@ -4513,6 +4889,9 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
         # scheduling decision, and its absence is what every one of the seven
         # documented last-hop failures had in common.
         advice += pending_operator_actions(bus_root, roster, epoch)
+        # The watcher owns the reading; the daemon only routes its persisted
+        # CPU/GPU episode within this tick's 45-second transport boundary.
+        advice += route_persistent_compute_idle(bus_root, config, epoch)
         # M1: the daemon's OWN pick, delivered to a reader. Runs at EVERY
         # authority and NEVER assigns — see the block comment above. Passed the
         # advice list as computed at the top of this tick.

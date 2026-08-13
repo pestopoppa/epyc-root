@@ -2945,6 +2945,38 @@ from that seat.
       work, and dropping it would be worse than dispatching it by hand. Verified live — 3 of 5
       proposals flagged.
 
+## Dedicated Auditor and Inference roles (operator-approved 2026-08-13)
+
+- [x] **AIR-1 — define stable role contracts and remove generic Auditor scheduling.** ✅ 2026-08-13
+  Added `agents/auditor-main.md` and `agents/inference-main.md`. The Auditor accepts only typed
+  audit work. The Inference Main owns compute-resource decisions. Launch profiles are advice only.
+  Operator model or effort changes are silent and never change role identity.
+- [x] **AIR-2 — route completed main work through an independent audit loop.** ✅ 2026-08-13
+  A successful `mainA`–`mainD` completion creates one linked audit row and request. Each row stores
+  its audit policy and question. Only the `auditor` outbox can issue a verdict. Rework returns to
+  the backlog through the coordinator. It never routes to the source main.
+- [x] **AIR-3 — add reconstructible compute-resource leases.** ✅ 2026-08-13
+  Added typed request, grant, activate, renew, drain, release, expiry, and revocation records.
+  Grants preserve the exact request and reject resource overlap. CPU activation requires a
+  `region-lock` receipt. Delegated GPU grants fail closed until a general claim provider is enabled.
+- [x] **AIR-4 — route persistent compute idle to the Inference Main.** ✅ 2026-08-13
+  `fleet_watch` now keeps independent CPU and GPU persistence counters. The daemon sends one
+  actionable message per idle episode. Durable inbox evidence prevents duplicates after restart or
+  state-file loss. Unknown and warming readings never create idle work.
+- [x] **AIR-5 — require an operator choice for special-role instantiation.** ✅ 2026-08-13
+  `inspect-pane` reports the exact endpoint, runtime, task, unread count, triage count, worktree,
+  and durable checkpoint. `instantiate` requires `fresh` or `adopt`. Adoption requires an explicit
+  role-context reset confirmation. No model, provider, or effort value is inspected.
+- [ ] **AIR-6 — promote live audit and lease enforcement after a controlled canary.** Deploy this
+  branch under the live daemon owner. Replay the live bus, then canary one completed main task and
+  one CPU lease. Promote selected audits from `shadow` to `required`, and resource leases from
+  `observe` to `enforce`, only if replay has no authority or lifecycle defect. Persistent-idle
+  routing is already `route` because it is transport-only. Delegated GPU leases remain disabled
+  until a general GPU claim provider exists. **Blocker:** live daemon deployment and owner-run canary.
+
+Validation: bus tests `346 passed, 2 deselected` because this worktree has no live bus corpus;
+M4 `51/51`; tmux and routing `173 passed`; fleet watcher `87/87`; mutation harness `21/21`.
+
 ## Reporting instructions
 
 Flip milestone boxes with `✅ YYYY-MM-DD` + evidence refs (M4 cites the hub saturation-history

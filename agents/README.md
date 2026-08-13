@@ -25,6 +25,8 @@ This directory is organized for agent legibility and low drift.
 | Sysadmin | `agents/sysadmin.md` | Host tuning and runtime system state |
 | Safety Reviewer | `agents/safety-reviewer.md` | Risk gate before high-impact operations |
 | Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
+| Auditor Main | `agents/auditor-main.md` | Coordinator-routed review of completed main work; verdict and checkpoint |
+| Inference Main | `agents/inference-main.md` | Inference compute ownership, leases, and persistent-idle recovery |
 
 ## Model Routing (Task-Based)
 
@@ -33,6 +35,10 @@ This directory is organized for agent legibility and low drift.
 - Local stack roles route via the orchestrator's frozen registry, never hand-picked per task.
 
 Rule: start with the cheapest model likely to succeed, escalate only when blocked.
+
+Role launch profiles are recommendations, not identity. In particular, the Auditor and Inference
+Main profiles in their role files may be changed by the operator at any time without a warning,
+validation failure, lease action, or reprovisioning.
 
 ## Design Principles
 

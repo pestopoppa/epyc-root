@@ -178,13 +178,13 @@ mutate 10 "liveness compares a FLOAT quiet reading with bash integer test" \
 
 # --- COMPUTE-IDLE -----------------------------------------------------------
 mutate 11 'compute reinstates the ${gpu:-0} fail-open (unknown reads as 0%)' \
-    "        *unknown*) printf 'unknown'; return 0 ;;" \
-    '        *unknown*) : ;;' \
+    '    local gpu="$1" vram="$2"' \
+    '    local gpu="${1/unknown/0}" vram="${2/unknown/0}"' \
     "unreadable gpu"
 
 mutate 12 "compute stops checking VRAM independently of GPU%" \
-    '    if [ "$gpu" = "0" ] && [ "$vram" = "0" ] && [ "$free" = "$total" ]; then' \
-    '    if [ "$gpu" = "0" ] && [ "$free" = "$total" ]; then' \
+    '    if [ "$gpu" = "0" ] && [ "$vram" = "0" ]; then' \
+    '    if [ "$gpu" = "0" ]; then' \
     "vram resident"
 
 mutate 13 "COMPUTE-IDLE fires on a single sample (no persistence)" \
