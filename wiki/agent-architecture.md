@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
-**Sources**: 77+ documents
+**Last compiled**: 2026-08-13 (a 23-entry research-intake round on multi-agent fan-out (PARL/Kimi K2.5 Agent Swarm and 21 follow-ons) found our own fan-out doctrine has no negative condition and most of the source literature does not survive a primary-source dive — 9 of 18 dived entries overturned; the round's own self-correcting dive process is filed as the more durable lesson — see below; earlier 2026-08-12 note (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
+**Sources**: 85+ documents
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
 
@@ -1937,3 +1937,71 @@ collapsing into one self-justifying channel.
 - [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
 - [Reviewer-model ablations](../handoffs/active/reviewer-model-ablations.md)
 - Research intakes 1003 and 1004 (machine-review and metacognitive-review evidence)
+
+## Compiled Update — 2026-08-13: our own fan-out doctrine has no negative condition, and neither does the literature that inspired it
+
+**Confidence: mixed, stated per claim.** External paper findings below are `external` (vendor-reported
+or single-study, not measured on our stack); the mapping onto our own doctrine and detector gap is
+`verified` (read directly from the tracked files it describes).
+
+A 23-entry research-intake round (`research-intake` operating on `github.com/The-Swarm-Corporation/PARL`,
+the Kimi K2.5 Agent-Swarm paper, and 21 follow-on sources — intake-1105 through intake-1127) set out to
+answer a narrow question: does anything in this literature improve how EPYC orchestrates its own agent
+fleet? Nine of the eighteen entries selected for a Stage-2 primary-source dive were **overturned** on
+re-read against the source — more than half — which is itself the headline finding: multi-agent-fan-out
+claims in this literature fail primary-source verification at a rate high enough that no number from it
+should be adopted without an independent dive.
+
+**What survived is narrower than the sweep started with, and lands on a gap we already knew we had.**
+`agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* mandates 3–5 concurrent subagents
+on every dispatch, unconditionally — the rule has a width but no negative condition, no completion
+feedback, and (per `handoffs/active/session-bus-thin-dispatcher.md`'s own open item) no way to tell a
+main that actually fanned out from one that worked serially and reported otherwise. Kimi's PARL paper
+(intake-1106, arXiv:2602.02276v2) independently names that exact failure mode "serial collapse" — but
+the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
+citable, the measurement is not. Two structural finding pairs from the wider sweep bear directly on the
+open gap: Anthropic's own multi-agent guidance (intake-1121, `claude.com/blog`, 2026-01-23) states three
+conditions FOR multi-agent use and four AGAINST — including that decomposition-by-role, rather than by
+context boundary, measurably shifts spend from work onto coordination — while our own rule encodes none
+of the negative conditions; and a controlled scaling study (intake-1107, arXiv:2512.08296) finds
+returns from adding agents go structurally negative once a single agent already clears roughly 45%
+accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
+statistically non-significant coefficient to one the paper's own robustness checks discount — so the
+*shape* (diminishing then negative returns as task difficulty falls) is usable, the *number* is not.
+
+**The dive process itself produced the most instructive artifact of the round.** The dive on intake-1110
+(MAST, arXiv:2503.13657) initially reported a citation defect in four of our own handoffs — a "36.9%
+inter-agent misalignment" figure it judged stale against a differently-denominated 32.15% in the paper.
+That same dive later re-audited its own output, discovered five of seven delegated subagents had never
+returned, and recomputed the category share directly from the paper's released dataset: 36.3% of
+positive failure-mode flags, which closely matches the original 36.9% citation. The staleness finding
+was retracted before any handoff was corrected on its strength; the correction that shipped was narrower
+— two files claimed the figure was "production" data when every underlying trace is a benchmark run, and
+only that provenance word was wrong. The near-miss was procedural, not architectural: the retraction
+arrived as a delayed self-correction notification, and had to be checked against the in-flight Stage-3
+plan before Stage 4 executed, rather than being caught by any automatic gate. Filed as a standing lesson:
+a dive's self-correction must be checked against whatever downstream artifact is about to consume its
+output, every time, not assumed to have arrived before that artifact was written.
+
+**Two things came out of the round as genuinely actionable, and neither required training anything** —
+material, since EPYC orchestrates closed-weight frontier models and cannot train an orchestrator the way
+PARL's own recipe requires. First, AdaMAST (intake-1127, arXiv:2607.16387, Apache-2.0) is a trace-failure
+grading tool that runs against our own Claude Code and Codex transcript corpus at roughly one LLM call
+per trace, and — reversing an intermediate finding from earlier in the same dive — needs no
+success/failure oracle to do it: its induction pipeline is deliberately outcome-blind. Second, OrchBench
+(intake-1111, arXiv:2607.25656, dive-overturned on its headline correlation) still contributes a usable
+specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
+utilization, workflow depth) built from real transcript timestamps rather than the simulated,
+duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
+[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) rather than adopted
+sight-unseen — the round's own overturn rate is the argument for filing them as measurement work first.
+
+### Source References
+
+- [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
+- [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — new stub filed this round to own the collector and grading work
+- [Decomposition-to-Batch Mapping](../handoffs/active/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
+- [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
+- `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
+- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
