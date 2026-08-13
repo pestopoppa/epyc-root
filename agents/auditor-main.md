@@ -52,7 +52,7 @@ existing pane or launch a fresh pane. Adoption is evidence-gated and explicit; i
 from a similarly named window. The operator must reset and reseed the old role context before
 adoption, then confirm that reset. The roster id and role contract are the identity.
 
-Recommended launch profiles are capacity hints only: `gpt-5.6-sol` at `xhigh`, or Fable 5 at
+Recommended launch profiles are capacity hints only: `gpt-5.6-sol` at `high`, or Fable 5 at
 `high` when token availability warrants it. They are not validation rules. The operator may change
 the model or effort at any time; such a change is silent and must never trigger drift detection,
 warnings, lease changes, revocation, or reprovisioning.

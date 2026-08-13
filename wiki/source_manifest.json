@@ -4,15 +4,15 @@
     "handoff-active": 171,
     "handoff-blocked": 2,
     "handoff-completed": 168,
-    "progress": 281,
+    "progress": 283,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-13T17:25:59Z",
+  "last_compile": "2026-08-13T19:36:55Z",
   "mode": "full",
-  "scan_time": "2026-08-13T17:28:46Z",
+  "scan_time": "2026-08-13T19:37:24Z",
   "schema_version": 1,
-  "source_set_hash": "236d42ae3af3e9bb44e1664c65ea9dde789aa8afb47373f7a3d7586ab2d46e95",
+  "source_set_hash": "3beabda10153a9f8b1cbaff83dc3b1b01bc7c85e8898f252650dbec7e3b3061d",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -887,10 +887,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4df78b70850b15244084a097c471c937fb0f6b83da1ad1ef0bd34c4c822ad318",
-      "modified": "2026-08-13T14:23:17Z",
+      "content_hash": "e2a5685139357b4a47f319b4ab7c82131e0fba5d0846198eacc101e6d12ab160",
+      "modified": "2026-08-13T19:33:59Z",
       "path": "handoffs/active/opendataloader-pipeline-integration.md",
-      "size": 9733,
+      "size": 13425,
       "title": "OpenDataLoader PDF \u2014 Pipeline Integration",
       "type": "handoff-active"
     },
@@ -999,10 +999,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "998b28bd368f6ec79c51a6bd66d9b5b55821076c02e3aefede4f7e87ab418053",
-      "modified": "2026-08-13T13:28:54Z",
+      "content_hash": "a872b7023aa95c40aa6f333c33ceb73b0e162fa9a3676c2f210699f76809adf8",
+      "modified": "2026-08-13T19:27:49Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 21230,
+      "size": 24164,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1159,18 +1159,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c1c7021d629f57a7669b19d1a110700cb6e5296786c0d6724f7f07346fce1120",
-      "modified": "2026-08-13T17:27:52Z",
+      "content_hash": "3275b19197b04076cb38dc27c8485d91bed40af9d9215aa3596b4ab0aaa0ab67",
+      "modified": "2026-08-13T19:33:59Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 263587,
+      "size": 264953,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
     {
-      "content_hash": "12b711e0a0fd3fd81ab1022976d82486fc9e9af54c67dbfe5dd468f03a14cf1f",
-      "modified": "2026-08-12T21:09:35Z",
+      "content_hash": "04df178f1fd764efce96de16f0572570380d336b26b7e4219e8922534db9a569",
+      "modified": "2026-08-13T19:27:49Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
-      "size": 54115,
+      "size": 55079,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
       "type": "handoff-active"
     },
@@ -1335,10 +1335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c874a5beac139cbf7e7dddbf129759679b864f44fe4db82065fcef85f9f74d29",
-      "modified": "2026-08-13T17:24:22Z",
+      "content_hash": "db5774d66423e8ad40f4e2ea3d930eb187dd5c8cad197d367be43213ef819af6",
+      "modified": "2026-08-13T19:33:59Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 63385,
+      "size": 64374,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -6063,10 +6063,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "261a156fc10e51b058c1746e0f0d21952777455d07e2b7c1ef081e827b23d45f",
-      "modified": "2026-08-13T17:27:52Z",
+      "content_hash": "9e80ac730b1101730aacabc29a056d309ec404b3ee223d87333902c99ee5af0c",
+      "modified": "2026-08-13T19:37:19Z",
       "path": "progress/2026-08/2026-08-13-auditor.md",
-      "size": 10133,
+      "size": 14151,
       "title": "2026-08-13 \u2014 auditor",
       "type": "progress"
     },
@@ -6076,6 +6076,22 @@
       "path": "progress/2026-08/2026-08-13-inference.md",
       "size": 5893,
       "title": "2026-08-13 \u2014 AutoKernel r41 and discovery-throughput checkpoint",
+      "type": "progress"
+    },
+    {
+      "content_hash": "aa58809622ad2ae68f4c438302c5acdd6191e803b2136d6f900e47b93edfaab1",
+      "modified": "2026-08-13T19:27:49Z",
+      "path": "progress/2026-08/2026-08-13-mainA.md",
+      "size": 10850,
+      "title": "mainA \u2014 2026-08-13: ODL-011 Ekimetrics intrinsic chunk-quality harness",
+      "type": "progress"
+    },
+    {
+      "content_hash": "658f2d8a68b1455c31407f75730ade3ac06c2cf9ee46ea7f53212d354beff9df",
+      "modified": "2026-08-13T19:27:49Z",
+      "path": "progress/2026-08/2026-08-13-mainB.md",
+      "size": 6423,
+      "title": "2026-08-13 \u2014 mainB",
       "type": "progress"
     },
     {
@@ -6647,7 +6663,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 829,
+  "total_new": 831,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -54,7 +54,7 @@ roster:
   # coordinator-agent, checkpoints every pass, and returns residual items via the backlog rather
   # than directly contacting a source main. `role_policy` is canonical; historic C-series work is
   # ordinary backlog work, not a standing entitlement. Launch profiles are advisory only.
-  - {id: auditor,           role: auditor-main,      lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor, schedulable: false, accepts_work_types: [audit], role_policy: agents/auditor-main.md, recommended_launch_profiles: [{model: gpt-5.6-sol, effort: xhigh}, {model: fable5, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
+  - {id: auditor,           role: auditor-main,      lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor, schedulable: false, accepts_work_types: [audit], role_policy: agents/auditor-main.md, recommended_launch_profiles: [{model: gpt-5.6-sol, effort: high}, {model: fable5, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
   # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
