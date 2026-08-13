@@ -3416,6 +3416,12 @@ future sweep.)*
       immutable raw vectors without inference; `composition_attestation.json` binds every input hash,
       evaluator commit `c4a42c69917187b53809c8d4c3267cc1a99a37de`, and
       `inference_executed=false`.
+- [x] **Recalibrate the final direct-child IQK instrument after empirical T0 repairs.** ✅
+      2026-08-13 — final instrument `283b520b527a7b507d6cf05cd124a59f427f3629`
+      is a clean direct child of frozen production `0db32c06…`, contains the committed T0
+      receiver plus the Q4_K and Q4_0 narrow-shape fallbacks, and passed all five live controls at
+      `/mnt/raid0/llm/autokernel/controls/ak-controls-v9-283b520b-20260813-r1/`
+      (`controls_complete`, `may_rank=true`, B_min=11, MDE=1.4562%).
 
 ### Step 3 — the first candidate
 
@@ -3495,6 +3501,18 @@ future sweep.)*
     - **Recommendation:** Option A. All pre-reboot durability obligations are satisfied and no useful
       protocol-compliant CPU candidate measurement can proceed at the current uptime.
     - **Default:** Option B; preflight continues to refuse and no inference runs.
+- [x] **Close empirical T0 defects surfaced by the post-reboot IQK rehearsal.** ✅ 2026-08-13 —
+      r23's real property suite exposed input-dependent Q4_0 `m=16,n=2,k=256` error; Q4_0 now
+      falls back below 32 rows, matching the Q4_K safeguard, and the exact linked suite passed
+      1,954/1,954. Durable T0 output proved scheduler execution; research `da7d14fa` parses its
+      bare timestamp format. Research `430443c5` preserves a legitimate T0 refusal rather than
+      misclassifying it as a candidate-record error. r23 produced no throughput result.
+- [ ] **Reboot for the final r24 IQK intervention/control pair.** r24's dry-runs bind the final
+      `283b520b…` instrument, the accepted five-control bundle above, and 11 precommitted pairs.
+      Its live preflight refused before build or benchmark because only 9/96 cores met 2.5 GHz at
+      real load (80 required) and load/core exceeded the contamination gate; production was PASS.
+      After an operator reboot, rerun r24 intervention, then r24 A/A control, then the decode
+      holdout and heldout-bound prefill chain.
 - [ ] **Run a clean, governed CPU decode IQK holdout after the r3 prefill pair.** It must use the same
       candidate frame but target `decode`, then be projected from its completed journal before r3 may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
