@@ -1,8 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V9 CONTROLS 5/5 PASS / AK-WM IMPLEMENTATION REPAIR COMPLETE / POST-REBOOT REAL ARCHIVE NEXT — updated 2026-08-12
-
-**Status:** V9 CONTROLS 5/5 PASS / CURRENT-MAIN LOOP COMPLETION IN PROGRESS / CPU IQK READY AFTER REQUIRED REBOOT — updated 2026-08-12
+**Status:** R41 IQK INTERVENTION RANKABLE / CONTROL IDENTITY RACE FIXED / CONTROL REPLAY + DECODE HOLDOUT NEXT — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -19,6 +17,30 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-13):** the post-reboot r41 intervention is the first clean rankable
+known-real CPU IQK result: all 15 precommitted paired blocks favoured IQK, median relative prefill gain
+was **+27.6481989%**, the e-value was `321.1221863` against threshold `10`, T0 passed, production
+remained byte-identical, and both the full-host CPU claim and campaign worktree released. Its matched
+A/A control reached T0 but stopped before T1 solely because the evaluator identity was re-read from a
+live research checkout that advanced between campaign start and evaluation. The immutable control
+journal remains an honest `t0_failed` record; it is not archive evidence and does not invalidate the
+intervention. Research `a65e638a` seals evaluator identity at campaign start and carries that identity
+through the evaluation window, closing the race prospectively.
+
+The low-cost discovery plane is now explicit but nonpromotable. Research `28e7c41a` adds a bounded
+screening tier, and `59a4ec91` binds it to an immutable exact-frame amortized baseline bank and emits
+noise-aware top-K nominations rather than KEEP/archive/promotion decisions. Research
+`eb898bd0`/`c376853d` adds sealed matched-pair T0 evidence plus frame-tamper coverage.
+`de464126`/`0f137f50` adds the separately calibrated decode producer and resolves its control frame at
+runtime. The remaining empirical chain is: rerun the repaired A/A control, execute the clean decode
+holdout, run the heldout-bound pair, project AK-WM-2a, then evaluate AK-WM-2b observe-only.
+
+**Discovery policy:** discovery is throughput work, not release confirmation. Only competing model
+inference blocks a discovery screen; ordinary system load is captured as noise/uncertainty instead of
+turning every screen into a quiet-host campaign. Screened candidates are ordered as top-K under that
+uncertainty, and strict calibrated confirmation is reserved for the small nominated set. No screen can
+bank, promote, enter an archive, or authorize release.
 
 **Current checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
 decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
@@ -3480,10 +3502,11 @@ future sweep.)*
     `heldout_bound` plan still requires the strict completed-journal projector. Fresh r3 intervention
     and A/A inputs under `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260812-r3/` and
     `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812-r3/` both dry-run clean.
-- [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
-      one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
-      sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
-      preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
+- [x] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** ✅ 2026-08-13 —
+      the reboot occurred, host/production checks passed, and the campaign advanced through the
+      immutable r23–r41 attempts without bypassing claim, build, correctness, or measurement gates.
+      r41 is the first rankable intervention; its matched control replay and held-out chain remain
+      separately filed below.
   - [x] **OP-16 — Operator decision package: authorize the orderly reboot.** ✅ 2026-08-12 — the
     operator granted the AutoKernel session ownership of all compute resources and approved the
     reboot→IQK→archive execution sequence. Preserve the r3 checkpoint, then reboot only after the
@@ -3522,17 +3545,48 @@ future sweep.)*
       attestations before the unchanged T1 admission gate. Fresh controls at
       `ak-controls-v9-f744cc220-20260813-r1` are accepted/rankable (5/5, B_min=10,
       MDE=2.0360%).
-- [ ] **Quiesce external CPU work and run fresh r30 IQK intervention/A/A bootstrap pair.** Generate a
-      new pair bound to `f744cc220…` and the accepted f744 control bundle only after independent
-      preflight passes; then execute both arms to terminal `DECIDED` before the decode holdout.
+- [x] **Land the sealed T0 and decode-cell producer prerequisites for the final pair.** ✅ 2026-08-13 —
+      research `eb898bd0` accepts sealed matched-pair T0 evidence, `c376853d` proves frame tampering
+      fails closed, `de464126` calibrates the held-out decode cell independently, and `0f137f50`
+      resolves its control frame at runtime instead of carrying a stale precomputed binding.
+      Research `c81b67db` prepares recipe-bound decode IQK pairs and `8a701354` binds each pair
+      envelope to the independently calibrated cell.
+- [x] **Execute the r41 IQK intervention and preserve the matched control's exact refusal.** ✅
+      2026-08-13 — the intervention reached terminal `DECIDED` with T0 PASS, production unchanged,
+      released resources, 15/15 positive blocks, median relative gain **+27.6481989%**, and
+      `speed_rank_admissible=true`. The A/A control stopped at `t0_failed` before measurement solely
+      on `EVALUATOR_BUNDLE_UNVERIFIED`; all its other T0 gates passed and its resources released.
+      Neither the invalid control nor the unmatched intervention may enter AK-WM-2a.
+- [x] **Seal evaluator identity at campaign start and add the nonpromotable discovery tier.** ✅
+      2026-08-13 — research `a65e638a` closes r41's live-checkout identity race. Research `28e7c41a`
+      caps screening at three paired blocks and structurally forbids KEEP/archive/promotion;
+      `59a4ec91` requires a hash-valid exact-frame amortized baseline bank and reports uncertain top-K
+      nominations only.
+- [ ] **Rerun the repaired r41 A/A control, then complete the held-out chain.** Reuse the exact r41
+      matched frame under research `a65e638a`; require a clean terminal control before the decode
+      holdout, heldout-bound pair, AK-WM-2a projection, and AK-WM-2b observe-only evaluation.
+- [x] **Finish the candidate-only discovery-throughput primitive without weakening confirmation.** ✅
+      2026-08-13 — research `c8971a6b` executes candidate-only screening batches, `6661ca25` removes
+      per-candidate anchor subprocesses, and `9a4bca3b` requires an inference witness. No live screen
+      has run yet. Only competing model inference on claimed compute may block discovery; services,
+      agents, builds, and all other ordinary system load must never pause it and are retained as
+      measured noise/uncertainty. Nominate top-K and send only that shortlist to rare strict
+      calibrated confirmation.
+- [ ] **Produce and seal the first real amortized discovery baseline bank.** Capture measured anchor
+      subprocess output for the exact screening frame, seal its identity and inference witness, and
+      prove the candidate-only screen consumes it fail closed. Synthetic fixtures remain regression
+      tests and cannot substitute; completing this producer does not itself claim a live screen.
 - [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
       candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
       prefill pair cannot substitute.
-- [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
+- [x] **CPU first.** ✅ 2026-08-13 — the r41 intervention and control both ran on `llama_cpu` under
+      released full-host claims; no GPU claim was taken. `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
-- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v4
+- [x] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** ✅ 2026-08-13 — r41
+      reproduced the rankable **+27.6481989%** intervention result; matched archive admission remains
+      gated on the repaired control and held-out chain. It is a proposal-v4
       `change_class: parameter` comparison with candidate `ggml_iqk=1` and anchor `ggml_iqk=0`;
       `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
       A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
@@ -3812,6 +3866,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | A coarse 2026-07-04 B=128 profile originally made G15 look like the highest-confidence GPU band; the strict 2026-08-11 family map later closed G15 itself. That falsification reinforces the rule: batch regimes remain valid, but targets must be selected by current mechanism-specific metrics rather than a whole-stack ratio or a coarse non-GEMM remainder |
 | AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
 | AK-D39 | **ROCm libraries, compiler choices, and source-available modules are isolated candidate providers, not new champion source trees.** AutoKernel may select, tune, or fork them, but a win must integrate through an experimental `llama_gpu` candidate and pass operator plus whole-model gates; shared `/opt/rocm` mutation and opaque-binary champion source are forbidden | The measured gap is regime-dependent: dense GEMM provider choice is shape-specific, while the large Q8/IQ2/MoE utilization collapse lives mainly in custom low-bit/layout/gather paths. Broad search across both layers is warranted, but promotion must still name the deployable `llama.cpp` lineage and preserve the frozen-stack trust boundary |
+| AK-D40 | **Discovery optimizes throughput under measured uncertainty; confirmation establishes claims.** Only competing model inference on claimed compute blocks a discovery screen. Services, agents, builds, and all other ordinary system load never block or pause discovery; they are retained as measured noise/uncertainty. Candidates are nominated top-K under that uncertainty, and strict calibrated confirmation is spent only on the small nominated set. Screens never bank, promote, enter an archive, or authorize release | Quiet-host strict confirmation on every idea would serialize the loop and spend most compute proving weak candidates precisely. A bounded nonpromotable screen with an amortized exact-frame baseline preserves throughput while the rare confirmation campaign retains the existing evidence standard |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
