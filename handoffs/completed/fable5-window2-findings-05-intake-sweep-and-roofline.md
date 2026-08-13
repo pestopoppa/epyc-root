@@ -1,5 +1,7 @@
 # Window-2 findings 05 — Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)
 
+> **Completed findings ledger (2026-08-13).** The intake sweep, roofline synthesis, and backlog application are complete. Live follow-ups are dispatched from the [Research & Evaluation index](../active/research-evaluation-index.md) and their owning active handoffs.
+
 **Two operator questions**: (A) did we miss important tasks in the research-intake / deep-dive corpus — especially stale **DGX-gated** dismissals now unblocked by the MI210? (B) roofline gap for the **CPU kernel (v6+iqk)** and the **MI210** — highest-ROI avenues to close it, and can the dequant slowdown be compensated (even Q8/fp16 caps ~60%)? Plus a standing instruction to **apply** the reprioritization to the live backlog, not just propose it (§7).
 
 **Method**: 8 read-only sweep agents over **769 intakes + 125 deep-dives** (compact-extract → deep-read candidates → fold-check vs 119 active handoffs) + 2 roofline agents (CPU, MI210) + 3 adversarial verifiers + 1 kernel synthesis. 14 agents, 0 errors, ~2.09M tokens. Every number below is an **OBSERVATION** per MEASUREMENT.md (no protocol-id; throttle-suspect 28-day CPU host / single-run contended MI210 host) — usable for hypotheses, never to gate a keep/revert/deploy decision.

@@ -2,8 +2,25 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (fourth pass — the livecodebench oracle was REBUILT from LeetCode's own worked examples (704 rows rebuilt / 1,656 retired, distinct `expected` 1 → 670), the upstream reference corpus shown misaligned to the *wrong problems* (40.08% slug-name match), and a third silent-scoring defect (a zero-arg `entry_point` assertion that fails every correct answer) fixed and pinned — see below; earlier third pass — a retired suite's own verification grew under audit (12→24 tests, all passing, four mutations each failing loudly) and a canonical-solutions acceptance gate PASSED an adopted efficiency instrument while surfacing a fourth, runtime-only correctness-inflation defect — see below; earlier same-day note: kernel-era identity now binds to the executed binary rather than a hard-coded constant, closing four stale era constants — one of them a live tool outage; the E5 top-rung `empty_trimmed_window` diagnosed as a *sample-size* defect and its read-side fix chosen for changing zero banked numbers; an absence-read-as-a-value census across the manifest corpus; a scoring oracle proved vacuous with a cheap generalisable pool-generation guard; the wrong-artefact and prompt-length audits given named enforcement points; and a judge rubric found priming on question identity — see below; earlier 2026-08-11 note: adds the resident kernel-promotion fast-path design and its fresh-server fallback; prior generated-eval findings retained; concurrent-lane compile 2026-08-11: instrument-era registry closes a v9 cutover gap, an eligibility-vs-kernel-identity scope collision, the whole-file-sha-pin anti-pattern against an autonomously-written registry, and a sealed-capture scorer found systematically more permissive than its canonical counterpart — see below; earlier 2026-08-10 note: adds the generated-eval gate stack G1–G6 with human-curate as a hard node, the two-repo verifier-parity divergences incl. a vacuously-passing `code_execution` scorer, the correction that the paper this expansion was scoped from generates no tasks, and — second pass — why a regression tester cannot serve as a reward-bearing oracle, the instrument-inside-the-candidate's-tree problem, and five generalisable evaluation rules)
-**Sources**: 113+ documents
+**Last compiled**: 2026-08-13 (matched experiments must replay production semantics and independently initialize mutable state; repeated pairs cannot repair a contaminated or drifting frame)
+**Sources**: 118+ documents
+
+## Compiled Update — 2026-08-13: repetitions can create a trajectory, and an A/B must isolate its mutable state
+
+**Confidence: verified across one CPU matched-pair refusal and one static prompt-harness audit.**
+
+R29 demonstrates that completing the planned number of pairs is not enough: ten intervention pairs reached `DECIDED`, but anchor drift of `15.27%` exceeded the `3.08%` bound, so the result reverted; the A/A arm then refused under external CPU work. Repetitions sampled a changing host trajectory rather than one stable comparison frame. Quiet-host admission, teardown, settling, and fresh attestations are part of the measurement—not cleanup around it.
+
+The prefix-cache harness exposes the software analogue. Its arms shared one pinned slot, so the second inherited cache state; it also used a structured builder instead of the live minimal builder, synthetic state/model spillover instead of executed REPL output, corpus on every turn, missing dynamic suffixes, and fail-open error handling. Cache counters and default-off implementation can be correct while this A/B remains unable to authorize a default flip.
+
+The joint rule is strict: a decision A/B must faithfully replay the production path and independently initialize every mutable state carrier. More samples do not cure cross-arm state, semantic mismatch, contention, or drift; they make the wrong comparison more precise.
+
+### Source References (2026-08-13 matched-frame rule)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — r29 drift/contamination refusal and fresh-pair requirements.
+- [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) — prefix harness defects and repaired semantic gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent audit verdict and focused verification.
+- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — CPU instrument and paired-attempt disposition.
 
 ## Compiled Update — 2026-08-12 (fourth pass): the livecodebench rebuild landed — and the upstream reference corpus was the hidden second defect
 
