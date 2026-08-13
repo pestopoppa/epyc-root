@@ -46,6 +46,12 @@ series; a small-model window wants exactly that and nothing big), ranks the fire
 **unblock-leverage** (how many downstream handoffs each entry frees), and lands a **focused,
 prioritized dispatch on the bus**.
 
+**Sequencing rule (operator, 2026-08-13): load GPU weights BEFORE firing CPU inference.** GPU compute
+is concurrent with CPU work; the only interference is *weight loading* contending for CPU memory
+bandwidth. So absorb the load window first, then start the CPU measurement — resident GPU weights then
+compute in VRAM without touching CPU bandwidth. Firing CPU-first strands the GPU for the whole window
+(loading later would corrupt the bandwidth-sensitive measurement).
+
 **Inference-gated worker rule:** a main blocked on a compute grant either (a) negotiates the window
 with `inference`, or (b) — when there is no non-compute alternative — **wraps up where it stands** and
 moves to other tasks from the bus. Never idle on a grant that will not come. The churn phase exists to
