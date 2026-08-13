@@ -446,10 +446,25 @@ not a reopening of empirical work:
 - [x] **AK-AUD-5 — Audit the runnable loop against current research `main`, not historical completion
   narration.** ✅ 2026-08-12 — verified the live campaign boundary, generic-source refusals, removed
   planes, preserved tag, and focused suite from a clean detached `730adb1d` checkout.
-- [ ] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
+- [x] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
   actual T0 property measurements and raw paired-performance evidence; append exactly once before the
   terminal `STOP_STATE`; make append failure non-success; and keep dry runs record-free. This is the
-  producer prerequisite for Vidya SC10/SC18 and the real matched archive.
+  producer prerequisite for Vidya SC10/SC18 and the real matched archive. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — same pattern as AK-RUN-3: this row was filed by the runnable-loop
+  audit at 02:30 on 2026-08-12, and the implementation landed 37 minutes later the same day
+  (`d96e8704` "autokernel: journal live evaluation events", 03:07, in origin/main); the row was never
+  reconciled. Verified element-by-element at HEAD: `campaign.py` `journal_evaluation()` binds actual T0
+  property measurements and raw paired-performance evidence into schema-valid `EVALUATION_EVENT` +
+  `CANDIDATE_RECORDED` records (evaluator identity, claim grammar, host/claim receipts, evaluation
+  event ids, protocol ids); appends idempotently (replay returns identical event ids, byte-diff on
+  mutated payload raises "different bytes"); ordering test asserts `journal_evaluation` runs before the
+  terminal `journal`/`STOP_STATE`; append failure makes the run non-success (`journal_error` set, result
+  `ok=False`); dry runs are record-free (no `journal_evaluation` seam, zero candidate records — both
+  tested). Tests: `test_campaign.py` 362 passed incl. idempotent-append, ordering, failure-non-success,
+  and dry-run-record-free coverage. The 3 adjacent `test_campaign_footprint.py` failures are
+  pre-existing module-list drift (new `execution/inference_window.py`, `execution/screening_baseline.py`,
+  `heldout_bound_pipeline.py` lack FOOTPRINT.md rows from later AutoKernel commits) — reproduced on a
+  clean detached origin/main checkout, unrelated to AK-RUN-1.
 - [ ] **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
