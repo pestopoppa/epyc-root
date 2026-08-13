@@ -1,71 +1,175 @@
 {
-  "session_id": "b3cb6221-c00f-4696-a49b-4ff326f41eb8",
-  "started_at": "2026-08-11T14:57:44.360743Z",
-  "last_checkpoint": "2026-08-11T14:57:44.360743Z",
-  "phase": 1,
-  "stage": "stage1-complete-awaiting-dive-selection",
-  "session_kind": "research-intake (1 discovered URL + 1 expansion)",
+  "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
+  "started_at": "2026-08-12T23:10:00Z",
+  "last_checkpoint": "2026-08-13T08:31:36Z",
+  "phase": 4,
+  "stage": "stage4-complete",
+  "session_kind": "research-intake (1 submitted URL + 10 expansion)",
   "previous_session": {
-    "session_id": "b43a6183-9b5d-435b-a942-50a6cd77303e",
-    "stage": "stage4-complete",
-    "completed": "2026-08-10",
-    "note": "Closed session; not resumed. This is a new AutoKernel benchmark-substrate mandate."
+    "session_id": "b3cb6221-c00f-4696-a49b-4ff326f41eb8",
+    "stage": "stage1-complete-awaiting-dive-selection",
+    "mandate": "Assess the ROCm SOL-ExecBench source discovered while resolving the missing workload/reference half of AutoKernel C5-2, and expand to its canonical upstream.",
+    "note": "NOT RESUMED \u2014 disjoint mandate (AutoKernel/SOL-ExecBench). ITS DIVE-SELECTION GATE IS STILL OPEN: intake-1102/1103 awaiting operator dive selection since 2026-08-11."
   },
-  "mandate": "Assess the ROCm SOL-ExecBench source discovered while resolving the missing workload/reference half of AutoKernel C5-2, and expand to its canonical upstream.",
+  "mandate": "Ingest The-Swarm-Corporation/PARL (operator-submitted while studying Kimi Agent Swarm) and expand the parallel-agent-orchestration literature around it.",
   "submitted_url_count": 1,
   "submitted_inline_material_count": 0,
   "sources_submitted": [
-    "https://github.com/williamqwu/sol-execbench-rocm"
-  ],
-  "expansion_sources": [
-    "https://github.com/NVIDIA/SOL-ExecBench"
+    "https://github.com/The-Swarm-Corporation/PARL"
   ],
   "dedup_sweep": {
-    "run": "2026-08-11, unbounded over all 1,097 pre-existing entries",
-    "url_patterns_checked": [
-      "https://github.com/williamqwu/sol-execbench-rocm",
-      "https://github.com/NVIDIA/SOL-ExecBench"
-    ],
-    "collisions_found": 0
+    "run": "2026-08-12, unbounded over all 1,100 pre-existing entries, normalized (arxiv_id + url + referenced_arxiv_ids distinguished)",
+    "collisions_found": 0,
+    "notable": "arXiv:2602.02276 (Kimi K2.5, the PRIMARY source) appeared ONLY inside referenced_arxiv_ids of intake-869 and intake-933 \u2014 cited twice, never ingested. Referenced != ingested. arXiv:2605.02801 IS already held as intake-548 and was correctly NOT re-minted."
   },
-  "max_existing_intake_id": 1101,
-  "next_intake_id": 1104,
-  "expansion_count": 1,
+  "max_existing_intake_id": 1127,
+  "next_intake_id": 1128,
+  "expansion_count": 10,
   "expansion_cap": 10,
+  "expansion_cap_reached": true,
   "processed_urls": [
-    "https://github.com/williamqwu/sol-execbench-rocm",
-    "https://github.com/NVIDIA/SOL-ExecBench"
+    "https://github.com/The-Swarm-Corporation/PARL",
+    "https://arxiv.org/abs/2602.02276",
+    "https://arxiv.org/abs/2512.08296",
+    "https://arxiv.org/abs/2602.11964",
+    "https://arxiv.org/abs/2604.02460",
+    "https://arxiv.org/abs/2503.13657",
+    "https://arxiv.org/abs/2607.25656",
+    "https://arxiv.org/abs/2601.10560",
+    "https://www.anthropic.com/engineering/multi-agent-research-system",
+    "https://arxiv.org/abs/2510.18893",
+    "https://arxiv.org/abs/2606.13003"
   ],
   "entries_processed": [
-    "intake-1102",
-    "intake-1103"
+    "intake-1105",
+    "intake-1106",
+    "intake-1107",
+    "intake-1108",
+    "intake-1109",
+    "intake-1110",
+    "intake-1111",
+    "intake-1112",
+    "intake-1113",
+    "intake-1114",
+    "intake-1115"
   ],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "I believe there are a number of rocm-related profiling handoffs. Dispatch a subagent to collect them for you. They shoudl be added to your goal given that the tools they build integrate and inform autokernel",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "effect_on_stage1": "Establishes AutoKernel ownership of the ROCm profiling and verification substrate. It does not waive the research-intake review gate or authorize Stage-3 handoff writes."
-    }
-  ],
-  "dive_recommendations": [
-    {
-      "rank": 1,
-      "entry": "intake-1102",
-      "reason": "Direct eight-task match to C5; determine portable definitions, license boundary, and MI210 reproduction seam."
+      "verbatim": "I foudn the intake object while studying Kimi's agent swarm and PARL popped up. There may be a lot more literature expansion to do",
+      "disposition": "planned",
+      "plan_ref": "S1-expansion-kimi-axis",
+      "effect_on_stage1": "Dispatched a dedicated Kimi-agent-swarm expansion sweep in addition to the parallel-agent-RL sweep. Overflow beyond the cap of 10 is carried to the Stage-2 close-out gate, which is uncapped."
     },
     {
-      "rank": 2,
-      "entry": "intake-1103",
-      "reason": "Canonical Apache-2.0 upstream; audit the schema and reported validation vulnerabilities before reuse."
+      "seq": 2,
+      "stage": 1,
+      "verbatim": "I'm curious to know if there are any principles that coudl be used to train/operate our orchestrator better",
+      "disposition": "planned",
+      "plan_ref": "S3-orchestrator-operating-principles",
+      "effect_on_stage1": "Dispatched a ground-truth sweep of our own spawn/stop policy and instrumentation so any imported principle can be compared against what actually exists. Shapes dive recommendations; authorizes no handoff write."
+    },
+    {
+      "seq": 3,
+      "stage": 1,
+      "verbatim": "\"So \\\"no sound thread-attribution method exists here\\\" is refutable: for Codex the parent->child edge is explicit, and for Claude the sidechain grouping is present. What's actually missing is narrower than R-17 concluded - a collector, a bus<->transcript join key, an outcome label, and a Task/SubagentStop hook (none of the 13 registered hooks in .claude/settings.json matches Task).\" - this sounds eerily similar to the coordinator-agent skill I just refactored with claude today. \"One caveat I won't let slide: the orchestrator repo's concurrency work (src/runtime/concurrency.py, NUMA quarters, placement veto) is inference concurrency - model instances on hardware. It is a completely disjoint axis from agent fan-out, shares no code or metric, and conflating the two would be a category error.\" - true there is a subtle difference between PARL and what's possible on our hardware. First, our model currently have relatively small context windows (~260k), this means that on large fan out, the individual batch threads have a lot less context to work with. This may not be an issue if fan-out tasks are narrowly scoped but typically when claude fans out, the subagents easily accumulate ~100k token contexts. We still don't know how much the REPL allows us to avoid such large contexts. As such, the max number of fanout agents on our models is quite reduce at the moment (-np 2 on full CPU instance, and -np 8 on the GPU architect_general). Secondly, the fanout doesn't necessarily mean fast execution. If the largest most expensive models guides the fanout, the individual threads will be slow on our system. This is precisely why our orchestration stack was built with the worker_general role available. This model is supposed to take narrowly scoped tasks and execute them fast. The intelligent model thus decides the fan out but the actual fanout threads aren't limited by the bandwidth-per-token required to operate the more intelligent model. We do allow the router to tap into the batched processes and this, if tied holistically intop the orhcestrator's task decomposition and distribution shoudl allow importing some of the power of the batching used in PARL to our wheelhouse. Ultimately, the task decomposition is the crux if I'm nto mistaken",
+      "disposition": "planned",
+      "plan_ref": "S3-epyc-native-parl-decomposition",
+      "effect_on_stage1": "Establishes the EPYC-native framing: the relevant plane is orchestrator TASK DECOMPOSITION mapping onto np batching, not Claude agent fan-out; worker_general is the structural analogue of PARL frozen subagents. Recorded in intake-1106 notes as a structural note. Also flagged a duplicate-work check against today's coordinator-agent skill refactor \u2014 CHECKED, no overlap: commits 2f787163/22c4aff5/d5c0848c/c436d5be encode DOCTRINE, and grep of the skill for parent_thread_id/isSidechain/promptId/critical-path returns zero hits."
+    },
+    {
+      "seq": 4,
+      "stage": 1,
+      "verbatim": "\"and can a decomposition be emitted that maps onto np batch slots on a cheap executor.\" - or a mixture of np batching and multi instance activation (CPU & GPU) in principle.",
+      "disposition": "planned",
+      "plan_ref": "S3-epyc-native-parl-decomposition",
+      "effect_on_stage1": "Widens the decomposition target from np slots on one instance to np batching x multi-instance activation across CPU and GPU; implies decomposition must be PLACEMENT-AWARE, a constraint no source in this sweep models."
+    },
+    {
+      "seq": 5,
+      "stage": 1,
+      "verbatim": "\"- Context is the real binding constraint, and it's the one nobody's reward function models. ~260k window against subagents that routinely accumulate ~100k means fan-out width and per-thread context trade off directly against KV. PARL's step-count formulation is blind to this - CriticalSteps counts steps, not tokens or KV residency, and it assumes uniform step cost.\" - dont' forget that we try avoiding large contexts by leveraging the REPL. This is a key element to take into consideration",
+      "disposition": "planned",
+      "plan_ref": "S3-repl-context-lever",
+      "effect_on_stage1": "Corrects the main's overstatement: context binds only ABSENT the REPL. REPL keeps child reasoning out of the parent context (cf. intake-536 RAO automatic context isolation, rao-redel-substrate-spike.md, repl-turn-efficiency.md), so it is the lever that breaks the fan-out-width vs per-thread-context tradeoff. Recorded against intake-1109, whose positive prediction is that fan-out wins only when single-agent context utilization binds."
+    },
+    {
+      "seq": 6,
+      "stage": 2,
+      "verbatim": "also the quality difference looks like noise",
+      "disposition": "planned",
+      "plan_ref": "S2-1115-role-ablation-correction",
+      "effect": "Correct. 54.41 vs 53.40 is 1.01pp with no SD reported for the ablation, against comparable cells carrying SDs of 2.41-4.51. Recorded in intake-1115 as a NULL RESULT, not a reversal."
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "verbatim": "this isn't exactly us. We have roles but I wouldn't say they're task specific experts",
+      "disposition": "planned",
+      "plan_ref": "S2-1115-role-ablation-correction",
+      "effect": "Correct and load-bearing. DyLAN task-specific experts are DOMAIN-EXPERTISE PERSONAS; EPYC roster roles (mainA-D, auditor, coordinator-agent, inference) are LANE AND OWNERSHIP roles. The ablated construct does not map onto our roster, so the result neither supports nor undermines our role files. Recorded in intake-1115."
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "verbatim": "Whatever happened to your leftover stage 2 agent? Did it ever finish? I see it having a close-out gate but still looks alive in your subagent list",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "effect": "Checked via ListAgents: the MAST dive read completed, all six Stage-2 dives closed. Surfaced an unrelated finding \u2014 roughly 9 subagents appeared that the main did not dispatch, inferred to be sub-subagents spawned by the Stage-2b agents, meaning real concurrency was about double what was intended. Reported as inference, not fact."
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "verbatim": "Tier 1, Tier2, and 2312.04511 LLMCompiler (ICML 2024, seminal) \u00b7 2602.07359 W&D \u00b7 2608.06370 Bitter Lesson of Tool Calling \u00b7 2605.15077 AsyncFC",
+      "disposition": "planned",
+      "plan_ref": "S2b-selection",
+      "effect": "Stage-2b selection: 13 sources run as combined Stage-1+Stage-2 passes, persisted as intake-1116 through intake-1127."
     }
   ],
-  "preliminary_actionables": [
-    "Map the eight C5 task definitions and locally regenerate references for the existing three-seed by four-transform sensitivity reducer.",
-    "Diff scorer, profiler, timing, and anti-reward-hacking mechanisms against the existing C2/C3/C6 implementation.",
-    "Keep all gfx950/B200 timings, bounds, tolerances, and scores outside the MI210 evidence boundary."
-  ],
-  "handoff_writes_performed": false
+  "open_gates": {
+    "stage3": "READY \u2014 Stage-2 close-out gate is CLOSED. All operator-selected dive-surfaced sources ingested-and-dived; declines recorded.",
+    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate.",
+    "stage3_prerequisites_noted": [
+      "Three corrections to COMMITTED material need operator approval: the 36.9%-of-production-failures citation in 4 handoffs; the R-17 reopening; the rao-redel-substrate-spike.md FUND-OR-CLOSE status as candidate owner."
+    ]
+  },
+  "stage2_dives": {
+    "selected_by_operator": [
+      "intake-1106",
+      "intake-1107",
+      "intake-1109",
+      "intake-1110",
+      "intake-1111",
+      "intake-1115"
+    ],
+    "verdicts": {
+      "intake-1106": "dive-verified",
+      "intake-1107": "dive-overturned",
+      "intake-1109": "dive-verified",
+      "intake-1110": "dive-overturned",
+      "intake-1111": "dive-overturned",
+      "intake-1115": "dive-overturned"
+    }
+  },
+  "stage2b": {
+    "uncapped": true,
+    "sources_selected": 13,
+    "entries_persisted": 12,
+    "note": "13 sources / 12 entries \u2014 the two Anthropic vendor documents share one entry (intake-1121).",
+    "entries": {
+      "intake-1116": "2605.29442 dive-verified",
+      "intake-1117": "2312.04511 dive-verified",
+      "intake-1118": "2510.05381 dive-verified",
+      "intake-1119": "2605.15077 dive-overturned",
+      "intake-1120": "2407.01502 dive-verified",
+      "intake-1121": "Anthropic blog + Agent Teams docs dive-verified",
+      "intake-1122": "2604.22750 dive-overturned",
+      "intake-1123": "2505.18286 dive-overturned",
+      "intake-1124": "2608.06370 dive-overturned",
+      "intake-1125": "2602.07359 dive-verified",
+      "intake-1126": "2601.14652 dive-overturned",
+      "intake-1127": "2607.16387 dive-verified (only adopt_component of the sweep)"
+    }
+  }
 }
