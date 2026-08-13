@@ -299,10 +299,10 @@ function renderProgression(d){
 
   const strategy=p.strategy||{};
   h+='<div class="strategy-grid">';
-  [["Pursued",strategy.pursued||[]],["Accepted for next gate",strategy.accepted||[]],["Abandoned",strategy.abandoned||[]]].forEach(function(group){
+  [["Pursued",strategy.pursued||[]],["Accepted for next gate",strategy.accepted||[]],["Abandoned / retest",strategy.abandoned||[]]].forEach(function(group){
     h+='<div class="strategy-card"><div class="hero-label">'+group[0]+'</div>';
     if(!group[1].length) h+='<div class="meta">none evidenced</div>';
-    group[1].forEach(function(r){ const ev=(r.evidence||[]).slice(-1)[0]||{}; h+='<div class="meta"><b>'+esc(r.lane)+' '+esc(r.candidate)+'</b> · '+esc(effectPct(r))+' · '+esc(r.workload)+'<br><code>'+esc(ev.path||"—")+'</code></div>'; });
+    group[1].forEach(function(r){ const ev=(r.evidence||[]).slice(-1)[0]||{}; h+='<div class="meta"><b>'+esc(r.lane)+' '+esc(r.candidate)+'</b> · '+esc(r.stage||"—")+' · '+esc(effectPct(r))+' · '+esc(r.workload)+'<br><b>Gate:</b> '+esc(r.current_gate||"—")+'<br><code>'+esc(ev.path||"—")+'</code></div>'; });
     h+='</div>';
   }); h+='</div>';
 
