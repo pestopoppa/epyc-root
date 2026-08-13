@@ -680,7 +680,7 @@ consideration, not a computed term.
   `max_related_cards 3`; improve `ancestor_k 3` / `sibling_k 3`; crossover `2` / `2`; debug
   `max_related_cards 8`. **Offline-first**: measure current per-operator context size before changing
   anything, so the change has a baseline to beat.
-- [ ] **AP-ME-2 — Scored parent utility with an always-on novelty term.** P17's Bradley-Terry tiebreak
+- [x] **AP-ME-2 — Scored parent utility with an always-on novelty term.** P17's Bradley-Terry tiebreak
   fires only *under hypervolume stagnation* — reactive de-concentration. Add a computed utility over
   normalized score, gain-over-strongest-parent (positive-only) and method-family novelty
   `1/sqrt(1+N_f)`, always on, so concentration is prevented rather than corrected. Complementary to
@@ -689,6 +689,7 @@ consideration, not a computed term.
   paper and code disagree and that the case study used an unreleased configuration. Islands are
   inactive in every shipped profile (`num_islands 1`, `migration_prob 0.0`,
   `initial_temp = final_temp = 1.0`), so **do not port island machinery**.
+✅ 2026-08-13 — `mainC` (orchestrator commit `c1bae52c`): `ParetoArchive.parent_utility_ranking()` + `parent_utility_text()` landed — weighted utility (minmax score, positive-only delta-over-strongest-parent, novelty 1/sqrt(1+N_f)), SHIPPED weights score 1.0 / delta 0.4 / novelty 0.25 (NOT paper prose 1.0/0.6/0.3), always-on (not stagnation-gated), no island machinery. Wired into planner geometry behind `AUTOPILOT_PARENT_UTILITY` (default on). 8 unit tests.
 - [ ] **AP-ME-3 — Complementarity cue for crossover donor selection**, replacing frequency ranking in
   `informed_crossover_candidates`. **BSV-3 already computes a semantic conflict severity** over shared
   subsystem, files touched, prompt sections touched, feature flags and behavior-signature delta. That
