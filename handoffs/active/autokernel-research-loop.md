@@ -3416,6 +3416,12 @@ future sweep.)*
       immutable raw vectors without inference; `composition_attestation.json` binds every input hash,
       evaluator commit `c4a42c69917187b53809c8d4c3267cc1a99a37de`, and
       `inference_executed=false`.
+- [x] **Recalibrate the final direct-child IQK instrument after empirical T0 repairs.** ✅
+      2026-08-13 — final instrument `283b520b527a7b507d6cf05cd124a59f427f3629`
+      is a clean direct child of frozen production `0db32c06…`, contains the committed T0
+      receiver plus the Q4_K and Q4_0 narrow-shape fallbacks, and passed all five live controls at
+      `/mnt/raid0/llm/autokernel/controls/ak-controls-v9-283b520b-20260813-r1/`
+      (`controls_complete`, `may_rank=true`, B_min=11, MDE=1.4562%).
 
 ### Step 3 — the first candidate
 
@@ -3495,8 +3501,32 @@ future sweep.)*
     - **Recommendation:** Option A. All pre-reboot durability obligations are satisfied and no useful
       protocol-compliant CPU candidate measurement can proceed at the current uptime.
     - **Default:** Option B; preflight continues to refuse and no inference runs.
-- [ ] **Run a clean, governed CPU decode IQK holdout after the r3 prefill pair.** It must use the same
-      candidate frame but target `decode`, then be projected from its completed journal before r3 may
+- [x] **Close empirical T0 defects surfaced by the post-reboot IQK rehearsal.** ✅ 2026-08-13 —
+      r23's real property suite exposed input-dependent Q4_0 `m=16,n=2,k=256` error; Q4_0 now
+      falls back below 32 rows, matching the Q4_K safeguard, and the exact linked suite passed
+      1,954/1,954. Durable T0 output proved scheduler execution; research `da7d14fa` parses its
+      bare timestamp format. Research `430443c5` preserves a legitimate T0 refusal rather than
+      misclassifying it as a candidate-record error. r23 produced no throughput result.
+- [x] **Reboot and execute the fresh bootstrap-pair attempts through r29.** ✅ 2026-08-13 — r25 reached
+      passing T0 but exposed a `MicrobenchPlan.schedule()` driver call defect; r26's T0 truthfully
+      rejected the Q6_K `m=16,n=3,k=256` IQK result; r27 refused contaminated host admission; and
+      r28 showed that the former load gate counted campaign-owned T0 residual as outside contention.
+      r29 intervention reached `DECIDED` with all ten pairs and production PASS, but correctly
+      reverted as inadmissible when anchor drift was 15.27% against a 3.08% bound. Its A/A arm
+      terminally refused preflight while a separate OpenDataLoader workload held the CPU. None of
+      these immutable journals substitutes for the required clean matched pair.
+- [x] **Make the CPU IQK instrument and T0→T1 boundary fail closed on the observed failures.** ✅
+      2026-08-13 — experimental direct-child `f744cc220e722d1bda93783959471d44f8e118b0` adds only
+      the Q6_K `<32` native fallback; its exact seeded property suite passes. Research `deeed365`
+      requires every T0 sandbox teardown receipt, a 65-second decay, and three fresh low-load
+      attestations before the unchanged T1 admission gate. Fresh controls at
+      `ak-controls-v9-f744cc220-20260813-r1` are accepted/rankable (5/5, B_min=10,
+      MDE=2.0360%).
+- [ ] **Quiesce external CPU work and run fresh r30 IQK intervention/A/A bootstrap pair.** Generate a
+      new pair bound to `f744cc220…` and the accepted f744 control bundle only after independent
+      preflight passes; then execute both arms to terminal `DECIDED` before the decode holdout.
+- [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
+      candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
       prefill pair cannot substitute.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most

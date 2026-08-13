@@ -105,6 +105,16 @@ self-exits). Verified 2026-07-29: supervisor PID 14518 relaunched daemon PID 145
 the relaunch is self-announcing — a higher epoch in the next `status` is the confirmation, not an
 anomaly to investigate.
 
+> **Expect one UNKNOWN cycle on the first bringup after 2026-08-12, and do not treat it as a
+> fault.** The supervisor no longer decides "the daemon is running stale code" from source
+> **mtime** — in a five-writer tree that is true every few minutes, and it restarted a healthy
+> daemon 14 times in 54 minutes (F-38/AUD-6). It now compares the **committed tree SHA** the daemon
+> recorded at startup (`source_tree` in its heartbeat) against `git rev-parse HEAD:scripts/coordination`.
+> A daemon that has not yet run under the new code publishes no `source_tree`, so the supervisor
+> reads **UNKNOWN and correctly refuses to restart it** — cannot-determine never justifies a kill.
+> The reading becomes meaningful once the daemon has started once from this tree. A genuine stale
+> verdict now restarts **at most once per 15 minutes** and then ALARMs rather than looping.
+
 **`status` output is not proof of life.** On 2026-07-29 it reported `state=working epoch=11
 pid=1928027 age=2157s` for a daemon that had died in the reboot: the state file is on disk and
 outlives the process that wrote it. **Always confirm with `ps -p <pid>` before believing it.**
@@ -269,7 +279,33 @@ coordination failure**, not a resting state.
 Dispatch with a self-contained brief file under `coordination/session-bus/tasks/`, and a short
 nudge that points at the file.
 
+**Every dispatch is a TYPED row now — the shape is enforced, not remembered** (AUD-2, 2026-08-12).
+A `task-assign` carries `task_text` (the identity — `append` refuses without it), `row_ref` as a
+*hint only*, `screened_by` (proof `backlog_row_check.py` ran), `expected_occupancy` (`est_h`,
+basis, gating), and `constraints[]` where each constraint names the `source` line it derives from.
+Payloads over 4 KB must point at a `brief_path`. Two of those fields exist because of specific
+failures: line-keyed dispatch rotted at 34.5% queue-wide while the role's own queue file said
+*"line numbers are a hint, task text is the identity"* (F-22), and a card was fed 40-second sweeps
+all morning while reading idle — **`expected_occupancy` is there to make you ask "hours or
+seconds?" at composition time**, which is where that failure lived (F-14). A screener proves
+WELL-FORMED, never STILL-NEEDED: verify the row's premise against the world before pointing a main
+at it — four of eight screened rows fact-checked on 2026-08-12 were already satisfied in reality.
+
+**Mains spawn into their own lane worktrees** (`/mnt/raid0/llm/worktrees/mains/<id>`, roster key
+`worktree:` in `config.yaml`); `inference` and `coordinator-agent` stay in `/workspace`. A declared
+but missing worktree REFUSES the spawn rather than silently falling back to the shared tree. This
+is what stops five mains from committing over each other; the wrap-up contract does the rest —
+per-agent `progress/YYYY-MM/YYYY-MM-DD-<agent>.md` files, lane-branch commits promoted to `main` at
+**every** wrap-up (lanes that skip promotion rot: measured at 106 and ~302 commits behind), and an
+O_EXCL lease around the genuinely shared surfaces. **Never run `git worktree prune` or `git gc`**
+from either path depth — that is what destroyed all five lanes once.
+
 **4. Begin boundary watching** — drain and refresh your heartbeat at every boundary from here on.
+`drain` now also reports what you would otherwise have to remember to look at: uncommitted work
+under `scripts/`, the `action_required` items *you* owe with their age, and the fleet_watch
+occupancy line behind a staleness guard. Your inbox is split MUST-ACT (you are the `assignee`;
+a disposition is owed) from FYI (`cc`; cursor-cleared, no ack). Before this split, 83% of what sat
+in an inbox belonged to someone else.
 
 ### Nudging — the only safe path
 
@@ -280,8 +316,23 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
 - **Never nudge via raw `tmux send-keys`.** The adapter chunks long messages and verifies
   submission; raw sends blob past ~800–1000 chars (Codex silently truncates at 1024).
 - **Never send `Ctrl-C` to a Codex pane** to clear an input buffer — a second `Ctrl-C` exits the
-  session and destroys the window. `Ctrl-U` alone clears the composer. A blobbed buffer is
-  *cosmetic*: submit it and follow with a correction. Both lessons learned the hard way 2026-07-28.
+  session and destroys the window. A blobbed buffer is *cosmetic*: submit it and follow with a
+  correction. Learned the hard way 2026-07-28.
+- **A BARE key does nothing to a Claude composer holding text — this includes `Ctrl-U`.** Measured
+  2026-08-12 against live panes and re-measured against a disposable TUI: bare `Enter`, `C-m`,
+  `Ctrl-U` and 100×`BSpace` all leave the text exactly where it was. Send an ordinary character
+  first, settle ~1s, *then* the key: that submits (`Enter`) and that clears (`Ctrl-U`). `Escape`
+  does nothing in either form. The adapter's `submit`/`clear` verbs and its failed-delivery
+  rollback all use that sequence — **so use the adapter and never hand-roll the keystrokes.**
+  Re-measure with `scripts/coordination/verify_composer_keys.sh` if the TUI changes. Origin:
+  C55/H-1/H-2 — four mains sat holding undelivered instructions for up to 75 minutes because every
+  delivery path ended in a bare key, and each one reported failure honestly while nothing arrived.
+- **A quiet-check refusal against an idle main is answered by the DOORBELL, not by a looser
+  threshold.** A main whose subagents redraw its pane every second can never satisfy the payload
+  path's quiet-check, so it looks unreachable while being perfectly idle. Put the payload on the
+  bus, then ring: the doorbell carries no quiet-check, no rate limit and no heartbeat guard, and it
+  verifies its own ring against the buffer. `probe` reports `quiet_corroborated_idle` so you can
+  see the condition rather than infer it. Origin: F-37/H-3.
 - Identity before keystrokes: never send keys to a pane whose agent identity is inferred rather
   than confirmed, nor into a pane holding operator-typed input.
 - **Never swallow a refusal reason.** A retry loop that pipes `nudge` through `grep -q 'nudged'`

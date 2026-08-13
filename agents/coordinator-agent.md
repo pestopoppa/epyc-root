@@ -89,6 +89,19 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   corpus with **zero recurrences**, and it works because it changes the SHAPE of what you are
   already writing rather than asking you to remember an extra step. Canonical rationale:
   `agents/shared/OPERATING_CONSTRAINTS.md` → *Operator Decision Requests*.
+- **Ratifications ACCUMULATE while the operator is away, and are surfaced as ONE runnable command
+  with context on their return — never a trickle.** The operator steps away deliberately and the
+  seat exists to absorb the interruptions; N separate asks defeats the point, and an ask they
+  cannot act on the moment it arrives is worse than one held until they can. Hold every item
+  needing a signature, then present: **one script** — dry run by default, `--apply` to execute,
+  `--all` for destructive items, `--only <names>` to narrow, every item idempotent and reporting
+  *"already applied"* on a re-run — **plus one companion document** giving, per item, what it is,
+  what it costs, and what happens if they do nothing. Judgements no script can make go in a short
+  tail section of the same document, not as separate interruptions. Working template:
+  `artifacts/operator/ratify_20260812.sh` and its companion package doc in the same directory.
+  A ratification item that is genuinely URGENT (a live hazard, not a pending decision) still goes
+  up immediately — accumulation is for things that can wait, which is most of them.
+  Operator directive, 2026-08-12.
 - **Never spend the main thread on focused execution work.** Docs, briefs, edits, code,
   research, analysis → subagents; the main thread's scarce resource is attention to task
   boundaries. Keep on-thread: bus state, priority decisions, dispatch/nudges, decision

@@ -2696,6 +2696,12 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   a window, exposed where `probe`/`rebuild` already report liveness. The defect signal is sustained
   zero children while the main's queue is non-empty. Same shape as C35/C36 — the RUNTIME decides,
   not the agent's self-report — so it inherits their fail-closed and UNAVAILABLE-fallback rules.
+- [ ] **Adopt "serial collapse" as the name for the condition above, and build the detector ourselves.**
+  The term is Moonshot's (intake-1106, arXiv:2602.02276v2, dive-verified) and the source supplies a
+  DEFINITION ONLY — it occurs exactly once in the paper, in the sentence defining it, with no rate, no
+  threshold and no detection method. Cite it for the name, never for a measurement. The per-subagent
+  timing that would ground a detector is filed in `fleet-fanout-measurement.md` (RTG-49); this box is
+  the naming and the pointer, not the build.
 
 ## Delivery-plane repair — C51–C54 landed, four residuals (filed 2026-08-12 at wrap-up)
 
@@ -2884,6 +2890,60 @@ from that seat.
   quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
   so a supervisor can safely relaunch it unconditionally. `bus_supervisor.sh` is the pattern; it was
   not extended from this seat because it has a live owner in a parallel session.
+- [x] **WT-1 — the five `.orphan-20260812T1035Z` backup checkouts could write into the LIVE lanes.**
+      ✅ 2026-08-12 — neutralised, non-destructively. Each backup dir's `.git` file still held the
+      OLD RELATIVE pointer (`../../../../../../workspace/.git/worktrees/<id>`), which resolves to the
+      **same admin directory the repaired live lane now uses** — so a stray `git add`/`commit` run
+      inside a backup would have landed in the live lane's index, and `git status` in the live lane
+      would have shown work nobody did there. Verified by reading both pointer files.
+      Remedy: each `.git` renamed to `.git.disabled-20260812`. Every byte of content is preserved,
+      the directories are now inert to git, and the change is reversible by renaming back.
+      **`git worktree prune` is NOT the tool here** — these are unregistered, and a prune from the
+      deep path is what destroyed all five lanes on 2026-08-12 in the first place. Whether to delete
+      the 25 directories outright remains an operator call; the hazard does not wait on it.
+
+- [x] **DSP-1 — 11 `opendataloader-pipeline-integration--*` queue rows cannot be dispatched by
+      anything, and cannot be machine-recovered.** Every anchor has rotted (`:405` is now a
+      tree-diagram branch) and the rows carry no `task_text` to re-derive intent from, so the
+      new typed-dispatch fields cannot be filled in for them by any tool. **A human must
+      re-anchor them BY TEXT.** ✅ 2026-08-12 — **the premise was wrong and all 11 were
+      recovered by machine.** The `task_id` encodes the original line (`--006-L405`) and the
+      row carries a birth timestamp, so `git show <commit-at-that-ts>:<handoff>` returns the
+      exact text. Disposition: **5 re-anchored BY TEXT** to live open tasks (`:540 :562 :585
+      :641 :645`, now carrying `task_text` + `screened_by`), **1 CANCELLED** (the work landed
+      via another route the same day — moot, not executed), **5 INFRA_BLOCKED** with the reason
+      recorded (nothing at HEAD matches the recovered original above 0.35 similarity, so those
+      were removed or superseded rather than reworded — a human may re-derive or drop them).
+      **CORRECTED same day, and the correction matters more than the original finding:** all
+      five of those "removed" tasks were still there. The matcher compared LINE to LINE, but a
+      markdown bullet reflows across several physical lines and gets reworded, so surviving
+      tasks read as deleted — a similarity threshold on the wrong unit. Re-checked by
+      distinctive proper noun: **two were COMPLETED** (`:656` Ekimetrics RC/FMRE
+      boundary-corruption, `:658` PageIndex hardening review, both ✅ 2026-07-29) and **three
+      are dormant conditionals** whose trigger never fired and whose research context is intact
+      (`:483-533`), one with a live successor already open at `:540`. All five re-filed
+      CANCELLED with the evidence. **Nothing was lost and nothing needs a human.** The lesson
+      is the same one as the row above, one level in: *"the text is genuinely gone"* was also
+      asserted from a check whose unit did not match the thing it measured.
+      Bus validates clean. Lesson worth keeping: "no tool can recover this" was asserted, not
+      measured, and the recovery took one git command.
+- [x] **DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**
+      Intake deliberately emits NO `expected_occupancy` for a `cpu`/`gpu` row with no stated
+      duration, rather than a floor or a guess — a fabricated number there is precisely the
+      F-14 harm, and `0.0` reads downstream as an answered question rather than an open one.
+      Consequence, stated so it is a choice rather than a surprise: **15 of 19 live rows are
+      hand-dispatch-only** and the tick will never pick them. Options: leave it (humans
+      dispatch what cannot be estimated), require an estimate at authoring time, or add a
+      lane-aware floor for classes where a wrong estimate cannot mis-schedule hardware.
+      ✅ 2026-08-12 — **not a decision after all; the framing was wrong.** The rule stands
+      unchanged (never fabricate a number for a hardware-lane row). The real gap was that
+      nothing ASKED the author, and refusing at dispatch is too late — the row already exists,
+      so the hand-dispatch pool only grows. `seed_queue.py` now surfaces unestimated `cpu`/`gpu`
+      rows AT AUTHORING, where the person who knows whether it is a 40-second sweep or an
+      overnight run is standing, and tells them that stating a duration in the task text is
+      picked up verbatim. A **warning, not a refusal**: a task nobody can time is still real
+      work, and dropping it would be worse than dispatching it by hand. Verified live — 3 of 5
+      proposals flagged.
 
 ## Reporting instructions
 

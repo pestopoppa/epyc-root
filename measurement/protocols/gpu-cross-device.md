@@ -36,6 +36,14 @@ produced it.*
 3. **Binary/model identity** — exact worktree, branch, commit, binary path, `LD_LIBRARY_PATH`,
    backend list; exact model path, mmproj (if used), quant, context, KV quant,
    reasoning/sampling flags, spec-dec mode.
+   **The `LD_LIBRARY_PATH`/backend evidence is satisfied ONLY by a verifier-produced
+   linkage receipt captured against the running binary — verifier id and version, the
+   inspected library set with per-library resolved path and sha256, and the verdict —
+   never by a recorded environment string alone. A receipt that inspected no libraries
+   is vacuous and does not satisfy this field.** (Amended 2026-08-12: llama.cpp dlopens
+   `libggml-hip.so`, so a HIP-invoked run can execute wholly on CPU while `ldd` shows
+   nothing — INC-20260731, reproduced twice on 2026-08-12. Governs claims made after
+   this date; artifacts already dispositioned are not re-graded.)
 4. **Run recipe** — warm-up policy; **fresh server per rep** unless resident-server mode
    explicitly declared; discard rules for warm-up reps and shape-change graph recapture; reps
    per the P-BENCH-1 rule (n≥5 for ≥5% claims, n≥10 for ≤2%); fixed prompt/task set,

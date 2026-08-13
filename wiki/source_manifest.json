@@ -1,18 +1,18 @@
 {
   "by_type": {
-    "docs": 67,
-    "handoff-active": 172,
+    "docs": 68,
+    "handoff-active": 174,
     "handoff-blocked": 2,
     "handoff-completed": 164,
-    "progress": 274,
+    "progress": 278,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-12T20:16:59Z",
+  "last_compile": "2026-08-13T08:30:26Z",
   "mode": "full",
-  "scan_time": "2026-08-12T20:52:37Z",
+  "scan_time": "2026-08-13T08:55:05Z",
   "schema_version": 1,
-  "source_set_hash": "be2cb125aaa48df5a61858e0f0e59613f0514bb277a9d1dafd8ef7514c912e00",
+  "source_set_hash": "53e44085d1a657dd2c03545e6c112737135bb566cf2046dd13a9b8fcb093bc14",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -31,10 +31,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b0b04c2c160682ee88c60aa74f78aa601a3550373816d4b3a8ed341ad4bcbaec",
-      "modified": "2026-07-29T15:18:14Z",
+      "content_hash": "3f6f1848f8bd69eeb08d3398f76b7303ee67b58f0409870966547c22e279d14c",
+      "modified": "2026-08-13T07:26:22Z",
       "path": "handoffs/active/agent-collab-rnd-harness.md",
-      "size": 6001,
+      "size": 7093,
       "title": "Agent-Collaboration Harness for Kernel/Orchestration R&D",
       "type": "handoff-active"
     },
@@ -71,10 +71,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ae0a66b891d2c9ae0394a98ba1bf43ac080f93b754fa47365f88bfcbbbfa20f1",
-      "modified": "2026-08-12T20:52:10Z",
+      "content_hash": "c6075f70ea17b7f602d313bb4a5a9f74e624d214aebd6bdd3dd723d98bb81250",
+      "modified": "2026-08-12T21:38:51Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 121545,
+      "size": 115965,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "94327d7fb64bb7dbd8139f9592d26a3964540a636069c01f934b915ee90dd97e",
-      "modified": "2026-08-12T20:20:36Z",
+      "content_hash": "7a999b70a49bb908cc4fb02705f45f21a8d87a576ae489cb360ea8758445d6a2",
+      "modified": "2026-08-13T07:23:54Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 380714,
+      "size": 383900,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -223,10 +223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8d575b355defaabd165a7be599a514d7c8372cb1ffe66642a28928ad966f7885",
-      "modified": "2026-08-12T12:42:27Z",
+      "content_hash": "b6572ee2821c1a8642a34332331016ecc2c82cc6888650a1c547ba12f2fddf00",
+      "modified": "2026-08-13T07:26:04Z",
       "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
-      "size": 104191,
+      "size": 124763,
       "title": "Coordinator role \u2014 failure modes, root causes, and the refactor",
       "type": "handoff-active"
     },
@@ -260,6 +260,14 @@
       "path": "handoffs/active/decision-aware-routing.md",
       "size": 79658,
       "title": "Decision-Aware Routing for Q-Scorer",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "76def87ec40bbfe9cf76fc3070bd759577e286cf4d5de936cf629dad2389a88e",
+      "modified": "2026-08-13T07:25:36Z",
+      "path": "handoffs/active/decomposition-to-batch-mapping.md",
+      "size": 3874,
+      "title": "Decomposition-to-Batch Mapping \u2014 orchestrator decisions onto np/instance slots",
       "type": "handoff-active"
     },
     {
@@ -460,6 +468,14 @@
       "path": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
       "size": 51020,
       "title": "findings-05c \u2014 MI210 gfx90a Speed Campaign: Lever \u00d7 Model-Category Isolation",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "2883c680e0c05446e688b0c01ad301f6256cf314194a219f04921c2d73aab64f",
+      "modified": "2026-08-13T07:25:20Z",
+      "path": "handoffs/active/fleet-fanout-measurement.md",
+      "size": 6743,
+      "title": "Fleet Fan-Out Measurement \u2014 per-subagent timing collector + failure grading",
       "type": "handoff-active"
     },
     {
@@ -911,10 +927,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9e4268c86f62d41000e5590575b4b525ab161fa337e953381949ffcc460b2b1d",
-      "modified": "2026-07-29T18:44:52Z",
+      "content_hash": "34bd831d9c56f61424b9cc9e952029f948025e647b11938d8e376a8d1872da48",
+      "modified": "2026-08-13T07:24:20Z",
       "path": "handoffs/active/outer-coordinator-learned-head.md",
-      "size": 29933,
+      "size": 30001,
       "title": "Outer-Coordinator Learned Head (Claude-driven loop)",
       "type": "handoff-active"
     },
@@ -999,10 +1015,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4b9603ab48d015ef7522d55ef753c6061fccefb67b0ade56ab55d52785544879",
-      "modified": "2026-07-29T19:22:40Z",
+      "content_hash": "a92242010256e7810a4b41f94dc28cdead3568c319fa1c9f044c88ea95b1be19",
+      "modified": "2026-08-13T07:26:16Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 17140,
+      "size": 19096,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1167,10 +1183,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9a93dab22491b4c85d17b5f2f28e1844a10002d88e3fd7de43163a11812456fa",
-      "modified": "2026-08-12T20:13:40Z",
+      "content_hash": "50939c82f65baee8f80906986af366ed6c646708369ede6c7955b5400a6ba903",
+      "modified": "2026-08-13T07:25:54Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 251773,
+      "size": 258516,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -2543,10 +2559,10 @@
       "type": "handoff-completed"
     },
     {
-      "content_hash": "82c6269accebcd4adbed2069e3c764b0d2f3bae1eab662fadb0e64cd89db465c",
-      "modified": "2026-06-20T06:22:32Z",
+      "content_hash": "1e366100b931aa666bb04de8ac4cfbcc6dbe96c1cc9820fc6f7cd3c5457bfcb0",
+      "modified": "2026-08-13T07:24:22Z",
       "path": "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md",
-      "size": 61392,
+      "size": 61469,
       "title": "Routing Intelligence: Semantic Classifiers + Factual-Risk Routing",
       "type": "handoff-completed"
     },
@@ -6015,11 +6031,43 @@
       "type": "progress"
     },
     {
-      "content_hash": "5e8e9448d6c6e6b781c857754c69ce96776e729803d9437a255ab53731ca639b",
-      "modified": "2026-08-12T20:45:47Z",
+      "content_hash": "3ca336571bc2452944f06692bf0252e63897b141c499e6ada8ee8d5121b87795",
+      "modified": "2026-08-12T22:02:50Z",
+      "path": "progress/2026-08/2026-08-12-mainC.md",
+      "size": 4958,
+      "title": "2026-08-12 \u2014 `mainC` session wrap-up",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a27fcb58e609d8554202c9f39fc1da34bb64d45a0698f5c250be52259e2719a3",
+      "modified": "2026-08-12T22:56:16Z",
+      "path": "progress/2026-08/2026-08-12-refactor-session.md",
+      "size": 10751,
+      "title": "2026-08-12 \u2014 coordinator-seat refactor (refactor-session)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3f75af915cc0fbe342b6e60b823bb82d92bb606cd61b9647d01c6201a009ad25",
+      "modified": "2026-08-12T21:57:53Z",
       "path": "progress/2026-08/2026-08-12.md",
-      "size": 507093,
+      "size": 514079,
       "title": "2026-08-12",
+      "type": "progress"
+    },
+    {
+      "content_hash": "92b8557b5583d18436cb1d3ed0a36ad15094cbe493ee82a90e49ef4c09e15239",
+      "modified": "2026-08-13T08:54:37Z",
+      "path": "progress/2026-08/2026-08-13-research-intake.md",
+      "size": 8726,
+      "title": "2026-08-13 \u2014 research-intake: PARL / Kimi agent-swarm sweep, Stages 1\u20134",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ed69afc6185fa1f9deab975f48be36d7ec803fc235d4abb610179f076dcebb27",
+      "modified": "2026-08-13T07:23:54Z",
+      "path": "progress/2026-08/2026-08-13-root.md",
+      "size": 2201,
+      "title": "2026-08-13 \u2014 AutoKernel empirical checkpoint",
       "type": "progress"
     },
     {
@@ -6479,6 +6527,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "6d8815667626fd5e18ab66815179aac63a7263835f3b7a542dd9d173890e0e72",
+      "modified": "2026-08-12T21:49:52Z",
+      "path": "docs/reviews/gpu-linkage-retro-certification-20260812.md",
+      "size": 48976,
+      "title": "P-GPU-1 retro-certification of the ggml-linkage window (2026-07-31 \u2192 2026-08-12)",
+      "type": "docs"
+    },
+    {
       "content_hash": "ff5608f90af7650834b22116fe5faef7d46c3e639416ce5541315723f717ee7f",
       "modified": "2026-08-12T00:24:04Z",
       "path": "docs/reviews/kvquant-27b-decision-package-20260812.md",
@@ -6559,7 +6615,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 818,
+  "total_new": 825,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

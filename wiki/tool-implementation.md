@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
+**Last compiled**: 2026-08-13 (a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
 **Sources**: 40 documents (2026-07-06 focused pass: AutoPilot dashboard regions-lock coherence and local planner provider hardening; 2026-07-05 full pass: project dashboard hub :8100 + recency/Blocked-routing fixes, AutoPilot dashboard live-tps repair, loops-and-dashboards audit, repo-readiness portfolio-L5 milestone + passive pickup launcher wiring, and 2026-07-04 tool-sentinel activation telemetry; prior 2026-07-03 corpus-augmented prompt lookup revalidation and AutoPilot planner-turn tool-use hint rendering, 2026-06-22 DCP context-assembler and stack-change guard cross-refs, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns)
 
 ## Summary
@@ -538,3 +538,38 @@ A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **
 - [`handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md`](../handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md) — the data-truth defects that remain owned separately from this information-architecture work
 - [`handoffs/active/loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md) — the liveness-vs-value instrument finding this plan builds on
 - [`handoffs/active/benchmark-results-dashboard.md`](../handoffs/active/benchmark-results-dashboard.md) — the producer/renderer contract used as the working precedent for the data-plane split
+
+## Compiled Update — 2026-08-13: a licence blocker on failure-trace grading resolved by finding the maintained successor, not by waiting
+
+**Confidence: external** for the tool's own reported metrics (vendor/author-reported, not measured on
+our stack); **verified** for the licence and repository-state facts, which were read directly.
+
+A research-intake dive on MAST (intake-1110, arXiv:2503.13657, the multi-agent failure taxonomy paper)
+found its reference implementation unusable under EPYC's open-source-only sourcing policy: the
+`multi-agent-systems-failure-taxonomy/MAST` repository carries no LICENSE file at all — all rights
+reserved by default. A follow-up dive on the same authors' successor project, AdaMAST (intake-1127,
+arXiv:2607.16387), found it Apache-2.0, actively maintained, and — the detail that matters for us — able
+to detect Codex session transcripts natively, since its loader keys on the exact record-type set our own
+Codex rollouts already use. Claude Code transcripts need a small normalizer (roughly 60–120 LOC) to the
+tool's four-field canonical schema (`problem_id, task, raw_trajectory, metadata`); Codex needs none.
+
+**The more important reversal happened inside the same dive.** An earlier pass on this material had
+concluded that neither of our transcript corpora carries a machine-readable success/failure verdict, and
+that building one was "the real blocker" before any grading tool could run. Re-reading AdaMAST's own
+induction code overturned that: its taxonomy-induction step is deliberately **outcome-blind** — it
+strips any outcome or gate-status field from a trace before an LLM judge ever sees it, precisely so the
+induced categories describe failure *modes*, not success labels. A fixed-catalog grading pass (running
+MAST's 14 published codes through AdaMAST's judge rather than inducing a new taxonomy) needs no oracle
+and costs roughly one LLM call per trace. The oracle question is real but smaller than first framed: it
+gates a *second-stage*, fleet-specific taxonomy induction, not the first useful grading pass.
+
+Both tools are cited on the strength of author-reported metrics only; neither has been run against our
+own corpus yet. The work is filed, not adopted — see the [Fleet Fan-Out
+Measurement](../handoffs/active/fleet-fanout-measurement.md) stub's FM-2 task for the planned pilot.
+
+### Source References
+
+- `research/intake_index.yaml` intake-1110 (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
+- [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — FM-2, the planned pilot run
+- [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
+- [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record

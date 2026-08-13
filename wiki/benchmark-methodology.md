@@ -2066,3 +2066,57 @@ instrument, so speed does not weaken the proof boundary.
 - [`kernel-promotion-resident-fast-path.md`](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/design/kernel-promotion-resident-fast-path.md) — measured overhead audit, memory-fit proof, resident schedule and fallback rules.
 - [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — V9-8 implementation/ratification task and request-local speculation contract.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — v9 qualification context and durable-design checkpoint.
+
+## Tuning constants are CALL-SHAPE specific, not machine constants (2026-08-12)
+
+Four independent instances in one day, all the same mistake in different clothing: a constant
+measured against one usage was reused for a different usage, and every one degraded silently while
+looking correct.
+
+| constant | measured for | reused for | cost |
+|---|---|---|---|
+| `intra_op=8` (ONNX) | one single-row request-path call | a 28k-chunk bulk sweep | machine ran at **4.6%** of a 192-thread host |
+| `intra_op=8` | single-row encoder | **batched** `score_pairs()` (N rows/`run()`) | ~40% at batch=50 (best is 16) |
+| `-fa 1` | LFM2.5 on MI210 | gemma4 on the **same GPU** | gemma is 12.9% faster at `-fa 0` — opposite optimum |
+| Q4 over Q8 | CPU decode (Q4 1.60× ahead) | GPU decode | ordering **inverts**; Q8 marginally ahead |
+| 176 workers | "saturate 192 cores" | actual throughput | **48 workers are 3× faster** — each carries `1+len(affinity mask)` threads |
+
+**The rule**: a tuning constant is valid only for the call shape it was measured against. Copying it
+to a consumer with a different batch size, device, or process topology is a new experiment, not
+reuse — and it will not announce itself, because every test still passes.
+
+The worker-count case is the sharpest: choosing a pool size from *core count* rather than from
+*measurement* produced a 3× regression, and the bottleneck was not where anyone would look — not
+ONNX, not BLAS, but `tokenizer.encode()`, whose thread pool `OMP/OPENBLAS/RAYON_NUM_THREADS=1` do
+not suppress.
+
+## Four more ways a check passes for the wrong reason (2026-08-12)
+
+Extending the vacuous-verification catalogue with faces found in one day of measurement work:
+
+- **A flag that is ACCEPTED and IGNORED.** `llama-cli`/`llama-completion` parse `-rea off` and do
+  nothing with it (`default_template_kwargs` is consumed only by `common_chat_format_example`);
+  `llama-server` honours it. This produces **thinking-ON numbers labelled thinking-OFF** — it fails
+  in the direction that *flatters* a reasoning model. A flag that errors is safe; one that is
+  accepted and ignored is not. Render the prompt yourself and prove it by **diffing token
+  sequences**, with the tool's own render as the control.
+- **EXISTENCE asserted as VALIDITY.** "Every `emb_path` resolves to a file" passes trivially on a
+  file truncated mid-write. After an unclean reboot the meaningful check is *load every artifact and
+  assert its shape/dtype/finiteness* — and sample **across the failure boundary**, because a sample
+  drawn only from post-event work cannot detect pre-event damage.
+- **The WRONG BASELINE.** A migration read as "855 embeddings short" only because the comparison
+  directory held 2,753 orphaned files beyond its own catalog. Against its own catalog it was
+  complete. Compare a thing to its own manifest, not to a sibling that may have drifted.
+- **A HEADLINE that measures corpus drift, not the change.** A prefix migration read as −4pp recall;
+  restricted to the cases whose evidence existed in **both** catalogs, recall was identical and only
+  ranking moved. Uncontrolled before/after comparison across an index rebuild measures the rebuild.
+
+**Cheaper than the obvious remedy**: when an artifact store is suspect, *validate all* rather than
+*rebuild all* — validation is a load-and-check, rebuilding is a forward pass. 27,405 embeddings
+validated exhaustively in **0.3 s at 7,270% CPU**, versus ~10 minutes to re-embed. Certainty by
+exhaustion, at a fraction of the cost, and it re-does only what fails.
+
+**Source references**
+- `progress/2026-08/2026-08-12.md` — all five constants and all four faces, with measurements
+- `handoffs/active/architect-model-selection-bench.md` — the `-fa`, quant and token-count findings
+- `handoffs/active/shape-keyed-contention-gating.md` — host-health provenance and the timeout-laundering fix

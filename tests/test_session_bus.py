@@ -3736,6 +3736,43 @@ def _c50_bed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return (stale, live, rot), (latest, {"load_class": "idle"}, "")
 
 
+def test_STALE_REQUEUED_is_assignable_or_the_dispatcher_is_inert(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A requeued row must be pickable again, or "requeued" is a lie.
+
+    The stall ladder writes STALE_REQUEUED when a lease expires AND attempts
+    remain, and writes INFRA_BLOCKED when they are exhausted — so the retry bound
+    lives in the ladder, not in eligibility. Nothing anywhere converts the status
+    back to READY. When `_eligible` demanded READY, a requeued row could never be
+    picked by anything again: measured 2026-08-12, 17 of 19 live queue rows sat in
+    that state, unassignable no matter how well screened or estimated. That is a
+    second, independent way to ship a dispatcher that never dispatches.
+
+    Pinned as a PROPERTY over ASSIGNABLE_STATUSES rather than a spelling, so
+    narrowing the tuple fails here rather than going quiet in production.
+    """
+    (_stale, live, _rot), (latest, snap, tok) = _c50_bed(tmp_path, monkeypatch)
+
+    assert "STALE_REQUEUED" in coordinator.ASSIGNABLE_STATUSES, (
+        "STALE_REQUEUED must remain assignable; if it is ever narrowed back, the "
+        "status needs renaming too — a name that says 'requeued' while nothing can "
+        "dequeue it is the defect, not the fix."
+    )
+
+    for status in coordinator.ASSIGNABLE_STATUSES:
+        row = dict(live, status=status)
+        latest_row = dict(latest, **{row["task_id"]: row})
+        ok, why = coordinator._eligible(row, latest_row, snap, tok)
+        assert ok is True, f"status={status} must be assignable — got {why!r}"
+
+    # And the bound still holds: a terminal status is still refused, so this is a
+    # widening of exactly one state, not a removal of the status gate.
+    blocked = dict(live, status="INFRA_BLOCKED")
+    ok, why = coordinator._eligible(blocked, dict(latest, **{blocked["task_id"]: blocked}),
+                                    snap, tok)
+    assert ok is False and "INFRA_BLOCKED" in why, why
+
+
 def test_C50_probe_the_consumer_refuses_a_READY_row_whose_box_is_closed(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The probe that would have caught the stuck picker.
@@ -4073,3 +4110,284 @@ def test_C50b_spec_ref_survives_a_status_rewrite(tmp_path: Path) -> None:
         {"task_id": "T", "status": "READY", "spec_ref": "h.md#L3,box=a~b"})}
     assert rewritten["spec_ref"] == "h.md#L3,box=a~b", (
         "a status rewrite must carry the reference forward or C50 has nothing to check")
+
+
+# =========================================================== R-16 / Phase 6 ===
+#
+# THE AUTOMATIC-DISPATCH GATE.
+#
+# The daemon holds `assign` authority, so its between-turns tick can dispatch
+# without a human in the loop. Operator decision R-16 (option B, 2026-08-12)
+# permits that ONLY deterministically and ONLY for a row carrying the AUD-2 typed
+# evidence. These probes pin the two refusal codes apart, prove a refused row is
+# REPORTED rather than skipped, prove a fully typed row still goes, and pin the
+# occupancy-aware ordering.
+#
+# Every probe drives `apply_assignment` — the real write path — not the gate
+# predicate alone. A regression that routed around the gate (folding the queue
+# differently, or re-adding the row after the pick) would leave a predicate-only
+# test green, which is the C50 lesson applied one layer up.
+
+def _assign_config(bus_root: Path) -> dict:
+    """The fixture config with the daemon raised to `assign`, on disk and returned."""
+    config = json.loads((bus_root / "config.yaml").read_text())
+    config["coordinator_daemon"]["authority"] = "assign"
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    return config
+
+
+def _typed_row(task_id: str, *, est_h: float = 2.0, priority: str = "P1", **extra: object) -> dict:
+    """A queue row carrying the full AUD-2 evidence the gate demands."""
+    return _queue(task_id, priority=priority,
+                  task_text=f"the backlog row text for {task_id}",
+                  screened_by="backlog_row_check.py @ 2026-08-12T00:00:00Z",
+                  expected_occupancy={"est_h": est_h, "basis": "test fixture"},
+                  **extra)
+
+
+def _refusals(emitted: list[dict], task_id: str) -> list[dict]:
+    return [r for r in emitted if r.get("kind") == "dispatch-refused"
+            and r.get("task_id") == task_id]
+
+
+def _assigned(emitted: list[dict]) -> dict[str, str]:
+    """task_id -> agent, over this tick's real assignments."""
+    return {str(r["task_id"]): str(r["agent"]) for r in emitted if r.get("kind") == "assigned"}
+
+
+def _task_assigns(bus_root: Path, agent: str) -> list[dict]:
+    return [r for r in _read_jsonl(bus_root / "inbox" / f"{agent}.jsonl")
+            if r.get("kind") == "task-assign"]
+
+
+def test_R16_unscreened_row_is_refused_by_name_and_never_dispatched(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """No `screened_by` -> refused as `unscreened`, reported, and NOT assigned.
+
+    The failure this closes: overnight 2026-08-11/12 the tick emitted 4,602
+    would-assign picks resolving to 9 distinct rows out of ONE file, none of which
+    anything had re-derived. A dispatcher acting on an unverified row is the
+    hazard; going quiet about it is the second hazard, so the refusal must be
+    visible and attributable, not a silent skip.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-unscreened")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}, "an unscreened row must not be auto-dispatched"
+    refusals = _refusals(emitted, "T-unscreened")
+    assert refusals, "refused silently — a pass-over with no stated reason is not a refusal"
+    assert {r["gate"] for r in refusals} == {coordinator.DISPATCH_GATE_UNSCREENED}
+    for r in refusals:
+        assert "unscreened" in r["reason"] and "screened_by" in r["reason"], r
+        assert "T-unscreened" in r["reason"], "the refusal must NAME the row"
+    assert bus.fold_queue(bus_root)["T-unscreened"]["status"] == "READY"
+    assert _task_assigns(bus_root, "alice") == [] and _task_assigns(bus_root, "bob") == []
+
+
+def test_R16_screened_row_with_no_occupancy_is_a_DIFFERENT_named_refusal(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Screened but no `est_h` -> refused as `no-occupancy-estimate`, distinctly.
+
+    F-14: a card was fed 40-second sweeps while reading idle, because no dispatch
+    could express how long the work should hold the hardware. Collapsing the two
+    codes into one "not eligible" would make the two defects indistinguishable in
+    the record — and each is fixed by editing a DIFFERENT field.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-no-occ")
+    del row["expected_occupancy"]
+    _append(bus_root / "queue.jsonl", row)
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}
+    refusals = _refusals(emitted, "T-no-occ")
+    assert refusals
+    assert {r["gate"] for r in refusals} == {coordinator.DISPATCH_GATE_NO_OCCUPANCY}
+    assert coordinator.DISPATCH_GATE_NO_OCCUPANCY != coordinator.DISPATCH_GATE_UNSCREENED
+    for r in refusals:
+        assert "occupancy" in r["reason"] and "est_h" in r["reason"], r
+    # est_h present but ZERO is the same refusal: a row claiming no duration at all
+    # is exactly the seconds-long work F-14 is about.
+    assert coordinator.dispatch_gate(
+        {"task_id": "z", "screened_by": "x",
+         "expected_occupancy": {"est_h": 0}})[1] == coordinator.DISPATCH_GATE_NO_OCCUPANCY
+
+
+def test_R16_a_fully_typed_row_IS_dispatched_with_its_evidence_on_the_payload(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The gate must be a gate, not a wall. Fail-direction sentinel for the two above."""
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    _append(bus_root / "queue.jsonl", _typed_row("T-typed", est_h=3.5))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {"T-typed": "alice"}, emitted
+    assert _refusals(emitted, "T-typed") == []
+    assert bus.fold_queue(bus_root)["T-typed"]["status"] == "ASSIGNED"
+    sent = _task_assigns(bus_root, "alice")
+    assert len(sent) == 1
+    payload = sent[0]["payload"]
+    assert payload["task_text"] == "the backlog row text for T-typed"
+    assert payload["screened_by"].startswith("backlog_row_check.py")
+    assert payload["expected_occupancy"]["est_h"] == 3.5
+
+
+def test_R16_between_two_eligible_rows_the_DEEPER_one_is_chosen(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Equal priority -> larger `expected_occupancy.est_h` wins, deterministically.
+
+    F-14 again, from the scheduling side: handing an idle main six minutes of work
+    leaves it idle again inside the same tick interval while every occupancy
+    instrument reads busy. The task_id ordering is deliberately ADVERSARIAL here —
+    the shallow row sorts first alphabetically, so a green result cannot come from
+    the old (priority, task_id) ordering.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    _append(bus_root / "queue.jsonl", _typed_row("T-a-shallow", est_h=0.2))
+    _append(bus_root / "queue.jsonl", _typed_row("T-b-deep", est_h=6.0))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted)["T-b-deep"] == "alice", emitted
+    # Explainable and total, straight off `_pick`: priority still outranks depth.
+    deep_p2 = _typed_row("T-deep", est_h=9.0, priority="P2")
+    shallow_p1 = _typed_row("T-shallow", est_h=0.1, priority="P1")
+    assert coordinator._pick([deep_p2, shallow_p1])["task_id"] == "T-shallow"
+    assert coordinator._pick([shallow_p1, deep_p2])["task_id"] == "T-shallow"
+    # No occupancy sorts LAST within its class, and ties break on task_id.
+    bare = _queue("T-bare", priority="P1")
+    assert coordinator._pick([bare, shallow_p1])["task_id"] == "T-shallow"
+    twin = _typed_row("T-aaa", est_h=0.1, priority="P1")
+    assert coordinator._pick([shallow_p1, twin])["task_id"] == "T-aaa"
+
+
+def test_R16_the_gate_is_specific_to_the_AUTOMATIC_path(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Advisory/manual view keeps showing a human every row they may still dispatch.
+
+    Two rules, one field: the daemon may not act on an unscreened row, but a human
+    author may (`check_task_assign` WARNS and proceeds). If the gate leaked into
+    the ungated advisory path, the coordinator's own reading of the queue would go
+    dark on exactly the rows that need a human decision.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = json.loads((bus_root / "config.yaml").read_text())
+    row = _typed_row("T-unscreened")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+
+    ungated = coordinator.compute_advice(bus_root, config, epoch=1)
+    assert any(r.get("kind") == "would-assign" and r.get("task_id") == "T-unscreened"
+               for r in ungated), "the advisory view must still show the pick"
+    assert not [r for r in ungated if r.get("kind") == "dispatch-refused"]
+
+    gated = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    assert not [r for r in gated if r.get("kind") == "would-assign"
+                and r.get("task_id") == "T-unscreened"]
+    assert [r["gate"] for r in gated if r.get("kind") == "dispatch-refused"] == [
+        coordinator.DISPATCH_GATE_UNSCREENED]
+    # ONE refusal record for ONE row, not one per agent: 4,602 records from 9 rows
+    # is the shape this repo already paid for once.
+    assert len([r for r in gated if r.get("kind") == "dispatch-refused"]) == 1
+
+
+def test_R16_a_gated_row_does_not_starve_the_row_behind_it(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Refusal must EXCLUDE from candidacy, not just veto at the write.
+
+    If the gate only refused after `_pick`, a top-priority unscreened row would
+    consume the pick every tick and the dispatchable row behind it would never go
+    out — a gate that quietly becomes a stop.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    blocker = _typed_row("T-blocker", est_h=8.0, priority="P0")
+    del blocker["screened_by"]
+    _append(bus_root / "queue.jsonl", blocker)
+    _append(bus_root / "queue.jsonl", _typed_row("T-behind", est_h=1.0, priority="P1"))
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted).get("T-behind") == "alice", emitted
+    assert "T-blocker" not in _assigned(emitted)
+    assert _refusals(emitted, "T-blocker")
+
+
+def test_R16_drain_reports_ready_depth_per_lane_and_hours_in_flight(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """The boundary reading: queued depth per lane + hours actually held.
+
+    Sums `est_h` over ASSIGNED/CLAIMED/RUNNING only. Terminal and READY rows are
+    not occupancy, and an in-flight row with NO estimate is reported as unknown
+    depth rather than folded in as zero — summing it as 0 would make a loaded
+    fleet read empty, which is the reading this line exists to replace.
+    """
+    _provision(bus_root, *AGENTS)
+    q = bus_root / "queue.jsonl"
+    _append(q, _typed_row("R-none-1", lane="none"))
+    _append(q, _typed_row("R-none-2", lane="none"))
+    _append(q, _typed_row("R-gpu-1", lane="gpu"))
+    _append(q, _typed_row("F-1", lane="gpu", est_h=4.0, status="ASSIGNED", owner="alice"))
+    _append(q, _typed_row("F-2", lane="cpu", est_h=2.5, status="RUNNING", owner="bob"))
+    _append(q, _typed_row("F-3", lane="none", est_h=99.0, status="DONE_PASS", owner="bob"))
+    unestimated = _typed_row("F-4", lane="none", status="CLAIMED", owner="bob")
+    del unestimated["expected_occupancy"]
+    _append(q, unestimated)
+
+    assert bus.main(["--bus-root", str(bus_root), "drain", "--agent", "alice"]) == 0
+    line = [l for l in capsys.readouterr().err.splitlines() if "queue READY by lane" in l]
+    assert len(line) == 1, "exactly one depth line per drain"
+    assert "[gpu=1, none=2]" in line[0], line[0]
+    assert "3 row(s) in flight" in line[0], line[0]
+    assert "6.5h" in line[0], "4.0 + 2.5; the DONE_PASS row's 99h must not be counted"
+    assert "1 of them state NO occupancy" in line[0], line[0]
+    # And the older untyped field is honoured by the same resolver the gate uses.
+    assert bus.row_occupancy_h({"est_wall_clock_h": 1.5}) == 1.5
+    assert bus.row_occupancy_h({"expected_occupancy": {"est_h": 2}, "est_wall_clock_h": 9}) == 2.0
+    assert bus.row_occupancy_h({}) is None
+
+
+def test_R16_the_write_path_refuses_even_when_the_pick_path_is_bypassed(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The second half of the fail-closed pair, pinned on its own.
+
+    The candidate-scan gate and the write-path re-check are defence in depth, and
+    depth that is never exercised is decoration. The regression this models is not
+    hypothetical — it is C50's shape: something upstream of the write hands the
+    write a pick it should not have made (a different fold, a re-added row, a
+    caller that forgets `gate_dispatch=True`). Here `compute_advice` is replaced
+    with one that names an unscreened row, and the write must still refuse.
+    """
+    _provision(bus_root, *AGENTS)
+    _quiet_tick_seams(monkeypatch)
+    config = _assign_config(bus_root)
+    row = _typed_row("T-bypassed")
+    del row["screened_by"]
+    _append(bus_root / "queue.jsonl", row)
+    monkeypatch.setattr(coordinator, "compute_advice", lambda *a, **k: [{
+        "schema_version": coordinator.ADVISORY_SCHEMA, "kind": "would-assign",
+        "agent": "alice", "task_id": "T-bypassed", "lane": "none"}])
+
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=1)
+
+    assert _assigned(emitted) == {}, "the write path took a pick the gate should refuse"
+    refusals = _refusals(emitted, "T-bypassed")
+    assert refusals and refusals[0]["gate"] == coordinator.DISPATCH_GATE_UNSCREENED
+    assert "write path" in refusals[0]["reason"], refusals[0]
+    assert bus.fold_queue(bus_root)["T-bypassed"]["status"] == "READY"
+    assert _task_assigns(bus_root, "alice") == []

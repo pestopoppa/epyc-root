@@ -190,6 +190,13 @@ only the tasks whose nudge happened to repeat it. Measured cost that day: **1,07
 items** — distinct unchecked task rows across the six domain indices — while all five mains worked
 coordination plumbing, largely serially.*
 
+**When NOT to fan out.** Sequential phases of the same work; tightly coupled components; work
+requiring shared state; and any decomposition by ROLE rather than by context boundary — the last is
+a named anti-pattern, measured as subagents spending more tokens on coordination than on work.
+Source: intake-1121 (Anthropic, 2026-01-23, dive-verified via `/research-intake`). Width 3–5 above
+is unchanged and vendor-endorsed verbatim; this adds the negative conditions the rule previously
+lacked, ratified 2026-08-13.
+
 Coordinator-side strict form (its main thread spends NO time on execution work):
 `agents/coordinator-agent.md` → Guardrails.
 

@@ -85,6 +85,31 @@ TERMINAL_STATES = frozenset(
     {"DONE_PASS", "DONE_MARGINAL_OBS", "FAILED", "CANCELLED"}
 )
 
+# A row someone is holding right now: dispatched and not yet finished. Distinct
+# from TERMINAL_STATES' complement, which also contains READY, INFRA_BLOCKED,
+# HELD_OP_GATE and STALE_REQUEUED — none of which is occupying anybody.
+IN_FLIGHT_STATES = frozenset({"ASSIGNED", "CLAIMED", "RUNNING"})
+
+
+def row_occupancy_h(row: dict) -> Optional[float]:
+    """The queue row's expected occupancy in hours, or None if it states none.
+
+    AUD-2 / F-14. The typed `expected_occupancy.est_h` first, then the queue's
+    own older `est_wall_clock_h`. ONE definition, shared by the coordinator's
+    automatic-dispatch gate, its pick ordering, and the drain depth line — three
+    readings of "how loaded is the fleet" that must not be able to disagree.
+    """
+    occ = row.get("expected_occupancy")
+    raw = occ.get("est_h") if isinstance(occ, dict) else None
+    if raw is None:
+        raw = row.get("est_wall_clock_h")
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
 
 class BusError(RuntimeError):
     """Protocol or validation violation. Message is operator-facing."""
@@ -1664,6 +1689,47 @@ def _print_fleet_watch_occupancy(bus_root: Path) -> None:
     print(f"   {line}", file=sys.stderr)
 
 
+def _print_queue_depth(bus_root: Path) -> None:
+    """READY depth per lane + the hours currently in flight.
+
+    Phase 6 / F-14. "Is the fleet actually loaded?" was a guess made from pane
+    text and heartbeats, both of which report OCCUPANCY OF AN AGENT, never DEPTH
+    OF WORK — which is how a card was fed 40-second sweeps while every instrument
+    read busy. Two numbers turn it into a reading: how much is queued and
+    dispatchable per lane, and how many hours of work the fleet is actually
+    holding right now.
+
+    `in-flight h` sums `expected_occupancy.est_h` over ASSIGNED/CLAIMED/RUNNING
+    rows only. Rows in flight with no stated occupancy are COUNTED SEPARATELY and
+    named, never folded in as zero: an unestimated row is unknown depth, and
+    silently summing it as 0 would make a loaded fleet read empty — the exact
+    laundering this line exists to stop.
+    """
+    try:
+        latest = fold_queue(bus_root)
+    except Exception as exc:  # noqa: BLE001
+        print(f"boundary: queue depth UNREADABLE ({exc})", file=sys.stderr)
+        return
+    ready: dict[str, int] = {}
+    for row in latest.values():
+        if row.get("status") == "READY":
+            lane = str(row.get("lane") or "?")
+            ready[lane] = ready.get(lane, 0) + 1
+    in_flight = [r for r in latest.values() if r.get("status") in IN_FLIGHT_STATES]
+    hours, unestimated = 0.0, 0
+    for row in in_flight:
+        est = row_occupancy_h(row)
+        if est is None:
+            unestimated += 1
+        else:
+            hours += est
+    lanes = ", ".join(f"{lane}={ready[lane]}" for lane in sorted(ready)) or "none ready"
+    tail = (f" ({unestimated} of them state NO occupancy — that depth is UNKNOWN, "
+            f"not zero)" if unestimated else "")
+    print(f"boundary: queue READY by lane [{lanes}]; {len(in_flight)} row(s) in flight "
+          f"holding {hours:.1f}h of estimated work{tail}.", file=sys.stderr)
+
+
 def cmd_drain(args: argparse.Namespace) -> int:
     """Print this agent's inbox past its cursor and advance. The one-liner
     agents run at every task boundary."""
@@ -1731,6 +1797,7 @@ def cmd_drain(args: argparse.Namespace) -> int:
         _print_scripts_hygiene(bus_root)
         _print_owed_actions(bus_root, args.agent)
         _print_fleet_watch_occupancy(bus_root)
+        _print_queue_depth(bus_root)
     if getattr(args, "triage", False):
         print_triage(bus_root, args.agent)
     return 0
