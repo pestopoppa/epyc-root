@@ -3507,14 +3507,15 @@ future sweep.)*
       1,954/1,954. Durable T0 output proved scheduler execution; research `da7d14fa` parses its
       bare timestamp format. Research `430443c5` preserves a legitimate T0 refusal rather than
       misclassifying it as a candidate-record error. r23 produced no throughput result.
-- [ ] **Reboot for the final r24 IQK intervention/control pair.** r24's dry-runs bind the final
+- [ ] **Reboot, then generate and run fresh r25 IQK intervention/control pair.** r24's dry-runs bind the final
       `283b520b…` instrument, the accepted five-control bundle above, and 11 precommitted pairs.
       Its live preflight refused before build or benchmark because only 9/96 cores met 2.5 GHz at
       real load (80 required) and load/core exceeded the contamination gate; production was PASS.
-      After an operator reboot, rerun r24 intervention, then r24 A/A control, then the decode
+      r24 is terminal and immutable. After an operator reboot, generate the fresh matched r25 pair
+      from these same accepted bindings, execute intervention then A/A control, then the decode
       holdout and heldout-bound prefill chain.
-- [ ] **Run a clean, governed CPU decode IQK holdout after the r3 prefill pair.** It must use the same
-      candidate frame but target `decode`, then be projected from its completed journal before r3 may
+- [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
+      candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
       prefill pair cannot substitute.
 - [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
