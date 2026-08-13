@@ -4234,7 +4234,7 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         if tid in released_this_tick:
             continue
         row = latest.get(tid) or {}
-        if row.get("status") != "READY":
+        if row.get("status") not in ASSIGNABLE_STATUSES:
             continue
         # Fail closed at the WRITE, not only at the pick. The gate above runs
         # inside compute_advice, which the advisory path also calls with the gate
