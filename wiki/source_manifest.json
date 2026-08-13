@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-13T19:36:55Z",
+  "last_compile": "2026-08-13T21:03:54Z",
   "mode": "full",
-  "scan_time": "2026-08-13T19:37:24Z",
+  "scan_time": "2026-08-13T21:04:40Z",
   "schema_version": 1,
-  "source_set_hash": "3beabda10153a9f8b1cbaff83dc3b1b01bc7c85e8898f252650dbec7e3b3061d",
+  "source_set_hash": "9a17158ad42ee89696f852925a915f7ef23bb0c99e1cb8acfba70e77dc46af99",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1dfad1be383eb59c8e89ac3c914889ad0dd216aed8671e043d56c067b7c6c4a6",
-      "modified": "2026-08-13T17:24:22Z",
+      "content_hash": "af811669887c225a62529bc86b1f539d630d127494483d0a957d9935a4871e04",
+      "modified": "2026-08-13T20:57:34Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 395655,
+      "size": 397384,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -1159,10 +1159,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3275b19197b04076cb38dc27c8485d91bed40af9d9215aa3596b4ab0aaa0ab67",
-      "modified": "2026-08-13T19:33:59Z",
+      "content_hash": "379e462471619991e79d10c62e29dc8ad146a19860bc88167185088630b089e8",
+      "modified": "2026-08-13T21:02:08Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
-      "size": 264953,
+      "size": 266240,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -6063,10 +6063,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "9e80ac730b1101730aacabc29a056d309ec404b3ee223d87333902c99ee5af0c",
-      "modified": "2026-08-13T19:37:19Z",
+      "content_hash": "73bb15f85ba9bddf4274f662a65171fc523d06a1c3d38283f5aafbaa18cf3d53",
+      "modified": "2026-08-13T21:04:35Z",
       "path": "progress/2026-08/2026-08-13-auditor.md",
-      "size": 14151,
+      "size": 16220,
       "title": "2026-08-13 \u2014 auditor",
       "type": "progress"
     },
@@ -6087,10 +6087,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "658f2d8a68b1455c31407f75730ade3ac06c2cf9ee46ea7f53212d354beff9df",
-      "modified": "2026-08-13T19:27:49Z",
+      "content_hash": "e40413cfd635cbab8c8c01fa4329169b97a3caca035128c32c00380002172166",
+      "modified": "2026-08-13T20:57:34Z",
       "path": "progress/2026-08/2026-08-13-mainB.md",
-      "size": 6423,
+      "size": 7851,
       "title": "2026-08-13 \u2014 mainB",
       "type": "progress"
     },

@@ -2,8 +2,39 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (independent audit found the new compute-dialogue kinds structurally valid but authority-open; dedicated-role and fan-out findings retained below)
-**Sources**: 88+ documents
+**Last compiled**: 2026-08-13 (the first live role-admission canary failed because the daemon ran an unguarded stale source; compute-dialogue and dedicated-role findings retained below)
+**Sources**: 91+ documents
+
+## Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
+
+**Confidence: verified by the live queue/advisory records, process start time, source identity, and
+tracked code comparison.** The first live role-admission canary assigned ordinary AP-ME-1 backlog
+work to Auditor even though the roster declares `schedulable: false` and
+`accepts_work_types: [audit]`. Auditor declined before editing or compute; coordinator-agent revoked
+the lease, and the queue can return to an ordinary main.
+
+The tracked `compute_advice` implementation already contains the needed refusal: a non-schedulable
+role is skipped unless explicitly targeted with an accepted work type, and a generic row is rejected
+again during candidate evaluation. The running daemon did not contain that code. It started at
+19:48:03Z from the shared-main tree at `ff7a5e6f`, which does not contain `d7b83ddf9`; the stale source
+was materialized before process start, so this was not a stale-process-after-file-update ambiguity.
+
+The rollout lesson is sharper than “restart the daemon”: deployment acceptance must prove the exact
+running source before testing behavior. AIR-6 now requires source-version proof plus a mutation
+canary in which an ordinary untyped `lane:none` row is refused by Auditor. Only after that should
+audit `shadow` or resource `observe` advance. GitNexus rates `compute_advice` HIGH reach across four
+assignment/coordinator flows, so the wrap-up changed the deployment gate rather than patching or
+reloading the live control plane.
+
+### Source References (2026-08-13 role-admission canary)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-6 failed
+  canary evidence/retry gate and AIR-10 disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
+  source, queue, and role-contract audit.
+- [`config.yaml`](../coordination/session-bus/config.yaml) and
+  [`auditor-main.md`](../agents/auditor-main.md) — authoritative schedulability and accepted-work
+  contract.
 
 ## Compiled Update — 2026-08-13: typed compute messages are not yet an authority boundary
 

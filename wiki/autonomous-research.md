@@ -2,8 +2,35 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (AutoKernel's post-reboot CPU instrument passed its five controls, while r29 remained inadmissible and non-rankable; earlier findings retained)
-**Sources**: 107+ documents
+**Last compiled**: 2026-08-13 (the lean sequencer/champion path was verified already restored; post-reboot CPU instrument and refusal findings retained below)
+**Sources**: 110+ documents
+
+## Compiled Update — 2026-08-13: the sequencer restoration was complete before its duplicate row was dispatched
+
+**Confidence: verified from current research code, focused tests, and commit history.** AK-RUN-3 was
+still unchecked even though the lean bank/frontier/champion path had landed on 2026-08-12. The
+reconciliation verified the implementation element by element: proposal/candidate/evaluation
+records feed distinct frontier, banked, and champion state; compatible members are composed and
+directly re-evaluated; `CHAMPION_UPDATED` appends idempotently; production-anchor changes require a
+matching sealed receipt; rejected composition preserves the incumbent; and member speedups are never
+added arithmetically. The focused champion suite passed 16 tests, including import closure,
+re-anchoring refusal, and idempotent replay.
+
+This is another stale-premise dispatch, not new implementation work. The earlier restoration record
+and the later AK-RUN-3 row described the same outcome in different parts of the long handoff; the
+checkbox was reconciled rather than reimplementing the sequencer. One adjacent campaign-rehearsal
+failure remains an unrelated environment/fixture issue: its relative model path is correctly refused
+by the hardened absolute-path contract.
+
+### Source References (2026-08-13 sequencer reconciliation)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-RUN-3
+  element-by-element verification and original restoration pointer.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — independent
+  premise check and focused-test result.
+- [`champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/champion.py)
+  and [`test_champion.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/test_champion.py) — current
+  composition/re-anchor semantics and regression coverage.
 
 ## Compiled Update — 2026-08-13: accepted controls do not make a refused paired attempt archive evidence
 
