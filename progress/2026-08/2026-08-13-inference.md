@@ -76,3 +76,18 @@ reload, process mutation, research-code change, kernel-tree mutation, or release
 - GitNexus was current. The markdown target has no executable symbol; related consumers are the
   handoff index generator and Kernel-R&D dashboard reader, so validation covers those generated
   contracts rather than claiming a code blast radius.
+
+## R36/r41 handoff divergence reconciliation
+
+The unmerged local checkpoint `23bc70c1` and pushed checkpoint `e1781969` share base `0e3035376`;
+the former uniquely recorded the r4 calibration and terminal r34/r35/r36 attempts, while the latter
+correctly advanced current state through rankable r41. The active handoff now keeps r4–r36 as a dated
+historical checkpoint and completed checklist item, retains r41 as the first rankable intervention,
+and advances current execution state to the dry-run-clean fresh r42 pair. It also records the terminal
+decode-r2 calibration rejection without treating it as holdout authority.
+
+INF-06 now points to the actual next imperative: execute the fresh r42 matched prefill pair, then
+recalibrate decode and complete the held-out/archive/evaluation chain. The obsolete instruction to
+rerun the immutable terminal r41 control is removed. The reconciliation also collapsed duplicate and
+fragmented checkpoint prose introduced by the divergent edits; no empirical claim, production state,
+or campaign artifact was mutated by this documentation repair.

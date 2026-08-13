@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** R41 IQK INTERVENTION RANKABLE / CONTROL IDENTITY RACE FIXED / CONTROL REPLAY + DECODE HOLDOUT NEXT — updated 2026-08-13
+**Status:** R41 IQK WIN PRESERVED / FRESH R42 PREFILL PAIR READY / DECODE CALIBRATION REJECTED, FRESH CALIBRATION NEXT — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,7 +18,7 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-13):** the post-reboot r41 intervention is the first clean rankable
+**Current checkpoint (2026-08-13 16:01 UTC):** the post-reboot r41 intervention is the first clean rankable
 known-real CPU IQK result: all 15 precommitted paired blocks favoured IQK, median relative prefill gain
 was **+27.6481989%**, the e-value was `321.1221863` against threshold `10`, T0 passed, production
 remained byte-identical, and both the full-host CPU claim and campaign worktree released. Its matched
@@ -28,13 +28,35 @@ journal remains an honest `t0_failed` record; it is not archive evidence and doe
 intervention. Research `a65e638a` seals evaluator identity at campaign start and carries that identity
 through the evaluation window, closing the race prospectively.
 
+Because the r41 control is terminal-invalid and campaign identity is immutable, it is not replayed in
+place. A fresh r42 intervention/control pair now binds the accepted r5 prefill calibration, sealed
+evaluator identity, fresh `0042` campaign/candidate roots, and 15 one-repetition blocks; both arms
+compose dry-run clean and neither has executed. The separately governed decode control r2 preserved
+its completed 200-block A/A leg across a dead claimant and resumed at neutral under research
+`2081ec02`/`5d514cef`, but the calibration then rejected before ranked controls: neutral `|effect|`
+p95 `0.154446` exceeded its A/A permutation reference `0.148013` (phi `0.133735`). Its released claim
+and terminal `calibration_rejected` bundle are evidence about this calibration attempt, not decode
+holdout authority. The immediate empirical action is the fresh r42 matched prefill pair; after both
+arms are terminal, establish an accepted fresh decode calibration before executing the decode holdout.
+
+**Historical checkpoint (2026-08-13, r4–r36):** clean direct-child CPU instrument
+`f744cc220e722d1bda93783959471d44f8e118b0` produced accepted baseline-matched control bundle
+`ak-controls-v9-f744cc220-20260813-r4` with 5/5 controls, B_min `15`, and MDE `2.9585%`.
+Rejected r2/r3 controls exposed the within-invocation thermal/P-state trajectory from
+`llama-bench -r 5`; research `798016e3` therefore sealed both A/A arms to `GGML_IQK=0`, `reps=1`,
+and `7486a167` rejected pair lengths outside the accepted range before publication. r34 spent no
+inference because ten blocks were outside `[15,20]`; r35 refused before build on contention; r36
+passed intervention T0 but refused before T1 when the then-governing quiet sample was `25.47/96 =
+0.27`, above `0.25`, and its A/A arm never started. All three are terminal non-archive evidence.
+
 The low-cost discovery plane is now explicit but nonpromotable. Research `28e7c41a` adds a bounded
 screening tier, and `59a4ec91` binds it to an immutable exact-frame amortized baseline bank and emits
 noise-aware top-K nominations rather than KEEP/archive/promotion decisions. Research
 `eb898bd0`/`c376853d` adds sealed matched-pair T0 evidence plus frame-tamper coverage.
 `de464126`/`0f137f50` adds the separately calibrated decode producer and resolves its control frame at
-runtime. The remaining empirical chain is: rerun the repaired A/A control, execute the clean decode
-holdout, run the heldout-bound pair, project AK-WM-2a, then evaluate AK-WM-2b observe-only.
+runtime. The remaining empirical chain is: execute both fresh r42 prefill arms, establish an accepted
+decode calibration and holdout, run the heldout-bound pair, project AK-WM-2a, then evaluate AK-WM-2b
+observe-only.
 
 **Discovery policy:** discovery is throughput work, not release confirmation. Only competing model
 inference blocks a discovery screen; ordinary system load is captured as noise/uncertainty instead of
@@ -42,7 +64,7 @@ turning every screen into a quiet-host campaign. Screened candidates are ordered
 uncertainty, and strict calibrated confirmation is reserved for the small nominated set. No screen can
 bank, promote, enter an archive, or authorize release.
 
-**Current checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
+**Historical checkpoint (2026-08-12):** the frozen-v9 control campaign is accepted and
 decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
 `ak-controls-v9-a4cb04ca-20260812-r2` solved B_min=`10` and φ=`0.03578502357852242`, passed all
 five controls, promoted the historical IQK replay at `+26.6050%`, and set `may_rank=true`. The six
@@ -50,16 +72,8 @@ inference legs completed under one released CPU claim. Deterministic composition
 because `CampaignBinding.change_class` was absent; research `c4a42c69` repaired that drift and
 recomposed the already-completed raw vectors with a hash-bound attestation stating
 `inference_executed=false`. Research `900cb5c6` also implements the strict AK-WM-2a real-archive
-builder. The CPU IQK proposal, exact physical envelope, calibration binding, and dry run are ready,
-but live preflight correctly refused before claim, build, or benchmark because host uptime was
-`13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
-IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
-observe-only.
-Research `58b8d66a`, `948a95a4`, and `3bd94893` close the no-inference producer gap and subsequent
-proposal-v4 drift in that next step. The live
-
-
-Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
+builder. Research `58b8d66a`, `948a95a4`, and `3bd94893` closed the no-inference producer gap and
+subsequent proposal-v4 drift. The live
 campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
 journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
 the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
@@ -71,32 +85,14 @@ capture, source, hypothesis-store, and physical-envelope inputs are materialized
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/` and
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound current-schema
 commands compose successfully in 12 steps with `state=dry_run_composed` and `executed=false`; no
-inference was performed by this checkpoint. A live matched
-archive still requires two post-reboot clean DECIDED runs.
-The separate availability-conditioned seven-arm controller campaign now runs from an immutable source
-worktree. R15 is terminal-invalid and non-rankable after Claude exhausted its structured-output retries;
-its 7/7 claims released, all 13 captured PIDs were dead, and every cgroup was empty and removed. Research
-`537163d5` adds one exact-cause, receipt-visible retry without retrying timeouts or arbitrary failures;
-`eb1de388` refreshes the campaign pin. The full admitted Python 3.12 AutoKernel suite passed **5,682
-tests with one expected failure**. R16 then refused before claim or inference on the stale expected
-entrypoint identity. Fresh immutable r17 reached a valid 32h actor/critic checkpoint at diagnostic
-speedup `1.004404445111776` with compile/correctness **4/4**, but terminated noncomplete when the next
-EvoEngineer 2h cell called `ArenaWorkspaceEvaluator.__init__` without required keyword-only
-`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial and
-non-rankable. Research `381bc55e`/`11bccd41` repaired and repinned source-path construction across the
-five affected controllers; `b0d6f79f` prospectively captures and strictly projects feedback-only
-intermediate evaluator beliefs. Fresh immutable r18 is sealed at `17b9208d`; its baseline is complete
-and its first actor cell is active. Partial r18 evidence grants no comparison, aggregate, rank, bank,
-champion, promotion, or release authority. This controller comparison remains diagnostic and does not
-replace the post-reboot IQK/matched-archive sequence.
+inference was performed by this checkpoint; a live matched archive still required two post-reboot
+clean DECIDED runs.
 
-
-`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
-successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
-archive still requires two post-reboot clean DECIDED runs.
-
-`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, and
-`b0d6f79f` prospectively captures feedback-only intermediate evaluator beliefs. R18 then completed
+The separate availability-conditioned seven-arm controller history remains diagnostic. R15 was
+terminal-invalid after structured-output retries; r16 refused before claim on stale entrypoint
+identity; and r17 reached a valid actor/critic checkpoint before the next cell omitted required
+`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, while
+`b0d6f79f` prospectively captured feedback-only evaluator beliefs. R18 then completed
 its baseline and full Claude/Codex 2h loop, but the parent refused the cell fail-closed after mutable
 host `~/.claude/.claude.json` changed following its staged copy. No actor-cell receipt or aggregate
 was admitted; r18 is terminal-noncomplete and non-rankable. Research `0b1fdbe9` now binds the source
@@ -105,7 +101,7 @@ tests passed**. Fresh immutable r19 is live from exact clean source `0b1fdbe9`; 
 completed baseline, and active first actor cell grant no comparison authority. Research `dfe265a1`
 separately specifies the safe controller-overlap architecture and required overlap A/A gate, but does
 not enable overlap in r19. This controller comparison remains diagnostic and does not replace the
-post-reboot IQK/matched-archive sequence.
+IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -3545,6 +3541,11 @@ future sweep.)*
       attestations before the unchanged T1 admission gate. Fresh controls at
       `ak-controls-v9-f744cc220-20260813-r1` are accepted/rankable (5/5, B_min=10,
       MDE=2.0360%).
+- [x] **Harden and calibrate the IQK bootstrap frame through r36.** ✅ 2026-08-13 — r2/r3 exposed
+      `-r 5` instability and source/path A/A asymmetry; `798016e3` fixed a sealed `GGML_IQK=0/0`,
+      `reps=1` frame and r4 was accepted (5/5, B_min `15`, MDE `2.9585%`). `7486a167` refuses
+      out-of-range pairs before publication. r34/r35/r36 are terminal non-archive attempts as recorded
+      in the dated historical checkpoint; later r41 evidence supersedes them as current state.
 - [x] **Land the sealed T0 and decode-cell producer prerequisites for the final pair.** ✅ 2026-08-13 —
       research `eb898bd0` accepts sealed matched-pair T0 evidence, `c376853d` proves frame tampering
       fails closed, `de464126` calibrates the held-out decode cell independently, and `0f137f50`
@@ -3562,9 +3563,13 @@ future sweep.)*
       caps screening at three paired blocks and structurally forbids KEEP/archive/promotion;
       `59a4ec91` requires a hash-valid exact-frame amortized baseline bank and reports uncertain top-K
       nominations only.
-- [ ] **Rerun the repaired r41 A/A control, then complete the held-out chain.** Reuse the exact r41
-      matched frame under research `a65e638a`; require a clean terminal control before the decode
-      holdout, heldout-bound pair, AK-WM-2a projection, and AK-WM-2b observe-only evaluation.
+- [x] **Prepare a fresh r42 pair instead of mutating the terminal r41 identity.** ✅ 2026-08-13 —
+      both `0042` arms bind the accepted r5 prefill calibration, sealed evaluator identity, one sole
+      `GGML_IQK` factor, 15 one-repetition blocks, and fresh campaign/output roots. Both dry runs
+      compose clean; neither arm has executed, so r42 is preparation rather than evidence.
+- [ ] **Execute the fresh r42 matched prefill pair to terminal results.** Run intervention and A/A
+      control under their immutable r42 identities; require both terminal journals before any archive
+      projection or held-out-bound campaign.
 - [x] **Finish the candidate-only discovery-throughput primitive without weakening confirmation.** ✅
       2026-08-13 — research `c8971a6b` executes candidate-only screening batches, `6661ca25` removes
       per-candidate anchor subprocesses, and `9a4bca3b` requires an inference witness. No live screen
@@ -3576,10 +3581,15 @@ future sweep.)*
       subprocess output for the exact screening frame, seal its identity and inference witness, and
       prove the candidate-only screen consumes it fail closed. Synthetic fixtures remain regression
       tests and cannot substitute; completing this producer does not itself claim a live screen.
-- [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
-      candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
-      enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
-      prefill pair cannot substitute.
+- [x] **Preserve the rejected decode r2 calibration as terminal non-authority.** ✅ 2026-08-13 — its
+      resumed 200-block A/A leg and 60-block neutral leg completed under a released claim, but neutral
+      `|effect|` p95 `0.154446` exceeded the A/A permutation reference `0.148013`; calibration rejected
+      before controls and cannot license a holdout.
+- [ ] **Establish a fresh accepted decode calibration, then run the governed CPU decode IQK holdout.**
+      Start only after the final bootstrap prefill pair. The holdout must use the same candidate factor
+      but target `decode`, then be projected from its completed journal before the final prefill pair may
+      enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures, rejected
+      decode r2, and the prefill pair cannot substitute.
 - [x] **CPU first.** ✅ 2026-08-13 — the r41 intervention and control both ran on `llama_cpu` under
       released full-host claims; no GPU claim was taken. `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
