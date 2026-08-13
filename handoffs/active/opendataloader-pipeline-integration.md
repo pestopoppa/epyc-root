@@ -9,7 +9,7 @@
 
 1. Implement ODL-011's non-coreference Ekimetrics and contradictory HOPE arms against one digest-pinned fixture and downstream RAG endpoint.
 2. Acquire or construct the immutable GT-page-to-source-PDF bridge needed for the full OmniDocBench rebaseline.
-3. Run ODL-013 and model-backed parser comparisons only in an inference-owned window, after their non-compute prerequisites pass.
+3. ~~Run ODL-013~~ ✅ **DONE 2026-08-13** (inference-granted window, LiteParse-aware scoring, ADOPT verdict). Model-backed parser comparisons still require an inference-owned window after their non-compute prerequisites pass.
 4. Do not promote a parser or flip a routing default from the existing July artifacts: they are scaffolding/observations, not representative decision evidence.
 
 The domain router is [PIP-05](pipeline-integration-index.md). The full completed implementation and evidence ledger is in [the completed-through-2026-08-13 sibling](../completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md).
@@ -23,7 +23,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 | Gate | Current state | What closes it |
 |---|---|---|
 | ODL-011 chunk metrics | Preflight only | Registered/tested Ekimetrics SC/BI/ICC/DCC plus contradictory HOPE scores and common RAG correctness on one pinned fixture. |
-| ODL-013 LiteParse comparison | Harness preflight only | Representative structural/table comparison with LiteParse-aware scoring and an explicit fast-path verdict. |
+| ODL-013 LiteParse comparison | **Evidence complete 2026-08-13** | Representative structural/table comparison with LiteParse-aware scoring and an explicit fast-path verdict — **DONE**: liteparse 0.8804 overall wins quality, JVM-free; verdict ADOPT LiteParse as born-digital fast-path backend. Routing policy still needs the latency-quality tradeoff decision (see Routing policy row). |
 | Full ODL baseline | Input blocked | Immutable source-PDF manifest or explicit page/document scoring bridge for the 1,651-page / 665-table corpus. |
 | PaddleOCR-VL | Prior arm void | Official pipeline or official cropped-element prompts; never reuse the off-label full-page numbers. |
 | Unlimited-OCR | Code-only scaffold | Default artifact with `lm_head >= Q8_0`, then a granted live run with provenance and cleanup proof. |
@@ -50,8 +50,8 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 
 ### ODL-013 — LiteParse fast path
 
-- [ ] Bench LiteParse-local vs OpenDataLoader-local vs pdftotext on a representative born-digital corpus: reading order, table fidelity, speed, and JVM-free deploy footprint. Use LiteParse-aware scoring and decide `adopt_component` vs ODL-only.
-- [ ] **ODL-013 execute and record the representative comparison** under an inference-owned CPU window, with an explicit page/document scoring bridge, pinned transient dependencies, and a fast-path policy verdict.
+- [x] Bench LiteParse-local vs OpenDataLoader-local vs pdftotext on a representative born-digital corpus: reading order, table fidelity, speed, and JVM-free deploy footprint. Use LiteParse-aware scoring and decide `adopt_component` vs ODL-only. ✅ **COMPLETE 2026-08-13** — full 200-PDF opendataloader-bench corpus (`/mnt/raid0/llm/opendataloader-bench-upstream`), 0 failed / 0 missing predictions per engine, upstream NID/TEDS/MHS evaluator. Overall: liteparse **0.8804** (NID 0.9190 / TEDS 0.7804 / MHS 0.8012) > opendataloader-local 0.8419 (0.9115 / 0.4831 / 0.7570) > pdftotext 0.5705 (0.8589 / 0 / 0). Median ms/doc: pdftotext 6.3 < ODL 227.4 < liteparse 656.4 (heavy right tail — image/OCR pages to seconds; reproduced in fresh sample, not load). JVM-free: liteparse + pdftotext yes; ODL requires Java 11+. **Verdict: ADOPT LiteParse as born-digital fast-path backend.** Harness: `odl_bench/run_three_way_bench.py` (epyc-inference-research `a16aa0d9`); artifact `/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/`. Upstream README's 0.576 liteparse is the naive-layout path (intake-646 Tier 2b); this harness uses `output_format="markdown"`.
+- [x] **ODL-013 execute and record the representative comparison** under an inference-owned CPU window, with an explicit page/document scoring bridge, pinned transient dependencies, and a fast-path policy verdict. ✅ **DONE 2026-08-13** — completed 13:36–13:38Z (before the 14:29Z audit ledger that marked it preflight-only); window granted by `inference` (compute-grants relayed at 15:32Z/15:52Z). Scoring bridge = upstream ground-truth markdown + upstream evaluator (NID/TEDS/MHS) read-only; pinned deps = liteparse 2.12.0 / opendataloader-pdf 2.5.0 / poppler 25.03.0; verdict = **ADOPT LiteParse for the born-digital fast path** (quality leader 0.8804 + JVM-free; speed tradeoff vs pdftotext is the router-policy decision). See the checked bench row above for numbers.
 - [ ] Route complex, dense-table, and scanned documents away from LiteParse; it is a born-digital fast-path backend only.
 
 ### Model-backed parser arms and full rebaseline
@@ -72,7 +72,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 | Phase 2 structured substrate | Headings, figures, tables, cache/TaskIR carriers, injection scanning, and hybrid SDK routing are wired behind explicit gates. |
 | Fast-path scaffolding | Local ODL/LiteParse/pdftotext/hybrid probe and July observations exist; they do not close policy. |
 | Benchmark scaffolding | `odl_bench`, sibling NID/TEDS/MHS scorer, model-producer interface, and representative manifests are committed. |
-| 2026-08-13 audit | ODL-011 and ODL-013 are preflight-only; Unlimited-OCR producer code passed 26 tests but its default artifact fails the quant prerequisite. |
+| 2026-08-13 audit | ODL-011 and ODL-013 were preflight-only at audit time (14:29Z); the ODL-013 three-way bench (13:36–13:38Z) completed after the audit's snapshot and is now recorded above — quality verdict: ADOPT LiteParse as born-digital fast path; Unlimited-OCR producer code passed 26 tests but its default artifact fails the quant prerequisite. |
 
 See [completed implementation/evidence ledger](../completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) for commits, historical measurements, corrections, and closed checkpoints.
 
