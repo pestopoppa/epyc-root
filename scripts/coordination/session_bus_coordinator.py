@@ -1565,27 +1565,51 @@ _PROGRESS_STALE_H = 4.0
 
 
 def _deliver_progress_defect(bus_root: Path, epoch: int, check: str, day: str,
-                             detail: str) -> None:
-    """Put the R2 defect where somebody drains it, once per day.
+                             detail: str, *, dedupe_key: str | None = None,
+                             agent: str | None = None,
+                             receipt_id: str | None = None,
+                             boundary_id: str | None = None) -> None:
+    """Put the progress defect where somebody drains it, once per evidence key.
 
     Deduped against `coordinator-agent`'s OWN inbox — the notice's durable trace,
     the same idiom C18/C33 use — so a 45s tick cannot turn a true finding into the
-    advisory flood C34 measured. Delivery failure is swallowed: this is a reporting
-    path, and a check that can take the daemon down is worse than a missed notice.
+    advisory flood C34 measured.  Receipt-bound callers provide a stable boundary
+    key, so two workers' defects on one day remain two distinct notices.  A legacy
+    caller with no key keeps the old `(check, day)` behaviour.
+
+    Delivery failure is swallowed: this is a reporting path, and a check that can
+    take the daemon down is worse than a missed notice.
     """
     try:
         rows, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
         for row in rows:
             payload = row.get("payload") or {}
-            if payload.get("event") == check and payload.get("day") == day:
+            if payload.get("event") != check or payload.get("day") != day:
+                continue
+            if dedupe_key is None and "dedupe_key" not in payload:
                 return
+            if dedupe_key is not None and payload.get("dedupe_key") == dedupe_key:
+                return
+        payload = {
+            "event": check,
+            "day": day,
+            "detail": detail,
+            "action": "the pushed checkpoint has no valid committed progress evidence in "
+                      "its own per-agent shard. Repair the lane commit or append a corrective "
+                      "checkpoint, push it, and emit a new receipt; an unsuffixed, peer, or "
+                      "uncommitted file is not evidence for this boundary.",
+        }
+        if dedupe_key is not None:
+            payload["dedupe_key"] = dedupe_key
+        if agent is not None:
+            payload["agent"] = agent
+        if receipt_id is not None:
+            payload["receipt_id"] = receipt_id
+        if boundary_id is not None:
+            payload["boundary_id"] = boundary_id
         _append_inbox(bus_root, [{
             "to": COORDINATOR_AGENT, "kind": "defect",
-            "payload": {"event": check, "day": day, "detail": detail,
-                        "action": "a working day with commits and no progress entry is "
-                                  "invisible to the operator — the dashboard counts checkbox "
-                                  "state, so unlogged work reads as a day where nothing "
-                                  "happened. Write the entry, or say why none is owed."}}],
+            "payload": payload}],
             epoch)
     except Exception:  # noqa: BLE001 — reporting must never break the tick
         pass
@@ -1594,104 +1618,235 @@ def _deliver_progress_defect(bus_root: Path, epoch: int, check: str, day: str,
 def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRESS_STALE_H,
                           now: float | None = None,
                           repo_root: Path | None = None) -> list[dict]:
-    """Commits landed with no progress-log write. FAILS CLOSED, everywhere.
+    """Validate the pushed per-agent progress evidence named by task checkpoints.
 
-    R2 (2026-08-11). F1: a day of commits with nothing written to
-    `progress/<YYYY-MM>/<today>.md` is invisible to the operator — the dashboard
-    counts checkbox state, so committed-but-unlogged work reads as a day where
-    nothing happened. Measured 2026-08-11: open boxes went 1283 -> 1293 while done
-    went 2274 -> 2294, and the board looked flat.
+    RTG-51 Phase 1 changes the unit of evidence from "the repository had a commit
+    today" to "this worker declared a task boundary".  The old heuristic watched
+    one unsuffixed daily file, so commits from any lane made a compliant worker's
+    per-agent shard look absent.  A task checkpoint is now the positive evidence
+    that progress is owed; no receipt means no boundary for this checker to infer.
 
-    The report that specified this flagged it as the proposal MOST at risk of
-    fail-open, with three silent-pass paths, and said to build it fail-closed or not
-    at all. So every unknown emits a defect rather than returning clean:
+    For the newest receipt from each agent, fail closed unless all of these hold:
 
-      * git unreadable / not a repo / times out  -> defect, not "no commits"
-      * `progress/` missing                      -> defect, not "nothing to check"
-      * today's file missing                     -> OVERDUE if commits exist, which
-                                                    is the whole point: the absent
-                                                    file is the defect, and treating
-                                                    absence as "nothing due" is
-                                                    exactly the fail-open shape.
+      * the receipt names that agent's dated shard (never the historical
+        unsuffixed file and never a peer shard);
+      * the named commit is reachable from the named remote-tracking lane ref;
+      * that commit itself changed the shard and the committed blob contains the
+        stable boundary id; and
+      * the current remote lane tip still carries exactly that blob.  A later push
+        that edits the progress record therefore needs a newer receipt.
 
-    Precedent for the shape: `scan_operator_receipts` returns a `*-skipped` advisory
-    rather than an all-clear when it cannot read what it needs.
+    This is deliberately schema-ahead shadow support: Phase 2 adds authoring and
+    bus-schema enforcement for ``kind: task-checkpoint``.  Until such receipts
+    exist, legacy/no-boundary operation remains quiet.  ``hours`` stays in the
+    signature for callers during rollout but no longer drives an mtime heuristic.
 
-    **CORRECTION 2026-08-11, same day, caught by the operator.** This first shipped
-    emitting the advisory row ONLY, on the reasoning that `defect` is in
-    `_OPERATOR_ITEM_KINDS` and would therefore reach `token-queue.md` on the C20
-    timer for free. That was wrong: `_is_operator_item` is applied to OUTBOX and
-    INBOX rows, never to advisory rows, so the notice went to `advisory.jsonl` and
-    stopped there. That is the C33 shape — an escalation delivered only to a file
-    nobody drains is a second unread sink one level up from the defect it reports —
-    and it is the sentence I had quoted twice the same day while building this. So
-    the defect is now DELIVERED into `coordinator-agent`'s inbox, deduped once per
-    day against that inbox's own contents so a 45s tick cannot flood it.
-
-    Read-only: it inspects git and a file mtime and returns advisory rows. It never
-    writes the progress log — a checker that fixes what it checks for cannot be
-    trusted to report, which is the rule `--audit-guards` and
-    `backfill-receipts --check` already follow.
+    Read-only: the checker reads outboxes and git objects.  It never writes the
+    progress log or repairs a receipt.
     """
+    del hours  # compatibility-only during the off -> shadow -> enforce rollout
     root = repo_root or REPO_ROOT
     when = time.time() if now is None else now
-    stamp = datetime.fromtimestamp(when, timezone.utc)
+    day = f"{datetime.fromtimestamp(when, timezone.utc):%Y-%m-%d}"
 
-    day = f"{stamp:%Y-%m-%d}"
-
-    def defect(check: str, detail: str, **extra) -> list[dict]:
+    def defect(check: str, detail: str, **extra) -> dict:
         row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                "kind": "defect", "check": check, "subject": COORDINATOR_AGENT,
                "day": day, "detail": detail, **extra}
-        _deliver_progress_defect(bus_root, epoch, check, day, detail)
-        return [row]
+        agent = str(extra.get("agent") or "") or None
+        receipt_id = str(extra.get("receipt_id") or "") or None
+        boundary_id = str(extra.get("boundary_id") or "") or None
+        dedupe_parts = [part for part in (agent, receipt_id, boundary_id) if part]
+        _deliver_progress_defect(
+            bus_root, epoch, check, day, detail,
+            dedupe_key="|".join(dedupe_parts) if dedupe_parts else None,
+            agent=agent, receipt_id=receipt_id, boundary_id=boundary_id)
+        return row
 
-    try:
-        proc = subprocess.run(
-            ["git", "-C", str(root), "log", "-1", "--format=%cI"],
-            capture_output=True, text=True, timeout=15)
-        head_iso = proc.stdout.strip()
-        if proc.returncode != 0 or not head_iso:
-            raise RuntimeError(proc.stderr.strip()[:200] or "git produced no output")
-        head_ts = datetime.fromisoformat(head_iso).timestamp()
-    except Exception as exc:  # noqa: BLE001 — unreadable git is NOT "no commits"
-        return defect("progress-log-check-skipped",
-                      f"cannot read git history to check progress-log currency: {exc}. "
-                      f"This is reported, not passed: an unreadable check is not a clean one.")
+    receipts: list[dict] = []
+    for path in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _problems = _read_jsonl(path)
+        receipts.extend({**row, "_progress_outbox_owner": path.stem}
+                        for row in rows if row.get("kind") == "task-checkpoint")
 
-    if not _PROGRESS_DIR.is_dir():
-        return defect("progress-log-stale",
-                      f"{_PROGRESS_DIR} does not exist, so no progress log can be written at "
-                      f"all. Reported rather than skipped — a missing directory is a louder "
-                      f"defect than a stale file, not a quieter one.")
-
-    path = _PROGRESS_DIR / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
-    try:
-        written = path.stat().st_mtime
-    except OSError:
-        written = None
-
-    # No commits today at all -> genuinely nothing owed. This is the ONE clean exit,
-    # and it is keyed on positive evidence (a commit timestamp older than today),
-    # never on something being unreadable.
-    if head_ts < stamp.replace(hour=0, minute=0, second=0, microsecond=0).timestamp():
+    # A git commit is not a task-boundary signal.  Inferring one here recreated the
+    # false positive this phase repairs: a peer lane could make another worker owe
+    # an entry.  Receipt authoring becomes mandatory only at the later rollout gate.
+    if not receipts:
         return []
 
-    if written is None:
-        return defect("progress-log-stale",
-                      f"commits landed today (HEAD {head_iso}) and {path.relative_to(root)} "
-                      f"does not exist. The absent file IS the defect; absence is not "
-                      f"'nothing due'.", progress_path=str(path.relative_to(root)))
+    # Phase 1 deliberately does not duplicate the kind-specific schema arriving in
+    # Phase 2, but it must not let an arbitrary raw outbox row acquire receipt
+    # authority merely by spelling `kind: task-checkpoint`.
+    defects: list[dict] = []
+    eligible_receipts: list[dict] = []
+    for receipt in receipts:
+        raw_payload = receipt.get("payload")
+        payload = raw_payload if isinstance(raw_payload, dict) else {}
+        agent = str(payload.get("agent") or receipt.get("from") or
+                    receipt.get("_progress_outbox_owner") or "")
+        boundary_id = str(payload.get("boundary_id") or "")
+        receipt_id = str(receipt.get("id") or boundary_id or "unknown-receipt")
+        envelope_problems: list[str] = []
+        if receipt.get("schema_version") != MSG_SCHEMA_VERSION:
+            envelope_problems.append(
+                f"schema_version must be {MSG_SCHEMA_VERSION!r}")
+        if receipt.get("to") != COORDINATOR_AGENT:
+            envelope_problems.append(f"to must be {COORDINATOR_AGENT!r}")
+        if not isinstance(raw_payload, dict):
+            envelope_problems.append("payload must be an object")
+        if envelope_problems:
+            defects.append(defect(
+                "progress-log-stale",
+                f"task checkpoint {receipt_id} for {agent or '<missing-agent>'} has an "
+                f"invalid receipt envelope: {'; '.join(envelope_problems)}",
+                receipt_id=receipt_id, boundary_id=boundary_id, agent=agent))
+            continue
+        eligible_receipts.append(receipt)
 
-    if head_ts > written and (when - written) > hours * 3600.0:
-        return defect("progress-log-stale",
-                      f"HEAD committed {head_iso}; {path.relative_to(root)} last written "
-                      f"{datetime.fromtimestamp(written, timezone.utc):%H:%MZ}, "
-                      f"{(when - written) / 3600.0:.1f}h ago and BEFORE that commit. Work is "
-                      f"landing unlogged, which reads to the operator as a day where nothing "
-                      f"happened.", progress_path=str(path.relative_to(root)),
-                      stale_h=round((when - written) / 3600.0, 1))
-    return []
+    # Later checkpoints legitimately append to the same daily shard.  Validate the
+    # newest declaration for each agent; an older blob is expected to differ once a
+    # newer, independently receipted boundary lands.
+    latest: dict[str, dict] = {}
+    for receipt in eligible_receipts:
+        payload = receipt.get("payload") or {}
+        agent = str(payload.get("agent") or receipt.get("from") or "")
+        previous = latest.get(agent)
+        order = (str(payload.get("completed_at") or receipt.get("ts") or ""),
+                 str(receipt.get("id") or ""))
+        previous_payload = (previous or {}).get("payload") or {}
+        previous_order = (str(previous_payload.get("completed_at") or
+                              (previous or {}).get("ts") or ""),
+                          str((previous or {}).get("id") or ""))
+        if previous is None or order > previous_order:
+            latest[agent] = receipt
+
+    for agent, receipt in sorted(latest.items()):
+        payload = receipt.get("payload") or {}
+        boundary_id = str(payload.get("boundary_id") or "")
+        receipt_id = str(receipt.get("id") or boundary_id or "unknown-receipt")
+
+        def receipt_defect(detail: str, **extra) -> None:
+            defects.append(defect(
+                "progress-log-stale",
+                f"task checkpoint {receipt_id} for {agent or '<missing-agent>'} has no valid "
+                f"receipt-bound progress evidence: {detail}",
+                receipt_id=receipt_id, boundary_id=boundary_id, agent=agent, **extra))
+
+        if (not agent or str(payload.get("agent") or "") != agent or
+                receipt.get("from") != agent or
+                receipt.get("_progress_outbox_owner") != agent):
+            receipt_defect("payload.agent, message author, and owning outbox do not match")
+            continue
+        if not boundary_id:
+            receipt_defect("boundary_id is missing")
+            continue
+
+        completed_at = str(payload.get("completed_at") or "")
+        try:
+            completed = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
+            if completed.tzinfo is None:
+                raise ValueError("timezone is missing")
+            completed = completed.astimezone(timezone.utc)
+        except (TypeError, ValueError) as exc:
+            receipt_defect(f"completed_at is not timezone-aware RFC3339: {exc}")
+            continue
+
+        progress_path = str(payload.get("progress_path") or "")
+        expected_path = f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-{agent}.md"
+        if progress_path != expected_path:
+            receipt_defect(
+                f"progress_path must be {expected_path!r}, got {progress_path!r}; unsuffixed "
+                f"and peer shards are historical/read-only evidence",
+                progress_path=progress_path)
+            continue
+
+        branch = str(payload.get("branch") or "")
+        pushed_ref = str(payload.get("pushed_ref") or "")
+        expected_branch = f"lane/{agent}"
+        expected_ref = f"refs/remotes/origin/{expected_branch}"
+        if branch != expected_branch or pushed_ref != expected_ref:
+            receipt_defect(
+                f"lane identity must be branch={expected_branch!r}, pushed_ref={expected_ref!r}",
+                progress_path=progress_path)
+            continue
+
+        commit_sha = str(payload.get("commit_sha") or "")
+        if re.fullmatch(r"[0-9a-f]{40}", commit_sha) is None:
+            receipt_defect("commit_sha is not a full lowercase 40-hex object id",
+                           progress_path=progress_path)
+            continue
+
+        try:
+            verify_ref = subprocess.run(
+                ["git", "-C", str(root), "show-ref", "--verify", "--quiet", pushed_ref],
+                capture_output=True, text=True, timeout=15)
+            if verify_ref.returncode == 1:
+                receipt_defect(f"pushed_ref {pushed_ref!r} does not exist",
+                               progress_path=progress_path, commit_sha=commit_sha)
+                continue
+            if verify_ref.returncode != 0:
+                raise RuntimeError(verify_ref.stderr.strip()[:200]
+                                   or "git show-ref could not read the repository")
+
+            reachable = subprocess.run(
+                ["git", "-C", str(root), "merge-base", "--is-ancestor",
+                 commit_sha, pushed_ref], capture_output=True, text=True, timeout=15)
+            if reachable.returncode == 1:
+                receipt_defect(
+                    f"commit {commit_sha} is not reachable from {pushed_ref}; a local-only SHA "
+                    f"is not durable evidence",
+                    progress_path=progress_path, commit_sha=commit_sha)
+                continue
+            if reachable.returncode != 0:
+                raise RuntimeError(reachable.stderr.strip()[:200]
+                                   or "git merge-base could not read the repository")
+
+            changed = subprocess.run(
+                ["git", "-C", str(root), "diff-tree", "--root", "--no-commit-id",
+                 "--name-only", "-r", commit_sha, "--", progress_path],
+                capture_output=True, text=True, timeout=15)
+            if changed.returncode != 0:
+                raise RuntimeError(changed.stderr.strip()[:200] or "git diff-tree failed")
+            if progress_path not in changed.stdout.splitlines():
+                receipt_defect(
+                    f"commit {commit_sha} did not change {progress_path}; the receipt cannot "
+                    f"borrow progress evidence from an older commit",
+                    progress_path=progress_path, commit_sha=commit_sha)
+                continue
+
+            committed_blob = subprocess.run(
+                ["git", "-C", str(root), "show", f"{commit_sha}:{progress_path}"],
+                capture_output=True, timeout=15)
+            if committed_blob.returncode != 0:
+                raise RuntimeError(committed_blob.stderr.decode(errors="replace")[:200]
+                                   or "cannot read committed progress blob")
+            if boundary_id.encode("utf-8") not in committed_blob.stdout:
+                receipt_defect(
+                    f"the committed shard does not contain boundary_id {boundary_id!r}",
+                    progress_path=progress_path, commit_sha=commit_sha)
+                continue
+
+            tip_blob = subprocess.run(
+                ["git", "-C", str(root), "show", f"{pushed_ref}:{progress_path}"],
+                capture_output=True, timeout=15)
+            if tip_blob.returncode != 0:
+                raise RuntimeError(tip_blob.stderr.decode(errors="replace")[:200]
+                                   or "cannot read remote-tip progress blob")
+            if tip_blob.stdout != committed_blob.stdout:
+                receipt_defect(
+                    f"{progress_path} changed on {pushed_ref} after receipt commit {commit_sha}; "
+                    f"the changed record needs a newer checkpoint receipt",
+                    progress_path=progress_path, commit_sha=commit_sha)
+        except Exception as exc:  # noqa: BLE001 — receipt validation must fail closed
+            defects.append(defect(
+                "progress-log-check-skipped",
+                f"cannot validate progress evidence for task checkpoint {receipt_id}: {exc}. "
+                f"This is reported, not passed: an unreadable check is not a clean one.",
+                receipt_id=receipt_id, boundary_id=boundary_id, agent=agent,
+                progress_path=progress_path, commit_sha=commit_sha))
+
+    return defects
 
 
 _ADVISORY_MAX_BYTES = 128 * 1024 * 1024

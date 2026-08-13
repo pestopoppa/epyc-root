@@ -3196,95 +3196,159 @@ def _git_repo(tmp_path: Path, commit_iso: str) -> Path:
     return root
 
 
-def test_r2_fails_closed_when_git_cannot_be_read(bus_root: Path, tmp_path: Path) -> None:
-    """Silent-pass path 1. An unreadable git is NOT 'no commits' — reporting it as
-    clean is precisely the fail-open this was built to avoid."""
-    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=tmp_path / "not-a-repo")
-    assert len(rows) == 1
-    assert rows[0]["check"] == "progress-log-check-skipped"
-    assert rows[0]["kind"] == "defect", "must be a defect kind — that is what reaches the operator"
+def _checkpoint_repo(tmp_path: Path, bus_root: Path, *, agent: str = "alice",
+                     progress_agent: str | None = None, unsuffixed: bool = False,
+                     push_checkpoint: bool = True) -> tuple[Path, dict, Path]:
+    """Create one real lane/remote checkpoint; the receipt is schema-ahead Phase 1 input."""
+    import subprocess as sp
+
+    completed = datetime.now(timezone.utc).replace(microsecond=0)
+    root = _git_repo(tmp_path, (completed - timedelta(hours=1)).isoformat())
+    remote = tmp_path / "remote.git"
+    sp.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+    sp.run(["git", "-C", str(root), "remote", "add", "origin", str(remote)], check=True)
+    sp.run(["git", "-C", str(root), "push", "-q", "-u", "origin", "HEAD:main"], check=True)
+    sp.run(["git", "-C", str(root), "checkout", "-q", "-b", f"lane/{agent}"], check=True)
+    # Establish the remote lane before the checkpoint commit.  The unpushed-SHA
+    # control therefore distinguishes "ref absent" from "commit not reachable".
+    sp.run(["git", "-C", str(root), "push", "-q", "-u", "origin", f"lane/{agent}"],
+           check=True)
+
+    shard_agent = progress_agent or agent
+    progress_rel = (f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}.md" if unsuffixed else
+                    f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-{shard_agent}.md")
+    progress = root / progress_rel
+    progress.parent.mkdir(parents=True, exist_ok=True)
+    boundary_id = f"{agent}:task-1:1"
+    progress.write_text(f"# checkpoint\n\nboundary_id: {boundary_id}\n", encoding="utf-8")
+    sp.run(["git", "-C", str(root), "add", progress_rel], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "checkpoint"], check=True,
+           env={**os.environ, "GIT_AUTHOR_DATE": completed.isoformat(),
+                "GIT_COMMITTER_DATE": completed.isoformat()})
+    sha = sp.run(["git", "-C", str(root), "rev-parse", "HEAD"], check=True,
+                 capture_output=True, text=True).stdout.strip()
+    if push_checkpoint:
+        sp.run(["git", "-C", str(root), "push", "-q", "origin", f"lane/{agent}"], check=True)
+
+    receipt = {
+        "schema_version": bus.MSG_SCHEMA_VERSION,
+        "id": f"msg-{completed:%Y%m%dT%H%M%SZ}-1-{agent}",
+        "ts": completed.isoformat(),
+        "from": agent,
+        "to": "coordinator-agent",
+        "kind": "task-checkpoint",
+        "payload": {
+            "boundary_id": boundary_id,
+            "agent": agent,
+            "completed_at": completed.isoformat(),
+            "branch": f"lane/{agent}",
+            "commit_sha": sha,
+            "pushed_ref": f"refs/remotes/origin/lane/{agent}",
+            "progress_path": progress_rel,
+        },
+    }
+    _append(bus_root / "outbox" / f"{agent}.jsonl", receipt)
+    return root, receipt, progress
+
+
+def test_rtg51_progress_accepts_receipt_bound_per_agent_shard(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root)
+    assert coordinator.progress_log_currency(bus_root, 14, repo_root=root) == []
+
+
+def test_rtg51_progress_rejects_unsuffixed_historical_file_as_receipt_evidence(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "unsuffixed" in rows[0]["detail"] and "historical/read-only" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_peer_shard(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, progress_agent="bob")
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "peer shards" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_local_only_checkpoint_sha(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(
+        tmp_path, bus_root, push_checkpoint=False)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "not reachable" in rows[0]["detail"] and "local-only SHA" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_remote_edit_after_receipt(
+        bus_root: Path, tmp_path: Path) -> None:
+    import subprocess as sp
+
+    root, receipt, progress = _checkpoint_repo(tmp_path, bus_root)
+    progress.write_text(progress.read_text(encoding="utf-8") + "post-receipt edit\n",
+                        encoding="utf-8")
+    progress_rel = receipt["payload"]["progress_path"]
+    sp.run(["git", "-C", str(root), "add", progress_rel], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "edit after receipt"], check=True)
+    sp.run(["git", "-C", str(root), "push", "-q", "origin", "lane/alice"], check=True)
+
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "changed" in rows[0]["detail"] and "newer checkpoint receipt" in rows[0]["detail"]
+
+
+def test_rtg51_progress_no_receipt_no_boundary_is_clean_even_with_a_commit(
+        bus_root: Path, tmp_path: Path) -> None:
+    """A repository commit is not a task boundary and may belong to a peer lane."""
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    root = _git_repo(tmp_path, now.isoformat())
+    assert coordinator.progress_log_currency(bus_root, 14, repo_root=root) == []
+
+
+@pytest.mark.parametrize(("field", "value"), [
+    ("schema_version", "session_bus.msg.v0"),
+    ("to", "bob"),
+])
+def test_rtg51_progress_rejects_raw_rows_without_minimal_receipt_envelope(
+        bus_root: Path, tmp_path: Path, field: str, value: str) -> None:
+    root, receipt, _progress = _checkpoint_repo(tmp_path, bus_root)
+    receipt[field] = value
+    (bus_root / "outbox" / "alice.jsonl").write_text(
+        json.dumps(receipt) + "\n", encoding="utf-8")
+
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "invalid receipt envelope" in rows[0]["detail"]
+    assert field in rows[0]["detail"]
+
+
+def test_rtg51_progress_fails_closed_when_receipt_git_cannot_be_read(
+        bus_root: Path, tmp_path: Path) -> None:
+    completed = datetime.now(timezone.utc).replace(microsecond=0)
+    agent = "alice"
+    _append(bus_root / "outbox" / f"{agent}.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION,
+        "id": f"msg-{completed:%Y%m%dT%H%M%SZ}-1-{agent}", "ts": completed.isoformat(),
+        "from": agent, "to": "coordinator-agent", "kind": "task-checkpoint",
+        "payload": {"boundary_id": "alice:task-1:1", "agent": agent,
+                    "completed_at": completed.isoformat(), "branch": "lane/alice",
+                    "commit_sha": "a" * 40,
+                    "pushed_ref": "refs/remotes/origin/lane/alice",
+                    "progress_path": f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-alice.md"}})
+    rows = coordinator.progress_log_currency(
+        bus_root, 14, repo_root=tmp_path / "not-a-repo")
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-check-skipped"
     assert "not a clean one" in rows[0]["detail"]
 
 
-def test_r2_fails_closed_when_the_progress_directory_is_missing(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Silent-pass path 2. A missing directory is a LOUDER defect than a stale file,
-    not a quieter one."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", tmp_path / "absent")
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert "does not exist" in rows[0]["detail"]
-
-
-def test_r2_fails_closed_when_todays_file_is_missing(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Silent-pass path 3, and the one most likely to be written wrong: an absent
-    file is the DEFECT, never 'nothing due'."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert "does not exist" in rows[0]["detail"] and "not\n" not in rows[0]["detail"]
-
-
-def test_r2_flags_commits_that_landed_after_the_last_entry(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The defect itself: work landing while the log stands still."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    stamp = datetime.fromtimestamp(now, timezone.utc)
-    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
-    entry.parent.mkdir(parents=True)
-    entry.write_text("# today\n", encoding="utf-8")
-    old = now - 6 * 3600
-    os.utime(entry, (old, old))
-
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert rows[0]["stale_h"] >= 4.0
-    assert "reads to the operator as a day where nothing happened" in rows[0]["detail"]
-
-
-def test_r2_is_silent_when_the_log_is_current(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The compliant path. A check that fires on a well-run day trains the reader to
-    ignore it, which is how the real one gets missed."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 3600, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    stamp = datetime.fromtimestamp(now, timezone.utc)
-    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
-    entry.parent.mkdir(parents=True)
-    entry.write_text("# today\n", encoding="utf-8")     # written now, after the commit
-
-    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
-
-
-def test_r2_is_silent_on_a_day_with_no_commits(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The ONE clean exit, and it is keyed on POSITIVE evidence — a commit timestamp
-    older than today — never on something being unreadable. Nothing is owed for a day
-    nobody worked."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 4 * 86400, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
-
-
-def test_r2_never_writes_the_thing_it_checks(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A checker that fixes what it checks for cannot be trusted to report — the rule
-    --audit-guards and backfill-receipts --check already follow."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    before = sorted(p.name for p in (root / "progress").rglob("*"))
-    coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert sorted(p.name for p in (root / "progress").rglob("*")) == before
+def test_rtg51_progress_never_writes_the_evidence_it_checks(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, progress = _checkpoint_repo(tmp_path, bus_root)
+    before = progress.read_bytes()
+    coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert progress.read_bytes() == before
 
 
 def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
@@ -3295,7 +3359,7 @@ def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
 
 
 def test_r2_delivers_into_an_inbox_not_only_advisory(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        bus_root: Path, tmp_path: Path) -> None:
     """R2 CORRECTION, same day, caught by the operator. This first shipped emitting
     the advisory row only, reasoning that `defect` is in _OPERATOR_ITEM_KINDS and
     would reach token-queue.md on the C20 timer for free. Wrong: `_is_operator_item`
@@ -3304,47 +3368,79 @@ def test_r2_delivers_into_an_inbox_not_only_advisory(
     while building this.
     """
     _provision(bus_root, "alice", "coordinator-agent")
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
 
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
     assert rows and rows[0]["check"] == "progress-log-stale"
 
     notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                if (r.get("payload") or {}).get("event") == "progress-log-stale"]
     assert notices, "the defect must reach a queue somebody drains"
-    assert "invisible to the operator" in notices[0]["payload"]["action"]
+    assert "committed progress evidence" in notices[0]["payload"]["action"]
+    assert "emit a new receipt" in notices[0]["payload"]["action"]
+    assert notices[0]["payload"]["agent"] == "alice"
+    assert notices[0]["payload"]["receipt_id"] == receipt["id"]
+    assert rows[0]["boundary_id"] == receipt["payload"]["boundary_id"]
 
 
 def test_r2_does_not_re_deliver_the_same_day_every_tick(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A 45s tick must not turn a true finding into the advisory flood C34 measured.
-    Deduped against the coordinator's own inbox — the notice's durable trace."""
+        bus_root: Path, tmp_path: Path) -> None:
+    """One receipt repeating on a 45s tick remains one durable notice."""
     _provision(bus_root, "alice", "coordinator-agent")
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
 
     for _ in range(5):
-        coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+        coordinator.progress_log_currency(bus_root, 14, repo_root=root)
 
     notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                if (r.get("payload") or {}).get("event") == "progress-log-stale"]
-    assert len(notices) == 1, f"one notice per day, got {len(notices)}"
+    assert len(notices) == 1, f"one notice per receipt, got {len(notices)}"
+
+
+def test_rtg51_progress_delivers_two_agents_same_day_and_dedupes_each_receipt(
+        bus_root: Path, tmp_path: Path) -> None:
+    """Day-level dedupe hid the second worker's distinct broken checkpoint."""
+    _provision(bus_root, "alice", "bob", "coordinator-agent")
+    alice_root, alice_receipt, _ = _checkpoint_repo(
+        tmp_path / "alice", bus_root, agent="alice", unsuffixed=True)
+    bob_root, bob_receipt, _ = _checkpoint_repo(
+        tmp_path / "bob", bus_root, agent="bob", unsuffixed=True)
+
+    # Both repos contain both outbox receipts, but each remote exists in only one
+    # fixture.  Validate once against each repository with the peer receipt hidden;
+    # then repeat both calls to exercise stable per-receipt dedupe.
+    alice_outbox = bus_root / "outbox" / "alice.jsonl"
+    bob_outbox = bus_root / "outbox" / "bob.jsonl"
+    bob_saved = bob_outbox.read_bytes()
+    bob_outbox.write_bytes(b"")
+    for _ in range(3):
+        coordinator.progress_log_currency(bus_root, 14, repo_root=alice_root)
+    bob_outbox.write_bytes(bob_saved)
+    alice_saved = alice_outbox.read_bytes()
+    alice_outbox.write_bytes(b"")
+    for _ in range(3):
+        coordinator.progress_log_currency(bus_root, 14, repo_root=bob_root)
+    alice_outbox.write_bytes(alice_saved)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert len(notices) == 2
+    payloads = [row["payload"] for row in notices]
+    assert {p["agent"] for p in payloads} == {"alice", "bob"}
+    assert {p["receipt_id"] for p in payloads} == {alice_receipt["id"], bob_receipt["id"]}
+    assert len({p["dedupe_key"] for p in payloads}) == 2
+    assert all("emit a new receipt" in p["action"] for p in payloads)
 
 
 def test_r2_delivery_failure_never_breaks_the_tick(
         bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Reporting must not be able to take the daemon down. A check that can break the
     tick is worse than a missed notice."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
     monkeypatch.setattr(coordinator, "_append_inbox",
                         lambda *_a, **_k: (_ for _ in ()).throw(OSError("disk full")))
 
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
     assert rows and rows[0]["check"] == "progress-log-stale", \
         "the advisory row still comes back even when delivery fails"
 
