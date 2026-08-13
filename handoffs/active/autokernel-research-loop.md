@@ -428,10 +428,11 @@ not a reopening of empirical work:
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
-- [ ] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
+- [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
   candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
   members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly
   when the production anchor moves. Never add member speedups arithmetically.
+✅ 2026-08-13 — `mainC` (assigned AK-RUN-3; premise VERIFIED ALREADY-SATISFIED, not re-implemented). The lean sequencer + champion-maintenance path was fully landed by 2026-08-12 research commits: `8a2e6f5d` adds `controller/sequencer.py` (Sequencer loop: consumes proposal/candidate/evaluation records, composes compatible members, records CHAMPION_UPDATED) + `controller/champion.py` (frontier/banked/champion lifecycle, compatibility(), composition_request() with required_t2_cells re-evaluation, record_anchor_moved()/reanchor_champion(), never adds member speedups arithmetically — combined evaluation must be a valid pass); `77689f76` enforces AK-D39 provider integration boundaries; `069e79fd` closes the source-to-champion seam; `4a5f7361` closes the offline release seam. Sequencer is deliberately unbound from campaign #1 (FOOTPRINT.md — no second live loop). Verified: all 7 row clauses map to implemented code; 296 tests pass in the sequencer/champion/release slice (test_champion 16, adapter/closeout/live_material/readiness); sequencer CLI inspect-only + --run works.
 - [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
