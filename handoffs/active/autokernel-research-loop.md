@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** R41 IQK WIN PRESERVED / FRESH R42 PREFILL PAIR READY / DECODE CALIBRATION REJECTED, FRESH CALIBRATION NEXT — updated 2026-08-13
+**Status:** DISCOVERY-FIRST RATIFIED / CPU+GPU SCREENS VALID / R43 INTERVENTION KEEP, CONTROL PREFLIGHT-REFUSED — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,26 +18,45 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-13 16:01 UTC):** the post-reboot r41 intervention is the first clean rankable
-known-real CPU IQK result: all 15 precommitted paired blocks favoured IQK, median relative prefill gain
-was **+27.6481989%**, the e-value was `321.1221863` against threshold `10`, T0 passed, production
-remained byte-identical, and both the full-host CPU claim and campaign worktree released. Its matched
-A/A control reached T0 but stopped before T1 solely because the evaluator identity was re-read from a
-live research checkout that advanced between campaign start and evaluation. The immutable control
-journal remains an honest `t0_failed` record; it is not archive evidence and does not invalidate the
-intervention. Research `a65e638a` seals evaluator identity at campaign start and carries that identity
-through the evaluation window, closing the race prospectively.
+**Current checkpoint (2026-08-13 16:44 UTC):** operator ratification
+`autokernel-discovery-first-20260813` made discovery-first search durable under
+`P-AK-SEARCH-1-A2`. Root source commit `678240b9` was promoted to `main` by `c8223a76`; the
+ratified receipt is SHA-256 `65571da3d7b89792fccb827824473051ee492a30670c9b4a34aad40a09e2e669`.
+Discovery uses one exact-frame three-anchor bank plus three candidate-only samples, treats ordinary
+host activity as recorded noise, and blocks only on competing model inference overlapping its held
+compute claim. It remains structurally unable to bank, promote, enter the archive, or authorize a
+release.
 
-Because the r41 control is terminal-invalid and campaign identity is immutable, it is not replayed in
-place. A fresh r42 intervention/control pair now binds the accepted r5 prefill calibration, sealed
-evaluator identity, fresh `0042` campaign/candidate roots, and 15 one-repetition blocks; both arms
-compose dry-run clean and neither has executed. The separately governed decode control r2 preserved
-its completed 200-block A/A leg across a dead claimant and resumed at neutral under research
-`2081ec02`/`5d514cef`, but the calibration then rejected before ranked controls: neutral `|effect|`
-p95 `0.154446` exceeded its A/A permutation reference `0.148013` (phi `0.133735`). Its released claim
-and terminal `calibration_rejected` bundle are evidence about this calibration attempt, not decode
-holdout authority. The immediate empirical action is the fresh r42 matched prefill pair; after both
-arms are terminal, establish an accepted fresh decode calibration before executing the decode holdout.
+That policy now has live CPU and GPU evidence. Prefill screen `ak-iqk-screen-20260813-s7` reused the
+sealed b4 bank, ran three candidates and zero anchors, and nominated IQK at median **+31.247%**.
+Distinct-regime decode screen `ak-iqk-decode-screen-20260813-s1` reused its tg128 bank and nominated
+IQK at median **+7.939%**. MI210 screen `ak-gpu-mmq-mfma-screen-20260813-s2` measured the sole build
+factor `GGML_HIP_MMQ_MFMA=ON→OFF`, with three anchors plus three candidates, and nominated OFF at
+median **+26.5965%**; every candidate invocation proved owned KFD residency and non-zero VRAM during
+the measurement window. All three are deliberately nonpromotable search records, not performance
+claims.
+
+Strict confirmation also advanced without hiding failures. The r42 intervention stopped before
+fingerprinting, claim, build, T0, or throughput because the evaluator-closure constructor listed the
+same authoritative `correctness.py` path directly and through a nested closure. Its terminal error is
+preserved; the control was not spent. Research `b93af168` now unions exact authoritative paths while
+retaining the fail-closed lexical-alias/duplicate guard. Fresh r43 inputs bound that repair and both
+dry-ran clean. The intervention then reached terminal `DECIDED/KEEP`: T0 passed, all 15 paired deltas
+were positive, median gain was **+28.860648%**, the worst delta was **+984.48 tokens/s**, anchor drift
+was `15.0356%` within the `18.4968%` bound, production remained byte-identical, and both resources
+released. Its control terminally refused before claim/T0/throughput because strict preflight observed
+only 7/96 cores at nominal frequency under load and simultaneously treated caller-disabled load
+measurement as unmeasured contention. The control is not archive evidence, so r43 is not a completed
+matched pair; the exact strict load/boost mode must be reconciled before fresh immutable pair identities.
+
+The separately governed decode r2 calibration remains terminal `calibration_rejected`: neutral
+`|effect|` p95 `0.154446` exceeded its A/A permutation reference `0.148013` (phi `0.133735`). Research
+`084f1ee6` repairs the short tg128 observation frame by defining each statistical block as the median
+of five fresh alternating pairs rather than reusing one process, and `9c0c907c` exposes the resulting
+2,600-invocation calibration cost before execution. No threshold was weakened and ordinary host noise
+is not an exclusion. After a fresh matched prefill pair completes, execute that decode calibration and
+holdout, then the heldout-bound prefill pair, AK-WM-2a archive projection, and AK-WM-2b observe-only
+evaluation.
 
 **Historical checkpoint (2026-08-13, r4–r36):** clean direct-child CPU instrument
 `f744cc220e722d1bda93783959471d44f8e118b0` produced accepted baseline-matched control bundle
@@ -49,20 +68,22 @@ inference because ten blocks were outside `[15,20]`; r35 refused before build on
 passed intervention T0 but refused before T1 when the then-governing quiet sample was `25.47/96 =
 0.27`, above `0.25`, and its A/A arm never started. All three are terminal non-archive evidence.
 
-The low-cost discovery plane is now explicit but nonpromotable. Research `28e7c41a` adds a bounded
-screening tier, and `59a4ec91` binds it to an immutable exact-frame amortized baseline bank and emits
-noise-aware top-K nominations rather than KEEP/archive/promotion decisions. Research
-`eb898bd0`/`c376853d` adds sealed matched-pair T0 evidence plus frame-tamper coverage.
+The low-cost discovery plane is explicit, ratified, and live but nonpromotable. Research `28e7c41a`
+adds the bounded tier, `59a4ec91` binds the immutable exact-frame amortized baseline bank,
+`a3eca461` removes builds and worktrees from runtime-parameter screens, `7c35b3bb` binds the decode
+tg128 frame, and `f1b97aa3`/`45996850` supplies a six-call MI210 runner with sealed build identity.
+Research `eb898bd0`/`c376853d` adds sealed matched-pair T0 evidence plus frame-tamper coverage.
 `de464126`/`0f137f50` adds the separately calibrated decode producer and resolves its control frame at
-runtime. The remaining empirical chain is: execute both fresh r42 prefill arms, establish an accepted
-decode calibration and holdout, run the heldout-bound pair, project AK-WM-2a, then evaluate AK-WM-2b
-observe-only.
+runtime. The remaining empirical chain is: reconcile strict load/boost preflight and execute a fresh
+matched prefill pair, establish an accepted decode calibration and holdout, run the heldout-bound pair,
+project AK-WM-2a, then evaluate AK-WM-2b observe-only.
 
-**Discovery policy:** discovery is throughput work, not release confirmation. Only competing model
-inference blocks a discovery screen; ordinary system load is captured as noise/uncertainty instead of
-turning every screen into a quiet-host campaign. Screened candidates are ordered as top-K under that
-uncertainty, and strict calibrated confirmation is reserved for the small nominated set. No screen can
-bank, promote, enter an archive, or authorize release.
+**Discovery policy (operator-ratified `P-AK-SEARCH-1-A2`, 2026-08-13):** discovery is throughput work,
+not release confirmation. Only competing model inference overlapping the held compute claim blocks a
+screen; ordinary services, agents, builds, filesystem activity, scheduler traffic, and host load are
+captured as noise/uncertainty. Screened candidates are ordered as top-K under that uncertainty, and
+strict calibrated confirmation is reserved for the small nominated set. No screen can bank, promote,
+enter an archive, contribute to readiness, or authorize release.
 
 **Historical checkpoint (2026-08-12):** the frozen-v9 control campaign is accepted and
 decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
@@ -3567,27 +3588,52 @@ future sweep.)*
       both `0042` arms bind the accepted r5 prefill calibration, sealed evaluator identity, one sole
       `GGML_IQK` factor, 15 one-repetition blocks, and fresh campaign/output roots. Both dry runs
       compose clean; neither arm has executed, so r42 is preparation rather than evidence.
-- [ ] **Execute the fresh r42 matched prefill pair to terminal results.** Run intervention and A/A
-      control under their immutable r42 identities; require both terminal journals before any archive
-      projection or held-out-bound campaign.
+- [x] **Execute r42 and preserve its pre-compute evaluator-closure refusal.** ✅ 2026-08-13 — the
+      intervention terminally stopped before fingerprint, claim, build, T0, or throughput because
+      `correctness.py` appeared in both direct and nested evaluator closures. The control was not
+      spent. Research `b93af168` forms the exact-path union while preserving the lexical-alias and
+      duplicate fail-closed guard; the immutable r42 identity is not reused.
+- [x] **Execute r43 and preserve both terminal outcomes.** ✅ 2026-08-13 — the intervention reached
+      `DECIDED/KEEP` with T0 PASS, 15/15 positive deltas, median **+28.860648%**, worst delta
+      **+984.48 tokens/s**, drift `15.0356% ≤ 18.4968%`, production PASS, and both resources released.
+      Its control refused before claim/T0/throughput: strict preflight observed only 7/96 cores at
+      nominal frequency under load and also rejected caller-disabled load measurement as unmeasured
+      contention. The control is not archive evidence and r43 is not a completed matched pair.
+- [ ] **Reconcile the strict load/boost preflight mode, then execute a fresh matched prefill pair.**
+      Preserve r43 unchanged; prove the strict checker does not request contradictory load policy,
+      re-establish a compliant host state if the frequency finding persists, and mint fresh immutable
+      identities for both arms before archive projection.
 - [x] **Finish the candidate-only discovery-throughput primitive without weakening confirmation.** ✅
       2026-08-13 — research `c8971a6b` executes candidate-only screening batches, `6661ca25` removes
-      per-candidate anchor subprocesses, and `9a4bca3b` requires an inference witness. No live screen
-      has run yet. Only competing model inference on claimed compute may block discovery; services,
-      agents, builds, and all other ordinary system load must never pause it and are retained as
-      measured noise/uncertainty. Nominate top-K and send only that shortlist to rare strict
-      calibrated confirmation.
-- [ ] **Produce and seal the first real amortized discovery baseline bank.** Capture measured anchor
-      subprocess output for the exact screening frame, seal its identity and inference witness, and
-      prove the candidate-only screen consumes it fail closed. Synthetic fixtures remain regression
-      tests and cannot substitute; completing this producer does not itself claim a live screen.
+      per-candidate anchor subprocesses, and `9a4bca3b` requires an inference witness. Only competing
+      model inference overlapping claimed compute may block discovery; ordinary host activity remains
+      measured noise. The live s7 prefill and s1 decode screens each ran three candidates and zero
+      anchors, proving the amortized physical path without granting confirmation authority.
+- [x] **Produce and seal the first real amortized discovery baseline banks.** ✅ 2026-08-13 — the
+      exact prefill b4 bank (file SHA-256 `1e9c32d9bd1544daf7dea0892f666ddad64a0b07dd06e9277bdea2cd4b589068`)
+      and tg128 decode b1 bank (`8dcd02d3e9fd4e4a989f3631e9bc41e96ba45b43809ff41d8eaf510d15c7d1ed`)
+      each bind three measured anchors, the full command/environment frame, and an inference witness.
+      Prefill s7 nominated IQK at **+31.247%** median; decode s1 nominated it at **+7.939%** median.
+      These are nonpromotable search records, not banked candidates or claims.
+- [x] **Run the first live MI210 discovery-first screen with residency proof.** ✅ 2026-08-13 —
+      `ak-gpu-mmq-mfma-screen-20260813-s2` compared the sole build factor
+      `GGML_HIP_MMQ_MFMA=ON→OFF`, measured three anchors plus three candidates, and nominated OFF at
+      **+26.5965%** median. All three candidate invocations proved their owned KFD PID and non-zero
+      VRAM during execution; result file SHA-256 is
+      `9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887`.
+- [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
+      next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
+      top-K nominee to strict paired GPU confirmation.
 - [x] **Preserve the rejected decode r2 calibration as terminal non-authority.** ✅ 2026-08-13 — its
       resumed 200-block A/A leg and 60-block neutral leg completed under a released claim, but neutral
       `|effect|` p95 `0.154446` exceeded the A/A permutation reference `0.148013`; calibration rejected
       before controls and cannot license a holdout.
 - [ ] **Establish a fresh accepted decode calibration, then run the governed CPU decode IQK holdout.**
-      Start only after the final bootstrap prefill pair. The holdout must use the same candidate factor
-      but target `decode`, then be projected from its completed journal before the final prefill pair may
+      Start only after the final bootstrap prefill pair. Research `084f1ee6` predeclares five fresh
+      alternating pairs per short tg128 statistical block and reduces each arm by its median;
+      `9c0c907c` discloses the 2,600 fresh-invocation cost before execution. No threshold was weakened
+      and ordinary host noise is not excluded. The holdout must use the same candidate factor but
+      target `decode`, then be projected from its completed journal before the final prefill pair may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures, rejected
       decode r2, and the prefill pair cannot substitute.
 - [x] **CPU first.** ✅ 2026-08-13 — the r41 intervention and control both ran on `llama_cpu` under

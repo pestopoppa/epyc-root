@@ -2,22 +2,40 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-13 (the CPU IQK frame is calibrated and correctness-closed at f744, but the matched intervention/A/A pair remains unmeasured; earlier findings retained)
-**Sources**: 106+ documents
+**Last compiled**: 2026-08-13 (discovery-first ratified and live on CPU/GPU; r43 intervention kept but its matched control refused before compute; earlier findings retained)
+**Sources**: 107+ documents
 
-## Compiled Update — 2026-08-13: the CPU IQK frame is calibrated; the matched pair still has not run cleanly
+## Compiled Update — 2026-08-13: discovery-first is live; strict r43 remains unmatched
 
-**Confidence: verified for correctness and controls; no candidate throughput finding.**
+**Confidence: verified operator ratification, immutable discovery records, and terminal strict
+campaign results; discovery effects are nominations, not performance claims.**
 
-Two narrow-shape correctness failures surfaced before candidate timing: Q4_0 at `m=16,n=2,k=256`, then Q6_K at `m=16,n=3,k=256`. The final experimental direct child `f744cc220…` applies the native fallback below 32 rows for Q6_K while retaining the earlier Q4 safeguards, and its exact seeded suite passes. Its five controls also pass (`5/5`, `B_min=10`, MDE `2.0360%`). Production v9 stayed frozen.
+Ratified `P-AK-SEARCH-1-A2` separates throughput discovery from promotion-grade confirmation. One
+exact-frame three-anchor bank is reused for exactly three candidate-only samples; ordinary host
+activity becomes recorded uncertainty, and only competing model inference overlapping the held
+claim blocks. CPU IQK screens nominated prefill at **+31.247%** and decode at **+7.939%** median.
+The MI210's sole-factor `GGML_HIP_MMQ_MFMA=ON→OFF` screen nominated OFF at **+26.5965%** with owned
+KFD PID and non-zero VRAM observed during every candidate invocation. None of these records can bank,
+enter the archive, contribute to readiness, authorize release, or become a headline claim.
 
-Those controls calibrate what a future matched pair may claim; they do not rescue r29. The ten-pair intervention reverted on `15.27%` anchor drift versus a `3.08%` limit, and the A/A arm refused under unrelated CPU contention. The current hardware result is therefore a validated instrument plus a negative admission record. A fresh pair must begin only after the fixed settle barrier and three independent low-load attestations pass.
+Strict confirmation retained its gates. R42 stopped before compute on a duplicate authoritative
+evaluator-closure path, repaired prospectively by research `b93af168`. R43's intervention then passed
+T0 and reached `DECIDED/KEEP`: 15/15 positive deltas, median **+28.860648%**, worst delta
+**+984.48 tokens/s**, drift `15.0356% ≤ 18.4968%`, production PASS, and released resources. Its
+A/A control refused before claim/T0/throughput on the strict load/boost preflight, so r43 is not the
+matched completed pair required by the archive. The next strict action is to reconcile that preflight
+mode and mint fresh immutable pair identities; the separately repaired decode calibration and
+holdout follow only after that pair completes.
 
-### Source References (2026-08-13 CPU IQK frame)
+### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
 
-- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — production-v9 freeze and campaign posture.
-- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — exact fallback, control, drift, and quiet-host gates.
-- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — empirical summary and research commit ledger.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — current task and
+  evidence ledger.
+- [Inference progress](../progress/2026-08/2026-08-13-inference.md) — preceding r41 and discovery
+  implementation checkpoint.
+- [AutoKernel wrap progress](../progress/2026-08/2026-08-13-root-autokernel-wrap.md) — ratification
+  hashes, exact live effects, residency evidence, and r42/r43 outcomes.
+- [Ratified Annex K](../measurement/protocols/kernel-research.md) — human-amended discovery authority.
 
 ## Compiled Update — 2026-08-12 (NUMA fail-open audit and OP-11 resolution): a fail-loud gap that mutation testing alone would have missed, and an occupancy question closed without a new instrument
 
@@ -2904,3 +2922,54 @@ hook; reference or synthetic tensors cannot substitute.
   immutable r18 posture, C3/C5 capture seam, and exact remaining hook artifacts.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — self-contained receipt hashes,
   implementation commits, test counts, router replay, and authority limits.
+
+## Compiled Update — 2026-08-13 (AutoKernel discovery-first search and r43 confirmation)
+
+**Confidence: verified operator ratification, immutable live screen records, and terminal strict
+campaign results; discovery records are nonpromotable nominations, not performance claims.**
+
+AutoKernel now separates cheap throughput discovery from rare promotion-grade confirmation under
+operator-ratified `P-AK-SEARCH-1-A2`. A discovery bank consists of exactly three immutable,
+exact-frame anchor invocations; each candidate then consumes exactly three candidate-only samples
+and zero new anchors. Ordinary services, agents, builds, filesystem activity, scheduler traffic, and
+host load are recorded uncertainty rather than blockers. Only competing model inference overlapping
+the held compute claim blocks a screen. The result may nominate top-K, but cannot bank, enter champion
+lineage or an archive, contribute to readiness, authorize release, or become a headline claim.
+
+The first live screens validate that fast path on both compute planes. CPU IQK prefill s7 reused its
+three-anchor bank and nominated `GGML_IQK=1` at median **+31.247%** from three candidate-only samples;
+the distinct tg128 decode s1 screen nominated it at **+7.939%** under the same 3/0 execution shape.
+On the MI210, the six-call MMQ screen isolated `GGML_HIP_MMQ_MFMA=ON→OFF` and nominated OFF at median
+**+26.5965%**. Each GPU candidate invocation recorded an owned KFD PID and non-zero VRAM during its
+measurement window. These values prioritize follow-up; none carries strict performance authority.
+
+Strict confirmation remains meaningfully stricter and its failures remain evidence about the
+instrument. R42 stopped before fingerprint, claim, build, T0, or throughput because the evaluator
+closure listed `correctness.py` through two authoritative routes. Research `b93af168` now unions exact
+overlap while continuing to reject ambiguous lexical aliases. R43's intervention subsequently passed
+T0 and reached `DECIDED/KEEP`: 15/15 deltas were positive, median gain was **+28.860648%**, worst delta
+was **+984.48 tokens/s**, anchor drift was `15.0356%` within the `18.4968%` bound, production was
+byte-identical, and resources released. Its A/A control refused before compute when strict preflight
+both observed only 7/96 cores at nominal frequency under load and treated caller-disabled load
+measurement as unmeasured contention. Therefore r43 is not the matched completed pair required for
+the real least-commitment archive.
+
+The separately rejected decode r2 calibration is not reinterpreted. Research `084f1ee6` prospectively
+defines one short tg128 statistical block as the median of five fresh alternating pairs, and
+`9c0c907c` exposes the resulting 2,600-invocation calibration cost before execution. The next strict
+sequence is to reconcile the load/boost preflight mode, run a fresh matched prefill pair under new
+identities, execute the repaired decode calibration and holdout, execute the heldout-bound prefill
+pair, then project AK-WM-2a and run AK-WM-2b observe-only.
+
+### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — ratified discovery
+  contract, exact live screen identities, r42/r43 terminal outcomes, and remaining empirical chain.
+- [Inference progress, 2026-08-13](../progress/2026-08/2026-08-13-inference.md) — the preceding r41
+  strict result, evaluator-identity race, and candidate-only execution implementation checkpoint.
+- [AutoKernel wrap progress, 2026-08-13](../progress/2026-08/2026-08-13-root-autokernel-wrap.md) —
+  self-contained ratification hashes, screen effects, residency evidence, strict-chain repairs, and
+  r43 outcomes.
+- [Ratified Annex K](../measurement/protocols/kernel-research.md) and
+  [ratification receipt](../artifacts/operator/receipts/autokernel-discovery-first-20260813.receipt.json)
+  — human-amended authority and the exact apply-time evidence/state-diff record.
