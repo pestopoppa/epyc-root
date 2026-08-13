@@ -176,3 +176,12 @@ Neither signs anything. Trust boundaries are human-only (`coordination/session-b
   then ring. Do NOT weaken the quiet-check to paper over it; the adapter owner declined that on
   purpose, and `probe` now reports `quiet_corroborated_idle` so the condition is visible rather
   than inferred. Origin: F-37/H-3, 2026-08-12.
+- **Mains spawn ONLY on the paid hosted model — never the free gateway.** The launch command is
+  `cd <worktree> && /home/node/.opencode/bin/opencode --agent main-max` (model
+  `deepseek/deepseek-v4-flash`, variant high, operator API key). The opencode free gateway
+  (`opencode/deepseek-v4-flash-free`, CLI `-m opencode/...`) exhausted its free tokens under 5
+  concurrent mains + coordinator on 2026-08-13 and stopped the fleet — twice, in one morning.
+  `tmux_adapter.py spawn` now refuses a free-tier command (fail-closed); this guardrail is the
+  "never reach for the free gateway in the first place" half. A main that wedges on a token
+  limit reads as a fleet crash and costs a manual recovery — so the model string matters at
+  spawn time, not only at dispatch time. Origin: F-43, 2026-08-13.

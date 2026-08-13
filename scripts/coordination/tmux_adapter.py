@@ -2881,6 +2881,22 @@ def cmd_submit(args: argparse.Namespace) -> int:
     return _composer_action(args, "submit")
 
 
+# F-43 (2026-08-13, free-tier token exhaustion): the opencode FREE gateway —
+# `opencode/deepseek-v4-flash-free`, CLI `-m opencode/...` — ran out of free tokens
+# under 5 concurrent mains + coordinator, stopping every opencode main (which reads
+# as a fleet crash, not a rate limit). The fleet runs on the PAID hosted model
+# (`deepseek/deepseek-v4-flash` via `--agent main-max`, variant high). Refuse any
+# spawn command that reintroduces the free gateway — fail closed, because a wedged
+# free-tier main is indistinguishable from a crashed one and recovery is manual.
+FREE_TIER_MODEL_RE = re.compile(r"(?:flash-free|(?:-m|--model)\s+opencode/)", re.IGNORECASE)
+
+
+def launch_uses_free_tier(launch_cmd: str) -> bool:
+    """True when the spawn command would route a main through the opencode free
+    gateway (`opencode/deepseek-v4-flash-free`, `-m opencode/...`)."""
+    return bool(FREE_TIER_MODEL_RE.search(launch_cmd or ""))
+
+
 def cmd_spawn(args: argparse.Namespace) -> int:
     """Create the agent's four bus files, THEN start its pane.
 
@@ -3001,6 +3017,16 @@ def cmd_spawn(args: argparse.Namespace) -> int:
             print(f"REFUSING: {cwd_reason}", file=sys.stderr)
             return EX_MISCONFIG
         launch_cmd = f"cd {cwd} && claude"
+
+    if launch_uses_free_tier(launch_cmd):
+        print(f"REFUSING: spawn command routes {args.agent!r} through the opencode free-tier "
+              f"gateway ({launch_cmd!r}). The fleet runs on the paid hosted model "
+              f"`deepseek/deepseek-v4-flash` via `--agent main-max` (variant high); the free "
+              f"tier exhausted its tokens on 2026-08-13 (F-43) and a wedged free-tier main "
+              f"reads as a fleet crash. Re-spawn with "
+              f"`cd <worktree> && /home/node/.opencode/bin/opencode --agent main-max`.",
+              file=sys.stderr)
+        return EX_MISCONFIG
 
     if args.dry_run:
         would = [r for r in (f"inbox/{args.agent}.jsonl", f"outbox/{args.agent}.jsonl",
