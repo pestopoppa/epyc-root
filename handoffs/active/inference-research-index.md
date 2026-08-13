@@ -15,7 +15,7 @@
 | INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Preserve live r19, then validate its terminal receipt chain before any comparison | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
-| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Quiesce external CPU load; run fresh r30 pair, decode holdout, heldout-bound pair, then archive evaluation | INF-48, EVL-47 |
+| INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run a fresh 15-block r37 pair under r4; then decode holdout, heldout pair, and archive evaluation | INF-48, EVL-47 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |

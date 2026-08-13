@@ -36,7 +36,16 @@
 > complete chain validation. Never resume r4-r14.** Owner:
 > [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) INF-03.
 
-> **🟡 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; ALL SIX AK-WM IMPLEMENTATION DEFECTS
+> **🟡 2026-08-13 — AUTOKERNEL R4 BASELINE-MATCHED CONTROLS PASS; CLEAN PREFILL PAIR NEXT.**
+> Experimental direct-child `f744cc220` is the current CPU instrument. Its r4 controls are accepted
+> and rankable (5/5, `B_min=15`, MDE `2.9585%`) in a sealed IQK-off, `reps=1` A/A frame. r34
+> (out-of-range 10 blocks), r35 (pre-build contention), and r36 intervention (T0 pass then foreign
+> OpenCode load refusal before T1) are terminal non-evidence; r36 A/A did not run. Next is a fresh
+> r37-or-later 15-block matched pair after the independent quiet-host gate, followed by the decode
+> holdout, heldout-bound prefill pair, strict archive, and observe-only evaluation. Owner:
+> [autokernel-research-loop.md](autokernel-research-loop.md) §AK6.5.
+
+> **Historical 2026-08-12 — AUTOKERNEL V9 CONTROLS PASS; ALL SIX AK-WM IMPLEMENTATION DEFECTS
 > ARE PATCHED.** `ak-controls-v9-a4cb04ca-20260812-r2` is an accepted `5/5`, `may_rank=true` control
 > bundle under frozen v9 and hardened instrument `a4cb04ca8`; the historical IQK arm promoted.
 > The prepared full-host CPU IQK campaign then refused before claim/build/benchmark because uptime

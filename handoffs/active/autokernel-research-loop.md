@@ -1,8 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V9 CONTROLS 5/5 PASS / AK-WM IMPLEMENTATION REPAIR COMPLETE / POST-REBOOT REAL ARCHIVE NEXT — updated 2026-08-12
-
-**Status:** V9 CONTROLS 5/5 PASS / CURRENT-MAIN LOOP COMPLETION IN PROGRESS / CPU IQK READY AFTER REQUIRED REBOOT — updated 2026-08-12
+**Status:** BASELINE-MATCHED R4 CONTROLS 5/5 PASS / CLEAN PREFILL PAIR RETRY PENDING QUIET HOST / REAL ARCHIVE CHAIN NOT YET STARTED — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -20,7 +18,22 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
+**Current checkpoint (2026-08-13):** the prior a4cb/283b control narration below is historical.
+The current clean direct-child CPU instrument is `f744cc220e722d1bda93783959471d44f8e118b0`;
+the current accepted baseline-matched control bundle is
+`/mnt/raid0/llm/autokernel/controls/ak-controls-v9-f744cc220-20260813-r4` (5/5 controls,
+`B_min=15`, MDE `2.9585%`). Rejected r2/r3 controls showed that llama-bench `-r 5` creates a
+within-invocation thermal/P-state trajectory; research `798016e3` therefore binds all A/A arms to
+one sealed `GGML_IQK=0`, `reps=1` frame, and `7486a167` rejects a pair outside its accepted
+block range before publication. r34 spent no inference (10 blocks rejected against `[15,20]`);
+r35 refused before build for host contention; r36 intervention passed all T0 gates but refused
+before T1 when foreign OpenCode CPU work made the post-T0 quiet sample `25.47/96 = 0.27`, above
+the unchanged `0.25` ceiling. Its A/A arm was not started. These terminal attempts are not
+archive evidence. The next empirical action is a fresh 15-block matched prefill pair only after
+the independent quiet-host gate passes; then the required decode pair, heldout-bound prefill pair,
+strict archive, and observe-only least-commitment evaluation remain mandatory.
+
+**Historical checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
 decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
 `ak-controls-v9-a4cb04ca-20260812-r2` solved B_min=`10` and φ=`0.03578502357852242`, passed all
 five controls, promoted the historical IQK replay at `+26.6050%`, and set `may_rank=true`. The six
@@ -3522,9 +3535,12 @@ future sweep.)*
       attestations before the unchanged T1 admission gate. Fresh controls at
       `ak-controls-v9-f744cc220-20260813-r1` are accepted/rankable (5/5, B_min=10,
       MDE=2.0360%).
-- [ ] **Quiesce external CPU work and run fresh r30 IQK intervention/A/A bootstrap pair.** Generate a
-      new pair bound to `f744cc220…` and the accepted f744 control bundle only after independent
-      preflight passes; then execute both arms to terminal `DECIDED` before the decode holdout.
+- [x] **Harden and calibrate the IQK bootstrap frame through r36.** ✅ 2026-08-13 — r2/r3 exposed
+      `-r 5` instability and source/path A/A asymmetry; `798016e3` fixes a sealed `GGML_IQK=0/0`,
+      `reps=1` frame and r4 is accepted (5/5, `B_min=15`). `7486a167` refuses out-of-range pairs
+      before publication. r34/r35/r36 are terminal non-evidence attempts as recorded above.
+- [ ] **Quiesce external CPU work and run a fresh r37-or-later 15-block IQK intervention/A/A bootstrap pair.**
+      Bind only r4 and `f744cc220…`; require both arms to terminal `DECIDED` before decode holdout.
 - [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
       candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
       enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
