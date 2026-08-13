@@ -46,7 +46,7 @@
 | EVL-34 | rao redel substrate spike | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation | — |
 | EVL-35 | re4 protocol redesign | [re4-protocol-redesign.md](re4-protocol-redesign.md) | RE-4.2 — non-saturation probe (operator quiet-window, current v9 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409… | — |
 | EVL-36 | repl session memory maturity | [repl-session-memory-maturity.md](repl-session-memory-maturity.md) | D-a5 — If DataFrame persistence is ever wanted, use a typed columnar codec, not the | — |
-| EVL-37 | repl turn efficiency | [repl-turn-efficiency.md](repl-turn-efficiency.md) | S4 Omega A/B: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface… | — |
+| EVL-37 | repl turn efficiency | [repl-turn-efficiency.md](repl-turn-efficiency.md) | RTE-Prefix: run bench_repl_prefix_stability.py on a granted inference compute window, then decide prefix_stable_order default flip | — |
 | EVL-38 | repo readiness scorer | [repo-readiness-scorer.md](repo-readiness-scorer.md) | Close remaining root L5.self_optimizing_loop gap (13-item queue) | — |
 | EVL-39 | rlm contested claims self evaluation | [rlm-contested-claims-self-evaluation.md](rlm-contested-claims-self-evaluation.md) | E1 — RESCOPED BY E0: measure Base vs Depth-1 first, not depth-1 vs depth-2. E0 showed | — |
 | EVL-40 | safetygate rlvr provenance audit 2026 07 22 | [safetygate-rlvr-provenance-audit-2026-07-22.md](safetygate-rlvr-provenance-audit-2026-07-22.md) | Extract the SafetyGate/RLVR provenance findings to docs and move to completed/ — all 9 boxes closed | — |
