@@ -69,7 +69,7 @@ evidence, role/roster identity, live-main cap impact, observed token availabilit
 window name and do not auto-spawn either role. Before adoption, have the operator reset and reseed
 the prior role context. Pass `--context-reset-confirmed` only after that explicit confirmation.
 
-The recommended profiles are: Auditor `gpt-5.6-sol`/`xhigh` or Fable 5/`high`; Inference
+The recommended profiles are: Auditor `gpt-5.6-sol`/`high` or Fable 5/`high`; Inference
 `gpt-5.6-terra`/`medium` or Claude Opus/`high`. They are recommendations only. The operator may
 change a running role's model or effort at any time; it is never role drift and never produces a
 warning, validation failure, lease action, revocation, or reprovisioning.

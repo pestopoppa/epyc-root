@@ -2,10 +2,10 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-13 (discovery-first ratified and live on CPU/GPU; r43 intervention kept but its matched control refused before compute; earlier findings retained)
+**Last compiled**: 2026-08-13 (manual discovery proved CPU/GPU throughput; strict execution stopped after the post-fix r6 checkpoint; controller-first correction active; earlier findings retained)
 **Sources**: 107+ documents
 
-## Compiled Update — 2026-08-13: discovery-first is live; strict r43 remains unmatched
+## Compiled Update — 2026-08-13: discovery produced a ranked funnel; manual strict execution stopped at the controller boundary
 
 **Confidence: verified operator ratification, immutable discovery records, and terminal strict
 campaign results; discovery effects are nominations, not performance claims.**
@@ -13,26 +13,42 @@ campaign results; discovery effects are nominations, not performance claims.**
 Ratified `P-AK-SEARCH-1-A2` separates throughput discovery from promotion-grade confirmation. One
 exact-frame three-anchor bank is reused for exactly three candidate-only samples; ordinary host
 activity becomes recorded uncertainty, and only competing model inference overlapping the held
-claim blocks. CPU IQK screens nominated prefill at **+31.247%** and decode at **+7.939%** median.
-The MI210's sole-factor `GGML_HIP_MMQ_MFMA=ON→OFF` screen nominated OFF at **+26.5965%** with owned
-KFD PID and non-zero VRAM observed during every candidate invocation. None of these records can bank,
-enter the archive, contribute to readiness, authorize release, or become a headline claim.
+claim blocks. The durable candidate-only leaders are CPU IQK prefill **+31.247%**, CPU IQK decode
+**+7.939%**, MI210 `GGML_HIP_MMQ_MFMA=ON→OFF` prefill **+26.5965%**, and MI210 flash-attention
+`OFF→ON` prefill **+4.8791%**. The GPU invocations proved owned KFD residency and non-zero VRAM.
+These records rank hypotheses; none can bank, enter the archive, contribute to readiness, authorize
+release, or become a headline promotion claim.
 
-Strict confirmation retained its gates. R42 stopped before compute on a duplicate authoritative
-evaluator-closure path, repaired prospectively by research `b93af168`. R43's intervention then passed
-T0 and reached `DECIDED/KEEP`: 15/15 positive deltas, median **+28.860648%**, worst delta
-**+984.48 tokens/s**, drift `15.0356% ≤ 18.4968%`, production PASS, and released resources. Its
-A/A control refused before claim/T0/throughput on the strict load/boost preflight, so r43 is not the
-matched completed pair required by the archive. The next strict action is to reconcile that preflight
-mode and mint fresh immutable pair identities; the separately repaired decode calibration and
-holdout follow only after that pair completes.
+The manual strict path exposed a real instrument defect rather than a noisy false negative. Decode
+r49 found `IQ3_XXS MUL_MAT_ID m=512,n=15,k=256` at `0.000528677`, above the unchanged `0.0005`
+correctness bound, while the native path passed. The capture parser was repaired to admit the emitted
+diagnostic-prefix family. Experimental kernel `894ec4dc55c829b11b663a46bc9b089d861b73a4` preserves
+the proven IQK n=1 path and routes IQ3_XXS MMID with `ids->ne[1] > 1` to native; the former failure
+then passed in the exact 1,216-case suite. Because that changes instrument identity, prior f744-era
+calibration is stale. Fresh decode calibration r6 checkpointed AA `200/200`, neutral `60/60`, and
+anchor-motion `15/15`, but the operator stopped the watcher and r6 before terminal composition. All
+q0-q3 claims were verified free. The checkpoint prefix is recoverable evidence, not accepted
+calibration authority, and no successor pair, heldout, archive, champion, promotion, package, or
+release ran.
+
+The governing correction is controller-first. Hand-written campaign IDs, manifests, and recovery
+watchers were serializing the search that AutoKernel exists to automate. The isolated implementation
+in progress must own deterministic hypothesis selection, resource-aware CPU/GPU dispatch, sealed
+measured-result ingestion, and persistent strategy dispositions, while remaining structurally unable
+to invoke strict calibration, heldout, champion, package, promotion, or release paths. Separately,
+AK-RUN-1 was reconciled as already satisfied by research `d96e8704`: `journal_evaluation()` emits
+idempotent, schema-valid candidate/evaluation records from real T0 and paired evidence before terminal
+state, makes append failure non-success, and leaves dry runs record-free. That producer exists; it
+does not convert discovery records into promotion authority.
 
 ### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — current task and
-  evidence ledger.
-- [Inference progress](../progress/2026-08/2026-08-13-inference.md) — preceding r41 and discovery
-  implementation checkpoint.
+  evidence ledger, strict failure repair, r6 stop, and controller boundary.
+- [Inference progress](../progress/2026-08/2026-08-13-inference.md) — exact discovery outcomes,
+  correctness failure, post-fix calibration prefix, and release verification.
+- [mainB progress](../progress/2026-08/2026-08-13-mainB.md) — independent AK-RUN-1 reconciliation
+  against landed producer code and tests.
 - [AutoKernel wrap progress](../progress/2026-08/2026-08-13-root-autokernel-wrap.md) — ratification
   hashes, exact live effects, residency evidence, and r42/r43 outcomes.
 - [Ratified Annex K](../measurement/protocols/kernel-research.md) — human-amended discovery authority.

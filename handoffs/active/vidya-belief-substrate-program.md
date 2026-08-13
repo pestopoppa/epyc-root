@@ -104,6 +104,10 @@ deliberately — decide them, do not just implement them.
       `gate_decisions` have been emitted. Wire the write side (adapter + producer-written hook)
       against the merged commit before the orchestrator next serves traffic; do NOT close this
       row until the adapter emits its first tuple.
+      **Independent merge audit 2026-08-13: ACCEPT.** `c61b8184` has the same stable patch-id and
+      six-file `+299/-0` diff as source `a7d7bdb6`; the merge gate classifies the range autonomous,
+      and the focused contention/chat suite passes (`118 passed`). This accepts the cherry-pick
+      only; SC19 remains open until its producer-written adapter emits the first tuple.
       **Self-caught, and the trigger is worth keeping:** I built this surface earlier tonight and
       filed no wiring task until `mainA` published the right test — *"you touched a producer", not
       "you thought about producers"*. A checklist keyed on the diff catches it; one keyed on intent

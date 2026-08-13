@@ -260,7 +260,7 @@ python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode fre
 **Auditor/Inference instantiation has one extra required choice.** Before either role is created,
 inspect any candidate pane and ask the operator whether to **adopt that eligible pane** or **launch
 fresh**. Include identity/runtime evidence, cap impact, and the profile recommendation: Auditor
-`gpt-5.6-sol` xhigh or Fable 5 high; Inference `gpt-5.6-terra` medium or Claude Opus high. These
+`gpt-5.6-sol` high or Fable 5 high; Inference `gpt-5.6-terra` medium or Claude Opus high. These
 profiles are capacity recommendations only. The operator can change model or effort at any time;
 do not diagnose model drift, warn, revoke a lease, or reprovision because of it. Canonical role
 files: `agents/auditor-main.md`, `agents/inference-main.md`.

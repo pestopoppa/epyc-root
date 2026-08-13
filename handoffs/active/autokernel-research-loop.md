@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** DISCOVERY-FIRST RATIFIED / CPU+GPU SCREENS VALID / R43 INTERVENTION KEEP, CONTROL PREFLIGHT-REFUSED — updated 2026-08-13
+**Status:** OPERATOR-STOPPED / MANUAL DISCOVERY PROVED THROUGHPUT / CONTROLLER-FIRST IMPLEMENTATION IN PROGRESS — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,37 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
+discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
+watchers is not the autonomous loop. The durable nonpromotable leaders remain CPU IQK prefill
+**+31.247%**, CPU IQK decode **+7.939%**, MI210 MMQ-MFMA OFF prefill **+26.5965%**, and MI210 flash
+attention ON prefill **+4.8791%**. The GPU search subsequently emitted many additional candidate-only
+records over graph mode, batch/ubatch, helper threads, poll, mmap/offload, rocWMMA, rope/RMS, and
+quant-kernel shapes; these are discovery observations only. Their value is a ranked hypothesis funnel,
+not authority to call any arm a champion or promotable.
+
+The strict manual execution path failed usefully. Decode attempt r49 exposed a real seeded
+`IQ3_XXS MUL_MAT_ID m=512,n=15,k=256` correctness violation (`0.000528677 > 0.0005`) that the result
+parser initially failed to surface. The parser now recognizes the full diagnostic-prefix family, and
+experimental kernel commit `894ec4dc55c829b11b663a46bc9b089d861b73a4` preserves the proven n=1
+IQK path while routing IQ3_XXS MMID with `ids->ne[1] > 1` to the native fallback. The exact former
+failure then passed in the full 1,216-case run. Because this changed instrument identity, the old r4
+calibration could not be reused. Fresh decode calibration r6, bound to that instrument, completed and
+checkpointed all AA `200/200`, neutral `60/60`, and anchor-motion `15/15` blocks before the operator
+requested an immediate stop. The sealed continuation watcher and exact r6 process were terminated in
+that order; their captured child was dead, all twelve q0-q3 lock probes were free in three follow-up
+samples, and no continuation, heldout pair, archive, champion, promotion, or release ran. SIGTERM
+arrived before r6 wrote its terminal summary/release receipt, so its checkpoint prefix is resumable
+evidence, not accepted calibration authority.
+
+The correction is controller-first: stop spending the session hand-authoring sequential campaign
+IDs, manifests, and recovery watchers. A deterministic discovery controller must own hypothesis
+selection, resource-aware CPU/GPU dispatch, sealed measured-result ingestion, strategy persistence,
+and the nonpromotable candidate funnel; strict calibration/heldout/champion/release remain separate
+consumers that discovery cannot invoke. Implementation is currently in progress in an isolated Terra
+worktree. Until its tests and independent review land, that unfinished code has no campaign authority
+and must not be swept into a documentation or wrap-up commit.
 
 **Current checkpoint (2026-08-13 16:44 UTC):** operator ratification
 `autokernel-discovery-first-20260813` made discovery-first search durable under
@@ -446,18 +477,51 @@ not a reopening of empirical work:
 - [x] **AK-AUD-5 — Audit the runnable loop against current research `main`, not historical completion
   narration.** ✅ 2026-08-12 — verified the live campaign boundary, generic-source refusals, removed
   planes, preserved tag, and focused suite from a clean detached `730adb1d` checkout.
-- [ ] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
+- [x] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
   actual T0 property measurements and raw paired-performance evidence; append exactly once before the
   terminal `STOP_STATE`; make append failure non-success; and keep dry runs record-free. This is the
-  producer prerequisite for Vidya SC10/SC18 and the real matched archive.
+  producer prerequisite for Vidya SC10/SC18 and the real matched archive. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — same pattern as AK-RUN-3: this row was filed by the runnable-loop
+  audit at 02:30 on 2026-08-12, and the implementation landed 37 minutes later the same day
+  (`d96e8704` "autokernel: journal live evaluation events", 03:07, in origin/main); the row was never
+  reconciled. Verified element-by-element at HEAD: `campaign.py` `journal_evaluation()` binds actual T0
+  property measurements and raw paired-performance evidence into schema-valid `EVALUATION_EVENT` +
+  `CANDIDATE_RECORDED` records (evaluator identity, claim grammar, host/claim receipts, evaluation
+  event ids, protocol ids); appends idempotently (replay returns identical event ids, byte-diff on
+  mutated payload raises "different bytes"); ordering test asserts `journal_evaluation` runs before the
+  terminal `journal`/`STOP_STATE`; append failure makes the run non-success (`journal_error` set, result
+  `ok=False`); dry runs are record-free (no `journal_evaluation` seam, zero candidate records — both
+  tested). Tests: `test_campaign.py` 362 passed incl. idempotent-append, ordering, failure-non-success,
+  and dry-run-record-free coverage. The 3 adjacent `test_campaign_footprint.py` failures are
+  pre-existing module-list drift (new `execution/inference_window.py`, `execution/screening_baseline.py`,
+  `heldout_bound_pipeline.py` lack FOOTPRINT.md rows from later AutoKernel commits) — reproduced on a
+  clean detached origin/main checkout, unrelated to AK-RUN-1.
 - [ ] **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
-- [ ] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
+- [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
   candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
   members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly
-  when the production anchor moves. Never add member speedups arithmetically.
+  when the production anchor moves. Never add member speedups arithmetically. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — this row was filed by the runnable-loop audit at 02:30 on
+  2026-08-12, and the restore landed ~1h later the same day; the row was never reconciled. The same
+  task is checked off at line 2894: **"Restore the lean bank/frontier/champion sequencer on the
+  runnable journal plane"** ✅ 2026-08-12 — research `069e79fd` (in origin/main). Verified element by
+  element at HEAD: `controller/sequencer.py` consumes proposal/candidate/evaluation records and
+  distinguishes frontier/banked/champion state; `controller/champion.py` composes compatible members
+  (file/symbol/dispatch predicates fail closed), requests direct combined-candidate T0/T1/T2 evidence,
+  appends `KIND_CHAMPION_UPDATED` idempotently, re-anchors explicitly on anchor move (matching sealed
+  release receipt required), preserves the incumbent on rejected/failed composition, and **never adds
+  member speedups arithmetically** (champion.py:10 "member results are never combined into a new
+  result"). Import closure proven: campaign cannot reach sequencer/champion. Tests: `test_champion.py`
+  16 passed (incl. `test_sequencer_composes_existing_frontier_without_importing_campaign`,
+  `test_reanchor_drops_members_already_present_in_new_production`,
+  `test_reanchor_without_matching_sealed_receipt_fails_closed`, idempotent-replay and concurrent-append
+  coverage). The one failure in the adjacent rehearsal suite (`test_current_campaign_cli_contract_is_one_json_document`)
+  is a pre-existing environment issue (rehearsal passes relative `--model test`, which hardened
+  campaign rejects as non-absolute) — reproduced on a clean detached origin/main checkout, unrelated
+  to the sequencer.
 - [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
@@ -3621,6 +3685,22 @@ future sweep.)*
       **+26.5965%** median. All three candidate invocations proved their owned KFD PID and non-zero
       VRAM during execution; result file SHA-256 is
       `9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887`.
+- [x] **Expose and repair the IQ3_XXS MMID correctness boundary before spending more strict
+      inference.** ✅ 2026-08-13 — r49 proved a real `m=512,n=15,k=256` error above the declared
+      tolerance. The parser now admits the complete failure-prefix schema, and experimental commit
+      `894ec4dc55c829b11b663a46bc9b089d861b73a4` retains IQK for the proven n=1 decode path while
+      routing `ids->ne[1] > 1` to native. The former failure passed in the exact 1,216-case suite; no
+      threshold or seed changed.
+- [x] **Checkpoint the fresh post-fix decode calibration and release all compute on operator stop.**
+      ✅ 2026-08-13 — r6 durably completed AA `200/200`, neutral `60/60`, and anchor-motion `15/15`
+      under the new instrument before SIGTERM. The watcher, r6 parent, and captured benchmark child
+      are absent; all q0-q3 global/autokernel lock probes passed three times. No continuation ran and
+      the unterminated prefix is not accepted authority.
+- [ ] **Land and independently review the controller-first discovery loop before resuming campaigns.**
+      The isolated Terra worktree is implementing deterministic hypothesis selection, sealed
+      measured-result ownership, strategy persistence, and resource-aware CPU/GPU dispatch. Discovery
+      must be structurally unable to load strict calibration/heldout/champion/release authority, and
+      planner prose or a screening threshold must never mint promotion state.
 - [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
       next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
       top-K nominee to strict paired GPU confirmation.

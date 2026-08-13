@@ -91,3 +91,79 @@ recalibrate decode and complete the held-out/archive/evaluation chain. The obsol
 rerun the immutable terminal r41 control is removed. The reconciliation also collapsed duplicate and
 fragmented checkpoint prose introduced by the divergent edits; no empirical claim, production state,
 or campaign artifact was mutated by this documentation repair.
+
+## Discovery throughput, strict-path failure, and controller-first correction
+
+### Outcome
+
+The manual discovery campaign demonstrated the intended throughput plane on both processors. These
+records are all `nonpromotable_candidate_only_discovery`; they rank hypotheses but cannot bank,
+archive, promote, or authorize release.
+
+| Lane | Exact screen | Median relative effect | Durable result SHA-256 |
+|---|---|---:|---|
+| CPU prefill pp512 | `ak-iqk-screen-20260813-s7` | `+31.247%` | recorded in its sealed result/b4 bank lineage |
+| CPU decode tg128 | `ak-iqk-decode-screen-20260813-s1` | `+7.939%` | recorded in its sealed result/b1 bank lineage |
+| MI210 prefill pp512 | `ak-gpu-mmq-mfma-screen-20260813-s2` (`MMQ_MFMA ON→OFF`) | `+26.5965%` | `9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887` |
+| MI210 prefill pp512 | `ak-gpu-flash-attn-screen-20260813-s1` (`flash_attention OFF→ON`) | `+4.8791%` | `0caa563c2b9f35e3edc66c6550b6175dcf456c8e5d302f2a1cdcadb91c16cdfa` |
+
+The GPU lane went on to emit a broad candidate-only corpus over HIP graph mode, batch/ubatch,
+helper-thread counts, polling, mmap and op/KV offload, rocWMMA attention, rope/RMS, and quant-kernel
+shape knobs. Large provisional deltas in that corpus remain search signals relative to their own
+sealed banks; they are not promoted here as comparable headline claims. Small-model GPU discovery was
+allowed to overlap CPU work through the ratified live-governance receipt, while larger model loads
+remain scheduled around CPU inference because shared memory bandwidth can materially perturb it.
+
+### Strict execution failure and repair
+
+The strict chain did not fail because the candidate was merely noisy. r49 exposed a real seeded
+correctness violation:
+
+`IQ3_XXS MUL_MAT_ID(type_a=iq3_xxs,type_b=f32,n_mats=4,n_used=2,b=0,m=512,n=15,k=256)`
+
+The candidate reported `0.000528677`, exceeding the unchanged `0.0005` bound; the native baseline
+passed. The capture parser had also missed failed rows whose console prefix carried diagnostics such
+as NaN/inf/sentinel/value/stateful failures. Research parser repair now recognizes that full emitted
+schema. Experimental kernel commit `894ec4dc55c829b11b663a46bc9b089d861b73a4` makes the smallest
+evidence-backed dispatch correction: IQ3_XXS MMID retains IQK when `ids->ne[1] == 1` and uses native
+for `ids->ne[1] > 1`. The exact former failure then passed within the full 1,216-case command; the n=1
+IQK engagement check stayed active. Neither the threshold nor seed was weakened.
+
+That source change required a new measurement era. The old f744 calibration was correctly rejected;
+fresh decode calibration `ak-controls-v9-894ec4dc-decode-20260813-r6` used the new canonical build and
+durably checkpointed:
+
+- AA calibration: `200/200`
+- neutral calibration: `60/60`
+- anchor-motion calibration: `15/15`
+
+Before controls and terminal composition, the operator requested an immediate stop. The exact sealed
+watcher PID `553989` was terminated first, followed by r6 PID `190609` and its captured benchmark child
+PID `1119941`. Three follow-up samples found all three absent and all q0-q3 GLOBAL, autokernel, and
+autokernel-windowed-control locks acquirable. SIGTERM preempted r6's final `claim_receipt.json` and
+summary publication, so the complete checkpoint prefix is recoverable input but **not** accepted
+calibration authority. No r51 pair, prefill calibration, heldout pair, archive, champion, promotion,
+package, or release ran.
+
+### Root cause of slow progress
+
+The work had become a hand-authored sequence of campaign IDs, manifests, preflight repairs, recovery
+watchers, and strict calibration retries. Each individual guard was defensible, but the aggregate was
+not AutoKernel: manual orchestration serialized progress and repeatedly spent the main thread on
+plumbing instead of hypothesis throughput. The correction is to land the controller before resuming
+campaign execution.
+
+The controller implementation is still in progress in an isolated Terra worktree. Its required
+authority boundary is explicit:
+
+- discovery cannot load calibration, heldout, champion, readiness, package, or release authority;
+- a screening threshold may nominate top-K but cannot mint promotion state;
+- small governed MI210 models may overlap CPU discovery, while large GPU loads require a bandwidth
+  window;
+- planner narrative is never evidence: only a sealed measured result owns observed effect and strategy
+  disposition;
+- accepted, abandoned, active, and unexplored strategies persist across controller rounds.
+
+This wrap-up does not commit or describe unfinished controller code as landed. The next action is to
+finish its tests and independent review, then resume from the controller's governed discovery queue—not
+by reviving the stopped manual watcher.

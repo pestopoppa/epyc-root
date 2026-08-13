@@ -14,7 +14,7 @@
 | PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size — a separate download from the GGUF | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs | — |
 | PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce… | — |
-| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | Finish ODL-011 intrinsic arms, then run Unlimited-OCR validation in granted compute windows | — |
+| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | Harden and seal ODL-013 before any routing decision; finish ODL-011 HOPE/common-endpoint work | — |
 
 ## Cross-domain
 

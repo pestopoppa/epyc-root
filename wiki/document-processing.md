@@ -2,8 +2,43 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (first-wave ODL metric/parser work was preflight-only; Unlimited-OCR code landed but its default artifact fails the lm_head quant gate)
-**Sources**: 13+ documents
+**Last compiled**: 2026-08-13 (ODL-013 later produced a reproducible full-corpus observation, but independent audit rejected its adoption/routing claim; Unlimited-OCR still fails the lm_head quant gate)
+**Sources**: 16+ documents
+
+## Compiled Update — 2026-08-13: ODL-013 is reproducible evidence, not an adoption decision
+
+**Confidence: verified for corpus/output equality and evaluator replay; observation-only for parser
+selection.** This supersedes the preflight-only snapshot below without turning the later run into a
+decision record.
+
+The later ODL-013 execution did process the full matched 200-PDF corpus. Each of LiteParse,
+OpenDataLoader-local, and pdftotext has the same 200 prediction stems, no zero-byte prediction, and
+the stored NID/TEDS/MHS results reproduce exactly when all 600 outputs are replayed through the
+pinned upstream evaluator. LiteParse leads the aggregate point estimates, including overall quality,
+and remains JVM-free. That makes the run useful comparative evidence.
+
+It does **not** license the recorded `ADOPT` verdict or a routing-default change. The artifact exists
+only in local scratch, cites no applicable document-parser protocol/category/attestation, records no
+precommitted selection rule, retains only timing summaries rather than per-document latencies, and
+does not pin the ODL engine version. Exploratory paired intervals for LiteParse-minus-ODL cross zero
+for NID and MHS, so “wins every metric” is true only of aggregate point estimates. The harness also
+needs prospective fail-closed handling for extractor return codes, absent candidates, and empty
+predictions; all actual stored predictions in this run are non-empty, so this is a harness-accounting
+follow-up rather than evidence of an observed failed document.
+
+The operational conclusion is deliberately narrow: preserve or rerun this comparison as durable,
+protocol-admissible evidence with a precommitted decision rule, and keep parser/routing defaults
+unchanged until then. The matched parser report's `decision-grade fixture` wording is superseded.
+
+### Source References (2026-08-13 ODL-013 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — corrected decision gate, completed observation rows, and concrete durability/harness follow-ups.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer-side
+  execution, corpus, and result records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
+  replay, statistical caveats, claim-boundary verdict, and follow-up disposition.
 
 ## Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
 

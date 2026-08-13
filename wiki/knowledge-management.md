@@ -2,8 +2,32 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-12 (second pass — the verification-failure catalogue reaches fourteen faces, eight of which defeat mutation testing; the 129-item correction queue drains to zero and the per-claim/per-entry distinction that made it tractable; three systematic hazards for anyone re-running it; the write-side hook trigger keyed on the diff rather than on intent; and two locator traps that read one witness as N; first pass records the first live post-hook GEAK/Arena beliefs; SC27 and prior promotion-track findings retained; concurrent-lane compile 2026-08-11: a same-day operator-commissioned audit's provenance-discipline lessons — receipts outrank bus messages, filesystem presence is not provenance, a closed box with real measurements is more misleading than an open one — see below; earlier 2026-08-10 note: belief-substrate promotion track: corroboration counted by source locator, machine anchoring, dependency propagation, R1b closed)
-**Sources**: 37 documents
+**Last compiled**: 2026-08-13 (A14 independently verifies the write-side trigger and request-level locator rule while leaving first-tuple validation open; earlier projection and correction findings retained below)
+**Sources**: 40+ documents
+
+## Compiled Update — 2026-08-13: landing a producer is not wiring its evidence
+
+**Confidence: verified for code identity and tests; prospective for belief capture.** The A14
+contention-decision echo now exists on the local orchestrator main and passed independent patch/test
+audit. Yet it has produced zero belief tuples: the API has not served the local commit, and the
+producer-written adapter remains open. This is the precise distinction the source roster needs to
+preserve—implementation can be accepted while evidence status remains `candidate` or `wired`, not
+`live`.
+
+The locator constraint is equally load-bearing. One request can walk several topology candidates and
+emit several gate decisions; treating each decision as an independent witness would manufacture N
+supports from one request. The durable locator is the request/chat identity, with the decision list as
+one observation payload. SC19 stays open until that shape emits and round-trips its first tuple.
+
+### Source References (2026-08-13 A14 write-side boundary)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
+  producer state, locator trap, and first-tuple closure condition.
+- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — local
+  GateDecision echo landing.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
+  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — producer
+  record and independent audit.
 
 ## Compiled Update — 2026-08-12 (third pass): the projection contract, and what "wired" is not
 

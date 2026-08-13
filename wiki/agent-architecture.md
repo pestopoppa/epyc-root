@@ -2,8 +2,68 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (Auditor and Inference are now dedicated, model-agnostic control-plane roles with typed audit/resource protocols and explicit pane adoption; earlier 2026-08-13 fan-out and 2026-08-12 coordinator findings retained below)
-**Sources**: 85+ documents
+**Last compiled**: 2026-08-13 (the first live role-admission canary failed because the daemon ran an unguarded stale source; compute-dialogue and dedicated-role findings retained below)
+**Sources**: 91+ documents
+
+## Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
+
+**Confidence: verified by the live queue/advisory records, process start time, source identity, and
+tracked code comparison.** The first live role-admission canary assigned ordinary AP-ME-1 backlog
+work to Auditor even though the roster declares `schedulable: false` and
+`accepts_work_types: [audit]`. Auditor declined before editing or compute; coordinator-agent revoked
+the lease, and the queue can return to an ordinary main.
+
+The tracked `compute_advice` implementation already contains the needed refusal: a non-schedulable
+role is skipped unless explicitly targeted with an accepted work type, and a generic row is rejected
+again during candidate evaluation. The running daemon did not contain that code. It started at
+19:48:03Z from the shared-main tree at `ff7a5e6f`, which does not contain `d7b83ddf9`; the stale source
+was materialized before process start, so this was not a stale-process-after-file-update ambiguity.
+
+The rollout lesson is sharper than “restart the daemon”: deployment acceptance must prove the exact
+running source before testing behavior. AIR-6 now requires source-version proof plus a mutation
+canary in which an ordinary untyped `lane:none` row is refused by Auditor. Only after that should
+audit `shadow` or resource `observe` advance. GitNexus rates `compute_advice` HIGH reach across four
+assignment/coordinator flows, so the wrap-up changed the deployment gate rather than patching or
+reloading the live control plane.
+
+### Source References (2026-08-13 role-admission canary)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-6 failed
+  canary evidence/retry gate and AIR-10 disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
+  source, queue, and role-contract audit.
+- [`config.yaml`](../coordination/session-bus/config.yaml) and
+  [`auditor-main.md`](../agents/auditor-main.md) — authoritative schedulability and accepted-work
+  contract.
+
+## Compiled Update — 2026-08-13: typed compute messages are not yet an authority boundary
+
+**Confidence: verified by negative validation probes and dependency analysis.** The Rule-11 prose
+says requests route to Inference and only Inference grants or denies. The audited schema change adds
+`compute-request`, `compute-grant`, and `compute-deny` to the enum and exercises positive authoring,
+relay, and idempotency, but it does not encode those role and route constraints.
+
+Four forged or incomplete rows currently validate: a request addressed to a non-Inference target, a
+grant authored by a non-Inference sender without `boundaries`, a deny without `next`, and a request
+with an unknown misspelled payload key. This is the important architecture distinction: a typed
+message vocabulary describes interaction shape, while an authority boundary must refuse a sender,
+recipient, correlation, or payload that violates that shape. Validator parity and green positive
+tests prove consistency, not the Rule-11 contract.
+
+The repair is focused but high-reach: enforce request routing, inference-only grant/deny authorship,
+request correlation/addressing, required non-empty per-kind fields, closed payload vocabularies, and
+authoring-plus-relay negative tests. GitNexus classifies `validate_row` as CRITICAL upstream reach
+(six dependants across five append/validation/coordinator flows), so the independent audit recorded
+the rework contract without editing the control-plane implementation.
+
+### Source References (2026-08-13 Rule-11 audit)
+
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
+  contract.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-8
+  independent audit and AIR-9 fail-closed repair task.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
+  probes, test result, and dependency blast radius.
 
 ## Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
 
