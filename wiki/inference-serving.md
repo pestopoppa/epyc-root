@@ -2,8 +2,32 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (second pass — a topology gate was **false-passing on 21 of 25 entries** because a stale pin and a stale attestation agreed with each other; two "missing" capabilities turned out already built, one needing only a zero-coverage test branch; a banked throughput number was corrected onto the right role after a cutover moved the binding; duty cycle is **~8–9% receipted, not ~20%** — see below; earlier same-day note: the fail-open 200 had three more streaming sites and a stream cannot retract its 200; a documented dry-run flag was inert and launched the production stack; the stack-change gate's catch-22 now names its own escape; and `-c` provisioning re-decided — lazy faulting relocates the cost from launch to load rather than removing it — see below; earlier 2026-08-11 note: production v9 stack restoration and the launcher circular-import boundary; prior stack-compilation and GPU-shadow findings retained; concurrent-lane compile 2026-08-11: a fail-open 200 masking backend outages as model answers, closed; a NUMA region-lock regression recurring in derived priors, IN-PROGRESS — see below; earlier 2026-08-01 note: adds stack compilation as a pure function of declared inputs, backend-resolved kernel binaries, and derived kernel-freeze scope; prior GPU shadow lane / frozen-v8 E8 posture retained)
+**Last compiled**: 2026-08-13 (K-LCM-1 full-run dispatch correctly stopped at its never-run RE-4.2 non-saturation precondition; earlier serving findings retained)
 **Sources**: 69 documents
+
+## Compiled Update — 2026-08-13: a region-lock grant is not a model-server inference window
+
+**Confidence: verified** — current handoff, redesign protocol, artifact absence, and dispatch-resource
+scope were checked together; no inference was authorized or run.
+
+The K-LCM-1 LongCoT-Mini full-run dispatch was not runnable merely because it carried a q2 benchmark
+grant. Its v1 protocol floor-saturated (frontdoor `0/402`, worker-general `0/307`), and the v2 redesign
+requires RE-4.2 first: a frontdoor-only, 30-row, two-phase non-saturation probe whose admissible band is
+overall accuracy strictly between 10% and 90% with approximately complete marker presence. No RE-4.2
+artifact exists. The probe itself requires an operator-granted quiet window, current v8/v9 topology
+re-attestation, and stopped autopilot; the design note explicitly authorizes no inference. In addition,
+the LongCoT runner needs live model-server role ports, which a region-lock-only benchmark grant does not
+provide. The durable disposition is therefore `BLOCKED_PRECONDITION`, not a failed or completed run:
+execute RE-4.2 in its governed window, and attempt/close K-LCM-1 only if that probe is in band.
+
+### Source References (2026-08-13 K-LCM-1 precondition)
+
+- [Bulk inference campaign](../handoffs/active/bulk-inference-campaign.md) — exact K-LCM-1 dependency,
+  prior floor-saturated evidence, resource mismatch, and next action.
+- [mainB progress](../progress/2026-08/2026-08-13-mainB.md) — dispatch-premise audit and no-run
+  disposition.
+- [RE-4 protocol redesign](../handoffs/active/re4-protocol-redesign.md) — governing probe order,
+  acceptance band, quiet-window prerequisites, and inference-authorization boundary.
 
 ## Compiled Update — 2026-08-12 (second pass): a gate that fails open by agreeing with itself, and two "missing" things that already existed
 
