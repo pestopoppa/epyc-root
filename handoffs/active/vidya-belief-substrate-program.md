@@ -97,6 +97,13 @@ deliberately — decide them, do not just implement them.
       **Price it first** per the P2 discipline before any bulk adapter: the surface emits nothing
       until the branch lands, so the honest state today is `candidate — ready, unwritten`, not
       `live`. Source-table row added in `scripts/vidya/adapters/README.md`.
+      **STATUS 2026-08-13: A14 landed locally** on orchestrator `main` as `c61b8184`
+      (cherry-pick, merge-gate verdict autonomous, local-only — NOT pushed; push freeze). The
+      "while unmerged" phrasing no longer applies to the branch, but the PRACTICAL capture window
+      is still open: the orchestrator API is down and the code is not pushed, so zero
+      `gate_decisions` have been emitted. Wire the write side (adapter + producer-written hook)
+      against the merged commit before the orchestrator next serves traffic; do NOT close this
+      row until the adapter emits its first tuple.
       **Self-caught, and the trigger is worth keeping:** I built this surface earlier tonight and
       filed no wiring task until `mainA` published the right test — *"you touched a producer", not
       "you thought about producers"*. A checklist keyed on the diff catches it; one keyed on intent
