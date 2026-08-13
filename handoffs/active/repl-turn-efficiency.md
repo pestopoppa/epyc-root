@@ -122,6 +122,17 @@ Audit result: our scaffold is **cache-hostile but NOT SkyRL's literal shape**. `
 - [x] **RTE-Prefix flag-gated reorder**: `ORCHESTRATOR_PREFIX_STABLE_ORDER` + `to_string(prefix_stable=)` + builder wiring + A/B harness script. ✅ 2026-08-13
 - [ ] **RTE-Prefix live measurement**: run `bench_repl_prefix_stability.py` on a granted inference compute window (requested `msg-20260813T110423Z-28-mainC`); record hit ratio per turn for both orders, decide default flip. Awaits inference grant.
 
+_2026-08-13 session-2 status: original request lapsed unread; superseded by
+`msg-20260813T131907Z-30-mainC` (window 13:30-15:00Z, est 0.75h, one CPU region) — relayed to
+inference inbox 13:19:21Z. Fire-readiness complete (harness offline dry-run both orders;
+measurement-validity confirmed — `Features()` fresh defaults produce byte-identical
+`build_root_lm_prompt` vs `get_features(production=True)`; production v9 llama-server + linkage
+PASS; model `Qwen2.5-Coder-1.5B.Q4_K_M`; runbook `/tmp/opencode/mainC-rte-prefix-runbook.md`;
+227 tests green). Compute was genuinely free at 13:17Z (autokernel r4 released all 4 regions).
+Still awaiting inference's grant — inference has not drained the bus since the reboot (0 outbox
+rows today, 8 unread); daemon flagged it LOOKS DEAD 10:13Z. Rule 11 + operator directive
+2026-08-13: I do not self-claim._
+
 
 ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed)
 
