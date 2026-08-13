@@ -454,10 +454,28 @@ not a reopening of empirical work:
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
-- [ ] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
+- [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
   candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
   members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly
-  when the production anchor moves. Never add member speedups arithmetically.
+  when the production anchor moves. Never add member speedups arithmetically. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — this row was filed by the runnable-loop audit at 02:30 on
+  2026-08-12, and the restore landed ~1h later the same day; the row was never reconciled. The same
+  task is checked off at line 2894: **"Restore the lean bank/frontier/champion sequencer on the
+  runnable journal plane"** ✅ 2026-08-12 — research `069e79fd` (in origin/main). Verified element by
+  element at HEAD: `controller/sequencer.py` consumes proposal/candidate/evaluation records and
+  distinguishes frontier/banked/champion state; `controller/champion.py` composes compatible members
+  (file/symbol/dispatch predicates fail closed), requests direct combined-candidate T0/T1/T2 evidence,
+  appends `KIND_CHAMPION_UPDATED` idempotently, re-anchors explicitly on anchor move (matching sealed
+  release receipt required), preserves the incumbent on rejected/failed composition, and **never adds
+  member speedups arithmetically** (champion.py:10 "member results are never combined into a new
+  result"). Import closure proven: campaign cannot reach sequencer/champion. Tests: `test_champion.py`
+  16 passed (incl. `test_sequencer_composes_existing_frontier_without_importing_campaign`,
+  `test_reanchor_drops_members_already_present_in_new_production`,
+  `test_reanchor_without_matching_sealed_receipt_fails_closed`, idempotent-replay and concurrent-append
+  coverage). The one failure in the adjacent rehearsal suite (`test_current_campaign_cli_contract_is_one_json_document`)
+  is a pre-existing environment issue (rehearsal passes relative `--model test`, which hardened
+  campaign rejects as non-absolute) — reproduced on a clean detached origin/main checkout, unrelated
+  to the sequencer.
 - [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
