@@ -233,6 +233,18 @@ deliberately — decide them, do not just implement them.
       receipt/window/sampler hashes, and the released MI210 claim while preserving
       `controller_feedback_only`, no-ranking, no-bank, no-champion, and no-promotion authority. R12–r17
       are immutable pre-hook evidence and emit zero rows; r18 is the first eligible campaign.
+- [ ] **SC37 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
+      prospectively before its next run.** Filed 2026-08-13 by `mainD`, the author of the run, at
+      the run. The first demo (`.../odl-p2-unlimited-ocr-demo-20260813T221821Z/`) produced
+      protocol-admissible evidence — `adapter.py run-model --engine unlimited_ocr`, n=18 GT pages,
+      dated, durable `model_gated_row_set.json` + per-page response JSONs + the shared
+      inference-call-window receipt (`inference_window.json`) — with median latency 5857 ms/page,
+      decode ~392 t/s, text_block edit_dist 0.3624, table TEDS 0.0117, reading_order edit_dist
+      0.2165, plus the verified finding that the model emits coordinate-tagged layout dumps, not
+      markdown. The adapter has no `ClaimTuple` write hook — add one (measurement class, run-level
+      locator, one witness per run) before any successor run so the tuple records what this run
+      actually captured; retrofitting on read is impossible (the `benchmarks/results` lesson).
+      Source-table row added in `scripts/vidya/adapters/README.md`.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
