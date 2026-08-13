@@ -92,7 +92,7 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 > **2026-07-22/23 measurement campaign — TERMINAL 2026-07-23 12:45Z** (gate live: T1 1.600 core_v2 / T2 1.891, era-fenced, reseed operator-applied; P-CAL + P-PAIRED + E4-quality-core-v2 in the constitution; scorer class closed; judge fixed; vl recovered). Open: T3 (architect decision), WP-12 flip (parallel session sync), E5, fabric session. Historical entry points: four verified audits with
 > embedded implementation records — [decision-plane](autopilot-decision-plane-audit-2026-07-22.md)
 > (era fence LANDED; **Q-TD-write deploy + era-fence baseline reseed = the two open operator
-> boundary actions**), [SafetyGate/RLVR](safetygate-rlvr-provenance-audit-2026-07-22.md),
+> boundary actions**), [SafetyGate/RLVR](../completed/safetygate-rlvr-provenance-audit-2026-07-22.md),
 > [scorer-drift](scorer-fork-drift-audit-2026-07-22.md) (research-repo pre-B7 scorer open),
 > [dashboard](autopilot-dashboard-fidelity-audit-2026-07-22.md) (H1/H2 panels open). ESC-8
 > landmine [DEPLOYED](esc8-stack-restart-landmine-audit-2026-07-22.md). WP-12 fleet layer

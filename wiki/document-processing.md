@@ -2,27 +2,24 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (the intrinsic chunk-quality scoring harness landed in `odl_bench` — Ekimetrics SC/BI/ICC/DCC alongside the existing NID/TEDS/MHS rows; earlier 2026-08-12 pass retained)
-**Sources**: 10+ documents (2026-08-13 adds the ODL-011 intrinsic harness; 2026-08-12 adds the 200-PDF benchmark dataset + name-collision corrections; 2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-08-13 (first-wave ODL metric/parser work was preflight-only; Unlimited-OCR code landed but its default artifact fails the lm_head quant gate)
+**Sources**: 13+ documents
 
-## Compiled Update — 2026-08-13: intrinsic chunk-quality scoring is now instrumented in the ODL bench
+## Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
 
-**Confidence: verified** — the scoring path was implemented and tested in this repo (`epyc-inference-research` commit `f24b8aa9`; 26 new stdlib-unittest cases; full 52-test odl_bench suite green; ruff clean).
+**Confidence: verified by commit, artifact, source, and focused-test audit.**
 
-**The Phase-3 instrumented harness arrived**: `scripts/benchmark/odl_bench/intrinsic.py` lifts the four non-coref Ekimetrics intrinsic metrics from the MIT scaffold (intake-579/580) — Size Compliance (SC), Block Integrity (BI), Intrachunk Cohesion (ICC), Contextual Coherence (DCC) — and wires them into the benchmark as a new `intrinsic_chunk_quality` metric family alongside the existing NID/TEDS/MHS rows. `odl_bench adapter intrinsic --prediction-dir <dir> --engine <name>` scores any existing prediction directory with no inference and no model download; the real Phase-2 chunker slots in later by passing its chunk list to `score_chunks` directly.
+The committed `odl_bench` schema does **not** expose the previously attributed NID/TEDS/MHS trio. Its package rows are structural text edit distance, table TEDS, reading-order edit distance, and speed; NID and MHS live in the sibling `document_extraction_adapter.py`. ODL-011 completed only this premise/contract audit. Ekimetrics SC/BI/ICC/DCC and contradictory HOPE scoring remain unimplemented in the accepted tree, and neither family may gate a chunker until both run on one pinned fixture with the same downstream RAG answer-correctness endpoint.
 
-**Contract constraints, carried from the Phase-2 evaluation contract (handoff :539-540):**
-- **FMRE/RC excluded.** The coref-dependent "Filtered Missing Reference Error" is not lifted — it requires `maverick-coref` (CC BY-NC-SA 4.0) and its upstream RC=99.0 figure is unverified (reference-boundary corruption fixed only 2026-07-06). No coref code or license exposure enters the repo.
-- **Never a gate.** Intrinsic scores are informational next to NID/TEDS/MHS and do not gate on their own; intake-581 (HOPE) empirically falsifies the cohesion premise that ICC/BI rest on, so the Ekimetrics-vs-HOPE side-by-side remains the decision instrument for Phase 2.
-- **Embedder degrade.** ICC/DCC need a sentence-transformers model; when none is provided the rows carry `value=None` with the reason in `detail`, exactly like a missing extraction backend reports `available=False`.
+ODL-013 likewise completed harness preflight, not a comparison. The July born-digital artifacts remain useful scaffolding but contain no representative 2026-08-13 structural/table result or fast-path verdict. The Unlimited-OCR producer/adapter/manifest scaffold is real and passed 26 focused tests, yet its default model is not eligible for the planned demo: `output.weight` is Q6_K while the parent contract requires `lm_head >= Q8_0`. No live model result was produced.
 
-**One design note worth carrying**: the default token counter is a deterministic whitespace approximation of upstream's tiktoken counter (tiktoken is not installed on any EPYC venv); `count_tokens_func` is injectable for tiktoken-exact numbers. Relative comparisons between engines are unaffected by the approximation.
+This also retires the old PaddleOCR table numbers as quality evidence: they came from an off-label full-page invocation rather than the official layout-plus-cropped-recognition pipeline. The live decision surface remains ODL/LiteParse representative scoring, a corrected full-corpus PDF bridge, architecture-faithful model arms, and explicit routing policy.
 
-### Source References (2026-08-13)
+### Source References (2026-08-13 audit)
 
-- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) §Research Intake Update — 2026-05-20 (intake-579/580/581) and the flipped `:540` row — the Phase-3 contract and this implementation
-- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — implementation + verification summary
-- `epyc-inference-research/scripts/benchmark/odl_bench/intrinsic.py` — the lifted metrics and the embedder-gating convention
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) — compact active gates and exact next work.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
 
 ## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
 
@@ -99,7 +96,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - **Phase 2 (medium effort, biggest win)**: The gated structured consumer path is wired: enrich VL model prompts with figure semantic type, caption, surrounding text, and heading position from ODL JSON; replace PyMuPDF figure extraction with ODL bboxes; use heading hierarchy instead of regex when present; carry ODL table metadata through preprocessing/cache/TaskIR output; suppress unsafe ODL structured metadata under `INJECTION_SCANNING`; expose a default-inert `ORCHESTRATOR_ODL_TABLE_BACKEND` seam; and expose default-off body warnings through `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`. Remaining work: implement the real ODL hybrid table sidecar/client path for 0.93 accuracy.
 - **Phase 3 (medium-large effort)**: The sidecar is now live, so the remaining work is benchmark-backed comparison and routing policy. Experiment with swapping hybrid backend to LightOnOCR-2-1B (already running). Implement three-way routing: ODL local (simple) -> ODL hybrid (tables) -> LightOnOCR (scanned) only if the comparison justifies it. Clone opendataloader-bench, add EPYC pipeline as custom engine, run 200-PDF comparison.
 - **Document-specialist comparison (new)**: run the guarded PaddleOCR-VL producer against LightOnOCR and ODL on the same structural/table/reading-order corpus, and treat the current HTML/post-processing path as a baseline to beat rather than a solution.
-- **Benchmark integration**: Add `document_extraction` suite to `epyc-inference-research/scripts/benchmark/question_pool.py` using opendataloader-bench 200-PDF dataset. Scoring: NID (reading order), TEDS (table DOM), MHS (heading hierarchy).
+- **Benchmark integration**: the committed `odl_bench` package scores structural text edit distance, table TEDS, reading-order edit distance, and speed. NID/MHS are in the sibling document-extraction adapter and must be explicitly bridged or co-reported when the parent contract uses those names.
 - **JVM management**: Pre-warm JVM in persistent subprocess or run ODL as sidecar service on dedicated port.
 
 ## Open Questions

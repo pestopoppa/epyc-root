@@ -15,9 +15,9 @@ roster:
   # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
   # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
   # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
-  # is now named explicitly. Roster id stays `codex`: it is the identity every existing
+  # is now named explicitly. Roster id is `inference`: it is the identity every existing
   # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
-  - {id: inference,         role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary}   # was `codex` until 2026-07-29
+  - {id: inference,         role: inference-main,    lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary, schedulable: true, resource_owner: [cpu, gpu], role_policy: agents/inference-main.md, recommended_launch_profiles: [{model: gpt-5.6-terra, effort: medium}, {model: claude-opus, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
   # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row was kept,
   # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
   # removing it would orphan that history.
@@ -50,23 +50,11 @@ roster:
   # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
   # session in this slot drains it rather than needing it re-relayed.
   - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainB}   # was `claude-gpu-lane` until 2026-07-29
-  # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
-  # Originally spawned 2026-07-28 as a READ-ONLY auditor of the E8 harness contract set:
-  # three consecutive failed-closed cycles had each surfaced a DIFFERENT defect in a different
-  # layer (snapshot publisher binding, watcher abort path, runner sealed-question contract), so
-  # the inference main was discovering contract violations one run-cycle at a time, and a fresh
-  # reviewer reading the whole harness at once could find the remainder statically.
-  #
-  # NO LONGER READ-ONLY, corrected 2026-07-29. It adopted C-OWN — the session-bus delivery plane,
-  # including `tmux_adapter.py` and the whole C-series — which makes implementing fixes part of
-  # its job, not a deviation from it. It has since landed C29/C30b/C31/C33/C34. The stale
-  # "READ-ONLY" wording was found by a charter audit and is corrected here rather than left to
-  # contradict MAIN-GOALS.md. Its second standing duty is auditing other mains' completed work,
-  # which is the counterweight that makes "prefer finishing whole items over polishing" safe.
-  #
-  # lanes: [none] STILL HOLDS and is unchanged: it must never take an inference lane or a region
-  # claim. Owning the delivery plane is not a licence to contend for the host.
-  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor}
+  # Auditor Main is a dedicated, non-generic audit queue. It receives completed main work from
+  # coordinator-agent, checkpoints every pass, and returns residual items via the backlog rather
+  # than directly contacting a source main. `role_policy` is canonical; historic C-series work is
+  # ordinary backlog work, not a standing entitlement. Launch profiles are advisory only.
+  - {id: auditor,           role: auditor-main,      lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor, schedulable: false, accepts_work_types: [audit], role_policy: agents/auditor-main.md, recommended_launch_profiles: [{model: gpt-5.6-sol, effort: xhigh}, {model: fable5, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
   # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
@@ -90,6 +78,10 @@ authority:
   # deterministic rule from the priority artifact, never by discretion.
   lease_grant: [operator, coordinator-agent]
   lease_regrant_deterministic: [coordinator-daemon]
+  # The inference resource lease is advisory scheduling authority above physical claims.
+  # It is distinct from task assignment and model/effort never participates in its validity.
+  resource_lease_grant: [inference]
+  resource_lease_revoke_request: [operator, coordinator-agent]
 
 coordinator_daemon:
   tick_s: 45
@@ -114,6 +106,21 @@ tmux:
 flags:
   codex_sendkeys: on       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
   triage: off               # M5
+
+# Staged activation for the Auditor/Inference role protocol. Audit shadow and lease observe modes
+# do not change completion or assignment admission. Persistent-idle routing is transport-only and
+# is active after its episode-deduplication tests passed; it cannot claim or launch compute.
+role_rollout:
+  audit_completion: shadow          # off | shadow | required
+  resource_leases: observe          # off | observe | enforce
+  persistent_idle_routing: route    # off | observe | route; tested transport-only activation
+
+# A delegated GPU reservation is prohibited until a real claim primitive is
+# selected and enabled.  An Inference Main may still run its own GPU work; this
+# gate applies only to grants whose holder is another main.
+resource_claims:
+  cpu: {provider: region-lock, enabled: true}
+  gpu: {provider: null, enabled: false}
 
 caps:
   max_headless_workers: 0

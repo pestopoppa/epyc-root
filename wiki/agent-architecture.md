@@ -2,28 +2,55 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (post-reboot cold-start findings F-39…F-43: the opencode era added three adapter gaps and the coordinator "crash" was a SIGSTOP — free-tier rate-limit wedge plus an unsubmitted-composer wedge; earlier same-day fan-out note retained)
+**Last compiled**: 2026-08-13 (Auditor and Inference are now dedicated, model-agnostic control-plane roles with typed audit/resource protocols and explicit pane adoption; earlier 2026-08-13 fan-out and 2026-08-12 coordinator findings retained below)
 **Sources**: 85+ documents
 
-## Compiled Update — 2026-08-13 (post-reboot cold start): the opencode era's adapter gaps, and a "crash" that was a SIGSTOP
+## Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
 
-**Confidence: verified** — F-39/F-40/F-43 each cite process state, log timestamps, or live TUI calibration; the SIGSTOP was investigated from `ps` state `T` + wchan `do_signal_stop` + `opencode.log` timestamps, not asserted.
+**Confidence: verified for committed policy, state machines, and tests; rollout enforcement remains
+staged.** No live coordinator daemon was restarted as part of this checkpoint.
 
-**The fleet moved to opencode (DeepSeek V4 Flash) and the adapter had to catch up.** Three findings from the 2026-08-13 post-reboot cold start, all in `coordination/session-bus/BUS_PROTOCOL.md`-adjacent tooling:
+The session-bus fleet now separates two control-plane responsibilities that previously existed only
+as informal conventions. Auditor is no longer a generic `lane:none` executor: successful
+`mainA`–`mainD` completions deterministically create linked, role-targeted audit work, and only a
+linked Auditor verdict can close that review. Findings return through handoffs and ordinary
+coordinator dispatch rather than directly tasking the source main, so review remains valid after the
+originating session has cleared context or moved on. Small fixes discovered during review are
+delegated to Terra subagents and stay proposed until Auditor accepts them.
 
-- **F-39 — `tmux_adapter` had no opencode backend.** `_BACKENDS = ("codex", "claude")`, the composer glyph set missed opencode's `┃` (U+2503), and `_strip_faint_runs` only stripped SGR-2 faint while opencode renders its placeholder gray `38;5;8`. Measured against a live disposable opencode TUI, an empty composer read as NON-EMPTY — every doorbell/nudge guard would have refused permanently. Corrected in place with two regression tests (suite 45/45). Honest remaining gap: opencode has **no runtime signal yet** (`runtime UNAVAILABLE`), which fails closed — safe, but a next-step item.
-- **F-40 — opencode's TUI silently rejects `--variant`.** `--variant` exists only on the `run` subcommand; the default TUI command does not define it, so four spawn attempts died instantly before the cause was found. (The lesson generalizes: an instant-death spawn with no output means check subcommand-specific flags, not the model.)
-- **F-43 — the coordinator "crash" was a SIGSTOP, not a crash.** Process state `T` with all 121 threads stopped, wchan `do_signal_stop`; trigger was a **free-tier rate-limit wedge** (`AI_APICallError: Rate limit exceeded` on `deepseek-v4-flash-free` ×4+ sessions in a 2-minute window — the free tier cannot sustain 5 concurrent mains + coordinator), followed by an **unsubmitted-composer wedge** (doorbell text left in the prompt box because the post-Enter buffer check read `''` vs the expected `›`; operator had to press Enter manually twice). Corrected by switching mains to hosted `deepseek/deepseek-v4-flash` via `main-max.md`.
+Inference now owns the advisory compute schedule independently of ordinary task assignment. Typed
+resource requests and grants preserve holder, task batch, exact CPU/GPU resources, expiry, and
+lifecycle across replay. A task assignment plus a valid resource lease still does not prove physical
+ownership: CPU activation requires a `region-lock` receipt, while delegated GPU grants fail closed
+until a general device-claim provider is configured. Persistent CPU and GPU idle are detected as
+separate multi-sample episodes and routed once to Inference, with durable inbox history preventing a
+daemon restart or lost routing-state file from duplicating the episode.
 
-**The operator-observed behaviour encoded (F-43):** when a nudge/doorbell reports a **post-Enter failure**, the text is still in the composer and delivery is NOT done — follow up with `tmux_adapter.py pending`, then `submit --expect '<text>'` if it is the adapter's own doorbell string. Treating "verification failed" as "harmless" is what leaves rings sitting unsubmitted in live panes.
+Role provisioning is explicit as well. Coordinator-agent must present an inspected existing pane
+versus fresh-launch choice to the operator. Adoption requires exact endpoint/worktree identity, a
+positively idle runtime, empty composer, valid heartbeat/cursor/task state, unread/triage evidence,
+and explicit confirmation that the old role context was reset and reseeded. Recommended model and
+effort pairs populate the launch decision only; an operator changing either in-session is silent and
+never invalidates identity, leases, liveness, or the pane.
 
-**Standing lesson for the fleet:** a wedged-but-alive pane reads as idle (opencode runtime `UNAVAILABLE` falls back to the heartbeat guard chain), so a stopped process plus a stale heartbeat is indistinguishable from a finished session until the hardware/process check is done. The three-states rule (working / compacting / idle) now has a fourth failure mode to remember: **stopped**.
+The staged posture is intentional: audit completion is `shadow`, resource leases are `observe`, and
+persistent-idle transport is `route`. Promotion to required audits or enforced lease admission waits
+for a live-bus replay plus one audit and one CPU canary; delegated GPU leases additionally wait for a
+real physical claim provider. The implementation checkpoint passed 346 non-corpus bus tests, 173
+pane/routing tests, the 51-case M4 authority harness, and the 87-case fleet watcher plus 21 mutation
+checks.
 
-### Source References (2026-08-13)
+### Source References (2026-08-13 dedicated roles)
 
-- [`handoffs/active/coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) §2026-08-13 post-reboot cold-start findings — F-39, F-40, F-43
-- [`progress/2026-08/2026-08-13-coordinator-agent.md`](../progress/2026-08/2026-08-13-coordinator-agent.md) — crash investigation + fleet re-instantiation on hosted DeepSeek V4 Flash
-- `scripts/coordination/tests/test_tmux_adapter_submission.py` — the F-39 regression pins
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR
+  implementation checklist, rollout posture, and remaining canary gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
+  implementation and verification record.
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — typed audit, resource-lease, and
+  persistent-idle wire contracts.
+- [`auditor-main.md`](../agents/auditor-main.md) and
+  [`inference-main.md`](../agents/inference-main.md) — canonical role boundaries, provisioning, and
+  model-agnostic identity rules.
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
 

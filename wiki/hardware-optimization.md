@@ -2,28 +2,40 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-13 (post-reboot CPU IQK rehearsal — the instrument and T0→T1 boundary fail closed on every failure observed; anchor-drift and host-contention gates correctly refused contaminated runs — see top section below. Earlier 2026-08-12 kernel-lever pass: **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172. Earlier same-day 2026-08-12 note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
-**Sources**: 103+ documents
+**Last compiled**: 2026-08-13 (discovery-first ratified and live on CPU/GPU; r43 intervention kept but its matched control refused before compute; earlier findings retained)
+**Sources**: 107+ documents
 
-## Compiled Update — 2026-08-13: post-reboot CPU IQK rehearsal — the instrument fails closed, and the gates refused every contaminated run
+## Compiled Update — 2026-08-13: discovery-first is live; strict r43 remains unmatched
 
-**Confidence: verified** — every claim below is a checkbox flip in `handoffs/active/autokernel-research-loop.md` backed by an immutable research-repo commit or a seeded property suite; no throughput number is asserted because **none of these runs produced one**.
+**Confidence: verified operator ratification, immutable discovery records, and terminal strict
+campaign results; discovery effects are nominations, not performance claims.**
 
-**The rehearsal produced no throughput result, and that is the finding.** r23→r29 after the reboot exercised the CPU IQK instrument against real property suites and every defective or contaminated path was refused or closed:
+Ratified `P-AK-SEARCH-1-A2` separates throughput discovery from promotion-grade confirmation. One
+exact-frame three-anchor bank is reused for exactly three candidate-only samples; ordinary host
+activity becomes recorded uncertainty, and only competing model inference overlapping the held
+claim blocks. CPU IQK screens nominated prefill at **+31.247%** and decode at **+7.939%** median.
+The MI210's sole-factor `GGML_HIP_MMQ_MFMA=ON→OFF` screen nominated OFF at **+26.5965%** with owned
+KFD PID and non-zero VRAM observed during every candidate invocation. None of these records can bank,
+enter the archive, contribute to readiness, authorize release, or become a headline claim.
 
-- **Q4_0/Q6_K input-dependent low-row errors** surfaced by r23's real property suite (Q4_0 `m=16,n=2,k=256` error; Q6_K `m=16,n=3,k=256` rejected at T0). The experimental direct-child `f744cc220e722d1bda93783959471d44f8e118b0` adds the Q6_K `<32` native fallback; its exact seeded property suite passes. Research `deeed365` requires every T0 sandbox teardown receipt, a 65-second decay, and three fresh low-load attestations before the unchanged T1 admission gate.
-- **Anchor-drift gate did its job**: r29 reached `DECIDED` with all ten pairs and production PASS but correctly reverted as inadmissible when anchor drift was 15.27% against a 3.08% bound.
-- **Host-contention gate did its job twice**: r27 refused contaminated host admission; the A/A arm terminally refused preflight while a separate OpenDataLoader workload held the CPU. r28 showed the former load gate counted campaign-owned T0 residual as outside contention — a gate-fix finding in its own right.
-- **Driver defect found, not papered over**: r25 reached passing T0 but exposed a `MicrobenchPlan.schedule()` driver call defect.
-- Fresh controls (`ak-controls-v9-f744cc220-20260813-r1`) are accepted/rankable (5/5, B_min=10, MDE=2.0360%).
+Strict confirmation retained its gates. R42 stopped before compute on a duplicate authoritative
+evaluator-closure path, repaired prospectively by research `b93af168`. R43's intervention then passed
+T0 and reached `DECIDED/KEEP`: 15/15 positive deltas, median **+28.860648%**, worst delta
+**+984.48 tokens/s**, drift `15.0356% ≤ 18.4968%`, production PASS, and released resources. Its
+A/A control refused before claim/T0/throughput on the strict load/boost preflight, so r43 is not the
+matched completed pair required by the archive. The next strict action is to reconcile that preflight
+mode and mint fresh immutable pair identities; the separately repaired decode calibration and
+holdout follow only after that pair completes.
 
-**Standing conclusion**: the durable legacy of this rehearsal is the fail-closed instrument, not a measurement. The required clean matched intervention/A/A pair still needs a quiesced host (the outstanding row: quiesce external CPU work, run fresh r30 pair).
+### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
 
-### Source References (2026-08-13)
-
-- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) §post-reboot IQK rehearsal — r23…r29 checkboxes, gate failures, instrument fixes
-- `epyc-inference-research` commits `deeed365`, `f744cc220e722d1bda93783959471d44f8e118b0`, `da7d14fa`, `430443c5` — the instrument and T0/T1 gates
-- [`progress/2026-08/2026-08-13-root.md`](../progress/2026-08/2026-08-13-root.md) — post-reboot checkpoint + durable empirical state
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — current task and
+  evidence ledger.
+- [Inference progress](../progress/2026-08/2026-08-13-inference.md) — preceding r41 and discovery
+  implementation checkpoint.
+- [AutoKernel wrap progress](../progress/2026-08/2026-08-13-root-autokernel-wrap.md) — ratification
+  hashes, exact live effects, residency evidence, and r42/r43 outcomes.
+- [Ratified Annex K](../measurement/protocols/kernel-research.md) — human-amended discovery authority.
 
 ## Compiled Update — 2026-08-12 (NUMA fail-open audit and OP-11 resolution): a fail-loud gap that mutation testing alone would have missed, and an occupancy question closed without a new instrument
 
@@ -846,9 +858,9 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 
 ### 2026-07-03 — Roofline-gap synthesis (CPU v6+iqk & MI210) and the GPU-program un-gating
 
-- **The MI210 "~60% roofline ceiling" is largely a *batch-1 measurement artifact*, not a loss under production serving.** Weights are read once per forward step and reused across the batch, so at batch-32 the weight-BW utilization *falls* to ~28% while token throughput *rises 14.6×* (62.45 → 909.8 t/s) — the operating point leaves the BW-bound edge and climbs the compute/occupancy roof, where "% of weight-BW roofline" is the wrong axis. Under concurrent production serving the card already delivers ~910 tok/s @32-way. Sources: [findings-05 roofline](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md), [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md).
-- **The dequant slowdown IS compensable — and the cheapest, highest-recovery method is a config change, not a kernel.** Two gaps decompose the gfx90a decode roofline (consistent GiB basis): a **dequant gap** (Q4_K 34% → Q8 50% → fp16 62.5%; ~28pp lost on Q4, ~12pp on Q8) and a **batch-1 latency gap** (fp16 62% is already near the practical batch-1 ceiling — above vLLM-on-H100's ~50%, near Hazy's ~78% single-dispatch; no ROCm megakernel exists). Serving quantized models **batched (`-np 8–32`)** amortizes MMQ dequant across batch columns and engages MFMA, so for throughput roles the penalty self-compensates. A custom gfx90a Q4_K dequant-GEMV kernel (via the GEAK/agentic-rocm loop) is worth authoring **only for a batch-1 *latency* role** (e.g. a GPU drafter), recovering ~half the 28pp Q4 gap. NOT via AITER (gfx90a-unsupported), NOT via fp8 (needs ROCm 6.3), NOT via MFMA at batch-1 (GEMV idles the matrix cores). **Caveat making measurement mandatory:** the ~910 figure is fp16 Qwen3-8B — the *quantized* batched sweep was never run on the MI210, and MoE batches worse than dense (distinct tokens hit distinct experts), so a quantized `-np` sweep is the decisive first experiment. Source: [findings-05 roofline](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md).
-- **CPU decode sits on a *barrier/op-count plateau*, not the BW wall — and iqk is decode-neutral on Q8_0.** Frontdoor Qwen3.6-35B-A3B Q8 ≈ 13.8% and worker gemma4-26B-A4B Q4 ≈ 21% of 460 GB/s STREAM; but STREAM ≠ achievable GEMV (realistic MoE-GEMV ceiling ~25–30%), so the worker is ~74–78% of *its* ceiling (little single-stream headroom) while the frontdoor is ~49% (a real gap). The bottleneck is libomp barrier / op count (≈45% of Q4_K decode cycles are barrier at 96t), so the top CPU decode lever is **frontdoor Q8_0 operator/graph fusion to cut barrier count** (est +10–15%), NOT more SIMD; iqk's wins are prefill + Q4 decode, so it does not move frontdoor Q8 decode. No *canonical* post-iqk decode number exists yet (v6-iqk-promotion Phase J bench pending). Sources: [findings-05 roofline](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md), [cpu-shape-specialized-gemv-decode.md](../handoffs/active/cpu-shape-specialized-gemv-decode.md), [iqk-port.md](../handoffs/active/iqk-port.md).
+- **The MI210 "~60% roofline ceiling" is largely a *batch-1 measurement artifact*, not a loss under production serving.** Weights are read once per forward step and reused across the batch, so at batch-32 the weight-BW utilization *falls* to ~28% while token throughput *rises 14.6×* (62.45 → 909.8 t/s) — the operating point leaves the BW-bound edge and climbs the compute/occupancy roof, where "% of weight-BW roofline" is the wrong axis. Under concurrent production serving the card already delivers ~910 tok/s @32-way. Sources: [completed findings-05 roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md), [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md).
+- **The dequant slowdown IS compensable — and the cheapest, highest-recovery method is a config change, not a kernel.** Two gaps decompose the gfx90a decode roofline (consistent GiB basis): a **dequant gap** (Q4_K 34% → Q8 50% → fp16 62.5%; ~28pp lost on Q4, ~12pp on Q8) and a **batch-1 latency gap** (fp16 62% is already near the practical batch-1 ceiling — above vLLM-on-H100's ~50%, near Hazy's ~78% single-dispatch; no ROCm megakernel exists). Serving quantized models **batched (`-np 8–32`)** amortizes MMQ dequant across batch columns and engages MFMA, so for throughput roles the penalty self-compensates. A custom gfx90a Q4_K dequant-GEMV kernel (via the GEAK/agentic-rocm loop) is worth authoring **only for a batch-1 *latency* role** (e.g. a GPU drafter), recovering ~half the 28pp Q4 gap. NOT via AITER (gfx90a-unsupported), NOT via fp8 (needs ROCm 6.3), NOT via MFMA at batch-1 (GEMV idles the matrix cores). **Caveat making measurement mandatory:** the ~910 figure is fp16 Qwen3-8B — the *quantized* batched sweep was never run on the MI210, and MoE batches worse than dense (distinct tokens hit distinct experts), so a quantized `-np` sweep is the decisive first experiment. Source: [completed findings-05 roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md).
+- **CPU decode sits on a *barrier/op-count plateau*, not the BW wall — and iqk is decode-neutral on Q8_0.** Frontdoor Qwen3.6-35B-A3B Q8 ≈ 13.8% and worker gemma4-26B-A4B Q4 ≈ 21% of 460 GB/s STREAM; but STREAM ≠ achievable GEMV (realistic MoE-GEMV ceiling ~25–30%), so the worker is ~74–78% of *its* ceiling (little single-stream headroom) while the frontdoor is ~49% (a real gap). The bottleneck is libomp barrier / op count (≈45% of Q4_K decode cycles are barrier at 96t), so the top CPU decode lever is **frontdoor Q8_0 operator/graph fusion to cut barrier count** (est +10–15%), NOT more SIMD; iqk's wins are prefill + Q4 decode, so it does not move frontdoor Q8 decode. No *canonical* post-iqk decode number exists yet (v6-iqk-promotion Phase J bench pending). Sources: [completed findings-05 roofline](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md), [cpu-shape-specialized-gemv-decode.md](../handoffs/active/cpu-shape-specialized-gemv-decode.md), [iqk-port.md](../handoffs/active/iqk-port.md).
 - **The MI210 GPU program is UN-GATED (operator-directed 2026-07-03): the DGX-Spark gating everywhere was stale.** The project *considered* a DGX Spark and bought the MI210 instead, so "DGX-gated / expected ~July 2026 / nothing runs until the card racks" lines across ~14 handoffs were reprioritized: `agentic-rocm-kernel-authoring` + `rocm-verify-profile-backend` flipped to ACTIVE (MEDIUM — an optimization to close the roofline gap, not a production blocker; first step = reproduce GEAK-eval on gfx90a, the only gfx90a-proven substrate — AgentKernelArena/robust-kbench are gfx942-listed), `gpu-acceleration-path` retargeted off the never-bought DGX Spark onto the MI210. The ordered queue is now G0 α-from-live-MTP-logs (free) → G1 P-GPU-1 protocol → G2 HIP op-smoke → G3 Gate-R frontdoor-residency bench. Sources: [findings-02 heterogeneous GPU](../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md), [master-handoff-index §F](../handoffs/active/master-handoff-index.md), [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md).
 
 ### 2026-07-02 — MI210 GPU installed: HIP path verified, first GPU benchmarks, vLLM head-to-head
@@ -2911,3 +2923,53 @@ hook; reference or synthetic tensors cannot substitute.
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — self-contained receipt hashes,
   implementation commits, test counts, router replay, and authority limits.
 
+## Compiled Update — 2026-08-13 (AutoKernel discovery-first search and r43 confirmation)
+
+**Confidence: verified operator ratification, immutable live screen records, and terminal strict
+campaign results; discovery records are nonpromotable nominations, not performance claims.**
+
+AutoKernel now separates cheap throughput discovery from rare promotion-grade confirmation under
+operator-ratified `P-AK-SEARCH-1-A2`. A discovery bank consists of exactly three immutable,
+exact-frame anchor invocations; each candidate then consumes exactly three candidate-only samples
+and zero new anchors. Ordinary services, agents, builds, filesystem activity, scheduler traffic, and
+host load are recorded uncertainty rather than blockers. Only competing model inference overlapping
+the held compute claim blocks a screen. The result may nominate top-K, but cannot bank, enter champion
+lineage or an archive, contribute to readiness, authorize release, or become a headline claim.
+
+The first live screens validate that fast path on both compute planes. CPU IQK prefill s7 reused its
+three-anchor bank and nominated `GGML_IQK=1` at median **+31.247%** from three candidate-only samples;
+the distinct tg128 decode s1 screen nominated it at **+7.939%** under the same 3/0 execution shape.
+On the MI210, the six-call MMQ screen isolated `GGML_HIP_MMQ_MFMA=ON→OFF` and nominated OFF at median
+**+26.5965%**. Each GPU candidate invocation recorded an owned KFD PID and non-zero VRAM during its
+measurement window. These values prioritize follow-up; none carries strict performance authority.
+
+Strict confirmation remains meaningfully stricter and its failures remain evidence about the
+instrument. R42 stopped before fingerprint, claim, build, T0, or throughput because the evaluator
+closure listed `correctness.py` through two authoritative routes. Research `b93af168` now unions exact
+overlap while continuing to reject ambiguous lexical aliases. R43's intervention subsequently passed
+T0 and reached `DECIDED/KEEP`: 15/15 deltas were positive, median gain was **+28.860648%**, worst delta
+was **+984.48 tokens/s**, anchor drift was `15.0356%` within the `18.4968%` bound, production was
+byte-identical, and resources released. Its A/A control refused before compute when strict preflight
+both observed only 7/96 cores at nominal frequency under load and treated caller-disabled load
+measurement as unmeasured contention. Therefore r43 is not the matched completed pair required for
+the real least-commitment archive.
+
+The separately rejected decode r2 calibration is not reinterpreted. Research `084f1ee6` prospectively
+defines one short tg128 statistical block as the median of five fresh alternating pairs, and
+`9c0c907c` exposes the resulting 2,600-invocation calibration cost before execution. The next strict
+sequence is to reconcile the load/boost preflight mode, run a fresh matched prefill pair under new
+identities, execute the repaired decode calibration and holdout, execute the heldout-bound prefill
+pair, then project AK-WM-2a and run AK-WM-2b observe-only.
+
+### Source References (2026-08-13 AutoKernel discovery-first checkpoint)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — ratified discovery
+  contract, exact live screen identities, r42/r43 terminal outcomes, and remaining empirical chain.
+- [Inference progress, 2026-08-13](../progress/2026-08/2026-08-13-inference.md) — the preceding r41
+  strict result, evaluator-identity race, and candidate-only execution implementation checkpoint.
+- [AutoKernel wrap progress, 2026-08-13](../progress/2026-08/2026-08-13-root-autokernel-wrap.md) —
+  self-contained ratification hashes, screen effects, residency evidence, strict-chain repairs, and
+  r43 outcomes.
+- [Ratified Annex K](../measurement/protocols/kernel-research.md) and
+  [ratification receipt](../artifacts/operator/receipts/autokernel-discovery-first-20260813.receipt.json)
+  — human-amended authority and the exact apply-time evidence/state-diff record.

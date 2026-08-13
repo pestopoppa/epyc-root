@@ -97,6 +97,13 @@ deliberately — decide them, do not just implement them.
       **Price it first** per the P2 discipline before any bulk adapter: the surface emits nothing
       until the branch lands, so the honest state today is `candidate — ready, unwritten`, not
       `live`. Source-table row added in `scripts/vidya/adapters/README.md`.
+      **STATUS 2026-08-13: A14 landed locally** on orchestrator `main` as `c61b8184`
+      (cherry-pick, merge-gate verdict autonomous, local-only — NOT pushed; push freeze). The
+      "while unmerged" phrasing no longer applies to the branch, but the PRACTICAL capture window
+      is still open: the orchestrator API is down and the code is not pushed, so zero
+      `gate_decisions` have been emitted. Wire the write side (adapter + producer-written hook)
+      against the merged commit before the orchestrator next serves traffic; do NOT close this
+      row until the adapter emits its first tuple.
       **Self-caught, and the trigger is worth keeping:** I built this surface earlier tonight and
       filed no wiring task until `mainA` published the right test — *"you touched a producer", not
       "you thought about producers"*. A checklist keyed on the diff catches it; one keyed on intent
@@ -233,6 +240,16 @@ deliberately — decide them, do not just implement them.
       receipt/window/sampler hashes, and the released MI210 claim while preserving
       `controller_feedback_only`, no-ranking, no-bank, no-champion, and no-promotion authority. R12–r17
       are immutable pre-hook evidence and emit zero rows; r18 is the first eligible campaign.
+- [ ] **SC37 — Wire AutoKernel GPU discovery baseline and candidate-only screens prospectively.**
+      The new `epyc.autokernel.gpu_screening_baseline.v2` and
+      `epyc.autokernel.gpu_candidate_only_screen.v2` producers need a write-side ClaimTuple row plus a
+      strict root reader before any successor screen. Bind exact source/build/binary/linkage/model,
+      device and released-claim identities; scored invocation basis; sole-factor identity; KFD/VRAM
+      residency; baseline/result hashes; run-level locator; and the nonpromotable/no-bank/no-readiness/
+      no-release authority boundary. Delegate grading to `claim_tuple.grade()`; do not create a second
+      ladder. The 2026-08-13 MMQ-MFMA s2 screen predates the hook and must emit zero rows rather than be
+      retrofitted. Source-register row is in `scripts/vidya/adapters/README.md`; producer/read hook is
+      being implemented prospectively.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input

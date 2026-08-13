@@ -229,8 +229,8 @@ blocked further spawns while only two mains were alive). Ledger spawn counts are
 enforce nothing** — `probe` prints them with exactly that label.
 
 **Roster ids are model-agnostic as of 2026-07-29.** Renamed on operator direction: `codex` →
-**`inference`** (owns inference tasks), `fable-auditor` → **`auditor`** (miscellaneous work, and the
-DEFAULT main for auditing other mains' work), `claude-main` → **`mainA`** and `claude-gpu-lane` →
+**`inference`** (owns advisory inference compute scheduling), `fable-auditor` → **`auditor`**
+(coordinator-routed audits of completed main work), `claude-main` → **`mainA`** and `claude-gpu-lane` →
 **`mainB`** (both take dispatched handoff/backlog work). `coordinator-agent` keeps its id — it is
 the authority name in `authority.cross_main` / `lease_grant`, not a session label — and its window
 is `agent:coordinator`. Reason: an id pinned to its model meant re-spawning a main on a different
@@ -243,24 +243,34 @@ id is the identity every queue row, cursor, inbox, outbox and triage `corr_id` i
 alias orphans all of it and leaves the old row drawing "LOOKS DEAD" advisories forever. A
 `role: retired` row is a **re-usable slot, not a tombstone**.
 
-**The operator decides.** Do not run `tmux_adapter.py spawn` on your own initiative. When
-authorised, `tmux_adapter.py spawn --agent <id> --dry-run` first.
-
-**Rename the window to the ENDPOINT immediately after spawn.** `cmd_spawn` names the new window
-after the **roster id**, while `resolve_target` verifies the **endpoint's** window name. When the
-two differ the main spawns successfully and is then undeliverable: on 2026-07-29 `codex` (endpoint
-`tmux:agent:codex-inference`) came up as window `codex` and every nudge refused. Filed as **C25**;
-until it is fixed, always follow a spawn with
+**The operator decides.** Do not instantiate a role on your own initiative. Inspect first, present
+the decision package, then use the explicit selected mode:
 
 ```bash
-tmux rename-window -t agent:<id> <endpoint-window-name>
-python3 scripts/coordination/tmux_adapter.py probe --agent <id>   # confirm the target RESOLVES
+python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id>
+# After the operator resets/reseeds the pane's role context:
+python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id> --context-reset-confirmed
+python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode adopt \
+  --target <exact-target> --context-reset-confirmed
+# or, after the operator chooses fresh:
+python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode fresh \
+  --command '<operator-selected launch command>' --dry-run
 ```
 
-**Then verify the pane is still alive.** `cmd_spawn` reports success on `new-window` exit 0 and
-nothing more. On 2026-07-29 a codex pane died instantly and silently because the CLI presented an
-update prompt at startup — spawn reported success and the window was simply gone. A few seconds
-after every spawn, confirm the window still exists and capture the pane to confirm the agent reached
+**Auditor/Inference instantiation has one extra required choice.** Before either role is created,
+inspect any candidate pane and ask the operator whether to **adopt that eligible pane** or **launch
+fresh**. Include identity/runtime evidence, cap impact, and the profile recommendation: Auditor
+`gpt-5.6-sol` xhigh or Fable 5 high; Inference `gpt-5.6-terra` medium or Claude Opus high. These
+profiles are capacity recommendations only. The operator can change model or effort at any time;
+do not diagnose model drift, warn, revoke a lease, or reprovision because of it. Canonical role
+files: `agents/auditor-main.md`, `agents/inference-main.md`.
+
+**The endpoint is the window identity.** C25 is fixed: fresh instantiation derives the window name
+from the roster endpoint and verifies that exact endpoint after launch. Do not add a manual rename
+step; a rename between creation and verification re-opens the identity race the adapter closes.
+
+**Then verify the agent reached its prompt.** C30(b) is fixed: fresh instantiation waits and refuses
+success if the window dies immediately. Capture the surviving pane to verify the TUI itself reached
 its prompt:
 
 ```bash

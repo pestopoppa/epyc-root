@@ -44,6 +44,19 @@
           "enum": [
             "task-assign",
             "task-complete",
+            "audit-request",
+            "audit-verdict",
+            "compute-idle",
+            "resource-lease-request",
+            "resource-lease-grant",
+            "resource-lease-decline",
+            "resource-lease-activate",
+            "resource-lease-renew",
+            "resource-lease-draining",
+            "resource-lease-release",
+            "resource-lease-cancel",
+            "resource-lease-expire",
+            "resource-lease-revoke-request",
             "status",
             "finding",
             "decision-request",
@@ -141,6 +154,129 @@
         }
       },
       "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "compute-idle"}}, "required": ["kind"]},
+          "then": {
+            "required": ["payload"],
+            "properties": {"payload": {"type": "object", "required": [
+              "resource", "observed_at", "cycles", "duration_s", "receipt_path", "receipt_line"
+            ], "properties": {
+              "resource": {"enum": ["cpu", "gpu"]},
+              "observed_at": {"type": "string", "minLength": 1},
+              "cycles": {"type": "integer", "minimum": 1},
+              "duration_s": {"type": "integer", "minimum": 1},
+              "receipt_path": {"type": "string", "minLength": 1},
+              "receipt_line": {"type": "string", "minLength": 1},
+              "episode_id": {"type": "string", "minLength": 1}
+            }}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"kind": {"enum": [
+              "resource-lease-request", "resource-lease-grant", "resource-lease-decline",
+              "resource-lease-activate", "resource-lease-renew", "resource-lease-draining",
+              "resource-lease-release", "resource-lease-revoke-request",
+              "resource-lease-cancel", "resource-lease-expire"
+            ]}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["payload"],
+            "properties": {"payload": {"type": "object", "required": ["lease_id", "holder"],
+              "properties": {
+                "lease_id": {"type": "string", "minLength": 1},
+                "holder": {"type": "string", "minLength": 1},
+                "task_ids": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "resources": {"type": "object", "properties": {
+                  "cpu_regions": {"type": "array", "minItems": 1, "uniqueItems": true,
+                    "items": {"type": "string", "minLength": 1}},
+                  "gpu_devices": {"type": "array", "minItems": 1, "uniqueItems": true,
+                    "items": {"type": "string", "minLength": 1}}
+                }},
+                "expires_ts": {"type": "string", "minLength": 1},
+                "activation_deadline_ts": {"type": "string", "minLength": 1},
+                "contention_class": {"enum": ["exclusive-contiguous", "resumable"]},
+                "safe_drain_point": {"type": "string", "minLength": 1},
+                "physical_claim_receipts": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "physical_claim_close_receipts": {"type": "array", "minItems": 1,
+                  "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                "reason": {"type": "string", "minLength": 1}
+              }
+            }}
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-request"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": [
+            "task_ids", "resources", "contention_class", "safe_drain_point"
+          ]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-grant"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": [
+            "task_ids", "resources", "expires_ts", "activation_deadline_ts"
+          ]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-decline"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-activate"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["physical_claim_receipts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-renew"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["expires_ts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-draining"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-release"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["physical_claim_close_receipts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"enum": [
+            "resource-lease-cancel", "resource-lease-expire"
+          ]}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-revoke-request"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {
+            "properties": {"kind": {"const": "audit-request"}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["task_id", "payload"],
+            "properties": {"payload": {"type": "object", "required": [
+              "audit_of", "completion_msg_id", "artifact_refs", "acceptance_refs",
+              "audit_policy", "audit_question"
+            ]}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"kind": {"const": "audit-verdict"}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["task_id", "payload"],
+            "properties": {"payload": {"type": "object", "required": [
+              "verdict", "audit_of", "completion_msg_id"
+            ], "properties": {"verdict": {"enum": [
+              "accept", "accept-with-followups", "needs-rework", "blocked-evidence"
+            ]}}}}
+          }
+        },
         {
           "if": {
             "properties": {
@@ -574,6 +710,7 @@
             "ASSIGNED",
             "CLAIMED",
             "RUNNING",
+            "DONE_PENDING_AUDIT",
             "DONE_PASS",
             "DONE_MARGINAL_OBS",
             "FAILED",
@@ -720,8 +857,19 @@
         "revoking": {
           "type": "boolean",
           "description": "R4 \u2014 the coordinator-agent has asked for this lease back. The task keeps its current status because it IS still running; the holder stops accepting new work and releases at its next boundary (axiom 4). A revoking task is never re-assigned while still held."
+        },
+        "executor_id": {"type": "string", "minLength": 1},
+        "executor_role": {"type": "string", "minLength": 1},
+        "work_type": {"enum": ["backlog", "audit"]},
+        "audit_of": {"type": "string", "minLength": 1},
+        "completion_msg_id": {"type": "string", "minLength": 1},
+        "source_agent": {"type": "string", "minLength": 1},
+        "artifact_refs": {"type": "array", "items": {"type": "string"}},
+        "acceptance_refs": {"type": "array", "items": {"type": "string"}},
+        "audit_policy": {"enum": ["off", "shadow", "required"]},
+        "audit_question": {"type": "string", "minLength": 1},
+        "resource_lease_id": {"type": "string", "minLength": 1}
         }
-      }
     }
   },
   "oneOf": [

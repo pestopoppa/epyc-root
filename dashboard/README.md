@@ -159,6 +159,20 @@ after its terminal `STOP_STATE` is fsynced, to the durable
 (`KERNEL_DASHBOARD_JSON` still overrides the reader for tests). The terminal
 journal timestamp, not export time, drives freshness.
 
+Discovery/progression is a second, additive contract:
+`scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
+and strict campaign receipts into
+`/mnt/raid0/llm/autokernel/surface/kernel_progression.json`. The hub exposes it
+as `_progression`; it never overwrites terminal `sections`, never mints a
+champion, and requires `promotion_claim: false`. Its top layer is the operator's
+ten-second scan (production anchor, CPU/GPU leaders, direction-correct effect,
+workload, evidence tier, current gate, next action and candidate → strict keep →
+champion → promotable counts). Strategy and unexplored hypotheses form the
+second layer; all former detailed cards remain under **Evidence & diagnostics**.
+When progression is populated but strict champion/headroom/release owners are
+unreported, panel and global health say `degraded`, never `ok` and no longer the
+false `absent`/“nobody is reporting” state.
+
 The hub also adds `_activity`: committed AutoKernel history, durable
 `data/autokernel_*` bundles, in-progress timestamp markers, a bounded journal
 inventory, and an evidence-backed `current_state` snapshot. The snapshot keeps
@@ -262,7 +276,8 @@ moves. That means the schema strings, the section status and the export path are
 literals here, and literals drift. Two rules keep them honest:
 
 * **Hub-derived fields are underscored.** `/api/kernel` serves the producer's
-  document *plus* `_contract_version`, `_freshness` and `_render`. It used to
+  document *plus* `_contract_version`, `_freshness`, `_render` and the separate
+  `_progression` projection. It used to
   overwrite `contract_version` — a key the producer owns and writes as the
   integer `2` — with the string `"v2"`, so the body the hub served no longer
   validated under `schemas.validate_kernel_dashboard_v2`. The seam suite now

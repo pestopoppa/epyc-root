@@ -119,6 +119,10 @@ DASHBOARD_REGISTRY_SCHEMA = "epyc.dashboard.registry.v1"
 KERNEL_DASHBOARD_JSON = Path(os.environ.get(
     "KERNEL_DASHBOARD_JSON",
     "/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json"))
+KERNEL_PROGRESSION_JSON = Path(os.environ.get(
+    "KERNEL_PROGRESSION_JSON",
+    "/mnt/raid0/llm/autokernel/surface/kernel_progression.json"))
+KERNEL_PROGRESSION_SCHEMA = "epyc.autokernel.progression.v1"
 
 # The two contract versions the hub reads. Copied as STRINGS on purpose: the hub
 # is stdlib-only and must never import epyc-inference-research to render a page
@@ -513,6 +517,40 @@ def _read_kernel_contract() -> tuple:
     return present, shell
 
 
+def _read_kernel_progression() -> dict:
+    """Read the additive discovery funnel without changing terminal truth."""
+    present, data, error = _read_json_object(
+        KERNEL_PROGRESSION_JSON, "kernel progression contract")
+    if data is None:
+        return {"schema": KERNEL_PROGRESSION_SCHEMA, "available": False,
+                "artifact_present": present, "error": error or "not exported",
+                "promotion_claim": False, "candidates": [], "unexplored": []}
+    malformed = []
+    if data.get("schema") != KERNEL_PROGRESSION_SCHEMA:
+        malformed.append("unknown schema")
+    if data.get("promotion_claim") is not False:
+        malformed.append("promotion_claim must be false")
+    if not isinstance(data.get("candidates"), list):
+        malformed.append("candidates must be a list")
+    if malformed:
+        return {"schema": KERNEL_PROGRESSION_SCHEMA, "available": False,
+                "artifact_present": True, "error": "; ".join(malformed),
+                "promotion_claim": False, "candidates": [], "unexplored": []}
+    result = dict(data)
+    result["available"] = True
+    result["artifact_present"] = True
+    result["evidence"] = str(KERNEL_PROGRESSION_JSON)
+    observed = _parse_semantic_timestamp(result.get("observed_through"))
+    age = None if observed is None else max(0.0, time.time() - observed)
+    result["freshness"] = {
+        "source": "observed_through", "age_s": age,
+        "staleness_class": ("unknown" if age is None else
+                            "fresh" if age < 3 * 86400 else
+                            "aging" if age < 14 * 86400 else "stale"),
+    }
+    return result
+
+
 def kernel_contract_version(data: dict) -> str:
     """``"v2"`` / ``"v1"`` / ``"unknown"`` for a kernel dashboard document.
 
@@ -655,6 +693,37 @@ def _kernel_contract_freshness(data: dict, *, artifact_present: bool = True) -> 
         data, artifact_present=artifact_present))
 
 
+def _supplement_kernel_verdict(verdict: dict, progression: dict) -> dict:
+    """Downgrade kernel-only absence to degraded when discovery is reporting.
+
+    This never produces ``ok`` and never changes the strict envelope. It only
+    prevents intentionally absent champion/release owners from describing a
+    populated non-promotable discovery funnel as ``NOBODY IS REPORTING``.
+    """
+    absent_attention = [row for row in verdict.get("attention", [])
+                        if row.get("verdict") == panels.STATUS_ABSENT
+                        and row.get("gates_health") is True]
+    if not (verdict.get("status") == panels.STATUS_ABSENT
+            and absent_attention
+            and all(row.get("panel") == "kernel" for row in absent_attention)
+            and progression.get("available")
+            and (progression.get("candidates") or progression.get("unexplored"))):
+        return verdict
+    result = dict(verdict)
+    status = {
+        "panel": "kernel", "verdict": panels.STATUS_DEGRADED,
+        "why": ("discovery progression is reporting, while strict terminal "
+                "sections remain explicitly unreported"),
+        "gates_health": True,
+    }
+    result["status"] = panels.STATUS_DEGRADED
+    result["status_set_by"] = status
+    result["worst"] = status
+    result["attention"] = [status if row.get("panel") == "kernel" else row
+                           for row in verdict.get("attention", [])]
+    return result
+
+
 def kernel_data_health() -> tuple[int, dict]:
     """Kernel-R&D's panel-specific producer/data-health probe.
 
@@ -671,8 +740,9 @@ def kernel_data_health() -> tuple[int, dict]:
     """
     present, data = _read_kernel_contract()
     env = _kernel_contract_freshness(data, artifact_present=present)
-    verdict = panels.fold(
-        {"kernel": env}, registry={"kernel": panels.source("kernel")})
+    progression = _read_kernel_progression()
+    verdict = _supplement_kernel_verdict(panels.fold(
+        {"kernel": env}, registry={"kernel": panels.source("kernel")}), progression)
     payload = {
         "status": verdict["status"],
         "probe": "panel-data",
@@ -685,6 +755,13 @@ def kernel_data_health() -> tuple[int, dict]:
         "attention": verdict["attention"],
         "absent": verdict["absent"],
         "freshness": env,
+    }
+    payload["progression"] = {
+        "available": progression.get("available", False),
+        "evidence": progression.get("evidence", str(KERNEL_PROGRESSION_JSON)),
+        "freshness": progression.get("freshness"),
+        "candidate_count": len(progression.get("candidates") or []),
+        "promotion_claim": False,
     }
     return (200 if verdict["status"] == panels.STATUS_OK else 503), payload
 
@@ -1090,8 +1167,15 @@ def _autokernel_journal_inventory(root: Path) -> dict:
     """
     journals = []
     if root.is_dir():
+        # The durable root also contains enormous source worktrees and build
+        # trees. Recursive rglob walked all of them on every /api/kernel request
+        # (measured >5 s) even though campaign journals occupy three declared
+        # layouts. Keep discovery explicit and bounded so the operator surface
+        # remains responsive without hiding its scope.
         try:
-            shards = list(root.rglob("events.jsonl"))
+            shards = list(root.glob("*/events.jsonl"))
+            shards += list((root / "campaigns").glob("*/events.jsonl"))
+            shards += list((root / "screens").glob("*/events.jsonl"))
         except OSError:
             shards = []
         for shard in shards:
@@ -3124,6 +3208,9 @@ def kernel_payload() -> dict:
     data["_freshness"] = _panel_envelope(
         "kernel", _kernel_observation(data, artifact_present=present))
     data["_render"] = _kernel_render(data, version, present, data["_freshness"])
+    # Additive discovery/funnel projection.  It cannot alter any strict section,
+    # freshness watermark, campaign decision, champion, or promotion authority.
+    data["_progression"] = _read_kernel_progression()
     # Live implementation and calibration activity is useful even while the
     # first campaign contract is absent.  It stays separate from the Observation
     # above so a new commit or A/A result can never resurrect a dead controller.
@@ -3789,7 +3876,8 @@ def health_payload() -> dict:
     broken by the generalisation.
     """
     envs = panel_envelopes()
-    verdict = panels.fold(envs)
+    verdict = _supplement_kernel_verdict(
+        panels.fold(envs), _read_kernel_progression())
     return {
         "status": verdict["status"],
         # WHICH panel produced ``status``. ``worst`` is the worst by severity
