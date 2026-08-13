@@ -2,7 +2,7 @@
 
 **Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gate is S4 Omega A/B.
 **Created**: 2026-04-09
-**Updated**: 2026-06-14
+**Updated**: 2026-08-13
 **Priority**: MEDIUM
 **Categories**: agent_architecture
 **Depends on**: None
@@ -105,6 +105,16 @@ Also correcting two earlier claims: the 4-children / 10-round budgets are **prom
 
 - [ ] **Strategy-prompt-length ablation.** intake-867 measured an explicit task-strategy prompt cutting Sonnet 4.6 rollout time **90s → 30s (3x)**, and a 200-token compressed variant converging *lower and less stably* than the 1500-token original. Both directions matter for us: our agent roles may be under-specified (leaving 3x turn-time on the table) or over-compressed (paying instability for token savings). Pure prompt-side A/B on existing roles — no training, modest inference. Candidate arm alongside the S4 Omega A/B above.
 - [ ] **Prefix-cache audit of our REPL scaffold.** intake-867's scaffold re-appends the user query every turn, so successive turns share NO prefix — every turn is a full-prompt cache miss, which on bandwidth-bound CPU decode is a real per-turn tax. Zero-inference first step: inspect our REPL loop's prompt construction and measure slot-cache hit rate across turns (llama-server `/slots` + `--slot-save-path` already exist). If our scaffold has the same shape, reordering the prompt layout is a free prefill win.
+
+### RTE-Prefix audit checkpoint — 2026-08-13
+
+The static premise is verified, with a different mechanism than SkyRL: the frontdoor prompt renders per-turn `state`, `context`, and first-turn-only `reference_code` before the fixed task/instruction, so later turns share only the earlier system/tools/rules prefix. Orchestrator commits `d977454e` and `2c4087b7` correct the cache counters and add a default-off prefix-stable order plus an A/B script. The auditor reran the claimed focused suite: **353 passed**.
+
+- [x] **RTE-Prefix static prompt audit ✅ 2026-08-13**: verified live `graph/helpers.py` uses a minimal `PromptBuilder`, first-turn-only corpus context, executed REPL output/error spillover, and dynamic gathered/workspace/session suffixes. Frontdoor bypass retains llama-server `cache_prompt` but clears the custom PrefixRouter slot id, correcting the first-wave claim that the live payload pins `id_slot`.
+- [x] **RTE-Prefix cache-token instrumentation repair ✅ 2026-08-13**: `/slots` reads v9 `n_prompt_tokens`/`n_prompt_tokens_cache`; inference telemetry reads `timings.cache_n` rather than total slot occupancy. The separate v9 slot-state mapping remains open.
+- [x] **RTE-Prefix default-off stable ordering implementation ✅ 2026-08-13**: the feature flag, prompt rendering order, builder wiring, and unit coverage are present; no runtime default was flipped.
+- [ ] **Repair the RTE-Prefix A/B harness before spending compute**: use the live minimal builder and real turn state/executed-output semantics, include the live gathered/workspace/session/budget suffixes, inject corpus only on turn 1, isolate/reset the pinned slot between arms, map v9 `is_processing`, fail closed on arm/metric errors, and add harness regression tests. The current script's “REAL frontdoor sequence” claim is not decision-grade.
+- [ ] **Run the repaired RTE-Prefix live A/B and semantic gate** under a granted inference window; record isolated-arm cached/processed tokens and prefill latency plus S4 turns/task, token cost/task, and accuracy. Keep the default off unless cache benefit and neutral/better task behavior both pass.
 
 
 ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed)
