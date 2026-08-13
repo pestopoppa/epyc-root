@@ -1141,8 +1141,8 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     gate_refusals: dict[str, tuple[str, str]] = {}
 
     for aid, agent in agents.items():
-        if agent.get("role") == "coordinator-agent":
-            continue  # the judgment tier is not scheduled by the daemon
+        if agent.get("role") != "main":
+            continue  # only worker mains are scheduled by the daemon; reviewer/service/retired/coordinator are not
         if aid in busy_owners:
             advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                            "epoch": epoch, "kind": "would-skip", "agent": aid,
