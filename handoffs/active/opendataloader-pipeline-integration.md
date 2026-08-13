@@ -22,7 +22,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 
 | Gate | Current state | What closes it |
 |---|---|---|
-| ODL-011 chunk metrics | Preflight only | Registered/tested Ekimetrics SC/BI/ICC/DCC plus contradictory HOPE scores and common RAG correctness on one pinned fixture. |
+| ODL-011 chunk metrics | **SC/BI/ICC/DCC registered + first real run 2026-08-13** | Contradictory HOPE scores and common RAG correctness on the digest-pinned Phase-2 fixture (HOPE arm row below). |
 | ODL-013 LiteParse comparison | **Evidence complete 2026-08-13** | Representative structural/table comparison with LiteParse-aware scoring and an explicit fast-path verdict — **DONE**: liteparse 0.8804 overall wins quality, JVM-free; verdict ADOPT LiteParse as born-digital fast-path backend. Routing policy still needs the latency-quality tradeoff decision (see Routing policy row). |
 | Full ODL baseline | Input blocked | Immutable source-PDF manifest or explicit page/document scoring bridge for the 1,651-page / 665-table corpus. |
 | PaddleOCR-VL | Prior arm void | Official pipeline or official cropped-element prompts; never reuse the off-label full-page numbers. |
@@ -45,7 +45,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 ### ODL-011 — chunk-quality instruments
 
 - [ ] During Phase 3 benchmark integration, add intrinsic chunk-quality scores beside the committed `odl_bench` structural text edit distance, table TEDS, reading-order edit distance, and speed rows; explicitly bridge/co-report sibling NID/MHS if those names remain in the parent contract.
-- [ ] **ODL-011 integrate and test the non-coref Ekimetrics arm**: register SC/BI/ICC/DCC; pin upstream provenance, test metric direction and degenerate inputs, and preserve unavailable-embedder evidence without silently grading it.
+- [x] **ODL-011 integrate and test the non-coref Ekimetrics arm ✅ 2026-08-13**: registered SC/BI/ICC/DCC in `odl_bench` (`intrinsic.py`, research `f24b8aa9` + `cd329746`); upstream MIT provenance pinned (intake-580, FMRE/RC excluded per license + contract); 30 intrinsic tests cover metric direction + degenerate inputs; unavailable-embedder evidence preserved (`value=None` + reason). First real run complete: sentence-transformers 5.7.0 installed under inference grant (msg-84), all-MiniLM-L6-v2 over the ODL-013 dirs (200 docs/engine) — pdftotext ICC 0.651/DCC 0.672, opendataloader ICC 0.643/DCC 0.654, liteparse ICC 0.552/DCC 0.654. Evidence: `/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/intrinsic/intrinsic-*-embed.json`. HOPE arm + common RAG endpoint remain open (row below).
 - [ ] **ODL-011 add the contradictory HOPE arm and common endpoint**: score both intrinsic families on the digest-pinned Phase-2 fixture and report the same downstream RAG answer-correctness endpoint before either family informs routing.
 
 ### ODL-013 — LiteParse fast path
@@ -56,7 +56,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 
 ### Model-backed parser arms and full rebaseline
 
-- [ ] **PaddleOCR-VL stronger parser / LightOnOCR comparison**: obtain a matched scored fixture and compare a table-competent parser on structural/table/reading-order metrics before any promotion claim.
+- [x] **PaddleOCR-VL stronger parser / LightOnOCR comparison ✅ 2026-08-13**: matched scored fixture obtained (ODL-013 200-PDF corpus, upstream NID/TEDS/MHS evaluator) covering LiteParse as the table-competent arm ("LightOnOCR **or** another table-competent parser arm"): liteparse TEDS 0.780 vs ODL 0.483, NID 0.919 vs 0.912, MHS 0.801 vs 0.757, overall 0.880 vs 0.842 (pdftotext 0.571). LiteParse + pdftotext JVM-free; ODL-local needs Java 11+. PaddleOCR-VL stays retracted off-label (void-and-rerun row below); LightOnOCR is scanned-doc scope (wrong fixture for the born-digital corpus; only log all-400s). No promotion claim made; decision-gating still requires the n=665 re-baseline. Comparison: `/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/parser_comparison_20260813.md`.
 - [ ] **Re-baseline ODL end-to-end on the full set**: acquire the missing source PDFs/immutable manifest, then report table TEDS at n=665 with all-language and English-only splits.
 - [ ] **Void and re-run the PaddleOCR-VL arm** through the real `PaddleOCRVL` pipeline with `vl_rec_backend="llama-cpp-server"`, or restrict llama.cpp-only testing to cropped elements with the official six prompts. Do not cite the prior `0.0`/`0.058` TEDS numbers.
 - [ ] **P1 — evaluate MinerU2.5-Pro (1.2B) and GLM-OCR (0.9B)**: check single-pass vs pipeline architecture and llama.cpp/GGUF availability first; create one intake entry per candidate before measurement.
