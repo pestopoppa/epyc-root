@@ -7,6 +7,19 @@
 
 ---
 
+> **⛔ 2026-08-13 22:14 UTC — AUTOKERNEL MANUAL EXECUTION STOPPED; CONTROLLER-FIRST CORRECTION IS
+> THE NEXT BOUNDARY.** Discovery-first policy is ratified and the nonpromotable funnel has live CPU
+> leaders (IQK prefill `+31.247%`, decode `+7.939%`) and GPU leaders (MMQ-MFMA OFF prefill
+> `+26.5965%`, flash attention ON prefill `+4.8791%`). These are candidate-only search observations,
+> not champions or promotion evidence. The strict path exposed and repaired a real IQ3_XXS MMID n=15
+> correctness failure without weakening its threshold; the new-instrument r6 calibration checkpointed
+> AA `200/200`, neutral `60/60`, and anchor-motion `15/15`. On operator request, its sealed watcher,
+> parent, and captured child were stopped and all q0-q3 claims verified free. **Do not resume r6 or
+> launch a successor campaign.** First land and independently review the deterministic discovery
+> controller being built in the isolated Terra worktree. It must consume sealed measurements rather
+> than planner prose and remain unable to invoke calibration, heldout, champion, promotion, package,
+> or release paths. Owner: [autokernel-research-loop.md](autokernel-research-loop.md) §AK6.5.
+
 > **🟡 2026-08-12 — INF-03 R18 IS TERMINAL-NONCOMPLETE; SEVEN-ARM R19 IS LIVE FROM
 > IMMUTABLE RESEARCH `0b1fdbe9`.** R18 completed its baseline and full Claude/Codex 2h controller
 > loop, including four compile/correctness-4/4 candidates and a final evaluation, but the parent

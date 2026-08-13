@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** DISCOVERY-FIRST RATIFIED / CPU+GPU SCREENS VALID / R43 INTERVENTION KEEP, CONTROL PREFLIGHT-REFUSED — updated 2026-08-13
+**Status:** OPERATOR-STOPPED / MANUAL DISCOVERY PROVED THROUGHPUT / CONTROLLER-FIRST IMPLEMENTATION IN PROGRESS — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,37 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
+discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
+watchers is not the autonomous loop. The durable nonpromotable leaders remain CPU IQK prefill
+**+31.247%**, CPU IQK decode **+7.939%**, MI210 MMQ-MFMA OFF prefill **+26.5965%**, and MI210 flash
+attention ON prefill **+4.8791%**. The GPU search subsequently emitted many additional candidate-only
+records over graph mode, batch/ubatch, helper threads, poll, mmap/offload, rocWMMA, rope/RMS, and
+quant-kernel shapes; these are discovery observations only. Their value is a ranked hypothesis funnel,
+not authority to call any arm a champion or promotable.
+
+The strict manual execution path failed usefully. Decode attempt r49 exposed a real seeded
+`IQ3_XXS MUL_MAT_ID m=512,n=15,k=256` correctness violation (`0.000528677 > 0.0005`) that the result
+parser initially failed to surface. The parser now recognizes the full diagnostic-prefix family, and
+experimental kernel commit `894ec4dc55c829b11b663a46bc9b089d861b73a4` preserves the proven n=1
+IQK path while routing IQ3_XXS MMID with `ids->ne[1] > 1` to the native fallback. The exact former
+failure then passed in the full 1,216-case run. Because this changed instrument identity, the old r4
+calibration could not be reused. Fresh decode calibration r6, bound to that instrument, completed and
+checkpointed all AA `200/200`, neutral `60/60`, and anchor-motion `15/15` blocks before the operator
+requested an immediate stop. The sealed continuation watcher and exact r6 process were terminated in
+that order; their captured child was dead, all twelve q0-q3 lock probes were free in three follow-up
+samples, and no continuation, heldout pair, archive, champion, promotion, or release ran. SIGTERM
+arrived before r6 wrote its terminal summary/release receipt, so its checkpoint prefix is resumable
+evidence, not accepted calibration authority.
+
+The correction is controller-first: stop spending the session hand-authoring sequential campaign
+IDs, manifests, and recovery watchers. A deterministic discovery controller must own hypothesis
+selection, resource-aware CPU/GPU dispatch, sealed measured-result ingestion, strategy persistence,
+and the nonpromotable candidate funnel; strict calibration/heldout/champion/release remain separate
+consumers that discovery cannot invoke. Implementation is currently in progress in an isolated Terra
+worktree. Until its tests and independent review land, that unfinished code has no campaign authority
+and must not be swept into a documentation or wrap-up commit.
 
 **Current checkpoint (2026-08-13 16:44 UTC):** operator ratification
 `autokernel-discovery-first-20260813` made discovery-first search durable under
@@ -3654,6 +3685,22 @@ future sweep.)*
       **+26.5965%** median. All three candidate invocations proved their owned KFD PID and non-zero
       VRAM during execution; result file SHA-256 is
       `9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887`.
+- [x] **Expose and repair the IQ3_XXS MMID correctness boundary before spending more strict
+      inference.** ✅ 2026-08-13 — r49 proved a real `m=512,n=15,k=256` error above the declared
+      tolerance. The parser now admits the complete failure-prefix schema, and experimental commit
+      `894ec4dc55c829b11b663a46bc9b089d861b73a4` retains IQK for the proven n=1 decode path while
+      routing `ids->ne[1] > 1` to native. The former failure passed in the exact 1,216-case suite; no
+      threshold or seed changed.
+- [x] **Checkpoint the fresh post-fix decode calibration and release all compute on operator stop.**
+      ✅ 2026-08-13 — r6 durably completed AA `200/200`, neutral `60/60`, and anchor-motion `15/15`
+      under the new instrument before SIGTERM. The watcher, r6 parent, and captured benchmark child
+      are absent; all q0-q3 global/autokernel lock probes passed three times. No continuation ran and
+      the unterminated prefix is not accepted authority.
+- [ ] **Land and independently review the controller-first discovery loop before resuming campaigns.**
+      The isolated Terra worktree is implementing deterministic hypothesis selection, sealed
+      measured-result ownership, strategy persistence, and resource-aware CPU/GPU dispatch. Discovery
+      must be structurally unable to load strict calibration/heldout/champion/release authority, and
+      planner prose or a screening threshold must never mint promotion state.
 - [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
       next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
       top-K nominee to strict paired GPU confirmation.
