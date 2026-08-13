@@ -754,7 +754,11 @@ def spec_ref_with_content_anchor(spec_ref: str | None,
 _IDENTITY_FIELDS = ("spec_ref", "task_text", "screened_by", "expected_occupancy",
                     "est_wall_clock_h", "executor_id", "executor_role", "work_type",
                     "audit_of", "completion_msg_id", "source_agent", "artifact_refs",
-                    "acceptance_refs", "audit_policy", "audit_question")
+                    "acceptance_refs", "audit_policy", "audit_question", "correlation_id",
+                    "audit_origin", "checkpoint_id", "checkpoint_msg_id",
+                    "checkpoint_outcome", "checkpoint_commit_sha", "checkpoint_pushed_ref",
+                    "integration_state", "audit_verdict_id", "followup_task_ids",
+                    "rework_findings", "missing_evidence", "evidence_request_pending")
 
 
 def _carry_row_identity(row: dict | None) -> dict:
@@ -1354,6 +1358,10 @@ def _outbox_reports(bus_root: Path, roster: list[dict]) -> dict[str, list[dict]]
             if row.get("from") != aid:
                 continue
             tid = row.get("task_id")
+            # A malformed checkpoint still reaches fail-closed admission instead
+            # of disappearing merely because its envelope omitted task_id.
+            if not tid and row.get("kind") == "task-checkpoint":
+                tid = (row.get("payload") or {}).get("task_id")
             if tid:
                 reports.setdefault(tid, []).append(row)
     return reports
@@ -1401,10 +1409,330 @@ def _audit_row(source: dict, done: dict, epoch: int, policy: str) -> dict:
             "audit_of": source["task_id"], "completion_msg_id": completion_msg_id,
             "source_agent": done.get("from"), "artifact_refs": artifacts,
             "acceptance_refs": acceptance, "audit_policy": policy,
+            "audit_origin": "task-complete", "correlation_id": completion_msg_id,
             "audit_question": _audit_question(source, done),
             "task_text": f"Audit completed work {source['task_id']} ({completion_msg_id})",
             "screened_by": f"task-complete:{completion_msg_id}",
             "expected_occupancy": {"est_h": 0.25, "basis": "audit shadow default"}}
+
+
+def _checkpoint_audit_row(source: dict, checkpoint: dict, epoch: int) -> dict:
+    """One deterministic audit queue row for one accepted boundary receipt."""
+    payload = checkpoint["payload"]
+    correlation_id = str(payload.get("completion_msg_id") or payload["boundary_id"])
+    audit_id = _audit_task_id(str(source["task_id"]), correlation_id)
+    return {
+        "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+        "task_id": audit_id, "status": "READY", "lane": "none", "gating": "none",
+        "epoch": epoch, "priority": source.get("priority") or "P2",
+        "executor_id": "auditor", "executor_role": "auditor-main", "work_type": "audit",
+        "audit_of": source["task_id"], "audit_origin": "task-checkpoint",
+        "correlation_id": correlation_id,
+        **({"completion_msg_id": payload["completion_msg_id"]}
+           if payload.get("completion_msg_id") else {}),
+        "checkpoint_id": payload["boundary_id"], "checkpoint_msg_id": checkpoint["id"],
+        "checkpoint_outcome": payload["outcome"],
+        "checkpoint_commit_sha": payload["commit_sha"],
+        "checkpoint_pushed_ref": payload["pushed_ref"],
+        "source_agent": payload["agent"],
+        "artifact_refs": list(payload.get("artifact_paths") or []),
+        "acceptance_refs": [item["evidence_ref"] for item in payload.get("validation") or []],
+        "audit_policy": "required",
+        "audit_question": (f"Does checkpoint {payload['boundary_id']} prove the "
+                           f"{payload['outcome']} boundary for {payload['task_text']!r}, "
+                           f"including its pushed commit, owned scope, task state, and evidence?"),
+        "task_text": f"Audit checkpoint {payload['boundary_id']}",
+        "screened_by": f"task-checkpoint:{checkpoint['id']}",
+        "expected_occupancy": {"est_h": 0.25, "basis": "checkpoint audit default"},
+    }
+
+
+def _checkpoint_path_problem(path: str, agent: str, progress_path: str) -> str | None:
+    """Return why a declared checkpoint path is outside worker-owned scope."""
+    candidate = Path(path)
+    if (not path or candidate.is_absolute() or ".." in candidate.parts or
+            str(candidate) != path):
+        return f"path {path!r} is not a canonical repository-relative path"
+    if path.startswith("progress/") and path != progress_path:
+        return f"progress path {path!r} is not {agent}'s receipt-bound shard"
+    protected_exact = {"handoffs/active/master-handoff-index.md",
+                       "handoffs/active/inference-batch-loop.md",
+                       "handoffs/active/.index-state.json",
+                       "handoffs/active/.index-graph.json",
+                       "data/handoff_timeline.json", "wiki/source_manifest.json",
+                       "wiki/.last_compile"}
+    if (path in protected_exact or path == "wiki" or path.startswith("wiki/") or
+            path == ".git" or path.startswith(".git/") or
+            path == "repos" or path.startswith("repos/") or
+            path.startswith("coordination/session-bus/") or
+            path.startswith("handoffs/active/.index-") or
+            (path.startswith("handoffs/") and Path(path).name.startswith(".")) or
+            (path.startswith("handoffs/active/") and Path(path).name.endswith("-index.md"))):
+        return f"path {path!r} is Coordinator/Auditor-owned, not worker checkpoint scope"
+    return None
+
+
+def _validate_task_checkpoint(bus_root: Path, config: dict, source: dict,
+                              checkpoint: dict, task_msgs: list[dict],
+                              repo_root: Path) -> list[str]:
+    """Validate one receipt against schema, roster, queue identity, and pushed git facts."""
+    problems: list[str] = []
+    try:
+        validate_row(bus_root, checkpoint, "msg")
+    except Exception as exc:  # noqa: BLE001 - invalid input is quarantined, never fatal
+        return [f"schema: {exc}"]
+
+    payload = checkpoint["payload"]
+    agent = str(payload["agent"])
+    roster = {str(row.get("id")): row for row in config.get("roster") or []
+              if isinstance(row, dict) and row.get("id")}
+    roster_row = roster.get(agent)
+    if roster_row is None:
+        problems.append(f"agent {agent!r} is not a current roster identity")
+    if checkpoint.get("from") != agent or checkpoint.get("to") != COORDINATOR_AGENT:
+        problems.append("message author/target does not match agent -> coordinator-agent")
+    if checkpoint.get("task_id") != payload.get("task_id") or source.get("task_id") != payload.get("task_id"):
+        problems.append("top-level, payload, and queue task_id do not match")
+    expected_boundary_prefix = f"{agent}:{payload.get('task_id')}:"
+    if not str(payload.get("boundary_id") or "").startswith(expected_boundary_prefix):
+        problems.append(f"boundary_id must begin with {expected_boundary_prefix!r}")
+    if source.get("owner") != agent:
+        problems.append(f"queue owner is {source.get('owner')!r}, not receipt agent {agent!r}")
+    if source.get("task_text") != payload.get("task_text"):
+        problems.append("receipt task_text does not exactly match the queue identity")
+    if source.get("spec_ref") and source.get("spec_ref") != payload.get("spec_ref"):
+        problems.append("receipt spec_ref does not exactly match the queue identity")
+
+    expected_branch = f"lane/{agent}"
+    expected_ref = f"refs/remotes/origin/{expected_branch}"
+    if payload.get("branch") != expected_branch or payload.get("pushed_ref") != expected_ref:
+        problems.append(f"branch/ref must be {expected_branch!r} / {expected_ref!r}")
+
+    try:
+        completed = datetime.fromisoformat(str(payload["completed_at"]).replace("Z", "+00:00"))
+        if completed.tzinfo is None:
+            raise ValueError("timezone missing")
+        completed = completed.astimezone(timezone.utc)
+    except (TypeError, ValueError) as exc:
+        problems.append(f"completed_at is not timezone-aware RFC3339: {exc}")
+        completed = datetime.now(timezone.utc)
+    expected_progress = f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-{agent}.md"
+    progress_path = str(payload.get("progress_path") or "")
+    if progress_path != expected_progress:
+        problems.append(f"progress_path must be {expected_progress!r}")
+
+    handoffs = {str(path) for path in payload.get("handoff_paths") or []}
+    artifacts = {str(path) for path in payload.get("artifact_paths") or []}
+    declared = {str(path) for path in payload.get("changed_paths") or []}
+    exact_declared = {progress_path} | handoffs | artifacts
+    if declared != exact_declared:
+        problems.append("changed_paths must equal progress_path + handoff_paths + artifact_paths")
+    spec_path = str(payload.get("spec_ref") or "").split("#", 1)[0]
+    if spec_path not in handoffs:
+        problems.append("the source spec_ref path must be declared in handoff_paths")
+    if handoffs != {spec_path}:
+        problems.append("handoff_paths must contain only the queue-owned source handoff")
+    for path in sorted(declared):
+        if reason := _checkpoint_path_problem(path, agent, progress_path):
+            problems.append(reason)
+
+    outcome = str(payload.get("outcome") or "")
+    matching_flips = [flip for flip in payload.get("checkbox_flips") or []
+                      if flip.get("task_text") == payload.get("task_text")]
+    if outcome == "completed":
+        if not any(flip.get("before") == "open" and flip.get("after") == "done"
+                   for flip in matching_flips):
+            problems.append("completed checkpoint lacks the exact source open -> done flip")
+    elif any(flip.get("after") == "done" for flip in matching_flips):
+        problems.append(f"{outcome} checkpoint may not close the source task")
+
+    completion_msg_id = payload.get("completion_msg_id")
+    if completion_msg_id:
+        linked = [msg for msg in task_msgs if msg.get("kind") == "task-complete"
+                  and msg.get("id") == completion_msg_id and msg.get("from") == agent]
+        if not linked:
+            problems.append("completion_msg_id does not resolve to this worker's task-complete")
+
+    commit_sha = str(payload.get("commit_sha") or "")
+    pushed_ref = str(payload.get("pushed_ref") or "")
+    try:
+        ref = subprocess.run(["git", "-C", str(repo_root), "show-ref", "--verify", "--quiet",
+                              pushed_ref], capture_output=True, text=True, timeout=15)
+        if ref.returncode != 0:
+            problems.append(f"pushed ref {pushed_ref!r} is unreadable or absent")
+            return problems
+        reachable = subprocess.run(["git", "-C", str(repo_root), "merge-base", "--is-ancestor",
+                                    commit_sha, pushed_ref], capture_output=True, text=True,
+                                   timeout=15)
+        if reachable.returncode != 0:
+            problems.append(f"commit {commit_sha} is not reachable from {pushed_ref}")
+            return problems
+        changed = subprocess.run(["git", "-C", str(repo_root), "diff-tree", "--root",
+                                  "--no-commit-id", "--name-only", "-r", commit_sha],
+                                 capture_output=True, text=True, timeout=15)
+        if changed.returncode != 0:
+            problems.append("cannot enumerate checkpoint commit paths")
+            return problems
+        actual = {line for line in changed.stdout.splitlines() if line}
+        if actual != declared:
+            problems.append(f"commit changed paths {sorted(actual)!r}, not receipt paths {sorted(declared)!r}")
+        post_receipt = subprocess.run(
+            ["git", "-C", str(repo_root), "diff", "--quiet", commit_sha, "--", *sorted(declared)],
+            capture_output=True, text=True, timeout=15)
+        if post_receipt.returncode != 0:
+            problems.append("a declared checkpoint path changed after the receipt commit")
+        progress = subprocess.run(["git", "-C", str(repo_root), "show",
+                                   f"{commit_sha}:{progress_path}"], capture_output=True, timeout=15)
+        if progress.returncode != 0 or payload["boundary_id"].encode() not in progress.stdout:
+            problems.append("committed per-agent progress shard does not contain boundary_id")
+        handoff = subprocess.run(["git", "-C", str(repo_root), "show",
+                                  f"{commit_sha}:{spec_path}"], capture_output=True, timeout=15)
+        if handoff.returncode != 0 or payload["task_text"].encode() not in handoff.stdout:
+            problems.append("committed source handoff does not contain the exact task identity")
+    except Exception as exc:  # noqa: BLE001 - git uncertainty fails closed
+        problems.append(f"git validation failed closed: {exc}")
+    return problems
+
+
+def process_task_checkpoints(bus_root: Path, config: dict, latest: dict[str, dict],
+                             reports: dict[str, list[dict]], epoch: int,
+                             repo_root: Path | None = None) -> dict[str, list[dict]]:
+    """Admit valid checkpoint receipts, quarantine invalid ones, and dedupe by correlation."""
+    root = repo_root or REPO_ROOT
+    result: dict[str, list[dict]] = {"queue_rows": [], "messages": [], "advisory": []}
+    coordinator_inbox, _ = _read_jsonl(bus_root / "inbox" / f"{COORDINATOR_AGENT}.jsonl")
+    quarantined = {str((row.get("payload") or {}).get("checkpoint_msg_id"))
+                   for row in coordinator_inbox
+                   if (row.get("payload") or {}).get("event") == "checkpoint-quarantined"}
+
+    for task_id, task_msgs in reports.items():
+        source = latest.get(task_id)
+        for checkpoint in [msg for msg in task_msgs if msg.get("kind") == "task-checkpoint"]:
+            checkpoint_msg_id = str(checkpoint.get("id") or "")
+            payload = checkpoint.get("payload") if isinstance(checkpoint.get("payload"), dict) else {}
+            correlation_id = str(payload.get("completion_msg_id") or
+                                 payload.get("boundary_id") or checkpoint_msg_id)
+            audit_id = _audit_task_id(task_id, correlation_id)
+            existing_audit = latest.get(audit_id)
+            if existing_audit:
+                same_receipt = (existing_audit.get("checkpoint_id") == payload.get("boundary_id") and
+                                existing_audit.get("checkpoint_commit_sha") == payload.get("commit_sha") and
+                                existing_audit.get("checkpoint_outcome") == payload.get("outcome"))
+                if not same_receipt and checkpoint_msg_id not in quarantined:
+                    reasons = ["boundary correlation already names a different checkpoint receipt"]
+                    result["messages"].append({
+                        "to": COORDINATOR_AGENT, "kind": "defect",
+                        "payload": {"event": "checkpoint-quarantined",
+                                    "checkpoint_msg_id": checkpoint_msg_id,
+                                    "boundary_id": payload.get("boundary_id"),
+                                    "task_id": task_id, "agent": checkpoint.get("from"),
+                                    "reasons": reasons,
+                                    "action": "repair the receipt; a stable boundary_id may not "
+                                              "name a different commit or outcome"}})
+                    result["advisory"].append({
+                        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                        "kind": "checkpoint-quarantined", "task_id": task_id,
+                        "checkpoint_msg_id": checkpoint_msg_id, "reasons": reasons})
+                    quarantined.add(checkpoint_msg_id)
+                continue
+            if any(row.get("task_id") == audit_id for row in result["queue_rows"]):
+                continue
+            problems = (["source task is absent from the queue"] if source is None else
+                        _validate_task_checkpoint(bus_root, config, source, checkpoint,
+                                                  task_msgs, root))
+            if problems:
+                if checkpoint_msg_id not in quarantined:
+                    result["messages"].append({
+                        "to": COORDINATOR_AGENT, "kind": "defect",
+                        "payload": {"event": "checkpoint-quarantined",
+                                    "checkpoint_msg_id": checkpoint_msg_id,
+                                    "boundary_id": payload.get("boundary_id"),
+                                    "task_id": task_id, "agent": checkpoint.get("from"),
+                                    "reasons": problems,
+                                    "action": "repair and push the same boundary, then emit a "
+                                              "new schema-valid task-checkpoint receipt"}})
+                    quarantined.add(checkpoint_msg_id)
+                result["advisory"].append({
+                    "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                    "kind": "checkpoint-quarantined", "task_id": task_id,
+                    "checkpoint_msg_id": checkpoint_msg_id, "reasons": problems})
+                continue
+
+            assert source is not None
+            source_base = {k: source.get(k) for k in ("lane", "gating", "priority", "owner",
+                           "priority_class", "contention_class", "role_affinity", "operator_gates",
+                           "depends_on", "max_attempts", "attempt", "replay_eligible")
+                           if source.get(k) is not None}
+            source_base.update(_carry_row_identity(source))
+            result["queue_rows"].append({
+                **source_base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
+                "task_id": task_id, "status": "DONE_PENDING_AUDIT", "epoch": epoch,
+                "checkpoint_id": payload["boundary_id"],
+                "checkpoint_msg_id": checkpoint_msg_id,
+                "checkpoint_outcome": payload["outcome"],
+                "checkpoint_commit_sha": payload["commit_sha"],
+                "checkpoint_pushed_ref": payload["pushed_ref"],
+                "source_agent": payload["agent"],
+                "correlation_id": correlation_id, "audit_origin": "task-checkpoint"})
+            result["queue_rows"].append(_checkpoint_audit_row(source, checkpoint, epoch))
+    return result
+
+
+def _lifecycle_notice_exists(bus_root: Path, recipient: str, kind: str,
+                             correlation_id: str) -> bool:
+    rows, _ = _read_jsonl(bus_root / "inbox" / f"{recipient}.jsonl")
+    return any(row.get("kind") == kind and
+               str((row.get("payload") or {}).get("correlation_id") or
+                   (row.get("payload") or {}).get("checkpoint_id") or "") == correlation_id
+               for row in rows)
+
+
+def _evidence_only_request(audit_row: dict) -> dict:
+    """Typed request for missing proof; deliberately carries no rework instruction."""
+    missing = list(audit_row.get("missing_evidence") or [])
+    return {
+        "to": audit_row["source_agent"], "kind": "audit-request",
+        "task_id": audit_row["task_id"], "assignee": audit_row["source_agent"],
+        "action_required": True, "requires_ack": True, "ack_deadline_s": 600,
+        "payload": {
+            "audit_of": audit_row["audit_of"],
+            "correlation_id": audit_row["correlation_id"],
+            "audit_origin": audit_row.get("audit_origin") or "task-checkpoint",
+            "source_agent": audit_row["source_agent"],
+            "checkpoint_id": audit_row.get("checkpoint_id"),
+            "checkpoint_msg_id": audit_row.get("checkpoint_msg_id"),
+            "completion_msg_id": audit_row.get("completion_msg_id"),
+            "audited_sha": audit_row.get("checkpoint_commit_sha"),
+            "outcome": audit_row.get("checkpoint_outcome"),
+            "artifact_refs": audit_row.get("artifact_refs") or [],
+            "acceptance_refs": audit_row.get("acceptance_refs") or [],
+            "audit_policy": audit_row.get("audit_policy") or "required",
+            "audit_question": ("Provide only the missing audit evidence; do not change "
+                               "implementation scope: " + "; ".join(missing)),
+            "request_type": "evidence-only", "missing_evidence": missing,
+            "task_text": audit_row.get("task_text"),
+        },
+    }
+
+
+def _integration_ready_notice(source_row: dict) -> dict:
+    audit_task_id = _audit_task_id(str(source_row["task_id"]),
+                                   str(source_row["correlation_id"]))
+    return {
+        "to": COORDINATOR_AGENT, "kind": "checkpoint-integration-ready",
+        "task_id": source_row["task_id"],
+        "payload": {
+            "checkpoint_id": source_row["checkpoint_id"],
+            "checkpoint_msg_id": source_row["checkpoint_msg_id"],
+            "task_id": source_row["task_id"],
+            "source_agent": source_row["source_agent"],
+            "commit_sha": source_row["checkpoint_commit_sha"],
+            "pushed_ref": source_row["checkpoint_pushed_ref"],
+            "outcome": source_row["checkpoint_outcome"],
+            "audit_task_id": audit_task_id,
+            "audit_verdict_id": source_row["audit_verdict_id"],
+        },
+    }
 
 
 def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: int,
@@ -1425,21 +1753,31 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
                         and m.get("from") == "auditor"]
             verdict_applied = False
             if verdicts:
-                payload = verdicts[-1].get("payload") or {}
+                verdict_msg = verdicts[-1]
+                payload = verdict_msg.get("payload") or {}
                 verdict = str(payload.get("verdict", ""))
+                correlation = (payload.get("correlation_id") or
+                               payload.get("completion_msg_id"))
+                expected_correlation = (row.get("correlation_id") or
+                                        row.get("completion_msg_id"))
+                sha_linked = (not row.get("checkpoint_commit_sha") or
+                              payload.get("audited_sha") == row.get("checkpoint_commit_sha"))
+                checkpoint_linked = (not row.get("checkpoint_id") or
+                                     payload.get("checkpoint_id") == row.get("checkpoint_id"))
                 linked = (payload.get("audit_of") == row.get("audit_of") and
-                          payload.get("completion_msg_id") == row.get("completion_msg_id"))
+                          correlation == expected_correlation and sha_linked and checkpoint_linked)
                 if linked and verdict in _AUDIT_VERDICTS and row.get("status") not in TERMINAL_STATES:
                     verdict_applied = True
-                    base = {k: row.get(k) for k in ("lane", "gating", "priority", "executor_id",
-                            "executor_role", "work_type", "audit_of", "completion_msg_id",
-                            "source_agent", "artifact_refs", "acceptance_refs", "audit_policy",
-                            "audit_question", "task_text",
-                            "screened_by", "expected_occupancy") if row.get(k) is not None}
+                    base = {k: row.get(k) for k in ("lane", "gating", "priority")
+                            if row.get(k) is not None}
+                    base.update(_carry_row_identity(row))
                     out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                                 "task_id": tid,
                                 "status": "INFRA_BLOCKED" if verdict == "blocked-evidence" else "DONE_PASS",
-                                "epoch": epoch})
+                                "epoch": epoch,
+                                **({"missing_evidence": list(payload.get("missing_evidence") or []),
+                                    "evidence_request_pending": True}
+                                   if verdict == "blocked-evidence" else {})})
                     if row.get("audit_policy") == "required" and verdict != "blocked-evidence":
                         source = latest.get(str(row.get("audit_of")))
                         if source:
@@ -1448,11 +1786,23 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
                                            "operator_gates", "depends_on", "max_attempts", "attempt",
                                            "replay_eligible") if source.get(k) is not None}
                             source_base.update(_carry_row_identity(source))
+                            accepted = verdict in {"accept", "accept-with-followups"}
+                            checkpoint = row.get("audit_origin") == "task-checkpoint"
+                            if accepted and checkpoint:
+                                source_status = ("DONE_PASS" if row.get("checkpoint_outcome") == "completed"
+                                                 else "INFRA_BLOCKED")
+                            else:
+                                source_status = "DONE_PASS" if accepted else "STALE_REQUEUED"
                             out.append({**source_base, "schema_version": QUEUE_SCHEMA_VERSION,
                                         "ts": _utcnow_iso(), "task_id": source["task_id"], "epoch": epoch,
-                                        "status": "DONE_PASS" if verdict in {"accept", "accept-with-followups"}
-                                        else "STALE_REQUEUED", "owner": None if verdict == "needs-rework"
-                                        else source.get("owner")})
+                                        "status": source_status,
+                                        "owner": None if verdict == "needs-rework" else source.get("owner"),
+                                        **({"integration_state": "ready",
+                                            "audit_verdict_id": verdict_msg["id"],
+                                            "followup_task_ids": list(payload.get("followup_task_ids") or [])}
+                                           if accepted and checkpoint else {}),
+                                        **({"rework_findings": list(payload.get("findings") or [])}
+                                           if verdict == "needs-rework" else {})})
             # Audits may advance through normal receipt/status states, but cannot
             # complete from task-complete: only a linked auditor verdict closes it.
             if verdict_applied:
@@ -1464,11 +1814,9 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
             if "status" in kinds:
                 target = _STATUS_IMPLIES.get(target, target)
             if target != row.get("status"):
-                base = {k: row.get(k) for k in ("lane", "gating", "priority", "executor_id",
-                        "executor_role", "work_type", "audit_of", "completion_msg_id",
-                        "source_agent", "artifact_refs", "acceptance_refs", "audit_policy",
-                        "audit_question", "task_text", "screened_by", "expected_occupancy")
+                base = {k: row.get(k) for k in ("lane", "gating", "priority")
                         if row.get(k) is not None}
+                base.update(_carry_row_identity(row))
                 out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                             "task_id": tid, "status": target, "epoch": epoch,
                             "claim_ts": _utcnow_iso() if target == "CLAIMED" else row.get("claim_ts")})
@@ -4176,6 +4524,8 @@ _RELAY_HANDLERS: dict[str, tuple[str, str]] = {
     # kind: (handler-of-record, authority at which it runs; "*" = every authority)
     "token-request": ("relay_token_blocks", "*"),
     "task-complete": ("transcribe", "assign"),
+    "task-checkpoint": ("process_task_checkpoints", "assign"),
+    "audit-verdict": ("transcribe", "assign"),
     "task-propose": ("intake_proposals", "never — `intake` CLI only, never from tick"),
 }
 # Retained as the derived view, so `validate` and any external reader that asks
@@ -4519,12 +4869,34 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
     reports = _outbox_reports(bus_root, roster)
 
-    # 1. transcribe agent reports into the queue (bookkeeping, no judgment)
+    # 1. Admit typed checkpoint receipts before ordinary transcription.  A linked
+    # task-complete then sees the deterministic audit row already present and cannot
+    # synthesize a second review for the same correlation.
+    latest = fold_queue(bus_root)
+    checkpoints = process_task_checkpoints(bus_root, config, latest, reports, epoch)
+    for row in checkpoints["queue_rows"]:
+        _append_jsonl(bus_root / "queue.jsonl", row)
+    if checkpoints["messages"]:
+        _append_inbox(bus_root, checkpoints["messages"], epoch)
+    emitted.extend(checkpoints["advisory"])
+
+    # 1a. transcribe agent reports into the queue (bookkeeping, no judgment)
     latest = fold_queue(bus_root)
     for row in transcribe(latest, reports, epoch, config):
         _append_jsonl(bus_root / "queue.jsonl", row)
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "transcribed", "task_id": row["task_id"], "status": row["status"]})
+        if row.get("evidence_request_pending"):
+            correlation = str(row.get("correlation_id") or "")
+            recipient = str(row.get("source_agent") or "")
+            if recipient and not _lifecycle_notice_exists(
+                    bus_root, recipient, "audit-request", correlation):
+                _append_inbox(bus_root, [_evidence_only_request(row)], epoch)
+        if row.get("integration_state") == "ready":
+            checkpoint_id = str(row.get("checkpoint_id") or "")
+            if checkpoint_id and not _lifecycle_notice_exists(
+                    bus_root, COORDINATOR_AGENT, "checkpoint-integration-ready", checkpoint_id):
+                _append_inbox(bus_root, [_integration_ready_notice(row)], epoch)
 
     # 1b. R4 revocation: mark revoking + nudge the holder to drain, and settle any
     # task whose holder has since reported `draining` back to READY.
@@ -4639,11 +5011,20 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
             "attempt": int(row.get("attempt") or 0)})
         if row.get("work_type") == "audit":
             payload = {"audit_of": row["audit_of"],
-                       "completion_msg_id": row["completion_msg_id"],
+                       "correlation_id": (row.get("correlation_id") or
+                                          row.get("completion_msg_id")),
+                       "audit_origin": row.get("audit_origin") or "task-complete",
+                       "source_agent": row["source_agent"],
+                       "checkpoint_id": row.get("checkpoint_id"),
+                       "checkpoint_msg_id": row.get("checkpoint_msg_id"),
+                       "completion_msg_id": row.get("completion_msg_id"),
+                       "audited_sha": row.get("checkpoint_commit_sha"),
+                       "outcome": row.get("checkpoint_outcome"),
                        "artifact_refs": row.get("artifact_refs") or [],
                        "acceptance_refs": row.get("acceptance_refs") or [],
                        "audit_policy": row.get("audit_policy") or "shadow",
                        "audit_question": row["audit_question"],
+                       "request_type": "verdict", "missing_evidence": [],
                        "task_text": row.get("task_text")}
             msg_kind = "audit-request"
         else:

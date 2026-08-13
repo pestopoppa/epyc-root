@@ -230,7 +230,8 @@ def test_c27_task_complete_is_skipped_again_once_its_handler_runs(bus_root: Path
 
     assert advisory == []
     assert _read_jsonl(bus_root / "inbox" / "bob.jsonl") == []
-    assert coordinator.no_relay_kinds("assign") == {"token-request", "task-complete"}
+    assert coordinator.no_relay_kinds("assign") == {
+        "token-request", "task-complete", "task-checkpoint", "audit-verdict"}
     assert coordinator.no_relay_kinds("manual") == {"token-request"}
 
 
@@ -3220,8 +3221,13 @@ def _checkpoint_repo(tmp_path: Path, bus_root: Path, *, agent: str = "alice",
     progress = root / progress_rel
     progress.parent.mkdir(parents=True, exist_ok=True)
     boundary_id = f"{agent}:task-1:1"
+    task_text = "Implement receipt-bound checkpoint lifecycle"
+    handoff_rel = "handoffs/active/checkpoint-lifecycle.md"
+    handoff = root / handoff_rel
+    handoff.parent.mkdir(parents=True, exist_ok=True)
     progress.write_text(f"# checkpoint\n\nboundary_id: {boundary_id}\n", encoding="utf-8")
-    sp.run(["git", "-C", str(root), "add", progress_rel], check=True)
+    handoff.write_text(f"- [x] {task_text}\n", encoding="utf-8")
+    sp.run(["git", "-C", str(root), "add", progress_rel, handoff_rel], check=True)
     sp.run(["git", "-C", str(root), "commit", "-q", "-m", "checkpoint"], check=True,
            env={**os.environ, "GIT_AUTHOR_DATE": completed.isoformat(),
                 "GIT_COMMITTER_DATE": completed.isoformat()})
@@ -3237,14 +3243,30 @@ def _checkpoint_repo(tmp_path: Path, bus_root: Path, *, agent: str = "alice",
         "from": agent,
         "to": "coordinator-agent",
         "kind": "task-checkpoint",
+        "task_id": "task-1",
         "payload": {
             "boundary_id": boundary_id,
+            "outcome": "completed",
+            "boundary_reason": "task-boundary",
+            "task_id": "task-1",
+            "task_text": task_text,
+            "spec_ref": handoff_rel,
             "agent": agent,
             "completed_at": completed.isoformat(),
             "branch": f"lane/{agent}",
             "commit_sha": sha,
             "pushed_ref": f"refs/remotes/origin/lane/{agent}",
             "progress_path": progress_rel,
+            "handoff_paths": [handoff_rel],
+            "artifact_paths": [],
+            "changed_paths": [progress_rel, handoff_rel],
+            "checkbox_flips": [{"task_text": task_text, "before": "open", "after": "done"}],
+            "new_tasks": [],
+            "validation": [{"command": ["true"], "exit_code": 0,
+                            "evidence_ref": progress_rel}],
+            "next_context": "related",
+            "major_checkpoint": False,
+            "completion_msg_id": None,
         },
     }
     _append(bus_root / "outbox" / f"{agent}.jsonl", receipt)
@@ -4444,6 +4466,181 @@ def _audit_complete(task: str, *, sender: str = "mainA", seq: int = 1, outcome: 
     return _message(sender, "coordinator-agent", "task-complete", task_id=task, seq=seq,
                     payload={"outcome": outcome, "artifacts": [f"artifacts/{task}.json"],
                              "acceptance_refs": [f"handoffs/{task}.md#acceptance"]})
+
+
+def _typed_verdict(audit: dict, verdict: str, *, seq: int = 1,
+                   audited_sha: str | None = None) -> dict:
+    return _message("auditor", "coordinator-agent", "audit-verdict",
+                    task_id=audit["task_id"], seq=seq,
+                    payload={"verdict": verdict, "audit_of": audit["audit_of"],
+                             "correlation_id": (audit.get("correlation_id") or
+                                                audit.get("completion_msg_id")),
+                             "checkpoint_id": audit.get("checkpoint_id"),
+                             "audited_sha": audited_sha,
+                             "evidence_refs": ["evidence/audit.txt"],
+                             "findings": (["repair the ordinary implementation"]
+                                          if verdict == "needs-rework" else []),
+                             "followup_task_ids": (["followup-1"]
+                                                   if verdict == "accept-with-followups" else []),
+                             "missing_evidence": (["validation transcript"]
+                                                  if verdict == "blocked-evidence" else [])})
+
+
+def _checkpoint_source(receipt: dict) -> dict:
+    payload = receipt["payload"]
+    row = _typed_row(payload["task_id"], owner=payload["agent"], status="RUNNING")
+    row.update({"task_text": payload["task_text"], "spec_ref": payload["spec_ref"]})
+    return row
+
+
+def test_checkpoint_admission_validates_git_scope_and_dedupes_audit(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    source = _checkpoint_source(receipt)
+    reports = {"task-1": [receipt]}
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": source}, reports, 1, repo_root=root)
+    assert [row["status"] for row in admitted["queue_rows"]] == [
+        "DONE_PENDING_AUDIT", "READY"]
+    audit = admitted["queue_rows"][1]
+    assert audit["audit_origin"] == "task-checkpoint"
+    assert audit["checkpoint_commit_sha"] == receipt["payload"]["commit_sha"]
+    latest = {"task-1": admitted["queue_rows"][0], audit["task_id"]: audit}
+    replay = {**receipt, "id": receipt["id"] + "-retry"}
+    repeated = coordinator.process_task_checkpoints(
+        bus_root, config, latest, {"task-1": [replay]}, 2, repo_root=root)
+    assert repeated == {"queue_rows": [], "messages": [], "advisory": []}
+    conflicting = {**replay, "id": replay["id"] + "-conflict",
+                   "payload": {**replay["payload"], "commit_sha": "f" * 40}}
+    conflict = coordinator.process_task_checkpoints(
+        bus_root, config, latest, {"task-1": [conflicting]}, 3, repo_root=root)
+    assert conflict["queue_rows"] == [] and len(conflict["messages"]) == 1
+    assert "different checkpoint receipt" in conflict["messages"][0]["payload"]["reasons"][0]
+
+
+@pytest.mark.parametrize("outcome", ["blocked", "partial"])
+def test_checkpoint_admission_accepts_evidenced_nonterminal_boundaries(
+        bus_root: Path, tmp_path: Path, outcome: str) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    payload = {**receipt["payload"], "outcome": outcome, "checkbox_flips": [],
+               "blocker_class": "dependency", "blocked_on": "upstream receipt",
+               "blocking_owner_or_event": "mainB", "evidence_refs": ["evidence/blocker"],
+               "alternatives_exhausted": ["checked the durable inbox"],
+               "resume_action": "consume the upstream receipt", "compute_request": None}
+    if outcome == "partial":
+        payload["boundary_reason"] = "pre-reboot"
+    receipt = {**receipt, "payload": payload}
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": _checkpoint_source(receipt)},
+        {"task-1": [receipt]}, 1, repo_root=root)
+    assert [row["status"] for row in admitted["queue_rows"]] == [
+        "DONE_PENDING_AUDIT", "READY"]
+
+
+def test_checkpoint_apply_lifecycle_emits_one_audit_and_one_integration_record(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    monkeypatch.setattr(coordinator, "REPO_ROOT", root)
+    _append(bus_root / "queue.jsonl", _checkpoint_source(receipt))
+
+    coordinator.apply_assignment(bus_root, config, epoch=1)
+    folded = bus.fold_queue(bus_root)
+    audit = next(row for row in folded.values() if row.get("work_type") == "audit")
+    requests = [row for row in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+                if row.get("kind") == "audit-request"]
+    assert len(requests) == 1
+    bus.validate_row(bus_root, requests[0], "msg")
+    coordinator.apply_assignment(bus_root, config, epoch=2)
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+                if row.get("kind") == "audit-request"]) == 1
+
+    verdict = _typed_verdict(audit, "accept", audited_sha=receipt["payload"]["commit_sha"])
+    _append(bus_root / "outbox" / "auditor.jsonl", verdict)
+    coordinator.apply_assignment(bus_root, config, epoch=3)
+    ready = [row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+             if row.get("kind") == "checkpoint-integration-ready"]
+    assert len(ready) == 1
+    bus.validate_row(bus_root, ready[0], "msg")
+    coordinator.apply_assignment(bus_root, config, epoch=4)
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "checkpoint-integration-ready"]) == 1
+
+
+@pytest.mark.parametrize("defect", ["forged", "unpushed", "wrong-scope"])
+def test_checkpoint_admission_quarantines_forged_unpushed_and_wrong_scope(
+        bus_root: Path, tmp_path: Path, defect: str) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(
+        tmp_path, bus_root, agent="mainA", push_checkpoint=defect != "unpushed")
+    if defect == "forged":
+        receipt = {**receipt, "from": "alice"}
+    elif defect == "wrong-scope":
+        receipt = {**receipt, "payload": {**receipt["payload"],
+                   "artifact_paths": ["wiki/forged.md"],
+                   "changed_paths": receipt["payload"]["changed_paths"] + ["wiki/forged.md"]}}
+    result = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": _checkpoint_source(receipt)},
+        {"task-1": [receipt]}, 1, repo_root=root)
+    assert result["queue_rows"] == []
+    assert len(result["messages"]) == 1
+    reasons = " ".join(result["messages"][0]["payload"]["reasons"])
+    assert {"forged": "author/target", "unpushed": "not reachable",
+            "wrong-scope": "not worker checkpoint scope"}[defect] in reasons
+
+
+@pytest.mark.parametrize(("verdict", "source_status", "ready"), [
+    ("accept", "DONE_PASS", True),
+    ("accept-with-followups", "DONE_PASS", True),
+    ("needs-rework", "STALE_REQUEUED", False),
+    ("blocked-evidence", "DONE_PENDING_AUDIT", False),
+])
+def test_checkpoint_verdict_authority_and_integration_gate(
+        bus_root: Path, tmp_path: Path, verdict: str, source_status: str,
+        ready: bool) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    source = _checkpoint_source(receipt)
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": source}, {"task-1": [receipt]}, 1, repo_root=root)
+    pending, audit = admitted["queue_rows"]
+    response = _typed_verdict(audit, verdict, audited_sha=receipt["payload"]["commit_sha"])
+    rows = coordinator.transcribe(
+        {"task-1": pending, audit["task_id"]: audit},
+        {audit["task_id"]: [response]}, 2, config)
+    folded = {row["task_id"]: row for row in rows}
+    if verdict == "blocked-evidence":
+        assert "task-1" not in folded
+        assert folded[audit["task_id"]]["evidence_request_pending"] is True
+        request = coordinator._evidence_only_request(folded[audit["task_id"]])
+        assert request["payload"]["request_type"] == "evidence-only"
+        assert request["payload"]["missing_evidence"] == ["validation transcript"]
+        assert "implementation" not in " ".join(request["payload"]["missing_evidence"])
+    else:
+        assert folded["task-1"]["status"] == source_status
+        assert (folded["task-1"].get("integration_state") == "ready") is ready
+    forged_sha = _typed_verdict(audit, "accept", audited_sha="f" * 40)
+    assert coordinator.transcribe(
+        {"task-1": pending, audit["task_id"]: audit},
+        {audit["task_id"]: [forged_sha]}, 2, config) == []
+
+
+def test_wrap_lifecycle_schema_and_authority_are_closed(bus_root: Path) -> None:
+    _audit_config(bus_root, "required")
+    request = _message("coordinator-agent", "auditor", "wrapup-request", payload={
+        "request_id": "wrap-1", "reason": "operator", "synchronization": "asynchronous",
+        "checkpoint_ids": ["mainA:task-1:1"], "cutoff_ts": "2026-08-13T00:00:00+00:00",
+        "integrated_main_sha": "a" * 40})
+    bus.validate_row(bus_root, request, "msg")
+    bus.check_checkpoint_lifecycle_message(request)
+    with pytest.raises(bus.BusError, match="coordinator-agent -> auditor"):
+        bus.check_checkpoint_lifecycle_message({**request, "from": "mainA"})
+    invalid = {**request, "payload": {**request["payload"], "untyped": True}}
+    with pytest.raises(bus.BusError):
+        bus.validate_row(bus_root, invalid, "msg")
 
 
 def test_audit_shadow_preserves_source_done_and_synthesizes_one_targeted_audit(
