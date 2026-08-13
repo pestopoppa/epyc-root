@@ -60,6 +60,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -3138,7 +3139,12 @@ def cmd_spawn(args: argparse.Namespace) -> int:
             created.append(rel)
     print(f"bus files ready ({len(created)} created: {', '.join(created) or 'all pre-existing'})")
 
-    launch = launch_cmd
+    # Launch through the guard so a mis-aimed terminal stop signal (SIGTSTP/
+    # SIGTTIN/SIGTTOU) cannot wedge the main dead. opencode installs no handler
+    # for those three, so SIG_IGN must be set before it starts (fish, tmux's
+    # default-shell, does not support `trap '' SIG`, hence the bash guard).
+    guard = REPO_ROOT / "scripts" / "coordination" / "opencode_guard.sh"
+    launch = f"/bin/bash {guard} {shlex.quote(launch_cmd)}"
     rc, out = _tmux("new-window", "-t", session, "-n", window, launch)
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
