@@ -1,6 +1,6 @@
 # Wrap-up division of labor — actionable implementation plan
 
-**Status**: ACTIVE — target contract fixed; implementation not started
+**Status**: ACTIVE — Phases 0–2 and the Phase-3 planner core are pushed on `lane/auditor`; rollout remains off pending compute/wrap integration, protected policy review, and canaries
 **Created**: 2026-08-13
 **Last refined**: 2026-08-13
 **Priority**: P1 — task-boundary durability, fleet documentation consistency, and compute-blocker
@@ -286,18 +286,20 @@ before role cutover.
       rollout gates, and acceptance suite. ✅ 2026-08-13
 - [x] Correct ownership to `RTG-51`; remove the stale `d7b83ddf` dependency (already in
       `origin/main`). ✅ 2026-08-13
+- [x] Publish a standalone implementation-audit flowchart covering Coordinator, mainA–D,
+      Auditor, Inference, failure loops, authority boundaries, and deployment gaps. ✅ 2026-08-13
 
 ### Phase 1 — repair foundations before changing behavior
 
-- [ ] Change `progress_log_currency()` to validate receipt-bound per-agent progress evidence.
+- [x] Change `progress_log_currency()` to validate receipt-bound per-agent progress evidence. ✅ 2026-08-13 (`20640d55`)
   Keep unsuffixed logs for historical reads only. Add negative controls for local-only SHA, peer
   shard, post-receipt edit, and no-boundary state.
-- [ ] **Autonomous writers:** remove `index_state.py` writes from post-commit/merge/checkout hook
+- [x] **Autonomous writers:** remove `index_state.py` writes from post-commit/merge/checkout hook ✅ 2026-08-13 (`60187101`)
       bodies; make `install_timeline_hook.sh` upgrade its marked block; prove a worker handoff commit
       leaves `.index-state.json`, `.index-graph.json`, and master generated content unchanged.
-- [ ] **Wiki hook:** ensure ordinary post-commit retrieval refresh cannot mutate
+- [x] **Wiki hook:** ensure ordinary post-commit retrieval refresh cannot mutate ✅ 2026-08-13 (`60187101`)
       `wiki/source_manifest.json` or the wrap watermark; give retrieval its own cursor if needed.
-- [ ] **Lease:** replace roster/PID reclaim with an opaque per-operation token in a mode-0600 token
+- [x] **Lease:** replace roster/PID reclaim with an opaque per-operation token in a mode-0600 token ✅ 2026-08-13 (`8ff5162c`)
       file, store its hash in the lock, require the token for normal release, and audit explicit
       force-release. A second same-roster process without the token must be refused.
 
@@ -306,11 +308,11 @@ control that would have admitted the previous same-role lease collision.
 
 ### Phase 2 — implement checkpoint and receipt in shadow mode
 
-- [ ] Add the log skill, checkpoint program, typed schema, relay/fold validation, and idempotence
-      journal.
-- [ ] Preserve the existing completed-task audit flow without duplicate `audit-request` synthesis.
-- [ ] Add Coordinator validation for remote reachability, path ownership, exact task identity, and
-      committed progress evidence.
+- [x] Add the log skill, checkpoint program, typed schema, relay/fold validation, and idempotence
+      journal. ✅ 2026-08-13 (`82c1c5b4`)
+- [x] Preserve the existing completed-task audit flow without duplicate `audit-request` synthesis. ✅ 2026-08-13 (`82c1c5b4`)
+- [x] Add Coordinator validation for remote reachability, path ownership, exact task identity, and
+      committed progress evidence. ✅ 2026-08-13 (`82c1c5b4`)
 - [ ] Shadow-record complete, blocked, and pre-reboot boundaries without rejecting legacy behavior.
 
 Phase gate: two workers can checkpoint concurrently without sweeping peer hunks; failed validation,
@@ -318,6 +320,8 @@ commit, or push cannot produce an accepted receipt; a repeated `boundary_id` pro
 
 ### Phase 3 — implement compute-ready projection and admission
 
+- [x] Implement and test the pure, deterministic compute-ready projection/ranking core without
+      creating a live intake or dispatch path. ✅ 2026-08-13 (`7623e37c`)
 - [ ] Add compute request/window schemas, the reconstructible projection, graph-derived leverage,
       stable ranking, and focused bus dispatch.
 - [ ] Encode the authority split in Coordinator and Inference role files.
@@ -332,7 +336,7 @@ lease cases are deterministic; only Inference can declare compatibility or grant
 - [ ] Update `agents/commands/wrap-up.md` for request ID, immutable receipt cut, one designated
       writer, operation-token lease, ordered mutations, Coordinator promotion handoff, and completion
       receipt.
-- [ ] Update concurrent-wrap tests: two same-roster executors contend, only one mutates, crash
+- [x] Update concurrent-wrap tests: two same-roster executors contend, only one mutates, crash ✅ 2026-08-13 (`8ff5162c`)
       residue remains held, wrong tokens cannot release, and all worktrees share the common-git-dir
       lease.
 - [ ] Add receipt inclusion/exclusion and post-cut deferral tests.
@@ -437,12 +441,16 @@ failed heavy wrap keeps the barrier closed.
 
 ## Immediate next action
 
-Implement Phase 1 as three independently reviewable safety changes, in this order:
+Finish the open integration seams in this order:
 
-1. repair receipt-bound per-agent progress currency;
-2. remove autonomous derived-state writers from hooks;
-3. harden the cross-process wrap lease with operation tokens.
+1. connect typed compute blocker/intake/window events and the pushed planner core to the bus under
+   Inference-owned compatibility and lease authority;
+2. implement the receipt-cut heavy-wrap executor and completion receipt on the hardened lease;
+3. shadow the complete, blocked, pre-reboot, compute, and immutable-cut paths;
+4. present the protected Phase-5 instruction package for operator approval, then canary before
+   enforcement.
 
-Then implement the worker checkpoint in shadow mode. No remaining design choice blocks those phases.
+The current implementation and its remaining gaps are rendered in
+[`docs/coordination/session-bus-task-flow.html`](../../docs/coordination/session-bus-task-flow.html).
 The only operator-only action is approval/merge of the protected Phase 5 policy package and any
 narrow subagent-writer exception.

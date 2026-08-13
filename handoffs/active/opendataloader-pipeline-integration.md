@@ -26,7 +26,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 | ODL-013 LiteParse comparison | **Observation complete 2026-08-13; decision gate open** | Preserve or rerun it as durable, protocol-admissible evidence with a precommitted decision rule. LiteParse leads the aggregate point estimates, but the current scratch artifact cannot authorize adoption or routing. |
 | Full ODL baseline | Input blocked | Immutable source-PDF manifest or explicit page/document scoring bridge for the 1,651-page / 665-table corpus. |
 | PaddleOCR-VL | Prior arm void | Official pipeline or official cropped-element prompts; never reuse the off-label full-page numbers. |
-| Unlimited-OCR | Code-only scaffold | Default artifact with `lm_head >= Q8_0`, then a granted live run with provenance and cleanup proof. |
+| Unlimited-OCR | **18-page observation complete; evidence correction open** | Correct the causal claim and mutex receipt, then run the canonical-profile A/B after the operator lifts the all-inference-stop order. |
 | Routing policy | Default unchanged | Matched quality + latency evidence for local ODL, hybrid ODL, LiteParse/pdftotext, and model-backed arms. |
 
 ## Outstanding Tasks
@@ -64,6 +64,8 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 - [ ] **Void and re-run the PaddleOCR-VL arm** through the real `PaddleOCRVL` pipeline with `vl_rec_backend="llama-cpp-server"`, or restrict llama.cpp-only testing to cropped elements with the official six prompts. Do not cite the prior `0.0`/`0.058` TEDS numbers.
 - [ ] **P1 — evaluate MinerU2.5-Pro (1.2B) and GLM-OCR (0.9B)**: check single-pass vs pipeline architecture and llama.cpp/GGUF availability first; create one intake entry per candidate before measurement.
 - [ ] **P2 — Unlimited-OCR as a single-pass arm**: preserve the stock full-MHA path, Q5_K_M-or-better body, `lm_head >= Q8_0`, and conservative loop guard; do not take draft R-SWA PR #24975 into the production kernel.
+- [ ] **Correct the P2 observation record before using it**: retain the 18-page run as an observation, but replace “root cause” with the demonstrated prompt/profile mismatch. The bare-passthrough GGUF chat template is verified; “coordinate output regardless of prompt” is not — llama.cpp's canonical source explicitly records prompt-dependent behavior. Also correct the timing narrative and do not cite the stored mutex receipt as full-interval proof: `inference_window.json` reports only `held_s=1.002881998`.
+- [ ] **Run the canonical Unlimited-OCR profile as a fresh matched A/B after inference resumes**: use `document parsing.`, `n_predict=4096`, `n_ctx=16384`, DRY, and grounding-strip exactly as `tools/mtmd/tests/test-deepseek-ocr.py` specifies; preserve both profiles, score the stripped output, and require a new inference-window receipt spanning server launch through termination. This is blocked only on the operator's all-inference-stop order being lifted and a new Inference grant.
 - [ ] **Make the default Unlimited-OCR artifact quant-compliant**: replace/requantize the default model so `output.weight`/`lm_head` is at least Q8_0, record immutable SHA-256 plus tensor audit, and update `DEFAULT_MODEL`.
 - [ ] **Run and score the 18-page OmniDocBench demo** only after the artifact gate and an inference grant: capture binary/model/mmproj digests, server argv, linkage/residency during the window, responses, CER/TEDS/reading-order/latency, failures, manifest contract, and cleanup proof.
 
@@ -75,7 +77,7 @@ Use OpenDataLoader PDF as the structured document path, preserve a cheap born-di
 | Phase 2 structured substrate | Headings, figures, tables, cache/TaskIR carriers, injection scanning, and hybrid SDK routing are wired behind explicit gates. |
 | Fast-path scaffolding | Local ODL/LiteParse/pdftotext/hybrid probe and July observations exist; they do not close policy. |
 | Benchmark scaffolding | `odl_bench`, sibling NID/TEDS/MHS scorer, model-producer interface, and representative manifests are committed. |
-| 2026-08-13 audits | The later ODL-013 run is a reproducible full-corpus observation, not a decision record: no parser protocol/category/attestation, no precommitted selection rule, scratch-only durability, and summary-only timing. No adoption or routing-default change is authorized. Unlimited-OCR producer code passed 26 tests but its default artifact fails the quant prerequisite. |
+| 2026-08-13 audits | ODL-013 is a reproducible full-corpus observation, not a decision record: no parser protocol/category/attestation, no precommitted selection rule, scratch-only durability, and summary-only timing. A14's exact patch was accepted. Unlimited-OCR's 18-page run is mechanically real, but its causal claim and mutex evidence need correction before a canonical rerun. |
 
 See [completed implementation/evidence ledger](../completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) for commits, historical measurements, corrections, and closed checkpoints.
 
