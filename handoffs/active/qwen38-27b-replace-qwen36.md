@@ -40,10 +40,13 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 - [ ] **MTP wiring** — confirm `--spec-type draft-mtp` with the explicit `mtp-*.gguf` sidecar loads and
   drafts (vs Qwen3.6's embedded self-draft). Check whether `draft_model` in the registry must change from
   same-file to the sidecar path.
-- [ ] **Quality gate** — Qwen3.8-27B vs Qwen3.6-27B on the coder/architect suite (the roles it serves).
-  Bar: ≥ parity (or a measured ≥+Xpp uplift) before any swap. No regressions on code correctness.
+- [x] **Quality gate — DECLINED by operator (2026-08-14):** *"quality will improve certainly."* The
+  Qwen3.8→Qwen3.6 quality uplift is taken as a given (same-day release refresh); no coder/architect
+  quality comparison will be run. The load-smoke below is the only remaining correctness check, and it
+  confirms the model loads + generates — a technical check, not a quality gate.
 - [ ] **Throughput** — decode + prefill on the MI210 (plain and `draft-mtp`), vs the Qwen3.6-27B numbers
-  (~99.8 t/s plain at `-c 512`; the coder_escalation serving baseline). MTP acceptance rate too.
+  (~99.8 t/s plain at `-c 512`; the coder_escalation serving baseline). MTP acceptance rate too. For the
+  serving config, not a go/no-go gate.
 - [ ] **Registry swap** — `architect_general` + `coder_escalation`: `model_path` →
   `Qwen3.8-27B-Q8_0.gguf`, `draft_model` → `mtp-Qwen3.8-27B-Q8_0.gguf` (if sidecar wiring confirmed),
   then `stack_change_pipeline.py` regenerate + the standard model-stack-change checklist.
@@ -55,6 +58,6 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
    that may not transfer.)
 2. **Multimodal**: is the vision projector a reason to *also* stage Qwen3.8 for `worker_vision`/
    `vision_escalation`, or strictly out of scope for this coder/architect swap?
-3. **Is this even worth it**: the coder/architect role is served by a dense 27B already at ~100 t/s on
-   GPU. The refresh only clears if quality improves — throughput is unlikely to move materially (dense,
-   BW-bound). The quality gate is the whole decision.
+3. ~~**Is this even worth it**~~ — RESOLVED by operator (2026-08-14): quality uplift is a given, so the
+   swap is worth it on quality grounds alone. Throughput won't move materially (dense, BW-bound); the
+   throughput step exists to record the serving baseline, not to gate the decision.
