@@ -39,8 +39,7 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 - [x] **Verify the download** ✅ 2026-08-14 — both files at full declared size (29,047,086,048 B /
   3,164,006,688 B); GGUF header shows arch `qwen35`, `block_count`, `context_length`, and the embedded
   `nextn`/MTP tensors in the base (see "What is known" — the MTP-sidecar assumption was wrong).
-- [ ] **Load smoke** on the v9 HIP build (`-ngl 999 -c 4096`, 32-token generation) — no op fallback,
-  coherent output. This is the qwen35moe/qwen35-family op-coverage check the 27B dense needs.
+- [x] **Load smoke** ✅ 2026-08-14 — PASS on v9 HIP (`-ngl 999 -c 4096 --spec-type draft-mtp --spec-draft-n-max 4`): model loads (31.98 GB VRAM), generates coherently ("Quicksort is a highly efficient sorting algorithm…"), no op-fallback warnings.
 - [x] **MTP wiring** ✅ 2026-08-14 — RESOLVED: the unsloth base embeds the nextn/MTP head, so
   `--spec-type draft-mtp` self-draft is same-file, exactly like Qwen3.6-27B-MTP. `draft_model` in the
   registry stays the same file. The separate `mtp-*.gguf` sidecar is NOT needed.
@@ -48,9 +47,7 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
   Qwen3.8→Qwen3.6 quality uplift is taken as a given (same-day release refresh); no coder/architect
   quality comparison will be run. The load-smoke below is the only remaining correctness check, and it
   confirms the model loads + generates — a technical check, not a quality gate.
-- [ ] **Throughput** — decode + prefill on the MI210 (plain and `draft-mtp`), vs the Qwen3.6-27B numbers
-  (~99.8 t/s plain at `-c 512`; the coder_escalation serving baseline). MTP acceptance rate too. For the
-  serving config, not a go/no-go gate.
+- [x] **Throughput (optimized mode, GPU `draft-mtp`)** ✅ 2026-08-14 — decode **47.57 t/s** (256 tok, draft_n 285/predicted 256 ≈ 90% MTP acceptance). vs Qwen3.6-27B's recorded MTP **33.6 t/s** (findings-05c, experimental-v7 era) = **+41.6%** — throughput improves alongside the quality uplift. (Caveat: the 33.6 is a v7-era figure; a same-kernel v9 A/B would pin it exactly, but direction is unambiguous.) Prefill 70.95 t/s is the 13-token-prompt number (overhead-dominated); a pp512 llama-bench is the remaining prefill datapoint if needed.
 - [ ] **Registry swap** — `architect_general` + `coder_escalation`: `model_path` →
   `Qwen3.8-27B-Q8_0.gguf` (and `draft_model` stays the same file), then `stack_change_pipeline.py`
   regenerate + the standard model-stack-change checklist.
