@@ -82,10 +82,20 @@
   .stage{display:inline-block;border:1px solid var(--border);border-radius:12px;padding:1px 7px;font-size:10px;margin-left:5px}
   .diagnostics{margin-top:20px}.diagnostics>summary{cursor:pointer;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.5px;padding:12px 2px}
   .diagnostics[open]>summary{margin-bottom:10px}
+  .live-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .live-grid section.panel{margin-bottom:0;min-width:0}
+  .live-head{display:flex;align-items:center;gap:8px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+  .live-dot.on{background:var(--good);box-shadow:0 0 8px var(--good)}
+  pre.live-log{margin:0;min-height:190px;max-height:330px;overflow:auto;white-space:pre-wrap;
+    overflow-wrap:anywhere;background:#090c10;border:1px solid var(--border);border-radius:7px;
+    padding:10px;color:#b9c2cc;font:11px/1.5 ui-monospace,Menlo,Consolas,monospace}
+  .live-foot{color:var(--muted);font-size:11px;margin-top:7px}
   @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
   @media(max-width:760px){.state-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.hero,.winner-grid,.strategy-grid{grid-template-columns:1fr 1fr}}
   @media(max-width:620px){.hero,.lane-grid,.winner-grid,.strategy-grid{grid-template-columns:1fr}}
+  @media(max-width:850px){.live-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -109,6 +119,19 @@
     <h2>Kernel progression <span class="tag">discovery ≠ promotion</span></h2>
     <div id="progression"><div class="empty">loading CPU/GPU candidate funnel…</div></div>
   </section>
+
+  <div class="live-grid">
+    <section class="panel" id="autokernel-live-panel">
+      <h2 class="live-head"><span class="live-dot" id="ak-live-dot"></span>AutoKernel log <span class="tag">live</span></h2>
+      <pre class="live-log" id="ak-live-log">connecting…</pre>
+      <div class="live-foot" id="ak-live-foot">bounded durable lifecycle stream</div>
+    </section>
+    <section class="panel" id="planner-live-panel">
+      <h2 class="live-head"><span class="live-dot" id="planner-live-dot"></span>Planner log <span class="tag">redacted contract</span></h2>
+      <pre class="live-log" id="planner-live-log">connecting…</pre>
+      <div class="live-foot" id="planner-live-foot">no prompts or model text are exported</div>
+    </section>
+  </div>
 
   <details class="diagnostics">
   <summary>Evidence &amp; diagnostics — receipts, controls, implementation and raw campaign detail</summary>
@@ -797,7 +820,38 @@ async function load(){
   try{ const r=await fetch("/api/kernel",{cache:"no-store"}); render(await r.json()); }
   catch(e){ setBadge("stale"); $("#observation").innerHTML='<b>OBSERVATION discipline.</b> failed to load contract'; console.error(e); }
 }
-load(); setInterval(load, 60000);
+function liveLine(row){
+  const result=row.result||{};
+  const facts=[];
+  if(result.decision) facts.push("decision="+result.decision);
+  if(result.returncode!=null) facts.push("exit="+result.returncode);
+  if(result.stdout_sha256) facts.push("stdout="+String(result.stdout_sha256).slice(0,12));
+  return [row.ts||"—", row.event||"event", row.hypothesis_id||"—",
+          row.model||"—", facts.join(" ")].filter(Boolean).join(" · ");
+}
+function renderLive(d){
+  const active=d.active===true;
+  $("#ak-live-dot").className="live-dot"+(active?" on":"");
+  $("#planner-live-dot").className="live-dot"+(active?" on":"");
+  const header=(d.observed_at||"—")+" · "+(d.deployment||"no deployment")+"\n"+
+    (d.status_message||d.error||"status unavailable");
+  const ak=(d.autokernel_log||[]).map(liveLine);
+  const planner=(d.planner_log||[]).map(liveLine);
+  $("#ak-live-log").textContent=[header,"",...(ak.length?ak:["no durable lifecycle event yet"])].join("\n");
+  $("#planner-live-log").textContent=[header,"",...(planner.length?planner:[active?
+    "planner call active; awaiting its first controller-owned lifecycle checkpoint":
+    "no durable planner event yet"])].join("\n");
+  const fresh=d._freshness||{};
+  $("#ak-live-foot").textContent=(active?"controller lock held":"controller idle")+" · "+
+    (fresh.staleness_class||"missing")+" · "+ak.length+" event(s)";
+  $("#planner-live-foot").textContent=planner.length+" event(s) · "+(d.telemetry_note||"");
+}
+async function loadLive(){
+  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); renderLive(await r.json()); }
+  catch(e){ $("#ak-live-log").textContent="live endpoint unavailable: "+e.message;
+    $("#planner-live-log").textContent="live endpoint unavailable: "+e.message; }
+}
+load(); setInterval(load, 60000); loadLive(); setInterval(loadLive, 2000);
 </script>
 </body>
 </html>
