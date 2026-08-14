@@ -47,14 +47,13 @@ re-design: same axes, same era-labeling discipline (label the kernel era; never 
   merit") must be re-read once Qwen3.8-27B lands in the row: if Qwen3.8-27B becomes the new coding bar on
   quality grounds (operator's given), the "Stock 27B dense" verdict transfers to it.
 
-## Open question (the one thing that needs a decision)
+## Coding ladder — RESOLVED: deferred to another time
 
-The artifact's *core* is the coding ladder (LCB/BCB/SWE), and the operator declined the Qwen3.8→Qwen3.6
-quality comparison. So: does the Qwen3.8-27B row ship **throughput + RAG + MTP only, with the coding
-ladder marked "operator-declined"**, or is the ladder populated anyway (re-running the coding bench,
-which would contradict the operator's "don't verify" directive)? Recommend the former — honor the
-decline, label the cell, and note that Qwen3.8-27B inherits the "coding bar" verdict on the operator's
-quality-given basis, not on a fresh measurement.
+The operator declined the Qwen3.8→Qwen3.6 quality comparison (2026-08-14) and confirmed the coding
+ladder (LCB/BCB/SWE) will be done **another time**. So the Qwen3.8-27B row ships **throughput + RAG +
+MTP only**; the coding-ladder cell is marked `operator-declined — deferred`, never left blank or
+silently re-run. When that later coding bench happens, it is the same LCB-hard n=53 / BCB-hard n=90 /
+SWE-40 n=40 recipe the artifact already uses, and its results slot into this row then.
 
 ## Deps
 
