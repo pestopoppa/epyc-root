@@ -4784,7 +4784,13 @@ GPU cost before any GPU claim is filed.
 
 Neither of these may be executed by a session; both are decision packages for the operator.
 
-- [ ] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).**
+- [x] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).** ✅ 2026-08-14 — RATIFIED
+  (option a) by `RATIFY-PGPU1-DUTY-CYCLE-20260814` (receipt
+  `artifacts/operator/ratify_pgpu1_duty_cycle_20260814.json`, amended sha256
+  `9f6f033ed363a8322e082f8933a7be01c3abf9c5eb7f05ea3a10bbf6b99de3fc`). Mandatory field 7
+  `duty_cycle: bursty | sustained` added to P-GPU-1; the canonical `fresh server per rep` recipe is
+  declared `bursty`. Pure labelling — no existing number invalidated. Sustained variant (option b)
+  deferred until a sustained-serving claim needs it. Historical rationale below.
   - **Observation.** P-GPU-1 field 4 specifies a fresh server per repetition. A fresh server per rep
     necessarily inserts a multi-second gap between reps — i.e. the protocol measures the **bursty**
     duty cycle, while production serves in the **sustained** one.
