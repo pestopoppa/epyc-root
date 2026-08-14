@@ -26,11 +26,11 @@ re-design: same axes, same era-labeling discipline (label the kernel era; never 
 
 | Axis | Qwen3.8-27B status | Note |
 |---|---|---|
-| Throughput — decode (optimized `draft-mtp`) | ✅ **47.57 t/s** (256 tok, draft_n 285/256 ≈ 90% accept) | measured 2026-08-14 on v9 `0db32c06e`/`10125` |
-| Throughput — prefill pp512 | ⬜ pending | needs one `llama-bench -p 512` (or longer-prompt server call); the 13-token 70.95 t/s is not usable |
+| Throughput — decode (optimized `draft-mtp`) | ✅ **37.15 t/s** @512ctx · **37.95** @2k · **22.22** @8k · **13.61** @32k | measured 2026-08-14 on v9 `0db32c06e`/`10125` (47.57 was the earlier natural-prompt single-shot; the sweep uses the synthetic random-word prompt, hence lower MTP acceptance) |
+| Throughput — prefill pp512 | ✅ **727.29 ± 28.00 t/s** | `llama-bench -ngl 999 -nkvo 1 -p 512 -r 3` |
 | Coding ladder (LCB/BCB/SWE) | ⛔ **operator-DECLINED** | "quality will improve certainly" (2026-08-14) — no coding comparison will be run for Qwen3.8. See open question below. |
-| RAG-at-depth | ⬜ pending | no Qwen3.8 RAG measurement yet |
-| MTP workload-gate (batched vs deep-RAG) | ⬜ partial | single-stream acceptance ~90% measured; the batched-vs-long-context gate the artifact documents for MTP is not measured for Qwen3.8 |
+| RAG-at-depth | ✅ measured | decode vs context depth: 37.15 @512 → 37.95 @2k → 22.22 @8k → 13.61 @32k (MTP) — monotone decay, the KV-read-cost curve |
+| MTP workload-gate (batched vs deep-RAG) | ✅ measured | **MTP HURTS at depth**: plain beats MTP at 8k (29.11 vs 22.22, −23.7%) and 32k (21.65 vs 13.61, −37.1%) — reproduces the artifact's "MTP net-negative on deep-RAG". Batched np=4 @512 ~20–23 t/s/req (agg ~80). |
 
 ## Steps
 
