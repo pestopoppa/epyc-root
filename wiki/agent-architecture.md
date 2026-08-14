@@ -2,8 +2,33 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (RTG-51 checkpoint/audit foundations published with rollout off; the first live role-admission canary still shows why source identity and reload proof are mandatory)
+**Last compiled**: 2026-08-14 (reviewer event-to-ledger materialization proven at current-store scale; paired shadow replay remains open)
 **Sources**: 91+ documents
+
+## Compiled Update — 2026-08-14: the reviewer ledger materializer scales, but the paired experiment has not run
+
+**Confidence: verified for the non-inference mechanism and current trace store; no claim about live
+shadow overhead or reviewer quality.** The RCP-W2 materialization leg converted all **1,366** current
+`review_decision` events into **1,366** `review_ledger` rows with zero duplicate skips. This expands the
+previous 32-event dry validation and proves that the event-to-ledger mechanism works on the current
+store without restarting the stack or running inference.
+
+The result also demonstrates why mechanism completion and experiment completion are different states.
+Only 207 events carry `candidate_id`, and none join the near-miss corpus `row_id`; false-accept,
+false-reject, calibration, and AUC fields therefore remain null by the predeclared firing contingency.
+The full RCP-W2 row still requires the paired, same-question shadow-OFF/ON replay. RCP-W1 live flag
+attestation and RCP-W3's corpus-matched bridge remain next-era work; this materialization checkpoint
+does not license a reviewer rollout or performance claim.
+
+### Source References (2026-08-14 reviewer materialization)
+
+- [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) — full RCP-W2 paired
+  replay contract and completion gate.
+- [`inference-batch-loop.md`](../handoffs/active/inference-batch-loop.md) — RCP prologue ordering and
+  existing materializer/ledger bridge.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — current-store
+  counts, join result, output location, and operator disposition.
+- `epyc-orchestrator/scripts/analysis/reviewer_events_to_ledger.py` — executed materialization path.
 
 ## Compiled Update — 2026-08-13: task durability is now a pushed receipt, not a worker-wide documentation sweep
 

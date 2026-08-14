@@ -4,15 +4,15 @@
     "handoff-active": 172,
     "handoff-blocked": 2,
     "handoff-completed": 168,
-    "progress": 283,
+    "progress": 284,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-13T23:09:38Z",
+  "last_compile": "2026-08-13T23:09:50Z",
   "mode": "full",
-  "scan_time": "2026-08-13T23:09:50Z",
+  "scan_time": "2026-08-14T11:37:15Z",
   "schema_version": 1,
-  "source_set_hash": "e692451bbebb020ee12b1bbf90b50b122789f4108ef8a0280228e1bceda96ff7",
+  "source_set_hash": "dbc7c17411c8cb8515a2ba5cfb6e9fb771a7cccca1d73a8ccdea23eb184fc29d",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "54012c11941d1ea285f3a3feeff43f82e2017e8cefc8781f962ba7766e05190e",
-      "modified": "2026-08-13T23:06:17Z",
+      "content_hash": "2e605506d14c1654c2ab9c0608661603fffc647db03dca445104e03d8fba8ec8",
+      "modified": "2026-08-14T09:58:50Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 403004,
+      "size": 403540,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -423,10 +423,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f4d964045b69ccf89352062b9a3a1bdd6a90a785497781f74aa506c0dc71432c",
-      "modified": "2026-08-12T10:37:56Z",
+      "content_hash": "38770c0b6ca9a4dc5e7f20e8361519f6c79f9625eabedb0c320fc316418cef1f",
+      "modified": "2026-08-14T10:49:15Z",
       "path": "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
-      "size": 31432,
+      "size": 34261,
       "title": "Window-2 findings 02 \u2014 Post-bandwidth-wall heterogeneous CPU+GPU serving (\u00a74B)",
       "type": "handoff-active"
     },
@@ -695,10 +695,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5c6e1f185ec7aa97b2175131f24d84859471cd147d67bd6af08d6b8c4b04bbb3",
-      "modified": "2026-08-12T10:37:56Z",
+      "content_hash": "df749d457bb18eaf08a1cb2b2dfdf80ce92d4b817aed5825b97ebbad7f43b070",
+      "modified": "2026-08-13T23:54:53Z",
       "path": "handoffs/active/llama-cpp-dsa-contribution.md",
-      "size": 26619,
+      "size": 27902,
       "title": "llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)",
       "type": "handoff-active"
     },
@@ -6071,10 +6071,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "8aeb9ac1490c0c6ae7c23d218cccf08408575f8f269f6ae250b2070b1fbe9976",
-      "modified": "2026-08-13T23:05:27Z",
+      "content_hash": "601067c03d56930fa730469aa60a8cd1d27799e670f3492911ae2282e16c0e38",
+      "modified": "2026-08-14T10:49:24Z",
       "path": "progress/2026-08/2026-08-13-auditor.md",
-      "size": 20591,
+      "size": 31465,
       "title": "2026-08-13 \u2014 auditor",
       "type": "progress"
     },
@@ -6124,6 +6124,14 @@
       "path": "progress/2026-08/2026-08-13-root.md",
       "size": 4998,
       "title": "2026-08-13 \u2014 AutoKernel empirical checkpoint",
+      "type": "progress"
+    },
+    {
+      "content_hash": "416f7052ea7d2ed52b84ebe7a14e04445647f5e781ab22bb6cd435cbdd9f108f",
+      "modified": "2026-08-14T11:31:17Z",
+      "path": "progress/2026-08/2026-08-14-auditor.md",
+      "size": 1462,
+      "title": "2026-08-14 \u2014 Auditor",
       "type": "progress"
     },
     {
@@ -6671,7 +6679,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 832,
+  "total_new": 833,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
