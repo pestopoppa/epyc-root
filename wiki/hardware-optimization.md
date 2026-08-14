@@ -2,8 +2,49 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-13 (A7 produced one clean Gemma 4 group before operator stop; manual discovery and controller-first findings retained)
+**Last compiled**: 2026-08-14 (frontdoor, architect, and ingest GPU probes converged; P-GPU duty-cycle semantics ratified; latent HIP bf16 indexer bug isolated)
 **Sources**: 107+ documents
+
+## Compiled Update — 2026-08-14: three serving probes converged, but only at observation grade
+
+**Confidence: verified for the recorded invocations, linkage/residency, outputs, and arithmetic;
+observation-grade for serving decisions until the named matched protocols run.**
+
+The GPU measurement contract now names the workload shape it was previously hiding. The operator
+ratified mandatory P-GPU-1 field `duty_cycle: bursty | sustained`; the canonical fresh-server-per-rep
+recipe is explicitly `bursty`. This is a labeling correction, not a retroactive upgrade of old results.
+
+Against that clarified boundary, three role-specific probes produced strong but non-decision-gating
+signals:
+
+- **Frontdoor residency (Gate R):** the initial OOM was the default 256K KV cache plus weights, not a
+  duplicated model. At `-c 512`, the 35.2 GiB Qwen3.6 model fits at about 37 GiB VRAM. GPU decode is
+  about 100 t/s plain or draft-MTP; the deployed CPU baseline is 40.22 t/s, so the corrected comparison
+  is about **2.5×** and clears the 1.8× observation gate. MTP adds no GPU decode benefit. Matched-regime
+  repetitions and P-GPU device-state capture remain required before migration.
+- **Architect MoE split (Gate B):** Qwen3.5-122B at `-ncmoe 8` reached **35.63 ± 0.75 t/s** decode and
+  **555.43 ± 6.01 t/s** prefill, about **2.92×** the 12.19 t/s CPU observation. Larger CPU-MoE tails
+  degraded monotonically. This establishes a strong hosting candidate, not an adoption verdict.
+- **Ingest op offload (family D):** Qwen3-Next-80B prefill rose from **153.55 ± 2.86** to
+  **353.95 ± 9.82 t/s** with the default minimum batch 32, a **2.30×** gain with no material decode
+  penalty. Raising the threshold to 128 added nothing; the shipped default is already the useful point.
+
+A separate correctness audit removed the “flaky” label from HIP bf16 `LIGHTNING_INDEXER`. Frozen v9
+fails 6/12 bf16 backend-op cases deterministically while f16 passes 12/12. The failure narrows to the
+bf16 K-load/dequantization path in `lightning_indexer_kernel_vec`; direct ggml output is constant garbage,
+not a batch-geometry effect. No production role uses a bf16 indexer K-cache, so this is latent rather
+than an active serving regression, but that path is not numerically trustworthy on gfx90a.
+
+### Source References (2026-08-14 GPU probes and D4)
+
+- [`fable5-window2-findings-02-heterogeneous-gpu.md`](../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md)
+  — corrected gates, exact role probes, and evidence locations.
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — ratified P-GPU-1
+  duty-cycle semantics and receipt.
+- [`llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) — D4 reproduction,
+  root-cause boundary, production impact, and upstream next step.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
+  execution, device proof, corrections, and arithmetic.
 
 ## Compiled Update — 2026-08-13: A7 started correctly, banked one model group, then obeyed stop-all
 
