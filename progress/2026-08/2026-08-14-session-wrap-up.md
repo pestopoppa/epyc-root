@@ -46,10 +46,10 @@ overlapping the attempt saw no KFD process and no VRAM residency. Therefore:
   screen and never back-fill this pre-hook refusal.
 
 That controller repair is now complete on pushed research branch
-`codex/autokernel-inaugural-schema-fix-20260814` at `3f7b4731`. The intervening commits align the
+`codex/autokernel-inaugural-schema-fix-20260814` at `9ad4d7d1`. The intervening commits align the
 sealed multirow dispatch schema, bind hunks to source-backed definitions, honor canonical claim-check
-outcomes, and classify critic process failures without weakening fail-closed behavior. The expanded
-suite passes 255/255. Fresh bundle
+outcomes, classify critic process failures without weakening fail-closed behavior, and safely persist
+validated OAuth rotation. The expanded suite passes 257/257. The pre-credential-fix diagnostic bundle
 `/mnt/raid0/llm/autokernel/deployments/gpu-discovery-inaugural-critic-diagnostic-v1` validates at graph
 SHA-256 `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`.
 
@@ -62,8 +62,15 @@ inaugural sequence, no attempt reached build, GPU execution, or profiling.
 The sole current blocker is external authentication, not controller logic or hardware admission. The
 Claude OAuth access token expired at `2026-08-13T13:14Z`. A staged Fable invocation refreshed it once,
 but the rotated credential existed only in the ephemeral staged config and was deleted during normal
-teardown. Subsequent Fable invocations return `category=authentication` under the safe failure
-classification added by `3f7b4731`.
+teardown, making the original refresh credential unusable. Subsequent Fable invocations return
+`category=authentication` under the safe failure classification.
+
+Research `9ad4d7d1` fixes future rotation persistence without weakening isolation: after validating
+the rotated OAuth state, the launcher atomically synchronizes it to the existing mode-0600 credential
+carrier under flock and compare-and-swap. A concurrently newer credential wins; the ephemeral sandbox
+is still deleted; no access token, refresh token, or other secret enters a receipt. Rotation and
+concurrency coverage are included in the 257-test suite. The rotation discarded before this fix is
+already lost, so one reauthentication is still required.
 
 The operator must reauthenticate the persistent Claude configuration:
 
@@ -71,7 +78,7 @@ The operator must reauthenticate the persistent Claude configuration:
 claude auth login --claudeai
 ```
 
-After login, generate a fresh sealed bundle from the same repaired code and relaunch. Do not expose,
+After login, generate a fresh sealed bundle from `9ad4d7d1` and relaunch. Do not expose,
 log, or copy either token into a receipt, handoff, progress record, or chat message. The current empty
 critic-diagnostic journals remain non-evidence and must not be back-filled.
 

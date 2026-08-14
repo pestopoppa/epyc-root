@@ -42,9 +42,10 @@ worktree, while frozen production remained exact v9. The controller must continu
 sealed ref and must not consume the unrelated shared checkout state.
 
 **Final inaugural boundary (2026-08-14):** research branch
-`codex/autokernel-inaugural-schema-fix-20260814` at `3f7b4731` repairs the sealed multirow dispatch
+`codex/autokernel-inaugural-schema-fix-20260814` at `9ad4d7d1` repairs the sealed multirow dispatch
 schema, source-backed hunk parsing, canonical claim-check outcomes, and safe critic-process failure
-classification. Its expanded suite passes 255/255. Fresh bundle
+classification, then safely persists validated OAuth rotation. Its expanded suite passes 257/257.
+The pre-credential-fix diagnostic bundle
 `/mnt/raid0/llm/autokernel/deployments/gpu-discovery-inaugural-critic-diagnostic-v1` validates with
 graph SHA-256 `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`.
 The repaired controller validates the Sol artifact; one prior Fable acceptance advanced to GPU
@@ -53,14 +54,18 @@ execution, or profiling.
 
 The remaining blocker is external Claude authentication. The configured OAuth access token expired
 at `2026-08-13T13:14Z`. One staged Fable call refreshed it successfully, but the rotated token lived
-only in the ephemeral staged config and was deleted with that directory; subsequent critic calls are
-correctly classified `category=authentication`. The operator action is:
+only in the ephemeral staged config and was deleted with that directory, making the original refresh
+credential unusable; subsequent critic calls are correctly classified `category=authentication`.
+Research `9ad4d7d1` prevents recurrence: after validating a rotation it atomically synchronizes the
+new OAuth state back to the existing mode-0600 carrier under flock plus compare-and-swap, lets a
+concurrently newer credential win, preserves staged-sandbox deletion, and emits no secret receipt.
+The already-lost rotation cannot be recovered, so the one-time operator action remains:
 
 ```bash
 claude auth login --claudeai
 ```
 
-After reauthentication, generate a fresh sealed bundle from the same repaired code and relaunch. Do
+After reauthentication, generate a fresh sealed bundle from `9ad4d7d1` and relaunch. Do
 not print, copy into documentation, or otherwise expose either the access token or refresh token.
 
 **Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
@@ -3753,15 +3758,18 @@ future sweep.)*
       GPU execution. No KFD PID or VRAM residency appeared in overlapping samples. This is a
       fail-closed controller defect, not a hypothesis verdict or performance result.
 - [x] **Repair the portfolio-v2 bounded-dispatch schema boundary and downstream launch-path defects.**
-      ✅ 2026-08-14 — research `3f7b4731` closes the multirow schema, source-backed hunk parsing,
-      canonical claim-check outcome, and critic-process classification defects; 255/255 tests pass.
+      ✅ 2026-08-14 — research `9ad4d7d1` closes the multirow schema, source-backed hunk parsing,
+      canonical claim-check outcome, critic-process classification, and safe OAuth-rotation
+      persistence defects; 257/257 tests pass. Validated rotations sync atomically to the existing
+      mode-0600 carrier under flock/CAS, while concurrent newer credentials win and no secret receipt
+      is emitted.
       The fresh critic-diagnostic bundle validates at graph
       `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`. A Sol artifact validates
       and a prior Fable acceptance reached GPU admission, but no build/GPU/profiler stage ran.
 - [ ] **Reauthenticate Claude, reseal, and relaunch the repaired inaugural controller.** The operator
       must run `claude auth login --claudeai`; the current OAuth access token expired at
-      `2026-08-13T13:14Z`, and the staged refresh was lost with its ephemeral config. After login,
-      create a fresh sealed bundle from `3f7b4731` and relaunch without exposing credential material.
+      `2026-08-13T13:14Z`, and the already-lost staged rotation is unrecoverable. After login, create
+      a fresh sealed bundle from `9ad4d7d1` and relaunch without exposing credential material.
 - [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
       next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
       top-K nominee to strict paired GPU confirmation.
