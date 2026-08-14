@@ -677,6 +677,14 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       source/evaluator/candidate and released-claim evidence and diagnostic-only authority. Root
       `autokernel_scaffold_panel.py` independently re-derives panel, cell, evaluation, claim and row
       hashes. Terminal r1 remains pre-hook and projects zero rows; no history was reconstructed.
+- [ ] SC32 **Wire portfolio-v2 autonomous GPU-source screens on the write side before their first
+      real run.** Research `2153ccac` makes the source-discovery producer launchable with exact
+      portfolio/manifest/series identity, balanced S1/S2 order, raw native samples, model/runtime/
+      source evidence, borrowed GPU-claim phases, residency proof and nonpromotion authority. It
+      still emits no producer-authored `belief_measurements`. Add prospective rows for whole-model
+      effect and exact-family attribution, then implement a strict adapter that independently
+      re-derives the paired samples and every identity before calling the existing measurement
+      ladder. Do not back-fill any pre-hook receipt.
 
 ## Dependency notes
 
