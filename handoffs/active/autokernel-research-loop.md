@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** OPERATOR-STOPPED / MANUAL DISCOVERY PROVED THROUGHPUT / CONTROLLER-FIRST IMPLEMENTATION IN PROGRESS — updated 2026-08-13
+**Status:** INAUGURAL PORTFOLIO-V2 LAUNCH FAILED SAFE BEFORE CRITIC/BUILD/GPU; RESEAL/RETRY IN PROGRESS — updated 2026-08-14
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,29 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-14 16:23 UTC):** the controller-first discovery product and its
+evidence-bound portfolio v2 are integrated on immutable research lineage `4d2e69f8` (sealed Claude
+Fable 5 critic), `2153ccac` (portfolio/source/dispatch authority), and `c6a98db8` (expanded legacy
+hypothesis memory). The final portfolio has 18 hypotheses, 17 scoped do-not-repeat records and four
+eligible hypotheses for the exact Qwen2.5-Coder-0.5B bundle. Its hardware-free suite passed 235/235,
+the dedicated legacy-memory gate passed 4/4, and the public config-only validation reported
+`inference_executed=false`; deployment graph SHA-256 is
+`508ad0216b89e81f27a7492d350c5ef084b64176ebd93e1d164cb69902e6895d`.
+
+The inaugural launch from
+`/mnt/raid0/llm/autokernel/deployments/gpu-discovery-portfolio-v2-memory-final-v1` began at 16:23 UTC.
+Sol selected `akh-v2-q5-type-specific-dequant` and authored a patch/plan, but the controller rejected
+the result at `discovery_controller.py:816` with `DiscoveryControllerError: planner bounded dispatch
+schema mismatch`. It exited `rc=1` before the Fable critic, build, or GPU stages. Overlapping device
+samples saw no KFD PID and no VRAM residency, so this is a fail-closed launch-path defect and carries
+no kernel-performance result. Repair the bounded-dispatch producer/consumer contract, reseal a fresh
+bundle, and relaunch; never reuse this failed attempt as measurement evidence.
+
+The earlier dirty shared `llama.cpp-experimental` checkout was not an authority blocker: preflight
+resolved sealed instrument ref `81bf32f11b4a421880e8f25faec3e4ba872363f0` in its dedicated clean
+worktree, while frozen production remained exact v9. The controller must continue to resolve that
+sealed ref and must not consume the unrelated shared checkout state.
 
 **Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
 discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
@@ -3696,11 +3719,21 @@ future sweep.)*
       under the new instrument before SIGTERM. The watcher, r6 parent, and captured benchmark child
       are absent; all q0-q3 global/autokernel lock probes passed three times. No continuation ran and
       the unterminated prefix is not accepted authority.
-- [ ] **Land and independently review the controller-first discovery loop before resuming campaigns.**
-      The isolated Terra worktree is implementing deterministic hypothesis selection, sealed
-      measured-result ownership, strategy persistence, and resource-aware CPU/GPU dispatch. Discovery
-      must be structurally unable to load strict calibration/heldout/champion/release authority, and
-      planner prose or a screening threshold must never mint promotion state.
+- [x] **Land and independently review the controller-first discovery loop before resuming campaigns.**
+      ✅ 2026-08-14 — immutable research lineage through `4d2e69f8`, `2153ccac`, and `c6a98db8`
+      implements deterministic portfolio selection, sealed measured-result ownership, strategy
+      persistence, resource-aware CPU/GPU dispatch, Sol source authoring and the Fable 5 veto boundary.
+      The expanded product suite passed 235/235 and the dedicated legacy-memory gate passed 4/4.
+      Discovery remains structurally unable to mint bank/champion/promotion/release authority.
+- [x] **Run the first portfolio-v2 controller launch and preserve any pre-compute refusal.** ✅
+      2026-08-14 — Sol selected `akh-v2-q5-type-specific-dequant` and authored a patch/plan, but the
+      controller exited `rc=1` on `planner bounded dispatch schema mismatch` before critic, build, or
+      GPU execution. No KFD PID or VRAM residency appeared in overlapping samples. This is a
+      fail-closed controller defect, not a hypothesis verdict or performance result.
+- [ ] **Repair the portfolio-v2 bounded-dispatch schema boundary, reseal, and relaunch.** Make the Sol
+      producer and controller validator agree on the exact controller-owned dispatch representation,
+      retain rejection coverage for actor-invented dispatch, validate the new graph/bundle, then retry
+      from a fresh immutable launch identity. Do not resume or reinterpret the failed 16:23 UTC attempt.
 - [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
       next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
       top-K nominee to strict paired GPU confirmation.
