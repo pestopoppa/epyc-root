@@ -51,6 +51,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import fcntl
 import hashlib
 import json
 import os
@@ -173,6 +174,10 @@ AUTOKERNEL_PROBE_ROOT = Path(os.environ.get(
 AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
     "AUTOKERNEL_CONTROL_ROOT",
     "/mnt/raid0/llm/autokernel/controls"))
+AUTOKERNEL_DEPLOYMENTS_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_DEPLOYMENTS_ROOT",
+    "/mnt/raid0/llm/autokernel/deployments"))
+AUTOKERNEL_DISCOVERY_EVENT_SCHEMA = "epyc.autokernel.discovery_live_event.v1"
 ARENA_ATTEMPT_DISPOSITIONS_JSON = Path(os.environ.get(
     "ARENA_ATTEMPT_DISPOSITIONS_JSON",
     str(Path(__file__).resolve().parent / "arena_attempt_dispositions.json")))
@@ -727,8 +732,8 @@ def _supplement_kernel_verdict(verdict: dict, progression: dict) -> dict:
 def kernel_data_health() -> tuple[int, dict]:
     """Kernel-R&D's panel-specific producer/data-health probe.
 
-    This intentionally reads only the AutoKernel terminal contract and folds only
-    the ``kernel`` envelope. It never calls :func:`health_payload` or
+    This intentionally reads only the AutoKernel terminal and live-discovery
+    contracts and folds their two envelopes. It never calls :func:`health_payload` or
     :func:`panel_envelopes`, so a registry consumer may probe this route without
     recursing through the global ``/api/health`` fold (which includes the
     dashboard directory, whose Kernel-R&D row points back here).
@@ -740,9 +745,13 @@ def kernel_data_health() -> tuple[int, dict]:
     """
     present, data = _read_kernel_contract()
     env = _kernel_contract_freshness(data, artifact_present=present)
+    live_payload, live_observation = _discovery_live_read()
+    live_env = _panel_envelope("kernel_live", live_observation)
     progression = _read_kernel_progression()
     verdict = _supplement_kernel_verdict(panels.fold(
-        {"kernel": env}, registry={"kernel": panels.source("kernel")}), progression)
+        {"kernel": env, "kernel_live": live_env},
+        registry={"kernel": panels.source("kernel"),
+                  "kernel_live": panels.source("kernel_live")}), progression)
     payload = {
         "status": verdict["status"],
         "probe": "panel-data",
@@ -755,6 +764,10 @@ def kernel_data_health() -> tuple[int, dict]:
         "attention": verdict["attention"],
         "absent": verdict["absent"],
         "freshness": env,
+        "live": {"active": live_payload.get("active", False),
+                 "deployment": live_payload.get("deployment"),
+                 "status_message": live_payload.get("status_message"),
+                 "freshness": live_env},
     }
     payload["progression"] = {
         "available": progression.get("available", False),
@@ -3180,6 +3193,160 @@ def autokernel_activity(repo: Path | None = None,
     }
 
 
+def _discovery_lock_held(path: Path) -> bool:
+    """True only while another process owns the controller's exclusive lock."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+    except OSError:
+        return False
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return True
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        return False
+    finally:
+        os.close(fd)
+
+
+def _safe_bundle_path(value: object, bundle: Path) -> Path | None:
+    if not isinstance(value, str):
+        return None
+    path = Path(value)
+    try:
+        path.resolve(strict=False).relative_to(bundle.resolve(strict=True))
+    except (OSError, ValueError):
+        return None
+    return path
+
+
+def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str | None]:
+    """Read a bounded tail of the producer's allowlisted live-event contract."""
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as handle:
+            handle.seek(max(0, size - 128 * 1024))
+            raw = handle.read(128 * 1024)
+    except FileNotFoundError:
+        return [], None
+    except OSError as exc:
+        return [], f"live event stream unreadable: {exc}"
+    rows: list[dict] = []
+    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if (not isinstance(row, dict)
+                or row.get("schema") != AUTOKERNEL_DISCOVERY_EVENT_SCHEMA
+                or channel is not None and row.get("channel") != channel
+                or set(row) - {"schema", "ts", "channel", "event", "campaign_id",
+                                   "hypothesis_id", "provider", "model", "effort", "result"}):
+            continue
+        # The producer contract contains no prompt, model text, command, env, or
+        # credential fields. Re-project the allowlist anyway: consumers do not
+        # become a secret exfiltration path if a future writer drifts.
+        rows.append({key: row[key] for key in (
+            "ts", "channel", "event", "campaign_id", "hypothesis_id",
+            "provider", "model", "effort", "result") if key in row})
+    return rows[-200:], None
+
+
+def _discovery_live_read() -> tuple[dict, panels.Observation]:
+    candidates: list[tuple[bool, float, Path, dict, Path, Path]] = []
+    try:
+        configs = list(AUTOKERNEL_DEPLOYMENTS_ROOT.glob("*/config/deployment.json"))[:512]
+    except OSError as exc:
+        payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
+                   "active": False, "error": f"deployment discovery failed: {exc}",
+                   "autokernel_log": [], "planner_log": []}
+        return payload, panels.Observation(False, detail=payload["error"])
+    for config_path in configs:
+        present, config, error = _read_json_object(config_path, "discovery deployment")
+        if not present or config is None or error:
+            continue
+        bundle = config_path.parent.parent
+        controller = config.get("controller")
+        if not isinstance(controller, dict):
+            continue
+        state_root = _safe_bundle_path(controller.get("state_root"), bundle)
+        operations_root = _safe_bundle_path(controller.get("operations_root"), bundle)
+        if state_root is None or operations_root is None:
+            continue
+        lock_held = _discovery_lock_held(state_root / "controller.run.lock")
+        try:
+            stamp = max(config_path.stat().st_mtime,
+                        (state_root / "state.json").stat().st_mtime)
+        except OSError:
+            stamp = config_path.stat().st_mtime
+        candidates.append((lock_held, stamp, bundle, config, state_root, operations_root))
+    if not candidates:
+        payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
+                   "active": False, "error": "no valid discovery deployment found",
+                   "autokernel_log": [], "planner_log": []}
+        return payload, panels.Observation(False, detail=payload["error"])
+    active = [row for row in candidates if row[0]]
+    ambiguous = len(active) > 1
+    selected = max(active or candidates, key=lambda row: row[1])
+    lock_held, stamp, bundle, config, state_root, operations_root = selected
+    _, state, state_error = _read_json_object(state_root / "state.json", "discovery state")
+    all_events, all_error = _discovery_events(
+        operations_root / "live" / "autokernel.jsonl", None)
+    planner_events, planner_error = _discovery_events(
+        operations_root / "live" / "planner.jsonl", "planner")
+    event_times = [row.get("ts") for row in (*all_events, *planner_events)
+                   if isinstance(row.get("ts"), str)]
+    latest_ts = max(event_times) if event_times else None
+    if lock_held:
+        observed_ts = time.time()
+    else:
+        observed_ts = _parse_semantic_timestamp(latest_ts) if latest_ts else stamp
+    state_view = None
+    if state is not None:
+        iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
+        state_view = {
+            "updated_at": state.get("updated_at"), "next": state.get("next"),
+            "complete": state.get("complete"), "terminal_reason": state.get("terminal_reason"),
+            "pending": state.get("pending") is not None,
+            "inflight": state.get("inflight") is not None,
+            "iterations": [{key: row.get(key) for key in
+                            ("turn", "hypothesis_id", "status", "effect_fraction")}
+                           for row in iterations[-25:] if isinstance(row, dict)],
+        }
+    payload = {
+        "schema": "epyc.dashboard.autokernel_live.v1",
+        "available": True, "active": lock_held, "ambiguous_active": ambiguous,
+        "observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
+        "state": state_view, "state_error": state_error,
+        "autokernel_log": all_events, "planner_log": planner_events,
+        "log_error": all_error, "planner_log_error": planner_error,
+        "status_message": (
+            "controller lock held; planner is running and has not reached its first durable checkpoint"
+            if lock_held and state_view is None and not planner_events else
+            "controller lock held" if lock_held else
+            "controller is not running; showing the latest durable deployment"),
+        "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+        "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
+                           "never exported; only controller-owned lifecycle facts and hashes."),
+    }
+    obs = panels.Observation(
+        artifact_present=True, timestamp=observed_ts,
+        source="controller lock + durable discovery telemetry",
+        populated=bool(lock_held or all_events or planner_events or state_view),
+        detail=("multiple controller locks are held" if ambiguous else payload["status_message"]),
+        evidence=str(operations_root / "live"),
+        producer_idle=bool(state_view and state_view.get("complete") is True))
+    return payload, obs
+
+
+def discovery_live_payload() -> dict:
+    payload, observation = _discovery_live_read()
+    payload["_freshness"] = _panel_envelope("kernel_live", observation)
+    return payload
+
+
 def kernel_payload() -> dict:
     """Read the kernel dashboard contract (v2, or legacy v1), tolerating absence.
 
@@ -3829,6 +3996,7 @@ def panel_envelopes() -> dict:
     timeline_present, timeline_data = _read_timeline_contract()
     bench_present, bench_data = _read_benchmark_inventory()
     graph_present, graph_data = _read_graph_contract()
+    _, discovery_live_observation = _discovery_live_read()
     readers = {
         # The REAL board envelope, not ``panels.live()``: the latter hardcodes
         # ``populated=True``, so the fold's board card claimed content regardless
@@ -3844,6 +4012,7 @@ def panel_envelopes() -> dict:
             graph_data, artifact_present=graph_present),
         "kernel": lambda: _kernel_observation(
             kernel_data, artifact_present=kernel_present),
+        "kernel_live": lambda: discovery_live_observation,
         "outcome": lambda: _outcome_observation(
             outcome_data, artifact_present=outcome_present),
         "benchmark_artifacts": lambda: _benchmark_observation(
@@ -4014,6 +4183,7 @@ API_ROUTES = {
     "/api/handoff_timeline": timeline_payload,
     "/api/handoff_graph": graph_payload,
     "/api/kernel": kernel_payload,
+    "/api/kernel/live": discovery_live_payload,
     "/api/bus": bus_payload,
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,

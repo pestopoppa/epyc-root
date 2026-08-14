@@ -365,6 +365,29 @@ PANELS: Mapping[str, PanelSource] = _index((
               "reports 'idle' instead of 'stopped_reporting'.",
     ),
     PanelSource(
+        panel="kernel_live",
+        kind=KIND_FILETREE,
+        payload_func="discovery_live_payload",
+        route="/api/kernel/live",
+        producer="AutoKernel discovery controller actor seam",
+        producer_repo="epyc-inference-research",
+        evidence="/mnt/raid0/llm/autokernel/deployments/*/operations/live/{autokernel,planner}.jsonl",
+        timestamp_field="event.ts while idle; live controller-lock observation while active",
+        absence_means=(
+            "no valid discovery deployment exists. This is a legitimate pre-launch state, "
+            "not an empty log. Once a controller owns a deployment lock, the panel reports "
+            "that live fact even before the planner reaches its first durable checkpoint."),
+        warn_s=5 * _MINUTE,
+        stale_s=15 * _MINUTE,
+        silent_after_s=5 * _MINUTE,
+        watched=True,
+        gates_health=True,
+        absence_is_anomalous=False,
+        notes=("The producer writes an allowlisted lifecycle vocabulary only. Prompts, model "
+               "text, commands, environment and credentials never enter this contract. A "
+               "completed controller declares idle; unexplained telemetry silence gates health."),
+    ),
+    PanelSource(
         panel="bus",
         kind=KIND_FILETREE,
         payload_func="bus_payload",

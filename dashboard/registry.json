@@ -35,7 +35,7 @@
       "path": "/kernel",
       "owner_repo": "epyc-root",
       "health_path": "/api/kernel/health",
-      "blurb": "AutoKernel MI210 loop (contract-backed)"
+      "blurb": "AutoKernel MI210 loop + live controller/planner logs (contract-backed)"
     },
     {
       "id": "bus",
