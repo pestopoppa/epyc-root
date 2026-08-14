@@ -45,10 +45,35 @@ overlapping the attempt saw no KFD process and no VRAM residency. Therefore:
 - SC32 remains prospective: wire producer-authored Vidya rows before the first successful source
   screen and never back-fill this pre-hook refusal.
 
-The live next action is to repair the bounded-dispatch producer/validator contract, preserve the
-actor-invented-dispatch refusals, reseal a fresh graph/bundle, and relaunch from a new immutable
-identity. The owning launch session is actively doing that work; this failed attempt is preserved
-rather than resumed.
+That controller repair is now complete on pushed research branch
+`codex/autokernel-inaugural-schema-fix-20260814` at `3f7b4731`. The intervening commits align the
+sealed multirow dispatch schema, bind hunks to source-backed definitions, honor canonical claim-check
+outcomes, and classify critic process failures without weakening fail-closed behavior. The expanded
+suite passes 255/255. Fresh bundle
+`/mnt/raid0/llm/autokernel/deployments/gpu-discovery-inaugural-critic-diagnostic-v1` validates at graph
+SHA-256 `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`.
+
+The repaired controller validates the Sol artifact. One prior Fable acceptance advanced as far as GPU
+admission and exposed the claim-verifier outcome defect fixed in `ae1dd528`. Across the complete
+inaugural sequence, no attempt reached build, GPU execution, or profiling.
+
+## Current blocker — Claude OAuth reauthentication
+
+The sole current blocker is external authentication, not controller logic or hardware admission. The
+Claude OAuth access token expired at `2026-08-13T13:14Z`. A staged Fable invocation refreshed it once,
+but the rotated credential existed only in the ephemeral staged config and was deleted during normal
+teardown. Subsequent Fable invocations return `category=authentication` under the safe failure
+classification added by `3f7b4731`.
+
+The operator must reauthenticate the persistent Claude configuration:
+
+```bash
+claude auth login --claudeai
+```
+
+After login, generate a fresh sealed bundle from the same repaired code and relaunch. Do not expose,
+log, or copy either token into a receipt, handoff, progress record, or chat message. The current empty
+critic-diagnostic journals remain non-evidence and must not be back-filled.
 
 ## Wrap-up verification and authority boundary
 

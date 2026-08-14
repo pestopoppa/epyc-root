@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** INAUGURAL PORTFOLIO-V2 LAUNCH FAILED SAFE BEFORE CRITIC/BUILD/GPU; RESEAL/RETRY IN PROGRESS — updated 2026-08-14
+**Status:** INAUGURAL CONTROLLER REPAIRED; BLOCKED ON CLAUDE OAUTH BEFORE BUILD/GPU — updated 2026-08-14
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -40,6 +40,28 @@ The earlier dirty shared `llama.cpp-experimental` checkout was not an authority 
 resolved sealed instrument ref `81bf32f11b4a421880e8f25faec3e4ba872363f0` in its dedicated clean
 worktree, while frozen production remained exact v9. The controller must continue to resolve that
 sealed ref and must not consume the unrelated shared checkout state.
+
+**Final inaugural boundary (2026-08-14):** research branch
+`codex/autokernel-inaugural-schema-fix-20260814` at `3f7b4731` repairs the sealed multirow dispatch
+schema, source-backed hunk parsing, canonical claim-check outcomes, and safe critic-process failure
+classification. Its expanded suite passes 255/255. Fresh bundle
+`/mnt/raid0/llm/autokernel/deployments/gpu-discovery-inaugural-critic-diagnostic-v1` validates with
+graph SHA-256 `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`.
+The repaired controller validates the Sol artifact; one prior Fable acceptance advanced to GPU
+admission and exposed the now-fixed claim-verifier outcome bug. No attempt reached build, GPU
+execution, or profiling.
+
+The remaining blocker is external Claude authentication. The configured OAuth access token expired
+at `2026-08-13T13:14Z`. One staged Fable call refreshed it successfully, but the rotated token lived
+only in the ephemeral staged config and was deleted with that directory; subsequent critic calls are
+correctly classified `category=authentication`. The operator action is:
+
+```bash
+claude auth login --claudeai
+```
+
+After reauthentication, generate a fresh sealed bundle from the same repaired code and relaunch. Do
+not print, copy into documentation, or otherwise expose either the access token or refresh token.
 
 **Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
 discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
@@ -3730,10 +3752,16 @@ future sweep.)*
       controller exited `rc=1` on `planner bounded dispatch schema mismatch` before critic, build, or
       GPU execution. No KFD PID or VRAM residency appeared in overlapping samples. This is a
       fail-closed controller defect, not a hypothesis verdict or performance result.
-- [ ] **Repair the portfolio-v2 bounded-dispatch schema boundary, reseal, and relaunch.** Make the Sol
-      producer and controller validator agree on the exact controller-owned dispatch representation,
-      retain rejection coverage for actor-invented dispatch, validate the new graph/bundle, then retry
-      from a fresh immutable launch identity. Do not resume or reinterpret the failed 16:23 UTC attempt.
+- [x] **Repair the portfolio-v2 bounded-dispatch schema boundary and downstream launch-path defects.**
+      ✅ 2026-08-14 — research `3f7b4731` closes the multirow schema, source-backed hunk parsing,
+      canonical claim-check outcome, and critic-process classification defects; 255/255 tests pass.
+      The fresh critic-diagnostic bundle validates at graph
+      `4ea92aa98a10d36979810e6f4025d3d5cc75f472a08bc90618f88c8bb960e71f`. A Sol artifact validates
+      and a prior Fable acceptance reached GPU admission, but no build/GPU/profiler stage ran.
+- [ ] **Reauthenticate Claude, reseal, and relaunch the repaired inaugural controller.** The operator
+      must run `claude auth login --claudeai`; the current OAuth access token expired at
+      `2026-08-13T13:14Z`, and the staged refresh was lost with its ephemeral config. After login,
+      create a fresh sealed bundle from `3f7b4731` and relaunch without exposing credential material.
 - [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
       next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
       top-K nominee to strict paired GPU confirmation.
