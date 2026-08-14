@@ -44,7 +44,8 @@ produced it.*
    `libggml-hip.so`, so a HIP-invoked run can execute wholly on CPU while `ldd` shows
    nothing — INC-20260731, reproduced twice on 2026-08-12. Governs claims made after
    this date; artifacts already dispositioned are not re-graded.)
-4. **Run recipe** — warm-up policy; **fresh server per rep** unless resident-server mode
+4. **Run recipe** — warm-up policy; **fresh server per rep** (duty cycle `bursty` — see field 7) unless
+   resident-server mode
    explicitly declared; discard rules for warm-up reps and shape-change graph recapture; reps
    per the P-BENCH-1 rule (n≥5 for ≥5% claims, n≥10 for ≤2%); fixed prompt/task set,
    prompt-token count, generated-token floor, seed + sampling policy.
@@ -53,6 +54,14 @@ produced it.*
    cleanup proof; **vendor/web numbers only as background narrative, never in a decision row**
    (gfx90a compile≠perf per `agentic-rocm-kernel-authoring.md`).
 6. **Attestation** — `metric [P-GPU-1, n/reps, YYYY-MM-DD, attest <ref>]`.
+7. **Duty cycle** — `duty_cycle: bursty | sustained`, declared per claim. The canonical
+   recipe (`fresh server per rep`) is `bursty` by construction: a fresh server per repetition
+   inserts a multi-second gap between reps, so the protocol measures the bursty duty cycle
+   while production serves the sustained one. Both regimes are legitimate to measure;
+   conflating them is not, and a protocol that does not name its duty cycle cannot be compared
+   against one that does. Every existing P-GPU-1 number is valid and correctly labelled
+   `bursty`; a sustained-serving claim requires the not-yet-authored sustained variant
+   (deferred — see the amendment note below).
 
 **Retro-certification (allowed, strict).** An existing GPU artifact upgrades to a P-GPU-1 claim
 ONLY IF (a) produced on a production-named kernel AND (b) a field-by-field audit confirms
@@ -195,3 +204,9 @@ n=<reps>, YYYY-MM-DD, attest <ref>]`.
      production kernel remain decision-grade for their era; from the cutover, new
      P-GPU-1 decision-grade claims require production-consolidated-v9. No other
      clause of this annex is changed by this amendment. -->
+
+<!-- AMENDED per RATIFY-PGPU1-DUTY-CYCLE-20260814 (AK-OP-1 / master-index OP-10): added
+     mandatory field 7 `duty_cycle: bursty | sustained` and declared the canonical
+     `fresh server per rep` recipe `bursty`. Pure labelling — invalidates nothing; every
+     existing P-GPU-1 number stays valid and correctly labelled `bursty`. A sustained variant
+     (option b) is deferred until the first sustained-serving claim needs it. -->

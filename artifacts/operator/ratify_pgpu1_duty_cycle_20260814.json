@@ -1,0 +1,10 @@
+{
+  "amended_sha256": "9f6f033ed363a8322e082f8933a7be01c3abf9c5eb7f05ea3a10bbf6b99de3fc",
+  "amendment": "field 7 duty_cycle: bursty|sustained added; canonical recipe declared bursty (AK-OP-1 option a)",
+  "human_attestation": "RATIFY-PGPU1-DUTY-CYCLE-20260814",
+  "preimage_sha256": "6eb9acc467ecc1fd4978ddd5061a42122bf3ce17e2bd7b303e7b5819aa341423",
+  "ratified_at": "2026-08-14T09:54:18.441790+00:00",
+  "schema": "epyc.operator_pgpu1_duty_cycle.v1",
+  "status": "ratified",
+  "target": "/mnt/raid0/llm/epyc-root/measurement/protocols/gpu-cross-device.md"
+}
