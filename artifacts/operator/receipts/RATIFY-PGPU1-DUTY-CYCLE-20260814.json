@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-PGPU1-DUTY-CYCLE-20260814",
+  "indexed_by": "attest",
+  "receipt": "/mnt/raid0/llm/epyc-root/artifacts/operator/ratify_pgpu1_duty_cycle_20260814.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
