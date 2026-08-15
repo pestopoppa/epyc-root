@@ -33,19 +33,32 @@ delete-lens, the OP row) and diagrams live in the plan of record; do not restate
 | D4 (amended) | Compute owned at the COORDINATION level, not by a session. Console (in conversation with the operator) authors the compute policy file and approves choreography recipes; the daemon executes grants deterministically (region-free ∧ policy-allows); AutoKernel, AutoPilot, inference, pool workers are all symmetric consumers. Amends bus rule 11: ownership = policy authorship, not a session. |
 | D4b | Exotic lease arrangements = named choreography recipes: typed, receipt-gated step sequences (e.g. drain@boundary → GPU load → run ∥ resume), approved once, executed deterministically by the daemon forever after. New arrangement = new recipe file, never code (policy-data-never-code). |
 | D5 | Bus runtime relocated off the git tree; tracked symlink at the old path (survives `git clean -ffdx`). |
-| D6 (amended) | Kill-with-salvage: kill at lease expiry is allowed, loss is FORBIDDEN. SIGTERM → grace → SIGKILL, then mandatory salvage: uncommitted worktree state committed to `salvage/<task_id>`, harness transcript + pane scrollback attached to the row, row marked `FAILED-salvaged`. Nothing is ever discarded. |
+| D6 (amended) | Kill-with-salvage: kill at lease expiry is allowed, loss is FORBIDDEN. SIGTERM → grace → SIGKILL, then mandatory salvage: uncommitted worktree state committed to `salvage/<task_id>`, harness transcript + pane scrollback attached to the row, row marked FAILED with a `salvage_ref`. Nothing is ever discarded. **Requires a BUS_PROTOCOL rule-8 amendment** (lease-expiry salvage exception for POOL WORKERS ONLY; interactive-session reclaim stays quiesce-and-drain) — lands with P2-4 under operator ack, BEFORE the first kill path ships. |
 | D7 | One-time signed ghost sweep (11 dead-owner rows/claims, owner-death verified, list enumerated for operator review first) + `.orphan` worktree disposal (archive tarball, verify tips contained in lane branches, delete by explicit path list — NEVER `git worktree prune`). |
 | D8 | Worker panes are VISIBLE and human-authoritative: the operator may watch, steer, and answer permission prompts by hand. The machine never types into a pane and never makes a decision from pane text; it may capture scrollback as evidence for human triage. Completion signal = schema-valid report file, never pane text. |
-| D9 | Operator-gated loop-plane merges: the fleet may file typed defect rows and proposed patches, but merging any change under `scripts/coordination/**` requires operator ack. Self-repair share is computed by commit-path classification, never self-reported. **This gate applies to this implementation itself** — each phase lands as proposed commits the operator acks. |
+| D9 | Operator-gated loop-plane merges: the fleet may file typed defect rows and proposed patches, but merging any change under `scripts/coordination/**` requires operator ack. Self-repair share is computed by commit-path classification, never self-reported. **Handoff-local discipline for this implementation** (a scoping of ratified D9, not an extension of it): changes under `scripts/coordination/**` and any BUS_PROTOCOL amendment land as proposed commits with operator ack; Phase-1 doc/agent-file edits outside that path ship-and-fix-forward per the Phase-1 gate. |
 
 Standing constraint (from the plan): **prose-rule moratorium** — from Phase 0 onward, a new incident
 appends a labeled example to the eval fixtures, never a new rule/conjunct to BUS_PROTOCOL or agent files.
 
-## Invariants that must survive every task (verbatim set lives in P1-1's INVARIANTS.md)
+## Invariants that must survive every task — P1-1 copies THIS list into INVARIANTS.md
 
-Single-writer; hash-pinned human-only trust boundaries; region claims acquired-not-observed (flock);
-no name-pattern kills (owned pids only); two-sample persistence before destructive action; checkbox
-ownership; never sign; measurement trust boundary human-amendment-only.
+1. Single writer: each agent writes only its own outbox/heartbeat/cursor; path-derived authorship.
+2. Never block on the bus.
+3. The daemon is mechanical-only: it files defects on mechanically checkable violations, never grades work.
+4. Trust boundaries are human-only: hash-pinned `human_only_paths.yaml`, refuse on pin mismatch; never sign.
+5. Claims are ACQUIRED, never observed (flock; observing is TOCTOU).
+6. Reclaim of interactive sessions is quiesce-and-drain at a boundary — pool workers get the D6
+   salvage-kill exception ONLY (rule-8 amendment, P2-4).
+7. Full coordinator state reconstructs from bus files alone.
+8. Compute windows are requested via the bus and granted per policy (rule 11 as amended by D4).
+9. Never tick another agent's checkbox.
+10. Never edit `human_only_paths.yaml`.
+11. Never commit another session's in-flight work (salvage of a DEAD pool worker's tree is the D6 exception).
+12. No name-pattern kills — owned, self-captured pids only; verify death after killing.
+13. Two-sample persistence before any destructive or escalatory action on an absence/idleness claim.
+14. Gating declaration mandatory on queue rows.
+15. The measurement trust boundary is human-amendment-only.
 
 ---
 
@@ -56,10 +69,11 @@ exactly ONE alarm; the cold-start skill brings the supervision tier back and re-
 
 - [ ] P0-0 Copy the plan of record into `docs/design/loop-owned-fleet.html`; future amendments edit
       the in-repo copy first, republish to the artifact second.
-- [ ] P0-1 Alarm channel: one operator-reachable push mechanism (ntfy/email — operator picks the
-      endpoint at implementation). Wire: daemon fleet/runner-dead, fleet_watch queue-aging +
-      compute-idle, supervisor death, aged compute-requests. Emit once on state change, never per tick.
-      Deliverable includes the kill-the-fleet drill script.
+- [ ] P0-1 Alarm channel: one operator-reachable push mechanism. Present ntfy vs email as a decision
+      package (options + recommendation) at dispatch — not an open question mid-task. Day-1 sources:
+      daemon fleet/runner-dead + supervisor death (the only producers that exist on Day 1);
+      queue-aging arrives with P3-3 and aged compute-requests with P3-5, wired to this same channel.
+      Emit once on state change, never per tick. Deliverable includes the kill-the-fleet drill script.
 - [ ] P0-2 Fleet-existence gate in the daemon: zero live roster mains ⇒ halt assignment + ONE
       critical alarm (not per-task INFRA_BLOCKED). Predicate is explicitly transitional — see P3-4.
 - [ ] P0-3 Ghost-state sweep (D7, operator-signed): enumerate the 14 INFRA_BLOCKED rows + 11
@@ -73,10 +87,15 @@ exactly ONE alarm; the cold-start skill brings the supervision tier back and re-
       (`ps -o lstart` vs commit time of `bc6dc77f`); restart if stale.
 - [ ] P0-6 Harden `/coordinator-agent` into the D3 cold-start one-shot: relaunch supervisors, verify
       daemon health (pid identity + SHA marker, never the status file), run the alarm drill, report.
-- [ ] P0-7 Bus runtime off-tree (D5): `mv` runtime data to `/mnt/raid0/llm/bus-runtime` at a quiet
-      boundary + commit a tracked symlink at `coordination/session-bus`'s runtime paths; verify all
-      consumers (Python `get_bus_root()` + the shell daemons) still resolve; document the real path
-      for backup tooling.
+- [ ] P0-7 Bus runtime off-tree (D5). Scope: RUNTIME DATA ONLY — `queue.jsonl`, `advisory.jsonl`,
+      `claims/`, `tokens/`, `inbox/`, `outbox/`, `cursors/`, `heartbeats/`, and the `*_state.json`
+      files move to `/mnt/raid0/llm/bus-runtime/`; tracked policy files (`config.yaml`,
+      `BUS_PROTOCOL.md`, `session_bus.schema.json`, `human_only_paths.yaml`) STAY tracked in place.
+      Procedure: quiesce the daemon + watchers → `mv` → tracked symlinks at the old paths → restart →
+      verify every consumer resolves (Python `get_bus_root()` AND the shell daemons, which hardcode
+      paths separately — enumerate them at implementation). Written rollback: reverse-`mv` + symlink
+      removal, daemons quiesced again. **Sequencing: run P0-3 strictly before P0-7, same session** —
+      never rewrite the queue while it is being moved. Document the real path for backup tooling.
 - [ ] P0-8 `.orphan` worktree disposal (D7): archive tarball → verify each orphan tip is contained
       in a lane branch (push unique commits first if not) → delete by explicit path list. Add runner
       refusal for lane paths matching `*.orphan*` (lands with P2-1).
@@ -113,13 +132,20 @@ delivery-plane interventions · zero silent permission denials · 100% independe
 operator spot-reviews 3 of 10 · tokens/row within the D1 ceiling. Kill: quality drop or ceiling
 breach ⇒ stop, reassess.
 
+- [ ] P2-0 Pre-create the POOL worktrees: `worktrees/pool/lane0..lane3` (operator-visible step).
+      **Pilot workers NEVER spawn into mainA–D's lane worktrees while their interactive mains are
+      live** — a worker's commit-per-unit or salvage commit in an occupied worktree is the documented
+      commit-sweep hazard. mainA–D lanes become available to the pool only after P3-1 retirement.
 - [ ] P2-1 `scripts/coordination/worker_runner.py` (~200 lines target): claim (O_EXCL) → typed brief
       (AUD-2 schema: task_text primary, ≤4KB, screened_by, expected_occupancy, constraints[].source)
-      → premise preflight (P2-2) → permission profile injection (P2-3) → lane lockfile (1 worker per
-      worktree; refuse non-lane and `*.orphan*` paths) → spawn in a VISIBLE tmux pane (D8) → watch
-      report-file + process exit → collect (schema validation, denial audit, `subagents_spawned`) →
-      bus writes under the `workerpool` identity → audit packet (pointers only) → promotion row.
-      Exec'd fresh per assignment by the daemon tick; the only persistent piece is the collector wait.
+      → premise preflight (P2-2) → permission profile injection (P2-3) → pool-lane lockfile (1 worker
+      per worktree; refuse non-pool and `*.orphan*` paths until P3-1) → spawn in a VISIBLE tmux pane
+      (D8) → watch report-file + process exit → collect (schema validation, denial audit,
+      `subagents_spawned`) → bus writes under the `workerpool` identity → audit packet (pointers
+      only) → promotion row. Exec'd fresh per assignment by the daemon tick; the only persistent
+      piece is the collector wait. Includes the `session_bus.schema.json` update: target status set
+      is **READY · RUNNING · DONE_PASS · FAILED · HELD_OP_GATE** (5 states); `parked` = READY + a
+      `parked_reason` field, salvaged = FAILED + a `salvage_ref` field — annotations, NOT new states.
 - [ ] P2-2 `premise_screener`: point LLM call, forced-choice still-needed | stale | UNKNOWN with a
       mandatory evidence quote; UNKNOWN/stale ⇒ park row + routed fix task (refusals emit once, on
       state change, and count as queue-aging). Few-shot examples from `coordination/evals/examples/`;
@@ -128,22 +154,31 @@ breach ⇒ stop, reassess.
       the report ⇒ row outcome FAILED/blocked, never silent parity. Interactive-pane prompts remain
       answerable by the operator (D8); unanswered ⇒ lease expiry ⇒ salvage.
 - [ ] P2-4 Kill-with-salvage (D6): lease expiry ⇒ SIGTERM → grace → SIGKILL (owned pid only), then
-      WIP commit of the lane worktree to `salvage/<task_id>`, attach harness transcript + captured
-      pane scrollback to the row, mark `FAILED-salvaged`. Mutation-test: a salvage that loses any
-      file must fail the runner's own test.
+      WIP commit of the pool worktree to `salvage/<task_id>`, attach harness transcript + captured
+      pane scrollback to the row, mark FAILED + `salvage_ref`. Mutation-test: a salvage that loses
+      any file must fail the runner's own test. **Includes the BUS_PROTOCOL rule-8 amendment**
+      (pool-worker salvage-kill exception; interactive reclaim stays drain-only) — proposed commit,
+      operator ack, merged BEFORE the kill path first runs.
 - [ ] P2-5 Roster + daemon wiring: add `{id: workerpool, role: main, endpoint: "exec:worker_runner"}`
       and the daemon endpoint-scheme branch — the ONE schema/code extension the plan permits.
       `worker_harness:` config knob (global + per-lane override), pinned paid provider, concurrency
-      cap ≤4, ~250k tokens/batch ceiling (D1).
+      cap ≤4, ~250k tokens/batch ceiling (D1). Rollback note: revert = delete the roster row +
+      revert the endpoint-scheme commit (both under D9 ack); the daemon must refuse `exec:` endpoints
+      it has no branch for, so a half-rollback fails closed.
 - [ ] P2-6 Static batching: rows from the same source handoff share one invocation, cap 3, per-row
       completion records; on timeout only the in-progress row fails, untouched rows return to READY.
 - [ ] P2-7 Headless audit per completion: auditor invocation consumes the pointer packet, derives
       the diff from git independently, runs one mutation probe, writes a typed verdict to the bus.
 - [ ] P2-8 Merge cadence: promotion rows serialized through `merge_gate.py` / `serialized_push`, one
       at a time; part of the 10-row acceptance.
-- [ ] P2-9 Run the pilot: 10 screened churn rows alongside the existing fleet (additive; nothing
-      retired). Record tokens/row — mandatory input to the Phase-3 go decision and the D2 scale-out
-      harness choice.
+- [ ] P2-9 Run the pilot: 10 screened churn rows in the POOL worktrees (P2-0), alongside the
+      existing fleet (additive; nothing retired). Record tokens/row — mandatory input to the Phase-3
+      go decision and the D2 scale-out harness choice.
+- [ ] P2-10 Belief-kernel wiring (CLAUDE.md standing rule — file IMMEDIATELY, not when ready): the
+      completion reports (`subagents_spawned`, tokens/row), audit verdicts, and the duty-cycle /
+      self-repair metrics are new measurement producers. Add the source row to
+      `scripts/vidya/adapters/README.md` and the wiring task to
+      `handoffs/active/vidya-belief-substrate-program.md`.
 
 ## Phase 3 — Retire the machine delivery plane (Days 6–7)
 
@@ -168,6 +203,10 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - [ ] P3-6 First choreography recipe: the operator's CPU-pause → GPU-load → run ∥ resume example as
       a typed, receipt-gated recipe (drain@boundary receipt → load receipt → start + resume);
       approved at the coordination level, stepped through by the daemon.
+- [ ] P3-7 Disposition the `auditor` roster identity: once P2-7 headless audits prove out through
+      the pilot, retire the interactive auditor row by the same P3-1 procedure (its worktree follows
+      the lane-retirement path; its `.orphan` backup was handled in P0-8). The reviewer function
+      lives on as per-packet headless invocations.
 
 ## Pulled by need (NOT scheduled — do not start without a measured consumer)
 
@@ -191,7 +230,9 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - Coordination self-repair share: ~50% → **<10%**, computed by commit-path classification over
   `scripts/coordination/**` (D9) — never self-reported.
 - Alarm fidelity: every drill alarm arrives; **zero** alarms on well-run nights.
-- **Kill criteria**: pilot breaches the D1 ceiling or audit quality drops ⇒ halt, reassess. Any
+- **Kill criteria**: pilot breaches the D1 ceiling, OR audit quality drops — defined as the operator
+  spot-review overturning ≥2 of the 3 reviewed pilot rows (pilot) or the operator-vs-auditor verdict
+  disagreement rate exceeding 20% over any 7-day window (post-pilot) ⇒ halt, reassess. Any
   single-writer or trust-boundary violation by the runner ⇒ immediate revocation of its authority.
   **Meta-kill**: any phase exceeding 2× its estimate stops the plan — this restructure must never
   become the next 50%-self-repair sinkhole.
