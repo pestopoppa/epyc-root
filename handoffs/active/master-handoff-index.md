@@ -69,11 +69,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 53 | 372 | 12 | 2026-07-29 |
+| inference-research | 53 | 373 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 50 | 1 | 2026-07-29 |
 | research-evaluation | 49 | 334 | 9 | 2026-07-29 |
 | reviewer-control-plane | 9 | 30 | 11 | 2026-07-29 |
-| routing-and-optimization | 51 | 388 | 18 | 2026-07-29 |
+| routing-and-optimization | 52 | 423 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 38 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
