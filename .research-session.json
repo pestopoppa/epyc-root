@@ -1,9 +1,9 @@
 {
   "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
   "started_at": "2026-08-14T23:30:00Z",
-  "last_checkpoint": "2026-08-15T03:00:00Z",
+  "last_checkpoint": "2026-08-15T20:05:00Z",
   "phase": 5,
-  "stage": "stage4-complete",
+  "stage": "stage4-complete + wrap-up",
   "session_kind": "research-intake (2 submitted URLs + 10 expansion)",
   "previous_session": {
     "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
@@ -162,8 +162,8 @@
     "stage2b": "CLOSED",
     "stage3": "CLOSED \u2014 plan approved 2026-08-15",
     "stage4": "CLOSED \u2014 24 task lines across 5 handoffs; validate_intake.sh exit 0; index_state.py --check 0 problems; committed 6d783fbd (pathspec-limited).",
-    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate, untouched by this session.",
-    "operator_surface": "ONE item deliberately NOT added to the diff: a belief-kernel wiring task for EV-14a. The approved plan did not name it, and Stage 4 forbids silent additions. It becomes REQUIRED under the CLAUDE.md belief-kernel rule the moment EV-14a actually runs, because a measured per-suite resolution band IS a measurement."
+    "prior_session_gate": "CLOSED 2026-08-15 \u2014 intake-1102/1103 (SOL-ExecBench) dived and written back (f825adae: both dive-verified, integration_disposition knowledge_only), follow-ons filed as C5-3/4/5 in agentic-rocm-kernel-authoring.md and RVP-C6-11/12/13 in rocm-verify-profile-backend.md (1511267c; IDs renumbered from C6-8/9/10 at wrap-up after a collision with three completed tasks of the same names). Gate had been open since 2026-08-11.",
+    "operator_surface": "CLOSED 2026-08-15 \u2014 the belief-kernel wiring task for EV-14a was raised to the operator after Stage 4 and landed as SC37 in vidya-belief-substrate-program.md plus an adapter source-table row in scripts/vidya/adapters/README.md (13babe98). It is filed BEFORE the producer exists, which is the point: the write side is cheap now and impossible to retrofit. SC37 depends on EV-14c."
   },
   "stage1_hypotheses_requiring_dive": [
     "EPYC autopilot SafetyGate may be suppression-only in intake-1129's sense (accepts on score, never on warrant). Stage-1 basis is a ZERO-HIT grep for 'warrant' across autopilot-continuous-optimization.md, frontier-f2-self-running-lab.md and agent-collab-rnd-harness.md, plus the handoff's own description of the gate as 'quality floor + per-suite guard + routing diversity' with a 4D Pareto archive. This is a hypothesis about HANDOFF PROSE, not a finding about orchestrator code, and must be settled against epyc-orchestrator source.",

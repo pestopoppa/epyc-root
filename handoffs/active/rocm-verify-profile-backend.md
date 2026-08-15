@@ -960,20 +960,27 @@ architecture-independent, so none of this depends on the gfx90a constants questi
 
 **Two gaps the audit found that neither repository closes** — both our own 32.8%-timing-loophole family:
 
-- [ ] **RVP-C6-8 — Add a PHASE-DETECTION exploit case to the C6 reward-integrity screen.** A candidate
+> **ID note (corrected at wrap-up, 2026-08-15).** These three were first filed as RVP-C6-8/9/10, which
+> collided with three *already-completed* `[x]` tasks of the same names earlier in this file (lines
+> ~802/903/911: output-invariance under buffer-address rotation, the two `AntiRewardHackingEvidence`
+> detectors, anti-short-circuit cases in the ranked set). The C6 sequence already ran through C6-10, so
+> the new work is renumbered **RVP-C6-11/12/13**. Any pre-2026-08-15 reference to RVP-C6-8/9/10 means the
+> completed tasks, not these.
+
+- [ ] **RVP-C6-11 — Add a PHASE-DETECTION exploit case to the C6 reward-integrity screen.** A candidate
       that computes correctly during the correctness rounds and degrades or no-ops once timing starts.
       Correctness runs in 10 rounds *before* timing and the timed-phase output buffers are never
       inspected afterwards (upstream issue #19, which the ROCm port inherits; the fix PR was closed
       unmerged). The shifting-pool allocator closes the naive version by carrying validated values into
       the timed loop — what remains open is a submission that can *distinguish* the two phases.
       **Zero of the 48 adversarial cases in their corpus attempts this.** Cite `intake-1102#record`.
-- [ ] **RVP-C6-9 — Add a `torch.compile` / CUDA-graph capture-and-replay exploit case.** Nothing in
+- [ ] **RVP-C6-12 — Add a `torch.compile` / CUDA-graph capture-and-replay exploit case.** Nothing in
       either repository probes a compiled or graph-captured kernel specializing on the address-shifted
       but value-identical timed inputs — and that is the single most likely tool an AI kernel-authoring
       agent reaches for. Their state-caching corpus covers address- and shape-keyed caches but **not
       content-fingerprint-keyed** ones, which is exactly what NVIDIA's own issue response named as
       bypassing pointer shifting.
-- [ ] **RVP-C6-10 — Check whether our C3 timing loop has the same non-syncing shape, and if so adopt the
+- [ ] **RVP-C6-13 — Check whether our C3 timing loop has the same non-syncing shape, and if so adopt the
       stream fence/join fix.** ~200 lines, Apache-2.0, arch-independent. Mechanism: track every stream
       constructed after install, fence from current after the start event, join into current before the
       end event, so the reported time is correct regardless of what the source does. Note the detail

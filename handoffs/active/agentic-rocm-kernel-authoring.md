@@ -897,6 +897,14 @@ deferrals do not touch our seeds).
       with workload counts reproducing exactly (16/16/16/16/29/15/47/38 = 193). **The kNNN ids appear
       nowhere in either repository** — they are HyRA's — so this join is ours to maintain and should
       stop being re-derived. Add it as a `sol_execbench_problem_id` field.
+      **Premise re-checked at wrap-up 2026-08-15 — the task is real but the gap is one level lower than
+      written.** A `c5_seed_corpus.json` carrying all eight seeds *with* a populated `"slug"` field
+      already exists (schema `epyc.autokernel.c5_seed_corpus.v1`), but only inside two throwaway
+      verification snapshots — `tmp/wrap-research-router-20260812/` and
+      `tmp/verify-provider-a54-20260812/scripts/kernel_rnd/autokernel/`. `git ls-files` finds **no**
+      `c5_seed_corpus.json` in epyc-root or epyc-orchestrator, and the live orchestrator tree has no
+      copy at all. So the mapping is not missing, it is *unpersisted*: land the file in the orchestrator
+      tree under version control first, then add `sol_execbench_problem_id` beside the existing `slug`.
 
 ### OPERATOR DECISION — port the SOL bound constants to gfx90a?
 
