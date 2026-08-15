@@ -403,10 +403,53 @@ per-OAM TFLOPS figure was divided by a per-GCD bandwidth to give a ridge point o
 
 `[D]` derived from AMD spec; all four rates reproduce published figures exactly:
 
-**181.0 TFLOPS fp16/bf16 = 181.0 TOPS int8** — **CDNA2 does not double int8**, and there is **no FP8, no
-FP4, no TF32**. fp32 matrix 45.3 / vector 22.6. **Ridge point 110.5 FLOP/byte** (vs 281 for an RTX PRO
-6000, so **the MI210 is the more bandwidth-balanced part** — a bandwidth-directed program is the
-arithmetically correct one here).
+**181.0 TFLOPS fp16/bf16 = 181.0 TOPS int8** — **int8 is not FASTER THAN fp16 on CDNA2**, and there is
+**no FP8, no FP4, no TF32**. fp32 matrix 45.3 / vector 22.6. **Ridge point 110.5 FLOP/byte** (vs 281 for
+an RTX PRO 6000, so **the MI210 is the more bandwidth-balanced part** — a bandwidth-directed program is
+the arithmetically correct one here).
+
+> **Phrasing corrected 2026-08-15, and the correction matters.** This line previously read "CDNA2 does
+> not double int8", which is ambiguous and reads as false. CDNA2 **did** double int8 relative to CDNA1
+> (512→1024 per clk/CU, and it doubled bf16 the same way, both climbing to fp16 parity); fp16 was
+> *already* 1024 on CDNA1 and did not change. What CDNA2 does **not** do is make int8 faster **than
+> fp16** — they are equal. The operational consequence is the one that keeps getting re-derived:
+> **routing a quantized GEMM through int8 MFMA on gfx90a has zero peak-rate advantage.** That
+> relationship is CDNA3-only, where `v_mfma_i32_{16x16x32,32x32x16}_i8` double K and the narrow shapes
+> are retired.
+>
+> **Vendor citations** (this line previously carried none, marked `[D]` derived): AMD MI210 product page
+> and the MI210 product brief both list Peak FP16 181 TFLOPs / Peak BF16 181 TFLOPs / **Peak INT8 181
+> TOPs**, 104 CU @ 1700 MHz. Cross-part check at 1024/clk/CU reproduces MI250X 383.0 and MI100 184.6
+> exactly. For contrast on the generational point, MI100 (CDNA1) lists FP16 184.6 / BF16 92.3 / **INT8
+> 92.3** — int8 at *half* fp16.
+>
+> **ISA-level verification, 2026-08-15** (method: all 39 MFMA mnemonics extracted from the shipped
+> clang and assembled under `llvm-mc` for gfx908/gfx90a/gfx942, discriminating "instruction not
+> supported on this GPU" from "invalid operand"; re-run against a second toolchain, identical; AMD's own
+> matrix-instruction-calculator lists the same count): **gfx90a has 27 MFMA instructions** — FP32, FP64,
+> FP16, BF16 (legacy + `bf16_1k`), INT8. **FP16 and INT8 have IDENTICAL shape sets**
+> `{4x4x4, 16x16x4, 16x16x16, 32x32x4, 32x32x8}`, i.e. the same MACs per instruction. Absent on gfx90a
+> and present on gfx942: all 8 fp8/bf8 forms, both `xf32` (TF32), all `v_smfmac_*` (sparse), and the
+> K-doubled int8 shapes. The compiler names the gate — fp8 builtins require target feature `fp8-insts`,
+> which gfx90a lacks.
+>
+> **INT4 has no matrix path on ANY CDNA generation** — zero `i4` MFMA mnemonics exist in the compiler.
+> INT4 on gfx90a is VALU dot-product only (`v_dot8_i32_i4`). Corroborated by AMD's MI100 sheet listing
+> INT4 92.3 = INT8 92.3, consistent with both riding the same non-matrix path.
+>
+> **Two ridge figures coexist and are both correct — do not "fix" one against the other.** 110.5
+> FLOP/byte is spec-over-spec (181.0 TFLOPS ÷ 1638 GB/s). **120.1 FLOP/byte is measured-over-measured**
+> (172.21 TFLOPS peak fp16 MFMA measured on this card ÷ 1433.3 GB/s achievable HBM measured) — receipts
+> under `epyc-inference-research/data/mi210-mfma-peak/` and `…/mi210-achievable-bandwidth/`. Quote the
+> measured pair when arguing about a real kernel.
+>
+> **⚠ Benchmarking trap, new 2026-08-15.** Composable Kernel does **not refuse** fp8 on gfx90a — under
+> its non-gfx94x branch it silently lowers each logical fp8 MFMA into **8 sequential fp32 MFMA ops**. So
+> a "CK fp8 GEMM benchmark on MI210" compiles, runs, and measures **fp32 emulation** — far slower than
+> fp16. Any catastrophic CK-fp8 number from an MI210 is a measurement artifact, not a datapath finding.
+> (rocWMMA and hipBLASLt/rocBLAS behave correctly by contrast: rocWMMA raises
+> `"fp8 mfma not supported on gfx908/gfx90a"`, and Tensile ships 0 fp8 kernels for gfx90a vs 338 for
+> gfx942.)
 
 Two consequences that convert standing puzzles into closed questions:
 
