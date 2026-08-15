@@ -1,9 +1,9 @@
 {
   "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
   "started_at": "2026-08-14T23:30:00Z",
-  "last_checkpoint": "2026-08-15T02:10:00Z",
+  "last_checkpoint": "2026-08-15T03:00:00Z",
   "phase": 5,
-  "stage": "stage2b-complete-gate-closed-ready-for-stage3",
+  "stage": "stage4-complete",
   "session_kind": "research-intake (2 submitted URLs + 10 expansion)",
   "previous_session": {
     "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
@@ -158,11 +158,12 @@
     }
   ],
   "open_gates": {
-    "stage2": "CLOSED \u2014 all six operator-selected dives complete and written back.",
-    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate, carried forward untouched.",
-    "stage3_blocker": "meta-harness-optimization.md is a RETAINED COMPATIBILITY POINTER ('Do not add new task checkboxes here') \u2014 it must NOT be named as an owning handoff in any Stage-3 plan despite being the cross-reference-map target for agent_architecture/autonomous_research. Routing per that file: autopilot-continuous-optimization.md, eval-tower-verification.md, decision-aware-routing.md, unified-trace-memory-service.md. ALSO: intake-1129 dive CLOSED the charter instruction-hygiene actionable (our controller charter is already presupposition-free) \u2014 it must NOT be filed as work in Stage 3. AND intake-1128 dive CLOSED both belief-substrate design questions as DECLINE (PCR vs ClaimTuple; monotonic relation expansion).",
-    "stage2b": "CLOSED \u2014 all 8 operator-selected sources ingested-and-dived and persisted dive-verified; all Tier-3 declines named in bearing entries.",
-    "stage3": "READY. Prerequisites for the Stage-3 plan: (1) meta-harness-optimization.md is a FROZEN POINTER and must not be named as an owner; (2) three items are already CLOSED and must be filed as explicit declines, not work \u2014 charter instruction hygiene (our controller charter is already presupposition-free), PCR-vs-ClaimTuple, and monotonic relation expansion; (3) six cohort entries remain stage1-unverified (1132/1133/1135/1136/1137/1138) so NOTHING from them may be quoted in a plan item; (4) the Stage-1 preliminary actionables must each be promoted or explicitly declined."
+    "stage2": "CLOSED",
+    "stage2b": "CLOSED",
+    "stage3": "CLOSED \u2014 plan approved 2026-08-15",
+    "stage4": "CLOSED \u2014 24 task lines across 5 handoffs; validate_intake.sh exit 0; index_state.py --check 0 problems; committed 6d783fbd (pathspec-limited).",
+    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate, untouched by this session.",
+    "operator_surface": "ONE item deliberately NOT added to the diff: a belief-kernel wiring task for EV-14a. The approved plan did not name it, and Stage 4 forbids silent additions. It becomes REQUIRED under the CLAUDE.md belief-kernel rule the moment EV-14a actually runs, because a measured per-suite resolution band IS a measurement."
   },
   "stage1_hypotheses_requiring_dive": [
     "EPYC autopilot SafetyGate may be suppression-only in intake-1129's sense (accepts on score, never on warrant). Stage-1 basis is a ZERO-HIT grep for 'warrant' across autopilot-continuous-optimization.md, frontier-f2-self-running-lab.md and agent-collab-rnd-harness.md, plus the handoff's own description of the gate as 'quality floor + per-suite guard + routing diversity' with a 4D Pareto archive. This is a hypothesis about HANDOFF PROSE, not a finding about orchestrator code, and must be settled against epyc-orchestrator source.",
@@ -213,5 +214,20 @@
       "intake-1147": "2507.02833 IFBench \u2014 dive-verified, 6/6, the cohort ONLY adopt_component; noise floor computed (+/-5.6pp single-arm, +/-8.0pp unpaired)"
     },
     "entries_persisted": 8
+  },
+  "stage4": {
+    "handoffs_updated": [
+      "eval-tower-verification.md",
+      "canonical-judge-suite-revamp.md",
+      "eval-tower-loop-robustness-audit-2026-07-20.md",
+      "safetygate-rlvr-provenance-audit-2026-07-22.md",
+      "autopilot-continuous-optimization.md",
+      "routing-intelligence.md"
+    ],
+    "task_lines_added": 24,
+    "handoffs_created": [],
+    "index_rows_added": 0,
+    "entries_with_handoffs_updated": 10,
+    "commit": "6d783fbd"
   }
 }
