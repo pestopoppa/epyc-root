@@ -1,6 +1,6 @@
 # GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm
 
-**Status**: ACTIVE — scoping only; the artifact update is staged behind the Qwen3.8-27B rollout (INF-60).
+**Status**: MOSTLY DONE — artifact updated across all sections (2026-08-15); SWE FAIL_TO_PASS + agentic rung still landing.
 **Created**: 2026-08-14
 **Priority**: P2 (presentation surface; not evidence authority)
 **Effort**: Low — re-populate one candidate row with already-partial Qwen3.8-27B data + fill the gaps
@@ -58,3 +58,13 @@ SWE-40 n=40 recipe the artifact already uses, and its results slot into this row
 ## Deps
 
 `INF-60` (qwen38-27b-replace-qwen36.md) — this artifact update is the *presentation* tail of that rollout.
+
+## Completed 2026-08-15
+
+- **Artifact updated across ALL sections** — `/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`:
+  header, new-candidate verdict card, coding ladder (LCB 52.8% / BCB 31.1%), reasoning ladder (aime25 76.7%,
+  gpqa 42.4/81.3%), RAG heatmap, full 24-cell GRID, router-integration plan, bottom line.
+- **np × depth 24-cell sweep done** (real olympiadbench prompts): single-stream flat ~45 t/s, peak 157 t/s @np8.
+  CORRECTED the earlier synthetic "37→13.6 decline / MTP reversal" — that was a random-word-prompt artifact.
+- **SWE images built** (40) + **containers started** + **agentic harness (P2e) running** on the 40 instances.
+- The coding-ladder cell stays `operator-declined — deferred`; SWE-40 / agentic numbers fill in when the run lands.
