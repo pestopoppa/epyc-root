@@ -946,3 +946,37 @@ as a component (design reference only — and the reason is **technical**: torch
 here); the `speedup >= 1.0` pass clause; the upstream `warmup=3, repeats=5` timing protocol, which is
 weaker than our canonical one; and citing any foreign-hardware correctness-overestimation magnitude as
 if it were ours — under P-GPU-1 the analogous magnitude is ours to derive on our own card.
+
+## Research Intake Update — 2026-08-15 (SOL-ExecBench reward-integrity imports; intake-1102/1103)
+
+A Stage-2 dive of the SOL-ExecBench ROCm port audited its eleven reward-hacking checks against the
+standard that documented-but-unimplemented does not count. **They pass**: every check raises, every one
+is wired to a live call site, and detection is fail-closed at the record level, so a caught submission
+yields a non-passing terminal status rather than a score. The strongest evidence is that the port found,
+root-caused, measured and fixed an original timing bypass of its own — the timed loop deliberately never
+syncs between iterations, so work on a submission-created stream never lands inside the event bracket,
+and a 12.06 ms fp32 GEMM read 0.0069 ms, **1743× fast**. Apache-2.0, and every mechanism below is
+architecture-independent, so none of this depends on the gfx90a constants question.
+
+**Two gaps the audit found that neither repository closes** — both our own 32.8%-timing-loophole family:
+
+- [ ] **RVP-C6-8 — Add a PHASE-DETECTION exploit case to the C6 reward-integrity screen.** A candidate
+      that computes correctly during the correctness rounds and degrades or no-ops once timing starts.
+      Correctness runs in 10 rounds *before* timing and the timed-phase output buffers are never
+      inspected afterwards (upstream issue #19, which the ROCm port inherits; the fix PR was closed
+      unmerged). The shifting-pool allocator closes the naive version by carrying validated values into
+      the timed loop — what remains open is a submission that can *distinguish* the two phases.
+      **Zero of the 48 adversarial cases in their corpus attempts this.** Cite `intake-1102#record`.
+- [ ] **RVP-C6-9 — Add a `torch.compile` / CUDA-graph capture-and-replay exploit case.** Nothing in
+      either repository probes a compiled or graph-captured kernel specializing on the address-shifted
+      but value-identical timed inputs — and that is the single most likely tool an AI kernel-authoring
+      agent reaches for. Their state-caching corpus covers address- and shape-keyed caches but **not
+      content-fingerprint-keyed** ones, which is exactly what NVIDIA's own issue response named as
+      bypassing pointer shifting.
+- [ ] **RVP-C6-10 — Check whether our C3 timing loop has the same non-syncing shape, and if so adopt the
+      stream fence/join fix.** ~200 lines, Apache-2.0, arch-independent. Mechanism: track every stream
+      constructed after install, fence from current after the start event, join into current before the
+      end event, so the reported time is correct regardless of what the source does. Note the detail
+      that makes it worth copying rather than re-deriving — a join-only first version still read 1.41×
+      fast, which is why the fence exists, and a *real* submitted kernel had hit a mild unintentional
+      form at 1.42×. Single-stream submissions take no new code path.
