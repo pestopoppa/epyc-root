@@ -79990,6 +79990,7 @@
   disposition_evidence:
   - 'Stage-2b combined ingest and dive, operator-selected at the 2026-08-15 close-out gate. Supplies the per-task resolution-band method as a now-PUBLISHED citable instrument for the eval tower, and overturns two framings this cohort was carrying: that it supersedes intake-1134, and that its headline is a model-over-harness routing result.'
   handoffs_updated:
+  - handoffs/active/vidya-belief-substrate-program.md
   - handoffs/active/eval-tower-verification.md
   - handoffs/active/safetygate-rlvr-provenance-audit-2026-07-22.md
   - handoffs/active/routing-intelligence.md
@@ -80137,6 +80138,7 @@
   disposition_evidence:
   - 'Stage-2b combined ingest and dive, operator-selected at the 2026-08-15 close-out gate. Supplies the citation home for four evaluation-hygiene conventions that exist nowhere else, and delivers an overturn with direct application to our own measurement stack: a documented convention was found not to be implemented in the path that produced the published numbers.'
   handoffs_updated:
+  - handoffs/active/vidya-belief-substrate-program.md
   - handoffs/active/eval-tower-verification.md
   - handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md
   - handoffs/active/safetygate-rlvr-provenance-audit-2026-07-22.md

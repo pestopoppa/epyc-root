@@ -328,6 +328,24 @@ deliberately — decide them, do not just implement them.
       independent witnesses. Same-harness runs are not independent evidence. A bulk adapter needs a
       run-level (not file-level) locator or it manufactures corroboration
 
+- [ ] SC37 **The eval-tower resolution band needs a write-side ClaimTuple hook — filed 2026-08-15
+      from the intake-1128..1147 research cohort, BEFORE the producer exists.** `eval-tower-verification.md`
+      EV-14a will measure a per-suite resolution band by rescoring ONE UNCHANGED config with
+      `core_v2_calibrate.py --repeats` and deriving the band from the retained spread. That is a
+      measurement, so under the belief-kernel rule the write side is filed now rather than after the
+      first band lands. The producer already knows every element a tuple needs — suite id, K, the
+      unchanged-config identity, the per-repeat scores, the instrument era, and which baseline the band
+      was measured against — so nothing has to be invented on read, which is exactly the condition that
+      made `benchmarks/results` unusable. **Carry the scope limit into the ADAPTER, not just the docs**:
+      a band attests the RESOLUTION OF THE INSTRUMENT and says nothing about the quality of any config.
+      A projection that reads a band as "this delta is statistically solid" is the same category error
+      SC21 records for `decision_grade`, one level up. Two dependencies, both real: EV-14c must land
+      first, because while `safety_gate.py` `update_tier()` writes baselines with `dict.update`
+      (last-write-wins) a band can be measured against a silently-moved reference; and the tuple must
+      record K explicitly, because the whole downstream value is that a claim can never assert a delta
+      finer than its own suite's measured resolution. Adapters PROJECT into the existing `ClaimTuple`;
+      `claim_tuple.grade()` remains the only grading rule — do not add a second ladder.
+
 ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?)
 
 Audit finding that opened this section: **nothing outside `scripts/vidya/` read the fold.** A grep
