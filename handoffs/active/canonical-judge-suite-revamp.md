@@ -242,6 +242,53 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       `benchmarks/prompts/v1/*.yaml` and the 2026-05-04 anchor; deleting it silently would break
       comparability with that anchor. Propose, do not execute.
 
+
+### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147)
+
+Same five-step block as CJ-1…CJ-4. **Feeds CJ-GATE; does not bypass it** — adoption as a ranking prior
+and registration as an eval-tower row remain two separate operator decisions.
+
+Why it is a candidate at all: our tower is largely LLM-judged and noisy, with a documented history of
+per-suite "regressions" that were single-question flips. IFBench's scoring path was verified **by
+source inspection** (not by taking the claim) to contain no LLM client, no HTTP library and no API
+key — 58 deterministic Python predicates at temperature 0. It removes a whole failure class **by
+construction rather than by discipline**. Credibility 6/6 (NeurIPS 2025 Datasets & Benchmarks;
+independently corroborated twice). The scorer is fully separable from generation, so we generate with
+our own harness and score offline.
+
+- [ ] **CJ-6a. Acquire the corpus** — `allenai/IFBench`, Apache-2.0 code, ODC-BY data. 300 prompts /
+      344 constraint instances / 58 distinct constraint ids (independently re-derived from the
+      released data, every registry entry exercised).
+- [ ] **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
+- [ ] **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
+      sampling-free; only generation needs the fleet.
+- [ ] **CJ-6d. Wire a representative sample** through our own generation harness, handing the scorer a
+      prompt-keyed JSONL.
+- [ ] **CJ-6e. Record the noise floor BEFORE wiring, not after the first false alarm.** At n=300: one
+      item = 0.33pp; single-arm 95% CI ≈ ±5.6pp; **unpaired cross-arm ≈ ±8.0pp**. Score **PAIRED** on
+      the same 300 prompts via `scripts/autopilot/paired_stats.py` (McNemar already unified in
+      [`eval-tower-verification.md`](eval-tower-verification.md) ✅ 2026-07-29), or report no delta at
+      all.
+- [ ] **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
+      exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
+      assert no network during scoring (the only network touch is an NLTK bootstrap at import; until
+      seeded, a fresh run silently depends on the network). **Assert 300/300 prompt-join coverage** —
+      the scorer joins by exact prompt string and their own shipped sample output covers only 290 of
+      300, so a strict run against the full file errors, and a normalization change would break the
+      join loudly for some rows and silently for others. Install from `pyproject.toml`, not the stale
+      `requirements.txt`.
+- [ ] **CJ-6g. Record the saturation fact; pin the tier argument to our own scores.** A third-party
+      evaluation index removed IFBench on 2026-06-15 because it no longer separates frontier models.
+      That does **not** apply at our tier — the source reports 16.7–31.3 for untrained 7B–8B instruct
+      models — but record it so nobody re-derives it in a year, and rest the tier claim on our own
+      measured scores rather than on a leaderboard. This is the same "unsaturated at this tier" logic
+      already used for CJ-1.
+- [ ] **CJ-6h. Verify it discriminates across ≥2 fleet models**, per the block contract, then report
+      into CJ-GATE.
+
+**Do NOT attempt IF-RLVR** (the source's training half): GRPO on 8 high-end accelerators, and the
+paper's own evidence says we would not want it as-is — AlpacaEval 2 falls 34.5 → 21.3 on one path and
+collapses to 1.1 when trained from base. Cite `intake-1147#record`.
 ## Decision gate (OPERATOR)
 
 - [ ] **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4

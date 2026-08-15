@@ -3083,3 +3083,41 @@ AutoPilot remains stopped. The accepted immutable T1 artifact is
   orchestrator are verified. Completed evidence is T2 `500/500`, quality `1.356`, reliability `1.000`,
   and T3 `160/160`, quality `1.275`, reliability `1.000`; both have zero error rows. The v10 recodes are
   deterministic and attest that answers, scores, timing, and routing did not change.
+
+## Research Intake Update — 2026-08-15 (feedback-conditioned mutation; intake-1139/1143/1144)
+
+Operator decision taken 2026-08-15: **synthesizer first, then pilot.**
+
+A Stage-2b dive of Feedback Descent settled the question P17.BT left open: **adopt on fresh comparisons
+now — the P17.BT lineage-persistence work is orthogonal and is NOT a prerequisite.** That method's state
+is a champion plus a feedback buffer discarded on every acceptance, so it reads none of our missing
+BT-top / hypervolume-top / chosen-seed lineage. Waiting on the persistence work buys this nothing.
+
+- [ ] **P17.BT-5a — Retrospective feedback synthesizer (do this FIRST).** Consume logged
+      (config, score) pairs from the existing autopilot trial history and emit a **directional** hint
+      ("increase X", "decrease Y") for the proposal step. Offline, no new eval loop, no new inference
+      over the historical corpus. Bench against the no-feedback baseline before wiring anything live.
+      Admission test from `intake-1144`: feedback is **DIRECTIONAL iff it determines the SIGN of the
+      change**; **non-directional** (names the offending dimension but withholds the sign) still beats
+      a scalar and takes a narrowing path; neither → existing scalar path.
+- [ ] **P17.BT-5b — Full feedback-conditioned mutation pilot, GATED on 5a showing signal.** Ship in ONE
+      change with (i) a prospective **write-side trace hook** persisting
+      `(candidate_id, champion_id, preference, feedback_text, accepted, streak_index)`, and (ii) a
+      **scrambled-feedback control arm** — non-optional, because `intake-1139` measured **Random
+      Feedback scoring BELOW no-feedback at all**, so bad critique is a net negative rather than a
+      degraded positive. Reusable acceptance test: that source's own alignment design (true feedback
+      preferred over a scrambled control 81% of 400 comparisons, p<10⁻¹⁰).
+- [ ] **P17.BT-5c — Log pair CONTENT, not just ids.** Persist winner/loser candidate IDs **and both
+      candidate artifact texts** on every pairwise comparison. Rationale from `intake-1143`: post-hoc
+      rationales are **retrofittable** from (prompt, chosen, rejected), so logging pair content
+      preserves a future offline option that logging ids alone destroys. Our existing P17.BT corpus
+      **cannot** be rescued this way — it lacks exactly these fields — which is precisely the point.
+
+**Design fork to decide inside 5a/5b, not before**: `intake-1139` **resets** its feedback buffer on
+every accepted candidate; `intake-1144` **accumulates** and subsamples, treating history as a durable
+asset. Both are cited precedents; pick per pilot and record which.
+
+**Cost note**: roughly 400–500 short structured-output calls per optimization run at the source's own
+settings — short prompts, structured output, no long context (the buffer reset bounds it). A good
+Qwen3.x-class MI210 workload. The source's whole pipeline ran on an **8B open-weight** model and beat
+its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `intake-1139#record`.

@@ -1,175 +1,217 @@
 {
-  "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
-  "started_at": "2026-08-12T23:10:00Z",
-  "last_checkpoint": "2026-08-13T08:31:36Z",
-  "phase": 4,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake (1 submitted URL + 10 expansion)",
+  "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
+  "started_at": "2026-08-14T23:30:00Z",
+  "last_checkpoint": "2026-08-15T02:10:00Z",
+  "phase": 5,
+  "stage": "stage2b-complete-gate-closed-ready-for-stage3",
+  "session_kind": "research-intake (2 submitted URLs + 10 expansion)",
   "previous_session": {
-    "session_id": "b3cb6221-c00f-4696-a49b-4ff326f41eb8",
-    "stage": "stage1-complete-awaiting-dive-selection",
-    "mandate": "Assess the ROCm SOL-ExecBench source discovered while resolving the missing workload/reference half of AutoKernel C5-2, and expand to its canonical upstream.",
-    "note": "NOT RESUMED \u2014 disjoint mandate (AutoKernel/SOL-ExecBench). ITS DIVE-SELECTION GATE IS STILL OPEN: intake-1102/1103 awaiting operator dive selection since 2026-08-11."
+    "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
+    "stage": "stage4-complete",
+    "mandate": "Ingest The-Swarm-Corporation/PARL and expand the parallel-agent-orchestration literature around it.",
+    "note": "Completed 2026-08-13. Not resumed; this is a fresh mandate."
   },
-  "mandate": "Ingest The-Swarm-Corporation/PARL (operator-submitted while studying Kimi Agent Swarm) and expand the parallel-agent-orchestration literature around it.",
-  "submitted_url_count": 1,
+  "mandate": "Ingest two operator-submitted arXiv papers: MEGA (self-evolving agent optimization via Wisdom Graph) and Phantom Guardrails (self-improving harnesses fabricating failures that never happened), and expand the surrounding harness-optimization / acceptance-rule literature.",
+  "submitted_url_count": 2,
   "submitted_inline_material_count": 0,
   "sources_submitted": [
-    "https://github.com/The-Swarm-Corporation/PARL"
+    "https://arxiv.org/abs/2608.10504",
+    "https://arxiv.org/abs/2607.13083"
   ],
   "dedup_sweep": {
-    "run": "2026-08-12, unbounded over all 1,100 pre-existing entries, normalized (arxiv_id + url + referenced_arxiv_ids distinguished)",
+    "run": "2026-08-14, unbounded over all 78,706 pre-existing lines / 1,123 entries, normalized (bare id, abs/pdf URL forms, version suffixes)",
     "collisions_found": 0,
-    "notable": "arXiv:2602.02276 (Kimi K2.5, the PRIMARY source) appeared ONLY inside referenced_arxiv_ids of intake-869 and intake-933 \u2014 cited twice, never ingested. Referenced != ingested. arXiv:2605.02801 IS already held as intake-548 and was correctly NOT re-minted."
+    "notable": "Neither 2608.10504 nor 2607.13083 appears anywhere in the file, including inside referenced_arxiv_ids. Of 20 expansion candidates dedup-checked, 3 were already indexed and excluded: 2603.28052 (Meta-Harness = intake-244), 2605.18747 (Code as Agent Harness = intake-607), 2509.25140 (ReasoningBank).",
+    "no_truncating_filter": true
   },
   "max_existing_intake_id": 1127,
-  "next_intake_id": 1128,
+  "next_intake_id": 1148,
   "expansion_count": 10,
   "expansion_cap": 10,
   "expansion_cap_reached": true,
   "processed_urls": [
-    "https://github.com/The-Swarm-Corporation/PARL",
-    "https://arxiv.org/abs/2602.02276",
-    "https://arxiv.org/abs/2512.08296",
-    "https://arxiv.org/abs/2602.11964",
-    "https://arxiv.org/abs/2604.02460",
-    "https://arxiv.org/abs/2503.13657",
-    "https://arxiv.org/abs/2607.25656",
-    "https://arxiv.org/abs/2601.10560",
-    "https://www.anthropic.com/engineering/multi-agent-research-system",
-    "https://arxiv.org/abs/2510.18893",
-    "https://arxiv.org/abs/2606.13003"
+    "https://arxiv.org/abs/2608.10504",
+    "https://arxiv.org/abs/2607.13083",
+    "https://arxiv.org/abs/2606.05922",
+    "https://arxiv.org/abs/2607.13070",
+    "https://arxiv.org/abs/2604.25850",
+    "https://arxiv.org/abs/2603.03329",
+    "https://arxiv.org/abs/2602.22480",
+    "https://arxiv.org/abs/2209.13085",
+    "https://arxiv.org/abs/2405.20947",
+    "https://arxiv.org/abs/2603.02176",
+    "https://arxiv.org/abs/2603.04448",
+    "https://arxiv.org/abs/2511.07919"
   ],
   "entries_processed": [
-    "intake-1105",
-    "intake-1106",
-    "intake-1107",
-    "intake-1108",
-    "intake-1109",
-    "intake-1110",
-    "intake-1111",
-    "intake-1112",
-    "intake-1113",
-    "intake-1114",
-    "intake-1115"
+    "intake-1128",
+    "intake-1129",
+    "intake-1130",
+    "intake-1131",
+    "intake-1132",
+    "intake-1133",
+    "intake-1134",
+    "intake-1135",
+    "intake-1136",
+    "intake-1137",
+    "intake-1138",
+    "intake-1139"
+  ],
+  "expansion_declined": [
+    {
+      "arxiv_id": "2603.26942",
+      "title": "The observability gap: why output-level human feedback fails for LLM coding agents",
+      "reason": "Cap. Nearest miss \u2014 bears on reviewer-escalation-and-human-gate-policy.md. First candidate if a second expansion run is authorized."
+    },
+    {
+      "arxiv_id": "2607.13104",
+      "title": "Self-Improvements in Modern Agentic Systems: A Survey",
+      "reason": "Cap + survey. Primary-evidence entries were preferred; intake-781 (Weng survey) already covers the survey slot."
+    },
+    {
+      "arxiv_id": "2607.07663",
+      "title": "Recursive Self-Improvement in AI: From Bounded Self-Refinement to Autonomous Research Loops",
+      "reason": "Cap + survey, same slot as above."
+    },
+    {
+      "arxiv_id": "2603.05399",
+      "title": "Judge reliability harness: stress testing the reliability of LLM judges",
+      "reason": "Cap. Would bear on canonical-judge-suite-revamp.md; second-order to this cohort's acceptance-rule question."
+    },
+    {
+      "arxiv_id": "1803.04585",
+      "title": "Categorizing variants of Goodhart's law",
+      "reason": "Cap + 2018 taxonomy already implicit in intake-1135's formal treatment, which was preferred as the precise instrument."
+    },
+    {
+      "arxiv_id": "2605.22166",
+      "title": "Adapting the interface, not the model: runtime harness adaptation for deterministic LLM agents",
+      "reason": "Cap. Adjacent harness work with no distinct bearing on the acceptance-rule question this cohort centers on."
+    },
+    {
+      "arxiv_id": "2602.01869",
+      "title": "ProcMEM: procedural memory via non-parametric PPO",
+      "reason": "Cap. Memory-side of MEGA's lineage; the curation-side baselines (1137/1138) were higher value for checking MEGA's comparison."
+    },
+    {
+      "arxiv_id": "2603.20691",
+      "title": "SWE-Next: scalable real-world software engineering tasks for agents",
+      "reason": "Cap. Benchmark corpus, not load-bearing for either submitted entry's conclusions."
+    },
+    {
+      "arxiv_id": "2601.03555",
+      "title": "SCRIBE: structured mid-level supervision for tool-using language models",
+      "reason": "Cap. Cited by intake-1129 only in its discussion section; not load-bearing."
+    },
+    {
+      "arxiv_id": "2604.05963",
+      "title": "QiMeng-PRepair: precise code repair via edit-aware reward optimization",
+      "reason": "Cap. Program-repair adjacent; no EPYC surface."
+    },
+    {
+      "arxiv_id": "2607.12254",
+      "title": "Self-Aware Recursively Self-Improving Agents for Personal Singularity",
+      "reason": "Cap + scope. Multi-agent personal-assistant architecture, not an acceptance-rule or harness-optimization result."
+    },
+    {
+      "arxiv_id": "2602.05810",
+      "title": "Bifrost: Steering Strategic Trajectories to Bridge Contextual Gaps for Self-Improving Agents",
+      "reason": "Cap. Surfaced in the same search cluster; no distinct bearing on the two submitted entries."
+    }
+  ],
+  "companion_artifacts_noted_not_ingested": [
+    {
+      "url": "https://github.com/mega-edo/mega_benchmark",
+      "bearing": "intake-1128",
+      "status": "HTTP 200 verified 2026-08-14, contents UNREAD",
+      "note": "Cited by MEGA as the home of experiment configs and per-benchmark results; the artifact that would settle the 46.5% / 76.55 figures. Distinct source, NOT a duplicate of the paper."
+    },
+    {
+      "url": "https://github.com/wisdomgraph/mega-code",
+      "bearing": "intake-1128",
+      "status": "surfaced in search, UNREAD",
+      "note": "Vendor product repo, 'The Self-evolving AI Coding Infrastructure'. Relevant to the commercial-bias assessment."
+    },
+    {
+      "url": "https://www.megacode.ai/blog/tech-report",
+      "bearing": "intake-1128",
+      "status": "surfaced in search, UNREAD",
+      "note": "Vendor blog rendering of the same tech report \u2014 a RESTATEMENT, not independent corroboration."
+    }
   ],
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 1,
-      "verbatim": "I foudn the intake object while studying Kimi's agent swarm and PARL popped up. There may be a lot more literature expansion to do",
+      "stage": 2,
+      "verbatim": "\"RECOMMENDED DEEP DIVES (ranked \u2014 operator selects)\" [full ranked table of ranks 1-6 pasted back verbatim: intake-1129, intake-1128, intake-1130 (RHO), intake-1131, intake-1139, intake-1134] - proceed",
       "disposition": "planned",
-      "plan_ref": "S1-expansion-kimi-axis",
-      "effect_on_stage1": "Dispatched a dedicated Kimi-agent-swarm expansion sweep in addition to the parallel-agent-RL sweep. Overflow beyond the cap of 10 is carried to the Stage-2 close-out gate, which is uncapped."
+      "plan_ref": "stage2-dive-selection",
+      "effect": "Operator pasted the complete ranked dive table and said 'proceed' \u2014 read as selecting ALL SIX ranked dives (1129, 1128, 1130, 1131, 1139, 1134). intake-1133 (AutoHarness) is read WITHIN the 1129 dive as its positive control, per the Stage-1 report, not as a seventh selection."
     },
     {
       "seq": 2,
-      "stage": 1,
-      "verbatim": "I'm curious to know if there are any principles that coudl be used to train/operate our orchestrator better",
-      "disposition": "planned",
-      "plan_ref": "S3-orchestrator-operating-principles",
-      "effect_on_stage1": "Dispatched a ground-truth sweep of our own spawn/stop policy and instrumentation so any imported principle can be compared against what actually exists. Shapes dive recommendations; authorizes no handoff write."
-    },
-    {
-      "seq": 3,
-      "stage": 1,
-      "verbatim": "\"So \\\"no sound thread-attribution method exists here\\\" is refutable: for Codex the parent->child edge is explicit, and for Claude the sidechain grouping is present. What's actually missing is narrower than R-17 concluded - a collector, a bus<->transcript join key, an outcome label, and a Task/SubagentStop hook (none of the 13 registered hooks in .claude/settings.json matches Task).\" - this sounds eerily similar to the coordinator-agent skill I just refactored with claude today. \"One caveat I won't let slide: the orchestrator repo's concurrency work (src/runtime/concurrency.py, NUMA quarters, placement veto) is inference concurrency - model instances on hardware. It is a completely disjoint axis from agent fan-out, shares no code or metric, and conflating the two would be a category error.\" - true there is a subtle difference between PARL and what's possible on our hardware. First, our model currently have relatively small context windows (~260k), this means that on large fan out, the individual batch threads have a lot less context to work with. This may not be an issue if fan-out tasks are narrowly scoped but typically when claude fans out, the subagents easily accumulate ~100k token contexts. We still don't know how much the REPL allows us to avoid such large contexts. As such, the max number of fanout agents on our models is quite reduce at the moment (-np 2 on full CPU instance, and -np 8 on the GPU architect_general). Secondly, the fanout doesn't necessarily mean fast execution. If the largest most expensive models guides the fanout, the individual threads will be slow on our system. This is precisely why our orchestration stack was built with the worker_general role available. This model is supposed to take narrowly scoped tasks and execute them fast. The intelligent model thus decides the fan out but the actual fanout threads aren't limited by the bandwidth-per-token required to operate the more intelligent model. We do allow the router to tap into the batched processes and this, if tied holistically intop the orhcestrator's task decomposition and distribution shoudl allow importing some of the power of the batching used in PARL to our wheelhouse. Ultimately, the task decomposition is the crux if I'm nto mistaken",
-      "disposition": "planned",
-      "plan_ref": "S3-epyc-native-parl-decomposition",
-      "effect_on_stage1": "Establishes the EPYC-native framing: the relevant plane is orchestrator TASK DECOMPOSITION mapping onto np batching, not Claude agent fan-out; worker_general is the structural analogue of PARL frozen subagents. Recorded in intake-1106 notes as a structural note. Also flagged a duplicate-work check against today's coordinator-agent skill refactor \u2014 CHECKED, no overlap: commits 2f787163/22c4aff5/d5c0848c/c436d5be encode DOCTRINE, and grep of the skill for parent_thread_id/isSidechain/promptId/critical-path returns zero hits."
-    },
-    {
-      "seq": 4,
-      "stage": 1,
-      "verbatim": "\"and can a decomposition be emitted that maps onto np batch slots on a cheap executor.\" - or a mixture of np batching and multi instance activation (CPU & GPU) in principle.",
-      "disposition": "planned",
-      "plan_ref": "S3-epyc-native-parl-decomposition",
-      "effect_on_stage1": "Widens the decomposition target from np slots on one instance to np batching x multi-instance activation across CPU and GPU; implies decomposition must be PLACEMENT-AWARE, a constraint no source in this sweep models."
-    },
-    {
-      "seq": 5,
-      "stage": 1,
-      "verbatim": "\"- Context is the real binding constraint, and it's the one nobody's reward function models. ~260k window against subagents that routinely accumulate ~100k means fan-out width and per-thread context trade off directly against KV. PARL's step-count formulation is blind to this - CriticalSteps counts steps, not tokens or KV residency, and it assumes uniform step cost.\" - dont' forget that we try avoiding large contexts by leveraging the REPL. This is a key element to take into consideration",
-      "disposition": "planned",
-      "plan_ref": "S3-repl-context-lever",
-      "effect_on_stage1": "Corrects the main's overstatement: context binds only ABSENT the REPL. REPL keeps child reasoning out of the parent context (cf. intake-536 RAO automatic context isolation, rao-redel-substrate-spike.md, repl-turn-efficiency.md), so it is the lever that breaks the fan-out-width vs per-thread-context tradeoff. Recorded against intake-1109, whose positive prediction is that fan-out wins only when single-agent context utilization binds."
-    },
-    {
-      "seq": 6,
       "stage": 2,
-      "verbatim": "also the quality difference looks like noise",
+      "verbatim": "[Tier 1 and Tier 2 dive-surfaced source tables pasted back verbatim: arXiv:2608.06301 HarnessOpt-Bench; github.com/scaleapi/vero; github.com/mega-edo/mega-benchmark; 2407.14477; 2405.16434; 2411.16646; 2306.01693; 2507.02833] - proceed with all",
       "disposition": "planned",
-      "plan_ref": "S2-1115-role-ablation-correction",
-      "effect": "Correct. 54.41 vs 53.40 is 1.01pp with no SD reported for the ablation, against comparable cells carrying SDs of 2.41-4.51. Recorded in intake-1115 as a NULL RESULT, not a reversal."
-    },
-    {
-      "seq": 7,
-      "stage": 2,
-      "verbatim": "this isn't exactly us. We have roles but I wouldn't say they're task specific experts",
-      "disposition": "planned",
-      "plan_ref": "S2-1115-role-ablation-correction",
-      "effect": "Correct and load-bearing. DyLAN task-specific experts are DOMAIN-EXPERTISE PERSONAS; EPYC roster roles (mainA-D, auditor, coordinator-agent, inference) are LANE AND OWNERSHIP roles. The ablated construct does not map onto our roster, so the result neither supports nor undermines our role files. Recorded in intake-1115."
-    },
-    {
-      "seq": 8,
-      "stage": 2,
-      "verbatim": "Whatever happened to your leftover stage 2 agent? Did it ever finish? I see it having a close-out gate but still looks alive in your subagent list",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "effect": "Checked via ListAgents: the MAST dive read completed, all six Stage-2 dives closed. Surfaced an unrelated finding \u2014 roughly 9 subagents appeared that the main did not dispatch, inferred to be sub-subagents spawned by the Stage-2b agents, meaning real concurrency was about double what was intended. Reported as inference, not fact."
-    },
-    {
-      "seq": 9,
-      "stage": 2,
-      "verbatim": "Tier 1, Tier2, and 2312.04511 LLMCompiler (ICML 2024, seminal) \u00b7 2602.07359 W&D \u00b7 2608.06370 Bitter Lesson of Tool Calling \u00b7 2605.15077 AsyncFC",
-      "disposition": "planned",
-      "plan_ref": "S2b-selection",
-      "effect": "Stage-2b selection: 13 sources run as combined Stage-1+Stage-2 passes, persisted as intake-1116 through intake-1127."
+      "plan_ref": "stage2b-selection",
+      "effect": "Operator selected ALL EIGHT Tier-1 and Tier-2 dive-surfaced sources for Stage-2b. Tier 3 therefore stands DECLINED by omission and each declined item must be named in the bearing entry's dive_corrections before Stage 3 opens."
     }
   ],
   "open_gates": {
-    "stage3": "READY \u2014 Stage-2 close-out gate is CLOSED. All operator-selected dive-surfaced sources ingested-and-dived; declines recorded.",
-    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate.",
-    "stage3_prerequisites_noted": [
-      "Three corrections to COMMITTED material need operator approval: the 36.9%-of-production-failures citation in 4 handoffs; the R-17 reopening; the rao-redel-substrate-spike.md FUND-OR-CLOSE status as candidate owner."
-    ]
+    "stage2": "CLOSED \u2014 all six operator-selected dives complete and written back.",
+    "prior_session_gate": "STILL OPEN \u2014 intake-1102/1103 (SOL-ExecBench) awaiting dive selection from 2026-08-11, unrelated mandate, carried forward untouched.",
+    "stage3_blocker": "meta-harness-optimization.md is a RETAINED COMPATIBILITY POINTER ('Do not add new task checkboxes here') \u2014 it must NOT be named as an owning handoff in any Stage-3 plan despite being the cross-reference-map target for agent_architecture/autonomous_research. Routing per that file: autopilot-continuous-optimization.md, eval-tower-verification.md, decision-aware-routing.md, unified-trace-memory-service.md. ALSO: intake-1129 dive CLOSED the charter instruction-hygiene actionable (our controller charter is already presupposition-free) \u2014 it must NOT be filed as work in Stage 3. AND intake-1128 dive CLOSED both belief-substrate design questions as DECLINE (PCR vs ClaimTuple; monotonic relation expansion).",
+    "stage2b": "CLOSED \u2014 all 8 operator-selected sources ingested-and-dived and persisted dive-verified; all Tier-3 declines named in bearing entries.",
+    "stage3": "READY. Prerequisites for the Stage-3 plan: (1) meta-harness-optimization.md is a FROZEN POINTER and must not be named as an owner; (2) three items are already CLOSED and must be filed as explicit declines, not work \u2014 charter instruction hygiene (our controller charter is already presupposition-free), PCR-vs-ClaimTuple, and monotonic relation expansion; (3) six cohort entries remain stage1-unverified (1132/1133/1135/1136/1137/1138) so NOTHING from them may be quoted in a plan item; (4) the Stage-1 preliminary actionables must each be promoted or explicitly declined."
   },
+  "stage1_hypotheses_requiring_dive": [
+    "EPYC autopilot SafetyGate may be suppression-only in intake-1129's sense (accepts on score, never on warrant). Stage-1 basis is a ZERO-HIT grep for 'warrant' across autopilot-continuous-optimization.md, frontier-f2-self-running-lab.md and agent-collab-rnd-harness.md, plus the handoff's own description of the gate as 'quality floor + per-suite guard + routing diversity' with a 4D Pareto archive. This is a hypothesis about HANDOFF PROSE, not a finding about orchestrator code, and must be settled against epyc-orchestrator source.",
+    "Whether autopilot's accept path is add-only in effect (does any species ever propose DELETIONS?). intake-1129's ratchet argument applies only to add-only regimes; it reports a prune-capable loop removes the phantom 0.88 of the time."
+  ],
   "stage2_dives": {
     "selected_by_operator": [
-      "intake-1106",
-      "intake-1107",
-      "intake-1109",
-      "intake-1110",
-      "intake-1111",
-      "intake-1115"
+      "intake-1129",
+      "intake-1128",
+      "intake-1130",
+      "intake-1131",
+      "intake-1139",
+      "intake-1134"
     ],
+    "read_alongside": {
+      "intake-1133": "positive control for intake-1129"
+    },
     "verdicts": {
-      "intake-1106": "dive-verified",
-      "intake-1107": "dive-overturned",
-      "intake-1109": "dive-verified",
-      "intake-1110": "dive-overturned",
-      "intake-1111": "dive-overturned",
-      "intake-1115": "dive-overturned"
+      "intake-1128": "dive-verified (numbers reproduce from 544MB raw data; framing overturned; 13 contradicting-evidence rows)",
+      "intake-1129": "dive-verified (all 5 claims + all 20 figures confirmed; EPYC exposure settled in orchestrator source)",
+      "intake-1130": "dive-verified (acceptance rule settled; cred 2->3; novelty high->medium; 3rd domain restored)",
+      "intake-1131": "dive-overturned (fails the job it was filed for; novelty high->low; cred 1->2)",
+      "intake-1134": "dive-verified (ICML independently verified; rel medium->high; cred 4->5)",
+      "intake-1139": "dive-verified (66.56 shown ABSENT from source; venue established; verdict->adopt_patterns)"
     }
   },
   "stage2b": {
     "uncapped": true,
-    "sources_selected": 13,
-    "entries_persisted": 12,
-    "note": "13 sources / 12 entries \u2014 the two Anthropic vendor documents share one entry (intake-1121).",
+    "sources_selected": 8,
+    "assigned_ids": {
+      "2608.06301": "intake-1140",
+      "github.com/scaleapi/vero": "intake-1141",
+      "github.com/mega-edo/mega-benchmark": "intake-1142",
+      "2407.14477": "intake-1143",
+      "2405.16434": "intake-1144",
+      "2411.16646": "intake-1145",
+      "2306.01693": "intake-1146",
+      "2507.02833": "intake-1147"
+    },
     "entries": {
-      "intake-1116": "2605.29442 dive-verified",
-      "intake-1117": "2312.04511 dive-verified",
-      "intake-1118": "2510.05381 dive-verified",
-      "intake-1119": "2605.15077 dive-overturned",
-      "intake-1120": "2407.01502 dive-verified",
-      "intake-1121": "Anthropic blog + Agent Teams docs dive-verified",
-      "intake-1122": "2604.22750 dive-overturned",
-      "intake-1123": "2505.18286 dive-overturned",
-      "intake-1124": "2608.06370 dive-overturned",
-      "intake-1125": "2602.07359 dive-verified",
-      "intake-1126": "2601.14652 dive-overturned",
-      "intake-1127": "2607.16387 dive-verified (only adopt_component of the sweep)"
-    }
+      "intake-1140": "2608.06301 HarnessOpt-Bench \u2014 dive-verified; SUPERSESSION HYPOTHESIS OVERTURNED (extends VeRO, calls itself complementary); model-over-harness framing overturned",
+      "intake-1141": "github.com/scaleapi/vero @0b0e8676 \u2014 dive-verified; OVERTURN: runs/recompute.py never existed and the pin-generating script does not implement the documented convention",
+      "intake-1142": "github.com/mega-edo/mega-benchmark @97cbd74 \u2014 dive-verified by full 557MB raw recount; regression prior REPLICATED and method-invariant",
+      "intake-1143": "2407.14477 rationale DPO \u2014 dive-verified; v1 headline claims WITHDRAWN by v4, repo stale at v1, requires training",
+      "intake-1144": "2405.16434 directional feedback \u2014 dive-verified; NO numbers published at all, Algorithm 1 gate printed INVERTED in both versions",
+      "intake-1145": "2411.16646 self-generated critiques \u2014 dive-verified; \"without extra supervision\" is METADATA-ONLY, method is label-anchored",
+      "intake-1146": "2306.01693 fine-grained feedback \u2014 dive-verified; carries the training-free 70.9-vs-57.2 rater-accuracy prior",
+      "intake-1147": "2507.02833 IFBench \u2014 dive-verified, 6/6, the cohort ONLY adopt_component; noise floor computed (+/-5.6pp single-arm, +/-8.0pp unpaired)"
+    },
+    "entries_persisted": 8
   }
 }

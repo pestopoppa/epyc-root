@@ -469,3 +469,47 @@ implementation record; targeted offline pytest only.*
 
 - [x] ✅ 2026-07-22 (`e1e3d3da` + `590986bb` scored_at_s) **Per-question rows lack start/end timestamps** (found 2026-07-22 verifying EV-4b concurrency): `question_results.*.jsonl` rows carry verdicts/hashes/covariates but no per-question timing, so end-to-end concurrency depth and latency distributions cannot be derived from the artifact. Add started_at/ended_at to `_EvalQuestionJsonlWriter` rows.
 - [x] ✅ 2026-07-22 (`f72d1d52` --resume-incomplete-from, dataset-sha-guarded merge) **Resume-incomplete support for eval arms** (operator ask 2026-07-22): the sidecar's `complete_marker_required` contract + `--retry-errors-from` (error rows only) mean a stopped mid-arm run restarts from zero. Add `--resume-incomplete-from <dir>`: load per-question rows, skip completed ordinals, run the remainder, merge with explicit provenance (resumed=true, resume_boundary_ordinal). Enables stop→upgrade→resume workflows for long arms.
+
+## Research Intake Update — 2026-08-15 (acceptance cannot currently see a no-op; intake-1129/1141)
+
+Operator decisions taken 2026-08-15: **no-op guard + warrant telemetry**; full warrant gate
+**deferred**; dead `src/diversity_gate.py` **disposed of**.
+
+**Finding.** Acceptance is `passed = len(violations) == 0` (`safety_gate.py:2022`) over five
+score-comparison legs. Nothing requires a mutation to cite the failure it fixes — and structurally it
+cannot today, because **`SafetyGate.check()` never sees the mutation payload at all**; it takes only an
+`EvalResult`. The one surplus-shaped check, `_proxy_check`, is **warnings-only** and fires only when
+improved *and* declined are both non-empty, so a strict no-op fires **nothing**. Surplus is also
+unpriced: the four Pareto objectives are `(quality, speed, -cost, reliability)`, while
+`instruction_token_ratio` is report-only and gates just the `structural_prune` action.
+
+Scope note, so the external source is not over-read: we are **not** add-only (AP-17 `structural_prune`
+and `rollback` exist), so `intake-1129`'s ratchet argument does **not** transfer unmodified. What does
+transfer is that **nothing re-examines already-accepted scaffolding**, and that there is **no abstain
+action** — the controller charter requires emitting "the closest valid AutoPilot action block" even
+when the best move is operator-facing (`deep_eval` is a partial, non-mutating escape). Five independent
+sources in this literature have no warrant requirement either, so this is an absence, **not** evidence
+that a warrant requirement is unnecessary — nobody has tested one.
+
+### SG-WARRANT (NEW 2026-08-15)
+
+- [ ] **SG-W1 — No-op guard.** Refuse to promote a candidate whose config/diff is byte-identical to its
+      parent, regardless of score. Under a stochastic LLM-graded objective a byte-identical candidate
+      can score above its parent on noise alone, and `intake-1141`'s own data gives the magnitude: an
+      **unchanged** harness scored 0.800 and 0.547 on the same suite. A few lines; zero exploration cost.
+- [ ] **SG-W2 — Warrant as telemetry (explicitly NOT a gate).** Record whether an accepted edit cites
+      an observed failure instance, without blocking on it. Structural obstacle to plan for:
+      `SafetyGate.check()` takes only an `EvalResult`, so the action payload must be threaded to the
+      gate. The full warrant gate is **deliberately deferred** until this telemetry says it matters,
+      because the cost is real and measured — `intake-1134`'s equivalent guidance had the lowest
+      variance *and* "prevented breakthrough modifications", and `intake-1140` found trace-reading
+      share **negatively** correlated with gain (ρ −0.31 to −0.64). The cheapest exposure measurement
+      is the known-null corpus filed as EV-14f in
+      [`eval-tower-verification.md`](eval-tower-verification.md).
+- [ ] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** Zero production importers,
+      warn-only by default (`SAFETY_GATE_WARN_ONLY` defaults to `"1"`), renamed 2026-07-20 out of a
+      bare-name collision with `scripts/autopilot/safety_gate.py` (the module the autopilot actually
+      imports). Its `evaluate()` accepts on a raw `quality_delta > 0` with no resolution band, so it
+      reads like a live acceptance surface and is not one — a subagent during the 2026-08-15 intake
+      session read it as our live gate and was wrong. A plausible-looking second "SafetyGate" in the
+      tree is a standing misreading hazard.

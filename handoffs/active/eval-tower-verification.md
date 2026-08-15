@@ -415,6 +415,37 @@ Two complementary, mostly inference-free pieces. **Tracked in [research-evaluati
   - [x] EV-10b read-only report consumer for journaled surrogate feedback. ✅ 2026-07-11
 - **Cross-cutting**: EV-10a is the empirical instrument that makes the `meta-harness-optimization.md` SkillOpt recommendation auditable — without paired, per-suite, negative-delta-guarded efficacy measurement, the autopilot cannot distinguish a genuinely-helpful skill edit from a SkillsBench-style net-negative self-generation. **Priority MEDIUM**, mostly code (no new model for 10a; 10b reuses cross-family infra). Do NOT block EV-3/4/5 on this. **Inference-gated validation is tracked in [bulk-inference-campaign.md](bulk-inference-campaign.md) Package K as K-SKILL-1** (remaining stage: deploy/restart + paired-mutation A/B; post-AR-3/AR-4 class).
 
+
+#### EV-10a corroboration — the regression prior is now REPLICATED (2026-08-15, intake-1142)
+
+The SkillsBench "curated skills help on average while a sixth of tasks regress" finding that EV-10a's
+negative-delta guard exists to catch has been **independently reproduced on a second benchmark
+generation and a different model family**, using a third party's own raw data. A Stage-2b dive
+downloaded all four MEGA release bundles (~557 MB), parsed 1,719 per-trial records and 1,604 agent
+transcripts, and recomputed per-task deltas against the no-curation control:
+
+| arm vs no-curation control (n=85 shared tasks) | mean lift | tasks regressing |
+|---|---|---|
+| SkillNet | +10.69pp | 13 (15.3%) |
+| AgentSkillOS | +10.02pp | 17 (20.0%) |
+| MEGA (Wisdom Graph) | +15.52pp | 12 (14.1%) |
+
+On the clean 78-task subset (all four arms, no infrastructure failure anywhere): **MEGA +16.92pp with
+12/78 = 15.4% regressing**, against our standing SkillsBench prior of +16.2pp with 16/84 = 19.0%.
+Close to exact on lift, directionally identical on regression.
+
+**Stronger than a replication**: the regressing set is partly **method-invariant** — five tasks
+(`crystallographic-wyckoff-position-analysis`, `financial-modeling-qa`, `python-scala-translation`,
+`travel-planning`, `video-tutorial-indexer`) regress under **all three** independent curation methods,
+and three more under both baselines. That makes it a property of the TASKS, not of any one retriever.
+Note the ceiling too: even the winning arm passes 46.5%, so curation moves about one task in six and
+breaks about one in seven.
+
+**Consequence for this handoff — evidence only, NO new task.** EV-10a's per-suite negative-delta guard
+is confirmed load-bearing by a source with every incentive not to find it (the vendor never reports
+this cut). This raises the priority of EV-10a's remaining validation stage, tracked as K-SKILL-1 in
+[`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package K. Cite `intake-1142#record`.
+
 ### EV-11/12/13 (NEW 2026-07-14) — backlog ROI audit waypoints
 
 Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) §A):
@@ -545,3 +576,90 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 
 - [ ] **EV-10c — single-artifact admission prefilter (CORE pattern, intake-888).** Before a candidate skill/insight/prompt fragment reaches the EV-10a paired per-suite gate, re-attempt ONLY the originating failure with ONLY that artifact in context; admit iff success rate beats the pre-artifact baseline. Rejects junk at ~1 rollout each instead of a full paired suite run, and gives the SkillsBench net-negative caution (intake-096) a mechanical filter. Keep EV-10a as the authoritative accept gate.
 - [ ] **EV-9 frontier-tier candidate — FrontierCS (arXiv 2512.15699).** EV-9 records production suites saturating in the 90–94% band and unable to resolve the top-2 models; FrontierCS is maximally non-saturating (best model Score@1 **29.37** vs human expert **95.41**) and ships per-problem evaluators. **Start with a ~10-problem FLOOR PROBE on one production arm** before costing the exec-sandbox harness: all published baselines are proprietary API models, so our open-weight arms may land near zero — trading a saturation problem for an equally non-discriminative floor. Version note: paper v1 = **156** problems; the site reflects FrontierCS **1.0, 240 tasks / 172 algorithmic**. **No seeds, variance or significance testing anywhere** — do not build ranking-sensitive work on it, and define our own protocol-id rather than inheriting theirs.
+
+## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster)
+
+Source cohort: intake-1128…1147 (MEGA + Phantom Guardrails, operator-submitted 2026-08-14; 14 entries
+dive-verified). The convergent finding across four independent sources is that **we gate acceptance on
+deltas we have never measured the resolution of.**
+
+**The gap, precisely.** Three mechanisms touch resolution today; none blocks on the aggregate quality
+axis:
+
+| Mechanism | Measured? | Blocks acceptance? |
+|---|---|---|
+| MAD noise filter (`safety_gate.py:1419-1439`, rolling 10-sample window, z>2.0) | **Yes** | **No** — warnings/categories only, feeds `learning_exclusions.py`; also only ever sees deltas ≥ 0 |
+| Per-suite 3/n single-flip quantum (`safety_gate.py:242-254`) | No — analytic quantization | Yes, but only on the per-suite *regression* side |
+| `self_criticism.py:48-56` min-resolvable-delta, third state "within eval resolution" | No — derived 3/n | **No** — runs *after* the gate, emits prompt/journal text only |
+
+The three constants that actually decide `passed` on quality are all **chosen, not measured**:
+`QUALITY_FLOOR_T0=2.0`, `QUALITY_FLOOR_T1=1.0`, `REGRESSION_THRESHOLD=-0.05`.
+
+**This is not a new idea here** — we already declare noise floors elsewhere (K-RAG-1's 2pp floor in
+[`bulk-inference-campaign.md`](bulk-inference-campaign.md), where a 1.31pp gap was correctly called
+below-floor; and calibrated floors throughout [`autokernel-research-loop.md`](autokernel-research-loop.md)).
+The eval-tower *quality* lane is the one place the instrument is missing, and its absence is already
+documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_resolution_artifact`.
+
+### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate
+
+- [ ] **EV-14a — Measure a per-suite resolution band using the instrument we already have.** Run
+      `scripts/autopilot/core_v2_calibrate.py --repeats` (fixed n and seed, standalone JSONL rows,
+      spread fully retained, nothing averaged) against ONE **UNCHANGED** config per T1 suite; derive
+      the band from the retained spread and publish it beside the suite. Report a difference smaller
+      than its own suite's band as **UNRESOLVED** — never as "no change", never as a regression.
+      **Do NOT build a new rescore harness.** External method: `intake-1140#02` (published and
+      citable). External evidence of magnitude: `intake-1141` measured one *unchanged* harness at
+      0.800 and 0.547 on the same suite.
+- [ ] **EV-14b — Decide whether the measured band should BLOCK.** The only measured instrument (MAD)
+      never blocks and never sees negative deltas; the only blocking resolution bound (3/n) is
+      analytic. `self_criticism.py` already computes the right third state and discards it. Proposal:
+      give the gate that third state, so a sub-band delta records as `unresolved` rather than
+      counting as an improvement.
+- [ ] **EV-14b′ — The candidate/baseline asymmetry is structural, not just a K mismatch.** The
+      candidate is measured LIVE every trial; the baseline is a PINNED PRIOR SCALAR never re-measured,
+      so only the candidate side can be zero-filled, infra-degraded or unlucky. There is no paired
+      re-run of the incumbent, and the existing mitigations (`reliability_blocked`,
+      `quality_rebaseline_hold`) are one-sided suppressions that skip the comparison rather than
+      equalizing it. Decide alongside EV-14b. This is a stronger form of `intake-1141`'s √K argument
+      (repo-only; that argument is NOT in the paper).
+- [ ] **EV-14c — Fix the baseline last-write-wins collapse (defect, not enhancement).**
+      `safety_gate.py:1146-1155` `update_tier()` writes the baseline with `dict.update`, so a
+      re-score of the same suite silently overwrites the prior baseline with no record that one
+      existed. This is the collapse point that actually gates decisions and it will corrupt EV-14a the
+      moment repeat scoring exists. **Fix before EV-14a runs.**
+- [ ] **EV-14d — Assert expected case count before scoring.** A short draw currently scores a subset
+      and reports it as a complete result: the sampler logs a shortfall into provenance and returns
+      short, then `n_questions` is defined as `len(results)`. Three narrow paths already fail closed
+      (promotion-eval min-n, math re-baseline, designed-core missing ids); generalize that. External
+      precedent: `intake-1141`, where a half-vendored suite "passes config validation and then scores
+      a subset of the benchmark without saying so."
+- [ ] **EV-14e — Record the baseline pin INSIDE the trial record, beside the delta.** Today the
+      incumbent value reaches the journal at write time only as **free prose** in `failure_analysis`
+      ("… vs baseline 1.524 …"), and we already parse it back out with a regex
+      (`experiment_journal.py:99` `_BASELINE_QUALITY_RE`) — which exists because corrupt baselines
+      embedded in prose had to be scrubbed after the fact. `JournalEntry` has no `baseline_quality`,
+      no `delta`, no `previous_quality` field at all. Adopt `intake-1141`'s pattern: write the pin
+      into the run's own result so the delta is self-contained rather than joined by hand or
+      re-folded. Their own postmortem is ours in another costume — their pins went stale because
+      "nothing recorded the dependency."
+- [ ] **EV-14f — Known-null corpus: run the optimizer against inputs with NO failures and assert it
+      proposes nothing.** Our eval tower measures whether a change HELPS, never whether a proposed fix
+      ANSWERS a real observed failure. Method: `intake-1129`'s Counterfactual Fabrication Lab, whose
+      whole design is that the correct action is known to be "do nothing". This is the cheapest
+      measurement of the exposure that `safetygate-rlvr-provenance-audit-2026-07-22.md` SG-W2 tracks,
+      and it needs no gate change. Carry the source's limits: its effect was concentrated in one
+      proposer of five, and the trigger was a board-game genre prior whose analogue in
+      kernel/routing/benchmark harnesses is untested — a null result here is informative, not
+      exculpatory.
+
+**Reuse, do not rebuild**: `core_v2_calibrate.py --repeats` (repeat scoring, spread retained);
+`paired_stats.py` (McNemar — exact binomial, continuity-corrected normal, verdict surface,
+discordant-pair sample-size guidance); `pareto_archive.hv_slope_noise_floor()` (an existing *measured*
+floor, though it gates stagnation rather than acceptance).
+
+**Do not miscite SEQ-B.** It lives at `src/autopilot_core/tier_specs.py:121-147` (not under
+`scripts/`), and it root-caused a **measurement-pairing bug** — an unchanged config scored a rate
+regression because candidate and incumbent used different denominators — *not* sampling noise. Cite it
+for the "an unchanged config scores a regression" framing and for deriving a constant from 396
+journaled trials. It is **not** precedent for a measured noise band.

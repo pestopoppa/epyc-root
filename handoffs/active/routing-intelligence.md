@@ -133,3 +133,27 @@ one would fork an already-unfinished program.
 - Update [`bulk-inference-campaign.md`](bulk-inference-campaign.md) if AR-3/J-package traffic is used to collect RI samples.
 - If a new injection-risk classifier is opened, add it here as RI-13 and cross-link DAR-6/J14.
 - If a stack/model change changes role throughput or cost, update q-scorer baselines and note the dependency in the routing index.
+
+## Research Intake Update — 2026-08-15 (harness selection as a routing dimension; intake-1140)
+
+**Record only — no task, no build.** Filed because a plausible misreading of this source would push
+routing work in the wrong direction, and the misreading was made once already during intake.
+
+`intake-1140` (HarnessOpt-Bench, Scale AI) reports that "model choice has a larger effect than
+coding-harness choice" — 0.142 vs 0.079 mean gain movement, about 1.8×. **That is not a routing
+result, and citing it as one is backwards.** The harness varied in that contrast is the **optimizer's
+own coding agent** (Claude Code vs opencode vs codex vs kimi-cli), not the harness being optimized.
+
+On the **target** axis — the one our routing work cares about — the same paper's Table 3 is a
+controlled swap where the harness is the only variable (same dataset, partition, rounds and target
+model), and it shows the largest effects anywhere in the paper: OfficeQA 0.341 → 0.734,
+BrowseComp-Plus 0.462 → 0.701, Terminal-Bench 0.241 → 0.607, GAIA 0.000 → 0.508. Converting those to
+normalized gain and comparing against the best of **111** frontier-optimizer runs — an arithmetic the
+dive performed and the paper never states — **the best off-the-shelf harness is statistically
+unresolved from the best optimizer run on three of four tasks, and beats every optimizer on
+Terminal-Bench by about 3.6 resolution bands.**
+
+**The citable implication is therefore the opposite of the headline**: harness/scaffold selection is
+worth about as much as an entire frontier-model optimization campaign, and should be treated as a
+**first-class routing dimension rather than a fixed substrate**. Cite `intake-1140#record`, never as
+"model > harness".

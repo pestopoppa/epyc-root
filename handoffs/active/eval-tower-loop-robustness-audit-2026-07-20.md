@@ -146,3 +146,45 @@ The prevention is **not** kernel-promotion-specific — it's **any change to a m
 5 audits, 2026-07-20: runner + contention-matrix + preflight + entries/ledger (4 read-only subagents) +
 scoring (parallel research agent, verified here). Load-bearing claims spot-verified against source;
 F2a (safety_gate baseline block) and C9 (hash-namespace) flagged **unconfirmed**. Later checked items in the executable checklist record the implemented follow-up.
+
+## Research Intake Update — 2026-08-15 (failed-trial convention; intake-1141)
+
+The convention worth adopting, from a Stage-2b dive of the `scaleapi/vero` repository: an
+**agent/seed-caused** failure scores 0 *and the baseline pays the same tax*; a **platform-caused**
+failure is **dropped** (a retry cannot score a trial that never ran, and zero-filling infra bakes
+outage luck into the pin); an **unclassified exception type is a hard error**, not a default bucket.
+
+**Cite this as design guidance, never as validated practice.** The source that documents the rule does
+not implement it: `runs/recompute.py`, named as the rule's home, has **never existed** in that
+repository's history; the script that produced their published pins drops unrewarded trials rather
+than zero-filling them; and their shipped error taxonomy has zero `raise` statements. Their *live
+engine* does implement the first two halves. Both facts must travel together — this is a worked
+external example of "the convention is documented" and "the numbers obey the convention" being two
+different claims.
+
+**Verified against our own code**, where the gap is narrower and more specific than the source implies.
+`src/autopilot_core/measurement_guards.py` does have **zero `raise` statements**, but it is not naively
+fail-open — it exists *because* of the documented 2026-08-03 incident (a T1 calibration reported 0%
+correct purely because the orchestrator API was down), explicitly naming
+`feedback_fail_open_defaults_conceal_their_own_corruption`. Three specific holes remain:
+
+- [ ] **ETR-1 — We DROP BOTH failure classes; decide whether agent-caused should score 0.**
+      `eval_tower.py:5129` filters the quality denominator with `not r.error`, so an agent/config-caused
+      failure and a platform-caused failure are treated **identically** — both leave the denominator.
+      The distinction survives only into telemetry and `reliability`. The consequence: **a config that
+      crashes more gets a smaller denominator and is not penalized for it.** The external convention
+      says the agent-caused half should score 0 (with the baseline paying the same tax) while only the
+      platform-caused half is dropped. Decide deliberately; do not inherit current behaviour by default.
+- [ ] **ETR-2 — `quality_measured` is computed and never read (latent defect).** Placeholder results
+      are constructed with `quality=0.0` and `quality_measured=False`, each commented "`quality=0` is a
+      placeholder, not a measurement" — but `quality_measured` appears **zero** times in
+      `autopilot.py` and `experiment_journal.py`, and only at its own declaration in `safety_gate.py`.
+      Neither `check()` nor `update_baseline()` reads it, so a placeholder enters the gate as a literal
+      0.0 candidate score; what actually saves it is an **independent** guard, the REL-1 reliability
+      floor. Either read the flag or delete it — a guard that is computed, documented and never
+      consulted is exactly the shape our own verification rules warn about.
+- [ ] **ETR-3 — Close the narrow silent-scoring hole.** An unrecognized failure carrying a non-empty
+      error string becomes `task_failed` (misclassified — charged to the model rather than the
+      platform), which is defensible. The genuine fail-open is narrower: a **non-blank garbage answer
+      with no error field and no structural signal** returns `None` from `infra_failure_reason` and is
+      scored as an ordinary wrong answer.
