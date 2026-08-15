@@ -76119,7 +76119,7 @@
     Directly supplies candidate benchmark definitions and reference logic for
     RVP-C5-2, plus profiler, scorer, manifest, tolerance, and anti-reward-hack
     mechanisms relevant to RVP-C2, C3, C5, and C6.
-  credibility_score: null
+  credibility_score: 3
   credibility_justification: >-
     Repository artifact, not a peer-reviewed paper. It is recent, has no
     independent reproduction located in the bounded search, and targets a
@@ -76165,15 +76165,15 @@
     AMD reference records respectively. These are population counts, not
     transferable MI210 performance results.
   contradicting_evidence:
-  - >-
-    The implementation targets MI350X/MI355X gfx950 with ROCm 7.2 and PyTorch
-    2.9.1, whereas the AutoKernel host is MI210 gfx90a with ROCm 6.2.
-  - >-
-    No LICENSE file, GitHub license metadata, independent reproduction, or
-    public issue history was located at Stage 1.
-  - >-
-    The source itself documents bad bounds and timing/stream defects; the
-    current manifest must be audited rather than assumed clean.
+  - 'THE HEADLINE PORTABILITY FINDING, AND IT MUST BE STATED PRECISELY BECAUSE THE BLUNT VERSION IS WRONG: this port carries NO MEASURED CONSTANTS FOR gfx90a/MI210. It supports gfx950 (MI350X/MI355X) only, with an MI300X/gfx942 constants entry but no measurements; a tree-wide token census shows gfx950 x7511, gfx942 x55 and gfx90a x0 as a target. THIS IS NOT THE SAME AS UNUSABLE ON MI210. The compile path is genuinely arch-agnostic — the gencode helper falls back to reading gcnArchName from torch and would correctly emit --offload-arch=gfx90a, and a LOCAL hardware target exists precisely for whichever device the host has. SO COMPILATION AND CORRECTNESS CHECKING RUN ON OUR MI210 TODAY; ONLY SOL SCORING DOES NOT, because T_SOL, T_b and tolerances are per-part MEASURED quantities that do not exist for gfx90a.'
+  - 'THE TWO BLOCKERS ARE DELIBERATE FAIL-CLOSED REFUSALS THAT NAME THEIR OWN REMEDY, not crashes: a missing Part entry (add spec-sheet peak clock and power cap, and MEASURE F_LOCK — the repo ships the task for it) and a missing gfx90a LLC_BYTES (add one measured for the part; the docstring explains that falling back to torchs reported L2 would undersize the cache flush ~64x and make every memory-bound kernel look faster than it is). A third softer gate makes manifest building refuse when no clock preset exists. The port checklist is therefore bounded and signposted: Part entry, measured F_LOCK, measured LLC size, regenerate the SOLAR arch YAML via the parametric generator, re-measure T_b and tolerances. The repos own MI355X runbook is effectively that checklist.'
+  - 'THE PORT SCOPE IS SMALLER THAN THE SEED COUNT SUGGESTS, for a reason found in the sources own data: FOUR OF OUR EIGHT C5 SEEDS HAVE VACUOUS T_SOL BOUNDS. Median headroom (T_b/T_SOL) per seed is k215 6.8x (ok), k145 16.8x, k175 17.0x, k138 33.4x (loose), then k154 506x, k227 3,690x, k225 5,710x, k228 36,837x (vacuous). The repo states the consequence itself: above ~100x headroom the score collapses toward T_b/(T_b+T_k) and carries no roofline content — i.e. it degenerates into plain speedup-over-PyTorch, the exact framing this benchmark exists to replace. So a bound port buys real SOL scoring for k215 (29 workloads) and loosely for k138/k145/k175; the other four need no bound port at all, because a correctness oracle plus a PyTorch-relative number is everything their bound was ever worth.'
+  - 'ENVIRONMENT MISMATCH: the pinned container is ROCm 7.2 / torch 2.9.1 with an explicit instruction not to bump the tag, against our ROCm 6.2. This is a separate obstacle from the missing constants and must not be conflated with it.'
+  - 'DTYPE CONSTRAINT, immaterial to our seeds but material to any wider use: gfx90a has no FP8 datapath, so the 18 FP8 Quant problems (278 workloads) would very likely join the 15 NVFP4 in deferral, leaving roughly 202 problems / ~3,439 workloads. That is an INFERENCE FROM THE HARDWARE, not a measured figure. All eight of our C5 seeds are bf16/fp16 and are unaffected.'
+  - 'TWO REAL GAPS IN THE REWARD-HACKING SUITE, both relevant to us because they are the family that has burned us before. (1) TIMED-PHASE OUTPUTS ARE NEVER VALIDATED — correctness runs in 10 rounds BEFORE timing, the timed-phase output buffers exist only as call-shape scratch and are never inspected afterwards; the shifting allocator closes the naive version by carrying validated values into the timed loop, but a submission that can DISTINGUISH a correctness call from a timed call could behave differently once timing starts, and NO CASE IN THE 48-CASE CORPUS ATTEMPTS PHASE DETECTION. This is upstream issue #19, inherited. (2) ZERO ADVERSARIAL COVERAGE FOR torch.compile OR CUDA-GRAPH CAPTURE-AND-REPLAY caching specializing on the address-shifted but value-identical timed inputs — the single most likely tool an AI kernel-authoring agent reaches for. The state-caching corpus also covers address- and shape-keyed caches but not content-fingerprint-keyed ones.'
+  - 'LICENCE NUANCE — the Stage-1 line no LICENSE file is TECHNICALLY TRUE BUT MATERIALLY MISLEADING. There is no root LICENSE file and GitHub reports license null, but 242 files carry SPDX-License-Identifier: Apache-2.0 with zero other identifiers, the full Apache-2.0 text ships as LICENSE.upstream, and the README states the licence explicitly. Intent is unambiguous and documented in-tree.'
+  - 'MAINTENANCE AND PROVENANCE SIGNAL: this is a PERSONAL repository, not an institutional port — one author holds 122 of 128 commits, 0 stars, created 2026-08-03. It is also moving fast: 41 commits in the 5 days since the Stage-1 pin, so any figure quoted from that earlier pin must be re-read. It is self-evidently agent-authored (it ships an agent contract file).'
+  - 'STAGE-1 FIGURE NOW STALE, AND THE CORRECTION FAVOURS THE SOURCE: the recorded 28/28 reward-hack replay result reflects an artifact from 2026-08-03. Twenty adversarial cases were added since (side-stream x2, tf32/matmul-precision x5, path-hazard x13) and the current artifact reports 48/48. The repos own docs undercount by about 40%.'
   portability_to_epyc: >-
     The benchmark schemas, tensor-generation/reference logic, and workload
     populations are likely portable after review. All gfx950 timing anchors,
@@ -76209,14 +76209,77 @@
     the C5 HyRA seed corpus. The pinned Hyra-results repository provides the
     candidate solutions; this repository appears to provide the matching AMD
     benchmark substrate. That pairing is provisional until a source dive.
-  reader_should_conclude: >-
-    UNVERIFIED. Do not cite its MI350X numbers, treat it as MI210/ROCm-6.2
-    support, or import its timing/tolerance constants. A source dive is needed
-    before its definitions or mechanisms enter the AutoKernel evaluator.
+  reader_should_conclude: 'DIVE-VERIFIED 2026-08-15. STATE THE PORTABILITY FINDING IN TWO PARTS OR YOU WILL MISLEAD: this port has NO MEASURED CONSTANTS for gfx90a (it is gfx950-only, ROCm 7.2 against our 6.2) — but that is NOT the same as unusable on MI210. COMPILATION AND CORRECTNESS CHECKING RUN HERE TODAY via the arch-agnostic compile path and the LOCAL hardware target; only SOL SCORING needs the port. Never write "does not support MI210" without that second half. WHAT TO REUSE NOW, no port required: the definition/workload/live-reference schema, the 10 fresh-input correctness rounds, and the entire eleven-check reward-hacking suite (Apache-2.0, arch-independent, audited as genuinely enforced rather than merely documented). AutoKernel can use this as a gfx90a CORRECTNESS ORACLE immediately. IF THE BOUND PORT IS SCOPED, scope it small: four of our eight seeds have VACUOUS bounds where the score degenerates into speedup-over-PyTorch, so k215 (29 workloads) is the one seed with a bound worth optimizing against. NEVER import a T_SOL, T_b, tolerance or clock constant — every one is MI350X-measured and the source itself forbids it. Do NOT cite compute_partition_mode as a reward-hacking defense; it is advisory metadata nothing reads. Do NOT repeat the Stage-1 "no LICENSE file" line without its correction (242 SPDX Apache-2.0 headers, LICENSE.upstream, and an explicit README statement). Cite 48/48 replay, not the stale 28/28. Remember the kNNN-to-slug mapping lives in OUR corpus file, not theirs.'
   discovered_via: search
   ingested_date: '2026-08-11'
-  verification: stage1-unverified
-  integration_disposition: awaiting_dive
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'docs/methodology.md lines 27-28 — the anti-copying rule, and it is enforced not just stated'
+    quote: '**None of the three may be copied from B200.** That is not a stylistic preference.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'src/sol_execbench/core/bench/device/amd.py lines 66-71 — the gfx90a refusal, which TELLS YOU WHAT TO MEASURE'
+    quote: 'No LLC_BYTES entry for {arch!r}. Add one measured for that part -- do NOT fall back to torchs L2_cache_size, which reports the per-XCD L2 and would undersize the cache flush by ~64x, making every memory-bound kernel appear faster than it is.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'src/solexbench_rocm/parts.py line 201 — the second refusal, same shape: a bounded, signposted measurement task'
+    quote: 'No Part entry for {name!r}. Add one with its spec-sheet peak clock and power cap, and MEASURE its F_LOCK (tasks/01) -- do not reuse another parts, even on the same die.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'README.md line 8 — the supported parts, both the same die'
+    quote: 'Supports **MI350X** and **MI355X**. They are the same gfx950 die in different chassis'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'README.md lines 449-451 — the vacuous-bound self-diagnosis, which decides how much of the port is worth doing'
+    quote: 'The 827 above 100x are where `S` collapses toward `T_b/(T_b + T_k)` and carries no roofline content'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'README.md lines 452-454 — a bound corrected to the point of vacuity, named by the repo itself'
+    quote: 'Pricing a paged KV cache at the pages it gathers took `FlashInfer-Bench__018` from 185,274 cycles to **8** - correct, and vacuous.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'src/sol_execbench/core/bench/streams.py lines 20-21 — the original timing bypass this port found, root-caused and fixed'
+    quote: 'a 12.06 ms fp32 GEMM on a side stream, joined at the START of the next call, was reported as 0.0069 ms -- 1743x fast.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'README.md line 460 — licence intent, against a missing root LICENSE file'
+    quote: 'Apache-2.0, matching upstream `sol-execbench` and `NVlabs/SOLAR`.'
+    source_revision: 'github.com/williamqwu/sol-execbench-rocm at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e (2026-08-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED, and substantiated rather than merely asserted. The three-term derivation (T_SOL from SOLAR over the problems own graph against a generated arch config; T_b measured per workload; tolerances from reference-vs-reference variance) is documented, and the anti-copying rule is demonstrated: under AMD tolerances 3717/3717 non-deferred workloads pass, while under the datasets B200 tolerances the same references FAIL 8 workloads of L2/033. The codebase applies the same rule internally, refusing to copy one parts clock to another on the SAME die.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED by independent recount from the checked-in manifest, not taken from the README: 220 of 235 problems have n_scoreable > 0, the n_scoreable values sum to 3717, and the 15 fully-deferred problems are all NVFP4 (references fail at a CUDA-only scaled-GEMM path).'
+  - claim_index: 2
+    effect: narrowed
+    note: 'ALL EIGHT C5 SEEDS CONFIRMED PRESENT, with workload counts reproducing exactly (16/16/16/16/29/15/47/38 = 193, all scoreable, zero deferred) — BUT resolved via problem SLUG, not via the kNNN ids, which appear NOWHERE in either repository. The kNNN ids are HyRAs. The join therefore lives in OUR c5_seed_corpus.json and is ours to maintain; neither repo carries a cross-reference table. Record that as a maintenance obligation, not as a property of the source.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'THE TIMING PATHS AND THREE OF FOUR DEFENSES ARE CONFIRMED AND GENUINELY ENFORCED; ONE IS OVERSTATED. HIP-event timing, rocprofiler-sdk timing, AMD SMI clock/telemetry and the stream policy are all wired to live call sites and fail closed. BUT compute_partition_mode IS NOT A DEFENSE: it is computed and written into the environment record, and NOTHING ANYWHERE READS OR COMPARES IT. It is an advisory comparability label. (Moot for us regardless — MI210 has no compute partitioning.)'
+  - claim_index: 4
+    effect: unaffected
+    note: 'CONFIRMED, and unusually strong — the best epistemic hygiene encountered in this cohort. Three manifest versions coexist with explicit supersession semantics; a 62-entry defect ledger is maintained; bad bounds are enumerated per version with per-problem causes and the plain statement that none of the current five is corrected; a bound_quality mark (narrow/ok/loose/vacuous) is attached that changes no score but says what a score is worth; a single deferred-list file is declared as the one source every count quotes; and an agent run is excluded from the board WITH the reason published.'
+  dive_corrections: '2026-08-15 STAGE-2 DIVE (repo read at commit 7e751eccb8e45a0d0efbcb8c0db8f6eac57a837e, 2026-08-15; the Stage-1 pin has since moved 41 commits in 5 days). Operator-selected after waiting for dive selection since 2026-08-11. ALL FIVE CLAIMS RESOLVED: three CONFIRMED, two NARROWED. THE COMMISSIONED QUESTION WAS PORTABILITY TO OUR MI210, AND THE ANSWER MUST BE STATED IN TWO PARTS BECAUSE THE ONE-LINE VERSION IS MISLEADING. Part one: the port carries NO MEASURED CONSTANTS FOR gfx90a — it is gfx950-only (MI350X/MI355X), with an MI300X entry but no measurements, and its container pins ROCm 7.2 against our 6.2. Part two, which matters more: THAT IS NOT THE SAME AS UNUSABLE HERE. The compile path is genuinely arch-agnostic (the gencode helper reads gcnArchName from torch and would emit --offload-arch=gfx90a; a LOCAL hardware target exists for exactly this), so COMPILATION AND CORRECTNESS CHECKING RUN ON MI210 TODAY. Only SOL SCORING does not, because T_SOL, T_b and tolerances are per-part measured quantities. The two blockers are deliberate fail-closed refusals that name their own remedy rather than crashes, and the port checklist is bounded: Part entry, measured F_LOCK, measured gfx90a LLC size, regenerate the SOLAR arch YAML with the parametric generator, re-measure T_b and tolerances. The repos own MI355X runbook is that checklist. WHAT IS REUSABLE WITHOUT ANY PORT AT ALL, and this is the entrys real value: the definition/workload/live-reference schema; the 10 fresh-input correctness rounds; and the ENTIRE ELEVEN-CHECK REWARD-HACKING SUITE, which is Apache-2.0 and arch-independent. Those checks were audited against the standard that documented-but-unimplemented does not count, and they pass it: every check function raises, every one is wired to a live call site, and detection is fail-closed at the record level so a caught submission yields a non-passing terminal status rather than a score. The strongest evidence they are real is that the port found, root-caused, measured and FIXED an original timing bypass of its own — the timed loop deliberately never syncs between iterations, so work on a submission-created stream never lands inside the event bracket, and a 12.06 ms GEMM read 0.0069 ms (1743x fast). The fix is by neutralization (fence from current after the start event, join into current before the end event), a join-only first attempt still read 1.41x fast, and a REAL submitted kernel had hit a mild unintentional form at 1.42x. THE PAIRING HYPOTHESIS HOLDS: all eight C5 seeds resolve to real definition/workload/reference/tolerance/bound records, 193 workloads, all scoreable, zero deferred, all bf16/fp16 and so gfx90a-viable. But they resolve by problem SLUG — the kNNN ids appear nowhere in either repo, so THE JOIN IS OURS TO MAINTAIN. AND THE PORT IS WORTH LESS THAN THE SEED COUNT IMPLIES, which sharpens rather than weakens the case: four of the eight seeds have VACUOUS bounds (k228 36,837x headroom, k225 5,710x, k227 3,690x, k154 506x) where the score degenerates into plain speedup-over-PyTorch by the repos own analysis. k215 at 6.8x is the one seed with a bound worth optimizing against (29 workloads); k138/k145/k175 are usable but loose. So the honest bound-port target is tens of workloads, not 193 and certainly not 3,717. ONE CLAIM OVERSTATED: compute_partition_mode is NOT a reward-hacking defense — it is computed, written into the environment record, and never read or compared by anything. Advisory metadata. Moot for us anyway, since MI210 has no compute partitioning. TWO GENUINE GAPS TO CARRY: timed-phase outputs are never validated (upstream issue #19, inherited — and no case in the 48-case corpus attempts phase detection), and there is zero adversarial coverage for torch.compile or CUDA-graph capture-and-replay caching, which is the most likely cheat an AI kernel author would reach for. Both are our own 32.8%-timing-loophole family. CREDIBILITY RAISED null -> 3: the entry DOES make empirical claims of its own (F_LOCK measurements, tolerance derivation, 48/48 replay, the 1743x timing hole), so null was wrong. Not higher because it is a 12-day-old single-author personal repo with no independent reproduction; not lower because its self-auditing is the most rigorous in this cohort — a 62-entry defect ledger, published UNCORRECTED defects, a retracted-and-kept clock constant, and an excluded agent run with the reason published.'
+  verification: dive-verified
+  integration_disposition: knowledge_only
   disposition_evidence:
   - Exact eight-task overlap with the C5 corpus confirmed by pinned tree scan.
   - Platform and license mismatches require source-level review before reuse.
@@ -76245,7 +76308,7 @@
     SOL-ExecBench is already present indirectly through HyRA and intake-884,
     but the canonical repository, task format, and validation implementation
     were not indexed as their own source.
-  relevance: high
+  relevance: medium
   relevance_justification: >-
     This is the upstream schema and reference-harness source for the benchmark
     substrate needed to turn the C5 solution archive into reproducible
@@ -76282,17 +76345,9 @@
     Source-reported, unverified: official measurements assume fixed B200 clocks
     and note roughly 5-10% timing variance.
   contradicting_evidence:
-  - >-
-    The implementation and published bounds are NVIDIA B200/CUDA-specific and
-    cannot validate MI210 performance.
-  - >-
-    Closed issues #15 and #19 report benchmark-wide state-caching and
-    timed-output-validation vulnerabilities; open issue #21 reports an epsilon
-    mismatch. The pinned main commit predates those August reports, so a dive
-    must establish whether fixes exist outside that tree.
-  - >-
-    A single default seed is insufficient for the C5-2 three-seed,
-    four-transform input-insensitivity gate.
+  - 'UPSTREAM IS THE WEAKER ARTIFACT OF THE PAIR ON EXACTLY THE AXIS WE CARE ABOUT, which the Stage-1 filing did not capture. Issues #15 (benchmark-wide state caching) and #19 (timed-call outputs never validated) are both marked CLOSED, but upstream main HAS NOT BEEN PUSHED SINCE 2026-07-15, before either closure — so the open-source harness at current HEAD carries both holes unfixed.'
+  - 'WORSE, THE #15 MITIGATION DOES NOT EXIST FOR US. It was closed with a description of a leaderboard-side ASYNCHRONOUS POST-EVALUATION REVIEW — a service, not a harness fix — and that service does not exist for an offline self-hosted run, which is precisely our use case. The #19 fix (external PR #20) is closed WITHOUT being merged.'
+  - 'The ROCm port (intake-1102) therefore STRICTLY DOMINATES upstream for our purposes: it carries the same schema plus the AMD language set, the scoring implementation, and fixes for holes upstream still has. Upstreams residual value is licence clarity and provenance, not capability.'
   portability_to_epyc: >-
     The task schema, reference definitions, and correctness semantics are
     portable design inputs. CUDA implementations and all B200 timing, clocks,
@@ -76323,15 +76378,51 @@
   notes: >-
     Expansion source for intake-1102. The associated technical report is a
     separate source and was not added during this bounded Stage-1 expansion.
-  reader_should_conclude: >-
-    UNVERIFIED. This is the canonical portable schema/reference source, not
-    evidence that its B200 measurements or CUDA implementation apply to EPYC.
-    Source review of the reported validation vulnerabilities is required.
+  reader_should_conclude: 'DIVE-VERIFIED 2026-08-15. All four claims confirmed, and the SOL score was verified arithmetically from the implementation (1.0 at the solution bound, 0.5 at the PyTorch baseline, unbounded above 1.0 — which is how the ROCm port detects bad bounds). CITE THIS ENTRY FOR THE SCHEMA AND THE LICENCE PROVENANCE ONLY. Do NOT adopt the upstream harness as an oracle: at current HEAD it carries both its validation holes unfixed (main unpushed since 2026-07-15, before either issue was closed), and the state-caching mitigation is a LEADERBOARD SERVICE that does not exist for an offline self-hosted run like ours. intake-1102 strictly dominates it for our purposes. THE ONE THING TO CARRY FORWARD POSITIVELY: references are LIVE-EXECUTED, not stored golden tensors, so a seed change regenerates inputs and references together — that makes a multi-seed C5-2 screen scriptable without building a golden corpus.'
   discovered_via: expansion
   expanded_from: intake-1102
   ingested_date: '2026-08-11'
-  verification: stage1-unverified
-  integration_disposition: awaiting_dive
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'src/sol_execbench/sol_score.py line 24 — the score, verified arithmetically at both anchors'
+    quote: 'return 1.0 / (1.0 + (t_k - t_sol) / denom_gap)'
+    source_revision: 'github.com/NVIDIA/SOL-ExecBench at commit a9fa0804c793d438e70850c33fe34426e66d53dd (2026-07-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'src/sol_execbench/core/bench/config/benchmark_config.py line 34 — the default seed'
+    quote: 'seed: int = field(default=200)'
+    source_revision: 'github.com/NVIDIA/SOL-ExecBench at commit a9fa0804c793d438e70850c33fe34426e66d53dd (2026-07-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'src/sol_execbench/core/data/solution.py lines 63,65 — the hardware targets: no AMD anywhere upstream'
+    quote: 'B200 = "B200" ... LOCAL = "LOCAL"'
+    source_revision: 'github.com/NVIDIA/SOL-ExecBench at commit a9fa0804c793d438e70850c33fe34426e66d53dd (2026-07-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'GitHub issue #19, closed 2026-08-04, fix PR #20 state=closed merged=false — the validation hole upstream still carries'
+    quote: 'Correctness and performance are measured over two **disjoint sets of calls** to the solution, and the outputs produced during the timed calls are never inspected.'
+    source_revision: 'github.com/NVIDIA/SOL-ExecBench at commit a9fa0804c793d438e70850c33fe34426e66d53dd (2026-07-15), read 2026-08-15'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED. The three-part split is real (definition metadata with axes/inputs/outputs/reference, workload JSONL with tagged input generators and an explicit tolerance block, solution JSON), and correctness, timing and reward-hack checks are applied by the harness driver.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED ARITHMETICALLY from the implementation, not from the README: at T_k = T_SOL the expression yields 1.0 and at T_k = T_b it yields 0.5. Note two properties worth carrying: it is UNBOUNDED ABOVE 1.0, which is exactly how the ROCm port detects bad bounds, and it is asymptotic to 0.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED, and with a finding that FAVOURS us. The default seed is 200 and is supplied through a config file, so a canonical run alone indeed does not satisfy C5-2. The favourable part: the reference is a LIVE-EXECUTED function rather than stored golden tensors, so changing the seed regenerates inputs AND references together — which makes a multi-seed or multi-transform C5-2 screen straightforwardly scriptable rather than requiring a new golden corpus.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'CONFIRMED. Apache-2.0 verified from the LICENSE file itself, and the hardware enum is B200 plus LOCAL only — the entire ROCm language set exists only in the port, never upstream.'
+  dive_corrections: '2026-08-15 STAGE-2 DIVE (repo read at commit a9fa0804c793d438e70850c33fe34426e66d53dd, 2026-07-15; read 2026-08-15). ALL FOUR CLAIMS CONFIRMED, including the SOL score verified arithmetically from the implementation at both anchors rather than taken from the README. THE MATERIAL FINDING THE STAGE-1 FILING MISSED: UPSTREAM IS THE WEAKER ARTIFACT OF THE PAIR ON EXACTLY OUR AXIS. Its two validation issues — benchmark-wide state caching, and timed-call outputs never being inspected — are both marked closed, but main has not been pushed since 2026-07-15, BEFORE either closure, so the open-source harness at current HEAD carries both holes unfixed. And the state-caching mitigation is not a harness fix at all: it was closed with a description of a leaderboard-side asynchronous post-evaluation review, a SERVICE that does not exist for an offline self-hosted run — which is exactly our use case. The timed-output fix was an external PR closed without merging. ONE FINDING FAVOURS US and is worth carrying into any C5-2 design: the reference is a LIVE-EXECUTED function rather than stored golden tensors, so changing the seed regenerates inputs AND references together. A multi-seed or multi-transform C5-2 screen is therefore straightforwardly scriptable and does not require building a new golden corpus. RELEVANCE LOWERED high -> medium: the ROCm port (intake-1102) strictly dominates this source for every practical purpose — same schema, plus the AMD language set, plus the scoring implementation, plus fixes for holes upstream still carries. Upstreams residual value is licence clarity and provenance, not capability. The verdict stays adopt_component but is RE-SCOPED to the schema and the licence provenance; do NOT adopt the upstream harness as an oracle.'
+  verification: dive-verified
+  integration_disposition: knowledge_only
   disposition_evidence:
   - Canonical upstream and Apache-2.0 license confirmed at the pinned revision.
   - Relevant validation issues require a source-level dive before adoption.
