@@ -294,6 +294,50 @@ def _live_window_names(config: dict) -> tuple[set[str] | None, str]:
     return {w.strip() for w in (proc.stdout or "").split() if w.strip()}, live
 
 
+def _is_exec_endpoint(entry: dict) -> bool:
+    """True for `exec:<program>` endpoints (P2-5, the worker pool).
+
+    An exec endpoint names a MECHANISM, not a session. There is no window to
+    look for and no heartbeat to go stale, so every liveness question about it
+    is a question about the runner program, answered where the runner runs —
+    never by reading a pane. Fails closed: an endpoint scheme this daemon does
+    not recognise is not treated as exec, so a half-applied rollback leaves the
+    row unschedulable rather than mysteriously assignable.
+    """
+    return str(entry.get("endpoint") or "").startswith("exec:")
+
+
+def _exec_endpoint_ready(entry: dict, config: dict | None = None) -> str | None:
+    """None if the exec endpoint's program is present and runnable, else why not.
+
+    THIS IS THE FAIL-CLOSED HALF, and it is not optional. Adding the roster row
+    before the runner exists would make the pool immediately schedulable and
+    nothing would execute — rows would age out through lease expiry exactly as
+    they did on 2026-08-14, which is the failure this whole plan exists to end.
+    A missing or non-executable program therefore reads as NOT LIVE, so the work
+    stays READY and visible instead of being spent against a mechanism that is
+    not there. Same rule covers a half-applied rollback.
+    """
+    ep = str(entry.get("endpoint") or "")
+    if not ep.startswith("exec:"):
+        return "not an exec endpoint"
+    if config is not None:
+        pool = config.get("worker_pool") or {}
+        if not pool.get("enabled", False):
+            return ("worker_pool.enabled is false — the pool is schedulable but not "
+                    "executable, so work stays READY rather than being assigned to a "
+                    "mechanism that will not run")
+    prog = ep.split(":", 1)[1].strip()
+    if not prog:
+        return "exec endpoint names no program"
+    path = Path(__file__).resolve().parent / f"{prog}.py"
+    if not path.exists():
+        return f"runner program {path.name} does not exist yet"
+    if not os.access(path, os.R_OK):
+        return f"runner program {path.name} is not readable"
+    return None
+
+
 def _looks_dead(aid: str, entry: dict, states: dict[str, dict],
                 windows: set[str] | None, windows_why: str) -> str | None:
     """Reason a rostered recipient looks dead, or None if it looks alive.
@@ -317,6 +361,11 @@ def _looks_dead(aid: str, entry: dict, states: dict[str, dict],
     cost of false silence is the defect this exists to close.
     """
     endpoint = str(entry.get("endpoint") or "")
+    # P2-5: an `exec:` endpoint has no session to be alive or dead. Judging it by
+    # window presence or heartbeat age would mark the whole worker pool dead
+    # forever, since neither exists for a mechanism that is exec'd per assignment.
+    if endpoint.startswith("exec:"):
+        return _exec_endpoint_ready(entry)
     candidates = {aid}
     if endpoint.startswith("tmux:"):
         parts = endpoint.split(":")
@@ -395,6 +444,10 @@ def _fleet_presence(bus_root: Path, config: dict, roster: list[dict]) -> dict:
     for entry in candidates:
         aid = str(entry.get("id", "")).strip()
         checked.append(aid)
+        if _is_exec_endpoint(entry):
+            if _exec_endpoint_ready(entry, config) is None:
+                live.append(aid)
+            continue
         if _looks_dead(aid, entry, states, windows, windows_why) is None:
             live.append(aid)
 
@@ -1250,10 +1303,14 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     # unreadable tmux must never silently stop the fleet being scheduled.
     _roster_by_id = {str(r.get("id", "")).strip(): r for r in roster}
     _live_windows, _live_windows_why = _live_window_names(config)
-    dead_agents = {
-        aid: why for aid, entry in _roster_by_id.items()
-        if (why := _looks_dead(aid, entry, agents, _live_windows, _live_windows_why))
-    }
+    dead_agents: dict[str, str] = {}
+    for _aid, _entry in _roster_by_id.items():
+        # An exec endpoint has no session; its readiness is a property of the
+        # runner program and the pool switch, answered by _exec_endpoint_ready.
+        _why = (_exec_endpoint_ready(_entry, config) if _is_exec_endpoint(_entry)
+                else _looks_dead(_aid, _entry, agents, _live_windows, _live_windows_why))
+        if _why:
+            dead_agents[_aid] = _why
 
     for aid, agent in agents.items():
         if agent.get("role") != "main":

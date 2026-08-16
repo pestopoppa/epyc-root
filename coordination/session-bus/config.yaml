@@ -83,6 +83,53 @@ roster:
   # hardware; it never claims a device or launches a job.
   - {id: hardware-backfill, role: service,           lanes: [none],           endpoint: "monitor:file",          drain: none}
 
+  # P2-5 (Loop-Owned Fleet, 2026-08-16). THE POOL IDENTITY, and the one schema
+  # extension the plan permits. `endpoint: exec:...` is a new SCHEME, not a new
+  # message kind: instead of naming a tmux window a courier must type into, it
+  # names a program the daemon EXECS with the assignment. That is the whole
+  # structural change — spawn-args in, report file and exit status out — and it
+  # is why the composer/glyph/heartbeat delivery plane has no surface left to
+  # fail on for pool work.
+  #
+  # role: main because it must be SCHEDULABLE (the daemon only assigns to mains,
+  # per 240251bf). lanes: [cpu, none] — pool work is code/doc churn; a worker
+  # needing a GPU requests a window through the bus like every other consumer.
+  # The runner is exec'd FRESH per assignment and never persists, so this row
+  # names a mechanism, not a session — nothing here can go stale the way a dead
+  # tmux endpoint does.
+  - {id: workerpool,        role: main,              lanes: [cpu, none],      endpoint: "exec:worker_runner",    drain: none}
+
+# P2-5 / D1 / D2. Bounds on the pool, as DATA. Changing the harness is an edit
+# here, never a code change (policy-data-never-code).
+worker_pool:
+  # THE MASTER SWITCH, and it starts OFF. The roster row alone makes the pool
+  # SCHEDULABLE; this flag is what makes it EXECUTABLE. Separating them matters:
+  # a schedulable-but-not-executable pool is precisely the 2026-08-14 shape —
+  # the daemon assigns, nothing runs, the lease expires, the row dies. So the
+  # daemon treats `enabled: false` as "endpoint not ready" and leaves the work
+  # READY and visible. Flip to true only after the runner has been proven
+  # end-to-end on this host.
+  enabled: false
+  # D2: claude for the <=10-row pilot (isolates the structural variable from
+  # model quality); codex exec is the intended scale-out default once the pilot
+  # has measured tokens/row. Per-lane override lives in `lane_harness`.
+  worker_harness: claude
+  lane_harness: {}
+  # D1 bounds. concurrency is additionally floor-capped by the number of pool
+  # worktrees that exist — scaling past them is a deliberate, operator-visible
+  # step, never on-demand creation.
+  max_concurrent_workers: 4
+  token_ceiling_per_batch: 250000
+  # D6: kill is allowed at lease expiry, loss is not. Grace before SIGKILL, then
+  # MANDATORY salvage to a salvage/<task_id> ref.
+  lease_grace_s: 60
+  # P2-6: rows from the same source handoff may share one invocation.
+  max_rows_per_batch: 3
+  pool_root: /mnt/raid0/llm/worktrees/pool
+  # D8: the pane is the OPERATOR's window into the worker. The machine never
+  # types into it and never decides from its text.
+  visible_panes: true
+
 authority:
   within_lane: [self]
   cross_main: [operator, coordinator-agent]
