@@ -147,3 +147,74 @@ Current measured state: self-repair share **11.1%** (107/966 commits, D9's commi
 definition, target <10%); queue **0 INFRA_BLOCKED** (was 14) and 27 READY; 12 dead-owner claims
 released under reversible receipts; mainA–D retired as tombstones with receipts and archived
 cursors.
+
+
+---
+
+# ADDENDUM — 2026-08-16, after the ratification run
+
+Steps 1-5 of `ratify-loop-owned-fleet-20260816.sh` are DONE. The alarm channel is
+live, the pool was enabled and then PAUSED at your instruction, pilot-02 promoted,
+INVARIANTS.md installed, the dead marker retired.
+
+## Still needing you — two commands
+
+**A. The doctrine collapse (P1-2/3/4/6's protected half).** Redone after the
+`git clean` destroyed it; staged in a TRACKED directory this time.
+
+```bash
+bash artifacts/operator/staged/apply_p1_doctrine.sh              # dry run
+bash artifacts/operator/staged/apply_p1_doctrine.sh --apply
+```
+
+Source AND target sha256-pinned, SKIP when identical, five self-verifying gates,
+rehearsed against a shadow tree, mutation-tested five ways. Nine amendments that
+existed in only ONE copy were merged INTO the canonical text before any copy was
+deleted — losing one of those was the real risk of this task.
+
+**B. P3-4, the fleet predicate.** Three patches; all `git apply --check` clean.
+They must land in ONE commit — the predicate without its tests leaves the suite
+red — and it is D9-guarded, so the commit needs a `D9-ack:` line:
+
+```bash
+git apply artifacts/operator/staged/p3-4-fleet-predicate.patch \
+          artifacts/operator/staged/p3-4-tests.patch \
+          artifacts/operator/staged/p3-4-config-comment.patch
+git commit -m "P3-4: fleet predicate for an ephemeral pool
+
+D9-ack: operator <date>" -- scripts/coordination/session_bus_coordinator.py \
+          scripts/coordination/tests/test_fleet_gate.py \
+          coordination/session-bus/config.yaml
+```
+
+It DELETES the halt rather than softening it, and carries an explicit
+`halt_assignment: False` so reintroducing one means changing a stated value.
+9 tests -> 49; six mutations all caught; quiet-night walkthrough is 480 ticks
+with zero alarms.
+
+## Read before you resume the pool — PD-1
+
+`max_concurrent_workers: 4` is NOT reachable through the daemon. The pool is one
+roster identity, `busy_owners` is keyed on owner, so the first assigned row makes
+the whole pool busy and it serializes at ONE row at a time. The pilot's three
+concurrent workers were dispatched BY HAND, bypassing the picker — the measured
+throughput does not demonstrate the automatic path.
+
+Nothing is unsafe about this; the bound is honest as a ceiling. But the >40%
+duty-cycle target assumes concurrency that the automatic path cannot currently
+deliver, so resuming the pool now buys serialized throughput, not four-way.
+Filed as PD-1 in the handoff with three candidate fix shapes.
+
+## The other session
+
+Coordinated and converged: `agents/` duplicates removed, the RTG-51 policy tier
+rewritten for the headless auditor, its disclosed clobber verified harmless (the
+lost edits were a half-built copy of a feature the lane had finished; the test
+that proves it passes 11/11 and is now tracked).
+
+Reconciliation with origin: of 104 both-changed files, TWO remain lane-newer —
+`agents/coordinator-agent.md` (superseded by P1-6, landed) and
+`tests/test_session_bus.py` (kept ours with evidence: the lane's +868 lines test
+`_persistent_compute_idle`, which lives in the lane's coordinator, a file we
+deliberately kept ours). Nothing is at risk either way: `refs/heads/lane/auditor`
+exists on origin at the same tip, so those commits are durably named there.
