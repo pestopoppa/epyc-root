@@ -149,11 +149,32 @@ def _append_jsonl(path: Path, row: dict) -> None:
 
 
 def _write_atomic(path: Path, payload: dict) -> None:
-    """tmp+rename — heartbeats and cursors are overwritten, never appended."""
+    """tmp+rename — heartbeats and cursors are overwritten, never appended.
+
+    THE TEMP NAME IS PER-PROCESS, and that is not cosmetic. Single-writer is a
+    rule about IDENTITIES, not processes: the worker pool is one identity
+    (`workerpool`) with up to four concurrent runners, all refreshing the same
+    heartbeat. With a fixed `<name>.tmp` they collide — measured 2026-08-16, the
+    first three-worker pilot died with
+
+        FileNotFoundError: heartbeats/workerpool.json.tmp -> workerpool.json
+
+    because one runner's `os.replace` consumed the temp file another had just
+    written. Adding the pid makes each writer's temp private; the rename onto
+    the final path stays atomic, so the last writer still wins cleanly and a
+    reader never sees a partial file.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    os.replace(tmp, path)
+    tmp = path.with_suffix(f"{path.suffix}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
 
 
 # ------------------------------------------------------------------- ownership

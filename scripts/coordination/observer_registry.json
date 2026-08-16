@@ -90,6 +90,7 @@
           "LOCK_FILE": "{tmp}/sup.lock",
           "RUNNER_MARK": "{mark}",
           "LOG_DIR": "{tmp}/logs",
+          "BACKFILL_LOG_DIR": "{tmp}/logs",
           "STALE_AFTER": "150",
           "STARTUP_TIMEOUT": "2"
         },

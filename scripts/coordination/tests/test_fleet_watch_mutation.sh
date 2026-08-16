@@ -31,6 +31,12 @@
 # that fails for an unrelated reason (a typo, a missing `jq`) would "catch" every
 # mutation, and this harness would report a perfect score while testing nothing.
 #
+# WHAT IS DELIBERATELY NOT MUTATED. `fw_queue_rows`' embedded python is replaced
+# by the suite's fixture seam, so a mutation inside it would SURVIVE — correctly,
+# not as a gap. Its contract (US separators, `-1` for an unparseable timestamp)
+# is pinned on the BASH side instead: cases 24 and 23 below break the consumer of
+# each and the suite catches both.
+#
 # Usage: tests/test_fleet_watch_mutation.sh
 # =============================================================================
 set -uo pipefail
@@ -112,126 +118,165 @@ mutate() {
 
 printf '\n=== mutations ===\n'
 
-# --- STUCK-INPUT ------------------------------------------------------------
-mutate 1 "STUCK-INPUT alarms on PRESENCE instead of persistence" \
-    '[ "${FW_PEND_N[$a]:-0}" -ge "$PERSIST_CYCLES" ]' \
-    '[ "${FW_PEND_N[$a]:-0}" -ge 1 ]' \
+# --- persistence / hysteresis (rule 1) --------------------------------------
+mutate 1 "an alarm fires on PRESENCE instead of persistence" \
+    'fw_is_on()  { [ "${FW_ON_N[$1]:-0}"  -ge "$PERSIST_CYCLES" ]; }' \
+    'fw_is_on()  { [ "${FW_ON_N[$1]:-0}"  -ge 1 ]; }' \
     "does not fire before PERSIST_CYCLES"
 
-mutate 2 "STUCK-INPUT ignores whether the text CHANGED between cycles" \
-    'if [ "$pending" = "${FW_PEND_TEXT[$a]:-}" ]; then' \
-    'if true; then' \
-    "text that CHANGES each cycle never fires"
+mutate 2 "an alarm is RESOLVED off a single absent sample (no down-hysteresis)" \
+    'fw_is_off() { [ "${FW_OFF_N[$1]:-0}" -ge "$PERSIST_CYCLES" ]; }' \
+    'fw_is_off() { [ "${FW_OFF_N[$1]:-0}" -ge 1 ]; }' \
+    "not cleared before the absence persists"
 
-mutate 3 "composer treats the Codex placeholder as pending input" \
-    '    if printf '"'"'%s'"'"' "$rest" | grep -qE "$PLACEHOLDER_RE" 2>/dev/null; then' \
-    '    if false; then' \
-    "codex placeholder"
+# --- the R9 refusal taxonomy ------------------------------------------------
+# The measured failure: 9,219 identical `dispatch-refused` advisories repeating
+# a refusal nobody acted on. If a refused row stops counting as aging, or every
+# refusal collapses into one class, the fleet is back to starving rows silently.
+mutate 3 "a REFUSED row stops counting as AGING (the 9,219-refusal regression)" \
+    '        FW_AGED=$((FW_AGED + 1))
+        cls=$(fw_refusal_class "${screened:-0}" "${esth:-}" "${parked:-}")' \
+    '        [ "${screened:-0}" = "1" ] || continue
+        FW_AGED=$((FW_AGED + 1))
+        cls=$(fw_refusal_class "${screened:-0}" "${esth:-}" "${parked:-}")' \
+    "COUNTS AS AGING"
 
-mutate 4 "composer reports an unrecognised row as EMPTY instead of UNKNOWN" \
-    '[ "$matched" = 1 ] || return 1' \
-    '[ "$matched" = 1 ] || { printf ""; return 0; }' \
-    "non-composer row"
-
-mutate 5 "an unreadable composer HOLDS its persistence counter instead of resetting" \
-    '            FW_PEND_N[$a]=0
-            FW_PEND_TEXT[$a]=""' \
-    '            :' \
-    "unreadable composer resets"
-
-# --- IDLE-CANDIDATE ---------------------------------------------------------
-mutate 6 "liveness treats an UNREADABLE quiet reading as idle (fail-open)" \
-    "        ''|null|*[!0-9.]*) printf 'unknown'; return 0 ;;" \
-    "        ''|null|*[!0-9.]*) printf 'idle'; return 0 ;;" \
-    "unreadable quiet"
-
-mutate 7 "liveness ignores the authoritative runtime ACTIVE signal" \
-    '    [ "$runtime" = "active" ] && { printf '"'"'busy'"'"'; return 0; }' \
+mutate 4 "a PARKED row is misfiled under the gate that already said yes" \
+    "    [ -n \"\$parked\" ] && { printf 'premise-parked'; return 0; }" \
     '    :' \
-    "runtime active beats a long quiet window"
+    "parked row -> premise-parked"
 
-mutate 8 "liveness drops the busy-marker veto (the compacting case)" \
-    '    [ "$pane_busy" = "0" ] && { printf '"'"'busy'"'"'; return 0; }' \
+mutate 5 "the unscreened class disappears (refusals collapse into one bucket)" \
+    "    [ \"\$screened\" = \"1\" ] || { printf 'unscreened'; return 0; }" \
     '    :' \
-    "busy marker vetoes idle"
-
-mutate 9 "an UNREADABLE pane is treated as idle rather than unknown" \
-    '    [ "$pane_busy" = "2" ] && { printf '"'"'unknown'"'"'; return 0; }' \
-    '    [ "$pane_busy" = "2" ] && { printf '"'"'idle'"'"'; return 0; }' \
-    "unreadable pane"
+    "unscreened row -> unscreened"
 
 # The bash-arithmetic regression, spelled EXACTLY as it would be written by
-# hand. `[ 243.3 -ge 120 ]` is not a float comparison in bash — it is an error,
-# and without `set -e` it simply evaluates false, so every genuinely idle main
-# silently reports busy and IDLE-CANDIDATE never fires again.
-#
-# NOTE what this mutation is NOT. An earlier version of this case used
-# `[ "${quiet%%.*}" -ge ... ]`, which truncates before comparing. That mutant
-# SURVIVED, and correctly so: floor(q) >= t is equivalent to q >= t for an
-# integer threshold, so it is an equivalent mutant and not a gap in the suite.
-# It is recorded here because "the suite did not catch it" and "the suite has a
-# hole" are different conclusions, and only the second one is a defect.
-mutate 10 "liveness compares a FLOAT quiet reading with bash integer test" \
-    "    if awk -v q=\"\$quiet\" -v t=\"\$IDLE_QUIET_S\" 'BEGIN{exit !(q >= t)}'; then" \
-    '    if [ "$quiet" -ge "$IDLE_QUIET_S" ] 2>/dev/null; then' \
-    "float quiet compares correctly"
+# hand. `[ 0.5 -gt 0 ]` is not a float comparison in bash — it is an error, and
+# without `set -e` it simply evaluates false, so every ordinary 0.5h row is
+# classed as lacking an occupancy estimate and a human is routed to fix a
+# non-defect.
+mutate 6 "occupancy compares a FLOAT est_h with a bash integer test" \
+    "    awk -v v=\"\$esth\" 'BEGIN{exit !(v > 0)}' || { printf 'no-occupancy-estimate'; return 0; }" \
+    '    [ "$esth" -gt 0 ] 2>/dev/null || { printf '"'"'no-occupancy-estimate'"'"'; return 0; }' \
+    "fractional occupancy passes"
+
+mutate 7 "the owner table stops refusing a class nobody declared" \
+    '        unscreened|no-occupancy-estimate|premise-parked) printf ' \
+    '        unscreened|no-occupancy-estimate|premise-parked|*) printf ' \
+    "an undeclared class has NO owner"
+
+# --- the aging condition ----------------------------------------------------
+mutate 8 "capacity drops out of the aging condition (pages a fleet that is working)" \
+    '            if [ "$n" -gt 0 ] && [ "$FW_CAPACITY_FREE" -gt 0 ]; then' \
+    '            if [ "$n" -gt 0 ]; then' \
+    "no alarm while every slot is busy"
+
+mutate 9 "in-flight rows stop consuming capacity" \
+    '            ASSIGNED|CLAIMED|RUNNING) FW_INFLIGHT=$((FW_INFLIGHT + 1)); continue ;;' \
+    '            ASSIGNED|CLAIMED|RUNNING) continue ;;' \
+    "capacity full"
+
+mutate 10 "the age threshold is ignored (every READY row reads as aged)" \
+    '        [ "${age:-0}" -ge "$AGE_THRESHOLD_S" ] 2>/dev/null || continue' \
+    '        [ "${age:-0}" -ne 0 ] 2>/dev/null || continue' \
+    "only rows past the threshold age"
+
+mutate 11 "terminal and operator-held rows are counted as pending backlog" \
+    '            *) continue ;;     # terminal, INFRA_BLOCKED, HELD_OP_GATE: nobody is waiting on them' \
+    '            *) ;;' \
+    "terminal/held rows are not READY"
+
+# Tab is an IFS WHITESPACE character: `IFS=$'\t' read` collapses runs of it and
+# drops every empty field, shifting `gating` into `parked_reason` so a row with
+# no occupancy estimate is reported as `premise-parked` — the wrong owner, with
+# a straight face. This is not hypothetical; it is how the first draft behaved.
+mutate 12 "the record separator reverts to a tab (empty fields collapse)" \
+    "    while IFS=\$'\\x1f' read -r task status age screened esth parked gating; do" \
+    "    while IFS=\$'\\t' read -r task status age screened esth parked gating; do" \
+    "READY rows counted"
 
 # --- COMPUTE-IDLE -----------------------------------------------------------
-mutate 11 'compute reinstates the ${gpu:-0} fail-open (unknown reads as 0%)' \
+mutate 13 'compute reinstates the ${gpu:-0} fail-open (unknown reads as 0%)' \
     "        *unknown*) printf 'unknown'; return 0 ;;" \
     '        *unknown*) : ;;' \
-    "unreadable gpu"
+    "unreadable compute"
 
-mutate 12 "compute stops checking VRAM independently of GPU%" \
+mutate 14 "compute stops checking VRAM independently of GPU%" \
     '    if [ "$gpu" = "0" ] && [ "$vram" = "0" ] && [ "$free" = "$total" ]; then' \
     '    if [ "$gpu" = "0" ] && [ "$free" = "$total" ]; then' \
     "vram resident"
-
-mutate 13 "COMPUTE-IDLE fires on a single sample (no persistence)" \
-    '[ "$FW_COMPUTE_N" -ge "$PERSIST_CYCLES" ]' \
-    '[ "$FW_COMPUTE_N" -ge 1 ]' \
-    "does not fire on a single sample"
-
-mutate 14 "regions counted with a bare 'grep -c free' over whole lines" \
-    "fw_regions_free()  { printf '%s\\n' \"\$1\" | grep -cE '^[[:space:]]*[A-Za-z0-9_]+[[:space:]]+free([[:space:]]|\$)'; }" \
-    "fw_regions_free()  { printf '%s\\n' \"\$1\" | grep -c 'free'; }" \
-    "free regions counted from the state column"
 
 mutate 15 "an absent rocm-smi key reads as 0% instead of unknown" \
     'if length == 0 then "unknown" else (max | floor) end' \
     'if length == 0 then 0 else (max | floor) end' \
     "absent key -> unknown, not 0"
 
+mutate 16 "regions counted with a bare 'grep -c free' over whole lines" \
+    "fw_regions_free()  { printf '%s\\n' \"\$1\" | grep -cE '^[[:space:]]*[A-Za-z0-9_]+[[:space:]]+free([[:space:]]|\$)'; }" \
+    "fw_regions_free()  { printf '%s\\n' \"\$1\" | grep -c 'free'; }" \
+    "free regions counted from the state column"
+
+# THE GATE METRIC. Idle hardware with nothing queued for it is a well-run night.
+# Escalating it is how an operator learns to mute the channel, and it is the one
+# thing "zero alarms on well-run nights" forbids outright.
+mutate 17 "idle compute alarms even with NO compute-gated work queued" \
+    '        if [ "$compute" = "idle" ] && [ "$FW_READY_GATED" -gt 0 ]; then' \
+    '        if [ "$compute" = "idle" ]; then' \
+    "empty queue + idle card -> ZERO alarms"
+
+mutate 18 "compute-gated rows stop being distinguished from ungated ones" \
+    '            *) FW_READY_GATED=$((FW_READY_GATED + 1)) ;;' \
+    '            *) ;;' \
+    "compute-gated READY rows counted separately"
+
+# --- the alarm plane (rule 2 applied to alarms) -----------------------------
+mutate 19 "an UNREADABLE queue is treated as an EMPTY one (the fail-open)" \
+    '    if tsv=$(fw_queue_rows); then' \
+    '    if tsv=$(fw_queue_rows) || tsv=""; then' \
+    "unreadable queue"
+
+mutate 20 "the clear sweep stops checking which keys this script OWNS" \
+    '        case " ${FW_OWNED_KEYS} " in *" ${key} "*) ;; *) continue ;; esac' \
+    '        :' \
+    "foreign alarm key is left ACTIVE"
+
+mutate 21 "the clear sweep resolves alarms in domains it could not READ" \
+    '        case " ${eligible} "        in *" ${key} "*) ;; *) continue ;; esac' \
+    '        :' \
+    "unreadable queue never CLEARS"
+
+mutate 22 "an unreadable alarm channel is passed over silently" \
+    '        FW_OBSERVATIONS+=("ALARM-STATE-UNREADABLE ${ALARM} status could not be read — nothing cleared this cycle (an unreadable channel is not a quiet one)")' \
+    '        :' \
+    "unreadable alarm state is REPORTED"
+
+# --- evidence is never a trigger (rule 4 / D8) ------------------------------
+mutate 23 "pane evidence is ON by default (pane text starts reaching alarms)" \
+    'EVIDENCE_PANES="${FLEET_WATCH_EVIDENCE_PANES:-}"' \
+    'EVIDENCE_PANES="${FLEET_WATCH_EVIDENCE_PANES:-console}"' \
+    "evidence capture is OFF by default"
+
+mutate 24 "captured pane text loses its EVIDENCE-ONLY labelling" \
+    'EVIDENCE ONLY, NOT A TRIGGER — pane scrollback for human triage: ' \
+    'pane: ' \
+    "clearly labelled when enabled"
+
 # --- verdict / reporting ----------------------------------------------------
-mutate 16 "the first-cycle lie is reinstated (warming collapses into ok)" \
+mutate 25 "the first-cycle lie is reinstated (warming collapses into ok)" \
     '    elif [ "$FW_CYCLE" -lt "$PERSIST_CYCLES" ]; then' \
     '    elif false; then' \
     "cycle 1 verdict"
 
-mutate 17 "a degraded cycle is reported as fully healthy" \
-    '    elif [ "$unknown_mains" -gt 0 ] || [ "$compute" = "unknown" ]; then' \
+mutate 26 "a degraded cycle is reported as fully healthy" \
+    '    elif [ "$compute" = "unknown" ] || [ "$queue_ok" != "1" ]; then' \
     '    elif false; then' \
     "degraded verdict"
 
-mutate 18 "an absent tmux session is passed over silently" \
-    '    if ! fw_session_exists; then' \
-    '    if false; then' \
-    "absent tmux session is REPORTED"
-
-mutate 19 "the DETECTOR-BLIND drift guard is removed" \
-    '    if [ "$readable" -gt 0 ] && [ "$recognised" -eq 0 ]; then' \
-    '    if false; then' \
-    "DETECTOR-BLIND"
-
-mutate 20 "findings go back through printf '%b' (escapes re-interpreted)" \
+mutate 27 "findings go back through printf '%b' (escapes re-interpreted)" \
     '            [ -n "$line" ] && printf '"'"'  %s\n'"'"' "$line" >> "$LOG"' \
     '            [ -n "$line" ] && printf '"'"'  %b\n'"'"' "$line" >> "$LOG"' \
-    "backslashes in composer text"
-
-mutate 21 "an unreadable pane is skipped instead of reported" \
-    '            FW_FINDINGS+=("PANE-UNREADABLE ${a} — capture-pane returned nothing (reported, NOT treated as idle)")' \
-    '            :' \
-    "unreadable pane is REPORTED"
+    "backslashes in a task_id"
 
 printf '\n=========================================\n'
 printf 'mutation harness: %d caught, %d survived\n' "$((PASS - 1))" "$FAIL"

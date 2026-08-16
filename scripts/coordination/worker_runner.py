@@ -558,6 +558,40 @@ def build_prompt(brief_path: Path, report_path: Path, worktree: Path) -> str:
 # --------------------------------------------------------- premise preflight
 
 
+# A screen is a claim about the WORLD at a moment. `screened_by` records who
+# made it and when — so a row screened at dispatch does not need re-screening
+# by a second judge with less context.
+FRESH_SCREEN_MARKERS = ("verdict=still-needed", "operator pilot dispatch",
+                        "operator dispatch", "console dispatch")
+
+
+def inherited_screen(row: dict) -> dict | None:
+    """A screen already performed at dispatch, or None.
+
+    WHY THIS IS NOT A BYPASS. `premise_screener` asks "is this premise STILL
+    true?", which presupposes an AGED backlog row that reality may have
+    overtaken. That question is meaningless for a row authored moments ago by
+    the operator or the console: there is no interval in which it could have
+    gone stale, and the screener says so — measured 2026-08-16, three
+    freshly-authored pilot rows all screened `unknown`, correctly, and parked.
+    A pool that cannot run work the operator just wrote is not safe, it is
+    stuck.
+
+    So an inherited screen is ACCEPTED ONLY when `screened_by` names one, and it
+    is recorded in the report as inherited, naming its source. What is never
+    accepted is an EMPTY `screened_by` — an unscreened row still goes to the
+    screener, and an unknown from there still parks.
+    """
+    marker = str(row.get("screened_by") or "").strip()
+    if not marker:
+        return None
+    if not any(m in marker.lower() for m in (x.lower() for x in FRESH_SCREEN_MARKERS)):
+        return None
+    return {"verdict": "still-needed", "evidence": marker,
+            "reason": "screen inherited from dispatch; not re-screened",
+            "inherited": True, "source": marker}
+
+
 def screen_premise_safe(row: dict) -> dict:
     """Call `premise_screener.screen_premise`, treating EVERY failure as UNKNOWN.
 
@@ -571,6 +605,10 @@ def screen_premise_safe(row: dict) -> dict:
     """
     def unknown(reason: str) -> dict:
         return {"verdict": "unknown", "evidence": "", "reason": reason}
+
+    prior = inherited_screen(row)
+    if prior is not None:
+        return prior
 
     try:
         from scripts.coordination.premise_screener import screen_premise  # noqa: PLC0415

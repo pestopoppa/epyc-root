@@ -64,11 +64,29 @@ STALE_AFTER="${STALE_AFTER:-120}"          # heartbeat older than this => unheal
 MAX_BACKOFF="${MAX_BACKOFF:-300}"          # cap on restart backoff
 STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-30}"   # wait for a fresh heartbeat after relaunch
 
-LOG_DIR="${EPYC_ROOT}/logs"
-SUP_LOG="${LOG_DIR}/backfill_supervisor.log"
-RUNNER_LOG="${LOG_DIR}/hardware_backfill.out"
+# TEST HOOK, and the ONLY one. 0 (the default, i.e. unset) means "loop forever" —
+# production behaviour is bit-identical to a loop with no budget at all. A positive
+# value stops the loop after that many iterations and makes the in-loop waits
+# return immediately once the budget is spent, so `loop` — THE consumer, the one
+# whose dangling `health_ok` call survived for two days precisely because no test
+# ever ran it — is drivable by a test in under a second instead of paying a 300s
+# backoff to observe one decision.
+LOOP_MAX_ITERATIONS="${LOOP_MAX_ITERATIONS:-0}"
+_loop_iters=0
+_loop_budget_exhausted() {
+  (( LOOP_MAX_ITERATIONS > 0 )) || return 1
+  (( _loop_iters >= LOOP_MAX_ITERATIONS ))
+}
+# Every wait inside `loop` goes through here. With no budget set this is `sleep`.
+sup_sleep() {
+  _loop_budget_exhausted && return 0
+  sleep "$1"
+}
+
 LOCK_FILE="${LOCK_FILE:-/tmp/backfill_supervisor.lock}"   # overridable so tests isolate
-SUP_PIDFILE="${LOG_DIR}/backfill_supervisor.pid"
+# NOTE: LOG_DIR and everything derived from it are assigned BELOW, after the last
+# `source` — see the block just above `mkdir -p`. Assigning them here is wrong and
+# fails in a way that only shows up in a sandbox.
 
 # Substring used ONLY to corroborate identity in a read-only /proc walk. It is
 # never a kill target and never the sole basis for a verdict — see the observation
@@ -90,8 +108,38 @@ RUNNER_MARK="${RUNNER_MARK:-hardware_backfill.py}"
 # independent read-only /proc walk, folded three-valued by observer_guard.sh.
 # Disagreement between the two, or a channel that cannot be evaluated at all, is
 # `unobservable`: alarm loudly, touch NOTHING. Only `absent` licenses action.
+#
+# (`health_ok` DOES exist again, further down, and it is NOT the two-state function
+# quoted above — it returns 0/1/3 and its callers must capture the code. It came
+# back because deleting it left `loop`'s two call sites dangling; see P0-4 there.)
 # shellcheck source=scripts/coordination/observer_guard.sh
 source "${EPYC_ROOT}/scripts/coordination/observer_guard.sh"
+
+# --------------------------------------------------------------------------- #
+# LOG PATHS — assigned HERE, AFTER THE LAST `source`, and that is load-bearing.
+# --------------------------------------------------------------------------- #
+#
+# THE KNOB IS `BACKFILL_LOG_DIR`, NOT `LOG_DIR`, AND THAT IS NOT A STYLE CHOICE.
+# `scripts/lib/env.sh` does an UNCONDITIONAL `export LOG_DIR=...` — it honours no
+# caller value — so `LOG_DIR="${LOG_DIR:-...}"` would read env.sh's value, never
+# the sandbox's, and isolate NOTHING while looking exactly like isolation.
+#
+# AND THE POSITION MATTERS AS MUCH AS THE NAME. observer_guard.sh sources env.sh
+# AGAIN, so an assignment placed above that `source` is silently overwritten by
+# it. Measured while fixing P0-4: LOG_DIR was reset to the production logs dir
+# while SUP_LOG kept the sandbox path captured a line earlier, `mkdir -p` then
+# created the PRODUCTION dir, and every `log` call died on
+# `tee: .../logs/backfill_supervisor.log: No such file or directory` — which under
+# `set -euo pipefail` aborts the whole supervisor at its first log line. The
+# observation-contract harness caught it as "did NOT start its target when it was
+# genuinely absent": a watchdog that cannot open its log stops watching.
+#
+# Sandboxing this supervisor therefore needs BACKFILL_LOG_DIR; before it existed,
+# every contract-harness run appended to the production supervisor log instead.
+LOG_DIR="${BACKFILL_LOG_DIR:-${EPYC_ROOT}/logs}"
+SUP_LOG="${LOG_DIR}/backfill_supervisor.log"
+RUNNER_LOG="${LOG_DIR}/hardware_backfill.out"
+SUP_PIDFILE="${LOG_DIR}/backfill_supervisor.pid"
 
 mkdir -p "$LOG_DIR"
 
@@ -142,6 +190,64 @@ observe_runner() {
 # file was rewritten to avoid: a live runner with a stale heartbeat is `present`
 # and WEDGED (actionable), not `unobservable`.
 heartbeat_fresh() { (( $(heartbeat_age_s) <= STALE_AFTER )); }
+
+# --------------------------------------------------------------------------- #
+# health_ok — THE LOOP'S PREDICATE, three-valued (P0-4, 2026-08-14)
+# --------------------------------------------------------------------------- #
+#
+# THE DEFECT THIS CLOSES. The observation-contract rewrite (ed38041d) replaced the
+# two-state `health_ok` quoted in the header above with `observe_runner` +
+# `heartbeat_fresh`, and updated `start_runner`, `check_once` and `status` to use
+# them — but it left the `loop` case block calling `health_ok`, which from that
+# commit onward was DEFINED NOWHERE. Under `set -e` a `command not found` inside an
+# `if` condition is not fatal, it is merely FALSE, so loop mode took the failure
+# branch on EVERY iteration against a perfectly healthy runner: relaunch, "restart
+# failed", back off, doubling to the 300s cap, forever and in silence. The exact
+# family the rewrite existed to kill, reintroduced by the rewrite's own dangling
+# call site — and invisible because the tests exercised `once`/`observe`, i.e. A
+# consumer and not THE consumer.
+#
+# THREE VALUES, NOT TWO — the return code IS the verdict:
+#
+#   0  HEALTHY        present AND heartbeat fresh. Do nothing.
+#   1  ACTIONABLE     absent (start it), or present-but-stale (wedged, restart it).
+#                     Both are real negatives that license corrective action.
+#   3  UNOBSERVABLE   this supervisor CANNOT TELL. Corrective action forbidden.
+#
+# Note carefully what is NOT here. `unobservable` is not folded into 1: doing so
+# would restart-loop a possibly-healthy runner (the specimen's failure), and it is
+# not folded into 0 either, which is the fail-open twin the callers must never be
+# handed — an unreadable health signal read as "fine" leaves the runner unwatched
+# while everything looks green (C3/C6/C8). The caller gets the third value and has
+# to say what it does with it.
+#
+# `if health_ok` IS THEREFORE A BUG AT ANY CALL SITE. 3 is falsy, so that idiom
+# re-collapses the third state into "unhealthy" at the point of use. Callers must
+# capture: `rc=0; health_ok || rc=$?`. (`|| rc=$?`, never `health_ok; rc=$?` — a
+# function returning non-zero as a simple command aborts the whole supervisor under
+# `set -e`, which is how a watchdog silently stops watching.)
+health_ok() {
+  # `|| true` is load-bearing: og_verdict exits 1/3 BY DESIGN and a failing command
+  # substitution in an assignment aborts the script under `set -e`.
+  local state; state="$(observe_runner)" || true
+  case "$state" in
+    present)
+      # Seeing the target is proof the eyes work — the loop's healthy path is the
+      # only path that runs on a well behaved fleet, so the blind-streak counter
+      # has to be cleared HERE or detector B slowly poisons a healthy supervisor.
+      og_note_sighting
+      if heartbeat_fresh; then og_clear; return 0; fi
+      return 1   # alive but not ticking: WEDGED. Actionable, and check_once says so.
+      ;;
+    absent)       return 1 ;;
+    unobservable) return 3 ;;
+    *)
+      # og_verdict only ever prints the three states; anything else means the
+      # observation itself broke. That is a blind spot, never a clean bill.
+      return 3
+      ;;
+  esac
+}
 
 source_present() { [[ -f "$RUNNER" ]]; }
 
@@ -296,20 +402,66 @@ case "${1:-loop}" in
     trap 'rm -f "$SUP_PIDFILE"; log "supervisor stopped"; exit 0' TERM INT
     log "supervisor started (poll ${POLL_INTERVAL}s, stale after ${STALE_AFTER}s, runner=$RUNNER)"
     backoff=0
+    rc=0
     while true; do
-      if health_ok; then
+      if _loop_budget_exhausted; then
+        log "LOOP_MAX_ITERATIONS=${LOOP_MAX_ITERATIONS} reached — exiting (bounded-loop test hook)"
+        rm -f "$SUP_PIDFILE"
+        exit 0
+      fi
+      _loop_iters=$(( _loop_iters + 1 ))
+
+      # `rc=0; health_ok || rc=$?` — NOT `if health_ok`. health_ok is three-valued
+      # and 3 is falsy, so the `if` form silently re-collapses `unobservable` into
+      # "unhealthy, restart it", which is the specimen bug wearing the fix's clothes.
+      rc=0; health_ok || rc=$?
+
+      if (( rc == 0 )); then
         backoff=0
-        sleep "$POLL_INTERVAL"
+        sup_sleep "$POLL_INTERVAL"
         continue
       fi
+
+      if (( rc == 3 )); then
+        # CANNOT TELL. check_once's `unobservable` branch is THE canonical response
+        # (alarm loudly, touch nothing), so it is reused rather than restated here.
+        # What must NOT happen is the two lines below it: re-testing health after a
+        # no-op and scoring the still-unobservable answer as "restart failed" would
+        # walk the backoff to 300s against a runner that may be perfectly healthy,
+        # while the actual fault is in this observer. Poll cadence is kept so that
+        # recovery is noticed the moment the eyes come back.
+        #
+        # This line is LOOP-LEVEL and is not redundant with check_once's own
+        # OBSERVER-BLIND line: it records that the loop declined to enter the
+        # corrective branch AT ALL, which is a different fact from check_once
+        # declining to act once inside it. Without it, collapsing this branch back
+        # into the actionable one is invisible in the log — check_once would
+        # suppress the action anyway and the trace would look identical.
+        log "health verdict is UNOBSERVABLE — corrective branch NOT entered this cycle"
+        check_once || true
+        sup_sleep "$POLL_INTERVAL"
+        continue
+      fi
+
+      # rc == 1: a REAL negative — absent, or present-but-wedged. Action permitted.
       check_once || true
-      if health_ok; then
+      rc=0; health_ok || rc=$?
+      if (( rc == 0 )); then
         backoff=0
+      elif (( rc == 3 )); then
+        # The post-attempt observation went blind. An observer that cannot see
+        # cannot testify that the restart failed, so this is not counted as one.
+        # The relaunch storm this could otherwise permit is already bounded by
+        # observer_guard's blind streak: og_note_launch increments it on every
+        # launch, and at OG_BLIND_STREAK_MAX the verdict is FORCED to unobservable,
+        # which lands in the suppress-everything branch above.
+        log "post-restart observation is UNOBSERVABLE — not scored as a failed restart: $(og_why)"
+        sup_sleep "$POLL_INTERVAL"
       else
         backoff=$(( backoff == 0 ? 10 : backoff * 2 ))
         (( backoff > MAX_BACKOFF )) && backoff=$MAX_BACKOFF
         log "restart failed (or refused); backing off ${backoff}s"
-        sleep "$backoff"
+        sup_sleep "$backoff"
       fi
     done
     ;;

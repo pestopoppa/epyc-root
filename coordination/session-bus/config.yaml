@@ -24,12 +24,19 @@ roster:
   #
   # REVIVED 2026-07-29 post-reboot by coordinator-agent, on the operator's standing rule "always
   # reuse main aliases after reboot". It owns E5 W1-W4 (the NUMA×batch sweep) on the cpu lane.
-  # A `role: retired` row is a re-usable slot, not a tombstone: reviving the identity keeps its
+  # NOTE (superseded 2026-08-16, P3-1): retirement is now a TOMBSTONE, not a re-usable slot.
+  # The paragraph below records the older reading. Reviving an identity keeps its
   # outbox history, cursor and triage corr_ids attached to the same name, whereas a fresh alias
   # would orphan all of it AND leave the old row drawing "LOOKS DEAD" advisories forever.
   # endpoint monitor:file -> tmux:agent:claude-main so it can actually be nudged: monitor:file has
   # no push delivery, which `validate` flags precisely because assigned work rots unread there.
-  - {id: mainA,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainA",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainA}   # was `claude-main` until 2026-07-29
+  # RETIRED 2026-08-16 (P3-1). TOMBSTONE, NOT A RE-USABLE SLOT: the identity keeps its
+  # history (queue rows, inbox, outbox, triage corr_ids all key on it) and nothing may be
+  # newly addressed to it. Reviving it is a deliberate act with its own procedure
+  # (retirements/mainA.retirement.json), never a side effect of writing the id into a
+  # message — that is how C24 (inherited dead heartbeat) and C28 (relay re-flood into a
+  # recreated inbox) happened. Retired with a verified-DEAD liveness read and a receipt.
+  - {id: mainA, role: retired, lanes: [], endpoint: "retired:mainA", drain: none}
   # Renamed window 0 `claude` -> `coordinator` and re-pointed monitor:file -> tmux 2026-07-29:
   # monitor:file has NO push delivery, which `validate` flagged precisely because assigned
   # work rots unread there. The id stays `coordinator-agent` — it is the authority name in
@@ -49,7 +56,13 @@ roster:
   # P2-2 tenant landing starts PRE-reboot rather than deferring. Re-using the same roster id
   # deliberately — its inbox still holds the undelivered lane-activation decision, so a fresh
   # session in this slot drains it rather than needing it re-relayed.
-  - {id: mainB,             role: main,              lanes: [gpu, none],      endpoint: "tmux:agent:mainB",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainB}   # was `claude-gpu-lane` until 2026-07-29
+  # RETIRED 2026-08-16 (P3-1). TOMBSTONE, NOT A RE-USABLE SLOT: the identity keeps its
+  # history (queue rows, inbox, outbox, triage corr_ids all key on it) and nothing may be
+  # newly addressed to it. Reviving it is a deliberate act with its own procedure
+  # (retirements/mainB.retirement.json), never a side effect of writing the id into a
+  # message — that is how C24 (inherited dead heartbeat) and C28 (relay re-flood into a
+  # recreated inbox) happened. Retired with a verified-DEAD liveness read and a receipt.
+  - {id: mainB, role: retired, lanes: [], endpoint: "retired:mainB", drain: none}
   # Added by coordinator-agent 2026-07-28 on operator direction. Fable 5 at xhigh effort,
   # Originally spawned 2026-07-28 as a READ-ONLY auditor of the E8 harness contract set:
   # three consecutive failed-closed cycles had each surfaced a DIFFERENT defect in a different
@@ -73,8 +86,20 @@ roster:
   # dispatched to them. lanes:[none] deliberately: the CPU is already contended by inference (E8)
   # and mainA (E5), and none-lane work is the only kind that can be dispatched instantly at any
   # moment, which is exactly what an anti-idle reserve needs to be.
-  - {id: mainC,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainC",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainC}
-  - {id: mainD,             role: main,              lanes: [cpu, none],      endpoint: "tmux:agent:mainD",      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/mainD}   # was `fable-auditor` until 2026-07-29
+  # RETIRED 2026-08-16 (P3-1). TOMBSTONE, NOT A RE-USABLE SLOT: the identity keeps its
+  # history (queue rows, inbox, outbox, triage corr_ids all key on it) and nothing may be
+  # newly addressed to it. Reviving it is a deliberate act with its own procedure
+  # (retirements/mainC.retirement.json), never a side effect of writing the id into a
+  # message — that is how C24 (inherited dead heartbeat) and C28 (relay re-flood into a
+  # recreated inbox) happened. Retired with a verified-DEAD liveness read and a receipt.
+  - {id: mainC, role: retired, lanes: [], endpoint: "retired:mainC", drain: none}
+  # RETIRED 2026-08-16 (P3-1). TOMBSTONE, NOT A RE-USABLE SLOT: the identity keeps its
+  # history (queue rows, inbox, outbox, triage corr_ids all key on it) and nothing may be
+  # newly addressed to it. Reviving it is a deliberate act with its own procedure
+  # (retirements/mainD.retirement.json), never a side effect of writing the id into a
+  # message — that is how C24 (inherited dead heartbeat) and C28 (relay re-flood into a
+  # recreated inbox) happened. Retired with a verified-DEAD liveness read and a receipt.
+  - {id: mainD, role: retired, lanes: [], endpoint: "retired:mainD", drain: none}
   # Added by coordinator-agent 2026-08-12 on operator instruction. The hardware-idle
   # backfill runner (5af987ef) detects idle compute with queued compute-gated work and
   # files it. Without this row its appends fail CLOSED with the roster error - it was
