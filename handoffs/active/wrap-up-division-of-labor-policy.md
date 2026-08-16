@@ -90,10 +90,21 @@ Coordinator request and lease; it does not authorize parallel mutation.
 > unchanged and now binds every invocation that does NOT hold the lease, which includes every
 > per-packet P2-7 audit.
 >
-> **Identity is not session, and the distinction is load-bearing.** P3-7 retired the auditor SESSION
-> but deliberately did NOT tombstone the IDENTITY: the headless auditor still writes under it, and
-> marking it `role: retired` would make the routing linter refuse the P2-7 audit path. Any future
-> edit that "cleans up" the retired session by retiring the identity will break audit routing.
+> **Identity is not session, and the distinction is load-bearing.** Supplied verbatim by the RTG-52
+> Loop-Owned Fleet session, which owns this mechanism:
+>
+> > Since P3-7 (2026-08-16) the `auditor` roster row is `role: service` with no tmux
+> > endpoint and no `worktree:` key: no pane can be spawned, probed or nudged under
+> > that id. The reviewer function runs as per-packet headless invocations of
+> > `scripts/coordination/headless_audit.py`. The IDENTITY is deliberately NOT
+> > retired — `worker_runner.py` addresses every audit packet to `auditor` and
+> > `headless_audit.py` writes its own outbox under that id, and
+> > `session_bus.py::_check_routing_intent` raises `BusError` on an assignee or
+> > routing target whose roster role is `retired`. Tombstoning it would break the
+> > P2-7 audit path.
+>
+> Any future edit that "cleans up" the retired session by retiring the identity will break audit
+> routing at that raise.
 >
 > **The test this tier must keep passing: does it still work with no interactive auditor?** Every
 > remaining `Auditor` in this document should be read as the identity, executing headlessly. Where
