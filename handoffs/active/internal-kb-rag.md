@@ -535,3 +535,31 @@ _Via `/research-intake` Stage-2 2026-07-29. Both items correct the record before
 
 - [x] **K-eval re-scoped ✅ 2026-07-29**: epyc-root `683f70de` corrected the GGUF-path/capability evidence and bounded the work to the K7 70-case probe under the 2pp noise floor; execution still requires a region claim.
 - [x] **intake-925 retriever reading corrected ✅ 2026-07-29**: epyc-root `683f70de` recorded that the figures are shell-invocation counts and Table 2 favors dense retrieval; retrieval complements rather than replaces grep.
+
+### Wiki compile watermark — a runtime file that a `git clean` can silently destroy (2026-08-16)
+
+`wiki/.last_compile` was found **missing** on 2026-08-16, so `compile_sources.py` reported **844 new
+sources** — effectively the entire repo. It is deliberately untracked (`f1717d80`, "actually untrack
+the four generated/runtime files"), and the live `git clean` recorded in `82400787` (2026-08-16
+10:57Z) is the most likely destroyer. Reconstructed from the last genuine `--touch` (`5fcad5e3`,
+2026-08-13T08:55:55Z, preceded by a real compile at `05c97235`); restoring it took the count from
+**844 to 51**.
+
+The compile was then run against the correct 51 and the watermark advanced normally.
+
+- [ ] **KB-WM-1 — Make watermark LOSS distinguishable from "never compiled".** `get_last_compile()`
+      returns `0.0` both when `wiki/.last_compile` is absent and when it fails to parse, so a destroyed
+      watermark is indistinguishable from a virgin repo. The realistic next action for whoever sees
+      "844 new" is to `--touch` it forward, which silently skips every genuinely uncompiled source —
+      the precise silent knowledge loss the wrap-up lease exists to prevent. Fail loudly on
+      absent-but-wiki-pages-exist instead of returning 0.0.
+- [ ] **KB-WM-2 — Decide where the watermark should live, given it is fleet-shared but untracked.**
+      It is documented as ONE watermark for the whole repo, yet it is untracked, so every lane
+      worktree carries its own and any `git clean` removes it with no trace. Those two properties are
+      inconsistent. Options: track it (reverses a deliberate hygiene decision taken three times);
+      move it under `coordination/` runtime state alongside the other fleet-shared runtime files; or
+      derive it from the last `--touch` commit instead of storing it. **Not resolved unilaterally —
+      the untracking was another session's considered call.**
+- [ ] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
+      had this failure shape, its siblings from the same commit should be checked for it rather than
+      assumed safe.

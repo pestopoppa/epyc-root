@@ -98,3 +98,36 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
 ## Progress checklist
 
 - [x] Intake-sweep findings deliverable produced (edits applied across 11 handoffs) ✅
+
+### Measurement #1 — the DENSE half is now measured (2026-08-16); the MoE half is still open
+
+- [x] **§5 measurement #1, dense quantized `-np {1,2,4,8,16,32}` sweep — RUN ✅ 2026-08-16.**
+      Goedel-8B, 8 rungs, one f16 source, frozen production quantizer `0db32c06e`/10125. Receipt:
+      `artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`. Filed as
+      `autokernel-research-loop.md` §22.
+- [ ] **§5 measurement #1, MoE half — STILL OPEN and still a genuine go/no-go.** This handoff's own
+      caveat (§4) is that MoE batches worse than dense because distinct tokens hit distinct experts,
+      so the dense result below does NOT transfer. The named targets — Q4_K gemma4-31B and Q8_0
+      Qwen3.6-27B — remain unmeasured. Needs an owner and a GPU window.
+
+**What the dense half settled, and the one place it revises §6.** "Batching closes GAP-A for
+quantized" is **confirmed for the formats this document considered** — Q4_K_M reaches ~0.99 of the
+best rung by B=32, so recommendation §6.1 (serve batched instead of authoring a kernel) stands for
+Q4_K and Q8_0.
+
+It is **false for sub-4-bpw**, which this document never considered. IQ3_XXS and IQ2_XXS reach only
+**0.77 and 0.88** of IQ4_XS at B=32, rising from 0.60/0.66 at B=1 — narrowing but never closing. The
+mechanism is register pressure, not per-weight-read cost: a quant whose
+`mul_mat_vec_q<_,1,true,false>` exceeds 64 VGPR drops from 8 waves/SIMD to 6, and a wave-slot ceiling
+does not amortize with batch the way a per-read cost does. Q4_K (44 VGPR) and Q8_0 (25) are both
+comfortably inside the 8-wave regime, which is exactly why batching rescues them.
+
+So §8's stated pivot — "measurement #1 showing quantized MoE *not* amortizing under batch → the
+gfx90a dequant kernel jumps to high-ROI for throughput too" — **half-fires already, on format rather
+than on MoE-ness**: for IQ formats the kernel work has throughput ROI, not only batch-1 latency ROI,
+and the lever is occupancy (VGPR ≤64) rather than dequant arithmetic. §6.3 should be read with that
+qualification pending the MoE measurement.
+
+**Caveats, carried:** n=1 per cell, no A/A band, one dense 8B model, speed-only with no correctness
+pairing (the IQ2/IQ3 rungs are 1.23 MB-imatrix performance probes, never quality-grade). Grade is
+`design_prior` — non-governed, no `evaluation_event`. This does not gate a deploy decision.
