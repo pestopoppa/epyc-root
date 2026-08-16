@@ -29,6 +29,39 @@ moved to `agents/archived/` under the Loop-Owned Fleet doctrine collapse (P1-5).
 dormant layer that no roster, dispatch path, hook, or validator consumed. Read
 `agents/archived/README.md` before citing or restoring any of them.
 
+## Pool Workers
+
+Added 2026-08-16. Alongside the interactive sessions the roster addresses, work also reaches a
+**pool-worker tier**: one roster identity, `workerpool` (`role: main`, `endpoint:
+"exec:worker_runner"`), which the daemon *exec's fresh for each assignment* instead of a session it
+holds a conversation with. The program behind that endpoint is
+`scripts/coordination/worker_runner.py`; the pool's bounds (harness, concurrency, token ceiling,
+lease grace) are data in `coordination/session-bus/config.yaml` under `worker_pool:`, and the pool
+is executable only while `worker_pool.enabled` is true.
+
+A pool worker is a process, not a session:
+
+- **One per assignment.** The runner starts on a daemon tick, does the batch, and exits. Nothing
+  persists between assignments.
+- **Works in a pool worktree.** `/mnt/raid0/llm/worktrees/pool/lane0..lane3`, one worker per lane
+  (enforced by a `.worker.lock` lockfile). Never an interactive main's lane worktree — a
+  commit-per-unit or salvage commit in an occupied tree is the documented commit-sweep hazard.
+- **Delivers commits, signals by file.** The deliverable is pathspec-limited commits in the lane
+  worktree, one per completed unit. The typed report (`worker_report.v1`) is the *only* completion
+  signal and carries pointers, not the diff — a headless auditor re-derives the change from git
+  independently. Denied tool calls are recorded in the report rather than passing silently.
+- **Fans out its own subagents**, 3–5 concurrent, like any main (D0).
+
+Its tmux pane is **visible and human-authoritative** (D8): the operator may watch it, steer it, and
+answer permission prompts by hand. The machine never types into a pane and never makes a decision
+from pane text — it may only capture scrollback as evidence for a human to triage.
+
+Design of record: `docs/design/loop-owned-fleet.html` — *The pivot: pool workers in visible panes*
+(`#pivot`), *worker_runner: per-assignment lifecycle* (`#d-runner`), and *Ratified decisions*
+(`#decisions`, D0/D1/D2/D6/D8). Task-level state and gates:
+`handoffs/active/loop-owned-fleet-implementation.md` (Phase 2). Consult those rather
+than this section for the design rationale.
+
 ## Model Routing (Task-Based)
 
 - Claude sessions: `Haiku` routine execution / `Sonnet` most engineering / `Opus` novel architecture and hard debugging. `Fable` is metered — reserve for architect-grade work.
