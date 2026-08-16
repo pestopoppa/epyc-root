@@ -47,6 +47,10 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MODULE = REPO_ROOT / "scripts" / "coordination" / "tmux_adapter.py"
+# P3-2 (2026-08-16): `pending` / `clear` / `submit` left `tmux_adapter.py` for the
+# quarantine. Their tests did NOT — they are the measured record of C51/C54/C55 and
+# they still run, against the module's new home.
+REPAIR_MODULE = REPO_ROOT / "scripts" / "coordination" / "_retired" / "composer_repair.py"
 FIXTURE = Path(__file__).resolve().parent / "composer_tui_fixture.py"
 SESSION = f"tmuxsub-test-{os.getpid()}"
 
@@ -76,6 +80,37 @@ def _load(bus_root: Path | None = None):
         m.LEDGER = bus_root / "adapter-ledger.jsonl"
         for d in ("heartbeats", "cursors", "inbox", "outbox"):
             (bus_root / d).mkdir(parents=True, exist_ok=True)
+    return m
+
+
+def _load_repair(bus_root: Path | None = None):
+    """The quarantined composer-repair module, bound to a FRESH adapter instance.
+
+    `composer_repair.py` does `from tmux_adapter import ...`, so the names it calls
+    live in ITS namespace — which is what keeps every `monkeypatch.setattr(m, ...)`
+    seam in this file working unchanged. The one thing that does not follow from
+    that is BUS_ROOT: the imported `load_config`/`heartbeat`/`record` read the
+    globals of the tmux_adapter module they were imported FROM. So the fresh,
+    temp-rooted adapter is put in `sys.modules` for the duration of the import and
+    handed back as `m._adapter` — a test that needs to patch adapter-side internals
+    (see the Ctrl-C prohibition case) has to patch BOTH handles, and saying so here
+    is cheaper than a test that silently misses half the send-keys calls.
+    """
+    ta = _load(bus_root)
+    saved = sys.modules.get("tmux_adapter")
+    sys.modules["tmux_adapter"] = ta
+    try:
+        spec = importlib.util.spec_from_file_location(
+            f"cr_{os.getpid()}_{id(bus_root)}", REPAIR_MODULE)
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+    finally:
+        if saved is None:
+            sys.modules.pop("tmux_adapter", None)
+        else:
+            sys.modules["tmux_adapter"] = saved
+    m.BUS_ROOT, m.LEDGER = ta.BUS_ROOT, ta.LEDGER
+    m._adapter = ta
     return m
 
 
@@ -223,7 +258,7 @@ def _detector_config(rows: list[dict]) -> dict:
 
 
 def test_detector_reports_pending_and_exits_non_zero(monkeypatch):
-    m = _load()
+    m = _load_repair()
     monkeypatch.setattr(m, "resolve_target", lambda cfg, a: (f"x:{a}", "verified"))
     monkeypatch.setattr(m, "_read_composer_row",
                         lambda t, _f=False: ("❯ push it" if t.endswith("b") else "❯ ", None))
@@ -237,7 +272,7 @@ def test_detector_reports_pending_and_exits_non_zero(monkeypatch):
 
 
 def test_detector_clean_fleet_exits_zero(monkeypatch):
-    m = _load()
+    m = _load_repair()
     monkeypatch.setattr(m, "resolve_target", lambda cfg, a: (f"x:{a}", "verified"))
     monkeypatch.setattr(m, "_read_composer_row", lambda t, _f=False: ("❯ ", None))
     monkeypatch.setattr(m, "heartbeat", lambda a: ({"state": "idle"}, 5.0))
@@ -249,7 +284,7 @@ def test_detector_clean_fleet_exits_zero(monkeypatch):
 def test_detector_unreadable_pane_is_not_reported_clean(monkeypatch):
     """The fail-open this module's whole history is made of: "I could not look"
     must never render as "nothing is pending"."""
-    m = _load()
+    m = _load_repair()
     monkeypatch.setattr(m, "resolve_target", lambda cfg, a: (f"x:{a}", "verified"))
     monkeypatch.setattr(m, "_read_composer_row", lambda t, _f=False: (None, "capture-pane failed"))
     monkeypatch.setattr(m, "heartbeat", lambda a: (None, None))
@@ -259,7 +294,7 @@ def test_detector_unreadable_pane_is_not_reported_clean(monkeypatch):
 
 
 def test_detector_unresolved_endpoint_is_unevaluable_but_a_retired_row_is_not(monkeypatch):
-    m = _load()
+    m = _load_repair()
     monkeypatch.setattr(m, "resolve_target", lambda cfg, a: (None, "does not resolve"))
     monkeypatch.setattr(m, "heartbeat", lambda a: (None, None))
     report = m.pending_input_report(_detector_config([
@@ -272,7 +307,7 @@ def test_detector_unresolved_endpoint_is_unevaluable_but_a_retired_row_is_not(mo
 
 
 def test_detector_unknown_agent_is_refused_not_silently_dropped(monkeypatch):
-    m = _load()
+    m = _load_repair()
     monkeypatch.setattr(m, "heartbeat", lambda a: (None, None))
     report = m.pending_input_report(_detector_config([{"id": "a", "endpoint": "monitor:file"}]),
                                     agents=["ghost"])
@@ -485,7 +520,7 @@ def test_live_doorbell_refuses_a_composer_that_already_holds_input(live_bus):
 
 def test_live_detector_sees_pending_input_and_names_the_main(live_bus):
     """The whole point: the standing condition is answerable without reading panes."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["clean", "stuck"])
     for a in ("clean", "stuck"):
         _heartbeat(m, a)
@@ -510,7 +545,7 @@ def test_live_detector_sees_pending_input_and_names_the_main(live_bus):
 def test_live_detector_sends_no_keys(live_bus):
     """READ-ONLY, asserted rather than asserted-in-a-comment: the pending text is still
     pending afterwards, neither submitted nor cleared."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["stuck"])
     _heartbeat(m, "stuck")
     _start_pane("stuck", "submit")
@@ -615,7 +650,7 @@ def test_live_pending_text_to_the_right_of_the_cursor_is_seen(live_bus):
     live Claude panes — cursor at column 2, content to its right — must read as
     PENDING. A cursor-prefix read calls it empty, which is how four mains sat holding
     unsubmitted instructions while the detector reported the fleet clean."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["ghosty"])
     _heartbeat(m, "ghosty")
     painted = "\\033[39m\u276f\u00a0\\033[2mpull the next batch and keep going\\033[0m\\033[3;3H"
@@ -633,7 +668,10 @@ def test_live_pending_text_to_the_right_of_the_cursor_is_seen(live_bus):
     assert report["pending"] == ["ghosty"], report["panes"]
 
     # ...and the same pane read the OLD way — sliced at the cursor — is invisible.
-    cursor_prefix, failure = m._composer_text(f"{SESSION}:ghosty")
+    # `_composer_text` is adapter-side (the detector never wanted it), so this half of
+    # the mutation check reaches through to the adapter handle rather than pretending
+    # the quarantined module re-exports something it does not use.
+    cursor_prefix, failure = m._adapter._composer_text(f"{SESSION}:ghosty")
     assert failure is None, failure
     assert m._composer_row_is_empty(cursor_prefix), \
         "MUTATION CHECK: the cursor-prefix read must be the one that misses it"
@@ -657,7 +695,7 @@ def _type(window: str, text: str) -> None:
 def test_live_clear_empties_the_composer_and_the_detector_agrees(live_bus):
     """The keystroke is not the evidence: the composer is RE-READ, and so is the
     detector, because the whole point of `clear` is to move `pending` back to clean."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["stuck"])
     _heartbeat(m, "stuck")
     _start_pane("stuck", "submit")
@@ -676,7 +714,7 @@ def test_live_clear_logs_the_discarded_text_verbatim(live_bus):
     """A wrongly-discarded operator instruction must be recoverable from the ledger —
     that is the only reason discarding is allowed at all. `detail` may be trimmed;
     `pending_text` may not."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["stuck"])
     _heartbeat(m, "stuck")
     _start_pane("stuck", "submit")
@@ -693,7 +731,7 @@ def test_live_clear_logs_the_discarded_text_verbatim(live_bus):
 def test_live_expect_refuses_on_a_mismatch_and_changes_nothing(live_bus):
     """The TOCTOU defence: an operator who types between the read and the call cannot
     have the new sentence discarded by a decision made about the old one."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["stuck"])
     _heartbeat(m, "stuck")
     _start_pane("stuck", "submit")
@@ -708,7 +746,7 @@ def test_live_expect_refuses_on_a_mismatch_and_changes_nothing(live_bus):
 
 def test_live_neither_expect_nor_force_refuses_without_touching_the_pane(live_bus):
     """Discarding somebody's words must never happen by omission."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["stuck"])
     _heartbeat(m, "stuck")
     _start_pane("stuck", "submit")
@@ -723,7 +761,7 @@ def test_live_neither_expect_nor_force_refuses_without_touching_the_pane(live_bu
 def test_live_submit_sends_the_pending_text_as_an_instruction(live_bus):
     """The other verb. mainC's pending text was CORRECT and wanted submitting; nothing
     on the pane says which case you are in, so the caller chooses."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["ready"])
     _heartbeat(m, "ready")
     _start_pane("ready", "submit")
@@ -741,7 +779,7 @@ def test_live_submit_sends_the_pending_text_as_an_instruction(live_bus):
 
 
 def test_live_submit_refuses_an_empty_composer(live_bus):
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["empty"])
     _heartbeat(m, "empty")
     _start_pane("empty", "submit")
@@ -752,7 +790,7 @@ def test_live_submit_refuses_an_empty_composer(live_bus):
 
 def test_live_clear_on_an_already_empty_composer_is_a_no_op_success(live_bus):
     """Idempotent, so a coordinator can run it without first running `pending`."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["empty"])
     _heartbeat(m, "empty")
     _start_pane("empty", "submit")
@@ -765,7 +803,7 @@ def test_live_a_clear_that_does_not_take_is_reported_as_failure(live_bus):
     """MUTATION of the PANE rather than the code: a composer that ignores Ctrl-U must
     produce a loud failure and a `clear-unconfirmed` row, never a success. This is the
     keystroke-is-not-evidence rule, applied to the remedy."""
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["deaf"])
     _heartbeat(m, "deaf")
     rc, out = _tmux("new-window", "-d", "-t", SESSION, "-n", "deaf",
@@ -800,7 +838,7 @@ def test_no_path_through_clear_or_submit_can_emit_ctrl_c(live_bus, argv, acts, m
     wrong reason. Each case therefore also asserts WHETHER it should have pressed a key,
     so the cases that prove the prohibition are the ones that actually press one.
     """
-    m = _load(live_bus)
+    m = _load_repair(live_bus)
     _write_config(live_bus, ["k"])
     _heartbeat(m, "k")
     _start_pane("k", "submit")
@@ -808,7 +846,18 @@ def test_no_path_through_clear_or_submit_can_emit_ctrl_c(live_bus, argv, acts, m
 
     sent: list[tuple] = []
     real = m._tmux
-    monkeypatch.setattr(m, "_tmux", lambda *a: (sent.append(a) or real(*a)))
+
+    def _spy(*a):
+        sent.append(a)
+        return real(*a)
+
+    # BOTH handles, and the second one is the load-bearing half: `_composer_action`
+    # calls this module's `_tmux`, while `_press_key_with_wake` — where the actual
+    # keystrokes go out — lives in the adapter and calls the adapter's. Patching only
+    # the first would let every send-keys through unobserved and the prohibition would
+    # pass vacuously (P3-2 moved the two apart; before that they shared a namespace).
+    monkeypatch.setattr(m, "_tmux", _spy)
+    monkeypatch.setattr(m._adapter, "_tmux", _spy)
     _run(m, argv)
     keys = [a for a in sent if a and a[0] == "send-keys"]
     assert bool(keys) is acts, f"expected acts={acts}, sent {keys}"

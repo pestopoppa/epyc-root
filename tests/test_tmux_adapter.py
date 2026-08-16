@@ -2226,10 +2226,20 @@ def test_h2_both_key_paths_go_through_one_helper() -> None:
     """Structural: `_clear_own_pending` and `_composer_action` must both press keys
     via `_press_key_with_wake`. A second hand-rolled wake sequence is how the two
     paths drift apart again — one of them silently losing the wake character is
-    exactly the defect H-2 repairs."""
+    exactly the defect H-2 repairs.
+
+    P3-2 (2026-08-16) moved `_composer_action` to
+    `scripts/coordination/_retired/composer_repair.py`, so the two paths now live in
+    two files — which makes drift EASIER, not harder, and is precisely why this test
+    follows it there rather than dropping the second half. The helper itself stayed
+    in the adapter and is imported by name."""
     import ast
-    tree = _adapter_ast()
-    fns = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+    repair_path = (REPO_ROOT / "scripts" / "coordination" / "_retired"
+                   / "composer_repair.py")
+    assert repair_path.exists(), f"quarantined module is missing: {repair_path}"
+    fns = {}
+    for tree in (_adapter_ast(), ast.parse(repair_path.read_text(encoding="utf-8"))):
+        fns.update({n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)})
     for name in ("_clear_own_pending", "_composer_action"):
         body = fns[name]
         calls = {c.func.id for c in ast.walk(body)
