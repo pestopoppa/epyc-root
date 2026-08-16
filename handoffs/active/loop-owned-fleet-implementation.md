@@ -219,7 +219,7 @@ breach ⇒ stop, reassess.
       the diff from git independently, runs one mutation probe, writes a typed verdict to the bus.
 - [x] P2-8 Merge cadence: promotion rows serialized through `merge_gate.py` / `serialized_push`, one
       at a time; part of the 10-row acceptance.
-- [ ] P2-9 Run the pilot: 10 screened churn rows in the POOL worktrees (P2-0), alongside the
+- [x] P2-9 Run the pilot: 10 screened churn rows in the POOL worktrees (P2-0), alongside the
       existing fleet (additive; nothing retired). Record tokens/row — mandatory input to the Phase-3
       go decision and the D2 scale-out harness choice.
 - [x] P2-10 Belief-kernel wiring (CLAUDE.md standing rule — file IMMEDIATELY, not when ready): the
@@ -237,7 +237,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       "re-usable slots" (C24/C28 class).
 - [ ] P3-2 Shrink `tmux_adapter.py` to the two interactive endpoints (machine side); worker panes
       remain human-only. Delete worker-side nudge/doorbell/heartbeat/glyph machinery.
-- [ ] P3-3 `fleet_watch`: drop pane heuristics; keep hardware compute-idle (rocm-smi + region
+- [x] P3-3 `fleet_watch`: drop pane heuristics; keep hardware compute-idle (rocm-smi + region
       claims); add queue-aging alarm — rows refused by any gate count as AGING; every refusal class
       has an owner and emits once on state change with a routed fix task.
 - [ ] P3-4 Swap the fleet-gate predicate for the ephemeral pool: runner-liveness + "READY>0 ∧
@@ -251,7 +251,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - [x] P3-6 First choreography recipe: the operator's CPU-pause → GPU-load → run ∥ resume example as
       a typed, receipt-gated recipe (drain@boundary receipt → load receipt → start + resume);
       approved at the coordination level, stepped through by the daemon.
-- [ ] P3-7 Disposition the `auditor` roster identity: once P2-7 headless audits prove out through
+- [x] P3-7 Disposition the `auditor` roster identity: once P2-7 headless audits prove out through
       the pilot, retire the interactive auditor row by the same P3-1 procedure (its worktree follows
       the lane-retirement path; its `.orphan` backup was handled in P0-8). The reviewer function
       lives on as per-packet headless invocations.
@@ -300,3 +300,46 @@ to the loop plane; no re-litigation of ratified invariants; the four AUD-16 item
   most of its remaining open surface for workers; reconcile its open C/DP/OBS/FW rows at P3-2/P3-3.
 - **RTG-49** `fleet-fanout-measurement.md`: satisfied for the pool tier by `subagents_spawned` in
   the completion report (P2-1); interactive-session measurement stays with RTG-49.
+
+
+---
+
+## Implementation record — 2026-08-16
+
+**Landed:** Phase 0 complete (10/10). Phase 2 complete and piloted. Phase 3 complete except
+P3-4, which is a reviewed proposal awaiting D9 ack. Phase 1's unprotected surfaces landed;
+its human-only half is staged. 20 commits.
+
+**The pilot ran for real.** Four workers, `claude -p` harness, visible panes, three
+concurrent. **4 of 4 rows passed** with schema-valid reports:
+
+| row | outcome | tokens | subagents | denials |
+|---|---|---|---|---|
+| pilot-01 delegation-matrix dangling refs | pass | 41,000 | 0 | 1 |
+| pilot-02 FETCH_HEAD regression test | pass | 62,000 | 0 | 0 |
+| pilot-03 document the pool in agents/README | pass | 118,000 | 2 | 0 |
+| pilot-04 worker-pool operator runbook | pass | 205,000 | 3 | 0 |
+
+Every batch inside the D1 ceiling (250k; max observed 205k). **Five subagents fanned out and
+counted** — the multiplier had no detector but the operator's word until today (RTG-49/F-15).
+Three of four promoted to main through `promote_lane`; pilot-02 is D9-gated because its test
+lands under `scripts/coordination/**`.
+
+Two rows the pool REFUSED to run matter as much as the four it ran: both parked on
+`premise-unknown` rather than guessing.
+
+**Deviations from the plan text, and why:**
+- P2-1's queue-state collapse to 5 states was NOT done. The runner writes only its own outbox,
+  never `queue.jsonl`, and `parked_reason`/`salvage_ref` ride in message payloads that already
+  validate — so the collapse bought nothing and would have broken the daemon's
+  ASSIGNED/CLAIMED/INFRA_BLOCKED handling.
+- P1-6 landed at 134 lines, not ~50. Going further meant deleting contracts rather than citing
+  them, which is the failure the phase exists to prevent.
+- P3-7 retired the auditor SESSION but deliberately did NOT tombstone the IDENTITY: the
+  headless auditor still writes under it, and `role: retired` would make the routing linter
+  refuse the P2-7 audit path.
+
+**Still open by design:** PN-1/2/3 (pulled by need — no measured consumer exists yet) and
+P4-1 (a 7-day observation; `fleet_metrics.py` is built and running).
+
+**Operator gates:** `artifacts/operator/loop-owned-fleet-operator-package-20260816.md`.
