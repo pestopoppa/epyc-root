@@ -39,9 +39,15 @@ BUS_SRC = REPO_ROOT / "coordination" / "session-bus"
 # already started enforcing the roster. A suite that is red for an unrelated reason
 # stops being read at all, so `make_bus` now asserts these against the copied config
 # and fails with one pointed message instead of sixteen confusing ones.
-SENDER = "mainB"
+# 2026-08-16 (P3-2/P3-7): SENDER was `mainB` and `OTHER` was `inference`. P3-1
+# tombstoned mainA-D, and a RETIRED sender is refused by `_check_routing_intent`
+# the moment a case routes to it — which silently reddened two cases here again,
+# in exactly the way the 07-29 note above predicted. `make_bus` now asserts
+# LIVENESS as well as existence, so the next retirement fails with one pointed
+# message instead of a confusing red.
+SENDER = "inference"
 TARGET = "auditor"
-OTHER = "inference"
+OTHER = "workerpool"
 RETIRED = "codex-bus-tests"      # rostered but role: retired — a distinct case from absent
 DAEMON = "coordinator-daemon"
 
@@ -63,6 +69,13 @@ def make_bus(tmp_path: Path) -> Path:
         f"fixture ids {missing} are no longer on the roster in {BUS_SRC}/config.yaml "
         f"(have: {sorted(by_id)}). A roster RENAME silently reddens this whole file; "
         f"update the SENDER/TARGET/OTHER/RETIRED constants above.")
+    live = [a for a in (SENDER, TARGET, OTHER)
+            if str(by_id[a].get("role") or "").strip().lower() == "retired"]
+    assert not live, (
+        f"fixture ids {live} are now role: retired in {BUS_SRC}/config.yaml. A retired "
+        f"id is REFUSED as an assignee/routing target, so every case that routes to one "
+        f"fails for a reason that has nothing to do with what it tests. Repoint the "
+        f"SENDER/TARGET/OTHER constants above at live roster rows.")
     assert by_id[RETIRED].get("role") == "retired", (
         f"fixture assumption: {RETIRED!r} is the rostered-but-RETIRED case, but its role "
         f"is {by_id[RETIRED].get('role')!r}. Pick another retired row or the "
@@ -835,7 +848,19 @@ def test_drain_prints_the_three_boundary_readings(tmp_path, capsys):
     assert "boundary: 1 action_required row(s) OWED BY YOU" in err
     assert "d old" in err, "age is the point — a two-week-old ask read like this minute's"
     assert "boundary: scripts/" in err
-    assert "boundary: occupancy" in err
+    # The occupancy reading, on WHICHEVER branch fires. This used to pin the exact
+    # string "boundary: occupancy", which only four of the five branches emit — the
+    # HEALTHY one prints "boundary: last occupancy line (<age>) from <path>". The
+    # assertion therefore passed only while fleet_watch had written no COMPUTE-IDLE
+    # line, and went red the moment P3-3 made it write one (2026-08-16). Note the
+    # standing hazard this exposes: `_print_fleet_watch_occupancy` reads the LIVE
+    # /workspace/logs/fleet_watch.log, so this case's outcome depends on production
+    # state a tmp bus root cannot control. Pinning every branch is the fix available
+    # here; injecting the path is the real one, and belongs with drain's owner.
+    occupancy = [l for l in err.splitlines() if l.startswith("boundary: ")
+                 and ("occupancy" in l
+                      or "/".join(("COMPUTE-IDLE", "IDLE-CANDIDATE")) in l)]
+    assert occupancy, f"no occupancy reading among the boundary lines: {err!r}"
 
 
 def test_drain_never_reports_a_stale_fleet_watch_line_as_current(tmp_path, capsys):
