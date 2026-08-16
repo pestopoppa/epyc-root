@@ -227,10 +227,37 @@ else:
     print("NO-DELIVERY-RESULT-RECORD")
 PY
 )"
-    [[ $rc -eq 0 && "$d" == "skipped_not_live" ]]
-    check $? "shipped config touches no network (delivery=$d) yet still records locally"
-    grep -q 'PLACEHOLDER' "$TMP/ph.err"
-    check $? "and says so loudly on stderr, with the one-line fix"
+    # THE ASSERTION DEPENDS ON WHICH STATE THE CONFIG IS IN, and both states are
+    # legitimate. Before go-live the shipped config carries a REPLACE-ME sentinel
+    # and MUST touch no network; after the operator sets a real endpoint it MUST
+    # actually deliver. Asserting only the first turns this gate red the moment
+    # someone does the very thing the gate exists to encourage — which is exactly
+    # what happened at go-live on 2026-08-16, and a permanently-red gate is worse
+    # than no gate because it stops being read.
+    # Precise: the sentinel that decides liveness lives in the ACTIVE BACKEND's
+    # endpoint, not anywhere in the file. A whole-file grep also matches the
+    # comment that explains the sentinel and the unused email placeholder, which
+    # is how this check first reported PRE-GO-LIVE against an already-live config.
+    if "$PY" - "$REPO_CONFIG" <<'PY_LIVE'
+import re, sys
+t = open(sys.argv[1], encoding="utf-8").read()
+backend = (re.search(r"^backend:\s*(\w+)", t, re.M) or [None, ""])[1]
+block = re.search(rf"^{backend}:\n((?:[ \t]+.*\n)+)", t, re.M)
+body = block.group(1) if block else ""
+endpoint = re.search(r"^\s*(?:url|to):\s*(.+)$", body, re.M)
+sys.exit(0 if endpoint and "REPLACE-ME" in endpoint.group(1) else 1)
+PY_LIVE
+    then
+        [[ $rc -eq 0 && "$d" == "skipped_not_live" ]]
+        check $? "PRE-GO-LIVE: shipped config touches no network (delivery=$d) yet still records locally"
+        grep -q 'PLACEHOLDER' "$TMP/ph.err"
+        check $? "and says so loudly on stderr, with the one-line fix"
+    else
+        [[ $rc -eq 0 && "$d" == "ok" ]]
+        check $? "LIVE: configured endpoint actually delivers (delivery=$d) and records locally"
+        [[ -s "$PREC" ]]
+        check $? "and the local durable record is written regardless of the backend"
+    fi
 else
     bad "repo config missing at $REPO_CONFIG"
 fi
