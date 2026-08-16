@@ -33,7 +33,8 @@ drain-at-boundary safety.
 1. Keep a ready queue of valid inference-gated work and select the highest-priority compatible
    item whenever a resource has been persistently idle.
 2. Emit or request receipts for resource activity and occupancy; one between-run sample is not
-   evidence of idleness.
+   evidence of idleness. Sampling discipline (sample DURING, name the persistence count):
+   `agents/shared/OPERATING_CONSTRAINTS.md` → *Observation Windows*.
 3. When `fleet_watch` reports a persistent CPU or GPU idle episode, coordinator-agent routes a
    compute-ready item to this role or asks it to grant a lease. Inference Main resolves the
    physical-resource choice and records the outcome.
@@ -58,8 +59,10 @@ or reprovisioning.
 - Decide whether to execute an inference-gated task directly or grant a time-bounded resource
   lease to another main. A resource lease is distinct from a task assignment and never replaces a
   physical claim (`region-lock` for CPU and the configured device claim for GPU).
-- Own reload timing for a running inference session. Reclaim is always quiesce-and-drain, never a
-  forced interruption.
+- Own reload timing for a running inference session — this is the owner-side half of the reload
+  rule; the requester-side half is `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and
+  Benchmarks* (reload ownership). Reclaim is always quiesce-and-drain, never a forced interruption
+  (`agents/shared/INVARIANTS.md` invariant 6).
 - Follow the inference/measurement rules in `agents/shared/OPERATING_CONSTRAINTS.md`; a lease
   never proves a CPU or GPU run occurred.
 - The normal coordinator dispatch path remains responsible for ordinary task assignment and for

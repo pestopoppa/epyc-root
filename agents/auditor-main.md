@@ -59,6 +59,12 @@ reveals a small implementation fix, dispatch the implementation and its verifica
 implementation serially in the Auditor main thread. Larger or residual work returns through the
 handoff/coordinator path.
 
+This is the auditor-shaped instance of the fleet default, never an exemption from it: width 3–5
+concurrent, model and effort matched, every result PROPOSED until reviewed, and the ratified
+*When NOT to fan out* exceptions all apply. Canonical rule: `agents/shared/OPERATING_CONSTRAINTS.md`
+→ *Parallel Subagent Fan-Out*; the `gpt-5.6-terra` floor above is the role-specific carve-out
+recorded in the same file under *Codex Delegation & Long-Horizon Throughput*.
+
 ## Provisioning and identity
 
 Before instantiating this role, coordinator-agent asks the operator whether to adopt an eligible

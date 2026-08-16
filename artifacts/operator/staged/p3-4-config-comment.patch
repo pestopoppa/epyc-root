@@ -1,0 +1,16 @@
+--- a/coordination/session-bus/config.yaml
++++ b/coordination/session-bus/config.yaml
+@@ -86,8 +86,11 @@
+   # are GONE: nothing may spawn, probe, nudge or type into a pane under this id again.
+   # role: reviewer -> service, for the same reason hardware-backfill is a service —
+   # it is a mechanism, not a session; it has no tmux window and nothing nudges it.
+-  # Side effect, and the desired one: `_fleet_presence` counts roles main+reviewer,
+-  # so this row stops being a permanently-dead fleet-gate candidate.
++  # Side effect, and the desired one: the Phase-0 `_fleet_presence` gate counted
++  # roles main+reviewer, so this row stopped being a permanently-dead fleet-gate
++  # candidate. That gate was retired by P3-4 (runner-liveness + starvation, which
++  # look at `exec:` endpoints only), so the side effect is now moot rather than
++  # load-bearing — recorded here because the reasoning above cites it.
+   #
+   # The IDENTITY is NOT retired, because it is still ADDRESSED and still WRITES:
+   # worker_runner.py emits every completed batch's audit packet with

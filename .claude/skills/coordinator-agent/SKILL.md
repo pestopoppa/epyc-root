@@ -435,8 +435,10 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
 
 ### Boundaries you must not cross
 
-- **Trust boundaries are human-only.** You present; the operator signs. Never sign, never flip a
-  checkbox, never edit `human_only_paths.yaml`.
+- **Trust boundaries are human-only.** You present; the operator signs. Never sign, never edit
+  `human_only_paths.yaml`, and never tick ANOTHER agent's checkbox
+  (`agents/shared/INVARIANTS.md` invariants 4, 9, 10). Saying that someone else's box is stale is
+  not ticking it and is always allowed.
 - **Every merge is gated**: `python3 scripts/coordination/merge_gate.py check [--repo <r>]
   [--range <ref..ref>]`. A **gated** verdict means you produce a *pre-validated* command for the
   operator — you never apply it. A presented command that fails is a defect attributed to you, so
