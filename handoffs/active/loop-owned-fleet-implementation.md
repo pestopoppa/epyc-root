@@ -106,22 +106,22 @@ exactly ONE alarm; the cold-start skill brings the supervision tier back and re-
 
 Gate: ship and fix forward (pure deletion needs no drill); moratorium verified in force.
 
-- [ ] P1-1 `agents/shared/INVARIANTS.md`: the ~15 real invariants, verbatim, no origin narratives.
+- [x] P1-1 `agents/shared/INVARIANTS.md`: the ~15 real invariants, verbatim, no origin narratives.
       Mechanical protocol cited from `session_bus.schema.json`, not restated.
-- [ ] P1-2 Deduplicate headline rules (fan-out, liveness, checkbox, dispatch-identity, reload
+- [x] P1-2 Deduplicate headline rules (fan-out, liveness, checkbox, dispatch-identity, reload
       ownership, observation windows…): one canonical copy each; CLAUDE.md and every other surface
       cite, never restate. (The fan-out rule's 08-13 exceptions currently exist in 1 of 5 copies.)
-- [ ] P1-3 Resolve the three live self-contradictions with one explicit ruling each, recorded here:
+- [x] P1-3 Resolve the three live self-contradictions with one explicit ruling each, recorded here:
       (a) wrap-up cadence (manual-trigger banner vs lifecycle checkpoint contract vs binding 08-11
       per-task rule); (b) subagent index edits (SESSION_LIFECYCLE "coordinator subagent preferred"
       vs CLAUDE.md prohibition); (c) role-based delegation (role files/delegation matrix vs the
       measured role-decomposition anti-pattern).
-- [ ] P1-4 Move incident narratives out of the instruction path: BUS_PROTOCOL/coordinator-agent.md
+- [x] P1-4 Move incident narratives out of the instruction path: BUS_PROTOCOL/coordinator-agent.md
       shrink to contracts; narratives live in the ledgers; judgment heuristics become per-decision
       example packs under `coordination/evals/examples/` (future few-shot content).
 - [x] P1-5 Archive the eight dormant role files (benchmark-analyst … sysadmin) and the amber unwired
       task-flow sections; regenerate the flow doc from wired reality only.
-- [ ] P1-6 Rewrite `agents/coordinator-agent.md` to ~50 lines: identity, invariants pointer,
+- [x] P1-6 Rewrite `agents/coordinator-agent.md` to ~50 lines: identity, invariants pointer,
       choke-point contracts, console role (primary operator channel; no clock ownership; no
       instrument reading; compute-policy editor per amended D4).
 
