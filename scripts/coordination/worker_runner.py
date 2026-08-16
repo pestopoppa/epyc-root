@@ -1350,6 +1350,38 @@ AUDIT_POINTER_KEYS = ("task_ids", "worktree", "commit_range", "report_path", "br
                       "harness", "run_dir")
 
 
+def _invoke_headless_audit(bus_root: Path, ctx: dict) -> None:
+    """Actually RUN the auditor on the packet we just emitted (P2-7's other half).
+
+    Emitting a packet addressed to `auditor` and stopping there is how the first
+    pilot ended with three audit packets sitting undrained: the audit plane
+    existed, was tested, and was never invoked by anything. An unread packet is
+    the unread-sink failure with an extra step, and it fails in the direction
+    that matters — work reads as audited when nobody looked at it.
+
+    Detached and best-effort ON PURPOSE. The audit is a SEPARATE judgement about
+    work that is already committed and reported; a slow or broken auditor must
+    not change the worker's outcome, or the runner would be grading itself
+    through the back door. The packet stays on the bus either way, so a failed
+    invocation degrades to exactly the old behaviour — a packet waiting for a
+    reader — rather than to a lost verdict.
+    """
+    script = Path(__file__).resolve().parent / "headless_audit.py"
+    if not script.exists():
+        return
+    try:
+        run_dir = Path(ctx.get("run_dir") or ".")
+        packet_path = run_dir / "audit_packet.json"
+        packet_path.write_text(json.dumps(audit_packet(ctx), indent=2) + "\n", encoding="utf-8")
+        log = open(run_dir / "headless_audit.log", "ab")
+        subprocess.Popen(
+            [sys.executable, str(script), "audit", "--packet", str(packet_path),
+             "--emit", "--bus-root", str(bus_root)],
+            stdout=log, stderr=log, start_new_session=True)
+    except (OSError, subprocess.SubprocessError, TypeError, ValueError):
+        return
+
+
 def audit_packet(ctx: dict) -> dict:
     """POINTERS ONLY. Never the worker's own claims.
 
@@ -1721,6 +1753,8 @@ def write_results(bus_root: Path, agent: str, results: list[dict], report: Optio
         "payload": {"audit_packet": audit_packet(ctx),
                     "note": "pointers only — derive the diff from git independently"},
     }))
+
+    _invoke_headless_audit(bus_root, ctx)
 
     promo = promotion_row(ctx, results)
     if promo:
