@@ -9,6 +9,15 @@
 > full OP-1..OP-6 operator-decision text, the closed OP-2, coordination checkpoints, and the generated
 > capability table. It is not a task list; do not dispatch from it.
 
+## Operator-decision queue entries archived at the 2026-08-16 wrap-up
+
+- **OP-10 — P-GPU-1 `duty_cycle` amendment.** Answered 2026-08-14: the operator ratified option (a)
+  through `RATIFY-PGPU1-DUTY-CYCLE-20260814`; durable receipt:
+  `artifacts/operator/ratify_pgpu1_duty_cycle_20260814.json`. Removed from the live decision queue.
+- **OP-24 — trained `[Q]`/`[D]` ColBERT-prefix migration.** Answered 2026-08-12: the operator said
+  go; the new `index-qd-v1` store was already being built alongside the live store. Execution remains
+  in its owning handoff, but the human choice is closed and was removed from the live decision queue.
+
 ---
 
 # EPYC Handoff — Master Index

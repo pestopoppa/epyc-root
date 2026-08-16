@@ -322,3 +322,16 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     `c24892485af0bddedc641b4ae764302a3c7dc070ed2d765c8e820c01f680b470` against frozen v9
     `0db32c06e3e550065b78311a6031ef3dd2c4f27c`.
 - [ ] With OP-12 approval, commit the one-file IQ2_XXS one-row dispatch and run matched model-level TG/PP confirmation before any promotion claim.
+- [x] **Settle the gfx90a low-precision datapath at ISA level.** ✅ 2026-08-15 — gfx90a FP16 and
+  INT8 MFMA have identical shape sets and peak rate; there is no FP8 or INT4 matrix path. Batch-one
+  decode sits 31–113× below the measured ridge, so native-MFMA decode hypotheses have zero value on
+  this die. Composable Kernel FP8 on gfx90a is fp32 emulation, not a datapath benchmark. Durable
+  citations and assembly/toolchain checks are compiled in `wiki/hardware-optimization.md`.
+- [ ] **TRIPWIRE — re-open low-quant VALU/occupancy work when an IQ-format role becomes GPU-resident.**
+  Current production has no IQ1/IQ2/IQ3/IQ4 serving role on ROCm0, so the 6-vs-8-wave loss is a
+  latent exposure rather than current payoff. Reprice immediately on a registry transition making an
+  IQ-format GGUF resident; do not close the mechanism as “not a problem.”
+  - [x] **INF37-IQ-1 — Bind the latent-residency blocker into planner memory.** ✅ 2026-08-16 —
+    research `5ae54e0ae4a80ab02450f703617b6a769599caf2` assigns zero current live-stack payoff,
+    preserves the IQ mechanism as ineligible memory, and requires reprice on an IQ residency change.
+    Automatic machine-trigger enforcement is owned by AutoKernel AK-ADM-1.

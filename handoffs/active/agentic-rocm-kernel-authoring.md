@@ -858,3 +858,78 @@ on elastic external accelerator capacity and a free third-party adversarial veri
 MI210 and a verifier we own. **The orchestration is reproducible almost fully; the cadence is not** —
 and per AK-LN-1/AK-LN-4 in [`autokernel-research-loop.md`](autokernel-research-loop.md) §21, our
 answer to cadence is concurrent screening lanes, not more devices.
+
+## Research Intake Update — 2026-08-15 (SOL-ExecBench as a gfx90a correctness oracle; intake-1102)
+
+The Stage-2 dive settled the C5 provider question, and the answer is more useful than the headline
+suggests. **State it in two parts or it misleads.** The ROCm port carries *no measured constants* for
+gfx90a — it is gfx950-only (MI350X/MI355X), pinned to ROCm 7.2 against our 6.2. **That is not the same
+as unusable here.** Its compile path is genuinely architecture-agnostic (the gencode helper falls back
+to reading `gcnArchName` from torch and would emit `--offload-arch=gfx90a`, and a `LOCAL` hardware
+target exists for exactly this case), so **compilation and correctness checking run on our MI210
+today**. Only SOL *scoring* needs a port, because T_SOL, T_b and tolerances are per-part measured
+quantities.
+
+All eight C5 seeds resolve to real definition/workload/reference/tolerance/bound records — 193
+workloads, all scoreable and zero deferred. The port's actual k145 oracle workload/tolerance surface
+is fp32, while HyRA candidate metadata names fp16; k227 is bf16-only. The provider deliberately keeps
+oracle-workload and candidate-metadata identities separate rather than repeating the earlier
+"all bf16/fp16" conflation.
+
+- [ ] **C5-3 — Use the port as a gfx90a CORRECTNESS ORACLE now, ahead of any bound port.** Target
+      `LOCAL` hardware, compile through the existing arch-agnostic path, and run the 10 fresh-input
+      correctness rounds against the live-executed references. This is the C3/C5 provider validation
+      the handoff already says a HyRA reference tensor or synthetic fixture cannot substitute for — and
+      it needs no measured constants, so it is available immediately. AutoKernel is explicitly in scope
+      to author and screen gfx90a kernels against it.
+  - [x] **C5-3a — Implement the sealed gfx90a correctness-only provider.** ✅ 2026-08-16 — research
+        `5f1b645c0c5034137e298c1dc9732beee9742547` adds LOCAL/gfx90a planning, exact source/runtime/
+        workload identities, ten fresh live-reference rounds, and `scoring.enabled=false`; later
+        hardening binds source staging and complete raw-result reduction. No live 193-workload run
+        occurred, so the parent C5-3 empirical task remains open.
+- [x] **C5-4 — Classify the eight seeds by bound quality, and stop quoting `S` where it is meaningless.** ✅ 2026-08-16 —
+      research `777ac7845ad378cb660c30bf9a4a14f4a23851b3` persists the quality classes, blocks gfx90a SOL
+      scoring without measured constants, and keeps numeric SOL fields out of author prompts.
+      Median headroom (T_b/T_SOL) per seed: **k215 6.8× (ok)**; k145 16.8×, k175 17.0×, k138 33.4×
+      (loose); **k154 506×, k227 3,690×, k225 5,710×, k228 36,837× (vacuous)**. Above ~100× the score
+      collapses toward T_b/(T_b+T_k) and carries no roofline content — it degenerates into plain
+      speedup-over-PyTorch, the exact framing the benchmark exists to replace, and the repo says so
+      itself. **Treat the four vacuous seeds as correctness-only oracles plus a PyTorch-relative speed
+      number; never quote their `S` as a speed-of-light figure.** k228 is named in the source as a
+      problem where a correct kernel beat the bound, and k227's correction took its bound to 8 cycles —
+      "correct, and vacuous". Note k175 additionally sits on the still-defective `declared_traffic` tier.
+- [ ] **C5-5 — Persist the kNNN ↔ problem-slug mapping into `c5_seed_corpus.json`.** All eight resolve
+      uniquely with matching ordinals (k138→`L2__044_mamba…`, k145→`L2__051_…hyena…`,
+      k154→`L2__060_chunk_gated_delta_rule…`, k175→`L2__081_moe_sparse_expert_dispatch`,
+      k215→`FlashInfer-Bench__006_gemm_n2048_k4096`, k225→`FlashInfer-Bench__016_gqa_ragged_prefill…`,
+      k227→`FlashInfer-Bench__018_mla_paged_decode…`, k228→`FlashInfer-Bench__019_mla_paged_prefill…`),
+      with workload counts reproducing exactly (16/16/16/16/29/15/47/38 = 193). **The kNNN ids appear
+      nowhere in either repository** — they are HyRA's — so this join is ours to maintain and should
+      stop being re-derived. Add it as a `sol_execbench_problem_id` field. **2026-08-16 checkpoint:**
+      `c5_seed_corpus.json` is now tracked, but exact problem IDs still live separately in
+      `c5_rocm_oracle.json`; the requested joined field remains open.
+
+### OPERATOR DECISION — port the SOL bound constants to gfx90a?
+
+This is the one item that needs MI210 GPU time and therefore a region claim, so it is presented rather
+than filed. The port is **bounded and signposted** — the source's two refusals name their own remedy,
+and its own MI355X runbook is effectively the checklist: add an MI210 `Part` entry (spec-sheet peak
+clock + power cap), measure `F_LOCK` on gfx90a (they ship the task for it), add a measured `gfx90a`
+`LLC_BYTES` (do NOT fall back to torch's reported L2 — it reports the per-XCD L2 and would undersize the
+cache flush ~64×, making every memory-bound kernel look faster than it is), regenerate the SOLAR arch
+YAML with the parametric generator, then re-measure T_b and tolerances.
+
+**Scope it by bound quality, not by seed count.** Because four of eight seeds are vacuous, the honest
+target is **k215 alone at 29 workloads** for a bound worth optimizing against, or ~77 workloads if
+k138/k145/k175 are included at loose quality. Not 193, and certainly not the full 3,717.
+
+| Option | Buys | Costs |
+|---|---|---|
+| **A. No bound port** | Correctness oracle (C5-3) + PyTorch-relative speed. Zero GPU time. | No speed-of-light measure on any seed. |
+| **B. Port k215 only** | One genuine SOL-scored seed at 6.8× headroom. | F_LOCK + LLC measurement + T_b/tolerance re-measure over 29 workloads. |
+| **C. Port k215 + the three loose seeds** | Four scored seeds, three of them loose. | ~77 workloads; the loose three yield weak roofline content. |
+| **D. Full eight-seed port** | — | 193 workloads, four of which produce vacuous scores by construction. Not recommended. |
+
+**Recommendation: B**, after C5-3 has shown the correctness oracle works end-to-end on gfx90a. A is a
+legitimate stopping point if GPU time is scarce — the correctness half is where the C3/C5 provider gap
+actually was.
