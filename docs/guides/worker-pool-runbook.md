@@ -15,10 +15,17 @@ document follows the code and says so.
 ## 0. The one-paragraph model
 
 A pool worker is **one process, one assignment, one typed report, then exit**. The runner is exec'd
-fresh per assignment and blocks on its own child; there is no resident supervisor, so the code that
+fresh per assignment and lives only as long as it; there is no resident supervisor, so the code that
 runs a batch is the code on disk when the batch started (`git pull` *is* the deploy). The machine's
 channel to the worker is one-way and typed: **a brief file in, a report file out**. The runner never
 types into the worker's pane and never reads pane text to make a decision. The pane exists for *you*.
+
+One mechanical detail that matters when you are reasoning about signals: in the normal `tmux` path
+the harness is a child of the **tmux server**, not of the runner. The runner learns the pid from the
+wrapper's `harness.pid` file and then *polls* it (`os.kill(pid, 0)`); it never `wait()`s on it. Only
+the test-only `--spawn-mode direct` produces a real child process. What makes the kill safe is not
+parentage — it is that the pid was **captured by this process from its own wrapper**, never matched
+by name.
 
 ---
 
@@ -52,12 +59,16 @@ started at that point.
 ### What the daemon does with the flag
 
 The daemon's half of the gate is `_exec_endpoint_ready()` in `scripts/coordination/session_bus_coordinator.py`.
-It answers *is this exec endpoint ready* with `None` (ready) or a reason string, and it says "not
-ready" when any of these hold: the flag is false, the endpoint names no program, or the runner
-program is missing/unreadable next to the daemon's own checkout. A not-ready endpoint produces a
-`would-skip` advisory (`agent looks dead (…) — not assigning work to an absent session`) and the row
-is **never assigned — it stays READY**. It is not parked, not blocked, not assigned anyway.
-`workerpool` also stops counting toward "is any main alive" while not ready.
+It answers *is this exec endpoint ready* with `None` (ready) or a reason string. On the two paths
+that matter — the assignment loop and fleet-presence — it is called **with** the config and says "not
+ready" when the flag is false, when the endpoint names no program, or when the runner program is
+missing or unreadable next to the daemon's own checkout. (It is also called without config from
+`_looks_dead()`, where only program presence is checked; the flag is invisible on that path.)
+
+A not-ready endpoint produces a `would-skip` advisory — `agent looks dead (worker_pool.enabled is
+false — the pool is schedulable but not executable…)` — and the row is **never assigned; it stays
+READY**. It is not parked, not blocked, not assigned anyway. `workerpool` also stops counting toward
+"is any main alive" while not ready, so a disabled pool cannot prop up the fleet-presence gate.
 
 The pool is schedulable because of one roster row in the same config file:
 
@@ -107,10 +118,14 @@ git rev-parse HEAD:scripts/coordination
 ```
 
 Equal ⇒ the daemon is running current coordination code. Unequal ⇒ **restart the daemon first**
-(`bus_supervisor.sh` makes the same comparison). Measured 2026-08-16: the live daemon reported
-`source_tree 86015c01`, HEAD was `0200a67d`, and the pool's `would-skip` advisories were still citing
-the *tmux* liveness predicate rather than the exec-endpoint one — the signature of exactly this.
-Corroborating check: zero `exec-launched` and zero `exec-deferred` rows in `advisory.jsonl`.
+(`bus_supervisor.sh` makes the same comparison).
+
+This is not hypothetical. On 2026-08-16 the live daemon was measured at `source_tree 86015c01` while
+HEAD was `0200a67d`, and its `would-skip` advisories for `workerpool` were still citing the *tmux*
+liveness predicate — a tmux test applied to an exec endpoint is the signature of exactly this. It was
+restarted later the same morning and the advisories switched to the exec-endpoint text. The tell in
+the advisory stream is worth remembering: **which predicate the refusal cites tells you which code is
+running.**
 
 ### Running before the flip: supervised manual runs
 
@@ -130,8 +145,11 @@ The flag says "flip only after the runner is proven end-to-end", and proving it 
 
 (The file carries a shebang for that interpreter but is **not** mode +x, so invoke the interpreter
 explicitly.) A batch of up to three rows goes in a file instead:
-`--assignment /path/to/assignment.json`, an object with a `rows` list of
-`{task_id, task_text, row_ref, source_handoff, screened_by}`.
+`--assignment /path/to/assignment.json`, an object with a `rows` list. Per row the brief builder
+consumes `task_id`, `task_text`, `row_ref`, `screened_by`, `source_handoff`, `expected_occupancy` and
+`constraints` — the last being a list of `{text, source}`, because a constraint that cites nothing is
+prose in disguise. A bare string is accepted but stamped `source: "unsourced"` so the defect is
+visible in the brief rather than indistinguishable from a sourced one.
 
 `--pilot-override` prints a warning to stderr, does **not** touch the daemon's gate (the daemon reads
 the config, not this flag), and does **not** bypass the rule-8 ack — a runner may not kill without
@@ -140,21 +158,26 @@ the amendment, override or no override.
 ### The other fail-closed gates
 
 All of these refuse **before anything is spawned** (exit 2). Read the refusal text: each one names
-its own origin.
+its own origin. They are listed in the order `run()` actually applies them, which matters — the first
+eight run before anything has been touched, but the last three run *after* the batch's rows have been
+O_EXCL-claimed and possibly screened and parked, so "refused" there is not quite "nothing happened".
 
-| gate | refuses when |
-|---|---|
-| `_require_roster_id` | `workerpool` is not a roster id — a runner that cannot record results must not start work |
-| `check_enabled` | `worker_pool.enabled` is false and no `--pilot-override` |
-| `check_bounds` | config asks for **more** than a D1 bound (see §5) |
-| `check_provider_pin` | `provider` is pinned but the environment sets `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `ANTHROPIC_BASE_URL` or `ANTHROPIC_AUTH_TOKEN` |
-| `check_rule8_ack` | `worker_pool.rule8_amendment_ack` is unset |
-| `resolve_harness` | `worker_harness` names a harness that does not exist |
-| `resolve_lane` | lane is outside `pool_root`, matches `*.orphan*`, does not exist, or is not a git worktree |
-| `check_concurrency` | the concurrency cap is already reached |
-| `LaneLock.acquire` | the lane is already held by a live worker (`flock` on `<lane>/.worker.lock`) |
-| `check_batch` | >3 rows, rows from mixed `source_handoff`, or missing/duplicate `task_id`s |
-| `build_brief` | a row has no `task_text`, or the brief exceeds 4096 bytes |
+| # | gate | refuses when |
+|---|---|---|
+| 1 | `_require_roster_id` | `workerpool` is not a roster id — a runner that cannot record results must not start work |
+| 2 | `check_enabled` | `worker_pool.enabled` is false and no `--pilot-override` |
+| 3 | `check_bounds` | config asks for **more** than a D1 bound (see §5) |
+| 4 | `check_provider_pin` | `provider` is pinned but the environment sets `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `ANTHROPIC_BASE_URL` or `ANTHROPIC_AUTH_TOKEN` |
+| 5 | `check_rule8_ack` | `worker_pool.rule8_amendment_ack` is unset |
+| 6 | `resolve_harness` | `worker_harness` names a harness that does not exist |
+| 7 | `resolve_lane` | lane is outside `pool_root`, matches `*.orphan*`, does not exist, or is not a git worktree |
+| 8 | `check_concurrency` | `min(max_concurrent, 4)` lanes are already held |
+| 9 | `check_batch` | more than `min(batch_cap, 3)` rows, rows from mixed `source_handoff`, or missing/duplicate `task_id`s |
+| 10 | `build_brief` | a row has no `task_text`, or the brief exceeds 4096 bytes |
+| 11 | `LaneLock.acquire` | the lane is already held by a live worker (`flock` on `<lane>/.worker.lock`) |
+
+Both caps are applied as `min(config, hard bound)` at the point of use, so lowering
+`max_rows_per_batch` to 1 makes a two-row batch a refusal.
 
 `rule8_amendment_ack` is currently set in config to
 `"D6 ratified 2026-08-15 (plan of record: docs/design/loop-owned-fleet.html); BUS_PROTOCOL.md rule 8 amendment 2026-08-16"`.
@@ -214,8 +237,10 @@ tmux attach -t agent          # then pick the window
 tmux capture-pane -p -S - -t agent:wpool-lane3 | tail -50
 ```
 
-The runner never creates the tmux session (`tmux.allow_session_creation: false` is authoritative); if
-the session is missing it refuses.
+The runner never creates the tmux session: if `tmux has-session` fails it refuses, full stop. Its
+refusal message says the config key `tmux.allow_session_creation` is authoritative, but that is not
+true of this code path — `load_pool_config()` reads the key and nothing ever reads it back, so
+flipping it to `true` changes nothing here. Create the session yourself before dispatching.
 
 ### Steering it by hand is expected and safe
 
@@ -237,29 +262,40 @@ harness, exactly like a keystroke in any other interactive session.
 
 ### One thing NOT to do: killing the pane
 
-The runner's salvage runs **only on its own kill path** — it is guarded by `handle.alive()`. If you
-kill the window (or the harness process) yourself before the worker has written `report.json`,
-`watch()` sees the process gone, returns `exit`, the worker is already dead, and the
-kill-with-salvage block is skipped entirely: **no salvage ref is written**, and the rows come back
-FAILED with `failure_reason: no-report` and no `salvage_ref`. The work is still sitting uncommitted
-in the lane — nothing is destroyed — but nothing has captured it either.
+The runner's salvage is guarded by `handle.alive()` — it runs **only when the runner finds the worker
+still alive and kills it itself**. Kill the harness yourself before it has written `report.json` and
+you land in the other branch: `watch()` sees the pid gone, returns `exit`, the salvage block is
+skipped, **no salvage ref is written**, and the rows come back FAILED with
+`failure_reason: report-invalid` and `detail: "report file was never written"`. The work is still
+sitting uncommitted in the lane — nothing is destroyed — but nothing has captured it either.
 
-If you need to stop a worker and keep its work:
+Killing the *window* is murkier still. `watch()` polls the harness pid from `harness.pid`, not the
+pane; whether that pid dies with its pane is a signal-propagation question the runner does not
+settle. If it survives, the runner keeps waiting and the lease path — kill **and** salvage — is what
+eventually takes it. So killing a pane gives you neither outcome reliably.
 
-1. let the lease expire (the runner kills *and* salvages), or
-2. commit the lane's work yourself with a pathspec-limited commit, or
-3. run the salvage by hand before killing anything:
+If you need to stop a worker and keep its work, in preference order:
+
+1. let the lease expire — the runner kills *and* salvages, which is the path with the no-loss proof;
+2. commit the lane's work yourself with a pathspec-limited commit;
+3. salvage by hand — **after** the worker is dead, never while it is still writing:
 
 ```bash
 /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python - <<'PY'
 import sys; sys.path.insert(0, "/mnt/raid0/llm/epyc-root")
+from pathlib import Path
 from scripts.coordination.worker_runner import salvage_worktree
-print(salvage_worktree("/mnt/raid0/llm/worktrees/pool/lane3", "manual-<batch_id>"))
+print(salvage_worktree(Path("/mnt/raid0/llm/worktrees/pool/lane3"), "manual-<batch_id>"))
 PY
 ```
 
-`salvage_worktree()` is non-destructive and re-runnable: it builds its tree in a temporary index
-(`GIT_INDEX_FILE`), never the lane's own index or HEAD, so the lane is left exactly as found.
+Note the `Path(...)` — the function takes a `Path`, and a bare string raises `AttributeError`. The
+"after it is dead" order is not fussiness: `verify_salvage()` byte-compares the committed blobs
+against the **working tree**, so a file that changes between the staging and the verify read raises
+`SalvageError`. The runner itself only salvages after proving the pid dead, for exactly this reason.
+
+`salvage_worktree()` is otherwise non-destructive and re-runnable: it builds its tree in a temporary
+index (`GIT_INDEX_FILE`), never the lane's own index or HEAD, so the lane is left exactly as found.
 
 ---
 
@@ -291,13 +327,30 @@ An **empty run directory** means the batch was parked before spawn (premise not 
 Absent `report.json` means the worker never wrote one. Absent `harness.rc` means the harness has not
 exited yet — that plus a live pid is the shape of a worker still running.
 
+**`report.json` must be written last.** `watch()` polls three signals and no fourth: process exit,
+report file present, lease expiry. Once the report appears, the worker gets a bounded grace
+(`post_report_grace_s`, default 60 s) to exit on its own; a worker still running after that is taken
+by the kill path — SIGTERM, salvage, and a `defect` message on the bus — because from the runner's
+side "report written, process will not leave" is indistinguishable from a hang. A worker that writes
+its report at the halfway mark gets killed at the halfway mark.
+
 Adjacent state: `/mnt/raid0/llm/worker-pool/parked/<claim-key>.json` holds the last park verdict per
 row, which is what makes the park emit once instead of every tick.
 
-The runner's own output goes to the bus, not to the run dir: one `task-complete`/`requeue` message
-per row in `coordination/session-bus/outbox/workerpool.jsonl`, plus a pointers-only audit packet to
-`auditor`, plus (when something passed with commits) a merge-gate promotion proposal. **The runner
-never writes `queue.jsonl`** — status is proposed, the daemon transcribes.
+The runner's own output goes to the bus, not to the run dir — everything lands in
+`coordination/session-bus/outbox/workerpool.jsonl`:
+
+- one `task-complete` (or `requeue`, for a row returning to READY) **per row**;
+- a `finding` to `auditor` carrying the audit packet — **pointers only**, never the worker's own
+  summary, so the reviewer is not anchored on the defendant's statement of the case;
+- when something passed *and* produced commits, a `task-propose` merge-gate promotion row;
+- when a kill or salvage happened, a `defect` to `coordinator-agent` carrying the kill record and the
+  salvage manifest;
+- and, on the park path, a `requeue` plus a `task-propose` per parked row asking for its premise to
+  be re-verified.
+
+**The runner never writes `queue.jsonl`** — status is proposed, the daemon transcribes (with the
+caveats in §8).
 
 ---
 
@@ -325,24 +378,29 @@ is forbidden (D6).
 
 ### Which rows carry it
 
-At lease expiry exactly **one** row is blamed: the row `progress.jsonl` shows in progress, or (if
-that file is missing or ambiguous) the first briefed row with no completion record. That row goes
-`FAILED / failure_reason: lease-expired / salvage_ref: …`. Rows that were never started go back
-**READY, unmarked** — no attempt increment, no failure reason — because they were never dispatched in
-any meaningful sense. That is why writing `progress.jsonl` is in the worker's prompt: it narrows
-blame at a timeout, and it is not a completion signal.
+At lease expiry **at most one** row is blamed: the row `progress.jsonl` shows in progress, or, if
+that file is missing or ambiguous, the first briefed row with no completion record — and **none at
+all** if every briefed row already appears in the report, in which case the salvage ref is attached
+to nothing. The blamed row goes `FAILED / failure_reason: lease-expired / salvage_ref: …`. Rows that
+were never started go back **READY, unmarked** — no attempt increment, no failure reason — because
+they were never dispatched in any meaningful sense. That is why writing `progress.jsonl` is in the
+worker's prompt: it narrows blame at a timeout, and it is not a completion signal.
 
-Other `failure_reason` values you will see, all from `classify_outcomes()`:
+The full set of `failure_reason` values, all from `classify_outcomes()`. The lease-expiry branch is
+evaluated **first**, so at a timeout the reasons below it do not apply to unreported rows:
 
-| reason | meaning |
-|---|---|
-| `lease-expired` | the blamed row at a timeout (carries `salvage_ref`) |
-| `no-report` | the report file was never written |
-| `report-invalid` | the report failed its own schema — the **whole** document is set aside, every row falls here |
-| `row-unreported` | a valid report simply did not mention this row |
-| `permission-denied` | a denial was recorded; an *attributed* denial fails that row, an **unattributed** one fails the whole batch |
-| `token-ceiling-breach` | `tokens_used` exceeded the D1 ceiling — checked **after** the run, on the worker's self-report |
-| `worker-fail` / `worker-blocked` | the worker's own outcome for that row |
+| reason | carries `salvage_ref`? | meaning |
+|---|---|---|
+| `lease-expired` | yes | the blamed row at a timeout |
+| `report-invalid` | yes | the report failed its own schema — the **whole** document is set aside and every row falls here. **A missing report file lands here too**, with `detail: "report file was never written"` |
+| `row-unreported` | yes | a valid report simply did not mention this row |
+| `permission-denied` | no | a denial was recorded; an *attributed* denial fails that row, an **unattributed** one fails the whole batch |
+| `token-ceiling-breach` | no | `tokens_used` exceeded the D1 ceiling — checked **after** the run, on the worker's self-report |
+| `worker-fail` / `worker-blocked` | no | the worker's own outcome for that row |
+
+(`no-report` exists as a constant in the code but `run()` cannot reach it: `read_report()` always
+returns a schema error for a missing file, so the `report-invalid` branch wins. If you see
+`no-report`, it came from a test, not from a run.)
 
 A worker-reported `skipped` returns the row to READY unmarked rather than failing it.
 
@@ -374,8 +432,9 @@ git show refs/salvage/<batch_id>:.salvage-evidence/pane-scrollback.log
 git show refs/salvage/<batch_id>:.salvage-evidence/brief.json
 ```
 
-Recover, in increasing order of commitment. All four forms below were exercised against a real
-`salvage_worktree()` output:
+Recover, in increasing order of commitment. Every form below was exercised against a scratch repo
+driven through the real `salvage_worktree()` (this clone has no salvage refs yet — the pool has not
+had to kill anything):
 
 ```bash
 # read one file, touching nothing at all
@@ -392,11 +451,13 @@ git worktree add /mnt/raid0/llm/tmp/recover-<batch_id> recover-<batch_id>
 git cherry-pick refs/salvage/<batch_id>
 ```
 
-The salvage commit's parent **is** the lane's HEAD at kill time (verified byte-identical), so
-`<ref>^` is the right baseline, a deletion in the lane is a real deletion in the salvage tree, and a
-recovery branch rebases cleanly onto whatever the lane was tracking.
+The salvage commit is parented on the lane's HEAD at kill time, so `<ref>^` is the right baseline, a
+deletion in the lane is a real deletion in the salvage tree, and a recovery branch rebases cleanly
+onto whatever the lane was tracking. (Note what the no-loss proof does and does not cover: it
+compares the committed *paths* against the working tree. It does not check the parent — that comes
+from `git rev-parse HEAD` at salvage time.)
 
-Four properties worth internalising, each observed rather than assumed:
+Five properties worth internalising, each observed on a real salvage rather than assumed:
 
 - **`git checkout -b recover-<id> refs/salvage/<id>` fails inside the still-dirty lane** — "local
   changes would be overwritten". It aborts safely and leaves the lane intact, but the recovery route
@@ -442,13 +503,17 @@ Additional bounds that are not numbers in a table:
 - **Concurrency is measured by *probing*, not counting.** `live_lane_count()` tries the `flock` on
   each `<lane>/.worker.lock`; a lockfile is a birth certificate, the lock is the liveness signal. A
   crashed runner cannot wedge a lane, because the kernel drops its flock.
-- **Concurrency is additionally floor-capped by the number of pool worktrees that exist.** There are
-  four today (`/mnt/raid0/llm/worktrees/pool/lane0..lane3`). The runner **will not create a lane** —
-  creating them is a deliberate, operator-visible step, and a runner that made its own lane would
-  hide a missing precondition.
+- **Concurrency is additionally floor-capped by the number of pool worktrees that exist** — four
+  today (`/mnt/raid0/llm/worktrees/pool/lane0..lane3`). This one is *not* a runner bound: it falls out
+  of the daemon's `_free_pool_lane()`, which enumerates the lanes on disk and returns nothing when
+  none is free, combined with one-worker-per-worktree. The runner's own `live_lane_count()` counts
+  held locks, not lanes. Either way the runner **will not create a lane** — creating them is a
+  deliberate, operator-visible step, and a runner that made its own lane would hide a missing
+  precondition. There is no script that creates pool lanes; it is a `git worktree add` you run.
 - **The token ceiling doubles as the Phase-2 cost gate**, and it is enforced *after the fact* on the
-  worker's self-reported `tokens_used`. A breach fails every row in the batch with
-  `token-ceiling-breach`; it does not stop a run mid-flight.
+  worker's self-reported `tokens_used`. It does not stop a run mid-flight. A breach fails every row
+  that reaches that check — rows the report never mentioned fail as `row-unreported` instead, and a
+  denial on a row shadows the ceiling check for it.
 - **The brief is capped at 4096 bytes** (AUD-2) — a dispatch too big to read gets skimmed.
 - **Batching is static**: the batch is fixed before the worker starts and never grows, and all rows
   must share one `source_handoff`, so a timeout cannot blame a context the other rows never shared.
@@ -491,9 +556,15 @@ worker_pool:
 
 ### Precedence
 
-`DEFAULTS` < `tmux:` block < top-level `worker_harness:` < `worker_pool:` block < `lane_harness[lane]`
-< `lanes[lane]` < `--harness` on the command line. The CLI flag wins, and is the right way to try a
-harness for a single run without editing config.
+`load_pool_config()` merges in this order, so later wins:
+
+a top-level `worker_harness:` key (defaulting to `"claude"` if absent) < the `worker_pool:` block <
+`lane_harness[<lane>]` < `lanes[<lane>]` < `--harness` on the command line.
+
+The CLI flag wins outright and is the right way to try a harness for a single run without editing
+config. `DEFAULTS` sits underneath the whole merge for *other* keys — the module's own default must
+never outrank a value the operator wrote down — but it carries no `worker_harness` entry, so the
+effective fallback for the harness specifically is the literal `"claude"` in `load_pool_config()`.
 
 ### Adding a harness
 
@@ -505,13 +576,17 @@ worker_pool:
 
 A list of argv parts, or a single string (split with `shlex`). The substitutable fields are exactly:
 `{prompt}`, `{brief_path}`, `{report_path}`, `{permissions_path}`, `{worktree}`, `{run_dir}`,
-`{python}`, `{stub_cmd}`, `{batch_id}`. An unknown field is a refusal at preflight that names the
-available set.
+`{python}`, `{stub_cmd}`, `{batch_id}`. An unknown field is a refusal naming the available set — but
+note **when**: `build_harness_argv()` runs immediately before the spawn, inside the acquired lane
+lock and after the rows have been claimed and the brief written, not at preflight. Typo a field name
+and you find out late.
 
 Two constraints on any new harness:
 
-- it must accept a **prompt** and be able to write files, because the completion contract is *write
-  `report.json`* — the runner reads nothing else;
+- it must be able to **write files**, because the completion contract is *write `report.json`* and
+  the runner reads nothing else. It does not have to take `{prompt}`: the shipped `stub` template
+  takes `--brief`/`--report` and no prompt at all. What it must receive, one way or another, is the
+  location of the brief and of the report;
 - it runs in a visible pane. `--spawn-mode direct` (headless) is **refused for every harness but
   `stub`**, because a production worker the operator cannot watch or steer is the thing D8 forbids.
 
@@ -525,13 +600,19 @@ another: `max_concurrent_workers` → `max_concurrent`, `max_rows_per_batch` →
 
 | code | meaning | operator action |
 |---|---|---|
-| **0** | the batch ran (pass **or** fail) and every outcome was recorded on the bus — or the batch was parked before spawning | read `report.json` and the bus messages |
-| **2** | **REFUSED before spawn** — a guard said no; nothing was started | read the refusal text; it names the gate and its origin. Nothing to clean up |
+| **0** | the batch ran (pass **or** fail) and every outcome was recorded on the bus; **or** the batch was parked before spawning; **or** every row was already claimed by someone else, in which case nothing was recorded and no run artifacts exist | read `report.json` and the bus messages — and if there are none, check `claims/` for who holds the rows |
+| **2** | a guard said no — usually **before** anything was started | read the refusal text; it names the gate and its origin |
 | **3** | **SALVAGE FAILED** — a kill happened and state may be at risk | **look at the lane now.** It was deliberately not cleaned up. Do not let anything else touch it first |
 | **4** | internal error | read stderr; the run dir has the brief and whatever transcript exists |
 
-Exit 2 is the common one and is almost always self-explanatory. Exit 3 is the only one that is an
-incident.
+Two qualifications on exit 2, because "refused ⇒ nothing happened" is *almost* but not always true:
+a `BusError` also exits 2, and the bus writes happen at the **end** of a completed batch, so a schema
+or roster failure there gives you exit 2 after the worker ran to completion. And if the wrapper
+launches but never reports a pid within `spawn_timeout_s`, the refusal comes *after* a process
+started — the tmux path kills the window, but a `direct`-mode wrapper is left running. Check the run
+directory before assuming a clean slate.
+
+Exit 3 is the only code that is an incident.
 
 ---
 
@@ -546,25 +627,33 @@ was read out of the source and cross-checked against live bus data.
   `pass → DONE_PASS`, `marginal → DONE_MARGINAL_OBS`, **anything else → FAILED** — and `outcome` is
   absent from every message the runner writes (verified against the three real `task-complete` rows
   in `outbox/workerpool.jsonl`, whose payload keys are `status`, `commits`, `artifacts`, … and no
-  `outcome`). Until the two agree on one key name, check `report.json` and the outbox rather than
-  trusting a `FAILED` queue row from the pool.
+  `outcome`). The same mismatch hits the reason: `transcribe()` reads `payload.reason` while the
+  runner writes `payload.failure_reason`, so the transcribed `FAILED` row is also reason-less. Until
+  the two agree on one key name, check `report.json` and the outbox rather than trusting a `FAILED`
+  queue row from the pool.
 - **`requeue` is not transcribed at all.** The literal kind does not appear in the daemon. A parked
   row (premise not `still-needed`) and an untouched-at-timeout row are both emitted as `requeue`,
   which is *relayed as mail* to `coordinator-agent` — it does not move the queue row back to READY on
   its own. Someone has to act on the mail.
-- **`task-propose` is relayed AND raises a `relay-handler-reachability` defect** each time, because
-  the handler that turns proposals into queue rows (`intake_proposals`) is reachable only from the
-  manual `session_bus_coordinator.py intake` CLI, never from `tick`. Both the promotion proposal and
-  the premise-fix proposal take this path. The defects are expected noise, not faults.
+- **`task-propose` is relayed AND raises a `relay-handler-reachability` defect**, because the handler
+  that turns proposals into queue rows (`intake_proposals`) is reachable only from the manual
+  `session_bus_coordinator.py intake` CLI, never from `tick`. Both the promotion proposal and the
+  premise-fix proposal take this path. The defect is deduped per message, so it is one per proposal,
+  not one per tick — expected noise, not a fault, but it does mean **a promotion proposal sits as
+  mail until someone runs `intake`**.
 - **Two different leases run at once.** The daemon stamps `lease_expires_ts = now + leases.max_hold_s`
   = **1800 s**, while the runner enforces its own `worker_pool.lease_s` = **5400 s** by default. A
   batch running longer than 30 minutes can be requeued `STALE_REQUEUED` with `attempt+1` by the
   daemon's stall ladder while the worker is still happily working, and `attempt > max_attempts` then
   writes `INFRA_BLOCKED`. Either lower `lease_s` below `max_hold_s` or expect that interaction.
 - **The `task-assign` inbox message to `workerpool` is dead mail.** The runner never reads an inbox
-  and never emits `ack`, so the assignment sits unacked; expect `nudge` redeliveries and periodic
-  `stuck-unreachable` advisories for the pool. Also expected noise — the runner's channel is the
-  brief file, by design.
+  and never emits `ack`, so the assignment sits unread forever. Expect periodic `stuck-unreachable`
+  advisories for the pool (unread mail + a non-`tmux:` endpoint is the trigger). You will *not* see
+  ack-deadline redeliveries, despite the message carrying `requires_ack: true` — that path needs a
+  `corr_id` and the daemon does not put one on this message. All expected: the runner's channel is
+  the brief file, by design.
+
+---
 
 ## 9. Quick reference
 
@@ -572,6 +661,9 @@ was read out of the source and cross-checked against live bus data.
 # what is running right now
 tmux list-windows -t agent -F '#{window_name}' | grep wpool
 ls -t /mnt/raid0/llm/worker-pool/runs/ | head
+
+# the daemon said exec-launched but nothing happened — the refusal is here
+tail -20 /workspace/logs/worker_runner/<task_id>.log
 
 # is lane3 held?
 cat /mnt/raid0/llm/worktrees/pool/lane3/.worker.lock     # "<pid> <ts> workerpool"; the flock is the truth
