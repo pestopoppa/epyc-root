@@ -10,8 +10,10 @@ does not restate them:
 
 - `agents/coordinator-agent.md` — the role: mission, guardrails, what you must never do.
 - `coordination/session-bus/BUS_PROTOCOL.md` — the bus contract.
-- `agents/shared/OPERATING_CONSTRAINTS.md` → *Session Lifecycle: wrap-up, clear, close* and
-  *Inference and Benchmarks* (reload ownership).
+- `agents/shared/SESSION_LIFECYCLE.md` — the canonical session-lifecycle contract: wrap-up,
+  `/clear`, close, pre-reboot, and reading another session's liveness. (Extracted from
+  `OPERATING_CONSTRAINTS.md` on 2026-07-30; that file now points here.)
+- `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* (reload ownership).
 
 Governing principle — **BUS_PROTOCOL rule 9**: a fresh coordinator reconstructs its entire state
 from bus files alone. That is why this skill needs no arguments and no operator input to start.
@@ -88,6 +90,66 @@ python3 /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py st
 ps -o pid,lstart,args -p <autopilot-pid-from-stack-status>
 ```
 
+### 0c. Bring the supervision tier back, and PROVE the alarm reaches a human (D3)
+
+This replaces the cron dead-man the operator declined. Reboots are operator-only, so a
+human is present at exactly this moment — that is what makes manual relaunch sound, and it
+is also why this step must be *run*, not assumed.
+
+```bash
+# 1. The supervisor starts the daemon itself; do not launch the daemon by hand.
+#    (If the supervisor is already up, this is a no-op — check before starting.)
+ps -eo pid,args | grep -F bus_supervisor.sh | grep -v grep
+nohup /bin/bash scripts/coordination/bus_supervisor.sh >> logs/bus_supervisor.out 2>&1 &
+
+# 2. fleet_watch is NOT supervised by anything. Nothing else will notice it is gone.
+ps -eo pid,args | grep -F fleet_watch.sh | grep -v grep
+nohup /bin/bash scripts/coordination/fleet_watch.sh >> logs/fleet_watch.out 2>&1 &
+
+# 3. DAEMON HEALTH BY IDENTITY, NEVER BY THE STATUS FILE. A state file outlives its
+#    process: on 2026-08-01 the daemon died and `status` reported state=working for
+#    243 hours. Require BOTH: the pid is alive AND is the daemon, and the heartbeat's
+#    `source_tree` equals the committed tree — a daemon running older code is a daemon
+#    whose fixes are not live.
+python3 scripts/coordination/session_bus_coordinator.py status
+git rev-parse HEAD:scripts/coordination        # must equal heartbeat source_tree
+
+# 4. THE ALARM DRILL. An alarm nobody receives is the failure this whole plane exists
+#    to prevent — on 2026-08-14 every internal signal fired correctly for 11 hours and
+#    no human learned of it. Prove the channel end to end, then prove it is quiet.
+bash scripts/coordination/tests/alarm_drill.sh          # must print RESULT: PASS
+python3 scripts/coordination/alarm_channel.py status    # active alarms, if any
+```
+
+If `alarm_config.yaml` still contains the `REPLACE-ME` sentinel, the channel is INERT by
+design and no human is reachable. Say so in the Phase-4 report as a live gap, in one line,
+with the one-line fix — do not quietly proceed as if alarms work.
+
+### 0d. Ghost state — enumerate, never assume
+
+Bus state held by sessions that no longer exist cannot clear itself, and after a reboot
+there is always some. Enumerate it before triaging anything:
+
+```bash
+python3 scripts/coordination/ghost_sweep.py     # dry run; enumerates and explains
+```
+
+Releasing it is operator-signed (D7) and runs through the daemon, which owns the queue:
+`session_bus_coordinator.py ghost-sweep --apply --signed-by <operator>`. Bring the
+enumerated list to the operator in the Phase-4 report; do not sweep on your own initiative.
+
+**The bus runtime lives OFF-TREE** at `/mnt/raid0/llm/bus-runtime/`, reached through tracked
+symlinks in `coordination/session-bus/`. If a bus path ever reads as empty, check the symlink
+target before concluding anything was lost — and never "repair" it by writing a real file over
+the link.
+
+**Reading another session's state — three states, not two: working / compacting / idle.** A
+session COMPACTING its context renders **identically** to a finished one, so **never conclude idle
+from pane text alone** — not from a window list, a quiet-check, or a `capture-pane`. The
+authoritative instrument is `scripts/coordination/tmux_adapter.py`'s runtime check, and an adapter
+refusal citing runtime state is a finding about the world, not an obstacle to retry past. Full
+rule: `agents/shared/SESSION_LIFECYCLE.md` → *Reading another session's liveness*.
+
 **Bringing up the daemon and its watchdog is YOUR job, not an escalation.** They are part of the
 coordinator-agent spawn — operator correction, 2026-07-29, verbatim, against an earlier version of
 this skill that told you to report and wait: *"no they're not. They're part of the coordinator-agent
@@ -149,7 +211,7 @@ reboot already happened; going to sleep before the next one is not delegated to 
 reboot request reaches the operator, every main — including coordinator-agent itself — must have
 completed a wrap-up (checkboxes flipped with evidence, mid-flight findings filed, work committed
 AND pushed) and the coordinator must have confirmed that state before relaying the request. See
-`agents/shared/OPERATING_CONSTRAINTS.md` → *Pre-reboot wrap-up is mandatory, not checkpoint-gated*.
+`agents/shared/SESSION_LIFECYCLE.md` → *Pre-reboot wrap-up is mandatory, not checkpoint-gated*.
 
 ## Phase 1 — become addressable
 
@@ -165,9 +227,9 @@ defect **C1** existed to fix: a roster member with no inbox is unreachable, and 
 fail **open** — silently reporting nothing to do. Never skip it, even if you think you are
 provisioned.
 
-Refresh that heartbeat at **every** task boundary from here on, not once. A heartbeat written once
-is a birth certificate, not a liveness signal; a stale one is worse than none, because the stall
-ladder reads it as a stall and nudges a healthy agent.
+Refresh that heartbeat at **every** task boundary from here on, not once (birth-certificate axiom:
+`agents/shared/SESSION_LIFECYCLE.md` → *Reading another session's liveness*); a stale one is worse
+than none, because the stall ladder reads it as a stall and nudges a healthy agent.
 
 ## Phase 2 — recover state from files alone
 
@@ -288,8 +350,8 @@ failures: line-keyed dispatch rotted at 34.5% queue-wide while the role's own qu
 *"line numbers are a hint, task text is the identity"* (F-22), and a card was fed 40-second sweeps
 all morning while reading idle — **`expected_occupancy` is there to make you ask "hours or
 seconds?" at composition time**, which is where that failure lived (F-14). A screener proves
-WELL-FORMED, never STILL-NEEDED: verify the row's premise against the world before pointing a main
-at it — four of eight screened rows fact-checked on 2026-08-12 were already satisfied in reality.
+WELL-FORMED, never STILL-NEEDED. Full rule: `agents/shared/OPERATING_CONSTRAINTS.md` →
+*Dispatching Backlog Work*.
 
 **Mains spawn into their own lane worktrees** (`/mnt/raid0/llm/worktrees/mains/<id>`, roster key
 `worktree:` in `config.yaml`); `inference` and `coordinator-agent` stay in `/workspace`. A declared
@@ -350,13 +412,18 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
   [--range <ref..ref>]`. A **gated** verdict means you produce a *pre-validated* command for the
   operator — you never apply it. A presented command that fails is a defect attributed to you, so
   dry-run it first.
-- **Reload ownership**: if a session owns the inference, only that session may reload the
-  orchestrator API or the stack. Route reload requests to the owner; never run or approve one
-  around them.
+- **Reload ownership**: route reload requests to the owner; never run or approve one around them.
+  Full rule: `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks*.
 - **Single writer**: write only `outbox/`, `heartbeats/`, `cursors/` for `coordinator-agent`.
   `queue.jsonl` and all `inbox/*` belong to the coordinator-daemon.
 - **Never spend the main thread on focused execution work** — docs, briefs, edits, research and
-  analysis go to subagents. Your scarce resource is attention to task boundaries.
+  analysis go to subagents. Your scarce resource is attention to task boundaries. This is the
+  **strict case of a fleet-wide default that binds every main**, not a coordinator privilege:
+  **3–5 subagents run CONCURRENTLY**, model and effort matched to the task, and **every subagent
+  result is PROPOSED work** until you have reviewed its evidence and diffs. It admits **no
+  coordinator exception** — the coordinator is the tightest instance of it, never an exemption
+  from it. Full rule, including when NOT to fan out:
+  `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*.
 
 ## Phase 4 — operator report
 
