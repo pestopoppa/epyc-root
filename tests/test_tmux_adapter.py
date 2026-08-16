@@ -637,6 +637,137 @@ class _SpawnArgs:
     dry_run = True
 
 
+def test_adoption_requires_exact_target_and_records_read_only_receipt(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Adoption observes a ready pane; it never infers an alternate endpoint.
+
+    The fixture deliberately has no model/provider data.  Role adoption is based
+    only on pane, worktree, runtime and bus identity evidence.
+    """
+    adapter = _load("adoption")
+    adapter.BUS_ROOT = tmp_path / "bus"
+    adapter.LEDGER = adapter.BUS_ROOT / "adapter-ledger.jsonl"
+    worktree = tmp_path / "auditor-worktree"
+    worktree.mkdir()
+    config = {"roster": [{"id": "auditor", "endpoint": "tmux:agent:auditor",
+                           "worktree": str(worktree),
+                           # Deliberately outside every launch recommendation:
+                           # an operator's in-session change is policy-invisible.
+                           "model": "operator-changed-model", "effort": "low"}]}
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    (adapter.BUS_ROOT / "cursors").mkdir()
+    (adapter.BUS_ROOT / "inbox").mkdir()
+    (adapter.BUS_ROOT / "outbox").mkdir()
+    (adapter.BUS_ROOT / "inbox" / "auditor.jsonl").write_text("")
+    (adapter.BUS_ROOT / "outbox" / "auditor.jsonl").write_text("")
+    (adapter.BUS_ROOT / "heartbeats" / "auditor.json").write_text(
+        json.dumps({"agent": "auditor", "state": "idle", "task_id": None}))
+    (adapter.BUS_ROOT / "cursors" / "auditor.json").write_text(
+        json.dumps({"agent": "auditor", "offset": 0}))
+    monkeypatch.setattr(adapter, "load_config", lambda: config)
+    monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
+    monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
+    monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("idle", "settled"))
+    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
+        {"agent": "auditor", "status": "empty"}]})
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
+
+    report = adapter.pane_adoption_report(config, "auditor", context_reset_confirmed=True)
+    assert report["adoptable"] is True
+    assert "model" not in report and "provider" not in report and "effort" not in report
+
+    class A:
+        agent, mode, target, dry_run = "auditor", "adopt", "wrong:target", False
+        command = None
+        context_reset_confirmed = True
+    assert adapter.cmd_instantiate(A()) == adapter.EX_BLOCKED
+    A.target = "agent:auditor"
+    assert adapter.cmd_instantiate(A()) == 0
+    rows = _ledger_rows(adapter)
+    assert rows[-1]["kind"] == "pane-adopted"
+    assert rows[-1]["target"] == "agent:auditor"
+
+
+def test_adoption_refuses_busy_or_dirty_pane_without_ledger_mutation(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    adapter = _load("adoption_dirty")
+    adapter.BUS_ROOT = tmp_path / "bus"
+    adapter.LEDGER = adapter.BUS_ROOT / "adapter-ledger.jsonl"
+    worktree = tmp_path / "lane"
+    worktree.mkdir()
+    config = {"roster": [{"id": "auditor", "endpoint": "tmux:agent:auditor",
+                           "worktree": str(worktree)}]}
+    monkeypatch.setattr(adapter, "load_config", lambda: config)
+    monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
+    monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
+    monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("active", "turn running"))
+    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
+        {"agent": "auditor", "status": "pending"}]})
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
+
+    class A:
+        agent, mode, target, dry_run = "auditor", "adopt", "agent:auditor", False
+        command = None
+        context_reset_confirmed = True
+    assert adapter.cmd_instantiate(A()) == adapter.EX_BLOCKED
+    assert not adapter.LEDGER.exists(), "failed validation is atomic: no adoption receipt"
+
+
+def test_adoption_requires_explicit_context_reset_confirmation(
+        monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """An empty composer cannot prove that the previous role context is gone."""
+    adapter = _load("adoption_context")
+    adapter.BUS_ROOT = tmp_path / "bus"
+    worktree = tmp_path / "lane"
+    worktree.mkdir()
+    config = {"roster": [{"id": "auditor", "endpoint": "tmux:agent:auditor",
+                           "worktree": str(worktree)}]}
+    (adapter.BUS_ROOT / "heartbeats").mkdir(parents=True)
+    (adapter.BUS_ROOT / "cursors").mkdir()
+    (adapter.BUS_ROOT / "inbox").mkdir()
+    (adapter.BUS_ROOT / "outbox").mkdir()
+    (adapter.BUS_ROOT / "heartbeats" / "auditor.json").write_text(
+        json.dumps({"agent": "auditor", "state": "idle", "task_id": None}))
+    (adapter.BUS_ROOT / "cursors" / "auditor.json").write_text(
+        json.dumps({"agent": "auditor", "offset": 0}))
+    (adapter.BUS_ROOT / "inbox" / "auditor.jsonl").write_text("")
+    (adapter.BUS_ROOT / "outbox" / "auditor.jsonl").write_text("")
+    monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
+    monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
+    monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("idle", "settled"))
+    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
+        {"agent": "auditor", "status": "empty"}]})
+    monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
+    report = adapter.pane_adoption_report(config, "auditor")
+    assert report["adoptable"] is False
+    assert any("stale role context" in blocker for blocker in report["blockers"])
+    assert report["last_checkpoint"]["status"] == "no durable completion/status record"
+
+
+def test_fresh_special_role_requires_explicit_operator_selected_command(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    adapter = _load("special_fresh_command")
+    config = {"roster": [{"id": "auditor", "role": "auditor-main",
+                           "recommended_launch_profiles": [
+                               {"model": "gpt-5.6-sol", "effort": "xhigh"}]}]}
+    monkeypatch.setattr(adapter, "load_config", lambda: config)
+    called: list[str] = []
+    monkeypatch.setattr(adapter, "cmd_spawn", lambda args: called.append(args.command) or 0)
+
+    class A:
+        agent, mode, target, dry_run = "auditor", "fresh", None, False
+        command = None
+        context_reset_confirmed = False
+
+    assert adapter.cmd_instantiate(A()) == adapter.EX_USAGE
+    assert called == []
+    # Any explicit operator choice is accepted. It is not compared with policy
+    # recommendations and can be changed inside the session later.
+    A.command = "operator-selected-launch-command"
+    assert adapter.cmd_instantiate(A()) == 0
+    assert called == ["operator-selected-launch-command"]
+
+
 def test_live_mains_counts_roster_windows_including_renamed_ones(
         monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     adapter = _c9_adapter("count", monkeypatch, tmp_path)

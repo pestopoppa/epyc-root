@@ -49,18 +49,18 @@ re-design: same axes, same era-labeling discipline (label the kernel era; never 
 
 | Axis | Qwen3.8-27B status | Note |
 |---|---|---|
-| Throughput — decode (optimized `draft-mtp`) | ✅ **37.15 t/s** @512ctx · **37.95** @2k · **22.22** @8k · **13.61** @32k | measured 2026-08-14 on v9 `0db32c06e`/`10125` (47.57 was the earlier natural-prompt single-shot; the sweep uses the synthetic random-word prompt, hence lower MTP acceptance) |
+| Throughput — decode (optimized `draft-mtp`) | ✅ **flat ~45 t/s** single-stream (47.6 @2k → 45.0 @32k) | 24-cell np × depth sweep on **real olympiadbench prompts**, v9 `0db32c06e`/`10125` |
 | Throughput — prefill pp512 | ✅ **727.29 ± 28.00 t/s** | `llama-bench -ngl 999 -nkvo 1 -p 512 -r 3` |
 | Coding ladder (LCB/BCB/SWE) | ✅ **RAN** — see *Coding ladder — WAS RUN* below | Originally ⛔ operator-DECLINED ("quality will improve certainly", 2026-08-14); the operator later authorized the ladder anyway ("both rungs, proceed") and it landed. |
-| RAG-at-depth | ✅ measured | decode vs context depth: 37.15 @512 → 37.95 @2k → 22.22 @8k → 13.61 @32k (MTP) — monotone decay, the KV-read-cost curve |
-| MTP workload-gate (batched vs deep-RAG) | ✅ measured | **MTP HURTS at depth**: plain beats MTP at 8k (29.11 vs 22.22, −23.7%) and 32k (21.65 vs 13.61, −37.1%) — reproduces the artifact's "MTP net-negative on deep-RAG". Batched np=4 @512 ~20–23 t/s/req (agg ~80). |
+| RAG-at-depth | ✅ measured | decode vs context depth is **flat** across 2k–32k on real prompts — no KV-read-cost decay in this range |
+| MTP workload-gate (batched vs deep-RAG) | ✅ measured | peak **aggregate 157.3 t/s @np8/2k**; no MTP reversal at depth on real prompts |
 
-> **CORRECTION (2026-08-15/16), read the two throughput/RAG/MTP rows above with it**: the
-> `37.15 → 37.95 → 22.22 → 13.61` decline and the "MTP reversal at depth" were a **synthetic
-> random-word-prompt artifact**. The 24-cell np × depth sweep on real olympiadbench prompts gives a
-> **flat** single-stream MTP curve (47.6 @2k → 45.0 @32k) and a peak aggregate of **157.3 t/s @np8/2k**.
-> The rows are kept as the original measurement of record; the corrected numbers are the ones the
-> artifact ships.
+> **RETRACTED (2026-08-15/16) — do not cite**: an earlier synthetic sweep reported a decode-vs-depth
+> decline (`37.15 @512 → 37.95 @2k → 22.22 @8k → 13.61 @32k`) and an "**MTP HURTS at depth**" workload
+> gate (plain beating MTP at 8k/32k). Both were a **synthetic random-word-prompt artifact** — the low
+> MTP acceptance came from the random-word prompt, not from context depth. The 24-cell np × depth sweep
+> on real olympiadbench prompts supersedes them with the flat curve and 157.3 t/s @np8 peak in the table
+> above; those corrected numbers are the ones the artifact ships.
 
 ## Coding ladder — WAS RUN (supersedes the earlier "deferred")
 

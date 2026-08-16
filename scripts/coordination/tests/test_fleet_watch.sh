@@ -143,6 +143,25 @@ chk "unreadable vram -> unknown, NOT idle"   "$(fw_classify_compute 0 unknown 4 
 chk "unreadable regions -> unknown"          "$(fw_classify_compute 0 0 unknown unknown)" "unknown"
 chk "zero regions found -> unknown"          "$(fw_classify_compute 0 0 0 0)" "unknown"
 
+# THE PER-RESOURCE HALVES (origin/main's split, merged 2026-08-16). The aggregate
+# above is a CONJUNCTION, so it can only ever answer for BOTH resources at once —
+# one busy region hides a card at 0%/0%. These are the classifiers that do not.
+# Each is three-valued in its own right; that is what lets a known-idle CPU stay
+# reportable while the GPU probe is unreadable.
+chk "gpu idle at 0%%/0%%"                     "$(fw_classify_gpu 0 0)"        "idle"
+chk "gpu busy on util"                       "$(fw_classify_gpu 7 0)"        "busy"
+chk "gpu busy on RESIDENT VRAM alone"        "$(fw_classify_gpu 0 42)"       "busy"
+chk "unreadable gpu -> unknown, NOT idle"    "$(fw_classify_gpu unknown 0)"  "unknown"
+chk "unreadable vram -> unknown, NOT idle"   "$(fw_classify_gpu 0 unknown)"  "unknown"
+chk "cpu idle when every region is free"     "$(fw_classify_cpu 4 4)"        "idle"
+chk "one held region -> cpu busy"            "$(fw_classify_cpu 3 4)"        "busy"
+chk "unreadable regions -> cpu unknown"      "$(fw_classify_cpu unknown unknown)" "unknown"
+chk "zero regions found -> cpu unknown"      "$(fw_classify_cpu 0 0)"        "unknown"
+# NO MASKING, at the classifier level: a busy CPU must not change the GPU's
+# answer and a busy GPU must not change the CPU's.
+chk "busy CPU does not change the GPU answer" "$(fw_classify_gpu 0 0)"       "idle"
+chk "busy GPU does not change the CPU answer" "$(fw_classify_cpu 4 4)"       "idle"
+
 # region-lock's holder column is free text. `grep -c free` over whole lines
 # counts a holder whose command happens to contain the word.
 REGIONS=$'  q0  free   \n  q1  HELD   pid 123 bench --output freeze.json\n  q2  free   \n  q3  free   '
@@ -373,6 +392,62 @@ chk "COMPUTE-IDLE raised exactly once" "$(count_notified compute-idle-with-queue
 cycles 5
 chk "COMPUTE-IDLE still raised exactly once after 5 more cycles" \
     "$(count_notified compute-idle-with-queued-work)" "1"
+# The per-resource halves of the same reading (origin/main's split, merged
+# 2026-08-16). Both fire here because BOTH resources are genuinely idle.
+chk_contains "GPU-IDLE is detected independently" "$out" "GPU-IDLE"
+chk_contains "CPU-IDLE is detected independently" "$out" "CPU-IDLE"
+
+# ---- 4b-i. NO MASKING: one busy resource must not hide the other -----------
+# `fw_classify_compute` is a CONJUNCTION, so before origin/main's split a single
+# busy CPU region hid a card at 0%/0% (and a busy card hid four free regions).
+# These are origin/main's cases, re-fixtured onto rule 3: the compute-gated READY
+# row is what makes an idle resource ESCALATE at all, so it is part of each one.
+
+# CPU work must not hide a persistently idle GPU.
+reset_all
+FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)
+FIX_GPU='{"card0":{"GPU use (%)":"0","GPU Memory Allocated (VRAM%)":"0"}}'
+FIX_REGIONS=$'  q0  HELD   worker\n  q1  free   \n  q2  free   \n  q3  free   '
+cycles 3; out="$LAST_OUT"
+chk_contains "busy CPU does not hide GPU-IDLE" "$out" "GPU-IDLE"
+chk_lacks "busy CPU suppresses CPU-IDLE" "$out" "CPU-IDLE"
+chk_lacks "partially busy compute is not combined COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
+chk "the idle GPU raised its OWN key" "$(count_notified gpu-idle-with-queued-work)" "1"
+chk "the busy CPU raised nothing" "$(count_notified cpu-idle-with-queued-work)" "0"
+
+# GPU work must not hide persistently idle CPU regions.
+reset_all
+FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)
+FIX_GPU='{"card0":{"GPU use (%)":"55","GPU Memory Allocated (VRAM%)":"71"}}'
+FIX_REGIONS=$'  q0  free   \n  q1  free   \n  q2  free   \n  q3  free   '
+cycles 3; out="$LAST_OUT"
+chk_contains "busy GPU does not hide CPU-IDLE" "$out" "CPU-IDLE"
+chk_lacks "busy GPU suppresses GPU-IDLE" "$out" "GPU-IDLE"
+chk_lacks "partially busy compute is not combined COMPUTE-IDLE (GPU)" "$out" "COMPUTE-IDLE"
+chk "the idle CPU raised its OWN key" "$(count_notified cpu-idle-with-queued-work)" "1"
+
+# RULE 3 STILL BINDS THE SPLIT. The same idle-GPU fixture with NO compute-gated
+# row queued is a well-run night, and the per-resource detectors must not become
+# a back door around "zero alarms on well-run nights" — the gate metric of the
+# whole restructure. The reading is still OBSERVED, so occupancy stays visible.
+reset_all
+FIX_TSV=$(row q-ungated READY "$NEW" 1 0.5 '' none)      # queued, but needs no compute
+FIX_GPU='{"card0":{"GPU use (%)":"0","GPU Memory Allocated (VRAM%)":"0"}}'
+FIX_REGIONS=$'  q0  HELD   worker\n  q1  free   \n  q2  free   \n  q3  free   '
+cycles 8; out="$LAST_OUT"
+chk "COMPLIANT: idle GPU with NO compute-gated work -> no findings" \
+    "$(printf '%s' "$out" | tr -d '\n')" ""
+chk "COMPLIANT: idle GPU with NO compute-gated work -> ZERO alarms" \
+    "$(alarm_log | grep -c NOTIFIED)" "0"
+chk_contains "...but the per-resource READING is still observed" \
+    "$(printf '%s\n' ${FW_OBSERVATIONS[@]+"${FW_OBSERVATIONS[@]}"})" "GPU-IDLE (not an alarm"
+
+# Restore the fixtures the cases below inherit: gated row queued, card idle,
+# every CPU region free.
+reset_all
+FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)
+FIX_GPU='{"card0":{"GPU use (%)":"0","GPU Memory Allocated (VRAM%)":"0"}}'
+FIX_REGIONS=$'  q0  free   \n  q1  free   \n  q2  free   \n  q3  free   '
 
 # THE llama-bench GAP. The card legitimately reads 0%/0% between probes inside a
 # perfectly healthy sweep. One busy sample must reset the counter.
@@ -386,15 +461,42 @@ for pattern in idle idle busy idle idle busy idle idle; do
     fw_run_cycle
 done
 out=$(printf '%s\n' ${FW_FINDINGS[@]+"${FW_FINDINGS[@]}"})
-chk_lacks "COMPLIANT: a sweep's inter-probe gaps never fire COMPUTE-IDLE" "$out" "COMPUTE-IDLE ["
+chk_lacks "COMPLIANT: a sweep's inter-probe gaps never fire COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
+chk_lacks "COMPLIANT: a sweep's inter-probe gaps never fire GPU-IDLE" "$out" "GPU-IDLE"
 chk "COMPLIANT: a sweep's inter-probe gaps raise no alarm" \
     "$(count_notified compute-idle-with-queued-work)" "0"
+chk "COMPLIANT: ...and no per-GPU alarm either" \
+    "$(count_notified gpu-idle-with-queued-work)" "0"
 
-# An unreadable GPU is not an idle GPU.
+# An unreadable GPU is not an idle GPU — and, since the split, an unreadable GPU
+# must not silently swallow a KNOWN-IDLE CPU either. Both branches asserted here,
+# each with the fixture its claim actually needs (the conjunctive version could
+# only ever answer "compute unknown" and lost the CPU reading with it).
+#
+# (i) gated work IS queued: the GPU is UNKNOWN so it raises nothing, while the
+#     CPU is positively idle and stays reportable — origin/main's case, and the
+#     masking this split exists to remove.
 reset_all
+FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)
+FIX_REGIONS=$'  q0  free   \n  q1  free   \n  q2  free   \n  q3  free   '
+FIX_GPU=""
+cycles 6; out="$LAST_OUT"
+chk_lacks "unreadable rocm-smi never fires COMPUTE-IDLE" "$out" "COMPUTE-IDLE"
+chk_lacks "unreadable rocm-smi never fires GPU-IDLE" "$out" "GPU-IDLE"
+chk "unreadable GPU raises no GPU alarm" "$(count_notified gpu-idle-with-queued-work)" "0"
+chk_contains "known-idle CPU remains reportable with unreadable GPU" "$out" "CPU-IDLE"
+chk "known CPU stall takes precedence while GPU remains unknown" "$FW_VERDICT" "stall"
+
+# (ii) NOTHING gated is queued: nothing may be raised at all, and the honest
+#      verdict for a compute reading that could not be taken is `degraded` —
+#      never `ok`. This is the local branch's case, unchanged in meaning.
+reset_all
+FIX_TSV=""
 FIX_GPU=""
 cycles 6; out="$LAST_OUT"
 chk "unreadable compute raises nothing" "$(count_notified compute-idle-with-queued-work)" "0"
+chk "unreadable compute raises no per-resource alarm either" \
+    "$(alarm_log | grep -c NOTIFIED)" "0"
 chk "unreadable compute -> degraded verdict" "$FW_VERDICT" "degraded"
 FIX_GPU='{"card0":{"GPU use (%)":"0","GPU Memory Allocated (VRAM%)":"0"}}'
 

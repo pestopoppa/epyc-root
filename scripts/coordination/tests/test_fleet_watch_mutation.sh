@@ -197,14 +197,20 @@ mutate 12 "the record separator reverts to a tab (empty fields collapse)" \
     "READY rows counted"
 
 # --- COMPUTE-IDLE -----------------------------------------------------------
+# MERGE 2026-08-16: the local numbering (13, 14) is kept and origin/main's
+# TARGETS are kept. Both branches rewrote these two cases, and a mutation has to
+# name a line that EXISTS — after the per-resource split the classifier they
+# point at is `fw_classify_gpu`, not the old conjunctive `fw_classify_compute`.
+# (A stale target does not silently pass: apply_mutation requires exactly one
+# match and reports MUTATION DEFECTIVE otherwise.)
 mutate 13 'compute reinstates the ${gpu:-0} fail-open (unknown reads as 0%)' \
-    "        *unknown*) printf 'unknown'; return 0 ;;" \
-    '        *unknown*) : ;;' \
-    "unreadable compute"
+    '    local gpu="$1" vram="$2"' \
+    '    local gpu="${1/unknown/0}" vram="${2/unknown/0}"' \
+    "unreadable gpu"
 
 mutate 14 "compute stops checking VRAM independently of GPU%" \
-    '    if [ "$gpu" = "0" ] && [ "$vram" = "0" ] && [ "$free" = "$total" ]; then' \
-    '    if [ "$gpu" = "0" ] && [ "$free" = "$total" ]; then' \
+    '    if [ "$gpu" = "0" ] && [ "$vram" = "0" ]; then' \
+    '    if [ "$gpu" = "0" ]; then' \
     "vram resident"
 
 mutate 15 "an absent rocm-smi key reads as 0% instead of unknown" \
@@ -231,6 +237,19 @@ mutate 28 "the not-an-alarm occupancy line denies queued work that IS queued" \
     '            if true; then
                 FW_OBSERVATIONS+=("COMPUTE-IDLE (not an alarm)' \
     "does NOT deny the queued gated work"
+
+# THE PER-RESOURCE SPLIT (merge 2026-08-16). Two properties, and each fails in a
+# direction the other cannot catch: 29 is the masking origin/main's split exists
+# to remove, 30 is rule 3 still binding that split.
+mutate 29 "an unreadable GPU re-masks a KNOWN-IDLE CPU (the conjunction is back)" \
+    '        fw_resource_idle_plane cpu-idle-with-queued-work CPU-IDLE "$cpu_state" \' \
+    '        fw_resource_idle_plane cpu-idle-with-queued-work CPU-IDLE "$compute" \' \
+    "known-idle CPU remains reportable with unreadable GPU"
+
+mutate 30 "a per-resource idle alarms with NO compute-gated work queued" \
+    '    if [ "$state" = "idle" ] && [ "$FW_READY_GATED" -gt 0 ]; then' \
+    '    if [ "$state" = "idle" ]; then' \
+    "idle GPU with NO compute-gated work -> ZERO alarms"
 
 mutate 18 "compute-gated rows stop being distinguished from ungated ones" \
     '            *) FW_READY_GATED=$((FW_READY_GATED + 1)) ;;' \

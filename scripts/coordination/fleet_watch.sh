@@ -208,6 +208,11 @@ fw_class_fix() {
 # Every alarm key this script may raise. The clear sweep touches ONLY these, so
 # it can never resolve an alarm raised by the daemon, a supervisor or a human.
 FW_OWNED_KEYS="compute-idle-with-queued-work"
+# The per-resource halves of the same reading (merge 2026-08-16, from
+# origin/main's GPU/CPU split). They MUST be listed here: the clear sweep
+# intersects with this list first, so a key raised but not owned would be raised
+# forever and never resolved.
+FW_OWNED_KEYS="${FW_OWNED_KEYS} gpu-idle-with-queued-work cpu-idle-with-queued-work"
 for _c in $FW_CLASSES; do FW_OWNED_KEYS="${FW_OWNED_KEYS} queue-aging-${_c}"; done
 FW_OWNED_KEYS="${FW_OWNED_KEYS} queue-aging-unowned"
 unset _c
@@ -411,16 +416,37 @@ fw_capture_pane() { timeout 10 tmux capture-pane -p -t "${EVIDENCE_SESSION}:${1}
 # PURE CLASSIFIERS — no I/O, unit-testable.
 # ============================================================================
 
-# Compute state. Echoes busy|idle|unknown.
-#   $1 gpu%  $2 vram%  $3 regions free  $4 regions total  ('unknown' allowed)
-fw_classify_compute() {
-    local gpu="$1" vram="$2" free="$3" total="$4"
-    case "${gpu}|${vram}|${free}|${total}" in
-        *unknown*) printf 'unknown'; return 0 ;;
-        *[!0-9|]*) printf 'unknown'; return 0 ;;
+# MERGE 2026-08-16. TWO REWRITES OF THE SAME CLASSIFIER BLOCK, COMPOSED.
+#
+# The local branch (P3-3) DELETED the pane classifiers that used to live here —
+# fw_lstrip / fw_rstrip / fw_composer_pending / fw_pane_busy / fw_pane_recognised /
+# fw_classify_liveness / fw_round. They are not dropped work: their detectors
+# (STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND) are gone with them, 94% of
+# STUCK-INPUT's production reports were an empty composer's placeholder text, and
+# every constant they read (PROMPT_GLYPHS, BUSY_MARKERS, PLACEHOLDER_RE,
+# SUBAGENT_MARKER, IDLE_QUIET_S) was removed from the config block above. Keeping
+# them would be unreferenced code that fails under `set -u` the moment anyone
+# called it. Rule 4 now says pane text is EVIDENCE FOR A HUMAN, NEVER A TRIGGER.
+#
+# origin/main's change to this block is KEPT IN FULL: the split of the single
+# conjunctive `fw_classify_compute` into per-resource classifiers. It removes a
+# real masking defect — the conjunction reads idle only when the GPU and the CPU
+# regions are BOTH idle, so one busy region hides a card sitting at 0%/0%. The
+# aggregate survives underneath as the compatibility fold (byte-for-byte the same
+# verdict as before: unknown if either is unknown, idle only if both are idle),
+# so the verdict line and the log format are unchanged.
+
+# Per-resource compute state. Each probe is three-valued so CPU activity cannot
+# hide an idle GPU and GPU activity cannot hide idle CPU regions.
+fw_classify_gpu() {
+    local gpu="$1" vram="$2"
+    case "${gpu}|${vram}" in
+        *unknown*|*[!0-9|]*) printf 'unknown'; return 0 ;;
     esac
-    [ -n "$gpu" ] && [ -n "$vram" ] && [ -n "$free" ] && [ -n "$total" ] || { printf 'unknown'; return 0; }
-    [ "$total" -gt 0 ] 2>/dev/null || { printf 'unknown'; return 0; }
+    if [ -z "$gpu" ] || [ -z "$vram" ]; then
+        printf 'unknown'
+        return 0
+    fi
     # VRAM IS CHECKED INDEPENDENTLY OF GPU%. A run that silently falls back to
     # CPU shows 0% util AND 0% VRAM — that is how a "GPU benchmark" got measured
     # on 96 CPU threads on 2026-08-12 (root cause: /etc/environment puts the CPU
@@ -429,7 +455,34 @@ fw_classify_compute() {
     # llama-bench EXITS between probes, so the card legitimately reads 0%/0%
     # inside a perfectly healthy sweep, and a single sample landing in that gap
     # is sampling error, not idleness.
-    if [ "$gpu" = "0" ] && [ "$vram" = "0" ] && [ "$free" = "$total" ]; then
+    if [ "$gpu" = "0" ] && [ "$vram" = "0" ]; then
+        printf 'idle'
+    else
+        printf 'busy'
+    fi
+}
+
+fw_classify_cpu() {
+    local free="$1" total="$2"
+    case "${free}|${total}" in
+        *unknown*|*[!0-9|]*) printf 'unknown'; return 0 ;;
+    esac
+    if [ -z "$free" ] || [ -z "$total" ]; then
+        printf 'unknown'
+        return 0
+    fi
+    [ "$total" -gt 0 ] 2>/dev/null || { printf 'unknown'; return 0; }
+    if [ "$free" = "$total" ]; then printf 'idle'; else printf 'busy'; fi
+}
+
+# Compatibility aggregate used by the existing health verdict and log format.
+fw_classify_compute() {
+    local gpu_state cpu_state
+    gpu_state=$(fw_classify_gpu "$1" "$2")
+    cpu_state=$(fw_classify_cpu "$3" "$4")
+    if [ "$gpu_state" = unknown ] || [ "$cpu_state" = unknown ]; then
+        printf 'unknown'
+    elif [ "$gpu_state" = idle ] && [ "$cpu_state" = idle ]; then
         printf 'idle'
     else
         printf 'busy'
@@ -485,6 +538,14 @@ fw_hours() {
     awk -v v="$1" 'BEGIN{printf "%.1f", v / 3600}'
 }
 
+# MERGE 2026-08-16: origin/main's counters FW_GPU_IDLE_N / FW_CPU_IDLE_N were
+# declared here, on the OLD persistence block (a per-cycle integer per detector).
+# That block is gone — the persistence machine below is the symmetric-hysteresis
+# one (fw_track / fw_is_on / fw_is_off, keyed by alarm key), and the per-resource
+# idle state is tracked through it under the keys `gpu-idle-with-queued-work` and
+# `cpu-idle-with-queued-work`. Nothing is lost: those two keys get up-hysteresis
+# they did not have, plus down-hysteresis and a clear sweep.
+
 # ============================================================================
 # PERSISTENCE STATE
 #
@@ -499,6 +560,8 @@ declare -a FW_FINDINGS=() FW_OBSERVATIONS=()
 FW_CYCLE=0
 FW_READY=0; FW_AGED=0; FW_INFLIGHT=0; FW_READY_GATED=0
 FW_CAPACITY_FREE=0; FW_OLDEST_ID=""; FW_OLDEST_AGE=0
+# Per-cycle scratch for the per-resource idle plane (see fw_resource_idle_plane).
+FW_KEYS_WANT=""; FW_KEYS_ELIGIBLE=""
 
 fw_reset_state() {
     FW_ON_N=(); FW_OFF_N=(); FW_CLASS_AGED=()
@@ -506,6 +569,7 @@ fw_reset_state() {
     FW_CYCLE=0
     FW_READY=0; FW_AGED=0; FW_INFLIGHT=0; FW_READY_GATED=0
     FW_CAPACITY_FREE=0; FW_OLDEST_ID=""; FW_OLDEST_AGE=0
+    FW_KEYS_WANT=""; FW_KEYS_ELIGIBLE=""
     FW_VERDICT=""; FW_SUMMARY=""
 }
 
@@ -522,6 +586,51 @@ fw_track() {
 }
 fw_is_on()  { [ "${FW_ON_N[$1]:-0}"  -ge "$PERSIST_CYCLES" ]; }
 fw_is_off() { [ "${FW_OFF_N[$1]:-0}" -ge "$PERSIST_CYCLES" ]; }
+
+# ----------------------------------------------------------------------------
+# ONE RESOURCE'S IDLE PLANE (merge 2026-08-16 — origin/main's per-resource split
+# expressed in this file's hysteresis + alarm machinery).
+#
+#   $1 alarm key   $2 label (GPU-IDLE|CPU-IDLE)   $3 state (busy|idle|unknown)
+#   $4 reading (the human-readable measurement)   $5 routed fix
+#
+# THREE PROPERTIES, EACH LOAD-BEARING:
+#   * rule 2 — an UNKNOWN reading advances NEITHER counter and makes the key
+#     ineligible for the clear sweep. An unreadable probe can therefore neither
+#     raise nor resolve this resource's alarm.
+#   * rule 3 — idle is ESCALATED only while compute-gated READY rows wait; with
+#     an empty gated queue it is an OBSERVATION, never an alarm.
+#   * per-resource readability — this key's eligibility depends on THIS
+#     resource's state alone, which is the whole point of the split: a
+#     known-idle CPU stays reportable while the GPU probe is unreadable.
+#
+# Appends to FW_KEYS_WANT / FW_KEYS_ELIGIBLE (globals, because a function cannot
+# write its caller's locals); the caller folds them into its own key lists.
+# ----------------------------------------------------------------------------
+fw_resource_idle_plane() {
+    local key="$1" label="$2" state="$3" reading="$4" fix="$5" n
+    [ "$state" != "unknown" ] || return 0
+    FW_KEYS_ELIGIBLE="${FW_KEYS_ELIGIBLE} ${key}"
+    if [ "$state" = "idle" ] && [ "$FW_READY_GATED" -gt 0 ]; then
+        fw_track "$key" 1
+    else
+        fw_track "$key" 0
+    fi
+    if fw_is_on "$key"; then
+        FW_KEYS_WANT="${FW_KEYS_WANT} ${key}"
+        n="${FW_ON_N[$key]}"
+        FW_FINDINGS+=("${label} ${n} cycles ~ $(( n * INTERVAL ))s: ${reading}, with ${FW_READY_GATED} compute-gated READY row(s) waiting")
+        fw_alarm_raise "$key" "warning" \
+            "${label}: ${reading} for ${n} cycles (~$(( n * INTERVAL ))s) while ${FW_READY_GATED} compute-gated READY row(s) wait. OWNER: coordinator-agent. FIX: ${fix}." \
+            "$(fw_evidence_json resource "$label" reading "$reading" \
+                ready_gated "$FW_READY_GATED" cycles "$n" owner "coordinator-agent" fix "$fix")"
+    elif [ "$state" = "idle" ]; then
+        # Logged, never escalated — the same not-an-alarm branch the aggregate
+        # uses, and for the same reason (rule 3). It must not deny queued work
+        # that IS queued, so the count is printed rather than asserted away.
+        FW_OBSERVATIONS+=("${label} (not an alarm, ${FW_ON_N[$key]:-0}/${PERSIST_CYCLES} cycles) ${reading}, with ${FW_READY_GATED} compute-gated READY row(s) waiting")
+    fi
+}
 
 # ============================================================================
 # QUEUE SCAN — pure over the TSV the probe returns.
@@ -617,9 +726,11 @@ fw_evidence_json() {   # fw_evidence_json k v k v ...
 # ============================================================================
 fw_run_cycle() {
     local gpu=unknown vram=unknown free=unknown total=unknown rocm regions compute
+    local gpu_state=unknown cpu_state=unknown          # origin/main: per-resource readings
     local tsv queue_ok=0 cls n owner fix key msg
     local want_keys="" eligible_keys="" unowned="" unowned_n=0
     FW_FINDINGS=(); FW_OBSERVATIONS=()
+    FW_KEYS_WANT=""; FW_KEYS_ELIGIBLE=""
     FW_CYCLE=$((FW_CYCLE + 1))
     FW_VERDICT=""; FW_SUMMARY=""
 
@@ -641,6 +752,8 @@ fw_run_cycle() {
         free=$(fw_regions_free "$regions")
         total=$(fw_regions_total "$regions")
     fi
+    gpu_state=$(fw_classify_gpu "$gpu" "$vram")
+    cpu_state=$(fw_classify_cpu "$free" "$total")
     compute=$(fw_classify_compute "$gpu" "$vram" "$free" "$total")
 
     # ---- 3. COMPUTE-IDLE -----------------------------------------------
@@ -677,6 +790,37 @@ fw_run_cycle() {
                 FW_OBSERVATIONS+=("COMPUTE-IDLE (${FW_ON_N[compute-idle-with-queued-work]:-0}/${PERSIST_CYCLES} cycles, nothing asserted yet) GPU ${gpu}% / VRAM ${vram}% / ${free} of ${total} CPU regions free, with ${FW_READY_GATED} compute-gated READY row(s) waiting")
             fi
         fi
+    fi
+
+    # ---- 3b. PER-RESOURCE IDLE (origin/main's split, under rule 3) ------
+    #
+    # MERGE 2026-08-16. origin/main added GPU-IDLE and CPU-IDLE as unconditional
+    # findings off their own raw counters. Both intents are kept, composed:
+    #
+    #   * ITS intent — NO MASKING. `fw_classify_compute` is a CONJUNCTION, so a
+    #     single busy CPU region hides a card sitting at 0%/0%, and a busy card
+    #     hides four free regions. Each resource is now classified, tracked and
+    #     reported on its own, and each is gated on ITS OWN readability rather
+    #     than on the aggregate's: a known-idle CPU stays reportable while
+    #     rocm-smi is unreadable, which the conjunction swallowed as "unknown".
+    #   * RULE 3, unchanged — idle hardware with NOTHING QUEUED FOR IT is a
+    #     well-run night. So a persistent per-resource idle is ESCALATED only
+    #     while compute-gated READY rows wait, and is merely OBSERVED otherwise.
+    #     Together the two are exactly the standing operator rule: idle compute
+    #     WITH compute-gated work queued is the reportable condition.
+    #
+    # Tracked through fw_track/fw_is_on, not through raw counters, so these keys
+    # get the same symmetric hysteresis and the same emit-once clear sweep as
+    # every other alarm — strictly more than the counters they replace.
+    if [ "$queue_ok" = "1" ]; then
+        fw_resource_idle_plane gpu-idle-with-queued-work GPU-IDLE "$gpu_state" \
+            "GPU ${gpu}% / VRAM ${vram}%" \
+            "dispatch the gated rows onto the GPU or grant a compute window"
+        fw_resource_idle_plane cpu-idle-with-queued-work CPU-IDLE "$cpu_state" \
+            "${free} of ${total} CPU regions free" \
+            "dispatch the gated rows onto the free CPU regions or grant a compute window"
+        want_keys="${want_keys}${FW_KEYS_WANT}"
+        eligible_keys="${eligible_keys}${FW_KEYS_ELIGIBLE}"
     fi
 
     # ---- 4. QUEUE-AGING, per refusal class ------------------------------

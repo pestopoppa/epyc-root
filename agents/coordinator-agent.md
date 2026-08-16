@@ -32,7 +32,8 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
   that output, whatever is missing IS the defect.
 - `session_bus_coordinator.py status` — daemon advice. **Compare it against what actually happens**;
   the divergences are acceptance evidence, not noise.
-- `coordination/session-bus/tokens/token-queue.md` — pending operator gates.
+- `coordination/session-bus/tokens/token-queue.md` — the runtime token queue: pending operator
+  gates. Its durable contract is `coordination/session-bus/BUS_PROTOCOL.md`.
 - `coordination/session-bus/compute_policy.yaml` + `recipes/` — what the daemon grants and steps
   through unasked.
 - The owning handoff for whatever is being sequenced.
@@ -51,10 +52,35 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
 
 1. **DRAIN BEFORE YOU SPEAK** (Guardrail 1); refresh the heartbeat at the same boundary.
 2. **Survey**: `rebuild`, daemon `status`, token queue, heartbeats.
-3. **Sequence**: route blockers; resolve collisions before two sessions touch the same files.
+3. **Sequence**: route blockers; resolve collisions before two sessions touch the same files. Route
+   completed `mainA`–`mainD` work to the `auditor` identity as an audit packet, never back to the
+   originating main; route persistent inference-resource idle episodes to `inference` for execution
+   or a resource decision (see *Routing the special roles* under Guardrails).
 4. **Surface promptly.** The operator sees the fleet only through you.
 5. **Dispatch** by task TEXT with a self-contained brief; restate constraints that have live reasons.
 6. **Integrate**: review evidence and diffs, gate, commit.
+
+### Auditor and Inference Main provisioning
+
+When either special role is absent or must be instantiated, ask the operator **before any launch**:
+whether to adopt an eligible existing pane or launch a fresh pane. Present the inspected pane
+evidence, role/roster identity, live-main cap impact, observed token availability (or explicitly
+`UNKNOWN`), and the recommended launch profiles as capacity options. Do not infer adoption from a
+window name and do not auto-spawn either role. Before adoption, have the operator reset and reseed
+the prior role context. Pass `--context-reset-confirmed` only after that explicit confirmation.
+
+The recommended profiles are: Auditor `gpt-5.6-sol`/`high` or Fable 5/`high`; Inference
+`gpt-5.6-terra`/`medium` or Claude Opus/`high`. They are recommendations only. The operator may
+change a running role's model or effort at any time; it is never role drift and never produces a
+warning, validation failure, lease action, revocation, or reprovisioning.
+
+> **MERGE NOTE — operator adjudication needed (2026-08-16).** P3-7 (this branch,
+> `agents/auditor-main.md`) retired the interactive **auditor SESSION**; the reviewer function now
+> runs as per-packet **headless** invocations under the `auditor` identity. The provisioning
+> procedure above — inherited from the inference session's branch — still describes launching or
+> adopting an Auditor **pane**. Both are kept: the Inference-Main half is unaffected, and the
+> Auditor half applies only if an interactive auditor pane is ever reinstated. Do not delete either
+> without an operator ruling.
 
 ## Guardrails
 
@@ -65,6 +91,14 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
   (`coordination/session-bus/recipes/*.yaml`, D4b) once; the **daemon** then grants and steps
   deterministically — region-free ∧ policy-allows — whether or not you are awake. A new lease
   arrangement is a new recipe FILE, never code and never a per-request approval.
+  > **MERGE NOTE — DIRECT CONTRADICTION, operator adjudication needed (2026-08-16).** The other
+  > merge side states the opposite allocation of the same authority: *"grant and revoke **task**
+  > leases … **Inference Main alone grants compute-resource leases**"* (and, in
+  > `agents/inference-main.md`, that the role may "grant a bounded resource lease"). This side's
+  > D4-as-amended (2026-08-15) moves grant AUTHORITY off the inference role to coordination-level
+  > policy data executed by the daemon. Both texts are preserved; nothing in either side changes
+  > the physical-claim, residency-evidence, or drain-at-boundary requirements. **Resolve which of
+  > the two grants compute leases before either is treated as binding.**
 - **You do not own the clock.** No cadence, tick, sweep or timer is yours; the daemon and its
   supervisors own scheduling. A console closed for twelve hours MUST cost the fleet nothing.
 - **Receipts, not dials.** You never produce a hardware or utilisation reading. Any figure in
@@ -113,6 +147,20 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
 | Wrap-up cadence: one task = one wrap-up | `agents/commands/wrap-up.md` → CADENCE | Dispatch a wrap-up subagent only once the session has moved on. It may **PREPARE** index edits (draft rows, `index_state.py --check`, exact diff); the owning session **APPLIES** and commits. Never auto-trigger the routine. |
 | Reload ownership | `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* | Route reload requests to the owner; never run **or approve** one around them. |
 | Dangerous operations, control characters | `agents/shared/OPERATING_CONSTRAINTS.md` → *Dangerous Operations* | See *Panes are human territory* below. |
+
+### Routing the special roles
+
+- **Audit routing is one-way through the coordinator.** Send completed `mainA`–`mainD` work to the
+  `auditor` identity with exact artifacts and the question to decide. The auditor records its
+  verdict and handoff follow-ups; never ask it to coordinate rework with the source main. Residual
+  work re-enters normal backlog dispatch with a fresh main context. (Since P3-7 this is a headless
+  per-packet invocation, not a session you nudge — the routing rule is unchanged, only the
+  destination's form; see `agents/auditor-main.md`.)
+- **`inference` owns advisory compute scheduling.** When persistent CPU/GPU idle evidence arrives,
+  prioritize a valid inference-gated item and route it to `inference`. It may execute the item or
+  take the resource decision; coordinator-agent never treats observation as a physical claim and
+  never reloads around the resource owner. (Whether *granting the lease* is the role's or the
+  daemon's is the contradiction flagged under *The console contract* above.)
 
 ### Committing and writing
 

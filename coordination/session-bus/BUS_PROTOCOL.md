@@ -115,6 +115,60 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
     gate and the `hardware_backfill.py` "only wedge into a gap the owner released" contract
     are the execution-side instruments of this same ownership.
 
+    > **MERGE NOTE — operator adjudication needed (2026-08-16).** This rule and rules 12–13 below
+    > place compute-grant authority with the `inference` main. `agents/coordinator-agent.md` →
+    > *The console contract (D4 as amended, 2026-08-15)* states the opposite: compute is owned at
+    > the coordination level as policy data (`compute_policy.yaml`) and the **daemon** grants
+    > deterministically. Both texts are preserved here; **decide which holds before treating
+    > either as binding.** Note that the schema carries BOTH wire vocabularies — the
+    > `compute-request`/`-grant`/`-deny` triple above and the `resource-lease-*` lifecycle below —
+    > so the ambiguity is in the doctrine, not in the transport.
+
+12. **SPECIAL ROLE ROUTING IS EXPLICIT.** The audit role is excluded from generic backlog
+    scheduling and accepts only a coordinator-routed audit packet for completed `mainA`–`mainD`
+    work. Its verdict never directly assigns or messages the source main; handoff follow-ups
+    return through coordinator dispatch. Inference Main owns advisory resource scheduling for
+    inference-gated work. A typed resource lease is distinct from a task assignment and from the
+    physical claim; model and effort are never part of either role's identity or lease validity.
+    (Since P3-7 the audit role is a headless per-packet invocation under the `auditor` identity
+    rather than an interactive session — `agents/auditor-main.md`. The routing rule is unchanged.)
+
+13. **PERSISTENT IDLE IS ROUTING INPUT.** `fleet_watch` supplies the persistence-gated CPU/GPU
+    receipt; coordinator-agent supplies priority and routing; Inference Main supplies the execute
+    or lease decision. None may replace the others or infer a physical claim from observation.
+
+### Audit and compute-resource wire contracts
+
+- A successful `task-complete` from `mainA`–`mainD` deterministically creates one linked
+  `audit-request`, keyed by source task plus completion-message id. `role_rollout.audit_completion`
+  selects the default and is `shadow`: the source keeps its existing terminal semantics while audit
+  coverage is measured. Each audit row captures that choice in immutable `audit_policy` plus an
+  `audit_question`, so later config changes cannot alter work already sent for review. `required`
+  changes the source to `DONE_PENDING_AUDIT` until an `audit-verdict` of
+  `accept`, `accept-with-followups`, `needs-rework`, or `blocked-evidence` is transcribed. Verdicts
+  address coordinator-agent only; the original main is provenance, never an assignee or CC.
+- Compute-resource messages are `resource-lease-request`, `-grant`, `-decline`, `-activate`,
+  `-renew`, `-revoke-request`, `-draining`, `-release`, `-cancel`, and `-expire`. The reconstructible
+  lifecycle is `REQUESTED → RESERVED → ACTIVE → DRAINING → RELEASED`, with terminal alternatives
+  `DECLINED`, `CANCELLED`, and `EXPIRED`. Only `inference` grants, renews, declines, or expires a
+  resource lease. Coordinator-agent may request cooperative revocation; it cannot grant one.
+  (Subject to the merge note under rule 11.)
+- Every compute-resource event is addressed/actionable (`assignee == to`). Requests and grants name
+  exact CPU regions and/or GPU devices and the finite task batch. A CPU+GPU request is atomic.
+  Activation requires provider-qualified physical claim-open receipts (`region-lock` for CPU and
+  the configured device claim for GPU); release requires matching claim-close receipts. An
+  unactivated reservation may expire. An active lease must use revoke, drain, and release, so an
+  expiry never steals a live physical claim. The current config disables delegated GPU grants until
+  a general GPU claim provider is selected and enabled.
+- `role_rollout.resource_leases: observe` records and routes this protocol without changing task
+  admission. `enforce` requires a non-Inference executor to hold a matching live Inference-issued
+  reservation before an inference-gated task can be assigned. The physical claim remains a second,
+  separate prerequisite before execution.
+- `compute-idle` carries the watcher receipt path and exact receipt line, separately for `cpu` and
+  `gpu`. One message is emitted per persistence episode. `persistent_idle_routing: observe` reports
+  to coordinator-agent; `route` additionally assigns the episode to Inference Main for an execute,
+  lease, or queue-empty disposition.
+
 ## Standing instructions change under running sessions
 
 An agent's instruction set is loaded at session start. Editing `CLAUDE.md` / `AGENTS.md` therefore
@@ -455,6 +509,39 @@ which has neither marker — i.e. a ratification that was printed at a human but
 script declares `BUS-GATE` today, so the check emits nothing; adopting the convention is an
 operator decision, and without it the join has no ground truth (an earlier receipt-less attempt
 mis-flagged most of the scripts it scanned — appendix).
+
+## Typed checkpoint, audit, integration, and wrap lifecycle (RTG-51)
+
+The JSON schema is the executable wire contract for these kinds; their payloads are closed objects
+(`additionalProperties: false`). A worker main sends one `task-checkpoint` to
+`coordinator-agent` at a task boundary. Its `boundary_id` is the worker's idempotence key and the
+message names the exact queue task text/spec reference, lane branch and remote-tracking ref, pushed
+commit, committed per-agent progress shard, handoff/artifact paths, actual changed paths, checkbox
+transition, validation receipts, and next-context classification. `blocked` and `partial` add typed
+blocker evidence; `partial` is restricted to `pre-reboot`.
+
+At `assign` authority the daemon admits the receipt fail-closed. It checks the roster author and
+queue owner, exact task identity, `lane/<agent>` and `origin/lane/<agent>` identity, SHA reachability,
+exact commit path equality, worker-owned surfaces, and the committed progress/handoff evidence.
+Invalid receipts are quarantined as defects and never create audit or integration state. A valid
+receipt moves the source to `DONE_PENDING_AUDIT` and creates exactly one deterministic audit row.
+When a linked legacy `task-complete` exists, its message id is the shared correlation key, so the
+old completion path cannot create a second audit.
+
+The daemon sends the Auditor a typed `audit-request`; only `auditor` may return the linked
+`audit-verdict`, and the verdict must repeat the source task, correlation, and audited SHA. Only
+`accept` and `accept-with-followups` produce `integration_state: ready` and a typed
+`checkpoint-integration-ready` notice. `needs-rework` returns the source to ordinary
+`STALE_REQUEUED` Coordinator routing. `blocked-evidence` leaves the source pending and sends the
+worker an `evidence-only` audit request: it asks for missing proof, never implementation rework.
+All notices are deduped by correlation/checkpoint identity, so replay and daemon restart are safe.
+
+`wrapup-request` is Coordinator-to-Auditor and names a cutoff, synchronization mode, included
+checkpoint ids, and integrated main SHA. `wrapup-complete` is Auditor-to-Coordinator and records the
+included/excluded boundaries, source/promoted SHAs, generated artifacts, validations, wiki result,
+and serialized lease operation. Those message kinds establish authority and durable linkage here;
+the wrap implementation remains separately staged. (Since P3-7 the `auditor` end of these kinds is a
+headless per-packet invocation, not an interactive session; the wire contract is unchanged.)
 
 ## Appendix — incident record (not instructions)
 

@@ -306,6 +306,12 @@ to fan out*). Confirmed by sweep on 2026-08-16: the eight persona files are arch
 holds which role. `agents/README.md` → Model Routing (Task-Based) is model-tier-vs-task-difficulty
 routing, **not** the anti-pattern, and stays.
 
+> **MERGE NOTE (2026-08-16):** the role set quoted above is no longer exhaustive. The other merge
+> side added `inference-main` (live in `config.yaml` and read by `session_bus_coordinator.py`) and
+> `auditor-main` (recorded on the contested `auditor` row). The RULE — decompose by context
+> boundary, never by persona — is unaffected; only the enumeration is stale. Reconcile the list
+> when the auditor-row conflict in `coordination/session-bus/config.yaml` is adjudicated.
+
 ## Session Lifecycle
 
 Canonical contract — wrap-up cadence, `/clear`, close, pre-reboot, the idle-main and
