@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "coordination/evals/fixtures/fixture.schema.json",
+  "title": "Labeled eval fixture",
+  "description": "One labeled example for one classifier/decision. Fixtures are the ONLY sanctioned response to a new incident or edge case under the prose-rule moratorium (see ../README.md): append a labeled example here, never a new rule or conjunct to BUS_PROTOCOL.md or the agent files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "decision",
+    "input",
+    "label",
+    "label_provenance",
+    "evidence_ref",
+    "created",
+    "notes"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique identifier. Convention: <decision>-NNN. Never reused, never renumbered — example packs and promotion records cite it.",
+      "pattern": "^[a-z0-9_]+-[0-9]{3}$"
+    },
+    "decision": {
+      "type": "string",
+      "description": "Which classifier / choke-point decision this example trains. One ladder per decision; a fixture belongs to exactly one.",
+      "pattern": "^[a-z0-9_]+$",
+      "examples": ["premise_screener", "liveness_classifier", "escalation_classifier"]
+    },
+    "input": {
+      "type": "object",
+      "description": "The evidence bundle as the classifier would actually see it at decision time. MUST NOT contain the answer, the verdict, or any hindsight the classifier would not have. If a field would not be available at the moment of the call, it does not belong here.",
+      "additionalProperties": true,
+      "required": ["presented"],
+      "properties": {
+        "presented": {
+          "type": "string",
+          "description": "The primary text put in front of the classifier — for premise_screener, the backlog row text verbatim (the task TEXT is the identity; file.md:LINE is only a hint)."
+        },
+        "asserted_state": {
+          "type": "string",
+          "description": "The state of the world the input asserts or presupposes — the premise whose truth is being screened."
+        },
+        "source_hint": {
+          "type": "string",
+          "description": "Non-authoritative locator (file:line, handoff id). Advisory only; the text is the identity."
+        },
+        "context": {
+          "type": "string",
+          "description": "Any additional bundle content available at decision time."
+        }
+      }
+    },
+    "label": {
+      "type": "string",
+      "description": "Ground-truth verdict for this decision's forced-choice ladder. For premise_screener: still-needed | stale | UNKNOWN.",
+      "minLength": 1
+    },
+    "label_provenance": {
+      "type": "string",
+      "description": "WHERE THE LABEL CAME FROM. Mandatory. Only 'primary-artifact' and 'operator' labels may gate a classifier promotion; 'ledger-narrative' fixtures are advisory/few-shot only, because the project's own audit found the ledger graded itself and is the least trustworthy possible source.",
+      "enum": ["primary-artifact", "operator", "ledger-narrative"]
+    },
+    "evidence_ref": {
+      "type": "string",
+      "description": "Pointer to the artifact that PROVES the label: repo-relative path, optionally :LINE or :LINE-LINE, and/or a commit SHA. For label_provenance 'operator', the operator record (message id, ratification artifact). Never a restatement of the label.",
+      "minLength": 1
+    },
+    "created": {
+      "type": "string",
+      "description": "ISO-8601 date (YYYY-MM-DD) or timestamp the fixture was labeled.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}"
+    },
+    "notes": {
+      "type": "string",
+      "description": "What makes this example discriminative — the feature a classifier must learn from it. For ledger-narrative fixtures, MUST state why no primary artifact was reachable."
+    },
+    "promotion_gating": {
+      "type": "boolean",
+      "description": "Whether this fixture may gate a classifier promotion. DEFAULTS TO TRUE when absent — opting out is explicit and fails closed. A promotion-gating fixture MUST NOT have label_provenance 'ledger-narrative', so every ledger-narrative fixture must carry \"promotion_gating\": false; validate_fixtures.py fails otherwise. Defaulting ledger-narrative to non-gating was rejected: it would make the gate vacuous, firing only on fixtures whose author had already set the flag."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Optional free-form grouping (incident class, failure mode).",
+      "items": {"type": "string"}
+    }
+  }
+}

@@ -1,0 +1,195 @@
+[
+  {
+    "id": "premise_screener-001",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-7 Bus runtime off-tree (D5). Scope: RUNTIME DATA ONLY — `queue.jsonl`, `advisory.jsonl`, `claims/`, `tokens/`, `inbox/`, `outbox/`, `cursors/`, `heartbeats/`, and the `*_state.json` files move to `/mnt/raid0/llm/bus-runtime/`; tracked policy files (`config.yaml`, `BUS_PROTOCOL.md`, `session_bus.schema.json`, `human_only_paths.yaml`) STAY tracked in place.",
+      "asserted_state": "The bus runtime data still lives inside the git tree at coordination/session-bus/ and has not been relocated behind symlinks.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:90",
+      "context": "Row is an unticked checkbox in an ACTIVE handoff."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "coordination/session-bus/queue.jsonl — `test -L` reports REGULAR_FILE, not a symlink; /mnt/raid0/llm/bus-runtime/ does not exist",
+    "created": "2026-08-16",
+    "notes": "The cheapest possible artifact check settles this one: the move either happened (path is a symlink) or it did not. Teaches that a premise asserting a FILESYSTEM SHAPE is decidable in one probe, and the screener should reach for that probe rather than reason about the row's plausibility.",
+    "tags": ["filesystem-shape", "clean-still-needed"]
+  },
+  {
+    "id": "premise_screener-002",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-0 Copy the plan of record into `docs/design/loop-owned-fleet.html`; future amendments edit the in-repo copy first, republish to the artifact second.",
+      "asserted_state": "The plan of record is not yet in-repo and versioned; the only copy lives outside the repository.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:70",
+      "context": "The row's stated purpose is 'so the plan of record is in-repo and versioned'."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "docs/design/loop-owned-fleet.html — present on disk (47017 B) but `git ls-files --error-unmatch` fails: UNTRACKED",
+    "created": "2026-08-16",
+    "notes": "THE TRAP FIXTURE. A filesystem check says the file exists, so a naive screener calls the row stale. But the row's premise is 'in-repo and VERSIONED', and an untracked file is byte-identical to a committed one on disk while satisfying none of it. Resolve cited deliverables against GIT, not the filesystem. Discriminating feature: read the row's PURPOSE clause, then pick the probe that tests the purpose.",
+    "tags": ["untracked-vs-tracked", "trap", "purpose-clause"]
+  },
+  {
+    "id": "premise_screener-003",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-4 Fix `backfill_supervisor.sh` undefined `health_ok` (loop mode always takes the failure branch); add a test that exercises `loop` — THE consumer, not A consumer.",
+      "asserted_state": "`health_ok` is undefined in backfill_supervisor.sh, and no test exercises the script's loop mode.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:84",
+      "context": "Row has two conjuncts joined by a semicolon."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "scripts/coordination/backfill_supervisor.sh — WORKING TREE has `health_ok() {` at :204 (uncommitted repair, +130 lines, another session's in-flight work); `git show HEAD:scripts/coordination/backfill_supervisor.sh` has NO definition, only calls at :300 and :306 and a comment at :82, so the defect is fully present in git. No file under scripts/coordination/tests/ or /workspace/tests references `backfill_supervisor` (grep returns nothing) in either state.",
+    "created": "2026-08-16",
+    "notes": "TWO LESSONS, and it needs both to land on still-needed. (1) PARTIAL SATISFACTION IS NOT STALE: even granting the working-tree repair, conjunct two — a test exercising loop mode — is untouched, and a screener that stops at the first satisfied clause emits `stale` and destroys the surviving work. (2) WORKING TREE IS NOT GIT: the repair exists only as another session's uncommitted diff, so a screener reading the checked-out file sees a fix that `git show HEAD:` does not have. Reading the working tree is how a check silently targets state no one else can see. Discriminating feature: enumerate every conjunct, and settle each against HEAD, naming the state you read.",
+    "tags": ["multi-conjunct", "partial-satisfaction", "working-tree-vs-git", "trap"]
+  },
+  {
+    "id": "premise_screener-004",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "DP-3 (MED): `bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not fixed. `STALE_SRC_SKEW_S=5` (`scripts/coordination/bus_supervisor.sh:362`) exists because `ps -p <pid> -o etimes=` reports WHOLE seconds ... The real fix removes the tolerance rather than tuning it — take the start time at sub-second resolution.",
+      "asserted_state": "bus_supervisor.sh still computes staleness from source mtime versus process start time, tolerated by a STALE_SRC_SKEW_S=5 constant at line 362.",
+      "source_hint": "handoffs/active/session-bus-thin-dispatcher.md:2758",
+      "context": "Row is an unticked checkbox in an ACTIVE handoff (RTG-34)."
+    },
+    "label": "stale",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "scripts/coordination/bus_supervisor.sh:331-335 (`H-4 (2026-08-12). THE MTIME PREDICATE IS GONE ON PURPOSE ... All three are deleted.`); line 362 is now `git rev-parse HEAD:scripts/coordination`; commit bc6dc77f 'bus_supervisor: H-4 — replace the mtime stale-source predicate with a deploy marker'",
+    "created": "2026-08-16",
+    "notes": "SECOND TRAP, opposite polarity to -002. `grep STALE_SRC_SKEW_S scripts/coordination/bus_supervisor.sh` still HITS — at line 334, inside the comment that documents the constant's deletion. A grep-presence screener therefore says still-needed; the row is stale. The mtime predicate the row wants removed was removed wholesale by bc6dc77f, and the cited line 362 now holds unrelated code. Discriminating feature: an identifier surviving in a comment is not the identifier being live; check the cited LINE, and read what it says.",
+    "tags": ["grep-presence-trap", "anchor-rot", "clean-stale"]
+  },
+  {
+    "id": "premise_screener-005",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in full every tick. Filed 2026-08-11 by `mainD`, half fixed. C34's dedupe stopped the growth (~20k rows/hour) but nothing addressed the ledger already on disk, and `already_flagged` in `relay_outbox_messages` reads it entirely, every 45s, on the delivery hot path.",
+      "asserted_state": "advisory.jsonl is approximately 1,028 MiB and holds 2,986,358 rows, and the daemon re-reads all of it every 45s tick.",
+      "source_hint": "handoffs/active/session-bus-thin-dispatcher.md:1884",
+      "context": "Parent checkbox unticked; a nested sub-checkbox reads '- [x] The tick-path read. ✅ 2026-08-11 — mainD, commit 2e01d5dd.'"
+    },
+    "label": "stale",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "coordination/session-bus/advisory.jsonl — 68,014,861 bytes (64.9 MiB), 145,058 lines, measured 2026-08-16; asserted 1,028 MiB / 2,986,358 rows. Tick-path conjunct closed by commit 2e01d5dd per the nested ticked sub-box at handoffs/active/session-bus-thin-dispatcher.md:1893",
+    "created": "2026-08-16",
+    "notes": "The premise is a QUANTITY, and the quantity is wrong by ~16x in bytes and ~20x in rows; the tick-path half carries its own ticked sub-box and a commit. Both conjuncts are dead, so the row is stale even though its parent box is open. Discriminating feature: when a row asserts a NUMBER, go measure the number — and read the nested sub-boxes, because a parent box left open above ticked children is a bookkeeping artifact, not a live premise.",
+    "tags": ["quantitative-premise", "nested-checkboxes", "clean-stale"]
+  },
+  {
+    "id": "premise_screener-006",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-8 `.orphan` worktree disposal (D7): archive tarball → verify each orphan tip is contained in a lane branch (push unique commits first if not) → delete by explicit path list.",
+      "asserted_state": "`.orphan` worktrees still exist on disk and have not been archived or deleted.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:99",
+      "context": "A sibling row at :207 states 'its `.orphan` backup was handled in P0-8', presupposing completion."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "/mnt/raid0/llm/worktrees/mains/ — five extant directories: mainA.orphan-20260812T1035Z, mainB.orphan-20260812T1035Z, mainC.orphan-20260812T1035Z, mainD.orphan-20260812T1035Z, auditor.orphan-20260812T1035Z",
+    "created": "2026-08-16",
+    "notes": "Two path lessons. First, a SIBLING ROW'S PRESUPPOSITION ('was handled in P0-8') is not evidence — prose inside the same document is the weakest witness available and here it is simply wrong. Second, the obvious probe `ls worktrees/*.orphan*` from the repo root returns nothing, because the worktree root is /mnt/raid0/llm/worktrees/, not /workspace/worktrees/. A no-match on the wrong path is not an absence. Discriminating feature: an absence claim needs the RIGHT search root before it means anything.",
+    "tags": ["absence-claim", "wrong-search-root", "sibling-presupposition"]
+  },
+  {
+    "id": "premise_screener-007",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-3 Ghost-state sweep (D7, operator-signed): enumerate the 14 INFRA_BLOCKED rows + 11 dead-owner CLAIMED/RUNNING/STALE_REQUEUED rows and claims; verify owner death via process table; present the list; on signature, release + reset to READY (or CANCELLED where the premise died).",
+      "asserted_state": "The queue currently holds 14 INFRA_BLOCKED rows and 11 dead-owner rows in CLAIMED/RUNNING/STALE_REQUEUED, none of them yet released.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:79",
+      "context": "Row asserts two exact counts."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "coordination/session-bus/queue.jsonl folded to latest record per task_id (38 distinct tasks): INFRA_BLOCKED=14; CLAIMED=4 + RUNNING=1 + STALE_REQUEUED=6 = 11. Both asserted counts hold exactly.",
+    "created": "2026-08-16",
+    "notes": "The positive control for -005. Same class of premise — an asserted count — but here measurement CONFIRMS it, to the row. Included so the pack cannot be satisfied by the heuristic 'numbers in old rows are always stale'. Note the fold: queue.jsonl is append-only and the 235 raw lines must be reduced to the latest record per task_id before counting, or every count is wrong. Discriminating feature: measure, and measure with the right reduction; do not infer from age.",
+    "tags": ["quantitative-premise", "positive-control", "append-only-fold"]
+  },
+  {
+    "id": "premise_screener-008",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P2-10 Belief-kernel wiring (CLAUDE.md standing rule — file IMMEDIATELY, not when ready): the completion reports (`subagents_spawned`, tokens/row), audit verdicts, and the duty-cycle / self-repair metrics are new measurement producers. Add the source row to `scripts/vidya/adapters/README.md` and the wiring task to `handoffs/active/vidya-belief-substrate-program.md`.",
+      "asserted_state": "Neither the adapter source row nor the wiring task exists yet for the worker-pool measurement producers.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:177",
+      "context": "Row names two specific target files and the content each must gain."
+    },
+    "label": "still-needed",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "scripts/vidya/adapters/README.md — grep for worker/subagents_spawned/completion report/self-repair returns no match across its 60 table rows; handoffs/active/vidya-belief-substrate-program.md — grep for worker_runner/loop-owned/completion report returns no match",
+    "created": "2026-08-16",
+    "notes": "The row names its own acceptance test: two files, two additions. Both greps come back empty, so the premise stands. Discriminating feature: when a row states WHERE the change lands, the screen is a lookup in those files, not a judgment about whether the work sounds done. Also note the negative was taken over several distinct keys, not one spelling — a single-key miss is not an absence.",
+    "tags": ["named-target-files", "multi-key-negative", "clean-still-needed"]
+  },
+  {
+    "id": "premise_screener-009",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P0-5 Verify the H-4 SHA deploy-marker predicate is what the RUNNING bus_supervisor executes (`ps -o lstart` vs commit time of `bc6dc77f`); restart if stale.",
+      "asserted_state": "The running bus_supervisor process may be executing code predating the H-4 deploy-marker predicate.",
+      "source_hint": "handoffs/active/loop-owned-fleet-implementation.md:86",
+      "context": "The row's subject is a live process, not a file."
+    },
+    "label": "UNKNOWN",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "scripts/coordination/bus_supervisor.sh:331-368 (H-4 deploy-marker predicate present in source) and commit bc6dc77f — these settle the SOURCE only; no artifact in the repo records the start time or loaded code of the running process",
+    "created": "2026-08-16",
+    "notes": "THE UNKNOWN EXEMPLAR, and the reason the ladder has three rungs. Artifacts fully settle that the predicate exists in source, and that is not what the row asks: it asks what a PROCESS is currently executing, which no file can answer. The correct output is UNKNOWN, which parks the row for runtime observation — not `stale` (the source check tempts exactly that) and not `still-needed` (unfounded). Discriminating feature: when the premise's subject is runtime state, artifact evidence is off-target however abundant it is, and a confident label here is the failure mode.",
+    "tags": ["runtime-premise", "unknown-exemplar", "off-target-evidence"]
+  },
+  {
+    "id": "premise_screener-010",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "A-7 — Rule on the durability gap, which gates this entire table. The operator writes to no bus file; the corrections that matter most exist only in conversation; the bus was wiped at 08:20Z. Half the recurrence counts in this file are the coordinator's own tally of its own errors, which is the least trustworthy possible source. Is a durable correction ledger the fix, or does that just add a file nobody reads?",
+      "asserted_state": "The recurrence counts in the failure-modes table are still self-tallied and unverified, so the table's grades remain ungrounded.",
+      "source_hint": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:465",
+      "context": "Row is an unticked checkbox in an ACTIVE handoff (RTG-48)."
+    },
+    "label": "still-needed",
+    "label_provenance": "ledger-narrative",
+    "evidence_ref": "handoffs/active/coordinator-role-failure-modes-and-refactor.md:465-470 (the row itself); docs/reviews/coordinator-role-audit-20260812.md:521-525 (the structural account)",
+    "created": "2026-08-16",
+    "notes": "MARKED ledger-narrative BECAUSE NO PRIMARY ARTIFACT IS REACHABLE, and the reason is the row's own subject. The premise is a claim about the trustworthiness of a ledger's self-grading; the only witnesses are that ledger and the audit of it. The audit states why this is structural rather than an oversight: the operator writes 0 of 839 bus rows, so every operator correction exists only in one session's tmux context and 'its only durable form is whatever an agent chooses to transcribe — and the transcriber is the party the correction indicts'. Under the rule in ../README.md this fixture may seed the few-shot pack but MUST NOT gate a promotion; validate_fixtures.py enforces that via promotion_gating. It becomes gate-eligible only when re-labeled by the operator or against a durable correction record — which is what A-7 is asking for.",
+    "promotion_gating": false,
+    "tags": ["ledger-narrative", "self-grading", "unreachable-primary-artifact"]
+  },
+  {
+    "id": "premise_screener-011",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — 403 lines, **zero runtime importers**, and now factually wrong about the machine. Confirm the two test-only references (`tests/unit/test_dynamic_stack.py:177`, `tests/unit/test_stack_templates_v2.py:234`) and delete.",
+      "asserted_state": "quarter_scheduler.py has no runtime importers, is factually wrong about the current machine topology, and is referenced from exactly two test sites — so it is safe to delete.",
+      "source_hint": "handoffs/active/numa-topology-cutover-resume-20260730.md:362",
+      "context": "The row prescribes a DESTRUCTIVE action (delete 403 lines) and supplies its own confirmation checklist."
+    },
+    "label": "stale",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "repos/epyc-orchestrator/src/backends/round_robin.py:119 (`# DS-6: Dynamic instance management for QuarterScheduler`, directly above `add_instance()`); repos/epyc-orchestrator/src/backends/concurrency_aware.py:1718-1730 (`quarter_instances`/`quarter_active`/`idle_quarters`/`quarter_requests` telemetry); repos/epyc-orchestrator/src/config/stack_migration.py:14-15 (hot-swap `depends on the DS-6 QuarterScheduler (NIB2-18)`); repos/epyc-orchestrator/tests/unit/test_stack_templates_v2.py:322 is the real anchor (`assert decision[\"ds6_quarter_scheduler\"] == \"parked_until_static_prewarm_gap\"`), NOT the cited :234 which is an unrelated docstring; repos/epyc-orchestrator/scripts/server/quarter_scheduler.py:3 (`STATUS: **PARKED — NOT DEAD CODE. DO NOT DELETE.**`, banner added 2026-08-12)",
+    "created": "2026-08-16",
+    "notes": "THE HIGHEST-STAKES FIXTURE IN THE CORPUS: the prescribed action is destructive and a wrong `still-needed` here deletes working code. Three checkable claims, and the screener must not stop at the first. (1) 'zero runtime importers' is TRUE — `grep --include=*.py` finds only test imports — and IRRELEVANT, because the production coupling runs through a purpose-built DS-6 API at three live sites, not through an import of the module name. (2) 'two test-only references' is FALSE. (3) 'factually wrong about the machine' is FALSE: quarters are unused since W1, which is parked, not wrong. And the row's OWN supporting citation has rotted — :234 is an unrelated docstring, while the real assertion at :322 pins DS-7 governance metadata, so 'repairing' the anchor would break a contract. Discriminating features: a true-but-irrelevant metric can carry a false conclusion; coupling is not always an import; and a row that supplies its own confirmation checklist is not thereby confirmed. Adjudicated by orchestrator commit 1fe3b57e, additive only (+83/-0).",
+    "tags": ["destructive-action", "true-but-irrelevant-metric", "rotted-self-citation", "api-not-import-coupling", "clean-stale"]
+  },
+  {
+    "id": "premise_screener-012",
+    "decision": "premise_screener",
+    "input": {
+      "presented": "P1-1. Generalise the `placement_policy` enum vocabulary — it is quarter-shaped. `src/scheduling/placement_policy.py:35` declares `BURST_PREFER_QUARTERS`, and `SOLO_PREFER_FULL`'s docstring says concurrent requests \"spill to NUMA-disjoint quarters\". On a machine with no quarters both options mean the same non-existent thing. Rename to shape-agnostic (`BURST_PREFER_SPLIT`) with an **alias map** for the existing `\"burst_prefer_quarters\"` strings already sitting in configs. **Note while you are in there:** `_coerce` returns `None` on an unknown string and the caller substitutes `DEFAULT_PLACEMENT_POLICY` — so a typo silently degrades to a **different policy** rather than erroring. Fix that too, or the alias map hides its own failures.",
+      "asserted_state": "The enum still declares BURST_PREFER_QUARTERS, there is no alias map for the legacy config strings, and _coerce still returns None on an unknown string so a typo silently degrades to the default policy.",
+      "source_hint": "handoffs/active/numa-topology-cutover-resume-20260730.md:303",
+      "context": "A specific, well-cited, three-part row written 2026-07-30."
+    },
+    "label": "stale",
+    "label_provenance": "primary-artifact",
+    "evidence_ref": "repos/epyc-orchestrator/src/scheduling/placement_policy.py:67 (`BURST_PREFER_SPLIT = \"burst_prefer_split\"`; no BURST_PREFER_QUARTERS member remains); :112 (`\"burst_prefer_quarters\": RolePlacementPolicy.BURST_PREFER_SPLIT,` — the alias map); :144 (`raise ValueError(` inside `_coerce`, so an unknown string no longer degrades silently). All three landed in orchestrator commit 270cf9ea, 2026-07-31.",
+    "created": "2026-08-16",
+    "notes": "ALL THREE conjuncts were satisfied ONE DAY after the row was written — the shortest-lived premise in the corpus. Nothing about the row's form signals it: it is specific, correctly cited at authoring time, technically sound, and names its own file and line. Only reading the named file settles it. Discriminating feature: recency is not freshness and quality is not liveness; a well-written row from last month is exactly as likely to be overtaken as a vague one, and the screener's job is the lookup, not an assessment of craftsmanship. Pairs with -007, where measurement confirms an equally specific row.",
+    "tags": ["shortest-lived-premise", "well-formed-but-stale", "recency-is-not-freshness", "clean-stale"]
+  }
+]
