@@ -193,3 +193,6 @@ logs/.current_session
 !coordination/session-bus/relay_state.json
 !coordination/session-bus/scheduling_recommendation_state.json
 !coordination/session-bus/stuck_state.json
+!coordination/session-bus/alarm_state.json
+!coordination/session-bus/alarms.jsonl
+!coordination/session-bus/retirements

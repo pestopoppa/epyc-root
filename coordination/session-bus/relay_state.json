@@ -75,7 +75,8 @@
       "msg-20260813T230335Z-118-coordinator-agent",
       "msg-20260816T101730Z-6-workerpool",
       "msg-20260816T102653Z-12-workerpool",
-      "msg-20260816T102807Z-15-workerpool"
+      "msg-20260816T102807Z-15-workerpool",
+      "msg-20260816T104549Z-18-workerpool"
     ],
     "codex-bus-tests": [],
     "coordinator-agent": [
@@ -308,7 +309,8 @@
       "msg-20260816T101953Z-10-workerpool",
       "msg-20260816T101953Z-9-workerpool",
       "msg-20260816T102653Z-13-workerpool",
-      "msg-20260816T102807Z-16-workerpool"
+      "msg-20260816T102807Z-16-workerpool",
+      "msg-20260816T104549Z-19-workerpool"
     ],
     "hardware-backfill": [
       "msg-20260813T194951Z-92-coordinator-agent"
@@ -1867,8 +1869,12 @@
     [
       "msg-20260816T102807Z-16-workerpool",
       "handler:intake_proposals"
+    ],
+    [
+      "msg-20260816T104549Z-19-workerpool",
+      "handler:intake_proposals"
     ]
   ],
   "schema_version": "session_bus.relay_state.v1",
-  "ts": "2026-08-16T10:44:09+00:00"
+  "ts": "2026-08-16T10:56:53+00:00"
 }
