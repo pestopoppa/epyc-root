@@ -366,3 +366,60 @@ Two rows the pool REFUSED to run matter as much as the four it ran: both parked 
 P4-1 (a 7-day observation; `fleet_metrics.py` is built and running).
 
 **Operator gates:** `artifacts/operator/loop-owned-fleet-operator-package-20260816.md`.
+
+---
+
+## Wrap-up findings, 2026-08-16 (operator cadence)
+
+Discovered while running the operator-invoked `/wrap-up`. Each item is done or filed;
+none is an "open item" restated as a question.
+
+- [x] **Four handoffs existed in BOTH `active/` and `completed/`, and `--check` was blind to
+  all four.** ✅ 2026-08-16 — `index_state.py --check` now carries a **SPLIT IDENTITY** pass
+  that exempts only a deliberate compatibility pointer (a body containing
+  `../completed/<name>`). Mutation-verified: reintroducing a duplicate produces exactly one
+  error. One duplicate mattered — `fable5-window2-findings-05` had been archived on 2026-08-13
+  while it still held a live go/no-go, so the *active* copy is the newer one and the completed
+  copy was renamed `-completed-through-2026-08-13.md` rather than the active one deleted.
+
+- [x] **A routine handoff prune rotted 151 wiki links, with every lint pass green.** ✅
+  2026-08-16 — `check_missing_crossrefs` runs handoff→wiki and accepts a basename found in
+  *either* `active/` or `completed/`, so moving a handoff between them is invisible to it, and
+  nothing resolved wiki→repo at all. Added lint pass 7 `wiki_link_targets`
+  (`.claude/skills/project-wiki/scripts/lint_wiki.py`), enabled in `wiki.yaml`. Dangling target
+  = ERROR, dangling anchor = WARNING. **Five mutations, all correct**: pass runs and is counted
+  by the reporter; broken target fires; broken anchor fires; a valid anchor does not; a path
+  inside backticks does not. The anchor check failed its own first mutation — the dedup key
+  ignored the anchor, so a plain link earlier in the page masked a broken anchor later — and
+  the key now includes it.
+
+- [x] **`/workspace/repos/` was empty — the documented symlinks were gone.** ✅ 2026-08-16 —
+  18 wiki links resolved only through it. Repaired with the idempotent
+  `scripts/clone-repos.sh` (previewed with `DRY_RUN=1` first: pure symlink creation, no
+  divergent clone to back up). Inode identity re-verified against `/mnt/raid0/llm/` per
+  CLAUDE.md. All 3183 relative wiki links now resolve; before this wrap-up, 151 did not.
+
+- [ ] **Find out what removed `repos/`.** The likeliest cause is the live `git clean` that
+  destroyed `retirements/` earlier today (see P0-7/P3-7 above), which would mean the same
+  event cost two things and only one was noticed. Cheap to check against the shell history and
+  the reflog; worth knowing, because the repair is idempotent but the *cause* is not fixed.
+
+### OP-11 — `main` cannot push, and the graph is the only thing left unreconciled
+
+`main` is 89 ahead / 111 behind `origin/main`, so `git push` will be rejected. **Never
+force-push it.** The content, however, is reconciled: measured 2026-08-16, **no file on
+`origin/main` is absent locally** (`git diff --name-status HEAD origin/main` yields zero `A`
+entries), the research plane is a strict superset (1150 local intake ids vs 1130 on origin,
+**zero** missing), and the residual per-file deltas were forward-ported individually.
+
+What is left is a *graph* problem, not a content problem, and recording it as a merge touches
+`scripts/coordination/**` — so **D9 gates it**. Options:
+
+| | Option | Cost | Risk |
+|---|---|---|---|
+| **a** | `git merge -s ours origin/main`, then push | one commit | Records origin as a parent while keeping our tree. Correct **only because** the per-file port already did the semantic merge with evidence. Nothing becomes unreachable: `refs/heads/lane/auditor` names the same tip on origin. |
+| b | Full `git merge origin/main` with manual resolution | ~78 conflicted files | Redoes by hand the work already done per-file, and invites a wrong pick on a loop-plane file that was deliberately rewritten. |
+| c | Leave diverged; push to a review branch | zero | `main` stays unpushable indefinitely, and every later session inherits the divergence. |
+
+**Recommendation: (a)**, and it needs a `D9-ack:` trailer. It is reversible until pushed —
+`git reset --hard` before the push undoes it completely.

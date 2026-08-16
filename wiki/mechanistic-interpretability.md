@@ -59,10 +59,10 @@ Qwen-Scope's **Section 8** identifies SAE features causally linked to **endless 
 - intake-523 — Does higher interpretability imply better utility? A Pairwise Analysis on Sparse Autoencoders (Wang, Hu, Wang, Zou, ICLR 2026, arxiv:2510.03659)
 - `research/deep-dives/qwen-scope-sae-suite.md` — six-correction skeptical re-read of intake-521
 - `research/deep-dives/sae-utility-falsification-axbench-wang2026.md` — combined deep-dive of intake-522 + intake-523, with two methodological gates extracted
-- `handoffs/active/qwen-scope-sae-toolkit.md` — coordination handoff with five-tier application priority order, storage map, license map
+- `handoffs/completed/qwen-scope-sae-toolkit.md` — coordination handoff with five-tier application priority order, storage map, license map
 - `handoffs/active/routing-intelligence.md` — SAE classifier as audit primitive (gated on G1 baselines)
 - `handoffs/active/per-request-reasoning-budget.md` — Section 8 repetition feature as stuck-state precursor signal
-- `handoffs/active/qwen36-production-upgrade.md` — Qwen3.5-35B-A3B SAE coverage as predecessor diagnostic
+- `handoffs/completed/qwen36-production-upgrade.md` — Qwen3.5-35B-A3B SAE coverage as predecessor diagnostic
 - `handoffs/active/eval-tower-verification.md` — Section 4 feature-coverage redundancy as candidate EV-8 work track
 - `handoffs/active/mathsmith-hc-formalizer-eval.md` — Section 4 framework for S4 test-suite construction
 - `handoffs/active/reasoning-compression.md` — Section 8 mechanism noted alongside Action 9 reasoning-length-alarm

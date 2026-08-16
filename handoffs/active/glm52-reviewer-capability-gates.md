@@ -91,7 +91,7 @@ H5 RM-3 screening, Ref external judge-of-judge, or any new reviewer candidate/re
 specific quality rationale. A0/A1/A3 and RM-2.fast are now evidence inputs, not future work.
 This is not a production
 cutover decision; it removes GLM-specific unchanged reruns from the critical path and leaves
-v7 promotion policy to [`v7-promotion.md`](v7-promotion.md).
+v7 promotion policy to [`v7-promotion.md`](../completed/v7-promotion.md).
 
 ## 2026-07-19 DIRECTIVE (operator) — test GLM quality on EXTERNAL ground-truth benchmarks, not hand-labeled corpora
 

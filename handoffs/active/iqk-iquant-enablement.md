@@ -6,7 +6,7 @@
 NEW-6, trellis gates, and the remaining riders below stay open.
 **Branch**: ~~`iqk/enable-iquants-v7-20260721` @ `f78ec18fe`, worktree `/mnt/raid0/llm/llama.cpp-iqk-iquants`~~ **superseded 2026-07-25** — the v8 branch re-implemented this as `b8ad9d292` (same 5-type whitelist + tests + IQ3_XXS small-shape NMSE guard) WITHOUT merging `f78ec18fe`; the worktree branch is historical after the v8 freeze.
 **Superseded branch**: `iqk/enable-iquants-20260721` @ `e06f5368f` (off the experimental tip, only 3 of 5 types) — do not use
-**Related**: [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md), [v7-promotion.md](v7-promotion.md), completed [iqk-port.md](../completed/iqk-port.md)
+**Related**: [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md), [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md), [v7-promotion.md](../completed/v7-promotion.md), completed [iqk-port.md](../completed/iqk-port.md)
 
 ---
 

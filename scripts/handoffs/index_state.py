@@ -373,6 +373,41 @@ def check(state: dict) -> list[str]:
             if d not in state["rows"]:
                 errs.append(f"BAD DEP: row {rid} depends on unknown id {d}")
 
+    # SAME FILENAME IN BOTH active/ AND completed/ (added 2026-08-16).
+    #
+    # Found by the operator, not by this checker: FOUR handoffs were sitting in
+    # both directories at once, and `--check` was blind to every one. The states
+    # it conflates are genuinely different — one copy is stale residue, another
+    # is a live handoff whose completed ledger kept the same name — but they all
+    # produce the same symptom: `handoff_paths()` resolves a row to the ACTIVE
+    # copy while a reader following a `completed/` link gets a different
+    # document, and neither knows the other exists.
+    #
+    # The legitimate shape is a POINTER STUB: an active file that exists only to
+    # link at its historical ledger. That is allowed, and detected by the link
+    # rather than by name, so a real duplicate cannot disguise itself as one.
+    active_dir = ACTIVE
+    completed_dir = REPO_ROOT / "handoffs" / "completed"
+    if active_dir.is_dir() and completed_dir.is_dir():
+        completed_names = {f.name for f in completed_dir.glob("*.md")}
+        for f in sorted(active_dir.glob("*.md")):
+            if f.name not in completed_names:
+                continue
+            try:
+                body = f.read_text(encoding="utf-8")
+            except OSError:
+                body = ""
+            points_at_ledger = f"../completed/{f.name}" in body
+            if points_at_ledger:
+                continue          # a deliberate compatibility pointer, not a duplicate
+            errs.append(
+                f"SPLIT IDENTITY: {f.name} exists in BOTH handoffs/active/ and "
+                f"handoffs/completed/. A row resolves to the active copy while a "
+                f"completed/ link reaches a different document. Either delete the "
+                f"stale copy, or rename the completed one to "
+                f"'{f.stem}-completed-through-YYYY-MM-DD.md' and link it from the "
+                f"active file's Completed Scope")
+
     if MASTER.exists():
         text = MASTER.read_text(encoding="utf-8")
         if BEGIN not in text:

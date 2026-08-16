@@ -1,9 +1,9 @@
 # Qwen3.8-27B — replace Qwen3.6-27B in production
 
-**Status**: ACTIVE — weights downloaded + header-verified 2026-08-14 (release day); load-smoke + throughput pending; quality gate declined.
+**Status**: ACTIVE — weights downloaded + header-verified 2026-08-14 (release day); download/smoke/MTP/throughput/architect-bench all done — **only the registry swap remains**.
 **Created**: 2026-08-14
 **Priority**: P2 (model refresh; no production pain forcing it, but a same-day release refresh is cheap to stage)
-**Effort**: Low-Medium — download (done) + load-smoke + throughput + registry swap (quality gate declined)
+**Effort**: Low-Medium — download/smoke/MTP/throughput/architect-bench done; the registry swap is the last step (the 2026-08-14 quality-gate decline was later reversed and the coding ladder ran)
 
 ## Objective
 

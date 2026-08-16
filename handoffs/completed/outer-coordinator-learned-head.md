@@ -1,5 +1,8 @@
 # Outer-Coordinator Learned Head (Claude-driven loop)
 
+> **COMPLETED — archived 2026-08-16 at operator-invoked wrap-up.** No remaining tasks; its index row's own next action was "move to completed/". Live work is dispatched from the owning domain index. Historical ledger only.
+
+
 **Status**: TERMINAL `not_pursued` 2026-07-29 — OC-0 completed; no implementation or OC-1 draft is justified without a measured Claude-loop bottleneck and decision-level provenance
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
 **Updated**: 2026-07-29 (OC-0 terminal disposition)

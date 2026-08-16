@@ -5,7 +5,7 @@
 **Updated**: 2026-07-26
 **Priority**: MED — compiler can start today (no blockers); the Phase-3 cascade tail is GATED and predicted to stay so
 **Spec**: [fable5-findings-02-impl-plan.md](../completed/fable5-findings-02-impl-plan.md) Phase 2 (+ Phase 3 for the gated tail) and [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md) §3 — read both before claiming any waypoint
-**Related**: [retrain-routing-models.md](retrain-routing-models.md) (descriptor-conditioned predictor is the post-retrain shape), [routing-truth-restoration.md](routing-truth-restoration.md) (its W5 stopgap is replaced here; its W8 gates the tail), [MEASUREMENT.md](../../MEASUREMENT.md) §5 item 5 (registry provenance comments are the ONLY measurement witness — never reformat them away)
+**Related**: [retrain-routing-models.md](retrain-routing-models.md) (descriptor-conditioned predictor is the post-retrain shape), [routing-truth-restoration.md](../completed/routing-truth-restoration.md) (its W5 stopgap is replaced here; its W8 gates the tail), [MEASUREMENT.md](../../MEASUREMENT.md) §5 item 5 (registry provenance comments are the ONLY measurement witness — never reformat them away)
 
 ## 2026-07-26 Staleness Review
 

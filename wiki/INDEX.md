@@ -1,5 +1,32 @@
 # Project Wiki — Knowledge Index
 
+**Manifest reconciled**: 2026-08-16 (operator wrap-up pass) — the manifest reported **25** new sources and
+**none of them carried knowledge**, so this pass wrote **zero articles**. That is the correct output, not a
+skipped step: an exhaustive diff across all 25 shows the complete content delta is (a) relative-link
+rewrites `(x.md)` → `(../completed/x.md)` in 19 active handoffs and (b) a three-line archive banner on the
+6 handoffs relocated `active/` → `completed/`. A `--word-diff` over the whole set returns **zero** changed
+tokens that are not a link path or that banner. These are the mechanical footprint of the *same* wrap-up's
+handoff relocations; the substance had been compiled 11 minutes earlier (`6451d742`, 12 articles from the
+51-source backlog the restored watermark revealed), and 22 of the 25 are already cited across the wiki.
+Writing an article here would have required inventing content.
+
+**What the relocations did break: 151 wiki links, with every lint pass green.** Resolving every wiki link
+against the filesystem found 151 dangling targets. All 151 are now repaired and **3183 of 3183 relative
+links resolve** — 124 link targets plus 25 backticked paths repointed to `handoffs/completed/` (157
+insertions / 157 deletions, a word-diff confirms no changed token is anything but a path; no prose
+touched); 18 more were fixed by restoring the `repos/` symlinks with `scripts/clone-repos.sh`, which had
+gone missing; and the last 11 pointed at `inference-acceleration-index.md` /
+`cpu-inference-optimization-index.md`, both **dissolved** by `b208d9ce` into the six domain indices. Those
+11 cite specific rows and one `#research-intake-update--2026-05-06` anchor — content that lives verbatim in
+`handoffs/archived/*-history-through-2026-06-19.md`, and the anchor was verified present there before
+repointing, so this is accurate provenance rather than a guess at a successor.
+
+**Structural cause, now closed.** No lint pass resolved wiki link targets. `check_wiki_article_structure`
+checks headings only, and `check_missing_crossrefs` runs the *other* direction and accepts a basename found
+in **either** `active/` or `completed/` — so an `active/`→`completed/` move is invisible to it on both
+surfaces. Added lint pass 7, `wiki_link_targets` (dangling target = ERROR, dangling anchor = WARNING),
+enabled in `wiki.yaml`; mutation-tested five ways, including that the reporter actually counts it.
+
 **Manifest reconciled**: 2026-08-12 (wrap-up pass, later same day) — the manifest reported **60** sources
 since the still-unadvanced 09:13:09Z timestamp. That set is a **superset of the 38 the overnight-fleet
 pass compiled** (note below) plus the ~22 sources changed by the 10:30–12:38Z commit run, so this pass

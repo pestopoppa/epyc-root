@@ -1,5 +1,8 @@
 # v6 → v7 production-promotion (production-consolidated-v7)
 
+> **COMPLETED — archived 2026-08-16 at operator-invoked wrap-up.** No remaining tasks; its index row's own next action was "move to completed/". Live work is dispatched from the owning domain index. Historical ledger only.
+
+
 **Status:** CUTOVER COMPLETE — canonical production is now `production-consolidated-v7` at frozen candidate `6ad45fa3ff6718c07c000061dbc6e29c1771f6e3`. CPU and HIP `llama-server --version` both report `version: 10098 (6ad45fa3f)`. This handoff records the validated experimental **v7** kernel promoted to the NEW production version **production-consolidated-v7**, per the four-step experimental-kernel workflow (fresh-pull → build → validate-no-regression → deploy as new version). Sibling/template: the completed v5→v6 cutover in [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md) (phased procedure + rollback pattern reused).
 
 ## What v7 is

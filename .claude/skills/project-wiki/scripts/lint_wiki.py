@@ -53,6 +53,7 @@ def _get_lint_config(config: dict) -> dict:
         "enabled_passes": lint.get("enabled_passes", [
             "orphan_handoffs", "stale_entries", "contradictory_status",
             "unactioned_intake", "missing_cross_refs", "wiki_article_structure",
+            "wiki_link_targets",
         ]),
     }
 
@@ -339,6 +340,67 @@ def check_wiki_article_structure(wiki_dir: Path) -> list[Issue]:
     return issues
 
 
+def check_wiki_link_targets(wiki_dir: Path) -> list[Issue]:
+    """Pass 7: Resolve every relative link a wiki page makes against the filesystem.
+
+    Nothing else here does this. `check_missing_crossrefs` looks the other way
+    (handoff -> wiki) and matches on basename found in EITHER active/ or
+    completed/, so relocating a handoff between the two is invisible to it. That
+    is how 151 wiki links rotted on 2026-08-16 — six handoffs moved to
+    completed/ during a routine wrap-up prune and every lint pass stayed green.
+
+    A link is a claim that a document says something. When it dangles, the claim
+    is unsupported, so this is an ERROR, not a style warning.
+    """
+    issues: list[Issue] = []
+    if not wiki_dir.exists():
+        return [(ERROR, str(wiki_dir), "Wiki directory not found")]
+
+    # Only relative links are ours to resolve; http(s) and bare anchors are not.
+    link_re = re.compile(r"\[(?:[^\]]*)\]\((\.{1,2}/[^)\s]+?\.md)(#[^)\s]*)?\)")
+
+    for md_file in sorted(wiki_dir.rglob("*.md")):
+        content = md_file.read_text(errors="replace")
+        # Strip fenced code blocks and inline code: a path inside backticks is
+        # being *discussed*, not followed, and flagging it is a false positive.
+        stripped = re.sub(r"```.*?```", "", content, flags=re.DOTALL)
+        stripped = re.sub(r"`[^`\n]*`", "", stripped)
+
+        seen: set[str] = set()
+        for match in link_re.finditer(stripped):
+            target, anchor = match.group(1), match.group(2)
+            # Key on target AND anchor: two links to one file with different
+            # anchors are two distinct claims, and keying on the path alone lets
+            # a plain link earlier in the page mask a broken anchor later.
+            key = f"{target}{anchor or ''}"
+            if key in seen:
+                continue
+            seen.add(key)
+            resolved = (md_file.parent / target).resolve()
+            if not resolved.exists():
+                issues.append((
+                    ERROR, f"wiki/{md_file.name}",
+                    f"Dangling link target: {target} (resolves to {resolved})",
+                ))
+                continue
+            # An anchor that names a heading the target no longer has is the
+            # same defect one level down: the citation points at a document,
+            # but not at the passage it claims.
+            if anchor:
+                slug = anchor[1:].lower()
+                body = resolved.read_text(errors="replace")
+                heads = {
+                    re.sub(r"[^a-z0-9\s-]", "", h.lower()).strip().replace(" ", "-")
+                    for h in re.findall(r"^#{1,6}\s+(.+?)\s*$", body, flags=re.MULTILINE)
+                }
+                if slug and slug not in heads:
+                    issues.append((
+                        WARNING, f"wiki/{md_file.name}",
+                        f"Link anchor not found in target: {target}{anchor}",
+                    ))
+    return issues
+
+
 def main() -> int:
     config = load_wiki_config()
     lint_cfg = _get_lint_config(config)
@@ -396,6 +458,12 @@ def main() -> int:
         issues = check_wiki_article_structure(wiki_dir)
         all_issues.extend(issues)
         pass_names.append(("Wiki article structure", issues))
+
+    # Pass 7: Wiki link targets resolve
+    if "wiki_link_targets" in enabled:
+        issues = check_wiki_link_targets(wiki_dir)
+        all_issues.extend(issues)
+        pass_names.append(("Wiki link targets", issues))
 
     # Print report
     print("=" * 70)

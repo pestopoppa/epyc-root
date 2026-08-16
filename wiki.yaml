@@ -48,6 +48,11 @@ lint:
     - unactioned_intake
     - missing_cross_refs
     - wiki_article_structure
+    # Resolves every relative link a wiki page makes. missing_cross_refs runs the
+    # other direction and accepts a basename in EITHER active/ or completed/, so
+    # moving a handoff between them is invisible to it — 151 wiki links rotted
+    # that way on 2026-08-16 with every pass green.
+    - wiki_link_targets
 
 # Compile configuration (consumed by project-wiki skill compile operation)
 compile:

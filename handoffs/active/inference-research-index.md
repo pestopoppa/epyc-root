@@ -60,11 +60,10 @@
 | INF-54 | tq3 quantization evaluation | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree | — |
 | INF-55 | tree draft forward port plan | [tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md) | Decide forward-port vs drop for the tree-draft plan now that v9 is frozen; the read-only investigation is complete | — |
 | INF-56 | triattention kv selection | [triattention-kv-selection.md](triattention-kv-selection.md) | S8 autopilot exploration: sweep keep_ratio and layer_weights per production role; persist Pareto profiles with quality, speed, cost, and re… | — |
-| INF-57 | v7 promotion | [v7-promotion.md](v7-promotion.md) | Move to completed/ — the v7 cutover closed and is twice superseded (v8, v9); relink the 14 active handoffs citing it | — |
 | INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback | INF-11 |
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
-| INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap: point architect_general/coder_escalation model_path at Qwen3.8-27B, then re-verify the pinned CPU bench | — |
-| INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Add Qwen3.8-27B as the new stock-27B arm in the GPU Candidates HTML (throughput ✅, prefill/RAG/MTP pending; coding ladder operator-declined) | INF-60 |
+| INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap: architect_general/coder_escalation model_path → Qwen3.8-27B-Q8_0.gguf + stack_change_pipeline regen | — |
+| INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Commit staged SWE harness parser fix (blocked on shared-clone merge), then devcontainer restart + SWE re-run → final 40 | INF-60 |
 
 ## Cross-domain
 

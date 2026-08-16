@@ -18,7 +18,7 @@ with `live_hash=required_hash=8c8cfcbb13d2611d`. Root coordination verification:
 `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest scripts/coordination/tests/test_batch_ledger.py scripts/coordination/tests/test_batch_status_report.py -q`
 => 31 passed. This is not an EV-4 completion signal and does not flip EV-4.
 
-**Cross-links:** [eval-tower-verification.md](eval-tower-verification.md), [inference-batch-loop.md](inference-batch-loop.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [v7-promotion.md](v7-promotion.md).
+**Cross-links:** [eval-tower-verification.md](eval-tower-verification.md), [inference-batch-loop.md](inference-batch-loop.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [v7-promotion.md](../completed/v7-promotion.md).
 
 ## Headline (corrected root cause)
 The EV-4 failure is **three independent defects stacked**, and the premise that the *kernel* promotion

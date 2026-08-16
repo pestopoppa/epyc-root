@@ -1,9 +1,32 @@
 # GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm
 
-**Status**: MOSTLY DONE — artifact updated across all sections (2026-08-15); SWE FAIL_TO_PASS + agentic rung still landing.
+**Status**: MOSTLY DONE — artifact updated across all sections (2026-08-15); SWE FAIL_TO_PASS + agentic
+rung still landing — **the agentic re-run is parked on a devcontainer restart** (2026-08-16).
 **Created**: 2026-08-14
 **Priority**: P2 (presentation surface; not evidence authority)
 **Effort**: Low — re-populate one candidate row with already-partial Qwen3.8-27B data + fill the gaps
+
+## NEXT STEP — top of queue
+
+1. **Commit the harness parser fix (do this first).**
+   `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/agentic_swe_harness.py` is modified
+   (+43 lines, staged): `_translate_native_tool_calls()` maps Qwen3.x's native
+   `<tool_call><function=bash><parameter=command>…` grammar to the harness's `ACTION:` grammar (grep/read/
+   edit/done), plus a defensive `_sha256_file()` for early-return instances. **It is staged but NOT committed** —
+   the shared research clone is mid-merge from another session (`U` files under
+   `scripts/kernel_rnd/autokernel/`), so `git commit` refuses. **Do NOT touch the conflict.** Once the other
+   session's merge clears, commit from the research repo (file is already `git add`ed):
+   `git -C /mnt/raid0/llm/epyc-inference-research commit -m "agentic_swe_harness: translate native tool-call grammar to ACTION:; defensive _sha256_file"`.
+   The fix is safe in the working tree + index and will survive the wait.
+2. **Recreate this devcontainer from the host.** Its `/var/run/docker.sock` is an **orphaned bind-mount**
+   (inode pinned from Aug 13; the host dockerd unlinked + recreated the socket at 13:58:01 during the
+   29.7.1→29.7.2 apt upgrade). Container-local and irreparable from inside — the host docker and all 40
+   `sweb.eval.*` containers are healthy and untouched. This is the **only** blocker on the SWE re-run.
+3. **Re-run the SWE agentic harness** on the 19 previously-empty instances (parser fix now active):
+   swebench `run_evaluation --max_workers 8 --run_id q38-agentic-final` (instances list
+   `/tmp/opencode/swe_remaining.txt`, script pattern `/tmp/opencode/q38_agentic3.sh`), merge with the 21
+   patches from run 1, re-run FAIL_TO_PASS, and write **SWE-40 = resolved/40** into the artifact's
+   coding-ladder cell + verdict card (currently **15/40 = 37.5%, provisional/understated**).
 
 ## The artifact
 
@@ -28,32 +51,43 @@ re-design: same axes, same era-labeling discipline (label the kernel era; never 
 |---|---|---|
 | Throughput — decode (optimized `draft-mtp`) | ✅ **37.15 t/s** @512ctx · **37.95** @2k · **22.22** @8k · **13.61** @32k | measured 2026-08-14 on v9 `0db32c06e`/`10125` (47.57 was the earlier natural-prompt single-shot; the sweep uses the synthetic random-word prompt, hence lower MTP acceptance) |
 | Throughput — prefill pp512 | ✅ **727.29 ± 28.00 t/s** | `llama-bench -ngl 999 -nkvo 1 -p 512 -r 3` |
-| Coding ladder (LCB/BCB/SWE) | ⛔ **operator-DECLINED** | "quality will improve certainly" (2026-08-14) — no coding comparison will be run for Qwen3.8. See open question below. |
+| Coding ladder (LCB/BCB/SWE) | ✅ **RAN** — see *Coding ladder — WAS RUN* below | Originally ⛔ operator-DECLINED ("quality will improve certainly", 2026-08-14); the operator later authorized the ladder anyway ("both rungs, proceed") and it landed. |
 | RAG-at-depth | ✅ measured | decode vs context depth: 37.15 @512 → 37.95 @2k → 22.22 @8k → 13.61 @32k (MTP) — monotone decay, the KV-read-cost curve |
 | MTP workload-gate (batched vs deep-RAG) | ✅ measured | **MTP HURTS at depth**: plain beats MTP at 8k (29.11 vs 22.22, −23.7%) and 32k (21.65 vs 13.61, −37.1%) — reproduces the artifact's "MTP net-negative on deep-RAG". Batched np=4 @512 ~20–23 t/s/req (agg ~80). |
 
+> **CORRECTION (2026-08-15/16), read the two throughput/RAG/MTP rows above with it**: the
+> `37.15 → 37.95 → 22.22 → 13.61` decline and the "MTP reversal at depth" were a **synthetic
+> random-word-prompt artifact**. The 24-cell np × depth sweep on real olympiadbench prompts gives a
+> **flat** single-stream MTP curve (47.6 @2k → 45.0 @32k) and a peak aggregate of **157.3 t/s @np8/2k**.
+> The rows are kept as the original measurement of record; the corrected numbers are the ones the
+> artifact ships.
+
+## Coding ladder — WAS RUN (supersedes the earlier "deferred")
+
+The operator declined the Qwen3.8→Qwen3.6 quality comparison on 2026-08-14, then later authorized the coding
+ladder anyway ("both rungs, proceed"). Full architect bench (v9 `0db32c06e`, seeded temp 0.6, MTP, reasoning
+off) landed:
+
+| Rung | Score | |
+|---|---|---|
+| LCB-hard (n=53) | **52.8%** (28/53) | tops the 27B class |
+| BCB-hard (n=90) | **31.1%** (28/90) | ties stock 27B |
+| SWE-40 (n=40) | **15/40 = 37.5% (provisional)** | agentic, understated — 19/40 empty from format-mismatch, now fixed |
+| humaneval | 96.3% (158/164) | |
+| aime25 / gpqa (cot) / gpqa (letter) / mmlu_pro / olympiad_hard | 76.7% / 81.3% / 42.4% / 56.7% / 47.1% | |
+
+It is the same LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40 recipe the artifact already uses, so the
+results slot straight into this row.
+
 ## Steps
 
-- [ ] **Populate the throughput row** — add Qwen3.8-27B with the 47.57 t/s MTP decode (already measured)
-  and the pending pp512 prefill, era-labeled v9 `0db32c06e`.
-- [ ] **Prefill pp512** — one `llama-bench -m Qwen3.8-27B-Q8_0.gguf -ngl 999 -nkvo 1 -p 512 -n 128 -r 3`
-  (or the KV-on-GPU server equivalent) to fill the prefill cell.
-- [ ] **Decide the coding-ladder cell** — see the open question; do NOT silently re-run the coding bench
-  the operator declined, and do NOT leave a blank cell that reads as "unmeasured" when it is
-  "operator-declined".
-- [ ] **RAG-at-depth + MTP workload-gate** — either run the equivalent RAG/deep-context probe (long-prompt
-  single-stream vs batched, same recipe the artifact used) or explicitly mark the cells deferred.
-- [ ] **Update the verdict prose** — the artifact's "Bottom line" ("nothing new displaces the lineup on
-  merit") must be re-read once Qwen3.8-27B lands in the row: if Qwen3.8-27B becomes the new coding bar on
-  quality grounds (operator's given), the "Stock 27B dense" verdict transfers to it.
-
-## Coding ladder — RESOLVED: deferred to another time
-
-The operator declined the Qwen3.8→Qwen3.6 quality comparison (2026-08-14) and confirmed the coding
-ladder (LCB/BCB/SWE) will be done **another time**. So the Qwen3.8-27B row ships **throughput + RAG +
-MTP only**; the coding-ladder cell is marked `operator-declined — deferred`, never left blank or
-silently re-run. When that later coding bench happens, it is the same LCB-hard n=53 / BCB-hard n=90 /
-SWE-40 n=40 recipe the artifact already uses, and its results slot into this row then.
+- [x] **Populate the throughput row** — Qwen3.8-27B flat ~45 t/s MTP decode, pp512 prefill 727 t/s, era v9 `0db32c06e`.
+- [x] **Prefill pp512** — `727.29 ± 28.00 t/s` (`llama-bench -ngl 999 -nkvo 1 -p 512 -r 3`).
+- [x] **Coding-ladder cell** — populated (LCB 52.8% / BCB 31.1% / SWE 15/40 provisional); SWE finalizes on re-run.
+- [x] **RAG-at-depth + MTP workload-gate** — measured: single-stream decode FLAT ~45 t/s (47.6@2k → 45.0@32k);
+  peak aggregate 157.3 t/s @np8/2k. (The earlier "37→13.6 decline / MTP reversal" was a synthetic
+  random-word-prompt artifact — corrected; real prompts give a flat MTP curve.)
+- [x] **Update the verdict prose** — bottom line + verdict card re-read with Qwen3.8-27B as the new 27B coding bar.
 
 ## Deps
 
@@ -67,4 +101,11 @@ SWE-40 n=40 recipe the artifact already uses, and its results slot into this row
 - **np × depth 24-cell sweep done** (real olympiadbench prompts): single-stream flat ~45 t/s, peak 157 t/s @np8.
   CORRECTED the earlier synthetic "37→13.6 decline / MTP reversal" — that was a random-word-prompt artifact.
 - **SWE images built** (40) + **containers started** + **agentic harness (P2e) running** on the 40 instances.
-- The coding-ladder cell stays `operator-declined — deferred`; SWE-40 / agentic numbers fill in when the run lands.
+- ~~The coding-ladder cell stays `operator-declined — deferred`~~ — **superseded 2026-08-16**: the operator
+  authorized the ladder, it ran, and the cell is populated. See *Coding ladder — WAS RUN* above.
+
+## Completed 2026-08-16
+
+- Agentic run 1 landed → **21 patches / 19 empty** (format-mismatch, not model failure).
+- Harness parser fixed (native tool-call translation, 20/20 unit tests pass) — staged, awaiting commit.
+- **SWE-40 = 15/40 (provisional)** written to the artifact; the re-run is parked on the devcontainer restart.

@@ -6,7 +6,7 @@
 **Priority**: HIGH
 **Categories**: routing_intelligence, reinforcement_learning, cost_aware_routing
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
-**Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
+**Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
 
 ## Problem / Context
 

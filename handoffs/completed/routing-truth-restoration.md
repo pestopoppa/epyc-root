@@ -1,5 +1,8 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
+> **COMPLETED — archived 2026-08-16 at operator-invoked wrap-up.** No remaining tasks; its index row's own next action was "move to completed/". Live work is dispatched from the owning domain index. Historical ledger only.
+
+
 **Status**: CLOSED 2026-07-14 — W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; the overdue `dispatch_swarm_fanout` watch is resolved as delete/defer until a future reasoning-compression owner reopens it explicitly
 **Created**: 2026-06-12
 **Priority**: CLOSED/HIGH — immediate repair scope completed and the `dispatch_swarm_fanout` ownership watch is closed

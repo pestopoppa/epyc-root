@@ -17,6 +17,8 @@ This directory is organized for agent legibility and low drift.
 | Role | File | Primary Use |
 |---|---|---|
 | Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
+| Inference Main | `agents/inference-main.md` | Inference compute ownership, leases, and persistent-idle recovery (roster id `inference`, `role: main`) |
+| Auditor | `agents/auditor-main.md` | The review CONTRACT carried out under the `auditor` identity. **P3-7 retired the interactive auditor SESSION** (roster `auditor` is `role: service`); the reviewer function now runs as per-packet headless invocations, so read this file as a contract, not as a session to route to |
 
 The roster is the authority on who holds which role: `coordination/session-bus/config.yaml`
 assigns every agent a roster id and one role from a closed set — `main`, `coordinator-agent`,
@@ -69,6 +71,10 @@ than this section for the design rationale.
 - Local stack roles route via the orchestrator's frozen registry, never hand-picked per task.
 
 Rule: start with the cheapest model likely to succeed, escalate only when blocked.
+
+Role launch profiles are recommendations, not identity. In particular, the Auditor and Inference
+Main profiles in their role files may be changed by the operator at any time without a warning,
+validation failure, lease action, or reprovisioning.
 
 ## Design Principles
 

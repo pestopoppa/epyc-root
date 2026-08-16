@@ -123,7 +123,7 @@ The cost-model projection (1.4× single-instance per-request latency, "trades ag
 
 The 6.10× ceiling probe that motivated the reopener measured AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting for 4× concurrent inference), not per-request K-parallel verify gain. These are two different mechanisms; the aggregate-throughput one is already deployed in production via the orchestrator's 4×24t splits.
 
-CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
+CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../repos/epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../repos/epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
 
 ## Updates — 2026-04-28
 

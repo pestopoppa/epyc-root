@@ -146,7 +146,7 @@ Q8 for the quality bench unless throughput is being measured, then use the produ
 > "GPU accelerates, CPU guarantees" fallback design in [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md).
 
 ## Gating (sequenced — do NOT start inference until ALL clear)
-1. **[x] v7 promoted to production** (`production-consolidated-v7`) → GPU arms are now `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](v7-promotion.md). ✅ 2026-07-20
+1. **[x] v7 promoted to production** (`production-consolidated-v7`) → GPU arms are now `P-GPU-1`-eligible. Tracked in [`v7-promotion.md`](../completed/v7-promotion.md). ✅ 2026-07-20
 2. **[ ] `inference-batch-loop.md` outstanding tests complete** — the parallel agent runs that backlog first, on the current orchestration stack. See [`inference-batch-loop.md`](inference-batch-loop.md).
 3. **[x] Operator inference approval — GPU ONLY** ✅ 2026-07-20. Operator granted the GPU arms explicitly ("GPU-only benchmark tasks … DO NOT interfere with any CPU inference resources"), **overriding gate 2 for the GPU arms only**. Gate 2 remains binding for anything touching CPU.
 
@@ -502,7 +502,7 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 - Evidence: `docs/reference/architect-model-selection-2026-07-20.md`.
 - Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-big-model-and-acceleration-roadmap.md) (AXA-1),
   [`reviewer-model-ablations.md`](reviewer-model-ablations.md) (H5, model-role selection sibling),
-  [`v7-promotion.md`](v7-promotion.md) (gate 1), [`inference-batch-loop.md`](inference-batch-loop.md) (gate 2).
+  [`v7-promotion.md`](../completed/v7-promotion.md) (gate 1), [`inference-batch-loop.md`](inference-batch-loop.md) (gate 2).
 
 ## Intake (research provenance — persisted 2026-07-20)
 6 papers deep-dived read-only; see `research/intake_index.yaml`: net-new `2508.18672`, `2505.11574`,

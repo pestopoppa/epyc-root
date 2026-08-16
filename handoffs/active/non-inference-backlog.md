@@ -3,7 +3,7 @@
 **Status**: ACTIVE — 43 Round-2 baseline tasks catalogued + 4 May 2026 cluster supplements. 40/43 Round-2-baseline done. Open Round-2 baseline (3 items): NIB2-18, 43, 46. NIB2-33 moved to excluded (hermes-outer-shell auth deferral). May 2026 cluster supplement: NIB2-49 and NIB2-50 are closed from existing May evidence; NIB2-51 X-MAS non-inference scaffolding is closed as default-off shadow/advisory telemetry; NIB2-52 StreamingLLM C++ scaffold landed and its 4-axis bench sweep is inference-gated.
 
 **Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 36 NIB2 + 6 standalone = 42 items.
-**Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
+**Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog-completed-through-2026-04-12.md`](../completed/non-inference-backlog-completed-through-2026-04-12.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
 **Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit), 2026-04-22 (NIB2-40..48 from deep-dive integration pass), 2026-05-19 (NIB2-49..52 from May 2026 research cluster deep-dives)
 **Priority**: MEDIUM (as a whole; individual items tagged HIGH/MED/LOW below)

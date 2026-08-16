@@ -1,5 +1,8 @@
 # Window-2 findings 05 — Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)
 
+> **Historical ledger only; current work lives in [`../active/fable5-window2-findings-05-intake-sweep-and-roofline.md`](../active/fable5-window2-findings-05-intake-sweep-and-roofline.md).** Renamed from the bare `fable5-window2-findings-05-intake-sweep-and-roofline.md` on 2026-08-16: it shared a filename with the live handoff, which made the same handoff appear in BOTH `active/` and `completed/` — a state `index_state.py --check` could not see.
+
+
 > **Completed findings ledger (2026-08-13).** The intake sweep, roofline synthesis, and backlog application are complete. Live follow-ups are dispatched from the [Research & Evaluation index](../active/research-evaluation-index.md) and their owning active handoffs.
 
 **Two operator questions**: (A) did we miss important tasks in the research-intake / deep-dive corpus — especially stale **DGX-gated** dismissals now unblocked by the MI210? (B) roofline gap for the **CPU kernel (v6+iqk)** and the **MI210** — highest-ROI avenues to close it, and can the dequant slowdown be compensated (even Q8/fp16 caps ~60%)? Plus a standing instruction to **apply** the reprioritization to the live backlog, not just propose it (§7).

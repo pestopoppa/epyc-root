@@ -1,3 +1,7 @@
+
+
+> **COMPLETED — archived 2026-08-16 at operator-invoked wrap-up.** No remaining tasks; its index row's own next action was "move to completed/". Live work is dispatched from the owning domain index. Historical ledger only.
+
 ---
 title: ESC-8 — Stack-script restart-landmine audit + Option A implementation contract
 status: DEPLOYED 2026-07-22 — all six fixes + verification complete; landmine dead (see checklist)

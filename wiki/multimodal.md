@@ -540,7 +540,7 @@ request, and its sole justification (the repetitive-context upside) was retracte
 ### Source References
 
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the source-read section and tasks SW-1..SW-4 (SW-2 confirms against a live server; SW-3 decides whether a per-request surface is worth carrying into v9)
-- [`inference-acceleration-index.md`](../handoffs/active/inference-acceleration-index.md) — the structural-fact banner above the retracted ngram row
+- [`inference-acceleration-index.md`](../handoffs/archived/inference-acceleration-index-history-through-2026-06-19.md) — the structural-fact banner above the retracted ngram row
 - [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — row **N28**
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §10, with the exact line numbers and the README-echo explanation
 

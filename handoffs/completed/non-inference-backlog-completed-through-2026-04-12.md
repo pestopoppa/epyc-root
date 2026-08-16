@@ -1,5 +1,8 @@
 # Non-Inference Backlog — Tasks Actionable Without Compute
 
+> **Historical ledger only; current work lives in [`../active/non-inference-backlog.md`](../active/non-inference-backlog.md).** Renamed from the bare `non-inference-backlog.md` on 2026-08-16: it shared a filename with the live handoff, which made the same handoff appear in BOTH `active/` and `completed/` — a state `index_state.py --check` could not see.
+
+
 **Status**: completed
 **Created**: 2026-04-11 (consolidated from audit of near-complete and active handoffs)
 **Updated**: 2026-04-12 (tasks 7-18 completed; AP-14/AP-16 confirmed already done per routing index 2026-04-07; tasks 1-2/4-6 completed 2026-04-11)

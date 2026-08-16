@@ -57,7 +57,7 @@ Land mainline llama.cpp Qwen MTP self-speculation (`--spec-type draft-mtp` / `--
 
 ## Checkpoint update (2026-07-11)
 
-- Work for this historical checkpoint was in `/mnt/raid0/llm/llama.cpp-experimental`, branch `experimental-v7-candidate` at commit `46f876c12`. Do not resume promotion work from that branch; current v7 promotion authority is `experimental-v7-refresh-20260716` as tracked in [`v7-promotion.md`](v7-promotion.md).
+- Work for this historical checkpoint was in `/mnt/raid0/llm/llama.cpp-experimental`, branch `experimental-v7-candidate` at commit `46f876c12`. Do not resume promotion work from that branch; current v7 promotion authority is `experimental-v7-refresh-20260716` as tracked in [`v7-promotion.md`](../completed/v7-promotion.md).
 - The production tree `/mnt/raid0/llm/llama.cpp` was not edited.
 - The experimental source already contains the Qwen/native MTP port surface: `COMMON_SPECULATIVE_TYPE_DRAFT_MTP`, `draft-mtp` parsing + dispatch, `LLAMA_CONTEXT_TYPE_MTP`, MTP graph mapping in `src/llama-context.cpp`, Qwen MTP graph code in `src/models/qwen35.cpp` and `src/models/qwen35moe.cpp`, `nextn_predict_layers` emission in `conversion/qwen.py`, and server/CLI docs that surface the flags.
 - Fresh CPU-only build succeeded with `cmake -S . -B build-ap-mtp -DGGML_CUDA=OFF -DGGML_HIP=OFF`, then `cmake --build build-ap-mtp --target llama-server llama-speculative -j$(nproc)`.
