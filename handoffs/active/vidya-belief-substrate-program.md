@@ -258,6 +258,20 @@ deliberately — decide them, do not just implement them.
       ladder. The 2026-08-13 MMQ-MFMA s2 screen predates the hook and must emit zero rows rather than be
       retrofitted. Source-register row is in `scripts/vidya/adapters/README.md`; producer/read hook is
       being implemented prospectively.
+- [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
+      prospectively before its next run.** *(Filed as "SC37" on lane/mainD 2026-08-13 by `mainD`,
+      the author of the run, at the run; renumbered on forward-port because SC37 was independently
+      taken by the eval-tower resolution-band row below.)* The first demo
+      (`.../odl-p2-unlimited-ocr-demo-20260813T221821Z/`) produced protocol-admissible evidence —
+      `adapter.py run-model --engine unlimited_ocr`, n=18 GT pages, dated, durable
+      `model_gated_row_set.json` + per-page response JSONs + the shared inference-call-window
+      receipt (`inference_window.json`) — with median latency 5857 ms/page, decode ~392 t/s,
+      text_block edit_dist 0.3624, table TEDS 0.0117, reading_order edit_dist 0.2165, plus the
+      verified finding that the model emits coordinate-tagged layout dumps, not markdown. The
+      adapter has no `ClaimTuple` write hook — add one (measurement class, run-level locator, one
+      witness per run) before any successor run so the tuple records what this run actually
+      captured; retrofitting on read is impossible (the `benchmarks/results` lesson).
+      Source-table row is already in `scripts/vidya/adapters/README.md`.
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
