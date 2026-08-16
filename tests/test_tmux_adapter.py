@@ -668,8 +668,7 @@ def test_adoption_requires_exact_target_and_records_read_only_receipt(
     monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
     monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
     monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("idle", "settled"))
-    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
-        {"agent": "auditor", "status": "empty"}]})
+    monkeypatch.setattr(adapter, "composer_state", lambda *_a: {"agent": "auditor", "status": "empty"})
     monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
 
     report = adapter.pane_adoption_report(config, "auditor", context_reset_confirmed=True)
@@ -701,8 +700,7 @@ def test_adoption_refuses_busy_or_dirty_pane_without_ledger_mutation(
     monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
     monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
     monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("active", "turn running"))
-    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
-        {"agent": "auditor", "status": "pending"}]})
+    monkeypatch.setattr(adapter, "composer_state", lambda *_a: {"agent": "auditor", "status": "pending"})
     monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
 
     class A:
@@ -735,8 +733,7 @@ def test_adoption_requires_explicit_context_reset_confirmation(
     monkeypatch.setattr(adapter, "resolve_target", lambda *_a: ("agent:auditor", "verified"))
     monkeypatch.setattr(adapter, "live_mains", lambda *_a: ({"auditor"}, "one live"))
     monkeypatch.setattr(adapter, "runtime_liveness", lambda *_a: ("idle", "settled"))
-    monkeypatch.setattr(adapter, "pending_input_report", lambda *_a: {"panes": [
-        {"agent": "auditor", "status": "empty"}]})
+    monkeypatch.setattr(adapter, "composer_state", lambda *_a: {"agent": "auditor", "status": "empty"})
     monkeypatch.setattr(adapter, "_tmux", lambda *a: (0, f"0\t{worktree}"))
     report = adapter.pane_adoption_report(config, "auditor")
     assert report["adoptable"] is False
