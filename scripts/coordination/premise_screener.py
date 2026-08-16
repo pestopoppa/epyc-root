@@ -921,7 +921,10 @@ class HarnessCLIClient:
     def __init__(self, exe: str, args: list[str]):
         self.exe, self.args = exe, args
 
-    def __call__(self, prompt: str, timeout_s: float = 120.0) -> str:
+    _STRICT = ("\n\nReturn ONLY a single JSON object with keys verdict, evidence, reason. "
+               "No prose before or after it, no markdown fences.")
+
+    def _once(self, prompt: str, timeout_s: float) -> str:
         proc = subprocess.run([self.exe, *self.args], input=prompt,
                               capture_output=True, text=True, timeout=timeout_s)
         if proc.returncode != 0:
@@ -930,6 +933,22 @@ class HarnessCLIClient:
         out = (proc.stdout or "").strip()
         if not out:
             raise PremiseScreenerError(f"{self.exe} produced no output")
+        return out
+
+    def __call__(self, prompt: str, timeout_s: float = 120.0) -> str:
+        """One strict retry when the reply carries no JSON object.
+
+        This tier has no temperature knob, so its output shape is not stable:
+        measured on this host, the same row screened `still-needed` with a full
+        evidence quote on one call and produced unparseable prose on the next.
+        An unparseable reply is correctly treated as UNKNOWN — which parks the
+        row — so without a retry the pool would stall on model phrasing rather
+        than on anything about the work. The retry re-asks strictly; if that
+        also fails, UNKNOWN stands and the row parks, which is the safe end.
+        """
+        out = self._once(prompt, timeout_s)
+        if _extract_json(out) is None:
+            out = self._once(prompt + self._STRICT, timeout_s)
         return out
 
 

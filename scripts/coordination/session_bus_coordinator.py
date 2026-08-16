@@ -338,6 +338,116 @@ def _exec_endpoint_ready(entry: dict, config: dict | None = None) -> str | None:
     return None
 
 
+def load_compute_policy(bus_root: Path) -> dict:
+    """Read compute_policy.yaml. An unreadable policy grants NOTHING.
+
+    Deliberately fail-closed, and the asymmetry is the point: a missing or
+    corrupt policy must not read as "everything permitted". Compute is the one
+    resource where a fail-open costs a campaign — a wrong grant puts two
+    consumers on the same device and both measurements become worthless.
+    """
+    path = bus_root / "compute_policy.yaml"
+    try:
+        import yaml  # noqa: PLC0415
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        return data if isinstance(data, dict) else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def evaluate_compute_request(policy: dict, agent: str, device: str,
+                             lane_free: bool, now_hhmm: str) -> tuple[str, str]:
+    """(verdict, reason) for one request. verdict: grant | deny | needs-operator.
+
+    THE WHOLE POINT IS THAT THIS IS A FUNCTION. It reads a policy a human wrote
+    and a claim state the filesystem holds, and it returns an answer every time
+    it is called — including at 3am, which is when the 14-hour stall happened.
+    """
+    consumers = {str(c.get("id")): c for c in (policy.get("consumers") or [])
+                 if isinstance(c, dict)}
+    if not consumers:
+        return "needs-operator", "no compute policy loaded — nothing is granted without one"
+    c = consumers.get(agent)
+    if c is None:
+        return "deny", f"{agent} is not a listed compute consumer"
+    if device not in (c.get("devices") or []):
+        return "deny", f"{agent} is not permitted on {device} by policy"
+    for r in (policy.get("reservations") or []):
+        if not isinstance(r, dict) or r.get("device") != device:
+            continue
+        start, end = str(r.get("from", "")), str(r.get("to", ""))
+        inside = (start <= now_hhmm < end) if start <= end else (now_hhmm >= start or now_hhmm < end)
+        if inside and agent not in (r.get("for") or []):
+            return "deny", (f"{device} is reserved {start}-{end} for "
+                            f"{', '.join(r.get('for') or [])} ({r.get('why', 'no reason given')})")
+    if not lane_free:
+        return "deny", f"{device} is held — claims are acquired, not observed; wait for release"
+    return "grant", f"{device} free and policy permits {agent}"
+
+
+def _free_pool_lane(config: dict) -> str | None:
+    """A pool lane with no live worker holding its lockfile, or None.
+
+    Concurrency is bounded by the lanes that EXIST, not by a number in config:
+    two workers in one worktree is the shared-clone commit-sweep hazard, and
+    scaling past the lanes on disk is a deliberate, operator-visible step.
+    """
+    pool = config.get("worker_pool") or {}
+    root = Path(str(pool.get("pool_root") or "/mnt/raid0/llm/worktrees/pool"))
+    cap = int(pool.get("max_concurrent_workers") or 4)
+    if not root.is_dir():
+        return None
+    lanes = sorted(d for d in root.iterdir() if d.is_dir() and d.name.startswith("lane"))
+    live = 0
+    free: str | None = None
+    for lane in lanes:
+        lock = lane / ".worker.lock"
+        holder_alive = False
+        if lock.exists():
+            try:
+                pid = int((lock.read_text(encoding="utf-8").split() or ["0"])[0])
+                holder_alive = Path(f"/proc/{pid}").exists()
+            except (OSError, ValueError):
+                holder_alive = False        # unreadable lock is not a live holder
+        if holder_alive:
+            live += 1
+        elif free is None:
+            free = lane.name
+    if live >= cap:
+        return None
+    return free
+
+
+def _exec_worker_runner(bus_root: Path, config: dict, entry: dict, row: dict,
+                        tid: str, agent: str, epoch: int) -> list[dict]:
+    """Launch one detached worker_runner for this assignment. Never raises."""
+    prog = str(entry.get("endpoint") or "").split(":", 1)[1].strip()
+    script = Path(__file__).resolve().parent / f"{prog}.py"
+    lane = _free_pool_lane(config)
+    if lane is None:
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "exec-deferred", "agent": agent, "task_id": tid,
+                 "reason": "no free pool lane (all worktrees hold a live worker)"}]
+    cmd = [sys.executable, str(script), "--bus-root", str(bus_root), "run",
+           "--lane", lane, "--task-id", tid,
+           "--row-text", str(row.get("task_text") or "")[:4000]]
+    if row.get("spec_ref"):
+        cmd += ["--row-ref", str(row["spec_ref"])]
+    if row.get("screened_by"):
+        cmd += ["--screened-by", str(row["screened_by"])]
+    try:
+        log_dir = Path("/workspace/logs/worker_runner")
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log = open(log_dir / f"{tid[:60].replace('/', '_')}.log", "ab")
+        subprocess.Popen(cmd, stdout=log, stderr=log, start_new_session=True)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "defect", "check": "exec-runner", "subject": agent,
+                 "detail": f"could not exec {script.name} for {tid}: {exc}"}]
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             "kind": "exec-launched", "agent": agent, "task_id": tid, "lane": lane}]
+
+
 def _looks_dead(aid: str, entry: dict, states: dict[str, dict],
                 windows: set[str] | None, windows_why: str) -> str | None:
     """Reason a rostered recipient looks dead, or None if it looks alive.
@@ -4476,6 +4586,19 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
                       epoch)
         emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                         "kind": "assigned", "agent": agent, "task_id": tid})
+
+        # P2-5: an `exec:` assignee is EXEC'D, not messaged. This is the whole
+        # delivery change — no pane, no composer, no glyph table, no doorbell:
+        # spawn-args in, report file and exit status out.
+        #
+        # Fresh process PER ASSIGNMENT, deliberately: a long-lived runner would
+        # re-enter the committed-not-live class that this codebase has paid for
+        # repeatedly (a fix merged is not a fix running). Exec'ing per assignment
+        # means the next assignment always runs current code, with no restart
+        # choreography and no deploy marker to forget.
+        entry = next((r for r in roster if str(r.get("id", "")).strip() == agent), None)
+        if entry is not None and _is_exec_endpoint(entry):
+            emitted.extend(_exec_worker_runner(bus_root, config, entry, row, tid, agent, epoch))
         latest = fold_queue(bus_root)
     return emitted
 

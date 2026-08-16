@@ -1,0 +1,61 @@
+# Compute policy — WHO may hold WHAT, WHEN. Policy-as-data (fabric contract).
+#
+# D4 as amended by the operator, 2026-08-16: COMPUTE IS OWNED AT THE COORDINATION
+# LEVEL, NOT BY A SESSION. This file is what "ownership" now means. The console
+# edits it in conversation with the operator; the coordinator-daemon EXECUTES it
+# deterministically (region free ∧ policy allows). AutoKernel, AutoPilot, the
+# inference session and pool workers are all symmetric CONSUMERS that request a
+# window through the bus — none of them is the owner.
+#
+# WHY THE GRANT PATH IS MECHANISED. Under the old rule 11 a single session held
+# grant authority, so its availability was on the critical path of every consumer.
+# Measured 2026-08-13: `inference` sat unreachable for 14 hours with 8 unread
+# messages including 6+ compute requests, while all four CPU regions were FREE.
+# Nothing was wrong with the decision-making; the decision-MAKER was asleep. A
+# policy file cannot be asleep.
+#
+# WHAT STAYS HUMAN. Priorities and reservations are judgement and live here, set
+# by a human through the console. What is removed from the LLM's critical path is
+# the per-request approval, which was never judgement — it was bookkeeping over
+# "is the region free" plus "does policy allow it".
+schema_version: session_bus.compute_policy.v1
+
+# Consumers, most-privileged first. A request is granted only if its consumer
+# appears here AND the region is free AND no reservation excludes it.
+# `priority` orders contention; it never preempts (preemption is a drain, and
+# ratified axiom 4 still governs interactive holders).
+consumers:
+  - {id: inference,   devices: [gpu, cpu], priority: 10, note: "AutoKernel/AutoPilot campaigns run from this session"}
+  - {id: workerpool,  devices: [cpu],      priority: 40, note: "pool workers; code/doc churn. A worker needing the GPU must name it explicitly and takes the lowest priority."}
+  - {id: mainA,       devices: [cpu],      priority: 50}
+  - {id: mainB,       devices: [gpu, cpu], priority: 50}
+  - {id: mainC,       devices: [cpu],      priority: 50}
+  - {id: mainD,       devices: [cpu],      priority: 50}
+
+# Reservations are the blunt instrument and are meant to be rare. A window here
+# EXCLUDES every consumer not named in `for`. Times are UTC, 24h, inclusive-start
+# exclusive-end. An empty list means the machine is open to policy alone.
+reservations: []
+  # Example — uncomment and edit through the console, never by an agent's own
+  # initiative:
+  # - {device: gpu, from: "22:00", to: "06:00", for: [inference],
+  #    why: "overnight AutoKernel campaigns; the GPU is the campaign's instrument"}
+
+# Deterministic grant rule. Stated here so the daemon's behaviour is READABLE
+# rather than inferred from code:
+#   1. the consumer must be listed above and permitted on the requested device
+#   2. the region must be FREE — read from the flock claim, never observed
+#      (claims are ACQUIRED, never observed: observing is TOCTOU)
+#   3. no reservation may exclude the consumer at the requested time
+#   4. anything else -> DENY with a reason, never a silent hold
+# A request the daemon cannot decide is DENIED with `needs-operator`, and it ages
+# into an alarm. It is never left pending in silence — silence was the 14-hour
+# failure.
+grant_rule:
+  aged_request_alarm_s: 1800
+  deny_reason_required: true
+
+# Choreography recipes for arrangements the simple rule cannot express (D4b).
+# A recipe is DATA: typed, receipt-gated steps the daemon steps through. A new
+# exotic arrangement is a new file here, never new code.
+recipes_dir: recipes

@@ -1,0 +1,100 @@
+# Choreography recipe — the operator's worked example, made executable.
+#
+# The arrangement, in the operator's own words (2026-08-15):
+#
+#   "I will pause current CPU inference work at the next inter-subtask boundary,
+#    so that a model can be loaded onto the GPU such that you can then proceed
+#    with GPU work while current CPU work resumes."
+#
+# This is exactly the shape a simple "region free ∧ policy allows" grant cannot
+# express: it is a SEQUENCE with a boundary, a handover, and a resumption, and
+# the CPU holder is never killed — it quiesces at a seam it chooses.
+#
+# D4b: a recipe is DATA. The daemon steps through it deterministically on
+# RECEIPTS; it does not interpret intent and it does not improvise. A new exotic
+# arrangement is a new file in this directory, never a new branch in the daemon.
+# That is the ratified policy-data-never-code contract applied to scheduling.
+#
+# WHY RECEIPT-GATED. Every step's precondition is an artifact somebody else
+# wrote, not an inference this daemon made. A step whose receipt is absent does
+# not "probably" advance — it waits, and if it waits too long it alarms. The
+# failure this forbids is the one that produced a 10-hour stall: a mechanism
+# concluding a state had been reached because it seemed reasonable.
+schema_version: session_bus.recipe.v1
+id: cpu-pause-gpu-load-resume
+title: Pause CPU inference at a boundary, load the GPU, run GPU work while CPU resumes
+approved_by: coordination level (console); ratified with D4b, operator 2026-08-15
+
+# Who may invoke it, and what it costs.
+invocable_by: [coordinator-agent, operator]
+devices: [cpu, gpu]
+
+steps:
+  - id: request-boundary-drain
+    action: send
+    to: "{cpu_holder}"
+    kind: status
+    payload:
+      request: drain-at-next-subtask-boundary
+      why: "GPU model load needs memory bandwidth that contends with resident CPU inference"
+    # NOT a kill, NOT a preemption. Axiom 4 governs interactive holders and is
+    # untouched by D6's pool-worker exception: the holder picks the seam.
+    receipt:
+      kind: status
+      from: "{cpu_holder}"
+      match: {state: draining}
+    timeout_s: 1800
+    on_timeout: alarm      # the holder is entitled to finish its subtask; if it
+                           # never reaches a boundary that is a finding, not a
+                           # licence to force it.
+
+  - id: load-gpu
+    action: await-receipt
+    # The load is performed by the GPU consumer, not by the daemon — the daemon
+    # sequences, it does not operate instruments.
+    receipt:
+      kind: compute-grant
+      match: {device_region: gpu, state: loaded}
+    timeout_s: 2700
+    on_timeout: alarm
+    # LOAD-FIRST SEQUENCING (RTG-51): weights load before CPU inference resumes,
+    # because LOADING contends with memory bandwidth while resident compute does
+    # not. Resuming the CPU first would slow the load and both would suffer.
+
+  - id: resume-cpu
+    action: send
+    to: "{cpu_holder}"
+    kind: status
+    payload: {request: resume, reason: "GPU weights resident; bandwidth contention over"}
+    receipt:
+      kind: status
+      from: "{cpu_holder}"
+      match: {state: working}
+    timeout_s: 900
+    on_timeout: alarm
+
+  - id: start-gpu-work
+    action: grant
+    device_region: gpu
+    to: "{gpu_consumer}"
+    # Parallel by construction: the CPU holder is already back at work, so this
+    # grant creates the co-residency the arrangement exists to produce.
+    receipt:
+      kind: status
+      from: "{gpu_consumer}"
+      match: {state: working}
+    timeout_s: 900
+    on_timeout: alarm
+
+parameters:
+  cpu_holder:   {required: true,  note: "roster id currently holding the CPU region"}
+  gpu_consumer: {required: true,  note: "roster id that will hold the GPU window"}
+
+# Every step is reversible up to `start-gpu-work`: if any receipt fails to
+# arrive, the daemon alarms and the arrangement is ABANDONED — the CPU holder is
+# told to resume and nothing is left half-choreographed. There is no partial
+# success state, because a half-applied arrangement is how a lane ends up held
+# by nobody.
+on_abandon:
+  - {action: send, to: "{cpu_holder}", kind: status, payload: {request: resume, reason: "arrangement abandoned"}}
+  - {action: alarm, key: choreography-abandoned, severity: warning}

@@ -50,6 +50,27 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
    work — it does not stall. A revocation the holder ignores surfaces as a `defect`, never as a
    silent inconsistency.
 
+   *Amendment, 2026-08-16 — POOL WORKERS ONLY (D6, Loop-Owned Fleet).* A pool worker reached
+   through an `exec:` endpoint may be killed at lease expiry: `SIGTERM` → grace →
+   `SIGKILL`, of a pid the runner captured itself. **KILL IS PERMITTED; LOSS IS NOT.** Every
+   kill is followed by a MANDATORY salvage before the row may close — the lane worktree's
+   uncommitted state is committed to a `salvage/<task_id>` ref, the harness transcript and the
+   captured pane scrollback are attached, and the row is marked `FAILED` with a `salvage_ref`.
+   A kill whose salvage did not complete is itself a `defect`.
+
+   The exception is narrow and does not generalise. **Interactive sessions keep drain-only
+   reclaim, unchanged** — the reason axiom 4 exists is that a human's session holds
+   unreproducible context, and a pool worker holds none: it is exec'd per assignment from a
+   typed brief, commits per unit, and is reconstructible from that brief plus its salvage ref.
+   Quiesce-and-drain also cannot terminate a *wedged* worker — a hung API call never reaches a
+   boundary — so without this the lease would be unenforceable and a single wedge would hold a
+   lane forever, which is the unbounded-block failure the lease exists to prevent.
+
+   *Enforcement.* `worker_runner.py` REFUSES TO SPAWN unless
+   `worker_pool.rule8_amendment_ack` in `config.yaml` names this ratification. A runner that
+   enforces a lease can kill, so it declines to exist until the amendment permitting that is on
+   the record. Ratified with D6 by the operator, 2026-08-15.
+
    *Mechanism (R4).* `coordinator-agent` (or the operator through it) writes a `lease-revoke`
    message to its own outbox; authority is checked against `authority.lease_grant` in
    `config.yaml` and an unauthorised sender is rejected with a `defect`, never obeyed. The
@@ -96,10 +117,8 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
 
 ## Standing instructions change under running sessions
 
-An agent's instruction set is loaded at session start. Editing `CLAUDE.md` /
-`AGENTS.md` therefore does **not** reach a session already running — observed
-2026-07-27, when a heartbeat-refresh rule was added at 21:43Z and a demonstrably
-active agent was still on its 19:45Z heartbeat afterwards.
+An agent's instruction set is loaded at session start. Editing `CLAUDE.md` / `AGENTS.md` therefore
+does **not** reach a session already running (origin: 2026-07-27 — appendix).
 
 So a standing-instruction change is a **coordination event**, not just a commit:
 
@@ -122,10 +141,8 @@ Act on assignments and nudges; write acks and status to your own outbox.
 
 ## Routing intent is structural, not prose (2026-07-29)
 
-Two routed messages were missed on 2026-07-29 because routing intent lived as prose inside
-`payload` ("FOR FABLE-AUDITOR …" in a defect string; "action: DOC FIX requested … relay") and a
-context-economy payload truncation cut exactly the sentences carrying it. No tool could have known
-better. Therefore:
+Routing intent that lives as prose inside `payload` does not survive a context-economy truncation,
+and no tool can know better (origin: two missed messages, 2026-07-29 — appendix). Therefore:
 
 - **`needs_routing_to`** (top-level msg field, array of roster ids): who this message must REACH,
   beyond the transport `to`. `append` refuses non-roster ids.
@@ -148,14 +165,10 @@ better. Therefore:
 
 ## ONE assignee per action; everyone else is `cc` (2026-08-12)
 
-`action_required` was a boolean that applied to **every** member of `needs_routing_to`, and the
-schema had no way to say *"read this, you owe nothing"*. So a fleet-wide report marked every reader
-as owing an action. Measured across the fleet's inboxes on 2026-08-12: **499 `action_required`
-rows, only 86 sole-target — 83% of what an agent had to triage was not its own** (73–89% per
-agent). Compounding it, the relay set `msg["to"] = target` on every fan-out copy, so **100% of
-delivered rows looked directly addressed**: a CC was structurally indistinguishable from an
-assignment on arrival. A triage queue that is 83% other people's work stops being read, and then
-the 17% that *was* yours is lost too.
+`action_required` applied to **every** member of `needs_routing_to`, the schema had no way to say
+*"read this, you owe nothing"*, and the relay re-addressed every fan-out copy — so a CC was
+structurally indistinguishable from an assignment, and a triage queue that is mostly other people's
+work stops being read (measured 2026-08-12 — appendix).
 
 **The fields.**
 
@@ -192,25 +205,23 @@ one line is for mail you received because it went to everyone.
 `kind: ack`: a disposition **quoting** the request it answers is not a new request, and telling its
 author to set `action_required` would re-arm the item it was clearing. The missing opposite
 polarity now exists: a `finding` / `status` / `task-complete` with `action_required` and more than
-one target warns **"this looks like FYI; use `cc`"**. The old lint only ever pushed the bit ON,
-which is half of how 499 rows accumulated with 86 sole targets.
+one target warns **"this looks like FYI; use `cc`"** (the old one-way lint — appendix).
 
 **Migration is authoring-side only.** All existing history stays valid, `validate` warns and never
 fails on a legacy row, and the relay keeps delivering pre-migration rows unchanged.
 
 ## A dispatch is TYPED (AUD-2, 2026-08-12)
 
-Measured: **171 distinct payload keys across 55 `task-assign` messages.** With no vocabulary, no
-content rule about a dispatch was mechanizable — every rule had to be prose addressed to the
-author, and prose is not a channel tools act on. The `task-assign` payload now has one:
+With no vocabulary, no content rule about a dispatch was mechanizable — prose addressed to the
+author is not a channel tools act on (AUD-2 — appendix). The `task-assign` payload now has one:
 
 | Field | Status | Why |
 |---|---|---|
-| `task_text` | **REQUIRED** (enforced in `cmd_append`) | the dispatch IDENTITY — the row's TEXT. Anchor rot measured **34.5% queue-wide** on 2026-08-11 (27% twelve days earlier): `file.md:LINE` names a different row every few weeks |
+| `task_text` | **REQUIRED** (enforced in `cmd_append`) | the dispatch IDENTITY — the row's TEXT: `file.md:LINE` names a different row every few weeks (anchor rot — appendix) |
 | `row_ref` | optional **hint** | demoted from identity. When it disagrees with `task_text`, the text wins; re-resolve with `backlog_row_check.py --row "<text>"` |
-| `screened_by` | receipt | evidence `backlog_row_check` RAN. It proves WELL-FORMED, not STILL-NEEDED — four of eight rows screened on 2026-08-12 were already satisfied, so verify the premise too |
-| `expected_occupancy` | `{est_h, basis, gating}` | **F-14**: seconds-long work was queued at a card that needed hours, and nothing in the dispatch made the mismatch expressible. Declaring it forces the question at composition time |
-| `constraints[]` | each entry needs a **`source`** | **F-20**: a brief asserted `lanes: [none]` the roster never imposed. A restated constraint cites the line it derives from, or it is the author's recollection wearing the roster's authority |
+| `screened_by` | receipt | evidence `backlog_row_check` RAN. It proves WELL-FORMED, not STILL-NEEDED — verify the premise too (screening — appendix) |
+| `expected_occupancy` | `{est_h, basis, gating}` | nothing in an untyped dispatch made an occupancy mismatch expressible. Declaring it forces the question at composition time (F-14 — appendix) |
+| `constraints[]` | each entry needs a **`source`** | a restated constraint cites the line it derives from, or it is the author's recollection wearing the roster's authority (F-20 — appendix) |
 | `brief_path` | required past the size cap | draft-7 has no size keyword, so the cap lives in `cmd_append`: a payload over `TASK_ASSIGN_PAYLOAD_MAX_BYTES` with no `brief_path` is **refused**. A dispatch too big to read in a triage report belongs in a file |
 
 Missing `task_text` and oversize-without-`brief_path` are **refusals**; keys outside the vocabulary,
@@ -232,8 +243,8 @@ exactly two codes, kept apart because each is fixed by editing a **different** f
 
 | Code | Condition | The measured failure |
 |---|---|---|
-| `unscreened` | no `screened_by` on the queue row | overnight 2026-08-11/12 the tick emitted **4,602 would-assign picks resolving to 9 distinct rows from ONE file** — nothing in the pick path had ever re-derived whether those rows were still real |
-| `no-occupancy-estimate` | no usable `expected_occupancy.est_h` (absent, unparseable, or ≤ 0) | **F-14**: a card was fed 40-second sweeps while every occupancy instrument read idle |
+| `unscreened` | no `screened_by` on the queue row | nothing in the pick path had ever re-derived whether the rows it picked were still real (the overnight pick storm — appendix) |
+| `no-occupancy-estimate` | no usable `expected_occupancy.est_h` (absent, unparseable, or ≤ 0) | a card was fed seconds-long work while every occupancy instrument read idle (F-14 — appendix) |
 
 A refused row is **reported, never skipped**: one `dispatch-refused` advisory row per row per tick
 (not per agent — per-agent emission is how 9 rows became 4,602 records), naming the `task_id`, the
@@ -259,9 +270,8 @@ empty, which is the reading the line exists to replace.
 
 ## Corrections are typed, so an omitted one is visible (AUD-4, 2026-08-12)
 
-Five corrections were silently missing from the 2026-08-12 wrap-up — not because anyone decided to
-omit them, but because a correction looked like any other `finding`, so nothing could enumerate
-them and the omission was invisible on both sides. A `finding` payload may now carry:
+A correction that looks like any other `finding` cannot be enumerated, so an omission is invisible
+on both sides (origin: 2026-08-12 wrap-up — appendix). A `finding` payload may now carry:
 
 - **`corrects: <msg-id>`** — the message this finding corrects.
 - **`provenance`** — `operator-verbatim` | `paraphrase` | `inferred`. A correction whose standing
@@ -311,6 +321,7 @@ Boundaries reach the coordinator durably: the coordinator-daemon's `detect_task_
 delivers a `status` message with `payload.event == "task-boundary"` to `coordinator-agent`'s
 inbox on any main's transition into `idle`. That is daemon-side, so it survives a coordinator
 session restart — but it makes boundaries *durable*, not *instant*: a running session still only
+sees them at its next drain (defect C8, 2026-07-28).
 
 ### Unreachable idle session (stale heartbeat, guard refuses nudge)
 
@@ -320,16 +331,18 @@ its own heartbeat while blocked, so the guard's refusal and the target's silence
 other into a deadlock. `--heartbeat-max-age` does not help: the refusal keys on heartbeat state,
 not age. Do not bypass the guard with raw `tmux send-keys`.
 
-A refusal is a snapshot, not a verdict: check the pane first (a mid-generation session is not
-blocked, and the guard is correct), then keep re-probing with `tmux_adapter.py probe --agent <id>`
-rather than escalating immediately — most refusals self-clear (quiet-check ~20s, nudge rate limit
-600s, `working` heartbeat clears at the session's own next boundary). Escalate to the operator
-only once the block outlives the longest plausible self-clearing timer (10-15 minutes of
-continuous refusal with no pane activity) AND something is actually waiting on that session. Never
-busy-wait or bypass while probing; do other coordination work between probes (rule 2 covers
-blocking on a human too). Full procedure, threshold reasoning, and origin incident:
+A refusal is a snapshot, not a verdict: run the authoritative instrument first —
+`tmux_adapter.py probe --agent <id>`, the runtime check — and **never conclude idle from pane text
+alone**, because a session is working, compacting or idle and a compacting pane renders
+identically to a finished one (a mid-generation session is not blocked, and the guard is correct).
+Then keep re-probing rather than escalating immediately — most refusals self-clear (quiet-check
+~20s, nudge rate limit 600s, `working` heartbeat clears at the session's own next boundary).
+Escalate to the operator only once the block outlives the longest plausible self-clearing timer
+(10-15 minutes of continuous refusal with no pane activity) AND something is actually waiting on
+that session. Never busy-wait or bypass while probing; do other coordination work between probes
+(rule 2 covers blocking on a human too). Full rule: `agents/shared/SESSION_LIFECYCLE.md` →
+*Reading another session's liveness*. Full procedure, threshold reasoning, and origin incident:
 `agents/coordinator-agent.md` → Guardrails.
-sees them at its next drain (defect C8, 2026-07-28).
 
 ## Stuck-agent rescue and the last hop to the operator (C19 / C20, 2026-07-29)
 
@@ -357,13 +370,10 @@ net that depends on the hop before it having worked is not a net.
 
 ## Operator items are DECLARED, not inferred (C49, 2026-08-12)
 
-"Unread `token-request` / `defect` / CRITICAL" (the C20 predicate above) is **superseded.** Measured
-2026-08-12 over 267 live inbox rows: 116 carried `action_required` (which means a NAMED AGENT must
-act next, never the operator), only 8 satisfied that old predicate, and just 7 overlapped —
-near-disjoint sets, misclassifying in both directions. Every one of those 8 was `kind: defect` —
-fleet-internal engineering work — and **not one was a `token-request`**, the only kind that genuinely
-means a human must sign something. The daemon had escalated "11 operator-decision items unread past
-deadline"; a parse of all 17 found **zero** genuine operator items.
+"Unread `token-request` / `defect` / CRITICAL" (the C20 predicate above) is **superseded.** It and
+`action_required` are near-disjoint sets that misclassify in both directions, and what it caught was
+`kind: defect` — fleet-internal engineering work — never a `token-request`, the only kind that
+genuinely means a human must sign something (measured 2026-08-12 — appendix).
 
 An item reaches the operator if, and only if, one of two things is true:
 
@@ -391,18 +401,11 @@ agent can no longer escalate to the operator by owing itself a next step.
 
 ## Gate presentation is transport, and transport runs at every authority (C27, 2026-07-29)
 
-Two operator SIGNATURE REQUESTS filed on 2026-07-29 were never presented to anyone:
-`RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (10:18Z) and
-`RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (11:16Z). Both well-formed, both
-`needs_routing_to: [coordinator-agent]`, both `action_required`. `token-queue.md` read
-*"Pending token requests: (none)"* throughout, so **a coordinator following the documented cold
-start exactly would conclude no gates were waiting.** Not a lost message — a lost request for a
-human signature.
-
-Cause: `relay_tokens`, the only writer of gate blocks, ran only inside `apply_assignment`
-(`authority: assign`) while the live config is `manual`; and `token-request` was excluded from the
-always-on relay *because `relay_tokens` was named as its handler*. An exclusion was justified by a
-handler the configured authority never reached.
+Two well-formed operator SIGNATURE REQUESTS were never presented to anyone while `token-queue.md`
+read *"Pending token requests: (none)"*, so **a coordinator following the documented cold start
+exactly would conclude no gates were waiting.** Not a lost message — a lost request for a human
+signature. Cause: an exclusion justified by a handler the configured authority never reached
+(C27, 2026-07-29 — appendix).
 
 The standing rules that follow:
 
@@ -421,18 +424,15 @@ The standing rules that follow:
 ## A repeated payload across N corr_ids is bus noise by construction (C23, 2026-07-29)
 
 Clearing triage requires one disposition per `corr_id`. When the same payload answers N routed
-items, that produces N byte-identical messages — 19 identical `triage-disposition-post-standdown`
-rows once made up 40% of a 48-item queue. This is **protocol shape, not a send bug**: 19 distinct
-corr_ids, 19 distinct ids, relayed 1:1. Do not "fix" it in `tmux_adapter.py`.
+items, that produces N byte-identical messages (origin: C23, 2026-07-29 — appendix). This is
+**protocol shape, not a send bug**: N distinct corr_ids, N distinct ids, relayed 1:1. Do not
+"fix" it in `tmux_adapter.py`.
 
 **The 2026-07-29 rule was NOT PERFORMABLE, and is replaced (C23, 2026-08-11).** It said *"before
 writing the same payload against a second `corr_id`, write it once and reference it"* — while no
 mechanism to reference it existed. Clearing triage took one `corr_id` per item, full stop, so a
-session holding one answer for N items had no compliant way to send it once. It failed within
-hours: measured from one careful main, 3 byte-identical payloads at 17:41Z and 6 more at 17:44Z
-differing only in `corr_id` — **nine in ten minutes, by someone following the rule correctly.**
-Fan-out multiplies it, since N dispositions × M routing targets is N×M triage entries fleet-wide.
-Two failures in ten minutes is the rule being the defect, not the sender.
+session holding one answer for N items had no compliant way to send it once, and it failed within
+hours (full record: `handoffs/active/session-bus-thin-dispatcher.md` → C23).
 
 Standing rule, now performable: **one answer, one row.** A message may carry `corr_ids: [<id>,
 <id>, …]` alongside or instead of the scalar `corr_id`, and it clears every id it names. The scalar
@@ -453,5 +453,103 @@ generated, the superseded script gets `<script-name>.superseded`. The daemon the
 declaring script whose gate appears in neither the token queue nor any outbox `token-request` and
 which has neither marker — i.e. a ratification that was printed at a human but never *filed*. No
 script declares `BUS-GATE` today, so the check emits nothing; adopting the convention is an
-operator decision, and without it the join has no ground truth (an earlier attempt mis-flagged 11
-of 25 scripts, because superseded and repaired scripts never receive receipts).
+operator decision, and without it the join has no ground truth (an earlier receipt-less attempt
+mis-flagged most of the scripts it scanned — appendix).
+
+## Appendix — incident record (not instructions)
+
+Nothing below is a directive; it is the evidence the rules above were derived from, kept here so
+the instruction path stays short. The full ledgers are
+[`handoffs/active/coordinator-role-failure-modes-and-refactor.md`](../../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+(R-/AUD-/F- series) and
+[`handoffs/active/session-bus-thin-dispatcher.md`](../../handoffs/active/session-bus-thin-dispatcher.md)
+(C-/H- series).
+
+### 2026-07-27 — standing instructions do not reach running sessions
+
+Observed 2026-07-27, when a heartbeat-refresh rule was added at 21:43Z and a demonstrably active
+agent was still on its 19:45Z heartbeat afterwards. (Ledger: `session-bus-thin-dispatcher.md` M5c.)
+
+### 2026-07-29 — routing intent as prose
+
+Two routed messages were missed on 2026-07-29 because routing intent lived as prose inside
+`payload` ("FOR FABLE-AUDITOR …" in a defect string; "action: DOC FIX requested … relay") and a
+context-economy payload truncation cut exactly the sentences carrying it. No tool could have known
+better.
+
+### 2026-08-12 — CC indistinguishable from assignment
+
+Measured across the fleet's inboxes on 2026-08-12: **499 `action_required` rows, only 86
+sole-target — 83% of what an agent had to triage was not its own** (73–89% per agent). Compounding
+it, the relay set `msg["to"] = target` on every fan-out copy, so **100% of delivered rows looked
+directly addressed**. A triage queue that is 83% other people's work stops being read, and then the
+17% that *was* yours is lost too.
+
+### 2026-08-12 — the one-way lint
+
+The old lint only ever pushed the bit ON, which is half of how 499 rows accumulated with 86 sole
+targets.
+
+### AUD-2, 2026-08-12 — an untyped dispatch payload
+
+Measured: **171 distinct payload keys across 55 `task-assign` messages.**
+
+### Anchor rot, 2026-08-11 — `file.md:LINE` is not an identity
+
+Anchor rot measured **34.5% queue-wide** on 2026-08-11 (27% twelve days earlier).
+
+### Screening, 2026-08-12 — well-formed is not still-needed
+
+Four of eight rows screened on 2026-08-12 were already satisfied.
+
+### F-14 — dispatched shallow
+
+Seconds-long work was queued at a card that needed hours, and nothing in the dispatch made the
+mismatch expressible; a card was fed 40-second sweeps while every occupancy instrument read idle.
+(Ledger: `coordinator-role-failure-modes-and-refactor.md` F-14.)
+
+### F-20 — an invented roster constraint
+
+A brief asserted `lanes: [none]` the roster never imposed. (Ledger:
+`coordinator-role-failure-modes-and-refactor.md` F-20.)
+
+### 2026-08-11/12 — the overnight pick storm
+
+Overnight 2026-08-11/12 the tick emitted **4,602 would-assign picks resolving to 9 distinct rows
+from ONE file** — nothing in the pick path had ever re-derived whether those rows were still real.
+
+### AUD-4, 2026-08-12 — five omitted corrections
+
+Five corrections were silently missing from the 2026-08-12 wrap-up — not because anyone decided to
+omit them, but because a correction looked like any other `finding`, so nothing could enumerate
+them and the omission was invisible on both sides.
+
+### C49 / C20, 2026-08-12 — operator items were inferred, and wrongly
+
+Measured 2026-08-12 over 267 live inbox rows: 116 carried `action_required` (which means a NAMED
+AGENT must act next, never the operator), only 8 satisfied the old C20 predicate, and just 7
+overlapped — near-disjoint sets, misclassifying in both directions. Every one of those 8 was
+`kind: defect`, and **not one was a `token-request`**. The daemon had escalated "11
+operator-decision items unread past deadline"; a parse of all 17 found **zero** genuine operator
+items.
+
+### C27, 2026-07-29 — two gates never presented
+
+`RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729` (10:18Z) and
+`RATIFY-E8-FINAL-C1-RETRY-CAPACITYFIX-20260729` (11:16Z), both `needs_routing_to:
+[coordinator-agent]`, both `action_required`. Cause: `relay_tokens`, the only writer of gate
+blocks, ran only inside `apply_assignment` (`authority: assign`) while the live config is `manual`;
+and `token-request` was excluded from the always-on relay *because `relay_tokens` was named as its
+handler*.
+
+### C23, 2026-07-29 — a repeated payload is bus noise by construction
+
+19 identical `triage-disposition-post-standdown` rows once made up 40% of a 48-item queue: 19
+distinct corr_ids, 19 distinct ids, relayed 1:1. (The 2026-08-11 replacement measurement — nine
+identical payloads in ten minutes from a main following the old rule correctly — is held in full
+at `session-bus-thin-dispatcher.md` → C23.)
+
+### BUS-GATE receipts — an unadopted join has no ground truth
+
+An earlier attempt mis-flagged 11 of 25 scripts, because superseded and repaired scripts never
+receive receipts.

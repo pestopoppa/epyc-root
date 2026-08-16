@@ -123,6 +123,12 @@ worker_pool:
   # D6: kill is allowed at lease expiry, loss is not. Grace before SIGKILL, then
   # MANDATORY salvage to a salvage/<task_id> ref.
   lease_grace_s: 60
+  # The runner refuses to spawn until this names the ratification, because a
+  # runner that enforces a lease can kill. D6 was ratified by the operator on
+  # 2026-08-15 (recorded in docs/design/loop-owned-fleet.html, "RATIFIED
+  # (amended)"); the protocol text it authorises is BUS_PROTOCOL.md rule 8,
+  # amended 2026-08-16 — pool workers only, interactive reclaim unchanged.
+  rule8_amendment_ack: "D6 ratified 2026-08-15 (plan of record: docs/design/loop-owned-fleet.html); BUS_PROTOCOL.md rule 8 amendment 2026-08-16"
   # P2-6: rows from the same source handoff may share one invocation.
   max_rows_per_batch: 3
   pool_root: /mnt/raid0/llm/worktrees/pool
