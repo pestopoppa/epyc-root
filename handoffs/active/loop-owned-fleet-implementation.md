@@ -256,6 +256,29 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       the lane-retirement path; its `.orphan` backup was handled in P0-8). The reviewer function
       lives on as per-packet headless invocations.
 
+## Open defect — the pool cannot reach its own concurrency bound
+
+- [ ] **PD-1 — `max_concurrent_workers: 4` is unreachable through the daemon.**
+      Surfaced by the P3-4 rework 2026-08-16 and confirmed independently.
+      `compute_advice` skips any agent already in `busy_owners`, and `busy_owners`
+      is keyed on the queue row's `owner`. The entire pool is ONE roster identity
+      (`workerpool`), so the first row assigned to it makes the whole pool "busy"
+      and no second row is picked until that row clears. The pool therefore
+      serializes at ONE row at a time, whatever `max_concurrent_workers` says.
+      The pilot reached three concurrent workers only because they were dispatched
+      BY HAND with `--pilot-override`, bypassing the picker — so the measured
+      throughput does not demonstrate the automatic path.
+      Deliberately NOT alarmed on: the condition is continuously true, so an alarm
+      would be permanently on, which is the exact failure P3-4 exists to end. It is
+      visible in every tick's `fleet-health` advisory via `capacity_free` /
+      `in_flight` / `dispatchable`.
+      Fix shapes, none chosen yet: per-lane roster identities (`workerpool-lane0..3`);
+      or make `busy_owners` count in-flight rows per owner against a declared cap
+      rather than treating owner-present as owner-busy; or let the runner itself pull
+      the next eligible row rather than waiting to be assigned one.
+      D1's bound is honest as a CEILING — nothing exceeds 4 — but it is not yet
+      achievable, and the >40% duty-cycle target assumes it is.
+
 ## Pulled by need (NOT scheduled — do not start without a measured consumer)
 
 - [ ] PN-1 Liveness / escalation classifiers — only if interactive-session volume returns.
