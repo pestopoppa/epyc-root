@@ -131,7 +131,17 @@ EXIT_UNRECORDABLE = 4
 EXIT_USAGE = 64
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-BUS_ROOT = REPO_ROOT / "coordination" / "session-bus"
+
+# NOT __file__-relative -- see session_bus.get_bus_root(). Found by the sweep in
+# tests/test_bus_root_resolution.py, not by review: this file was written and
+# ratified on 2026-08-16, AFTER the 2026-08-12 audit that named the other three
+# offenders, so no per-file assertion was ever going to cover it. An alarm run
+# from a lane worktree would have written its dedup state to a private bus root
+# and re-fired an alarm the canonical state had already suppressed.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from session_bus import get_bus_root  # noqa: E402
+
+BUS_ROOT = get_bus_root()
 
 DEFAULT_CONFIG_PATH = BUS_ROOT / "alarm_config.yaml"
 DEFAULT_STATE_PATH = BUS_ROOT / "alarm_state.json"

@@ -48,9 +48,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import row_intake  # noqa: E402  (path-relative sibling, same directory)
 
+from session_bus import get_bus_root  # noqa: E402  (sibling; path inserted above)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HANDOFFS = REPO_ROOT / "handoffs" / "active"
-BUS_ROOT = REPO_ROOT / "coordination" / "session-bus"
+
+# NOT __file__-relative -- see session_bus.get_bus_root(). Every lane worktree
+# carries its own `coordination/session-bus/` on disk, so deriving this from
+# __file__ gave one private bus per worktree. `:221` writes an agent's OUTBOX
+# here, so the failure mode was a silently dropped message, not an error.
+BUS_ROOT = get_bus_root()
 
 OPEN_BOX = re.compile(r"^\s*-\s*\[ \]\s*(?P<text>.+)$")
 # An explicit task token the handoff already uses, e.g. `**AFC-P5.0 — …` or `**M4 —`.
