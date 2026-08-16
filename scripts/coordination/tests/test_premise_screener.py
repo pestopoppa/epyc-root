@@ -268,19 +268,44 @@ class ClientFailureTests(unittest.TestCase):
         self.assertEqual(out["provenance"]["llm_calls"], 0)
 
     def test_no_client_and_nothing_reachable(self):
-        """With discovery pointed at a dead port, the module must return unknown
-        rather than raise — `worker_runner.py` calls this in its preflight."""
+        """With NOTHING reachable, the module returns unknown rather than raising —
+        `worker_runner.py` calls this in its preflight.
+
+        AMENDED 2026-08-16: "nothing reachable" now has a third tier to silence.
+        A last-resort harness-CLI client was added after every model endpoint on
+        this host was measured refused (:8000, :8070, :8072, :8080), which would
+        otherwise have made every open row screen `unknown` and blocked the whole
+        worker pool whenever the serving stack was down. So this test must stub
+        out the CLI tier too, or it is really asserting "no HTTP endpoint" while
+        claiming to assert "no model at all" — a test passing for a reason other
+        than the one it names.
+        """
         saved = ps._DEFAULT_ENDPOINTS
         ps._DEFAULT_ENDPOINTS = ("http://127.0.0.1:1/v1",)
         saved_orch = ps._ORCHESTRATOR_BASE
         ps._ORCHESTRATOR_BASE = "http://127.0.0.1:1"
+        saved_cli = ps._resolve_harness_cli
+        ps._resolve_harness_cli = lambda **_kw: None
         try:
             out = ps.screen_premise(dict(UNRESOLVABLE_ROW), discovery_timeout_s=0.25)
         finally:
             ps._DEFAULT_ENDPOINTS = saved
             ps._ORCHESTRATOR_BASE = saved_orch
+            ps._resolve_harness_cli = saved_cli
         self._assert_unknown(out, "no reachable model means undetermined")
         self.assertIn("no model server answered", out["provenance"]["client"]["error"])
+
+    def test_harness_cli_is_the_last_tier_not_the_first(self):
+        """The CLI tier must never pre-empt a reachable HTTP endpoint.
+
+        It cannot honour temperature/seed, so a verdict through it is recorded
+        non-deterministic; letting it win over a deterministic endpoint would
+        silently make every verdict unreproducible.
+        """
+        src = Path(ps.__file__).read_text(encoding="utf-8")
+        body = src[src.index("def resolve_client("):]
+        self.assertLess(body.index("discover_endpoint("), body.index("_resolve_harness_cli("),
+                        "HTTP discovery must be attempted before the harness CLI")
 
     def test_garbage_row_input(self):
         for bad in (None, [], "a string", 7):
