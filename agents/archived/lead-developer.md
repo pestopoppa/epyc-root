@@ -32,12 +32,16 @@ Own architecture-level decisions and technical sequencing within a session. Cros
 
 ## Delegation Matrix
 
-- Implementation and deep debugging: `agents/research-engineer.md`
-- Measurement and comparative analysis: `agents/benchmark-analyst.md`
-- Build system problems: `agents/build-engineer.md`
-- Host and runtime configuration: `agents/sysadmin.md`
-- Risk gating before sensitive actions: `agents/safety-reviewer.md`
-- Report and narrative updates: `agents/research-writer.md`
+**Historical.** The six persona targets below were archived alongside this file on 2026-08-16
+(`agents/archived/README.md`); work is not assigned by persona here. Paths point at the archived
+locations so they resolve — they are a record of the retired layer, not a live dispatch table.
+
+- Implementation and deep debugging: `agents/archived/research-engineer.md`
+- Measurement and comparative analysis: `agents/archived/benchmark-analyst.md`
+- Build system problems: `agents/archived/build-engineer.md`
+- Host and runtime configuration: `agents/archived/sysadmin.md`
+- Risk gating before sensitive actions: `agents/archived/safety-reviewer.md`
+- Report and narrative updates: `agents/archived/research-writer.md`
 - Cross-main sequencing / session-bus coordination: `agents/coordinator-agent.md` (exclusive)
 
 ## Guardrails
