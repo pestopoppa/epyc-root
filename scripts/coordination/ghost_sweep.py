@@ -130,8 +130,36 @@ def read_heartbeat(bus_root: Path, agent: str) -> dict | None:
         return None
 
 
+def exec_endpoint_live(bus_root: Path, roster_row: dict) -> bool | None:
+    """Is a runner actually executing for an `exec:` endpoint? None if untellable.
+
+    An exec endpoint has no tmux window and no heartbeat, so the tmux/pid/age
+    triad reads UNKNOWN for it forever — which means a row assigned to the pool
+    and then abandoned could never be swept. Liveness here is the lane locks:
+    a live pid holding any pool lane means the pool is working.
+    """
+    pool_root = Path("/mnt/raid0/llm/worktrees/pool")
+    if not pool_root.is_dir():
+        return None
+    for lane in sorted(pool_root.glob("lane*")):
+        lock = lane / ".worker.lock"
+        if not lock.exists():
+            continue
+        try:
+            pid = int((lock.read_text(encoding="utf-8").split() or ["0"])[0])
+        except (OSError, ValueError):
+            return None                      # unreadable lock: cannot tell
+        if Path(f"/proc/{pid}").exists():
+            return True
+    return False
+
+
 def sample_owner(bus_root: Path, agent: str, roster: dict) -> dict:
     row = roster.get(agent, {})
+    if str(row.get("endpoint", "")).startswith("exec:"):
+        live = exec_endpoint_live(bus_root, row)
+        return {"retired": row.get("role") == "retired", "in_roster": agent in roster,
+                "exec_endpoint": True, "window": None, "pid_alive": live, "hb_age_s": None}
     hb = read_heartbeat(bus_root, agent)
     hb_age = None
     if hb and hb.get("ts"):
@@ -156,6 +184,12 @@ def judge_owner(s1: dict, s2: dict) -> tuple[str, str]:
     """
     if not s2["in_roster"]:
         return "UNKNOWN", "not a roster id — out of scope for this tool"
+    if s2.get("exec_endpoint"):
+        if s1.get("pid_alive") is None or s2.get("pid_alive") is None:
+            return "UNKNOWN", "exec endpoint: pool lane locks unreadable"
+        if s1["pid_alive"] or s2["pid_alive"]:
+            return "ALIVE", "exec endpoint: a runner holds a pool lane"
+        return "DEAD", "exec endpoint: no runner holds any pool lane"
     if s2["retired"]:
         return "DEAD", "roster role: retired (tombstoned identity)"
 

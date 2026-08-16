@@ -67,27 +67,27 @@ appends a labeled example to the eval fixtures, never a new rule/conjunct to BUS
 Gate: **live-fire drill** — fleet killed ⇒ assignment halts and the operator's push channel receives
 exactly ONE alarm; the cold-start skill brings the supervision tier back and re-verifies.
 
-- [ ] P0-0 Copy the plan of record into `docs/design/loop-owned-fleet.html`; future amendments edit
+- [x] P0-0 Copy the plan of record into `docs/design/loop-owned-fleet.html`; future amendments edit
       the in-repo copy first, republish to the artifact second.
-- [ ] P0-1 Alarm channel: one operator-reachable push mechanism. Present ntfy vs email as a decision
+- [x] P0-1 Alarm channel: one operator-reachable push mechanism. Present ntfy vs email as a decision
       package (options + recommendation) at dispatch — not an open question mid-task. Day-1 sources:
       daemon fleet/runner-dead + supervisor death (the only producers that exist on Day 1);
       queue-aging arrives with P3-3 and aged compute-requests with P3-5, wired to this same channel.
       Emit once on state change, never per tick. Deliverable includes the kill-the-fleet drill script.
-- [ ] P0-2 Fleet-existence gate in the daemon: zero live roster mains ⇒ halt assignment + ONE
+- [x] P0-2 Fleet-existence gate in the daemon: zero live roster mains ⇒ halt assignment + ONE
       critical alarm (not per-task INFRA_BLOCKED). Predicate is explicitly transitional — see P3-4.
-- [ ] P0-3 Ghost-state sweep (D7, operator-signed): enumerate the 14 INFRA_BLOCKED rows + 11
+- [x] P0-3 Ghost-state sweep (D7, operator-signed): enumerate the 14 INFRA_BLOCKED rows + 11
       dead-owner CLAIMED/RUNNING/STALE_REQUEUED rows and claims; verify owner death via process
       table; present the list; on signature, release + reset to READY (or CANCELLED where the
       premise died). Add the standing rule: claims owned by retired ids are daemon-releasable with a
       receipt.
-- [ ] P0-4 Fix `backfill_supervisor.sh` undefined `health_ok` (loop mode always takes the failure
+- [x] P0-4 Fix `backfill_supervisor.sh` undefined `health_ok` (loop mode always takes the failure
       branch); add a test that exercises `loop` — THE consumer, not A consumer.
-- [ ] P0-5 Verify the H-4 SHA deploy-marker predicate is what the RUNNING bus_supervisor executes
+- [x] P0-5 Verify the H-4 SHA deploy-marker predicate is what the RUNNING bus_supervisor executes
       (`ps -o lstart` vs commit time of `bc6dc77f`); restart if stale.
-- [ ] P0-6 Harden `/coordinator-agent` into the D3 cold-start one-shot: relaunch supervisors, verify
+- [x] P0-6 Harden `/coordinator-agent` into the D3 cold-start one-shot: relaunch supervisors, verify
       daemon health (pid identity + SHA marker, never the status file), run the alarm drill, report.
-- [ ] P0-7 Bus runtime off-tree (D5). Scope: RUNTIME DATA ONLY — `queue.jsonl`, `advisory.jsonl`,
+- [x] P0-7 Bus runtime off-tree (D5). Scope: RUNTIME DATA ONLY — `queue.jsonl`, `advisory.jsonl`,
       `claims/`, `tokens/`, `inbox/`, `outbox/`, `cursors/`, `heartbeats/`, and the `*_state.json`
       files move to `/mnt/raid0/llm/bus-runtime/`; tracked policy files (`config.yaml`,
       `BUS_PROTOCOL.md`, `session_bus.schema.json`, `human_only_paths.yaml`) STAY tracked in place.
@@ -96,10 +96,10 @@ exactly ONE alarm; the cold-start skill brings the supervision tier back and re-
       paths separately — enumerate them at implementation). Written rollback: reverse-`mv` + symlink
       removal, daemons quiesced again. **Sequencing: run P0-3 strictly before P0-7, same session** —
       never rewrite the queue while it is being moved. Document the real path for backup tooling.
-- [ ] P0-8 `.orphan` worktree disposal (D7): archive tarball → verify each orphan tip is contained
+- [x] P0-8 `.orphan` worktree disposal (D7): archive tarball → verify each orphan tip is contained
       in a lane branch (push unique commits first if not) → delete by explicit path list. Add runner
       refusal for lane paths matching `*.orphan*` (lands with P2-1).
-- [ ] P0-9 Declare the prose-rule moratorium in force: create `coordination/evals/fixtures/` with
+- [x] P0-9 Declare the prose-rule moratorium in force: create `coordination/evals/fixtures/` with
       the fixture format (`label_provenance` field mandatory) and a README stating the rule.
 
 ## Phase 1 — Doctrine collapse (Days 2–3)
@@ -119,11 +119,59 @@ Gate: ship and fix forward (pure deletion needs no drill); moratorium verified i
 - [ ] P1-4 Move incident narratives out of the instruction path: BUS_PROTOCOL/coordinator-agent.md
       shrink to contracts; narratives live in the ledgers; judgment heuristics become per-decision
       example packs under `coordination/evals/examples/` (future few-shot content).
-- [ ] P1-5 Archive the eight dormant role files (benchmark-analyst … sysadmin) and the amber unwired
+- [x] P1-5 Archive the eight dormant role files (benchmark-analyst … sysadmin) and the amber unwired
       task-flow sections; regenerate the flow doc from wired reality only.
 - [ ] P1-6 Rewrite `agents/coordinator-agent.md` to ~50 lines: identity, invariants pointer,
       choke-point contracts, console role (primary operator channel; no clock ownership; no
       instrument reading; compute-policy editor per amended D4).
+
+### P1-3 rulings (recorded 2026-08-16) — binding
+
+Canonical home: `agents/shared/OPERATING_CONSTRAINTS.md` → *Doctrine rulings — 2026-08-16*.
+Recorded here as well because P1-3 says "recorded here".
+
+- **(a) Wrap-up cadence.** The binding 2026-08-11 operator rule wins: **one task done = one wrap-up,
+  AS YOU GO** — not manual-trigger-only, not session-end. What survives of the "MANUAL TRIGGER ONLY"
+  banner is narrower and real: the two BROAD, DESTRUCTIVE steps (index PRUNING, the wiki compilation
+  sweep) run only inside an operator-invoked `/wrap-up`. Everything else — progress report, checkbox
+  sync, handoff updates, `Next action` refresh, agent log, pathspec commit, lane promotion — runs at
+  every completed task, autonomous and nightshift sessions included. **Nothing may auto-trigger the
+  full routine**: no `Stop`/`SessionEnd`/`PreCompact` hook, no cron, no nightshift task, and there
+  must not be one. `agents/commands/wrap-up.md` and `agents/shared/SESSION_LIFECYCLE.md` were both
+  changed to say this; the ruling itself is unchanged by either.
+- **(b) Subagent index edits.** **A subagent may PREPARE index edits; the owning session APPLIES
+  them and owns the commit.** Drafting row text, running `index_state.py --check` and reporting the
+  exact diff is preparation. Adding, deleting or re-pointing an index row is never a subagent's own
+  write. This reconciles SESSION_LIFECYCLE's "wrap-up may run via a coordinator subagent —
+  preferred" with the standing CLAUDE.md prohibition: both hold, because preparation is not
+  modification. Explicit operator approval is required only to widen it — a subagent writing an
+  index directly. Same rule for intake entries and handoff stubs.
+- **(c) Role-based delegation.** **Decomposition by ROLE is a measured anti-pattern and no live
+  surface may instruct it.** Decompose by CONTEXT BOUNDARY. Confirmed by sweep on 2026-08-16: the
+  eight persona files are archived, the roster (`coordination/session-bus/config.yaml`, closed set
+  `main`/`coordinator-agent`/`reviewer`/`retired`/`service`) is the sole authority on who holds
+  which role, and no live surface routes by persona. Two corrections were needed and made:
+  `docs/guides/agent-workflows/research-writer.md` instructed dispatching "to a session acting in
+  the research-writer role", and `docs/guides/agent-workflows/INDEX.md` carried persona framing in
+  its header. `agents/README.md` → Model Routing (Task-Based) is model-tier-vs-task-difficulty
+  routing, **not** the anti-pattern, and stays. Residual, filed not fixed:
+  `agents/archived/lead-developer.md` still holds a Delegation Matrix whose six backtick paths are
+  now dangling — invisible only because both validators glob `agents/*.md` non-recursively.
+
+### P1 blocker — the doctrine corpus is behind the trust boundary
+
+`agents/shared/*.md`, `CLAUDE.md` and `agents/AGENT_INSTRUCTIONS.md` match the human-only write list
+(`coordination/session-bus/human_only_paths.yaml`), so `scripts/hooks/check_trust_boundary_edit.sh`
+refuses agent Write/Edit on them — by construction, as containment. P1-1's `INVARIANTS.md` and the
+P1-2/P1-3 canonical merges therefore land through the operator/ratify path, not an agent edit:
+
+- Package: `tmp/p1-doctrine/apply_p1_doctrine_collapse.sh` (dry run by default, `--apply` to write,
+  `--only <NAME>` to narrow). Every target sha256-pinned to its current content; drift or a
+  pre-existing `INVARIANTS.md` aborts that item without touching the rest; already-applied items
+  report "already applied". Companion: `tmp/p1-doctrine/PACKAGE.md`.
+- `agents/coordinator-agent.md` (P1-6) is in the same package **only** because it cites
+  `agents/shared/INVARIANTS.md`; the reference guard and `validate_agents_references.py` both refuse
+  a dangling reference, so the two files must land together.
 
 ## Phase 2 — worker_runner MVP + pilot (Days 3–5)
 
@@ -132,11 +180,11 @@ delivery-plane interventions · zero silent permission denials · 100% independe
 operator spot-reviews 3 of 10 · tokens/row within the D1 ceiling. Kill: quality drop or ceiling
 breach ⇒ stop, reassess.
 
-- [ ] P2-0 Pre-create the POOL worktrees: `worktrees/pool/lane0..lane3` (operator-visible step).
+- [x] P2-0 Pre-create the POOL worktrees: `worktrees/pool/lane0..lane3` (operator-visible step).
       **Pilot workers NEVER spawn into mainA–D's lane worktrees while their interactive mains are
       live** — a worker's commit-per-unit or salvage commit in an occupied worktree is the documented
       commit-sweep hazard. mainA–D lanes become available to the pool only after P3-1 retirement.
-- [ ] P2-1 `scripts/coordination/worker_runner.py` (~200 lines target): claim (O_EXCL) → typed brief
+- [x] P2-1 `scripts/coordination/worker_runner.py` (~200 lines target): claim (O_EXCL) → typed brief
       (AUD-2 schema: task_text primary, ≤4KB, screened_by, expected_occupancy, constraints[].source)
       → premise preflight (P2-2) → permission profile injection (P2-3) → pool-lane lockfile (1 worker
       per worktree; refuse non-pool and `*.orphan*` paths until P3-1) → spawn in a VISIBLE tmux pane
@@ -146,35 +194,35 @@ breach ⇒ stop, reassess.
       piece is the collector wait. Includes the `session_bus.schema.json` update: target status set
       is **READY · RUNNING · DONE_PASS · FAILED · HELD_OP_GATE** (5 states); `parked` = READY + a
       `parked_reason` field, salvaged = FAILED + a `salvage_ref` field — annotations, NOT new states.
-- [ ] P2-2 `premise_screener`: point LLM call, forced-choice still-needed | stale | UNKNOWN with a
+- [x] P2-2 `premise_screener`: point LLM call, forced-choice still-needed | stale | UNKNOWN with a
       mandatory evidence quote; UNKNOWN/stale ⇒ park row + routed fix task (refusals emit once, on
       state change, and count as queue-aging). Few-shot examples from `coordination/evals/examples/`;
       eval fixtures with `label_provenance` before any authority promotion.
-- [ ] P2-3 D2b permission profile: per-worker settings allowlist; any denied tool call recorded in
+- [x] P2-3 D2b permission profile: per-worker settings allowlist; any denied tool call recorded in
       the report ⇒ row outcome FAILED/blocked, never silent parity. Interactive-pane prompts remain
       answerable by the operator (D8); unanswered ⇒ lease expiry ⇒ salvage.
-- [ ] P2-4 Kill-with-salvage (D6): lease expiry ⇒ SIGTERM → grace → SIGKILL (owned pid only), then
+- [x] P2-4 Kill-with-salvage (D6): lease expiry ⇒ SIGTERM → grace → SIGKILL (owned pid only), then
       WIP commit of the pool worktree to `salvage/<task_id>`, attach harness transcript + captured
       pane scrollback to the row, mark FAILED + `salvage_ref`. Mutation-test: a salvage that loses
       any file must fail the runner's own test. **Includes the BUS_PROTOCOL rule-8 amendment**
       (pool-worker salvage-kill exception; interactive reclaim stays drain-only) — proposed commit,
       operator ack, merged BEFORE the kill path first runs.
-- [ ] P2-5 Roster + daemon wiring: add `{id: workerpool, role: main, endpoint: "exec:worker_runner"}`
+- [x] P2-5 Roster + daemon wiring: add `{id: workerpool, role: main, endpoint: "exec:worker_runner"}`
       and the daemon endpoint-scheme branch — the ONE schema/code extension the plan permits.
       `worker_harness:` config knob (global + per-lane override), pinned paid provider, concurrency
       cap ≤4, ~250k tokens/batch ceiling (D1). Rollback note: revert = delete the roster row +
       revert the endpoint-scheme commit (both under D9 ack); the daemon must refuse `exec:` endpoints
       it has no branch for, so a half-rollback fails closed.
-- [ ] P2-6 Static batching: rows from the same source handoff share one invocation, cap 3, per-row
+- [x] P2-6 Static batching: rows from the same source handoff share one invocation, cap 3, per-row
       completion records; on timeout only the in-progress row fails, untouched rows return to READY.
-- [ ] P2-7 Headless audit per completion: auditor invocation consumes the pointer packet, derives
+- [x] P2-7 Headless audit per completion: auditor invocation consumes the pointer packet, derives
       the diff from git independently, runs one mutation probe, writes a typed verdict to the bus.
-- [ ] P2-8 Merge cadence: promotion rows serialized through `merge_gate.py` / `serialized_push`, one
+- [x] P2-8 Merge cadence: promotion rows serialized through `merge_gate.py` / `serialized_push`, one
       at a time; part of the 10-row acceptance.
 - [ ] P2-9 Run the pilot: 10 screened churn rows in the POOL worktrees (P2-0), alongside the
       existing fleet (additive; nothing retired). Record tokens/row — mandatory input to the Phase-3
       go decision and the D2 scale-out harness choice.
-- [ ] P2-10 Belief-kernel wiring (CLAUDE.md standing rule — file IMMEDIATELY, not when ready): the
+- [x] P2-10 Belief-kernel wiring (CLAUDE.md standing rule — file IMMEDIATELY, not when ready): the
       completion reports (`subagents_spawned`, tokens/row), audit verdicts, and the duty-cycle /
       self-repair metrics are new measurement producers. Add the source row to
       `scripts/vidya/adapters/README.md` and the wiring task to
@@ -184,7 +232,7 @@ breach ⇒ stop, reassess.
 
 Gate: one full day of backlog churn with zero machine pane-IO for workers.
 
-- [ ] P3-1 Retire mainA–D per identity: drain-verify → final wrap receipt → tombstone marker in the
+- [x] P3-1 Retire mainA–D per identity: drain-verify → final wrap receipt → tombstone marker in the
       roster row → `assignee:` linter refuses new messages to retired ids → cursors archived. NOT
       "re-usable slots" (C24/C28 class).
 - [ ] P3-2 Shrink `tmux_adapter.py` to the two interactive endpoints (machine side); worker panes
@@ -195,12 +243,12 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - [ ] P3-4 Swap the fleet-gate predicate for the ephemeral pool: runner-liveness + "READY>0 ∧
       capacity free ∧ no spawn attempt in N ticks" as the anomaly condition (zero live workers is
       the NORMAL idle state after this phase).
-- [ ] P3-5 D4/D4b compute mechanization: compute policy file (priorities, windows, reservations;
+- [x] P3-5 D4/D4b compute mechanization: compute policy file (priorities, windows, reservations;
       console-edited, edits logged as typed rows) + daemon grant check (region-free ∧ policy-allows)
       + aged-request alarm. All consumers (AutoKernel, AutoPilot, inference, workers) request via the
       same bus path. Amend BUS_PROTOCOL rule 11 accordingly (this is a protocol edit — lands with
       operator ack under D9).
-- [ ] P3-6 First choreography recipe: the operator's CPU-pause → GPU-load → run ∥ resume example as
+- [x] P3-6 First choreography recipe: the operator's CPU-pause → GPU-load → run ∥ resume example as
       a typed, receipt-gated recipe (drain@boundary receipt → load receipt → start + resume);
       approved at the coordination level, stepped through by the daemon.
 - [ ] P3-7 Disposition the `auditor` roster identity: once P2-7 headless audits prove out through

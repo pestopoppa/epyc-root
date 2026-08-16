@@ -161,6 +161,46 @@ worker_pool:
   # types into it and never decides from its text.
   visible_panes: true
 
+  # D2b. The authority a pool worker runs under, as DATA — widening it is a
+  # config diff, never a code change.
+  #
+  # The deny list is the load-bearing half and every entry is an incident, not a
+  # hypothetical. Note what is NOT here: the trust boundary itself
+  # (human_only_paths.yaml, CLAUDE.md, agents/shared/*) is enforced by the
+  # PreToolUse hooks for every agent alike, and duplicating it here would create
+  # a second copy to drift. This list covers what is specific to an unattended
+  # worker.
+  permission_profile:
+    allow:
+      - "Read"
+      - "Grep"
+      - "Glob"
+      - "Edit"
+      - "Write"
+      - "Task"          # a worker fans out its own subagents — that is the multiplier
+      - "Bash(git *)"
+      - "Bash(python3 *)"
+      - "Bash(ls *)"
+      - "Bash(rg *)"
+      - "Bash(pytest *)"
+    deny:
+      # Never a name pattern on a shared host: a pattern is a wildcard over
+      # other sessions' processes, and a guard's own argv contains the names it
+      # guards (origin: INC-20260731 — llama-server was killed twice, and
+      # earlyoom died because its command line names what it protects).
+      - "Bash(pkill *)"
+      - "Bash(pgrep *)"
+      - "Bash(killall *)"
+      # git clean -x deletes ignored files. That is how the bus was destroyed on
+      # 2026-08-12, along with the evidence of who ran it.
+      - "Bash(git clean *)"
+      # prune is what destroyed all five lane worktrees at once on 2026-08-12.
+      - "Bash(git worktree prune *)"
+      # A worker commits its OWN lane. Pushing is serialized elsewhere.
+      - "Bash(git push *)"
+      - "Bash(sudo *)"
+      - "Bash(rm -rf /*)"
+
 authority:
   within_lane: [self]
   cross_main: [operator, coordinator-agent]
