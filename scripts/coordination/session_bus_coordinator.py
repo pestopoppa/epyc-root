@@ -385,19 +385,45 @@ def evaluate_compute_request(policy: dict, agent: str, device: str,
     return "grant", f"{device} free and policy permits {agent}"
 
 
-def _free_pool_lane(config: dict) -> str | None:
-    """A pool lane with no live worker holding its lockfile, or None.
+def _pool_lane_state(config: dict) -> dict:
+    """ONE reading of the pool worktrees: how many lanes, how many held, one free.
 
-    Concurrency is bounded by the lanes that EXIST, not by a number in config:
-    two workers in one worktree is the shared-clone commit-sweep hazard, and
-    scaling past the lanes on disk is a deliberate, operator-visible step.
+    `state` is FOUR-valued and each value means something different to a caller:
+
+        free     — at least one lane is takeable now
+        full     — lanes exist, all are held (or the concurrency cap is reached)
+        missing  — the pool root is not there, or holds no `lane*` worktree at
+                   all. Nothing can ever spawn; that is a DEPLOY DEFECT, not a
+                   busy pool, and P3-4's runner-liveness reads it as BROKEN.
+        unknown  — the directory could not be read. NOT "missing": a blind probe
+                   is not evidence of absence, and P3-4 alarms at nothing on it.
+
+    P3-4 folded the P2-5 `_free_pool_lane` body into this on purpose, so that
+    CAPACITY ("can a worker start?") and OCCUPANCY ("is one running?") are two
+    questions with ONE answer behind them. This file already carries a warning
+    about the four uncoordinated liveness calibrations it inherited; a second,
+    separately-drifting probe of the same lockfiles would be the fifth.
     """
     pool = config.get("worker_pool") or {}
     root = Path(str(pool.get("pool_root") or "/mnt/raid0/llm/worktrees/pool"))
     cap = int(pool.get("max_concurrent_workers") or 4)
-    if not root.is_dir():
-        return None
-    lanes = sorted(d for d in root.iterdir() if d.is_dir() and d.name.startswith("lane"))
+    out: dict[str, Any] = {"state": "unknown", "reason": "", "live": 0, "lanes": 0,
+                           "free_lane": None, "cap": cap, "root": str(root)}
+    try:
+        if not root.is_dir():
+            out["state"] = "missing"
+            out["reason"] = f"pool root {root} is not a directory"
+            return out
+        lanes = sorted(d for d in root.iterdir() if d.is_dir() and d.name.startswith("lane"))
+    except OSError as exc:
+        # UNKNOWN, and it stays UNKNOWN. See the four-valued note above.
+        out["reason"] = f"pool root {root} unreadable: {exc}"
+        return out
+    out["lanes"] = len(lanes)
+    if not lanes:
+        out["state"] = "missing"
+        out["reason"] = f"no lane* worktree under {root}"
+        return out
     live = 0
     free: str | None = None
     for lane in lanes:
@@ -413,14 +439,37 @@ def _free_pool_lane(config: dict) -> str | None:
             live += 1
         elif free is None:
             free = lane.name
+    out["live"] = live
     if live >= cap:
-        return None
-    return free
+        free = None
+    out["free_lane"] = free
+    out["state"] = "free" if free else "full"
+    out["reason"] = (f"lane {free} free ({live}/{cap} workers live)" if free
+                     else f"no free lane ({live} live, cap {cap}, {len(lanes)} lane(s))")
+    return out
+
+
+def _free_pool_lane(config: dict) -> str | None:
+    """A pool lane with no live worker holding its lockfile, or None.
+
+    Concurrency is bounded by the lanes that EXIST, not by a number in config:
+    two workers in one worktree is the shared-clone commit-sweep hazard, and
+    scaling past the lanes on disk is a deliberate, operator-visible step.
+
+    Now a thin projection of `_pool_lane_state` — same verdict, one probe.
+    """
+    return _pool_lane_state(config).get("free_lane")
 
 
 def _exec_worker_runner(bus_root: Path, config: dict, entry: dict, row: dict,
                         tid: str, agent: str, epoch: int) -> list[dict]:
     """Launch one detached worker_runner for this assignment. Never raises."""
+    # P3-4. THE SPAWN-ATTEMPT MARK, and it is taken HERE rather than after a
+    # successful Popen, because the starvation predicate asks whether the loop
+    # REACHED the runner, not whether the runner then succeeded. A failed exec
+    # is a `defect` row and (if it persists) a broken-runner alarm; counting it
+    # as "no attempt" would double-report the same fault as starvation too.
+    _note_spawn_attempt(bus_root, tid, epoch)
     prog = str(entry.get("endpoint") or "").split(":", 1)[1].strip()
     script = Path(__file__).resolve().parent / f"{prog}.py"
     lane = _free_pool_lane(config)
@@ -512,66 +561,322 @@ def _agent_states(bus_root: Path, roster: list[dict]) -> dict[str, dict]:
     return out
 
 
-# ----------------------------------------------------- P0-2 fleet presence
-
-
-# Phase-0 predicate. DELIBERATELY TRANSITIONAL, and P3-4 replaces it.
+# ================================================== P3-4 fleet health gate
 #
-# Today a "main" is a persistent tmux session, so "zero live mains" is an
-# emergency. Once the worker pool is ephemeral (P2/P3), zero live workers
-# becomes the NORMAL idle state and this exact predicate would alarm on every
-# quiet hour — the alarm-that-fires-on-a-well-run-night, which is how a fleet
-# learns to ignore its own alarms. P3-4 swaps it for runner-liveness plus
-# "READY>0 AND capacity free AND no spawn attempt in N ticks".
-FLEET_HEARTBEAT_MAX_AGE_S = 3600.0
+# WHAT THIS REPLACED, AND WHY THE REPLACEMENT IS NOT A REFINEMENT.
+#
+# P0-2 shipped `_fleet_presence`: "zero live roster mains => HALT assignment +
+# one critical `fleet-absent` alarm". Its own comment declared it TRANSITIONAL,
+# and this is the swap it named. The Phase-0 predicate was right for a fleet
+# whose mains were persistent tmux sessions — a session that is gone is an
+# emergency, because nothing will ever come back to read the inbox. It is
+# WRONG, and actively harmful, for the ephemeral worker pool that Phase 2/3
+# built: the pool is exec'd fresh per assignment and holds no session, so
+# ZERO LIVE WORKERS IS THE NORMAL IDLE STATE. Kept as-is, `fleet-absent` would
+# have paged critical on every quiet hour of every well-run night. An alarm
+# that fires when everything is fine is how a fleet learns to ignore its
+# alarms, and being ignorable is the property that let the 2026-08-14 outage
+# run for eleven hours with every internal light blinking correctly.
+#
+# WHAT REPLACES IT IS NOT "THE SAME QUESTION, TUNED". It is two different
+# questions, because "is anybody home" no longer has an answer worth having:
+#
+#   1. RUNNER LIVENESS — is the spawn MECHANISM functional? Three-valued:
+#      functional | broken | unknown. A mechanism, unlike a session, cannot be
+#      "idle": it either works when invoked or it does not.
+#   2. STARVATION — dispatchable work exists AND capacity is free AND the
+#      runner is idle AND no spawn attempt has happened for N consecutive
+#      ticks. This is the loop-is-inert condition, and it is the only thing
+#      that "nobody is running anything" can still legitimately mean.
+#
+# THE PROTECTION P0-2 PROVIDED DID NOT LIVE IN THE HALT. Rows were burned on
+# 2026-08-14 by assigning to DEAD RECIPIENTS, and the thing that stops that is
+# the per-recipient `dead_agents` filter (P0-2b in `compute_advice`) — which
+# reproduced and stopped the bug live on 2026-08-16 and is PERMANENT. The
+# fleet-wide halt only ever added the ALARM on top. So this change retires the
+# halt (zero live workers is normal; halting on it would stop the fleet every
+# night) and re-points the alarm, and P0-2b is untouched.
+#
+# UNKNOWN NEVER ALARMS, ON EITHER BRANCH. Not the raise (paging on a blind
+# instrument is noise), and not the clear (silently resolving a real critical
+# alarm because the instrument went dark is worse than noise). An UNKNOWN
+# reading touches no alarm key at all. This is the same polarity rule
+# `_looks_dead` and `_live_window_names` already enforce, applied one level up.
+
+RUNNER_FUNCTIONAL = "functional"
+RUNNER_BROKEN = "broken"
+RUNNER_UNKNOWN = "unknown"
+
+#: Raised critical when the spawn mechanism is positively broken.
+ALARM_RUNNER_BROKEN = "fleet-runner-broken"
+#: Raised warning when the loop is inert with work, capacity and a live runner.
+ALARM_POOL_STARVED = "fleet-pool-starved"
+#: The retired P0-2 key. Cleared exactly ONCE, then never touched again.
+ALARM_FLEET_ABSENT_RETIRED = "fleet-absent"
+
+#: Consecutive assignment ticks the starvation condition must hold before it is
+#: reported. Two-sample persistence is an invariant of this repo (a condition
+#: read once is a sample, not a state); three is that rule plus one tick of
+#: slack for a queue that changes under a long tick. Overridable as data via
+#: `worker_pool.starvation_ticks`.
+FLEET_STARVATION_TICKS = 3
+
+_FLEET_GATE_STATE = "fleet_gate_state.json"
+_FLEET_GATE_STATE_SCHEMA = "session_bus.fleet_gate_state.v1"
 
 
-def _fleet_presence(bus_root: Path, config: dict, roster: list[dict]) -> dict:
-    """Is there any main that could actually receive an assignment?
+def _starvation_ticks(config: dict) -> int:
+    raw = (config.get("worker_pool") or {}).get("starvation_ticks")
+    try:
+        return max(1, int(raw))
+    except (TypeError, ValueError):
+        return FLEET_STARVATION_TICKS
 
-    Built on `_live_window_names` + `_looks_dead` ON PURPOSE, rather than a
-    fresh tmux probe. This repo already carried FOUR uncoordinated calibrations
-    of "is this session alive" — different busy-markers, different glyph
-    tables, different staleness constants — and their disagreements are a large
-    part of the failure record. A fifth would be a defect, not a feature, so
-    this gate is a FOLD over the existing audited predicate.
 
-    UNREADABLE IS NOT ABSENT. If tmux cannot be read at all, the fleet reports
-    PRESENT: halting on a blind instrument would be the fail-closed twin of the
-    08-14 failure, and `_looks_dead` already refuses to read an unreadable tmux
-    as proof of death.
+def _read_fleet_gate_state(bus_root: Path) -> dict:
+    """The gate's own durable memory. An unreadable one reads as EMPTY.
+
+    Empty means tick 0, no spawn ever recorded, no alarm ever raised — i.e. the
+    counters restart and nothing is asserted about the past. That is the safe
+    direction: a lost state file delays a starvation report by N ticks, whereas
+    inventing history from it would manufacture one.
     """
-    candidates = [r for r in roster
-                  if str(r.get("role", "")).strip() in ("main", "reviewer")]
-    if not candidates:
-        return {"present": True, "reason": "roster declares no mains — nothing to gate",
-                "live": [], "checked": []}
+    try:
+        data = json.loads((bus_root / _FLEET_GATE_STATE).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+    return data if isinstance(data, dict) else {}
 
-    windows, windows_why = _live_window_names(config)
-    states = _agent_states(bus_root, roster)
 
-    live, checked = [], []
-    for entry in candidates:
+def _write_fleet_gate_state(bus_root: Path, state: dict) -> None:
+    """Persist it. A write failure is SILENT AND SAFE, deliberately.
+
+    If this file cannot be written the tick counter never advances, so
+    `starvation_ticks` never reaches N and no alarm is ever raised from it. A
+    gate that cannot remember must not page; it must go quiet. The `defect`
+    channel is not used here either, because a broken bus_root already produces
+    louder failures upstream in the same tick.
+    """
+    state["schema_version"] = _FLEET_GATE_STATE_SCHEMA
+    state["ts"] = _utcnow_iso()
+    try:
+        _write_atomic(bus_root / _FLEET_GATE_STATE, state)
+    except OSError:
+        pass
+
+
+def _note_spawn_attempt(bus_root: Path, tid: str, epoch: int) -> None:
+    """Record that the daemon HANDED WORK TO THE RUNNER on this tick.
+
+    An ATTEMPT, not a success: see the call site in `_exec_worker_runner`.
+    Stamped against the gate's own tick counter rather than `epoch`, because
+    `epoch` counts daemon GENERATIONS (it increments on restart), not ticks —
+    reading it as a tick number would make "no spawn in 3 ticks" true forever
+    on a daemon that never restarts.
+    """
+    state = _read_fleet_gate_state(bus_root)
+    state["last_spawn_attempt_tick"] = int(state.get("tick") or 0)
+    state["last_spawn_attempt_ts"] = _utcnow_iso()
+    state["last_spawn_attempt_task"] = tid
+    state["last_spawn_attempt_epoch"] = epoch
+    _write_fleet_gate_state(bus_root, state)
+
+
+def _exec_identities(roster: list[dict]) -> set[str]:
+    return {str(r.get("id", "")).strip() for r in roster if _is_exec_endpoint(r)}
+
+
+def _runner_liveness(config: dict, roster: list[dict], lane_state: dict) -> dict:
+    """Is the spawn MECHANISM functional? -> functional | broken | unknown.
+
+    Order of the questions is the whole design, because each one moves a
+    different failure into a different bucket:
+
+      1. Is there a runner endpoint at all? No => UNKNOWN. A roster with no
+         `exec:` row (every pre-P2-5 config, and every unit test that does not
+         build one) asserts nothing about a mechanism it does not declare.
+      2. Is the pool switched off by policy? Yes => UNKNOWN, flagged
+         `policy_disabled`. `worker_pool.enabled: false` is an OPERATOR
+         DECISION, not a fault. Paging critical because the operator turned the
+         pool off is the same class of defect as paging because the night was
+         quiet — and it is why this is not simply folded into `broken`.
+      3. Is the program there and readable? No => BROKEN. The roster names a
+         program that does not exist: that is the schedulable-but-not-executable
+         shape of 2026-08-14, and it is determinate — no instrument can be
+         "unsure" whether a file exists.
+      4. Do the pool worktrees exist? No => BROKEN. Same argument; a pool root
+         that vanished can never spawn, and P2-0 pre-created those lanes as an
+         operator-visible step. UNREADABLE (as opposed to absent) => UNKNOWN.
+
+    `_exec_endpoint_ready` is called with `config=None` on purpose: its policy
+    branch was already answered at step 2, and passing config would collapse
+    "the operator disabled it" and "the program is missing" back into one
+    string — the distinction this function exists to make.
+    """
+    execs = [r for r in roster
+             if _is_exec_endpoint(r) and str(r.get("role", "")).strip() in ("main", "service")]
+    checked = [str(r.get("id", "")).strip() for r in execs]
+    if not execs:
+        return {"runner": RUNNER_UNKNOWN, "checked": [], "policy_disabled": False,
+                "reason": ("roster declares no exec: runner endpoint — nothing is "
+                           "asserted about a mechanism that is not deployed")}
+    pool = config.get("worker_pool") or {}
+    if not pool.get("enabled", False):
+        return {"runner": RUNNER_UNKNOWN, "checked": checked, "policy_disabled": True,
+                "reason": ("worker_pool.enabled is false — the pool is switched OFF by "
+                           "policy, so its health is not being exercised and is not "
+                           "asserted either way")}
+    broken: dict[str, str] = {}
+    ready: list[str] = []
+    for entry in execs:
         aid = str(entry.get("id", "")).strip()
-        checked.append(aid)
-        if _is_exec_endpoint(entry):
-            if _exec_endpoint_ready(entry, config) is None:
-                live.append(aid)
-            continue
-        if _looks_dead(aid, entry, states, windows, windows_why) is None:
-            live.append(aid)
+        why = _exec_endpoint_ready(entry, None)
+        if why is None:
+            ready.append(aid)
+        else:
+            broken[aid] = why
+    if not ready:
+        detail = "; ".join(f"{k}: {v}" for k, v in sorted(broken.items()))
+        return {"runner": RUNNER_BROKEN, "checked": checked, "policy_disabled": False,
+                "broken": broken,
+                "reason": f"no runnable exec endpoint ({detail})"}
+    lane_verdict = str(lane_state.get("state") or "unknown")
+    if lane_verdict == "missing":
+        return {"runner": RUNNER_BROKEN, "checked": checked, "policy_disabled": False,
+                "ready": ready,
+                "reason": (f"runner program present but the pool worktrees are gone: "
+                           f"{lane_state.get('reason')}")}
+    if lane_verdict == "unknown":
+        return {"runner": RUNNER_UNKNOWN, "checked": checked, "policy_disabled": False,
+                "ready": ready,
+                "reason": f"pool worktrees unreadable — {lane_state.get('reason')}"}
+    return {"runner": RUNNER_FUNCTIONAL, "checked": checked, "policy_disabled": False,
+            "ready": ready,
+            "reason": (f"runner ready: {', '.join(sorted(ready))}; "
+                       f"{lane_state.get('reason')}")}
 
-    if live:
-        return {"present": True, "reason": f"live mains: {', '.join(sorted(set(live)))}",
-                "live": sorted(set(live)), "checked": checked}
-    if windows is None:
-        return {"present": True,
-                "reason": f"tmux unreadable ({windows_why}) — UNKNOWN, and unknown never halts",
-                "live": [], "checked": checked}
-    return {"present": False,
-            "reason": (f"no live main among {len(candidates)} ({', '.join(checked)}): "
-                       f"no live window and no fresh heartbeat"),
-            "live": [], "checked": checked}
+
+def _dispatchable_for_runner(roster: list[dict], latest: dict[str, dict], snapshot: dict,
+                             token_text: str, co_ctx: dict | None) -> tuple[list[str], list[str]]:
+    """Rows the daemon could hand the pool RIGHT NOW -> (task_ids, pool lanes).
+
+    THE FOLD IS THE POINT, and getting it wrong is the nightly-alarm bug in one
+    line. `status == "READY"` is NOT dispatchable work: a row refused by
+    `dispatch_gate` (unscreened, or with no occupancy estimate) stays READY
+    forever — that is exactly what the gate does to it — and a starvation
+    predicate reading raw READY would therefore be TRUE every night from the
+    moment the first ungated row was seeded, with the loop behaving perfectly.
+    Measured basis for that claim: the C50/R-16 refusal classes are the
+    steady-state contents of this queue, not an exception.
+
+    So a row counts only if BOTH admission tests the write path applies would
+    admit it — `_eligible` (status, deps, operator gates, anchor, lane, load,
+    co-residency) AND `dispatch_gate` (screened_by, expected_occupancy) — and
+    only if its lane is one the POOL can actually take. A gpu row the pool may
+    never serve is not the pool starving; it is a row for somebody else.
+    """
+    lanes: set[str] = set()
+    for entry in roster:
+        if _is_exec_endpoint(entry) and str(entry.get("role", "")).strip() == "main":
+            lanes.update(entry.get("lanes") or [])
+    ids: list[str] = []
+    for row in latest.values():
+        if row.get("lane") not in lanes:
+            continue
+        ok, _why = _eligible(row, latest, snapshot, token_text, co_ctx)
+        if not ok:
+            continue
+        gate_ok, _code, _reason = dispatch_gate(row)
+        if not gate_ok:
+            continue
+        ids.append(str(row.get("task_id")))
+    return sorted(ids), sorted(lanes)
+
+
+def evaluate_fleet_health(bus_root: Path, config: dict, roster: list[dict],
+                          latest: dict[str, dict], tick_no: int, prev: dict) -> dict:
+    """The P3-4 predicate. Reads host + queue state, writes nothing, halts nothing.
+
+    THE STARVATION CONJUNCTION, and why each conjunct is load-bearing:
+
+      runner == functional   Starvation is only meaningful about a mechanism
+                             that works. broken has its own alarm; unknown has
+                             none by construction.
+      runner is IDLE         A pool with a worker running is not starving, it is
+                             working. Without this conjunct a healthy 40-minute
+                             worker holding the single `workerpool` identity
+                             (which `compute_advice` skips while it owns a live
+                             row) would read as starved for 40 minutes, every
+                             time — the nightly-alarm bug re-entering through
+                             the back door.
+      capacity free          A full pool is a saturated pool. Nothing to report.
+      dispatchable > 0       Folded through `_eligible` + `dispatch_gate`, never
+                             raw READY. See `_dispatchable_for_runner`.
+      no spawn THIS tick     The tick that just spawned is not a starved tick.
+
+    The count is of CONSECUTIVE ticks the whole conjunction held, not of ticks
+    since the last spawn. Those differ in exactly the case that matters: after a
+    genuinely quiet night, "ticks since last spawn" is in the thousands, so the
+    first row seeded at 06:00 would trip the alarm on the tick it arrived —
+    before the daemon had a chance to dispatch it. Counting consecutive
+    condition-ticks instead means the clock only runs while work is actually
+    sitting there un-dispatched. The two formulations agree on the thing P3-4
+    was asked for: N consecutive condition-ticks implies no spawn attempt in
+    those N ticks, because "no spawn this tick" is one of the conjuncts.
+    """
+    snapshot = lane_snapshot_cached()
+    co_ctx = co_residency_cached(config)
+    try:
+        token_text = (bus_root / "tokens" / "token-queue.md").read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        token_text = ""
+
+    lane_state = _pool_lane_state(config)
+    runner = _runner_liveness(config, roster, lane_state)
+    dispatchable, pool_lanes = _dispatchable_for_runner(roster, latest, snapshot,
+                                                        token_text, co_ctx)
+    exec_ids = _exec_identities(roster)
+    in_flight = sorted(str(tid) for tid, row in latest.items()
+                       if row.get("owner") in exec_ids
+                       and row.get("status") in ("ASSIGNED", "CLAIMED", "RUNNING"))
+    spawned_this_tick = int(prev.get("last_spawn_attempt_tick") or -1) == tick_no
+    # UNKNOWN lane state is not idle and not free: both readings below stay
+    # False, so an unreadable pool root can only ever silence this alarm.
+    idle = lane_state.get("state") in ("free", "full") and not lane_state.get("live") \
+        and not in_flight
+    capacity_free = lane_state.get("state") == "free"
+
+    condition = bool(runner["runner"] == RUNNER_FUNCTIONAL and idle and capacity_free
+                     and dispatchable and not spawned_this_tick)
+    held = int(prev.get("starvation_ticks") or 0) + 1 if condition else 0
+    need = _starvation_ticks(config)
+    starved = condition and held >= need
+
+    return {
+        "tick": tick_no,
+        "runner": runner["runner"],
+        "runner_reason": runner["reason"],
+        "runner_checked": runner.get("checked") or [],
+        "policy_disabled": bool(runner.get("policy_disabled")),
+        "pool_lanes": pool_lanes,
+        "lane_state": {k: lane_state.get(k) for k in ("state", "live", "lanes",
+                                                      "free_lane", "cap", "reason")},
+        "capacity_free": capacity_free,
+        "runner_idle": bool(idle),
+        "in_flight": in_flight,
+        "dispatchable": len(dispatchable),
+        "dispatchable_ids": dispatchable[:8],
+        "spawned_this_tick": spawned_this_tick,
+        "last_spawn_attempt_tick": prev.get("last_spawn_attempt_tick"),
+        "last_spawn_attempt_ts": prev.get("last_spawn_attempt_ts"),
+        "starvation_ticks": held,
+        "starvation_ticks_required": need,
+        "starved": bool(starved),
+        # REPORTS, NEVER HALTS. Kept as an explicit field so the contract is
+        # visible at the call site and a future edit that reintroduces a halt
+        # has to change a stated value rather than slip past a comment.
+        "halt_assignment": False,
+    }
 
 
 def _alarm(bus_root: Path, action: str, key: str, severity: str = "critical",
@@ -597,15 +902,129 @@ def _alarm(bus_root: Path, action: str, key: str, severity: str = "critical",
         pass
 
 
-def _raise_fleet_alarm(bus_root: Path, fleet: dict, epoch: int) -> None:
-    _alarm(bus_root, "raise", "fleet-absent", "critical",
-           f"Assignment HALTED: {fleet['reason']}",
-           {"checked": fleet["checked"], "epoch": epoch,
-            "action": "spawn the fleet, or run the /coordinator-agent cold start"})
+def _sync_alarm(bus_root: Path, raised: dict, key: str, want: Optional[bool],
+                severity: str, message: str, evidence: dict, epoch: int) -> list[dict]:
+    """Drive ONE alarm key from a three-valued want. Mutates `raised` in place.
+
+        want is True   -> raise. Called on EVERY tick the condition holds, and
+                          that is deliberate: `alarm_channel` is the
+                          authoritative deduper (it notifies only on the
+                          inactive -> active transition and counts the rest),
+                          so re-asserting is free of noise and self-heals if the
+                          two state files ever disagree.
+        want is False  -> clear, but ONLY on the true -> false edge, tracked
+                          here. `clear_alarm` on an inactive key is already a
+                          silent no-op, so an unconditional clear would be
+                          correct and also a subprocess spawned for nothing on
+                          every tick forever. THIS BRANCH IS WHY A QUIET
+                          HEALTHY NIGHT COSTS ZERO ALARMS AND ZERO WORK: `want`
+                          is False, `raised` is empty, nothing runs.
+        want is None   -> DO NOT TOUCH THE KEY. The UNKNOWN reading. Not a
+                          raise (paging on a blind instrument) and not a clear
+                          (resolving a real critical alarm because the
+                          instrument went dark, which would be strictly worse).
+    """
+    if want is None:
+        return []
+    now = _utcnow_iso()
+    if want:
+        first = not raised.get(key)
+        _alarm(bus_root, "raise", key, severity, message, evidence)
+        raised[key] = True
+        if not first:
+            return []          # already reported; the channel suppresses, so do we
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": now, "epoch": epoch,
+                 "kind": "fleet-alarm", "alarm": key, "state": "raised",
+                 "severity": severity, "reason": message}]
+    if raised.get(key):
+        _alarm(bus_root, "clear", key)
+        raised.pop(key, None)
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": now, "epoch": epoch,
+                 "kind": "fleet-alarm", "alarm": key, "state": "cleared",
+                 "reason": message}]
+    return []
 
 
-def _clear_fleet_alarm(bus_root: Path, epoch: int) -> None:
-    _alarm(bus_root, "clear", "fleet-absent")
+def _retire_fleet_absent_alarm(bus_root: Path, state: dict) -> bool:
+    """Clear the retired P0-2 key ONCE, ever. True if this call did it.
+
+    P0-2's `fleet-absent` could be ACTIVE at the moment this predicate lands —
+    the pool ships `enabled: false`, and the old gate read that as "no live
+    main". Deleting the code that raised it would then leave a critical alarm
+    active on the operator's channel with nothing left alive to resolve it: a
+    retired alarm that never clears is indistinguishable from an ignored one.
+
+    Guarded by a durable marker rather than run every tick because `clear_alarm`
+    on an inactive key is a no-op that still costs a subprocess. If the key was
+    not active, the channel notifies nobody and this is invisible — which is the
+    correct outcome, not a reason to skip the call.
+    """
+    if state.get("fleet_absent_retired"):
+        return False
+    _alarm(bus_root, "clear", ALARM_FLEET_ABSENT_RETIRED)
+    state["fleet_absent_retired"] = True
+    state["fleet_absent_retired_ts"] = _utcnow_iso()
+    return True
+
+
+def fleet_health_pass(bus_root: Path, config: dict, roster: list[dict],
+                      latest: dict[str, dict], epoch: int, tick_no: int,
+                      prev: dict) -> list[dict]:
+    """Evaluate P3-4, drive the two alarm keys, persist the counters.
+
+    Returns advisory rows. Writes the gate state file and (only on a state
+    change) the alarm channel. NEVER halts, refuses or rewrites a queue row —
+    the whole content of "the fleet gate no longer halts" is that this function
+    has no way to.
+    """
+    health = evaluate_fleet_health(bus_root, config, roster, latest, tick_no, prev)
+    raised = dict(prev.get("raised_alarms") or {})
+
+    runner_state = health["runner"]
+    want_broken: Optional[bool] = {RUNNER_BROKEN: True,
+                                   RUNNER_FUNCTIONAL: False}.get(runner_state)
+    # Starvation is EVALUATED ONLY WHEN THE RUNNER READS FUNCTIONAL. Under
+    # broken it would be a second report of one fault; under unknown it would be
+    # a verdict from a blind instrument. Both leave the key exactly as it was.
+    want_starved: Optional[bool] = (bool(health["starved"])
+                                    if runner_state == RUNNER_FUNCTIONAL else None)
+
+    rows: list[dict] = []
+    rows += _sync_alarm(
+        bus_root, raised, ALARM_RUNNER_BROKEN, want_broken, "critical",
+        f"Worker runner is BROKEN: {health['runner_reason']}",
+        {"runner": runner_state, "checked": health["runner_checked"],
+         "lane_state": health["lane_state"], "epoch": epoch, "tick": tick_no,
+         "action": ("verify scripts/coordination/worker_runner.py and the pool "
+                    "worktrees, then re-run the daemon tick; assignment is NOT "
+                    "halted, so rows will queue rather than burn")},
+        epoch)
+    rows += _sync_alarm(
+        bus_root, raised, ALARM_POOL_STARVED, want_starved, "warning",
+        (f"Worker pool STARVED: {health['dispatchable']} dispatchable row(s), "
+         f"lane {health['lane_state'].get('free_lane')} free, no spawn attempt for "
+         f"{health['starvation_ticks']} tick(s)"),
+        {"dispatchable": health["dispatchable"], "sample_ids": health["dispatchable_ids"],
+         "lane_state": health["lane_state"], "pool_lanes": health["pool_lanes"],
+         "last_spawn_attempt_ts": health["last_spawn_attempt_ts"],
+         "starvation_ticks": health["starvation_ticks"], "epoch": epoch, "tick": tick_no,
+         "action": ("the pick loop is not reaching the runner: check the workerpool "
+                    "roster row's role/lanes and the P0-2b dead-agent filter's verdict "
+                    "on it in this tick's would-skip rows")},
+        epoch)
+
+    state = dict(prev)
+    state["tick"] = tick_no
+    state["starvation_ticks"] = health["starvation_ticks"]
+    state["raised_alarms"] = raised
+    state["last_health"] = {k: health[k] for k in
+                            ("runner", "runner_reason", "capacity_free", "runner_idle",
+                             "dispatchable", "starved")}
+    _write_fleet_gate_state(bus_root, state)
+
+    rows.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "fleet-health", **health})
+    return rows
 
 
 # -------------------------------------------------------------- eligibility
@@ -4430,31 +4849,31 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     emitted: list[dict] = []
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
 
-    # ------------------------------------------------------------------ P0-2
-    # FLEET-EXISTENCE GATE. Assignment into an empty fleet is not a task-level
-    # failure and must never be recorded as one.
+    # ------------------------------------------------------------------ P3-4
+    # THE TICK MARK. `epoch` counts daemon generations, not ticks, so the gate
+    # keeps its own counter; `_note_spawn_attempt` stamps against it from inside
+    # the assignment loop, which is why it is written HERE, before any spawn.
     #
-    # Measured 2026-08-14: the roster's tmux windows vanished at ~13:05Z and
-    # nothing put them back. This function kept running, kept picking, and kept
-    # assigning to assignees that did not exist. Each row then walked
-    # ASSIGNED -> lease expiry -> STALE_REQUEUED until `attempt` hit the cap and
-    # it landed in INFRA_BLOCKED, "attempts exhausted after lease expiry".
-    # Fourteen rows were destroyed that way in eleven hours, one row at a time,
-    # while every signal that could have said "there is no fleet" was either
-    # unread or expressed as per-task noise.
-    #
-    # So the verdict is taken ONCE, at the top, before anything is written, and
-    # it produces ONE alarm rather than N terminal rows. `attempts` are a
-    # measure of the WORK's difficulty; spending them on the fleet's absence
-    # corrupts that measure permanently.
-    fleet = _fleet_presence(bus_root, config, roster)
-    if not fleet["present"]:
-        _raise_fleet_alarm(bus_root, fleet, epoch)
-        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
-                 "kind": "assignment-halted", "reason": fleet["reason"],
-                 "detail": ("no live roster main — assignment halted so rows are not "
-                            "burned against an absent fleet (P0-2)")}]
-    _clear_fleet_alarm(bus_root, epoch)
+    # The P0-2 fleet-existence HALT that used to stand at this point is GONE, and
+    # its removal is the substance of P3-4 rather than a side effect. It halted
+    # on "zero live roster mains", which after Phase 3 is the pool's normal idle
+    # state — the halt would have stopped assignment on every quiet hour and
+    # paged critical while doing it. The protection it was credited with lives in
+    # the per-recipient P0-2b `dead_agents` filter in `compute_advice` (rows are
+    # never handed to an absent session), which is untouched and permanent. What
+    # is left of P0-2 here is one thing: its `fleet-absent` alarm key is cleared
+    # exactly once, below, so a retired alarm cannot sit active forever.
+    gate_state = _read_fleet_gate_state(bus_root)
+    tick_no = int(gate_state.get("tick") or 0) + 1
+    gate_state["tick"] = tick_no
+    retired_alarm = _retire_fleet_absent_alarm(bus_root, gate_state)
+    _write_fleet_gate_state(bus_root, gate_state)
+    if retired_alarm:
+        emitted.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                        "epoch": epoch, "kind": "fleet-alarm",
+                        "alarm": ALARM_FLEET_ABSENT_RETIRED, "state": "retired",
+                        "reason": ("P0-2 fleet-existence gate retired by P3-4; the key is "
+                                   "cleared once and never raised again")})
 
     reports = _outbox_reports(bus_root, roster)
 
@@ -4600,6 +5019,23 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         if entry is not None and _is_exec_endpoint(entry):
             emitted.extend(_exec_worker_runner(bus_root, config, entry, row, tid, agent, epoch))
         latest = fold_queue(bus_root)
+
+    # ------------------------------------------------------------------ P3-4
+    # FLEET HEALTH, at the END of the tick and REPORTING ONLY.
+    #
+    # After, not before, and the ordering carries the meaning. Evaluated at the
+    # top it would judge a queue this tick is about to drain: the single row that
+    # `inference` takes two lines later would read as work the pool is starving
+    # on, and a perfectly working loop would page. Evaluated here it reads what
+    # SURVIVED dispatch — rows still eligible, still gated-in, still unassigned,
+    # with the runner idle and a lane free. That is the only shape that means
+    # the loop is inert.
+    #
+    # The state is RE-READ rather than carried down from the top because
+    # `_exec_worker_runner` may have stamped a spawn attempt into it during the
+    # loop above, and that stamp is one of the conjuncts.
+    emitted.extend(fleet_health_pass(bus_root, config, roster, fold_queue(bus_root),
+                                     epoch, tick_no, _read_fleet_gate_state(bus_root)))
     return emitted
 
 
