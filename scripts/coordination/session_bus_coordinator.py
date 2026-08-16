@@ -461,6 +461,30 @@ def _free_pool_lane(config: dict) -> str | None:
     return _pool_lane_state(config).get("free_lane")
 
 
+def _owner_capacity(entry: dict, config: dict) -> int:
+    """How many live rows this owner may hold at once.
+
+    ONE for a session — a tmux main does one task, and that is the behaviour
+    every non-pool agent had before PD-1 and still has.
+
+    For an `exec:` endpoint it is the pool's concurrency, floored by the lanes
+    that actually EXIST rather than by the configured number: a lane is a
+    worktree, two workers in one worktree is the documented commit-sweep hazard,
+    and scaling past the lanes on disk has to be a deliberate operator-visible
+    step. So a config asking for 4 with 2 lanes present grants 2, not 4.
+    """
+    if not _is_exec_endpoint(entry):
+        return 1
+    pool = (config.get("worker_pool") or {})
+    cap = int(pool.get("max_concurrent_workers") or 1)
+    root = Path(str(pool.get("pool_root") or "/mnt/raid0/llm/worktrees/pool"))
+    try:
+        lanes = len([d for d in root.iterdir() if d.is_dir() and d.name.startswith("lane")])
+    except OSError:
+        return 1                       # unreadable pool root: fail to the safe bound
+    return max(1, min(cap, lanes)) if lanes else 1
+
+
 def _exec_worker_runner(bus_root: Path, config: dict, entry: dict, row: dict,
                         tid: str, agent: str, epoch: int) -> list[dict]:
     """Launch one detached worker_runner for this assignment. Never raises."""
@@ -1777,10 +1801,25 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     except Exception:  # noqa: BLE001
         token_text = ""
 
-    busy_owners = {
-        r.get("owner") for r in latest.values()
-        if r.get("status") in {"ASSIGNED", "CLAIMED", "RUNNING"} and r.get("owner")
-    }
+    # PD-1 (2026-08-16). OWNER-PRESENT IS NOT OWNER-BUSY FOR A POOL.
+    #
+    # This was a SET of owners holding a live row, and the skip below treated
+    # membership as "this agent is occupied". That is exactly right for a session
+    # — one tmux main does one task — and exactly wrong for the worker pool,
+    # which is a single roster identity (`workerpool`) fronting up to four
+    # concurrent runners. The first row assigned to it made the whole pool read
+    # busy, so the pool serialised at ONE row no matter what
+    # `max_concurrent_workers` said, and D1's bound was unreachable through the
+    # daemon. The pilot's three concurrent workers were hand-dispatched past the
+    # picker, so they never demonstrated this path.
+    #
+    # Counting rows per owner instead lets an owner with capacity be picked
+    # again. Sessions are unaffected: their capacity is 1, so one live row still
+    # makes them busy, exactly as before.
+    inflight_by_owner: dict[str, int] = {}
+    for r in latest.values():
+        if r.get("status") in {"ASSIGNED", "CLAIMED", "RUNNING"} and r.get("owner"):
+            inflight_by_owner[r["owner"]] = inflight_by_owner.get(r["owner"], 0) + 1
 
     advice: list[dict] = [{
         "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
@@ -1850,10 +1889,21 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
                            "reason": f"agent looks dead ({dead_agents[aid]}) — not assigning "
                                      f"work to an absent session (P0-2b)"})
             continue
-        if aid in busy_owners:
+        # PD-1: capacity, not presence. A session's capacity is 1 (unchanged
+        # behaviour); an `exec:` pool's is its lane count, bounded by
+        # max_concurrent_workers AND by the lanes that actually exist — two
+        # workers in one worktree is the shared-clone commit-sweep hazard, so
+        # the floor is the real directory count, never the configured number.
+        # the ROSTER ENTRY, not the agent-state dict: only the entry carries
+        # `endpoint`, and without it every agent read as a session (capacity 1),
+        # which is the defect this fix exists to remove.
+        _cap = _owner_capacity(_roster_by_id.get(aid) or {}, config)
+        _held = inflight_by_owner.get(aid, 0)
+        if _held >= _cap:
             advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                            "epoch": epoch, "kind": "would-skip", "agent": aid,
-                           "reason": "already holds a live ASSIGNED/CLAIMED/RUNNING task"})
+                           "reason": (f"at capacity: holds {_held} live "
+                                      f"ASSIGNED/CLAIMED/RUNNING task(s), cap {_cap}")})
             continue
         candidates, rejections = [], []
         admit_why: dict[str, str] = {}

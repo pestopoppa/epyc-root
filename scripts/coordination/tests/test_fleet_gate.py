@@ -558,11 +558,16 @@ class MutationGuardTests(unittest.TestCase):
         """P0-2b. PERMANENT — this is the gate that stopped the live 08-16 repro."""
         self.assertIn("dead_agents", self.src,
                       "the per-agent liveness filter vanished from compute_advice")
-        # It must be consulted BEFORE the busy check, or a dead agent that also
-        # holds a stale row would be reported as merely busy and stay eligible.
+        # It must be consulted BEFORE the capacity check, or a dead agent with
+        # free capacity would be handed work. The capacity check was
+        # `if aid in busy_owners:` until PD-1 (2026-08-16) replaced presence with
+        # per-owner capacity accounting — the pool is ONE roster identity fronting
+        # four runners, so owner-present could never mean owner-busy for it. The
+        # ORDER is the invariant here, not the spelling of the second check.
         i_dead = self.src.index("if aid in dead_agents:")
-        i_busy = self.src.index("if aid in busy_owners:")
-        self.assertLess(i_dead, i_busy, "liveness must be checked before busyness")
+        i_cap = self.src.index("_held >= _cap")
+        self.assertLess(i_dead, i_cap,
+                        "liveness must be checked before capacity")
 
     def test_the_fleet_gate_no_longer_halts_assignment(self):
         """P3-4. Zero live workers is the NORMAL idle state; halting on it would

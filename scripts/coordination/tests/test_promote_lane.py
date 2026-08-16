@@ -95,14 +95,14 @@ class PromoteTestCase(unittest.TestCase):
         git(self.target, "commit", "-q", "-m", message)
         return git(self.target, "rev-parse", "HEAD").strip()
 
-    def run_cli(self, *args: str, agent: str = "mainB") -> subprocess.CompletedProcess:
+    def run_cli(self, *args: str, agent: str = "inference") -> subprocess.CompletedProcess:
         return subprocess.run(
             [sys.executable, str(SCRIPT), "promote", "--agent", agent,
              "--target", str(self.target), "--lock-dir", str(self.lock_dir), *args],
             capture_output=True, text=True)
 
     def promote(self, lane: Path, rng: str, *, apply: bool = False,
-                agent: str = "mainB", operator_ack: str | None = None,
+                agent: str = "inference", operator_ack: str | None = None,
                 dwell_s: float = 0.0) -> dict:
         return pl.promote({"task_ids": ["T-1"], "lane_worktree": str(lane),
                            "commit_range": rng},
@@ -166,18 +166,47 @@ class PromotionTests(PromoteTestCase):
 # ---------------------------------------------------------- serialization
 
 
+def _assert_fixture_ids_are_live(*ids: str) -> None:
+    """Fail loudly if a fixture identity has since been RETIRED.
+
+    P3-1 tombstoned mainA-D on 2026-08-16 and this file used them as lock
+    holders; `serialized_push.acquire` refuses a retired id, so three cases went
+    red for a reason that had nothing to do with promotion serialisation. The
+    same thing hit test_routing_intent.py the same day. A retirement is a
+    perfectly ordinary event — the fixture just has to notice it.
+    """
+    import re as _re
+    cfg = (Path(__file__).resolve().parents[3] / "coordination" / "session-bus" / "config.yaml")
+    if not cfg.exists():
+        return
+    text = cfg.read_text(encoding="utf-8")
+    retired = []
+    for i in ids:
+        m = _re.search(rf"\{{id: {_re.escape(i)},\s*role:\s*(\w+)", text)
+        if m and m.group(1) == "retired":
+            retired.append(i)
+    assert not retired, (
+        f"fixture ids {retired} are now role: retired in {cfg}. A retired id is "
+        f"REFUSED by serialized_push.acquire and by the routing linter, so every "
+        f"case using one fails for an unrelated reason. Repoint them at live rows.")
+
+
+_assert_fixture_ids_are_live("coordinator-agent", "inference", "workerpool")
+
+
 class SerializationTests(PromoteTestCase):
     def test_a_held_lock_refuses_the_second_promotion_naming_the_holder(self) -> None:
         lane = self.add_lane("lane0")
         head = self.lane_commit(lane, "src/widget.py", "promoted\n")
         key = serialized_push.repo_key(self.target)
-        serialized_push.acquire(self.lock_dir, key, "mainA", str(self.target),
-                                mode="hold", name=pl.LOCK_NAME)
+        serialized_push.acquire(self.lock_dir, key, "coordinator-agent", str(self.target),
+                                mode="hold", name=pl.LOCK_NAME,
+                                token_file=self.lock_dir / "holder.token")
         with self.assertRaises(pl.PromotionRefused) as ctx:
-            self.promote(lane, f"{self.base}..{head}", apply=True, agent="mainB")
+            self.promote(lane, f"{self.base}..{head}", apply=True, agent="inference")
         self.assertEqual(ctx.exception.condition, "lock-held")
         self.assertEqual(ctx.exception.code, pl.EX_LOCK_HELD)
-        self.assertIn("mainA", str(ctx.exception))
+        self.assertIn("coordinator-agent", str(ctx.exception))
         self.assertEqual((self.target / "src" / "widget.py").read_text(), "base\n")
 
     def test_two_concurrent_promotions_serialize(self) -> None:
@@ -196,14 +225,14 @@ class SerializationTests(PromoteTestCase):
         before = self.commit_count()
 
         proc_a = subprocess.Popen(
-            [sys.executable, str(SCRIPT), "promote", "--agent", "mainB",
+            [sys.executable, str(SCRIPT), "promote", "--agent", "inference",
              "--target", str(self.target), "--lock-dir", str(self.lock_dir),
              "--task-id", "T-A", "--lane-worktree", str(lane_a),
              "--range", f"{self.base}..{head_a}", "--apply", "--dwell-s", "3"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         time.sleep(1.0)
         proc_b = subprocess.run(
-            [sys.executable, str(SCRIPT), "promote", "--agent", "mainC",
+            [sys.executable, str(SCRIPT), "promote", "--agent", "workerpool",
              "--target", str(self.target), "--lock-dir", str(self.lock_dir),
              "--task-id", "T-B", "--lane-worktree", str(lane_b),
              "--range", f"{self.base}..{head_b}", "--apply"],
@@ -214,7 +243,7 @@ class SerializationTests(PromoteTestCase):
         self.assertEqual(proc_b.returncode, pl.EX_LOCK_HELD,
                          f"second promotion was not refused: {proc_b.stdout}{proc_b.stderr}")
         self.assertEqual(json.loads(proc_b.stdout)["condition"], "lock-held")
-        self.assertIn("mainB", proc_b.stdout)
+        self.assertIn("inference", proc_b.stdout)
         self.assertEqual(self.commit_count(), before + 1,
                          "exactly one promotion may land while the lock is held")
         self.assertEqual((self.target / "src" / "widget.py").read_text(), "from-a\n")

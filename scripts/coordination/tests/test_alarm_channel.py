@@ -337,14 +337,30 @@ class TestConfigParser(unittest.TestCase):
         cfg = ac.parse_simple_yaml('{"backend": "file", "enabled": true}')
         self.assertEqual(cfg["backend"], "file")
 
-    def test_shipped_repo_config_parses_and_is_not_live(self):
+    def test_repo_config_parses_and_its_endpoint_is_coherent(self):
+        """The config PARSES, and its endpoint matches whichever state it is in.
+
+        RENAMED AND WIDENED 2026-08-16. This asserted the shipped config is NOT
+        live — a property of the DEFAULT that the operator is meant to change,
+        and did. Going red the moment someone does the thing the test exists to
+        encourage is how a suite stops being read; it is the same
+        failing-for-the-wrong-reason shape that hit the alarm drill, the
+        ratification script and fleet_control.sh on the same day.
+
+        Both states are legitimate and both are checked: pre-go-live the endpoint
+        carries the sentinel; live, it is a real URL and NOT the sentinel.
+        """
         self.assertTrue(REPO_CONFIG.exists(), f"missing shipped config {REPO_CONFIG}")
         cfg = ac.parse_simple_yaml(REPO_CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(cfg["schema_version"], ac.SCHEMA_CONFIG)
         self.assertIs(cfg["enabled"], True)
         self.assertEqual(cfg["backend"], "ntfy")
-        self.assertIn(ac.PLACEHOLDER_SENTINEL, cfg["ntfy"]["url"],
-                      "the shipped config must ship with a placeholder endpoint")
+        url = cfg["ntfy"]["url"]
+        if ac.PLACEHOLDER_SENTINEL in url:
+            return                      # pre-go-live: inert by design
+        self.assertRegex(url, r"^https?://\S+$",
+                         "a live endpoint must be a well-formed URL")
+        self.assertNotIn(" ", url.strip(), "a live endpoint must not contain spaces")
 
     def test_missing_config_falls_back_to_builtin_defaults(self):
         cfg = ac.load_config(Path("/nonexistent/alarm_config.yaml"))

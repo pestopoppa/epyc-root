@@ -240,7 +240,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - [x] P3-3 `fleet_watch`: drop pane heuristics; keep hardware compute-idle (rocm-smi + region
       claims); add queue-aging alarm — rows refused by any gate count as AGING; every refusal class
       has an owner and emits once on state change with a routed fix task.
-- [ ] P3-4 Swap the fleet-gate predicate for the ephemeral pool: runner-liveness + "READY>0 ∧
+- [x] P3-4 Swap the fleet-gate predicate for the ephemeral pool: runner-liveness + "READY>0 ∧
       capacity free ∧ no spawn attempt in N ticks" as the anomaly condition (zero live workers is
       the NORMAL idle state after this phase).
 - [x] P3-5 D4/D4b compute mechanization: compute policy file (priorities, windows, reservations;
@@ -258,7 +258,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 
 ## Open defect — the pool cannot reach its own concurrency bound
 
-- [ ] **PD-1 — `max_concurrent_workers: 4` is unreachable through the daemon.**
+- [x] **PD-1 — `max_concurrent_workers: 4` is unreachable through the daemon.**
       Surfaced by the P3-4 rework 2026-08-16 and confirmed independently.
       `compute_advice` skips any agent already in `busy_owners`, and `busy_owners`
       is keyed on the queue row's `owner`. The entire pool is ONE roster identity
