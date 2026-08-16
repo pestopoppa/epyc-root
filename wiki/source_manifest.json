@@ -1,18 +1,18 @@
 {
   "by_type": {
-    "docs": 68,
-    "handoff-active": 174,
+    "docs": 69,
+    "handoff-active": 176,
     "handoff-blocked": 2,
     "handoff-completed": 164,
-    "progress": 278,
+    "progress": 281,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-08-13T08:30:26Z",
+  "last_compile": "2026-08-13T14:28:31Z",
   "mode": "full",
-  "scan_time": "2026-08-13T08:55:05Z",
+  "scan_time": "2026-08-16T10:30:12Z",
   "schema_version": 1,
-  "source_set_hash": "53e44085d1a657dd2c03545e6c112737135bb566cf2046dd13a9b8fcb093bc14",
+  "source_set_hash": "6aedfb8750cf805d5680ca0093464a1453ba765f5bee2a150abbcd86a15d40bf",
   "sources": [
     {
       "content_hash": "9eb9296ef6b1e1d8bb4164b3b8acd4899325e705edd8d018b638c3ad8b3126e1",
@@ -23,10 +23,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3dd847950b2191849c01779ac575c08e3328dbd5403abb8c69631a689bc170a1",
-      "modified": "2026-08-12T20:19:53Z",
+      "content_hash": "87a872cae36ef26638b697808e99888b953e37a33400e1fa8bba0eaeeae59bb4",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 19876,
+      "size": 20631,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "00fe33832c57c7252f41bc6d16e813a5687ba538f80fb9a9bffc69c679ae4b9f",
-      "modified": "2026-08-12T20:19:53Z",
+      "content_hash": "c8cec57941b5c0954cd65b44719b984612d9c25094fce3e2ef4bcd42e8ec4f70",
+      "modified": "2026-08-15T20:02:50Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 84715,
+      "size": 90723,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -87,18 +87,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7a999b70a49bb908cc4fb02705f45f21a8d87a576ae489cb360ea8758445d6a2",
-      "modified": "2026-08-13T07:23:54Z",
+      "content_hash": "9eb44c2f26c919e89045a1143899bfa98b30d2ae07a3177ce6dbac263e634a4a",
+      "modified": "2026-08-13T22:07:26Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 383900,
+      "size": 387451,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
     {
-      "content_hash": "35125bb3cae38674471ead651c2d4d72785d195c6ea5ecd953894136685fbbff",
-      "modified": "2026-08-12T14:01:07Z",
+      "content_hash": "0ba991d6589a3861cf97a8d885ff0045ee4bcc111d439a642b8ada820dfdd91c",
+      "modified": "2026-08-15T20:11:05Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 352487,
+      "size": 359932,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -176,17 +176,17 @@
     },
     {
       "content_hash": "4be01f79f94d0b91709225769ed18be4ac62d769f8ddfd56aac23223f59c7e18",
-      "modified": "2026-08-11T00:02:20Z",
+      "modified": "2026-08-13T22:28:44Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
       "size": 125661,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "19d6c56fae32faa5423a8e330602cbe9fb7367ee15069d957045925d1f18f929",
-      "modified": "2026-08-12T02:03:31Z",
+      "content_hash": "ae1abfd12821ba481383cc3b29051423e16b2214ea85c325d66a8f29d4f55071",
+      "modified": "2026-08-15T12:15:43Z",
       "path": "handoffs/active/canonical-judge-suite-revamp.md",
-      "size": 22327,
+      "size": 25948,
       "title": "Canonical Judge Suite Revamp \u2014 Replace a Saturated Instrument with Execution-Verified Ones",
       "type": "handoff-active"
     },
@@ -223,10 +223,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b6572ee2821c1a8642a34332331016ecc2c82cc6888650a1c547ba12f2fddf00",
-      "modified": "2026-08-13T07:26:04Z",
+      "content_hash": "a36ffc28252b7d6ad4bbbdd6df0cbde069f892fe1a4d6232ca403da4d2daaf5d",
+      "modified": "2026-08-13T19:22:48Z",
       "path": "handoffs/active/coordinator-role-failure-modes-and-refactor.md",
-      "size": 124763,
+      "size": 139342,
       "title": "Coordinator role \u2014 failure modes, root causes, and the refactor",
       "type": "handoff-active"
     },
@@ -360,25 +360,25 @@
     },
     {
       "content_hash": "3daa7435a4d901b43513bd88cad627432d9d9d86414b850dcb417a03e5d2c7cf",
-      "modified": "2026-08-11T23:20:36Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
       "size": 79878,
       "title": "Eval Tower Architecture & Robustness Audit (2026-07-20)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "e02e2891ee7344815aaa027f58bf37d2a8fde79b59b8d194c125aebd8c75c704",
-      "modified": "2026-07-27T06:05:47Z",
+      "content_hash": "883181df429d022149f331a927cfb474d9b15a8864693781f0c5148062eb5f4c",
+      "modified": "2026-08-15T12:15:43Z",
       "path": "handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md",
-      "size": 29539,
+      "size": 33036,
       "title": "Eval-Tower / Inference-Batch-Loop Robustness Audit (2026-07-20)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "9c797faea15620194170c42d6739a56f81c2150efb34ba31c2739e8df129bd99",
-      "modified": "2026-07-29T15:18:43Z",
+      "content_hash": "6453b13b1f3d989e546a23948f48a1a07dab584c5dbe624e99766bbe5091a8bf",
+      "modified": "2026-08-15T12:15:43Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 79123,
+      "size": 88176,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -416,7 +416,7 @@
     },
     {
       "content_hash": "1e029ab4adb55a669beaf103a35328a7928e482427fd811750264c86a3715eaf",
-      "modified": "2026-07-07T00:08:41Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/fable5-window2-findings-00-executive-summary.md",
       "size": 12264,
       "title": "Fable 5 architectural review \u2014 window 2 \u2014 executive summary",
@@ -440,7 +440,7 @@
     },
     {
       "content_hash": "1f260ec5954f045596318f23bfb3d8acb4de17b98f8bfe7fa8a559badfe5136e",
-      "modified": "2026-07-29T18:25:23Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
       "size": 17089,
       "title": "Window-2 findings 03 \u2014 Portfolio audit, resurrection sweep, and proposed master-queue rewrite (\u00a73 + \u00a78.4)",
@@ -448,7 +448,7 @@
     },
     {
       "content_hash": "08de87ef44a14de4420432bd04aad5f7e3c3f41639578e9e7f4a7f35dea64357",
-      "modified": "2026-07-07T00:08:41Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md",
       "size": 16762,
       "title": "Window-2 findings 05 \u2014 Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)",
@@ -487,10 +487,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "293f0437a79cdc207e5c47c6112934e7bf61c56a7e4c3ed0e2e5598962826701",
-      "modified": "2026-07-14T16:04:51Z",
+      "content_hash": "a8f1d0bb7229a4bd940a4b1e2149d8f35fb0cc10db1b63179acc68f3bd243630",
+      "modified": "2026-08-16T09:42:14Z",
       "path": "handoffs/active/frontier-f2-self-running-lab.md",
-      "size": 30512,
+      "size": 30664,
       "title": "Frontier F2 \u2014 The Self-Running Lab: Local Agents Take Over Lab Maintenance",
       "type": "handoff-active"
     },
@@ -511,10 +511,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3296f08f8c93cab9c37eae1e13ae7c5a0164b667402f8a8370d2185ac1c1c301",
-      "modified": "2026-07-06T09:40:49Z",
+      "content_hash": "56301d85b0b6984d7c446741f922e008f89fbac07847fd4721622d437428cf06",
+      "modified": "2026-08-16T09:42:10Z",
       "path": "handoffs/active/frontier-f6-upstream-publication.md",
-      "size": 18377,
+      "size": 18476,
       "title": "Frontier F6 \u2014 Upstream & Publication Leverage",
       "type": "handoff-active"
     },
@@ -735,6 +735,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "a9a9d19e06a0001dd3eb3ceb5b9bc1c64b3ed37ea96c5b62c4f068846eaaa25a",
+      "modified": "2026-08-16T10:30:10Z",
+      "path": "handoffs/active/loop-owned-fleet-implementation.md",
+      "size": 25332,
+      "title": "Loop-Owned Fleet \u2014 implementation",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "fa927dc091a0c0821181b524d7d5e8a5424a7e26aed598934ea086b57dfca4d1",
       "modified": "2026-08-12T09:37:06Z",
       "path": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
@@ -775,10 +783,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4f39d42b70c1f0a0d70c59fc66b703b337bf8d3be760bf5635e79255df107377",
-      "modified": "2026-08-12T13:39:43Z",
+      "content_hash": "1e8768a89815cc6c8cf5277ddc437ac9d2a5353597478c68d23bd79646dd0d91",
+      "modified": "2026-08-15T20:03:16Z",
       "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
-      "size": 34961,
+      "size": 37691,
       "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
       "type": "handoff-active"
     },
@@ -904,7 +912,7 @@
     },
     {
       "content_hash": "5c711960dae394b975a6a8b45d2810a0c912aa7c9dc059e9483fe5c8a475d40e",
-      "modified": "2026-08-12T09:37:06Z",
+      "modified": "2026-08-13T18:07:28Z",
       "path": "handoffs/active/opendataloader-pipeline-integration.md",
       "size": 76941,
       "title": "OpenDataLoader PDF \u2014 Pipeline Integration",
@@ -976,7 +984,7 @@
     },
     {
       "content_hash": "162c43e1bd95f3f084af45563862166d05a018c8eba0c860095b796e0fe93760",
-      "modified": "2026-07-29T19:37:43Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/re4-protocol-redesign.md",
       "size": 20985,
       "title": "RE-4 / K-LCM-1 \u2014 LongCoT-Mini Protocol Redesign (design + harness SPEC)",
@@ -1016,7 +1024,7 @@
     },
     {
       "content_hash": "a92242010256e7810a4b41f94dc28cdead3568c319fa1c9f044c88ea95b1be19",
-      "modified": "2026-08-13T07:26:16Z",
+      "modified": "2026-08-13T15:55:14Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
       "size": 19096,
       "title": "REPL Turn Efficiency - Active Gates",
@@ -1103,18 +1111,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "617f44e7e14830d104b5418f0621470306be3671408fa8d72803743a4a28e5ae",
-      "modified": "2026-08-12T20:19:53Z",
+      "content_hash": "aae1744e47cf3ab2135df1e1f7cec40fd94b355b436bf6aaaf0aa37b9a99f882",
+      "modified": "2026-08-15T20:02:31Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 86783,
+      "size": 90292,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
     {
-      "content_hash": "091443eb30fa7c61b0e84fd271cbf1a418833b9c300fec1d76aa4ebf22cc03fc",
-      "modified": "2026-07-29T11:21:02Z",
+      "content_hash": "963fc81e2e5ef3fd99263036947e5b4a81e5343d043a0b2cc2f52e4c6d1bb9b8",
+      "modified": "2026-08-15T12:15:43Z",
       "path": "handoffs/active/routing-intelligence.md",
-      "size": 17797,
+      "size": 19543,
       "title": "Routing Intelligence: Factual-Risk Rollout",
       "type": "handoff-active"
     },
@@ -1127,10 +1135,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8991e3d401cd8e5994f4095ac850ccd46b60ac555354de09581efe8bf5615025",
-      "modified": "2026-07-22T14:19:57Z",
+      "content_hash": "6ba2a87b3d0f378204685dcf34338b0310cad8f94eb692c339d9b22628212d63",
+      "modified": "2026-08-15T20:11:05Z",
       "path": "handoffs/active/safetygate-rlvr-provenance-audit-2026-07-22.md",
-      "size": 34487,
+      "size": 35091,
       "title": "SafetyGate / Promotion-Gate / RLVR-Export Provenance Audit \u2014 2026-07-22",
       "type": "handoff-active"
     },
@@ -1192,7 +1200,7 @@
     },
     {
       "content_hash": "12b711e0a0fd3fd81ab1022976d82486fc9e9af54c67dbfe5dd468f03a14cf1f",
-      "modified": "2026-08-12T20:39:45Z",
+      "modified": "2026-08-13T18:07:28Z",
       "path": "handoffs/active/shape-keyed-contention-gating.md",
       "size": 54115,
       "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
@@ -1359,10 +1367,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1e6f460cd459386496be05c81cc054580115950b29f8e60717200e3ed0356579",
-      "modified": "2026-08-12T20:40:00Z",
+      "content_hash": "4b56e0fb6b88538a5b867bd2fe31ff2e767ba16be9c2f45c214fea00eae868c1",
+      "modified": "2026-08-16T10:09:13Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 62466,
+      "size": 72190,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1388,6 +1396,14 @@
       "path": "handoffs/active/wp9-wp10-lineup-event-prep.md",
       "size": 27198,
       "title": "WP-9 + WP-10 Lineup / Recert Event \u2014 Turnkey Operator Procedure (PREP ONLY)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "6e39b3f6e3a790a556c3d45b0f201d0a8367cb14cf8df1d511cf181e707874af",
+      "modified": "2026-08-13T22:47:33Z",
+      "path": "handoffs/active/wrap-up-division-of-labor-policy.md",
+      "size": 6223,
+      "title": "Wrap-up division of labor \u2014 durable policy (plan)",
       "type": "handoff-active"
     },
     {
@@ -6055,6 +6071,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "ed4765613893e21e35e19ec0e5fd5edac1ca41cef23522b3913631837a8e1eed",
+      "modified": "2026-08-13T22:23:26Z",
+      "path": "progress/2026-08/2026-08-13-coordinator-agent.md",
+      "size": 8580,
+      "title": "2026-08-13 \u2014 coordinator-agent pickup + fleet re-instantiation (session 2)",
+      "type": "progress"
+    },
+    {
       "content_hash": "92b8557b5583d18436cb1d3ed0a36ad15094cbe493ee82a90e49ef4c09e15239",
       "modified": "2026-08-13T08:54:37Z",
       "path": "progress/2026-08/2026-08-13-research-intake.md",
@@ -6063,12 +6087,36 @@
       "type": "progress"
     },
     {
-      "content_hash": "ed69afc6185fa1f9deab975f48be36d7ec803fc235d4abb610179f076dcebb27",
-      "modified": "2026-08-13T07:23:54Z",
+      "content_hash": "8e1d3d495ed3a587dd6500ac4173edfe79fc40a1665cbb24df103e9fffec3d52",
+      "modified": "2026-08-13T23:05:39Z",
       "path": "progress/2026-08/2026-08-13-root.md",
-      "size": 2201,
+      "size": 9244,
       "title": "2026-08-13 \u2014 AutoKernel empirical checkpoint",
       "type": "progress"
+    },
+    {
+      "content_hash": "77e16e66f7fa63d042f448466c6e5c320b1ebf37f0dd9b956ccb5bc76571bf2d",
+      "modified": "2026-08-14T12:11:12Z",
+      "path": "progress/2026-08/2026-08-14.md",
+      "size": 2344,
+      "title": "2026-08-14",
+      "type": "progress"
+    },
+    {
+      "content_hash": "14d1c3414e3a487b6223dac3e4393777aabe736871c1bfedf033ef1c100d7911",
+      "modified": "2026-08-15T20:08:45Z",
+      "path": "progress/2026-08/2026-08-15-research-intake.md",
+      "size": 18133,
+      "title": "2026-08-15 \u2014 research-intake: MEGA + Phantom Guardrails cohort, SOL-ExecBench gate closed, gfx90a datapath settled",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
+      "modified": "2026-08-16T09:43:39Z",
+      "path": "docs/coordination/session-bus-task-flow-STATUS.md",
+      "size": 5173,
+      "title": "Status note \u2014 `session-bus-task-flow.html` was design-ahead-of-runtime",
+      "type": "docs"
     },
     {
       "content_hash": "f98b758ff0a2e246f6bbcf530dff87edefa7ec76d63b78b96f594432fc47f47b",
@@ -6135,10 +6183,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "c46826977020d5e6360f0ca7e6852c54f5a17d1564653974b8d9470b3f0939da",
-      "modified": "2026-08-12T11:00:38Z",
+      "content_hash": "2338d81cb91016aa1f4431389a79a197282c475510c30785555e78f7aa8bf657",
+      "modified": "2026-08-16T10:00:58Z",
       "path": "docs/guides/agent-workflows/coordinator-escalation.md",
-      "size": 4078,
+      "size": 3648,
       "title": "Coordinator Escalation \u2014 unreachable sessions, guard refusals, rate limits",
       "type": "docs"
     },
@@ -6159,10 +6207,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "2eab235ad5dc1e0360823b53a1688ced13c28e246bbb24ccca640d3d0e893681",
-      "modified": "2026-07-30T10:39:30Z",
+      "content_hash": "1d05afcb616dde59ea63fb9a03fa2c8c7e2c4286aaaa402ac35c2f3a5c870ea5",
+      "modified": "2026-08-16T10:01:35Z",
       "path": "docs/guides/agent-workflows/research-writer.md",
-      "size": 1682,
+      "size": 1954,
       "title": "Research Writer Workflow",
       "type": "docs"
     },
@@ -6615,7 +6663,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 825,
+  "total_new": 831,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

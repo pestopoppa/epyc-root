@@ -90,6 +90,8 @@ the orchestrator's venv is **not** required.
 - `GET /api/handoff_detail?id=<state>/<stem>` — full card + scrubbed markdown body (path-traversal guarded)
 - `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
 - `GET /api/kernel` — the AutoKernel `/kernel` contract (v2, v1 still readable) + freshness
+- `GET /api/kernel/live` — active discovery lock/state plus bounded, secret-free
+  AutoKernel and planner lifecycle tails from the deployment-owned live contract
 - `GET /api/kernel/health` — Kernel-R&D producer/data health only; HTTP 200 when
   fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
@@ -158,6 +160,16 @@ after its terminal `STOP_STATE` is fsynced, to the durable
 `/mnt/raid0/llm/autokernel/surface/kernel_dashboard.json`
 (`KERNEL_DASHBOARD_JSON` still overrides the reader for tests). The terminal
 journal timestamp, not export time, drives freshness.
+
+Live discovery visibility is a separate producer contract:
+`operations/live/{autokernel,planner}.jsonl`, schema
+`epyc.autokernel.discovery_live_event.v1`. The actor seam writes only an
+allowlisted lifecycle vocabulary, provider/model identities, return codes,
+decisions and transcript hashes. Prompts, model text, commands, environment and
+credentials are structurally excluded. `/api/kernel/live` also observes the
+deployment's controller lock, so a long first planner call is visible before its
+first durable state checkpoint; that lock observation never exposes or scrapes
+the ephemeral actor container.
 
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
