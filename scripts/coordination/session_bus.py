@@ -164,9 +164,23 @@ def required_writer(bus_root: Path, target: Path) -> str:
 
     queue.jsonl and inbox/* belong to the coordinator-daemon; outbox/<a>,
     heartbeats/<a> and cursors/<a> belong to <a>.
+
+    CONTAINMENT IS LOGICAL, NOT PHYSICAL (P0-7, 2026-08-16). This used to
+    compare `target.resolve()` against `bus_root.resolve()`, which broke the
+    moment the runtime moved off-tree behind tracked symlinks: every real path
+    then lands under /mnt/raid0/llm/bus-runtime/ and the whole bus read as
+    "outside the bus root". The single-writer rule is about WHICH LOGICAL FILE
+    is being written — `inbox/<a>`, `outbox/<a>` — and that is a property of
+    the path you asked for, not of where the bytes physically live.
+
+    `os.path.normpath` still collapses `..`, so traversal out of the bus is
+    rejected exactly as before; what it does not do is follow symlinks, which
+    is the whole point.
     """
+    t_norm = Path(os.path.normpath(str(target if target.is_absolute() else Path.cwd() / target)))
+    b_norm = Path(os.path.normpath(str(bus_root if bus_root.is_absolute() else Path.cwd() / bus_root)))
     try:
-        rel = target.resolve().relative_to(bus_root.resolve())
+        rel = t_norm.relative_to(b_norm)
     except ValueError as e:
         raise BusError(f"{target} is outside the bus root {bus_root}") from e
     parts = rel.parts

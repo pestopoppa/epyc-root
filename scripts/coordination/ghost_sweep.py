@@ -314,13 +314,16 @@ def reset_row(row: dict, task_id: str, epoch: int, receipt_id: str, signed_by: s
         "gating": row.get("gating", "none"),
         "epoch": epoch,
         "attempt": 0,
-        "routing_annotation": (
+        # `origin` (a string) and NOT `routing_annotation` (an object): the
+        # schema is the contract, and writing a string where it declares an
+        # object produced six schema-invalid rows before `validate` caught it.
+        "origin": (
             f"{receipt_id}: reset from {row.get('status')} — owner dead/absent, "
             f"signed-by {signed_by}"
         ),
     }
     for carry in ("task_text", "spec_ref", "screened_by", "expected_occupancy",
-                  "priority", "priority_class", "origin", "depends_on", "operator_gates"):
+                  "priority", "priority_class", "depends_on", "operator_gates"):
         if row.get(carry) is not None:
             out[carry] = row[carry]
     return out

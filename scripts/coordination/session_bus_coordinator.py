@@ -2366,7 +2366,8 @@ def process_revocations(config: dict, latest: dict[str, dict], reports: dict[str
                 "status": row.get("status"), "lane": row.get("lane"), "gating": row.get("gating"),
                 "epoch": epoch, "owner": row.get("owner"), "revoking": True,
                 "lease_expires_ts": row.get("lease_expires_ts"), **_carry_row_identity(row),
-                "attempt": row.get("attempt"), "priority": row.get("priority")})
+                "attempt": row.get("attempt"),
+                **({"priority": row["priority"]} if row.get("priority") is not None else {})})
             nudges.append({"to": row.get("owner"), "kind": "nudge", "task_id": tid,
                            "corr_id": f"revoke-{tid}-{epoch}",
                            "payload": {"reason": "lease-revoke — quiesce and drain",
@@ -2755,7 +2756,8 @@ def settle_drained(latest: dict[str, dict], agents: dict[str, dict], epoch: int)
         out.append({"schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
                     "status": "READY", "lane": row.get("lane"), "gating": row.get("gating"),
                     "epoch": epoch, "owner": None, "revoking": False,
-                    "priority": row.get("priority"), "attempt": row.get("attempt"),
+                    **({"priority": row["priority"]} if row.get("priority") is not None else {}),
+                    "attempt": row.get("attempt"),
                     **_carry_row_identity(row),
                     "failure_reason": "lease released on revocation (drained at boundary)"})
     return out
@@ -4401,7 +4403,12 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
         _append_jsonl(bus_root / "queue.jsonl", {
             "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(), "task_id": tid,
             "status": "ASSIGNED", "lane": row.get("lane"), "gating": row.get("gating"),
-            "epoch": epoch, "owner": agent, "priority": row.get("priority"),
+            "epoch": epoch, "owner": agent,
+            # `priority` is an OPTIONAL string in the schema. Writing it
+            # unconditionally emitted `priority: null` on every row whose source
+            # had none — 65 schema-invalid rows across 08-13/08-14, undetected
+            # because nothing ever ran `session_bus.py validate`.
+            **({"priority": row["priority"]} if row.get("priority") is not None else {}),
             "lease_expires_ts": expires.isoformat(timespec="seconds"),
             **_carry_row_identity(row),
             "attempt": int(row.get("attempt") or 0)})

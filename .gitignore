@@ -171,3 +171,25 @@ coordination/session-bus/tokens/token-queue.md
 coordination/session-bus/tokens/unblock.md
 coordination/session-bus/tokens/unblock.pins.json
 logs/.current_session
+
+# --- P0-7 / D5 (2026-08-16): the bus runtime lives OFF-TREE ---------------
+# Runtime data now lives at /mnt/raid0/llm/bus-runtime/. What remains here are
+# SYMLINKS, and they are TRACKED on purpose: `git clean -ffdx` removes ignored
+# and untracked files, which is exactly how the 2026-08-12 wipe destroyed the
+# inbox, 13 live claim locks and the whole advisory history — and the evidence
+# of who ran it. A tracked symlink is not clean-able, so the class dies here
+# rather than depending on nobody ever running that command again.
+!coordination/session-bus/queue.jsonl
+!coordination/session-bus/advisory.jsonl
+!coordination/session-bus/adapter-ledger.jsonl
+!coordination/session-bus/claims
+!coordination/session-bus/cursors
+!coordination/session-bus/heartbeats
+!coordination/session-bus/inbox
+!coordination/session-bus/outbox
+!coordination/session-bus/tokens
+!coordination/session-bus/boundary_state.json
+!coordination/session-bus/operator_escalation_state.json
+!coordination/session-bus/relay_state.json
+!coordination/session-bus/scheduling_recommendation_state.json
+!coordination/session-bus/stuck_state.json
