@@ -255,11 +255,41 @@ def fetch_head_path(repo: str) -> Path | None:
     not) — it lives once, in the common dir, shared by every worktree. Reuse
     the same git-common-dir resolution is_shared() already uses so there is
     one answer for "where is this repo's real .git", not two.
+
+    CORRECTION, 2026-08-16, found by the first pool worker — this hook blocked
+    its commit twice with "stale fetch (50748s old)" immediately after a
+    SUCCESSFUL fetch in that worktree. The paragraph above is FALSE on this
+    git: a `git fetch` run from inside a linked worktree writes FETCH_HEAD into
+    that worktree's OWN metadata dir. Measured at the time:
+    `.git/worktrees/lane0/FETCH_HEAD` was 10:16 (the fetch that had just run)
+    while `.git/FETCH_HEAD` was the previous day. Reading only the common dir
+    therefore reports a stale fetch to precisely the worktrees that just
+    fetched — the opposite of this check's purpose, and a hard block on every
+    pool-worker commit.
+
+    Both locations are now consulted and the NEWEST wins, because the question
+    is "when did THIS working tree last fetch" and the answer is whichever file
+    git actually touched.
     """
     common = _git_common_dir(repo)
     if common is None:
         return None
-    return Path(common) / "FETCH_HEAD"
+    candidates = [Path(common) / "FETCH_HEAD"]
+    try:
+        proc = subprocess.run(["git", "-C", repo, "rev-parse", "--git-dir"],
+                              capture_output=True, text=True, timeout=10)
+        if proc.returncode == 0 and proc.stdout.strip():
+            gitdir = Path(proc.stdout.strip())
+            if not gitdir.is_absolute():
+                gitdir = Path(repo) / gitdir
+            candidates.insert(0, gitdir / "FETCH_HEAD")
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+    existing = [p for p in candidates if p.exists()]
+    if not existing:
+        return candidates[-1]          # unchanged "no FETCH_HEAD" behaviour
+    return max(existing, key=lambda p: p.stat().st_mtime)
 
 
 def fetch_precedes_commit(cmd: str, repo: str) -> bool:
