@@ -1631,7 +1631,7 @@ def _print_staleness(rows: list[dict], stale_after_h: float) -> None:
 
 FLEET_WATCH_LOG = "logs/fleet_watch.log"
 FLEET_WATCH_STALE_S = 900.0
-_OCCUPANCY_MARKERS = ("COMPUTE-IDLE", "IDLE-CANDIDATE")
+_OCCUPANCY_MARKERS = ("COMPUTE-IDLE")
 
 
 def _repo_root(bus_root: Path) -> Optional[Path]:
@@ -1701,7 +1701,7 @@ def _print_owed_actions(bus_root: Path, agent: str) -> None:
 
 
 def _print_fleet_watch_occupancy(bus_root: Path) -> None:
-    """The last COMPUTE-IDLE / IDLE-CANDIDATE line, VERBATIM, with its path.
+    """The last COMPUTE-IDLE line, VERBATIM, with its path.
 
     The staleness guard is MANDATORY, not decoration: fleet_watch runs
     unsupervised, so its log going quiet is indistinguishable from the fleet

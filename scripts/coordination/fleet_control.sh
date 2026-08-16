@@ -34,6 +34,24 @@ CFG="$BUS/config.yaml"
 POOL_ROOT=/mnt/raid0/llm/worktrees/pool
 cd "$REPO"
 
+
+alarm_is_inert() {
+  # Precise: the sentinel that decides liveness lives in the ACTIVE BACKEND's
+  # endpoint. A whole-file grep for REPLACE-ME also matches the comment that
+  # explains the sentinel and the unused email placeholder, which made a LIVE
+  # channel report as inert (observed 2026-08-16, right after go-live).
+  python3 - "$1" <<'PY_INERT'
+import re, sys
+t = open(sys.argv[1], encoding="utf-8").read()
+m = re.search(r"^backend:\s*(\w+)", t, re.M)
+b = m.group(1) if m else ""
+blk = re.search(rf"^{b}:\n((?:[ \t]+.*\n)+)", t, re.M)
+body = blk.group(1) if blk else ""
+ep = re.search(r"^\s*(?:url|to):\s*(.+)$", body, re.M)
+sys.exit(0 if (ep and "REPLACE-ME" in ep.group(1)) else 1)
+PY_INERT
+}
+
 say()  { printf '\n\033[1m== %s\033[0m\n' "$*"; }
 ok()   { printf '   \033[32mOK\033[0m   %s\n' "$*"; }
 warn() { printf '   \033[33m!!\033[0m   %s\n' "$*"; }
@@ -132,7 +150,7 @@ cmd_status() {
   note "workers in flight: $(live_workers) of 4"
 
   say "ALARMS"
-  if grep -q "REPLACE-ME" "$BUS/alarm_config.yaml" 2>/dev/null; then
+  if alarm_is_inert "$BUS/alarm_config.yaml" 2>/dev/null; then
     warn "channel INERT (placeholder endpoint) — nothing reaches you"
   else
     ok "channel configured"
@@ -187,7 +205,7 @@ cmd_resume() {
   say "RESUME"
   set_pool_enabled true
   ok "worker_pool.enabled = true"
-  if grep -q "REPLACE-ME" "$BUS/alarm_config.yaml" 2>/dev/null; then
+  if alarm_is_inert "$BUS/alarm_config.yaml" 2>/dev/null; then
     warn "alarms are still INERT — if the pool wedges overnight, nothing reaches you"
   fi
 }

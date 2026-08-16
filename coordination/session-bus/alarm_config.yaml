@@ -53,7 +53,7 @@ backend: ntfy
 advisory_mirror: false
 
 ntfy:
-  url: https://ntfy.sh/REPLACE-ME-epyc-fleet-alarms
+  url: https://ntfy.sh/epyc-fleet-rnuvx1j9-alarms
   timeout_s: 10
   priority_critical: urgent
   priority_warning: default

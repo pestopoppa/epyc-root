@@ -34,6 +34,24 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+
+alarm_is_inert() {
+  # Precise: the sentinel that decides liveness lives in the ACTIVE BACKEND's
+  # endpoint. A whole-file grep for REPLACE-ME also matches the comment that
+  # explains the sentinel and the unused email placeholder, which made a LIVE
+  # channel report as inert (observed 2026-08-16, right after go-live).
+  python3 - "$1" <<'PY_INERT'
+import re, sys
+t = open(sys.argv[1], encoding="utf-8").read()
+m = re.search(r"^backend:\s*(\w+)", t, re.M)
+b = m.group(1) if m else ""
+blk = re.search(rf"^{b}:\n((?:[ \t]+.*\n)+)", t, re.M)
+body = blk.group(1) if blk else ""
+ep = re.search(r"^\s*(?:url|to):\s*(.+)$", body, re.M)
+sys.exit(0 if (ep and "REPLACE-ME" in ep.group(1)) else 1)
+PY_INERT
+}
+
 say()  { printf '\n\033[1m== %s\033[0m\n' "$*"; }
 ok()   { printf '   \033[32mOK\033[0m   %s\n' "$*"; }
 skip() { printf '   \033[33mSKIP\033[0m %s\n' "$*"; }
@@ -98,7 +116,7 @@ fi
 # ------------------------------------------------------- 1. alarm go-live
 if wants 1; then
   say "STEP 1 — alarm channel go-live"
-  if ! grep -q "REPLACE-ME" coordination/session-bus/alarm_config.yaml; then
+  if ! alarm_is_inert coordination/session-bus/alarm_config.yaml; then
     skip "already pointed at a real endpoint"
   else
     if [[ -z "$NTFY_URL" ]]; then
@@ -137,7 +155,7 @@ fi
 # ------------------------------------------------------- 2. enable the pool
 if wants 2; then
   say "STEP 2 — enable the worker pool"
-  if grep -q "REPLACE-ME" coordination/session-bus/alarm_config.yaml; then
+  if alarm_is_inert coordination/session-bus/alarm_config.yaml; then
     note "The alarm channel is still inert. If the pool wedges overnight, nothing"
     note "will reach you. Strongly consider running step 1 first."
     confirm "Enable the pool anyway, with alarms inert?" || fail "declined — run step 1 first"
@@ -211,19 +229,21 @@ if wants 4; then
   fi
   python3 scripts/validate/validate_agents_structure.py >/dev/null 2>&1 \
     && ok "agent structure validator passes" || fail "structure validator failed"
-  # DELTA, not absolute. The reference validator is ALREADY red on this checkout
-  # (13 unresolved cross-repo `repos/*` paths that predate all of this), so an
-  # absolute pass/fail here would fail for a reason that has nothing to do with
-  # this file — the exact "gate that fails for the wrong reason" shape. What
-  # matters is that installing this file adds NO new unresolved reference.
-  AFTER=$(python3 scripts/validate/validate_agents_references.py 2>&1 | grep -c "^- " || true)
-  BEFORE_EXPECTED=13
-  if [[ "$AFTER" -le "$BEFORE_EXPECTED" ]]; then
-    ok "reference validator: $AFTER unresolved refs, none of them new (baseline $BEFORE_EXPECTED)"
+  # ATTRIBUTABLE, not a count. The first version compared the total against a
+  # frozen baseline of 13, so ANY concurrent change by another session in this
+  # shared tree was attributed to this file — which is exactly what happened
+  # (another session restored agents/research-writer.md and the total moved to
+  # 17 while INVARIANTS.md contributed nothing). A gate must fail for its own
+  # reason or it teaches people to ignore it. So: does any unresolved reference
+  # name THIS file as its source?
+  MINE=$(python3 scripts/validate/validate_agents_references.py 2>&1 | grep -c "^- agents/shared/INVARIANTS.md ->" || true)
+  if [[ "$MINE" -eq 0 ]]; then
+    ok "reference validator: INVARIANTS.md introduces no unresolved reference"
+    TOTAL=$(python3 scripts/validate/validate_agents_references.py 2>&1 | grep -c "^- " || true)
+    note "($TOTAL unresolved refs exist repo-wide, all from other files and pre-dating this)"
   else
-    note "unresolved references rose from $BEFORE_EXPECTED to $AFTER — this file added one:"
-    python3 scripts/validate/validate_agents_references.py 2>&1 | grep "INVARIANTS" | sed 's/^/        /'
-    fail "INVARIANTS.md introduced a dangling reference"
+    python3 scripts/validate/validate_agents_references.py 2>&1 | grep "^- agents/shared/INVARIANTS.md ->" | sed 's/^/        /'
+    fail "INVARIANTS.md introduced $MINE dangling reference(s)"
   fi
 fi
 

@@ -1,10 +1,10 @@
 {
   "active": {
     "compute-idle-with-queued-work": {
-      "count": 9,
-      "delivery": "skipped_not_live",
+      "count": 3,
+      "delivery": "ok",
       "evidence": {
-        "cycles": "11",
+        "cycles": "5",
         "gpu_pct": "0",
         "owner": "coordinator-agent",
         "ready_gated": "14",
@@ -12,34 +12,48 @@
         "regions_total": "4",
         "vram_pct": "0"
       },
-      "last_seen": "2026-08-16T10:57:00+00:00",
-      "message": "Compute idle for 11 cycles (~990s) while 14 compute-gated READY row(s) wait. GPU 0% / VRAM 0% / 4 of 4 CPU regions free. OWNER: coordinator-agent. FIX: dispatch the gated rows or grant a compute window.",
-      "notified_at": "2026-08-16T10:44:51+00:00",
-      "raised_at": "2026-08-16T10:44:51+00:00",
+      "last_seen": "2026-08-16T12:05:23+00:00",
+      "message": "Compute idle for 5 cycles (~450s) while 14 compute-gated READY row(s) wait. GPU 0% / VRAM 0% / 4 of 4 CPU regions free. OWNER: coordinator-agent. FIX: dispatch the gated rows or grant a compute window.",
+      "notified_at": "2026-08-16T12:02:21+00:00",
+      "raised_at": "2026-08-16T12:02:21+00:00",
       "severity": "warning"
     },
     "queue-aging-no-occupancy-estimate": {
-      "count": 9,
+      "count": 52,
       "delivery": "skipped_not_live",
       "evidence": {
         "aged_rows": "4",
-        "capacity_free": "3",
+        "capacity_free": "2",
         "fix": "add expected_occupancy {est_h, basis} to each row and re-append it, or dispatch it by hand",
-        "in_flight": "1",
-        "oldest_age_h": "84.1",
+        "in_flight": "2",
+        "oldest_age_h": "85.2",
         "oldest_task_id": "opendataloader-pipeline-integration--011-L512",
         "owner": "coordinator-agent",
         "queue_file": "/workspace/coordination/session-bus/queue.jsonl",
-        "ready_rows": "27",
+        "ready_rows": "26",
         "refusal_class": "no-occupancy-estimate",
         "threshold_h": "6.0"
       },
-      "last_seen": "2026-08-16T10:57:00+00:00",
-      "message": "4 READY row(s) refused as 'no-occupancy-estimate' have aged past 6.0h while 3 of 4 worker slot(s) are free. OWNER: coordinator-agent. FIX: add expected_occupancy {est_h, basis} to each row and re-append it, or dispatch it by hand. Oldest overall: opendataloader-pipeline-integration--011-L512 (84.1h).",
+      "last_seen": "2026-08-16T12:05:23+00:00",
+      "message": "4 READY row(s) refused as 'no-occupancy-estimate' have aged past 6.0h while 2 of 4 worker slot(s) are free. OWNER: coordinator-agent. FIX: add expected_occupancy {est_h, basis} to each row and re-append it, or dispatch it by hand. Oldest overall: opendataloader-pipeline-integration--011-L512 (85.2h).",
       "notified_at": "2026-08-16T10:44:51+00:00",
       "raised_at": "2026-08-16T10:44:51+00:00",
       "severity": "warning"
     }
   },
+  "recent_resolved": [
+    {
+      "cleared_at": "2026-08-16T11:56:34+00:00",
+      "count": 1,
+      "key": "alarm-channel-selftest",
+      "raised_at": "2026-08-16T11:56:33+00:00"
+    },
+    {
+      "cleared_at": "2026-08-16T11:57:49+00:00",
+      "count": 46,
+      "key": "compute-idle-with-queued-work",
+      "raised_at": "2026-08-16T10:44:51+00:00"
+    }
+  ],
   "schema_version": "alarm_channel.state.v1"
 }

@@ -310,7 +310,9 @@
       "msg-20260816T101953Z-9-workerpool",
       "msg-20260816T102653Z-13-workerpool",
       "msg-20260816T102807Z-16-workerpool",
-      "msg-20260816T104549Z-19-workerpool"
+      "msg-20260816T104549Z-19-workerpool",
+      "msg-20260816T120441Z-20-workerpool",
+      "msg-20260816T120441Z-21-workerpool"
     ],
     "hardware-backfill": [
       "msg-20260813T194951Z-92-coordinator-agent"
@@ -1873,8 +1875,12 @@
     [
       "msg-20260816T104549Z-19-workerpool",
       "handler:intake_proposals"
+    ],
+    [
+      "msg-20260816T120441Z-21-workerpool",
+      "handler:intake_proposals"
     ]
   ],
   "schema_version": "session_bus.relay_state.v1",
-  "ts": "2026-08-16T10:56:53+00:00"
+  "ts": "2026-08-16T12:05:43+00:00"
 }

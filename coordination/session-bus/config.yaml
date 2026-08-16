@@ -154,7 +154,7 @@ worker_pool:
   # daemon treats `enabled: false` as "endpoint not ready" and leaves the work
   # READY and visible. Flip to true only after the runner has been proven
   # end-to-end on this host.
-  enabled: false
+  enabled: true
   # D2: claude for the <=10-row pilot (isolates the structural variable from
   # model quality); codex exec is the intended scale-out default once the pilot
   # has measured tokens/row. Per-lane override lives in `lane_harness`.
