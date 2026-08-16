@@ -4908,3 +4908,101 @@ so they carry derived actionables the plan predates._
 (**already covered** by §7.3's candidate record, which binds compiler/toolchain/build command and
 logs); and adopting the reference campaigns' variance tolerances or scoring formulae, both of which are
 weaker than our sanctioned e-process machinery.
+
+## 22. The quant ladder and the occupancy knee — re-aiming the low-bit lever set (2026-08-16)
+
+_Filed by the research-intake session at operator request. Evidence:
+`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md` (receipt, raw JSONL and
+sweep log beside it). Grade: **`design_prior`** — this is a non-governed measurement, not an
+AutoKernel `evaluation_event`, and §19.0 rule 4 forbids promoting it by origin. It proposes; it
+settles nothing._
+
+**The finding in one line.** On a single-model 8-rung ladder (Goedel-8B, one f16 source, frozen
+production quantizer `0db32c06e`/10125), batch-1 decode partitions **exactly** on kernel register
+pressure, not on bits-per-weight: every rung whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR
+(8 waves/SIMD) decodes at **≥90.05 t/s**; both rungs above 64 VGPR (6 waves) decode at **≤82.89 t/s**
+— *while being 27–46% smaller*. **IQ4_XS sits on the 64-VGPR boundary and is the fastest rung on the
+ladder** (129.77 t/s, vs Q4_K_M 108.75 and IQ2_XXS 82.89). Below it, shrinking the model makes decode
+absolutely slower. Prefill is flat across the whole ladder (2398–2881 t/s, 16.7% spread), so the cliff
+is specific to the batch-1 GEMV path.
+
+**This loop predicted it and never caught it.** `mi210-q8-dequant-gemv-roofline.md:12` established for
+Q8_0 that the gap is "achieved-bandwidth / occupancy, **NOT** dequant-compute";
+`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md` published the per-quant VGPR table on
+2026-08-12 with IQ4_XS at exactly 64 → 8 waves and IQ3_XXS/IQ2_XXS at 71/78 → 6 waves. The prediction
+was on disk four days before the ladder measured it. It never reached this handoff's catalogue:
+measured 2026-08-16, format mentions here were **Q4_K 20, IQ2 8, Q8_0 6, Q6_K 4, IQ3 3 — and IQ4_XS 0,
+Q5_K 0, IQ1 0**. The loop is aimed at the rungs on the wrong side of its own knee.
+
+**What this does to the lever set.** The ranked IQ2/IQ3 items (the `v_perm_b32` sign-expansion
+437-instruction excess; the Q4_K branchless six-bit scale/min decoder; VGPR 78→64) are **occupancy
+levers, not dequant-arithmetic levers**. Instruction count matters to the extent it holds live
+registers. That makes the payoff *threshold-shaped, not linear*: crossing back under 64 VGPR regains
+the 8th wave, and a reduction that lands at 70 buys nothing. None of these items currently state a
+register target, so none of them can presently be judged against the threshold that decides whether
+they pay.
+
+### 22.1 Hypotheses (operator-channel form, §8.4.0 — each carries its falsifier)
+
+- [ ] **AK-H-QL-1 — The sub-4-bpw decode cliff is an occupancy cliff, and the 64-VGPR/8-wave boundary
+      is the whole mechanism.** Entering at `design_prior`; the supporting VGPR table is static, read
+      from the shipped code object, and the throughput half is n=1 on one model.
+      **Falsifier:** a wall-share / occupancy map of IQ3_XXS or IQ2_XXS batch-1 decode showing
+      achieved waves/SIMD at or near 8 (i.e. the static allocation does not bind in practice), **or**
+      an IQ2_XXS variant reduced below 64 VGPR whose measured decode does not move into the ≥90 t/s
+      band. Either result kills the mechanism and the lever set must be re-derived from a fresh
+      profile rather than from register pressure.
+- [ ] **AK-H-QL-2 — The residual IQ3/IQ2 deficit that survives batching is wave-slot-bound, not
+      per-read.** Measured ratio to IQ4_XS rises but plateaus short of parity — IQ3_XXS 0.60→0.77,
+      IQ2_XXS 0.66→0.88 across B=1→32 — while Q4_K_M converges to ~0.99. A purely per-weight-read cost
+      amortizes away as B grows (read once, reuse B times); a wave-slot ceiling does not.
+      **Falsifier:** the B=32 ratio reaching parity (inside the A/A band established by AK-QL-3) with
+      occupancy unchanged, **or** a fixed additive per-read cost that reproduces the whole 0.60→0.77
+      curve without invoking occupancy. Note this hypothesis is currently supported by an
+      **unreplicated** sweep; AK-QL-3 is its precondition, not a follow-up.
+- [ ] **AK-H-QL-3 — IQ1_S will NOT show the cliff.** The static table puts IQ1_S at **42 VGPR → 8
+      waves**, below IQ4_XS's 64. If the mechanism is register pressure and not bit-width, the
+      smallest format on the shelf should land in the fast band, inverting the monotonic
+      "fewer bits = slower below 4 bpw" reading of the ladder. This is the cheapest discriminating
+      test available and it is a genuine prediction, not a restatement — it is the one place where the
+      occupancy story and the unpacking-cost story disagree in sign.
+      **Falsifier:** IQ1_S decoding in the ≤83 t/s band despite 8-wave occupancy. (Scope note: IQ1 is
+      stubbed in the CPU iqk path; this is a GPU MMVQ question and does not depend on that.)
+
+### 22.2 Tasks
+
+- [ ] **AK-QL-1 — Catalogue the missing rungs.** IQ4_XS, Q5_K_M and IQ1_S have zero mentions in this
+      handoff; IQ4_XS is the measured optimum. Add them to the format catalogue with their VGPR /
+      waves-per-SIMD figures from `a10_iq2_vgpr_lever_20260812.md`, so a proposal can be ranked
+      against the knee instead of against its own format's baseline.
+- [ ] **AK-QL-2 — Re-state every ranked IQ2/IQ3 lever with an explicit VGPR target and a
+      threshold-shaped payoff.** A lever that does not cross 64 does not regain the 8th wave and
+      should say so in its own value case. Levers whose stated benefit is "fewer instructions" without
+      a register target are currently unrankable against AK-H-QL-1 and must be re-scoped or declined.
+      Re-weight the value case against **IQ4_XS**, not against the format's own baseline: an IQ2_XXS
+      win that does not clear a 1.57× deficit produces no production value at any batch size measured.
+- [ ] **AK-QL-3 — Replicate the ladder and sweep with an A/A band before any of this gates a
+      decision.** n=1 per cell today, no band. The IQ4_XS B=8 cell (408.5) is a suspected outlier —
+      it breaks its own monotonic trend and is the single point where Q4_K_M inverts above it.
+      Use the §9.3 T1a recipe with its `min_measurable_us` floor and a declared `cache_state`; below
+      the floor a cell is `inconclusive`, not a rank. **This is the precondition for AK-H-QL-2**, and
+      for quoting any of these numbers as anything other than `design_prior`.
+- [ ] **AK-QL-4 — Run the IQ1_S discriminating probe (AK-H-QL-3).** One rung, one model, batch-1
+      decode plus the batched sweep. Cheapest test that can falsify the whole mechanism.
+- [ ] **AK-QL-5 — Pair the ladder with correctness before any rung is proposed for production.**
+      The ladder is speed-only; the IQ2/IQ3 rungs were built on a 1.23 MB / 30-chunk imatrix and are
+      performance probes, explicitly not quality-grade models. Standing project rule is to pair speed
+      with a correctness check. **No rung on this ladder may be cited in a promotion argument until
+      this runs** — the throughput ranking says nothing about whether IQ4_XS is usable, only that it
+      is fast.
+- [ ] **AK-QL-6 — Record the refuted premise in the §19.2 do-not-repeat ledger.** "Batching closes the
+      dequant gap" is now measured and **false as stated**: batching closes it for the 8-wave K-quants
+      (Q4_K_M → ~0.99 of IQ4_XS at B=32) and leaves **12–23%** on the floor for the 6-wave IQ formats.
+      It was reasoned-but-never-measured before 2026-08-16; retire it with the receipt so it is not
+      re-proposed as an argument for low-bit serving.
+
+**Not filed, recorded so it is not re-derived:** a new belief-kernel adapter row. AutoKernel already
+has five source rows in `scripts/vidya/adapters/README.md`; this ladder was run **outside** the loop
+and emits no `evaluation_event`, so it correctly produces zero claim rows. If AK-QL-3 re-runs it
+under the governed path, it flows through the existing `autokernel_evaluation_event.py` adapter and
+still needs no new row — which is the wiring working as designed, not a gap.
