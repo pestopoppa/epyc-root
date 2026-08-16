@@ -235,7 +235,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 - [x] P3-1 Retire mainA–D per identity: drain-verify → final wrap receipt → tombstone marker in the
       roster row → `assignee:` linter refuses new messages to retired ids → cursors archived. NOT
       "re-usable slots" (C24/C28 class).
-- [ ] P3-2 Shrink `tmux_adapter.py` to the two interactive endpoints (machine side); worker panes
+- [x] P3-2 Shrink `tmux_adapter.py` to the two interactive endpoints (machine side); worker panes
       remain human-only. Delete worker-side nudge/doorbell/heartbeat/glyph machinery.
 - [x] P3-3 `fleet_watch`: drop pane heuristics; keep hardware compute-idle (rocm-smi + region
       claims); add queue-aging alarm — rows refused by any gate count as AGING; every refusal class
