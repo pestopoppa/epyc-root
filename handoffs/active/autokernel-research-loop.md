@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** OPERATOR-STOPPED / MANUAL DISCOVERY PROVED THROUGHPUT / CONTROLLER-FIRST IMPLEMENTATION IN PROGRESS — updated 2026-08-13
+**Status:** CONTROLLER-FIRST GRAPH VALIDATED / PLANNER-CONDITIONING V3 SEALED / CAMPAIGN IDLE — updated 2026-08-16
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,7 +18,44 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
+**Current checkpoint (2026-08-16 19:55 UTC):** the controller-first implementation is now on
+research `main` via merge `0d701b9ae6717821f4728a62897b73773f63c874`. Its final product tip is
+`6807a0b1034de7aab751f65e40084463dc0d9015` (`codex/autokernel-planner-conditioning-v3-20260816`), and the fresh immutable
+bundle `/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v3` validates with
+`inference_executed=false` and graph SHA-256
+`31af931de1da453cf7c28c450de301b7db89c13cd58a1064d512390a514bd4a2`. The graph binds one
+`gpt-5.6-sol/high` planner and one `claude-fable-5/high` critic, source/dispatch authority, the timed
+output oracle, protected-tree snapshots, device reservations, and 29 immutable evidence carriers.
+The full merged-tree hardware-free gate passed **303/303** with three explicitly expected future
+machine-policy tests.
+
+Planner conditioning is now a reviewed portfolio rather than two hotspot rows and prose. The exact
+eligible spend set remains Q5 type-specific dequant, a new Q8 quantizer mechanism, production-shape
+FA/GQA7 work, and RMS direct load/reduction. Quant-ladder observations enter only as
+`non_governed_design_prior`; IQ1 is an inactive counterfactual with zero autonomous spend. Q4_K MMQ
+source work is blocked until a committed clean repair passes the unchanged 172/172 κ=1.5 matrix,
+and the exact generic Q8 per-element-fp-dequant premise is a DNR because that path is already
+integer-native DP4A. The live dashboard now exposes `/api/kernel/live` with bounded controller and
+planner logs; it currently reports `active=false` because no campaign is running.
+
+**Live next work:**
+
+- [ ] **AK-RSM-1 — make stop/resume an explicit controller contract before the next long campaign.**
+      Persist content-addressed stage receipts for assignment → planner → critic → authorization →
+      build → correctness → attribution → runner → classification; add a graceful stop latch and
+      same-graph restart tests proving completed stages never repeat. Graph upgrades require a
+      versioned carry-forward receipt rather than copying state or weakening deployment identity.
+- [ ] **AK-RUN-V3 — operationally launch the v3 bundle from a fresh state root.** The specific external
+      prerequisite is restoration of this devcontainer's Docker socket followed by exact inspection
+      of the pinned planner image. Launch only after the GPU is free and protected production and
+      instrument identities revalidate; do not migrate a stale bundle state.
+- [ ] **AK-ADM-1 — promote the six planner-memory limitations into typed pre-model enforcement.**
+      Bind a versioned admissibility-policy manifest into Sol/Fable context and enforce exact kernel
+      instantiation, command phase, static-tool execution, Q4_K correctness, Q8 native-path premise,
+      and IQ residency before model judgment. Acceptance is the three current expected-failure tests
+      becoming ordinary passing tests.
+
+**Historical checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
 discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
 watchers is not the autonomous loop. The durable nonpromotable leaders remain CPU IQK prefill
 **+31.247%**, CPU IQK decode **+7.939%**, MI210 MMQ-MFMA OFF prefill **+26.5965%**, and MI210 flash
@@ -4971,35 +5008,41 @@ they pay.
 
 ### 22.2 Tasks
 
-- [ ] **AK-QL-1 — Catalogue the missing rungs.** IQ4_XS, Q5_K_M and IQ1_S have zero mentions in this
-      handoff; IQ4_XS is the measured optimum. Add them to the format catalogue with their VGPR /
-      waves-per-SIMD figures from `a10_iq2_vgpr_lever_20260812.md`, so a proposal can be ranked
-      against the knee instead of against its own format's baseline.
+- [x] **AK-QL-1 — Catalogue the missing rungs.** ✅ 2026-08-16 — research `02307322d166...` adds
+      immutable IQ4_XS, Q5_K_M and IQ1_S evidence and portfolio records. IQ1 remains memory-only and
+      inactive; catalogue presence grants no GPU or authoring spend.
 - [ ] **AK-QL-2 — Re-state every ranked IQ2/IQ3 lever with an explicit VGPR target and a
       threshold-shaped payoff.** A lever that does not cross 64 does not regain the 8th wave and
       should say so in its own value case. Levers whose stated benefit is "fewer instructions" without
       a register target are currently unrankable against AK-H-QL-1 and must be re-scoped or declined.
       Re-weight the value case against **IQ4_XS**, not against the format's own baseline: an IQ2_XXS
       win that does not clear a 1.57× deficit produces no production value at any batch size measured.
+  - [x] **AK-QL-2a — Re-state the exact IQ2_XXS lever as a threshold mechanism.** ✅ 2026-08-16 — the
+        portfolio requires the production `true,false` instantiation, `v_perm_b32`, at most 64 true
+        and allocated VGPR, scratch=0, `vgpr_spill_count=0`, and eight waves/SIMD. A 65–70 VGPR result
+        has no predicted occupancy payoff. IQ3 still lacks equivalent source-level attribution, so
+        the broader parent remains open.
 - [ ] **AK-QL-3 — Replicate the ladder and sweep with an A/A band before any of this gates a
       decision.** n=1 per cell today, no band. The IQ4_XS B=8 cell (408.5) is a suspected outlier —
       it breaks its own monotonic trend and is the single point where Q4_K_M inverts above it.
-      Use the §9.3 T1a recipe with its `min_measurable_us` floor and a declared `cache_state`; below
-      the floor a cell is `inconclusive`, not a rank. **This is the precondition for AK-H-QL-2**, and
-      for quoting any of these numbers as anything other than `design_prior`.
-- [ ] **AK-QL-4 — Run the IQ1_S discriminating probe (AK-H-QL-3).** One rung, one model, batch-1
-      decode plus the batched sweep. Cheapest test that can falsify the whole mechanism.
+      This is a conditional real-graph/T1b characterization, not §9.3's operator-microbenchmark T1a.
+      Before activation, codify the comparator plus `min_measurable_us`, declared `cache_state`, A/A,
+      randomized/interleaved blocks and correctness; below the floor a cell is `inconclusive`.
+      **Activation condition:** a practical serving or ranking decision depends on the ladder.
+- [x] **AK-QL-4 — Retain IQ1_S as an inactive discriminator, not an execution task.** ✅ 2026-08-16 —
+      operator direction says there is no practical need to run IQ1. The portfolio preserves its
+      sign-discriminating falsifier with zero expected value, empty templates and no GPU/source spend.
+      Reopen only on explicit operator direction plus a practical IQ1 serving decision.
 - [ ] **AK-QL-5 — Pair the ladder with correctness before any rung is proposed for production.**
       The ladder is speed-only; the IQ2/IQ3 rungs were built on a 1.23 MB / 30-chunk imatrix and are
       performance probes, explicitly not quality-grade models. Standing project rule is to pair speed
       with a correctness check. **No rung on this ladder may be cited in a promotion argument until
       this runs** — the throughput ranking says nothing about whether IQ4_XS is usable, only that it
       is fast.
-- [ ] **AK-QL-6 — Record the refuted premise in the §19.2 do-not-repeat ledger.** "Batching closes the
-      dequant gap" is now measured and **false as stated**: batching closes it for the 8-wave K-quants
-      (Q4_K_M → ~0.99 of IQ4_XS at B=32) and leaves **12–23%** on the floor for the 6-wave IQ formats.
-      It was reasoned-but-never-measured before 2026-08-16; retire it with the receipt so it is not
-      re-proposed as an argument for low-bit serving.
+- [x] **AK-QL-6 — Record the refuted blanket batching premise.** ✅ 2026-08-16 — `02307322d166...`
+      records it as a scoped, retired `design_prior` warning for the exact MI210/Goedel-8B B1–B32
+      regime. It is deliberately not a hard family-wide DNR and does not forbid narrower per-format
+      hypotheses or governed re-entry.
 
 **Not filed, recorded so it is not re-derived:** a new belief-kernel adapter row. AutoKernel already
 has five source rows in `scripts/vidya/adapters/README.md`; this ladder was run **outside** the loop

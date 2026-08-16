@@ -620,6 +620,14 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     `/mnt/raid0/llm/autokernel/probes/rvp-c2-6b-q4k-qsum-final-20260811/receipt.json`, SHA-256
     `355bdcf169cb8682d2f56e1754b321f770a0fe3c0bbc5f6e1dc58eaffb443fb2`. The source fix remains
     uncommitted and approval-gated; this row closes the diagnosis and live correction, not promotion.
+  - [x] **RVP-C2-6c — Bind the exact four Q4_K MMQ receipts into AutoKernel planner authority.** ✅
+    2026-08-16 — research `5ae54e0ae4a80ab02450f703617b6a769599caf2` carries the stock 18/43
+    result, DP4A and least-squares negatives, and diagnostic 172/172 same-population repair as
+    immutable `candidate_only` evidence. Source authoring and performance ranking now refuse until a
+    committed clean-source repair passes the unchanged κ=1.5 matrix.
+  - [ ] **RVP-C2-6d — Materialize the same-population Q8 qsum repair as a committed clean experimental
+    source identity and rerun 172/172 at κ=1.5.** Only that source-bound receipt unlocks exact Q4_K
+    MMQ profiling or source authoring; the uncommitted diagnostic cannot.
 - [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
   transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
   at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
@@ -958,23 +966,35 @@ syncs between iterations, so work on a submission-created stream never lands ins
 and a 12.06 ms fp32 GEMM read 0.0069 ms, **1743× fast**. Apache-2.0, and every mechanism below is
 architecture-independent, so none of this depends on the gfx90a constants question.
 
-**Two gaps the audit found that neither repository closes** — both our own 32.8%-timing-loophole family:
+**Three gaps the audit found that neither repository originally closed** — all now implemented and
+retained here as regression requirements in the 2026-08-16 AutoKernel graph:
 
-- [ ] **RVP-C6-8 — Add a PHASE-DETECTION exploit case to the C6 reward-integrity screen.** A candidate
+> **ID note (corrected 2026-08-16).** These were initially filed as RVP-C6-8/9/10, colliding with
+> three already-completed tasks of those names earlier in this file. The new work is C6-11/12/13;
+> pre-2026-08-15 references to C6-8/9/10 continue to mean the earlier completed checks.
+
+- [x] **RVP-C6-11 — Add a PHASE-DETECTION exploit case to the C6 reward-integrity screen.** ✅
+      2026-08-16 — research `bcce7793` adds fail-closed source detection; `ad9dc65e` and `71a8c7a3`
+      bind a cross-arm timed-output semantic oracle into the executable graph; an independently red
+      black-box phase-switch case is green under the dynamic oracle. A candidate
       that computes correctly during the correctness rounds and degrades or no-ops once timing starts.
       Correctness runs in 10 rounds *before* timing and the timed-phase output buffers are never
       inspected afterwards (upstream issue #19, which the ROCm port inherits; the fix PR was closed
       unmerged). The shifting-pool allocator closes the naive version by carrying validated values into
       the timed loop — what remains open is a submission that can *distinguish* the two phases.
       **Zero of the 48 adversarial cases in their corpus attempts this.** Cite `intake-1102#record`.
-- [ ] **RVP-C6-9 — Add a `torch.compile` / CUDA-graph capture-and-replay exploit case.** Nothing in
+- [x] **RVP-C6-12 — Add a `torch.compile` / CUDA-graph capture-and-replay exploit case.** ✅
+      2026-08-16 — `bcce7793` rejects candidate-added compile/capture/replay, requires graphs off,
+      address-and-content rotation, and validated timed outputs before C3 timing authority. Nothing in
       either repository probes a compiled or graph-captured kernel specializing on the address-shifted
       but value-identical timed inputs — and that is the single most likely tool an AI kernel-authoring
       agent reaches for. Their state-caching corpus covers address- and shape-keyed caches but **not
       content-fingerprint-keyed** ones, which is exactly what NVIDIA's own issue response named as
       bypassing pointer shifting.
-- [ ] **RVP-C6-10 — Check whether our C3 timing loop has the same non-syncing shape, and if so adopt the
-      stream fence/join fix.** ~200 lines, Apache-2.0, arch-independent. Mechanism: track every stream
+- [x] **RVP-C6-13 — Close side-stream timing integrity.** ✅ 2026-08-16 — C3 surfaces now require
+      either full-device synchronization or the exact tracked fence-after-start/join-before-stop
+      contract; event-only timing is refused. The discovery oracle uses `hip_full_device`. The source
+      mechanism is ~200 lines, Apache-2.0, arch-independent: track every stream
       constructed after install, fence from current after the start event, join into current before the
       end event, so the reported time is correct regardless of what the source does. Note the detail
       that makes it worth copying rather than re-deriving — a join-only first version still read 1.41×

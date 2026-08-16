@@ -871,8 +871,10 @@ today**. Only SOL *scoring* needs a port, because T_SOL, T_b and tolerances are 
 quantities.
 
 All eight C5 seeds resolve to real definition/workload/reference/tolerance/bound records — 193
-workloads, all scoreable, zero deferred, all bf16/fp16 and therefore gfx90a-viable (the FP8 and NVFP4
-deferrals do not touch our seeds).
+workloads, all scoreable and zero deferred. The port's actual k145 oracle workload/tolerance surface
+is fp32, while HyRA candidate metadata names fp16; k227 is bf16-only. The provider deliberately keeps
+oracle-workload and candidate-metadata identities separate rather than repeating the earlier
+"all bf16/fp16" conflation.
 
 - [ ] **C5-3 — Use the port as a gfx90a CORRECTNESS ORACLE now, ahead of any bound port.** Target
       `LOCAL` hardware, compile through the existing arch-agnostic path, and run the 10 fresh-input
@@ -880,7 +882,14 @@ deferrals do not touch our seeds).
       the handoff already says a HyRA reference tensor or synthetic fixture cannot substitute for — and
       it needs no measured constants, so it is available immediately. AutoKernel is explicitly in scope
       to author and screen gfx90a kernels against it.
-- [ ] **C5-4 — Classify the eight seeds by bound quality, and stop quoting `S` where it is meaningless.**
+  - [x] **C5-3a — Implement the sealed gfx90a correctness-only provider.** ✅ 2026-08-16 — research
+        `5f1b645c0c5034137e298c1dc9732beee9742547` adds LOCAL/gfx90a planning, exact source/runtime/
+        workload identities, ten fresh live-reference rounds, and `scoring.enabled=false`; later
+        hardening binds source staging and complete raw-result reduction. No live 193-workload run
+        occurred, so the parent C5-3 empirical task remains open.
+- [x] **C5-4 — Classify the eight seeds by bound quality, and stop quoting `S` where it is meaningless.** ✅ 2026-08-16 —
+      research `777ac7845ad378cb660c30bf9a4a14f4a23851b3` persists the quality classes, blocks gfx90a SOL
+      scoring without measured constants, and keeps numeric SOL fields out of author prompts.
       Median headroom (T_b/T_SOL) per seed: **k215 6.8× (ok)**; k145 16.8×, k175 17.0×, k138 33.4×
       (loose); **k154 506×, k227 3,690×, k225 5,710×, k228 36,837× (vacuous)**. Above ~100× the score
       collapses toward T_b/(T_b+T_k) and carries no roofline content — it degenerates into plain
@@ -896,7 +905,9 @@ deferrals do not touch our seeds).
       k227→`FlashInfer-Bench__018_mla_paged_decode…`, k228→`FlashInfer-Bench__019_mla_paged_prefill…`),
       with workload counts reproducing exactly (16/16/16/16/29/15/47/38 = 193). **The kNNN ids appear
       nowhere in either repository** — they are HyRA's — so this join is ours to maintain and should
-      stop being re-derived. Add it as a `sol_execbench_problem_id` field.
+      stop being re-derived. Add it as a `sol_execbench_problem_id` field. **2026-08-16 checkpoint:**
+      `c5_seed_corpus.json` is now tracked, but exact problem IDs still live separately in
+      `c5_rocm_oracle.json`; the requested joined field remains open.
 
 ### OPERATOR DECISION — port the SOL bound constants to gfx90a?
 
