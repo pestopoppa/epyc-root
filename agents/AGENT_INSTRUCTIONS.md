@@ -20,10 +20,11 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
 3. `agents/shared/ENGINEERING_STANDARDS.md`
 4. `agents/shared/WORKFLOWS.md`
 5. `docs/guides/agent-workflows/INDEX.md`
-6. Role file in `agents/*.md` relevant to the task — if you are coordinating other sessions on
+6. `agents/shared/INVARIANTS.md` — the 15 coordination invariants, before any bus work
+7. Role file in `agents/*.md` relevant to the task — if you are coordinating other sessions on
    the session bus, that is `agents/coordinator-agent.md` plus
    `coordination/session-bus/BUS_PROTOCOL.md` (the contract)
-7. Domain docs in `docs/` and current status in `CLAUDE.md`
+8. Domain docs in `docs/` and current status in `CLAUDE.md`
 
 ## Non-Negotiables
 
@@ -34,9 +35,16 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
   `agents/shared/ENGINEERING_STANDARDS.md` (read-order item 3), not restated here.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
 - **Fan out by default.** A main's own thread is for review, integration and task boundaries;
-  execution goes to 3–5 concurrent subagents, model and effort matched to the task, and every result
-  is PROPOSED work until its evidence and diffs are reviewed. Working serially is the defect. Full
-  rule: [Parallel Subagent Fan-Out](shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main).
+  execution goes to 3–5 concurrent subagents. Working serially is the defect. The width, the
+  model/effort matching, the PROPOSED-work review gate **and the ratified *When NOT to fan out*
+  exceptions** are canonical in [Parallel Subagent
+  Fan-Out](shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
+  — read the exceptions there rather than inferring them.
+- **Coordination invariants are canonical in [`agents/shared/INVARIANTS.md`](shared/INVARIANTS.md)**
+  — 15 numbered rules, cited and never restated.
+- **An absence is not proved by one sample.** Sample DURING, never after. Full rule:
+  [Observation
+  Windows](shared/OPERATING_CONSTRAINTS.md#observation-windows--a-sample-that-misses-the-phenomenon-proves-nothing).
 - **Default is ACT — escalation must earn itself.** Before deferring, escalating, or writing a "Deferred /
   Open / Awaiting operator" item, name the specific decision only the operator can make, or the external
   event you await, in one sentence. If you cannot, **finish the work**. Find a bug → fix it; find a gap →
