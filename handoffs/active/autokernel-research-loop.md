@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** BASELINE-MATCHED R4 CONTROLS 5/5 PASS / CLEAN PREFILL PAIR RETRY PENDING QUIET HOST / REAL ARCHIVE CHAIN NOT YET STARTED — updated 2026-08-13
+**Status:** OPERATOR-STOPPED / MANUAL DISCOVERY PROVED THROUGHPUT / CONTROLLER-FIRST IMPLEMENTATION IN PROGRESS — updated 2026-08-13
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -18,22 +18,105 @@
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
-**Current checkpoint (2026-08-13):** the prior a4cb/283b control narration below is historical.
-The current clean direct-child CPU instrument is `f744cc220e722d1bda93783959471d44f8e118b0`;
-the current accepted baseline-matched control bundle is
-`/mnt/raid0/llm/autokernel/controls/ak-controls-v9-f744cc220-20260813-r4` (5/5 controls,
-`B_min=15`, MDE `2.9585%`). Rejected r2/r3 controls showed that llama-bench `-r 5` creates a
-within-invocation thermal/P-state trajectory; research `798016e3` therefore binds all A/A arms to
-one sealed `GGML_IQK=0`, `reps=1` frame, and `7486a167` rejects a pair outside its accepted
-block range before publication. r34 spent no inference (10 blocks rejected against `[15,20]`);
-r35 refused before build for host contention; r36 intervention passed all T0 gates but refused
-before T1 when foreign OpenCode CPU work made the post-T0 quiet sample `25.47/96 = 0.27`, above
-the unchanged `0.25` ceiling. Its A/A arm was not started. These terminal attempts are not
-archive evidence. The next empirical action is a fresh 15-block matched prefill pair only after
-the independent quiet-host gate passes; then the required decode pair, heldout-bound prefill pair,
-strict archive, and observe-only least-commitment evaluation remain mandatory.
+**Current checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
+discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
+watchers is not the autonomous loop. The durable nonpromotable leaders remain CPU IQK prefill
+**+31.247%**, CPU IQK decode **+7.939%**, MI210 MMQ-MFMA OFF prefill **+26.5965%**, and MI210 flash
+attention ON prefill **+4.8791%**. The GPU search subsequently emitted many additional candidate-only
+records over graph mode, batch/ubatch, helper threads, poll, mmap/offload, rocWMMA, rope/RMS, and
+quant-kernel shapes; these are discovery observations only. Their value is a ranked hypothesis funnel,
+not authority to call any arm a champion or promotable.
 
-**Historical checkpoint (2026-08-12):** the current frozen-v9 control campaign is accepted and
+The strict manual execution path failed usefully. Decode attempt r49 exposed a real seeded
+`IQ3_XXS MUL_MAT_ID m=512,n=15,k=256` correctness violation (`0.000528677 > 0.0005`) that the result
+parser initially failed to surface. The parser now recognizes the full diagnostic-prefix family, and
+experimental kernel commit `894ec4dc55c829b11b663a46bc9b089d861b73a4` preserves the proven n=1
+IQK path while routing IQ3_XXS MMID with `ids->ne[1] > 1` to the native fallback. The exact former
+failure then passed in the full 1,216-case run. Because this changed instrument identity, the old r4
+calibration could not be reused. Fresh decode calibration r6, bound to that instrument, completed and
+checkpointed all AA `200/200`, neutral `60/60`, and anchor-motion `15/15` blocks before the operator
+requested an immediate stop. The sealed continuation watcher and exact r6 process were terminated in
+that order; their captured child was dead, all twelve q0-q3 lock probes were free in three follow-up
+samples, and no continuation, heldout pair, archive, champion, promotion, or release ran. SIGTERM
+arrived before r6 wrote its terminal summary/release receipt, so its checkpoint prefix is resumable
+evidence, not accepted calibration authority.
+
+The correction is controller-first: stop spending the session hand-authoring sequential campaign
+IDs, manifests, and recovery watchers. A deterministic discovery controller must own hypothesis
+selection, resource-aware CPU/GPU dispatch, sealed measured-result ingestion, strategy persistence,
+and the nonpromotable candidate funnel; strict calibration/heldout/champion/release remain separate
+consumers that discovery cannot invoke. Implementation is currently in progress in an isolated Terra
+worktree. Until its tests and independent review land, that unfinished code has no campaign authority
+and must not be swept into a documentation or wrap-up commit.
+
+**Current checkpoint (2026-08-13 16:44 UTC):** operator ratification
+`autokernel-discovery-first-20260813` made discovery-first search durable under
+`P-AK-SEARCH-1-A2`. Root source commit `678240b9` was promoted to `main` by `c8223a76`; the
+ratified receipt is SHA-256 `65571da3d7b89792fccb827824473051ee492a30670c9b4a34aad40a09e2e669`.
+Discovery uses one exact-frame three-anchor bank plus three candidate-only samples, treats ordinary
+host activity as recorded noise, and blocks only on competing model inference overlapping its held
+compute claim. It remains structurally unable to bank, promote, enter the archive, or authorize a
+release.
+
+That policy now has live CPU and GPU evidence. Prefill screen `ak-iqk-screen-20260813-s7` reused the
+sealed b4 bank, ran three candidates and zero anchors, and nominated IQK at median **+31.247%**.
+Distinct-regime decode screen `ak-iqk-decode-screen-20260813-s1` reused its tg128 bank and nominated
+IQK at median **+7.939%**. MI210 screen `ak-gpu-mmq-mfma-screen-20260813-s2` measured the sole build
+factor `GGML_HIP_MMQ_MFMA=ON→OFF`, with three anchors plus three candidates, and nominated OFF at
+median **+26.5965%**; every candidate invocation proved owned KFD residency and non-zero VRAM during
+the measurement window. All three are deliberately nonpromotable search records, not performance
+claims.
+
+Strict confirmation also advanced without hiding failures. The r42 intervention stopped before
+fingerprinting, claim, build, T0, or throughput because the evaluator-closure constructor listed the
+same authoritative `correctness.py` path directly and through a nested closure. Its terminal error is
+preserved; the control was not spent. Research `b93af168` now unions exact authoritative paths while
+retaining the fail-closed lexical-alias/duplicate guard. Fresh r43 inputs bound that repair and both
+dry-ran clean. The intervention then reached terminal `DECIDED/KEEP`: T0 passed, all 15 paired deltas
+were positive, median gain was **+28.860648%**, the worst delta was **+984.48 tokens/s**, anchor drift
+was `15.0356%` within the `18.4968%` bound, production remained byte-identical, and both resources
+released. Its control terminally refused before claim/T0/throughput because strict preflight observed
+only 7/96 cores at nominal frequency under load and simultaneously treated caller-disabled load
+measurement as unmeasured contention. The control is not archive evidence, so r43 is not a completed
+matched pair; the exact strict load/boost mode must be reconciled before fresh immutable pair identities.
+
+The separately governed decode r2 calibration remains terminal `calibration_rejected`: neutral
+`|effect|` p95 `0.154446` exceeded its A/A permutation reference `0.148013` (phi `0.133735`). Research
+`084f1ee6` repairs the short tg128 observation frame by defining each statistical block as the median
+of five fresh alternating pairs rather than reusing one process, and `9c0c907c` exposes the resulting
+2,600-invocation calibration cost before execution. No threshold was weakened and ordinary host noise
+is not an exclusion. After a fresh matched prefill pair completes, execute that decode calibration and
+holdout, then the heldout-bound prefill pair, AK-WM-2a archive projection, and AK-WM-2b observe-only
+evaluation.
+
+**Historical checkpoint (2026-08-13, r4–r36):** clean direct-child CPU instrument
+`f744cc220e722d1bda93783959471d44f8e118b0` produced accepted baseline-matched control bundle
+`ak-controls-v9-f744cc220-20260813-r4` with 5/5 controls, B_min `15`, and MDE `2.9585%`.
+Rejected r2/r3 controls exposed the within-invocation thermal/P-state trajectory from
+`llama-bench -r 5`; research `798016e3` therefore sealed both A/A arms to `GGML_IQK=0`, `reps=1`,
+and `7486a167` rejected pair lengths outside the accepted range before publication. r34 spent no
+inference because ten blocks were outside `[15,20]`; r35 refused before build on contention; r36
+passed intervention T0 but refused before T1 when the then-governing quiet sample was `25.47/96 =
+0.27`, above `0.25`, and its A/A arm never started. All three are terminal non-archive evidence.
+
+The low-cost discovery plane is explicit, ratified, and live but nonpromotable. Research `28e7c41a`
+adds the bounded tier, `59a4ec91` binds the immutable exact-frame amortized baseline bank,
+`a3eca461` removes builds and worktrees from runtime-parameter screens, `7c35b3bb` binds the decode
+tg128 frame, and `f1b97aa3`/`45996850` supplies a six-call MI210 runner with sealed build identity.
+Research `eb898bd0`/`c376853d` adds sealed matched-pair T0 evidence plus frame-tamper coverage.
+`de464126`/`0f137f50` adds the separately calibrated decode producer and resolves its control frame at
+runtime. The remaining empirical chain is: reconcile strict load/boost preflight and execute a fresh
+matched prefill pair, establish an accepted decode calibration and holdout, run the heldout-bound pair,
+project AK-WM-2a, then evaluate AK-WM-2b observe-only.
+
+**Discovery policy (operator-ratified `P-AK-SEARCH-1-A2`, 2026-08-13):** discovery is throughput work,
+not release confirmation. Only competing model inference overlapping the held compute claim blocks a
+screen; ordinary services, agents, builds, filesystem activity, scheduler traffic, and host load are
+captured as noise/uncertainty. Screened candidates are ordered as top-K under that uncertainty, and
+strict calibrated confirmation is reserved for the small nominated set. No screen can bank, promote,
+enter an archive, contribute to readiness, or authorize release.
+
+**Historical checkpoint (2026-08-12):** the frozen-v9 control campaign is accepted and
 decision-grade. Under clean one-parent instrument `a4cb04ca8f92fa4d665684490f609b380f9b5e96`,
 `ak-controls-v9-a4cb04ca-20260812-r2` solved B_min=`10` and φ=`0.03578502357852242`, passed all
 five controls, promoted the historical IQK replay at `+26.6050%`, and set `may_rank=true`. The six
@@ -41,16 +124,8 @@ inference legs completed under one released CPU claim. Deterministic composition
 because `CampaignBinding.change_class` was absent; research `c4a42c69` repaired that drift and
 recomposed the already-completed raw vectors with a hash-bound attestation stating
 `inference_executed=false`. Research `900cb5c6` also implements the strict AK-WM-2a real-archive
-builder. The CPU IQK proposal, exact physical envelope, calibration binding, and dry run are ready,
-but live preflight correctly refused before claim, build, or benchmark because host uptime was
-`13.47 days`, beyond the ratified one-week ceiling. After a compliant reboot, run the full-host CPU
-IQK proposal, materialize the real matched archive, then run the least-commitment evaluation
-observe-only.
-Research `58b8d66a`, `948a95a4`, and `3bd94893` close the no-inference producer gap and subsequent
-proposal-v4 drift in that next step. The live
-
-
-Research `58b8d66a` and `948a95a4` close the no-inference producer gap in that next step. The live
+builder. Research `58b8d66a`, `948a95a4`, and `3bd94893` closed the no-inference producer gap and
+subsequent proposal-v4 drift. The live
 campaign now requires a prospective least-commitment capture plan for the IQK parameter path,
 journals the measured diagnostic/outcome block, and can project two clean completed campaigns into
 the strict matched archive and onward to the sequencer/release rehearsal. Capture plans no longer
@@ -62,32 +137,14 @@ capture, source, hypothesis-store, and physical-envelope inputs are materialized
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260811/` and
 `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound current-schema
 commands compose successfully in 12 steps with `state=dry_run_composed` and `executed=false`; no
-inference was performed by this checkpoint. A live matched
-archive still requires two post-reboot clean DECIDED runs.
-The separate availability-conditioned seven-arm controller campaign now runs from an immutable source
-worktree. R15 is terminal-invalid and non-rankable after Claude exhausted its structured-output retries;
-its 7/7 claims released, all 13 captured PIDs were dead, and every cgroup was empty and removed. Research
-`537163d5` adds one exact-cause, receipt-visible retry without retrying timeouts or arbitrary failures;
-`eb1de388` refreshes the campaign pin. The full admitted Python 3.12 AutoKernel suite passed **5,682
-tests with one expected failure**. R16 then refused before claim or inference on the stale expected
-entrypoint identity. Fresh immutable r17 reached a valid 32h actor/critic checkpoint at diagnostic
-speedup `1.004404445111776` with compile/correctness **4/4**, but terminated noncomplete when the next
-EvoEngineer 2h cell called `ArenaWorkspaceEvaluator.__init__` without required keyword-only
-`source_paths`. Its exact campaign PIDs are dead and final device claim released. R17 is partial and
-non-rankable. Research `381bc55e`/`11bccd41` repaired and repinned source-path construction across the
-five affected controllers; `b0d6f79f` prospectively captures and strictly projects feedback-only
-intermediate evaluator beliefs. Fresh immutable r18 is sealed at `17b9208d`; its baseline is complete
-and its first actor cell is active. Partial r18 evidence grants no comparison, aggregate, rank, bank,
-champion, promotion, or release authority. This controller comparison remains diagnostic and does not
-replace the post-reboot IQK/matched-archive sequence.
+inference was performed by this checkpoint; a live matched archive still required two post-reboot
+clean DECIDED runs.
 
-
-`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812/`. Both bound commands compose
-successfully with `executed=false`; no inference was performed by this checkpoint. A live matched
-archive still requires two post-reboot clean DECIDED runs.
-
-`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, and
-`b0d6f79f` prospectively captures feedback-only intermediate evaluator beliefs. R18 then completed
+The separate availability-conditioned seven-arm controller history remains diagnostic. R15 was
+terminal-invalid after structured-output retries; r16 refused before claim on stale entrypoint
+identity; and r17 reached a valid actor/critic checkpoint before the next cell omitted required
+`source_paths`. Research `381bc55e`/`11bccd41` repaired and repinned that construction, while
+`b0d6f79f` prospectively captured feedback-only evaluator beliefs. R18 then completed
 its baseline and full Claude/Codex 2h loop, but the parent refused the cell fail-closed after mutable
 host `~/.claude/.claude.json` changed following its staged copy. No actor-cell receipt or aggregate
 was admitted; r18 is terminal-noncomplete and non-rankable. Research `0b1fdbe9` now binds the source
@@ -96,7 +153,7 @@ tests passed**. Fresh immutable r19 is live from exact clean source `0b1fdbe9`; 
 completed baseline, and active first actor cell grant no comparison authority. Research `dfe265a1`
 separately specifies the safe controller-overlap architecture and required overlap A/A gate, but does
 not enable overlap in r19. This controller comparison remains diagnostic and does not replace the
-post-reboot IQK/matched-archive sequence.
+IQK/matched-archive sequence.
 Research `069e79fd` now closes the remaining no-inference source-to-champion implementation seam.
 The live campaign consumes an immutable content-addressed source patch before claim acquisition,
 applies it only through the guarded worktree boundary, and records the exact clean source/build,
@@ -420,10 +477,25 @@ not a reopening of empirical work:
 - [x] **AK-AUD-5 — Audit the runnable loop against current research `main`, not historical completion
   narration.** ✅ 2026-08-12 — verified the live campaign boundary, generic-source refusals, removed
   planes, preserved tag, and focused suite from a clean detached `730adb1d` checkout.
-- [ ] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
+- [x] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind
   actual T0 property measurements and raw paired-performance evidence; append exactly once before the
   terminal `STOP_STATE`; make append failure non-success; and keep dry runs record-free. This is the
-  producer prerequisite for Vidya SC10/SC18 and the real matched archive.
+  producer prerequisite for Vidya SC10/SC18 and the real matched archive. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — same pattern as AK-RUN-3: this row was filed by the runnable-loop
+  audit at 02:30 on 2026-08-12, and the implementation landed 37 minutes later the same day
+  (`d96e8704` "autokernel: journal live evaluation events", 03:07, in origin/main); the row was never
+  reconciled. Verified element-by-element at HEAD: `campaign.py` `journal_evaluation()` binds actual T0
+  property measurements and raw paired-performance evidence into schema-valid `EVALUATION_EVENT` +
+  `CANDIDATE_RECORDED` records (evaluator identity, claim grammar, host/claim receipts, evaluation
+  event ids, protocol ids); appends idempotently (replay returns identical event ids, byte-diff on
+  mutated payload raises "different bytes"); ordering test asserts `journal_evaluation` runs before the
+  terminal `journal`/`STOP_STATE`; append failure makes the run non-success (`journal_error` set, result
+  `ok=False`); dry runs are record-free (no `journal_evaluation` seam, zero candidate records — both
+  tested). Tests: `test_campaign.py` 362 passed incl. idempotent-append, ordering, failure-non-success,
+  and dry-run-record-free coverage. The 3 adjacent `test_campaign_footprint.py` failures are
+  pre-existing module-list drift (new `execution/inference_window.py`, `execution/screening_baseline.py`,
+  `heldout_bound_pipeline.py` lack FOOTPRINT.md rows from later AutoKernel commits) — reproduced on a
+  clean detached origin/main checkout, unrelated to AK-RUN-1.
 - [ ] **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
@@ -431,8 +503,25 @@ not a reopening of empirical work:
 - [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
   candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
   members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly
-  when the production anchor moves. Never add member speedups arithmetically.
-✅ 2026-08-13 — `mainC` (assigned AK-RUN-3; premise VERIFIED ALREADY-SATISFIED, not re-implemented). The lean sequencer + champion-maintenance path was fully landed by 2026-08-12 research commits: `8a2e6f5d` adds `controller/sequencer.py` (Sequencer loop: consumes proposal/candidate/evaluation records, composes compatible members, records CHAMPION_UPDATED) + `controller/champion.py` (frontier/banked/champion lifecycle, compatibility(), composition_request() with required_t2_cells re-evaluation, record_anchor_moved()/reanchor_champion(), never adds member speedups arithmetically — combined evaluation must be a valid pass); `77689f76` enforces AK-D39 provider integration boundaries; `069e79fd` closes the source-to-champion seam; `4a5f7361` closes the offline release seam. Sequencer is deliberately unbound from campaign #1 (FOOTPRINT.md — no second live loop). Verified: all 7 row clauses map to implemented code; 296 tests pass in the sequencer/champion/release slice (test_champion 16, adapter/closeout/live_material/readiness); sequencer CLI inspect-only + --run works.
+  when the production anchor moves. Never add member speedups arithmetically. ✅ **ALREADY SATISFIED
+  2026-08-13 (mainB verification)** — this row was filed by the runnable-loop audit at 02:30 on
+  2026-08-12, and the restore landed ~1h later the same day; the row was never reconciled. The same
+  task is checked off at line 2894: **"Restore the lean bank/frontier/champion sequencer on the
+  runnable journal plane"** ✅ 2026-08-12 — research `069e79fd` (in origin/main). Verified element by
+  element at HEAD: `controller/sequencer.py` consumes proposal/candidate/evaluation records and
+  distinguishes frontier/banked/champion state; `controller/champion.py` composes compatible members
+  (file/symbol/dispatch predicates fail closed), requests direct combined-candidate T0/T1/T2 evidence,
+  appends `KIND_CHAMPION_UPDATED` idempotently, re-anchors explicitly on anchor move (matching sealed
+  release receipt required), preserves the incumbent on rejected/failed composition, and **never adds
+  member speedups arithmetically** (champion.py:10 "member results are never combined into a new
+  result"). Import closure proven: campaign cannot reach sequencer/champion. Tests: `test_champion.py`
+  16 passed (incl. `test_sequencer_composes_existing_frontier_without_importing_campaign`,
+  `test_reanchor_drops_members_already_present_in_new_production`,
+  `test_reanchor_without_matching_sealed_receipt_fails_closed`, idempotent-replay and concurrent-append
+  coverage). The one failure in the adjacent rehearsal suite (`test_current_campaign_cli_contract_is_one_json_document`)
+  is a pre-existing environment issue (rehearsal passes relative `--model test`, which hardened
+  campaign rejects as non-absolute) — reproduced on a clean detached origin/main checkout, unrelated
+  to the sequencer.
 - [ ] **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
@@ -3494,10 +3583,11 @@ future sweep.)*
     `heldout_bound` plan still requires the strict completed-journal projector. Fresh r3 intervention
     and A/A inputs under `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-20260812-r3/` and
     `/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-20260812-r3/` both dry-run clean.
-- [ ] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** The ratified
-      one-week uptime ceiling in `measurement/protocols/kernel-research.md` and `bench-cpu.md` is the
-      sole remaining preflight blocker. Reuse the accepted v9 control bundle and exact recipe frame;
-      preserve the journal and require claim/build/benchmark evidence rather than bypassing preflight.
+- [x] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.** ✅ 2026-08-13 —
+      the reboot occurred, host/production checks passed, and the campaign advanced through the
+      immutable r23–r41 attempts without bypassing claim, build, correctness, or measurement gates.
+      r41 is the first rankable intervention; its matched control replay and held-out chain remain
+      separately filed below.
   - [x] **OP-16 — Operator decision package: authorize the orderly reboot.** ✅ 2026-08-12 — the
     operator granted the AutoKernel session ownership of all compute resources and approved the
     reboot→IQK→archive execution sequence. Preserve the r3 checkpoint, then reboot only after the
@@ -3537,19 +3627,102 @@ future sweep.)*
       `ak-controls-v9-f744cc220-20260813-r1` are accepted/rankable (5/5, B_min=10,
       MDE=2.0360%).
 - [x] **Harden and calibrate the IQK bootstrap frame through r36.** ✅ 2026-08-13 — r2/r3 exposed
-      `-r 5` instability and source/path A/A asymmetry; `798016e3` fixes a sealed `GGML_IQK=0/0`,
-      `reps=1` frame and r4 is accepted (5/5, `B_min=15`). `7486a167` refuses out-of-range pairs
-      before publication. r34/r35/r36 are terminal non-evidence attempts as recorded above.
-- [ ] **Quiesce external CPU work and run a fresh r37-or-later 15-block IQK intervention/A/A bootstrap pair.**
-      Bind only r4 and `f744cc220…`; require both arms to terminal `DECIDED` before decode holdout.
-- [ ] **Run a clean, governed CPU decode IQK holdout after the final bootstrap prefill pair.** It must use the same
-      candidate frame but target `decode`, then be projected from its completed journal before the final prefill pair may
-      enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures and the
-      prefill pair cannot substitute.
-- [ ] **CPU first.** `llama_cpu` needs no GPU device claim and its canonical baseline is the most
+      `-r 5` instability and source/path A/A asymmetry; `798016e3` fixed a sealed `GGML_IQK=0/0`,
+      `reps=1` frame and r4 was accepted (5/5, B_min `15`, MDE `2.9585%`). `7486a167` refuses
+      out-of-range pairs before publication. r34/r35/r36 are terminal non-archive attempts as recorded
+      in the dated historical checkpoint; later r41 evidence supersedes them as current state.
+- [x] **Land the sealed T0 and decode-cell producer prerequisites for the final pair.** ✅ 2026-08-13 —
+      research `eb898bd0` accepts sealed matched-pair T0 evidence, `c376853d` proves frame tampering
+      fails closed, `de464126` calibrates the held-out decode cell independently, and `0f137f50`
+      resolves its control frame at runtime instead of carrying a stale precomputed binding.
+      Research `c81b67db` prepares recipe-bound decode IQK pairs and `8a701354` binds each pair
+      envelope to the independently calibrated cell.
+- [x] **Execute the r41 IQK intervention and preserve the matched control's exact refusal.** ✅
+      2026-08-13 — the intervention reached terminal `DECIDED` with T0 PASS, production unchanged,
+      released resources, 15/15 positive blocks, median relative gain **+27.6481989%**, and
+      `speed_rank_admissible=true`. The A/A control stopped at `t0_failed` before measurement solely
+      on `EVALUATOR_BUNDLE_UNVERIFIED`; all its other T0 gates passed and its resources released.
+      Neither the invalid control nor the unmatched intervention may enter AK-WM-2a.
+- [x] **Seal evaluator identity at campaign start and add the nonpromotable discovery tier.** ✅
+      2026-08-13 — research `a65e638a` closes r41's live-checkout identity race. Research `28e7c41a`
+      caps screening at three paired blocks and structurally forbids KEEP/archive/promotion;
+      `59a4ec91` requires a hash-valid exact-frame amortized baseline bank and reports uncertain top-K
+      nominations only.
+- [x] **Prepare a fresh r42 pair instead of mutating the terminal r41 identity.** ✅ 2026-08-13 —
+      both `0042` arms bind the accepted r5 prefill calibration, sealed evaluator identity, one sole
+      `GGML_IQK` factor, 15 one-repetition blocks, and fresh campaign/output roots. Both dry runs
+      compose clean; neither arm has executed, so r42 is preparation rather than evidence.
+- [x] **Execute r42 and preserve its pre-compute evaluator-closure refusal.** ✅ 2026-08-13 — the
+      intervention terminally stopped before fingerprint, claim, build, T0, or throughput because
+      `correctness.py` appeared in both direct and nested evaluator closures. The control was not
+      spent. Research `b93af168` forms the exact-path union while preserving the lexical-alias and
+      duplicate fail-closed guard; the immutable r42 identity is not reused.
+- [x] **Execute r43 and preserve both terminal outcomes.** ✅ 2026-08-13 — the intervention reached
+      `DECIDED/KEEP` with T0 PASS, 15/15 positive deltas, median **+28.860648%**, worst delta
+      **+984.48 tokens/s**, drift `15.0356% ≤ 18.4968%`, production PASS, and both resources released.
+      Its control refused before claim/T0/throughput: strict preflight observed only 7/96 cores at
+      nominal frequency under load and also rejected caller-disabled load measurement as unmeasured
+      contention. The control is not archive evidence and r43 is not a completed matched pair.
+- [ ] **Reconcile the strict load/boost preflight mode, then execute a fresh matched prefill pair.**
+      Preserve r43 unchanged; prove the strict checker does not request contradictory load policy,
+      re-establish a compliant host state if the frequency finding persists, and mint fresh immutable
+      identities for both arms before archive projection.
+- [x] **Finish the candidate-only discovery-throughput primitive without weakening confirmation.** ✅
+      2026-08-13 — research `c8971a6b` executes candidate-only screening batches, `6661ca25` removes
+      per-candidate anchor subprocesses, and `9a4bca3b` requires an inference witness. Only competing
+      model inference overlapping claimed compute may block discovery; ordinary host activity remains
+      measured noise. The live s7 prefill and s1 decode screens each ran three candidates and zero
+      anchors, proving the amortized physical path without granting confirmation authority.
+- [x] **Produce and seal the first real amortized discovery baseline banks.** ✅ 2026-08-13 — the
+      exact prefill b4 bank (file SHA-256 `1e9c32d9bd1544daf7dea0892f666ddad64a0b07dd06e9277bdea2cd4b589068`)
+      and tg128 decode b1 bank (`8dcd02d3e9fd4e4a989f3631e9bc41e96ba45b43809ff41d8eaf510d15c7d1ed`)
+      each bind three measured anchors, the full command/environment frame, and an inference witness.
+      Prefill s7 nominated IQK at **+31.247%** median; decode s1 nominated it at **+7.939%** median.
+      These are nonpromotable search records, not banked candidates or claims.
+- [x] **Run the first live MI210 discovery-first screen with residency proof.** ✅ 2026-08-13 —
+      `ak-gpu-mmq-mfma-screen-20260813-s2` compared the sole build factor
+      `GGML_HIP_MMQ_MFMA=ON→OFF`, measured three anchors plus three candidates, and nominated OFF at
+      **+26.5965%** median. All three candidate invocations proved their owned KFD PID and non-zero
+      VRAM during execution; result file SHA-256 is
+      `9508396b5793568b9a458f1bc9374d6cf3855ca0872ab613768099e2654c0887`.
+- [x] **Expose and repair the IQ3_XXS MMID correctness boundary before spending more strict
+      inference.** ✅ 2026-08-13 — r49 proved a real `m=512,n=15,k=256` error above the declared
+      tolerance. The parser now admits the complete failure-prefix schema, and experimental commit
+      `894ec4dc55c829b11b663a46bc9b089d861b73a4` retains IQK for the proven n=1 decode path while
+      routing `ids->ne[1] > 1` to native. The former failure passed in the exact 1,216-case suite; no
+      threshold or seed changed.
+- [x] **Checkpoint the fresh post-fix decode calibration and release all compute on operator stop.**
+      ✅ 2026-08-13 — r6 durably completed AA `200/200`, neutral `60/60`, and anchor-motion `15/15`
+      under the new instrument before SIGTERM. The watcher, r6 parent, and captured benchmark child
+      are absent; all q0-q3 global/autokernel lock probes passed three times. No continuation ran and
+      the unterminated prefix is not accepted authority.
+- [ ] **Land and independently review the controller-first discovery loop before resuming campaigns.**
+      The isolated Terra worktree is implementing deterministic hypothesis selection, sealed
+      measured-result ownership, strategy persistence, and resource-aware CPU/GPU dispatch. Discovery
+      must be structurally unable to load strict calibration/heldout/champion/release authority, and
+      planner prose or a screening threshold must never mint promotion state.
+- [ ] **Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.** Test the
+      next exact single-factor gfx90a candidates and broader surfaces cheaply; send only a surviving
+      top-K nominee to strict paired GPU confirmation.
+- [x] **Preserve the rejected decode r2 calibration as terminal non-authority.** ✅ 2026-08-13 — its
+      resumed 200-block A/A leg and 60-block neutral leg completed under a released claim, but neutral
+      `|effect|` p95 `0.154446` exceeded the A/A permutation reference `0.148013`; calibration rejected
+      before controls and cannot license a holdout.
+- [ ] **Establish a fresh accepted decode calibration, then run the governed CPU decode IQK holdout.**
+      Start only after the final bootstrap prefill pair. Research `084f1ee6` predeclares five fresh
+      alternating pairs per short tg128 statistical block and reduces each arm by its median;
+      `9c0c907c` discloses the 2,600 fresh-invocation cost before execution. No threshold was weakened
+      and ordinary host noise is not excluded. The holdout must use the same candidate factor but
+      target `decode`, then be projected from its completed journal before the final prefill pair may
+      enter AK-WM-2a. This is the first valid source for `heldout_regime_transfer`; fixtures, rejected
+      decode r2, and the prefill pair cannot substitute.
+- [x] **CPU first.** ✅ 2026-08-13 — the r41 intervention and control both ran on `llama_cpu` under
+      released full-host claims; no GPU claim was taken. `llama_cpu` needs no GPU device claim and its canonical baseline is the most
       characterised surface we have; `llama_gpu` needs the device claim and contends with whoever is
       serving. The claim reason alone decides it.
-- [ ] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** It is a proposal-v4
+- [x] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.** ✅ 2026-08-13 — r41
+      reproduced the rankable **+27.6481989%** intervention result; matched archive admission remains
+      gated on the repaired control and held-out chain. It is a proposal-v4
       `change_class: parameter` comparison with candidate `ggml_iqk=1` and anchor `ggml_iqk=0`;
       `campaign.py` now projects that registered arm-local variant into the exact dry-run commands.
       A null result on a known win is diagnostic of the *harness*; a null on a novel idea tells you
@@ -3829,6 +4002,7 @@ capability dispatch; and alternate-engine capability audits as design oracles.
 | AK-D37 | **AK-D36 excludes a *target*, not a *regime*.** Single-stream and batched prefill and decode are all legitimate optimization directions, and AutoKernel looks for improvement independently of batch count. What AK-D36 forbids is recruiting the whole-stack llama.cpp-vs-vLLM ratio as a kernel objective, because that ratio is dominated by scheduling above 16 concurrent users | A coarse 2026-07-04 B=128 profile originally made G15 look like the highest-confidence GPU band; the strict 2026-08-11 family map later closed G15 itself. That falsification reinforces the rule: batch regimes remain valid, but targets must be selected by current mechanism-specific metrics rather than a whole-stack ratio or a coarse non-GEMM remainder |
 | AK-D38 | **Operator hypotheses are a first-class planner input**, carrying an explicit falsifier, entering at `design_prior` evidence grade and never above it, tracked still-open until resolved, and subject to every gate without exception | The operator sees things the profile does not; without a channel that steering arrives as an out-of-band instruction with no falsifier and no resolution record. Grading it `design_prior` is what stops a hunch being laundered into a measured fact. **Note the sibling comparison in §8.4.0 was corrected on 2026-08-03: AutoPilot does not have still-open tracking either, its falsifier is optional and observability-only, its open-set block is stagnation-gated, and it has no evidence-grade vocabulary at all — so this is a new mechanism in both loops rather than parity with one** |
 | AK-D39 | **ROCm libraries, compiler choices, and source-available modules are isolated candidate providers, not new champion source trees.** AutoKernel may select, tune, or fork them, but a win must integrate through an experimental `llama_gpu` candidate and pass operator plus whole-model gates; shared `/opt/rocm` mutation and opaque-binary champion source are forbidden | The measured gap is regime-dependent: dense GEMM provider choice is shape-specific, while the large Q8/IQ2/MoE utilization collapse lives mainly in custom low-bit/layout/gather paths. Broad search across both layers is warranted, but promotion must still name the deployable `llama.cpp` lineage and preserve the frozen-stack trust boundary |
+| AK-D40 | **Discovery optimizes throughput under measured uncertainty; confirmation establishes claims.** Only competing model inference on claimed compute blocks a discovery screen. Services, agents, builds, and all other ordinary system load never block or pause discovery; they are retained as measured noise/uncertainty. Candidates are nominated top-K under that uncertainty, and strict calibrated confirmation is spent only on the small nominated set. Screens never bank, promote, enter an archive, or authorize release | Quiet-host strict confirmation on every idea would serialize the loop and spend most compute proving weak candidates precisely. A bounded nonpromotable screen with an amortized exact-frame baseline preserves throughput while the rare confirmation campaign retains the existing evidence standard |
 | AK-D31 | Architectural campaigns replace three §8.4 rejection conditions rather than waiving them: predicted post-change profile for the wall-share ceiling, prospective shapes, and per-step conceptual-change scope; plus spikes and a reserved budget fraction | Those three are correct for incremental work and would block the deep kernel rethinking the loop exists to find; EIG-first ranking starves high-variance work by arithmetic unless budget is reserved |
 | AK-D29 | Source-integrity gates run **before** behavioural gates: symbol/registration preservation, clean build from snapshot, semantic diff conformance, repair from clean parent | AutoPilot's one autonomous source mutation destroyed a module with a syntactically valid edit; none of its four Python defenses transfer to compiled C++, where "it compiles" is far weaker than "it imports" |
 | AK-D30 | `core_header` is its own change class and risk tier, not a size band | A small textual diff to shared ggml core reaches every op in both the CPU and GPU builds |
@@ -4610,7 +4784,13 @@ GPU cost before any GPU claim is filed.
 
 Neither of these may be executed by a session; both are decision packages for the operator.
 
-- [ ] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).**
+- [x] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).** ✅ 2026-08-14 — RATIFIED
+  (option a) by `RATIFY-PGPU1-DUTY-CYCLE-20260814` (receipt
+  `artifacts/operator/ratify_pgpu1_duty_cycle_20260814.json`, amended sha256
+  `9f6f033ed363a8322e082f8933a7be01c3abf9c5eb7f05ea3a10bbf6b99de3fc`). Mandatory field 7
+  `duty_cycle: bursty | sustained` added to P-GPU-1; the canonical `fresh server per rep` recipe is
+  declared `bursty`. Pure labelling — no existing number invalidated. Sustained variant (option b)
+  deferred until a sustained-serving claim needs it. Historical rationale below.
   - **Observation.** P-GPU-1 field 4 specifies a fresh server per repetition. A fresh server per rep
     necessarily inserts a multi-second gap between reps — i.e. the protocol measures the **bursty**
     duty cycle, while production serves in the **sustained** one.

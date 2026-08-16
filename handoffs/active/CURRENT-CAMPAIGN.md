@@ -7,6 +7,19 @@
 
 ---
 
+> **⛔ 2026-08-13 22:14 UTC — AUTOKERNEL MANUAL EXECUTION STOPPED; CONTROLLER-FIRST CORRECTION IS
+> THE NEXT BOUNDARY.** Discovery-first policy is ratified and the nonpromotable funnel has live CPU
+> leaders (IQK prefill `+31.247%`, decode `+7.939%`) and GPU leaders (MMQ-MFMA OFF prefill
+> `+26.5965%`, flash attention ON prefill `+4.8791%`). These are candidate-only search observations,
+> not champions or promotion evidence. The strict path exposed and repaired a real IQ3_XXS MMID n=15
+> correctness failure without weakening its threshold; the new-instrument r6 calibration checkpointed
+> AA `200/200`, neutral `60/60`, and anchor-motion `15/15`. On operator request, its sealed watcher,
+> parent, and captured child were stopped and all q0-q3 claims verified free. **Do not resume r6 or
+> launch a successor campaign.** First land and independently review the deterministic discovery
+> controller being built in the isolated Terra worktree. It must consume sealed measurements rather
+> than planner prose and remain unable to invoke calibration, heldout, champion, promotion, package,
+> or release paths. Owner: [autokernel-research-loop.md](autokernel-research-loop.md) §AK6.5.
+
 > **🟡 2026-08-12 — INF-03 R18 IS TERMINAL-NONCOMPLETE; SEVEN-ARM R19 IS LIVE FROM
 > IMMUTABLE RESEARCH `0b1fdbe9`.** R18 completed its baseline and full Claude/Codex 2h controller
 > loop, including four compile/correctness-4/4 candidates and a final evaluation, but the parent
@@ -101,7 +114,7 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 > **2026-07-22/23 measurement campaign — TERMINAL 2026-07-23 12:45Z** (gate live: T1 1.600 core_v2 / T2 1.891, era-fenced, reseed operator-applied; P-CAL + P-PAIRED + E4-quality-core-v2 in the constitution; scorer class closed; judge fixed; vl recovered). Open: T3 (architect decision), WP-12 flip (parallel session sync), E5, fabric session. Historical entry points: four verified audits with
 > embedded implementation records — [decision-plane](autopilot-decision-plane-audit-2026-07-22.md)
 > (era fence LANDED; **Q-TD-write deploy + era-fence baseline reseed = the two open operator
-> boundary actions**), [SafetyGate/RLVR](safetygate-rlvr-provenance-audit-2026-07-22.md),
+> boundary actions**), [SafetyGate/RLVR](../completed/safetygate-rlvr-provenance-audit-2026-07-22.md),
 > [scorer-drift](scorer-fork-drift-audit-2026-07-22.md) (research-repo pre-B7 scorer open),
 > [dashboard](autopilot-dashboard-fidelity-audit-2026-07-22.md) (H1/H2 panels open). ESC-8
 > landmine [DEPLOYED](esc8-stack-restart-landmine-audit-2026-07-22.md). WP-12 fleet layer

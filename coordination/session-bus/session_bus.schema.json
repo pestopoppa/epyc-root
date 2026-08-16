@@ -44,6 +44,23 @@
           "enum": [
             "task-assign",
             "task-complete",
+            "task-checkpoint",
+            "audit-request",
+            "audit-verdict",
+            "checkpoint-integration-ready",
+            "wrapup-request",
+            "wrapup-complete",
+            "compute-idle",
+            "resource-lease-request",
+            "resource-lease-grant",
+            "resource-lease-decline",
+            "resource-lease-activate",
+            "resource-lease-renew",
+            "resource-lease-draining",
+            "resource-lease-release",
+            "resource-lease-cancel",
+            "resource-lease-expire",
+            "resource-lease-revoke-request",
             "status",
             "finding",
             "decision-request",
@@ -145,6 +162,304 @@
         }
       },
       "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "compute-idle"}}, "required": ["kind"]},
+          "then": {
+            "required": ["payload"],
+            "properties": {"payload": {"type": "object", "required": [
+              "resource", "observed_at", "cycles", "duration_s", "receipt_path", "receipt_line"
+            ], "properties": {
+              "resource": {"enum": ["cpu", "gpu"]},
+              "observed_at": {"type": "string", "minLength": 1},
+              "cycles": {"type": "integer", "minimum": 1},
+              "duration_s": {"type": "integer", "minimum": 1},
+              "receipt_path": {"type": "string", "minLength": 1},
+              "receipt_line": {"type": "string", "minLength": 1},
+              "episode_id": {"type": "string", "minLength": 1}
+            }}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"kind": {"enum": [
+              "resource-lease-request", "resource-lease-grant", "resource-lease-decline",
+              "resource-lease-activate", "resource-lease-renew", "resource-lease-draining",
+              "resource-lease-release", "resource-lease-revoke-request",
+              "resource-lease-cancel", "resource-lease-expire"
+            ]}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["payload"],
+            "properties": {"payload": {"type": "object", "required": ["lease_id", "holder"],
+              "properties": {
+                "lease_id": {"type": "string", "minLength": 1},
+                "holder": {"type": "string", "minLength": 1},
+                "task_ids": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "resources": {"type": "object", "properties": {
+                  "cpu_regions": {"type": "array", "minItems": 1, "uniqueItems": true,
+                    "items": {"type": "string", "minLength": 1}},
+                  "gpu_devices": {"type": "array", "minItems": 1, "uniqueItems": true,
+                    "items": {"type": "string", "minLength": 1}}
+                }},
+                "expires_ts": {"type": "string", "minLength": 1},
+                "activation_deadline_ts": {"type": "string", "minLength": 1},
+                "contention_class": {"enum": ["exclusive-contiguous", "resumable"]},
+                "safe_drain_point": {"type": "string", "minLength": 1},
+                "physical_claim_receipts": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "physical_claim_close_receipts": {"type": "array", "minItems": 1,
+                  "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                "reason": {"type": "string", "minLength": 1}
+              }
+            }}
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-request"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": [
+            "task_ids", "resources", "contention_class", "safe_drain_point"
+          ]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-grant"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": [
+            "task_ids", "resources", "expires_ts", "activation_deadline_ts"
+          ]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-decline"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-activate"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["physical_claim_receipts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-renew"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["expires_ts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-draining"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-release"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["physical_claim_close_receipts"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"enum": [
+            "resource-lease-cancel", "resource-lease-expire"
+          ]}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "resource-lease-revoke-request"}}, "required": ["kind"]},
+          "then": {"properties": {"payload": {"required": ["reason"]}}}
+        },
+        {
+          "if": {
+            "properties": {"kind": {"const": "task-checkpoint"}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["task_id", "payload"],
+            "properties": {"payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "boundary_id", "outcome", "boundary_reason", "task_id", "task_text",
+                "spec_ref", "agent", "branch", "commit_sha", "pushed_ref",
+                "progress_path", "handoff_paths", "artifact_paths", "changed_paths",
+                "checkbox_flips", "new_tasks", "validation", "next_context",
+                "major_checkpoint", "completed_at", "completion_msg_id"
+              ],
+              "properties": {
+                "boundary_id": {"type": "string", "minLength": 1},
+                "outcome": {"enum": ["completed", "blocked", "partial"]},
+                "boundary_reason": {"enum": ["task-boundary", "pre-reboot"]},
+                "task_id": {"type": "string", "minLength": 1},
+                "task_text": {"type": "string", "minLength": 1},
+                "spec_ref": {"type": "string", "minLength": 1},
+                "agent": {"type": "string", "minLength": 1},
+                "branch": {"type": "string", "pattern": "^lane/[A-Za-z0-9._-]+$"},
+                "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                "pushed_ref": {"type": "string", "pattern": "^refs/remotes/origin/lane/[A-Za-z0-9._-]+$"},
+                "progress_path": {"type": "string", "pattern": "^progress/[0-9]{4}-[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2}-[A-Za-z0-9._-]+\\.md$"},
+                "handoff_paths": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "pattern": "^handoffs/(?:active|blocked)/.+\\.md$"}},
+                "artifact_paths": {"type": "array", "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "changed_paths": {"type": "array", "minItems": 2, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "checkbox_flips": {"type": "array", "items": {"type": "object",
+                  "additionalProperties": false, "required": ["task_text", "before", "after"],
+                  "properties": {"task_text": {"type": "string", "minLength": 1},
+                    "before": {"enum": ["open", "done"]}, "after": {"enum": ["open", "done"]}}}},
+                "new_tasks": {"type": "array", "items": {"type": "object",
+                  "additionalProperties": false, "required": ["task_text", "owner"],
+                  "properties": {"task_text": {"type": "string", "minLength": 1},
+                    "owner": {"type": "string", "minLength": 1}}}},
+                "validation": {"type": "array", "minItems": 1, "items": {"type": "object",
+                  "additionalProperties": false, "required": ["command", "exit_code", "evidence_ref"],
+                  "properties": {"command": {"type": "array", "minItems": 1,
+                      "items": {"type": "string", "minLength": 1}},
+                    "exit_code": {"const": 0}, "evidence_ref": {"type": "string", "minLength": 1}}}},
+                "next_context": {"enum": ["related", "disjoint", "dry", "pre-reboot"]},
+                "major_checkpoint": {"type": "boolean"},
+                "completed_at": {"type": "string", "minLength": 1},
+                "completion_msg_id": {"type": ["string", "null"]},
+                "blocker_class": {"enum": ["dependency", "operator-decision", "external-event", "compute"]},
+                "blocked_on": {"type": "string", "minLength": 1},
+                "blocking_owner_or_event": {"type": "string", "minLength": 1},
+                "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "alternatives_exhausted": {"type": "array", "minItems": 1,
+                  "items": {"type": "string", "minLength": 1}},
+                "resume_action": {"type": "string", "minLength": 1},
+                "compute_request": {"type": ["object", "null"]}
+              },
+              "allOf": [{
+                "if": {"properties": {"outcome": {"enum": ["blocked", "partial"]}},
+                  "required": ["outcome"]},
+                "then": {"required": ["blocker_class", "blocked_on",
+                  "blocking_owner_or_event", "evidence_refs", "alternatives_exhausted",
+                  "resume_action", "compute_request"]}
+              }, {
+                "if": {"properties": {"outcome": {"const": "partial"}}, "required": ["outcome"]},
+                "then": {"properties": {"boundary_reason": {"const": "pre-reboot"}}}
+              }]
+            }}
+          }
+        },
+        {
+          "if": {
+            "properties": {"kind": {"const": "audit-request"}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["task_id", "payload"],
+            "properties": {"payload": {"type": "object", "additionalProperties": false,
+              "required": ["audit_of", "correlation_id", "audit_origin", "source_agent",
+                "checkpoint_id", "checkpoint_msg_id", "completion_msg_id", "audited_sha",
+                "outcome", "artifact_refs", "acceptance_refs", "audit_policy",
+                "audit_question", "request_type", "missing_evidence"],
+              "properties": {
+                "audit_of": {"type": "string", "minLength": 1},
+                "correlation_id": {"type": "string", "minLength": 1},
+                "audit_origin": {"enum": ["task-complete", "task-checkpoint"]},
+                "source_agent": {"type": "string", "minLength": 1},
+                "checkpoint_id": {"type": ["string", "null"]},
+                "checkpoint_msg_id": {"type": ["string", "null"]},
+                "completion_msg_id": {"type": ["string", "null"]},
+                "audited_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+              "outcome": {"enum": ["completed", "blocked", "partial", null]},
+                "artifact_refs": {"type": "array", "items": {"type": "string"}},
+                "acceptance_refs": {"type": "array", "items": {"type": "string"}},
+                "audit_policy": {"enum": ["shadow", "required"]},
+                "audit_question": {"type": "string", "minLength": 1},
+                "request_type": {"enum": ["verdict", "evidence-only"]},
+                "missing_evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                "task_text": {"type": ["string", "null"]}
+              }
+            }}
+          }
+        },
+        {
+          "if": {
+            "properties": {"kind": {"const": "audit-verdict"}},
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["task_id", "payload"],
+            "properties": {"payload": {"type": "object", "additionalProperties": false,
+              "required": ["verdict", "audit_of", "correlation_id", "checkpoint_id", "audited_sha",
+                "evidence_refs", "findings", "followup_task_ids", "missing_evidence"],
+              "properties": {
+                "verdict": {"enum": ["accept", "accept-with-followups", "needs-rework", "blocked-evidence"]},
+                "audit_of": {"type": "string", "minLength": 1},
+                "correlation_id": {"type": "string", "minLength": 1},
+                "checkpoint_id": {"type": ["string", "null"]},
+                "audited_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+                "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                "findings": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                "followup_task_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                "missing_evidence": {"type": "array", "items": {"type": "string", "minLength": 1}}
+              }
+            }}
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "checkpoint-integration-ready"}}, "required": ["kind"]},
+          "then": {"required": ["task_id", "payload"], "properties": {"payload": {
+            "type": "object", "additionalProperties": false,
+            "required": ["checkpoint_id", "checkpoint_msg_id", "task_id", "source_agent",
+              "commit_sha", "pushed_ref", "outcome", "audit_task_id", "audit_verdict_id"],
+            "properties": {
+              "checkpoint_id": {"type": "string", "minLength": 1},
+              "checkpoint_msg_id": {"type": "string", "minLength": 1},
+              "task_id": {"type": "string", "minLength": 1},
+              "source_agent": {"type": "string", "minLength": 1},
+              "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "pushed_ref": {"type": "string", "minLength": 1},
+              "outcome": {"enum": ["completed", "blocked", "partial"]},
+              "audit_task_id": {"type": "string", "minLength": 1},
+              "audit_verdict_id": {"type": "string", "minLength": 1}
+            }
+          }}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "wrapup-request"}}, "required": ["kind"]},
+          "then": {"required": ["payload"], "properties": {"payload": {
+            "type": "object", "additionalProperties": false,
+            "required": ["request_id", "reason", "synchronization", "checkpoint_ids",
+              "cutoff_ts", "integrated_main_sha"],
+            "properties": {
+              "request_id": {"type": "string", "minLength": 1},
+              "reason": {"enum": ["operator", "major-checkpoint", "pre-reboot", "auditor-due"]},
+              "synchronization": {"enum": ["asynchronous", "synchronous"]},
+              "checkpoint_ids": {"type": "array", "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}},
+              "cutoff_ts": {"type": "string", "minLength": 1},
+              "integrated_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+            }
+          }}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "wrapup-complete"}}, "required": ["kind"]},
+          "then": {"required": ["payload"], "properties": {"payload": {
+            "type": "object", "additionalProperties": false,
+            "required": ["request_id", "included_checkpoint_ids", "exclusions", "source_sha",
+              "promoted_sha", "generated_artifacts", "validation", "wiki",
+              "lease_operation_id", "completed_at"],
+            "properties": {
+              "request_id": {"type": "string", "minLength": 1},
+              "included_checkpoint_ids": {"type": "array", "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}},
+              "exclusions": {"type": "array", "items": {"type": "object",
+                "additionalProperties": false, "required": ["checkpoint_id", "reason"],
+                "properties": {"checkpoint_id": {"type": "string", "minLength": 1},
+                  "reason": {"type": "string", "minLength": 1}}}},
+              "source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "promoted_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "generated_artifacts": {"type": "object", "additionalProperties": {
+                "type": "string", "pattern": "^[0-9a-f]{64}$"}},
+              "validation": {"type": "array", "minItems": 1, "items": {"type": "object",
+                "additionalProperties": false, "required": ["command", "exit_code", "evidence_ref"],
+                "properties": {"command": {"type": "array", "minItems": 1,
+                    "items": {"type": "string", "minLength": 1}},
+                  "exit_code": {"const": 0},
+                  "evidence_ref": {"type": "string", "minLength": 1}}}},
+              "wiki": {"type": "object", "additionalProperties": false,
+                "required": ["manifest_sha256", "watermark"],
+                "properties": {"manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                  "watermark": {"type": "string", "minLength": 1}}},
+              "lease_operation_id": {"type": "string", "minLength": 1},
+              "completed_at": {"type": "string", "minLength": 1}
+            }
+          }}}
+        },
         {
           "if": {
             "properties": {
@@ -730,6 +1045,7 @@
             "ASSIGNED",
             "CLAIMED",
             "RUNNING",
+            "DONE_PENDING_AUDIT",
             "DONE_PASS",
             "DONE_MARGINAL_OBS",
             "FAILED",
@@ -876,8 +1192,33 @@
         "revoking": {
           "type": "boolean",
           "description": "R4 \u2014 the coordinator-agent has asked for this lease back. The task keeps its current status because it IS still running; the holder stops accepting new work and releases at its next boundary (axiom 4). A revoking task is never re-assigned while still held."
+        },
+        "executor_id": {"type": "string", "minLength": 1},
+        "executor_role": {"type": "string", "minLength": 1},
+        "work_type": {"enum": ["backlog", "audit"]},
+        "audit_of": {"type": "string", "minLength": 1},
+        "completion_msg_id": {"type": "string", "minLength": 1},
+        "correlation_id": {"type": "string", "minLength": 1},
+        "audit_origin": {"enum": ["task-complete", "task-checkpoint"]},
+        "checkpoint_id": {"type": "string", "minLength": 1},
+        "checkpoint_msg_id": {"type": "string", "minLength": 1},
+        "checkpoint_outcome": {"enum": ["completed", "blocked", "partial"]},
+        "checkpoint_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "checkpoint_pushed_ref": {"type": "string", "minLength": 1},
+        "integration_state": {"enum": ["ready"]},
+        "audit_verdict_id": {"type": "string", "minLength": 1},
+        "followup_task_ids": {"type": "array", "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}},
+        "rework_findings": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "missing_evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_request_pending": {"type": "boolean"},
+        "source_agent": {"type": "string", "minLength": 1},
+        "artifact_refs": {"type": "array", "items": {"type": "string"}},
+        "acceptance_refs": {"type": "array", "items": {"type": "string"}},
+        "audit_policy": {"enum": ["off", "shadow", "required"]},
+        "audit_question": {"type": "string", "minLength": 1},
+        "resource_lease_id": {"type": "string", "minLength": 1}
         }
-      }
     }
   },
   "oneOf": [
