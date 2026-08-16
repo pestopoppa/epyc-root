@@ -90,6 +90,35 @@ python3 /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py st
 ps -o pid,lstart,args -p <autopilot-pid-from-stack-status>
 ```
 
+### 0b-bis. THE SINGLE CONTROL SURFACE — `fleet_control.sh`
+
+This skill is the operator's handle on the loop, and these are the verbs. Anything
+below in 0c is the long form of `start`; use the long form when you need to see each
+check, and this when you need the loop up or down now.
+
+```bash
+scripts/coordination/fleet_control.sh status          # what is running, dispatching, in flight
+scripts/coordination/fleet_control.sh start           # bring the loop plane up
+scripts/coordination/fleet_control.sh pause           # stop starting NEW work; in-flight finishes
+scripts/coordination/fleet_control.sh resume          # undo pause
+scripts/coordination/fleet_control.sh stop            # stop the loop; leave in-flight workers alone
+scripts/coordination/fleet_control.sh stop --hard     # also kill in-flight workers
+```
+
+**Reach for `pause` first.** The usual intent is "stop starting things", not "destroy
+what is running": `pause` flips `worker_pool.enabled` and touches no process, so every
+in-flight worker still finishes its batch, writes its report and exits.
+
+**Two ordering facts the script encodes, and you must not re-derive by hand.** The
+supervisor RESTARTS the daemon, so a daemon killed first is back in seconds and the
+stop reads as broken — supervisor always goes first. And `fleet_watch` is supervised
+by nothing, so nobody else notices it is gone or brings it back; it is started and
+stopped explicitly.
+
+`stop --hard` kills workers OUTSIDE their runner's lease path, which is the path that
+performs the salvage commit. It prints the `git -C <lane> status` to check afterwards.
+Prefer `pause`, then let them drain.
+
 ### 0c. Bring the supervision tier back, and PROVE the alarm reaches a human (D3)
 
 This replaces the cron dead-man the operator declined. Reboots are operator-only, so a
