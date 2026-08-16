@@ -25,7 +25,7 @@ A session is **working**, **compacting**, or **idle**, and the pane cannot tell 
 compacting its context renders *identically* to a finished one, because the goal line, the "Pursuing
 goal" timer and the background-terminal count all disappear together
 ([`SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another session's
-liveness*). The other two instruments fail in the opposite direction: measured 2026-08-12 10:53Z,
+liveness*). The heartbeat fails in the opposite direction: measured 2026-08-12 10:53Z,
 `mainB`'s heartbeat read `state: working` while **446 seconds stale**, with the pane idle across
 three consecutive watcher cycles and the GPU at 0% (origin: INC-20260727-stale-heartbeat). A
 heartbeat written once is a birth certificate, not a liveness signal, and **a stale heartbeat is
@@ -76,26 +76,53 @@ precisely, as a **two-plane model**:
   `Path(__file__).resolve().parents[2]`, so five worktrees would have produced five independently
   mutating buses. `get_bus_root()` now pins the literal canonical path from every worktree.
 
-Three further surfaces are singletons that a worktree cannot isolate either, and RTG-51 gives each
-one a single writer rather than a per-lane copy
-([`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md),
-Phase 1, landed 2026-08-13):
+The sharpest statement of the boundary is the dispatcher ledger's, and it is a warning about how the
+guarantee gets *read*: `repos/epyc-orchestrator` and `repos/epyc-inference-research` are symlinks
+**out of** every lane worktree, so lane isolation covers `epyc-root` only — *"anyone reading 'mains
+are isolated' must read it as **epyc-root is isolated**"*
+([`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md)). Six further
+surfaces stay shared, each with its own remedy rather than a per-lane copy:
 
-1. **Generated index state.** `index_state.py` writes were removed from post-commit/merge/checkout
+1. **The child repos' index and sequencer state** (DP-4, open, HIGH). A main sitting in its own
+   isolated worktree still shares one index and one `CHERRY_PICK_HEAD` with every other agent for the
+   orchestrator and research repos. Measured 2026-08-12: one main's `git add` in the research clone
+   put **42 files into another agent's in-flight cherry-pick index** (staged 8 → 50); had that agent
+   run `git cherry-pick --continue` in the window, all of it would have ridden into their commit
+   under their subject line. **It was caught only because `git commit -- <paths>` refuses with
+   `fatal: cannot do a partial commit during a cherry-pick`** — the same pathspec commit that is a
+   *hazard* for peer hunks in a shared file (2026-08-12 section below) is here the *guard* that
+   caught the contamination. Proposed remedy: per-lane child worktrees, or assert a clean sequencer
+   state before any `add`/`commit`/`checkout` in a shared clone.
+2. **Generated index state.** `index_state.py` writes were removed from post-commit/merge/checkout
    hook bodies (`60187101`), with the proof obligation stated as a negative control: a worker handoff
    commit must leave `.index-state.json`, `.index-graph.json` and the master generated block
    unchanged. Derived files are regenerated only inside the heavy-wrap lease.
-2. **One-per-repo manifests and watermarks.** The same commit ensured an ordinary post-commit
+3. **One-per-repo manifests and watermarks.** The same commit ensured an ordinary post-commit
    retrieval refresh cannot mutate `wiki/source_manifest.json` or the wrap watermark, giving
    retrieval its own cursor.
-3. **The promotion merge itself.** Promotion runs through a throwaway `--detach` worktree against
-   `origin/main`, aborts and leaves `main` untouched on conflict, and never force-pushes; promotion
-   rows are serialized one at a time through `merge_gate.py` / `serialized_push` (P2-8).
+4. **The promotion merge itself.** Promotion runs through a throwaway `--detach` worktree against
+   `origin/main`, aborts and leaves `main` untouched on conflict, and never force-pushes; pool
+   promotion rows are serialized one at a time through `merge_gate.py` / `serialized_push` (P2-8).
+   Note what that does *not* buy: `serialized_push.py` and its pre-push guard were built and tested
+   (62 + 56 tests, 50 mutations killed) and **deliberately not installed** as a hook — an operator
+   decision, on the stated ground that **only a server-side `pre-receive` on origin makes
+   serialization structural.** It is used as an explicit tool at promotion time, not as a guarantee.
+5. **The worktree admin data itself.** With `worktree.useRelativePaths` and one directory reachable
+   at two path depths, live worktrees read as *prunable* from the deeper path — and `git worktree
+   prune`, or the `git gc` that runs one, deletes their admin data. **That is what destroyed all five
+   lane worktrees on 2026-08-12**, and the fix is not retroactive: three pre-existing worktrees
+   remain exposed. The prescribed replacement is a read-only lane-ENTRY check
+   (`check_lane_worktree.py --strict`), never an exit sweep.
+6. **Backups that point into a live lane** (WT-1). Five `.orphan-…` backup directories retained the
+   old relative pointer, resolving to *the same admin directory the repaired live lane now uses* — a
+   commit inside a backup would have landed in the live lane's index. Neutralised by renaming each
+   `.git` to `.git.disabled-…`.
 
-And the lease that guards them had its own defect: roster/PID reclaim allowed a second same-roster
-process to take a held wrap lease. It was replaced (`8ff5162c`) by an **opaque per-operation token**
-in a mode-0600 file whose hash is stored in the lock, required for normal release, with force-release
-audited — accepted only with a negative control that *would have admitted the previous collision*.
+And the lease that guards the singletons had its own defect: roster/PID reclaim allowed a second
+same-roster process to take a held wrap lease. It was replaced (`8ff5162c`) by an **opaque
+per-operation token** in a mode-0600 file whose hash is stored in the lock, required for normal
+release, with force-release audited — accepted only with a negative control that *would have admitted
+the previous collision*.
 
 The standing corollary, unchanged and now mechanised: **the worktree isolates; only promotion syncs.**
 The wrap-up cadence ruling below is what makes promotion frequent enough for that to matter.
@@ -146,7 +173,8 @@ Four workers ran under the `claude -p` harness in visible panes, three concurren
 attempted rows passed** with schema-valid reports (41k / 62k / 118k / 205k tokens; 0 / 0 / 2 / 3
 subagents; one denied tool call recorded rather than silently tolerated). Every batch sat inside the
 D1 ceiling of ~250k tokens/batch; three of four promoted to `main` through `promote_lane`, and
-pilot-02 stopped at the D9 gate because its test lands under `scripts/coordination/**`.
+pilot-02 stopped at the D9 gate because its test lands under `scripts/coordination/**` (it was
+promoted later, after the operator's ack — not by the session that built the gate).
 
 **Two further rows the pool REFUSED to run matter as much as the four it ran: both parked on
 `premise-unknown` rather than guessing.** That is `premise_screener` (P2-2) doing its job — a
@@ -210,7 +238,15 @@ working rather than routed around:
   doctrine collapse therefore ships as an operator-run package with every target sha256-pinned,
   aborting on drift and skipping if already applied.
 - **D9 held on the loop plane.** Merging anything under `scripts/coordination/**` requires operator
-  ack; `promote_lane.py` exited 5 and named the path rather than promoting.
+  ack; `promote_lane.py` exited 5 and named the path rather than promoting. The session's own note:
+  *"I did not sign this. Bypassing a control I had just built, on my own authority, would have taught
+  the fleet exactly the wrong lesson."*
+
+One operational lesson came free with the package: the first staging directory was **destroyed by a
+`git clean`** and had to be rebuilt, so the replacement was staged under a **tracked** path. The same
+mechanism as the 2026-08-12 bus wipe recorded below, at a smaller scale — an untracked staging
+directory is not a durable artifact in a shared tree, and this is also why D5 relocated the bus
+runtime behind a tracked symlink.
 
 One hazard specific to *deduplicating* an instruction corpus is worth generalising: nine amendments
 existed in only ONE copy and would have been destroyed by a naive dedup — including the subagent
@@ -227,6 +263,14 @@ eval fixtures (`label_provenance` mandatory), never a new rule or conjunct to BU
 agent files.
 
 ### Current measured state, and what is explicitly not measured
+
+One caution about reading any of these ledgers, verified on the dispatcher handoff this pass: **a
+long-lived handoff's own summary of its open work is not an instrument.** Its header claims 18 open
+task contracts; the file contains 45 unchecked boxes (26 at top level), and neither number is
+reproducible from the other. A milestone box (M4) sits unchecked while the config change it gated
+(`authority: assign`) has landed, two task rows appear twice with opposite check states, and the
+document itself carries a C-number collision warning. Counts inside a hand-maintained ledger drift
+from its own checkboxes; the checkboxes are the record, and the dashboard already counts only those.
 
 Self-repair share is **11.1%** (107/966 commits, computed by D9's commit-path classification over
 `scripts/coordination/**`, never self-reported) against a <10% target — down from a stated ~50%
@@ -258,6 +302,10 @@ phase exceeding 2× its estimate stops the plan, so that it "must never become t
 - [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
   the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
   `git worktree prune` rule.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the
+  epyc-root-only scope of lane isolation, DP-4's shared child index and its 42-file cherry-pick
+  contamination, WT-1's backup-pointer aliasing, the uninstalled `serialized_push` decision, and the
+  header-versus-checkbox count discrepancy.
 - [`artifacts/operator/loop-owned-fleet-operator-package-20260816.md`](../artifacts/operator/loop-owned-fleet-operator-package-20260816.md)
   — the gates that fired, the self-repair/queue numbers, and the PD-1 warning.
 - [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
