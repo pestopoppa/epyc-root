@@ -4,7 +4,7 @@
 **Created**: 2026-06-12
 **Priority**: MED — D2 PR is the spearhead and already an ACTIVE queue item
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F6 — read before claiming
-**Related**: [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) (D2 = spearhead); MEASUREMENT.md (claims grammar governs every published number); `agents/research-writer.md`
+**Related**: [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) (D2 = spearhead); MEASUREMENT.md (claims grammar governs every published number); `docs/guides/agent-workflows/research-writer.md` (the persona file was archived 2026-08-16 — this guide is the live surface)
 
 ## Why
 

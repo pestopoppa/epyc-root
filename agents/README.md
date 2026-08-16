@@ -10,21 +10,24 @@ This directory is organized for agent legibility and low drift.
 4. Read `agents/shared/ENGINEERING_STANDARDS.md` for coding invariants.
 5. Read `agents/shared/WORKFLOWS.md` for common operating procedures.
 6. Read workflow depth docs in `docs/guides/agent-workflows/`.
-7. Open only the role file needed for the current task.
+7. Open the role file only if your session holds that role.
 
 ## Roles
 
 | Role | File | Primary Use |
 |---|---|---|
-| Lead Developer | `agents/lead-developer.md` | Architecture decisions, sequencing, arbitration |
-| Research Engineer | `agents/research-engineer.md` | Implementation and deep debugging |
-| Benchmark Analyst | `agents/benchmark-analyst.md` | Benchmark execution and interpretation |
-| Research Writer | `agents/research-writer.md` | Reports, synthesis, literature framing |
-| Build Engineer | `agents/build-engineer.md` | Build configuration and compiler tuning |
-| Model Engineer | `agents/model-engineer.md` | Model conversion, quantization, pairing |
-| Sysadmin | `agents/sysadmin.md` | Host tuning and runtime system state |
-| Safety Reviewer | `agents/safety-reviewer.md` | Risk gate before high-impact operations |
 | Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
+
+The roster is the authority on who holds which role: `coordination/session-bus/config.yaml`
+assigns every agent a roster id and one role from a closed set — `main`, `coordinator-agent`,
+`reviewer`, `retired`, `service`. Work reaches an agent as a queue row addressed to a roster id,
+with a lane and a typed brief. There is no persona-based routing.
+
+**Archived 2026-08-16**: the eight task-based persona files (Lead Developer, Research Engineer,
+Benchmark Analyst, Research Writer, Build Engineer, Model Engineer, Sysadmin, Safety Reviewer)
+moved to `agents/archived/` under the Loop-Owned Fleet doctrine collapse (P1-5). They were a
+dormant layer that no roster, dispatch path, hook, or validator consumed. Read
+`agents/archived/README.md` before citing or restoring any of them.
 
 ## Model Routing (Task-Based)
 

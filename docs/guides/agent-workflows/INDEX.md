@@ -13,3 +13,11 @@ Operational detail for role workflows lives here, not in role prompts.
 
 - Keep `agents/*.md` concise and role-specific.
 - Keep durable, procedure-heavy guidance in this folder.
+
+## Scope Note (2026-08-16)
+
+These guides are workflow depth docs, not persona prompts. The eight task-based persona files
+moved to `agents/archived/` under the Loop-Owned Fleet doctrine collapse (P1-5). Guides named
+after a former persona keep their name for continuity — read them as *how this kind of work is
+done*, not as *who does it*. Assignment is roster id plus lane plus typed brief; see
+`agents/archived/README.md`.

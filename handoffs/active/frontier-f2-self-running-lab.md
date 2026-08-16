@@ -36,7 +36,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
 
 - HARD GATES: N1–N4 instrument repair done; N2 ledger/restart-bundle gates satisfied for live promotion. F5 injection policy is complete; intake-touching jobs must preserve the `SOURCE-QUARANTINE` convention.
 - Review queue is mandatory — CLAUDE.md forbids sub-agent index modifications without approval; the queue IS the compliance mechanism. No job writes directly to handoffs/indices.
-- No job may self-modify `lab_jobs.yaml` or any trust-boundary file (add to safety-reviewer guardrails).
+- No job may self-modify `lab_jobs.yaml` or any trust-boundary file (the guardrail belongs in `agents/shared/OPERATING_CONSTRAINTS.md` and `coordination/session-bus/human_only_paths.yaml` — the safety-reviewer persona file was archived 2026-08-16, P1-5).
 - Context assembly is the cost center — budget it (DCP bundles, per-job token caps); lab jobs share the stack with the autopilot — run in the contention gate's background class, off-peak.
 - A job's accept-rate is a MEASUREMENT.md-grade number — same claims discipline as any benchmark.
 

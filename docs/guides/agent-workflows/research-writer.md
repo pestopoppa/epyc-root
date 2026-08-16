@@ -1,9 +1,13 @@
 # Research Writer Workflow
 
-Canonical workflow for the research-writer role (`agents/research-writer.md`). This file
-absorbed the former agents/research-writer-guide.md (retired 2026-07-30 — it duplicated this
-doc, targeted a report file that no longer exists, and used subagent @-mention wiring that was
-never installed).
+Canonical workflow for research-writing work. This file absorbed the former
+agents/research-writer-guide.md (retired 2026-07-30 — it duplicated this doc, targeted a report
+file that no longer exists, and used subagent @-mention wiring that was never installed).
+
+**This doc is now the only live surface for this work.** The persona file moved to
+`agents/archived/research-writer.md` on 2026-08-16 (Loop-Owned Fleet doctrine collapse, P1-5 —
+see `agents/archived/README.md`). Sessions take research-writing tasks by roster id and typed
+brief, not by holding a "research writer" role.
 
 ## Primary Script
 

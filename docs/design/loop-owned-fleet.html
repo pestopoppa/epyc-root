@@ -1,0 +1,532 @@
+<title>Loop-Owned Fleet</title>
+<style>
+  :root {
+    --paper: #F6F5F1;
+    --ink: #22262C;
+    --ink-soft: #4C525B;
+    --steel: #51677A;
+    --accent: #A8552A;
+    --accent-ink: #8C4522;
+    --line: #DAD8D0;
+    --card: #FDFCFA;
+    --card-line: #E3E1D9;
+    --mono-bg: #EDEBE4;
+    --keep: #2E6B45;   --keep-bg: #E2EEE6;
+    --shrink: #7A6217; --shrink-bg: #F2ECD6;
+    --defer: #51677A;  --defer-bg: #E4EAEF;
+    --cut: #93372A;    --cut-bg: #F4E2DE;
+    --high: #93372A;
+    --med: #7A6217;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #15181D; --ink: #E4E2DB; --ink-soft: #A6A9AD; --steel: #8FA6B8;
+      --accent: #D08150; --accent-ink: #D9925F; --line: #30353D; --card: #1B1F26;
+      --card-line: #2C313A; --mono-bg: #232830;
+      --keep: #7FBF97;   --keep-bg: #1E2B23;
+      --shrink: #CBB35C; --shrink-bg: #2B2718;
+      --defer: #93AEC4;  --defer-bg: #1E262E;
+      --cut: #D98B7C;    --cut-bg: #2E1F1C;
+      --high: #D98B7C; --med: #CBB35C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #15181D; --ink: #E4E2DB; --ink-soft: #A6A9AD; --steel: #8FA6B8;
+    --accent: #D08150; --accent-ink: #D9925F; --line: #30353D; --card: #1B1F26;
+    --card-line: #2C313A; --mono-bg: #232830;
+    --keep: #7FBF97;   --keep-bg: #1E2B23;
+    --shrink: #CBB35C; --shrink-bg: #2B2718;
+    --defer: #93AEC4;  --defer-bg: #1E262E;
+    --cut: #D98B7C;    --cut-bg: #2E1F1C;
+    --high: #D98B7C; --med: #CBB35C;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.62; margin: 0; font-size: 16.5px;
+  }
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    padding: 0.55rem 1.4rem; display: flex; gap: 1.1rem; flex-wrap: wrap;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .nav a { color: var(--steel); text-decoration: none; padding: 0.1rem 0.2rem; border-radius: 4px; }
+  .nav a:hover, .nav a:focus-visible { color: var(--accent); background: var(--mono-bg); }
+  .wrap { max-width: 76ch; margin: 0 auto; padding: 2.6rem 1.4rem 5rem; }
+  .wide { max-width: 1040px; margin: 0 auto; padding: 0 1.4rem; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--steel); margin: 0 0 0.7rem;
+  }
+  h1 { font-size: 2.35rem; line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 0.9rem; text-wrap: balance; font-weight: 700; }
+  .thesis { font-size: 1.12rem; color: var(--ink-soft); margin: 0 0 1.1rem; text-wrap: balance; }
+  .provenance {
+    font-size: 0.86rem; color: var(--ink-soft);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 0.65rem 0; margin: 1.6rem 0 0;
+  }
+  h2 {
+    font-size: 1.35rem; letter-spacing: -0.01em; margin: 3rem 0 0.9rem;
+    padding-top: 1.6rem; border-top: 1px solid var(--line); text-wrap: balance;
+  }
+  h2 .sn {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--accent); font-size: 0.85em; margin-right: 0.55em; font-weight: 600;
+  }
+  h3 { font-size: 1.02rem; margin: 1.7rem 0 0.5rem; }
+  p { margin: 0.75rem 0; }
+  ul, ol { padding-left: 1.3rem; margin: 0.6rem 0; }
+  li { margin: 0.38rem 0; }
+  li::marker { color: var(--accent); }
+  strong { font-weight: 650; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.86em; background: var(--mono-bg); padding: 0.1em 0.35em; border-radius: 4px;
+  }
+  .diagram {
+    border: 1px solid var(--card-line); border-radius: 8px; background: var(--card);
+    padding: 0.8rem; margin: 0.8rem 0 0.4rem; overflow-x: auto;
+  }
+  pre.mermaid { margin: 0; background: transparent; }
+  .figcap { font-size: 0.86rem; color: var(--ink-soft); margin: 0.2rem 0 1.6rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .diaghead { display: flex; align-items: baseline; gap: 0.8rem; margin: 2rem 0 0.1rem; }
+  .diaghead .t { font-weight: 680; font-size: 1.08rem; }
+  .diaghead .k {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel);
+  }
+  details {
+    border: 1px solid var(--card-line); border-radius: 6px; background: var(--card);
+    margin: 0.45rem 0; padding: 0;
+  }
+  details summary {
+    cursor: pointer; padding: 0.5rem 0.9rem; font-weight: 640; font-size: 0.93rem;
+    list-style-position: inside;
+  }
+  details summary::marker { color: var(--accent); }
+  details .body { padding: 0 0.95rem 0.8rem; font-size: 0.92rem; }
+  details .body p { margin: 0.35rem 0; }
+  details .body ul { margin: 0.3rem 0; }
+  .dchip {
+    display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
+    padding: 0.08rem 0.42rem; border-radius: 4px; margin-left: 0.5em; vertical-align: 0.1em;
+  }
+  .dchip.new { color: var(--cut); background: var(--cut-bg); }
+  .dchip.kept { color: var(--defer); background: var(--defer-bg); }
+  .dchip.shrunk { color: var(--shrink); background: var(--shrink-bg); }
+  .dchip.deferred { color: var(--ink-soft); background: var(--mono-bg); }
+  .dchip.retired { color: var(--ink-soft); background: var(--mono-bg); text-decoration: line-through; }
+  .detgrid { columns: 2 34ch; column-gap: 1rem; margin: 0.6rem 0 0; }
+  .detgrid details { break-inside: avoid; }
+  .phase {
+    background: var(--card); border: 1px solid var(--card-line);
+    border-left: 3px solid var(--accent); border-radius: 6px;
+    padding: 1.15rem 1.35rem 1.05rem; margin: 1.35rem 0;
+  }
+  .phase-head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.35rem; }
+  .phase-num {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--accent); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.06em;
+  }
+  .phase-title { font-weight: 680; font-size: 1.08rem; }
+  .day {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.08em; color: var(--steel);
+    border: 1px solid var(--line); border-radius: 99px; padding: 0.1rem 0.6rem;
+    margin-left: auto; white-space: nowrap;
+  }
+  .gate {
+    margin-top: 0.9rem; padding: 0.6rem 0.85rem; border-radius: 5px;
+    background: var(--mono-bg); font-size: 0.9rem;
+  }
+  .gate .g {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent-ink); font-weight: 700; margin-right: 0.5em;
+  }
+  .tablewrap { overflow-x: auto; margin: 1rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  th {
+    text-align: left; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--steel); font-weight: 600; padding: 0.45rem 0.8rem 0.45rem 0;
+    border-bottom: 1.5px solid var(--line); white-space: nowrap;
+  }
+  td { padding: 0.55rem 0.8rem 0.55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .sev-high { color: var(--high); font-weight: 700; }
+  .sev-med  { color: var(--med);  font-weight: 700; }
+  .decision {
+    border: 1px solid var(--card-line); border-radius: 6px;
+    padding: 0.9rem 1.15rem; margin: 0.9rem 0; background: var(--card);
+  }
+  .decision .did {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--accent); font-weight: 700; font-size: 0.85rem; margin-right: 0.5em;
+  }
+  .rat {
+    display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--keep); background: var(--keep-bg);
+    padding: 0.1rem 0.5rem; border-radius: 4px; margin-left: 0.5em; vertical-align: 0.12em;
+  }
+  .rec { font-weight: 650; }
+  .quiet { color: var(--ink-soft); font-size: 0.92rem; }
+  .rule-callout {
+    border-left: 3px solid var(--steel); padding: 0.15rem 0 0.15rem 1rem;
+    margin: 1.1rem 0; color: var(--ink-soft); font-size: 0.97rem;
+  }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<nav class="nav" aria-label="Sections">
+  <a href="#top">Overview</a>
+  <a href="#map">Architecture</a>
+  <a href="#internals">Internals</a>
+  <a href="#pivot">The pivot</a>
+  <a href="#phases">Phases</a>
+  <a href="#reviews">Reviews</a>
+  <a href="#decisions">Decisions</a>
+  <a href="#metrics">Metrics</a>
+</nav>
+
+<div class="wrap" id="top">
+  <p class="eyebrow">EPYC fleet &middot; restructure plan + systems map &middot; v6 &middot; ratified 2026-08-15 &middot; cold-audited (18 findings applied) same day</p>
+  <h1>Loop-Owned Fleet</h1>
+  <p class="thesis">Code owns the loop. Models judge at choke points, with examples in the prompt. Workers run in visible panes you can steer — but the machine's only channel to them is spawn-args in, report file and exit status out.</p>
+  <p class="provenance">Built from a six-reader audit of the design docs, both defect ledgers (C1–C56, F-01–F-43), the live-run logs of 2026-08-12 → 08-14, and the automation code — then attacked by two adversarial reviews (failure-class red team, 20 findings; proportionality delete-lens) and ratified decision-by-decision by the operator on 2026-08-15. Implementation tracker: <code>handoffs/active/loop-owned-fleet-implementation.md</code> (RTG-52, deps RTG-34/RTG-48); the in-repo copy of this plan lives at <code>docs/design/loop-owned-fleet.html</code> (task P0-0).</p>
+
+  <h2><span class="sn">00</span>Symptoms this plan must fix</h2>
+  <ul>
+    <li><strong>"I keep pressing Enter for my own fleet."</strong> Manual delivery rescues roughly daily; 42 refused nudges over 38.4&nbsp;h on one main.</li>
+    <li><strong>"Everything is idle while the backlog is full."</strong> 8–9% compute duty cycle on the flagship night; 11&nbsp;h of dead fleet on 08-14 while the daemon assigned into the void.</li>
+    <li><strong>"Half of everything written is the coordination layer repairing itself."</strong> ~50% of report volume, 08-11 → 08-13.</li>
+    <li><strong>"I can't stop writing flowchart rules."</strong> Doctrine corpus ~67% incident patch; ~40 incidents each minted a standing rule.</li>
+    <li><strong>"The coordinator needs hand-holding between prompts."</strong> RC-4: the role runs on prompt; between prompts, nothing runs.</li>
+  </ul>
+</div>
+
+<div class="wide" id="map">
+  <div class="wrap" style="padding-top:0; padding-bottom:0;">
+    <h2><span class="sn">01</span>Architecture — three views, one claim each</h2>
+    <p>One diagram per mechanism, so every arrow is visible and labeled. Orange borders mark <strong>new</strong> modules; every edge is directed — there are no bare association lines. Module-by-module detail is in the expandable entries after the third view; the compound modules break down further in <a href="#internals">Internals</a>.</p>
+  </div>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;"><span class="t">View 1 — How a task gets done</span><span class="k">queue row → merged code</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  q["queue row<br/>READY · screened"] -->|"tick 45s:<br/>pick + assign"| dmn["coordinator-<br/>daemon"]
+  dmn ==>|"exec fresh"| run["worker_runner"]:::newc
+  run -->|"claim + typed brief<br/>+ premise preflight"| scr{"still<br/>needed?"}:::newc
+  scr -->|"stale / UNKNOWN"| park["park row +<br/>routed fix task"]
+  scr ==>|"yes: spawn in<br/>VISIBLE pane"| wk["worker · batch ≤3<br/>operator-steerable"]:::newc
+  wk -->|"fans out"| sub["3–5<br/>subagents"]
+  wk -->|"commit<br/>per unit"| lane["lane<br/>worktree"]
+  wk -->|"report file<br/>= completion signal"| col["collector<br/>denial audit ·<br/>subagents_spawned"]:::newc
+  col -->|"task-complete /<br/>FAILED + salvage_ref"| bus["session<br/>bus"]
+  col -->|"pointers only"| aud["headless<br/>auditor"]:::newc
+  aud -->|"independent diff<br/>+ mutation probe"| lane
+  aud -->|"verdict"| bus
+  lane -->|"promotion row,<br/>serialized"| mg["merge gate<br/>→ main"]
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">Completion is a schema-valid report file appearing on disk — never pane text, never a heartbeat. The machine never types into the worker's pane; you can, anytime.</p>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;"><span class="t">View 2 — Who watches whom, and how you find out</span><span class="k">supervision &amp; alarms</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  op["Operator"] <==>|"PRIMARY CHANNEL:<br/>conversation · status ·<br/>priorities · decision packages"| con["coordinator console<br/>the ONE agent you talk to"]
+  con -->|"reads receipts ·<br/>integration rows"| dmn2["coordinator-daemon"]
+  sup["bus_supervisor"] -->|"SHA-marker watch ·<br/>bounded restart"| dmn2
+  op -->|"runs after reboot<br/>(reboots are operator-only)"| skill["cold-start skill<br/>/coordinator-agent"]:::newc
+  skill -->|"relaunches +<br/>drill-verifies"| sup
+  dmn2 -->|"fleet / runner dead"| al["alarm channel"]:::newc
+  fw["fleet_watch"] -->|"queue-aging ·<br/>compute-idle"| al
+  al -.->|"OUT-OF-BAND: one push,<br/>drill-tested — for when the<br/>console is closed"| op
+  dmn2 -->|"token relay<br/>+ receipts"| tq["token queue"]
+  tq -.->|"OUT-OF-BAND:<br/>signatures needed"| op
+  op -.->|"OPTIONAL: watch, steer,<br/>answer prompts by hand"| pane["worker panes"]
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">Under normal operation you talk to ONE agent — the console. What changed is only its load-bearing status: the loop no longer depends on it ticking. Alarms, the token queue, and worker panes are out-of-band or optional channels, not replacements. Panes are human-authoritative: the machine may capture scrollback as evidence for you, but never types and never decides from pane text.</p>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;"><span class="t">View 3 — Compute negotiation</span><span class="k">mechanized grants + choreography recipes</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  subgraph CONSUMERS["compute consumers — all symmetric"]
+    direction LR
+    ak["AutoKernel"]
+    ap["AutoPilot"]
+    wk2["pool workers"]
+    inf3["inference session"]
+  end
+  CONSUMERS -->|"compute-request"| bus2["session bus"]
+  bus2 --> grant{"daemon grant check:<br/>region free ∧ policy allows"}:::newc
+  op2["Operator"] <==>|"priorities, in conversation"| con2["coordinator console"]
+  con2 -->|"edits — logged as<br/>typed rows"| pol["compute policy file<br/>priorities · windows · reservations"]:::newc
+  pol -->|"read every tick"| grant
+  grant -->|"simple: GRANT"| rcl["region claim<br/>(flock)"]
+  rcl --> hw["MI210 · CPU regions ×4"]
+  grant -.->|"exotic arrangement"| cho["choreography recipe<br/>typed steps, receipt-gated:<br/>drain@boundary → load → run ∥ resume"]:::newc
+  con2 -->|"approves once;<br/>recipe reused forever"| cho
+  cho -->|"daemon steps through<br/>on receipts, deterministically"| rcl
+  grant -->|"request aged"| al2["alarm channel"]
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">D4 as amended: compute is owned at the COORDINATION level, not by a session. AutoKernel, AutoPilot, the inference session, and pool workers are all symmetric consumers; prioritizing between them is policy content, set in conversation with the console. The daemon executes grants mechanically — no per-request LLM approval on the critical path, so a wedged session can never again park free compute for 14 hours. A new exotic dance is a new recipe file, never new code (the ratified policy-data-never-code contract).</p>
+
+  <div class="wrap" style="padding-top:0;padding-bottom:0;">
+  <h3>Module reference</h3>
+  <div class="detgrid">
+    <details><summary>Alarm channel<span class="dchip new">NEW</span></summary><div class="body">
+      <p>ONE operator-reachable push mechanism (ntfy vs email presented as a decision package at dispatch). Day-1 sources: fleet/runner dead, supervisor death. Queue-aging joins with P3-3 and aged compute-requests with P3-5, on this same channel. Emits once on state change.</p>
+      <p class="quiet">Red-team #1: every prior alarm went to <code>advisory.jsonl</code>, delivered to no one — 11 unnoticed dead hours on 08-14. Gate: kill the fleet in a drill, verify exactly one alarm arrives. Phase 0.</p>
+    </div></details>
+    <details><summary>Cold-start skill<span class="dchip new">NEW (D3)</span></summary><div class="body">
+      <p>The hardened <code>/coordinator-agent</code> one-shot: after a reboot (operator-only by policy, so you are present), one command relaunches the supervisor tier, verifies daemon health, and runs the alarm drill. Replaces the cron dead-man — manual relaunch, packaged properly, per your ruling.</p>
+    </div></details>
+    <details><summary>Token queue<span class="dchip kept">KEPT</span></summary><div class="body">
+      <p>Operator-signature pipeline: token-requests relayed by the daemon, receipts checked, ratifications accumulated into one command. C27/C33/C39 closed; kept as-is.</p>
+    </div></details>
+    <details><summary>Coordinator console<span class="dchip shrunk">SHRUNK</span></summary><div class="body">
+      <p><strong>The one agent you talk to under normal operation.</strong> Conversation, status, decision packages, priorities, merge serialization — and, under amended D4, editor of the compute policy file and approver of choreography recipes. Reads state; never owns the clock; never reads instruments (receipts-not-dials).</p>
+      <p class="quiet">"Shrunk" means its load-bearing role shrank, not its conversational one: nothing in the loop depends on it ticking, so closing it costs only conversation. Gate: 7 days with the console closed ≥12h/day and nothing degrading, alarms included.</p>
+    </div></details>
+    <details><summary>inference session<span class="dchip kept">KEPT (D4 amended)</span></summary><div class="body">
+      <p>Stays interactive and keeps running whatever the coordination level prioritizes — AutoKernel, AutoPilot, either, or neither. Under amended D4 it is a compute <em>consumer</em> like every other: it requests windows through the same bus mechanism as pool workers. Ownership (policy authorship, recipe approval) sits at the coordination level.</p>
+      <p class="quiet">This amends bus rule 11 ("compute owned by ONE main") — ownership becomes policy authorship at the coordination plane, executed mechanically by the daemon, rather than a session's per-request discretion.</p>
+    </div></details>
+    <details><summary>coordinator-daemon<span class="dchip kept">KEPT + EXTENDED</span></summary><div class="body">
+      <p>The 45s tick — the only clock owner. Fold → boundary detect → pick (gated) → assign → exec runner; transport for the two survivors; fleet/runner gate; mechanized compute grants + choreography step-through. Zero discretion: judgment enters as typed fields or classifier verdicts. <a href="#d-daemon">Internals ↓</a></p>
+    </div></details>
+    <details><summary>worker_runner<span class="dchip new">NEW</span></summary><div class="body">
+      <p>Exec'd FRESH per assignment (committed-not-live impossible by construction). Claim → typed brief → premise preflight → permission profile → lane lockfile → spawn in visible pane → lease timer → collect. Roster row <code>{id: workerpool, role: main, endpoint: "exec:worker_runner"}</code> — the one schema extension permitted. Harness is a config knob (<code>worker_harness:</code>), per-lane overridable (D2). <a href="#d-runner">Internals ↓</a></p>
+    </div></details>
+    <details><summary>premise_screener<span class="dchip new">NEW</span></summary><div class="body">
+      <p>The one day-1 classifier: point LLM call at preflight; still-needed | stale | UNKNOWN, typed, forced-choice, evidence quote mandatory; UNKNOWN routes a fix task. Few-shot examples in the prompt are where your positive/negative examples live; eval fixtures carry <code>label_provenance</code>.</p>
+    </div></details>
+    <details><summary>headless auditor<span class="dchip new">NEW</span></summary><div class="body">
+      <p>Per completion packet, pointers only; derives the diff from git independently; one mutation probe. Never grades the worker's claim (red-team #12).</p>
+    </div></details>
+    <details><summary>workers<span class="dchip new">NEW (D8)</span></summary><div class="body">
+      <p>≤4 concurrent, one per lane worktree, batch ≤3 statically-grouped rows, each fanning out its own 3–5 subagents (<code>subagents_spawned</code> in the report — the multiplier finally measured). Runs in a <strong>visible tmux pane</strong>: you can watch, steer, and answer permission prompts by hand. The machine's channel is spawn-args in, report file + exit + signals out — it never types into or decides from the pane; it may capture scrollback as evidence for your eyes.</p>
+    </div></details>
+    <details><summary>session bus<span class="dchip shrunk">SLIMMED (D5)</span></summary><div class="body">
+      <p>Stable core kept: queue.jsonl, O_EXCL claims, tokens/, outbox+cursors ×2 — runtime relocated off-tree behind a tracked symlink (survives <code>git clean -ffdx</code>). Deleted: relay fan-out to N mains, acks, nudges, worker heartbeats, ~11 unwired message kinds. <a href="#d-bus">Internals ↓</a></p>
+    </div></details>
+    <details><summary>lane worktrees + merge gate<span class="dchip kept">KEPT (D7)</span></summary><div class="body">
+      <p>mainA–D lanes, absolute gitdirs, pathspec commits; runner refuses to spawn outside a lane. Promotion = typed row through <code>merge_gate.py</code>/<code>serialized_push</code>, one at a time. D7: the five <code>.orphan</code> backups get archive-tarball-then-delete after verifying their tips are contained in lane branches — never <code>prune</code>; the 11 ghost rows/claims get a one-time signed release after owner-death verification.</p>
+    </div></details>
+    <details><summary>Retired surfaces<span class="dchip retired">RETIRED</span></summary><div class="body">
+      <ul>
+        <li><strong>mainA–D interactive mains</strong> — per-identity retirement: drain-verify → final receipt → tombstone → linter refuses new messages → cursors archived.</li>
+        <li><strong>Machine composer typing</strong> — C6/C51–C56: three-attempt fixes, reopened fail-opens, four mangled call sites. Deleted, not fixed. (Human typing into panes: always allowed.)</li>
+        <li><strong>Glyph tables / pane heuristics for decisions</strong> — 94% false positives; "a calibration that drifted in fifteen days."</li>
+        <li><strong>Nudge + doorbell for workers</strong> — F-34's correct-refusal deadlock class.</li>
+        <li><strong>Worker heartbeats</strong> — birth certificates that lied in both directions.</li>
+        <li><strong>8 dormant role files; ~11 unwired message kinds; judgment-rule mass</strong> — narratives → ledgers, heuristics → example packs, new incidents → labeled eval fixtures.</li>
+      </ul>
+    </div></details>
+  </div>
+  </div>
+</div>
+
+<div class="wide" id="internals">
+  <div class="wrap" style="padding-top:0; padding-bottom:0;">
+    <h2><span class="sn">02</span>Module internals</h2>
+  </div>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;" id="d-daemon"><span class="t">coordinator-daemon</span><span class="k">tick pipeline</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  flock["flock singleton<br/>+ epoch fence"] --> fold["fold queue<br/>state from files only"]
+  fold --> bnd["boundary<br/>detect"]
+  bnd --> pick["assignment picker<br/>gates: screened_by ·<br/>occupancy · lane/lease"]
+  pick --> apply["apply_assignment<br/>same status set<br/>as picker"]
+  apply ==>|"authority: assign"| execr["exec<br/>worker_runner"]:::newc
+  fold --> relay["relay transport<br/>2 interactive inboxes"]
+  relay --> tok["token relay<br/>receipt-checked"]
+  tok -->|"writes"| busport(["→ bus"])
+  pick --> gate["fleet / runner gate<br/>READY&gt;0 ∧ free ∧<br/>no spawn in N ticks"]:::newc
+  gate -->|"one alarm, not<br/>per-task blocks"| alarmport(["→ alarm channel"])
+  fold --> cgrant["compute grants<br/>policy check +<br/>recipe step-through"]:::newc
+  cgrant -->|"grant receipts"| busport
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">Picker and apply share ONE status-set constant — the STALE_REQUEUED black hole was the two-sets version of this pipeline.</p>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;" id="d-runner"><span class="t">worker_runner</span><span class="k">per-assignment lifecycle</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  claim["claim row<br/>O_EXCL"] --> brief["typed brief<br/>task_text · ≤4KB"]
+  brief --> pre["premise<br/>preflight"]
+  pre -->|"still-needed"| perm["permission profile<br/>allowlist · D2b"]
+  pre -.->|"stale / UNKNOWN"| park(["park + routed<br/>fix task"])
+  perm --> lock["lane lockfile<br/>1 worker / lane"]
+  lock ==> spawn["spawn worker in<br/>VISIBLE pane<br/>harness = config knob"]
+  spawn --> watch["watch: report file<br/>+ process exit"]
+  watch -->|"report appears"| col["collector<br/>schema check · denial audit ·<br/>subagents_spawned"]
+  watch -.->|"lease expiry,<br/>no report"| salv["SALVAGE: SIGTERM → grace →<br/>KILL, then WIP commit to<br/>salvage/&lt;task&gt; + logs + scrollback"]:::newc
+  salv --> col
+  col -->|"task-complete /<br/>FAILED + salvage_ref"| busw(["→ bus, workerpool id"])
+  col -->|"pointers"| pkt(["→ auditor"])
+  col -->|"on accept"| promo(["promotion row<br/>→ merge gate"])
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">D6 as ratified: kill is allowed, loss is not. Every kill is preceded by grace and followed by a mandatory salvage — worktree WIP committed to a salvage ref, harness transcript and pane scrollback attached to the row. Nothing is ever discarded.</p>
+
+  <div class="diaghead wrap" style="padding-top:0;padding-bottom:0;" id="d-bus"><span class="t">session bus</span><span class="k">what survives, and where it lives</span></div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  sym["runtime off-tree<br/>tracked symlink at old path<br/>survives git clean -ffdx"]:::newc -->|"hosts"| q["queue.jsonl — 5 states:<br/>READY · RUNNING · DONE_PASS ·<br/>FAILED · HELD_OP_GATE<br/>(parked / salvaged = annotations)"]
+  sym -->|"hosts"| cl["claims/ O_EXCL<br/>ghost sweep D7"]
+  sym -->|"hosts"| tk["tokens/<br/>operator queue"]
+  sym -->|"hosts"| oc["outbox + cursors ×2<br/>console · inference"]
+  sw["single-writer + fold<br/>path-derived authorship"] -->|"enforced on"| q
+  sw -->|"enforced on"| oc
+  classDef newc stroke:#C4703F,stroke-width:2.5px;
+</pre>
+  </div>
+  <p class="figcap wrap" style="padding-top:0;padding-bottom:0;">The low-churn half of the old system, kept nearly intact. The one addition is the workerpool endpoint scheme.</p>
+</div>
+
+<div class="wrap" id="pivot">
+  <h2><span class="sn">03</span>The pivot: pool workers in visible panes</h2>
+  <p>A worker is spawned per dispatched batch into a lane worktree, <strong>in a tmux window you can watch and steer</strong>. The machine's contract with it is minimal and typed: spawn-args and a brief file in; a schema-valid report file, artifacts, and exit status out. The machine never types into the pane and never makes a decision from pane text — those were the two channels that produced the C51–C56 / F-33–F-43 delivery class and the 94%-false-positive perception class. Panes are <em>human-authoritative</em>: your inspection-and-steering channel, plus captured scrollback as evidence on failed rows.</p>
+  <p><strong>The multiplier survives.</strong> The point of mains was the two-level tree: N independent dispatchers, each fanning out 3–5 subagents, with the coordinator negotiating dispatch and compute across them. Pool workers keep that tree, and <code>subagents_spawned</code> in the report makes the multiplier measured instead of self-reported (F-15 / RTG-49).</p>
+  <p><strong>Kill-with-salvage (D6 as ratified):</strong> lease expiry ⇒ SIGTERM, grace, SIGKILL — then a mandatory salvage: uncommitted worktree state committed to <code>salvage/&lt;task_id&gt;</code>, harness transcript and pane scrollback attached, row marked FAILED with a <code>salvage_ref</code>. Commit-per-unit keeps salvage small; nothing is ever discarded. This is a scoped amendment to BUS_PROTOCOL rule 8 (quiesce-and-drain): the salvage-kill exception applies to POOL WORKERS ONLY — interactive-session reclaim stays drain-only — and the rule-8 amendment lands with operator ack before the kill path first runs (P2-4).</p>
+  <p><strong>Self-repair gate (D9 as ratified):</strong> the fleet may file typed defect rows and proposed patches, but merging any change under <code>scripts/coordination/**</code> requires operator ack — the architecture cannot autonomously rewrite itself or its instruments. The self-repair metric is computed by commit-path classification, never self-reported.</p>
+
+  <h2 id="phases"><span class="sn">04</span>The one-week core plan</h2>
+  <p class="quiet">Every gate is a live-fire probe, never a merge.</p>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PHASE 0</span><span class="phase-title">Stop the bleeding</span><span class="day">DAY 1</span></div>
+    <ul>
+      <li><strong>Alarm channel with a tested reader</strong>: one push mechanism; drill-verified.</li>
+      <li><strong>Fleet-existence gate</strong>: zero live roster mains ⇒ halt assignment + one alarm; predicate swaps in Phase 3.</li>
+      <li><strong>Ghost-state sweep (D7, signed)</strong>: reset 14 INFRA_BLOCKED + release the 11 dead-owner rows/claims after owner-death verification.</li>
+      <li><strong>Two live bugs</strong>: <code>backfill_supervisor.sh</code> undefined <code>health_ok</code>; verify the H-4 SHA predicate is live in the running supervisor.</li>
+      <li><strong>Cold-start skill (D3)</strong>: harden <code>/coordinator-agent</code> into the packaged manual-relaunch one-shot (relaunch supervisors, verify daemon, run the alarm drill).</li>
+      <li><strong>Bus runtime off-tree (D5)</strong>: mv runtime data only (policy files stay tracked in place) + tracked symlinks; verify every consumer resolves — Python get_bus_root() AND the shell daemons, enumerated at implementation. P0-3 runs strictly before this, same session.</li>
+      <li><strong><code>.orphan</code> disposal (D7)</strong>: archive-tarball, verify tips contained in lane branches, delete by explicit path list — never <code>prune</code>.</li>
+      <li><strong>Prose-rule moratorium</strong>: new incidents append labeled eval fixtures, never rules.</li>
+    </ul>
+    <div class="gate"><span class="g">Gate</span>Fleet killed in a drill ⇒ assignment halts and your phone gets exactly one alarm; the cold-start skill brings the tier back and re-verifies.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PHASE 1</span><span class="phase-title">Doctrine collapse</span><span class="day">DAYS 2–3</span></div>
+    <ul>
+      <li><code>INVARIANTS.md</code> (~15 rules, verbatim, no narratives); mechanical protocol cited from the schema.</li>
+      <li>Delete duplicate rule copies; resolve the three live self-contradictions, one ruling each.</li>
+      <li>Narratives → ledgers/evals; heuristics → per-decision example packs.</li>
+      <li>Archive the eight dormant role files and the amber flowchart sections; <code>coordinator-agent.md</code> → ~50 lines.</li>
+    </ul>
+    <div class="gate"><span class="g">Gate</span>Ship and fix forward — for doc/agent-file edits outside <code>scripts/coordination/**</code>; any protocol or loop-plane amendment still requires operator ack (D9 scoping). Moratorium verified in force.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PHASE 2</span><span class="phase-title">worker_runner MVP + pilot</span><span class="day">DAYS 3–5</span></div>
+    <ul>
+      <li>~200-line runner per the <a href="#d-runner">lifecycle diagram</a>: daemon-tick exec, workerpool roster row, permission profile + denial audit, screener preflight, static batching, pool-lane lockfiles, visible-pane spawn, kill-with-salvage (+ the rule-8 amendment, operator-acked), merge-gate promotion rows. Harness = <code>worker_harness:</code> config knob (D2: Claude pilot, codex default scale-out, easily switched).</li>
+      <li>Pilot: 10 screened churn rows in PRE-CREATED pool worktrees (<code>worktrees/pool/lane0..3</code>) — never mainA–D’s lanes while their interactive mains are live (commit-sweep hazard); additive, nothing retired yet. Standing spawn authority, ≤4 concurrent, ~250k tokens/batch ceiling (D1).</li>
+      <li>Headless audit per completion: pointers only, independent git diff, one mutation probe.</li>
+    </ul>
+    <div class="gate"><span class="g">Gate</span>≥10 rows end-to-end, schema-valid reports &middot; zero machine delivery interventions &middot; zero silent permission denials &middot; 100% independently audited &middot; operator spot-reviews 3 of 10 &middot; tokens/row within the D1 ceiling. Kill: quality drop or ceiling breach ⇒ stop, reassess.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PHASE 3</span><span class="phase-title">Retire the machine delivery plane</span><span class="day">DAYS 6–7</span></div>
+    <ul>
+      <li>mainA–D retired per-identity: drain-verify → final receipt → tombstone → linter refuses new messages → cursors archived.</li>
+      <li><code>tmux_adapter</code> shrinks to the two interactive endpoints (machine side); worker panes remain, human-only. <code>fleet_watch</code> drops pane heuristics, keeps hardware compute-idle, gains queue-aging — refused rows count as aging, every refusal class has an owner.</li>
+      <li>Fleet-gate predicate swap; D4b mechanized compute grants + first choreography recipe (your CPU-pause → GPU-load → parallel-resume example).</li>
+    </ul>
+    <div class="gate"><span class="g">Gate</span>One full day of backlog churn with zero machine pane-IO for workers.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PULLED BY NEED</span><span class="phase-title">Deferred until a measured consumer exists</span><span class="day">NOT SCHEDULED</span></div>
+    <ul>
+      <li><strong>Liveness / escalation classifiers</strong> — shadow-first when volume returns; <code>label_provenance</code>; precision with a recall floor.</li>
+      <li><strong>Wrap-up generation</strong> — the typed completion report is the wrap-up unit first (RTG-51).</li>
+      <li><strong>Eval CI runner</strong> — fixtures directory exists from Day 1; a runner when the first promotion needs it.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">PHASE 4</span><span class="phase-title">Role shrink</span><span class="day">WEEK 2, FREE</span></div>
+    <p>Falls out of Phases 1–3. Gate: 7 days with zero operator delivery interventions, duty-cycle target sustained, no MUST-ACT item aging past SLA while the console is closed ≥12&nbsp;h/day — alarms still reaching you with it closed.</p>
+  </div>
+
+  <h2 id="reviews"><span class="sn">05</span>What the adversarial reviews changed</h2>
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th>Sev</th><th>Finding</th><th>Where it landed</th></tr>
+    <tr><td class="mono">R1</td><td class="sev-high">HIGH</td><td>The "one critical alarm" had no reader — the unread-sink class at the plan's most important node</td><td>Phase 0: alarm channel with a kill-the-fleet drill</td></tr>
+    <tr><td class="mono">R2</td><td class="sev-high">HIGH</td><td>Headless permission model unspecified; every default bad</td><td>D2b allowlist profile + denial audit; denial ⇒ FAILED; prompts visible in the pane for you to answer</td></tr>
+    <tr><td class="mono">R3</td><td class="sev-high">HIGH</td><td>Fleet-existence gate false-alarms once workers are ephemeral</td><td>Phase 0/3 predicate swap</td></tr>
+    <tr><td class="mono">R4</td><td class="sev-high">HIGH</td><td>Runner unassignable under current roster roles</td><td><code>workerpool</code> roster row + exec endpoint — the one permitted extension</td></tr>
+    <tr><td class="mono">R5</td><td class="sev-high">HIGH</td><td>A long-lived runner re-enters committed-not-live</td><td>Runner exec'd fresh per assignment; no new supervised tier</td></tr>
+    <tr><td class="mono">R6</td><td class="sev-high">HIGH</td><td>Pilot gate unmeasurable as drafted</td><td>Absolute numbers + operator spot-review</td></tr>
+    <tr><td class="mono">R7</td><td class="sev-med">MED</td><td>Eval labels contaminated — the ledger graded itself</td><td><code>label_provenance</code>; primary-artifact re-labeling</td></tr>
+    <tr><td class="mono">R8</td><td class="sev-med">MED</td><td>"Re-usable slot" retirement resurrects dead state (C24/C28)</td><td>Per-identity retirement procedure with tombstones (P3-1)</td></tr>
+    <tr><td class="mono">R9</td><td class="sev-med">MED</td><td>Composed refusals starve rows without resolving them (9,219-refusal class)</td><td>Every refusal class has an owner, emits once on state change, routes a fix task; refused rows count as aging</td></tr>
+    <tr><td class="mono">R10</td><td class="sev-med">MED</td><td>Timeout-kill contradicts ratified axiom 4 — an amendment, not a footnote</td><td>D6 ratified as kill-with-salvage; scoped rule-8 amendment under operator ack (P2-4)</td></tr>
+    <tr><td class="mono">R11</td><td class="sev-med">MED</td><td>A bad batch burns N rows in one stroke</td><td>Batch cap 3, per-row records; on timeout only the in-progress row fails</td></tr>
+    <tr><td class="mono">R12</td><td class="sev-med">MED</td><td>Auditor circularity: grading the worker's own claim</td><td>Pointer-only packets; independent git diff + mutation probe</td></tr>
+    <tr><td class="mono">R13</td><td class="sev-med">MED</td><td>Atomic bus-path migration would split-brain the shell daemons</td><td>Move data + tracked symlink at the old path; consumers migrate opportunistically (P0-7)</td></tr>
+    <tr><td class="mono">R14</td><td class="sev-med">MED</td><td>11 more rows/claims held by dead sessions than the draft swept</td><td>Full ghost sweep, operator-signed, owner-death verified (P0-3, D7)</td></tr>
+    <tr><td class="mono">R15</td><td class="sev-med">MED</td><td>Five .orphan worktrees sit beside live lanes, inviting the prune that destroyed them once</td><td>Archive → verify containment → delete by path list; runner refuses *.orphan* (P0-8)</td></tr>
+    <tr><td class="mono">R16</td><td class="sev-med">MED</td><td>Pilot-harness choice conflicts with the budget roster without a re-open point</td><td>Claude for the pilot only; tokens/row is a mandatory Phase-3 go input; codex default scale-out (D2)</td></tr>
+    <tr><td class="mono">R17</td><td class="sev-med">MED</td><td>Merge/integration left unowned between phases</td><td>Typed promotion rows, serialized via merge_gate; part of pilot acceptance (P2-8)</td></tr>
+    <tr><td class="mono">R18</td><td class="sev-med">LOW</td><td>Phase-4 gate vacuous as drafted</td><td>Concrete 7-day observables incl. alarms-with-console-closed</td></tr>
+    <tr><td class="mono">R19</td><td class="sev-med">LOW</td><td>Concurrency silently capped by worktree inventory</td><td>One-worker-per-worktree lockfile; scaling past 4 = pre-created worktrees, operator-visible</td></tr>
+    <tr><td class="mono">R20</td><td class="sev-med">LOW</td><td>Escalation precision gameable by silence</td><td>Precision paired with a recall floor on known-true escalations (PN-1)</td></tr>
+    <tr><td class="mono">DL</td><td class="sev-high">—</td><td>Delete-lens: 3 of 4 classifiers served deleted surfaces; doctrine collapse mispositioned; honest price 4–7 weeks</td><td>One-week reduction; classifiers deferred; collapse at Days 2–3</td></tr>
+    <tr><td class="mono">OP</td><td class="sev-high">—</td><td>Operator: panes must stay for inspection/steering; kills must never lose work; self-repair must not be gameable; exotic compute leases must be expressible; one conversational front door under normal operation; compute ownership ≠ compute consumption</td><td>D8 visible panes (human-authoritative); D6 kill-with-salvage; D9 merge gate + commit-path metric; D4b choreography recipes; console restored as the primary channel in View 2; D4 amended — ownership at the coordination level, all consumers symmetric</td></tr>
+  </table></div>
+
+  <h2 id="decisions"><span class="sn">06</span>Ratified decisions <span class="quiet" style="font-size:0.8rem;">(operator, 2026-08-15, this session)</span></h2>
+  <div class="decision"><span class="did">D0</span><span class="rat">RATIFIED</span> <strong>Two-level worker pool.</strong> 2 interactive sessions + ≤4 pool workers, each fanning out 3–5 subagents; the coordinator keeps dispatch + compute negotiation. The mains multiplier survives with the delivery-failure surface deleted.</div>
+  <div class="decision"><span class="did">D1</span><span class="rat">RATIFIED</span> <strong>Standing spawn authority</strong>, bounded: concurrency ≤4, pinned paid provider, ~250k tokens/batch ceiling — which doubles as the Phase-2 cost gate. Revocable on any violation.</div>
+  <div class="decision"><span class="did">D2</span><span class="rat">RATIFIED</span> <strong>Claude harness for the pilot, codex exec default for scale-out</strong> — implemented as a <code>worker_harness:</code> config knob, per-lane overridable, easy to change later per operator note. Console harness unconstrained (it doesn't fan out).</div>
+  <div class="decision"><span class="did">D3</span><span class="rat">RATIFIED</span> <strong>No cron.</strong> Manual relaunch packaged as the hardened <code>/coordinator-agent</code> cold-start skill — reboots are operator-only, so the operator is always present at the natural relaunch moment.</div>
+  <div class="decision"><span class="did">D4 + D4b</span><span class="rat">RATIFIED (amended)</span> <strong>Compute is owned at the coordination level; the grant path is mechanized.</strong> Operator amendment, 2026-08-15: AutoKernel/AutoPilot are just consumers — pinning ownership to the session that runs them conflated ownership with consumption. Final shape: the console (in conversation with the operator) authors the compute policy file (priorities, windows, reservations; edits logged as typed rows) and approves choreography recipes; the daemon executes grants deterministically (region-free ∧ policy-allows); AutoKernel, AutoPilot, inference, and pool workers are all symmetric consumers requesting via the bus. Exotic arrangements: named, receipt-gated choreography recipes — approved once, reused forever. This amends bus rule 11: ownership = policy authorship, not a session.</div>
+  <div class="decision"><span class="did">D5</span><span class="rat">RATIFIED</span> <strong>Bus runtime off-tree</strong> behind a tracked symlink.</div>
+  <div class="decision"><span class="did">D6</span><span class="rat">RATIFIED (amended)</span> <strong>Kill-with-salvage.</strong> Kill allowed at lease expiry; loss forbidden: mandatory WIP commit to <code>salvage/&lt;task_id&gt;</code> + transcript + scrollback attached before the row closes. Nothing discarded, ever.</div>
+  <div class="decision"><span class="did">D7</span><span class="rat">RATIFIED</span> <strong>Ghost sweep + orphan disposal</strong>, with safeguards: owner-death verification and an enumerated list before the signed claim release; archive + containment check before orphan deletion.</div>
+  <div class="decision"><span class="did">D8</span><span class="rat">RATIFIED</span> <strong>Visible panes, human-authoritative.</strong> Workers run in tmux windows the operator can watch and steer; the machine never types into a pane and never decides from pane text; it may capture scrollback as evidence for human triage.</div>
+  <div class="decision"><span class="did">D9</span><span class="rat">RATIFIED</span> <strong>Operator-gated loop-plane merges.</strong> The fleet proposes typed patches; merging anything under <code>scripts/coordination/**</code> requires operator ack. Self-repair share measured by commit-path classification, never self-reported.</div>
+
+  <h2 id="metrics"><span class="sn">07</span>Metrics &amp; kill criteria</h2>
+  <ul>
+    <li>Compute duty cycle on unattended nights: <strong>8–9% → &gt;40%</strong> within two weeks of Phase 3.</li>
+    <li>Operator delivery interventions: <strong>~daily → 0</strong> (steering by choice stays; rescuing by necessity goes).</li>
+    <li>Coordination self-repair share: <strong>~50% → &lt;10%</strong> — computed from commit paths (<code>scripts/coordination/**</code>), never self-reported (D9).</li>
+    <li>Alarm fidelity: every drill alarm arrives; <strong>zero</strong> alarms on well-run nights.</li>
+    <li><strong>Kill criteria:</strong> pilot breaches the D1 ceiling, or audit quality drops — operator spot-review overturns ≥2 of the 3 reviewed pilot rows, or post-pilot operator-vs-auditor disagreement exceeds 20% over any 7-day window ⇒ halt and reassess. Any single-writer or trust-boundary violation by the runner ⇒ immediate authority revocation. Meta-kill: any phase exceeding 2× its estimate stops the plan.</li>
+  </ul>
+
+  <h2><span class="sn">08</span>Explicitly not built</h2>
+  <p class="quiet">No general workflow engine. No new message kinds beyond the workerpool endpoint. No classifier for any surface Phase 3 deletes. No policy-DSL for exotic leases — recipes are data. No autonomous merges to the loop plane. No re-litigation of ratified invariants.</p>
+</div>
