@@ -1,5 +1,7 @@
 # SafetyGate / Promotion-Gate / RLVR-Export Provenance Audit — 2026-07-22
 
+> **Completed findings ledger (2026-08-13).** All nine audit tasks are closed. Current remediation and measurement work lives in [RE-4 protocol redesign](../active/re4-protocol-redesign.md) and [eval-tower architecture audit](../active/eval-tower-architecture-audit-2026-07-20.md).
+
 **Scope:** read-only walk of every numeric input reaching a gating verdict in
 `/mnt/raid0/llm/epyc-orchestrator` (== `/workspace/repos/epyc-orchestrator`).
 Commissioned by operator 2026-07-22. Read-only: no inference, no HTTP, no stack

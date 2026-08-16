@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EPYC coordination task flow — implementation audit map</title>
+<style>
+:root{--ink:#172033;--muted:#5d687b;--paper:#f7f8fb;--card:#fff;--line:#ccd3df;--green:#16794a;--green-bg:#e7f7ef;--blue:#2463ad;--blue-bg:#e9f2ff;--amber:#a85d00;--amber-bg:#fff3d7;--gray:#6d7480;--gray-bg:#eef0f3;--danger:#a22832;--shadow:0 7px 22px #17203312}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.48 system-ui,-apple-system,"Segoe UI",sans-serif}header,main,footer{max-width:1500px;margin:auto;padding:1.3rem 2rem}header{padding-top:2rem}h1{font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.05;margin:.25rem 0 .8rem;letter-spacing:-.035em}h2{font-size:1.35rem;margin:0 0 .8rem}h3{font-size:1rem;margin:0 0 .4rem}.lede{max-width:86ch;font-size:1.05rem;color:var(--muted)}.asof{display:inline-block;background:#172033;color:#fff;padding:.35rem .65rem;border-radius:.35rem;font-weight:700}.scope{border-left:4px solid var(--blue);padding:.65rem .9rem;background:var(--blue-bg);max-width:95ch}.grid{display:grid;gap:1rem}.legend{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:1.3rem 0}.key,.panel,.role,.step,.audit-card{background:var(--card);border:1px solid var(--line);border-radius:.6rem;box-shadow:var(--shadow)}.key{padding:.7rem}.swatch{width:1.2rem;height:1.2rem;border-radius:.2rem;display:inline-block;vertical-align:-.25rem;margin-right:.45rem}.green{background:var(--green-bg);border:2px solid var(--green)}.blue{background:var(--blue-bg);border:2px solid var(--blue)}.amber{background:var(--amber-bg);border:2px dashed var(--amber)}.gray{background:var(--gray-bg);border:2px solid var(--gray)}.panel{padding:1rem;margin:1rem 0}.roles{grid-template-columns:1.25fr 2.4fr 1fr 1fr}.role{padding:.85rem;position:relative}.role::before,.step::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;border-radius:.6rem 0 0 .6rem;background:var(--status-color,var(--gray))}.role[data-status="pushed"],.step[data-status="pushed"]{--status-color:var(--green);background:var(--green-bg)}.role[data-status="local"],.step[data-status="local"]{--status-color:var(--blue);background:var(--blue-bg)}.role[data-status="gap"],.step[data-status="gap"]{--status-color:var(--amber);background:var(--amber-bg);border-style:dashed}.role[data-status="future"],.step[data-status="future"]{--status-color:var(--gray);background:var(--gray-bg)}.mains{display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem;margin-top:.55rem}.pill,.kind,.authority{display:inline-block;border-radius:999px;padding:.12rem .45rem;margin:.12rem .12rem .12rem 0;font:700 .72rem ui-monospace,SFMono-Regular,monospace}.pill{background:#fff9;border:1px solid currentColor}.kind{background:#172033;color:#fff}.authority{background:#fff;color:#593c00;border:1px solid #bd8c28}.flow{display:grid;grid-template-columns:repeat(7,minmax(125px,1fr));align-items:stretch;gap:.7rem}.step{padding:.75rem .65rem .75rem .9rem;position:relative;min-height:150px}.step:not(:last-child)::after{content:"→";position:absolute;right:-.65rem;top:43%;z-index:3;font-size:1.25rem;font-weight:900}.step a,.audit-card a,td a{color:#164f91}.step p{margin:.35rem 0;color:#4c586a;font-size:.84rem}.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.7rem;margin-top:.8rem}.branch .step{min-height:0}.branch .step::after{display:none}.audit-meta{border-top:1px solid #c8ced8;margin-top:.5rem;padding-top:.45rem;font-size:.78rem}.audit-meta b{display:block}.diagram{overflow:auto}.diagram svg{display:block;min-width:1050px;width:100%;height:auto}.diagram .box{rx:10;stroke-width:2}.diagram text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;fill:var(--ink)}.diagram .title{font-weight:750;font-size:15px}.diagram .small{font-size:11px;fill:#4f5c6e}.diagram .arrow{fill:none;stroke:#59667a;stroke-width:2;marker-end:url(#arrow)}.diagram .retry{stroke:var(--danger);stroke-dasharray:6 4}.diagram .gapline{stroke:var(--amber);stroke-dasharray:7 5}.diagram a:focus .box,.diagram a:hover .box{stroke-width:4;filter:brightness(.97)}table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{text-align:left;vertical-align:top;padding:.55rem;border-bottom:1px solid var(--line)}th{background:#edf0f6;position:sticky;top:0}.tag{font-weight:800}.tag.pushed{color:var(--green)}.tag.local{color:var(--blue)}.tag.gap{color:var(--amber)}.tag.future{color:var(--gray)}.two{grid-template-columns:repeat(2,minmax(0,1fr))}ul,ol{padding-left:1.25rem}.forbidden li::marker{color:var(--danger)}code{font: .85em ui-monospace,SFMono-Regular,monospace;background:#edf0f5;padding:.1rem .25rem;border-radius:.2rem}.questions{border-color:#d5a045;background:#fffaf0}.questions li{margin:.45rem 0}details{margin:.35rem 0}summary{cursor:pointer;font-weight:700}.noscript{background:#fff1f1;border:2px solid var(--danger);padding:.7rem}footer{color:var(--muted);font-size:.85rem}.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;z-index:9;background:#fff;padding:.5rem}@media(max-width:1050px){.roles,.two{grid-template-columns:1fr 1fr}.flow{grid-template-columns:repeat(2,1fr)}.step:not(:last-child)::after{display:none}}@media(max-width:650px){header,main,footer{padding:1rem}.roles,.two,.flow{grid-template-columns:1fr}.mains{grid-template-columns:repeat(2,1fr)}}@media print{body{background:#fff;font-size:10pt}.panel,.role,.step,.key{box-shadow:none;break-inside:avoid}header,main,footer{max-width:none;padding:.35in}.diagram{overflow:visible}.diagram svg{min-width:0}a{color:inherit;text-decoration:none}.step{min-height:0}th{position:static}}
+</style>
+<style>
+/* Dark audit-console theme. The status colors retain their existing semantics. */
+:root{
+  color-scheme:dark;
+  --ink:#edf4ff;
+  --muted:#afbdd2;
+  --paper:#080d16;
+  --card:#111a28;
+  --line:#34445a;
+  --green:#62e2a6;
+  --green-bg:#102a22;
+  --blue:#80bcff;
+  --blue-bg:#10253d;
+  --amber:#ffc66d;
+  --amber-bg:#352512;
+  --gray:#bac4d3;
+  --gray-bg:#222b38;
+  --danger:#ff7f8d;
+  --shadow:0 12px 32px #0008;
+}
+body{
+  background:
+    radial-gradient(circle at 10% 0,#152742 0,transparent 30rem),
+    radial-gradient(circle at 90% 12%,#122b25 0,transparent 28rem),
+    var(--paper);
+}
+header{border-bottom:1px solid #26354a}
+h1,h2,h3,strong{color:#f7faff}
+.lede{color:var(--muted)}
+.asof{background:#1a2940;color:#eaf3ff;border:1px solid #486382}
+[role="status"]{
+  background:#35171d!important;
+  color:#ffb9c0!important;
+  border-color:#d65b68!important;
+}
+.scope{background:#101f34;border-left-color:var(--blue);color:#c9d8eb}
+.key,.panel,.role,.step,.audit-card{background:linear-gradient(145deg,#141e2d,#0f1724);border-color:var(--line)}
+.key{color:#c4d0e1}
+.green{background:var(--green-bg);border-color:var(--green)}
+.blue{background:var(--blue-bg);border-color:var(--blue)}
+.amber{background:var(--amber-bg);border-color:var(--amber)}
+.gray{background:var(--gray-bg);border-color:var(--gray)}
+.role[data-status="pushed"],.step[data-status="pushed"]{background:linear-gradient(145deg,#123126,#0d211c)}
+.role[data-status="local"],.step[data-status="local"]{background:linear-gradient(145deg,#122d49,#0d1e32)}
+.role[data-status="gap"],.step[data-status="gap"]{background:linear-gradient(145deg,#3a2914,#261b0e)}
+.role[data-status="future"],.step[data-status="future"]{background:linear-gradient(145deg,#293341,#1c2430)}
+.role:focus-visible,.step:focus-visible,.diagram a:focus-visible,.skip:focus-visible,
+a:focus-visible,summary:focus-visible{outline:3px solid #a9d3ff;outline-offset:3px}
+.role,.step,.key{transition:border-color .16s ease,transform .16s ease,box-shadow .16s ease}
+.role:hover,.step:hover,.key:hover{border-color:#607694;box-shadow:0 14px 35px #0009;transform:translateY(-1px)}
+.pill{background:#1b293b;color:#f0f5fc;border-color:#74869f}
+.kind{background:#050912;color:#dceaff;border:1px solid #41536c}
+.authority{background:#2f2514;color:#ffe0a4;border-color:#a97826}
+.step a,.audit-card a,td a,footer a,.role a{color:#91c8ff;text-decoration-color:#4d7fae;text-underline-offset:.16em}
+.step a:hover,.audit-card a:hover,td a:hover,footer a:hover,.role a:hover{color:#c4e2ff;text-decoration-thickness:2px}
+.step p{color:#b3c0d3}
+.audit-meta{border-top-color:#415068;color:#aebbd0}
+.diagram svg{background:#0b121d;border:1px solid #28374b;border-radius:.5rem}
+.diagram text{fill:#f0f5fc}
+.diagram .small{fill:#b7c4d7}
+.diagram .arrow{stroke:#93a4ba}
+.diagram marker path{fill:#93a4ba}
+.diagram .retry{stroke:var(--danger)}
+.diagram .gapline{stroke:var(--amber)}
+.diagram rect[stroke="#2463ad"]{fill:#10253d!important;stroke:#80bcff!important}
+.diagram rect[stroke="#16794a"]{fill:#102a22!important;stroke:#62e2a6!important}
+.diagram rect[stroke="#a85d00"]{fill:#352512!important;stroke:#ffc66d!important}
+.diagram a:focus .box,.diagram a:hover .box{filter:brightness(1.2);stroke-width:4}
+th{background:#182438;color:#f5f8fd;border-bottom-color:#4a5c74}
+td{border-bottom-color:#34445a}
+tbody tr:nth-child(even){background:#101927}
+tbody tr:hover{background:#17243a}
+.tag.pushed{color:#72e9b1}.tag.local{color:#8cc5ff}.tag.gap{color:#ffd083}.tag.future{color:#c6ced9}
+code{background:#080e18;color:#dce8f8;border:1px solid #2b3a4e}
+.questions{background:linear-gradient(145deg,#2d2111,#1d170e);border-color:#8f6728}
+.noscript{background:#35171d;color:#ffd0d5;border-color:var(--danger)}
+footer{color:#99a8bd;border-top:1px solid #26354a}
+.skip:focus{background:#16243a;color:#fff;border:2px solid #91c8ff}
+::selection{background:#285d91;color:#fff}
+*{scrollbar-color:#526985 #0b121d}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .role,.step,.key{transition:none}
+}
+
+@media print{
+  :root{color-scheme:light;--ink:#172033;--muted:#4f5b6d;--paper:#fff;--card:#fff;--line:#aeb7c4;--green:#16794a;--green-bg:#e7f7ef;--blue:#2463ad;--blue-bg:#e9f2ff;--amber:#8a4b00;--amber-bg:#fff3d7;--gray:#59616d;--gray-bg:#eef0f3;--danger:#a22832;--shadow:none}
+  body{background:#fff;color:var(--ink)}
+  header,footer{border-color:#bbb}
+  h1,h2,h3,strong{color:#111827}
+  .lede,footer{color:#465265}
+  .asof{background:#172033;color:#fff;border-color:#172033}
+  [role="status"]{background:#fff1f1!important;color:#7f1721!important;border-color:#a22832!important}
+  .scope{background:#eef5ff;color:#223047;border-left-color:#2463ad}
+  .key,.panel,.role,.step,.audit-card{background:#fff;border-color:#aeb7c4;box-shadow:none}
+  .key{color:#263245}
+  .role[data-status="pushed"],.step[data-status="pushed"]{background:#e7f7ef}
+  .role[data-status="local"],.step[data-status="local"]{background:#e9f2ff}
+  .role[data-status="gap"],.step[data-status="gap"]{background:#fff3d7}
+  .role[data-status="future"],.step[data-status="future"]{background:#eef0f3}
+  .role:hover,.step:hover,.key:hover{transform:none;box-shadow:none}
+  .pill{background:#fff;color:#172033;border-color:#687386}
+  .kind{background:#172033;color:#fff;border-color:#172033}
+  .authority{background:#fff;color:#593c00;border-color:#8a631f}
+  .step p,.audit-meta{color:#3f4b5d}.audit-meta{border-top-color:#aeb7c4}
+  .step a,.audit-card a,td a,footer a,.role a{color:#111;text-decoration:none}
+  .diagram svg{background:#fff;border-color:#bbb}
+  .diagram text{fill:#172033}.diagram .small{fill:#4f5c6e}.diagram .arrow{stroke:#59667a}.diagram marker path{fill:#59667a}
+  .diagram rect[stroke="#2463ad"]{fill:#e9f2ff!important;stroke:#2463ad!important}
+  .diagram rect[stroke="#16794a"]{fill:#e7f7ef!important;stroke:#16794a!important}
+  .diagram rect[stroke="#a85d00"]{fill:#fff3d7!important;stroke:#8a4b00!important}
+  th{background:#edf0f6;color:#172033;border-color:#aeb7c4}td{border-color:#c8ced8}tbody tr:nth-child(even),tbody tr:hover{background:#fff}
+  .tag.pushed{color:#126b41}.tag.local{color:#1f5798}.tag.gap{color:#804500}.tag.future{color:#555e6a}
+  code{background:#edf0f5;color:#172033;border:0}.questions{background:#fffaf0;border-color:#b78535}.noscript{background:#fff1f1;color:#7f1721}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to flowchart</a>
+<header>
+  <span class="asof">AS OF 2026-08-13 UTC · implementation through 82c1c5b4</span>
+  <p role="status" style="display:inline-block;margin:.45rem 0 .45rem .45rem;padding:.35rem .65rem;border:2px solid #a22832;border-radius:.35rem;background:#fff1f1;color:#7f1721;font-weight:800">FLEET ROLLOUT: OFF · code published through this Auditor wrap · no daemon reload or role cutover claimed</p>
+  <h1>Session-bus task flow</h1>
+  <p class="lede">A reviewable authority and lifecycle map of the EPYC <strong>coordination system as currently built</strong>. It shows durable worker boundaries, receipt admission, independent audit, integration, session disposition, compute scheduling, and serialized wrap-up.</p>
+  <p class="scope"><strong>Scope boundary:</strong> this is governance/session coordination, not the <code>epyc-orchestrator</code> application architecture. A dashed path is a contract or planned integration, not proof that a live daemon executes it.</p>
+  <div class="grid legend" aria-label="Implementation status legend">
+    <div class="key"><span class="swatch green"></span><strong>Solid green — pushed/built code</strong><br>Published code evidence only; it does not mean reloaded, acknowledged, enabled, or live.</div>
+    <div class="key"><span class="swatch blue"></span><strong>Solid blue — local, awaiting integration</strong><br>Reserved for unpushed code. Phase 2 moved to green at <code>82c1c5b4</code>; blue remains distinct for later local work.</div>
+    <div class="key"><span class="swatch amber"></span><strong>Dashed amber — not wired</strong><br>Compute bus/role integration or receipt-driven heavy wrap.</div>
+    <div class="key"><span class="swatch gray"></span><strong>Gray — protected/future</strong><br>Policy cutover, canary rollout, or operator-ratified authority change.</div>
+  </div>
+</header>
+
+<main id="main">
+<section class="panel" aria-labelledby="roles-title">
+ <h2 id="roles-title">First-class roles and sole authorities</h2>
+ <div class="grid roles">
+  <article class="role" data-status="future" tabindex="0"><h3>coordinator-agent</h3><span class="authority">sole: route · validate · integrate</span><p>Dispatches queue work, admits pushed receipts, creates audit work, decides related/disjoint/close, and orders promotion. It does not own compute.</p><a href="../../agents/coordinator-agent.md">role contract</a></article>
+  <article class="role" data-status="future" tabindex="0"><h3>Worker mains</h3><span class="authority">sole: owned task state · lane push</span><p>Each executes assigned work and checkpoints only its own task, progress shard, artifacts, and <code>lane/&lt;agent&gt;</code>.</p><div class="mains" aria-label="Worker mains"><span class="pill">mainA</span><span class="pill">mainB</span><span class="pill">mainC</span><span class="pill">mainD</span></div><a href="../../coordination/session-bus/config.yaml">roster configuration</a></article>
+  <article class="role" data-status="future" tabindex="0"><h3>auditor</h3><span class="authority">sole: audit verdict</span><p>Reviews the exact receipt/SHA packet. Never directs the source main. Currently the heavy-wrap writer under protected policy.</p><a href="../../agents/auditor-main.md">role contract</a></article>
+  <article class="role" data-status="gap" tabindex="0"><h3>inference</h3><span class="authority">sole: window · fit · physical claim</span><p>Owns compute admission, window grade, execution/grant decision, claims, and safe drain. Compute planning exists; the bus loop is not wired.</p><a href="../../agents/inference-main.md">role contract</a></article>
+ </div>
+</section>
+
+<section class="panel diagram" aria-labelledby="map-title">
+ <h2 id="map-title">Whole-system route map</h2>
+ <svg viewBox="0 0 1420 610" role="img" aria-labelledby="svgtitle svgdesc">
+  <title id="svgtitle">Coordination task flow between coordinator, worker mains, auditor and inference</title>
+  <desc id="svgdesc">Coordinator dispatches to main A through D. Workers acknowledge, work and create pushed checkpoints. Coordinator validates receipts and sends them to Auditor. Accepted work is integrated; rework returns through Coordinator. Related work retains context, disjoint work wraps then clears, dry work closes. Compute blockers go through Inference admission, window, lease and dispatch. Major or pre-reboot cuts request an Auditor heavy wrap.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#59667a"/></marker></defs>
+  <path class="arrow" d="M215 105H285"/><path class="arrow" d="M490 105H560"/><path class="arrow" d="M765 105H835"/><path class="arrow" d="M1040 105H1110"/>
+  <path class="arrow" d="M1210 165V245H1038"/><path class="arrow" d="M835 305H765"/><path class="arrow retry" d="M665 365V425H390V165"/>
+  <path class="arrow" d="M935 365V440H1120"/><path class="arrow" d="M1210 500V550H215"/>
+  <path class="arrow gapline" d="M665 165V510H835"/><path class="arrow gapline" d="M1040 510H1110"/>
+  <path class="arrow gapline" d="M1210 550V395H1325V165"/>
+  <a href="#status-table" tabindex="0"><rect class="box" x="10" y="45" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="25" y="78" class="title">Coordinator</text><text x="25" y="103" class="small">task-assign · sole author</text><text x="25" y="125" class="small">queue owner + lease owner</text><text x="25" y="147" class="small">validate, route, integrate</text></a>
+  <a href="#worker-flow" tabindex="0"><rect class="box" x="285" y="45" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="300" y="76" class="title">mainA · mainB</text><text x="300" y="98" class="title">mainC · mainD</text><text x="300" y="123" class="small">ack → work → checkpoint</text><text x="300" y="145" class="small">sole authors of lane state</text></a>
+  <a href="#worker-flow" tabindex="0"><rect class="box" x="560" y="45" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="575" y="78" class="title">Pushed boundary</text><text x="575" y="103" class="small">task-checkpoint</text><text x="575" y="125" class="small">idempotent receipt + SHA</text><text x="575" y="147" class="small">or recover missing suffix</text></a>
+  <a href="#audit-loop" tabindex="0"><rect class="box" x="835" y="45" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="850" y="78" class="title">Receipt admission</text><text x="850" y="103" class="small">Coordinator daemon</text><text x="850" y="125" class="small">fail closed; quarantine defect</text><text x="850" y="147" class="small">→ one audit-request</text></a>
+  <a href="#audit-loop" tabindex="0"><rect class="box" x="1110" y="45" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="1125" y="78" class="title">Auditor review</text><text x="1125" y="103" class="small">audit-request / audit-verdict</text><text x="1125" y="125" class="small">exact SHA + evidence</text><text x="1125" y="147" class="small">sole verdict authority</text></a>
+  <a href="#audit-loop" tabindex="0"><rect class="box" x="835" y="245" width="205" height="120" fill="#e7f7ef" stroke="#16794a"/><text x="850" y="278" class="title">Coordinator disposition</text><text x="850" y="303" class="small">accept → integration-ready</text><text x="850" y="325" class="small">rework → ordinary backlog</text><text x="850" y="347" class="small">evidence → source, proof only</text></a>
+  <a href="#session-paths" tabindex="0"><rect class="box" x="560" y="245" width="205" height="120" fill="#eef0f3" stroke="#6d7480"/><text x="575" y="278" class="title">Durable boundary</text><text x="575" y="303" class="small">related → retain context</text><text x="575" y="325" class="small">disjoint → wrap, clear, brief</text><text x="575" y="347" class="small">dry → recheck then close</text></a>
+  <a href="#compute-flow" tabindex="0"><rect class="box" x="835" y="450" width="205" height="120" fill="#fff3d7" stroke="#a85d00" stroke-dasharray="7 5"/><text x="850" y="481" class="title">Compute candidate</text><text x="850" y="506" class="small">compute-blocker + intake</text><text x="850" y="528" class="small">projection/ranking core built</text><text x="850" y="550" class="small">bus producer not wired</text></a>
+  <a href="#compute-flow" tabindex="0"><rect class="box" x="1110" y="450" width="205" height="120" fill="#fff3d7" stroke="#a85d00" stroke-dasharray="7 5"/><text x="1125" y="481" class="title">Inference execution gate</text><text x="1125" y="506" class="small">window → plan → lease</text><text x="1125" y="528" class="small">physical claim → dispatch</text><text x="1125" y="550" class="small">drain → terminal/release</text></a>
+  <a href="#wrap-flow" tabindex="0"><rect class="box" x="10" y="490" width="205" height="100" fill="#fff3d7" stroke="#a85d00" stroke-dasharray="7 5"/><text x="25" y="521" class="title">Immutable cut / barrier</text><text x="25" y="546" class="small">major checkpoint: async</text><text x="25" y="568" class="small">pre-reboot: synchronous</text></a>
+ </svg>
+</section>
+
+<section id="worker-flow" class="panel" aria-labelledby="worker-title">
+ <h2 id="worker-title">1 · Dispatch, work, checkpoint, and recovery</h2>
+ <div class="flow">
+  <article class="step" data-status="pushed" tabindex="0"><h3>Queue &amp; dispatch</h3><span class="kind">task-assign</span><span class="authority">Coordinator only</span><p>Exact task text is identity; lease and typed constraints accompany assignment.</p><div class="audit-meta"><b>Trigger</b> queue row becomes compatible/ready<br><a href="../../agents/coordinator-agent.md">authority</a> · <a href="../../scripts/coordination/session_bus.py">writer checks</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Acknowledge</h3><span class="kind">ack / corr_id</span><span class="authority">assigned worker</span><p>Receipt acknowledges delivery; action-required items remain visible until dispositioned.</p><div class="audit-meta"><b>Trigger</b> inbox drain<br><a href="../../coordination/session-bus/BUS_PROTOCOL.md">bus protocol</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Work</h3><span class="kind">heartbeat</span><span class="authority">worker</span><p>Mutate only owned task/artifact surfaces; refresh liveness at boundaries.</p><div class="audit-meta"><b>Failure</b> blocker must name owner/event, proof, attempts, resume action</div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Checkpoint engine</h3><span class="kind">local command</span><span class="authority">worker</span><p>Resolve task → update checkbox/progress → validate → exact commit → lane push.</p><div class="audit-meta"><b>Trigger</b> completed, non-movable blocker, or pre-reboot<br><a href="../../scripts/coordination/worker_checkpoint.py">implementation</a> · <a href="../../tests/coordination/test_worker_checkpoint.py">tests</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Boundary receipt</h3><span class="kind">task-checkpoint</span><span class="authority">source worker</span><p>Immutable pushed SHA, paths, validations, outcome, next-context, and stable boundary ID.</p><div class="audit-meta"><b>Trigger</b> push succeeds; never before<br><a href="../../coordination/session-bus/session_bus.schema.json">schema</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Admission</h3><span class="kind">assign fold</span><span class="authority">Coordinator daemon</span><p>Verify roster, owner, task identity, branch/ref, reachable SHA, exact paths, and committed evidence.</p><div class="audit-meta"><b>Failure</b> quarantine as defect; create no audit/integration state<br><a href="../../scripts/coordination/session_bus_coordinator.py">validator/fold</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Retry suffix</h3><span class="kind">checkpoint state</span><span class="authority">same worker</span><p>Validation/commit/push/emit failure preserves the completed prefix. Retry is idempotent and cannot authorize clear/close.</p><div class="audit-meta"><b>Recovery</b> same boundary ID returns receipt or executes only missing suffix</div></article>
+ </div>
+</section>
+
+<section id="audit-loop" class="panel" aria-labelledby="audit-title">
+ <h2 id="audit-title">2 · Independent audit, integration, and correction loop</h2>
+ <div class="flow">
+  <article class="step" data-status="pushed" tabindex="0"><h3>Create audit</h3><span class="kind">audit-request</span><span class="authority">Coordinator authority</span><p>Exactly one deterministic row per accepted checkpoint/correlation.</p><div class="audit-meta"><b>To</b> auditor only<br><a href="../../scripts/coordination/session_bus_coordinator.py">row builder</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Review packet</h3><span class="kind">audit-request</span><span class="authority">auditor</span><p>Inspect exact commit, diff, tests, artifacts, premise and evidence—not the completion claim alone.</p><div class="audit-meta"><a href="../../agents/auditor-main.md">audit contract</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Verdict</h3><span class="kind">audit-verdict</span><span class="authority">auditor only</span><p><code>accept</code>, <code>accept-with-followups</code>, <code>needs-rework</code>, or <code>blocked-evidence</code>.</p><div class="audit-meta"><b>Forbidden</b> route/CC the source main; Coordinator owns requeue<br><a href="../../scripts/coordination/session_bus.py">authoring checks</a></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Accept</h3><span class="kind">checkpoint-integration-ready</span><span class="authority">daemon → Coordinator</span><p>Only accepted verdicts make the exact audited SHA eligible for lane integration.</p><div class="audit-meta"><b>Trigger</b> linked verdict + matching SHA/correlation</div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Needs rework</h3><span class="kind">STALE_REQUEUED</span><span class="authority">Coordinator</span><p>Findings return to ordinary owned backlog work; fresh routing chooses a worker.</p><div class="audit-meta"><b>No direct Auditor→worker control edge</b></div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Evidence blocked</h3><span class="kind">audit-request</span><span class="authority">daemon</span><p>Source receives an <em>evidence-only</em> request. It must not be converted into implementation rework.</p><div class="audit-meta"><b>Loop</b> new proof → linked verdict</div></article>
+  <article class="step" data-status="pushed" tabindex="0"><h3>Integrate</h3><span class="kind">promotion</span><span class="authority">Coordinator only</span><p>Promote exact reviewed commit in ordered lane integration. Follow-up rows remain Auditor-owned facts routed normally.</p><div class="audit-meta"><b>Result</b> durable boundary</div></article>
+ </div>
+</section>
+
+<section id="session-paths" class="panel" aria-labelledby="session-title">
+ <h2 id="session-title">3 · Related, disjoint, dry/close, and erroneous clear</h2>
+ <div class="branch">
+  <article class="step" data-status="future"><h3>Related next task</h3><span class="authority">Coordinator decides</span><p>After durable boundary, dispatch directly and retain useful context. No wrap and no <code>/clear</code>.</p></article>
+  <article class="step" data-status="future"><h3>Disjoint next task</h3><span class="authority">Coordinator decides</span><p>Complete wrap first, send <code>/clear</code> alone, confirm it landed, then send a self-contained brief. Never combine clear and instruction.</p><a href="../../agents/shared/SESSION_LIFECYCLE.md">lifecycle rule</a></article>
+  <article class="step" data-status="future"><h3>Genuinely dry</h3><span class="kind">dry report</span><span class="authority">worker reports; Coordinator verifies</span><p>Coordinator rechecks the queue. Dispatch if work exists; otherwise send close. Worker cannot decide fleet-wide dryness.</p></article>
+  <article class="step" data-status="future"><h3>Clear mistake recovery</h3><span class="kind">codex resume</span><span class="authority">Coordinator</span><p>Use the printed session ID to resume rather than rediscover. Clear/close before an accepted receipt is refused.</p></article>
+ </div>
+</section>
+
+<section id="compute-flow" class="panel" aria-labelledby="compute-title">
+ <h2 id="compute-title">4 · Compute blocker, graded window, lease, and execution</h2>
+ <div class="flow">
+  <article class="step" data-status="gap"><h3>Typed blocker</h3><span class="kind">compute-blocker</span><span class="authority">Coordinator forwards</span><p>Derived from a validated task checkpoint with resource/model/weight/bandwidth/VRAM/duration/contention needs.</p></article>
+  <article class="step" data-status="gap"><h3>Inference intake</h3><span class="kind">intake-disposition</span><span class="authority">Inference only</span><p><code>submitted → admitted|duplicate|needs-info|rejected → ready</code>. Append-only, reasoned, evidence-bound.</p></article>
+  <article class="step" data-status="gap"><h3>Window</h3><span class="kind">compute-window</span><span class="authority">Inference only</span><p>Exact compatibility label: small-model-only, load-then-keep-hot, or full-idle. Grade is not an ordering.</p></article>
+  <article class="step" data-status="pushed"><h3>Projection &amp; plan</h3><span class="kind">pure replay</span><span class="authority">derived read-only</span><p>Pinned graph hash, expiry/resources, same-weight grouping, typed exclusions, stable leverage rank and output hash.</p><a href="../../scripts/coordination/compute_ready.py">planner core</a> · <a href="../../tests/coordination/test_compute_ready.py">tests</a></article>
+  <article class="step" data-status="gap"><h3>Grant / deny</h3><span class="kind">resource-lease-*</span><span class="authority">Inference only</span><p>Window is advisory: it never substitutes for typed resource lease or physical claim.</p><a href="../../agents/inference-main.md">resource authority</a></article>
+  <article class="step" data-status="gap"><h3>Finite dispatch</h3><span class="kind">task-assign</span><span class="authority">Coordinator ranks/routes</span><p>Dispatch includes selected batch, rank evidence, window ID, and lease path. Inference owns final fit/execute choice.</p></article>
+  <article class="step" data-status="gap"><h3>Run &amp; drain</h3><span class="kind">physical claim receipts</span><span class="authority">Inference</span><p><code>granted → running → terminal</code>; prove physical use, drain safely, close claim and release lease. Failure stays reconstructible.</p></article>
+ </div>
+</section>
+
+<section id="wrap-flow" class="panel" aria-labelledby="wrap-title">
+ <h2 id="wrap-title">5 · Auditor immutable-cut heavy wrap and pre-reboot barrier</h2>
+ <div class="flow">
+  <article class="step" data-status="gap"><h3>Freeze cut</h3><span class="kind">wrapup-request</span><span class="authority">Coordinator only</span><p>Reason, sync mode, accepted checkpoint IDs/cutoff, and integrated main SHA. Late receipts go to the next cut.</p></article>
+  <article class="step" data-status="pushed"><h3>Acquire operation lease</h3><span class="kind">serialized_push</span><span class="authority">designated writer</span><p>Opaque mode-0600 token, common-git-dir contention, no auto-expiry; audited force-release for proven residue.</p><a href="../../scripts/coordination/serialized_push.py">lease</a> · <a href="../../agents/commands/wrap-up.md">command</a></article>
+  <article class="step" data-status="gap"><h3>Reconcile immutable cut</h3><span class="authority">Auditor writer</span><p>Sync integrated main, account for every included/excluded receipt, and never rewrite worker-owned completion state.</p></article>
+  <article class="step" data-status="gap"><h3>Shared docs transaction</h3><span class="authority">Auditor writer</span><p>Follow-ups → compact handoffs → domain indices → generated state → docs/freshness → wiki as final content mutation.</p></article>
+  <article class="step" data-status="gap"><h3>Publish packet</h3><span class="kind">wrapup-complete</span><span class="authority">Auditor → Coordinator</span><p>Exact paths, push Auditor lane, promote, verify main, report hashes/validations/watermark, then trap-release.</p></article>
+  <article class="step" data-status="gap"><h3>Async failure</h3><span class="authority">Coordinator retries</span><p>Major-checkpoint wrap stays queued; workers continue. Never silently widen or replace its cut.</p></article>
+  <article class="step" data-status="gap"><h3>Pre-reboot failure</h3><span class="authority">Coordinator barrier</span><p>All roster checkpoints + Inference drain + one synchronized heavy wrap are mandatory. Any missing receipt, claim, promotion, watermark, or wrap keeps reboot closed.</p></article>
+ </div>
+</section>
+
+<section class="grid two" aria-label="Audit controls">
+ <article class="panel"><h2>Mutation invariants</h2><ul>
+  <li>Worker mutates only its source task, artifacts, per-agent progress shard, and lane commit/push.</li>
+  <li>Coordinator alone accepts receipts, chooses integration order, promotes, clears, closes, and dispatches follow-ons.</li>
+  <li>Auditor alone authors verdicts; it never directs the originating worker.</li>
+  <li>Inference alone authors intake dispositions/windows and owns compatibility, leases, claims, and safe drain.</li>
+  <li>One leased heavy-wrap writer mutates shared handoff/index/generated/wiki surfaces.</li>
+  <li>Derived projections are regenerated from authoritative append-only inputs; humans/workers never edit them.</li>
+ </ul></article>
+ <article class="panel"><h2>Forbidden transitions</h2><ul class="forbidden">
+  <li>No clear, close, promotion, or completion claim before a valid durable checkpoint receipt.</li>
+  <li>No audit or integration state from a quarantined/invalid receipt.</li>
+  <li>No <code>ready → running</code> compute shortcut: planning, lease, grant, and physical claim are mandatory.</li>
+  <li>No Coordinator-authored compute window or Auditor-authored worker requeue.</li>
+  <li>No direct Auditor → source-main instruction edge.</li>
+  <li>No auto-expiry or same-roster reclaim of a long-lived wrap lease without its operation token.</li>
+  <li>No reboot-ready state while any roster receipt, physical claim, promotion, wiki watermark, or wrap receipt is missing.</li>
+ </ul></article>
+</section>
+
+<section class="panel" aria-labelledby="status-title">
+ <h2 id="status-title">Implementation evidence and status registry</h2>
+ <p>This table is rendered from the single <code>STATUS</code> object at the bottom of this file. Diagram elements reference the same four status keys via <code>data-status</code>. The cited commits are published by this Auditor wrap; publication is not runtime activation.</p>
+ <noscript><p class="noscript">JavaScript is disabled. Flow colors remain visible, but the evidence registry table cannot be rendered.</p></noscript>
+ <div style="overflow:auto"><table id="status-table"><thead><tr><th>Area</th><th>Status</th><th>Evidence</th><th>Audit reading</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section class="panel questions" aria-labelledby="gaps-title">
+ <h2 id="gaps-title">Known gaps / audit questions</h2>
+ <ol>
+  <li><strong>Publication versus deployment:</strong> the checkpoint engine, canonical publication, closed bus schemas, receipt admission, audit fold, and integration-ready path are published at <code>82c1c5b4</code>. A live daemon reload and instruction acknowledgment are still separate evidence; a commit alone does not prove process cutover.</li>
+  <li><strong>Compute producers:</strong> the deterministic planner is pushed, but no live bus relay creates intake/window records or writes the generated projection. Who invokes it, where its append-only inputs live, and how Inference acknowledges instruction SHA remain open integration work.</li>
+  <li><strong>Resource claim provider:</strong> delegated GPU grants remain disabled until a general provider is named and enabled. Confirm open/close receipt semantics before canary.</li>
+  <li><strong>Receipt-driven heavy wrap:</strong> typed <code>wrapup-request</code>/<code>wrapup-complete</code> schema exists locally; no end-to-end immutable-cut executor currently replaces the manual wrap routine.</li>
+  <li><strong>Authority cutover:</strong> protected policy/role changes and any narrow subagent writer exception require operator ratification. Until then, Auditor main remains the writer and subagents are read-only.</li>
+  <li><strong>Live refresh:</strong> after merge, prove daemon reload and obtain every role's instruction acknowledgment before moving <code>off → shadow → enforce</code>.</li>
+  <li><strong>Negative controls:</strong> acceptance must prove unsafe cases fail for the intended reason: invalid receipt creates no audit, unleased wrap collides, wrong compute grade excludes, and pre-reboot missing coverage holds the barrier.</li>
+ </ol>
+</section>
+</main>
+
+<footer>Review surface: <a href="../../coordination/session-bus/BUS_PROTOCOL.md">BUS_PROTOCOL</a> · <a href="../../agents/shared/SESSION_LIFECYCLE.md">SESSION_LIFECYCLE</a> · <a href="../../agents/commands/wrap-up.md">wrap-up command</a>. This document deliberately makes no claim about application-orchestrator services.</footer>
+<script>
+const STATUS = Object.freeze({
+  deployment: {rollout:"off", publishedBy:"Auditor wrap promotion", promotedToOriginMain:true, daemonReloadProven:false, roleAcknowledgmentsProven:false},
+  pushed: {label:"Pushed / built", css:"pushed"},
+  local: {label:"Implemented locally; awaiting integration", css:"local"},
+  gap: {label:"Not yet wired", css:"gap"},
+  future: {label:"Protected policy / canary future", css:"future"},
+  evidence: [
+    {area:"Fleet deployment state",status:"future",evidence:"rollout=off; code publication=true; reload=false; acknowledgments=false",reading:"Nothing green on this page is represented as live fleet behavior."},
+    {area:"Phase 1 · autonomous writer removal",status:"pushed",evidence:"60187101 — fix: keep worker hooks off wrap-owned state",reading:"Safety repair published; runtime use is not claimed."},
+    {area:"Phase 1 · progress currency",status:"pushed",evidence:"20640d55 — fix: validate receipt-bound progress shards",reading:"Receipt-bound per-agent progress support published."},
+    {area:"Phase 1 · wrap lease",status:"pushed",evidence:"8ff5162c — fix: bind wrap leases to operation tokens",reading:"Token hardening and documented command path published."},
+    {area:"Phase 3 · compute planner core",status:"pushed",evidence:"7623e37c — feat: add replayable compute-ready planner",reading:"Pure projection/rank/check CLI published; live bus producer intentionally absent."},
+    {area:"Phase 2 · checkpoint + canonical bus lifecycle",status:"pushed",evidence:"82c1c5b4 — checkpoint engine + bus publication/admission/audit/verdict/integration-ready",reading:"Built and published; daemon reload, role acknowledgment, and enforcement remain unproven."},
+    {area:"Compute bus and role integration",status:"gap",evidence:"No live compute_ready.json or intake/window relay",reading:"Planner success is not an end-to-end compute workflow."},
+    {area:"Receipt-driven immutable-cut wrap",status:"gap",evidence:"Typed lifecycle locally specified; manual wrap remains current execution surface",reading:"Lease is real; automatic cut reconciliation/publish loop is not."},
+    {area:"Fleet enforcement",status:"future",evidence:"Protected policy + instruction acknowledgment + canary required",reading:"Do not infer authority cutover from local code."}
+  ]
+});
+const tbody=document.querySelector("#status-table tbody");
+for(const row of STATUS.evidence){const tr=document.createElement("tr");const s=STATUS[row.status];tr.innerHTML=`<td>${row.area}</td><td><span class="tag ${s.css}">${s.label}</span></td><td><code>${row.evidence}</code></td><td>${row.reading}</td>`;tbody.appendChild(tr)}
+</script>
+</body>
+</html>

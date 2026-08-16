@@ -63,6 +63,8 @@
 | INF-57 | v7 promotion | [v7-promotion.md](v7-promotion.md) | Move to completed/ — the v7 cutover closed and is twice superseded (v8, v9); relink the 14 active handoffs citing it | — |
 | INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback | INF-11 |
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
+| INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap: point architect_general/coder_escalation model_path at Qwen3.8-27B, then re-verify the pinned CPU bench | — |
+| INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Add Qwen3.8-27B as the new stock-27B arm in the GPU Candidates HTML (throughput ✅, prefill/RAG/MTP pending; coding ladder operator-declined) | INF-60 |
 
 ## Cross-domain
 
