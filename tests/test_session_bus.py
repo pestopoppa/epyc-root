@@ -230,7 +230,8 @@ def test_c27_task_complete_is_skipped_again_once_its_handler_runs(bus_root: Path
 
     assert advisory == []
     assert _read_jsonl(bus_root / "inbox" / "bob.jsonl") == []
-    assert coordinator.no_relay_kinds("assign") == {"token-request", "task-complete"}
+    assert coordinator.no_relay_kinds("assign") == {
+        "token-request", "task-complete", "task-checkpoint", "audit-verdict"}
     assert coordinator.no_relay_kinds("manual") == {"token-request"}
 
 
@@ -3318,95 +3319,180 @@ def _git_repo(tmp_path: Path, commit_iso: str) -> Path:
     return root
 
 
-def test_r2_fails_closed_when_git_cannot_be_read(bus_root: Path, tmp_path: Path) -> None:
-    """Silent-pass path 1. An unreadable git is NOT 'no commits' — reporting it as
-    clean is precisely the fail-open this was built to avoid."""
-    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=tmp_path / "not-a-repo")
-    assert len(rows) == 1
-    assert rows[0]["check"] == "progress-log-check-skipped"
-    assert rows[0]["kind"] == "defect", "must be a defect kind — that is what reaches the operator"
+def _checkpoint_repo(tmp_path: Path, bus_root: Path, *, agent: str = "alice",
+                     progress_agent: str | None = None, unsuffixed: bool = False,
+                     push_checkpoint: bool = True) -> tuple[Path, dict, Path]:
+    """Create one real lane/remote checkpoint; the receipt is schema-ahead Phase 1 input."""
+    import subprocess as sp
+
+    completed = datetime.now(timezone.utc).replace(microsecond=0)
+    root = _git_repo(tmp_path, (completed - timedelta(hours=1)).isoformat())
+    remote = tmp_path / "remote.git"
+    sp.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+    sp.run(["git", "-C", str(root), "remote", "add", "origin", str(remote)], check=True)
+    sp.run(["git", "-C", str(root), "push", "-q", "-u", "origin", "HEAD:main"], check=True)
+    sp.run(["git", "-C", str(root), "checkout", "-q", "-b", f"lane/{agent}"], check=True)
+    # Establish the remote lane before the checkpoint commit.  The unpushed-SHA
+    # control therefore distinguishes "ref absent" from "commit not reachable".
+    sp.run(["git", "-C", str(root), "push", "-q", "-u", "origin", f"lane/{agent}"],
+           check=True)
+
+    shard_agent = progress_agent or agent
+    progress_rel = (f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}.md" if unsuffixed else
+                    f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-{shard_agent}.md")
+    progress = root / progress_rel
+    progress.parent.mkdir(parents=True, exist_ok=True)
+    boundary_id = f"{agent}:task-1:1"
+    task_text = "Implement receipt-bound checkpoint lifecycle"
+    handoff_rel = "handoffs/active/checkpoint-lifecycle.md"
+    handoff = root / handoff_rel
+    handoff.parent.mkdir(parents=True, exist_ok=True)
+    progress.write_text(f"# checkpoint\n\nboundary_id: {boundary_id}\n", encoding="utf-8")
+    handoff.write_text(f"- [x] {task_text}\n", encoding="utf-8")
+    sp.run(["git", "-C", str(root), "add", progress_rel, handoff_rel], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "checkpoint"], check=True,
+           env={**os.environ, "GIT_AUTHOR_DATE": completed.isoformat(),
+                "GIT_COMMITTER_DATE": completed.isoformat()})
+    sha = sp.run(["git", "-C", str(root), "rev-parse", "HEAD"], check=True,
+                 capture_output=True, text=True).stdout.strip()
+    if push_checkpoint:
+        sp.run(["git", "-C", str(root), "push", "-q", "origin", f"lane/{agent}"], check=True)
+
+    receipt = {
+        "schema_version": bus.MSG_SCHEMA_VERSION,
+        "id": f"msg-{completed:%Y%m%dT%H%M%SZ}-1-{agent}",
+        "ts": completed.isoformat(),
+        "from": agent,
+        "to": "coordinator-agent",
+        "kind": "task-checkpoint",
+        "task_id": "task-1",
+        "payload": {
+            "boundary_id": boundary_id,
+            "outcome": "completed",
+            "boundary_reason": "task-boundary",
+            "task_id": "task-1",
+            "task_text": task_text,
+            "spec_ref": handoff_rel,
+            "agent": agent,
+            "completed_at": completed.isoformat(),
+            "branch": f"lane/{agent}",
+            "commit_sha": sha,
+            "pushed_ref": f"refs/remotes/origin/lane/{agent}",
+            "progress_path": progress_rel,
+            "handoff_paths": [handoff_rel],
+            "artifact_paths": [],
+            "changed_paths": [progress_rel, handoff_rel],
+            "checkbox_flips": [{"task_text": task_text, "before": "open", "after": "done"}],
+            "new_tasks": [],
+            "validation": [{"command": ["true"], "exit_code": 0,
+                            "evidence_ref": progress_rel}],
+            "next_context": "related",
+            "major_checkpoint": False,
+            "completion_msg_id": None,
+        },
+    }
+    _append(bus_root / "outbox" / f"{agent}.jsonl", receipt)
+    return root, receipt, progress
+
+
+def test_rtg51_progress_accepts_receipt_bound_per_agent_shard(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root)
+    assert coordinator.progress_log_currency(bus_root, 14, repo_root=root) == []
+
+
+def test_rtg51_progress_rejects_unsuffixed_historical_file_as_receipt_evidence(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "unsuffixed" in rows[0]["detail"] and "historical/read-only" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_peer_shard(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, progress_agent="bob")
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "peer shards" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_local_only_checkpoint_sha(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, _progress = _checkpoint_repo(
+        tmp_path, bus_root, push_checkpoint=False)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "not reachable" in rows[0]["detail"] and "local-only SHA" in rows[0]["detail"]
+
+
+def test_rtg51_progress_rejects_remote_edit_after_receipt(
+        bus_root: Path, tmp_path: Path) -> None:
+    import subprocess as sp
+
+    root, receipt, progress = _checkpoint_repo(tmp_path, bus_root)
+    progress.write_text(progress.read_text(encoding="utf-8") + "post-receipt edit\n",
+                        encoding="utf-8")
+    progress_rel = receipt["payload"]["progress_path"]
+    sp.run(["git", "-C", str(root), "add", progress_rel], check=True)
+    sp.run(["git", "-C", str(root), "commit", "-q", "-m", "edit after receipt"], check=True)
+    sp.run(["git", "-C", str(root), "push", "-q", "origin", "lane/alice"], check=True)
+
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "changed" in rows[0]["detail"] and "newer checkpoint receipt" in rows[0]["detail"]
+
+
+def test_rtg51_progress_no_receipt_no_boundary_is_clean_even_with_a_commit(
+        bus_root: Path, tmp_path: Path) -> None:
+    """A repository commit is not a task boundary and may belong to a peer lane."""
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    root = _git_repo(tmp_path, now.isoformat())
+    assert coordinator.progress_log_currency(bus_root, 14, repo_root=root) == []
+
+
+@pytest.mark.parametrize(("field", "value"), [
+    ("schema_version", "session_bus.msg.v0"),
+    ("to", "bob"),
+])
+def test_rtg51_progress_rejects_raw_rows_without_minimal_receipt_envelope(
+        bus_root: Path, tmp_path: Path, field: str, value: str) -> None:
+    root, receipt, _progress = _checkpoint_repo(tmp_path, bus_root)
+    receipt[field] = value
+    (bus_root / "outbox" / "alice.jsonl").write_text(
+        json.dumps(receipt) + "\n", encoding="utf-8")
+
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
+    assert "invalid receipt envelope" in rows[0]["detail"]
+    assert field in rows[0]["detail"]
+
+
+def test_rtg51_progress_fails_closed_when_receipt_git_cannot_be_read(
+        bus_root: Path, tmp_path: Path) -> None:
+    completed = datetime.now(timezone.utc).replace(microsecond=0)
+    agent = "alice"
+    _append(bus_root / "outbox" / f"{agent}.jsonl", {
+        "schema_version": bus.MSG_SCHEMA_VERSION,
+        "id": f"msg-{completed:%Y%m%dT%H%M%SZ}-1-{agent}", "ts": completed.isoformat(),
+        "from": agent, "to": "coordinator-agent", "kind": "task-checkpoint",
+        "payload": {"boundary_id": "alice:task-1:1", "agent": agent,
+                    "completed_at": completed.isoformat(), "branch": "lane/alice",
+                    "commit_sha": "a" * 40,
+                    "pushed_ref": "refs/remotes/origin/lane/alice",
+                    "progress_path": f"progress/{completed:%Y-%m}/{completed:%Y-%m-%d}-alice.md"}})
+    rows = coordinator.progress_log_currency(
+        bus_root, 14, repo_root=tmp_path / "not-a-repo")
+    assert len(rows) == 1 and rows[0]["check"] == "progress-log-check-skipped"
     assert "not a clean one" in rows[0]["detail"]
 
 
-def test_r2_fails_closed_when_the_progress_directory_is_missing(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Silent-pass path 2. A missing directory is a LOUDER defect than a stale file,
-    not a quieter one."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", tmp_path / "absent")
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert "does not exist" in rows[0]["detail"]
-
-
-def test_r2_fails_closed_when_todays_file_is_missing(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Silent-pass path 3, and the one most likely to be written wrong: an absent
-    file is the DEFECT, never 'nothing due'."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert "does not exist" in rows[0]["detail"] and "not\n" not in rows[0]["detail"]
-
-
-def test_r2_flags_commits_that_landed_after_the_last_entry(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The defect itself: work landing while the log stands still."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    stamp = datetime.fromtimestamp(now, timezone.utc)
-    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
-    entry.parent.mkdir(parents=True)
-    entry.write_text("# today\n", encoding="utf-8")
-    old = now - 6 * 3600
-    os.utime(entry, (old, old))
-
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert len(rows) == 1 and rows[0]["check"] == "progress-log-stale"
-    assert rows[0]["stale_h"] >= 4.0
-    assert "reads to the operator as a day where nothing happened" in rows[0]["detail"]
-
-
-def test_r2_is_silent_when_the_log_is_current(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The compliant path. A check that fires on a well-run day trains the reader to
-    ignore it, which is how the real one gets missed."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 3600, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    stamp = datetime.fromtimestamp(now, timezone.utc)
-    entry = root / "progress" / f"{stamp:%Y-%m}" / f"{stamp:%Y-%m-%d}.md"
-    entry.parent.mkdir(parents=True)
-    entry.write_text("# today\n", encoding="utf-8")     # written now, after the commit
-
-    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
-
-
-def test_r2_is_silent_on_a_day_with_no_commits(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The ONE clean exit, and it is keyed on POSITIVE evidence — a commit timestamp
-    older than today — never on something being unreadable. Nothing is owed for a day
-    nobody worked."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now - 4 * 86400, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    assert coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root) == []
-
-
-def test_r2_never_writes_the_thing_it_checks(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A checker that fixes what it checks for cannot be trusted to report — the rule
-    --audit-guards and backfill-receipts --check already follow."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
-    before = sorted(p.name for p in (root / "progress").rglob("*"))
-    coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
-    assert sorted(p.name for p in (root / "progress").rglob("*")) == before
+def test_rtg51_progress_never_writes_the_evidence_it_checks(
+        bus_root: Path, tmp_path: Path) -> None:
+    root, _receipt, progress = _checkpoint_repo(tmp_path, bus_root)
+    before = progress.read_bytes()
+    coordinator.progress_log_currency(bus_root, 14, repo_root=root)
+    assert progress.read_bytes() == before
 
 
 def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
@@ -3417,7 +3503,7 @@ def test_r2_defect_kind_reaches_the_operator_path_without_new_code() -> None:
 
 
 def test_r2_delivers_into_an_inbox_not_only_advisory(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        bus_root: Path, tmp_path: Path) -> None:
     """R2 CORRECTION, same day, caught by the operator. This first shipped emitting
     the advisory row only, reasoning that `defect` is in _OPERATOR_ITEM_KINDS and
     would reach token-queue.md on the C20 timer for free. Wrong: `_is_operator_item`
@@ -3426,47 +3512,79 @@ def test_r2_delivers_into_an_inbox_not_only_advisory(
     while building this.
     """
     _provision(bus_root, "alice", "coordinator-agent")
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
 
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
     assert rows and rows[0]["check"] == "progress-log-stale"
 
     notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                if (r.get("payload") or {}).get("event") == "progress-log-stale"]
     assert notices, "the defect must reach a queue somebody drains"
-    assert "invisible to the operator" in notices[0]["payload"]["action"]
+    assert "committed progress evidence" in notices[0]["payload"]["action"]
+    assert "emit a new receipt" in notices[0]["payload"]["action"]
+    assert notices[0]["payload"]["agent"] == "alice"
+    assert notices[0]["payload"]["receipt_id"] == receipt["id"]
+    assert rows[0]["boundary_id"] == receipt["payload"]["boundary_id"]
 
 
 def test_r2_does_not_re_deliver_the_same_day_every_tick(
-        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A 45s tick must not turn a true finding into the advisory flood C34 measured.
-    Deduped against the coordinator's own inbox — the notice's durable trace."""
+        bus_root: Path, tmp_path: Path) -> None:
+    """One receipt repeating on a 45s tick remains one durable notice."""
     _provision(bus_root, "alice", "coordinator-agent")
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
 
     for _ in range(5):
-        coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+        coordinator.progress_log_currency(bus_root, 14, repo_root=root)
 
     notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
                if (r.get("payload") or {}).get("event") == "progress-log-stale"]
-    assert len(notices) == 1, f"one notice per day, got {len(notices)}"
+    assert len(notices) == 1, f"one notice per receipt, got {len(notices)}"
+
+
+def test_rtg51_progress_delivers_two_agents_same_day_and_dedupes_each_receipt(
+        bus_root: Path, tmp_path: Path) -> None:
+    """Day-level dedupe hid the second worker's distinct broken checkpoint."""
+    _provision(bus_root, "alice", "bob", "coordinator-agent")
+    alice_root, alice_receipt, _ = _checkpoint_repo(
+        tmp_path / "alice", bus_root, agent="alice", unsuffixed=True)
+    bob_root, bob_receipt, _ = _checkpoint_repo(
+        tmp_path / "bob", bus_root, agent="bob", unsuffixed=True)
+
+    # Both repos contain both outbox receipts, but each remote exists in only one
+    # fixture.  Validate once against each repository with the peer receipt hidden;
+    # then repeat both calls to exercise stable per-receipt dedupe.
+    alice_outbox = bus_root / "outbox" / "alice.jsonl"
+    bob_outbox = bus_root / "outbox" / "bob.jsonl"
+    bob_saved = bob_outbox.read_bytes()
+    bob_outbox.write_bytes(b"")
+    for _ in range(3):
+        coordinator.progress_log_currency(bus_root, 14, repo_root=alice_root)
+    bob_outbox.write_bytes(bob_saved)
+    alice_saved = alice_outbox.read_bytes()
+    alice_outbox.write_bytes(b"")
+    for _ in range(3):
+        coordinator.progress_log_currency(bus_root, 14, repo_root=bob_root)
+    alice_outbox.write_bytes(alice_saved)
+
+    notices = [r for r in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+               if (r.get("payload") or {}).get("event") == "progress-log-stale"]
+    assert len(notices) == 2
+    payloads = [row["payload"] for row in notices]
+    assert {p["agent"] for p in payloads} == {"alice", "bob"}
+    assert {p["receipt_id"] for p in payloads} == {alice_receipt["id"], bob_receipt["id"]}
+    assert len({p["dedupe_key"] for p in payloads}) == 2
+    assert all("emit a new receipt" in p["action"] for p in payloads)
 
 
 def test_r2_delivery_failure_never_breaks_the_tick(
         bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Reporting must not be able to take the daemon down. A check that can break the
     tick is worse than a missed notice."""
-    now = time.time()
-    root = _git_repo(tmp_path, datetime.fromtimestamp(now, timezone.utc).isoformat())
-    monkeypatch.setattr(coordinator, "_PROGRESS_DIR", root / "progress")
+    root, _receipt, _progress = _checkpoint_repo(tmp_path, bus_root, unsuffixed=True)
     monkeypatch.setattr(coordinator, "_append_inbox",
                         lambda *_a, **_k: (_ for _ in ()).throw(OSError("disk full")))
 
-    rows = coordinator.progress_log_currency(bus_root, 14, now=now, repo_root=root)
+    rows = coordinator.progress_log_currency(bus_root, 14, repo_root=root)
     assert rows and rows[0]["check"] == "progress-log-stale", \
         "the advisory row still comes back even when delivery fails"
 
@@ -4448,6 +4566,664 @@ def test_R16_a_gated_row_does_not_starve_the_row_behind_it(
     assert _assigned(emitted).get("T-behind") == "alice", emitted
     assert "T-blocker" not in _assigned(emitted)
     assert _refusals(emitted, "T-blocker")
+
+
+# =========================================================== Auditor shadow ===
+
+def _audit_config(bus_root: Path, mode: str = "shadow") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "mainA", "role": "main", "lanes": ["none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"]},
+    ]
+    config["audit"] = {"mode": mode}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "mainA", "auditor", "service")
+    return config
+
+
+def _audit_complete(task: str, *, sender: str = "mainA", seq: int = 1, outcome: str = "pass") -> dict:
+    return _message(sender, "coordinator-agent", "task-complete", task_id=task, seq=seq,
+                    payload={"outcome": outcome, "artifacts": [f"artifacts/{task}.json"],
+                             "acceptance_refs": [f"handoffs/{task}.md#acceptance"]})
+
+
+def _typed_verdict(audit: dict, verdict: str, *, seq: int = 1,
+                   audited_sha: str | None = None) -> dict:
+    return _message("auditor", "coordinator-agent", "audit-verdict",
+                    task_id=audit["task_id"], seq=seq,
+                    payload={"verdict": verdict, "audit_of": audit["audit_of"],
+                             "correlation_id": (audit.get("correlation_id") or
+                                                audit.get("completion_msg_id")),
+                             "checkpoint_id": audit.get("checkpoint_id"),
+                             "audited_sha": audited_sha,
+                             "evidence_refs": ["evidence/audit.txt"],
+                             "findings": (["repair the ordinary implementation"]
+                                          if verdict == "needs-rework" else []),
+                             "followup_task_ids": (["followup-1"]
+                                                   if verdict == "accept-with-followups" else []),
+                             "missing_evidence": (["validation transcript"]
+                                                  if verdict == "blocked-evidence" else [])})
+
+
+def _checkpoint_source(receipt: dict) -> dict:
+    payload = receipt["payload"]
+    row = _typed_row(payload["task_id"], owner=payload["agent"], status="RUNNING")
+    row.update({"task_text": payload["task_text"], "spec_ref": payload["spec_ref"]})
+    return row
+
+
+def test_checkpoint_admission_validates_git_scope_and_dedupes_audit(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    source = _checkpoint_source(receipt)
+    reports = {"task-1": [receipt]}
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": source}, reports, 1, repo_root=root)
+    assert [row["status"] for row in admitted["queue_rows"]] == [
+        "DONE_PENDING_AUDIT", "READY"]
+    audit = admitted["queue_rows"][1]
+    assert audit["audit_origin"] == "task-checkpoint"
+    assert audit["checkpoint_commit_sha"] == receipt["payload"]["commit_sha"]
+    latest = {"task-1": admitted["queue_rows"][0], audit["task_id"]: audit}
+    replay = {**receipt, "id": receipt["id"] + "-retry"}
+    repeated = coordinator.process_task_checkpoints(
+        bus_root, config, latest, {"task-1": [replay]}, 2, repo_root=root)
+    assert repeated == {"queue_rows": [], "messages": [], "advisory": []}
+    conflicting = {**replay, "id": replay["id"] + "-conflict",
+                   "payload": {**replay["payload"], "commit_sha": "f" * 40}}
+    conflict = coordinator.process_task_checkpoints(
+        bus_root, config, latest, {"task-1": [conflicting]}, 3, repo_root=root)
+    assert conflict["queue_rows"] == [] and len(conflict["messages"]) == 1
+    assert "different checkpoint receipt" in conflict["messages"][0]["payload"]["reasons"][0]
+
+
+@pytest.mark.parametrize("outcome", ["blocked", "partial"])
+def test_checkpoint_admission_accepts_evidenced_nonterminal_boundaries(
+        bus_root: Path, tmp_path: Path, outcome: str) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    payload = {**receipt["payload"], "outcome": outcome, "checkbox_flips": [],
+               "blocker_class": "dependency", "blocked_on": "upstream receipt",
+               "blocking_owner_or_event": "mainB", "evidence_refs": ["evidence/blocker"],
+               "alternatives_exhausted": ["checked the durable inbox"],
+               "resume_action": "consume the upstream receipt", "compute_request": None}
+    if outcome == "partial":
+        payload["boundary_reason"] = "pre-reboot"
+    receipt = {**receipt, "payload": payload}
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": _checkpoint_source(receipt)},
+        {"task-1": [receipt]}, 1, repo_root=root)
+    assert [row["status"] for row in admitted["queue_rows"]] == [
+        "DONE_PENDING_AUDIT", "READY"]
+
+
+def test_checkpoint_apply_lifecycle_emits_one_audit_and_one_integration_record(
+        bus_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    monkeypatch.setattr(coordinator, "REPO_ROOT", root)
+    _append(bus_root / "queue.jsonl", _checkpoint_source(receipt))
+
+    coordinator.apply_assignment(bus_root, config, epoch=1)
+    folded = bus.fold_queue(bus_root)
+    audit = next(row for row in folded.values() if row.get("work_type") == "audit")
+    requests = [row for row in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+                if row.get("kind") == "audit-request"]
+    assert len(requests) == 1
+    bus.validate_row(bus_root, requests[0], "msg")
+    coordinator.apply_assignment(bus_root, config, epoch=2)
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+                if row.get("kind") == "audit-request"]) == 1
+
+    verdict = _typed_verdict(audit, "accept", audited_sha=receipt["payload"]["commit_sha"])
+    _append(bus_root / "outbox" / "auditor.jsonl", verdict)
+    coordinator.apply_assignment(bus_root, config, epoch=3)
+    ready = [row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+             if row.get("kind") == "checkpoint-integration-ready"]
+    assert len(ready) == 1
+    bus.validate_row(bus_root, ready[0], "msg")
+    coordinator.apply_assignment(bus_root, config, epoch=4)
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "checkpoint-integration-ready"]) == 1
+
+
+@pytest.mark.parametrize("defect", ["forged", "unpushed", "wrong-scope"])
+def test_checkpoint_admission_quarantines_forged_unpushed_and_wrong_scope(
+        bus_root: Path, tmp_path: Path, defect: str) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(
+        tmp_path, bus_root, agent="mainA", push_checkpoint=defect != "unpushed")
+    if defect == "forged":
+        receipt = {**receipt, "from": "alice"}
+    elif defect == "wrong-scope":
+        receipt = {**receipt, "payload": {**receipt["payload"],
+                   "artifact_paths": ["wiki/forged.md"],
+                   "changed_paths": receipt["payload"]["changed_paths"] + ["wiki/forged.md"]}}
+    result = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": _checkpoint_source(receipt)},
+        {"task-1": [receipt]}, 1, repo_root=root)
+    assert result["queue_rows"] == []
+    assert len(result["messages"]) == 1
+    reasons = " ".join(result["messages"][0]["payload"]["reasons"])
+    assert {"forged": "author/target", "unpushed": "not reachable",
+            "wrong-scope": "not worker checkpoint scope"}[defect] in reasons
+
+
+@pytest.mark.parametrize(("verdict", "source_status", "ready"), [
+    ("accept", "DONE_PASS", True),
+    ("accept-with-followups", "DONE_PASS", True),
+    ("needs-rework", "STALE_REQUEUED", False),
+    ("blocked-evidence", "DONE_PENDING_AUDIT", False),
+])
+def test_checkpoint_verdict_authority_and_integration_gate(
+        bus_root: Path, tmp_path: Path, verdict: str, source_status: str,
+        ready: bool) -> None:
+    config = _audit_config(bus_root, "required")
+    root, receipt, _ = _checkpoint_repo(tmp_path, bus_root, agent="mainA")
+    source = _checkpoint_source(receipt)
+    admitted = coordinator.process_task_checkpoints(
+        bus_root, config, {"task-1": source}, {"task-1": [receipt]}, 1, repo_root=root)
+    pending, audit = admitted["queue_rows"]
+    response = _typed_verdict(audit, verdict, audited_sha=receipt["payload"]["commit_sha"])
+    rows = coordinator.transcribe(
+        {"task-1": pending, audit["task_id"]: audit},
+        {audit["task_id"]: [response]}, 2, config)
+    folded = {row["task_id"]: row for row in rows}
+    if verdict == "blocked-evidence":
+        assert "task-1" not in folded
+        assert folded[audit["task_id"]]["evidence_request_pending"] is True
+        request = coordinator._evidence_only_request(folded[audit["task_id"]])
+        assert request["payload"]["request_type"] == "evidence-only"
+        assert request["payload"]["missing_evidence"] == ["validation transcript"]
+        assert "implementation" not in " ".join(request["payload"]["missing_evidence"])
+    else:
+        assert folded["task-1"]["status"] == source_status
+        assert (folded["task-1"].get("integration_state") == "ready") is ready
+    forged_sha = _typed_verdict(audit, "accept", audited_sha="f" * 40)
+    assert coordinator.transcribe(
+        {"task-1": pending, audit["task_id"]: audit},
+        {audit["task_id"]: [forged_sha]}, 2, config) == []
+
+
+def test_wrap_lifecycle_schema_and_authority_are_closed(bus_root: Path) -> None:
+    _audit_config(bus_root, "required")
+    request = _message("coordinator-agent", "auditor", "wrapup-request", payload={
+        "request_id": "wrap-1", "reason": "operator", "synchronization": "asynchronous",
+        "checkpoint_ids": ["mainA:task-1:1"], "cutoff_ts": "2026-08-13T00:00:00+00:00",
+        "integrated_main_sha": "a" * 40})
+    bus.validate_row(bus_root, request, "msg")
+    bus.check_checkpoint_lifecycle_message(request)
+    with pytest.raises(bus.BusError, match="coordinator-agent -> auditor"):
+        bus.check_checkpoint_lifecycle_message({**request, "from": "mainA"})
+    invalid = {**request, "payload": {**request["payload"], "untyped": True}}
+    with pytest.raises(bus.BusError):
+        bus.validate_row(bus_root, invalid, "msg")
+
+
+def test_audit_shadow_preserves_source_done_and_synthesizes_one_targeted_audit(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Shadow mode adds a linked review unit without changing source semantics."""
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "shadow")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    _append(bus_root / "queue.jsonl", source)
+    done = _audit_complete("source-work")
+    _append(bus_root / "outbox" / "mainA.jsonl", done)
+
+    first = coordinator.apply_assignment(bus_root, config, epoch=7)
+    folded = bus.fold_queue(bus_root)
+    audit_id = coordinator._audit_task_id("source-work", done["id"])
+    assert folded["source-work"]["status"] == "DONE_PASS"
+    assert folded[audit_id]["audit_of"] == "source-work"
+    assert folded[audit_id]["completion_msg_id"] == done["id"]
+    assert folded[audit_id]["executor_id"] == "auditor"
+    assert folded[audit_id]["artifact_refs"] == ["artifacts/source-work.json"]
+    assert _assigned(first).get(audit_id) == "auditor"
+    request = [m for m in _read_jsonl(bus_root / "inbox" / "auditor.jsonl")
+               if m.get("kind") == "audit-request"]
+    assert len(request) == 1
+    bus.validate_row(bus_root, request[0], "msg")
+    assert request[0]["payload"]["completion_msg_id"] == done["id"]
+    assert coordinator.apply_assignment(bus_root, config, epoch=8) == []
+    assert len([r for r in _read_jsonl(bus_root / "queue.jsonl") if r["task_id"] == audit_id]) == 2
+
+
+def test_auditor_and_service_never_receive_generic_backlog(bus_root: Path,
+                                                           monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _audit_config(bus_root, "off")
+    _append(bus_root / "queue.jsonl", _typed_row("ordinary"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    agents = {r.get("agent") for r in advice if r.get("kind") == "would-assign"}
+    assert "auditor" not in agents and "service" not in agents
+
+
+def test_required_audit_verdict_transitions_without_routing_source_main(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    latest = {"source-work": source}
+    rows = coordinator.transcribe(latest, {"source-work": [done]}, 1, config)
+    pending = next(r for r in rows if r["task_id"] == "source-work")
+    audit = next(r for r in rows if r.get("work_type") == "audit")
+    assert pending["status"] == "DONE_PENDING_AUDIT"
+    assert audit["audit_policy"] == "required"
+    assert "source-work" in audit["audit_question"]
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                       payload={"verdict": "needs-rework", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    # The audit's captured required policy wins even if the global default is
+    # lowered before the auditor returns its verdict.
+    config["audit"] = {"mode": "shadow"}
+    after = coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                   {audit["task_id"]: [verdict]}, 2, config)
+    assert {r["task_id"]: r["status"] for r in after} == {
+        audit["task_id"]: "DONE_PASS", "source-work": "STALE_REQUEUED"}
+    forged = {**verdict, "payload": {**verdict["payload"], "completion_msg_id": "wrong"}}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged]}, 2, config) == []
+    forged_author = {**verdict, "from": "mainA"}
+    assert coordinator.transcribe({"source-work": pending, audit["task_id"]: audit},
+                                  {audit["task_id"]: [forged_author]}, 2, config) == []
+    with pytest.raises(bus.BusError, match="source main"):
+        bus.check_audit_message({**verdict, "cc": ["mainA"]})
+    with pytest.raises(bus.BusError, match="only by the auditor"):
+        bus.check_audit_message(forged_author)
+
+
+def test_audit_ack_and_status_progress_but_task_complete_cannot_close_it(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit = {**audit, "status": "ASSIGNED"}
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"])
+    claimed = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack]}, 2, config)
+    assert claimed[0]["status"] == "CLAIMED"
+    running = {**audit, **claimed[0]}
+    status = _message("auditor", "coordinator-agent", "status", task_id=audit["task_id"])
+    progressed = coordinator.transcribe({audit["task_id"]: running}, {audit["task_id"]: [status]}, 3, config)
+    assert progressed[0]["status"] == "RUNNING"
+    completion = _message("auditor", "coordinator-agent", "task-complete", task_id=audit["task_id"],
+                          payload={"outcome": "pass"})
+    assert coordinator.transcribe({audit["task_id"]: {**running, **progressed[0]}},
+                                  {audit["task_id"]: [completion]}, 4, config) == []
+
+
+def test_valid_audit_verdict_wins_over_historical_ack_in_same_batch(bus_root: Path) -> None:
+    config = _audit_config(bus_root, "shadow")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    audit = next(r for r in coordinator.transcribe({"source-work": source},
+                                                    {"source-work": [done]}, 1, config)
+                 if r.get("work_type") == "audit")
+    audit["status"] = "ASSIGNED"
+    ack = _message("auditor", "coordinator-agent", "ack", task_id=audit["task_id"], seq=1)
+    verdict = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"], seq=2,
+                       payload={"verdict": "accept", "audit_of": "source-work",
+                                "completion_msg_id": done["id"]})
+    rows = coordinator.transcribe({audit["task_id"]: audit}, {audit["task_id"]: [ack, verdict]}, 2, config)
+    assert [row["status"] for row in rows] == ["DONE_PASS"]
+
+
+def test_validate_rejects_direct_jsonl_forged_audit_verdict(bus_root: Path,
+                                                            capsys: pytest.CaptureFixture[str]) -> None:
+    _audit_config(bus_root, "shadow")
+    forged = _message("mainA", "coordinator-agent", "audit-verdict", task_id="audit-x",
+                      assignee="coordinator-agent", action_required=True,
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": "msg-source"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)  # bypass authoring CLI deliberately
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "only by the auditor" in capsys.readouterr().out
+
+
+def test_daemon_ignores_auditor_identity_forged_inside_another_outbox(
+        bus_root: Path) -> None:
+    config = _audit_config(bus_root, "required")
+    done = _audit_complete("source-work")
+    source = _typed_row("source-work", owner="mainA", status="RUNNING")
+    created = coordinator.transcribe({"source-work": source}, {"source-work": [done]}, 1, config)
+    pending = next(row for row in created if row["task_id"] == "source-work")
+    audit = next(row for row in created if row.get("work_type") == "audit")
+    _append(bus_root / "queue.jsonl", pending)
+    _append(bus_root / "queue.jsonl", audit)
+    forged = _message("auditor", "coordinator-agent", "audit-verdict", task_id=audit["task_id"],
+                      payload={"verdict": "accept", "audit_of": "source-work",
+                               "completion_msg_id": done["id"]})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    reports = coordinator._outbox_reports(bus_root, config["roster"])
+    assert audit["task_id"] not in reports
+    assert coordinator.transcribe(bus.fold_queue(bus_root), reports, 2, config) == []
+
+
+# ====================================================== Compute resource leases ===
+
+def _resource_config(bus_root: Path, mode: str = "observe") -> dict:
+    config = _assign_config(bus_root)
+    config["roster"] += [
+        {"id": "inference", "role": "inference-main", "lanes": ["cpu", "gpu", "none"],
+         "schedulable": True, "resource_owner": ["cpu", "gpu"]},
+        {"id": "mainA", "role": "main", "lanes": ["cpu", "gpu", "none"]},
+        {"id": "auditor", "role": "auditor-main", "lanes": ["none"],
+         "schedulable": False, "accepts_work_types": ["audit"]},
+        {"id": "service", "role": "service", "lanes": ["none"],
+         "schedulable": False},
+    ]
+    config["authority"].update({"resource_lease_grant": ["inference"],
+                                "resource_lease_revoke_request": ["coordinator-agent"]})
+    config["role_rollout"] = {"resource_leases": mode, "audit_completion": "shadow"}
+    config["resource_claims"] = {"cpu": {"provider": "region-lock", "enabled": True},
+                                 "gpu": {"provider": "test-device-claim", "enabled": True}}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    _provision(bus_root, "inference", "mainA", "auditor", "service")
+    return config
+
+
+def _append_resource(bus_root: Path, agent: str, kind: str, to: str, payload: dict) -> int:
+    return bus.main(["--bus-root", str(bus_root), "append", "--agent", agent,
+                     "--target", "outbox", "--json", json.dumps({
+                         "to": to, "kind": kind, "assignee": to,
+                         "action_required": True, "payload": payload})])
+
+
+def test_resource_lease_lifecycle_is_authoritative_and_rebuildable(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    common = {"lease_id": "rl-1", "holder": "mainA"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "contention_class": "resumable", "safe_drain_point": "persisted-unit"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "REQUESTED"
+
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "task_ids": ["gpu-work"], "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RESERVED"
+
+    # A reservation is not ACTIVE until a physical claim-open receipt exists.
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": []}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        **common, "physical_claim_receipts": ["artifacts/test-device-claim/mi210_0-open.json"]}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "ACTIVE"
+
+    assert _append_resource(bus_root, "mainA", "resource-lease-release", "inference", {
+        **common, "physical_claim_close_receipts": ["artifacts/test-device-claim/mi210_0-close.json"],
+        "reason": "batch complete"}) == 0
+    assert bus.fold_resource_leases(bus_root)["rl-1"]["state"] == "RELEASED"
+    assert bus.rebuild_state(bus_root)["resource_leases"]["rl-1"]["state"] == "RELEASED"
+
+
+def test_delegated_gpu_grant_requires_enabled_claim_provider_and_cpu_activation_region_lock(
+        bus_root: Path) -> None:
+    config = _resource_config(bus_root)
+    config["resource_claims"]["gpu"] = {"provider": None, "enabled": False}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    common = {"lease_id": "gpu-gated", "holder": "mainA", "task_ids": ["gpu-work"],
+              "resources": {"gpu_devices": ["mi210_0"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **common, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **common, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 1
+
+    # CPU receipts are named, not opaque evidence strings. The activation omits
+    # resources deliberately: validation must derive them from the reservation.
+    config["resource_claims"]["gpu"] = {"provider": "test-device-claim", "enabled": True}
+    (bus_root / "config.yaml").write_text(json.dumps(config), encoding="utf-8")
+    cpu = {"lease_id": "cpu-lock", "holder": "mainA", "task_ids": ["cpu-work"],
+           "resources": {"cpu_regions": ["0-3"]}}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        **cpu, "contention_class": "resumable", "safe_drain_point": "unit"}) == 0
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        **cpu, "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/claims/cpu-open.json"]}) == 1
+    assert _append_resource(bus_root, "mainA", "resource-lease-activate", "inference", {
+        "lease_id": cpu["lease_id"], "holder": cpu["holder"],
+        "physical_claim_receipts": ["artifacts/region-lock/cpu-open.json"]}) == 0
+
+
+def test_only_inference_can_grant_a_compute_resource_lease(bus_root: Path) -> None:
+    _resource_config(bus_root)
+    payload = {"lease_id": "rl-unauthorized", "holder": "mainA", "task_ids": ["gpu-work"],
+               "resources": {"gpu_devices": ["mi210_0"]},
+               "expires_ts": "2030-01-01T00:00:00+00:00",
+               "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "coordinator-agent", "resource-lease-grant",
+                            "mainA", payload) == 1
+
+
+def test_validate_rejects_direct_jsonl_orphan_resource_grant(
+        bus_root: Path, capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    orphan = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "orphan", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "inference.jsonl", orphan)  # bypass authoring CLI deliberately
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+    advice = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(row for row in advice if row.get("agent") == "mainA")
+    assert any("lease ledger is invalid" in str(item.get("reason"))
+               for item in main_a["rejected"])
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "resource lease 'orphan': resource-lease-grant after None" in capsys.readouterr().out
+
+
+def test_resource_fold_ignores_inference_identity_forged_inside_holder_outbox(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    forged = _message("inference", "mainA", "resource-lease-grant", task_id="gpu-work",
+                      assignee="mainA", action_required=True, payload={
+                          "lease_id": "forged", "holder": "mainA", "task_ids": ["gpu-work"],
+                          "resources": {"gpu_devices": ["mi210_0"]},
+                          "expires_ts": "2030-01-01T00:00:00+00:00",
+                          "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    _append(bus_root / "outbox" / "mainA.jsonl", forged)
+    assert "forged" not in bus.fold_resource_leases(bus_root)
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "single-writer violation" in capsys.readouterr().out
+
+
+def test_resource_grant_is_exact_and_exclusive_in_append_and_replay(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    _resource_config(bus_root)
+    request = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                   "resources": {"gpu_devices": ["mi210_0"]},
+                                   "contention_class": "resumable", "safe_drain_point": "unit"}
+    grant = lambda lease, task: {"lease_id": lease, "holder": "mainA", "task_ids": [task],
+                                 "resources": {"gpu_devices": ["mi210_0"]},
+                                 "expires_ts": "2030-01-01T00:00:00+00:00",
+                                 "activation_deadline_ts": "2029-12-31T23:59:00+00:00"}
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-a", "a")) == 0
+    # A grant may not silently alter the requested batch/resources.
+    altered = grant("rl-a", "different")
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", altered) == 1
+    assert _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", grant("rl-a", "a")) == 0
+    assert _append_resource(bus_root, "mainA", "resource-lease-request", "inference", request("rl-b", "b")) == 0
+    # Direct file injection bypasses append but must fail deterministic replay.
+    direct = _message("inference", "mainA", "resource-lease-grant", task_id="b",
+                      assignee="mainA", action_required=True, payload=grant("rl-b", "b"))
+    direct["ts"] = "2031-01-01T00:00:00+00:00"
+    direct["id"] = "msg-20310101T000000Z-1-inference"
+    _append(bus_root / "outbox" / "inference.jsonl", direct)
+    assert any("overlaps live lease 'rl-a'" in problem
+               for problem in bus.resource_lease_history_problems(bus_root))
+    assert bus.main(["--bus-root", str(bus_root), "validate"]) == 1
+    assert "grant overlaps live lease 'rl-a'" in capsys.readouterr().out
+
+
+def test_reassignment_replaces_stale_resource_lease_id(bus_root: Path,
+                                                        monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row("gpu-work", lane="gpu", gating="gpu",
+                                                   executor_id="mainA", resource_lease_id="stale"))
+    for lease in ("rl-fresh",):
+        _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+            "safe_drain_point": "unit"})
+        _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+            "lease_id": lease, "holder": "mainA", "task_ids": ["gpu-work"],
+            "resources": {"gpu_devices": ["mi210_0"]}, "expires_ts": "2030-01-01T00:00:00+00:00",
+            "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    emitted = coordinator.apply_assignment(bus_root, config, epoch=4)
+    assert _assigned(emitted)["gpu-work"] == "mainA"
+    assigned = bus.fold_queue(bus_root)["gpu-work"]
+    assert assigned["resource_lease_id"] == "rl-fresh"
+    payload = _task_assigns(bus_root, "mainA")[0]["payload"]
+    assert payload["resource_lease_id"] == "rl-fresh"
+
+
+def test_enforced_compute_dispatch_requires_inference_or_a_matching_resource_lease(
+        bus_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _quiet_tick_seams(monkeypatch)
+    config = _resource_config(bus_root, "enforce")
+    _heartbeat(bus_root, "inference", "working", task_id="scheduler-duty")
+    _heartbeat(bus_root, "mainA", "idle")
+    _append(bus_root / "queue.jsonl", _typed_row(
+        "gpu-work", lane="gpu", gating="gpu", executor_id="mainA"))
+
+    before = coordinator.compute_advice(bus_root, config, epoch=1, gate_dispatch=True)
+    main_a = next(r for r in before if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-idle"
+    assert any("resource lease" in str(r.get("reason")) for r in main_a["rejected"])
+
+    # Inference may reserve exact compute for another capable main. Assignment
+    # still does not prove execution; activation requires the physical claim.
+    _append_resource(bus_root, "mainA", "resource-lease-request", "inference", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]}, "contention_class": "resumable",
+        "safe_drain_point": "persisted-unit"})
+    _append_resource(bus_root, "inference", "resource-lease-grant", "mainA", {
+        "lease_id": "rl-dispatch", "holder": "mainA", "task_ids": ["gpu-work"],
+        "resources": {"gpu_devices": ["mi210_0"]},
+        "expires_ts": "2030-01-01T00:00:00+00:00",
+        "activation_deadline_ts": "2029-12-31T23:59:00+00:00"})
+    after = coordinator.compute_advice(bus_root, config, epoch=2, gate_dispatch=True)
+    main_a = next(r for r in after if r.get("agent") == "mainA")
+    assert main_a["kind"] == "would-assign" and main_a["task_id"] == "gpu-work"
+    assert main_a["resource_lease_id"] == "rl-dispatch"
+
+
+def test_persistent_compute_idle_routes_once_per_cpu_or_gpu_episode(bus_root: Path,
+                                                                    tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n", encoding="utf-8")
+
+    first = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert {row["resource"] for row in first} == {"cpu", "gpu"}
+    messages = [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
+    assert len(messages) == 2
+    assert all(row.get("assignee") == "inference" and row.get("action_required") for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_path") == str(log) for row in messages)
+    assert all((row.get("payload") or {}).get("receipt_line_number") in {2, 3}
+               for row in messages)
+    for row in messages:
+        bus.validate_row(bus_root, row, "msg")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state) == []
+
+    # The watcher writes a fresh timestamp/count on every cycle. The episode is
+    # nevertheless the same until a report without that resource intervenes;
+    # durable inbox evidence suppresses duplicates after state-file loss.
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 3 cycles ~ 270s: 4 of 4 CPU regions free\n"
+        "2026-08-13T16:01:30Z STALL REPORT\n"
+        "  GPU-IDLE 4 cycles ~ 360s: GPU 0% / VRAM 0%\n"
+        "  CPU-IDLE 4 cycles ~ 360s: 4 of 4 CPU regions free\n", encoding="utf-8")
+    state.unlink()
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=3, log_path=log, state_path=state) == []
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 2
+
+    # A non-idle report closes both episodes. A later persisted GPU episode is new.
+    log.write_text("2026-08-13T16:05:00Z ok — compute in use\n", encoding="utf-8")
+    assert coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=4, log_path=log, state_path=state) == []
+    log.write_text(
+        "2026-08-13T16:10:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+    again = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=5, log_path=log, state_path=state)
+    assert [row["resource"] for row in again] == ["gpu"]
+
+
+def test_persistent_compute_idle_observe_does_not_assign_inference_but_route_can_follow(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root, "observe")
+    config["role_rollout"]["persistent_idle_routing"] = "observe"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    log.write_text(
+        "2026-08-13T16:00:00Z STALL REPORT\n"
+        "  GPU-IDLE 3 cycles ~ 270s: GPU 0% / VRAM 0%\n", encoding="utf-8")
+
+    observed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=1, log_path=log, state_path=state)
+    assert [row["resource"] for row in observed] == ["gpu"]
+    coordinator_messages = _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+    assert len([row for row in coordinator_messages if row.get("kind") == "compute-idle"]) == 1
+    assert not _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    routed = coordinator.route_persistent_compute_idle(
+        bus_root, config, epoch=2, log_path=log, state_path=state)
+    assert [row["resource"] for row in routed] == ["gpu"]
+    inference_messages = _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+    assert len([row for row in inference_messages if row.get("kind") == "compute-idle"]) == 1
+    assert len([row for row in _read_jsonl(bus_root / "inbox" / "coordinator-agent.jsonl")
+                if row.get("kind") == "compute-idle"]) == 1
+
+
+def test_persistent_compute_idle_never_routes_warming_or_unknown_reports(
+        bus_root: Path, tmp_path: Path) -> None:
+    config = _resource_config(bus_root)
+    config["role_rollout"]["persistent_idle_routing"] = "route"
+    log = tmp_path / "fleet_watch.log"
+    state = tmp_path / "idle-state.json"
+    for body in (
+        "warming — cycle 1/3, persistence not yet accumulated; NOTHING is asserted yet",
+        "UNDETERMINED — 0/4 mains unreadable, compute=unknown; no health is claimed",
+        "STALL REPORT\n  DETECTOR-BLIND 3 cycles: observation is untrustworthy",
+    ):
+        log.write_text(f"2026-08-13T16:00:00Z {body}\n", encoding="utf-8")
+        assert coordinator.route_persistent_compute_idle(
+            bus_root, config, epoch=1, log_path=log, state_path=state) == []
+    assert not [row for row in _read_jsonl(bus_root / "inbox" / "inference.jsonl")
+                if row.get("kind") == "compute-idle"]
 
 
 def test_R16_drain_reports_ready_depth_per_lane_and_hours_in_flight(

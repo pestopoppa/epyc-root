@@ -732,8 +732,8 @@ def _supplement_kernel_verdict(verdict: dict, progression: dict) -> dict:
 def kernel_data_health() -> tuple[int, dict]:
     """Kernel-R&D's panel-specific producer/data-health probe.
 
-    This intentionally reads only the AutoKernel terminal contract and folds only
-    the ``kernel`` envelope. It never calls :func:`health_payload` or
+    This intentionally reads only the AutoKernel terminal and live-discovery
+    contracts and folds their two envelopes. It never calls :func:`health_payload` or
     :func:`panel_envelopes`, so a registry consumer may probe this route without
     recursing through the global ``/api/health`` fold (which includes the
     dashboard directory, whose Kernel-R&D row points back here).
@@ -745,9 +745,13 @@ def kernel_data_health() -> tuple[int, dict]:
     """
     present, data = _read_kernel_contract()
     env = _kernel_contract_freshness(data, artifact_present=present)
+    live_payload, live_observation = _discovery_live_read()
+    live_env = _panel_envelope("kernel_live", live_observation)
     progression = _read_kernel_progression()
     verdict = _supplement_kernel_verdict(panels.fold(
-        {"kernel": env}, registry={"kernel": panels.source("kernel")}), progression)
+        {"kernel": env, "kernel_live": live_env},
+        registry={"kernel": panels.source("kernel"),
+                  "kernel_live": panels.source("kernel_live")}), progression)
     payload = {
         "status": verdict["status"],
         "probe": "panel-data",
@@ -760,6 +764,10 @@ def kernel_data_health() -> tuple[int, dict]:
         "attention": verdict["attention"],
         "absent": verdict["absent"],
         "freshness": env,
+        "live": {"active": live_payload.get("active", False),
+                 "deployment": live_payload.get("deployment"),
+                 "status_message": live_payload.get("status_message"),
+                 "freshness": live_env},
     }
     payload["progression"] = {
         "available": progression.get("available", False),

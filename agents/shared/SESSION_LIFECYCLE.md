@@ -121,6 +121,14 @@ available for the next packet. Persist the verdict, evidence, and handoff follow
 accepting a disjoint audit. This does not authorize the auditor to contact the source main:
 follow-ups return to the ordinary handoff/coordinator backlog path.
 
+### Auditor audit-pass checkpoint
+
+Every completed Auditor audit pass is a checkpoint even when the Auditor remains available for the
+next packet. Persist the verdict, evidence, and handoff follow-ups via the standard wrap-up routine
+before accepting a disjoint audit. This does not authorize the Auditor to contact the source main:
+follow-ups return to the ordinary handoff/coordinator backlog path. The precise narrow exception to
+the manual-trigger rule is maintained in `agents/commands/wrap-up.md`.
+
 ## Pre-reboot wrap-up is mandatory, not checkpoint-gated
 
 Operator, 2026-07-29: ALL progress MUST be persisted and logged BEFORE a host reboot. Every

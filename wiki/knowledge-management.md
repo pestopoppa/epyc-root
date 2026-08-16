@@ -152,7 +152,7 @@ routed to `retired_from_public_claims`. Three transferable design choices:
   one-ladder-per-class invariant, read for this compile
 - [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md)
   W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
-- [`handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md`](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md)
+- [`handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md`](../handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline-completed-through-2026-08-13.md)
   §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
 
 ## Compiled Update — 2026-08-13: landing a producer is not wiring its evidence

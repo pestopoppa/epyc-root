@@ -15,9 +15,16 @@ roster:
   # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
   # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
   # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
-  # is now named explicitly. Roster id stays `codex`: it is the identity every existing
+  # is now named explicitly. Roster id is `inference`: it is the identity every existing
   # queue row, cursor, inbox and outbox is keyed on, and renaming it would orphan all of them.
-  - {id: inference,         role: main,              lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary}   # was `codex` until 2026-07-29
+  #
+  # MERGE 2026-08-16: `role: inference-main` and the resource keys come from the other merge
+  # side and are LOAD-BEARING IN CODE — session_bus_coordinator.py reads `role ==
+  # "inference-main"` (schedulability, and the enforce-mode lease exemption) and
+  # `resource_owner`; session_bus.py resolves the resource owner from the entry carrying
+  # `resource_owner`. Note this widens the role set beyond the five names quoted in
+  # agents/shared/OPERATING_CONSTRAINTS.md → Doctrine rulings (c); see the merge note there.
+  - {id: inference,         role: inference-main,    lanes: [cpu, gpu, none], endpoint: "tmux:agent:inference",  drain: boundary, schedulable: true, resource_owner: [cpu, gpu], role_policy: agents/inference-main.md, recommended_launch_profiles: [{model: gpt-5.6-terra, effort: medium}, {model: claude-opus, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
   # RETIRED 2026-07-28: the operator closed its tmux window (agent:claude_A). The row was kept,
   # not deleted — queue rows, cursors and its inbox/outbox are all keyed on this identity, and
   # removing it would orphan that history.
@@ -102,7 +109,32 @@ roster:
   # 3944 undrained bytes and why the cursor was NOT archived):
   # retirements/auditor.retirement.json. The lane worktree at
   # /mnt/raid0/llm/worktrees/mains/auditor was CLEAN and is left in place.
-  - {id: auditor,           role: service,           lanes: [none],           endpoint: "monitor:file",          drain: none}
+  #
+  # !!! MERGE 2026-08-16 — UNRESOLVED KEY CONFLICT ON THIS ROW, OPERATOR MUST DECIDE !!!
+  # The two merge sides give this row incompatible values for FOUR keys. Nothing was
+  # chosen on the merge's authority; the row below keeps THIS branch's values (the
+  # interactive auditor pane is verifiably dead, so a `tmux:` endpoint would point at
+  # nothing), and the other side's values are recorded verbatim here:
+  #
+  #   key        this branch (P3-7 headless)     other side (interactive Auditor Main)
+  #   role       service                          auditor-main
+  #   endpoint   "monitor:file"                   "tmux:agent:auditor"
+  #   drain      none                             boundary
+  #   worktree   (absent — key removed)           /mnt/raid0/llm/worktrees/mains/auditor
+  #
+  # Other side's row, verbatim, for restoration if that reading wins:
+  #   - {id: auditor, role: auditor-main, lanes: [none], endpoint: "tmux:agent:auditor",
+  #      drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor,
+  #      schedulable: false, accepts_work_types: [audit], role_policy: agents/auditor-main.md,
+  #      recommended_launch_profiles: [{model: gpt-5.6-sol, effort: high},
+  #                                    {model: fable5, effort: high}]}
+  #
+  # The other side's four NEW keys (schedulable / accepts_work_types / role_policy /
+  # recommended_launch_profiles) do NOT conflict with anything on this side and are unioned
+  # in below: session_bus_coordinator.py needs `accepts_work_types: [audit]` for a
+  # daemon-created audit row (executor_id "auditor", work_type "audit") to be dispatchable
+  # at all — without it the row is rejected as "work_type audit not accepted by auditor".
+  - {id: auditor,           role: service,           lanes: [none],           endpoint: "monitor:file",          drain: none, schedulable: false, accepts_work_types: [audit], role_policy: agents/auditor-main.md, recommended_launch_profiles: [{model: gpt-5.6-sol, effort: high}, {model: fable5, effort: high}]}   # launch profiles are advisory; operator model/effort changes are silent
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
   # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is
@@ -231,6 +263,15 @@ authority:
   # deterministic rule from the priority artifact, never by discretion.
   lease_grant: [operator, coordinator-agent]
   lease_regrant_deterministic: [coordinator-daemon]
+  # The inference resource lease is advisory scheduling authority above physical claims.
+  # It is distinct from task assignment and model/effort never participates in its validity.
+  # MERGE 2026-08-16: this key encodes "only `inference` grants a resource lease", which is
+  # the allocation of authority contested by D4-as-amended in agents/coordinator-agent.md
+  # (compute owned at coordination level, daemon grants from compute_policy.yaml). Kept as
+  # written on the other side because it is the only value in the file and the code reads it;
+  # flagged for operator adjudication together with the doctrine.
+  resource_lease_grant: [inference]
+  resource_lease_revoke_request: [operator, coordinator-agent]
 
 coordinator_daemon:
   tick_s: 45
@@ -255,6 +296,21 @@ tmux:
 flags:
   codex_sendkeys: on       # gate: OP-SENDKEYS-CODEX in tokens/token-queue.md
   triage: off               # M5
+
+# Staged activation for the Auditor/Inference role protocol. Audit shadow and lease observe modes
+# do not change completion or assignment admission. Persistent-idle routing is transport-only and
+# is active after its episode-deduplication tests passed; it cannot claim or launch compute.
+role_rollout:
+  audit_completion: shadow          # off | shadow | required
+  resource_leases: observe          # off | observe | enforce
+  persistent_idle_routing: route    # off | observe | route; tested transport-only activation
+
+# A delegated GPU reservation is prohibited until a real claim primitive is
+# selected and enabled.  An Inference Main may still run its own GPU work; this
+# gate applies only to grants whose holder is another main.
+resource_claims:
+  cpu: {provider: region-lock, enabled: true}
+  gpu: {provider: null, enabled: false}
 
 caps:
   max_headless_workers: 0

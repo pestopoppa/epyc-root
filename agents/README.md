@@ -17,13 +17,18 @@ This directory is organized for agent legibility and low drift.
 | Role | File | Primary Use |
 |---|---|---|
 | Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
-| Inference Main | `agents/inference-main.md` | Inference compute ownership, leases, and persistent-idle recovery (roster id `inference`, `role: main`) |
+| Inference Main | `agents/inference-main.md` | Inference compute ownership, leases, and persistent-idle recovery (roster id `inference`; `role: inference-main` after the 2026-08-16 merge — see the note below) |
 | Auditor | `agents/auditor-main.md` | The review CONTRACT carried out under the `auditor` identity. **P3-7 retired the interactive auditor SESSION** (roster `auditor` is `role: service`); the reviewer function now runs as per-packet headless invocations, so read this file as a contract, not as a session to route to |
 
 The roster is the authority on who holds which role: `coordination/session-bus/config.yaml`
 assigns every agent a roster id and one role from a closed set — `main`, `coordinator-agent`,
 `reviewer`, `retired`, `service`. Work reaches an agent as a queue row addressed to a roster id,
 with a lane and a typed brief. There is no persona-based routing.
+
+> **MERGE NOTE (2026-08-16):** the other merge side widened that set with `inference-main` (live in
+> `config.yaml`, read by `session_bus_coordinator.py`) and `auditor-main` (on the contested
+> `auditor` row). The "no persona-based routing" rule stands; the enumeration above needs
+> reconciling once the `auditor` roster row is adjudicated.
 
 **Archived 2026-08-16**: the eight task-based persona files (Lead Developer, Research Engineer,
 Benchmark Analyst, Research Writer, Build Engineer, Model Engineer, Sysadmin, Safety Reviewer)

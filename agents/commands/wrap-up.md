@@ -3,6 +3,16 @@
 Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
 > **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/loop-owned-fleet-implementation.md` P1-3a)
+>
+> **Narrow standing exception (retained from the other merge side, written against the previous
+> MANUAL-TRIGGER-ONLY cadence).** `agents/auditor-main.md` authorizes the audit role to run this
+> routine after a completed coordinator-routed audit pass, solely to checkpoint the verdict,
+> evidence, and handoff follow-ups before the next audit. It does not authorize scheduled
+> wrap-ups, unrelated audit-free wrap-ups, or any automatic invocation. **MERGE NOTE:** under the
+> per-completed-task cadence above this exception is subsumed rather than contradicted — an audit
+> pass IS a completed task — but it is kept verbatim because `agents/auditor-main.md` cites "the
+> narrow standing exception in `agents/commands/wrap-up.md`" by name. It does **not** lift the two
+> operator-cadence steps (Step 3 pruning, Step 5 wiki sweep), which remain operator-invoked only.
 
 ### Per-task wrap-up (the default cadence)
 
@@ -89,13 +99,77 @@ freeze this program exists to remove.
 owning session**, which applies them, holds the lease for the regen, and owns the commit — the
 subagent never writes an index row itself (ruling at the top of Step 3).
 
+Initialize one **operation-private** token path once per wrap-up invocation. The random `mktemp`
+directory is load-bearing: roster ids are shared by a main and its subagents, so a deterministic
+`<roster-id>.token` would give several processes the same capability.
+
+<!-- wrapup-lease-bootstrap:start -->
 ```bash
-LEASE="python3 scripts/coordination/serialized_push.py --agent <your-id> --lock-name wrapup"
-$LEASE --acquire        # exit 2 = someone else is in their shared-surface steps; wait and retry
-#   ... step 3's index regen, step 5's wiki compile, step 7's promotion merge ...
-$LEASE --release        # ALWAYS, including on failure
-$LEASE --status         # who holds it, since when, and whether it looks like residue
+WRAPUP_AGENT_ID="${WRAPUP_AGENT_ID:?set WRAPUP_AGENT_ID to your roster id}"
+WRAPUP_REPO="${WRAPUP_REPO:-.}"
+WRAPUP_LOCK_DIR="${WRAPUP_LOCK_DIR:-coordination/push-locks}"
+WRAPUP_TOKEN_DIR="$(mktemp -d "${TMPDIR:-/tmp}/epyc-wrapup-token.XXXXXXXX")"
+WRAPUP_TOKEN_FILE="${WRAPUP_TOKEN_DIR}/lease.token"
+LEASE=(python3 scripts/coordination/serialized_push.py
+       --agent "$WRAPUP_AGENT_ID" --repo "$WRAPUP_REPO"
+       --lock-dir "$WRAPUP_LOCK_DIR" --lock-name wrapup
+       --token-file "$WRAPUP_TOKEN_FILE")
+WRAPUP_LEASE_HELD=0
+
+wrapup_lease_acquire() {
+  "${LEASE[@]}" --acquire
+  WRAPUP_LEASE_HELD=1
+}
+
+wrapup_lease_release() {
+  if [ "$WRAPUP_LEASE_HELD" -eq 0 ]; then return 0; fi
+  if "${LEASE[@]}" --release; then
+    WRAPUP_LEASE_HELD=0
+    return 0
+  fi
+  echo "WRAP-UP LEASE RELEASE FAILED; lock and token retained at $WRAPUP_TOKEN_FILE" >&2
+  return 1
+}
+
+wrapup_lease_cleanup() {
+  rc=$?
+  trap - EXIT HUP INT TERM
+  if ! wrapup_lease_release && [ "$rc" -eq 0 ]; then rc=1; fi
+  if [ "$WRAPUP_LEASE_HELD" -eq 0 ]; then
+    rm -f -- "$WRAPUP_TOKEN_FILE"
+    rmdir -- "$WRAPUP_TOKEN_DIR" 2>/dev/null || true
+  fi
+  exit "$rc"
+}
+
+wrapup_lease_finish() {
+  wrapup_lease_release || return 1
+  rm -f -- "$WRAPUP_TOKEN_FILE"
+  rmdir -- "$WRAPUP_TOKEN_DIR" 2>/dev/null || true
+  trap - EXIT HUP INT TERM
+}
+
+trap wrapup_lease_cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
 ```
+<!-- wrapup-lease-bootstrap:end -->
+
+Then operate through the helpers; they pass the same token file to acquire and release, and the
+EXIT/signal trap releases on every ordinary failure path:
+
+```bash
+wrapup_lease_acquire     # exit 2 = another operation is in its shared-surface steps
+#   ... step 3's index regen, step 5's wiki compile, step 7's promotion merge ...
+wrapup_lease_finish      # after the FINAL protected section; releases + removes token + trap
+"${LEASE[@]}" --status  # who holds it, since when, and whether it looks like residue
+```
+
+`LEASE` names the `wrapup` lock, so never call `"${LEASE[@]}" --push`; the tool correctly refuses
+to publish under a lock other pushers do not observe. The lane and promotion pushes in Step 7 run
+inside the wrap-up critical section. A separate long-held push review, if ever needed, gets its
+own independently generated token file and `--lock-name push`; it must not borrow this capability.
 
 **Order inside the lease matters — SYNC FIRST.** A generated file (the index block,
 `source_manifest.json`) is rewritten *wholesale from current state*. If you regenerate it on a
@@ -104,11 +178,11 @@ inputs and your promotion overwrites theirs with an older answer — the lease s
 writes and still lost one. So, once you hold it:
 
 ```bash
-$LEASE --acquire
+wrapup_lease_acquire
 git fetch origin --quiet && git merge origin/main      # 1. build on whoever went before you
 #   2. run the shared-surface steps (step 3 regen, step 5 compile) and commit them on your lane
 #   3. promote (the step 7 detach-merge below)
-$LEASE --release
+wrapup_lease_release
 ```
 
 Sync, regenerate, promote, release — in that order, every time.
@@ -116,8 +190,12 @@ Sync, regenerate, promote, release — in that order, every time.
 It is the same O_EXCL primitive as the push lock, keyed on the git **common dir**'s
 device+inode — so all five lane worktrees are one repository and contend for one lease, and
 neither `realpath` nor a path string can fool it. It is a *different* lease from the push
-lock: holding one never blocks the other. A lease is **never** auto-expired; a stale one is
-displaced deliberately and on the record with `--force-release <named holder>`.
+lock: holding one never blocks the other. A lease is **never** auto-expired. `SIGKILL`, power
+loss, or a crashed shell cannot run the trap; in that case the lock and private token remain as
+residue. Inspect with `"${LEASE[@]}" --status`, verify the named operation is gone, then displace
+deliberately with `"${LEASE[@]}" --force-release <named-holder>` (journaled). Remove the private
+token directory only **after** force-release succeeds; deleting it first destroys the
+ordinary-release capability while leaving the lock held.
 
 If `--acquire` refuses, that is the system working. Do the unleased steps meanwhile and come
 back — do not skip step 3 or 5, and do not edit the shared surface without the lease.
@@ -215,10 +293,10 @@ decision queue. Do not re-add a "master index priority queue".
 **Required gate — run it under the wrap-up lease, and report the result:**
 
 ```bash
-$LEASE --acquire                                  # shared surface: generated index state
+wrapup_lease_acquire                              # shared surface: generated index state
 python3 scripts/handoffs/index_state.py           # refresh generated state
 python3 scripts/handoffs/index_state.py --check   # coverage/schema/freshness; non-zero on failure
-$LEASE --release
+wrapup_lease_release
 ```
 
 The regen and the master index's generated block are the shared surface here — they are
@@ -288,7 +366,8 @@ The `wiki/` and `research/` links are load-bearing (the checker re-tests them) �
 
 Compile any loose knowledge into the project wiki so findings don't stay buried in handoffs and progress logs.
 
-**Hold the wrap-up lease for this whole step** (`$LEASE --acquire` … `--release`):
+**Hold the wrap-up lease for this whole step** (`wrapup_lease_acquire` …
+`wrapup_lease_release`):
 `wiki/source_manifest.json` and `wiki/.last_compile` are one manifest and one watermark for
 the entire repo. Two sessions compiling concurrently means the second `--touch` moves the
 watermark past sources the first never wrote pages for — the loss is silent and only shows up
@@ -332,7 +411,8 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
     today's small merge for a guaranteed large one.
   - GitHub credits contributions only for commits on the **default branch** (`main`); a
     lane-branch push backs work up but earns nothing on the graph until it reaches `main`.
-- **Take the wrap-up lease for the merge** (`$LEASE --acquire` … `--release`) — two promotions
+- **Take the wrap-up lease for the merge** (`wrapup_lease_acquire` …
+  `wrapup_lease_finish`) — two promotions
   racing the same `main` tip is the one part of promotion that is not isolated. Release it as
   soon as the merge is pushed, including on the blocked path.
 - For each affected repo:
