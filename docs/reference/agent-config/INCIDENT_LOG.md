@@ -199,3 +199,24 @@ already retired. The screener validates a row's FORM against the file and cannot
 Rule fed: the task text is the identity and the line number only a hint; screen for form, then
 verify the premise independently before dispatching (`agents/shared/OPERATING_CONSTRAINTS.md` §
 Dispatching Backlog Work; `agents/coordinator-agent.md` Guardrails; CLAUDE.md § Handoff Workflow).
+
+## INC-20260816-git-clean-shared-clone
+
+A live `git clean -ffdx`-class operation in the SHARED clone destroyed at least four
+unrelated things across two dated events, and each loss was discovered independently by a
+different session tripping over it — none by the session that ran the clean. 2026-08-12:
+29 worktrees deleted with registrations pruned (forensics `921ec76c0`, `2b14d66ec`,
+`8b609ee29`; 45 orphan dirs with dangling gitdir pointers remain). 2026-08-16
+(`82400787` context, recurrence disclosed in `b33f14dfc`): the `retirements/` receipts
+directory (rebuilt off-tree under P0-7), the `wiki/.last_compile` watermark (its absence
+made the next compile report **844 new sources — the whole repo — instead of 51**; the
+watermark had to be reconstructed from the last genuine `--touch`), the staged P1
+doctrine-collapse artifacts (redone into a TRACKED directory), and — strongly suspected,
+same event — the `/workspace/repos/` symlinks, whose absence silently broke 18 wiki links
+until `scripts/clone-repos.sh` restored them. The damage signature is characteristic:
+`git clean` removes exactly the untracked operational state (watermarks, receipts,
+symlinks, staged artifacts) that no commit protects and no diff shows, so the cost
+surfaces days later as unrelated-looking breakage. Rule fed: never run `git clean` in the
+shared clone or any lane worktree; untracked-but-load-bearing state must either be
+tracked, live off-tree, or be listed in a manifest a restorer can replay (CLAUDE.md §
+Working-tree identity; `agents/shared/OPERATING_CONSTRAINTS.md` § Shared-tree hygiene).

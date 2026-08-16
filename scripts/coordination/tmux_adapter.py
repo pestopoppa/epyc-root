@@ -106,7 +106,19 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-BUS_ROOT = REPO_ROOT / "coordination" / "session-bus"
+# REPO_ROOT stays __file__-relative on purpose -- it exists to import our own
+# siblings, and the right sibling IS the one next to this file.
+#
+# BUS_ROOT must NOT be. There is exactly one live bus, and every lane worktree
+# has its own `coordination/session-bus/` directory on disk, so a
+# __file__-relative BUS_ROOT resolves to a DIFFERENT bus per worktree -- writes
+# land in a private directory and are silently lost rather than failing. Flagged
+# by `auditor` on 2026-08-12 and missed by the P3-2 rewrite of this file on
+# 2026-08-16; the guard test below now fails on any reintroduction.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from session_bus import get_bus_root  # noqa: E402
+
+BUS_ROOT = get_bus_root()
 LEDGER = BUS_ROOT / "adapter-ledger.jsonl"      # coordinator-daemon owned
 
 EX_BLOCKED = 2

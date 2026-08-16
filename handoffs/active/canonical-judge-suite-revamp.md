@@ -159,6 +159,13 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       T5 certification flag, now measured). Actual: hub cache 2.1M (hendrydong 108K + ankner 2.0M +
       Idavidrein 28K) + processed datasets cache 3.6M (ankner 3.5M + hendrydong 120K) ≈ **5.7M
       total**. No growth expected. ✅ 2026-08-12
+- [ ] **CJ-1c was parked on FALSE evidence — re-screen with the VERBATIM row text before trusting
+      the park.** The 2026-08-16 pool pilot screened this row `unknown` ("task text matches NO
+      checkbox"), but the worker was screened against a hand-written 241-char PARAPHRASE passed via
+      `--row-text`; the actual 452-char row text matches the checkbox verbatim and `find_by_text`
+      resolves it (re-run 2026-08-16: `resolved=True, hits=1, open, :162`). The park is a screening
+      artifact, not a premise problem — the row below is live as written. (Bus triage 2026-08-16,
+      msg-20260816T101157Z-2; the dispatch-side defect is filed in RTG-52.)
 - [ ] **CJ-1c. Execution requirement** — expected **none**. Confirm scoring runs through canonical
       `answer_scoring.extract_letter_answer`, NOT a bespoke extractor (this is the exact suite that
       produced the 2026-07-24 verbose-penalty scorer artifact: A4 15% false parse-failures vs A1 0%,

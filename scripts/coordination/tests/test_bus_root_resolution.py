@@ -153,3 +153,48 @@ def test_daemon_inherits_the_fix_by_import_not_by_its_own_file_relative_code() -
     if parser is not None:
         default = next(a.default for a in parser._actions if a.dest == "bus_root")
         assert default == str(bus.get_bus_root())
+
+
+# ---------------------------------------------------------------------------
+# THE SWEEP. Everything above pins ONE file at a time, which is why this class
+# of bug kept coming back: `auditor` flagged three offenders on 2026-08-12, one
+# was fixed, and the other two survived — `tmux_adapter.py`'s survived a full
+# rewrite of that file on 2026-08-16 (P3-2) because no test looked at it.
+#
+# A per-file assertion cannot catch a NEW file with the same mistake. This one
+# reads every module in scripts/coordination/ and fails on any of them that
+# derives a bus root from __file__.
+# ---------------------------------------------------------------------------
+
+def test_no_coordination_module_derives_a_bus_root_from_file() -> None:
+    import ast
+
+    coord_dir = Path(__file__).resolve().parents[1]
+    offenders: list[str] = []
+
+    for py in sorted(coord_dir.glob("*.py")):
+        tree = ast.parse(py.read_text(encoding="utf-8"), filename=str(py))
+
+        # Names bound to a __file__-derived path (e.g. REPO_ROOT = Path(__file__)...)
+        file_derived: set[str] = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assign):
+                continue
+            src = ast.unparse(node.value)
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+            if "__file__" in src:
+                file_derived.update(targets)
+                continue
+            # A bus root assigned from anything rooted in a __file__-derived name.
+            for tgt in targets:
+                if "BUS_ROOT" not in tgt.upper():
+                    continue
+                root = src.split("/")[0].strip().strip("()")
+                if root in file_derived or "__file__" in src:
+                    offenders.append(f"{py.name}: {tgt} = {src}")
+
+    assert not offenders, (
+        "these modules derive a bus root from __file__, which resolves to a "
+        "DIFFERENT bus in every lane worktree (writes are silently lost, not "
+        "refused). Use session_bus.get_bus_root():\n  " + "\n  ".join(offenders)
+    )
