@@ -4848,7 +4848,61 @@ def build_parser() -> argparse.ArgumentParser:
     i = sub.add_parser("intake", help="one-shot: transcribe task-propose messages into READY rows")
     i.add_argument("--dry-run", action="store_true", help="show what would be admitted")
     i.set_defaults(func=cmd_intake)
+
+    g = sub.add_parser("ghost-sweep",
+                       help="release bus state held by verifiably dead/retired owners (P0-3/D7)")
+    g.add_argument("--apply", action="store_true", help="perform the sweep (default: dry run)")
+    g.add_argument("--signed-by", help="operator identity authorising the sweep (required with --apply)")
+    g.add_argument("--sample-gap-s", type=float, default=3.0,
+                   help="seconds between the two owner-liveness samples")
+    g.set_defaults(func=cmd_ghost_sweep)
     return p
+
+
+def cmd_ghost_sweep(args: argparse.Namespace) -> int:
+    """P0-3 / D7: the ONE sanctioned release path for dead-owner bus state.
+
+    It lives here, in the daemon, and nowhere else, because `queue.jsonl` has
+    exactly one writer (invariant 1) and that writer is the coordinator-daemon.
+    An operator-signed one-shot run by this binary IS the daemon acting — which
+    is what "claims owned by retired ids are daemon-releasable with a receipt"
+    means, and why `ghost_sweep.py` deliberately cannot reset a row on its own:
+    it enumerates and it releases claims, and it refuses to forge the identity
+    that owns the queue.
+    """
+    import ghost_sweep  # noqa: PLC0415 — sibling module, same directory
+
+    bus_root = Path(args.bus_root)
+    data = ghost_sweep.collect(bus_root, args.sample_gap_s)
+    resettable, releasable = ghost_sweep.report(data)
+
+    if not args.apply:
+        print("DRY RUN — nothing changed. Re-run with --apply --signed-by <operator> to execute.")
+        return 0
+    if not args.signed_by:
+        print("REFUSED: --apply requires --signed-by (D7 makes this operator-signed).", file=sys.stderr)
+        return 2
+
+    receipt_id = ghost_sweep.new_receipt_id()
+    epoch = _read_epoch(bus_root)
+    n_rows = 0
+    for tid, row, _verdict in resettable:
+        new_row = ghost_sweep.reset_row(row, tid, epoch, receipt_id, args.signed_by)
+        _append_jsonl(bus_root / "queue.jsonl", new_row)
+        n_rows += 1
+
+    n_claims = ghost_sweep.release_claims(bus_root, data, releasable, receipt_id, args.signed_by)
+
+    _append_advisory(bus_root, [{
+        "schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+        "kind": "ghost-sweep",
+        "detail": (f"{receipt_id}: reset {n_rows} dead-owner queue rows, released {n_claims} "
+                   f"dead-owner claims; signed-by {args.signed_by}"),
+    }])
+    print(f"\nAPPLIED {receipt_id}: {n_rows} rows reset, {n_claims} claims released.")
+    print(f"   claim receipts: {bus_root / 'claims' / 'released'}")
+    print("   reversible: queue is append-only; claim files moved, not deleted.")
+    return 0
 
 
 def cmd_audit(args: argparse.Namespace) -> int:
