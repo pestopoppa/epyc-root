@@ -2,8 +2,122 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (the lean sequencer/champion path was verified already restored; post-reboot CPU instrument and refusal findings retained below)
-**Sources**: 110+ documents
+**Last compiled**: 2026-08-16 (manual AutoKernel execution stopped in favour of a controller-first correction; two independently designed autonomy ladders compared, both short of their own evidence bar)
+**Sources**: 112+ documents
+
+## Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar
+
+**Confidence: verified for the campaign posture, the ladder definitions and the recorded counts —
+each read from the tracked campaign file, the handoff, and the operator package it names.
+Explicitly bounded: the funnel numbers below are candidate-only search observations, and this page
+carries that refusal rather than restating them as results.**
+
+### Manual execution was stopped in favour of the controller — with the leaders already in hand
+
+At **2026-08-13 22:14 UTC** the campaign file recorded a hard stop: *"AUTOKERNEL MANUAL EXECUTION
+STOPPED; CONTROLLER-FIRST CORRECTION IS THE NEXT BOUNDARY."* Discovery-first policy is ratified and
+the nonpromotable funnel already holds live leaders — CPU IQK prefill `+31.247%` and decode
+`+7.939%`, GPU MMQ-MFMA-OFF prefill `+26.5965%` and flash-attention-ON prefill `+4.8791%`. **These
+are candidate-only search observations, not champions and not promotion evidence.** The strict path
+exposed and repaired a real IQ3_XXS MMID `n=15` correctness failure *without weakening its
+threshold*, and the new-instrument r6 calibration checkpointed A/A `200/200`, neutral `60/60`,
+anchor-motion `15/15`. On operator request the sealed watcher, parent and captured child were
+stopped and all q0–q3 claims verified free, with a standing instruction not to resume r6 or launch a
+successor campaign.
+
+The ordering is the finding. A loop holding four measured leaders and a clean calibration is exactly
+the moment at which continuing by hand is most tempting and least defensible: the next result would
+be attributable to an operator's dispatch rather than to a controller anyone can replay. Stopping
+there — before the leaders were converted into anything promotable — is what makes the eventual
+promotion mean something.
+
+### Autonomy specified as a negative capability list
+
+The replacement is a deterministic discovery controller, built in an isolated worktree, and its
+specification is written almost entirely as prohibitions: it **must consume sealed measurements
+rather than planner prose**, and must **remain unable to invoke the calibration, held-out, champion,
+promotion, package or release paths**. It must land and be independently reviewed before any
+successor campaign runs.
+
+That shape recurs across every autonomous mechanism this page tracks, and it is worth stating
+generally: **the load-bearing part of an autonomous loop's design is the list of transitions it
+cannot make.** The 2026-08-12 governed pilots below reached the same place from the opposite
+direction — a terminal receipt that *explicitly denies* matched-campaign, ranking, belief-update,
+promotion and release authority. Capability is what the loop can compute; authority is what its
+output is allowed to change, and the two must be specified separately or the first silently becomes
+the second.
+
+### Two promotion ladders, designed independently, agreeing on the same three rules
+
+The self-running lab (F2) and the worker pool (RTG-52) were designed by different sessions for
+different work, and converged:
+
+| | Self-running lab, W3 | Worker pool, Phase-2 gate |
+|---|---|---|
+| Stages | `shadow` → `reviewed` → `autonomous`, enforced only by `promote_job.py` | pilot → scale-out, gated on measured pilot rows |
+| Volume bar | ≥10 shadow runs scored against a cloud-reference run; autonomous only at ≥90% accept-rate over 20 reviewed runs | ≥10 rows end-to-end, 100% independently audited, operator spot-reviews 3 of 10 |
+| Scope limit | `autonomous` restricted to `read_only` report-class jobs | promotion to `main` serialized; loop-plane paths need operator ack |
+| Kill rule | promotion rejected on stage skips/downgrades; referenced gold-tuple files must exist | operator overturning ≥2 of the 3 spot-reviewed rows halts the pilot |
+
+Three rules are common to both, and none of them is about model quality. **First, output is not
+authoritative until an independent reviewer accepts it** — the lab writes to
+`orchestration/lab_review_queue/` and *never* directly to handoffs or indices, and the pool emits a
+pointer packet consumed by a headless audit that derives the diff from git independently and runs
+its own mutation probe. **Second, the promotion script is the only promotion path** — a stage that
+can be reached by editing a config is not a stage. **Third, every rung is counted, not asserted.**
+
+**Both are currently short of their own bar, and saying so is the point.** The lab's ladder scaffold,
+hardening, review-packet export and batch capture have all landed, and the first real quiet-window
+model-backed batch produced verdicts — but W3 is still `- [ ]`, with `verdicts=12` and exactly two F3
+gold tuples: one accepted (`handoff_freshness_lint`) and **one rejected negative**
+(`attestation_watch`, where cloud review caught a false attestation-empty claim). A rejected tuple is
+not a failure of the ladder; it is the ladder's only proof that acceptance means something. The pool
+dispatched six rows against a ≥10-row gate. Neither loop has earned `autonomous` on anything.
+
+### The review queue was the compliance mechanism; a 2026-08-16 ruling generalised it
+
+F2 states the constraint plainly: *"CLAUDE.md forbids sub-agent index modifications without
+approval; the queue IS the compliance mechanism. No job writes directly to handoffs/indices."* The
+lab therefore solved a governance problem with a data structure — a job produces a *proposal* in a
+queue, and a separate accepted verdict is what turns it into a change.
+
+The doctrine ruling of 2026-08-16 makes that the general rule rather than one subsystem's workaround:
+**a subagent may PREPARE index edits; the owning session APPLIES them and owns the commit** — drafting
+row text and reporting the exact diff is preparation, and preparation is not modification (see
+[agent-architecture](agent-architecture.md), *2026-08-16*). The lab's review queue and the pool's
+audit packet are two implementations of one contract, and the contract now has a canonical statement
+independent of either.
+
+### Refusal is a result — now mechanised at the row
+
+This page already records that *a screener certifies a row's FORM; only a read certifies its
+PREMISE* (2026-08-12, below). That check now exists as code. `premise_screener` makes a forced-choice
+still-needed | stale | UNKNOWN call with a mandatory evidence quote; UNKNOWN or stale **parks the row
+and files a routed fix task** rather than guessing. In the first pool pilot, **two rows were refused
+on `premise-unknown`** — and the handoff records those refusals as mattering as much as the four rows
+that passed. The same discipline is visible hand-executed in a worker's log from the same week, whose
+report opens with a "Premise verification" section confirming the screener's still-needed call by
+grep before any code was written.
+
+Read alongside the AutoKernel stop above, this is one posture applied at two scales: a loop that
+cannot say *no* — to a stale row, to an inadmissible journal, to a completed-but-refused pair —
+cannot be trusted with a *yes*.
+
+### Source References (2026-08-16 autonomy ladders)
+
+- [`CURRENT-CAMPAIGN.md`](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-13 22:14Z stop
+  banner, the discovery-first funnel leaders, r6 calibration counts, and the discovery controller's
+  prohibition list.
+- [`frontier-f2-self-running-lab.md`](../handoffs/active/frontier-f2-self-running-lab.md) — W3
+  reliability-ladder thresholds, `promote_job.py` as the sole promotion path, the review-queue
+  compliance rule, and the accepted/rejected gold-tuple pair.
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  the Phase-2 acceptance gate and kill criteria, `premise_screener` (P2-2), the headless audit
+  (P2-7), and the two `premise-unknown` refusals in the pilot record.
+- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
+  *Doctrine rulings — 2026-08-16*, ruling (b) — the canonical PREPARE-versus-APPLY statement.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
+  premise-verification-before-implementation record.
 
 ## Compiled Update — 2026-08-13: the sequencer restoration was complete before its duplicate row was dispatched
 

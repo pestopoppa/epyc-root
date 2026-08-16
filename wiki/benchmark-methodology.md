@@ -2,8 +2,81 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (matched experiments must replay production semantics and independently initialize mutable state; repeated pairs cannot repair a contaminated or drifting frame)
-**Sources**: 118+ documents
+**Last compiled**: 2026-08-16 (measurement resolution is a gate concept: the measured band does not block, the blocking bound was never measured, and only the candidate side of every comparison is ever re-measured)
+**Sources**: 120+ documents
+
+## Compiled Update — 2026-08-16: measurement RESOLUTION as a first-class gate concept — the measured band does not block, and the blocking bound was never measured
+
+**Confidence: verified — every file:line below was re-read in `/mnt/raid0/llm/epyc-orchestrator` at compile time; the task inventory is verified as FILED, not as implemented.**
+
+Three mechanisms in the promotion path touch measurement resolution. They divide along two independent axes — **measured vs analytic**, and **blocking vs advisory** — and we hold no mechanism that is both.
+
+| Mechanism | Where | Measured? | Blocks acceptance? |
+|---|---|---|---|
+| MAD noise filter, rolling window, z > 2.0 | `safety_gate.py:1419-1439` (`_mad_significance`) | **Yes** — median and MAD of real trial history | **No** — produces warnings/categories and feeds `learning_exclusions.py`; also only ever sees deltas ≥ 0 |
+| Per-suite single-flip quantum, 3/n | `safety_gate.py:242-254` (`per_suite_regression_threshold`) | No — an analytic quantization bound | **Yes**, but only on the per-suite *regression* side |
+| Min-resolvable-delta and the third state "within eval resolution" | `self_criticism.py:48-56` (`_quality_delta_threshold`, `max(0.02, 3/n)`) | No — derived 3/n | **No** — computed *after* the gate has already decided; emits prompt/journal text only |
+
+The constants that actually decide `passed` on the **aggregate quality** axis are all chosen, never measured: `QUALITY_FLOOR_T0 = 2.0`, `QUALITY_FLOOR_T1 = 1.0`, `REGRESSION_THRESHOLD = -0.05` (`safety_gate.py:87-90`), with acceptance itself reduced to `passed = len(violations) == 0` (`safety_gate.py:2022`). The generalization worth carrying out of this: **a measured band that cannot block and a blocking bound that was never measured do not add up to a resolution instrument.** The third state is the sharpest instance — the system already computes "this difference is smaller than what the eval can resolve", and then throws it away downstream of the verdict it should have changed.
+
+Two refinements the code carries beyond that summary, both worth knowing before anyone "fixes" the analytic side. The 3/n bound has been quantum-inclusive since SG-1 (`1b3da6ea`, 2026-07-20), so a single question flip can never hard-fire a per-suite regression: the threshold is the **coarser** of the candidate's and the baseline's quanta and is never tighter than the fixed `PER_SUITE_REGRESSION = -0.1` floor. And the MAD path's degenerate case — a saturated window where every recent same-tier sample is identical, so MAD = 0 — now requires the delta to clear **two** single-flip quanta before being called significant, replacing an older rule under which any nonzero delta counted as a real gain. Both are resolution-aware. Neither makes the aggregate quality lane resolution-aware.
+
+**Declaring a noise floor is not new here; the missing piece is one specific lane.** K-RAG-1 already works the right way: its 2pp floor caused a 1.31pp recall@10 gap between the aggregate winner (`recency_w0.1_s90_rerank_w0.3`, 0.6298) and the safety candidate (`recency_w0.3_s90`, 0.6167) to be called below-floor rather than promoted, and the safety candidate was preferred because it missed zero all-evidence cases. Calibrated floors run throughout the autokernel loop. It is the eval-tower quality lane, alone, that gates on deltas whose resolution has never been measured.
+
+### The candidate/baseline asymmetry is structural, not a sample-size mismatch
+
+The deeper defect underneath the resolution gap is that the two sides of every promotion comparison are not the same kind of number. **The candidate is measured live on every trial; the baseline is a pinned prior scalar that is never re-measured.** Only the candidate side can be zero-filled, infra-degraded, short-drawn or simply unlucky. There is no paired re-run of the incumbent, and the existing mitigations (`reliability_blocked`, `quality_rebaseline_hold`) are one-sided suppressions — they skip the comparison rather than equalizing it. This is a stronger statement than a √K repeat-count argument, because no number of candidate-side repeats symmetrizes a baseline that is a stored constant.
+
+Three concrete mechanical consequences, each verified in source:
+
+- **The baseline collapses last-write-wins.** `BaselineState.update_tier()` writes `self.baselines_by_tier[tier] = result.quality` and `.update(...)`s the per-suite dicts (`safety_gate.py:1146-1155`), so a re-score of the same suite silently overwrites the prior baseline with no record that one existed. Any repeat-measurement campaign corrupts the very pin it is trying to characterize, so this has to be fixed *before* repeat scoring exists, not after.
+- **The pin never enters the trial record.** `JournalEntry` has no `baseline_quality`, no `delta`, no `previous_quality` field. The incumbent value reaches the journal only as free prose inside `failure_analysis` ("… vs baseline 1.524 …") — and it is then parsed back out with a regex (`experiment_journal.py:99`, `_BASELINE_QUALITY_RE`), a regex that exists because corrupt baselines embedded in prose had to be scrubbed after the fact. A delta that must be reassembled by joining a scalar to a string is not self-contained evidence.
+- **A short draw scores as a complete result.** The sampler logs a shortfall into provenance and returns short, and `n_questions` is then defined as `len(results)`. Three narrow paths already fail closed (promotion-eval min-n, math re-baseline, designed-core missing ids); the general assertion does not exist.
+
+### FILED, not built — the EV-14 block
+
+All six items below were filed 2026-08-15 in [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) and are **open**. Nothing in this block has shipped; read the section above as the measured present state and this one as the intended next state.
+
+- **EV-14a** — measure a per-suite resolution band with the instrument already in the tree: `scripts/autopilot/core_v2_calibrate.py --repeats` (fixed n and seed, standalone JSONL rows, spread fully retained, nothing averaged) against one **unchanged** config per T1 suite, publishing the band beside the suite. A difference smaller than its own suite's band reports as **UNRESOLVED** — never as "no change", never as a regression. Explicitly: do not build a new rescore harness.
+- **EV-14b** — decide whether the measured band should BLOCK, i.e. give the gate the third state that `self_criticism.py` already computes, so a sub-band delta records as `unresolved` rather than as an improvement.
+- **EV-14b′** — decide the candidate/baseline asymmetry alongside it.
+- **EV-14c** — fix the last-write-wins baseline collapse. Flagged as a defect, not an enhancement, and sequenced *before* EV-14a runs.
+- **EV-14d** — assert the expected case count before scoring.
+- **EV-14e** — record the baseline pin inside the trial record, beside the delta.
+- **EV-14f** — a known-null corpus: run the optimizer against inputs with **no** failures and assert it proposes nothing. This measures a different thing from everything above — the tower measures whether a change HELPS, never whether a proposed fix ANSWERS a real observed failure.
+
+Two cautions travel with the block. **Reuse, do not rebuild**: `core_v2_calibrate.py --repeats`, `paired_stats.py` (McNemar — exact binomial, continuity-corrected normal, verdict surface, discordant-pair sample-size guidance), and `pareto_archive.hv_slope_noise_floor()`, which is an existing *measured* floor although it gates stagnation rather than acceptance. And **do not miscite SEQ-B** as precedent for a measured noise band: it lives at `src/autopilot_core/tier_specs.py:121-147`, and it root-caused a **measurement-pairing bug** — an unchanged config scored a rate regression because candidate and incumbent used different denominators — not sampling noise. Cite it for the "an unchanged config scores a regression" framing and for deriving a constant from 396 journaled trials, nothing more.
+
+### Failure classes: we currently drop both, and that is a choice nobody made
+
+`eval_tower.py:5129` filters the quality denominator with `not r.error`, so an **agent/config-caused** failure and a **platform-caused** failure are treated identically — both simply leave the denominator. The distinction survives only into telemetry and `reliability`. The consequence is a live perverse incentive: **a config that crashes more gets a smaller denominator and is not penalized for it.**
+
+The convention worth weighing against that (external design guidance, filed as ETR-1, undecided): an agent/seed-caused failure scores 0 *and the baseline pays the same tax*; a platform-caused failure is **dropped**, because a retry cannot score a trial that never ran and zero-filling an infra outage bakes outage luck into the pin; an unclassified exception type is a **hard error**, not a default bucket. Note that the asymmetry above is what makes zero-filling dangerous in the first place — with a never-re-measured baseline, an outage during the candidate's window becomes a permanent property of the comparison.
+
+Cite that convention as design guidance and never as validated practice. The Stage-2b dive established that the source documenting the rule does not implement it: the script named as the rule's home has never existed in that repository's history, the script that produced their published pins drops unrewarded trials rather than zero-filling them, and their shipped error taxonomy has zero `raise` statements. Their live engine does implement the first two halves. Both facts have to travel together — it is a worked external example of "the convention is documented" and "the numbers obey the convention" being two different claims.
+
+Two adjacent holes verified in our own tree, also open:
+
+- **ETR-2 — `quality_measured` is computed and never read.** Placeholder results are constructed with `quality=0.0` and `quality_measured=False`, each commented "`quality=0` is a placeholder, not a measurement" — but the flag appears zero times in `autopilot.py` and `experiment_journal.py`, and only at its own declaration in `safety_gate.py`. Neither `check()` nor `update_baseline()` reads it, so a placeholder enters the gate as a literal 0.0 candidate score. What actually saves it is an *independent* guard, the REL-1 reliability floor. Either read the flag or delete it.
+- **ETR-3 — the narrow silent-scoring hole.** A non-blank garbage answer with no error field and no structural signal returns `None` from `infra_failure_reason` and is scored as an ordinary wrong answer. (An unrecognized failure that *does* carry an error string becomes `task_failed`, which is a misclassification but a defensible one.)
+
+### Removing a failure class BY CONSTRUCTION rather than by discipline
+
+Our tower is largely LLM-judged and noisy, with a documented history of per-suite "regressions" that turned out to be single-question flips. The structural alternative is a suite whose scoring path *cannot* be noisy. IFBench is the current candidate (CJ-6, filed 2026-08-15, **not adopted**): its scoring path was verified **by source inspection**, not by taking the claim, to contain no LLM client, no HTTP library and no API key — **58 deterministic Python predicates at temperature 0**, over 300 prompts and 344 constraint instances (the 58 constraint ids were independently re-derived from the released data, with every registry entry exercised). Scoring is judge-free, network-free and sampling-free; only generation needs the fleet, so we generate with our own harness and score offline.
+
+The methodological point generalizes past this one suite: a deterministic-predicate scorer eliminates judge variance *by construction*, which is a different and stronger guarantee than eliminating it by protocol discipline. It does not eliminate sampling noise in generation, which is why the block requires the noise floor to be recorded **before** wiring, not after the first false alarm: at n=300 one item is 0.33pp, single-arm 95% CI ≈ ±5.6pp, and **unpaired cross-arm ≈ ±8.0pp** — so score PAIRED on the same 300 prompts via `scripts/autopilot/paired_stats.py`, or report no delta at all.
+
+Preconditions that are themselves methodology lessons: pin the repo by **commit SHA** (no tags or releases exist, so the name alone is not a reproducible referent); pre-seed the NLTK data directory and assert no network during scoring, since the only network touch is an NLTK bootstrap at import and until seeded a fresh run silently depends on the network; and **assert 300/300 prompt-join coverage**, because the scorer joins by exact prompt string while the shipped sample output covers only 290 of 300 — a normalization change would break that join loudly for some rows and silently for others. A third-party evaluation index removed IFBench on 2026-06-15 as no longer separating frontier models; that saturation fact does not apply at our tier (the source reports 16.7–31.3 for untrained 7B–8B instruct models), but the tier argument must rest on our own measured scores rather than on a leaderboard. Adoption remains an operator decision at CJ-GATE.
+
+### Source References (2026-08-16 resolution compile)
+
+- [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) — the 2026-08-15 resolution-mechanism table, the three chosen constants, and the EV-14a…f block including the candidate/baseline asymmetry, the baseline collapse, and the reuse/do-not-miscite notes.
+- [`eval-tower-loop-robustness-audit-2026-07-20.md`](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md) — the failed-trial convention, its "documented ≠ obeyed" caveat, and ETR-1/2/3 verified against our own code.
+- [`eval-tower-architecture-audit-2026-07-20.md`](../handoffs/active/eval-tower-architecture-audit-2026-07-20.md) — REL-1 (partial-failure semantics) and SG-1, the quantum-inclusive per-suite comparison landed as `1b3da6ea`.
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-6 IFBench block: source-inspected scoring path, n=300 noise floor, join-coverage and SHA-pinning preconditions, CJ-GATE.
+- [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) — K-RAG-1's declared 2pp floor and the 1.31pp below-floor call.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — `passed = len(violations) == 0` and the finding that the gate never receives the mutation payload (compiled into [Safety](safety.md)).
+- Source code re-read at compile time: `epyc-orchestrator/scripts/autopilot/safety_gate.py` (87-91, 242-254, 1146-1155, 1419-1440, 2022), `self_criticism.py:48-56`.
 
 ## Compiled Update — 2026-08-13: repetitions can create a trajectory, and an A/B must isolate its mutable state
 

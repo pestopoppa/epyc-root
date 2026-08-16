@@ -2,8 +2,113 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (K-LCM-1 full-run dispatch correctly stopped at its never-run RE-4.2 non-saturation precondition; earlier serving findings retained)
-**Sources**: 69 documents
+**Last compiled**: 2026-08-16 (a decode-vs-depth curve and an MTP workload gate on the new stock-27B arm were both manufactured by the prompt; batched np numbers and the concurrency-accounting rule that makes them readable; earlier serving findings retained)
+**Sources**: 71 documents
+
+## Compiled Update — 2026-08-16: a decode-vs-depth curve and an MTP workload gate, both manufactured by the prompt
+
+**Confidence: verified** — every number below was measured on this host against the frozen v9 kernel
+(`/mnt/raid0/llm/llama.cpp` @ `0db32c06e`, `llama-server --version` `10125`) on the single MI210, and
+the retraction was made by the same workstream that produced the retracted numbers.
+
+### The arm
+
+`Qwen3.8-27B` was staged on release day (2026-08-14) as the successor to `Qwen3.6-27B-MTP-Q8_0`,
+which is the primary model for **`architect_general` + `coder_escalation`** — both served from one
+`:8083` MI210 process (ROCm0). Load smoke PASSes on the v9 HIP build
+(`-ngl 999 -c 4096 --spec-type draft-mtp --spec-draft-n-max 4`): the model loads at **31.98 GB VRAM**,
+generates coherently, and raises no op-fallback warnings.
+
+**The MTP-sidecar assumption was wrong, and only header inspection caught it.** The plan assumed a
+separate draft sidecar. `llama-gguf r` on the unsloth `Qwen3.8-27B-Q8_0.gguf` (29.05 GB) shows
+`blk.64.nextn.*` tensors (`eh_proj` / `enorm` / `hnorm` / `shared_head_norm`) and
+`qwen35.nextn_predict_layers` metadata — the same **embedded** self-draft layout as
+Qwen3.6-27B-MTP-Q8_0. So `--spec-type draft-mtp` stays same-file self-draft and the registry's
+`draft_model` is unchanged: a genuine like-for-like wiring swap. The ggml-org `mtp-*.gguf` (3.16 GB)
+is a full layer-64 draft model (`attn` + `ffn` + `nextn`) built for the ggml-org base, which *strips*
+MTP — redundant here, and downloaded only as a fallback. A "drop-in" claim is only as good as the
+artifact inspection behind it; the assumed topology and the shipped topology differed.
+
+### The retraction
+
+The first throughput sweep (2026-08-14) used a **synthetic random-word prompt** and produced a clean,
+plausible story that was entirely an artifact of the prompt:
+
+| depth | synthetic sweep (RETRACTED) | real-prompt sweep (2026-08-15) |
+|---|---|---|
+| 512 | 37.15 t/s | — |
+| 2k | 37.95 t/s | ~45 t/s |
+| 8k | 22.22 t/s (plain 29.11, "MTP −23.7%") | ~45 t/s |
+| 32k | 13.61 t/s (plain 21.65, "MTP −37.1%") | ~45 t/s |
+
+The re-run on **real olympiadbench prompts** shows single-stream decode **flat at ~45 t/s across
+2k–32k**, and MTP holding. Both artefacts died together: the monotone "KV-read-cost" decay curve
+*and* the "MTP is net-negative on deep-RAG" workload gate it appeared to reproduce. Random-word
+prompts destroy MTP draft acceptance, so a speculative arm benched on synthetic text measures the
+prompt distribution, not the workload. This is the same failure mode as the retracted n-gram-drafter
+`2.8×` (a warm-context self-copy artifact): **never characterise a speculative-decoding arm on
+generated filler text.** The natural-prompt interactive single-shot figure, `47.57 t/s`, was never
+affected and still stands.
+
+*Standing source conflict, resolved here*: the candidate-surface handoff's axis table still lists the
+synthetic `37.15 → 13.61` row and the MTP-hurts-at-depth cell as ✅ measured, while its own
+2026-08-15 completion note retracts them. The real-prompt sweep supersedes; treat the axis table's
+throughput/RAG/MTP cells as stale until that handoff is reconciled.
+
+### Batched serving on the arm
+
+- Prefill **pp512 = 727.29 ± 28.00 t/s** (`llama-bench -ngl 999 -nkvo 1 -p 512 -r 3`).
+- 24-cell `np × depth` sweep on real prompts: single-stream flat ~45 t/s, **peak aggregate 157 t/s at
+  `np=8`**.
+- From the (otherwise retracted) synthetic sweep, the `np=4` @512 cell read ~20–23 t/s per request,
+  ~80 t/s aggregate. Do **not** splice that against the 157 t/s figure to build a scaling curve —
+  different prompt regimes, and the per-request half of the synthetic cell inherits the same
+  acceptance defect.
+
+**The accounting rule that makes any of this readable** (standing campaign policy, unchanged and
+still binding): under concurrency the individual request t/s normally *drops* while aggregate batch
+throughput *rises*, so every concurrent eval must record `speed_metric_mode`, `eval_concurrency`,
+median per-request t/s, aggregate batch t/s, and eval wall time. For concurrent eval batches the
+SafetyGate/Pareto `speed` objective is **aggregate batch t/s**, with raw median request t/s retained
+as audit metadata — precisely so the planner does not read safe same-trial fan-out as a regression
+while the per-instance slowdown stays visible for diagnostics. A run missing that metadata is
+diagnostic-only quarantine, never a baseline mutation.
+
+**`np` is a per-arm constant, not a stack default.** The campaign's remaining batched-decode item
+(E1 / P-BENCH-3) is deliberately a *per-model* ladder `-np 1,2,4,8,16`, and the 2026-07-06 checkpoint
+completed the `qwen36_q8_0` MoE ladder but interrupted the `qwen36_27b_q8` **dense-control** tail
+after `np=1` to restore the stack cleanly — so the MoE-vs-dense concurrency comparison that sweep
+exists to produce **does not exist yet**, and no cross-arm np optimum can be quoted from it. Read this
+alongside the call-shape rule compiled in
+[Benchmark Methodology](benchmark-methodology.md) (*"Tuning constants are CALL-SHAPE specific"* — the
+`-fa 1` optimum already inverts between two models on this same GPU). Cross-role parallelism is
+stricter still: allow-verdicts are closed-world only for the exact `topology_hash` measured, and any
+stack, role, model, CPU-binding or launch-topology change invalidates the matrix before concurrency
+may be used again.
+
+### What is still open
+
+The **registry swap** is the one unchecked step: `architect_general` + `coder_escalation`
+`model_path` → `Qwen3.8-27B-Q8_0.gguf` (with `draft_model` pointing at the same file), then
+`stack_change_pipeline.py` regenerate plus the standard model-stack-change checklist. The optional
+vision projector (`mmproj-Qwen3.8-27B-Q8_0.gguf`, 0.63 GB) is not downloaded and the multimodal
+question — whether to also stage this arm for `worker_vision`/`vision_escalation` — is explicitly out
+of scope for the coder/architect swap.
+
+### Source References (2026-08-16 Qwen3.8 serving arm)
+
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — GGUF-header
+  verification and the embedded-MTP correction, load smoke (31.98 GB VRAM), the real-prompt
+  flat-decode result and its explicit CORRECTION of the synthetic decline, prefill pp512, and the
+  remaining registry-swap step.
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+  — the synthetic sweep's per-depth and MTP-workload-gate cells (the retracted values, still present
+  in its axis table), the `np=4` @512 batched cell, and the 2026-08-15 24-cell re-run that supersedes
+  them.
+- [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) — the concurrent-run
+  metric policy (aggregate batch t/s as the Pareto speed objective), the baseline-mutation hard rule,
+  the topology-scoped closed-world guarantee, and the E1 `-np 1,2,4,8,16` per-model ladder with its
+  interrupted dense-control tail.
 
 ## Compiled Update — 2026-08-13: a region-lock grant is not a model-server inference window
 

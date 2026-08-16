@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-07-24 (adds the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
-**Sources**: 42+ documents (added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
+**Last compiled**: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
+**Sources**: 45+ documents (added 2026-08-16 intake-1140 HarnessOpt-Bench + the Qwen3.8-27B swap/candidate-surface pair; added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
 
 ## Summary
 
@@ -336,6 +336,67 @@ The framing above predicted a `{nothink → think-budget → single-shot scaffol
 
 **A third, previously-invisible axis surfaced: `max_tokens` (completion budget) as a silent quality lever, independent of both the prompt-effort and native-thinking axes.** On a hard, non-saturated suite (`olympiadbench_hard`), a model that can solve 76.9% of items when allowed to finish scored only 50.0% overall because 46% of responses were truncated mid-derivation by the token cap — a ~57pp swing driven purely by budget, not capability. Because every production role runs with an effective completion ceiling, any role whose ceiling sits below its model's accuracy "knee" is **silently losing quality on hard tasks** in a way that looks like a wrong answer, not a truncation, in aggregate metrics. The proposed router extension (**TB-6-ROUTER**, gated on the GPU joining the serving stack) treats `max_tokens`/`reasoning_budget` as a per-request tunable the router sets from assessed task complexity, jointly with an admission-control constraint: KV per slot scales linearly with the budget and is strongly per-architecture (a dense 27B costs ~2.4× the KV/slot of the MoE arms at the same context), so budget selection and concurrency admission are one coupled scheduling problem, not two independent knobs. [reasoning-effort-levels](../handoffs/active/reasoning-effort-levels.md) §Token-budget study
 
+## 2026-08-16 Update — Two additions to the effort ladder: a harness rung, and what a role swap costs when its quality gate is declined
+
+### A. The effort ladder has an unmodelled rung: the harness itself
+
+The `{nothink → think-budget → single-shot scaffold → loop-depth → model-escalation}` axis this page
+consolidated in 2026-07 treats the harness a request runs through as fixed substrate. External
+evidence suggests that is the wrong default.
+
+**EXTERNAL claim, not ours.** `intake-1140` (HarnessOpt-Bench, arXiv 2608.06301v1, Scale AI —
+unrefereed nine-day-old preprint, credibility `3/6`), dive-verified against the primary source on
+2026-08-15. Its Table 3 is a controlled swap in which the *target* harness is the only variable (same
+dataset, partition, rounds and target model): OfficeQA `0.341 → 0.734`, BrowseComp-Plus
+`0.462 → 0.701`, Terminal-Bench `0.241 → 0.607`, GAIA `0.000 → 0.508`. Normalizing those to gain and
+comparing against the best of **111** frontier-optimizer runs — arithmetic **our dive performed and
+the paper never states** — the best off-the-shelf harness is statistically unresolved from the best
+optimizer run on three of four tasks, and beats every optimizer on Terminal-Bench by about 3.6 of the
+paper's own noise-floor bands.
+
+**Cost reading**: changing harness can be worth about as much as an entire frontier-model
+optimization campaign, at essentially zero marginal token cost — which places a harness rung at least
+alongside the model-escalation rung at the expensive end of the ladder, rather than below it.
+**Do not** cite this entry's headline (*"model choice has a larger effect than coding-harness
+choice"*, `0.142` vs `0.079`, ~`1.8×`) as a routing or cost result: that contrast varies the
+**optimizer's own coding agent**, not the target harness, and reads backwards. Cite
+`intake-1140#record`. No EPYC measurement exists on this axis and none is proposed — the entry is
+filed record-only, no task, no build. Routing-side framing:
+[Routing Intelligence](routing-intelligence.md).
+
+### B. The first role swap decided without a comparative quality gate
+
+The Qwen3.8-27B → Qwen3.6-27B refresh for `architect_general` + `coder_escalation` (staged 2026-08-14,
+registry swap still pending) is the first role change in this stack justified **without** running the
+comparative quality gate. The operator declined it explicitly — *"quality will improve certainly"* —
+on the grounds that a same-day release refresh is cheap to stage. Three consequences are worth
+carrying as cost-of-evidence lessons:
+
+1. **The declined evidence was re-labelled, not omitted.** The candidate surface ships the
+   coding-ladder cell as `operator-declined — deferred`, never blank: a blank cell reads as
+   *unmeasured* to a downstream consumer choosing between arms, which is a different — and cheaper —
+   claim than *declined*. The deferred ladder is the same recipe already in use (LCB-hard n=53 /
+   BCB-hard n=90 / SWE-40 n=40).
+2. **The throughput step survived the declined gate on purpose.** It "exists to record the serving
+   baseline, not to gate the decision" — the swap was expected to be throughput-neutral (dense,
+   bandwidth-bound), so its measurement value is a baseline for later comparison, not a decision
+   input. That is the correct disposition for a measurement whose decision has already been made
+   elsewhere: keep it, and say why it is being kept.
+3. **The uplift arrived anyway, from a different instrument.** The architect bench measured it a day
+   later (2026-08-15, MEASURED here): mmlu_pro 56.7%, gpqa_diamond 42.4% (letter) / 81.3% (CoT),
+   aime25 **76.7%**, olympiadbench_hard 47.1%; humaneval 96.3%, BCB-hard 31.1%, LCB-hard **52.8%**
+   against the stock arm's 45.3%, SWE-oracle 39/40 single-shot with two hard tool-using instances
+   deferred to the agentic rung. So the banked uplift is real on LCB-hard and aime25 and near-parity
+   elsewhere. The lesson is *not* that the gate was unnecessary — the evidence came from another
+   instrument, and had it not, the swap would have shipped on an assertion.
+
+**The gpqa split is this page's own lever, re-observed on a new model.** `42.4%` letter-only vs
+`81.3%` with CoT allowed in `content` is a **38.9pp** gap on identical items — the same prompt-effort
+lever measured at +32.0pp (52.0%→84.0%, McNemar p=8.6e-04) in the 2026-07-24 ladder above. A role
+swap judged on a letter-only harness would have understated this arm by roughly that margin. Effort
+levels stay certified per (model, quant); the harness/prompt shape is not a property of the
+benchmark, it is a cost-and-quality decision the router makes.
+
 ## Related Categories
 
 - [Context Management](context-management.md) -- Compression techniques reduce context pressure, which is the primary cost driver; tool output compression is a routing-adjacent optimization; format-native injection and the transplant ceiling are compiled there from the context side
@@ -345,6 +406,10 @@ The framing above predicted a `{nothink → think-budget → single-shot scaffol
 
 ## Source References
 
+- [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) -- EXTERNAL, credibility `3/6`, unrefereed preprint dive-verified 2026-08-15: the controlled target-harness swap (Table 3), the published per-suite noise floor and its reading rule, the 111-run normalized-gain comparison our dive derived, and the explicit warning that the `0.142` vs `0.079` headline varies the optimizer's coding agent rather than the target harness. Cite as `intake-1140#record`; it does not inherit `intake-1134`'s ICML venue credit
+- [routing-intelligence.md](../handoffs/active/routing-intelligence.md) §*Research Intake Update — 2026-08-15* -- the record-only filing of the harness-as-routing-dimension finding and the correction attached to it
+- [qwen38-27b-replace-qwen36.md](../handoffs/active/qwen38-27b-replace-qwen36.md) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md) -- the `operator-declined — deferred` cell convention, the deferred ladder recipe (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40), and the presentation-vs-evidence-authority split
 - [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) -- the measured effort ladder: +32pp prompt-CoT lever, native-`<think>` non-termination-tail failure mode + budget-cap fix, the per-model calibration invariant, and the §Token-budget study (`max_tokens` as a silent quality lever + TB-6-ROUTER admission-control design)
 - [architect-model-selection-bench.md](../handoffs/active/architect-model-selection-bench.md) §R2 -- the R2a/R2b/R2c/R2d ablation runs the reasoning-effort ladder findings are measured from
 - [Overthinking + Information Bottleneck](../research/deep-dives/overthinking-info-bottleneck.md) -- xi_O/xi_P efficiency metrics, CIB theory (Propositions 4.1/4.2), difficulty-adaptive budgets, surprisal-based filler detection, three compression mechanisms

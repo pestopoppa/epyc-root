@@ -2,8 +2,266 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-14 (reviewer event-to-ledger materialization proven at current-store scale; paired shadow replay remains open)
-**Sources**: 91+ documents
+**Last compiled**: 2026-08-16 (the coordination layer was restructured: code owns the loop, the machine stopped reading panes, and a lane worktree was shown to isolate the index but not the repo's singletons)
+**Sources**: 93+ documents
+
+## Compiled Update — 2026-08-16: code owns the loop — the machine stops reading panes, and a worktree isolates the index but not the singletons
+
+**Confidence: verified for the ratified decisions, the landed mechanism, the pilot receipts and the
+open defect — each read directly from the tracked handoff, the operator package, and the doctrine
+files they name. Explicitly NOT verified: the >40% duty-cycle target and the <10% self-repair
+target, which are 7-day observations that have not elapsed.**
+
+The coordination layer was restructured on 2026-08-15 (decisions ratified) and implemented on
+2026-08-16 (20 commits). Its thesis is one sentence, and it is a subtraction: **code owns the loop;
+models judge at choke points; workers run in visible panes the operator can steer — but the
+machine's only channel to a worker is spawn-args in, report file and exit status out**
+([`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)).
+Everything below follows from taking that channel seriously.
+
+### The machine stopped reading panes — the three-state liveness problem was deleted, not classified
+
+A session is **working**, **compacting**, or **idle**, and the pane cannot tell you which: a session
+compacting its context renders *identically* to a finished one, because the goal line, the "Pursuing
+goal" timer and the background-terminal count all disappear together
+([`SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another session's
+liveness*). The other two instruments fail in the opposite direction: measured 2026-08-12 10:53Z,
+`mainB`'s heartbeat read `state: working` while **446 seconds stale**, with the pane idle across
+three consecutive watcher cycles and the GPU at 0% (origin: INC-20260727-stale-heartbeat). A
+heartbeat written once is a birth certificate, not a liveness signal, and **a stale heartbeat is
+worse than no heartbeat** — the stall ladder reads it as a stall and nudges a healthy agent.
+
+The failure record shows the instrument failing in *every* direction, which is what rules out a
+threshold fix ([`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)):
+
+- **Compacting read as idle, twice** (F-07) — the coordinator's own admission at 10:28:19Z, and the
+  second misread happened *between* its first and second corrections. Closed by `83f204cf`, which
+  reports `IDLE-CANDIDATE … may be compacting` and defers to the adapter's runtime check.
+- **Heartbeats stale while the thread demonstrably works** — at the 12:37Z handover on 2026-08-12,
+  `mainA` read ~90 minutes stale and `mainD` ~57 minutes stale, both while working: *"Heartbeats are
+  not liveness here"* (INC-20260727's birth-certificate failure, live at handover).
+- **Busy read as unreachable** (F-37) — a main whose subagents redraw the pane every second can never
+  satisfy a quiet-check, so it looks unreachable while perfectly healthy. Closed by `c3192787`
+  *without* weakening the guard: `pane_busy` corroboration requiring three consecutive stable readings.
+- **Wedged read as idle** (F-43, 2026-08-13) — a session found in process state `T`, all 121 threads
+  stopped, `wchan do_signal_stop`: a SIGSTOP, not a crash. Its heartbeat simply stopped updating and
+  the backend had no runtime signal, so the pane read idle. This is a fourth state the three-state
+  model does not even name.
+
+The obvious response is a better liveness classifier. The restructure did the opposite. D8 rules that
+worker panes are **human-authoritative**: the operator may watch, steer and answer permission prompts
+by hand, the machine never types into a pane and never makes a decision from pane text, and the only
+completion signal is a schema-valid report file. P3-2 then shrank `tmux_adapter.py` to the two
+interactive endpoints and deleted the worker-side nudge/doorbell/heartbeat/glyph machinery; P3-3
+dropped pane heuristics from `fleet_watch` entirely, keeping hardware compute-idle plus region claims
+and adding a queue-aging alarm. Liveness and escalation *classifiers* were explicitly demoted to
+"pulled by need" (PN-1) — **not scheduled, and not to be started without a measured consumer.** The
+generalisable move: when a signal is structurally incapable of distinguishing two states, removing
+the dependence on it beats improving the reading of it.
+
+### What a lane worktree isolates, and the four surfaces it cannot
+
+The wiki already records that per-agent worktrees dissolve same-file commit sweeps while unpromoted
+lanes rot (106 commits behind, one at ~302 — *2026-08-12* section below). The mechanism doc
+([`WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md)) states the boundary
+precisely, as a **two-plane model**:
+
+- **Versioned work plane** — one worktree per agent at `/mnt/raid0/llm/worktrees/mains/<agent>` on
+  its own `lane/<agent>` branch. Own working tree, own index, own untracked state. Isolation was
+  *measured, not assumed*: staging a scratch file inside `mains/mainA` left `/workspace`'s staged
+  count at 0.
+- **Canonical runtime plane** — `/workspace`, one instance, deliberately **never forked**. The
+  session bus is state, not work, "and there can only ever be one live copy of *right now*". A naive
+  rollout would have forked it: `session_bus.py`'s bus root used to resolve via
+  `Path(__file__).resolve().parents[2]`, so five worktrees would have produced five independently
+  mutating buses. `get_bus_root()` now pins the literal canonical path from every worktree.
+
+Three further surfaces are singletons that a worktree cannot isolate either, and RTG-51 gives each
+one a single writer rather than a per-lane copy
+([`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md),
+Phase 1, landed 2026-08-13):
+
+1. **Generated index state.** `index_state.py` writes were removed from post-commit/merge/checkout
+   hook bodies (`60187101`), with the proof obligation stated as a negative control: a worker handoff
+   commit must leave `.index-state.json`, `.index-graph.json` and the master generated block
+   unchanged. Derived files are regenerated only inside the heavy-wrap lease.
+2. **One-per-repo manifests and watermarks.** The same commit ensured an ordinary post-commit
+   retrieval refresh cannot mutate `wiki/source_manifest.json` or the wrap watermark, giving
+   retrieval its own cursor.
+3. **The promotion merge itself.** Promotion runs through a throwaway `--detach` worktree against
+   `origin/main`, aborts and leaves `main` untouched on conflict, and never force-pushes; promotion
+   rows are serialized one at a time through `merge_gate.py` / `serialized_push` (P2-8).
+
+And the lease that guards them had its own defect: roster/PID reclaim allowed a second same-roster
+process to take a held wrap lease. It was replaced (`8ff5162c`) by an **opaque per-operation token**
+in a mode-0600 file whose hash is stored in the lock, required for normal release, with force-release
+audited — accepted only with a negative control that *would have admitted the previous collision*.
+
+The standing corollary, unchanged and now mechanised: **the worktree isolates; only promotion syncs.**
+The wrap-up cadence ruling below is what makes promotion frequent enough for that to matter.
+
+### Three doctrine rulings, 2026-08-16 — canonical in `OPERATING_CONSTRAINTS.md`
+
+P1-3 closed three live self-contradictions in the instruction corpus with one explicit ruling each
+([`OPERATING_CONSTRAINTS.md` → *Doctrine rulings — 2026-08-16*](../agents/shared/OPERATING_CONSTRAINTS.md)):
+
+- **(a) Wrap-up cadence.** The binding 2026-08-11 operator rule wins — **one task done = one wrap-up,
+  AS YOU GO.** Exactly two steps are broad and destructive enough to stay at the operator cadence and
+  run ONLY inside an operator-invoked `/wrap-up`: index **PRUNING** (deleting or archiving rows, and
+  handoff compaction) and the **wiki compilation sweep**. Everything else — progress report, checkbox
+  sync, handoff updates, `Next action` refresh, agent log, pathspec commit, **lane promotion** — runs
+  at every completed task, autonomous and nightshift sessions included. And **nothing may
+  auto-trigger the full routine**: no `Stop`/`SessionEnd`/`PreCompact` hook, no cron, no nightshift
+  task, "and there must not be one." The cadence is a rule about *who invokes*, not a hook.
+- **(b) Subagent index edits.** **A subagent may PREPARE index edits; the owning session APPLIES them
+  and owns the commit.** Drafting row text, running `index_state.py --check` and reporting the exact
+  diff is preparation; adding, deleting or re-pointing a row is never a subagent's own write. This
+  reconciles two rules that had read as contradictory ("wrap-up may run via a coordinator subagent —
+  preferred" vs the standing CLAUDE.md prohibition): both hold, **because preparation is not
+  modification.** Same rule for intake entries and handoff stubs. Operator approval is needed only to
+  widen it.
+- **(c) Role-based delegation.** **Decomposition by ROLE is a measured anti-pattern and no live
+  surface may instruct it** — decompose by CONTEXT BOUNDARY. Confirmed by sweep: the eight persona
+  files are archived, and `coordination/session-bus/config.yaml` (closed role set
+  `main`/`coordinator-agent`/`reviewer`/`retired`/`service`) is the sole authority on who holds which
+  role. Two live surfaces still routing by persona were corrected. Model-tier-vs-task-difficulty
+  routing in `agents/README.md` is *not* the anti-pattern and stays.
+
+### The fan-out multiplier finally has a detector
+
+The 2026-08-13 section below records an open gap: no way to tell a main that actually fanned out from
+one that worked serially and reported otherwise (RTG-49 / the "serial collapse" name from
+intake-1106, which defines the term and never measures it). The failure ledger states it as sharply
+as it can be stated — *"nothing on this plane distinguishes a main that dispatched five concurrent
+subagents from one that did the same work on its own thread, so the only detector is the operator
+saying so"* (F-15, against a measured 1,070 open backlog items, and the operator's ruling *"this
+should ALWAYS be the case"*). The pool's completion report closes that gap for the pool tier via a
+`subagents_spawned` field. In the pilot, **five subagents were fanned out and counted** — the
+handoff's own words: the multiplier "had no detector but the operator's word until today."
+Interactive-session measurement remains open under RTG-49.
+
+### The pilot: four rows passed, two were refused, and the refusals are the result
+
+Four workers ran under the `claude -p` harness in visible panes, three concurrently. **4 of 4
+attempted rows passed** with schema-valid reports (41k / 62k / 118k / 205k tokens; 0 / 0 / 2 / 3
+subagents; one denied tool call recorded rather than silently tolerated). Every batch sat inside the
+D1 ceiling of ~250k tokens/batch; three of four promoted to `main` through `promote_lane`, and
+pilot-02 stopped at the D9 gate because its test lands under `scripts/coordination/**`.
+
+**Two further rows the pool REFUSED to run matter as much as the four it ran: both parked on
+`premise-unknown` rather than guessing.** That is `premise_screener` (P2-2) doing its job — a
+forced-choice still-needed | stale | UNKNOWN call with a mandatory evidence quote, where UNKNOWN or
+stale parks the row and emits a routed fix task. It is the mechanised form of a finding this KB
+already carries: a screener certifies a row's FORM, only a read certifies its PREMISE. The same
+discipline shows up hand-executed in a worker's own log the same week — a "Premise verification"
+section that confirmed the screener's still-needed check by grep before writing any code
+([`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md)).
+
+Read the pilot against its own gate before treating it as a pass: the Phase-2 acceptance gate is
+**≥10 rows end-to-end**, 100% independently audited, operator spot-reviews 3 of 10. Six rows were
+dispatched. The pilot is evidence the path *works*, not evidence the gate is met.
+
+### A concurrency ceiling the automatic path cannot reach — and the decision not to alarm on it
+
+The single open defect is instructive about how a bound can be honest and unreachable at the same
+time. `max_concurrent_workers: 4` is **not achievable through the daemon**: `compute_advice` skips
+any agent already in `busy_owners`, `busy_owners` is keyed on the queue row's `owner`, and the entire
+pool is ONE roster identity (`workerpool`) — so the first assigned row makes the whole pool busy and
+the pool serializes at **one row at a time**, whatever the config says. The pilot reached three
+concurrent workers only because they were dispatched **by hand** with `--pilot-override`, bypassing
+the picker, **so the measured throughput does not demonstrate the automatic path.** D1's bound is
+honest as a *ceiling* — nothing exceeds 4 — but the >40% duty-cycle target assumes it is achievable.
+
+The deliberate non-response is the transferable part: **it is not alarmed on, because the condition
+is continuously true and a permanently-on alarm is the exact failure the fleet predicate exists to
+end.** It is instead visible in every tick's `fleet-health` advisory via `capacity_free` /
+`in_flight` / `dispatchable`. Three candidate fix shapes are filed, none chosen.
+
+### Identity is not session — and a rule whose subject is deleted fails silently
+
+P3-7 retired the interactive `auditor` SESSION but deliberately did **not** tombstone the auditor
+IDENTITY: `worker_runner.py` addresses every audit packet to `auditor`, `headless_audit.py` writes
+its outbox under that id, and `session_bus.py::_check_routing_intent` raises `BusError` on a routing
+target whose roster role is `retired`. Tombstoning would break the audit path at that raise. The
+roster row is `role: service` with no tmux endpoint and no `worktree:` key, so no pane can be
+spawned, probed or nudged under it.
+
+The interesting failure is what that retirement did to a *rule written about a session*. RTG-51's
+interim rule read "Auditor main is the heavy-wrap writer and subagents are read-only." After P3-7
+that sentence **had no subject** — taken literally the document was left with NO designated
+heavy-wrap writer, "which is worse than an outdated one because it fails silently." It was replaced,
+not reworded: the heavy-wrap writer is now **the single headless invocation that holds the wrap
+lease, writing under the auditor identity**, and the read-only constraint now binds every invocation
+that does not hold the lease — which includes every per-packet audit. Two transactions that had been
+conflated are now separated by lease: **per-packet audit** (one per completion, read-only w.r.t.
+indices, wiki and `main`) versus **heavy wrap** (one leased, batched transaction over an immutable
+receipt cut — regenerating indices or compiling the wiki per packet "would be wrong and expensive;
+batching is the point of the immutable cut"). This is the same operator-cadence boundary as ruling
+(a), expressed as a lease instead of a prose rule.
+
+### A gate I built is not a gate I may sign
+
+Two containment mechanisms fired against the implementation itself, and both were recorded as
+working rather than routed around:
+
+- **The doctrine corpus is behind the trust boundary.** `agents/shared/*.md`, `CLAUDE.md` and
+  `agents/AGENT_INSTRUCTIONS.md` are hash-pinned in `human_only_paths.yaml`, so the PreToolUse hook
+  refused the agent's edits — "invariants 4 and 10 working exactly as designed, not an obstacle." The
+  doctrine collapse therefore ships as an operator-run package with every target sha256-pinned,
+  aborting on drift and skipping if already applied.
+- **D9 held on the loop plane.** Merging anything under `scripts/coordination/**` requires operator
+  ack; `promote_lane.py` exited 5 and named the path rather than promoting.
+
+One hazard specific to *deduplicating* an instruction corpus is worth generalising: nine amendments
+existed in only ONE copy and would have been destroyed by a naive dedup — including the subagent
+index-modification prohibition (present nowhere else), "never tick another agent's checkbox" (absent
+from the canonical checkbox axiom), and the stale-heartbeat causal chain. They were merged into the
+canonical text *before* any copy was deleted. **In a corpus with N duplicated copies of a rule,
+amendments land in one copy; collapsing to one canonical copy is a lossy operation unless every copy
+is diffed first.** The same failure mode is visible in the plan text itself: the fan-out rule's
+2026-08-13 exceptions existed in 1 of 5 copies.
+
+Standing constraint adopted from Phase 0 onward, aimed squarely at the corpus growth this article has
+documented repeatedly: a **prose-rule moratorium** — a new incident appends a labeled example to the
+eval fixtures (`label_provenance` mandatory), never a new rule or conjunct to BUS_PROTOCOL or the
+agent files.
+
+### Current measured state, and what is explicitly not measured
+
+Self-repair share is **11.1%** (107/966 commits, computed by D9's commit-path classification over
+`scripts/coordination/**`, never self-reported) against a <10% target — down from a stated ~50%
+baseline. The queue went from 14 `INFRA_BLOCKED` rows to **0** (27 READY), and 12 dead-owner claims
+were released under reversible receipts. The duty-cycle claim (8–9% baseline → >40%) and the
+zero-operator-intervention claim are **7-day observations that have not elapsed**; `fleet_metrics.py`
+is built and running, and P4-1 is open. A meta-kill criterion applies to the restructure itself: any
+phase exceeding 2× its estimate stops the plan, so that it "must never become the next
+50%-self-repair sinkhole."
+
+### Source References (2026-08-16 loop-owned fleet)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  ratified decisions D0–D9, the 15 invariants, Phase 0–4 task state, the 2026-08-16 implementation
+  record and pilot table, and open defect PD-1.
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+  the authority table, the per-packet-audit vs heavy-wrap split, the Phase-1 singleton repairs
+  (hook writers, wiki manifest/watermark, operation-token lease), and the REVISED 2026-08-16
+  identity-is-not-session correction.
+- [`agents/shared/OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md) →
+  *Doctrine rulings — 2026-08-16* — canonical text of rulings (a), (b) and (c).
+- [`agents/shared/SESSION_LIFECYCLE.md`](../agents/shared/SESSION_LIFECYCLE.md) → *Reading another
+  session's liveness* — the three-state model, the authoritative instrument, and the measured
+  446-second stale heartbeat.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+  — F-07 (compacting read as idle, twice), F-15 (the fan-out detector gap and its 1,070-item cost),
+  F-37/H-3 (redrawing panes defeat the quiet-check), F-43 (a SIGSTOPped session reading idle), and
+  the 12:37Z handover heartbeat-staleness table.
+- [`scripts/coordination/WORKTREE_MIGRATION.md`](../scripts/coordination/WORKTREE_MIGRATION.md) —
+  the two-plane model, the measured index isolation, the promotion pattern, and the withdrawn
+  `git worktree prune` rule.
+- [`artifacts/operator/loop-owned-fleet-operator-package-20260816.md`](../artifacts/operator/loop-owned-fleet-operator-package-20260816.md)
+  — the gates that fired, the self-repair/queue numbers, and the PD-1 warning.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — a worker's own
+  premise-verification-before-implementation record.
 
 ## Compiled Update — 2026-08-14: the reviewer ledger materializer scales, but the paired experiment has not run
 

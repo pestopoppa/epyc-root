@@ -2,8 +2,55 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified (CPU MoE findings) · observation (2026-07-06 MI210 GPU MoE-MTP numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (the `--moe-n-expert` fork patch resolves to **DROP** — stock v9 already reaches it via `--override-kv expert_used_count`, identically and with fewer copies; its motivating throughput numbers are v4/v5-era and unverified on v9; plus a roadmap-vs-deployment drift correction on the 122B's residency — see below; earlier 2026-07-20 note: adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
-**Sources**: 39 documents
+**Last compiled**: 2026-08-16 (**the production MoE decode kernel is a different instantiation from the one synthetic probes measure** — `mul_mat_vec_q<IQ2_XXS,1,true,false>` runs at 78 VGPR / 6 waves per SIMD vs the synthetic `<…,false,false>` at 63 / 8, which retires an earlier "IQ2_XXS MMVQ is not occupancy-limited" reading; the `mm_ids` wrapper is NOT the cost (Q8_0 = 25 VGPR on the same wrapper); 122B UD-IQ2_M decode attribution puts IQ2_XXS MMVQ at 16.42% / 85.60 µs median with a 6% spread; and the governed attribution runner hardcodes `-n 0`, making every governed rocprof-v1 capture to date prefill-only — see top section; earlier 2026-08-12 note: the `--moe-n-expert` fork patch resolves to **DROP** — stock v9 already reaches it via `--override-kv expert_used_count`, identically and with fewer copies; its motivating throughput numbers are v4/v5-era and unverified on v9; plus a roadmap-vs-deployment drift correction on the 122B's residency — see below; earlier 2026-07-20 note: adds the reasoning∝active MoE law, the production-representative GLM expert-routing-skew result, the IQ2 GPU big-MoE residency ladder, and the slot-fabric residency model; earlier 2026-07-17 note: adds GLM-5.2 DSA-DENSE-MASK runtime classification + expert-routing-skew hypothesis + Hy3 MoE-verify-wall re-confirmation; ⚠️ 2026-07-06 GPU MoE-MTP-negative note added under the CPU-MTP-wall finding — human review)
+**Sources**: 42 documents
+
+## Compiled Update — 2026-08-16: the MoE decode kernel is a DIFFERENT kernel from the one synthetic probes measure — and on gfx90a that difference is 2 waves/SIMD
+
+**Confidence: observation / `design_prior`** — the register figures are static reads of the shipped code object (exact, model-independent); the throughput figures are non-governed single captures. None of this is an AutoKernel `evaluation_event`.
+
+### `mul_mat_vec_q<_,1,true,false>` is the production MoE decode instantiation, and the template arguments decide the occupancy
+
+llama.cpp's batch-1 quantized GEMV has four instantiations of the same source. MoE decode goes through the `mm_ids` variant (`<TYPE,1,true,false>`); a synthetic single-op smoke goes through `<TYPE,1,false,false>`. On gfx90a they are **not the same kernel**, and for IQ2_XXS they differ by exactly the boundary that matters:
+
+| variant | VGPR | waves/SIMD | LDS | spill |
+|---|---:|---:|---:|---:|
+| `<IQ2_XXS,1,false,false>` (synthetic op path) | 63 | **8 — max** | 256 B | 0 |
+| `<IQ2_XXS,1,true,false>` (**production MoE decode**) | 78 | **6** | 512 B | 0 |
+| `<IQ2_XXS,1,false,true>` | 125 | 4 | 512 B | 0 |
+| `<IQ2_XXS,1,true,true>` | 90 | 5 | 1024 B | 0 |
+
+This **corrected an earlier reading in this project**: "IQ2_XXS MMVQ is not occupancy-limited" was concluded from the synthetic smoke's 8 waves. Production MoE decode runs at **6 of 8 waves, 75% of max**, with zero register spill in both. The generalisable rule: **a synthetic op capture is a different kernel from the production one until the template arguments are compared.**
+
+**But the MoE indirection itself is not the cost.** On the identical `<_,1,true,false>` wrapper, Q8_0 fits in **25 VGPR**. The 78 is IQ2_XXS's own dequant state machine, not the `mm_ids` gather — so an "MoE overhead" framing of the low-bit deficit is wrong. What the MoE wrapper does is *select* the expensive instantiation. Full per-quant table and the mechanism (sign unpacking, not the codebook gather) are on [Hardware Optimization](hardware-optimization.md); the throughput consequence across the quant ladder is on [Quantization](quantization.md).
+
+### Attribution on the real 122B UD-IQ2_M, and a governed-runner defect it exposed
+
+Two captures on the production `Qwen3.5-122B-A10B UD-IQ2_M`, clean frozen-v9 `0db32c06e` (build 10125), residency proven during (VRAM 57→58%, GPU 99–100%):
+
+- **Prefill (governed, receipt `passed`)** — 25,888 dispatches, 5,586 ms kernel time, 732.8 t/s. Top kernels: `mul_mat_q<IQ2_XXS,64,false>` **40.01%** (752 dispatches, the MMQ batched path), `mul_mat_q<IQ3_XXS,…>` 18.85%, `gated_delta_net_cuda<128,…>` 11.04%, rocBLAS/Tensile MFMA `Cijk_…MT64x32x64_MI16x16x16x1` 8.85%.
+- **Decode (NON-governed, no receipt, no durable identity)** — 245,246 dispatches, 3,158 ms, 39.40 t/s. `mul_mat_vec_q<IQ2_XXS,1,true,false>` is **16.42%** of decode kernel time across **6,063 dispatches at a 85.60 µs median**; IQ3_XXS 15.40%, Q5_K 13.52%, Q6_K 6.32%, `quantize_q8_1` 6.31%.
+
+**The defect the pair exposed matters more than either number**: the governed attribution runner hardcodes `-n 0` in `bench_command()` (line 69), so **every governed rocprof-v1 attribution to date is prefill-only** — including the K28 attribution the path was validated on. A batch-1 decode question cannot be answered through it as written; the decode figures above therefore come from a non-governed companion run and carry no durable identity.
+
+**The timing distribution is the most informative part**: per-dispatch duration is median 85,601 ns, min 83,520, max 88,801 — a **6% spread across 6,063 dispatches** at a single grid size. That is the signature of a throughput-limited kernel at a hard resource ceiling, not one with variable stalls.
+
+A bandwidth figure exists but **rests on a stated assumption, not a measurement**: at 39.40 t/s with ~10B active params of a 124.6B-param model at 2.7 bpw, per-token active-weight traffic is ~3.4 GB → ~133 GB/s against the 1638 GB/s datasheet peak, **~8%**, consistent with the ~10.3% figure carried elsewhere. The assumption is the active-expert byte count; it is not derived from the trace and should be confirmed before it gates anything.
+
+### What this changes for low-bit MoE serving
+
+MoE-IQ2 remains our worst roofline rung by roughly 2× (10.3% of spec / 11.8% of achievable bandwidth). Three consequences:
+
+- **Routed-expert low-bit quantization is a CAPACITY play whose decode cost is now attributable.** The asymmetric-MoE recipes recorded on [Quantization](quantization.md) (routed experts at IQ2/IQ3, shared experts and attention held at Q8_0/Q5_K/Q6_K) buy HBM footprint. On this device, below the 64-VGPR boundary they do **not** buy decode speed — a single-model dense ladder measured decode getting *absolutely slower* as the format shrank past IQ4_XS. Direction agrees between the 8B dense ladder and this 122B MoE attribution; **magnitude does not transfer** — one model, non-governed, n=1.
+- **The `v_perm_b32` sign-expansion lever is an occupancy lever with a hard threshold.** IQ2_XXS is 14 registers over 64. A reduction landing at 70 buys nothing, and spill is 0 everywhere so there is no slack — any attempt must report `vgpr_spill_count` beside occupancy or it is not evidence.
+- **The exposure is LATENT, not absent.** No IQ-format role is GPU-resident today (since the 2026-07-31 cutover the resident architect is the 27B and the 122B is retained as a CPU critic), so the 6-vs-8-wave loss costs the live stack nothing right now. It flips the day any `IQ1_*`/`IQ2_*`/`IQ3_*`/`IQ4_*` GGUF becomes resident on ROCm0 in a serving role. Do not record this as "not a problem" in the meantime — that is how a latent exposure gets closed by mistake. The existing 122B IQ2 residency ladder numbers (43.7 t/s single / 148.7 agg@B32, PPL 5.02) stand as measured, but they were taken **with** this occupancy tax already priced in.
+
+### Source References (2026-08-16)
+
+- [`artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_decode_attribution_20260812.md) — both 122B captures, the four-variant occupancy correction, the `-n 0` governed-runner defect, and the timing distribution.
+- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the four IQ2_XXS instantiations, the Q8_0-on-the-same-wrapper control at 25 VGPR, and the zero-spill constraint.
+- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the dense-model ladder whose direction the MoE attribution agrees with, and its caveat list.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the MoE-IQ2 10.3%/11.8% rung, the latent-exposure tripwire, and the open kill-criterion probe on whether ~10% is an architectural floor.
 
 ## Compiled Update — 2026-08-12: the expert-count fork patch is unnecessary — stock v9 already does it, and does it cheaper
 

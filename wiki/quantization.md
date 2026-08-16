@@ -2,8 +2,71 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
-**Sources**: 33 documents (0 dedicated deep-dives, 4 handoffs, 6 active handoffs, 24 intake entries + cross-references from 6 deep-dives)
+**Last compiled**: 2026-08-16 (**the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only — see top section; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Sources**: 36 documents (0 dedicated deep-dives, 4 handoffs, 7 active handoffs, 2 gpu-aux-baseline receipts, 24 intake entries + cross-references from 6 deep-dives)
+
+## Compiled Update — 2026-08-16: on CDNA2 the batch-1 decode knee is kernel REGISTER PRESSURE, not bits-per-weight
+
+**Confidence: observation / `design_prior`** — this is a **non-governed** measurement. It is not an AutoKernel `evaluation_event`, carries no governed receipt, and §19.0 rule 4 forbids promoting it by origin. It proposes; it settles nothing. **n=1 per cell, no A/A band, ONE model (8B dense), SPEED ONLY.** Every number below must be quoted with those caveats — see *Caveats* at the end of this section, and do not quote a number without them.
+
+### The partition, and it is not a bpw trend
+
+An 8-rung ladder was built from ONE f16 source of **Goedel-Code-Prover-8B** through ONE quantizer — the frozen production `llama-quantize`, version **10125** (`0db32c06e`) — and benched on the MI210 (gfx90a/CDNA2) with `-ngl 99`, GPU residency proven during both runs. The VGPR / waves-per-SIMD columns are the **static** register allocation of each quant's `mul_mat_vec_q<_,1,true,false>` instantiation, read out of the shipped code object four days earlier (see [Hardware Optimization](hardware-optimization.md) for the method); they are not measured here.
+
+`%HBM` is against the **measured** 1433.3 GB/s achievable bandwidth, not the 1638 GB/s datasheet peak. `eff GB/s` = t/s × model bytes — the weight stream only, ignoring KV and activations, so it is a floor on achieved bandwidth, not a ceiling.
+
+| rung | GB | tg128 t/s | eff GB/s | %HBM | pp512 t/s | VGPR | waves/SIMD |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| f16 | 16.38 | 63.97 | 1047.9 | 73.1% | 2880.9 | — | — |
+| Q8_0 | 8.70 | 99.09 | 862.5 | 60.2% | 2673.1 | 25 | 8 |
+| Q6_K | 6.72 | 90.05 | 605.1 | 42.2% | 2460.0 | 46 | 8 |
+| Q5_K_M | 5.85 | 100.93 | 590.0 | 41.2% | 2459.4 | 55 | 8 |
+| Q4_K_M | 5.02 | 108.75 | 546.1 | 38.1% | 2462.2 | 44 | 8 |
+| **IQ4_XS** | 4.59 | **129.77** | 595.3 | 41.5% | 2440.9 | **64** | **8** |
+| IQ3_XXS | 3.36 | 79.44 | 267.2 | 18.6% | 2398.5 | 71 | 6 |
+| IQ2_XXS | 2.48 | 82.89 | 205.9 | 14.4% | 2468.1 | 78 | 6 |
+
+**Every rung whose kernel fits in ≤64 VGPR (8 waves/SIMD) decodes at ≥90.05 t/s; both rungs above 64 VGPR (6 waves) decode at ≤82.89 t/s — while being 27–46% *smaller*.** Separation is 7.17 t/s with no overlap. **Below IQ4_XS, shrinking the model makes decode ABSOLUTELY SLOWER.** IQ4_XS sits exactly on the 64-VGPR boundary — the last rung that still reaches maximum occupancy — and is the fastest rung measured, 129.77 t/s against Q4_K_M's 108.75 and IQ2_XXS's 82.89.
+
+**Prefill is flat**: 2398–2881 t/s across the whole ladder, 16.7% total spread, no knee. Whatever the cliff is, it is **specific to the batch-1 GEMV path** and does not touch prompt processing.
+
+### "Batching closes the dequant gap" is REFUTED as stated
+
+The never-before-run quantized batched sweep (`llama-bench -p 128 -n 128`, B ∈ {1,2,4,8,16,32}, all 8 rungs) measures the ratio to IQ4_XS rising but plateauing short of parity: **IQ3_XXS 0.60 → 0.77** and **IQ2_XXS 0.66 → 0.88** across B=1→32, while **Q4_K_M converges to ~0.99**. So batching closes the gap for the 8-wave K-quants and leaves **12–23% on the floor** for the 6-wave IQ formats.
+
+That asymmetry is itself mechanism evidence: a cost that were purely per-weight-read amortizes away as B grows (read once, reuse B times); a cost that tracks a **wave-slot ceiling** does not — which is what the static VGPR table predicts. The premise was reasoned-but-never-measured before 2026-08-16 and is now retired with a receipt, so it is not re-proposed as an argument for low-bit serving.
+
+### What this does to the low-bit programme
+
+Three things change in how sub-4-bit work is valued on this device:
+
+- **The ranked IQ2/IQ3 items are OCCUPANCY levers, not dequant-arithmetic levers.** The `v_perm_b32` sign-expansion work (437-instruction excess), the Q4_K branchless six-bit scale/min decoder, and the VGPR 78→64 target all matter *to the extent they hold live registers*. This is the third independent time the codebook gather has been ruled out as the cost — see [Hardware Optimization](hardware-optimization.md) for the disassembly evidence.
+- **The payoff is threshold-shaped, not linear.** Crossing back under 64 VGPR regains the 8th wave; a reduction that lands at 70 buys nothing. Levers whose stated benefit is "fewer instructions" without a register target are currently unrankable and must be re-scoped or declined.
+- **Value cases must be weighted against IQ4_XS, not against the format's own baseline.** An IQ2_XXS win that does not clear a **1.57×** deficit produces no production value at any batch size measured.
+
+The prediction was on disk before the ladder ran and was never carried into the campaign that needed it: the Q8_0 roofline work had already established that the gap is achieved-bandwidth/occupancy and NOT dequant-compute, and the per-quant VGPR table published IQ4_XS at exactly 64 → 8 waves with IQ3_XXS/IQ2_XXS at 71/78 → 6 waves. Measured 2026-08-16, the AutoKernel catalogue mentioned **IQ4_XS zero times** (Q4_K 20, IQ2 8, Q8_0 6, Q6_K 4, IQ3 3, Q5_K 0, IQ1 0) — the loop was aimed at the rungs on the wrong side of its own knee.
+
+**The open discriminating test**: the same static table puts **IQ1_S at 42 VGPR → 8 waves**, below IQ4_XS. If the mechanism is register pressure and not bit-width, the *smallest* format on the shelf should land in the fast band, inverting the monotonic "fewer bits = slower below 4 bpw" reading. That is the one place where the occupancy story and the unpacking-cost story disagree in sign, and it is the cheapest test that can falsify the whole mechanism. Unrun as of 2026-08-16. (Scope note: IQ1 is stubbed in the CPU iqk path; this is a GPU MMVQ question and does not depend on that.)
+
+### A unit-confusion correction to the ladder manifest
+
+The ladder's build manifest warns that the pre-existing upstream Q4_K_M and Q8_0 "differ materially in size" from the ladder's (4.68 vs 5.03 GB; 8.11 vs 8.71 GB). That is a **unit-confusion artifact** — it compares upstream in GiB against ladder in GB. Measured 2026-08-16, both pairs are the *same size* (Q4_K_M 4.68 GiB = 5.03 GB; Q8_0 8.11 GiB = 8.71 GB). Same size is not proof of byte-identity, so the manifest's "do not substitute" instruction is still worth obeying on provenance grounds — but not for the reason it gives.
+
+The same hazard bit the analysis itself: an earlier pass reported the `%HBM` figures ~7.4% low by dividing GiB model sizes into a decimal-GB bandwidth. The 1.0737 factor is constant across rungs, so the *shape* survived the error and the absolute percentages did not — exactly the class of error a constant factor hides.
+
+### Caveats a future reader must not skip
+
+- **n=1 per cell, no A/A band.** The **IQ4_XS B=8 cell (408.5 t/s) is a suspected outlier**: it breaks its own monotonic trend (B=4→8 is 1.37×, B=8→16 is 2.14×; every other rung runs ~1.8–1.9× at both steps) and it is the single point where Q4_K_M inverts above IQ4_XS. Do not quote B=8 without replication.
+- **One model, 8B dense.** The VGPR figures are model-independent (static kernel allocation); the throughput figures are not. The 122B MoE attribution agrees on *direction* only — see [MoE Optimization](moe-optimization.md).
+- **SPEED ONLY — no correctness pairing.** The IQ2/IQ3 rungs were built on a **1.23 MB / 30-chunk imatrix** and are **performance probes, explicitly NOT quality-grade models**. No PPL, no eval. This ladder ranks *throughput* and says nothing about whether IQ4_XS is usable, only that it is fast. **No rung on this ladder may be cited in a promotion argument** until the correctness half runs — the standing project rule is to pair speed with a correctness check.
+- **Non-governed.** These are `design_prior`-grade measurements, not AutoKernel `evaluation_events`. Replication with an A/A band is the precondition for quoting any of it as anything stronger.
+
+### Source References (2026-08-16)
+
+- [`artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`](../artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md) — the receipt: the 8-rung ladder table, the batched sweep, the manifest unit correction, and the caveat list.
+- [`autokernel-research-loop.md` §22](../handoffs/active/autokernel-research-loop.md) — the re-aiming of the low-bit lever set, hypotheses AK-H-QL-1/2/3 with their falsifiers, and the format-mention census that found IQ4_XS absent from the catalogue.
+- [`artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md`](../artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md) — the per-quant static VGPR table that predicted the knee four days early, and the IQ2_XXS-vs-IQ4_XS disassembly diff.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — the prior establishing that the Q8_0 gap is achieved-bandwidth/occupancy and not dequant-compute, and the measured 1433.3 GB/s achievable-bandwidth denominator.
 
 ## Compiled Update — 2026-08-12: a blocker cited by the right PR number and the wrong description, and it would have cost a benchmark
 
@@ -97,6 +160,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 > **Review flag (project-wiki writer-evidence policy):** model-compiled from the MI210 GPU campaign; **not adopted until human or measured review**. Every throughput/roofline number is an **OBSERVATION** (single MI210, serial/aggregate, seed 42, no P-GPU-1 per MEASUREMENT.md). Sources: [findings-05c lever × category matrix (Axis-C quant)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md), [progress 2026-07-06 v7-candidate + GPU levers](../progress/2026-07/2026-07-06-v7-candidate-and-gpu-levers.md), [progress 2026-07-02 MI210 first-touch](../progress/2026-07/2026-07-02-mi210.md).
 
 - **Q8_0 is the gfx90a decode sweet spot; the Q8/Q4_K "roofline gap" is a dequant-boundedness artifact, not general kernel immaturity.** On the MI210, batch-1 quantized decode reaches ~**47% of the ~1.64 TB/s HBM roofline at Q8_0** vs ~**33% at Q4_K_M** vs **~62% at fp16** (no dequant). The residual is specifically the quantized MMQ dequant kernels: **Q8_0's GEMV is already int8-native** (`vec_dot_q8_0_q8_1` = `dp4a` + one fp scale per 32-block — there is no per-element dequant to hide), so the 47→62% gap is BW/occupancy, not dequant cycles; **Q4_K_M is genuinely dequant-bound** (a bigger 33→47% gap). Consequence: **Q4_K on gfx90a is a *capacity-only* quant** — it buys VRAM footprint, not speed, and a Q4_K dequant-efficiency kernel is a separate ~+43%→~47 t/s bet (quality-gated, kernel un-authored). Q8 is the quant to serve at when capacity permits.
+  - **⚠ CORRECTED 2026-08-16 — the attainment ordering survives, the serving conclusion does not.** The 8-rung single-model ladder (Goedel-8B, frozen v9 `0db32c06e`; see the top section) reproduces this bullet's *roofline-attainment* ordering — Q8_0 60.2% of achievable bandwidth vs Q4_K_M 38.1% — but **inverts the absolute batch-1 decode ranking: Q4_K_M 108.75 t/s vs Q8_0 99.09 t/s (+9.7% for Q4_K_M), with IQ4_XS fastest at 129.77 t/s.** Roofline-% and absolute t/s are different metrics and rank differently, because a smaller model reads fewer bytes per token; a low attainment figure is not by itself a reason to serve the larger quant. So **"Q4_K on gfx90a is a *capacity-only* quant — it buys VRAM footprint, not speed" is contradicted on absolute decode throughput**, and "Q8 is the quant to serve at when capacity permits" does not hold for batch-1 decode on the model measured. Carry the caveats: the ladder is n=1 per cell, no A/A band, one 8B dense model, speed-only, and `design_prior`-grade; this bullet's own figures are a separate single-run observation on a 27B against the 1638 GB/s *spec* denominator rather than the 1433.3 GB/s *achievable* one, so the two are not a clean A/B. What is settled is that the causal story must change: the sub-4-bit part of the ladder is bounded by **kernel register pressure / occupancy**, not by dequant arithmetic.
 - **F16 aggregate throughput costs ~30% vs Q8 — it is a *precision* choice, never a throughput one.** On the v7-candidate aggregate spec sheet, Qwen3.6-27B F16-proxy runs **141 t/s @B32 vs Q8's 199** (−29%) — F16's doubled weight bytes dominate a BW-bound decode. (The batched regime *does* flip for bf16 on a different axis — at B≥16–24 bf16 wins because it runs native on CDNA2 matrix cores with nothing to dequant-amortize while Q8 pays a per-tile dequant tax — but that is HBM-capacity-gated and distinct from the F16-precision cost here; see [Hardware Optimization](hardware-optimization.md) for the bf16↔Q8 crossover.)
 - **MTP repays ~4× more on F16 than on Q8 — the more BW-bound the weight read, the more each accepted draft token saves.** On a Qwen3.6-27B Q8→F16 dequant proxy (values preserved so acceptance α≈Q8's, isolating the kernel path): MTP gives **+60.2% on F16 vs +15.6% on Q8** at essentially unchanged α (66.9%). This is a pure bandwidth effect — F16 is 2 bytes/param, so a self-drafted token that lands avoids a fatter weight read — and it is the quantization-level analog of the general "spec-dec pays most where decode is most BW-bound" rule. It does **not** make F16 a throughput choice: absolute F16-MTP 31.0 t/s stays below Q8-MTP+MMQ 40.4; MTP just makes the precision far cheaper. See [Speculative Decoding](speculative-decoding.md).
 

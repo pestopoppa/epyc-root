@@ -2,8 +2,94 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (ODL-013 and the Ekimetrics run are observations; Unlimited-OCR needs a corrected record and canonical-profile rerun before any parser decision)
+**Last compiled**: 2026-08-16 (the 2026-08-13 numbers are recorded here with their provenance status: real measurements, no write-side claim tuple, so none of them can gate a parser or routing decision)
 **Sources**: 16+ documents
+
+## Compiled Update — 2026-08-16: the numbers behind the 2026-08-13 observations, and why none of them carries warrant
+
+**Confidence: verified** — figures are read from the ODL handoff's completed rows and the belief-kernel
+source register; both artifact trees (`/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/intrinsic/` and
+`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/`) were confirmed present on disk for
+this compile. **No routing, adoption, or promotion authority attaches to anything below.**
+
+### ODL-011 intrinsic chunk metrics: first real run, and what it can and cannot rank
+
+The non-coreference Ekimetrics arm is now registered in `odl_bench` (`intrinsic.py`, research
+`f24b8aa9` + `cd329746`) with SC/BI/ICC/DCC, upstream MIT provenance pinned (intake-580#record), and 30 tests
+covering metric direction plus degenerate inputs. An unavailable embedder is preserved as an explicit
+`value=None` with a reason rather than a silent zero — the same discipline the belief kernel calls
+"absence is recorded, never filled".
+
+First real run (sentence-transformers 5.7.0, `all-MiniLM-L6-v2`, 200 docs per engine over the ODL-013
+prediction directories):
+
+| engine | ICC | DCC |
+|---|---|---|
+| pdftotext | 0.651 | 0.672 |
+| opendataloader | 0.643 | 0.654 |
+| liteparse | 0.552 | 0.654 |
+
+Two limits keep this from ranking parsers. First, **intrinsic chunk-cohesion scores are not parser
+quality** and the parent contract forbids intrinsic-only gating: the contradictory HOPE family and one
+common downstream RAG answer-correctness endpoint must be reported on the same digest-pinned Phase-2
+fixture before either family informs routing. Second, the notable line in the table — pdftotext, the
+weakest structural extractor, leading ICC — is exactly the result that would mislead if read as a
+parser verdict. RC/FMRE remain excluded on both licence grounds and a recorded upstream
+boundary-corruption defect in that path.
+
+### Unlimited-OCR 18-page demo: a real run whose headline metric is an output-format artifact
+
+The P2 demo executed on 2026-08-13 against 18 OmniDocBench GT pages via
+`adapter.py run-model --engine unlimited_ocr` (research `aca459d9`), producing median **5,857 ms per
+page**, decode ≈ **392 t/s**, text-block edit distance **0.3624**, table TEDS **0.0117**, reading-order
+edit distance **0.2165**.
+
+The verified finding matters more than the scores: **the model emitted coordinate-tagged layout dumps
+rather than markdown on all 18 pages**, which is a sufficient explanation for a near-zero TEDS without
+any claim about table quality. This is structurally the PaddleOCR-VL retraction repeating — an
+off-label invocation profile producing numbers that describe the harness, not the model. Accordingly:
+
+- The **causal** claim is not verified. A bare-passthrough GGUF chat template is confirmed;
+  "coordinate output regardless of prompt" is not, and llama.cpp's own source records prompt-dependent
+  behaviour. The record must say *demonstrated prompt/profile mismatch*, not *root cause*.
+- The mutex evidence does not cover the run. `inference_window.json` reports `held_s = 1.002881998`, so
+  it is not full-interval residency proof and must not be cited as one.
+- The correct next step is the canonical profile as a fresh matched A/B (`document parsing.`,
+  `n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip, per `tools/mtmd/tests/test-deepseek-ocr.py`),
+  with a receipt spanning server launch through termination — gated on the operator's all-inference-stop
+  order being lifted, and on the artifact gate below.
+- The default artifact is still non-compliant: body Q5_K with `output.weight` at Q6_K against a
+  required `lm_head >= Q8_0`.
+
+### The provenance status of all of it: measurements without a claim tuple
+
+The demo run carries more warrant than most parser evidence in this program — a protocol (the engine
+invocation at a pinned research commit), n = 18 protocol-admissible GT pages, a date, durable per-page
+response JSONs plus `model_gated_row_set.json`, and an inference-window receipt. **It still has no
+write-side ClaimTuple hook**, so it is registered as a `candidate` source to be wired *prospectively
+before the next run*, never reconstructed on read. Two constraints travel with that row:
+
+- **Locator: the demo run, not the page.** One 18-page run is one witness, not eighteen — the same
+  same-harness trap that permanently disqualified `benchmarks/results`.
+- **Scratch is not attestation.** These artifacts live under `/mnt/raid0/llm/tmp/`, outside any git
+  tree, so a path alone proves nothing later; a content digest taken at collect time is what would let
+  the claim rise above a located reference.
+
+The general form is on [Knowledge Management](knowledge-management.md): wiring the write side is cheap
+and permanent, retrofitting the read side is impossible, because a tuple invented on read claims
+warrant the original run never captured.
+
+### Source References (2026-08-16 parser-evidence provenance)
+
+- [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — the ODL-011 completed row with the ICC/DCC run, the ODL-013 observation boundary, and the
+  Unlimited-OCR correction and rerun contract
+- [`handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
+  — metric-contract corrections, the RC/FMRE exclusion and its upstream defect, and the quant-gate audit
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 register row:
+  exact metrics, artifact locations, the coordinate-dump finding, and the run-level locator warning
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — why a pre-hook run is
+  skipped rather than back-filled
 
 ## Compiled Update — 2026-08-13: later parser evidence advances observation, not selection authority
 

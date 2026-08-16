@@ -2,8 +2,158 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (A14 independently verifies the write-side trigger and request-level locator rule while leaving first-tuple validation open; earlier projection and correction findings retained below)
+**Last compiled**: 2026-08-16 (the source register moved to design-time filing, and three of its newest rows are deliberately not measurements; A14's write-side trigger and the earlier projection/correction findings are retained below)
 **Sources**: 40+ documents
+
+## Compiled Update — 2026-08-16: the register moved to design time, and three of its newest rows are not measurements at all
+
+**Confidence: verified** — the register rows and their reasoning are read from
+[`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) and the SC37–SC40 tasks in
+[`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md); the
+ladder registry, the two named producer modules, and the adapter inventory were inspected directly on
+disk for this compile rather than restated from the handoff.
+
+### Filing moved *before* the producer, and the window is already closing on two of them
+
+The standing rule (file the wiring task the moment you notice a producer) has drifted earlier with
+each instance, and the four newest rows sit at the far end of that drift:
+
+| row | filed | producer state when filed |
+|---|---|---|
+| SC37 eval-tower per-suite resolution band | 2026-08-15 | the band has never been measured; `core_v2_calibrate.py --repeats` is the planned instrument |
+| SC38 worker-pool completion reports | 2026-08-16 | `worker_runner.py` still being authored, before the P2-9 pilot |
+| SC39 headless audit verdicts | 2026-08-16 | module **unwritten** — "the cheapest possible moment" |
+| SC40 loop-owned-fleet plan metrics | 2026-08-16 | four metrics computed nowhere; no unattended night scored yet |
+
+**Filed is not wired, and the gap is measurable today.** As of this compile
+`scripts/coordination/worker_runner.py` (82 KB) and `scripts/coordination/headless_audit.py` (38 KB)
+both exist on disk, and **neither contains a single `belief` reference**; `scripts/vidya/adapters/`
+holds twelve adapter modules and none of them reads either producer. So the two rows filed at design time
+have already watched their producers land without the hook — which is precisely the interval the rule
+exists to prevent, and the honest register status stays `candidate`, never `live`. The design-time
+filing bought the *knowledge* cheaply; it has not yet bought the *warrant*.
+
+### Not everything a producer emits is a measurement — the categorical/rate boundary
+
+SC39 is the sharpest instance the program has produced. The headless auditor writes one typed verdict
+per completion (`accept | accept-with-followups | needs-rework | blocked-evidence`). **A single
+verdict has no metric and no direction, and must not be forced through `ClaimTuple`** — the rule is
+stated as: never invent a metric direction to push a record through the carrier. What *is* an honest
+measurement is a **rate over a declared window** — verdict-mix share, and above all the
+operator-vs-auditor disagreement rate that the owning plan's kill criterion reads at a 20% threshold
+over any 7-day window. Those are lower-is-better fractions whose scored denominator is the audits
+actually *adjudicated*, never the audits emitted.
+
+This is the dependency-evidence call of 2026-08-11 (preflight findings are real but not ordinal) moved
+one level up: the same discipline now applies to a *verdict stream* rather than a capability check.
+SC37 records the mirror-image error on the other side of the boundary — a resolution band **attests
+the resolution of the instrument and says nothing about the quality of any config**, so a projection
+that reads a band as "this delta is significant" repeats the SC21 category error one level up. Two
+rows, one lesson: the carrier's shape is not a licence to put a record in it.
+
+### Independence is a property that can be spent
+
+Two of the new rows turn on warrant that a careless projection would destroy rather than merely
+overstate:
+
+- **SC39**: the audit packet is a pointer *whitelist* precisely so the review is not anchored on the
+  worker's own summary. A projection that folded worker-reported outcomes into the verdict rate would
+  destroy the property being measured. Independence is the entire warrant of that source.
+- **SC38**: `subagents_spawned`, `tokens_used` and `denials` are schema-required and type-validated —
+  `validate_report()` refuses a batch that omits any of them, so a clean run and an unreported one
+  cannot render identically. That is a genuine upgrade on a prose self-report, and it is **still
+  self-reported**: both counters are written by the worker into its own report file. The projection
+  must state *self-reported* plainly instead of claiming an independent witness; the independent count
+  would come from the harness transcript the runner already keeps a pointer to.
+
+### The locator rule now has five spellings and one shape
+
+Support is counted by source locator, so the same trap recurs wherever a run emits many rows. Recorded
+instances, all of them the same defect:
+
+| source | naive key | correct locator | inflation |
+|---|---|---|---|
+| `benchmarks/results` | the result file | the run | 2,605 files → 2,605 "witnesses" |
+| A14 contention gate (SC19) | the gate decision | the request | one request walks N candidates |
+| affinity preflight (SC13) | the artifact file | the cell run | repeated preflights of one cell |
+| worker-pool reports (SC38) | the row | the **batch** | 3 rows per invocation, batch-level counters |
+| loop-fleet metrics (SC40) | the sample | the **window** | a 60 s poller reads one night as 1,440 |
+
+SC38 adds the corollary that matters downstream: with a batch-level counter, tokens-per-row is a
+*derived quotient masquerading as a measured value*.
+
+### Two attestation limits worth carrying past this program
+
+- **A path outside git proves nothing on read.** SC38's runtime root (`/mnt/raid0/llm/worker-pool`) is
+  outside any tree, so the hook must write a sha256 over the report content at collect time or the
+  claim honestly tops out at `Witnessed/Anchored`. The same limit applies to every scratch artifact —
+  the 2026-08-13 document-parser runs sit in `/mnt/raid0/llm/tmp/`, present on disk and unattested.
+- **Pin the classifier version inside the tuple.** SC40's coordination self-repair share is a ratio
+  over commits classified *by path*, so it moves whenever the path taxonomy moves and two windows stop
+  being comparable. Its sibling caveat is a scope limit of the same family: compute duty cycle attests
+  **hardware occupancy**, never useful work.
+
+### Pricing now applies at design time too, and "no adapter" is a valid verdict
+
+The P2 discipline (sample ~50 records, count full tuples, before writing a bulk adapter) has acquired
+a design-time form: SC40 states outright that the corpus is one row per night, so the honest answer
+may be a hand-written record rather than an adapter — **and that verdict should be written down rather
+than leaving the row open**. This is the same standard that killed the `benchmarks/results` adapter on
+evidence rather than deferring it.
+
+### The registry invariant, re-verified this compile
+
+Reading the code rather than the docs: `scripts/vidya/claim_tuple.py` defines `register_ladder()` and
+raises `ProjectionError` on a second registration for a class ("*a second implementation of one rule
+becomes two dialects of it*"). Exactly two ladders are registered repo-wide — `measurement` in
+`claim_tuple.py:213` and `literature` in `adapters/research_intake.py:113`. The contract is enforced
+in code, not merely written down.
+
+### A stale premise replicates through the corpus faster than the correction (2026-07-03)
+
+Retro-compiled from the window-2 intake sweep, because it is the KB-hygiene half of the same problem.
+A read-only sweep over **769 intake entries and 125 deep-dives** against 119 active handoffs found
+**22 genuinely missed tasks, 95 dead-confirmed, 135 already covered** — and the missed tasks were not
+22 independent oversights but **one stale gating premise repeated across eleven handoffs and indices**
+(a hardware purchase changed, and every document written before it still read "GPU-gated / deferred").
+Two rules the sweep's own self-critique makes explicit and this page adopts: the sweep was
+*index/intake-grounded*, so a deciding fact wrong inside an intake entry propagates into every
+derived plan; and an adversarial verification pass demoted **both** proposed P1s (one to MEDIUM, one
+to "already owned elsewhere"), which is the routine outcome when a sweep's recommendations are checked
+against the owning handoff's actual gate line rather than the index row.
+
+### External publication is the same claim grammar with a fail-closed default
+
+The publication pipeline (F6) is the outward-facing instance of everything above and is worth reading
+as a governance pattern rather than a marketing task. Its generator turns `RESULTS.md` into a public
+draft where **no row publishes without a protocol tag**, and its current state is 374 rows of which
+**zero** are publishable: 31 held for historical-attestation review, 18 needing protocol tags, 325
+routed to `retired_from_public_claims`. Three transferable design choices:
+
+- **Differentiate holds by what would close them.** "374 blocked" is unactionable; splitting it into
+  attestation / protocol-tag / verification-decision buckets is what made the queue drainable, and the
+  generator emits that triage plus the named missing fields per row.
+- **Refuse retro-certification explicitly.** Rows dated before the host-attestation era get
+  `hold_for_historical_attestation_review`, not ordinary backfill, so a 2026-03-21 number cannot be
+  certified by today's host — it needs a historical artifact, a remeasurement, or retirement.
+- **Keep the decision layer out of the source.** The retirement of 325 rows lives in a dependency-free
+  JSON overlay applied at render time; `RESULTS.md` is never mutated. Fail-closed parsing completes
+  the pattern — an unparseable protocol marker holds the row instead of falling through to publishable.
+
+### Source References (2026-08-16 design-time register)
+
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the source register rows
+  for SC37–SC40, the locator warnings, the P2 pricing discipline, and the consumer table
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
+  — SC37/SC38/SC39/SC40 as filed, including the categorical-verdict refusal and the independence rule
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.7 — the normative
+  projection contract and the dependency-evidence boundary the SC39 call extends
+- [`scripts/vidya/claim_tuple.py`](../scripts/vidya/claim_tuple.py) `register_ladder()` — the enforced
+  one-ladder-per-class invariant, read for this compile
+- [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md)
+  W3 checkpoints — the 374-row publication queue, its triage buckets, and the review-decision overlay
+- [`handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md`](../handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md)
+  §1 and §8 — the 769-intake sweep counts, the single repeated stale gate, and the sweep's self-critique
 
 ## Compiled Update — 2026-08-13: landing a producer is not wiring its evidence
 

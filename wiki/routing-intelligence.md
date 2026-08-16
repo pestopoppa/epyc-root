@@ -2,8 +2,94 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (A14 GateDecision echo independently accepted on the local orchestrator main; its prospective evidence hook and first tuple remain open; earlier routing-memory findings retained below)
-**Sources**: 78+ documents
+**Last compiled**: 2026-08-16 (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 80+ documents
+
+## Compiled Update — 2026-08-16: the harness a request runs through is a routing dimension — and the number everyone quotes says the opposite of what it looks like
+
+**Confidence: external for every magnitude below (an unrefereed preprint, dive-verified against the
+primary source); verified for the record it was filed under and for the correction. No EPYC
+measurement exists on this axis, and none is proposed — the entry is filed record-only, no task, no
+build.**
+
+`intake-1140` (HarnessOpt-Bench, arXiv 2608.06301v1, Scale AI) was ingested and dived in one
+Stage-2b pass on 2026-08-15. It reaches this page because a plausible misreading of it would push
+routing work in the wrong direction — and the misreading was made once already, during intake.
+
+**The trap.** The paper's headline is that *model choice has a larger effect than coding-harness
+choice* — `0.142` vs `0.079` mean gain movement, about `1.8×`. That statement is confirmed as
+written and is **not a routing result**. The harness varied in that contrast is the **optimizer's own
+coding agent** (Claude Code / opencode / codex / kimi-cli), not the harness being optimized. Citing
+it as "model > harness" for routing purposes inverts it.
+
+**The target axis — the one our routing work actually cares about.** The same paper's Table 3 is a
+controlled swap in which the harness is the only variable (same dataset, partition, rounds and
+target model), and it carries the largest effects anywhere in the paper:
+
+| task | stock harness A | stock harness B |
+|---|---|---|
+| OfficeQA | 0.341 | 0.734 |
+| BrowseComp-Plus | 0.462 | 0.701 |
+| Terminal-Bench | 0.241 | 0.607 |
+| GAIA | 0.000 | 0.508 |
+
+Converting those to normalized gain and comparing them against the best of **111** frontier-optimizer
+runs is an arithmetic **our dive performed and the paper never states**: on that comparison the best
+off-the-shelf harness is *statistically unresolved* from the best optimizer run on three of four
+tasks, and beats every optimizer on Terminal-Bench by about **3.6 resolution bands**. "Bands" is the
+paper's own unit — it publishes a per-suite noise floor (score the same candidate twice on the same
+cases, carry the median discrepancy to the K=3 scale) with the reading rule that *a difference
+smaller than its own column band is not a difference*, and it uses that rule to refuse rankings it
+cannot support.
+
+**The citable implication is therefore the opposite of the headline**: harness/scaffold selection is
+worth about as much as an entire frontier-model optimization campaign, which makes *which harness a
+request runs through* a first-class routing dimension rather than a fixed substrate. Cite
+`intake-1140#record`; never cite this entry as "model > harness".
+
+**Credibility discipline for anyone reusing this.** The entry is an unrefereed nine-day-old preprint
+at credibility `3/6`; it does **not** inherit the ICML-2026 main-conference acceptance of its sibling
+`intake-1134` (VeRO, `5/6`), and it does not supersede it — it builds on VeRO's execution
+environment and calls itself complementary. The paper also pre-empts the Table 3 comparison in its
+own caption by describing the stock columns as *context rather than a reference*, which is defensible
+for its research question and evasive against the framing above; the dive records that as a disclosure,
+not as a reason to soften the finding.
+
+### The same discipline, applied to our own model-arm surface
+
+The parallel structure in our stack is the GPU candidate surface
+(`/mnt/raid0/llm/tmp/claude-artifacts/np_context_v8_decision.html`), which acquired a new "Stock 27B"
+arm — Qwen3.8-27B — on 2026-08-15. Two rules that surface enforces are worth restating here, because
+a router integration is one of its readers:
+
+- **The surface is presentation, not evidence authority.** Authority stays with the research bundles
+  (`epyc-inference-research/artifacts/np_context_study_v8_20260727/`, plus the v7 study for v7 rows);
+  the artifact re-labels the kernel era rather than silently re-collecting.
+- **A declined measurement must be labelled as declined, not left blank.** The operator declined the
+  Qwen3.8→Qwen3.6 coding comparison on 2026-08-14, so the coding-ladder cell ships as
+  `operator-declined — deferred` rather than empty — a blank cell would read as *unmeasured* to any
+  consumer choosing between arms. When that ladder is eventually run it is the same recipe already in
+  the surface (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40) and slots into the same row.
+
+Routing consequence of the swap itself (staged, not yet applied): Qwen3.8-27B replaces
+Qwen3.6-27B-MTP-Q8_0 as the primary model for **`architect_general` + `coder_escalation`**, both
+served from the single `:8083` MI210 process. The registry swap is the one remaining unchecked step;
+serving detail is compiled in [Inference Serving](inference-serving.md).
+
+### Source References (2026-08-16 harness-as-routing-dimension)
+
+- [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — §*Research Intake Update
+  — 2026-08-15*: the record-only filing, the optimizer-agent-vs-target-harness correction, the Table 3
+  figures, and the `intake-1140#record` citation form.
+- [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) — `dive_corrections`
+  2026-08-15 Stage-2b combined ingest+dive: credibility `3/6`, the published noise-floor convention
+  and its reading rule, the 111-run normalized-gain comparison, and the explicit warning that this
+  entry does not inherit `intake-1134`'s venue credit.
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+  — the presentation-vs-evidence-authority split, the era-labelling rule, and the
+  `operator-declined — deferred` cell convention.
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — which roles the
+  new arm serves, and the declined quality gate that made the labelling rule load-bearing.
 
 ## Compiled Update — 2026-08-13: contention decisions are now observable, but no evidence exists yet
 
