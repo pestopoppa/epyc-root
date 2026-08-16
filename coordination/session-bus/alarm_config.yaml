@@ -1,0 +1,72 @@
+# Alarm channel configuration — policy-as-data (fabric contract: policy-data-never-code).
+# Consumer:      scripts/coordination/alarm_channel.py
+# Owning handoff: handoffs/active/loop-owned-fleet-implementation.md § Phase 0 / P0-1
+#
+# ---------------------------------------------------------------------------
+# THIS IS THE LAST HOP. Everything else the fleet emits lands in advisory.jsonl,
+# which is delivered to NO ONE — on 2026-08-14 the fleet was dead for 11 hours
+# with every internal signal firing correctly and no human ever told. This file
+# is where the machine finally reaches a person.
+# ---------------------------------------------------------------------------
+#
+# GOING LIVE — ONE LINE. Replace the `url:` line under `ntfy:` below with a real
+# topic and nothing else needs to change:
+#
+#     url: https://ntfy.sh/epyc-fleet-a7f3c1-alarms
+#
+# then run `scripts/coordination/alarm_channel.py test` and confirm the phone
+# buzzes. Install the ntfy app (F-Droid / App Store / https://ntfy.sh) and
+# subscribe to that exact topic.
+#
+# CHOOSE A RANDOM TOPIC NAME (~10 random chars). On the public ntfy.sh server a
+# topic name IS its password: anyone who guesses it can read your alarms and
+# publish fake ones. `epyc-fleet-alarms` is guessable; `epyc-fleet-a7f3c1-alarms`
+# is not. Self-hosting ntfy with auth is the stronger option and needs no code
+# change here — just point `url:` at your own server.
+#
+# The string REPLACE-ME below is a sentinel: while it appears in the endpoint the
+# module refuses to touch the network at all, records the alarm locally, and says
+# loudly on stderr that nothing was pushed. That is the shipped state — configured
+# but not live — so this repo never reaches an endpoint the operator did not pick.
+
+schema_version: alarm_channel.config.v1
+
+# Master switch. `false` = record locally, never push (explicit kill switch).
+enabled: true
+
+# Which push backend to use: ntfy | email | file
+#   ntfy  — RECOMMENDED. Phone push in ~1s, no mail server, no credentials in
+#           this repo, works from a host with only outbound HTTPS. The topic is
+#           the only secret and it lives in this one line.
+#   email — no app to install and it lands in an archive the operator already
+#           reads, but it depends on a working MTA/SMTP relay on this host,
+#           which is one more thing that can be silently dead — and a dead
+#           notifier is the exact failure this channel exists to prevent.
+#   file  — local record only; the durable JSONL below is ALWAYS written
+#           regardless of this setting, so `file` means "no push at all".
+backend: ntfy
+
+# Mirror alarms into coordination/session-bus/advisory.jsonl as
+# session_bus.advisory.v1 rows (kind: alarm-raised / alarm-cleared /
+# alarm-delivery-failed). OFF by default: advisory.jsonl reaches no human, which
+# is why this module exists, and it already carries >140k rows.
+advisory_mirror: false
+
+ntfy:
+  url: https://ntfy.sh/REPLACE-ME-epyc-fleet-alarms
+  timeout_s: 10
+  priority_critical: urgent
+  priority_warning: default
+
+email:
+  to: REPLACE-ME@example.invalid
+  from: epyc-fleet@localhost
+  smtp_host: localhost
+  smtp_port: 25
+  timeout_s: 20
+
+# The durable local record. ALWAYS appended, before any push is attempted, so a
+# crash mid-delivery still leaves forensics — and so a failed push is never the
+# difference between "recorded" and "lost".
+file:
+  path: /workspace/coordination/session-bus/alarms.jsonl

@@ -353,6 +353,98 @@ def _agent_states(bus_root: Path, roster: list[dict]) -> dict[str, dict]:
     return out
 
 
+# ----------------------------------------------------- P0-2 fleet presence
+
+
+# Phase-0 predicate. DELIBERATELY TRANSITIONAL, and P3-4 replaces it.
+#
+# Today a "main" is a persistent tmux session, so "zero live mains" is an
+# emergency. Once the worker pool is ephemeral (P2/P3), zero live workers
+# becomes the NORMAL idle state and this exact predicate would alarm on every
+# quiet hour — the alarm-that-fires-on-a-well-run-night, which is how a fleet
+# learns to ignore its own alarms. P3-4 swaps it for runner-liveness plus
+# "READY>0 AND capacity free AND no spawn attempt in N ticks".
+FLEET_HEARTBEAT_MAX_AGE_S = 3600.0
+
+
+def _fleet_presence(bus_root: Path, config: dict, roster: list[dict]) -> dict:
+    """Is there any main that could actually receive an assignment?
+
+    Built on `_live_window_names` + `_looks_dead` ON PURPOSE, rather than a
+    fresh tmux probe. This repo already carried FOUR uncoordinated calibrations
+    of "is this session alive" — different busy-markers, different glyph
+    tables, different staleness constants — and their disagreements are a large
+    part of the failure record. A fifth would be a defect, not a feature, so
+    this gate is a FOLD over the existing audited predicate.
+
+    UNREADABLE IS NOT ABSENT. If tmux cannot be read at all, the fleet reports
+    PRESENT: halting on a blind instrument would be the fail-closed twin of the
+    08-14 failure, and `_looks_dead` already refuses to read an unreadable tmux
+    as proof of death.
+    """
+    candidates = [r for r in roster
+                  if str(r.get("role", "")).strip() in ("main", "reviewer")]
+    if not candidates:
+        return {"present": True, "reason": "roster declares no mains — nothing to gate",
+                "live": [], "checked": []}
+
+    windows, windows_why = _live_window_names(config)
+    states = _agent_states(bus_root, roster)
+
+    live, checked = [], []
+    for entry in candidates:
+        aid = str(entry.get("id", "")).strip()
+        checked.append(aid)
+        if _looks_dead(aid, entry, states, windows, windows_why) is None:
+            live.append(aid)
+
+    if live:
+        return {"present": True, "reason": f"live mains: {', '.join(sorted(set(live)))}",
+                "live": sorted(set(live)), "checked": checked}
+    if windows is None:
+        return {"present": True,
+                "reason": f"tmux unreadable ({windows_why}) — UNKNOWN, and unknown never halts",
+                "live": [], "checked": checked}
+    return {"present": False,
+            "reason": (f"no live main among {len(candidates)} ({', '.join(checked)}): "
+                       f"no live window and no fresh heartbeat"),
+            "live": [], "checked": checked}
+
+
+def _alarm(bus_root: Path, action: str, key: str, severity: str = "critical",
+           message: str = "", evidence: dict | None = None) -> None:
+    """Best-effort hand-off to the operator-reachable alarm channel.
+
+    Never raises: an alarm that can crash the tick would make the tick the
+    thing that needs an alarm. A delivery failure is itself recorded by the
+    channel, and the advisory row written by the caller remains the local
+    durable record either way.
+    """
+    script = Path(__file__).resolve().parent / "alarm_channel.py"
+    if not script.exists():
+        return
+    cmd = [sys.executable, str(script), action, "--key", key]
+    if action == "raise":
+        cmd += ["--severity", severity, "--message", message or key]
+        if evidence:
+            cmd += ["--evidence", json.dumps(evidence)]
+    try:
+        subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+
+def _raise_fleet_alarm(bus_root: Path, fleet: dict, epoch: int) -> None:
+    _alarm(bus_root, "raise", "fleet-absent", "critical",
+           f"Assignment HALTED: {fleet['reason']}",
+           {"checked": fleet["checked"], "epoch": epoch,
+            "action": "spawn the fleet, or run the /coordinator-agent cold start"})
+
+
+def _clear_fleet_alarm(bus_root: Path, epoch: int) -> None:
+    _alarm(bus_root, "clear", "fleet-absent")
+
+
 # -------------------------------------------------------------- eligibility
 
 
@@ -1140,9 +1232,38 @@ def compute_advice(bus_root: Path, config: dict, epoch: int,
     # it once per agent per tick is how 4,602 records came from 9 rows.
     gate_refusals: dict[str, tuple[str, str]] = {}
 
+    # P0-2b: DO NOT ASSIGN TO AN AGENT THAT IS NOT THERE.
+    #
+    # Reproduced live 2026-08-16, minutes after the ghost sweep reset the queue:
+    # this loop handed four rows to mainA/mainB/mainC/mainD, whose windows had
+    # been gone for 58 hours. That is the whole 2026-08-14 mechanism in one
+    # tick — assign to nobody, wait out the lease, requeue, repeat until
+    # `attempt` exhausts and the row dies INFRA_BLOCKED.
+    #
+    # The fleet-wide gate in `apply_assignment` cannot catch this: it asks "is
+    # ANY main alive", and a partially-dead fleet burns rows exactly as
+    # effectively, one dead agent at a time. Liveness therefore has to be a
+    # property of the RECIPIENT, checked here, where the recipient is chosen.
+    #
+    # Same predicate as everywhere else (`_looks_dead`), so there is one
+    # calibration rather than a new one, and UNKNOWN still means alive: an
+    # unreadable tmux must never silently stop the fleet being scheduled.
+    _roster_by_id = {str(r.get("id", "")).strip(): r for r in roster}
+    _live_windows, _live_windows_why = _live_window_names(config)
+    dead_agents = {
+        aid: why for aid, entry in _roster_by_id.items()
+        if (why := _looks_dead(aid, entry, agents, _live_windows, _live_windows_why))
+    }
+
     for aid, agent in agents.items():
         if agent.get("role") != "main":
             continue  # only worker mains are scheduled by the daemon; reviewer/service/retired/coordinator are not
+        if aid in dead_agents:
+            advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
+                           "epoch": epoch, "kind": "would-skip", "agent": aid,
+                           "reason": f"agent looks dead ({dead_agents[aid]}) — not assigning "
+                                     f"work to an absent session (P0-2b)"})
+            continue
         if aid in busy_owners:
             advice.append({"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(),
                            "epoch": epoch, "kind": "would-skip", "agent": aid,
@@ -4139,6 +4260,33 @@ def apply_assignment(bus_root: Path, config: dict, epoch: int) -> list[dict]:
     """
     emitted: list[dict] = []
     roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
+
+    # ------------------------------------------------------------------ P0-2
+    # FLEET-EXISTENCE GATE. Assignment into an empty fleet is not a task-level
+    # failure and must never be recorded as one.
+    #
+    # Measured 2026-08-14: the roster's tmux windows vanished at ~13:05Z and
+    # nothing put them back. This function kept running, kept picking, and kept
+    # assigning to assignees that did not exist. Each row then walked
+    # ASSIGNED -> lease expiry -> STALE_REQUEUED until `attempt` hit the cap and
+    # it landed in INFRA_BLOCKED, "attempts exhausted after lease expiry".
+    # Fourteen rows were destroyed that way in eleven hours, one row at a time,
+    # while every signal that could have said "there is no fleet" was either
+    # unread or expressed as per-task noise.
+    #
+    # So the verdict is taken ONCE, at the top, before anything is written, and
+    # it produces ONE alarm rather than N terminal rows. `attempts` are a
+    # measure of the WORK's difficulty; spending them on the fleet's absence
+    # corrupts that measure permanently.
+    fleet = _fleet_presence(bus_root, config, roster)
+    if not fleet["present"]:
+        _raise_fleet_alarm(bus_root, fleet, epoch)
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "assignment-halted", "reason": fleet["reason"],
+                 "detail": ("no live roster main — assignment halted so rows are not "
+                            "burned against an absent fleet (P0-2)")}]
+    _clear_fleet_alarm(bus_root, epoch)
+
     reports = _outbox_reports(bus_root, roster)
 
     # 1. transcribe agent reports into the queue (bookkeeping, no judgment)
