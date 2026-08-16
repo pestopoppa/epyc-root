@@ -28,8 +28,8 @@ bash scripts/utils/report_update_workflow.sh --show       # print current report
 
 ## Dispatch Template
 
-When dispatching a writing task to a session acting in the research-writer role, include the
-workflow output and require:
+When dispatching a research-writing task to a roster id, brief it with the workflow output and
+require:
 
 1. New benchmark table rows (claims follow the measurement grammar — protocol id, n, date, attest)
 2. Interpretation of the acceptance-vs-speed tradeoff

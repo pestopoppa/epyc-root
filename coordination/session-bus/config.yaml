@@ -79,7 +79,27 @@ roster:
   #
   # lanes: [none] STILL HOLDS and is unchanged: it must never take an inference lane or a region
   # claim. Owning the delivery plane is not a licence to contend for the host.
-  - {id: auditor,           role: reviewer,          lanes: [none],           endpoint: "tmux:agent:auditor",    drain: boundary, worktree: /mnt/raid0/llm/worktrees/mains/auditor}
+  #
+  # SESSION RETIRED 2026-08-16 (P3-7) — and deliberately NOT a tombstone. The
+  # INTERACTIVE auditor is dead (verified DEAD by retire_identity.py: no window, no
+  # live pid, heartbeat 46.8h stale) so the `tmux:` endpoint and the `worktree:` key
+  # are GONE: nothing may spawn, probe, nudge or type into a pane under this id again.
+  # role: reviewer -> service, for the same reason hardware-backfill is a service —
+  # it is a mechanism, not a session; it has no tmux window and nothing nudges it.
+  # Side effect, and the desired one: `_fleet_presence` counts roles main+reviewer,
+  # so this row stops being a permanently-dead fleet-gate candidate.
+  #
+  # The IDENTITY is NOT retired, because it is still ADDRESSED and still WRITES:
+  # worker_runner.py emits every completed batch's audit packet with
+  # to/assignee/needs_routing_to = "auditor", and headless_audit.py pins
+  # AUDITOR_AGENT = "auditor" for its own outbox. `role: retired` would make
+  # session_bus.py::_check_routing_intent REFUSE that append and break the P2-7
+  # audit path mid-pilot. The reviewer FUNCTION now lives on as per-packet headless
+  # invocations of scripts/coordination/headless_audit.py. Receipt (including the
+  # 3944 undrained bytes and why the cursor was NOT archived):
+  # retirements/auditor.retirement.json. The lane worktree at
+  # /mnt/raid0/llm/worktrees/mains/auditor was CLEAN and is left in place.
+  - {id: auditor,           role: service,           lanes: [none],           endpoint: "monitor:file",          drain: none}
   # Added by coordinator-agent 2026-07-29 on operator direction: 293 tasks closed in the last 7
   # days against a target of 1000+, and the binding constraint is idle mains, not throughput per
   # main. mainC/mainD exist purely to churn backlog — they take whatever unblocked handoff work is

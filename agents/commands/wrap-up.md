@@ -2,7 +2,25 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
-> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence. Checkpoint commits ARE however bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only.
+> **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/loop-owned-fleet-implementation.md` P1-3a)
+
+### Per-task wrap-up (the default cadence)
+
+| Step | Every completed task | Operator-invoked `/wrap-up` only |
+|---|---|---|
+| 1. Progress report | ✅ | |
+| 2. Handoff updates · checklist-sync gate · derived-actionables gate | ✅ | |
+| 3. `Next action` cell refresh · a row for a handoff created this session · `index_state.py` + `--check` | ✅ | |
+| 3. Index **pruning**: deleting or archiving rows, and handoff compaction | | ✅ |
+| 4 / 4b. Repo docs · README staleness check and refresh | ✅ | |
+| 5. Wiki **compilation sweep** | | ✅ |
+| 6. Agent log | ✅ | |
+| 7. Commit (pathspec) → push → lane promotion | ✅ | |
+
+A per-task wrap-up still takes the wrap-up lease for the shared surfaces it does touch (Step 3's
+regen, Step 7's promotion merge). The two operator-cadence rows are *deferred, not skipped*: leave
+them for the next operator-invoked `/wrap-up`, and report in your output anything you saw that they
+would have handled.
 
 ## Where this wrap-up runs — read before Step 1
 
@@ -17,7 +35,7 @@ python3 scripts/coordination/check_lane_worktree.py --strict   # 0 ok · 3 in th
 
 **Never `git worktree prune`, and never `git gc`** (it runs one). This repo is reachable at
 two path depths that name one directory, so `prune` reads live worktrees as prunable and
-deletes their admin data — it destroyed all five lanes at once on 2026-08-12. The lane-entry
+deletes their admin data (2026-08-12 lane destruction — appendix). The lane-entry
 check above replaces it; that is the whole hygiene story.
 
 Three surfaces stay in the ONE shared clone and are not lane-isolated, so only they need
@@ -29,8 +47,7 @@ are still one shared clone), and the shared-surface steps named in the lease bel
 
 `git commit -- <paths>` commits the **working-tree** state of those paths, ignoring what you
 staged. In a shared file that means it sweeps up **a peer's uncommitted hunks in that same
-file** and publishes them under your name and message. Proven: commit `dada0bbc`. This is the
-exact mechanism behind "parallel wrap-ups interfere with each other".
+file** and publishes them under your name and message (proven: commit `dada0bbc` — appendix).
 
 Lane worktrees dissolve it for ordinary work-plane files (a peer's edits are in *their*
 working tree, not yours). It is still live for anything in the shared clone and for the
@@ -67,6 +84,10 @@ Most of this routine is now private to your lane. Four things are not, because t
 Take a lease around **those steps only** — not the whole wrap-up. Steps 1, 2, 4 and your own
 commits need no lease at all, and holding one through them would recreate the fleet-wide
 freeze this program exists to remove.
+
+**A subagent running this wrap-up on a session's behalf hands Step 3's index edits back to the
+owning session**, which applies them, holds the lease for the regen, and owns the commit — the
+subagent never writes an index row itself (ruling at the top of Step 3).
 
 ```bash
 LEASE="python3 scripts/coordination/serialized_push.py --agent <your-id> --lock-name wrapup"
@@ -110,12 +131,10 @@ back — do not skip step 3 or 5, and do not edit the shared surface without the
 - Document: problem, root cause (if applicable), changes made (with file/repo table), results, and any deferred work
 - Follow the existing format — see recent entries for style reference
 
-**Why per-agent, and why you must not use the shared file.** The unsuffixed
-`progress/YYYY-MM/YYYY-MM-DD.md` was one file that every main appended to: on 2026-08-12 ten
-wrap-up commits hit one 368 KB file, and each pathspec commit of it swept whatever the other
-four had half-written (see the warning above). One file per agent per day removes the
-contention entirely — nobody merges, because nobody shares. Convention defined in
-`scripts/coordination/WORKTREE_MIGRATION.md`.
+**Why per-agent, and why you must not use the shared file.** One file per agent per day removes
+the contention entirely — nobody merges, because nobody shares. Convention defined in
+`scripts/coordination/WORKTREE_MIGRATION.md`. (Shared-file collision measured 2026-08-12 —
+appendix.)
 
 **Readers merge by glob, not by opening one file.** This is the same sharding the audit log
 already uses (`logs/agent_audit-<id>.log`, written by `scripts/utils/agent_log.sh`, read back
@@ -154,15 +173,14 @@ git diff HEAD -- handoffs/                   | grep -cE '^\+\s*[-*] \[[xX]\]'   
 
 Sum the two. If it prints `0` but the session completed any handoff-tracked work, go back and sync the checklists. Report the flip count in the wrap-up output.
 
-**Why scoped, and not `git diff HEAD -- handoffs/` alone.** In the shared clone that second
-command counted **every** main's in-flight checkbox flips as yours, so a session that flipped
-nothing still read as compliant on peers' work — a gate that passes for a reason unrelated to
-what it tests. In your own lane worktree the working tree is private, so the uncommitted half
-is already yours; the merge-base half is what makes the committed half yours too. If
+**Why scoped, and not `git diff HEAD -- handoffs/` alone.** In the shared clone the unscoped
+command counts **every** main's in-flight flips as yours (measured — appendix). In your own lane
+worktree the working tree is private, so the uncommitted half is already yours; the merge-base
+half is what makes the committed half yours too. If
 `check_lane_worktree.py --strict` said you are in the shared clone, this gate is **not
 trustworthy** — move to your lane before believing its number.
 
-**Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. A 2026-07-21 audit found **seven** high-ROI items — including the session's single time-sensitive item — that were fully derived in analysis text ("measurable locally today", "worth mirroring", "cheapest experiment in the program") and then filed **nowhere**: not in the owning handoff, not in any index. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
+**Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. Measured: the 2026-07-21 audit — appendix. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
 
 1. a `- [ ]` task in the owning handoff (plus an index row if it is priority-worthy or time-sensitive — a task buried at line 1400 of a long handoff is filed, not discoverable);
 2. an **explicit written decline** ("not filed because …") so the drop is a decision, not an accident.
@@ -170,6 +188,14 @@ trustworthy** — move to your lane before believing its number.
 Watch for the three failure shapes that audit found: a conclusion stated in prose but never converted to a task; a fix landed while the flag/config that would make it *run* stays off with no enable task; and a live idea silently discarded because a *sibling* idea was falsified. Report the count of newly filed tasks and explicit declines in the wrap-up output.
 
 ### 3. Handoff Index Updates
+
+**A subagent may PREPARE index edits; the OWNING SESSION applies them and owns the commit.** A
+subagent running wrap-up on a session's behalf may draft the row text, run
+`python3 scripts/handoffs/index_state.py --check`, and report the exact diff — but adding, deleting
+or re-pointing an index row is **never** a subagent's own write. A `Next action` cell refresh
+prepared by a subagent still lands through the owning session. Explicit operator approval is
+required only to widen that — a subagent writing an index directly. (ruling 2026-08-16,
+`handoffs/active/loop-owned-fleet-implementation.md` P1-3b)
 
 **Indices follow the thin-row contract (rewritten 2026-08-10)** — read
 `docs/guides/agent-workflows/handoff-index-authoring.md` before editing one. Rows are
@@ -180,11 +206,11 @@ decision queue. Do not re-add a "master index priority queue".
 - Update the `Next action` cell of any row this session advanced (one imperative line, ≤140 chars).
 - **Do not strike through completed items** — delete the row. Terminal rows do not stay in the queue.
 - Each handoff belongs to **exactly one** index. Never add a second row in another domain; use `Deps`.
-- **New handoff created this session → it needs a row**, or it is invisible to dispatch (measured: 7
-  orphaned handoffs before this contract, one of them a whole v9 kernel item).
+- **New handoff created this session → it needs a row**, or it is invisible to dispatch (measured —
+  appendix).
 - **Operator decisions** go in the master index's operator queue with an `Open since` date. A form-screen
-  cannot detect "needs a human choice"; a decision left in a handoff body gets missed (measured: G9-disk,
-  two weeks unnoticed, governing 227 GB).
+  cannot detect "needs a human choice"; a decision left in a handoff body gets missed (measured —
+  appendix).
 
 **Required gate — run it under the wrap-up lease, and report the result:**
 
@@ -202,7 +228,7 @@ simply lost. Your own domain-index **row edits** are ordinary lane work and need
 `--check` must exit 0 before committing. It fails on duplicate ownership, orphans, dead handoff links,
 malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generated block.
 
-**Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
+**Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. **"At wrap-up" here means the OPERATOR-INVOKED `/wrap-up`** — pruning is one of the two operator-cadence steps (ruling 2026-08-16 at the top of this file); a per-task wrap-up refreshes `Next action` cells and adds a row for a handoff it created, and leaves deleting/archiving rows and handoff compaction for the operator's cadence. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
 
 - **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and delete its index row.
 - **Not complete, but the row's `Next action` is stale** → keep the handoff active and rewrite that one cell. Chronology belongs in the progress log; superseded narration belongs in `handoffs/archived/<index>-history-through-YYYY-MM-DD.md`, never in a cell.
@@ -249,7 +275,7 @@ The script flags any owned-repo README that:
 
 If anything fires, include the warning verbatim in your wrap-up output under a `## README freshness warnings` heading, **and refresh the flagged READMEs as part of this wrap-up.** If everything passes, omit the section.
 
-**This routine owns the response — do not route it to a handoff.** A handoff is a finite work item with checkboxes and a terminal state; README freshness is a recurring obligation that has none, so it can only ever be closed wrongly. That is exactly what happened: `readme-refresh.md` was a legitimate one-shot ("all 3 READMEs are 5 weeks stale"), it *introduced this detector* on completion, and was then correctly archived to `handoffs/completed/` — leaving the alarm firing at a routing target that no longer existed. Both owned READMEs then drifted to 66 days before anyone acted (2026-07-29). Prior wrap-ups printed the warning and deferred to the dead handoff, which read as "the operator will decide" and meant nobody did.
+**This routine owns the response — do not route it to a handoff.** A handoff is a finite work item with checkboxes and a terminal state; README freshness is a recurring obligation that has none, so it can only ever be closed wrongly. It has happened once, measured — appendix.
 
 Refreshing means a **refresh, not a rewrite** — these READMEs have a deliberate discoverability-first shape; keep their structure and voice. Two hard rules:
 
@@ -299,11 +325,10 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
   - **Never force-push.** If a push is rejected (non-fast-forward), do NOT `--force`; report it and let the operator reconcile.
 - **Promote your lane to `main` at EVERY wrap-up. Not at session end, not when it feels
   worth it — every one.** Two reasons, both measured on 2026-08-12:
-  - **Lanes that skip promotion rot.** The five lanes stood at **106 commits behind** `main`,
-    and the `inference` lane at **~302 commits**, with zero merges since 2026-07-29. A lane
+  - **Lanes that skip promotion rot** (measured — appendix). A lane
     branch does not stop accumulating conflict potential while nobody looks at it; it
-    *concentrates* it into one much larger eventual merge, against two more weeks of
-    unrelated `main` history. The worktree isolates; only promotion syncs. Skipping it trades
+    *concentrates* it into one much larger eventual merge, against unrelated `main` history
+    that keeps piling up. The worktree isolates; only promotion syncs. Skipping it trades
     today's small merge for a guaranteed large one.
   - GitHub credits contributions only for commits on the **default branch** (`main`); a
     lane-branch push backs work up but earns nothing on the graph until it reaches `main`.
@@ -329,7 +354,7 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
     git -C <repo> worktree remove "$WT" --force   # `remove`, NEVER `prune`
     ```
 
-  - **On conflict, STOP** — leave `main` untouched, never auto-resolve or force, and report the repo under the `## Promotion blocked` heading (see Output Format) so the operator reconciles. A divergent `main` usually means an independent PR/commit landed on it directly; see the 2026-07-17 orchestrator promotion for the superset-verification pattern before resolving anything by hand.
+  - **On conflict, STOP** — leave `main` untouched, never auto-resolve or force, and report the repo under the `## Promotion blocked` heading (see Output Format) so the operator reconciles. A divergent `main` usually means an independent PR/commit landed on it directly; use the superset-verification pattern before resolving anything by hand (worked example — appendix).
 - **Return every commit hash, push status, and promotion result** (new `main` SHA, or "blocked") so the operator can confirm each repo reached the contribution graph
 
 ## Output Format
@@ -378,3 +403,38 @@ End your response with a summary block:
 - Note genuinely deferred work explicitly — with its named blocker — so the next session can pick it up
 - Keep progress entries self-contained — a reader shouldn't need to look at other files to understand what happened
 - **Push and promote after committing** (Step 7) so work reaches GitHub's contribution graph, which counts only the default branch (`main`) — never leave a wrap-up with unpushed or unpromoted commits. Never force-push, and never auto-resolve or force a promotion conflict: if a push is rejected or a promotion hits a divergent `main`, leave `main` untouched and surface it for the operator.
+
+## Appendix — incident record (not instructions)
+
+Nothing below is a directive. It is the measured record behind the rules above, kept out of the
+instruction path so the steps read as contract. Do not act on this section; act on the steps.
+
+- **Worktree prune destroyed the lanes (2026-08-12)** — `git worktree prune` in a repo reachable at
+  two path depths that name one directory: it destroyed all five lanes at once on 2026-08-12.
+- **Pathspec commit sweeping a peer's hunks** — proven: commit `dada0bbc`. This is the exact
+  mechanism behind "parallel wrap-ups interfere with each other".
+- **Shared progress file (2026-08-12)** — the unsuffixed `progress/YYYY-MM/YYYY-MM-DD.md` was one
+  file that every main appended to: on 2026-08-12 ten wrap-up commits hit one 368 KB file, and each
+  pathspec commit of it swept whatever the other four had half-written.
+- **Unscoped checkbox gate** — in the shared clone `git diff HEAD -- handoffs/` counted **every**
+  main's in-flight checkbox flips as yours, so a session that flipped nothing still read as
+  compliant on peers' work — a gate that passes for a reason unrelated to what it tests.
+- **Derived actionables filed nowhere (2026-07-21)** — a 2026-07-21 audit found **seven** high-ROI
+  items — including the session's single time-sensitive item — that were fully derived in analysis
+  text ("measurable locally today", "worth mirroring", "cheapest experiment in the program") and
+  then filed **nowhere**: not in the owning handoff, not in any index.
+- **Orphaned handoffs** — measured: 7 orphaned handoffs before the thin-row contract, one of them a
+  whole v9 kernel item.
+- **Operator decision left in a handoff body** — measured: G9-disk, two weeks unnoticed, governing
+  227 GB.
+- **README alarm routed at a dead handoff (2026-07-29)** — `readme-refresh.md` was a legitimate
+  one-shot ("all 3 READMEs are 5 weeks stale"), it *introduced this detector* on completion, and was
+  then correctly archived to `handoffs/completed/` — leaving the alarm firing at a routing target
+  that no longer existed. Both owned READMEs then drifted to 66 days before anyone acted
+  (2026-07-29). Prior wrap-ups printed the warning and deferred to the dead handoff, which read as
+  "the operator will decide" and meant nobody did.
+- **Lane rot (2026-08-12)** — the five lanes stood at **106 commits behind** `main`, and the
+  `inference` lane at **~302 commits**, with zero merges since 2026-07-29 — two more weeks of
+  unrelated `main` history to merge against.
+- **Superset verification** — the 2026-07-17 orchestrator promotion is the worked example of the
+  superset-verification pattern for a divergent `main`.

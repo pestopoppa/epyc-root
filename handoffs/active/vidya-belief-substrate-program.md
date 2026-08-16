@@ -346,6 +346,88 @@ deliberately — decide them, do not just implement them.
       finer than its own suite's measured resolution. Adapters PROJECT into the existing `ClaimTuple`;
       `claim_tuple.grade()` remains the only grading rule — do not add a second ladder.
 
+- [ ] SC38 **Wire worker-pool completion reports on the write side — filed 2026-08-16 by the
+      loop-owned-fleet session, WHILE `scripts/coordination/worker_runner.py` is still being
+      authored** (`loop-owned-fleet-implementation.md` P2-10, before the P2-9 pilot runs). The runner
+      writes `<runtime_root>/runs/<batch_id>/report.json` (`worker_report.v1`, default runtime root
+      `/mnt/raid0/llm/worker-pool`) per batch, and `validate_report()` already REFUSES a batch that
+      omits `subagents_spawned`, `tokens_used` or `denials` — so an unreported run and a clean run
+      cannot render identically, which is the precondition a tuple needs. `subagents_spawned` is the
+      pool tier's fan-out multiplier and closes the RTG-49/F-15 gap for that tier; `tokens_used` is
+      the D1 ceiling's only input and the mandatory input to the Phase-3 go decision.
+      **Why now rather than after the pilot:** retrofitting the read side is impossible — a tuple
+      invented on read claims warrant the original run never captured, which is exactly why
+      `benchmarks/results` is permanently rejected (4,562 files, no write-side hook, 0 of 200 sampled
+      carrying a usable tuple).
+      **Projection, not a ladder.** Protocol id = the native schema version (SC19's precedent);
+      metric direction recorded, never inferred; `reps` = the rows that SCORED (`outcome ∈
+      pass|fail`), never the rows dispatched, because `skipped` is attempted-not-scored (SC6-REPS);
+      category `CANDIDATE` for pilot batches. The adapter PROJECTS into the existing `ClaimTuple` and
+      `claim_tuple.grade()` decides — the `measurement` ladder already exists and
+      `register_ladder()` refuses a second.
+      **Locator: the BATCH, never the row.** P2-6 puts up to 3 rows in one invocation and both
+      counters are batch-level, so a per-row key reads one fan-out number as three witnesses and
+      tokens/row becomes a derived quotient masquerading as a measured value. Same class as the
+      SC13 run-level trap and SC6-HAZARD.
+      **Honest scope, and it must land in the ADAPTER not only the docs:** both counters are written
+      by the WORKER into its own report file. Schema-required and type-validated is a genuine upgrade
+      on RTG-49's prose self-report, but it is still self-reported; an independent count would come
+      from the harness transcript / provider usage the runner already keeps a pointer to
+      (`transcript_path`). Until that exists the projection must say *self-reported* rather than
+      claim an independent witness.
+      **Attestation:** the runtime root is OUTSIDE any git tree, so a path proves nothing on read
+      (`feedback_verify_evidence_in_git_not_filesystem`). Write a sha256 over the report content at
+      collect time or the claim honestly tops out at `Witnessed/Anchored`. Source-register row added
+      in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+- [ ] SC39 **Wire headless audit verdicts (P2-7) on the write side — filed 2026-08-16, BEFORE
+      `scripts/coordination/headless_audit.py` exists.** The auditor consumes the pointer-only packet,
+      re-derives the diff from git independently, runs one mutation probe and writes a typed verdict
+      per completion: `accept | accept-with-followups | needs-rework | blocked-evidence`. Filing at
+      design time is the whole point — the module is unwritten, so the write side costs one field
+      today and is unrecoverable later.
+      **Classify it deliberately, the SC21 call one level up: a single verdict is CATEGORICAL — no
+      metric, no direction — and MUST NOT be forced through `ClaimTuple`.** Never invent a metric
+      direction to push it through the carrier. What *is* an honest measurement is a RATE over a
+      declared window: the verdict-mix share and, above all, the operator-vs-auditor disagreement
+      rate, which this plan's own kill criterion reads at a 20% threshold over any 7-day window (and
+      the pilot's overturn count over 3 spot-reviewed rows). Those are lower-is-better fractions whose
+      scored denominator is the audits actually ADJUDICATED, not the audits emitted.
+      **Projection only.** Rates project into the existing `ClaimTuple` with an explicit window,
+      classifier/prompt version as protocol id, and the recorded direction; `claim_tuple.grade()`
+      remains the sole grading rule and no second ladder is registered. Individual verdicts are
+      retained natively and, if anything, classified the way SC30 classified rehearsal legs — never
+      coerced into a measurement.
+      **Locator: the audit window (or the batch, for a per-batch rate), never the verdict** — the
+      same trap as the completion report it reviews.
+      **Do not spend the independence property.** The audit packet is a pointer WHITELIST precisely
+      so the review is not anchored on the defendant's statement of the case; a projection that folded
+      worker-reported outcomes into the verdict rate would destroy the property being measured.
+      Source-register row added in the adapters README.
+
+- [ ] SC40 **Wire the loop-owned-fleet plan metrics on the write side BEFORE the first unattended
+      night is scored** (filed 2026-08-16, P2-10). Four producers, all of which GATE a decision — the
+      Phase-4 gate check and the plan's kill criteria — and all of which are computed nowhere today,
+      which is the ideal moment: compute duty cycle on unattended nights (higher-better fraction,
+      8–9% baseline → >40%), operator delivery interventions (lower-better count, ~daily → 0),
+      coordination self-repair share (lower-better fraction, ~50% → <10%, computed by **commit-path
+      classification over `scripts/coordination/`**, which D9 requires to be measured and *never*
+      self-reported), and alarm fidelity (drill alarms delivered / drill alarms fired, plus false
+      alarms on well-run nights). Anything that gates a grade or a go/no-go is exactly what the
+      register says needs a tuple — the SC13 test.
+      **Projection, not a ladder:** each metric needs a protocol id naming the classifier and its
+      version, an explicit window, recorded direction, scored basis, and a durable attested artifact;
+      the adapter projects into the existing `ClaimTuple` and `claim_tuple.grade()` decides.
+      **Locator: the WINDOW (a night, a 7-day span), never the sample.** A 60s duty-cycle poller keyed
+      per sample would read one night as 1,440 independent witnesses — SC6-HAZARD in its purest form.
+      **Two scope limits that belong in the adapter, not just the docs:** duty cycle attests HARDWARE
+      OCCUPANCY and says nothing about useful work (reading it as productivity is the SC21 category
+      error); and the self-repair share is a ratio over commits classified by path, so it moves
+      whenever the path taxonomy moves — pin the classifier version inside the tuple or two windows
+      are not comparable. **Price it first** per the P2 discipline before building any adapter: the
+      corpus is one row per night/window, so the honest answer may be a hand-written record rather
+      than an adapter — in which case record that verdict here instead of leaving the row open.
+
 ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?)
 
 Audit finding that opened this section: **nothing outside `scripts/vidya/` read the fold.** A grep

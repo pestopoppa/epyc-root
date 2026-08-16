@@ -333,7 +333,7 @@ tmux capture-pane -p -t agent:<window> | tail -20
 If a CLI needs updating, update it **before** spawning, not after a mystery failure.
 
 **3. Dispatch or close idle mains** per the session-lifecycle rule (authority:
-`OPERATING_CONSTRAINTS.md`): related next task → keep context and dispatch; disjoint → wrap up,
+`agents/shared/SESSION_LIFECYCLE.md`): related next task → keep context and dispatch; disjoint → wrap up,
 `/clear` (needs **both** conditions, and never in the same nudge as the task that follows), then
 dispatch; nothing assignable → close the session. **An idle main with an empty queue is a
 coordination failure**, not a resting state.
