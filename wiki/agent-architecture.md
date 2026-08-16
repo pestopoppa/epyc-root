@@ -59,7 +59,7 @@ and adding a queue-aging alarm. Liveness and escalation *classifiers* were expli
 generalisable move: when a signal is structurally incapable of distinguishing two states, removing
 the dependence on it beats improving the reading of it.
 
-### What a lane worktree isolates, and the four surfaces it cannot
+### What a lane worktree isolates, and the surfaces it cannot
 
 The wiki already records that per-agent worktrees dissolve same-file commit sweeps while unpromoted
 lanes rot (106 commits behind, one at ~302 — *2026-08-12* section below). The mechanism doc
