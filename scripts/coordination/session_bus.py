@@ -164,11 +164,25 @@ def _write_atomic(path: Path, payload: dict) -> None:
     the final path stays atomic, so the last writer still wins cleanly and a
     reader never sees a partial file.
     """
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(f"{path.suffix}.{os.getpid()}.tmp")
+    # WRITE THROUGH A SYMLINK, NEVER OVER IT (P0-7, 2026-08-16).
+    #
+    # `os.replace(tmp, path)` replaces the LINK, not its target. Since the bus
+    # runtime moved off-tree behind tracked symlinks, every atomic write here
+    # was quietly converting a symlink back into a regular file — measured the
+    # same afternoon: four `*_state.json` links had already become real files
+    # again and one had been committed as one. The relocation would have eroded
+    # file by file, silently, until the next `git clean -ffdx` found something
+    # to delete again.
+    #
+    # Resolving first keeps the indirection intact: the temp file is written
+    # beside the TARGET and replaces the TARGET, so the rename stays atomic on
+    # the same filesystem and the link is untouched.
+    target = Path(os.path.realpath(path)) if path.is_symlink() else path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_suffix(f"{target.suffix}.{os.getpid()}.tmp")
     try:
         tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        os.replace(tmp, path)
+        os.replace(tmp, target)
     finally:
         if tmp.exists():
             try:

@@ -348,6 +348,20 @@ chk "COMPLIANT: empty queue + idle card -> ZERO alarms" "$(alarm_log | grep -c N
 chk_contains "the idle READING is still reported (not an alarm)" \
     "$(printf '%s\n' ${FW_OBSERVATIONS[@]+"${FW_OBSERVATIONS[@]}"})" "COMPUTE-IDLE (not an alarm)"
 
+# THE OCCUPANCY LINE MUST NOT LIE ABOUT WHY IT IS NOT AN ALARM. Two different
+# reasons reach the not-an-alarm branch — nothing is queued, or persistence has
+# not accumulated yet — and a live smoke run caught a first draft printing "NO
+# compute-gated READY row is waiting" while FOURTEEN gated rows sat in the real
+# queue. That line is relayed verbatim by session_bus.py's boundary report, so a
+# fabricated reading there is a fabricated reading in the coordinator's hands.
+reset_all
+FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)      # gated work IS waiting
+fw_run_cycle                                        # cycle 1 of 3: not yet asserted
+obs=$(printf '%s\n' ${FW_OBSERVATIONS[@]+"${FW_OBSERVATIONS[@]}"})
+chk_contains "pre-persistence idle line still carries the COMPUTE-IDLE token" "$obs" "COMPUTE-IDLE"
+chk_lacks "pre-persistence idle line does NOT deny the queued gated work" "$obs" "NO compute-gated READY row"
+chk_contains "pre-persistence idle line counts the waiting gated rows" "$obs" "1 compute-gated READY row(s) waiting"
+
 # ---- 4b. COMPUTE-IDLE escalates only with compute-gated work queued --------
 reset_all
 FIX_TSV=$(row q-cpu READY "$NEW" 1 0.5 '' cpu)      # gated work, and it is fresh
@@ -505,6 +519,34 @@ chk "a foreign alarm key is left ACTIVE" "${FAKE_ACTIVE[fleet-absent]:+present}"
 chk "a second foreign key is left ACTIVE" "${FAKE_ACTIVE[bus-supervisor-dead]:+present}" "present"
 chk "nothing foreign was cleared" "$(alarm_log | grep -c '^CLEARED')" "0"
 
+# THE SWEEP'S TWO GUARDS, EXERCISED DIRECTLY.
+#
+# Through a full cycle these two are masked by each other: `eligible` is built
+# only from owned keys, so the ownership guard never sees a foreign key, and the
+# down-hysteresis counter is never advanced for a domain that was unreadable, so
+# the eligibility guard never sees a clearable key. Each masking makes the OTHER
+# look like dead code, and a mutation removing either survived a full-cycle-only
+# suite. They are defence in depth and they are called here with the arguments
+# that isolate them, because "no cycle reaches it today" is not the same claim as
+# "it does nothing".
+reset_all
+FAKE_ACTIVE[fleet-absent]="raised by the daemon"
+FW_OFF_N[fleet-absent]=99                       # long since absent, i.e. clearable
+fw_reconcile_alarms "" "fleet-absent"           # handed to the sweep as eligible
+chk "the sweep refuses to clear a key it does not OWN, even when handed one" \
+    "$(alarm_log | grep -c '^CLEARED')" "0"
+chk "the foreign key survives the sweep" "${FAKE_ACTIVE[fleet-absent]:+present}" "present"
+
+reset_all
+FAKE_ACTIVE[queue-aging-unscreened]="raised by fleet_watch earlier"
+FW_OFF_N[queue-aging-unscreened]=99             # long since absent, i.e. clearable
+fw_reconcile_alarms "" ""                       # ...but its domain was UNREADABLE
+chk "an own key whose domain was UNREADABLE is not cleared" \
+    "$(alarm_log | grep -c '^CLEARED')" "0"
+fw_reconcile_alarms "" "queue-aging-unscreened" # domain readable again
+chk "...and IS cleared once its domain can be read" \
+    "$(alarm_log | grep -c '^CLEARED queue-aging-unscreened')" "1"
+
 # ---- 4h. the first-cycle lie ----------------------------------------------
 # Cycle 1 with compute ALREADY idle. The pre-production version logged
 # "ok — no stalls, compute in use" here, because persistence had not accumulated.
@@ -528,16 +570,18 @@ reset_all
 FIX_TSV=$(row r-unscreened READY "$OLD" 0 0.5 '' none)
 cycles 4; out="$LAST_OUT"
 chk_lacks "no finding contains pane text" "$out" "PANE TEXT MUST NEVER"
-chk_lacks "no alarm contains pane text (evidence off)" "$(alarm_log)" "PANE TEXT MUST NEVER"
+chk_lacks "no alarm message or evidence contains pane text" "$(alarm_log)" "PANE TEXT MUST NEVER"
+# The DEFAULT, snapshotted at source time — see the note there. A script that
+# shipped with capture ON would pass every case that sets the variable itself.
+chk "pane-evidence capture is OFF by default" "$FW_EVIDENCE_DEFAULT" "<empty>"
 # Turned ON, the pane tail may appear ONLY inside an alarm's evidence, and only
 # on an alarm some other signal already decided to raise — clearly labelled.
 reset_all
+saved_ev="$EVIDENCE_PANES"
 EVIDENCE_PANES="console"
 ev=$(fw_evidence_json k v)
 chk_contains "evidence capture is clearly labelled when enabled" "$ev" "EVIDENCE ONLY, NOT A TRIGGER"
-EVIDENCE_PANES=""
-ev=$(fw_evidence_json k v)
-chk_lacks "evidence capture is OFF by default" "$ev" "PANE TEXT MUST NEVER"
+EVIDENCE_PANES="$saved_ev"
 
 # =============================================================================
 # 5. THE LOG LINES OTHER TOOLS GREP

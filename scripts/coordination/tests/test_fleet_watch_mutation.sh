@@ -225,6 +225,13 @@ mutate 17 "idle compute alarms even with NO compute-gated work queued" \
     '        if [ "$compute" = "idle" ]; then' \
     "empty queue + idle card -> ZERO alarms"
 
+mutate 28 "the not-an-alarm occupancy line denies queued work that IS queued" \
+    '            if [ "$FW_READY_GATED" -eq 0 ]; then
+                FW_OBSERVATIONS+=("COMPUTE-IDLE (not an alarm)' \
+    '            if true; then
+                FW_OBSERVATIONS+=("COMPUTE-IDLE (not an alarm)' \
+    "does NOT deny the queued gated work"
+
 mutate 18 "compute-gated rows stop being distinguished from ungated ones" \
     '            *) FW_READY_GATED=$((FW_READY_GATED + 1)) ;;' \
     '            *) ;;' \

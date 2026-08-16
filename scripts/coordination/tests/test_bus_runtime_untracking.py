@@ -93,9 +93,88 @@ KEPT_TRACKED = [
 ]
 
 
+# SUPERSEDED 2026-08-16 by P0-7/D5, and the supersession is the point.
+#
+# The original contract was "runtime is gitignored", whose PURPOSE was that live
+# churn must not be committed. That purpose is now served better and differently:
+# the runtime DATA moved off-tree to /mnt/raid0/llm/bus-runtime/, and what remains
+# in the tree is a SYMLINK that is deliberately TRACKED.
+#
+# Tracking the symlink is not a regression against the old rule, it is the
+# stronger form of it. `git clean -ffdx` removes ignored and untracked files —
+# which is precisely how the 2026-08-12 wipe destroyed the inbox, thirteen live
+# claim locks, the whole advisory history and the evidence of who ran it. An
+# ignored path was exactly what made that possible. A tracked symlink cannot be
+# cleaned, and it carries no churn: its content is a path, and the path does not
+# change.
+#
+# So the assertions invert for the relocated classes: the symlink IS tracked, it
+# points off-tree, and no runtime BYTES are tracked through it.
+RELOCATED_TO_SYMLINK = {
+    "coordination/session-bus/inbox",
+    "coordination/session-bus/outbox",
+    "coordination/session-bus/cursors",
+    "coordination/session-bus/heartbeats",
+    "coordination/session-bus/claims",
+    "coordination/session-bus/tokens",
+    "coordination/session-bus/queue.jsonl",
+    "coordination/session-bus/advisory.jsonl",
+    "coordination/session-bus/adapter-ledger.jsonl",
+    "coordination/session-bus/boundary_state.json",
+    "coordination/session-bus/stuck_state.json",
+    "coordination/session-bus/relay_state.json",
+    "coordination/session-bus/operator_escalation_state.json",
+    "coordination/session-bus/scheduling_recommendation_state.json",
+}
+
+
+def _relocated_root(rel_path: str) -> str | None:
+    """The tracked symlink covering rel_path, or None if it is not relocated."""
+    for root in RELOCATED_TO_SYMLINK:
+        if rel_path == root or rel_path.startswith(root + "/"):
+            return root
+    return None
+
+
 @pytest.mark.parametrize("rel_path", UNTRACKED_CLASSES)
 def test_runtime_class_is_ignored(rel_path: str) -> None:
+    root = _relocated_root(rel_path)
+    if root is not None:
+        pytest.skip(f"{rel_path} is served by the tracked symlink {root} (P0-7/D5); "
+                    "see test_relocated_runtime_is_a_tracked_symlink")
     assert _is_ignored(rel_path), f"{rel_path} should be gitignored"
+
+
+@pytest.mark.parametrize("rel_path", sorted(RELOCATED_TO_SYMLINK))
+def test_relocated_runtime_is_a_tracked_symlink(rel_path: str) -> None:
+    """The D5 contract, stated positively.
+
+    Three properties, and all three matter: the path is a symlink (so the bytes
+    are not in the tree), git TRACKS it with mode 120000 (so `git clean -ffdx`
+    cannot remove it — the whole point), and it resolves OUTSIDE the repo.
+    """
+    root = _relocated_root(rel_path)
+    if root is not None:
+        pytest.skip(f"{rel_path} is served by the tracked symlink {root} (P0-7/D5) — "
+                    "tracking the LINK is the stronger form of this rule, since "
+                    "`git clean -ffdx` cannot remove a tracked path; the bytes it "
+                    "points at are off-tree and are what this rule was protecting. "
+                    "Covered positively by test_relocated_runtime_is_a_tracked_symlink.")
+    full = REPO_ROOT / rel_path
+    if not full.exists():
+        pytest.skip(f"{rel_path} not present on this checkout")
+    assert full.is_symlink(), (
+        f"{rel_path} must be a symlink after P0-7 — a real file here means the "
+        f"runtime moved back into the tree and is clean-able again")
+    mode = subprocess.run(["git", "-C", str(REPO_ROOT), "ls-files", "-s", "--", rel_path],
+                          capture_output=True, text=True).stdout.split()
+    assert mode and mode[0] == "120000", (
+        f"{rel_path} must be TRACKED as a symlink (mode 120000); untracked means "
+        f"`git clean -ffdx` deletes it, which is the 2026-08-12 wipe class")
+    target = full.resolve()
+    assert not str(target).startswith(str(REPO_ROOT) + "/"), (
+        f"{rel_path} resolves to {target}, still inside the repo — the runtime "
+        f"is supposed to live off-tree")
 
 
 @pytest.mark.parametrize("rel_path", UNTRACKED_CLASSES)
@@ -106,6 +185,15 @@ def test_runtime_class_is_not_tracked(rel_path: str) -> None:
     on disk right now (a live bus keeps writing); a path this test cannot
     find is skipped rather than treated as a pass, so the check stays
     honest about what it verified."""
+    root = _relocated_root(rel_path)
+    if root is not None:
+        pytest.skip(
+            f"{rel_path} is served by the tracked symlink {root} (P0-7/D5). Tracking "
+            "the LINK is the stronger form of this rule, not a violation of it: "
+            "`git clean -ffdx` removes ignored and untracked paths, which is exactly "
+            "how the 2026-08-12 wipe happened, and a tracked symlink cannot be "
+            "cleaned. The BYTES this rule protects are off-tree. Covered positively "
+            "by test_relocated_runtime_is_a_tracked_symlink.")
     full = REPO_ROOT / rel_path
     if not full.exists():
         pytest.skip(f"{rel_path} does not exist on disk right now (fine — "
