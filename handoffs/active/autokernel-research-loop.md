@@ -500,6 +500,7 @@ not a reopening of empirical work:
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
+  **Prep is already staged 2026-08-13 — do not redo it** (verified on disk 2026-08-16): `/mnt/raid0/llm/autokernel/campaigns/ak-run2-generic-20260813/prep/` holds `akrun2-proposal-manifest.json` (`epyc.autokernel.proposal.v4`, `akp-run2-generic-0001`), `akrun2-source-patch-manifest.json` (`epyc.autokernel.source-patch.v1`, candidate `akc-run2-generic-0001`, change class `dispatcher`, production base `0db32c06`), `akrun2-generic.patch` (a comment-only `common/arg.cpp` diff that exercises the content-addressed patch binding with no behavioral change), and `akrun2-fresh-source-plan.json` (CPU backend, `MUL_MAT`/`MUL_MAT_ID`, suite seeds 4711–4713); what remains is execution, not authoring.
 - [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal,
   candidate, and evaluation records; distinguish frontier/banked/champion state; compose compatible
   members; re-evaluate the combined source snapshot; append `CHAMPION_UPDATED`; and re-anchor explicitly

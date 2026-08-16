@@ -421,5 +421,103 @@ What is left is a *graph* problem, not a content problem, and recording it as a 
 | b | Full `git merge origin/main` with manual resolution | ~78 conflicted files | Redoes by hand the work already done per-file, and invites a wrong pick on a loop-plane file that was deliberately rewritten. |
 | c | Leave diverged; push to a review branch | zero | `main` stays unpushable indefinitely, and every later session inherits the divergence. |
 
-**Recommendation: (a)**, and it needs a `D9-ack:` trailer. It is reversible until pushed —
-`git reset --hard` before the push undoes it completely.
+**~~Recommendation: (a)~~ — WITHDRAWN 2026-08-16, same day, and the reason is the useful part.**
+
+The evidence I gave for (a) was `git diff --name-status HEAD origin/main` yielding zero `A`
+entries, which I reported as "the content is reconciled". **That measures file PRESENCE, not
+content equality, and I stated the second having tested only the first.** The parallel session
+(`stage-3-action-plan`) measured the thing I should have:
+
+| against the merge base | files |
+|---|---|
+| `origin/main` changed | 104 |
+| local `main` changed | 269 |
+| **changed on BOTH sides** | **103** |
+| origin-only | 1 |
+
+`-s ours` keeps local content for all 103 and discards origin's half of each **with no conflict
+raised and nothing in the resulting diff to review**. That is not a graph-only operation; it is a
+silent 103-file revert of the other session's work. Option (a) is wrong and is withdrawn.
+
+**Resolution: option (b), and it is IN FLIGHT and owned by the other session** — a real per-file
+three-way merge in an isolated detached worktree (`/mnt/raid0/llm/tmp/merge-20260816`, our live
+tree untouched), 36 conflicts, fanned out over 4 subagents on disjoint sets. Policy: union by
+default; never drop a rule, guard, test or task; **retractions win over what they retract**;
+genuine contradictions preserved and reported, never silently picked.
+
+Nothing is at risk while it runs. Every local commit is on origin — verified with
+`git rev-list <branch> --not --remotes=origin` across all local branches; the only
+origin-unreachable commit was `4ad13cb2`, now parked at
+`origin/backup/coordinator-agent-20260816T1952Z/main`. All of today's earlier work was already
+inside `origin/backup/20260816T1900Z/main-research-intake`.
+
+**The instructive case, for whoever reviews the merged tree.** Local now carries the decode-vs-depth
+retraction (added by the forward-port at `gpu-candidates-surface-qwen38-update.md:58-61`), but it
+sits as a note *beneath* table rows that still read `✅ **37.15 t/s** … 13.61 @32k` and
+`**MTP HURTS at depth**`. Origin rewrote those rows instead. **Origin is right**, and a naive union
+is the worst of the three outcomes — it would preserve both the retracted cells and their
+retraction, and a `✅ measured` cell gets quoted downstream without the paragraph that withdraws it.
+
+## Bus-triage findings, 2026-08-16 — the 51-message backlog, read not swept
+
+All 51 routed messages (2026-07-29 → 2026-08-16) were dispositioned individually against the
+repo by four parallel readers, each disposition backed by a commit / file:line / handoff row.
+Zero were bulk-acked. What survived as live work:
+
+- [x] **BUS_ROOT derived from `__file__` in 3 modules — writes silently lost in every lane
+  worktree.** ✅ 2026-08-16 — flagged by `auditor` on 2026-08-12; one of three named files was
+  fixed then, and `tmux_adapter.py`'s instance SURVIVED THE P3-2 REWRITE of that file because
+  only per-file assertions guarded the invariant. Fixed `tmux_adapter.py`, `seed_queue.py`, and
+  — found by the new guard, not by any audit — `alarm_channel.py`, written 2026-08-16 *after*
+  the audit, proof that per-file assertions can never cover the next file. All three now use
+  `session_bus.get_bus_root()`. New AST sweep in `tests/test_bus_root_resolution.py` fails on
+  ANY `scripts/coordination/*.py` module deriving a bus root from `__file__`; mutation-verified
+  three ways (each fix reverted individually → sweep fires; restored → 9/9 green).
+- [x] **Four pilot audit packets were never audited — the invoke wiring landed 12 minutes too
+  late.** ✅ 2026-08-16 — packets emitted 10:17–10:46Z, `_invoke_headless_audit` (P2-7's other
+  half) landed 10:58Z. All four run retroactively; verdicts on the bus under `auditor`. Two
+  rationales report mutation-probe FAILs that are benign over-matches: the probe expects the
+  diff to touch every file the task TEXT mentions, and both pilots' prose named files outside
+  their deliverable (pilot-03 → RTG-52 itself, pilot-04 → `worker_runner.py`).
+- [ ] **The probe over-match above is itself a defect worth one line of code**: the mutation
+  probe should resolve expected-touched files from the row's stated deliverable, not from every
+  path-shaped token in the task text — two of four pilot audits FAIL-noised on it.
+- [ ] **`monitor:file` service identities are structurally invisible to the fleet-health plane.**
+  The P3-4 predicate watches `exec:` runners; `auditor` (`role: service`, `monitor:file`)
+  generated 23 `stuck-unreachable` advisories today, and its inbox holds 111 undrained rows —
+  the audit RESULTS flow (headless invocations write verdicts fine), but nothing drains packets
+  addressed to the identity, and a missed invocation (above) sat invisible until a manual
+  triage. Either give the daemon a re-invoke sweep for unanswered `action_required` packets
+  addressed to `monitor:file` services, or stop addressing bus rows to identities nothing
+  drains and make the direct invocation the ONLY channel. (msg-20260729T121802Z-33's C8, still
+  live after the rewrite.)
+- [ ] **Screener paraphrase defect: a pool dispatch screened a worker against hand-written
+  `--row-text` instead of the row's verbatim text.** CJ-1c parked `unknown` on a 241-char
+  paraphrase while the real 452-char row text matches its checkbox verbatim. "The task TEXT is
+  the identity" — the dispatch path must pass the row text through byte-for-byte; forbid
+  free-hand `--row-text` when the row resolves. (5/5 pilot rows screened `unknown`; at least
+  this one is a screening artifact, not a premise problem.)
+- [ ] **Relay ledger: 296 flagged rows, never reconciled.** `relay_state.json` carries 296
+  flagged entries (oldest 2026-07-27, `handler:intake_proposals`). The 2026-08-12 "reconcile
+  before restart" window is long past and this triage answered the re-presented backlog, but
+  the flagged list itself has never been adjudicated: nothing distinguishes "handled by a
+  handler" from "dropped". One pass over the 296 with the handler ledgers, then either clear
+  the list or file what it proves lost. (chunk-2 S1; two of 13 sampled messages in this very
+  triage carried `NOT-IN-INBOX` markers — the drop mechanism is corroborated, not hypothetical.)
+- [x] **The E8 wipe now has its incident entry.** ✅ 2026-08-16 —
+  `INC-20260816-git-clean-shared-clone` in `docs/reference/agent-config/INCIDENT_LOG.md`,
+  folding both dated events (08-12 worktree wipe, 08-16 retirements/watermark/repos/ loss) into
+  one signature: `git clean` removes exactly the untracked-but-load-bearing state no commit
+  protects, and the cost surfaces days later as unrelated-looking breakage.
+- [x] **"Backfill landed but off" — REFUTED during triage.** ✅ 2026-08-16 — chunk-4 read
+  `coordination/backfill/` (docs only) and concluded the runner never landed; in fact
+  `5af987ef` shipped `hardware_backfill.py` (777 lines) + supervisor + 418-line test, the
+  `hardware-backfill` roster row exists (`config.yaml:132`), and the supervisor process is
+  running. Recorded so the claim does not resurface.
+
+**E8 reseed gate (chunk-4 #4) — folded into OP-19** rather than filed twice: the gate text in
+`CURRENT-CAMPAIGN.md:103,106` blocks every stack change on an E8-form reseed that can no longer
+be satisfied (era advanced to E9, source evidence destroyed), and the file contains zero
+occurrences of "E9". OP-19's ruling should answer BOTH the B9/B10 disposition and the gate's
+restatement against E9 — answering the narrow question alone leaves the unsatisfiable gate
+binding. Master-index OP-19 row amended to say so.

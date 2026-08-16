@@ -34,6 +34,21 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   Residual, deliberately not chased here: the `master-handoff-index.md` rollup block that
   `index_state.py` also writes is still tracked and still shared, so it remains a (much smaller)
   concurrent-edit surface — one block, not a 250 KB pair.
+- [ ] **Cross-file duplicate-TASK detector (semantic, not exact-text).** Proposed by mainB, seconded
+  by the auditor 2026-08-12, owned by nobody since. Exact-text scanning is proven insufficient:
+  `stale-open-audit-2026-07-18.md:257` returned 0 duplicates while the (now-superseded)
+  `BACKLOG-DISPATCH-QUEUE.md:1686-1699` lists **14 real pairs found by hand** — index rows summarize
+  the same task in different words. Validate any detector against those 14 known pairs: one that
+  does not rediscover them is not working. Re-home the C2 pair list out of the superseded dispatch
+  queue before that file is pruned. (Filed from bus triage 2026-08-16, msg-20260812T111252Z-20.)
+- [ ] **`backlog_row_check.py`: mid-text owner declaration is a measured false negative.** Reproduced
+  live 2026-08-16: `numa-topology-cutover-resume-20260730.md:189` screens DISPATCHABLE while its own
+  line 190 reads "**Owner: the stack owner (`inference`), NOT this lane.**" — `_OWNER_PREFIX` is
+  `.match()`-anchored to the body's first characters and `_OWNER_DISCLAIM` searches only the heading.
+  The narrowness is deliberate (21/1258 precision, documented at `:96-101`), so widen narrowly:
+  match a bolded `Owner:` lead-in at the start of ANY line of the row body, keep the
+  colon-within-60-chars constraint, and re-measure against the live corpus without regressing the
+  21/1258. (Filed from bus triage 2026-08-16, msg-20260813T181621Z-52.)
 - [ ] **Populate `Deps` as real dependencies are established.** 577 `ref` edges are derived from
   markdown links; only 1 `dep` edge is hand-authored. A heuristic sweep found 253 candidates and was
   rejected — the phrasing cannot disambiguate direction ("X gates Y" vs "gated by X"), so importing
