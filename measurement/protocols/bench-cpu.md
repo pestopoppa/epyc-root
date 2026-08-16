@@ -18,6 +18,19 @@
   bare re-read; `feedback_drop_caches_numa_eviction`), ≥1wk → reboot required
   (`feedback_host_throttle_check`); governor + `kernel.numa_balancing` checked per session (it
   self-resets); THP pool noted (production `--no-mmap --mlock` depletes it).
+
+**AutoKernel narrowing cross-reference (2026-08-13, `P-AK-SEARCH-1-A2`).** For AutoKernel T0-T2
+search only, Annex K now owns a discovery-screen mode: a sealed exact-frame three-anchor baseline
+bank is reused with exactly three candidate-only samples; ordinary service, agent, build,
+filesystem and host-load activity is recorded noise and never blocks search; only competing model
+inference overlapping the held compute claim is an environmental blocker. The bank binds the full
+anchor runtime parameter/environment surface and each screen proves its declared factor is the sole
+intended semantic anchor/candidate difference. A runtime-parameter screen uses one sealed instrument
+binary/DSO set for both arms and performs no candidate build; a source-changing screen is a separate
+mode whose content-addressed source/build identity may differ while normalized runtime semantics
+remain fixed. Same-valued or multi-factor screens are invalid. Strict paired confirmation and every
+Annex B release or promotion requirement remain unchanged.
+
 - **Reps**: ≥5 for ≥5% effects; **≥10 for ≤2% effects**; report median + MAD. Cold-vs-warm
   declared. `-fa 1` always explicit (8–10% swing; llama-bench defaults to 0).
 - **Reference anchors**: 460 GB/s practical aggregate BW; per-thread share ≈ 4.79 GB/s × 96

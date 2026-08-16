@@ -1,7 +1,7 @@
 #!/bin/bash
-# Install (idempotently) git hooks that regenerate the handoff dashboard timeline
-# artifact whenever handoffs/ changes — on local commits AND on pulled/merged/
-# checked-out commits.
+# Install (idempotently) git hooks that regenerate only the handoff dashboard
+# timeline artifact whenever handoffs/ changes — on local commits AND on pulled/
+# merged/checked-out commits.  Wrap-up-owned index state is deliberately excluded.
 #
 # Three hooks are wired, each with a change-guard appropriate to its arguments:
 #   post-commit    — the just-made commit touched handoffs/ (git diff-tree HEAD)
@@ -33,14 +33,6 @@ regen_body() {
   _repo="$(git rev-parse --show-toplevel 2>/dev/null)" || _repo=""
   if [ -n "$_repo" ] && [ -f "$_repo/scripts/handoffs/build_handoff_timeline.py" ]; then
     ( python3 "$_repo/scripts/handoffs/build_handoff_timeline.py" >/dev/null 2>&1 & ) || true
-  fi
-  # Index liveness state + the dashboard graph artifact. Same change-guard (this
-  # only runs when handoffs/ moved), same detached best-effort contract. It takes
-  # ~8s because it asks git for each handoff's last checkbox change, which is why
-  # it is backgrounded and never awaited: a git hook that blocks for 8s on every
-  # commit would get uninstalled by the first person it annoyed.
-  if [ -n "$_repo" ] && [ -f "$_repo/scripts/handoffs/index_state.py" ]; then
-    ( python3 "$_repo/scripts/handoffs/index_state.py" >/dev/null 2>&1 & ) || true
   fi
 EOF
 }
@@ -79,7 +71,31 @@ install_into() {
   kind="$1"
   hook="$HOOK_DIR/$kind"
   if [ -f "$hook" ] && grep -qF "$MARKER" "$hook"; then
-    echo "[install-hook] already installed in $hook"
+    # This is an upgrade path, not an "already installed" no-op.  The marked
+    # body is version-controlled by this installer; replacing it removes stale
+    # worker-triggered actions (notably the former index_state.py regeneration)
+    # while preserving unrelated chained hooks such as git-lfs.
+    marker_count="$(awk -v marker="$MARKER" '$0 == marker { count++ } END { print count + 0 }' "$hook")"
+    end_marker_count="$(awk -v marker="$END_MARKER" '$0 == marker { count++ } END { print count + 0 }' "$hook")"
+    if [ "$marker_count" -ne 1 ] || [ "$end_marker_count" -ne 1 ]; then
+      echo "[install-hook] refusing malformed marked block in $hook" >&2
+      return 1
+    fi
+    start_line="$(awk -v marker="$MARKER" '$0 == marker { print NR }' "$hook")"
+    end_line="$(awk -v marker="$END_MARKER" '$0 == marker { print NR }' "$hook")"
+    if [ "$start_line" -ge "$end_line" ]; then
+      echo "[install-hook] refusing inverted marked block in $hook" >&2
+      return 1
+    fi
+    tmp="$hook.handoff.$$"
+    {
+      head -n "$((start_line - 1))" "$hook"
+      block_for "$kind"
+      tail -n "+$((end_line + 1))" "$hook"
+    } > "$tmp"
+    mv "$tmp" "$hook"
+    chmod +x "$hook"
+    echo "[install-hook] upgraded handoff-timeline block in $hook"
     return 0
   fi
   if [ ! -f "$hook" ]; then

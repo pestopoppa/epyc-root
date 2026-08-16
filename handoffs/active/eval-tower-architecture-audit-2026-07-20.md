@@ -364,4 +364,4 @@ Pick up when **no** eval-batch/calibration run is live — gate check: `pgrep -f
 - **C2** loader accounting / silent-drop guard (this handoff).
 - **E5** ~12 mechanical `[agent]` LOW fixes (this handoff).
 - **EV-RUNNER-BACKOFF** bounded backoff on connection-refused — [eval-tower-verification.md](eval-tower-verification.md) (stops burning eval budget during API reloads).
-- **safetygate provenance fields** `started_at`/`ended_at` + `--resume-incomplete-from` — [safetygate-rlvr-provenance-audit-2026-07-22.md](safetygate-rlvr-provenance-audit-2026-07-22.md).
+- **safetygate provenance fields** `started_at`/`ended_at` + `--resume-incomplete-from` — [completed SafetyGate/RLVR provenance audit](../completed/safetygate-rlvr-provenance-audit-2026-07-22.md).

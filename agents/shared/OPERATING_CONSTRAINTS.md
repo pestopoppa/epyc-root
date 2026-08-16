@@ -89,6 +89,11 @@ only the window differed.*
 - **"I invoked the HIP build" is not evidence of a HIP run, and `ldd` cannot supply the missing evidence** — llama.cpp **dlopens** `libggml-hip.so`, so the executable shows zero HIP linkage whether or not it ever touched the GPU, while `/etc/environment` places the CPU build early in `LD_LIBRARY_PATH` so a HIP binary resolves ANOTHER TREE'S ggml, finds no GPU, and runs full-CPU printing success. A GPU number becomes a claim only with residency proven from outside the binary: `epyc-inference-research/scripts/utils/verify_ggml_linkage.sh <binary> <tree_root>` (the script lives in the research repo), **non-zero VRAM sampled DURING the run** (§ Observation Windows), and a KFD process count (`/sys/class/kfd/kfd/proc/`, or `rocm-smi --showpids`). The three ggml generations on this host and the per-launcher `LD_LIBRARY_PATH` requirement are canonical in `CLAUDE.md` § Experimental Kernel Workflow & Production-Kernel Immutability. Origin: INC-20260731-ggml-linkage-silent-cpu-fallback, reproduced 2026-08-12.
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. Origin: INC-20260728-reload-preemption (`docs/reference/agent-config/INCIDENT_LOG.md`).
+- **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
+  and may grant a resource lease for an inference-gated batch. A task assignment and a resource
+  lease are separate: neither substitutes for a held CPU-region/GPU physical claim or for
+  residency evidence. Coordinator-agent routes persistent-idle work to the role; it does not
+  bypass the role to reload, seize, or silently assign its resources.
 
 ## Retry Policy
 
@@ -233,6 +238,9 @@ Harness-specific sizing and scheduling for the fan-out default above.
   or `gpt-5.6-luna` agent at the lowest adequate effort (`low`/`medium`/`high`/`xhigh`).
 - Every sub-agent result is PROPOSED work: review its evidence and diffs and run validation
   before accepting.
+- **Auditor exception:** for implementation discovered during an audit, the Auditor Main uses
+  `gpt-5.6-terra` subagents for the focused work and keeps its main thread available for audit
+  intake, subagent control, and acceptance. This is a role-specific floor, not a model identity.
 - Wrap-up routines go to `gpt-5.6-luna` at `high`; if Luna is unavailable, use `gpt-5.6-terra`
   at `high` automatically, without blocking on an operator override.
 - Run a formal wrap-up at every natural phase boundary or major campaign milestone; update

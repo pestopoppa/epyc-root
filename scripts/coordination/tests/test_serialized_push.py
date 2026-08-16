@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -37,6 +38,7 @@ from scripts.coordination.serialized_push import (  # noqa: E402
     EXIT_OK,
     EXIT_PREFLIGHT,
     EXIT_PUSH_FAILED,
+    LeaseTokenError,
     LockCorruptError,
     LockHeldError,
     NotHolderError,
@@ -374,9 +376,13 @@ def test_lock_records_its_mode_and_acquire_marks_it_held(tmp_path):
     lock_dir = tmp_path / "locks"
     assert acquire(lock_dir, repo_key(work), "mainA", str(work))["mode"] == "push"
     release(lock_dir, repo_key(work), "mainA")
+    token = tmp_path / "hold.token"
     assert _cli("--agent", "mainA", "--repo", str(work), "--acquire",
-                "--lock-dir", str(lock_dir)).returncode == EXIT_OK
-    assert read_lock(lock_path(lock_dir, repo_key(work)))["mode"] == "hold"
+                "--token-file", str(token), "--lock-dir", str(lock_dir)).returncode == EXIT_OK
+    rec = read_lock(lock_path(lock_dir, repo_key(work)))
+    assert rec["mode"] == "hold" and "token_sha256" in rec
+    assert stat.S_IMODE(token.stat().st_mode) == 0o600
+    assert token.read_text(encoding="utf-8").strip() not in json.dumps(rec)
 
 
 def test_holder_description_reports_the_lock_age(tmp_path):
@@ -825,7 +831,9 @@ def test_cli_acquire_hold_then_push_then_release(tmp_path):
     work, bare = _clone_with_remote(tmp_path)
     _write_commit(work, "docs/a.md", "a\n", "docs: add a")
     lock_dir = tmp_path / "locks"
-    common = ["--repo", str(work), "--lock-dir", str(lock_dir)]
+    token = tmp_path / "review.token"
+    common = ["--repo", str(work), "--lock-dir", str(lock_dir),
+              "--token-file", str(token)]
     assert _cli("--agent", "mainA", *common, "--acquire").returncode == EXIT_OK
     assert lock_path(lock_dir, repo_key(work)).exists()
     blocked = _cli("--agent", "mainB", *common, "--push")
@@ -873,7 +881,8 @@ def test_lock_dir_env_var_is_honoured(tmp_path, monkeypatch):
     work, _ = _clone_with_remote(tmp_path)
     lock_dir = tmp_path / "env-locks"
     monkeypatch.setenv("SERIALIZED_PUSH_LOCK_DIR", str(lock_dir))
-    assert _cli("--agent", "mainA", "--repo", str(work), "--acquire").returncode == EXIT_OK
+    assert _cli("--agent", "mainA", "--repo", str(work), "--acquire",
+                "--token-file", str(tmp_path / "env.token")).returncode == EXIT_OK
     assert lock_path(lock_dir, repo_key(work)).exists()
 
 
@@ -901,9 +910,11 @@ def test_named_leases_are_independent_of_the_push_lock(tmp_path):
     work, _ = _clone_with_remote(tmp_path)
     lock_dir = tmp_path / "locks"
     key = repo_key(work)
-    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup",
+            token_file=tmp_path / "wrapup.token")
     # A different agent may still take the push lock.
-    acquire(lock_dir, key, "mainB", str(work), mode="hold", name="push")
+    acquire(lock_dir, key, "mainB", str(work), mode="hold", name="push",
+            token_file=tmp_path / "push.token")
     assert lock_path(lock_dir, key, "wrapup").exists()
     assert lock_path(lock_dir, key, "push").exists()
     assert lock_path(lock_dir, key, "wrapup") != lock_path(lock_dir, key, "push")
@@ -914,9 +925,11 @@ def test_named_lease_refuses_a_second_holder(tmp_path):
     work, _ = _clone_with_remote(tmp_path)
     lock_dir = tmp_path / "locks"
     key = repo_key(work)
-    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup",
+            token_file=tmp_path / "mainA.token")
     with pytest.raises(LockHeldError) as exc:
-        acquire(lock_dir, key, "mainB", str(work), mode="hold", name="wrapup")
+        acquire(lock_dir, key, "mainB", str(work), mode="hold", name="wrapup",
+                token_file=tmp_path / "mainB.token")
     assert "wrapup lock" in str(exc.value)
 
 
@@ -932,18 +945,24 @@ def test_two_worktrees_of_one_clone_contend_for_the_same_lease(tmp_path):
     _git(work, "worktree", "add", "-b", "lane/mainA", str(lane))
     assert repo_key(lane) == repo_key(work)
     lock_dir = tmp_path / "locks"
-    acquire(lock_dir, repo_key(work), "mainA", str(work), mode="hold", name="wrapup")
+    acquire(lock_dir, repo_key(work), "mainA", str(work), mode="hold", name="wrapup",
+            token_file=tmp_path / "mainA.token")
     with pytest.raises(LockHeldError):
-        acquire(lock_dir, repo_key(lane), "mainB", str(lane), mode="hold", name="wrapup")
+        acquire(lock_dir, repo_key(lane), "mainB", str(lane), mode="hold", name="wrapup",
+                token_file=tmp_path / "mainB.token")
 
 
 def test_release_only_drops_the_named_lease(tmp_path):
     work, _ = _clone_with_remote(tmp_path)
     lock_dir = tmp_path / "locks"
     key = repo_key(work)
-    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup")
-    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="push")
-    assert release(lock_dir, key, "mainA", name="wrapup") is True
+    wrap_token = tmp_path / "wrapup.token"
+    push_token = tmp_path / "push.token"
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="wrapup",
+            token_file=wrap_token)
+    acquire(lock_dir, key, "mainA", str(work), mode="hold", name="push",
+            token_file=push_token)
+    assert release(lock_dir, key, "mainA", name="wrapup", token_file=wrap_token) is True
     assert not lock_path(lock_dir, key, "wrapup").exists()
     assert lock_path(lock_dir, key, "push").exists()
 
@@ -951,7 +970,8 @@ def test_release_only_drops_the_named_lease(tmp_path):
 def test_cli_named_lease_roundtrip_and_status(tmp_path):
     work, _ = _clone_with_remote(tmp_path)
     lock_dir = tmp_path / "locks"
-    common = ["--repo", str(work), "--lock-dir", str(lock_dir), "--lock-name", "wrapup"]
+    common = ["--repo", str(work), "--lock-dir", str(lock_dir), "--lock-name", "wrapup",
+              "--token-file", str(tmp_path / "wrapup.token")]
     got = _cli("--agent", "mainA", *common, "--acquire")
     assert got.returncode == EXIT_OK and "acquired wrapup lock" in got.stdout
     st = _cli("--agent", "mainB", *common, "--status")
@@ -961,6 +981,133 @@ def test_cli_named_lease_roundtrip_and_status(tmp_path):
     assert "push lock: FREE" in st2.stdout
     rel = _cli("--agent", "mainA", *common, "--release")
     assert rel.returncode == EXIT_OK and "released wrapup lock" in rel.stdout
+    assert Path(common[-1]).exists(), \
+        "the operation token persists across protected sections; the caller's final trap removes it"
+
+
+def test_same_roster_subprocess_cannot_reclaim_hold_without_token(tmp_path):
+    """The reproduced defect: two Auditor subagents share one roster id.
+
+    Both CLI invocations have short-lived/dead PIDs, so roster+PID reclaim admitted
+    the second process before token binding existed. Distinct operation tokens must
+    now collide even though the roster strings are identical.
+    """
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    common = ["--agent", "auditor", "--repo", str(work), "--lock-dir", str(lock_dir),
+              "--lock-name", "wrapup"]
+    first_token = tmp_path / "first.token"
+    second_token = tmp_path / "second.token"
+    first = _cli(*common, "--token-file", str(first_token), "--acquire")
+    assert first.returncode == EXIT_OK, first.stderr
+    second = _cli(*common, "--token-file", str(second_token), "--acquire")
+    assert second.returncode == EXIT_LOCKED
+    assert "token-mismatch" in second.stderr
+    assert lock_path(lock_dir, repo_key(work), "wrapup").exists()
+
+
+def test_hold_acquire_requires_token_and_same_token_is_idempotent(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    common = ["--agent", "auditor", "--repo", str(work), "--lock-dir", str(lock_dir),
+              "--lock-name", "wrapup"]
+    absent = _cli(*common, "--acquire")
+    assert absent.returncode == EXIT_LOCKED and "token-file-required" in absent.stderr
+    token = tmp_path / "operation.token"
+    first = _cli(*common, "--token-file", str(token), "--acquire")
+    before = lock_path(lock_dir, repo_key(work), "wrapup").read_bytes()
+    retry = _cli(*common, "--token-file", str(token), "--acquire")
+    assert first.returncode == retry.returncode == EXIT_OK
+    assert lock_path(lock_dir, repo_key(work), "wrapup").read_bytes() == before
+
+
+def test_hold_release_refuses_missing_and_wrong_token(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    good = tmp_path / "good.token"
+    wrong = tmp_path / "wrong.token"
+    common = ["--agent", "auditor", "--repo", str(work), "--lock-dir", str(lock_dir),
+              "--lock-name", "wrapup"]
+    assert _cli(*common, "--token-file", str(good), "--acquire").returncode == EXIT_OK
+    missing = _cli(*common, "--release")
+    assert missing.returncode == EXIT_LOCKED and "token-required" in missing.stderr
+    wrong.write_text("A" * 43 + "\n", encoding="utf-8")
+    wrong.chmod(0o600)
+    mismatch = _cli(*common, "--token-file", str(wrong), "--release")
+    assert mismatch.returncode == EXIT_LOCKED and "token-mismatch" in mismatch.stderr
+    assert lock_path(lock_dir, repo_key(work), "wrapup").exists()
+    assert _cli(*common, "--token-file", str(good), "--release").returncode == EXIT_OK
+
+
+def test_pid_reuse_does_not_confer_hold_ownership(tmp_path):
+    """Even an identical current PID is not an ownership credential for a hold."""
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    good = tmp_path / "good.token"
+    acquire(lock_dir, key, "auditor", str(work), mode="hold", name="wrapup",
+            token_file=good)
+    path = lock_path(lock_dir, key, "wrapup")
+    rec = read_lock(path)
+    rec["pid"] = os.getpid()  # reproduce PID reuse / same-PID ambiguity directly
+    path.write_text(json.dumps(rec, sort_keys=True) + "\n", encoding="utf-8")
+    with pytest.raises(LockHeldError) as exc:
+        acquire(lock_dir, key, "auditor", str(work), pid=os.getpid(), mode="hold",
+                name="wrapup", token_file=tmp_path / "other.token")
+    assert exc.value.condition == "lock-held-token-mismatch"
+
+
+def test_crashed_hold_is_residue_but_not_same_roster_reclaimable(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    owner_token = tmp_path / "owner.token"
+    assert _cli("--agent", "auditor", "--repo", str(work), "--lock-dir", str(lock_dir),
+                "--lock-name", "wrapup", "--token-file", str(owner_token),
+                "--acquire").returncode == EXIT_OK
+    owner_token.unlink()  # model a crashed operation whose private capability is lost
+    with pytest.raises(LockHeldError) as exc:
+        acquire(lock_dir, key, "auditor", str(work), mode="hold", name="wrapup",
+                token_file=tmp_path / "replacement.token")
+    assert exc.value.condition == "lock-held-token-mismatch"
+    assert lock_path(lock_dir, key, "wrapup").exists()
+    displaced = force_release(lock_dir, key, "coordinator-agent", "auditor", name="wrapup")
+    assert displaced["token_sha256"]
+    journal = (lock_dir / "displacements.jsonl").read_text(encoding="utf-8")
+    assert "coordinator-agent" in journal and "auditor" in journal
+
+
+def test_legacy_unbound_hold_requires_audited_force_release(tmp_path):
+    """Old hold files contain no token hash; fail closed instead of PID-reclaiming."""
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    key = repo_key(work)
+    _plant_lock(lock_dir, key, "auditor", _dead_pid(), mode="hold", lock_name="wrapup")
+    # _plant_lock targets the default name, so move the legacy record to wrapup.
+    default = lock_path(lock_dir, key)
+    target = lock_path(lock_dir, key, "wrapup")
+    default.rename(target)
+    token = tmp_path / "candidate.token"
+    with pytest.raises(LockHeldError):
+        acquire(lock_dir, key, "auditor", str(work), mode="hold", name="wrapup",
+                token_file=token)
+    with pytest.raises(NotHolderError) as exc:
+        release(lock_dir, key, "auditor", name="wrapup", token_file=token)
+    assert exc.value.condition == "not-holder-token-mismatch"
+    force_release(lock_dir, key, "coordinator-agent", "auditor", name="wrapup")
+
+
+def test_hold_token_file_must_remain_private(tmp_path):
+    work, _ = _clone_with_remote(tmp_path)
+    lock_dir = tmp_path / "locks"
+    token = tmp_path / "hold.token"
+    acquire(lock_dir, repo_key(work), "auditor", str(work), mode="hold", name="wrapup",
+            token_file=token)
+    token.chmod(0o644)
+    with pytest.raises(LeaseTokenError) as exc:
+        release(lock_dir, repo_key(work), "auditor", name="wrapup", token_file=token)
+    assert exc.value.condition == "token-file-mode"
+    assert lock_path(lock_dir, repo_key(work), "wrapup").exists()
 
 
 def test_cli_refuses_to_push_under_a_non_push_lock_name(tmp_path):

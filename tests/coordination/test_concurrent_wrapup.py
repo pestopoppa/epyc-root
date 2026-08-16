@@ -43,6 +43,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEASE_CLI = REPO_ROOT / "scripts" / "coordination" / "serialized_push.py"
+WRAP_COMMAND = REPO_ROOT / "agents" / "commands" / "wrap-up.md"
 
 AGENTS = ("mainC", "mainD")
 DAY = "2026-08-12"
@@ -64,6 +65,14 @@ def _git(cwd: Path, *args: str) -> str:
     if proc.returncode != 0:
         raise AssertionError(f"git {' '.join(args)} in {cwd}: {proc.stderr or proc.stdout}")
     return proc.stdout.strip()
+
+
+def _documented_lease_bootstrap() -> str:
+    """The executable shell block users actually copy from the wrap command."""
+    text = WRAP_COMMAND.read_text(encoding="utf-8")
+    marked = text.split("<!-- wrapup-lease-bootstrap:start -->", 1)[1].split(
+        "<!-- wrapup-lease-bootstrap:end -->", 1)[0]
+    return marked.split("```bash", 1)[1].split("```", 1)[0].strip()
 
 
 @pytest.fixture
@@ -119,6 +128,7 @@ _WORKER = textwrap.dedent(r'''
 
     agent, lane, lock_dir, lease_cli, use_lease, sleep_s = sys.argv[1:7]
     lane = Path(lane)
+    token_file = Path(os.environ["WRAPUP_TMP"]) / f"{agent}.wrapup.token"
     day, month = "%(DAY)s", "%(MONTH)s"
 
     def git(*a, check=True):
@@ -130,7 +140,8 @@ _WORKER = textwrap.dedent(r'''
     def lease(*a):
         return subprocess.run(
             [sys.executable, lease_cli, "--agent", agent, "--repo", str(lane),
-             "--lock-dir", lock_dir, "--lock-name", "wrapup", *a],
+             "--lock-dir", lock_dir, "--lock-name", "wrapup",
+             "--token-file", str(token_file), *a],
             capture_output=True, text=True)
 
     # ---- STEP 1: the per-agent daily progress file. No lease: nobody shares it.
@@ -288,3 +299,55 @@ def test_the_lease_is_one_lease_across_every_lane_of_one_clone(fleet):
     keys = {a: repo_key(fleet["lanes"][a]) for a in AGENTS}
     assert len(set(keys.values())) == 1, keys
     assert repo_key(fleet["shared"]) == next(iter(keys.values()))
+
+
+def test_documented_wrapup_lease_command_roundtrip(fleet):
+    """Execute the command surface verbatim, including reuse and final cleanup.
+
+    This is the compatibility gate missing from the first token-hardening pass: unit
+    tests passed while the deployed `/wrap-up` example still omitted --token-file.
+    """
+    symlink = REPO_ROOT / ".claude" / "commands" / "wrap-up.md"
+    assert symlink.is_symlink() and symlink.resolve() == WRAP_COMMAND.resolve(), \
+        "edit the real agents/commands target, not its command-surface symlink"
+    script = _documented_lease_bootstrap() + r'''
+wrapup_lease_acquire
+token_before="$(cat "$WRAPUP_TOKEN_FILE")"
+"${LEASE[@]}" --status | grep -q 'wrapup lock: HELD'
+wrapup_lease_release
+test -f "$WRAPUP_TOKEN_FILE"       # one token survives between protected sections
+wrapup_lease_acquire
+test "$(cat "$WRAPUP_TOKEN_FILE")" = "$token_before"
+wrapup_lease_finish
+test ! -e "$WRAPUP_TOKEN_DIR"
+'''
+    env = dict(os.environ)
+    env.update({
+        "WRAPUP_AGENT_ID": "auditor",
+        "WRAPUP_REPO": str(fleet["lanes"]["mainC"]),
+        "WRAPUP_LOCK_DIR": str(fleet["lock_dir"]),
+        "TMPDIR": str(fleet["tmp"]),
+    })
+    result = subprocess.run(["bash", "-euo", "pipefail", "-c", script],
+                            cwd=REPO_ROOT, env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_documented_wrapup_exit_trap_releases_and_cleans(fleet):
+    """A command failure after acquire must not strand either lock or capability."""
+    script = _documented_lease_bootstrap() + "\nwrapup_lease_acquire\nfalse\n"
+    env = dict(os.environ)
+    env.update({
+        "WRAPUP_AGENT_ID": "auditor",
+        "WRAPUP_REPO": str(fleet["lanes"]["mainC"]),
+        "WRAPUP_LOCK_DIR": str(fleet["lock_dir"]),
+        "TMPDIR": str(fleet["tmp"]),
+    })
+    result = subprocess.run(["bash", "-euo", "pipefail", "-c", script],
+                            cwd=REPO_ROOT, env=env, capture_output=True, text=True)
+    assert result.returncode != 0, "the injected command failure must remain visible"
+    sys.path.insert(0, str(REPO_ROOT))
+    from scripts.coordination.serialized_push import lock_path, repo_key  # noqa: E402
+    assert not lock_path(fleet["lock_dir"], repo_key(fleet["shared"]), "wrapup").exists()
+    assert not list(fleet["tmp"].glob("epyc-wrapup-token.*")), \
+        "ordinary failure must run the trap and remove the spent operation token"

@@ -2,8 +2,168 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-13 (a 23-entry research-intake round on multi-agent fan-out (PARL/Kimi K2.5 Agent Swarm and 21 follow-ons) found our own fan-out doctrine has no negative condition and most of the source literature does not survive a primary-source dive — 9 of 18 dived entries overturned; the round's own self-correcting dive process is filed as the more durable lesson — see below; earlier 2026-08-12 note (third pass — the 2026-08-03 daemon-owned-state gap is now enforced, not just diagnosed: a two-layer guard (kernel-held-lock ownership check + victim-side changed-since-last-write witness) landed at the single `save_state` funnel, 19 tests, mutation-verified — see the addendum on the original finding below; earlier same-day note (second pass) — a reviewed audit of the coordinator role **falsifies the root cause the role wrote for itself**: policy compliance does not "decay with context", it fails at *retrieval on the emission path*, and the same defect recurred 21 minutes after being written up as a correction; the audit also finds the self-audit applying **opposite evidentiary rules** depending on whether the evidence incriminates or exculpates the role — see below; earlier same-day note: a `git clean -ffdx` wiped the session bus and the recovery selected the one dead claim while dropping every live one; the "the daemon knew what to run and told nobody" narrative is RETRACTED with its measured refutation; the committed-not-live chain closed after four nested restarts; residency-is-not-work; within-file contamination in a shared log named as distinct from the cross-file rule pathspecs already solve — see below; earlier 2026-08-11 note: a 243-hour coordinator-daemon outage reported itself healthy; a nudge-guard deadlock caused a ~10-hour fleet stall; the session-bus C-series hardening arc closed; the backlog dispatch queue was retired as an unreliable instrument — see below; earlier 2026-08-08 note retained)
-**Sources**: 85+ documents
+**Last compiled**: 2026-08-14 (reviewer event-to-ledger materialization proven at current-store scale; paired shadow replay remains open)
+**Sources**: 91+ documents
+
+## Compiled Update — 2026-08-14: the reviewer ledger materializer scales, but the paired experiment has not run
+
+**Confidence: verified for the non-inference mechanism and current trace store; no claim about live
+shadow overhead or reviewer quality.** The RCP-W2 materialization leg converted all **1,366** current
+`review_decision` events into **1,366** `review_ledger` rows with zero duplicate skips. This expands the
+previous 32-event dry validation and proves that the event-to-ledger mechanism works on the current
+store without restarting the stack or running inference.
+
+The result also demonstrates why mechanism completion and experiment completion are different states.
+Only 207 events carry `candidate_id`, and none join the near-miss corpus `row_id`; false-accept,
+false-reject, calibration, and AUC fields therefore remain null by the predeclared firing contingency.
+The full RCP-W2 row still requires the paired, same-question shadow-OFF/ON replay. RCP-W1 live flag
+attestation and RCP-W3's corpus-matched bridge remain next-era work; this materialization checkpoint
+does not license a reviewer rollout or performance claim.
+
+### Source References (2026-08-14 reviewer materialization)
+
+- [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) — full RCP-W2 paired
+  replay contract and completion gate.
+- [`inference-batch-loop.md`](../handoffs/active/inference-batch-loop.md) — RCP prologue ordering and
+  existing materializer/ledger bridge.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — current-store
+  counts, join result, output location, and operator disposition.
+- `epyc-orchestrator/scripts/analysis/reviewer_events_to_ledger.py` — executed materialization path.
+
+## Compiled Update — 2026-08-13: task durability is now a pushed receipt, not a worker-wide documentation sweep
+
+**Confidence: verified for published code and focused tests; fleet authority cutover remains off.**
+RTG-51 now separates the task boundary from the fleet documentation transaction. A worker-owned
+checkpoint resolves the exact task, updates only owned checkbox/artifact/progress paths, validates,
+commits an explicit path set, pushes `lane/<agent>`, and only then publishes an idempotent typed
+receipt. Coordinator admission fails closed on roster, task identity, path scope, remote reachability,
+committed per-agent progress, and receipt correlation; an accepted checkpoint produces one immutable
+Auditor packet, and only an accepted verdict produces `checkpoint-integration-ready`.
+
+The independent roles remain intentionally asymmetric. Coordinator routes, validates, orders
+integration, and controls context transitions. Auditor owns verdicts and may not direct the source
+worker. Inference owns compute compatibility, leases, physical claims, and safe drain; the published
+compute planner is a replayable projection/ranking core, not a live grant path. Shared handoff/index/wiki
+mutation remains a single leased heavy-wrap transaction. The operation-token lease, non-mutating worker
+hooks, receipt-bound progress checker, checkpoint engine, and typed audit lifecycle are published, but
+the compute bus relay, receipt-cut heavy-wrap executor, protected role-policy package, daemon reload,
+instruction acknowledgments, and canaries are not. Rollout therefore remains `off`.
+
+### Source References (2026-08-13 RTG-51 implementation)
+
+- [`wrap-up-division-of-labor-policy.md`](../handoffs/active/wrap-up-division-of-labor-policy.md) —
+  authority table, state machine, implementation phases, acceptance matrix, and live gaps.
+- [`session-bus-task-flow.html`](../docs/coordination/session-bus-task-flow.html) — visual lifecycle,
+  failure loops, authority boundaries, implementation evidence, and deployment status.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — commits,
+  focused tests, audit findings, and publication boundary.
+
+## Compiled Update — 2026-08-13: a correct role guard is inert when the daemon loads the wrong tree
+
+**Confidence: verified by the live queue/advisory records, process start time, source identity, and
+tracked code comparison.** The first live role-admission canary assigned ordinary AP-ME-1 backlog
+work to Auditor even though the roster declares `schedulable: false` and
+`accepts_work_types: [audit]`. Auditor declined before editing or compute; coordinator-agent revoked
+the lease, and the queue can return to an ordinary main.
+
+The tracked `compute_advice` implementation already contains the needed refusal: a non-schedulable
+role is skipped unless explicitly targeted with an accepted work type, and a generic row is rejected
+again during candidate evaluation. The running daemon did not contain that code. It started at
+19:48:03Z from the shared-main tree at `ff7a5e6f`, which does not contain `d7b83ddf9`; the stale source
+was materialized before process start, so this was not a stale-process-after-file-update ambiguity.
+
+The rollout lesson is sharper than “restart the daemon”: deployment acceptance must prove the exact
+running source before testing behavior. AIR-6 now requires source-version proof plus a mutation
+canary in which an ordinary untyped `lane:none` row is refused by Auditor. Only after that should
+audit `shadow` or resource `observe` advance. GitNexus rates `compute_advice` HIGH reach across four
+assignment/coordinator flows, so the wrap-up changed the deployment gate rather than patching or
+reloading the live control plane.
+
+### Source References (2026-08-13 role-admission canary)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-6 failed
+  canary evidence/retry gate and AIR-10 disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — process,
+  source, queue, and role-contract audit.
+- [`config.yaml`](../coordination/session-bus/config.yaml) and
+  [`auditor-main.md`](../agents/auditor-main.md) — authoritative schedulability and accepted-work
+  contract.
+
+## Compiled Update — 2026-08-13: typed compute messages are not yet an authority boundary
+
+**Confidence: verified by negative validation probes and dependency analysis.** The Rule-11 prose
+says requests route to Inference and only Inference grants or denies. The audited schema change adds
+`compute-request`, `compute-grant`, and `compute-deny` to the enum and exercises positive authoring,
+relay, and idempotency, but it does not encode those role and route constraints.
+
+Four forged or incomplete rows currently validate: a request addressed to a non-Inference target, a
+grant authored by a non-Inference sender without `boundaries`, a deny without `next`, and a request
+with an unknown misspelled payload key. This is the important architecture distinction: a typed
+message vocabulary describes interaction shape, while an authority boundary must refuse a sender,
+recipient, correlation, or payload that violates that shape. Validator parity and green positive
+tests prove consistency, not the Rule-11 contract.
+
+The repair is focused but high-reach: enforce request routing, inference-only grant/deny authorship,
+request correlation/addressing, required non-empty per-kind fields, closed payload vocabularies, and
+authoring-plus-relay negative tests. GitNexus classifies `validate_row` as CRITICAL upstream reach
+(six dependants across five append/validation/coordinator flows), so the independent audit recorded
+the rework contract without editing the control-plane implementation.
+
+### Source References (2026-08-13 Rule-11 audit)
+
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — Rule-11 ownership and routing
+  contract.
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR-8
+  independent audit and AIR-9 fail-closed repair task.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — negative
+  probes, test result, and dependency blast radius.
+
+## Compiled Update — 2026-08-13: dedicated Auditor and Inference control planes
+
+**Confidence: verified for committed policy, state machines, and tests; rollout enforcement remains
+staged.** No live coordinator daemon was restarted as part of this checkpoint.
+
+The session-bus fleet now separates two control-plane responsibilities that previously existed only
+as informal conventions. Auditor is no longer a generic `lane:none` executor: successful
+`mainA`–`mainD` completions deterministically create linked, role-targeted audit work, and only a
+linked Auditor verdict can close that review. Findings return through handoffs and ordinary
+coordinator dispatch rather than directly tasking the source main, so review remains valid after the
+originating session has cleared context or moved on. Small fixes discovered during review are
+delegated to Terra subagents and stay proposed until Auditor accepts them.
+
+Inference now owns the advisory compute schedule independently of ordinary task assignment. Typed
+resource requests and grants preserve holder, task batch, exact CPU/GPU resources, expiry, and
+lifecycle across replay. A task assignment plus a valid resource lease still does not prove physical
+ownership: CPU activation requires a `region-lock` receipt, while delegated GPU grants fail closed
+until a general device-claim provider is configured. Persistent CPU and GPU idle are detected as
+separate multi-sample episodes and routed once to Inference, with durable inbox history preventing a
+daemon restart or lost routing-state file from duplicating the episode.
+
+Role provisioning is explicit as well. Coordinator-agent must present an inspected existing pane
+versus fresh-launch choice to the operator. Adoption requires exact endpoint/worktree identity, a
+positively idle runtime, empty composer, valid heartbeat/cursor/task state, unread/triage evidence,
+and explicit confirmation that the old role context was reset and reseeded. Recommended model and
+effort pairs populate the launch decision only; an operator changing either in-session is silent and
+never invalidates identity, leases, liveness, or the pane.
+
+The staged posture is intentional: audit completion is `shadow`, resource leases are `observe`, and
+persistent-idle transport is `route`. Promotion to required audits or enforced lease admission waits
+for a live-bus replay plus one audit and one CPU canary; delegated GPU leases additionally wait for a
+real physical claim provider. The implementation checkpoint passed 346 non-corpus bus tests, 173
+pane/routing tests, the 51-case M4 authority harness, and the 87-case fleet watcher plus 21 mutation
+checks.
+
+### Source References (2026-08-13 dedicated roles)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — AIR
+  implementation checklist, rollout posture, and remaining canary gate.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — integrated
+  implementation and verification record.
+- [`BUS_PROTOCOL.md`](../coordination/session-bus/BUS_PROTOCOL.md) — typed audit, resource-lease, and
+  persistent-idle wire contracts.
+- [`auditor-main.md`](../agents/auditor-main.md) and
+  [`inference-main.md`](../agents/inference-main.md) — canonical role boundaries, provisioning, and
+  model-agnostic identity rules.
 
 ## Compiled Update — 2026-08-12 (second pass): a role's self-diagnosis, audited — the conclusion survives and every argument for it does not
 

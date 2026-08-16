@@ -229,11 +229,22 @@ This is a real pre-existing HIP bf16 LIGHTNING_INDEXER kernel bug in the landed 
 not a promotion blocker, but it means the DSA indexer's bf16 K-cache path is numerically
 untrustworthy on gfx90a until root-caused.
 
-- [ ] **D4 — root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure** (flaky, ERR≈1.0,
-  6-8/12 configs, both v7 and v8): suspect reduction-order/precision in the WMMA-era kernel on
-  gfx90a or a bf16 staging issue; f16 configs pass. Low priority (no production lineup uses a
-  bf16 indexer K-cache today) but file upstream if confirmed in current master. Evidence paths
-  above; classification work done 2026-07-25.
+- [x] **D4 — root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure** ✅ 2026-08-13 — reproduced on
+  frozen `production-consolidated-v9` (`0db32c06e`, build-hip `10125`); **NOT flaky** — deterministic and
+  bf16-specific. `test-backend-ops -o LIGHTNING_INDEXER -p type_K=bf16` fails exactly the 6 `nb=1` configs
+  (ERR≈1.0); `type_K=f16` passes 12/12 including all `nb=1`. The prior "flaky 5/5 vs 0/5" was a misread: the
+  isolated run re-tested the *passing* `nb=512` shape. **Root cause narrowed to the bf16 load path of
+  `lightning_indexer_kernel_vec`** (`lightning-indexer.cu`, reached via `get_dequantize_V<GGML_TYPE_BF16,…>`
+  → `dequantize_V_bf16` in `fattn-common.cuh`): the WMMA kernel is `#if !defined(GGML_USE_HIP)` and never runs
+  on gfx90a, so the handoff's "WMMA-era reduction" suspicion is wrong. Ruled out by inspection: tensor
+  indexing (all 4 tensors cross-checked vs the CPU reference), the warp reduction (shared with f16, which
+  passes), `nv_bfloat16`/`nv_bfloat162` sizes (2B/4B confirmed), and the HIP `ggml_cuda_cast<float2>` low/high
+  bf16 extraction. A standalone ggml dump (`/tmp/opencode/dump_*.cpp`) confirms the bf16 output is a constant
+  garbage value in the direct (non-graph) path for *all* batch sizes, while f16 is exact — i.e. the bf16 K
+  load itself is defective, not the batch geometry. Latent correctness bug only (no production role uses a
+  bf16 indexer K-cache). **Remaining for upstream filing**: pin the exact line via a `hipPrintf`/patched-build
+  debug of `dequantize_V_bf16` vs the known-good `vec_dot_fattn_vec_KQ_bf16` (fattn-common.cuh:117) bf16 path,
+  then file against upstream `ggml-cuda` (`#25545` is the introducing commit).
 
 ## Progress checklist
 

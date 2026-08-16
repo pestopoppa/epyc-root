@@ -2,8 +2,33 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the episodic-index leak is **not** a text-format problem — that was fixed by a prior reseed; it is a single unobserved field value splitting writer paths at 99.973% purity; the standing integrity gate that was supposed to catch it had been comparing embeddings against a string that was never embedded; and an eval fan-out collapsed for every NUMA mode except one because a branch swallowed the rest — see below; earlier 2026-08-09 note: adds routing-memory namespace isolation; retains the 2026-07-31 throughput-prior and contention-surface updates)
-**Sources**: 75+ documents (adds the 2026-08-12 episodic-leak decision and its gate repair; retains the 2026-08-09 measured repair receipt and campaign checkpoint, the 2026-07-31 throughput-prior, 2026-07-05 RI-10, and earlier routing evidence)
+**Last compiled**: 2026-08-13 (A14 GateDecision echo independently accepted on the local orchestrator main; its prospective evidence hook and first tuple remain open; earlier routing-memory findings retained below)
+**Sources**: 78+ documents
+
+## Compiled Update — 2026-08-13: contention decisions are now observable, but no evidence exists yet
+
+**Confidence: verified for cherry-pick identity and focused tests; prospective for measurement.** The
+A14 `ChatResponse.contention_gate` change landed locally on orchestrator `main` as `c61b8184`. An
+independent audit confirmed the cherry-pick has the same stable patch-id and six-file `+299/-0` diff
+as source `a7d7bdb6`; the merge gate classifies it autonomous, and the focused current-main
+gate/contention/chat suite passes (`118` tests).
+
+This closes the observability implementation, not the measurement. A request may produce multiple
+candidate decisions, so the evidence locator must key on the request rather than counting each
+decision as an independent witness. The orchestrator API has not served this local commit and the
+producer-written Vidya adapter has emitted no tuple. The write-side capture task therefore remains
+open until the first real record proves the path; the audit did not push orchestrator code or reload
+the service.
+
+### Source References (2026-08-13 A14 audit)
+
+- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — landed
+  bridge state and remaining routing-smoke residuals.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC19
+  write-side capture contract and request-level locator rule.
+- [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) and
+  [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — landing
+  record and independent patch/test verification.
 
 ## Compiled Update — 2026-08-12 (second pass): the same defect was repairable in one subsystem and permanently unrepairable in the other, and only provenance decided which
 

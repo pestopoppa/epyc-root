@@ -36,6 +36,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -122,12 +123,22 @@ def last_advanced(path: Path) -> str | None:
 
     `-S'- [x]'` follows the COUNT of closed boxes, so it fires on a flip and stays
     quiet for prose edits. That is the whole point — see the module docstring.
+
+    GIT_DIR/GIT_WORK_TREE/GIT_INDEX_FILE are stripped from the subprocess env:
+    when this script runs from the handoff-timeline post-commit hook, git sets
+    those vars (pointing at the *common* dir), which makes `git log -- <name>`
+    resolve the pathspec against the wrong worktree root and the pickaxe finds
+    nothing — every handoff then reads as never-advanced (the "—" column).
+    Rediscovery from cwd restores the worktree view. (Observed 2026-08-13:
+    foreground runs produced real dates, hook runs produced "—" for every row.)
     """
+    env = {k: v for k, v in os.environ.items()
+           if k not in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE")}
     for needle in ("- [x]", "- [ ]"):
         try:
             out = subprocess.run(
                 ["git", "log", "-1", "--format=%as", "-S", needle, "--", path.name],
-                cwd=path.parent, capture_output=True, text=True, timeout=30)
+                cwd=path.parent, capture_output=True, text=True, timeout=30, env=env)
         except (subprocess.TimeoutExpired, OSError):
             return None
         if out.returncode == 0 and out.stdout.strip():

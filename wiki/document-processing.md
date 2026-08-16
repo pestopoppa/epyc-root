@@ -2,8 +2,92 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (the 200-PDF benchmark dataset is finally on disk, all three parenthesised premises of the row that asked for it were false, and the name it is filed under already belonged to a different project — see below; earlier 2026-07-17 pass retained)
-**Sources**: 10+ documents (2026-07-17 adds PaddleOCR-VL Wave-3 producer + negative HTML-table prompt result + scorer-compatible post-processing checkpoint; 2026-07-06 focused pass: ODL hybrid sidecar probe preflight; 2026-06-22 refresh: ODL pipeline Phase 2 landed; Phase 3 hybrid-table routing still open)
+**Last compiled**: 2026-08-13 (ODL-013 and the Ekimetrics run are observations; Unlimited-OCR needs a corrected record and canonical-profile rerun before any parser decision)
+**Sources**: 16+ documents
+
+## Compiled Update — 2026-08-13: later parser evidence advances observation, not selection authority
+
+**Confidence: verified for stored-output replay and the audited record; no routing or adoption decision.**
+The Ekimetrics SC/BI/ICC/DCC arm is now implemented and exercised over the ODL-013 prediction sets,
+superseding the earlier “unimplemented” snapshot below. The first real embedding run produced usable
+ICC/DCC observations, but the contradictory HOPE family and common downstream RAG endpoint remain open;
+neither intrinsic family can gate a chunker alone. ODL-013's 600 stored outputs still replay exactly,
+and LiteParse still leads aggregate point estimates, but scratch-only storage, absent parser protocol
+and precommitted rule, summary-only timing, and an unpinned ODL version keep the result observational.
+
+Unlimited-OCR also completed a mechanically real 18-page observation, but the independent audit found
+that its record overclaims the cause. A bare-passthrough GGUF chat template does not prove
+prompt-independent coordinate output, the stored mutex receipt covers only about 1.003 seconds rather
+than the full server interval, and the timing narrative needs correction. Preserve the observation,
+correct those claims, then run a fresh matched A/B with the canonical `document parsing.` profile,
+context/prediction limits, DRY settings, grounding-strip, and a new Inference receipt spanning launch
+through termination. The operator's stop-all-inference order remains a hard runtime boundary.
+
+The attempted LightOnOCR comparison was correctly refused before compute: `odl_bench` has only a
+manifest stub, the dispatch prohibited the HTTP server that is the only implemented producer, and the
+known-negative prior lacked a new parser-quality hypothesis. That is a precondition failure, not model
+evidence.
+
+### Source References (2026-08-13 later parser evidence)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — corrected gates and exact rerun contracts.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer and
+  precondition records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — exact
+  evidence audit and verdicts.
+
+## Compiled Update — 2026-08-13: ODL-013 is reproducible evidence, not an adoption decision
+
+**Confidence: verified for corpus/output equality and evaluator replay; observation-only for parser
+selection.** This supersedes the preflight-only snapshot below without turning the later run into a
+decision record.
+
+The later ODL-013 execution did process the full matched 200-PDF corpus. Each of LiteParse,
+OpenDataLoader-local, and pdftotext has the same 200 prediction stems, no zero-byte prediction, and
+the stored NID/TEDS/MHS results reproduce exactly when all 600 outputs are replayed through the
+pinned upstream evaluator. LiteParse leads the aggregate point estimates, including overall quality,
+and remains JVM-free. That makes the run useful comparative evidence.
+
+It does **not** license the recorded `ADOPT` verdict or a routing-default change. The artifact exists
+only in local scratch, cites no applicable document-parser protocol/category/attestation, records no
+precommitted selection rule, retains only timing summaries rather than per-document latencies, and
+does not pin the ODL engine version. Exploratory paired intervals for LiteParse-minus-ODL cross zero
+for NID and MHS, so “wins every metric” is true only of aggregate point estimates. The harness also
+needs prospective fail-closed handling for extractor return codes, absent candidates, and empty
+predictions; all actual stored predictions in this run are non-empty, so this is a harness-accounting
+follow-up rather than evidence of an observed failed document.
+
+The operational conclusion is deliberately narrow: preserve or rerun this comparison as durable,
+protocol-admissible evidence with a precommitted decision rule, and keep parser/routing defaults
+unchanged until then. The matched parser report's `decision-grade fixture` wording is superseded.
+
+### Source References (2026-08-13 ODL-013 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — corrected decision gate, completed observation rows, and concrete durability/harness follow-ups.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) and
+  [`progress/2026-08/2026-08-13-mainB.md`](../progress/2026-08/2026-08-13-mainB.md) — producer-side
+  execution, corpus, and result records.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent
+  replay, statistical caveats, claim-boundary verdict, and follow-up disposition.
+
+## Compiled Update — 2026-08-13: four first-wave preflights produced no decision-grade parser result
+
+**Confidence: verified by commit, artifact, source, and focused-test audit.**
+
+The committed `odl_bench` schema does **not** expose the previously attributed NID/TEDS/MHS trio. Its package rows are structural text edit distance, table TEDS, reading-order edit distance, and speed; NID and MHS live in the sibling `document_extraction_adapter.py`. ODL-011 completed only this premise/contract audit. Ekimetrics SC/BI/ICC/DCC and contradictory HOPE scoring remain unimplemented in the accepted tree, and neither family may gate a chunker until both run on one pinned fixture with the same downstream RAG answer-correctness endpoint.
+
+ODL-013 likewise completed harness preflight, not a comparison. The July born-digital artifacts remain useful scaffolding but contain no representative 2026-08-13 structural/table result or fast-path verdict. The Unlimited-OCR producer/adapter/manifest scaffold is real and passed 26 focused tests, yet its default model is not eligible for the planned demo: `output.weight` is Q6_K while the parent contract requires `lm_head >= Q8_0`. No live model result was produced.
+
+This also retires the old PaddleOCR table numbers as quality evidence: they came from an off-label full-page invocation rather than the official layout-plus-cropped-recognition pipeline. The live decision surface remains ODL/LiteParse representative scoring, a corrected full-corpus PDF bridge, architecture-faithful model arms, and explicit routing policy.
+
+### Source References (2026-08-13 audit)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) — compact active gates and exact next work.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md) — landed phases, corrections, and audit disposition.
+- [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent commits/tests/artifact audit.
 
 ## Compiled Update — 2026-08-12: the benchmark dataset landed, and every premise about it was wrong
 
@@ -80,7 +164,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - **Phase 2 (medium effort, biggest win)**: The gated structured consumer path is wired: enrich VL model prompts with figure semantic type, caption, surrounding text, and heading position from ODL JSON; replace PyMuPDF figure extraction with ODL bboxes; use heading hierarchy instead of regex when present; carry ODL table metadata through preprocessing/cache/TaskIR output; suppress unsafe ODL structured metadata under `INJECTION_SCANNING`; expose a default-inert `ORCHESTRATOR_ODL_TABLE_BACKEND` seam; and expose default-off body warnings through `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`. Remaining work: implement the real ODL hybrid table sidecar/client path for 0.93 accuracy.
 - **Phase 3 (medium-large effort)**: The sidecar is now live, so the remaining work is benchmark-backed comparison and routing policy. Experiment with swapping hybrid backend to LightOnOCR-2-1B (already running). Implement three-way routing: ODL local (simple) -> ODL hybrid (tables) -> LightOnOCR (scanned) only if the comparison justifies it. Clone opendataloader-bench, add EPYC pipeline as custom engine, run 200-PDF comparison.
 - **Document-specialist comparison (new)**: run the guarded PaddleOCR-VL producer against LightOnOCR and ODL on the same structural/table/reading-order corpus, and treat the current HTML/post-processing path as a baseline to beat rather than a solution.
-- **Benchmark integration**: Add `document_extraction` suite to `epyc-inference-research/scripts/benchmark/question_pool.py` using opendataloader-bench 200-PDF dataset. Scoring: NID (reading order), TEDS (table DOM), MHS (heading hierarchy).
+- **Benchmark integration**: the committed `odl_bench` package scores structural text edit distance, table TEDS, reading-order edit distance, and speed. NID/MHS are in the sibling document-extraction adapter and must be explicitly bridged or co-reported when the parent contract uses those names.
 - **JVM management**: Pre-warm JVM in persistent subprocess or run ODL as sidecar service on dedicated port.
 
 ## Open Questions

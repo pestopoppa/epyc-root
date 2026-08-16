@@ -1,14 +1,24 @@
 # STANDING MAIN RULES — all mains, all tasks
 
-**If you read nothing else:** you hold a standing **GOAL**, not a task list — derive your own next
-item from it and never sit idle; report to `coordinator-agent` on TWO conditions (out of work, or
-needing an operator decision), and keep your heartbeat honest — `idle` when awaiting dispatch,
-`working` otherwise, refreshed at every task boundary.
+**If you read nothing else:** ordinary mains hold a standing **GOAL**, not a task list — derive the
+next item and never sit idle. The dedicated Auditor instead stays available for routed audit work,
+and Inference keeps the compute-ready horizon under its canonical role contract. Every main reports
+to `coordinator-agent` on TWO conditions (out of work, or needing an operator decision), and keeps
+its heartbeat honest — `idle` when awaiting dispatch, `working` otherwise, refreshed at every task
+boundary.
 
 This is the shared contract behind every per-task brief. Your brief carries only what is specific to
 your task; everything below applies regardless of what you were dispatched to do. **Your standing
 goal lives in [`MAIN-GOALS.md`](MAIN-GOALS.md)** — read your own section there before your brief,
 because the brief is one instance of the goal and the goal is what survives it.
+
+> **Canonical role override (2026-08-13).** The durable contracts for the special mains are now
+> [`agents/auditor-main.md`](../../../agents/auditor-main.md) and
+> [`agents/inference-main.md`](../../../agents/inference-main.md). Historical campaign detail
+> below remains useful context but cannot widen their roles. Auditor is not a miscellaneous-work
+> default and never directs the source main; Inference owns advisory compute scheduling and typed
+> resource leases. Recommended models are only launch recommendations: operator model/effort
+> changes are silent and never alter identity or lease validity.
 
 ---
 
@@ -20,8 +30,8 @@ inbox and outbox is keyed on.
 
 | id | owns |
 |---|---|
-| `inference` | inference tasks; **currently the stack owner** |
-| `auditor` | miscellaneous work; the DEFAULT main for auditing other mains' completed work |
+| `inference` | inference compute owner; execute or grant typed resource leases |
+| `auditor` | coordinator-routed audits of completed `mainA`–`mainD` work only |
 | `mainA` `mainB` `mainC` `mainD` | whatever handoff / backlog work is dispatched to them |
 | `coordinator-agent` | cross-main sequencing; **the only role the operator talks to** |
 
@@ -33,6 +43,13 @@ Lanes come from your roster row in `coordination/session-bus/config.yaml` — th
 the authority on which lanes you may take.
 
 ## 2. Never sit idle
+
+**Special-role exception.** Auditor must not self-select or widen into generic work: with no audit
+packet it remains available and honestly `idle`. Inference does not widen through historical
+campaign prose; it maintains the inference-ready horizon, acts on persistent-idle receipts, and
+executes or leases inference-gated tasks under
+[`agents/inference-main.md`](../../../agents/inference-main.md). These rules keep those main threads
+available for their dedicated control-plane duties.
 
 When you finish an item, **immediately take the next one** from your owning handoff or from
 `queue.jsonl`. Do not wait to be told, do not stop to report and then wait for a reply.
@@ -48,6 +65,9 @@ whose checkbox and progress entry are missing is not finished, and moving on fro
 loss permanent.
 
 ## 3. Goal-based dispatch — you hold a GOAL, not a list
+
+This section applies to `mainA`–`mainD`. Auditor and Inference follow their canonical role files;
+neither derives a standing campaign from `MAIN-GOALS.md`.
 
 **A list runs out. A goal does not.** This section is the mechanism that makes §2 achievable: no main
 can "never sit idle" if what it was handed has a last line.
