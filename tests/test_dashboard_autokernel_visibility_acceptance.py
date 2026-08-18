@@ -44,13 +44,14 @@ def _iso(seconds_ago: int) -> str:
 
 def _event(event: str, *, seconds_ago: int, channel: str = "planner",
            model: str = "gpt-5.6-sol", provider: str = "codex",
-           result: dict | None = None) -> dict:
+           result: dict | None = None,
+           campaign_id: str = "ak-discovery-visibility") -> dict:
     row = {
         "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
         "ts": _iso(seconds_ago),
         "channel": channel,
         "event": event,
-        "campaign_id": "ak-discovery-visibility",
+        "campaign_id": campaign_id,
         "hypothesis_id": "akh-v2-q5-type-specific-dequant",
         "provider": provider,
         "model": model,
@@ -209,6 +210,36 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             [row["ts"] for row in transitions],
             sorted(row["ts"] for row in transitions),
             "the transition timeline must be chronological")
+
+    def test_v11_planner_event_supplies_hypothesis_before_pending_checkpoint(self) -> None:
+        expected_campaign = "ak-discovery-" + "a" * 16
+        self._write_events([_event(
+            "planner_started", seconds_ago=4,
+            campaign_id=expected_campaign)])
+
+        activity = self._active_payload()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "planner")
+        self.assertEqual(activity["hypothesis_id"],
+                         "akh-v2-q5-type-specific-dequant")
+
+        self._write_events([
+            _event("planner_started", seconds_ago=4,
+                   campaign_id=expected_campaign),
+            _event("planner_started", seconds_ago=3,
+                   campaign_id="ak-discovery-wrong"),
+        ])
+        self.assertEqual(self._active_payload()["activity"]["hypothesis_id"],
+                         "akh-v2-q5-type-specific-dequant")
+
+        self._write_events([
+            _event("planner_started", seconds_ago=4,
+                   campaign_id=expected_campaign),
+            _event("planner_completed", seconds_ago=3,
+                   campaign_id=expected_campaign),
+        ])
+        self.assertIsNone(self._active_payload()["activity"]["hypothesis_id"])
 
     def test_planner_uses_its_sealed_actor_budget_before_stall_warning(self) -> None:
         self._write_events([_event("planner_started", seconds_ago=600)])

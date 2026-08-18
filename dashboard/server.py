@@ -4021,7 +4021,8 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
     return None
 
 
-def _discovery_activity(*, lock_held: bool, state: dict | None,
+def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
+                        state: dict | None,
                         events: list[dict], checkpoint: dict | None,
                         operation_observation: dict | None,
                         correctness_observation: dict | None,
@@ -4162,6 +4163,34 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         else:
             pipeline["critic"]["state"] = "complete"
             pipeline["authorization"]["state"] = "running"
+
+    # Before planner output is checkpointed there is intentionally no pending
+    # or inflight candidate.  The producer's active lifecycle event is the only
+    # durable hypothesis identity available in that window.  Accept it only
+    # from the newest event for this sealed deployment campaign, only while the
+    # controller lock proves activity, and only from the allowlisted active
+    # event/field grammar.
+    if (hypothesis is None and lock_held and not isinstance(pending, dict)
+            and not isinstance(inflight, dict) and isinstance(campaign_id, str)):
+        active_hypothesis_events = {
+            "planner_started", "critic_started", "correctness_started",
+            "candidate_attribution_started", "anchor_attribution_started",
+            "measurement_graphs_off_screen_started",
+            "target_runtime_graphs_on_screen_started", "decision_started",
+            "replication_s1_started", "replication_s2_started",
+            "next_hypothesis_started",
+        }
+        latest_campaign_event = next(
+            (row for row in reversed(events)
+             if row.get("campaign_id") == campaign_id), None)
+        event_hypothesis = (latest_campaign_event.get("hypothesis_id")
+                            if isinstance(latest_campaign_event, dict)
+                            and latest_campaign_event.get("event") in
+                            active_hypothesis_events else None)
+        if (isinstance(event_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 event_hypothesis)):
+            hypothesis = event_hypothesis
 
     last_event_at = max((row.get("ts") for row in events
                          if isinstance(row.get("ts"), str)), default=None)
@@ -4973,8 +5002,13 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     claim_observation = _discovery_claim_observation(operations_root)
     refusal_observation = _discovery_refusal_observation(
         bundle, state, all_events)
+    config_sha256 = config.get("config_sha256")
+    campaign_id = (f"ak-discovery-{config_sha256[:16]}"
+                   if isinstance(config_sha256, str)
+                   and re.fullmatch(r"[0-9a-f]{64}", config_sha256) else None)
     activity = _discovery_activity(
-        lock_held=lock_held, state=state, events=all_events,
+        lock_held=lock_held, campaign_id=campaign_id,
+        state=state, events=all_events,
         checkpoint=checkpoint, operation_observation=build_observation,
         correctness_observation=correctness_observation,
         postbuild_observation=postbuild_observation,
