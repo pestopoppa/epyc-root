@@ -233,6 +233,54 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["label"],
                          "candidate arm active")
 
+    def test_completed_build_then_factory_error_is_evidence_binding_failure(self) -> None:
+        manifest_sha = "b" * 64
+        proposal_sha = "c" * 64
+        build_key = "d" * 64
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": _iso(2), "next": 1, "complete": False,
+            "iterations": [],
+            "inflight": {
+                "candidate": {"source_manifest_sha256": manifest_sha},
+                "row": {"proposal_sha256": proposal_sha},
+                "lease": {"admitted": True},
+                "exception": {
+                    "type": "DeploymentFactoryError",
+                    "message": "candidate manifest canonical carrier hash mismatch",
+                },
+            },
+        }))
+        entry = self.operations / "build-cache/entries" / build_key
+        entry.mkdir(parents=True)
+        (entry / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key,
+            "build_contract": {
+                "build_key": build_key,
+                "patch_bundle_sha256": manifest_sha,
+                "proposal_sha256": proposal_sha,
+                "deployment_config_sha256": "a" * 64,
+            },
+        }))
+        (entry / "terminal.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "build_key": build_key,
+            "state": "complete",
+        }))
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "evidence_binding")
+        self.assertIn("after completed build", activity["phase"]["label"])
+        self.assertEqual(activity["failure"]["stage"], "evidence_binding")
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["source_materialization"]["state"], "complete")
+        self.assertEqual(pipeline["build"]["state"], "complete")
+        self.assertEqual(pipeline["evidence_binding"]["state"], "failed")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "build_transaction_complete")
+
     def test_terminal_source_materialization_failure_is_not_idle_or_resumable(self) -> None:
         self._write_events([
             _event("planner_started", seconds_ago=240),

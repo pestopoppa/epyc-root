@@ -3260,6 +3260,7 @@ _DISCOVERY_PIPELINE = (
     ("resource_admission", "Resource admission"),
     ("source_materialization", "Source validation / materialization"),
     ("build", "Compile anchor and candidate"),
+    ("evidence_binding", "Bind build to proof plan"),
     ("correctness", "Correctness proof"),
     ("dispatch_proof", "Dispatch attribution"),
     ("profile", "Kernel profile"),
@@ -3377,6 +3378,23 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
             continue
         terminal = entry / "terminal.json"
         if terminal.exists() or terminal.is_symlink():
+            present, terminal_body, error = _read_json_object(
+                terminal, "source build terminal")
+            if (not present or terminal_body is None or error
+                    or terminal_body.get("schema") !=
+                    "epyc.autokernel.gpu_source_build_terminal.v1"
+                    or terminal_body.get("build_key") != entry.name
+                    or terminal_body.get("state") != "complete"):
+                continue
+            try:
+                completed_at = datetime.fromtimestamp(
+                    terminal.stat().st_mtime, timezone.utc
+                ).isoformat().replace("+00:00", "Z")
+            except OSError:
+                continue
+            matches.append({"stage": "evidence_binding", "state": "running",
+                            "started_at": completed_at,
+                            "build_key": entry.name, "arm": "complete"})
             continue
         lock = operations_root / "build-cache" / "locks" / f"build-{entry.name}.lock"
         if not _discovery_lock_held(lock):
@@ -3516,10 +3534,22 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                     "recovery": None}
     if failure is not None:
         status = "failed"
-        stage = "source_materialization"
-        label = "Source materialization failed"
+        observed_stage = (operation_observation.get("stage")
+                          if isinstance(operation_observation, dict) else None)
+        stage = (observed_stage if observed_stage in
+                 {"build", "evidence_binding"} else "source_materialization")
+        label = ("Evidence binding failed after completed build"
+                 if stage == "evidence_binding" else
+                 "Source build failed" if stage == "build" else
+                 "Source materialization failed")
         waiting_on = "fresh candidate attempt after controller repair"
         recoverability = "ambiguous_checkpoint_requires_fresh_deployment"
+        pipeline["source_materialization"]["state"] = (
+            "complete" if stage in {"build", "evidence_binding"} else "failed")
+        if stage == "evidence_binding":
+            pipeline["build"]["state"] = "complete"
+        if isinstance(operation_observation, dict):
+            pipeline[stage]["started_at"] = operation_observation.get("started_at")
         pipeline[stage]["state"] = "failed"
         pipeline[stage]["completed_at"] = state_at or checkpoint_at
         failure_view = {
@@ -3544,21 +3574,29 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     elif isinstance(inflight, dict):
         inflight_phase = inflight.get("phase")
         lease_phase = lease.get("phase") if isinstance(lease, dict) else None
-        if (isinstance(operation_observation, dict)
-                and operation_observation.get("stage") == "build"):
-            stage = "build"
+        observed_stage = (operation_observation.get("stage")
+                          if isinstance(operation_observation, dict) else None)
+        if observed_stage in {"build", "evidence_binding"}:
+            stage = observed_stage
             pipeline["source_materialization"]["state"] = "complete"
-            pipeline["build"]["started_at"] = operation_observation["started_at"]
-            arm = operation_observation.get("arm")
-            build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
-                           else "Compiling anchor arm 1 of 2" if arm == "anchor"
-                           else "Compiling the sealed anchor and candidate")
-            label = (build_label if lock_held
-                     else "Controller stopped during source build")
-            waiting_on = (("candidate build completion" if arm == "candidate"
-                           else "anchor build completion" if arm == "anchor"
-                           else "anchor/candidate build completion") if lock_held
-                          else "build recovery audit")
+            pipeline[stage]["started_at"] = operation_observation["started_at"]
+            if stage == "evidence_binding":
+                pipeline["build"]["state"] = "complete"
+                label = ("Binding completed builds to the proof plan" if lock_held
+                         else "Controller stopped during evidence binding")
+                waiting_on = ("proof-plan binding completion" if lock_held
+                              else "evidence-binding recovery audit")
+            else:
+                arm = operation_observation.get("arm")
+                build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
+                               else "Compiling anchor arm 1 of 2" if arm == "anchor"
+                               else "Compiling the sealed anchor and candidate")
+                label = (build_label if lock_held
+                         else "Controller stopped during source build")
+                waiting_on = (("candidate build completion" if arm == "candidate"
+                               else "anchor build completion" if arm == "anchor"
+                               else "anchor/candidate build completion") if lock_held
+                              else "build recovery audit")
         else:
             stage = ("benchmark" if inflight_phase == "measurement"
                      or lease_phase == "measurement" else "source_materialization")
@@ -3602,7 +3640,6 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     if checkpoint:
         checkpoint_stage = {
             "discovery_pre_screen_intent": "source_materialization",
-            "discovery_screen_ambiguous": "source_materialization",
             "discovery_waiting_resource": "resource_admission",
             "discovery_screened": "decision",
             "discovery_complete": "decision",
@@ -3613,14 +3650,17 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                             "label": f"STOP_STATE seq {checkpoint.get('seq')}",
                             "detail": f"STOP_STATE seq {checkpoint.get('seq')}"})
     if isinstance(operation_observation, dict):
+        observed_stage = operation_observation["stage"]
         transitions.append({
-            "ts": operation_observation["started_at"], "stage": "build",
-            "phase": "build", "state": "running",
-            "event": "build_transaction_observed",
-            "label": (f"{operation_observation.get('arm')} arm active"
+            "ts": operation_observation["started_at"], "stage": observed_stage,
+            "phase": observed_stage, "state": "running",
+            "event": ("build_transaction_complete" if observed_stage == "evidence_binding"
+                      else "build_transaction_observed"),
+            "label": ("both build arms complete" if observed_stage == "evidence_binding"
+                      else f"{operation_observation.get('arm')} arm active"
                       if operation_observation.get("arm") else
                       "sealed build transaction active"),
-            "detail": (f"{operation_observation.get('arm') or 'build'} "
+            "detail": (f"{operation_observation.get('arm') or observed_stage} "
                        f"{operation_observation['build_key'][:12]}…"),
         })
     transitions.sort(key=lambda row: row["ts"])
