@@ -486,12 +486,37 @@ Zero were bulk-acked. What survived as live work:
   rationales report mutation-probe FAILs that are benign over-matches: the probe expects the
   diff to touch every file the task TEXT mentions, and both pilots' prose named files outside
   their deliverable (pilot-03 → RTG-52 itself, pilot-04 → `worker_runner.py`).
-- [ ] **D9 hook: fire on the COMMIT PATHSPEC, not the command string.** Measured false
-  positive 2026-08-18: a compound shell command that *invoked* `serialized_push.py` and
-  `session_bus.py` as tools was refused although its `git commit` pathspec touched only
-  handoffs. It fails closed (right direction), but a guard that refuses unrelated work
-  trains people to split commands rather than to respect the gate. The fix is itself
-  D9-gated.
+- [x] **D9 hook: fire on the COMMIT PATHSPEC, not the command string.** ✅ 2026-08-18 (`a1294552`,
+  under D9-ack). Root cause was narrower and worse than "parses the command string": it took every
+  token after the FIRST `--` to **end-of-string**, so the pathspec ran through the `;` and swallowed
+  the next command's argv — and the `--` it keyed on need not have belonged to the commit at all.
+  Fixed by not deciding: the hook now asks **git** what the commit records — `git diff --cached`
+  for a plain commit, `git diff HEAD -- <pathspec>` for a pathspec commit, with the pathspec scoped
+  to the commit's own shell segment and handed to git verbatim. Coverage is sharpened, not traded:
+  it now expresses that a pathspec commit does **not** record the index, so a staged guarded file is
+  correctly irrelevant to a commit naming only a doc. 11 regression tests against a real temp git
+  repo (`scripts/hooks/tests/test_d9_loop_plane.py`); the original had none. Every false-positive
+  case is paired with one proving the real refusal still fires.
+- [x] **The same defect existed in three more guards; swept and fixed.** ✅ 2026-08-18. All 13
+  registered PreToolUse hooks plus the precommit and context hooks were audited for
+  match-on-text-not-effect. `check_commit_hygiene.py` (`cdbbd761`): `_SEP` split on newlines, so
+  every LINE of a heredoc body became a command — a Python heredoc whose *source* contained a commit
+  was blocked for a stale fetch. `check_live_holder_interference.sh` (`5202e98e`): matched its write
+  regex against the raw command, so a doc heredoc and a `grep` both matched a drop_caches write —
+  **latent**, reachable only under a held region, i.e. only mid-bench. Both fixed with paired
+  enforcement tests. Already-correct: `pytest_worker_scan` (C21 fixed this first, 2026-07-29) and the
+  two scanners importing from it; the `file_path`-only guards; the precommit and context hooks.
+- [x] **One shared implementation instead of four.** ✅ 2026-08-18 (`2f5a0c63`). `shell_scan.py` now
+  owns `SEPARATORS`/`strip_quoted`/`strip_heredocs`/`strip_comments`/`segments()`; four scanners
+  import it. −73/+17, `strip_comments` de-triplicated (one copy substituted `""` where the others
+  used `" "`, which could fuse tokens). Verified a **pure refactor**: a 22-command corpus through
+  three verdict functions before and after, byte-identical. The module's docstring carries the
+  incident record — the same defect, four times, dated — so a fifth author reads why before writing
+  a fifth copy.
+- [ ] **`test_hook_worktree_resolution.py` has 2 failing tests** (`test_env_override_wins_over_everything`,
+  `test_sparse_worktree_fallback_allows_a_clean_commit_too`). Confirmed **pre-existing** on 2026-08-18
+  by stashing the guard-sweep work and re-running: identical 2 failed / 6 passed. Untouched by that
+  sweep and filed here rather than left in prose. Not blocked on anything.
 - [ ] **The probe over-match above is itself a defect worth one line of code**: the mutation
   probe should resolve expected-touched files from the row's stated deliverable, not from every
   path-shaped token in the task text — two of four pilot audits FAIL-noised on it.

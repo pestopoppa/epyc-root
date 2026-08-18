@@ -95,3 +95,77 @@ session; Qwen2.5-Coder is what makes the intake-1151 correction *checkable* rath
 text, on a reader we serve. Blocker is a named external prerequisite — a vision-capable local reader
 on the live vision path (`multimodal-pipeline.md`, INF-41) — not a decision. Filed as OCC-1/2/3 with
 an index row, not left in prose.
+
+---
+
+# 2026-08-18 (part 2) — the guard sweep that came out of the intake wrap-up
+
+**Trigger**: the intake wrap-up's Step-3 pruning surfaced 15 handoffs reporting `open == 0`. Four
+spot-checks were all false positives, so nothing was pruned and the heuristic was reported instead.
+The operator then directed five follow-on fixes. Seven commits, all pushed to `main`.
+
+## The through-line: guards that matched TEXT instead of EFFECT
+
+Four independently-written guards had the same defect. Each fired on what a command's characters
+*said* rather than on what the command would *do*.
+
+| Guard | What it matched on | Consequence |
+|---|---|---|
+| prune selection (`index_state.py`) | `open == 0` | reads absence of open checkboxes as presence of completion |
+| `check_d9_loop_plane.py` | every token after the first `--`, to end-of-string | a chained `; python3 scripts/coordination/...` was swept into the commit's pathspec |
+| `check_commit_hygiene.py` | newline-split segments incl. heredoc bodies | a Python heredoc whose *source* contained `git commit` was blocked for a stale fetch |
+| `check_live_holder_interference.sh` | raw command regex | a doc heredoc and a `grep` both matched a drop_caches write |
+
+A guard that fires on text blocks the documentation about itself, the grep looking for it, and the
+bus message reporting it — and a guard that stalls a session for a reason it cannot see teaches
+people to route around it. Routing around a control is how the unguarded direct-commit path D9 was
+written to close came to exist in the first place.
+
+## Fixes
+
+| Commit | Change |
+|---|---|
+| `428c7bb6` | `index_state.py` emits `prune: {candidate, blocker, evidence}` — conservative by construction; 15 candidates → 5. Blockers: `pointer`, `frozen`, `not-a-task-list`, `prose-open`, `no-checkboxes`, `undispatchable-tasks`, `open-tasks`. 11 tests |
+| `7e3bab6e` | Archived `tree-draft-forward-port-plan.md` (INF-55). The other 4 candidates reported as live work with evidence |
+| `66c9d724` | Archived `moe-aggregate-deployment-wins-brief.md` (INF-39) and `fable5-window2-findings-05b` (INF-14) on operator direction, after verifying every open item has a live owner |
+| `a1294552` | D9 asks **git** which paths a commit records: `git diff --cached` (plain) or `git diff HEAD -- <pathspec>` (pathspec), pathspec scoped to the commit's own shell segment. 11 tests |
+| `cdbbd761` | commit-hygiene strips heredoc bodies before segmentation; opener lines kept, shell-fed heredocs kept enforced. 4 tests |
+| `5202e98e` | Swept all 13 registered hooks; found and fixed `check_live_holder_interference.sh` via `drop_caches_write_scan.py`. 7 tests |
+| `2f5a0c63` | Extracted `shell_scan.py`; four scanners now share one implementation. −73/+17 |
+
+## Results
+
+- Prune heuristic: **17 handoffs report `open == 0`, 0 are candidates** after the second tightening
+  (`open-section`, `open-assertion`). The screen is not vacuous — the handoff archived in the same
+  commit still evaluates to `candidate: true`.
+- Three archives, all with routing banners naming where each open item went; 22 inbound links
+  repointed across wiki pages, active handoffs and one dated runbook.
+- Hook suite: commit-hygiene ✓ · d9 (11) ✓ · live-holder (18) ✓ · worktree (12) ✓ ·
+  operator-apply (25) ✓ · agents-reference (3) ✓
+- `shell_scan.py` extraction verified as a **pure refactor**: a 22-command corpus through three
+  verdict functions, before and after, byte-identical.
+
+## Four corrections to my own work, recorded because the reasoning should be visible
+
+1. **A misattribution found while archiving.** Two active handoffs asserted findings-05b "owns MI210
+   residency (Gate R)". It doesn't — 05b is a supplement; Gate R lives in findings-02 (EVL-20).
+   Archiving would have turned a wrong ownership claim into a dangling one. Both repointed.
+2. **I nearly dropped the `| sudo tee` form** when porting the drop_caches regex: `_SEPARATORS`
+   splits on `|`, so the pipe is gone by the time a segment is tested. Caught by probing; named
+   regression case added.
+3. **The live-holder test suite was passing for the wrong reason.** Every `expect: 2` case *skipped*
+   when no region was held — 5 of 5 — while the suite printed "all checks passed". Block cases now
+   run under a synthetic flock in an isolated temp dir. 18 cases, 0 skips.
+4. **My first D9 verification probe was wrong**, reporting "want 2, got 0" on the real-change case.
+   The file was clean, so nothing could be recorded. Re-probed with it dirtied: refuses correctly.
+
+## Deferred, with named blockers
+
+- **`test_hook_worktree_resolution.py` — 2 pre-existing failures** (`test_env_override_wins_over_everything`,
+  `test_sparse_worktree_fallback_allows_a_clean_commit_too`). Confirmed pre-existing by stashing this
+  work and re-running: identical 2 failed / 6 passed. **Not blocked on anything** — they are simply
+  outside the operator's directed scope this session, and are filed as a task rather than left in prose.
+- **`git stash` is unsafe in this shared tree while daemons write.** Using it to verify the above
+  collided with a runtime file created between stash and pop. All work was intact and the redundant
+  stash entry was dropped after verifying all 10 files were present. A checked-out copy is the better
+  instrument here.

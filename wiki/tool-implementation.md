@@ -616,3 +616,63 @@ aider's own benchmark. Format and applier are one design, not two.
 - `research/intake_index.yaml` intake-1151 (Diff-XYZ, JetBrains) — the independent academic cross-format comparison; note it is single-turn and disclaims production prediction
 - [Batched edit / parallel apply](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6 (the granularity finding) and BEP-7 (the two external rules)
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+## Compiled Update — 2026-08-18: a guard must fire on what a command DOES, not on what its text SAYS
+
+Four PreToolUse guards in this repo, written independently over ten months, all had the same defect.
+Each decided whether to refuse a command by inspecting the command's own characters, rather than by
+establishing what the command would actually do.
+
+| Guard | Matched on | What it refused that it should not have |
+|---|---|---|
+| pytest worker cap | `pytest.*-n\s*[0-9]+` over the whole string | a pytest run piped into a `sed` line range — the range read as a worker count; and a heredoc listing `-n auto` as an example |
+| D9 loop-plane commit gate | every token after the first `--`, to end-of-string | a docs commit chained ahead of `; python3 scripts/coordination/serialized_push.py` — the pusher's path read as the commit's pathspec |
+| commit hygiene | newline-split segments, heredoc bodies included | a `python3 - <<'PY'` block whose Python *source* contained the text of a commit |
+| drop_caches interference | the write regex over the raw command | a heredoc documenting the guard, and a `grep` searching for the pattern |
+
+**The failure mode is self-referential, which is how it keeps being found.** Each guard blocked the
+documentation about itself, the search for it, or the bus message reporting the bug. One blocked its
+own commit message during bring-up; another blocked its own test fixture.
+
+**Two properties make it worse than an ordinary false positive.**
+
+*It teaches evasion.* A guard that refuses unrelated work trains people to split commands rather than
+respect the gate — and routing around a control is precisely how the unguarded direct-commit path the
+D9 gate exists to close came to exist in the first place. A control with an unguarded path is not a
+control; it is a habit that happens to hold.
+
+*It can be latent.* The drop_caches guard only reaches its refusal when a CPU region is actually
+claimed, so its false positives fire rarely, unpredictably, and mid-bench — the moment a session is
+least able to work out why an unrelated command was refused. A guard that is wrong 1% of the time, at
+the worst moment, is harder to debug than one that is wrong always.
+
+**The fix is to stop deciding and ask the system.** Where an authority exists, defer to it: the commit
+gate now asks git which paths a commit records (`git diff --cached` for a plain commit,
+`git diff HEAD -- <pathspec>` for a pathspec commit, since a pathspec commit bypasses the index
+entirely); the drop_caches guard asks whether a region lock is genuinely held. Text scanning narrows
+what is worth asking about; it does not decide.
+
+**Where text scanning is unavoidable, strip the data first** — heredoc bodies, quoted runs and
+comments are inputs to a program, not commands. Order is load-bearing: heredocs must be stripped
+before quotes, or a quoted marker (`<<'EOF'`) has its name blanked as a quoted run, leaving `<<''`
+with no detectable terminator and the body scanned as commands again.
+
+**Carve-outs keep the narrowing honest.** Stripping *all* heredoc bodies would open a hole, because
+`bash <<'EOF' … EOF` really does execute its body; so the body is kept when the receiving word is a
+shell. And opener lines are always kept, because `git commit -F - <<'MSG'` is a real commit whose
+message merely arrives on stdin.
+
+**Testing shape that catches this class.** Pair every permissive case with an enforcement case. A
+guard that simply stopped looking would pass the permissive half alone — which is exactly what a
+suite of "must not block" cases measures. Two live examples of suites that were passing for the wrong
+reason: the drop_caches suite skipped all five of its blocking cases whenever the host happened to
+have no region claimed, and still printed "all checks passed"; and a verification probe reported a
+real refusal as absent because the guarded file happened to be clean, so nothing could be recorded.
+
+### Source References
+
+- `scripts/hooks/shell_scan.py` — the shared strippers and the incident record; four guards import it
+- `scripts/hooks/check_d9_loop_plane.py` and `scripts/hooks/check_commit_hygiene.py` — the ask-the-system pattern, with `scripts/hooks/tests/test_d9_loop_plane.py` (11 paired cases)
+- `scripts/hooks/drop_caches_write_scan.py` and `scripts/hooks/tests/live_holder_interference_cases.json` — the latent case, and the suite made deterministic with a synthetic lock
+- [Loop-owned fleet implementation](../handoffs/active/loop-owned-fleet-implementation.md) — D9, the loop-plane gate these guards enforce
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

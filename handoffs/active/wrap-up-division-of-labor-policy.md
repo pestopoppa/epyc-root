@@ -334,6 +334,16 @@ before role cutover.
   Keep unsuffixed logs for historical reads only. Add negative controls for local-only SHA, peer
   shard, post-receipt edit, and no-boundary state.
 - [x] **Autonomous writers:** remove `index_state.py` writes from post-commit/merge/checkout hook ✅ 2026-08-13 (`60187101`)
+- [x] **Step-3 prune selection no longer keys on `open == 0`** ✅ 2026-08-18 (`428c7bb6`). That read
+  the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION — the same category error as using
+  mtime for `last_advanced`. Measured across the 15 handoffs then reporting `open == 0`: **13 were
+  false positives** (compatibility pointers, work stated in prose and never checkboxed, prompts and
+  notes-only references that never carried tasks, and handoffs whose remaining boxes are
+  guarded/blocked). `scan_handoff` now also reads the status region and the structural open-work
+  markers, emitting `prune: {candidate, blocker, evidence}` — conservative by construction, every
+  rejection naming its blocker and quoting the evidence line. `agents/commands/wrap-up.md` Step 3
+  documents the replacement selection command and states it is a **screen, not a verdict**.
+  17 tests; the screen is proven non-vacuous by a real-world positive control.
       bodies; make `install_timeline_hook.sh` upgrade its marked block; prove a worker handoff commit
       leaves `.index-state.json`, `.index-graph.json`, and master generated content unchanged.
 - [x] **Wiki hook:** ensure ordinary post-commit retrieval refresh cannot mutate ✅ 2026-08-13 (`60187101`)

@@ -1468,3 +1468,51 @@ claiming that a later adapter witnessed semantics the original producer never wr
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC20/SC21 acceptance, SC22 MMQ-WGM write-side task, and classification
 - [Vidya adapter contract](../scripts/vidya/adapters/README.md) — producer vectors, MMQ-WGM candidate source, and dependency-evidence handling
 - [2026-08-11 progress](../progress/2026-08/2026-08-11.md) — receipt hashes, negative disposition, and closeout boundary
+
+## Compiled Update — 2026-08-18: `open == 0` is not "complete", and a screen is not a verdict
+
+Index hygiene wants to retire finished handoffs, and the obvious signal — a handoff with no open
+checkboxes — is wrong often enough to destroy live work. Measured across the 15 handoffs then
+reporting `open == 0`: **13 were false positives**, in five distinct shapes.
+
+| Shape | Why `open == 0` was true | Example |
+|---|---|---|
+| `pointer` | its whole job is keeping a path resolving | a retained compatibility pointer; archiving it breaks the routing it exists to provide |
+| `prose-open` | open work stated in prose, never checkboxed | *"artifact ingestion and UI remain open"* in the status line |
+| `not-a-task-list` | never carried tasks at all | *"a prompt, not a task list"*; *"notes-only topology reference"* |
+| `no-checkboxes` | 0 of 0 boxes | a dossier |
+| `undispatchable-tasks` | boxes remain, but guarded or blocked rather than done | unresolved, and archiving buries the reason |
+
+This is the same category error as dating a handoff's liveness by file mtime: it reads the **absence
+of a signal** as the **presence of its opposite**. Prose churns without progress, and a document can
+have no open boxes because it never had any.
+
+**Where the open work is stated matters, and it is rarely the status line.** A second pass found four
+more handoffs whose open work lived in a *heading* (`## Still open`, `## Open Questions`,
+`## NEXT STEP`) or a *line-leading bold run* (`**Still OPEN (not measured-dead):** …`). Both are
+structural claims about the document, unlike incidental body prose, and both are cheap to detect.
+
+**Build the screen conservative and make every rejection legible.** A miss costs a candidate that a
+human then reviews; a wrong match makes a handoff unprunable forever. So a candidate requires boxes,
+none open or undispatchable, and no disqualifying marker — and every rejection carries a named
+blocker plus the evidence line that produced it, so a reader can overrule it deliberately rather than
+by re-deriving the judgement.
+
+**Guard against the screen becoming vacuous.** After tightening, the active tree yielded **zero**
+candidates — which is indistinguishable from a broken screen unless you prove otherwise. Two checks
+separate them: a real-world positive control (a handoff archived in the same commit still evaluates
+to `candidate: true`), and negative tests asserting that ordinary bold lead-ins and closed task lines
+mentioning "remaining" do *not* block.
+
+**The screen is what makes you look, and looking is what finds things.** Two of the three handoffs
+eventually archived turned out to be safe only after tracing each open item to a live owner
+elsewhere — and that tracing surfaced an unrelated defect: two active handoffs asserted that a
+*supplement* owned a decision gate that actually lived in its parent. Archiving on the checkbox count
+alone would have converted a wrong ownership claim into a dangling one.
+
+### Source References
+
+- `scripts/handoffs/index_state.py` — `prune_signal()`, the blocker taxonomy, and the measured incident record; `tests/test_index_state_prune.py` (17 cases, mutation-paired)
+- `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
+- [Wrap-up division of labor](../handoffs/active/wrap-up-division-of-labor-policy.md) — the wrap-up routine this governs
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to

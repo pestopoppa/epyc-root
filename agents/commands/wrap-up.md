@@ -78,6 +78,14 @@ git commit -m "..."                      # NO pathspec: commits the index, not t
 
 `git add -A` is forbidden in every shared tree, always.
 
+**`git stash` is unsafe in the shared clone while daemons are writing.** It captures untracked
+files too, and the runtime plane (`logs/`, `coordination/session-bus/`, `share/`) gains files
+between the stash and the pop — so the pop fails on "already exists, no checkout", restores the
+tracked half, and leaves the untracked half in a stash entry that looks like lost work.
+(Measured 2026-08-18 verifying whether a test failure pre-dated a change; nothing was lost, but
+only because every stashed file was checked against the worktree before the entry was dropped.)
+Use a throwaway checkout — `git worktree add --detach` — to compare against a clean tree instead.
+
 ### The wrap-up lease — for the four surfaces lane worktrees cannot isolate
 
 Most of this routine is now private to your lane. Four things are not, because they are
