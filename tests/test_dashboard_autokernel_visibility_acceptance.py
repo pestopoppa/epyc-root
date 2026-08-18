@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -60,6 +61,15 @@ def _event(event: str, *, seconds_ago: int, channel: str = "planner",
     if result is not None:
         row["result"] = result
     return row
+
+
+def _seal(body: dict) -> dict:
+    sealed = dict(body)
+    sealed["receipt_sha256"] = hashlib.sha256(json.dumps(
+        sealed, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+    return sealed
 
 
 class AutoKernelVisibilityContractTest(unittest.TestCase):
@@ -101,6 +111,36 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return server.discovery_live_payload()
 
+    def _complete_build(self, entry: Path, *, build_key: str,
+                        manifest_sha: str, contract: dict) -> None:
+        materialization = _seal({
+            "schema": "epyc.autokernel.gpu_source_materialization.v1",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "operation_key": build_key,
+            "build_key": build_key,
+            "build_contract": contract,
+            "manifest_sha256": manifest_sha,
+            "promotion_claim": False,
+        })
+        materialization_path = entry / "materialization.json"
+        materialization_path.write_text(json.dumps(materialization) + "\n")
+        intent_path = entry / "intent.json"
+        terminal = _seal({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "build_key": build_key,
+            "intent_file_sha256": hashlib.sha256(
+                intent_path.read_bytes()).hexdigest(),
+            "state": "complete",
+            "build": {
+                "build_key": build_key,
+                "materialization_receipt": str(materialization_path),
+                "materialization_sha256": hashlib.sha256(
+                    materialization_path.read_bytes()).hexdigest(),
+            },
+            "promotion_claim": False,
+        })
+        (entry / "terminal.json").write_text(json.dumps(terminal) + "\n")
+
     def _write_v10_correctness_parser_terminal(self) -> None:
         """Reproduce the durable v10 boundary, without inventing telemetry."""
         manifest_sha = "b" * 64
@@ -131,21 +171,19 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         }))
         entry = self.operations / "build-cache/entries" / build_key
         entry.mkdir(parents=True)
+        contract = {
+            "build_key": build_key,
+            "patch_bundle_sha256": manifest_sha,
+            "proposal_sha256": proposal_sha,
+            "deployment_config_sha256": "a" * 64,
+        }
         (entry / "intent.json").write_text(json.dumps({
             "schema": "epyc.autokernel.gpu_source_build_intent.v1",
             "build_key": build_key,
-            "build_contract": {
-                "build_key": build_key,
-                "patch_bundle_sha256": manifest_sha,
-                "proposal_sha256": proposal_sha,
-                "deployment_config_sha256": "a" * 64,
-            },
+            "build_contract": contract,
         }))
-        (entry / "terminal.json").write_text(json.dumps({
-            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
-            "build_key": build_key,
-            "state": "complete",
-        }))
+        self._complete_build(entry, build_key=build_key,
+                             manifest_sha=manifest_sha, contract=contract)
         build_completed = datetime.fromisoformat(
             acquired_at.replace("Z", "+00:00")).timestamp() - 1
         os.utime(entry / "terminal.json", (build_completed, build_completed))
@@ -452,12 +490,84 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(activity["waiting_on"], "candidate build completion")
         self.assertFalse(activity["gpu"]["expected_now"])
         pipeline = {row["id"]: row for row in activity["pipeline"]}
-        self.assertEqual(pipeline["source_materialization"]["state"], "complete")
+        self.assertEqual(pipeline["source_materialization"]["state"], "running")
         self.assertEqual(pipeline["build"]["state"], "running")
         self.assertEqual(activity["transitions"][-1]["event"],
                          "build_transaction_observed")
         self.assertEqual(activity["transitions"][-1]["label"],
                          "candidate arm active")
+
+    def test_v11_pre_screen_intent_keeps_active_anchor_build_fail_closed(self) -> None:
+        """Exact v11 boundary: declared proof plan cannot invent correctness."""
+        manifest_sha = "6bb3454fac66b311f126311837b85cad11af609d62c349a5eafb1b5674525569"
+        proposal_sha = "c02c48262a7634cf023ec454547517925f8d1df6c5158ee90a28eb85414e869a"
+        operation_key = "3818df9f05218f6b2583c7d8d4f1436d849e874e19ea47841b9d7055ce2df307"
+        build_key = "d21841b48fca9adbd410d8f4cadcf91f41087567088197bc85bf88ce633d70f5"
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": _iso(3), "next": 1, "complete": False,
+            "pending": None, "planning": None, "iterations": [],
+            "inflight": {
+                "phase": "prebuild_probe", "operation_key": operation_key,
+                "candidate": {
+                    "source_manifest_sha256": manifest_sha,
+                    "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                    "manifest": {"candidate_id": "akc-discovery-1",
+                                 "campaign_id": "ak-discovery-8e4eee8d36dc7e9e"},
+                },
+                "row": {"proposal_sha256": proposal_sha,
+                        "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "lease": {"admitted": True, "phase": "prebuild_probe",
+                          "repetition": 1,
+                          "device_claim_probe_released": {"released_at": _iso(4)}},
+                "confirmation": False,
+            },
+        }))
+        operation = self.operations / operation_key
+        operation.mkdir()
+        (operation / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_operation.v1",
+            "operation_key": operation_key,
+            "manifest_sha256": manifest_sha,
+        }))
+        # The v11 incident had no evidence-policy or any correctness receipt.
+        entry = self.operations / "build-cache/entries" / build_key
+        locks = self.operations / "build-cache/locks"
+        entry.mkdir(parents=True)
+        locks.mkdir(parents=True)
+        (entry / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key,
+            "build_contract": {
+                "build_key": build_key,
+                "patch_bundle_sha256": manifest_sha,
+                "proposal_sha256": proposal_sha,
+                "deployment_config_sha256": "a" * 64,
+            },
+        }))
+        logs = entry / "logs"
+        logs.mkdir()
+        (logs / "akc-anchor.log.build-sandbox.json").write_text("{}")
+        build_lock = locks / f"build-{build_key}.lock"
+        build_lock.touch()
+        with build_lock.open("r+") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            activity = self._active_payload()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "build")
+        self.assertEqual(activity["phase"]["label"],
+                         "Compiling anchor arm 1 of 2")
+        self.assertFalse(activity["correctness"]["execution_started"])
+        self.assertFalse(activity["gpu"]["expected_now"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["resource_admission"]["state"], "complete")
+        self.assertEqual(pipeline["source_materialization"]["state"], "running")
+        self.assertEqual(pipeline["build"]["state"], "running")
+        for stage in ("evidence_binding", "correctness",
+                      "correctness_validation", "candidate_attribution"):
+            self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
+                         "build")
 
     def test_completed_build_then_factory_error_is_evidence_binding_failure(self) -> None:
         manifest_sha = "b" * 64
@@ -478,21 +588,19 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         }))
         entry = self.operations / "build-cache/entries" / build_key
         entry.mkdir(parents=True)
+        contract = {
+            "build_key": build_key,
+            "patch_bundle_sha256": manifest_sha,
+            "proposal_sha256": proposal_sha,
+            "deployment_config_sha256": "a" * 64,
+        }
         (entry / "intent.json").write_text(json.dumps({
             "schema": "epyc.autokernel.gpu_source_build_intent.v1",
             "build_key": build_key,
-            "build_contract": {
-                "build_key": build_key,
-                "patch_bundle_sha256": manifest_sha,
-                "proposal_sha256": proposal_sha,
-                "deployment_config_sha256": "a" * 64,
-            },
+            "build_contract": contract,
         }))
-        (entry / "terminal.json").write_text(json.dumps({
-            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
-            "build_key": build_key,
-            "state": "complete",
-        }))
+        self._complete_build(entry, build_key=build_key,
+                             manifest_sha=manifest_sha, contract=contract)
 
         activity = server.discovery_live_payload()["activity"]
 

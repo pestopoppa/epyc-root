@@ -58,6 +58,43 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             "attribution_arm_order": ["candidate", "anchor"],
             "attribution_arm_order_seed_sha256": "c" * 64,
         }))
+        self.proposal_sha = "e" * 64
+        build_key = "d" * 64
+        entry = self.operations / "build-cache/entries" / build_key
+        entry.mkdir(parents=True)
+        contract = {
+            "build_key": build_key,
+            "patch_bundle_sha256": self.manifest_sha,
+            "proposal_sha256": self.proposal_sha,
+            "deployment_config_sha256": "a" * 64,
+        }
+        intent_path = entry / "intent.json"
+        intent_path.write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key, "build_contract": contract,
+        }))
+        materialization_path = entry / "materialization.json"
+        materialization_path.write_text(json.dumps(_sealed({
+            "schema": "epyc.autokernel.gpu_source_materialization.v1",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "operation_key": build_key, "build_key": build_key,
+            "build_contract": contract, "manifest_sha256": self.manifest_sha,
+            "promotion_claim": False,
+        })) + "\n")
+        (entry / "terminal.json").write_text(json.dumps(_sealed({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "build_key": build_key,
+            "intent_file_sha256": hashlib.sha256(
+                intent_path.read_bytes()).hexdigest(),
+            "state": "complete",
+            "build": {
+                "build_key": build_key,
+                "materialization_receipt": str(materialization_path),
+                "materialization_sha256": hashlib.sha256(
+                    materialization_path.read_bytes()).hexdigest(),
+            },
+            "promotion_claim": False,
+        })) + "\n")
         self._write_state(repetition=1)
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = root
 
@@ -73,7 +110,8 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                 "operation_key": self.operation_key,
                 "candidate": {"source_manifest_sha256": self.manifest_sha,
                               "hypothesis_id": "akh-stage-fixture"},
-                "row": {"hypothesis_id": "akh-stage-fixture"},
+                "row": {"hypothesis_id": "akh-stage-fixture",
+                        "proposal_sha256": self.proposal_sha},
                 "lease": {"admitted": True, "device_id": "mi210_0",
                           "repetition": repetition},
             },

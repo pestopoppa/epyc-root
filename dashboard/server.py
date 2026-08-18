@@ -3345,6 +3345,87 @@ def _discovery_safe_error(value: object) -> dict | None:
     return {"type": kind[:100], "detail": safe}
 
 
+def _discovery_native_receipt_hash_valid(body: object) -> bool:
+    """Validate the producer's canonical, content-addressed receipt field."""
+    if not isinstance(body, dict):
+        return False
+    native = body.get("receipt_sha256")
+    if not isinstance(native, str) or re.fullmatch(r"[0-9a-f]{64}", native) is None:
+        return False
+    try:
+        canonical = json.dumps(
+            {key: value for key, value in body.items()
+             if key != "receipt_sha256"},
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError):
+        return False
+    return hashlib.sha256(canonical).hexdigest() == native
+
+
+def _discovery_completed_build_materialization(
+        *, entry: Path, intent_path: Path, terminal: dict,
+        contract: dict) -> bool:
+    """Require the exact sealed terminal -> materialization receipt chain."""
+    build = terminal.get("build")
+    materialization_raw = (build.get("materialization_receipt")
+                           if isinstance(build, dict) else None)
+    materialization_sha = (build.get("materialization_sha256")
+                           if isinstance(build, dict) else None)
+    if (terminal.get("promotion_claim") is not False
+            or not _discovery_native_receipt_hash_valid(terminal)
+            or not isinstance(build, dict)
+            or build.get("build_key") != entry.name
+            or not isinstance(materialization_raw, str)
+            or not isinstance(materialization_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", materialization_sha) is None):
+        return False
+    try:
+        intent_sha = hashlib.sha256(intent_path.read_bytes()).hexdigest()
+    except OSError:
+        return False
+    if terminal.get("intent_file_sha256") != intent_sha:
+        return False
+    materialization_path = Path(materialization_raw)
+    try:
+        resolved_entry = entry.resolve(strict=True)
+        resolved = materialization_path.resolve(strict=True)
+        resolved.relative_to(resolved_entry)
+        info = materialization_path.lstat()
+        if (materialization_path.is_symlink()
+                or not materialization_path.is_file()
+                or info.st_nlink != 1 or info.st_size > 4 * 1024 * 1024):
+            return False
+        raw = materialization_path.read_bytes()
+        after = materialization_path.lstat()
+    except (OSError, ValueError):
+        return False
+    if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+            != (after.st_dev, after.st_ino, after.st_size,
+                after.st_mtime_ns, after.st_nlink)
+            or hashlib.sha256(raw).hexdigest() != materialization_sha):
+        return False
+    try:
+        materialization = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    return bool(
+        isinstance(materialization, dict)
+        and materialization.get("schema") ==
+        "epyc.autokernel.gpu_source_materialization.v1"
+        and materialization.get("authority") ==
+        "nonpromotable_candidate_only_discovery"
+        and materialization.get("promotion_claim") is False
+        and materialization.get("build_key") == entry.name
+        and materialization.get("operation_key") == entry.name
+        and materialization.get("manifest_sha256") ==
+        contract.get("patch_bundle_sha256")
+        and materialization.get("build_contract") == contract
+        and _discovery_native_receipt_hash_valid(materialization)
+    )
+
+
 def _discovery_build_observation(operations_root: Path, state: dict | None,
                                  config_sha256: object) -> dict | None:
     """Identify the exact active source-build transaction from sealed inputs.
@@ -3402,7 +3483,10 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
                     or terminal_body.get("schema") !=
                     "epyc.autokernel.gpu_source_build_terminal.v1"
                     or terminal_body.get("build_key") != entry.name
-                    or terminal_body.get("state") != "complete"):
+                    or terminal_body.get("state") != "complete"
+                    or not _discovery_completed_build_materialization(
+                        entry=entry, intent_path=intent_path,
+                        terminal=terminal_body, contract=contract)):
                 continue
             try:
                 completed_at = datetime.fromtimestamp(
@@ -3653,15 +3737,15 @@ def _discovery_postbuild_observation(operations_root: Path,
         return None
     policy_present, policy, policy_error = _read_json_object(
         operation / "evidence-policy.json", "GPU source evidence policy")
-    policy_order = (policy.get("attribution_arm_order")
-                    if policy_present and isinstance(policy, dict)
-                    and not policy_error
-                    and policy.get("schema") ==
-                    "epyc.autokernel.gpu_source_execution_policy.v2"
-                    and policy.get("manifest_sha256") == manifest_sha else None)
+    if (not policy_present or not isinstance(policy, dict) or policy_error
+            or policy.get("schema") !=
+            "epyc.autokernel.gpu_source_execution_policy.v2"
+            or policy.get("manifest_sha256") != manifest_sha):
+        return None
+    policy_order = policy.get("attribution_arm_order")
     if (not isinstance(policy_order, list) or len(policy_order) != 2
             or set(policy_order) != {"candidate", "anchor"}):
-        policy_order = ["candidate", "anchor"]
+        return None
     lease = inflight.get("lease") if isinstance(inflight, dict) else None
     repetition = lease.get("repetition") if isinstance(lease, dict) else None
     if not isinstance(repetition, int) or isinstance(repetition, bool) or repetition < 1:
@@ -4037,6 +4121,12 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     """
     pipeline = {stage: {"id": stage, "label": label, "state": "not_reached"}
                 for stage, label in _DISCOVERY_PIPELINE}
+    # A proof-plan declaration is not evidence that source materialization or
+    # compilation finished.  Post-build receipts become visible only behind
+    # the exact sealed terminal -> materialization chain observed above.
+    if (not isinstance(operation_observation, dict)
+            or operation_observation.get("stage") != "evidence_binding"):
+        postbuild_observation = None
     transitions: list[dict] = []
     started: dict[str, str] = {}
     event_stage = {
@@ -4420,15 +4510,18 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             pipeline["evidence_binding"]["state"] = "complete"
         elif observed_stage in {"build", "evidence_binding"}:
             stage = observed_stage
-            pipeline["source_materialization"]["state"] = "complete"
             pipeline[stage]["started_at"] = operation_observation["started_at"]
             if stage == "evidence_binding":
+                pipeline["source_materialization"]["state"] = "complete"
                 pipeline["build"]["state"] = "complete"
                 label = ("Binding completed builds to the proof plan" if lock_held
                          else "Controller stopped during evidence binding")
                 waiting_on = ("proof-plan binding completion" if lock_held
                               else "evidence-binding recovery audit")
             else:
+                pipeline["source_materialization"]["state"] = "running"
+                pipeline["source_materialization"]["detail"] = (
+                    "build transaction is active; materialization receipt is not sealed")
                 arm = operation_observation.get("arm")
                 build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
                                else "Compiling anchor arm 1 of 2" if arm == "anchor"
