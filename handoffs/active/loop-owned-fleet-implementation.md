@@ -399,6 +399,13 @@ none is an "open item" restated as a question.
   divergent clone to back up). Inode identity re-verified against `/mnt/raid0/llm/` per
   CLAUDE.md. All 3183 relative wiki links now resolve; before this wrap-up, 151 did not.
 
+- [x] **The two recurrence guards are BUILT, not just filed.** ✅ 2026-08-18 — commit `96ccad1a`
+  under operator D9-ack: `REPO-SEQUENCER-STALE` (per-repo abandoned cherry-pick/merge/rebase head,
+  2h threshold — the 3-day research-repo wedge shape) and `RETIRED-LANE-UNMERGED` (`git cherry`
+  patch-id count per retired identity — the mainD 9-stranded-patches shape). Suite 137→159, 30/30
+  pre-existing + 3/3 new mutations caught, real-probe tests against throwaway repos. First live run
+  found and led to porting 19 stranded patches (`10ff9bdf`); lane/mainC + lane/mainD worktrees and
+  branches then removed by explicit path (D7 pattern), so the guard comes up quiet.
 - [ ] **Find out what removed `repos/`.** The likeliest cause is the live `git clean` that
   destroyed `retirements/` earlier today (see P0-7/P3-7 above), which would mean the same
   event cost two things and only one was noticed. Cheap to check against the shell history and
