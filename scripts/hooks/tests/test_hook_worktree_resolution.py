@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import os
 import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -75,6 +74,38 @@ def _stage_and_run(repo: Path, content: str, env: dict | None = None) -> int:
         scratch.unlink(missing_ok=True)
 
 
+def chained_hook_scripts() -> list[str]:
+    """Every script the INSTALLED chain invokes out of $HOOK_SRC_DIR, read from the chain.
+
+    Hard-coding the set is what broke this file. It was written when the chain ran exactly
+    two scripts (pii, hermes_drift); `pre-commit.extras` later added
+    `observer_census_precommit.sh` through the same variable, and the tier-1 stub fixture —
+    which supplies always-allow copies of "the" hook scripts — went on supplying two. The
+    override was resolved perfectly and the run still failed on a missing third file, so the
+    test reported a resolution bug that did not exist. Discovering the set means the next
+    script added to the chain is stubbed automatically instead of failing this file again.
+    """
+    names: set[str] = set()
+    for hook in (INSTALLED_HOOK, INSTALLED_HOOK.with_suffix(".extras")):
+        if not hook.exists():
+            continue
+        text = hook.read_text(encoding="utf-8", errors="replace")
+        names.update(re.findall(r"\$\{?HOOK_SRC_DIR\}?/([A-Za-z0-9_.-]+)", text))
+    return sorted(names)
+
+
+def write_allow_stubs(dest: Path) -> list[str]:
+    """Always-exit-0 stand-ins for the whole chain. Returns what it wrote."""
+    dest.mkdir(parents=True, exist_ok=True)
+    written = chained_hook_scripts()
+    assert written, "no $HOOK_SRC_DIR references found in the installed chain"
+    for name in written:
+        script = dest / name
+        script.write_text("#!/bin/bash\nexit 0\n")
+        script.chmod(0o755)
+    return written
+
+
 @pytest.fixture
 def worktree(tmp_path: Path) -> Iterator[Path]:
     """A real, throwaway --detach worktree of THIS repo, always removed via
@@ -92,8 +123,12 @@ def worktree(tmp_path: Path) -> Iterator[Path]:
             ["git", "-C", str(REPO_ROOT), "worktree", "remove", "--force", str(wt)],
             capture_output=True, text=True,
         )
-        subprocess.run(["git", "-C", str(REPO_ROOT), "worktree", "prune"],
-                        capture_output=True, text=True)
+        # NO `git worktree prune` here. `remove --force` already drops the admin data for
+        # the worktree it removed, and prune is the command that destroyed all five lane
+        # worktrees on 2026-08-12: this repo is reachable at two path depths that name one
+        # directory, so prune reads live worktrees as prunable. A test must never run it —
+        # a fixture teardown is the last place that should be able to delete another
+        # session's lane. (agents/commands/wrap-up.md: "Never `git worktree prune`".)
 
 
 @pytest.fixture
@@ -115,11 +150,7 @@ def test_env_override_wins_over_everything(tmp_path: Path) -> None:
     override is consulted before any git-plumbing resolution runs at all,
     even from a repo with no other relationship to epyc-root."""
     stub_dir = tmp_path / "stubs"
-    stub_dir.mkdir()
-    for name in ("pii_precommit.sh", "hermes_drift_precommit.sh"):
-        script = stub_dir / name
-        script.write_text("#!/bin/bash\nexit 0\n")
-        script.chmod(0o755)
+    write_allow_stubs(stub_dir)      # the WHOLE chain, discovered — see chained_hook_scripts
 
     repo = tmp_path / "unrelated"
     repo.mkdir()
@@ -165,17 +196,39 @@ def test_canonical_is_unaffected_by_the_worktree_local_patch(worktree: Path) -> 
 # ------------------------------------------------ tier 3: common-dir primary tree
 
 
+def _make_sparse(wt: Path) -> None:
+    """Force tier-2 to miss, the way the cascade actually detects it.
+
+    Tier 2 probes for exactly one file — `${repo}/scripts/hooks/pii_precommit.sh`
+    (install_git_hooks.sh) — so removing that file is what makes a worktree "sparse" as far
+    as resolution is concerned.
+
+    These tests used to `rmtree` the whole `scripts/hooks` directory. That over-simulates:
+    `observer_census_precommit.sh`, later added to the chain, checks the committing
+    worktree's observer-registry rows against disk, and two of those rows point INTO
+    scripts/hooks. Deleting the tree made the census fail — correctly, it is a real
+    inconsistency — and the aggregate exit code then carried a complaint from a hook these
+    tests are not about. The clean-content case failed outright, and its sibling passed for
+    the WRONG REASON: it asserts `rc != 0` and was getting non-zero from the census rather
+    than from the resolution path it means to exercise.
+    """
+    (wt / "scripts" / "hooks" / "pii_precommit.sh").unlink()
+
+
 def test_sparse_worktree_falls_back_to_the_common_dir_primary_tree(worktree: Path) -> None:
-    """A worktree missing its own scripts/hooks entirely (sparse checkout)
-    must still correctly scan -- via the git-common-dir fallback to
-    canonical -- not silently no-op because a script path was missing."""
-    shutil.rmtree(worktree / "scripts" / "hooks")
+    """A worktree that cannot serve tier 2 must still scan — via the git-common-dir
+    fallback to canonical — not silently no-op because a script path was missing."""
+    _make_sparse(worktree)
     rc = _stage_and_run(worktree, BAD_BLOB)
     assert rc != 0, "sparse worktree should have fallen back to canonical and blocked"
 
 
 def test_sparse_worktree_fallback_allows_a_clean_commit_too(worktree: Path) -> None:
-    shutil.rmtree(worktree / "scripts" / "hooks")
+    """The other direction: the fallback must not block ordinary content.
+
+    This is the case that catches a fallback which "works" by failing everything.
+    """
+    _make_sparse(worktree)
     rc = _stage_and_run(worktree, "ordinary content")
     assert rc == 0
 
