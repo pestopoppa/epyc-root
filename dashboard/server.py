@@ -3263,6 +3263,7 @@ _DISCOVERY_PIPELINE = (
     ("build", "Compile anchor and candidate"),
     ("evidence_binding", "Bind build to proof plan"),
     ("correctness", "Correctness proof"),
+    ("correctness_validation", "Validate correctness result"),
     ("dispatch_proof", "Dispatch attribution"),
     ("profile", "Kernel profile"),
     ("benchmark", "Whole-model benchmark"),
@@ -3436,9 +3437,112 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
     return matches[0] if len(matches) == 1 else None
 
 
+def _discovery_correctness_observation(operations_root: Path,
+                                       state: dict | None) -> dict | None:
+    """Return an identity-bound completed correctness execution, if present.
+
+    A stdout filename alone is not proof that AutoKernel reached the GPU.  Bind
+    the operation directory to the inflight manifest and operation key, require
+    the sealed evidence policy, then require the operation-scoped release
+    receipt.  The result summary is deliberately narrow: it reports the native
+    backend test total, not the looser ``N/N backends passed`` line which caused
+    the v10 producer parser to reject otherwise completed output.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    if not isinstance(inflight, dict):
+        return None
+    operation_key = inflight.get("operation_key")
+    candidate = inflight.get("candidate")
+    manifest_sha = (candidate.get("source_manifest_sha256")
+                    if isinstance(candidate, dict) else None)
+    if (not isinstance(operation_key, str)
+            or re.fullmatch(r"[0-9a-f]{64}", operation_key) is None
+            or not isinstance(manifest_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None):
+        return None
+    operation = operations_root / operation_key
+    try:
+        if operation.is_symlink() or not operation.is_dir():
+            return None
+    except OSError:
+        return None
+    intent_path = operation / "intent.json"
+    policy_path = operation / "evidence-policy.json"
+    release_path = operation / "reservation-release.json"
+    proof_root = operation / "proof"
+    correctness_root = proof_root / "correctness"
+    try:
+        if any(path.is_symlink() for path in (
+                intent_path, policy_path, release_path, proof_root,
+                correctness_root)):
+            return None
+    except OSError:
+        return None
+    present, intent, error = _read_json_object(
+        intent_path, "GPU source operation intent")
+    if (not present or intent is None or error
+            or intent.get("schema") != "epyc.autokernel.gpu_source_operation.v1"
+            or intent.get("operation_key") != operation_key
+            or intent.get("manifest_sha256") != manifest_sha):
+        return None
+    present, policy, error = _read_json_object(
+        policy_path, "GPU source evidence policy")
+    if (not present or policy is None or error
+            or policy.get("schema") !=
+            "epyc.autokernel.gpu_source_execution_policy.v1"
+            or policy.get("manifest_sha256") != manifest_sha):
+        return None
+    stdout_path = correctness_root / "stdout.txt"
+    try:
+        if (stdout_path.is_symlink() or not stdout_path.is_file()
+                or stdout_path.stat().st_size > 2 * 1024 * 1024):
+            return None
+        raw = stdout_path.read_bytes()
+    except OSError:
+        return None
+    summaries = re.findall(rb"(?m)^\s*(\d+)/(\d+) tests passed\s*$", raw)
+    if len(summaries) != 1:
+        return None
+    passed, total = (int(value) for value in summaries[0])
+    if passed != total or total <= 0:
+        return None
+    present, release, error = _read_json_object(
+        release_path, "GPU source reservation release")
+    claim = release.get("device_claim_released") if isinstance(release, dict) else None
+    if (not present or release is None or error
+            or release.get("schema") !=
+            "epyc.autokernel.gpu_source_reservation_release.v1"
+            or release.get("operation_key") != operation_key
+            or not isinstance(claim, dict)
+            or claim.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
+            or claim.get("purpose") != "AutoKernel GPU source proof and throughput"
+            or not isinstance(claim.get("acquired_at"), str)
+            or not isinstance(claim.get("released_at"), str)):
+        return None
+    started = _parse_semantic_timestamp(claim["acquired_at"])
+    completed = _parse_semantic_timestamp(claim["released_at"])
+    if started is None or completed is None or completed < started:
+        return None
+    return {
+        "stage": "correctness_validation",
+        "state": "execution_complete",
+        "started_at": claim["acquired_at"],
+        "completed_at": claim["released_at"],
+        "elapsed_s": completed - started,
+        "operation_key": operation_key,
+        "device_id": claim.get("device_id"),
+        "claim_id": claim.get("claim_id"),
+        "claim_released": True,
+        "passed": passed,
+        "total": total,
+        "summary": f"{passed}/{total} tests passed",
+    }
+
+
 def _discovery_activity(*, lock_held: bool, state: dict | None,
                         events: list[dict], checkpoint: dict | None,
-                        operation_observation: dict | None, now: float) -> dict:
+                        operation_observation: dict | None,
+                        correctness_observation: dict | None, now: float) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -3551,8 +3655,11 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     checkpoint_at = checkpoint.get("written_at") if checkpoint else None
     operation_at = (operation_observation.get("started_at")
                     if isinstance(operation_observation, dict) else None)
+    correctness_at = (correctness_observation.get("completed_at")
+                      if isinstance(correctness_observation, dict) else None)
     semantic_times = [value for value in
-                      (last_event_at, state_at, checkpoint_at, operation_at)
+                      (last_event_at, state_at, checkpoint_at, operation_at,
+                       correctness_at)
                       if isinstance(value, str)]
     last_progress_at = max(semantic_times) if semantic_times else None
     last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
@@ -3570,19 +3677,38 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         status = "failed"
         observed_stage = (operation_observation.get("stage")
                           if isinstance(operation_observation, dict) else None)
-        stage = (observed_stage if observed_stage in
-                 {"build", "evidence_binding"} else "source_materialization")
-        label = ("Evidence binding failed after completed build"
+        correctness_parse_failed = bool(
+            isinstance(correctness_observation, dict)
+            and failure.get("type") == "EvidenceProducerError"
+            and "correctness stdout" in failure.get("detail", "").lower())
+        stage = ("correctness_validation" if correctness_parse_failed else
+                 observed_stage if observed_stage in {"build", "evidence_binding"}
+                 else "source_materialization")
+        label = ("Correctness result parsing failed after GPU proof"
+                 if stage == "correctness_validation" else
+                 "Evidence binding failed after completed build"
                  if stage == "evidence_binding" else
                  "Source build failed" if stage == "build" else
                  "Source materialization failed")
         waiting_on = "fresh candidate attempt after controller repair"
         recoverability = "ambiguous_checkpoint_requires_fresh_deployment"
         pipeline["source_materialization"]["state"] = (
-            "complete" if stage in {"build", "evidence_binding"} else "failed")
-        if stage == "evidence_binding":
+            "complete" if stage in {"build", "evidence_binding",
+                                    "correctness_validation"} else "failed")
+        if stage in {"evidence_binding", "correctness_validation"}:
             pipeline["build"]["state"] = "complete"
-        if isinstance(operation_observation, dict):
+        if stage == "correctness_validation":
+            pipeline["evidence_binding"]["state"] = "complete"
+            pipeline["correctness"]["state"] = "complete"
+            pipeline["correctness"]["started_at"] = correctness_observation[
+                "started_at"]
+            pipeline["correctness"]["completed_at"] = correctness_observation[
+                "completed_at"]
+            pipeline["correctness"]["elapsed_s"] = correctness_observation[
+                "elapsed_s"]
+            pipeline[stage]["started_at"] = correctness_observation[
+                "completed_at"]
+        elif isinstance(operation_observation, dict):
             pipeline[stage]["started_at"] = operation_observation.get("started_at")
         pipeline[stage]["state"] = "failed"
         pipeline[stage]["completed_at"] = state_at or checkpoint_at
@@ -3590,8 +3716,11 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             "detected": True, "stage": stage,
             "detail": f"{failure['type']}: {failure['detail']}",
             "recovery": "Do not resume this ambiguous operation; launch a fresh sealed deployment after repair.",
-            "source_proof_created": False, "runner_started": False,
-            "gpu_screen_started": False,
+            "source_proof_created": False,
+            "correctness_output_created": stage == "correctness_validation",
+            "runner_started": stage == "correctness_validation",
+            "gpu_screen_started": stage == "correctness_validation",
+            "correctness_execution_completed": stage == "correctness_validation",
         }
     elif validation_event is not None or planner_validation_interrupted:
         status = "failed"
@@ -3759,6 +3888,24 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             "detail": (f"{operation_observation.get('arm') or observed_stage} "
                        f"{operation_observation['build_key'][:12]}…"),
         })
+    if isinstance(correctness_observation, dict):
+        transitions.append({
+            "ts": correctness_observation["completed_at"],
+            "stage": "correctness", "phase": "correctness",
+            "state": "complete", "event": "correctness_execution_complete",
+            "label": (f"GPU correctness execution complete · "
+                      f"{correctness_observation['summary']}"),
+            "detail": (f"claim {str(correctness_observation.get('claim_id'))[:12]}… "
+                       "released"),
+        })
+        if stage == "correctness_validation" and status == "failed":
+            transitions.append({
+                "ts": state_at or correctness_observation["completed_at"],
+                "stage": stage, "phase": stage, "state": "failed",
+                "event": "correctness_validation_failed",
+                "label": "correctness output parser rejected the completed result",
+                "detail": failure_view["detail"],
+            })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
@@ -3780,6 +3927,7 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                       and probe_open.get("released_at") is None
                       and not probe_released)
     gpu_expected = stage in {"correctness", "dispatch_proof", "profile", "benchmark"}
+    historical_gpu_screen = isinstance(correctness_observation, dict)
     abandoned = [row for row in iterations if isinstance(row, dict)
                  and row.get("status") == "abandoned"]
     retest = [row for row in iterations if isinstance(row, dict)
@@ -3795,13 +3943,35 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         "last_progress_at": last_progress_at, "progress_age_s": progress_age,
         "waiting_on": waiting_on, "stall": stall,
         "gpu": {"expected_now": gpu_expected, "claim_held": claim_held,
+                "screen_started": historical_gpu_screen,
+                "claim_released": bool(historical_gpu_screen and
+                                       correctness_observation.get("claim_released")),
                 "detail": (f"MI210 {lease.get('device_id', 'device')} claim is held"
                            if claim_held else
+                           (f"GPU correctness ran for "
+                            f"{correctness_observation['elapsed_s']:.1f}s; "
+                            f"{correctness_observation['summary']}; claim released")
+                           if historical_gpu_screen else
                            "GPU screening was not reached"
                            if stage == "planner_validation" and status == "failed" else
                            "admission probe was released; no GPU screening began"
                            if probe_released else
                            "no identity-bound GPU claim is evidenced")},
+        "correctness": ({
+            "execution_started": True,
+            "execution_completed": True,
+            "validation_passed": False if stage == "correctness_validation"
+            and status == "failed" else None,
+            "started_at": correctness_observation["started_at"],
+            "completed_at": correctness_observation["completed_at"],
+            "elapsed_s": correctness_observation["elapsed_s"],
+            "passed": correctness_observation["passed"],
+            "total": correctness_observation["total"],
+            "summary": correctness_observation["summary"],
+        } if historical_gpu_screen else {
+            "execution_started": False, "execution_completed": False,
+            "validation_passed": None,
+        }),
         "checkpoint": {"available": checkpoint is not None,
                        "kind": "STOP_STATE" if checkpoint else None,
                        "state": checkpoint.get("state") if checkpoint else None,
@@ -3942,9 +4112,12 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     now = time.time()
     build_observation = _discovery_build_observation(
         operations_root, state, config.get("config_sha256"))
+    correctness_observation = _discovery_correctness_observation(
+        operations_root, state)
     activity = _discovery_activity(
         lock_held=lock_held, state=state, events=all_events,
-        checkpoint=checkpoint, operation_observation=build_observation, now=now)
+        checkpoint=checkpoint, operation_observation=build_observation,
+        correctness_observation=correctness_observation, now=now)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])

@@ -197,6 +197,16 @@ admission is shown only after the pending record carries a persisted
 authorization. This prevents a live critic actor from being mislabeled as an
 idle GPU wait.
 
+Post-build proof is likewise identity-bound before it reaches the page. The hub
+accepts a completed correctness execution only when the inflight operation key
+and manifest match the operation intent and evidence policy, the native backend
+summary is present, and the same operation carries its released GPU proof claim.
+This lets a terminal producer-parser failure report `correctness_validation`
+after a completed GPU run (including duration and passed/total), rather than
+falling backward to `evidence_binding` or claiming that GPU screening never ran.
+Dispatch attribution, profiling, and benchmarking remain `not_reached` unless
+their own evidence exists.
+
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
 and strict campaign receipts into
@@ -204,9 +214,18 @@ and strict campaign receipts into
 as `_progression`; it never overwrites terminal `sections`, never mints a
 champion, and requires `promotion_claim: false`. Its top layer is the operator's
 ten-second scan (production anchor, CPU/GPU leaders, direction-correct effect,
-workload, evidence tier, current gate, next action and candidate → strict keep →
-champion → promotable counts). Strategy and unexplored hypotheses form the
-second layer; all former detailed cards remain under **Evidence & diagnostics**.
+workload and candidate → strict keep → champion → promotable counts). Candidate
+cards keep only resource, lever, verdict, effect, and phase/workload exposed;
+regime, gate/next prose, evidence paths/hashes, vectors, and spread live in
+closed per-item disclosures. Pursued and abandoned/retest rows use the same
+compact contract, and historical rows remain closed by default. The current
+phase hero, last producer transition, and short timestamped AutoKernel plus
+planner/critic tails remain visible; full streams, pipeline, checkpoint, full
+timeline, and implementation/readiness diagnostics are closed by default. Poll
+time is labelled as dashboard refresh, never producer progress, while each live
+tail shows the last producer timestamp and age. Strategy and unexplored
+hypotheses form the second layer; all former detailed cards remain under
+**Evidence & diagnostics**.
 When progression is populated but strict champion/headroom/release owners are
 unreported, panel and global health say `degraded`, never `ok` and no longer the
 false `absent`/“nobody is reporting” state.

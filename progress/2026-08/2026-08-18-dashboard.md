@@ -26,3 +26,19 @@
   keeps the hero/pipeline in critic review. Authorization and resource admission
   remain not reached until their own durable boundaries; exact API/DOM coverage
   pins the seq-3 planner-checkpointed state.
+- Live-v10 terminal follow-up: the dashboard now binds the operation intent,
+  evidence policy, native `1139/1139 tests passed` summary, and released proof
+  claim before reporting `correctness_validation` failure. It truthfully shows
+  the 55.4-second GPU correctness execution as complete, the claim as released,
+  and dispatch/profile/benchmark as not reached.
+- Reworked the information hierarchy: current phase essentials, last producer
+  transition, and six-event AutoKernel plus planner/critic pulse tails remain
+  visible. Producer timestamp/age is distinct from the dashboard poll, tails
+  auto-scroll, and full streams/pipeline/checkpoints/history are closed by
+  default. Result cards expose only resource, lever, verdict, effect, and
+  workload; regime, Gate/Next, artifacts, hashes, vectors, and spread are nested
+  in closed per-item details.
+- Added v10-shaped API/DOM, symlink-refusal, live-pulse, auto-scroll, and compact
+  result disclosure coverage. Focused live/static suites pass; the broader
+  unittest dashboard suite passes 225/228 with the same three external-state
+  health failures reproduced unchanged at the base dashboard tip.

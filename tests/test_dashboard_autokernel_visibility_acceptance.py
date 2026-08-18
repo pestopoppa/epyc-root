@@ -100,6 +100,84 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return server.discovery_live_payload()
 
+    def _write_v10_correctness_parser_terminal(self) -> None:
+        """Reproduce the durable v10 boundary, without inventing telemetry."""
+        manifest_sha = "b" * 64
+        proposal_sha = "c" * 64
+        operation_key = "8" * 64
+        build_key = "d" * 64
+        acquired_at = _iso(60)
+        released_at = _iso(5)
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": _iso(2), "next": 1, "complete": False,
+            "iterations": [],
+            "inflight": {
+                "operation_key": operation_key,
+                "candidate": {
+                    "source_manifest_sha256": manifest_sha,
+                    "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                },
+                "row": {
+                    "proposal_sha256": proposal_sha,
+                    "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                },
+                "lease": {"admitted": True, "device_id": "mi210_0"},
+                "exception": {
+                    "type": "EvidenceProducerError",
+                    "message": "correctness stdout must contain exactly one summary",
+                },
+            },
+        }))
+        entry = self.operations / "build-cache/entries" / build_key
+        entry.mkdir(parents=True)
+        (entry / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key,
+            "build_contract": {
+                "build_key": build_key,
+                "patch_bundle_sha256": manifest_sha,
+                "proposal_sha256": proposal_sha,
+                "deployment_config_sha256": "a" * 64,
+            },
+        }))
+        (entry / "terminal.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "build_key": build_key,
+            "state": "complete",
+        }))
+        build_completed = datetime.fromisoformat(
+            acquired_at.replace("Z", "+00:00")).timestamp() - 1
+        os.utime(entry / "terminal.json", (build_completed, build_completed))
+        operation = self.operations / operation_key
+        (operation / "proof/correctness").mkdir(parents=True)
+        (operation / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_operation.v1",
+            "operation_key": operation_key,
+            "manifest_sha256": manifest_sha,
+        }))
+        (operation / "evidence-policy.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_execution_policy.v1",
+            "manifest_sha256": manifest_sha,
+        }))
+        (operation / "proof/correctness/stdout.txt").write_text(
+            "Testing 2 devices\n  1139/1139 tests passed\n"
+            "  Backend ROCm0: OK\nBackend 2/2: CPU\n  Skipping\n"
+            "2/2 backends passed\nOK\n")
+        (operation / "proof/correctness/stderr.txt").write_text(
+            "ggml_cuda_init: found 1 ROCm devices\n")
+        (operation / "reservation-release.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_reservation_release.v1",
+            "operation_key": operation_key,
+            "device_claim_released": {
+                "schema": "epyc.autokernel.device_claim_receipt.v1",
+                "claim_id": "akd-v10-correctness",
+                "device_id": "mi210_0",
+                "purpose": "AutoKernel GPU source proof and throughput",
+                "acquired_at": acquired_at,
+                "released_at": released_at,
+            },
+        }))
+
     def test_active_precheckpoint_planner_answers_the_operator_questions(self) -> None:
         self._write_events([_event("planner_started", seconds_ago=95)])
 
@@ -398,6 +476,56 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "build_transaction_complete")
 
+    def test_v10_correctness_parser_failure_preserves_completed_gpu_execution(self) -> None:
+        self._write_v10_correctness_parser_terminal()
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "correctness_validation")
+        self.assertEqual(activity["phase"]["label"],
+                         "Correctness result parsing failed after GPU proof")
+        self.assertEqual(activity["failure"]["stage"], "correctness_validation")
+        self.assertTrue(activity["failure"]["gpu_screen_started"])
+        self.assertTrue(activity["failure"]["correctness_execution_completed"])
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertTrue(activity["gpu"]["screen_started"])
+        self.assertTrue(activity["gpu"]["claim_released"])
+        self.assertIn("1139/1139 tests passed", activity["gpu"]["detail"])
+        self.assertEqual(activity["correctness"]["summary"],
+                         "1139/1139 tests passed")
+        self.assertTrue(activity["correctness"]["execution_completed"])
+        self.assertFalse(activity["correctness"]["validation_passed"])
+        self.assertGreaterEqual(activity["correctness"]["elapsed_s"], 54)
+        self.assertLessEqual(activity["correctness"]["elapsed_s"], 56)
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        for stage in ("source_materialization", "build", "evidence_binding",
+                      "correctness"):
+            self.assertEqual(pipeline[stage]["state"], "complete", stage)
+        self.assertEqual(pipeline["correctness_validation"]["state"], "failed")
+        for stage in ("dispatch_proof", "profile", "benchmark", "decision"):
+            self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        self.assertEqual(activity["transitions"][-2]["event"],
+                         "correctness_execution_complete")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "correctness_validation_failed")
+
+    def test_correctness_observation_rejects_a_symlinked_release_receipt(self) -> None:
+        self._write_v10_correctness_parser_terminal()
+        operation = self.operations / ("8" * 64)
+        release = operation / "reservation-release.json"
+        outside = Path(self.temp.name) / "outside-release.json"
+        outside.write_bytes(release.read_bytes())
+        release.unlink()
+        release.symlink_to(outside)
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertFalse(activity["gpu"]["screen_started"])
+        self.assertFalse(activity["correctness"]["execution_started"])
+        self.assertNotEqual(activity["phase"]["id"], "correctness_validation")
+
     def test_terminal_source_materialization_failure_is_not_idle_or_resumable(self) -> None:
         self._write_events([
             _event("planner_started", seconds_ago=240),
@@ -597,7 +725,8 @@ const fs = require("fs");
 const input = JSON.parse(fs.readFileSync(0, "utf8"));
 const elements = new Map();
 for (const id of input.ids) elements.set(id, {
-  id, textContent: "", innerHTML: "", className: "", style: {}
+  id, textContent: "", innerHTML: "", className: "", style: {},
+  scrollTop: 0, scrollHeight: 100
 });
 global.document = {
   querySelector: selector => selector.startsWith("#")
@@ -611,7 +740,8 @@ eval(input.source + "\nrenderLive(payload);");
 const out = {};
 for (const [id, node] of elements) out[id] = {
   textContent: node.textContent, innerHTML: node.innerHTML,
-  className: node.className
+  className: node.className, scrollTop: node.scrollTop,
+  scrollHeight: node.scrollHeight
 };
 process.stdout.write(JSON.stringify(out));
 '''
@@ -638,6 +768,27 @@ process.stdout.write(JSON.stringify(out));
             "the large progression abandoned/retest wall needs its own disclosure")
         self.assertNotRegex("".join(progression.groups()), r"\bopen\b",
                             "progression abandoned/retest rows must be collapsed")
+        for detail_id in ("ak-live-details", "ak-live-full-details",
+                          "planner-live-full-details"):
+            disclosure = re.search(
+                rf"<details\b([^>]*)\bid=\"{detail_id}\"([^>]*)>", html, re.I)
+            self.assertIsNotNone(disclosure, f"missing {detail_id} disclosure")
+            self.assertNotRegex("".join(disclosure.groups()), r"\bopen\b",
+                                f"{detail_id} must be collapsed by default")
+        live_panel = re.search(
+            r'<section class="panel" id="autokernel-live-panel">(.*?)</section>',
+            html, re.S)
+        self.assertIsNotNone(live_panel)
+        self.assertLess(live_panel.group(1).index('id="ak-live-log"'),
+                        live_panel.group(1).index('id="ak-live-full-details"'),
+                        "compact AutoKernel tail must remain outside its disclosure")
+        actor_panel = re.search(
+            r'<section class="panel" id="planner-live-panel">(.*?)</section>',
+            html, re.S)
+        self.assertIsNotNone(actor_panel)
+        self.assertLess(actor_panel.group(1).index('id="planner-live-log"'),
+                        actor_panel.group(1).index('id="planner-live-full-details"'),
+                        "compact actor tail must remain outside its disclosure")
 
         payload = {
             "active": True,
@@ -679,22 +830,99 @@ process.stdout.write(JSON.stringify(out));
         nodes = self._render_live(payload)
         summary = nodes["ak-live-summary"]["textContent"] + nodes[
             "ak-live-summary"]["innerHTML"]
+        detail_meta = nodes["ak-live-detail-meta"]["innerHTML"]
+        last_transition = nodes["ak-live-last-transition"]["innerHTML"]
         timeline = nodes["ak-live-timeline"]["textContent"] + nodes[
             "ak-live-timeline"]["innerHTML"]
         history_summary = nodes["ak-live-history-summary"]["textContent"]
         history_rows = nodes["ak-live-history-rows"]["textContent"] + nodes[
             "ak-live-history-rows"]["innerHTML"]
 
-        for token in ("Planning", "healthy", "planner model response", "GPU",
-                      "not expected", "No completed durable checkpoint"):
+        for token in ("Planning", "GPU", "not expected"):
             self.assertIn(token.lower(), summary.lower())
+        for token in ("healthy", "planner model response",
+                      "No completed durable checkpoint"):
+            self.assertIn(token.lower(), detail_meta.lower())
         self.assertRegex(summary, r"(?i)(95\s*s|1\s*m(?:in)?\s*35)",
                          "phase elapsed time is not visibly rendered")
         self.assertIn("Planner started", timeline)
+        self.assertIn("Planner started", last_transition)
         self.assertIn("2 abandoned", history_summary)
         self.assertIn("1 retest", history_summary)
         self.assertIn("akh-old-a", history_rows)
         self.assertIn("akh-retest", history_rows)
+
+    def test_live_pulse_tail_stays_visible_but_full_stream_and_detail_collapse(self) -> None:
+        events = [
+            {"ts": f"2026-08-18T19:5{i}:00Z", "channel": "planner",
+             "event": f"producer_event_{i}", "hypothesis_id": "akh-q5",
+             "model": "gpt-5.6-sol"}
+            for i in range(8)
+        ]
+        events[-1] = {
+            "ts": "2026-08-18T19:58:00Z", "channel": "autokernel",
+            "event": "critic_completed", "hypothesis_id": "akh-q5",
+            "model": "claude-fable-5", "result": {"decision": "accept"},
+        }
+        payload = {
+            "active": True, "deployment": "campaign-pulse",
+            "dashboard_observed_at": "2026-08-18T20:00:00Z",
+            "status_message": "STALLED — critic",
+            "autokernel_log": events, "planner_log": events[:-1],
+            "_freshness": {"staleness_class": "aging"},
+            "activity": {
+                "status": "stalled", "last_progress_at": "2026-08-18T19:58:00Z",
+                "progress_age_s": 120,
+                "phase": {"id": "critic", "label": "Critic review",
+                          "elapsed_s": 240},
+                "hypothesis_id": "akh-q5", "turn": 1,
+                "waiting_on": "hidden critic method detail",
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "GPU not expected during critic"},
+                "correctness": {"execution_started": False},
+                "checkpoint": {"available": True,
+                               "state": "hidden-checkpoint-state"},
+                "stall": {"state": "stalled", "detail": "hidden stall prose"},
+                "failure": {"detected": False},
+                "resume": {"required": False, "possible": True},
+                "pipeline": [{"id": "critic", "label": "hidden pipeline row",
+                              "state": "running"}],
+                "transitions": [
+                    {"ts": "2026-08-18T19:58:00Z", "phase": "critic",
+                     "event": "critic_completed", "label": "last visible transition"},
+                ],
+                "history": {"summary": "1 abandoned · 0 retest",
+                            "rows": [{"turn": 0, "hypothesis_id": "hidden-history-row",
+                                      "status": "abandoned"}]},
+            },
+        }
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        last = nodes["ak-live-last-transition"]["innerHTML"]
+        detail = nodes["ak-live-detail-meta"]["innerHTML"]
+        compact = nodes["ak-live-log"]["textContent"]
+        actor = nodes["planner-live-log"]["textContent"]
+        full = nodes["ak-live-log-full"]["textContent"]
+
+        for token in ("STALLED", "Critic review", "4 min", "akh-q5",
+                      "Turn", "GPU", "no claim"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("last visible transition", last)
+        for hidden in ("hidden critic method detail", "hidden-checkpoint-state",
+                       "hidden stall prose"):
+            self.assertNotIn(hidden, summary)
+            self.assertIn(hidden, detail)
+        self.assertIn("producer last 2026-08-18T19:58:00Z · age 2 min", compact)
+        self.assertIn("dashboard poll 2026-08-18T20:00:00Z (not producer progress)",
+                      compact)
+        self.assertNotIn("producer_event_0", compact)
+        self.assertIn("producer_event_2", compact)
+        self.assertIn("producer_event_0", full)
+        self.assertIn("critic_completed", actor)
+        for node_id in ("ak-live-log", "planner-live-log", "ak-live-log-full",
+                        "planner-live-log-full"):
+            self.assertEqual(nodes[node_id]["scrollTop"],
+                             nodes[node_id]["scrollHeight"], node_id)
 
     def test_planner_validation_interruption_is_visible_in_hero_and_pipeline(self) -> None:
         payload = {
@@ -795,15 +1023,90 @@ process.stdout.write(JSON.stringify(out));
         nodes = self._render_live(payload)
         summary = nodes["ak-live-summary"]["innerHTML"]
         pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+        detail_meta = nodes["ak-live-detail-meta"]["innerHTML"]
 
         for token in ("running", "campaign-v8", "Critic review",
-                      "critic review completion", "akh-v2-q5-type-specific-dequant",
-                      "not expected now", "discovery_planner_checkpointed"):
+                      "akh-v2-q5-type-specific-dequant", "not expected now"):
             self.assertIn(token.lower(), summary.lower())
+        for token in ("critic review completion", "discovery_planner_checkpointed"):
+            self.assertIn(token.lower(), detail_meta.lower())
         self.assertIn("Critic review", pipeline)
         self.assertIn("running", pipeline)
         self.assertIn("Resource admission", pipeline)
         self.assertIn("not_reached", pipeline)
+
+    def test_v10_correctness_parser_terminal_is_visible_in_hero_and_pipeline(self) -> None:
+        payload = {
+            "active": False,
+            "deployment": "gpu-discovery-quant-ladder-occupancy-v10",
+            "activity": {
+                "status": "failed",
+                "phase": {"id": "correctness_validation",
+                          "label": "Correctness result parsing failed after GPU proof",
+                          "elapsed_s": 2},
+                "waiting_on": "fresh candidate attempt after controller repair",
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "screen_started": True, "claim_released": True,
+                        "detail": ("GPU correctness ran for 55.4s; "
+                                   "1139/1139 tests passed; claim released")},
+                "correctness": {"execution_started": True,
+                                "execution_completed": True,
+                                "validation_passed": False,
+                                "summary": "1139/1139 tests passed",
+                                "elapsed_s": 55.4},
+                "checkpoint": {"available": True,
+                               "state": "discovery_screen_ambiguous"},
+                "stall": {"state": "failed",
+                          "detail": ("EvidenceProducerError: correctness stdout "
+                                     "must contain exactly one summary")},
+                "resume": {"required": True, "possible": False,
+                           "detail": "Cannot resume this ambiguous inflight operation"},
+                "failure": {"detected": True,
+                            "stage": "correctness_validation",
+                            "detail": ("EvidenceProducerError: correctness stdout "
+                                       "must contain exactly one summary"),
+                            "recovery": "Launch a fresh sealed deployment after repair"},
+                "pipeline": [
+                    {"id": "source_materialization",
+                     "label": "Source validation / materialization", "state": "complete"},
+                    {"id": "build", "label": "Compile anchor and candidate",
+                     "state": "complete"},
+                    {"id": "evidence_binding", "label": "Bind build to proof plan",
+                     "state": "complete"},
+                    {"id": "correctness", "label": "Correctness proof",
+                     "state": "complete"},
+                    {"id": "correctness_validation",
+                     "label": "Validate correctness result", "state": "failed"},
+                    {"id": "dispatch_proof", "label": "Dispatch attribution",
+                     "state": "not_reached"},
+                    {"id": "profile", "label": "Kernel profile",
+                     "state": "not_reached"},
+                    {"id": "benchmark", "label": "Whole-model benchmark",
+                     "state": "not_reached"},
+                ],
+                "transitions": [],
+                "history": {"summary": "0 abandoned · 0 retest", "rows": []},
+            },
+            "autokernel_log": [], "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+
+        for token in (
+                "FAILED", "Correctness result parsing failed after GPU proof",
+                "EvidenceProducerError", "correctness stdout must contain exactly one summary",
+                "GPU correctness", "execution complete", "1139/1139 tests passed",
+                "claim released", "not expected now"):
+            self.assertIn(token.lower(), summary.lower(), token)
+        for token in (
+                "Source validation / materialization", "Compile anchor and candidate",
+                "Bind build to proof plan", "Correctness proof", "complete",
+                "Validate correctness result", "failed", "Dispatch attribution",
+                "Kernel profile", "Whole-model benchmark", "not_reached"):
+            self.assertIn(token.lower(), pipeline.lower(), token)
 
     def test_failed_campaign_and_newer_unlaunched_bundle_render_separately(self) -> None:
         payload = {
@@ -849,13 +1152,16 @@ process.stdout.write(JSON.stringify(out));
         nodes = self._render_live(payload)
         summary = nodes["ak-live-summary"]["textContent"] + nodes[
             "ak-live-summary"]["innerHTML"]
+        detail_meta = nodes["ak-live-detail-meta"]["innerHTML"]
         for token in ("failed", "Source materialization failed",
-                      "SourceCandidateError", "discovery_screen_ambiguous",
+                      "SourceCandidateError",
                       "Cannot resume", "GPU screening was not reached",
-                      "Repair source declaration", "campaign-v5",
+                      "Repair source declaration", "campaign-v5"):
+            self.assertIn(token.lower(), summary.lower())
+        for token in ("discovery_screen_ambiguous",
                       "Available next deployment", "campaign-v6",
                       "sealed, not launched"):
-            self.assertIn(token.lower(), summary.lower())
+            self.assertIn(token.lower(), detail_meta.lower())
 
 
 if __name__ == "__main__":

@@ -330,8 +330,21 @@ renderProgression({{
       {{lane: "GPU", candidate: "MFMA", workload: "MI210 prefill pp512",
         metric: "prefill_tokens_per_s", effect_fraction: .26, evidence_tier: "screening",
         stage: "candidate", transition: "ON → OFF", confidence: "HIP resident",
-        current_gate: "strict", next_action: "confirm", evidence: []}}
-    ], strategy: {{pursued: [], accepted: [], abandoned: []}}, unexplored: []}}
+        current_gate: "strict-hidden-gate", next_action: "hidden-next-action",
+        regime: {{architecture: "gfx90a", quant: "Q4_K"}},
+        replication_effects: [.25,.27], spread_fraction: .02,
+        evidence: [{{path: "/hidden/top-result.json", file_sha256: "abcdef1234567890"}}]}}
+    ], strategy: {{pursued: [
+      {{lane: "GPU", candidate: "pursued-lever", workload: "decode tg128",
+        metric: "decode_tokens_per_s", effect_fraction: .02, stage: "inconclusive",
+        current_gate: "pursued-hidden-gate", next_action: "pursued-hidden-next",
+        evidence: [{{path: "/hidden/pursued.json", file_sha256: "bb"}}]}}
+    ], accepted: [], abandoned: [
+      {{lane: "GPU", candidate: "abandoned-lever", workload: "decode tg128",
+        metric: "decode_tokens_per_s", effect_fraction: -.12, stage: "screened_out",
+        current_gate: "abandoned-hidden-gate", next_action: "none",
+        evidence: [{{path: "/hidden/abandoned.json", file_sha256: "cc"}}]}}
+    ]}}, unexplored: []}}
 }});
 const html=__box.innerHTML;
 for (const expected of ["CPU lane", "GPU lane", "Prompt processing",
@@ -341,6 +354,25 @@ for (const expected of ["CPU lane", "GPU lane", "Prompt processing",
 }}
 if (html.includes("CPU leader") || html.includes("GPU leader")) {{
   throw new Error("ambiguous lane-only leader label remains");
+}}
+const detailTags=[...html.matchAll(/<details class="result-detail"([^>]*)>/g)];
+if(detailTags.length<5) throw new Error("result rows do not carry per-item details");
+if(detailTags.some(m=>/\bopen\b/.test(m[1]))) throw new Error("result detail expanded by default");
+const topStart=html.indexOf('<div class="winner-card"><div><b>GPU · MFMA');
+const topEnd=html.indexOf('</div>',html.indexOf('</details>',topStart))+6;
+const top=html.slice(topStart,topEnd), detailAt=top.indexOf('<details class="result-detail">');
+for(const headline of ["GPU · MFMA","candidate","+26.0%","Prompt processing","MI210 prefill pp512"]) {{
+  const at=top.indexOf(headline);
+  if(at<0||at>detailAt) throw new Error("headline hidden in disclosure: "+headline);
+}}
+for(const hidden of ["strict-hidden-gate","hidden-next-action","/hidden/top-result.json",
+                     "abcdef1234567890","gfx90a","[0.25,0.27]","0.02"]) {{
+  const at=top.indexOf(hidden);
+  if(at<detailAt) throw new Error("diagnostic leaked into headline: "+hidden);
+}}
+const abandonedTag=html.match(/<details id="ak-progression-abandoned"([^>]*)>/);
+if(!abandonedTag||/\bopen\b/.test(abandonedTag[1])) {{
+  throw new Error("abandoned/retest history must stay collapsed by default");
 }}
 '''
         proc = subprocess.run(
