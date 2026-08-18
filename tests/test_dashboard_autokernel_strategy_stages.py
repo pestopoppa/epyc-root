@@ -153,7 +153,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                       arm_order_schedule=["candidate", "anchor"])
         decided = self._active()["activity"]
         self.assertEqual(decided["phase"]["id"], expected[5])
-        self.assertEqual(decided["stage_contract"]["replication"], "S1")
+        self.assertIsNone(decided["stage_contract"]["replication"])
         self.assertEqual(decided["stage_contract"]
                          ["target_runtime_effect_fraction"], 0.025)
         self.assertEqual(decided["stage_contract"]["dual_decision_state"],
@@ -268,6 +268,10 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
 
     def test_replication_two_is_explicit_and_counterbalanced_order_is_preserved(self) -> None:
         self._write_state(repetition=2)
+        state_path = self.state_root / "state.json"
+        state = json.loads(state_path.read_text())
+        state["inflight"]["confirmation"] = True
+        state_path.write_text(json.dumps(state))
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
                       status="complete", result="PASS")
@@ -333,6 +337,17 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
         self.assertEqual(pipeline["replication_s1"], "complete")
         self.assertEqual(pipeline["replication_s2"], "waiting")
+
+    def test_s1_runs_only_after_a_persisted_inflight_decision(self) -> None:
+        state_path = self.state_root / "state.json"
+        state = json.loads(state_path.read_text())
+        state["inflight"]["result"] = {"result_sha256": "f" * 64}
+        state_path.write_text(json.dumps(state))
+        activity = self._active()["activity"]
+        self.assertEqual(activity["stage_contract"]["replication"], "S1")
+        pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
+        self.assertEqual(pipeline["replication_s1"], "running")
+        self.assertEqual(pipeline["replication_s2"], "not_reached")
 
     def test_screened_checkpoint_resumes_into_automatic_next_hypothesis(self) -> None:
         (self.state_root / "state.json").write_text(json.dumps({

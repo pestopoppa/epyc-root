@@ -4595,37 +4595,58 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                  if isinstance(postbuild_observation, dict) else None)
     if arm_order is None:
         arm_order = latest_result.get("arm_order_schedule")
-    repetition = (postbuild_observation.get("repetition")
-                  if isinstance(postbuild_observation, dict) else None)
     iteration_repetition = (latest_iteration.get("repetition")
                             if isinstance(latest_iteration, dict) else None)
-    if (repetition is None and isinstance(iteration_repetition, int)
-            and not isinstance(iteration_repetition, bool)
-            and iteration_repetition in {1, 2}):
-        repetition = iteration_repetition
+    iteration_decision = bool(
+        isinstance(latest_iteration, dict)
+        and isinstance(latest_iteration.get("result_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}",
+                         latest_iteration["result_sha256"]) is not None
+        and isinstance(iteration_repetition, int)
+        and not isinstance(iteration_repetition, bool)
+        and iteration_repetition in {1, 2})
     pending_confirmation = bool(
         isinstance(pending, dict) and pending.get("confirmation") is True)
+    inflight_confirmation = bool(
+        isinstance(inflight, dict) and inflight.get("confirmation") is True)
+    inflight_result = (inflight.get("result")
+                       if isinstance(inflight, dict) else None)
+    inflight_decision = bool(
+        isinstance(inflight_result, dict)
+        and isinstance(inflight_result.get("result_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}",
+                         inflight_result["result_sha256"]) is not None)
+    permit_repetition = (lease.get("repetition")
+                         if isinstance(lease, dict) else None)
+    if (not isinstance(permit_repetition, int)
+            or isinstance(permit_repetition, bool)
+            or permit_repetition not in {1, 2}):
+        permit_repetition = 2 if inflight_confirmation else 1
+    repetition = (
+        iteration_repetition if iteration_decision else
+        2 if pending_confirmation or inflight_confirmation else
+        permit_repetition if inflight_decision else None)
     latest_is_replication = bool(
-        repetition == 2 or isinstance(latest_iteration, dict)
+        iteration_decision and iteration_repetition == 2
+        or isinstance(latest_iteration, dict)
         and isinstance(latest_iteration.get("replication_of"), str))
-    if repetition is None and pending_confirmation:
-        repetition = 2
-    elif repetition is None and latest_is_replication:
-        repetition = 2
-    if repetition == 2 or pending_confirmation or latest_is_replication:
+    if (iteration_decision and iteration_repetition == 2
+            or pending_confirmation or inflight_confirmation
+            or latest_is_replication):
         pipeline["replication_s1"]["state"] = "complete"
-    if repetition == 1:
+    elif iteration_decision and iteration_repetition == 1:
+        pipeline["replication_s1"]["state"] = "complete"
+    elif inflight_decision and permit_repetition == 1:
         pipeline["replication_s1"]["state"] = (
-            "interrupted" if status == "stopped" else
-            "complete" if stage in {"decision", "next_hypothesis"}
-            and pipeline["decision"]["state"] == "complete" else "running")
+            "interrupted" if status == "stopped" else "running")
     if pending_confirmation:
+        pipeline["replication_s2"]["state"] = "waiting"
+    elif inflight_confirmation:
         pipeline["replication_s2"]["state"] = (
-            "waiting" if not lock_held else "running")
-    elif repetition == 2:
+            "interrupted" if status == "stopped" else "running")
+    elif iteration_decision and iteration_repetition == 2:
         pipeline["replication_s2"]["state"] = (
-            "complete" if latest_is_replication and not isinstance(inflight, dict)
-            else "interrupted" if status == "stopped" else "running")
+            "complete" if latest_is_replication else "not_reached")
     first_incomplete = (latest_result.get("first_incomplete_stage") or
                         (postbuild_observation.get("first_incomplete_stage")
                          if isinstance(postbuild_observation, dict) else stage))

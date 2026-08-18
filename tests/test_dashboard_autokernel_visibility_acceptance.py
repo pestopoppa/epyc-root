@@ -506,6 +506,9 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(pipeline["correctness_validation"]["state"], "failed")
         for stage in ("dispatch_proof", "profile", "benchmark", "decision"):
             self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        for stage in ("replication_s1", "replication_s2"):
+            self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        self.assertIsNone(activity["stage_contract"]["replication"])
         self.assertEqual(activity["transitions"][-2]["event"],
                          "correctness_execution_complete")
         self.assertEqual(activity["transitions"][-1]["event"],
