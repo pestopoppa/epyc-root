@@ -573,3 +573,46 @@ Measurement](../handoffs/active/fleet-fanout-measurement.md) stub's FM-2 task fo
 - [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — FM-2, the planned pilot run
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
+
+## Compiled Update — 2026-08-18: the edit format is a real lever, but the headline is measured against the broken baseline
+
+An agent's **edit tool** — the format in which a model expresses a code change — moves coding pass
+rate by more than most model upgrades, holding model and prompt fixed. The claim is real. Three of
+its four popular framings are not, and the difference matters for anyone choosing a format.
+
+**The three formats in the field.** `apply_patch` (OpenAI/Codex) takes a diff blob validated against
+strict unstated rules; models not tuned to it fail catastrophically — measured patch-failure rates of
+**99.3%** (Grok Code Fast 1), 50.7% (Grok 4), 46.2% (GLM-4.7). `str_replace` (Claude Code and most
+others) requires perfect character-level reproduction including whitespace, and rejects multiple
+matches. Cursor trained a **70B model** whose only job is merging a draft edit into a file — the
+problem is hard enough that a well-funded lab threw a second model at it.
+
+**What actually replicates.** Against `apply_patch`, a line-anchored format is worth a mean **+19.4 pp**
+across 19 models (17/19, two-sided sign p=0.0007) — an enormous, robust effect. Against `str_replace`,
+the realistic baseline, the same published runs give a mean of **+2.97 pp** (14/19, p=0.064), with four
+models outright worse. **The 10× headline is a patch-baseline artifact for one model.** Cite the
+delta-vs-`str_replace` column, or name the baseline every time.
+
+**Line numbers are contested, and the field moved against them.** Cursor names line-number emission as
+a *tokenizer-level* failure mode — a digit run tokenized as a single token forces the model to commit
+to a line number in one forward pass — and adopted aider's search/replace blocks specifically to
+eliminate it. aider's unified diffs likewise carry no line numbers. Both predate content-hash anchoring.
+
+**The strongest evidence that per-line content hashes are not the answer is that their author dropped
+them.** `hashline` originally tagged every line with a short content hash (`2:f1|  return "world";`),
+which is the format every published benchmark measures. Three months later it shipped **one file-level
+4-hex tag plus plain line numbers** — i.e. it moved *toward* the thing Cursor and aider both avoid, and
+never re-benchmarked. A file-level tag is also just whole-file optimistic concurrency, which most apply
+paths (ours included, via `current_shas`) already have.
+
+**The pairing rule, which is easy to miss.** A format change without a matching *tolerant applier* is a
+different intervention: disabling flexible patching produced a **9× increase in editing errors** on
+aider's own benchmark. Format and applier are one design, not two.
+
+### Source References
+
+- `research/intake_index.yaml` intake-1148, intake-1150 (oh-my-pi / hashline and its benchmark — dive records, including the abandonment timeline at commits `30793c165`/`7c6457652`)
+- `research/intake_index.yaml` intake-1153 (Cursor, *Editing Files at 1000 Tokens per Second*) and intake-1154 (aider, *Unified diffs make GPT-4 Turbo 3X less lazy*) — the two independent line-number arguments and the 9× pairing measurement
+- `research/intake_index.yaml` intake-1151 (Diff-XYZ, JetBrains) — the independent academic cross-format comparison; note it is single-turn and disclaims production prediction
+- [Batched edit / parallel apply](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6 (the granularity finding) and BEP-7 (the two external rules)
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

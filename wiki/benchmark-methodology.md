@@ -2312,3 +2312,47 @@ exhaustion, at a fraction of the cost, and it re-does only what fails.
 - `progress/2026-08/2026-08-12.md` — all five constants and all four faces, with measurements
 - `handoffs/active/architect-model-selection-bench.md` — the `-fa`, quant and token-count findings
 - `handoffs/active/shape-keyed-contention-gating.md` — host-health provenance and the timeout-laundering fix
+
+## Compiled Update — 2026-08-18: two external checks on what a static suite can settle
+
+**Static code benchmarks barely rank-correlate with in-the-wild developer preference.** Copilot Arena
+collected 11,604 pairwise judgements from 1,642 developers over 4.5M served suggestions inside a real
+IDE, then rank-correlated its leaderboard against existing ones: **Spearman 0.62** with Chatbot Arena
+(coding), **0.48** with Chatbot Arena (general), and **≤0.1 with most static benchmarks**. The authors
+read this as static suites missing something real.
+
+**Carry the counter-reading with the number.** Low correlation is equally consistent with *preference*
+being confounded — by latency, verbosity and style — rather than with static suites being wrong; the
+paper's own reference list cites the RLHF length-correlation result. And it measures neither
+correctness nor throughput, which is what our suites actually gate. The usable conclusion is narrow and
+worth holding: **a single static suite settles less about model ranking than its resolution suggests**,
+which is a restatement of our own saturation and scorer-artifact findings from an outside direction.
+
+**The single-shot n=60 lesson, from auditing a benchmark that got its arithmetic right.** A widely-cited
+harness benchmark reported "3 runs per task, 180 tasks per run". Its own 134 published run reports all
+record **n=60 tasks**, and the headline comparisons record `Runs per task = 1` — single-shot, no
+repetition, no variance estimate. The 180 is 60 tasks × 3 runs restated as tasks. Its *numbers* were
+reproducible to the decimal; its *protocol description* was not.
+
+**The noise floor is recoverable even when the author does not report one.** That benchmark repeated 22
+identical configurations. Median test-retest spread **3.75 pp**, mean 5.9 pp, **max 17.8 pp** (one config
+spanning 39.4–57.2 across five runs). Binomial 95% CI at n=60 is ±11–13 pp on a single arm and ±15.5–17.9 pp
+on an unpaired two-arm difference. Any published delta below roughly 15 pp on that instrument is inside
+its own noise — which is how a +2.97 pp headline effect and a +19.4 pp one get told apart without
+re-running anything. **When a source repeats a config, compute its noise floor from those repeats before
+believing any of its deltas.**
+
+**Corollary on second-hand figures.** Three prior-art citations in that same source were checked against
+their primaries: one swapped the two models it was comparing, one attributed to a vendor blog a sentence
+that is not in it (it matches a third-party issue title), and one could not be located at all. The
+source's own measurements were sound. **Citation-checking and measurement-checking are separate passes
+and a source can pass one while failing the other.**
+
+### Source References
+
+- `research/intake_index.yaml` intake-1156 (Copilot Arena, arXiv:2502.09328) — rank-correlation figures and deployment scale
+- `research/intake_index.yaml` intake-1150 (the harness benchmark) — protocol overturn, the 22 repeated configs, and the recomputed noise floor
+- `research/intake_index.yaml` intake-1152 (EDIT-Bench, arXiv:2511.04486) and intake-1157 (CanItEdit, arXiv:2312.12450) — independent judge-free edit benchmarks; both score by hidden execution tests, no LLM judge in the path
+- [Architect model selection bench](../handoffs/active/architect-model-selection-bench.md) — CAL-1, where the rank-correlation prior is recorded
+- [Canonical judge suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-7a–d, the judge-free suite designs derived from this cohort
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

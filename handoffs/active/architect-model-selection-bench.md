@@ -396,6 +396,18 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
   The row's "→ the model registry" leg is satisfied by verification, not by an edit — the registry
   is what the roadmap has drifted FROM.
 
+- [ ] **CAL-1 — external calibration input: static code benchmarks barely rank-correlate with
+  in-the-wild preference** (intake-1156, Copilot Arena, arXiv:2502.09328, dive-verified 2026-08-18).
+  Spearman rank correlation against real IDE developer preference: **0.62** (Chatbot Arena coding),
+  **0.48** (Chatbot Arena general), **≤0.1 with most static benchmarks** — over 4.5M suggestions,
+  11,604 votes, 1,642 users, 10 models. Directly relevant here because this handoff ranks arms on
+  static suites. **Carry the counter-reading with the number, always:** low correlation is equally
+  consistent with preference tracking latency, style and verbosity rather than with static suites
+  being wrong, and the paper's own reference list cites the RLHF length-correlation result.
+  **Explicitly NOT a licence to distrust our suites** — ours gate correctness and throughput, which
+  this paper measures neither of. The task is to record the prior in this handoff's methodology
+  notes; **it changes no gate and no arm ranking.**
+
 ## R4 — OlympiadBench-numeric SATURATES too (adapter design flaw, not the ceiling-breaker claimed)
 A1 122B-IQ2 = **89.3% (134/150)** on `olympiadbench_numeric` — *higher* than its AIME'25 (71.7%), though
 this was meant to be the *harder* tier. **Scorer verified correct** (spot-checks all genuine numeric matches

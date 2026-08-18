@@ -1,233 +1,221 @@
 {
-  "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
-  "started_at": "2026-08-14T23:30:00Z",
-  "last_checkpoint": "2026-08-15T20:05:00Z",
+  "session_id": "b4f19d70-8c2a-4e63-9a15-1d7e0c3b6f52",
+  "started_at": "2026-08-16T20:00:00Z",
+  "last_checkpoint": "2026-08-18T01:00:00Z",
   "phase": 5,
-  "stage": "stage4-complete + wrap-up",
-  "session_kind": "research-intake (2 submitted URLs + 10 expansion)",
+  "stage": "stage4-complete",
+  "session_kind": "research-intake (2 submitted URLs + 3 expansion)",
   "previous_session": {
-    "session_id": "285cefe9-d48d-4aae-b6ad-35cf26327cde",
+    "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
     "stage": "stage4-complete",
-    "mandate": "Ingest The-Swarm-Corporation/PARL and expand the parallel-agent-orchestration literature around it.",
-    "note": "Completed 2026-08-13. Not resumed; this is a fresh mandate."
+    "mandate": "Ingest two operator-submitted arXiv papers: MEGA (self-evolving agent optimization via Wisdom Graph) and Phantom Guardrails, and expand the surrounding harness-optimization / acceptance-rule literature.",
+    "note": "Completed 2026-08-15, all four gates CLOSED. Not resumed; this is a fresh mandate. next_intake_id carried forward from 1148."
   },
-  "mandate": "Ingest two operator-submitted arXiv papers: MEGA (self-evolving agent optimization via Wisdom Graph) and Phantom Guardrails (self-improving harnesses fabricating failures that never happened), and expand the surrounding harness-optimization / acceptance-rule literature.",
+  "mandate": "Ingest two operator-submitted sources on the oh-my-pi (omp) coding agent \u2014 the GitHub repository and the omp.sh project landing page \u2014 and expand the surrounding edit-format / harness-benchmark literature.",
   "submitted_url_count": 2,
   "submitted_inline_material_count": 0,
   "sources_submitted": [
-    "https://arxiv.org/abs/2608.10504",
-    "https://arxiv.org/abs/2607.13083"
+    "https://github.com/can1357/oh-my-pi",
+    "https://omp.sh/"
   ],
   "dedup_sweep": {
-    "run": "2026-08-14, unbounded over all 78,706 pre-existing lines / 1,123 entries, normalized (bare id, abs/pdf URL forms, version suffixes)",
+    "run": "2026-08-16, unbounded over all 81,034 pre-existing lines / 1,143 entries. No head/tail/truncating filter anywhere in the pipeline.",
     "collisions_found": 0,
-    "notable": "Neither 2608.10504 nor 2607.13083 appears anywhere in the file, including inside referenced_arxiv_ids. Of 20 expansion candidates dedup-checked, 3 were already indexed and excluded: 2603.28052 (Meta-Harness = intake-244), 2605.18747 (Code as Agent Harness = intake-607), 2509.25140 (ReasoningBank).",
+    "patterns": [
+      "oh-my-pi",
+      "omp.sh",
+      "can1357",
+      "2510.12487",
+      "2511.04486",
+      "Diff-XYZ / diff-xyz",
+      "EDIT-Bench / EditBench",
+      "hashline",
+      "str_replace",
+      "apply_patch",
+      "edit format"
+    ],
+    "notable": "Zero hits for hashline, str_replace, apply_patch and edit-format-as-a-variable across all 1,143 prior entries \u2014 this is the basis for the novelty:high scoring on intake-1148/1150. intake-473 (badlogic/pi-mono, pi-agent-core) is the FORK UPSTREAM of oh-my-pi and is recorded as a lineage cross-reference, NOT a duplicate: different URL, different repository, and the entire hashline / native-Rust / harness-benchmark contribution postdates the fork.",
     "no_truncating_filter": true
   },
-  "max_existing_intake_id": 1127,
-  "next_intake_id": 1148,
-  "expansion_count": 10,
+  "max_existing_intake_id": 1147,
+  "next_intake_id": 1161,
+  "expansion_count": 3,
   "expansion_cap": 10,
-  "expansion_cap_reached": true,
+  "expansion_cap_reached": false,
   "processed_urls": [
-    "https://arxiv.org/abs/2608.10504",
-    "https://arxiv.org/abs/2607.13083",
-    "https://arxiv.org/abs/2606.05922",
-    "https://arxiv.org/abs/2607.13070",
-    "https://arxiv.org/abs/2604.25850",
-    "https://arxiv.org/abs/2603.03329",
-    "https://arxiv.org/abs/2602.22480",
-    "https://arxiv.org/abs/2209.13085",
-    "https://arxiv.org/abs/2405.20947",
-    "https://arxiv.org/abs/2603.02176",
-    "https://arxiv.org/abs/2603.04448",
-    "https://arxiv.org/abs/2511.07919"
+    "https://github.com/can1357/oh-my-pi",
+    "https://omp.sh/",
+    "https://blog.can.ac/2026/02/12/the-harness-problem/",
+    "https://arxiv.org/abs/2510.12487",
+    "https://arxiv.org/abs/2511.04486",
+    "https://cursor.com/blog/instant-apply",
+    "https://aider.chat/docs/unified-diffs.html",
+    "https://arxiv.org/abs/2409.12186",
+    "https://arxiv.org/abs/2502.09328",
+    "https://arxiv.org/abs/2312.12450",
+    "https://arxiv.org/abs/2310.20329",
+    "https://github.com/can1357/oh-my-pi/tree/main/packages/snapcompact",
+    "https://github.com/can1357/oh-my-pi/tree/main/packages/metaharness"
   ],
   "entries_processed": [
-    "intake-1128",
-    "intake-1129",
-    "intake-1130",
-    "intake-1131",
-    "intake-1132",
-    "intake-1133",
-    "intake-1134",
-    "intake-1135",
-    "intake-1136",
-    "intake-1137",
-    "intake-1138",
-    "intake-1139"
+    "intake-1148",
+    "intake-1149",
+    "intake-1150",
+    "intake-1151",
+    "intake-1152",
+    "intake-1153",
+    "intake-1154",
+    "intake-1155",
+    "intake-1156",
+    "intake-1157",
+    "intake-1158",
+    "intake-1159",
+    "intake-1160"
   ],
+  "provenance_pins": {
+    "intake-1148": "github.com/can1357/oh-my-pi head 37eee71978951fccf66b21f7e3e2b74596ac9d74, committed 2026-08-16T07:21:05Z; raw README.md 44,503 bytes sha256 e57966ed5c6f...; repo page read 2026-08-16",
+    "intake-1149": "omp.sh index shell 6,026 bytes sha256 89b37c9f5593...; /assets/index-BzcJmtQE.js 296,910 bytes; retrieved 2026-08-16",
+    "intake-1150": "blog.can.ac/2026/02/12/the-harness-problem/ 45,183 bytes sha256 bf6cf1a3f6da...; retrieved 2026-08-16",
+    "intake-1151": "arXiv:2510.12487v2 (published 2025-10-14, updated 2025-11-17), abstract via arXiv API 2026-08-16",
+    "intake-1152": "arXiv:2511.04486v2 (published 2025-11-06, updated 2025-11-17), abstract via arXiv API 2026-08-16"
+  },
   "expansion_declined": [
     {
-      "arxiv_id": "2603.26942",
-      "title": "The observability gap: why output-level human feedback fails for LLM coding agents",
-      "reason": "Cap. Nearest miss \u2014 bears on reviewer-escalation-and-human-gate-policy.md. First candidate if a second expansion run is authorized."
+      "candidate": "aider edit-format leaderboard / benchmark (cited by intake-1150 for the GPT-4 Turbo 26%->59% swing)",
+      "reason": "The index already carries five aider references and the specific figure is second-hand inside intake-1150, where it is recorded as needing its own verification. Ingesting the leaderboard as an entry would add a moving web page, not a source; better handled as a dive check on intake-1150's prior-art paragraph."
     },
     {
-      "arxiv_id": "2607.13104",
-      "title": "Self-Improvements in Modern Agentic Systems: A Survey",
-      "reason": "Cap + survey. Primary-evidence entries were preferred; intake-781 (Weng survey) already covers the survey slot."
+      "candidate": "Cursor fast-apply blog post (cited by intake-1150 for the 70B apply model and the sub-400-line full-rewrite finding)",
+      "reason": "Closed-source vendor product with no self-hostable artifact; the transferable claim (full-file rewrite beats diffs under 400 lines) is already captured verbatim in intake-1150's reported_results as a second-hand figure a dive must check. Not declined as not_applicable \u2014 declined as redundant at Stage 1."
     },
     {
-      "arxiv_id": "2607.07663",
-      "title": "Recursive Self-Improvement in AI: From Bounded Self-Refinement to Autonomous Research Loops",
-      "reason": "Cap + survey, same slot as above."
+      "candidate": "packages/hashline and packages/typescript-edit-benchmark inside the oh-my-pi monorepo",
+      "reason": "Not separate sources \u2014 they are subtrees of intake-1148 and are named there as the dive targets. Minting entries for a repo's own packages would inflate the index with non-independent records."
     },
     {
-      "arxiv_id": "2603.05399",
-      "title": "Judge reliability harness: stress testing the reliability of LLM judges",
-      "reason": "Cap. Would bear on canonical-judge-suite-revamp.md; second-order to this cohort's acceptance-rule question."
-    },
-    {
-      "arxiv_id": "1803.04585",
-      "title": "Categorizing variants of Goodhart's law",
-      "reason": "Cap + 2018 taxonomy already implicit in intake-1135's formal treatment, which was preferred as the precise instrument."
-    },
-    {
-      "arxiv_id": "2605.22166",
-      "title": "Adapting the interface, not the model: runtime harness adaptation for deterministic LLM agents",
-      "reason": "Cap. Adjacent harness work with no distinct bearing on the acceptance-rule question this cohort centers on."
-    },
-    {
-      "arxiv_id": "2602.01869",
-      "title": "ProcMEM: procedural memory via non-parametric PPO",
-      "reason": "Cap. Memory-side of MEGA's lineage; the curation-side baselines (1137/1138) were higher value for checking MEGA's comparison."
-    },
-    {
-      "arxiv_id": "2603.20691",
-      "title": "SWE-Next: scalable real-world software engineering tasks for agents",
-      "reason": "Cap. Benchmark corpus, not load-bearing for either submitted entry's conclusions."
-    },
-    {
-      "arxiv_id": "2601.03555",
-      "title": "SCRIBE: structured mid-level supervision for tool-using language models",
-      "reason": "Cap. Cited by intake-1129 only in its discussion section; not load-bearing."
-    },
-    {
-      "arxiv_id": "2604.05963",
-      "title": "QiMeng-PRepair: precise code repair via edit-aware reward optimization",
-      "reason": "Cap. Program-repair adjacent; no EPYC surface."
-    },
-    {
-      "arxiv_id": "2607.12254",
-      "title": "Self-Aware Recursively Self-Improving Agents for Personal Singularity",
-      "reason": "Cap + scope. Multi-agent personal-assistant architecture, not an acceptance-rule or harness-optimization result."
-    },
-    {
-      "arxiv_id": "2602.05810",
-      "title": "Bifrost: Steering Strategic Trajectories to Bridge Contextual Gaps for Self-Improving Agents",
-      "reason": "Cap. Surfaced in the same search cluster; no distinct bearing on the two submitted entries."
+      "candidate": "Third-party oh-my-pi write-ups (Better Stack guide, explainx.ai, yuv.ai, agent field guide, beginner tutorial)",
+      "reason": "All five restate the project's own figures with no independent measurement, and at least one already disagrees with the README on basic counts. Recorded as restatement-not-corroboration in intake-1148's contradicting_evidence rather than ingested."
     }
   ],
   "companion_artifacts_noted_not_ingested": [
-    {
-      "url": "https://github.com/mega-edo/mega_benchmark",
-      "bearing": "intake-1128",
-      "status": "HTTP 200 verified 2026-08-14, contents UNREAD",
-      "note": "Cited by MEGA as the home of experiment configs and per-benchmark results; the artifact that would settle the 46.5% / 76.55 figures. Distinct source, NOT a duplicate of the paper."
-    },
-    {
-      "url": "https://github.com/wisdomgraph/mega-code",
-      "bearing": "intake-1128",
-      "status": "surfaced in search, UNREAD",
-      "note": "Vendor product repo, 'The Self-evolving AI Coding Infrastructure'. Relevant to the commercial-bias assessment."
-    },
-    {
-      "url": "https://www.megacode.ai/blog/tech-report",
-      "bearing": "intake-1128",
-      "status": "surfaced in search, UNREAD",
-      "note": "Vendor blog rendering of the same tech report \u2014 a RESTATEMENT, not independent corroboration."
-    }
+    "https://www.npmjs.com/package/@oh-my-pi/pi-coding-agent \u2014 distribution artifact only",
+    "https://huggingface.co/datasets/JetBrains-Research/diff-xyz \u2014 dataset card read as part of intake-1151; no independent claims beyond the paper"
   ],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 2,
-      "verbatim": "\"RECOMMENDED DEEP DIVES (ranked \u2014 operator selects)\" [full ranked table of ranks 1-6 pasted back verbatim: intake-1129, intake-1128, intake-1130 (RHO), intake-1131, intake-1139, intake-1134] - proceed",
+      "verbatim": "deep dive all",
       "disposition": "planned",
       "plan_ref": "stage2-dive-selection",
-      "effect": "Operator pasted the complete ranked dive table and said 'proceed' \u2014 read as selecting ALL SIX ranked dives (1129, 1128, 1130, 1131, 1139, 1134). intake-1133 (AutoHarness) is read WITHIN the 1129 dive as its positive control, per the Stage-1 report, not as a seventh selection."
+      "effect": "Read as selecting ALL FOUR ranked dives (intake-1150, intake-1148, intake-1151, intake-1152). intake-1149 (omp.sh) was declined for a dive at Stage 1 as having no independent content; under 'all' it is verified INSIDE the intake-1148 dive rather than skipped, so no submitted source goes unexamined."
     },
     {
       "seq": 2,
       "stage": 2,
-      "verbatim": "[Tier 1 and Tier 2 dive-surfaced source tables pasted back verbatim: arXiv:2608.06301 HarnessOpt-Bench; github.com/scaleapi/vero; github.com/mega-edo/mega-benchmark; 2407.14477; 2405.16434; 2411.16646; 2306.01693; 2507.02833] - proceed with all",
+      "verbatim": "all",
       "disposition": "planned",
       "plan_ref": "stage2b-selection",
-      "effect": "Operator selected ALL EIGHT Tier-1 and Tier-2 dive-surfaced sources for Stage-2b. Tier 3 therefore stands DECLINED by omission and each declined item must be named in the bearing entry's dive_corrections before Stage 3 opens."
+      "effect": "Operator selected ALL SIX dive-surfaced items for Stage 2b, INCLUDING the two I recommended declining (Qwen2.5-Coder floor paper; Copilot Arena / CanItEdit / EditEval). My declines are therefore overridden and every item is ingested-and-dived. Item 6 is a bundle of three distinct sources and expands accordingly. Items 3-4 (metaharness, snapcompact) run as additional dive targets WITHIN intake-1148 per the subtree convention, not as new entries; if the operator wants them as separate entries that is a one-line change."
     }
   ],
   "open_gates": {
-    "stage2": "CLOSED",
-    "stage2b": "CLOSED",
-    "stage3": "CLOSED \u2014 plan approved 2026-08-15",
-    "stage4": "CLOSED \u2014 24 task lines across 5 handoffs; validate_intake.sh exit 0; index_state.py --check 0 problems; committed 6d783fbd (pathspec-limited).",
-    "prior_session_gate": "CLOSED 2026-08-15 \u2014 intake-1102/1103 (SOL-ExecBench) dived and written back (f825adae: both dive-verified, integration_disposition knowledge_only), follow-ons filed as C5-3/4/5 in agentic-rocm-kernel-authoring.md and RVP-C6-11/12/13 in rocm-verify-profile-backend.md (1511267c; IDs renumbered from C6-8/9/10 at wrap-up after a collision with three completed tasks of the same names). Gate had been open since 2026-08-11.",
-    "operator_surface": "CLOSED 2026-08-15 \u2014 the belief-kernel wiring task for EV-14a was raised to the operator after Stage 4 and landed as SC37 in vidya-belief-substrate-program.md plus an adapter source-table row in scripts/vidya/adapters/README.md (13babe98). It is filed BEFORE the producer exists, which is the point: the write side is cheap now and impossible to retrofit. SC37 depends on EV-14c."
+    "stage1": "CLOSED 2026-08-16 \u2014 5 entries persisted stage1-unverified, validate_intake.sh exit 0, git status handoffs/ clean of intake-caused changes.",
+    "stage2": "CLOSED 2026-08-16 \u2014 all four selected dives complete, all five entries promoted to dive-verified with claim_anchors, claim_corrections and dive_corrections; validate_intake.sh exit 0.",
+    "stage2b": "CLOSED 2026-08-18 \u2014 all operator-selected sources ingested-and-dived (8 entries, dive-verified), declines recorded in bearing entries, validate_intake.sh exit 0.",
+    "stage3": "CLOSED 2026-08-18 \u2014 plan approved via ExitPlanMode.",
+    "stage4": "CLOSED 2026-08-18 \u2014 approved plan implemented exactly; both gates exit 0. Uncommitted by design."
   },
   "stage1_hypotheses_requiring_dive": [
-    "EPYC autopilot SafetyGate may be suppression-only in intake-1129's sense (accepts on score, never on warrant). Stage-1 basis is a ZERO-HIT grep for 'warrant' across autopilot-continuous-optimization.md, frontier-f2-self-running-lab.md and agent-collab-rnd-harness.md, plus the handoff's own description of the gate as 'quality floor + per-suite guard + routing diversity' with a 4D Pareto archive. This is a hypothesis about HANDOFF PROSE, not a finding about orchestrator code, and must be settled against epyc-orchestrator source.",
-    "Whether autopilot's accept path is add-only in effect (does any species ever propose DELETIONS?). intake-1129's ratchet argument applies only to add-only regimes; it reports a prune-capable loop removes the phantom 0.88 of the time."
+    "ALL STAGE-1 HYPOTHESES ARE NOW RESOLVED. (1) Self-attribution: benchmark figures verified against 134 primary run reports. (2) README-vs-blog discrepancy: RESOLVED in the source's favour (v1 prose vs v2 table). (3) Diff-XYZ contradiction: DISSOLVED \u2014 construct difference, the paper disclaims the reading. (4) HS-4 cooperation surface: CONFIRMED sufficient config-only (compat.extraBody). (5) hashline vs current_shas: OVERTURNED \u2014 shipped hashline is file-granularity, same as current_shas.",
+    "NEW, carried to Stage 3 as the only open measurement question: snapcompact's recall-versus-billed-cost claim (intake-1159) ships without its evidence and was measured on hosted frontier vision readers, not on models we serve. Adoption cannot proceed on the vendor claim."
   ],
-  "stage2_dives": {
-    "selected_by_operator": [
-      "intake-1129",
-      "intake-1128",
-      "intake-1130",
-      "intake-1131",
-      "intake-1139",
-      "intake-1134"
-    ],
-    "read_alongside": {
-      "intake-1133": "positive control for intake-1129"
+  "frozen_or_pointer_handoffs_flagged": [
+    "handoffs/active/meta-harness-optimization.md is a RETAINED COMPATIBILITY POINTER \u2014 'Do not add new Meta-Harness implementation work here.' It is the intuitive owner for harness-optimization intake and must NOT be named as an owning handoff in a Stage-3 plan. Route to harness-selection-and-integration.md, batched-edit-parallel-apply.md, or tool-use-eval-contract.md instead."
+  ],
+  "stage2_dives": [
+    {
+      "intake": "intake-1150",
+      "verdict": "dive-verified",
+      "method": "Extracted all 134 benchmark run reports ever committed from full repo history (16,749 commits); 71 present at blog-era commit f8e915e14. Recomputed every per-model delta independently.",
+      "headline": "Headline CONFIRMED exactly (4/60 -> 41/60); +15pts-avg-over-patch independently recomputed as +15.61. Protocol OVERTURNED (n=60 not 180; headline cells are single-shot). Stage-1 README-vs-blog discrepancy RESOLVED IN THE SOURCE'S FAVOUR (v1 prose vs v2 table, both real). Noise floor MEASURED from author's own repeats: median 3.75pp, max 17.8pp. Against str_replace the effect is +2.97pp mean \u2014 inside that floor."
     },
-    "verdicts": {
-      "intake-1128": "dive-verified (numbers reproduce from 544MB raw data; framing overturned; 13 contradicting-evidence rows)",
-      "intake-1129": "dive-verified (all 5 claims + all 20 figures confirmed; EPYC exposure settled in orchestrator source)",
-      "intake-1130": "dive-verified (acceptance rule settled; cred 2->3; novelty high->medium; 3rd domain restored)",
-      "intake-1131": "dive-overturned (fails the job it was filed for; novelty high->low; cred 1->2)",
-      "intake-1134": "dive-verified (ICML independently verified; rel medium->high; cred 4->5)",
-      "intake-1139": "dive-verified (66.56 shown ABSENT from source; venue established; verdict->adopt_patterns)"
+    {
+      "intake": "intake-1148",
+      "verdict": "dive-verified",
+      "headline": "Per-line content hashes \u2014 the mechanism scored novelty:high \u2014 were ABANDONED by the author (commits 30793c165 / 7c6457652, May 2026) for a file-level 4-hex tag + plain line numbers. All published benchmarks measure the abandoned format; the shipped format has never been benchmarked. Stage-1 'line vs our file granularity' framing OVERTURNED: shipped hashline is file-granularity, same as current_shas. HS-4 cooperation surface CONFIRMED sufficient config-only (compat.extraBody -> Object.assign(params, extraBody))."
+    },
+    {
+      "intake": "intake-1149",
+      "verdict": "dive-verified",
+      "headline": "Confirmed correct filing; nothing overturned. Verified inside the 1148 dive rather than skipped."
+    },
+    {
+      "intake": "intake-1151",
+      "verdict": "dive-verified",
+      "headline": "THIS SESSION'S OWN STAGE-1 HEADLINE OVERTURNED. The 'contradiction' with intake-1150 does not exist; the paper explicitly disclaims production prediction and is non-reasoning/greedy/single-pass, and its 'smaller open models' means sub-7B Qwen2.5-Coder (a floor effect). Net: NEITHER source measures the band we serve."
+    },
+    {
+      "intake": "intake-1152",
+      "verdict": "dive-verified",
+      "headline": "540/40/1 CONFIRMED (claude-sonnet-4). SCOPE CORRECTION: uses whole-file regeneration, no edit format \u2014 orthogonal to hashline, not a check on it. Context finding is sharper than the abstract: MORE CONTEXT IS NOT MONOTONICALLY BETTER (glm-4.6 -8.15pp from adding cursor position; highlighting hurts 2 of 7 models). Venue unresolved; credibility stays 3."
     }
-  },
+  ],
   "stage2b": {
+    "entries": [
+      "intake-1153",
+      "intake-1154",
+      "intake-1155",
+      "intake-1156",
+      "intake-1157",
+      "intake-1158",
+      "intake-1159",
+      "intake-1160"
+    ],
     "uncapped": true,
-    "sources_selected": 8,
-    "assigned_ids": {
-      "2608.06301": "intake-1140",
-      "github.com/scaleapi/vero": "intake-1141",
-      "github.com/mega-edo/mega-benchmark": "intake-1142",
-      "2407.14477": "intake-1143",
-      "2405.16434": "intake-1144",
-      "2411.16646": "intake-1145",
-      "2306.01693": "intake-1146",
-      "2507.02833": "intake-1147"
-    },
-    "entries": {
-      "intake-1140": "2608.06301 HarnessOpt-Bench \u2014 dive-verified; SUPERSESSION HYPOTHESIS OVERTURNED (extends VeRO, calls itself complementary); model-over-harness framing overturned",
-      "intake-1141": "github.com/scaleapi/vero @0b0e8676 \u2014 dive-verified; OVERTURN: runs/recompute.py never existed and the pin-generating script does not implement the documented convention",
-      "intake-1142": "github.com/mega-edo/mega-benchmark @97cbd74 \u2014 dive-verified by full 557MB raw recount; regression prior REPLICATED and method-invariant",
-      "intake-1143": "2407.14477 rationale DPO \u2014 dive-verified; v1 headline claims WITHDRAWN by v4, repo stale at v1, requires training",
-      "intake-1144": "2405.16434 directional feedback \u2014 dive-verified; NO numbers published at all, Algorithm 1 gate printed INVERTED in both versions",
-      "intake-1145": "2411.16646 self-generated critiques \u2014 dive-verified; \"without extra supervision\" is METADATA-ONLY, method is label-anchored",
-      "intake-1146": "2306.01693 fine-grained feedback \u2014 dive-verified; carries the training-free 70.9-vs-57.2 rater-accuracy prior",
-      "intake-1147": "2507.02833 IFBench \u2014 dive-verified, 6/6, the cohort ONLY adopt_component; noise floor computed (+/-5.6pp single-arm, +/-8.0pp unpaired)"
-    },
-    "entries_persisted": 8
+    "note": "Operator selected ALL six dive-surfaced items; item 6 was a 3-source bundle, and two repo subtrees were promoted to their own entries, so 6 selections produced 8 entries. All landed dive-verified, never stage1-unverified.",
+    "declines_recorded": [
+      {
+        "source": "Chatbot Arena (arXiv:2403.04132)",
+        "recorded_in": "intake-1152 dive_corrections",
+        "reason": "Not in the operator-selected bundle; one step further from code than Copilot Arena (intake-1156), which was ingested and carries the same methodological finding in a coding setting."
+      }
+    ],
+    "convention_deviation": "At Stage 1 I declined repo subtrees as non-sources. snapcompact and metaharness were promoted to their own entries (intake-1159/1160) because both are independently published npm packages with their own README, function and (for snapcompact) empirical claims. Offered to the operator as reversible.",
+    "corrections_pushed_upstream": [
+      "intake-1150 (Cursor misattribution, aider model swap, GPT-3.5 figure unlocated, stencil.so URL alias)",
+      "intake-1148 (independent line-number argument against the direction the shipped format moved)",
+      "intake-1152 (Chatbot Arena decline recorded)"
+    ]
   },
   "stage4": {
-    "handoffs_updated": [
-      "eval-tower-verification.md",
+    "plan": "/home/node/.claude/plans/jolly-gliding-harp.md (operator-approved 2026-08-18)",
+    "handoffs_amended": [
+      "harness-selection-and-integration.md",
+      "batched-edit-parallel-apply.md",
       "canonical-judge-suite-revamp.md",
-      "eval-tower-loop-robustness-audit-2026-07-20.md",
-      "safetygate-rlvr-provenance-audit-2026-07-22.md",
-      "autopilot-continuous-optimization.md",
-      "routing-intelligence.md"
+      "delegation-context-preassembly.md",
+      "speculative-decoding-mtp-refresh.md",
+      "architect-model-selection-bench.md",
+      "scoring-infra-standardization.md"
     ],
-    "task_lines_added": 24,
-    "handoffs_created": [],
-    "index_rows_added": 0,
-    "entries_with_handoffs_updated": 10,
-    "commit": "6d783fbd"
+    "handoffs_created": [
+      "optical-context-compression.md"
+    ],
+    "index_rows_added": [
+      "RTG-53 in routing-and-optimization-index.md (deps UFH-07, INF-41)"
+    ],
+    "checkbox_counts": {
+      "new_open": 15,
+      "new_done_2026_08_18": 2,
+      "note": "12 open across 7 existing handoffs + 3 in the new stub; HS-1d and BEP-6 land [x] because the dives settled them."
+    },
+    "intake_entries_written_back": 13,
+    "gates": {
+      "validate_intake.sh": "exit 0 (1,156 entries)",
+      "index_state.py --check": "exit 0, 0 problems \u2014 new stub owned by exactly one row (RTG-53), no orphans, no duplicate ownership",
+      "deletions_in_handoffs": "0 (the only 4 deleted lines are the regenerated master-index rollup counts)"
+    },
+    "not_committed": "Left UNSTAGED deliberately. Staging in this shared tree is itself a hazard \u2014 staged files ride into a parallel session's commit. Awaiting operator go-ahead for a pathspec-limited commit."
   }
 }

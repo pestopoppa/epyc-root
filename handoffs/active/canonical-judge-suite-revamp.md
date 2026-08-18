@@ -292,6 +292,32 @@ our own harness and score offline.
 **Do NOT attempt IF-RLVR** (the source's training half): GRPO on 8 high-end accelerators, and the
 paper's own evidence says we would not want it as-is — AlpacaEval 2 falls 34.5 → 21.3 on one path and
 collapses to 1.1 when trained from base. Cite `intake-1147#record`.
+
+### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18)
+
+Three externally-sourced suite designs, all sharing the property this handoff exists to buy: **no LLM
+judge anywhere in the scoring path.** Designs only — none of the underlying datasets is proposed for
+import.
+
+- [ ] **CJ-7a — inverse-mutation fixtures as a judge-free edit-application suite** (intake-1150). Take
+      a real source file, apply a mechanical mutation whose inverse is known (operator swap, boolean
+      flip, off-by-one, removed guard clause), auto-describe it in plain English, expect the inverse
+      edit. Scoring is exact-match after formatting — **no LLM judge, no network, deterministic**.
+      Costed at ~$300 and 60 tasks by its author. Caveat to carry: this measures mechanical edit
+      application, NOT software engineering, and the published fixture mix is ~6/106 the named
+      "representative" categories.
+- [ ] **CJ-7b — `anti-apply` as a cheap capability probe** (intake-1151, Diff-XYZ). Given new code and
+      a diff, recover the old code. Single-turn, supervised, automatic metrics, no judge. Useful as a
+      fast instrument-health probe rather than a quality gate.
+- [ ] **CJ-7c — paired descriptive/lazy instructions + hidden execution tests** (intake-1157,
+      CanItEdit). The design, not the 105-problem dataset: every problem carries a fully-specified AND
+      a minimal instruction, making instruction specificity a *controlled variable*. Scoring is hidden
+      execution tests — no judge anywhere in the path, the same property that made IFBench an
+      adopt_component. Independently rediscovered by intake-1152, which found hard instructions are
+      ~5x shorter. Pairs with DCP-8 in `delegation-context-preassembly.md`.
+- [ ] **CJ-7d — suite-construction principle** (intake-1154): build the suite to *provoke* the specific
+      failure mode under study rather than sampling generic tasks. Aider's laziness benchmark is the
+      worked example. A design note governing CJ-7a-c, not separate work.
 ## Decision gate (OPERATOR)
 
 - [ ] **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4

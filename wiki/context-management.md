@@ -437,3 +437,42 @@ budget rather than a fixed k. Detail in
 - [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
 - [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — 128K context-budget competition and its budget-conditional injection consequences
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — k as a fraction of remaining window budget rather than a fixed integer
+
+## Compiled Update — 2026-08-18: optical compaction is shipping, and more context is not monotonically better
+
+**Optical (bitmap-frame) compaction exists as a working implementation, not just a paper idea.**
+`@oh-my-pi/snapcompact` serializes discarded conversation history and **rasterizes it into dense PNG
+frames of pixel-font glyphs** that vision-capable models read back directly as image blocks. The entire
+pass is **local, deterministic, and inference-free** — no LLM call, no API key, no latency beyond
+rendering. That is the interesting property: every compaction approach we run is LLM-mediated, so it
+costs a model call, adds latency, and is nondeterministic.
+
+**It exploits a real billing asymmetry.** Frame geometry is chosen *per provider* against actual image
+pricing: Gemini bills a **fixed per-image budget at any pixel size**, so larger frames are free
+characters; OpenAI's patch billing is area-proportional, so larger frames cannot help; Anthropic's
+high-res lines get larger frames under a visual-token cap. This asymmetry is worth knowing for
+cost-aware routing whether or not anyone renders a frame — and it is pinned to provider pricing, so it
+can go stale silently.
+
+**The claim ships without its evidence.** The upstream docs state the frame-shape table came from
+200k-token evals "where bitmap frames preserved QA recall at lower billed-token cost than raw text".
+The package contains ~70 experiment scripts (SQuAD harness, 22 numbered experiments, logit-lens and
+occlusion probes) and **zero committed results**. Every published shape targets a hosted frontier vision
+reader. So the technique is a candidate, not a finding — and the costs are real: rasterized history
+cannot be grepped, diffed or partially quoted, and OCR-through-the-model failure is silent and
+content-dependent rather than loud.
+
+**Independently: more context can make a model worse.** EDIT-Bench varied context level across seven
+models (code only / +highlighted code / +highlight +cursor position). Highlighting helped 5 of 7 and
+**hurt 2** (o3-mini −3.70 pp, qwen3-coder −2.59 pp); adding cursor position on top cost glm-4.6
+**−8.15 pp**. The abstract's "up to 11%" is that one model's within-model range, not a typical effect —
+typical is 2–4 pp. **A relevant-looking context field can be per-model negative**, which is a caution
+for any budget-driven context assembly that assumes relevance implies benefit.
+
+### Source References
+
+- `research/intake_index.yaml` intake-1159 (`@oh-my-pi/snapcompact`) — mechanism, per-provider billing table, and the missing eval results
+- `research/intake_index.yaml` intake-1152 (EDIT-Bench, arXiv:2511.04486) — the context-ablation table quoted above
+- `research/intake_index.yaml` intake-1148 (oh-my-pi) — the parent harness whose compaction pipeline this serves
+- [Optical context compression](../handoffs/active/optical-context-compression.md) — OCC-1, the decisive measurement on a reader we serve
+- [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

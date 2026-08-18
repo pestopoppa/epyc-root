@@ -59,6 +59,7 @@
 | RTG-50 | decomposition to batch mapping | [decomposition-to-batch-mapping.md](decomposition-to-batch-mapping.md) | DB-1 — establish whether a task decomposition can be expressed as np-batch slots across CPU and GPU instances | RTG-49 |
 | RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Wire compute blocker/window events and the receipt-cut heavy-wrap executor; then shadow the complete lifecycle | RTG-34, RTG-48 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
+| RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | Measure billed-token cost and QA recall for bitmap frames vs raw text on a reader we serve (OCC-1) | UFH-07, INF-41 |
 
 ## Cross-domain
 

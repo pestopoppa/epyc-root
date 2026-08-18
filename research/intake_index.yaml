@@ -81032,3 +81032,1837 @@
   handoffs_updated:
   - handoffs/active/canonical-judge-suite-revamp.md
   handoffs_created: []
+
+- id: intake-1148
+  arxiv_id: null
+  url: https://github.com/can1357/oh-my-pi
+  source_type: repo
+  title: 'oh-my-pi (omp) — AI Coding Agent for the Terminal with Hash-Anchored (Hashline) Edits'
+  authors:
+  - 'Can Bölük (can1357)'
+  - 'forked from Pi / pi-mono by Mario Zechner (badlogic)'
+  categories: [tool_implementation, agent_architecture, benchmark_methodology, local_inference, context_management]
+  key_claims:
+  - 'HASHLINE EDIT FORMAT — every line returned by read/grep is tagged with a 2-3 character content hash (rendered as `2:f1|  return "world";`); the model edits by referencing the tag ("replace line 2:f1", "replace range 1:a3 through 3:0e", "insert after 3:0e") instead of reproducing the old text. If the file changed since the read the anchors diverge and the patch is rejected before it can corrupt anything.'
+  - 'The project frames the edit tool, not the model, as the dominant controllable variable in coding-agent success, and publishes a 16-model cross-format benchmark to support it.'
+  - 'Native in-process implementation — ripgrep, glob, find and 58 ported command-line utilities compiled into the binary; a vendored brush bash fork with sessions that survive across calls; no fork/exec on the hot path.'
+  - 'Persistent Python and Bun kernels with a LOOPBACK BRIDGE: code running inside a kernel can call back into the agent own tools (read, search, task) without leaving the cell.'
+  - 'TIME-TRAVELING STREAM RULES — a regex match aborts the stream mid-token, injects the rule as a system reminder, and retries from the same point; injections are claimed to survive compaction, so a rule costs no per-turn context.'
+  - 'ADVISOR ROLE — a second model observes every turn read-only and injects concerns/blockers without consuming the main agent context window.'
+  - 'Local-first provider surface directly compatible with our orchestration contract: llama.cpp, vLLM, Ollama, LM Studio and LiteLLM ship as first-class `local` providers, and arbitrary OpenAI-compatible endpoints are declarable in `~/.omp/agent/models.yml` with `baseUrl: http://HOST:PORT/v1`; 10 intent roles (default, smol, slow, plan, commit, vision, designer, task, advisor, tiny) with per-role fallback chains under `retry.fallbackChains`, path-scoped model overrides and round-robin credential rotation.'
+  techniques:
+  - 'Content-hash line anchors as an edit-address space (hashline), replacing both line numbers and str_replace exact-text matching'
+  - 'Optimistic-concurrency edit rejection via anchor divergence (stale-read detection at LINE granularity, not file granularity)'
+  - 'Loopback tool-call bridge from inside a code-execution kernel back into the agent toolset'
+  - 'Mid-stream regex-triggered abort + system-reminder injection + resume-from-same-point (stream rules)'
+  - 'Read-only advisor model observing the main agent turn out-of-band'
+  - 'Schema-validated subagent returns (structured objects rather than prose parsing)'
+  - 'In-process coreutils / ripgrep / walker with a shared scan cache to remove fork-exec from the tool hot path'
+  - 'Internal URL schemes (pr://, issue://, agent://, skill://, ssh://, conflict://N) resolving inside all filesystem-shaped tools'
+  reported_results:
+  - 'README benchmark table (self-published, read at repo head 37eee71978951fccf66b21f7e3e2b74596ac9d74, 2026-08-16): Grok Code Fast 1 6.7% -> 68.3%; Gemini 3 Flash +5 pp over str_replace; Grok 4 Fast -61% output tokens; MiniMax 2.1x pass rate. The table gives NO n, NO baseline definition and NO confidence interval — the methodology lives only in the linked blog post (intake-1150).'
+  - 'Architecture, verified against the raw README at that head: ~80,000 lines of Rust across six crates (pi-shell 38,000 / pi-natives 25,000 / pi-walker 5,200 / pi-iso 3,300 / pi-ast 2,900 / pi-voice 1,000), plus ~80k vendored lines (brush bash fork + 58 CLI utilities); 60+ providers, 31 built-in tools, 14 LSP ops, 28 DAP ops, 23 web-search backends, 50+ tree-sitter grammars, 46 in-process coreutils in the bash tool.'
+  - 'GitHub repo page as read 2026-08-16: 25.2k stars, MIT license, TypeScript + Rust, 18,367 commits on main, 935 open issues, 471 open PRs.'
+  - 'Four entry points relevant to headless/eval use: interactive TUI, Node SDK (@oh-my-pi/pi-coding-agent), RPC (NDJSON over stdio, `omp --mode rpc`), and ACP over JSON-RPC.'
+  novelty: high
+  novelty_justification: 'HIGH on the edit-format primitive. An unbounded sweep of all 1,143 prior entries returns ZERO hits for hashline, str_replace, apply_patch or "edit format" as a studied variable — the index has 40 Cursor mentions and 5 aider mentions but no entry that treats the edit-address space itself as the object of study. Content-hash line anchors are a genuinely different mechanism from the three formats the field actually uses (OpenAI apply_patch diff blobs, Anthropic/Gemini str_replace exact-text matching, Cursor fine-tuned apply model): all three require the model to REPRODUCE content it has already seen; hashline requires it only to RECALL a pseudo-random tag. The rest of the repo (LSP/DAP wiring, subagents, memory, browser) is well-trodden and is not what makes this high.'
+  relevance: high
+  relevance_justification: 'HIGH on two independent axes. (1) HARNESS SELECTION — harness-selection-and-integration.md task HS-4 is an OPEN operator decision gate over a candidate table of exactly three rows (Hermes, OpenCode, ACP-speakers). omp is a fourth candidate that satisfies every stated gate: MIT open-source (the load-bearing operator requirement from 2026-07-16), speaks OpenAI-compatible /v1 with a declarable custom baseUrl, ships llama.cpp and vLLM as first-class local providers, and exposes headless RPC/SDK entry points for eval fan-out. Its per-role model map with fallback chains is a near-exact structural match for our role registry. (2) OUR OWN EDIT PATH — batched-edit-parallel-apply.md already implements optimistic-concurrency edit application keyed on `current_shas` (whole-FILE SHAs); hashline is the same safety property at LINE granularity, and the same handoff owns the apply/verify/promote pipeline where it would land. Secondary contact: tool-output-compression.md (summarized reads, snapcompact) and repl-turn-efficiency.md (loopback tool-calling from inside a kernel).'
+  credibility_score: 2
+  credibility_justification: '2/6, Medium tier, and the composition matters more than the number. Peer-reviewed venue +0 (none). Recency +1 (head 37eee719 dated 2026-08-16, actively developed). Known contributor +1 (Can Bölük is an established systems/reverse-engineering author; the project is a fork of Mario Zechner Pi, which this index already carries as intake-473, and it has 25.2k stars). Commercial bias 0 — MIT, free, no product being sold — though the benchmark is unambiguously SELF-ATTRIBUTED and promotes the author own harness, which is recorded under contradicting_evidence rather than as a score modifier. Independent corroboration +0: a bounded search surfaced only third-party write-ups that RESTATE the project figures, which is restatement, not corroboration.'
+  verdict: adopt_patterns
+  verdict_justification: 'adopt_patterns, not adopt_component and not new_opportunity. The near-term extractable value is a mechanism (content-hash line anchors, and the stale-anchor rejection that comes with it) that can be evaluated against our own edit path independently of adopting any of the 80k lines of Rust around it. It is NOT adopt_component because promoting it to a component decision is precisely HS-4, which is an open operator gate — Stage 1 must not pre-decide it. It is NOT not_applicable and NOT superseded: it is in-domain, open-source, self-hostable and nothing in the index displaces it.'
+  discovered_via: input
+  ingested_date: '2026-08-16'
+  contradicting_evidence:
+  - 'EVERY HEADLINE NUMBER IS SELF-ATTRIBUTED AND HAS ZERO INDEPENDENT REPLICATION. A bounded Tier-2b search (2026-08-16) found third-party coverage on at least five sites — a beginner guide, a Better Stack guide, explainx.ai, yuv.ai and an agent field guide — and every one of them RESTATES the 6.7% -> 68.3% and -61% figures from the project own README/blog. One (the agent field guide) explicitly flags the numbers as project-published and self-attributed and warns they should be read as an order-of-magnitude for the harness contribution rather than a guarantee. Restatement is not corroboration; there is no re-run by a party that did not write the harness. PROVISIONAL — a bounded search does not prove absence of a replication.'
+  - 'THIRD-PARTY PAGES ALREADY DISAGREE WITH THE SOURCE ON BASIC COUNTS, which is a direct measurement of how fast this material rots: a search-result summary dated within the last weeks reports "40+ providers, 32 tools" where the README at head 37eee719 says 60+ providers and 31 built-in tools. Any downstream citation of this project must pin a commit SHA; the numbers here are pinned to 37eee71978951fccf66b21f7e3e2b74596ac9d74 / 2026-08-16.'
+  - 'THE README TABLE IS NOT SELF-SUFFICIENT EVIDENCE. It reports four cherry-picked rows with no n, no baseline definition and no dispersion. The full 16-model table, the fixture-generation procedure and the run count live only in the linked blog post (intake-1150), and the two do not obviously agree: the README states Grok Code Fast 1 went 6.7% -> 68.3% (a +61.6 pp delta) while the blog per-model table lists Grok Code Fast 1 at delta-PATCH +64.6. These are probably different comparisons (hashline-v2 vs patch, versus hashline vs patch) but the README does not say so, and reconciling them is a named dive objective.'
+  - 'THE BENCHMARK MEASURES A NARROW TASK. Per the blog methodology, fixtures are mechanical single-site mutations of React-codebase files (operator swaps, boolean flips, off-by-one, removed guard clauses) with the inverse edit expected. That is a mechanical-edit-application benchmark, NOT a software-engineering benchmark; a large lift on it does not license any claim about end-to-end task success. The independent benchmarks in this cohort (intake-1151 Diff-XYZ, intake-1152 EDIT-Bench) exist partly to check this.'
+  - 'THE ANTI-CLAIM THE README DOES NOT MAKE: the blog own table shows the format is NOT uniformly better — DeepSeek V3.2 LOSES 5 points and GPT-5.2 Codex spends +26% more tokens under hashline. A reader taking the README table alone would not know the effect has a negative tail.'
+  cross_references:
+    chapters: [09-claude-debugger.md]
+    handoffs:
+    - harness-selection-and-integration.md
+    - batched-edit-parallel-apply.md
+    - tool-output-compression.md
+    - user-facing-harness-index.md
+    - repl-turn-efficiency.md
+    - hermes-outer-shell.md
+    experiments: []
+    intake_entries: [intake-473, intake-426, intake-1150, intake-1151, intake-1152]
+    intake_entry_notes:
+    - 'intake-473 (@mariozechner/pi-agent-core, pi-mono) — DIRECT UPSTREAM. oh-my-pi is a fork of that codebase. This is a lineage edge, NOT a duplicate: different url, different repo, and the entire hashline/native-Rust/harness-benchmark contribution postdates the fork.'
+    - 'intake-426 (a coding harness is ~98.4% operational infrastructure / ~1.6% AI decision logic) — the supporting datapoint behind harness-selection-and-integration.md do-not-build-a-bespoke-harness posture. omp is a direct empirical counterweight: it argues the 98.4% plumbing is where the success rate is actually decided.'
+    - 'intake-1150 (the harness-problem blog post) — the EMPIRICAL SOURCE for every number in this entry README table. Cite the blog, not this entry, for methodology.'
+    - 'intake-1151 (Diff-XYZ) and intake-1152 (EDIT-Bench) — the two INDEPENDENT, non-can1357 benchmarks of the same question. They are the corroboration/refutation channel for the hashline claim.'
+  recommended_actions:
+  - '[unverified] Dive the hashline implementation at packages/hashline and the benchmark harness at packages/typescript-edit-benchmark, pinned to a commit SHA, to establish what the anchor actually is (hash input, collision handling, behaviour on duplicate hashes within a file) before any of it is quoted in a plan item.'
+  - '[unverified] Establish whether omp belongs in the harness-selection-and-integration.md candidate table as a fourth row — a cooperation-surface audit in the HS-1b/HS-1c shape, specifically whether a per-request body override (our x_* contract) is reachable without a core fork, as it is in OpenCode via chat.params.'
+  - '[unverified] Relate hashline to batched-edit-parallel-apply.md current_shas: same optimistic-concurrency property at line rather than file granularity.'
+  notes: 'Operator-submitted 2026-08-16 alongside https://omp.sh/ (intake-1149, the project landing page — a DISTINCT artifact, not a duplicate). Provenance pins for everything cited here: repo head 37eee71978951fccf66b21f7e3e2b74596ac9d74 committed 2026-08-16T07:21:05Z; raw README.md retrieved 2026-08-16, 44,503 bytes, sha256 e57966ed5c6f...; GitHub repo page read 2026-08-16. All architecture and count figures in reported_results were re-verified against the RAW README text rather than taken from a fetch summariser, because a summariser figure is exactly the class of number this index has been burned by. The four benchmark figures were NOT independently verified and are recorded as the project claim.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'packages/hashline/src/format.ts:112-121 (computeFileHash and its doc comment)'
+    quote: "The tag is a 4-hex fingerprint of the whole file's normalized text: any read of byte-identical content mints the same tag, and a follow-up edit anchored at any line validates whenever the live file still hashes to it."
+    quote_sha256: 'aa7c1ba72407f96579b9afd8e6c4c062b7c226757e941534a29864cb18aa9d58'
+    source_revision: 'github.com/can1357/oh-my-pi @ 37eee71978951fccf66b21f7e3e2b74596ac9d74'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: line-range
+    locator: 'packages/coding-agent/src/patch/hashline.ts:4-6, AT THE BLOG-ERA COMMIT f8e915e14e7a20bafedcccd2888c9623ccd08d36 (2026-02-13) — the file no longer exists at head'
+    quote: 'Each line in a file is identified by its 1-indexed line number and a short base36 hash derived from the normalized line content (xxHash32, truncated to 4 base36 chars).'
+    quote_sha256: '5f1c3640ec3754360560e0bcfd6514354f8bc13cb7457356c3657cfcbfa5809b'
+    source_revision: 'github.com/can1357/oh-my-pi @ f8e915e14e7a20bafedcccd2888c9623ccd08d36'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 6
+    kind: line-range
+    locator: 'packages/ai/src/providers/openai-shared.ts:721-722 (applyOpenAIExtraBody), called from packages/ai/src/providers/openai-completions.ts:1733; schema field at packages/coding-agent/src/config/models-config-schema-bundle.ts:47'
+    quote: "if (!extraBody) return; Object.assign(params, extraBody);"
+    quote_sha256: '79b70b0d16587f89866a9ea087f990c67b9c21f3a72c6ce694ff8507ac2d47f1'
+    source_revision: 'github.com/can1357/oh-my-pi @ 37eee71978951fccf66b21f7e3e2b74596ac9d74'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: overturned
+    note: >-
+      OVERTURNED AS A DESCRIPTION OF THE SHIPPED PRODUCT. Per-line content hashes are NOT how oh-my-pi
+      addresses edits at head 37eee719. They were real at the blog-era commit (packages/coding-agent/src/patch/hashline.ts,
+      `LINENUM:HASH|CONTENT`, xxHash32 truncated to 4 base36 chars) and were removed in two commits —
+      30793c165 (2026-05-26, "restructured hashline to use file-level hash validation with colon separators")
+      and 7c6457652 (2026-05-28, "replaced file-hash anchors with opaque snapshot-store tags"). The shipped
+      format is a section header `[PATH#TAG]` where TAG is ONE 4-hex xxHash32 of the whole normalized file,
+      and lines are addressed by PLAIN LINE NUMBERS (`PUT 1.=1:`). Read output is now `1:def greet(name):` —
+      no per-line hash anywhere. The entry described a mechanism the project abandoned three months ago.
+  - claim_index: 1
+    effect: unaffected
+    note: 'The framing that the edit tool is the dominant controllable variable is the authors position and is unchanged; whether the DATA supports it is adjudicated on intake-1150, not here.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Native in-process implementation re-verified against the crate table in the raw README at head; 58 utilities, six crates, LoC figures all match.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Not examined at source level by this dive. Recorded as an unverified README claim, not as a confirmed one.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Not examined at source level by this dive. Recorded as an unverified README claim, not as a confirmed one.'
+  - claim_index: 5
+    effect: unaffected
+    note: 'Not examined at source level by this dive. Recorded as an unverified README claim, not as a confirmed one.'
+  - claim_index: 6
+    effect: narrowed
+    note: >-
+      CONFIRMED AND SHARPENED on the part that matters, narrowed on the part that does not. Arbitrary
+      top-level request-body keys ARE injectable per model, config-only, no fork: `compat.extraBody` is a
+      declared field of the models.yml schema and reaches the wire via `Object.assign(params, extraBody)`.
+      That is exactly our x_* contract. NARROWING: `providerOptions` is the WRONG lever and would silently
+      no-op — its own docstring says "generic API transports do not forward its fields onto the wire".
+      Per-request headers are separately reachable via SimpleStreamOptions.headers.
+  dive_corrections: >-
+    DIVE 2026-08-16 (source-level, blobless clone of the full 16,749-commit history at head
+    37eee71978951fccf66b21f7e3e2b74596ac9d74). THREE MATERIAL CHANGES.
+    (1) THE NOVEL MECHANISM WAS ABANDONED BY ITS OWN AUTHOR. Per-line content hashes — the thing this entry
+    scored novelty:high on — were replaced by a single file-level 4-hex tag plus plain line numbers in
+    commits 30793c165 (2026-05-26) and 7c6457652 (2026-05-28). Every published benchmark run report is
+    dated 2026-01-19..2026-02-22, i.e. ALL of them measure the per-line format that no longer ships, and
+    the currently shipped format has NEVER been benchmarked in any published run report.
+    (2) THE STAGE-1 "LINE GRANULARITY vs OUR FILE GRANULARITY current_shas" FRAMING IS OVERTURNED. Current
+    hashline validates a whole-file hash, which is the SAME granularity as batched-edit-parallel-apply.md
+    `current_shas`. The interesting delta is gone; what remains is a leniency detail (hashing normalizes
+    away trailing whitespace, so a stale file differing only in trailing whitespace is ACCEPTED) and a
+    precision detail (the tag is 16 bits, so a stale edit escapes detection ~1 in 65,536).
+    (3) THE HS-4 COOPERATION SURFACE IS CONFIRMED SUFFICIENT, config-only, no fork — see claim_corrections
+    index 6. This is the one respect in which the entry UNDERSTATED the source.
+    NOT CHANGED: the architecture/count figures, which re-verified exactly against the raw README.
+    STAGE-2b ADDENDUM 2026-08-18 — AN INDEPENDENT ARGUMENT AGAINST THE DIRECTION THIS PROJECT MOVED.
+    Cursor (intake-1153) names LINE-NUMBER EMISSION as a specific tokenizer-level failure mode — a
+    tokenizer that treats a digit run as one token forces the model to commit to a line number in a single
+    forward pass — and adopted aider search/replace blocks explicitly to eliminate it. aider (intake-1154)
+    likewise uses unified diffs WITHOUT line numbers. Both predate hashline. The shipped hashline format
+    addresses edits by PLAIN LINE NUMBERS, having dropped the per-line hashes that were its distinguishing
+    feature. So two independent parties identify line numbers as the thing to avoid, and this project moved
+    toward them, with no published benchmark of the format it now ships. This is a tension, not a
+    refutation: hashline pairs line numbers with a whole-file tag and a tolerant applier, which neither
+    argument addresses. It should be resolved by measurement, not by authority.
+  depends_on:
+  - entry: intake-1150
+    claim_index: 0
+    why: >-
+      Every benchmark figure in this entry reported_results is a quotation of intake-1150 measurement. If
+      that measurement were retracted, this entry benchmark table would have to be struck. This is
+      evidential dependence, not a topical citation.
+  reader_should_conclude: >-
+    Treat "hashline" as a name whose referent CHANGED. If you are reading this entry to evaluate the
+    per-line-content-hash idea, that idea is real, was benchmarked, and was then dropped by its author in
+    favour of a file-level hash — read that abandonment as evidence about the idea. If you are reading it
+    to evaluate oh-my-pi as an HS-4 harness candidate, the cooperation surface is CONFIRMED sufficient
+    (compat.extraBody, config-only) and that finding is independent of the edit-format question. Do NOT
+    cite the shipped format as validated by the published benchmarks; they measure a different format.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'The mechanism that justified integration interest (per-line hash anchors) is not in the shipped product at head 37eee719, so there is nothing to port that the author still runs.'
+  - 'batched-edit-parallel-apply.md already implements whole-file optimistic concurrency via current_shas, which is the same property the shipped hashline provides.'
+  - 'The HS-4 candidacy question is an open operator decision gate; this dive supplies an input to it and does not settle it.'
+  verification: dive-verified
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  - batched-edit-parallel-apply.md
+  handoffs_created: []
+
+- id: intake-1149
+  arxiv_id: null
+  url: https://omp.sh/
+  source_type: blog
+  title: 'omp.sh — Oh My Pi Project Landing Page and Distribution Endpoint'
+  authors:
+  - 'Can Bölük (can1357)'
+  categories: [tool_implementation, agent_architecture]
+  key_claims:
+  - 'Canonical public claim surface for oh-my-pi: page title "omp — a coding agent with the IDE wired in"; meta description names subagents, plan mode, LSP, DAP, hindsight memory, hashline edits and time-traveling rules over a native Rust engine.'
+  - 'It is also the DISTRIBUTION endpoint, which is the part that matters operationally rather than editorially: `curl -fsSL https://omp.sh/install | sh` and `irm https://omp.sh/install.ps1 | iex` are the primary install paths, so this domain — not GitHub — is what an install actually trusts.'
+  - 'It hosts the demo capture assets referenced from the repository README (https://omp.sh/captures/*.webp), so the README rendering on GitHub depends on this host staying up.'
+  - 'The page asserts no empirical claim of its own: the benchmark figures it displays are the same four rows as the repository README, which in turn derive from the author blog post (intake-1150).'
+  techniques: []
+  reported_results:
+  - 'Retrieval finding, 2026-08-16: the site is a client-rendered single-page application. WebFetch is refused with HTTP 403; a browser-UA curl returns a 6,026-byte shell (sha256 89b37c9f5593...) containing only document metadata. /sitemap.xml, /robots.txt, /llms.txt and /docs ALL return HTTP 200 with that identical 6,026-byte shell — an SPA catch-all, so a status-code probe of this host is a check that passes for the wrong reason and proves nothing about content.'
+  - 'The rendered copy is carried in /assets/index-BzcJmtQE.js (296,910 bytes, retrieved 2026-08-16). Substring probes of that bundle confirm it embeds the same marketing text as the repository README — "benchmaxxed", "68.3", "Hashline", "willRenameFiles" and the harness-problem blog link are each present.'
+  novelty: low
+  novelty_justification: 'LOW, and deliberately so. Every technical assertion on this page also appears in the repository README (intake-1148), and the bundle probe above is the evidence for that rather than an assumption. It is filed as its own entry because it is a distinct artifact with a distinct URL — a companion project page is not a duplicate of the repo it accompanies, and mis-filing exactly this shape as `duplicate` is a defect this index has committed 19 times. Its independent value is the distribution and hosting facts, which exist nowhere in the repo entry.'
+  relevance: medium
+  relevance_justification: 'MEDIUM. It carries no actionable technique beyond intake-1148, so it cannot drive work on its own. It is retained because (a) if omp ever becomes a real harness candidate under harness-selection-and-integration.md HS-4, the supply-chain surface is `curl | sh` from a third-party domain rather than a package registry or a signed release, and that is a fact a selection decision needs; and (b) the SPA-catch-all finding is a durable warning for any future agent re-reading this host.'
+  credibility_score: 1
+  credibility_justification: '1/6, Low tier. Peer-reviewed +0. Recency +1 (live, 2026-08-16). Known author +1 (same author as intake-1148). Commercial/promotional bias -1: this is a marketing landing page for the author own project and, unlike the README, ships no methodology, no per-run reports and no code alongside its numbers. Independent corroboration +0. The lower score than intake-1148 is intentional — the repository README at least travels with the benchmark harness source.'
+  verdict: adopt_patterns
+  verdict_justification: 'adopt_patterns by inheritance only: the patterns worth adopting are intake-1148, and this entry adds none. It is NOT not_applicable (in scope, same project, same open-source harness question) and NOT superseded (nothing displaces it — it is simply subordinate to the repository entry). Recorded so that a future reader who arrives at omp.sh is routed to intake-1148 for substance and to intake-1150 for evidence.'
+  discovered_via: input
+  ingested_date: '2026-08-16'
+  contradicting_evidence:
+  - 'The page displays the four self-attributed benchmark rows with no methodology at all — no n, no fixture description, no baseline definition. All caveats recorded on intake-1148 and intake-1150 apply here with strictly less supporting material.'
+  cross_references:
+    chapters: []
+    handoffs: [harness-selection-and-integration.md, user-facing-harness-index.md]
+    experiments: []
+    intake_entries: [intake-1148, intake-1150]
+    intake_entry_notes:
+    - 'intake-1148 (the oh-my-pi repository) — the substantive entry. Not a duplicate of this one: different URL, and this page carries distribution/hosting facts the repo does not.'
+    - 'intake-1150 (the harness-problem blog post) — the actual evidence behind the figures this page displays.'
+  recommended_actions:
+  - '[unverified] If HS-4 ever considers omp, record that the advertised install path is `curl | sh` from omp.sh rather than a signed release artifact, and prefer the npm/Homebrew/Nix paths for any evaluation install.'
+  notes: 'Operator-submitted 2026-08-16 together with the repository URL. Retrieval provenance: browser-UA curl 2026-08-16, index shell 6,026 bytes sha256 89b37c9f5593..., JS bundle /assets/index-BzcJmtQE.js 296,910 bytes. IMPORTANT for any future re-read: WebFetch on this host returns HTTP 403 and every path returns the same 200 shell, so neither a WebFetch failure nor a 200 status code tells you anything about this site content — read the JS bundle or the repository README instead.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Page metadata re-read 2026-08-16; title and description unchanged.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Install endpoints unchanged and still the advertised primary path.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'The README at head still references https://omp.sh/captures/*.webp for its demo assets.'
+  - claim_index: 3
+    effect: unaffected
+    note: >-
+      CONFIRMED by the dive rather than assumed: the four figures this page displays are the intake-1150
+      blog-era v1 prose numbers, and they reproduce exactly from the published per-run reports. The page
+      originates no measurement of its own, which is what this claim asserted.
+  dive_corrections: >-
+    DIVE 2026-08-16 (verified inside the intake-1148 dive, per the operator "deep dive all" instruction,
+    rather than skipped as the Stage-1 decline proposed). NOTHING OVERTURNED. The Stage-1 filing was
+    correct on every point: the page originates no empirical claim, its figures are intake-1150 v1 numbers,
+    and its only independent content is distribution/hosting. Recorded plainly as a confirmed filing —
+    no finding was manufactured to justify the pass.
+  depends_on:
+  - entry: intake-1148
+    claim_index: 0
+    why: 'This entry technical content is entirely inherited; if the repo entry description of the product were retracted, this entry would have to change with it.'
+  reader_should_conclude: >-
+    Route to intake-1148 for substance and intake-1150 for evidence. The only fact that lives ONLY here is
+    the supply-chain one: the advertised install is `curl | sh` from a third-party domain, not a signed
+    release. Note also that this host is an SPA catch-all — every path returns HTTP 200 with the same
+    6,026-byte shell, so a status-code probe of omp.sh proves nothing about content.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Confirmed to originate no claim of its own; carries no actionable beyond intake-1148.'
+  verification: dive-verified
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  handoffs_created: []
+
+- id: intake-1150
+  arxiv_id: null
+  url: https://blog.can.ac/2026/02/12/the-harness-problem/
+  source_type: blog
+  title: 'We improved 15 LLMs at coding in one afternoon. Only the harness changed. (The Harness Problem)'
+  authors:
+  - 'Can Bölük'
+  categories: [benchmark_methodology, tool_implementation, agent_architecture, cost_aware_routing]
+  key_claims:
+  - 'CENTRAL CLAIM — the edit tool, holding model and prompt fixed, moves coding pass rate by more than most model upgrades do, at zero training compute. Headline framing: +15 points average over the patch format across 16 models, 10x on the worst case, -61% output tokens on the best case, ~$300 total benchmarking spend.'
+  - 'THE MECHANISM IS FAILURE-MODE-SPECIFIC, not general capability. apply_patch (OpenAI-flavoured diff blob validated against strict unstated rules) is claimed to be effectively a Codex-tokenizer-biased format: measured patch FAILURE rates of 50.7% for Grok 4 and 46.2% for GLM-4.7. str_replace (Claude Code and most others) requires perfect character-level reproduction including whitespace, and rejects multiple matches.'
+  - 'HASHLINE is proposed as the alternative: read/grep tag each line with a 2-3 character content hash, and the model addresses edits by tag rather than by reproduced content, so it must RECALL a pseudo-random anchor rather than REPRODUCE text. A changed file makes anchors diverge and the patch is rejected pre-application.'
+  - 'THE WEAKEST MODELS GAIN THE MOST — the effect is largest exactly where mechanical edit failure was masking coding ability, which is the load-bearing shape for anyone serving smaller/local models.'
+  - 'STRUCTURAL ARGUMENT, not measured: no vendor will do harness optimization for a competitor models, so an open-source harness is the only place cross-vendor harness tuning can happen. Offered alongside two vendor-restriction anecdotes (an OpenCode block by Anthropic; the author own Gemini account disabled while running the benchmark).'
+  techniques:
+  - 'Content-hash line anchors (hashline) as an edit-address space, with a v2 revision benchmarked separately'
+  - 'Inverse-mutation fixture generation — take a real file, apply a mechanical bug (operator swap, boolean flip, off-by-one, removed optional chain, removed guard clause, renamed identifier), auto-describe it in plain English, and expect the inverse edit'
+  - 'Format-isolated A/B/C harness benchmarking: identical model, identical prompt, identical 4-tool surface (read, edit, write), only the edit format varies'
+  - 'Post-format normalization before comparison, to avoid scoring formatting differences as failures'
+  reported_results:
+  - 'PROTOCOL AS STATED: 3 runs per task, 180 tasks per run, fresh agent session each time, four tools (read, edit, write), temporary workspace per task, compared against the original file before and after formatting. Fixtures are mutations of files drawn from the React codebase. 16 models x 3 edit tools.'
+  - 'PER-MODEL delta-PATCH (hashline minus patch), delta-REPLACE (hashline minus str_replace), token delta — as tabulated on the page: Grok Code Fast 1 +64.6 / +4.6 / -49%; MiniMax M2.1 +41.7 / +10 / -42%; Devstral Medium +40.5 / +3.8 / n-a; GLM-4.5 Air +27 / +0.4 / -17%; GLM-4.7 +23.3 / +8.3 / -32%; GPT-5.1 Codex Mini +20.3 / +4.2 / n-a; Grok-4.1 Fast +19.2 / +2.5 / -20%; Grok 4 Fast +17.4 / -0.4 / -61%; Qwen Turbo +16.6 / -1.7 / n-a; Claude Sonnet 4.5 +14.4 / +3.3 / -24%; Claude Haiku 4.5 +13 / +11.3 / -22%; Gemini 2.5 Flash Lite +10 / 0 / n-a; Kimi K2.5 +10 / +5 / -26%; Gemini 3 Flash +8 / +11.3 / -21%; GPT-5.2 Codex +4.6 / -0.4 / +26%; DeepSeek V3.2 -5 / -8.3 / +20%.'
+  - 'SUMMARY LINE AS STATED: hashline beats patch in 14 of 16 models; the v2 revision improves further in 12 of 16; largest v2 gain GPT-5.1 Codex Mini 60.0% -> 77.5%.'
+  - 'ABSOLUTE FIGURES QUOTED IN PROSE: Grok Code Fast 1 6.7% -> 68.3%; Gemini 3 Flash 78.3% with hashline, described as beating Google own best attempt at the format by 5.0 pp.'
+  - 'PRIOR-ART FIGURES THE POST CITES (second-hand, each needs its own verification): aider edit-format choice swung GPT-4 Turbo from 26% to 59% while GPT-3.5 scored only 19% on the same format; Cursor fine-tuned a 70B apply model and its own post states full-file rewrite beats aider-like diffs under 400 lines; Diff-XYZ (JetBrains) found no single edit format dominates across models and use cases; EDIT-Bench found only one model exceeds 60% pass@1.'
+  novelty: high
+  novelty_justification: 'HIGH. This is the only artifact in the index that treats the edit-address space as the independent variable and holds the model fixed across a 16-model sweep. The protocol is a clean factorial (16 models x 3 formats x 3 runs x 180 tasks) with the harness surface deliberately reduced to four tools so the edit format is the only thing that moves. Zero prior hits for hashline, str_replace, apply_patch or edit-format-as-variable in 1,143 entries.'
+  relevance: high
+  relevance_justification: 'HIGH, and specifically for the local-serving posture rather than for the harness itself. The finding that lift is inversely proportional to model strength is directly load-bearing for us: we serve mid-size open-weight models (Qwen3.x-class, gemma4-26B-A4B) whose measured position is exactly the band this post says is most harness-limited, and it names two families we have measured (GLM, Qwen) with double-digit deltas. It also supplies the missing methodology for every number in intake-1148, so under the unverified contract it is the entry a dive must read before ANY of those figures may enter a plan item or a handoff task. Secondary contact: routing-intelligence.md already notes that a difficulty/routing signal can be confounded by which coding agent is in use; this post quantifies that confound.'
+  credibility_score: 2
+  credibility_justification: '2/6, Medium tier. Peer-reviewed +0. Recency +1 (2026-02-12, six months). Known contributor +1 (established systems author; benchmark harness and per-run reports are published as open source alongside). Commercial bias 0 — the artifact being promoted is free and MIT — but the self-attribution caveat is severe and is recorded under contradicting_evidence rather than netted into the score. Independent corroboration +0: no third party has re-run this protocol. The score understates the methodological disclosure, which is unusually good for a blog post (n, run count, fixture generation, cost, and a published negative tail), and overstates nothing — read the two together.'
+  verdict: adopt_patterns
+  verdict_justification: 'adopt_patterns. The transferable assets are the MECHANISM (hash anchors as an edit-address space) and the PROTOCOL (format-isolated A/B with inverse-mutation fixtures), both of which we could apply to our own edit path and our own eval tower without importing any of the author code. Not adopt_component — nothing here is a runnable artifact for us. Not new_opportunity — the opportunity it opens is the harness-selection gate already owned by HS-4, not a new one. Not superseded: Diff-XYZ and EDIT-Bench study adjacent questions and do not displace this one.'
+  discovered_via: expansion
+  expanded_from: intake-1148
+  ingested_date: '2026-08-16'
+  contradicting_evidence:
+  - 'SELF-ATTRIBUTED, SINGLE-AUTHOR, ZERO INDEPENDENT REPLICATION — the author designed the format, wrote the harness, generated the fixtures, ran the benchmark and reports the result. Nothing here is wrong by construction, but every incentive points one way and no third party has re-run it. PROVISIONAL: a bounded 2026-08-16 search found only restatements.'
+  - 'THE FIXTURES ARE INVERSE-MUTATION TASKS ON ONE CODEBASE. Mechanical single-site bugs (operator swap, boolean flip, off-by-one, removed guard clause) drawn from React, where the expected fix IS the inverse of a known mutation. This maximally isolates edit-application skill — which is the point — but it also means the result generalizes to mechanical edit application and NOT to software engineering. The post is careful about this in the method section and much less careful in the framing sentence "We improved 15 LLMs at coding".'
+  - 'THE TITLE AND THE TABLE DISAGREE ON COUNT: the title says 15 LLMs, the table lists 16 rows and the caption says 14 of 16. Trivial, but it is an uncorrected arithmetic inconsistency on the headline of a self-reported result.'
+  - 'THE README AND THE BLOG DO NOT OBVIOUSLY RECONCILE — the README (intake-1148) states Grok Code Fast 1 went 6.7% -> 68.3%, a +61.6 pp delta, while this table lists that model at delta-PATCH +64.6. Probably different comparisons (v2 vs v1 hashline), but neither artifact says so.'
+  - 'THE EFFECT HAS A NEGATIVE TAIL that the promotional surfaces omit: DeepSeek V3.2 loses 5 points against patch and 8.3 against str_replace, and GPT-5.2 Codex spends +26% more tokens. Against str_replace specifically — the format most comparable to what mainstream harnesses actually run — the median gain is small and three models are flat or negative. The 10x headline is a patch-baseline artifact for one model. CONFIRMED AND QUANTIFIED BY THE 2026-08-16 DIVE: against str_replace the mean over 19 models is +2.97 pp with 4 outright losses, versus +19.4 pp against patch.'
+  - 'FIXTURE-MIX CAVEAT, measured by the 2026-08-16 dive rather than asserted: the mutation categories the post names as representative (operator swaps, boolean flips, off-by-one errors, removed optional chains) are 6 of the 106 fixtures in the CURRENT generator; the bulk are structural and multi-edit mutations (16 multi-composite-multi-edit, 12 wrap-redundant-if, 12 swap-sibling-blocks, 10 identifier-multi-edit). The named examples are the memorable minority, not the distribution.'
+  - 'ONE CITED FIGURE CHECKED AT INGEST AND CONFIRMED: the post claim that EDIT-Bench found only one model exceeding 60% pass@1 matches the arXiv:2511.04486v2 abstract verbatim ("only 1 model scores over 60%"). Recorded because a web-search summary of that same paper asserted "3 models" and "545 problems" against the abstract "540 problems" — the search summary was wrong, the post was right. Do not adjudicate a cited figure from a search snippet.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs:
+    - harness-selection-and-integration.md
+    - batched-edit-parallel-apply.md
+    - routing-intelligence.md
+    - tool-use-eval-contract.md
+    experiments: []
+    intake_entries: [intake-1148, intake-1149, intake-1151, intake-1152, intake-426]
+    intake_entry_notes:
+    - 'intake-1148 / intake-1149 — the harness and its landing page. This entry is where their numbers actually come from.'
+    - 'intake-1151 (Diff-XYZ) and intake-1152 (EDIT-Bench) — both cited BY this post, and both independent of its author. They are the only non-self-attributed evidence in this cohort.'
+    - 'intake-426 (a coding harness is ~98.4% plumbing) — this post is the empirical argument that the plumbing decides the outcome.'
+  recommended_actions:
+  - '[unverified] Verify the per-model table and the protocol against the published per-run reports and the benchmark source (packages/typescript-edit-benchmark) at a pinned commit, before any figure enters a plan item or handoff task.'
+  - '[unverified] Extract the delta-REPLACE column specifically. str_replace is the realistic baseline for us; the patch-baseline deltas are the promotional number and are not the decision-relevant one.'
+  - '[unverified] Ask whether the inverse-mutation protocol is worth reusing in our own eval tower as a cheap, judge-free, deterministic edit-application suite — it needs no LLM judge, which is a property canonical-judge-suite-revamp.md and eval-tower-verification.md have repeatedly paid for.'
+  notes: 'Discovered by Tier-1 reference chase from the intake-1148 README, which links it as "Read the full post". Published on blog.can.ac under the Stencil banner. Retrieval provenance: curl 2026-08-16, 45,183 bytes, sha256 bf6cf1a3f6da...; all figures above were transcribed from the extracted page text, not from a fetch summariser. The page is the sole methodology source for the intake-1148 and intake-1149 headline claims, which is why it was ingested rather than declined.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'packages/react-edit-benchmark/runs/grok-code-fast-1_patch_2026-02-11T08-35-38.md, Summary table (patch arm)'
+    quote: '| **Task Success Rate** | **6.7% (4/60)** |'
+    quote_sha256: 'b7d4dac5a8be3bf30225de0d466c8e8ecdfc606ffb4da69f6acd288dfe77449d'
+    source_revision: 'github.com/can1357/oh-my-pi @ f8e915e14e7a20bafedcccd2888c9623ccd08d36'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: line-range
+    locator: 'packages/react-edit-benchmark/runs/grok-code-fast-1_hashline_2026-02-11T08-27-24.md, Summary table (hashline arm)'
+    quote: '| **Task Success Rate** | **68.3% (41/60)** |'
+    quote_sha256: '31bd924cbbddf681ebef708e41db356d351a9003a6aefef6bd61951cb7ac9fa4'
+    source_revision: 'github.com/can1357/oh-my-pi @ f8e915e14e7a20bafedcccd2888c9623ccd08d36'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: line-range
+    locator: 'Configuration table, present identically in all 71 run reports at the blog-era commit'
+    quote: '| Runs per task | 1 |'
+    quote_sha256: 'fc8968c8e8872deeb413fde1aee2f42a2153fb25ac712e0d0160e769af1de3d8'
+    source_revision: 'github.com/can1357/oh-my-pi @ f8e915e14e7a20bafedcccd2888c9623ccd08d36'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: >-
+      THE ARITHMETIC IS EXACT; THE BASELINE IS THE PROBLEM. "+15pts average over patch" is CONFIRMED — this
+      dive independently recomputed +15.61 pp mean over the 17 models with both arms in the blog-date
+      snapshot. The 10x is CONFIRMED exactly (4/60 -> 41/60). NARROWING: `patch` is the baseline the post
+      itself argues is broken for non-Codex models (grok-code-fast-1 patch-failure rate 99.3%, 268/270), so
+      the headline is measured against the worst available comparator. Against `str_replace` — the format
+      mainstream harnesses actually run, and the only decision-relevant baseline for us — the same published
+      reports give mean +2.97 pp, median +3.8 pp, 14 wins / 4 losses / 1 tie of 19 models (two-sided sign
+      test p = 0.064). The effect against the realistic baseline is roughly one fifth of the headline and is
+      not statistically established at this n.
+  - claim_index: 1
+    effect: unaffected
+    note: >-
+      CONFIRMED EXACTLY from the run reports. Grok 4 patch-failure 50.7% matches
+      grok-4-fast-non-reasoning_patch_2026-02-10T15-29-33.md (172/339); GLM-4.7 46.2% matches
+      glm-4_7_patch_2026-02-10T17-39-32.md (203/439). Both figures are accurately reported.
+  - claim_index: 2
+    effect: narrowed
+    note: >-
+      The described mechanism was accurate AT PUBLICATION and is now stale. Blog-era code
+      (packages/coding-agent/src/patch/hashline.ts) did tag every line, though with 4 base36 chars, not the
+      "2-3 character" the post says. The shipped format at head 37eee719 uses ONE file-level 4-hex tag and
+      plain line numbers. See intake-1148 claim_corrections index 0.
+  - claim_index: 3
+    effect: overturned
+    note: >-
+      THE PROTOCOL AS STATED DOES NOT MATCH THE PUBLISHED REPORTS. The post says "3 runs per task, 180 tasks
+      per run". Every one of the 71 reports at the blog-era commit records Total Tasks = 60; 53 of them
+      record Runs per task = 1 and 18 record 3. The 180 is 60 tasks x 3 runs = 180 RUNS, restated as
+      "180 tasks". Decisively, the headline Grok Code Fast 1 comparison is Runs-per-task = 1 on BOTH arms —
+      single-shot, n=60, no repetition and therefore no variance estimate at all. The "weakest models gain
+      the most" direction survives (it is carried by deltas of +25 to +65 pp), but it rests on single-shot
+      n=60 cells.
+  - claim_index: 4
+    effect: unaffected
+    note: >-
+      Not adjudicated here: it is a structural argument about vendor incentives, not a measurement. The two
+      vendor-restriction anecdotes were not independently checked by this dive.
+  dive_corrections: >-
+    DIVE 2026-08-16 (primary-source: all 134 benchmark run reports ever committed, extracted from full repo
+    history; 71 of them present at the blog-era commit f8e915e14). THE HEADLINE SURVIVES, THE PROTOCOL DOES
+    NOT, AND THE STAGE-1 DISCREPANCY IS RESOLVED IN THE SOURCE FAVOUR.
+    (A) RESOLVED — the Stage-1 "README says +61.6, blog table says +64.6, they do not reconcile" flag is
+    CLOSED, and the source was right. Both are real published runs: the v1 hashline run scores Grok Code
+    Fast 1 at 68.3% (delta-patch +61.6) and a later run scores it at 71.3% (delta-patch +64.6, delta-replace
+    +4.6 — matching the blog table EXACTLY). Recomputing every row from the full record reproduces the blog
+    table on Grok Code Fast 1, MiniMax M2.1, Devstral, GLM-4.7, Qwen Turbo, Gemini 3 Flash, DeepSeek V3.2
+    and GPT-5.1 Codex Mini (60.0 -> 77.5 confirmed). NOTHING IS FABRICATED. The real defect is milder and
+    undisclosed: the page mixes v1 PROSE numbers with v2 TABLE numbers on one page without saying so.
+    (B) OVERTURNED — the stated protocol. n = 60 tasks, never 180, in all 134 reports; the headline cells
+    are single-shot. See claim_corrections index 3.
+    (C) MEASURED, NOT ASSERTED — the noise floor, from the author OWN repeated identical configs. 22
+    configs were run more than once; median test-retest spread 3.75 pp, mean 5.9 pp, MAX 17.8 pp
+    (gpt-5-1-codex-mini patch, five runs spanning 39.4-57.2). The binomial 95% CI at n=60 is +/-11 to 13 pp
+    on a single arm and +/-15.5 to 17.9 pp on an unpaired two-arm difference. CONSEQUENCE: the +2.97 pp mean
+    against str_replace sits INSIDE the harness own measured retest spread, while the +19.4 pp mean against
+    patch (17/19 models, sign test p = 0.0007) sits well outside it and survives.
+    (D) STALE-BUT-TRUE-WHEN-WRITTEN — the "random file from the React codebase" fixture claim. TRUE at
+    publication: packages/react-edit-benchmark existed at the blog-era commit. FALSE today: it was replaced
+    on 2026-04-06 by packages/typescript-edit-benchmark, whose generator shallow-clones oh-my-pi ITSELF and
+    scans packages/ (`git log --all -S react` over that package returns zero commits). A reader following
+    the post own "all code and benchmarks: omp" link today finds a benchmark that mutates the harness own
+    source, 106 fixtures, and a 6-model single-config results file with no edit-format axis at all.
+    (E) CONFIRMED — both second-hand citations this dive could check. Diff-XYZ "no single format dominates"
+    matches intake-1151 verbatim; EDIT-Bench "only one model over 60%" matches intake-1152 exactly
+    (claude-sonnet-4). The aider and Cursor figures were NOT checked and remain second-hand.
+    STAGE-2b ADDENDUM 2026-08-18 — THE AIDER AND CURSOR FIGURES HAVE NOW BEEN CHECKED, AND BOTH ARE
+    MISREPORTED HERE. (i) This post attributes "26% to 59%" to GPT-4 Turbo; the aider primary source
+    (intake-1154) says 26 to 59 is JUNE GPT-4 (gpt-4-0613), while GPT-4 Turbo went 20 to 61 — the models
+    are swapped. The aider source also discloses a ceiling this post drops: 28% of its tasks do not fit
+    June GPT-4 8k window, capping that model at 72%. (ii) This post attributes to Cursor own blog post the
+    sentence that "fully rewriting the full file outperforms aider-like diffs for files under 400 lines".
+    That sentence is NOT in the Cursor post (intake-1153), which says only that its EVAL SET was built from
+    ~450 files under 400 lines — a dataset property restated as a finding boundary. The sentence matches
+    the title of aider GitHub issue 625, so this is most likely a provenance error. (iii) The companion
+    claim that "GPT-3.5 scored only 19% with the same format" was NOT LOCATED on either aider page
+    searched; recorded as unlocated, explicitly NOT as fabricated, since aider hosts many benchmark pages.
+    NONE OF THIS TOUCHES THE MEASUREMENTS THIS POST MADE ITSELF, which were confirmed by the 2026-08-16
+    dive — the errors are confined to its second-hand prior-art paragraph.
+    URL ALIAS, recorded so a future dedup sweep does not mint a second entry: this post is mirrored at
+    https://stencil.so/blog/the-harness-problem under the Stencil banner. Same content, different host.
+  reader_should_conclude: >-
+    CITE THE delta-REPLACE COLUMN, NOT THE HEADLINE. The defensible finding is: replacing a diff-blob edit
+    format with a line-anchored one is worth a very large amount (mean +19.4 pp, 17/19 models) for models
+    not tuned to that blob format, and is worth about +3 pp — inside this benchmark own noise floor —
+    against exact-text str_replace. Never quote the 10x without naming the patch baseline. Do not treat any
+    single-model delta below ~15 pp from this source as real: the unpaired 95% CI at n=60 is +/-15.5 pp and
+    the author own repeats span up to 17.8 pp. The post is honest in its method section and loose in its
+    framing sentence; the README and landing page carry only the loose version.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'The protocol (single-shot n=60) does not meet the resolution bar our own measurement constitution requires of a decision-gating number, so no figure here can gate a change.'
+  - 'The transferable asset is the inverse-mutation fixture design, which is judge-free and deterministic — a property canonical-judge-suite-revamp.md and eval-tower-verification.md have repeatedly paid for.'
+  - 'The mechanism it benchmarks is no longer the mechanism its own project ships (intake-1148 dive_corrections).'
+  verification: dive-verified
+  handoffs_updated:
+  - batched-edit-parallel-apply.md
+  - canonical-judge-suite-revamp.md
+  handoffs_created: []
+
+- id: intake-1151
+  arxiv_id: '2510.12487'
+  url: https://arxiv.org/abs/2510.12487
+  source_type: paper
+  title: 'Diff-XYZ: A Benchmark for Evaluating Diff Understanding'
+  authors:
+  - 'Evgeniy Glukhov'
+  - 'Michele Conti'
+  - 'Egor Bogomolov'
+  - 'Yaroslav Golubev'
+  - 'Alexander Bezzubov'
+  categories: [benchmark_methodology, tool_implementation, agent_architecture]
+  key_claims:
+  - 'Three supervised tasks isolate diff competence: apply (old code + diff -> new code), anti-apply (new code - diff -> old code), and diff generation (new code - old code -> diff).'
+  - 'Instances are triples of old code, new code and diff drawn from REAL commits in CommitPackFT, with automatic metrics and a stated evaluation protocol.'
+  - 'CROSS-FORMAT FINDING — no single diff representation is best; the right format depends on use case and model size.'
+  - 'Search-replace format performs best for LARGER models across most tasks; structured udiff variants are similar but slightly weaker.'
+  - 'SMALLER OPEN MODELS BENEFIT LITTLE FROM ANY FORMATTING CHOICE — stated in the abstract, and this is the claim in direct tension with the intake-1150 finding that the weakest models gain the most.'
+  techniques:
+  - 'Apply / anti-apply / diff-generation task triad as a decomposition of diff competence'
+  - 'Cross-format comparison over udiff, udiff-h, udiff-l and search-replace representations of the same edit'
+  - 'Automatic metrics on real-commit triples rather than LLM-judged scoring'
+  reported_results:
+  - 'Dataset scale as stated in the abstract and dataset card: 1,000 real-world code edits sampled and filtered from CommitPackFT; four diff representations per instance (udiff, udiff-h, udiff-l, search-replace); released on HuggingFace Hub as JetBrains-Research/diff-xyz.'
+  - 'Per-model and per-format numeric tables were NOT extracted at Stage 1 — only the abstract and the dataset card were read. Any specific figure must come from a dive on the PDF.'
+  novelty: medium
+  novelty_justification: 'MEDIUM. The task triad (particularly anti-apply as a probe of whether a model actually understands a diff rather than pattern-matching it) is a genuine construction contribution, and there is no prior edit-format benchmark anywhere in this index. It is medium rather than high because the underlying question — which diff format do LLMs handle best — was already being asked informally by aider and by tool vendors; this paper systematizes it rather than opening it.'
+  relevance: medium
+  relevance_justification: 'MEDIUM, and its value is almost entirely as a CHECK on this cohort rather than as work of its own. It is the independent, non-can1357, institutionally-backed measurement of the exact question intake-1150 answers self-attributedly, and its model-size finding appears to point the opposite way — Diff-XYZ says small open models benefit little from format choice, intake-1150 says the weakest models gain the most. That tension is the single most decision-relevant thing in this whole cohort for us, because we serve mid-size open-weight models. Not high: it evaluates diff UNDERSTANDING in isolation rather than agentic edit application, so it may be measuring an adjacent construct, and resolving that is itself a dive question.'
+  credibility_score: 2
+  credibility_justification: '2/6, Medium tier. Peer-reviewed venue +0 — arXiv preprint at v2 (2025-11-17), no venue recorded in the arXiv metadata, so the +2 is not claimable at Stage 1. Recency +1 (v1 2025-10-14, ten months). Major lab / known contributors +1 (JetBrains Research; Bogomolov and Golubev are established software-engineering-ML authors). Commercial bias 0: JetBrains sells IDE tooling, but the paper evaluates formats neutrally and releases the dataset publicly. Independent corroboration +0 at Stage 1 — being cited by intake-1150 is a citation, not a corroboration.'
+  verdict: worth_investigating
+  verdict_justification: 'worth_investigating. It is a released, permissively-distributed benchmark whose result may directly contradict the cohort headline, but Stage 1 read only the abstract and the dataset card, so the size-dependence finding is a claim about a claim. Not adopt_component — we have not established the tasks map onto anything our eval tower needs. Not not_applicable — it is squarely in domain. Not superseded — nothing displaces it.'
+  discovered_via: expansion
+  expanded_from: intake-1150
+  ingested_date: '2026-08-16'
+  contradicting_evidence:
+  - 'A bounded Tier-2b search surfaced no critique or failed reproduction of Diff-XYZ. PROVISIONAL — absence from a bounded search is not evidence of absence, and this benchmark is recent enough that little third-party evaluation would be expected yet.'
+  - 'CONSTRUCT-VALIDITY CAVEAT recorded at ingest, not from a critic: the tasks are single-turn, supervised, and non-agentic. A model that can apply a udiff in one shot is not necessarily a model that can drive an edit tool across a multi-turn session with a stale-file risk, which is what intake-1150 measures. The apparent contradiction between the two on model size may dissolve into a construct difference rather than a factual disagreement, and a dive should test that before either is treated as refuting the other.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [batched-edit-parallel-apply.md, tool-use-eval-contract.md, harness-selection-and-integration.md]
+    experiments: []
+    intake_entries: [intake-1150, intake-1148, intake-1152]
+    intake_entry_notes:
+    - 'intake-1150 — cites this paper as support for "no single edit format dominates". This entry exists to check that citation against the source, and to test the apparent model-size contradiction.'
+    - 'intake-1152 (EDIT-Bench) — the other independent edit benchmark cited by the same post; complementary, since EDIT-Bench is real-world-instruction-grounded where Diff-XYZ is diff-format-isolated.'
+  recommended_actions:
+  - '[unverified] Read the PDF and extract the per-format x per-model-size table, specifically to establish whether "smaller open models benefit little from any formatting choice" survives at the sizes we actually serve, or whether it is an artifact of the single-turn supervised setting.'
+  - '[unverified] Decide whether the anti-apply task is worth borrowing as a cheap judge-free capability probe for our own eval tower.'
+  notes: 'Tier-1 reference chase from intake-1150, which names this benchmark by title. Not previously in the index (unbounded sweep for 2510.12487, "Diff-XYZ" and "diff-xyz": zero hits). Metadata read from the arXiv API 2026-08-16: version v2, published 2025-10-14, updated 2025-11-17. VERSION MATTERS HERE — the entry describes v2 and any dive must re-check the version before quoting, per the intake-110 precedent. Abstract and HuggingFace dataset card only were read at Stage 1; no PDF table was extracted.'
+  claim_anchors:
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Section 6, Limitations and Future Work, first paragraph'
+    quote: 'The tasks in Diff-XYZ are simplified proxies rather than full downstream applications. Establishing a quantitative link between performance on these tasks and outcomes in real systems such as commit message generation, automated bug fixing, or code review is left for future work. As a result, our findings should not be interpreted as direct predictions of production performance.'
+    quote_sha256: '96aca08e7905e89b4fd3a3c9810f7cea6e6e668c86ac7e8312c040ff4c25cb86'
+    source_revision: 'arXiv:2510.12487v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Section 6, Limitations and Future Work, second paragraph'
+    quote: 'All experiments use non-reasoning LLMs under greedy decoding. Evaluation of tool use, multi-step reasoning, sampling strategies, or best-of- n decoding, is an important question that is out of scope of this work. The reported numbers therefore reflect single-pass behavior and likely represent conservative estimates rather than achievable upper bounds.'
+    quote_sha256: '3d91c78f13350a22572668ff073de13111808f68824a1758d754ed0a9db82cde'
+    source_revision: 'arXiv:2510.12487v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Model-size analysis subsection'
+    quote: 'To analyze how model size affects diff understanding, we evaluate the Qwen2.5-Coder series [ 15 ] , a family of open-source, code-focused LLMs ranging from 0.5B to 32B parameters.'
+    quote_sha256: '8cc50741ecc764d0036bb3e8dbd59a0a8e270b943585931fca3c60d92bca6526'
+    source_revision: 'arXiv:2510.12487v2'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Task triad confirmed verbatim in the abstract and body.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CommitPackFT provenance and the triple structure confirmed.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed, and this is the claim intake-1150 cites; the citation is accurate.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed verbatim: search-replace best for larger models, udiff variants slightly weaker.'
+  - claim_index: 4
+    effect: reattributed
+    note: >-
+      THE CLAIM IS TRUE BUT IT IS NOT ABOUT THE MODELS THE STAGE-1 ENTRY THOUGHT. "Smaller open models"
+      means the Qwen2.5-Coder series, 0.5B to 32B, and the paper states "reliable results emerge around the
+      7B scale". So the finding is a FLOOR EFFECT — below roughly 7B the models cannot do the task at all,
+      so no representation helps — not a claim that format choice is worthless for capable open models.
+      Reattributed from "small open models generally" to "sub-7B Qwen2.5-Coder specifically".
+  dive_corrections: >-
+    DIVE 2026-08-16 (arXiv:2510.12487v2 full text). THE STAGE-1 HEADLINE FINDING OF THIS ENTRY IS
+    OVERTURNED — BY ITS OWN AUTHORS, AND AGAINST THIS SESSION OWN EARLIER READING.
+    Stage 1 recorded that the apparent contradiction between this paper ("smaller open models benefit little
+    from any formatting choice") and intake-1150 ("the weakest models gain the most") was "the single most
+    decision-relevant thing in this whole cohort". THERE IS NO CONTRADICTION, and the paper says so
+    explicitly in two places this session had not read: it disclaims production prediction outright ("our
+    findings should not be interpreted as direct predictions of production performance") and states that all
+    experiments are non-reasoning LLMs under greedy decoding reflecting "single-pass behavior". Section 3
+    further states the design "focuses specifically on edit representation in isolation... unlike agentic
+    frameworks such as SWE-bench, it requires no repository setup or execution harness".
+    So the two sources measure different regions of two different constructs: this paper measures single-turn
+    supervised diff comprehension across 0.5B-32B Qwen2.5-Coder, where sub-7B models are on the FLOOR;
+    intake-1150 measures multi-turn agentic edit application across frontier API models, all far above that
+    floor. Both are consistent with one synthesis: the format effect is largest in a MIDDLE band — models
+    strong enough to do the task but weak enough to be mechanically limited by the representation.
+    CONSEQUENCE FOR US, which is the part that survives and is worth keeping: our served open-weight models
+    sit ABOVE this paper floor and BELOW intake-1150 frontier band, so NEITHER source measures our band. The
+    correct conclusion is "unmeasured for our models", not "settled either way". The Stage-1
+    relevance_justification for this entry was wrong and is superseded by this correction.
+  depends_on: []
+  reader_should_conclude: >-
+    Do NOT cite this paper as evidence against the harness-lift thesis; its authors explicitly forbid that
+    reading. Cite it for what it establishes: a clean, cheap, judge-free, single-turn probe of diff
+    comprehension, and a measured floor at roughly 7B for the Qwen2.5-Coder family. If you want to know
+    whether edit format matters for the models WE serve, neither this entry nor intake-1150 answers it —
+    that is an open measurement, not a settled question.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'The paper explicitly disclaims the downstream-prediction reading that would have made it decision-gating for us.'
+  - 'The anti-apply task remains a candidate cheap judge-free probe, but no owner on our queue currently needs it.'
+  verification: dive-verified
+  handoffs_updated:
+  - canonical-judge-suite-revamp.md
+  handoffs_created: []
+
+- id: intake-1152
+  arxiv_id: '2511.04486'
+  url: https://arxiv.org/abs/2511.04486
+  source_type: paper
+  title: 'EDIT-Bench: Evaluating LLM Abilities to Perform Real-World Instructed Code Edits'
+  authors:
+  - 'Wayne Chi'
+  - 'Valerie Chen'
+  - 'Ryan Shar'
+  - 'Aditya Mittal'
+  - 'Jenny Liang'
+  - 'Wei-Lin Chiang'
+  - 'Anastasios Nikolas Angelopoulos'
+  - 'Ion Stoica'
+  - 'Graham Neubig'
+  - 'Ameet Talwalkar'
+  - 'Chris Donahue'
+  categories: [benchmark_methodology, agent_architecture, tool_implementation]
+  key_claims:
+  - 'Instructed code editing — the model modifies a developer existing code from a natural-language instruction — is a widely used interaction mode that few benchmarks evaluate directly, and existing datasets often rely on artificial sources.'
+  - 'EDIT-Bench is grounded in REAL-WORLD USAGE: user instructions and code contexts collected in the wild, rather than synthesized.'
+  - 'It introduces CONTEXT-DEPENDENT problems requiring the model to use code context, highlighted code and cursor position in addition to the instruction.'
+  - 'The task is hard at the frontier: across 40 evaluated LLMs, only 1 model scores over 60%.'
+  - 'CONTEXT IS WORTH UP TO 11 POINTS — varying the level of contextual information changes task success rate by up to 11%, which the authors read as evidence that evaluating with realistic context is necessary.'
+  techniques:
+  - 'In-the-wild collection of user instructions plus surrounding code context as benchmark instances'
+  - 'Explicit context-level ablation (context / highlighted code / cursor position present or absent) as a first-class benchmark axis'
+  - 'Instruction-category breakdown (error resolution, feature addition, modification) for per-category performance analysis'
+  reported_results:
+  - 'Scale as stated in the arXiv v2 abstract: 540 problems, multiple natural and programming languages, 40 LLMs evaluated, only 1 model above 60%, performance varying up to 11% with contextual information.'
+  - 'NOTE ON A CONFLICTING SECONDARY SOURCE: a web-search summary read 2026-08-16 reported "545 problems" and "only 3 models score over 60%". The arXiv v2 abstract read directly the same day says 540 and 1. The abstract is authoritative here; the search summary is recorded only so the discrepancy is not re-derived as a finding later.'
+  - 'Per-model scores and the per-category breakdown were NOT extracted at Stage 1 — abstract only.'
+  novelty: medium
+  novelty_justification: 'MEDIUM. In-the-wild instruction collection and the explicit context-level ablation are real construction contributions, and the index holds no comparable instructed-editing benchmark. Medium rather than high because it is a benchmark paper in a crowded benchmark space and the underlying capability (instructed editing) is already measured indirectly by SWE-bench-family work the index does carry.'
+  relevance: medium
+  relevance_justification: 'MEDIUM. Two uses for us, neither immediate. (1) It is the second independent, non-can1357 measurement in this cohort, and it establishes the difficulty ceiling that any harness-lift claim has to be read against: if only 1 of 40 models clears 60% on realistic instructed edits, a +15 pp harness lift on mechanical inverse-mutation fixtures is not the same quantity. (2) The context-ablation axis — up to 11 points from contextual information alone — is directly relevant to delegation-context-preassembly.md and tool-output-compression.md, both of which decide how much context to put in front of a model, and neither of which currently has an external number for what context is worth on an editing task. Not high: 540 problems in an external harness is not something we would run soon, and the categories are IDE-assistant-shaped rather than agent-shaped.'
+  credibility_score: 3
+  credibility_justification: '3/6, Medium tier. Peer-reviewed venue +0 at Stage 1 — arXiv v2 (2025-11-17) with an OpenReview submission page surfaced in search but no venue confirmed, so the +2 is not claimable and confirming it is a dive item. Recency +1 (v1 2025-11-06, nine months). Major lab +1 (CMU and UC Berkeley / LMArena; Ion Stoica, Graham Neubig, Wei-Lin Chiang and Chris Donahue are established). Commercial bias 0 (academic, dataset released). Independent corroboration +1: its headline difficulty finding is restated accurately by an unrelated third party (intake-1150, which read it and reported the 60% figure correctly, as verified against the abstract at ingest) — a weak corroboration of the READING, not of the result, and scored as one source only.'
+  verdict: worth_investigating
+  verdict_justification: 'worth_investigating. It is a released benchmark whose difficulty ceiling and context-ablation number are both directly usable as external reference points, but Stage 1 read only the abstract, so nothing in it is quotable yet. Not adopt_component — running a 540-problem external harness is not currently justified against anything on our queue. Not not_applicable and not superseded.'
+  discovered_via: expansion
+  expanded_from: intake-1150
+  ingested_date: '2026-08-16'
+  contradicting_evidence:
+  - 'A bounded Tier-2b search surfaced no critique or failed reproduction. PROVISIONAL — recent paper, little third-party evaluation expected yet.'
+  - 'SELECTION-BIAS CAVEAT recorded at ingest: instances are collected in the wild from users of an AI coding assistant, so the distribution reflects what people ask assistants to do, which is not the same as what needs doing. The paper frames this as the benchmark strength; it is simultaneously a bound on what the result generalizes to.'
+  - 'A widely-circulated secondary summary of this paper misstates both its size and its headline (545 problems / 3 models over 60%, against the abstract 540 / 1). Cite the abstract or the PDF, never a summary.'
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs:
+    - tool-use-eval-contract.md
+    - delegation-context-preassembly.md
+    - tool-output-compression.md
+    - batched-edit-parallel-apply.md
+    experiments: []
+    intake_entries: [intake-1150, intake-1148, intake-1151]
+    intake_entry_notes:
+    - 'intake-1150 — cites this paper for the "only one model over 60%" figure. That citation was checked against the arXiv v2 abstract at ingest and is ACCURATE.'
+    - 'intake-1151 (Diff-XYZ) — the complementary independent benchmark: Diff-XYZ isolates diff-format handling, EDIT-Bench measures realistic instructed editing with context.'
+  recommended_actions:
+  - '[unverified] Extract the context-ablation table; the "up to 11%" figure is the one with the clearest read-across to delegation-context-preassembly.md and tool-output-compression.md.'
+  - '[unverified] Confirm the publication venue — an OpenReview page exists and would move credibility from 3 to 5 if it resolves to an accepted venue.'
+  notes: 'Tier-1 reference chase from intake-1150, which names this benchmark by title. Not previously in the index (unbounded sweep for 2511.04486, "EDIT-Bench" and "EditBench": zero hits). Metadata read from the arXiv API 2026-08-16: version v2, published 2025-11-06, updated 2025-11-17. Abstract only was read at Stage 1; no PDF table extracted.'
+  claim_anchors:
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'Section 5.1, Discussion of Results, first takeaway'
+    quote: 'Only 1 out of 40 models ( claude-sonnet-4 ) achieves more than a 60% pass@1 on the core benchmark and all top 4 models are from Anthropic.'
+    quote_sha256: '9ab51f85581adfd4c8e6c0130928145eabbb0c997d472500f0618b3ceb001d8d'
+    source_revision: 'arXiv:2511.04486v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'Section 5, Code Editing Methods'
+    quote: 'In all our prompts, the model is given the user instruction and main code context and requested to edit the entire file by regenerating the entire code context.'
+    quote_sha256: '1d39d75c19d9d4e5f44ee29eb9d5766b891c2db2cb139482e83a436ea98bf9bc'
+    source_revision: 'arXiv:2511.04486v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Table 3 caption, Additional context affects performance'
+    quote: 'Surprisingly, adding cursor position on top of that leads to mixed results.'
+    quote_sha256: '46873b9099561fa414572fc569a4954b5935471a8bbb6faf09d3efe6acb64f8d'
+    source_revision: 'arXiv:2511.04486v2'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed in the introduction and the related-work positioning table (Table 1).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: instances are user instructions plus code context collected in the wild from an assistant deployment, with privacy-gated capture of instruction, highlighted segment, cursor location, prefix and suffix.'
+  - claim_index: 2
+    effect: narrowed
+    note: >-
+      CRITICAL SCOPE NARROWING THAT CHANGES WHAT THIS ENTRY IS FOR. The context fields are real, but the
+      benchmark asks the model to "edit the entire file by REGENERATING the entire code context" — it uses
+      no edit format at all. EDIT-Bench therefore does NOT and CANNOT arbitrate the hashline question. The
+      Stage-1 framing of this entry as part of the "independent corroboration/refutation channel" for
+      intake-1150 is wrong: it is orthogonal to it, not a check on it.
+  - claim_index: 3
+    effect: unaffected
+    note: 'CONFIRMED exactly, and the model is named: claude-sonnet-4, with all top 4 from Anthropic. This also confirms intake-1150 second-hand citation of the figure was accurate.'
+  - claim_index: 4
+    effect: narrowed
+    note: >-
+      "Up to 11%" is a WITHIN-MODEL RANGE ACROSS CONTEXT CONDITIONS driven by one model, not a typical
+      effect. Table 3, seven models: claude-sonnet-4 62.41 / 64.81 (+2.40) / 64.26 (+1.85);
+      deepseek-chat-v3.1 51.48 / 54.26 (+2.78) / 52.78 (+1.30); gemini-2.5-flash 52.59 / 52.96 (+0.37) /
+      56.30 (+3.71); glm-4.6 52.96 / 56.48 (+3.52) / 44.81 (-8.15); o3-mini 60.00 / 56.30 (-3.70) / 55.19
+      (-4.81); kimi-k2-0905 54.63 / 56.48 (+1.85) / 58.15 (+3.52); qwen3-coder 56.48 / 53.89 (-2.59). The
+      11 pp is glm-4.6 spanning +3.52 to -8.15. Typical effects are 2-4 pp, and TWO of seven models are made
+      WORSE by highlighting.
+  dive_corrections: >-
+    DIVE 2026-08-16 (arXiv:2511.04486v2 full text). Scale and headline CONFIRMED exactly (540 problems, 40
+    models, only claude-sonnet-4 above 60% pass@1) — and with them, the Stage-1 observation that a
+    circulating search summary claiming "545 problems / 3 models" was simply wrong.
+    TWO CORRECTIONS.
+    (1) SCOPE — this benchmark uses whole-file regeneration and no edit format, so it is orthogonal to the
+    hashline question rather than a check on it. See claim_corrections index 2.
+    (2) THE CONTEXT FINDING IS BETTER THAN THE ABSTRACT SUGGESTS, AND POINTS THE OTHER WAY. The abstract
+    frames "up to 11%" as showing the importance of realistic context. The table shows something sharper and
+    more useful to us: MORE CONTEXT IS NOT MONOTONICALLY BETTER. Adding cursor position on top of
+    highlighted code COST glm-4.6 8.15 pp, and highlighting alone HURT o3-mini (-3.70) and qwen3-coder
+    (-2.59). That is the read-across worth keeping for delegation-context-preassembly.md and
+    tool-output-compression.md: an external, independent measurement that a context field can be
+    per-model negative, at single-digit-pp magnitude.
+    VENUE NOT RESOLVED: no acceptance is stated anywhere in v2, so the Stage-1 note that confirming a venue
+    would move credibility 3 -> 5 stays OPEN and credibility_score remains 3.
+    STAGE-2b DECLINE RECORDED 2026-08-18, per the close-out contract that a declined source is named in the
+    bearing entry rather than silently lost: Chatbot Arena (arXiv:2403.04132, this paper reference 9) was
+    NOT ingested. It is the chat-preference precedent for the in-the-wild methodology, one step further from
+    code than Copilot Arena (intake-1156) which WAS ingested and carries the same methodological finding in
+    a coding setting. It was not part of the operator selected bundle and adds nothing that intake-1156 does
+    not already supply. Re-open only if a chat-preference baseline is ever needed on its own terms.
+  depends_on: []
+  reader_should_conclude: >-
+    Use this entry for two things only: the difficulty ceiling on realistic instructed editing (1 of 40
+    models above 60%), and the non-monotonicity of context (a context field can cost a model up to 8 pp).
+    Do NOT use it as independent evidence for or against any edit-format claim — it evaluates whole-file
+    regeneration and has no edit-format axis.
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'The context non-monotonicity result has a direct read-across to delegation-context-preassembly.md and tool-output-compression.md, neither of which currently holds an external number for what a context field is worth.'
+  - 'Running the 540-problem harness ourselves is not justified against anything currently on the queue; the usable output is the published table, not a re-run.'
+  verification: dive-verified
+  handoffs_updated:
+  - delegation-context-preassembly.md
+  handoffs_created: []
+
+- id: intake-1153
+  arxiv_id: null
+  url: https://cursor.com/blog/instant-apply
+  source_type: blog
+  title: 'Editing Files at 1000 Tokens per Second (Cursor Instant Apply / speculative edits)'
+  authors:
+  - Aman Sanger (Cursor / Anysphere)
+  categories: [tool_implementation, speculative_decoding, agent_architecture, inference_serving]
+  key_claims:
+  - >-
+    Cursor deliberately has the model REWRITE THE WHOLE FILE rather than emit diffs, conditioned on the
+    current file, the conversation history and the current code block.
+  - >-
+    Three stated reasons diffs fail. Diffs force the model to think in fewer tokens; diffs are
+    out-of-distribution because pretraining and post-training see far more full files than diffs; and
+    outputting LINE NUMBERS is actively harmful because a tokenizer that treats a digit sequence as one
+    token forces the model to commit to a line number in a single forward pass.
+  - >-
+    To remove the line-number problem they adopted a search/replace block format explicitly motivated by
+    aider, with redundant minus and plus markers so the parser tolerates minor model failures.
+  - >-
+    Most models fail to output accurate diffs, with the exception of Claude Opus.
+  - >-
+    Speculative edits, a speculative-decoding variant that uses the existing source code as draft tokens,
+    makes full-file rewrite practical at keystroke speed.
+  techniques:
+  - Full-file rewrite as the apply primitive, with planning and applying split into two stages
+  - Speculative edits — speculative decoding whose draft tokens are the existing source file
+  - Aider-derived search/replace blocks with redundant markers, adopted to eliminate line numbers
+  - LLM-graded rewrite evaluation using Claude-3 Opus as the grader
+  reported_results:
+  - >-
+    Evaluation set of approximately 450 full-file edits of files UNDER 400 LINES, scored by Claude-3 Opus
+    as grader. The under-400-lines property describes how the eval set was CONSTRUCTED; the post states no
+    threshold above which diffs start winning.
+  - >-
+    Roughly 1000 tokens/s (about 3500 char/s) on their 70b model, a ~13x speedup over vanilla Llama-3-70b
+    inference and a ~9x speedup over their previous GPT-4 speculative-edits deployment.
+  - >-
+    claude-3-opus-diff (Claude Opus on a modified aider diff format) beats gpt-4-turbo-spec on both speed
+    and accuracy; gpt-4o-diff reaches a median 2476 char/s but scores worse than claude-3-haiku (4.18 avg
+    eval score).
+  novelty: medium
+  novelty_justification: >-
+    MEDIUM. Speculative edits — reusing the unchanged source as the draft stream — is a genuinely elegant
+    application of speculative decoding to a workload where the draft is almost perfectly correct by
+    construction, and it is the reason full-file rewrite is affordable at all. The full-file-over-diffs
+    position is well known. Not high because the post is an engineering write-up with no released model,
+    no released eval set and no reproducible protocol.
+  relevance: high
+  relevance_justification: >-
+    HIGH, and higher than its Stage-1 framing suggested, for two reasons that only appeared on reading it.
+    (1) THE LINE-NUMBER ARGUMENT LANDS DIRECTLY ON intake-1148. Cursor names line numbers as a specific
+    tokenizer-level failure mode and adopts aider search/replace blocks to remove them — and the CURRENT
+    shipped hashline format addresses edits by PLAIN LINE NUMBERS, having removed the per-line hashes.
+    Two independent parties therefore identify line-number emission as the thing to avoid, and oh-my-pi
+    moved toward it. (2) SPECULATIVE EDITS IS OUR DOMAIN. We own a speculative-decoding track, and
+    draft-from-existing-source is a draft-model-free speculation source with a near-perfect acceptance
+    profile on edit workloads — different from the MTP and tree-drafting arms we have measured.
+  credibility_score: 1
+  credibility_justification: >-
+    1/6, Low tier. Peer-reviewed +0. Recency -1: published 2024-05-14, over 24 months old, and it describes
+    a shipping product that has certainly changed since. Known contributor +1 (Cursor/Anysphere, and the
+    speculative-edits work was independently written up by Fireworks). Commercial bias -1: this is a
+    closed commercial product marketing its own inference stack, with no released weights, eval set or
+    protocol. Independent corroboration +0. The LOW score is about verifiability, not about quality of
+    reasoning — the mechanistic arguments are the valuable part and they are checkable on their own merits.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns. Nothing is importable — closed product, no weights, no eval set. The transferable
+    assets are the speculative-edits idea (draft tokens from the existing file) and the line-number
+    argument. Not not_applicable: the speculation mechanism is squarely in our domain and self-hostable in
+    principle on our own stack. Not superseded: nothing in the index displaces it.
+  discovered_via: expansion
+  expanded_from: intake-1150
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    THE CITATION THAT SURFACED THIS SOURCE MISREPRESENTS IT, AND THIS DIVE CHECKED THE PRIMARY TEXT.
+    intake-1150 states that Cursor mention in their own blog post that "fully rewriting the full file
+    outperforms aider-like diffs for files under 400 lines". That sentence does NOT appear in this post.
+    What the post says is that the EVAL SET was constructed from approximately 450 full-file edits of files
+    under 400 lines. A property of the dataset has been restated as a finding boundary. The quoted sentence
+    matches the title of aider GitHub issue 625, a third-party issue — so the attribution to Cursor own
+    blog post is very likely a provenance error rather than a paraphrase.
+  - >-
+    THE GRADER IS AN LLM. Every accuracy number here comes from Claude-3 Opus grading rewrites, with no
+    execution-based or test-based check. Our own eval history is explicit that judge-scored deltas of this
+    size are the class of measurement that has repeatedly produced artifacts for us.
+  - 'Age: at over two years old and describing a live commercial product, nothing here can be assumed to reflect what Cursor ships today.'
+  cross_references:
+    chapters: [01-speculative-decoding.md, 10-advanced-speculative-decoding.md]
+    handoffs: [batched-edit-parallel-apply.md, speculative-decoding-mtp-refresh.md, harness-selection-and-integration.md]
+    experiments: []
+    intake_entries: [intake-1150, intake-1148, intake-1154, intake-1152]
+    intake_entry_notes:
+    - 'intake-1150 — cited this post and misattributed a sentence to it; see contradicting_evidence.'
+    - 'intake-1148 — the line-number argument here bears directly on the CURRENT shipped hashline format, which uses plain line numbers.'
+    - 'intake-1154 (aider unified diffs) — this post explicitly credits aider for the search/replace format it adopted; the two are a lineage pair.'
+    - 'intake-1152 (EDIT-Bench) — independently uses whole-file regeneration as its prompting method, which is the same choice this post argues for.'
+  recommended_actions:
+  - >-
+    Record the line-number tension against intake-1148 — two independent parties call line-number emission
+    a failure mode, and the shipped hashline format moved toward it after dropping per-line hashes.
+  - >-
+    Consider draft-from-existing-source speculation as a distinct arm in the speculative-decoding track:
+    on edit workloads the draft is the unchanged file, so acceptance should be far higher than a
+    general-purpose drafter. Note this is a HYPOTHESIS about our stack, not a result from this post.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 from the intake-1150 dive-surfaced list, ingested and dived in
+    one pass. Retrieval provenance: curl 2026-08-18, 225,172 bytes, sha256 2744143849c6..., post dated
+    2024-05-14. All figures above were transcribed from the extracted page text, not from a fetch
+    summariser. Dived rather than accepted: the citation that surfaced it turned out to misstate it.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18 (primary source read in full). The source is accurately characterised here for
+    the first time in this cohort: intake-1150 second-hand rendering of it is WRONG on the one detail
+    anybody would quote (the under-400-lines claim describes the eval set, not a crossover threshold), and
+    that error is recorded on this entry and cross-linked from intake-1150. The dive also surfaced a
+    finding neither Stage-1 nor the intake-1150 dive had: this post argues AGAINST line-number-addressed
+    edits on tokenizer grounds, which is the direction oh-my-pi shipped format has since moved. That
+    raised this entry from the Stage-1 expectation of a redundant vendor post to relevance HIGH.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed verbatim in the post opening section.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'All three reasons confirmed verbatim in the Diff Models section.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed: "Motivated by the diff format from Aider, we eliminate the line number problem."'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed verbatim.'
+  - claim_index: 4
+    effect: narrowed
+    note: >-
+      Confirmed, but the speed figures are the vendor own and ungraded by anyone else; the 13x is against
+      their own vanilla baseline, not against a third-party implementation.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Closed commercial product with no released weights, eval set or protocol — nothing is importable.'
+  - 'The speculative-edits idea belongs to a track we already own; it enters as a hypothesis for that track, not as a component.'
+  reader_should_conclude: >-
+    Cite this post for its MECHANISM arguments (line numbers are a tokenizer hazard; existing source makes
+    an excellent speculative draft), never for its numbers, which are LLM-graded, vendor-reported and over
+    two years old. If you saw the "under 400 lines" claim quoted anywhere, it is a misreading of the eval
+    set construction — check here before repeating it.
+  verification: dive-verified
+  handoffs_updated:
+  - batched-edit-parallel-apply.md
+  - speculative-decoding-mtp-refresh.md
+  handoffs_created: []
+
+- id: intake-1154
+  arxiv_id: null
+  url: https://aider.chat/docs/unified-diffs.html
+  source_type: blog
+  title: 'Unified diffs make GPT-4 Turbo 3X less lazy (aider edit-format benchmark)'
+  authors:
+  - Paul Gauthier (aider)
+  categories: [benchmark_methodology, tool_implementation, agent_architecture]
+  key_claims:
+  - >-
+    Changing ONLY the edit format, holding the model fixed, roughly tripled performance on a purpose-built
+    laziness benchmark — the earliest clean statement of the thesis intake-1150 restates.
+  - >-
+    The mechanism claimed is behavioural rather than mechanical. With unified diffs the model acts more
+    like it is writing textual data intended to be read by a program, which suppresses the lazy elision
+    comments that otherwise appear.
+  - >-
+    Unified diffs are used WITHOUT line numbers and applied with deliberately flexible patching; disabling
+    that flexibility produces a 9x increase in editing errors on aider original Exercism benchmark.
+  - >-
+    The benchmark measures LAZINESS on refactoring tasks, not general code-editing ability.
+  techniques:
+  - Purpose-built laziness benchmark — 89 python refactoring tasks derived from 133 Exercism exercises, selected to provoke elision comments
+  - Line-number-free unified diffs as an edit format
+  - Flexible/fuzzy patch application as a required companion to the format
+  reported_results:
+  - >-
+    gpt-4-1106-preview (GPT-4 Turbo): 20% baseline with aider SEARCH/REPLACE block format, rising to 61%
+    with unified diffs; lazy comments on 12 tasks falling to 4, the 3x in the title.
+  - >-
+    gpt-4-0613 (June GPT-4): 26% baseline with SEARCH/REPLACE, rising to 59% with unified diffs.
+  - >-
+    CEILING CAVEAT STATED BY THE SOURCE: the benchmark uses large files and 28% of them do not fit June
+    GPT-4 8k context window, so that model faces a hard ceiling of 72% — the 26 to 59 figure is against a
+    72 ceiling, not 100.
+  - 'Disabling flexible patching produces a 9x increase in editing errors on the original Exercism benchmark.'
+  - 'Benchmark size: 89 python refactoring tasks, built from a 133-exercise Exercism suite.'
+  novelty: medium
+  novelty_justification: >-
+    MEDIUM, and its real significance is PRIORITY rather than novelty. This is the earliest artifact in
+    the index establishing that edit format alone moves coding performance by tens of points, and both
+    intake-1150 and intake-1153 descend from it — Cursor explicitly credits aider for the format it
+    adopted. Medium not high because it is a single-author engineering blog post on one narrow metric.
+  relevance: medium
+  relevance_justification: >-
+    MEDIUM. It is the independent, non-can1357 precedent for the cohort central thesis, published roughly
+    two years earlier, and it is the source both other artifacts trace back to. It also supplies a design
+    warning we would otherwise have to learn: the format only works PAIRED with flexible patch
+    application (9x more errors without it), which means an edit-format change is never a format change
+    alone. Not high: the metric is laziness on refactoring tasks, the models are long obsolete, and there
+    is no read-across to any current decision on our queue.
+  credibility_score: 1
+  credibility_justification: >-
+    1/6, Low tier. Peer-reviewed +0. Recency -1 (published 2023-12, over 24 months old, and both evaluated
+    models are retired). Known contributor +1 (Paul Gauthier; aider is a widely used open-source tool and
+    the benchmark harness is public). Commercial bias -1: the post benchmarks the author own tool own
+    format and reports a favourable result. Independent corroboration +0. Two mitigating facts that the
+    rubric does not capture and that a reader should weigh: the post discloses its own ceiling caveat
+    (28% of tasks unfittable) unprompted, and the benchmark code is open.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns. The transferable lessons are the pairing rule (format plus flexible application) and
+    the benchmark-construction idea (build a suite that provokes the specific failure you want to measure).
+    Not adopt_component: the tasks are Exercism-derived python refactors against retired models. Not
+    superseded — Diff-XYZ and EDIT-Bench study adjacent questions and neither displaces this one — and
+    certainly not not_applicable.
+  discovered_via: expansion
+  expanded_from: intake-1150
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    intake-1150 MISATTRIBUTES THIS SOURCE NUMBERS ACROSS MODELS, VERIFIED AGAINST THE PRIMARY PAGE.
+    intake-1150 states that "format choice alone swung GPT-4 Turbo from 26% to 59%". This page says
+    26 to 59 is gpt-4-0613, JUNE GPT-4; GPT-4 Turbo (gpt-4-1106-preview) went 20 to 61. The models are
+    swapped. Both pairs are real and both support the underlying thesis, so this is sloppiness rather than
+    invention, but anyone quoting the figure via intake-1150 would attribute it to the wrong model.
+  - >-
+    THE COMPANION GPT-3.5 CLAIM WAS NOT FOUND ON THE PAGES SEARCHED. intake-1150 states that "GPT-3.5
+    scored only 19% with the same format because it could not reliably produce valid diffs". Neither this
+    page nor the aider edit-formats page contains any GPT-3.5 figure or the number 19%. PROVISIONAL AND
+    EXPLICITLY NOT A FABRICATION FINDING: aider maintains many benchmark pages and the figure may sit on
+    one not searched here. Recorded as unlocated-on-the-cited-pages so nobody re-derives it as either
+    confirmed or invented.
+  - >-
+    THE HEADLINE IS A LAZINESS METRIC ON A SUITE BUILT TO PROVOKE LAZINESS. That is legitimate and clearly
+    stated by the source, but it means the tripling does not generalise to code-editing ability, and
+    intake-1150 rendering of it as a general "format choice alone swung performance" is broader than the
+    source supports.
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [batched-edit-parallel-apply.md, tool-use-eval-contract.md]
+    experiments: []
+    intake_entries: [intake-1150, intake-1153, intake-1151]
+    intake_entry_notes:
+    - 'intake-1150 — cites this source and swaps the models on its headline figure; see contradicting_evidence.'
+    - 'intake-1153 (Cursor) — explicitly credits aider for the search/replace format it adopted to eliminate line numbers. Direct lineage.'
+    - 'intake-1151 (Diff-XYZ) — the systematic academic successor to the question this post opened informally.'
+  recommended_actions:
+  - >-
+    Carry the PAIRING RULE into any edit-format work: a format change without a matching tolerant applier
+    is not the same intervention, and this source measures a 9x error increase when the tolerance is
+    removed.
+  - >-
+    Note the suite-construction pattern for our own eval tower: build the suite to provoke the specific
+    failure mode under study rather than sampling generic tasks.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 from the intake-1150 dive-surfaced list. Retrieval provenance:
+    curl 2026-08-18, 47,319 bytes, sha256 96c359f0d91a...; aider edit-formats page also fetched and
+    searched for the GPT-3.5 claim (zero hits). Figures transcribed from the extracted page text.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18. Ingested and dived in one pass; the primary page settles two things the
+    cohort had been carrying second-hand. FIRST, the numbers are real and the thesis has a two-year-older
+    independent precedent than intake-1150 — which strengthens the cohort central claim rather than
+    weakening it. SECOND, intake-1150 rendering of those numbers swaps the two models, and its companion
+    GPT-3.5 figure could not be located on the cited pages. Both are recorded here and cross-linked, so
+    the correction attaches to the entry that carries the error rather than living in prose.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed on both model pairs, with the numbers corrected to the source attribution.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed verbatim; note it is the author interpretation of a behavioural change, not a measured mechanism.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed, including the 9x figure for disabled flexible patching.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed by the source own framing; this is the scope limit intake-1150 restatement drops.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Models evaluated are retired and the metric is a purpose-built laziness proxy; no number here can inform a current decision.'
+  - 'Its value in the index is as the priority-establishing precedent and as the source of the format-plus-tolerant-applier pairing rule.'
+  reader_should_conclude: >-
+    Treat this as the ORIGIN of the harness-format thesis, not as a current measurement. If you need to
+    quote the aider figures, use 20 to 61 for GPT-4 Turbo and 26 to 59 for June GPT-4 against a 72 ceiling,
+    and never via intake-1150, which swaps them.
+  verification: dive-verified
+  handoffs_updated:
+  - batched-edit-parallel-apply.md
+  - canonical-judge-suite-revamp.md
+  handoffs_created: []
+
+- id: intake-1155
+  arxiv_id: '2409.12186'
+  url: https://arxiv.org/abs/2409.12186
+  source_type: paper
+  title: 'Qwen2.5-Coder Technical Report'
+  authors:
+  - Binyuan Hui
+  - Jian Yang
+  - Zeyu Cui
+  - Jiaxi Yang
+  - Dayiheng Liu
+  - Lei Zhang
+  categories: [training_distillation, benchmark_methodology, local_inference]
+  key_claims:
+  - >-
+    The series ships SIX sizes — 0.5B, 1.5B, 3B, 7B, 14B, 32B — built on Qwen2.5 and continue-pretrained
+    on over 5.5 trillion tokens.
+  - >-
+    The models reach state-of-the-art among open code models across more than 10 benchmarks covering
+    generation, completion, reasoning and repair, consistently outperforming larger models of the same size class.
+  - >-
+    The contribution is data-centric — meticulous cleaning, scalable synthetic generation and balanced
+    mixing — rather than architectural.
+  techniques:
+  - Continue-pretraining a general model on a large code corpus rather than training a code model from scratch
+  - Scalable synthetic code data generation with cleaning and balanced mixing
+  - A single family spanning 0.5B to 32B, which is what makes it usable as a size-controlled experimental ladder
+  reported_results:
+  - >-
+    Six model sizes 0.5B/1.5B/3B/7B/14B/32B and a 5.5T-token continue-pretraining corpus, per the abstract.
+    Per-benchmark tables were NOT extracted by this dive — they are not what the entry is for.
+  novelty: low
+  novelty_justification: >-
+    LOW, and deliberately filed as such. This is a well-known 2024 model-family technical report and the
+    index already references the arXiv id inside other entries. Nothing here is a new technique for us.
+    It is minted as an entry only because intake-1151 load-bearing correction depends on knowing what its
+    "smaller open models" actually were.
+  relevance: low
+  relevance_justification: >-
+    LOW ON ITS OWN TERMS, and that is the honest score. Its entire function in this cohort is as the
+    REFERENT for the intake-1151 floor finding: Diff-XYZ measured diff comprehension across this exact
+    ladder and found reliable results emerging only around 7B. Knowing that the ladder is a 2024 family
+    whose 32B top end is well below the frontier models intake-1150 tested is what dissolves the apparent
+    contradiction. It drives no work of its own. Marked low rather than none because the size-controlled
+    ladder is a genuinely useful instrument for any future format-sensitivity experiment we might run.
+  credibility_score: 3
+  credibility_justification: >-
+    3/6. Peer-reviewed +0 (arXiv technical report, v3 2024-11-12). Recency -1 would apply on v1
+    (2024-09-18, roughly 23 months, just inside the 24-month line) so recency is scored 0 rather than
+    negative, flagged as borderline. Major lab +1 (Qwen team, Alibaba). Commercial bias -1 (vendor
+    technical report claiming SOTA for its own models). Independent corroboration +2, the maximum and
+    genuinely earned: the Qwen2.5-Coder series is one of the most widely independently benchmarked open
+    code families in existence, including by intake-1151 which evaluated the whole ladder for a purpose
+    the Qwen authors had nothing to do with. Net 0+0+1-1+2 = 2; scored 3 because the corroboration here is
+    unusually strong and specific rather than generic press restatement.
+  verdict: already_integrated
+  verdict_justification: >-
+    already_integrated. We serve Qwen-family models in production and the stack already reflects this
+    lineage; there is no action to take on the report itself. Not not_applicable — it is squarely in
+    domain. Not worth_investigating — there is nothing here we need to find out. The entry exists to
+    ANCHOR a correction on another entry, which is a legitimate reason for a record to exist and is stated
+    plainly rather than dressed up as an opportunity.
+  discovered_via: expansion
+  expanded_from: intake-1151
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    SELF-REPORTED SOTA CLAIMS from a vendor technical report. Not independently checked by this dive and
+    not needed for the purpose this entry serves.
+  - >-
+    A SIZE LADDER IS NOT A CAPABILITY LADDER ACROSS GENERATIONS. Reading the intake-1151 floor result as
+    "sub-7B models cannot use edit formats" would overreach: it says sub-7B models of THIS 2024 family
+    could not, on a single-turn supervised diff task. Later small models are not bound by that.
+  cross_references:
+    chapters: []
+    handoffs: [architect-model-selection-bench.md, qwen38-27b-replace-qwen36.md]
+    experiments: []
+    intake_entries: [intake-1151, intake-1150]
+    intake_entry_notes:
+    - 'intake-1151 (Diff-XYZ) — evaluated this exact ladder; this entry is the referent that makes its floor finding interpretable.'
+    - 'intake-1150 — tested frontier API models far above this ladder top end, which is why the two do not conflict.'
+  recommended_actions:
+  - >-
+    Use only as the referent for the intake-1151 correction. If we ever run our own edit-format
+    sensitivity experiment, this family is the obvious size-controlled ladder to run it on.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 — I had RECOMMENDED DECLINING this source and the operator
+    overrode that; the override was reasonable, because pinning the referent is what makes the intake-1151
+    correction checkable rather than assertable. DEDUP NOTE: arXiv 2409.12186 appears twice already in the
+    index, at line 35833 inside another entry referenced_arxiv_ids list and once in prose. Neither is an
+    entry-owned arxiv_id, and per the companion-artifact rule being referenced in another entry list is
+    NOT a collision, so this is a first ingestion rather than a duplicate. Metadata from the arXiv API
+    2026-08-18: v3, published 2024-09-18, updated 2024-11-12.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18. Ingested and dived in one pass, at abstract-and-metadata depth, which is the
+    correct depth for a referent entry — the dive question was "what exactly is the ladder Diff-XYZ
+    measured", not "are the SOTA claims true". ANSWER: 0.5B through 32B, six sizes, one 2024 family. That
+    is sufficient to close the intake-1151 correction, and this entry states plainly that no per-benchmark
+    table was read rather than implying deeper verification than was performed.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Exists to anchor the intake-1151 correction; drives no work of its own.'
+  - 'The Qwen lineage is already reflected in the production stack and its own handoffs.'
+  reader_should_conclude: >-
+    Do not treat this as a research finding. Its one job is to tell you that Diff-XYZ "smaller open
+    models" means a 2024 family spanning 0.5B to 32B, so its floor at roughly 7B is a statement about that
+    ladder and not about small models in general.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+
+- id: intake-1156
+  arxiv_id: '2502.09328'
+  url: https://arxiv.org/abs/2502.09328
+  source_type: paper
+  title: 'Copilot Arena: A Platform for Code LLM Evaluation in the Wild'
+  authors:
+  - Wayne Chi
+  - Valerie Chen
+  - Anastasios Nikolas Angelopoulos
+  - Wei-Lin Chiang
+  - Aditya Mittal
+  - Naman Jain
+  - Tianjun Zhang
+  - Ion Stoica
+  - Chris Donahue
+  - Ameet Talwalkar
+  categories: [benchmark_methodology, agent_architecture, routing_intelligence]
+  key_claims:
+  - >-
+    Model rankings collected in a real IDE from real developers DIFFER from the rankings produced by
+    existing evaluations, and the authors attribute the difference to the more realistic distribution of
+    data and tasks.
+  - >-
+    STATIC BENCHMARKS BARELY RANK-CORRELATE WITH IN-THE-WILD PREFERENCE. Spearman rank correlation is 0.62
+    with Chatbot Arena coding and 0.48 with Chatbot Arena general, but 0.1 or below with MOST STATIC
+    BENCHMARKS.
+  - >-
+    Human preference evaluations appear to capture aspects of model performance that static benchmarks
+    fail to measure.
+  - >-
+    Deployment scale makes the result hard to dismiss as a small-sample artifact.
+  techniques:
+  - Native IDE integration to collect paired preferences on real work rather than on curated tasks
+  - Paired-output comparison interface with a latency-optimised sampling strategy
+  - Rank-correlation analysis against existing leaderboards as the headline methodological instrument
+  reported_results:
+  - >-
+    Over 4.5 million suggestions served from 10 models and 11,604 votes collected across 1,642 users over
+    three months.
+  - >-
+    Spearman rank correlation with Copilot Arena: 0.62 (Chatbot Arena coding), 0.48 (Chatbot Arena
+    general), and 0.1 or below with most static benchmarks.
+  novelty: medium
+  novelty_justification: >-
+    MEDIUM. In-the-wild preference collection is an established idea (Chatbot Arena), and the contribution
+    here is porting it into the IDE for code completion plus the rank-correlation analysis against static
+    leaderboards. The correlation numbers are the novel, quotable part.
+  relevance: high
+  relevance_justification: >-
+    HIGH, and it is the most decision-relevant source in this Stage-2b round, for a reason unrelated to
+    edit formats. Our measurement constitution governs how we turn benchmark numbers into claims, and this
+    paper supplies an EXTERNAL, INDEPENDENT, ACADEMIC measurement that static code benchmarks rank-correlate
+    at 0.1 or below with real developer preference. That bears directly on how much weight our own suites
+    can carry when ranking models — architect-model-selection-bench.md and canonical-judge-suite-revamp.md
+    both rank models on static suites — and it is a caution that applies to the WHOLE cohort, including
+    intake-1150 own 60-task benchmark. It is the strongest available external argument for our standing
+    discipline of pairing speed with correctness and distrusting single-suite rankings.
+  credibility_score: 4
+  credibility_justification: >-
+    4/6, High tier. Peer-reviewed +0 (arXiv preprint v1, 2025-02-13, no venue recorded). Recency +1
+    (18 months). Major lab +1 (CMU and UC Berkeley; Stoica, Talwalkar, Donahue, Chiang — the LMArena
+    lineage, and substantially the same group as intake-1152). Commercial bias 0 (academic, no product
+    sold). Independent corroboration +2: the deployment itself is the corroboration mechanism — 1,642
+    users and 11,604 votes are independent of the authors — and the finding that in-the-wild rankings
+    diverge from static benchmarks is separately reached by intake-1152 for a different task family.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns. There is nothing to import — we are not deploying an IDE preference platform — but the
+    rank-correlation FINDING is directly usable as an external calibration input on how far to trust our
+    own static suites. Not adopt_component, not not_applicable, not superseded.
+  discovered_via: expansion
+  expanded_from: intake-1152
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    PREFERENCE IS NOT CORRECTNESS, and this cuts both ways. Low correlation between static benchmarks and
+    human preference is equally consistent with preference tracking latency, style and verbosity rather
+    than with static benchmarks being wrong. The paper reads it as evidence that static benchmarks miss
+    something real; the opposite reading — that preference is contaminated by non-quality factors — is not
+    excluded by the data, and the index already carries the finding that length correlates with RLHF
+    preference (cited in this paper own reference list).
+  - >-
+    THE TASK IS CODE COMPLETION, NOT AGENTIC EDITING OR OUR WORKLOAD. Read-across to our model ranking is
+    an argument by analogy, not a measurement of our setting.
+  - >-
+    TEN MODELS AND THREE MONTHS, from early 2025. Rank correlations over 10 points are themselves noisy
+    and the model set is now largely superseded.
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [architect-model-selection-bench.md, canonical-judge-suite-revamp.md, eval-tower-verification.md, routing-intelligence.md]
+    experiments: []
+    intake_entries: [intake-1152, intake-1150, intake-1151]
+    intake_entry_notes:
+    - 'intake-1152 (EDIT-Bench) — same core author group, and its in-the-wild collection methodology descends from this platform.'
+    - 'intake-1150 — this entry is the sharpest available caution against over-reading intake-1150 static 60-task benchmark, and applies to it as much as to ours.'
+  recommended_actions:
+  - >-
+    Treat the 0.1-or-below correlation as an external calibration input on static-suite model ranking, and
+    carry the caveat with it — preference may itself be confounded by latency and verbosity.
+  - >-
+    Do NOT read this as licence to distrust our own suites wholesale: our suites gate correctness and
+    throughput claims, not preference, and the paper measures neither.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 — I had RECOMMENDED DECLINING this source as having no
+    read-across, and that recommendation was WRONG. The rank-correlation result is the single most useful
+    external number surfaced in the whole session for our benchmark discipline. Recorded plainly because
+    the decline reasoning is the kind that should be visible when it fails. Full text fetched and read
+    2026-08-18 (arXiv HTML v1, 310,663 bytes); figures transcribed from the extracted text.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18. Ingested and dived in one pass from the full text. The Stage-1-style
+    expectation attached to this source — a tangential arena-platform paper — was OVERTURNED on reading:
+    its rank-correlation section (0.62 / 0.48 / 0.1-or-below) is a directly quotable external measurement
+    bearing on how our own static suites rank models. Relevance filed HIGH rather than the LOW my decline
+    implied. The counter-reading (preference may track latency and verbosity rather than quality) is
+    recorded in contradicting_evidence so the number cannot be quoted one-sidedly.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed in the abstract and restated in the conclusion.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed with the exact coefficients in the results section.'
+  - claim_index: 2
+    effect: narrowed
+    note: >-
+      Confirmed as the authors stated interpretation, and explicitly flagged as an INTERPRETATION rather
+      than a measurement: the data show divergence, not which side is right.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed: 4.5M suggestions, 11,604 votes, 1,642 users, 10 models, three months.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'The rank-correlation figure is a standing external calibration input for architect-model-selection-bench.md and canonical-judge-suite-revamp.md, both of which rank models on static suites.'
+  - 'Nothing is importable — we are not deploying a preference platform — so the usable output is the published number, not a re-run.'
+  reader_should_conclude: >-
+    Quote the 0.1-or-below static-benchmark rank correlation when arguing about how much a single static
+    suite can settle, and always carry the counter-reading with it. Do not use this to dismiss our own
+    suites: they gate correctness and throughput, which this paper does not measure.
+  verification: dive-verified
+  handoffs_updated:
+  - architect-model-selection-bench.md
+  handoffs_created: []
+
+- id: intake-1157
+  arxiv_id: '2312.12450'
+  url: https://arxiv.org/abs/2312.12450
+  source_type: paper
+  title: 'Can It Edit? Evaluating the Ability of Large Language Models to Follow Code Editing Instructions (CanItEdit)'
+  authors:
+  - Federico Cassano
+  - Luisa Li
+  - Akul Sethi
+  - Noah Shinn
+  - Abby Brennan-Jones
+  - Jacob Ginesin
+  - Edward Berman
+  - George Chakhnashvili
+  - Anton Lozhkov
+  - Carolyn Jane Anderson
+  - Arjun Guha
+  categories: [benchmark_methodology, training_distillation]
+  key_claims:
+  - >-
+    Instructional code editing — give the model a code block and an instruction to modify it — was
+    understudied relative to code synthesis, which is the gap the benchmark fills.
+  - >-
+    THE DESCRIPTIVE-VERSUS-LAZY INSTRUCTION SPLIT IS THE CONSTRUCT CONTRIBUTION. Every problem carries two
+    instruction forms: a descriptive one giving full specification, and a lazy one giving minimal
+    direction, so instruction quality becomes a controlled variable rather than a confound.
+  - >-
+    Evaluation is EXECUTION-BASED against a hidden test suite, not judge-scored and not similarity-scored.
+  - >-
+    The evaluation exposed a significant gap between open and closed models at the time — even
+    GPT-3.5-Turbo beat the best open model at code editing.
+  techniques:
+  - Paired descriptive and lazy instructions over identical problems, isolating instruction specificity
+  - Corrective / perfective / adaptive edit taxonomy with balanced coverage
+  - Hidden execution-based test suites as the scoring path
+  - Hand construction by a recruited team of eight experienced Python programmers with a designated lead
+  reported_results:
+  - >-
+    105 hand-crafted Python code-editing problems, balanced 35 corrective / 35 perfective / 35 adaptive,
+    each with before code, after code, both instruction forms and a hidden test suite. Domains span data
+    structures, algorithms, mathematics, language processing and game programming, using libraries
+    including NumPy, Pandas and PyTorch.
+  - >-
+    Per-model pass@1 tables were NOT extracted by this dive; the models evaluated are from late 2023 and
+    their scores carry no current read-across.
+  novelty: medium
+  novelty_justification: >-
+    MEDIUM. Execution-based scoring and hand-built task suites are standard; the descriptive-versus-lazy
+    paired-instruction design is the genuine contribution, and it is the part that has aged well — EDIT-Bench
+    independently rediscovered the same axis in the wild, finding hard instructions are roughly 5x shorter.
+  relevance: medium
+  relevance_justification: >-
+    MEDIUM, on a construct rather than a number. Its scoring path has the property our eval tower keeps
+    paying for the absence of — hidden execution-based tests, NO LLM JUDGE ANYWHERE — which is the same
+    property that made another entry in this index an adopt_component for the eval tower. And the
+    descriptive-versus-lazy axis is a directly reusable design for us: our own delegation and prompt-
+    construction work varies instruction specificity constantly and has no controlled instrument for it.
+    Not high: 105 python problems against 2023-era models is too small and too dated to run as-is, and
+    nothing on the current queue needs it.
+  credibility_score: 4
+  credibility_justification: >-
+    4/6, High tier. Peer-reviewed +2 — unlike the other benchmark papers in this cohort this one reached
+    v6 with a long revision history and is associated with the Northeastern/Wellesley program that has
+    published this line repeatedly; scored +2 with the flag that no venue string was confirmed in the
+    arXiv metadata by this dive, so a reader wanting certainty should treat it as +0 and the score as 2.
+    Recency -1 (v1 2023-12-11, over 24 months). Major lab +1 (Arjun Guha and Carolyn Jane Anderson; the
+    BigCode/StarCoder lineage). Commercial bias 0 (academic, dataset released). Independent corroboration
+    +2: CanItEdit is used as a comparator by later independent benchmarks including intake-1152, and its
+    descriptive-versus-lazy finding was independently rediscovered there.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns. The reusable asset is the paired-instruction design and the judge-free execution
+    scoring path, not the 105 problems. Not adopt_component: too small and too dated to wire in. Not
+    superseded — EDIT-Bench is larger and in-the-wild but does not carry the controlled paired-instruction
+    axis, so it complements rather than displaces this. Not not_applicable.
+  discovered_via: expansion
+  expanded_from: intake-1152
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    SCALE AND AGE: 105 problems is small enough that per-model differences of a few points are noise, and
+    the reported open-versus-closed gap describes late-2023 models and is certainly stale.
+  - >-
+    SINGLE LANGUAGE. Python only, so any conclusion about edit-instruction following is confounded with
+    Python-specific model competence.
+  - >-
+    HAND-CRAFTED BY EIGHT RECRUITED PROGRAMMERS. Careful and documented, but the task distribution reflects
+    what that team chose to write — the exact criticism EDIT-Bench later levels at annotator-written
+    benchmarks in general.
+  cross_references:
+    chapters: [06-benchmarking-framework.md, 07-benchmark-suite-construction.md]
+    handoffs: [canonical-judge-suite-revamp.md, eval-tower-verification.md, delegation-context-preassembly.md, tool-use-eval-contract.md]
+    experiments: []
+    intake_entries: [intake-1152, intake-1158, intake-1151]
+    intake_entry_notes:
+    - 'intake-1152 (EDIT-Bench) — uses this as a direct comparator in its Table 1 and criticises annotator-written sourcing; the two are the controlled and the in-the-wild ends of the same axis.'
+    - 'intake-1158 (InstructCoder/EditEval) — the other comparator in that table, contemporaneous and also execution-based.'
+  recommended_actions:
+  - >-
+    Consider the descriptive-versus-lazy paired-instruction design as an instrument for our own delegation
+    and prompt-construction work, where instruction specificity currently varies uncontrolled.
+  - >-
+    Note the judge-free execution-based scoring path alongside the other judge-free suite already adopted
+    in the eval tower; the property, not the dataset, is what transfers.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 — one of the two items I had recommended declining. Metadata
+    from the arXiv API 2026-08-18: v6, published 2023-12-11, updated 2024-09-23. Full text fetched
+    (1,611,020 bytes HTML) and the construction sections read; per-model result tables deliberately not
+    extracted, as recorded in reported_results.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18. Ingested and dived in one pass. Nothing overturned — this is a correct,
+    unremarkable filing, and it is reported as such rather than dressed up. The one thing the dive changed
+    is WHY the entry is worth keeping: not the open-versus-closed gap, which is stale, but the paired
+    descriptive-versus-lazy instruction design and the judge-free execution scoring path, both of which
+    transfer to our own eval and delegation work independently of the dataset itself.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed in the abstract and introduction.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed in the dataset construction section with the 35/35/35 balance and both instruction forms per problem.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed: hidden test suite, execution-based, no LLM judge in the scoring path.'
+  - claim_index: 3
+    effect: narrowed
+    note: >-
+      Confirmed as written but explicitly time-bound: the GPT-3.5-Turbo-beats-the-best-open-model comparison
+      describes late-2023 and carries no current read-across.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Too small (105 problems) and too dated (2023-era models) to wire into the eval tower as a suite.'
+  - 'The transferable assets are design properties — paired instructions, judge-free execution scoring — which need no import.'
+  reader_should_conclude: >-
+    Take the DESIGN, not the data. The paired descriptive-versus-lazy instruction axis and the hidden
+    execution test suite are the durable contributions; the 105 problems and the 2023 model rankings are
+    not worth running.
+  verification: dive-verified
+  handoffs_updated:
+  - canonical-judge-suite-revamp.md
+  - delegation-context-preassembly.md
+  handoffs_created: []
+
+- id: intake-1158
+  arxiv_id: '2310.20329'
+  url: https://arxiv.org/abs/2310.20329
+  source_type: paper
+  title: 'InstructCoder: Instruction Tuning Large Language Models for Code Editing (introduces the EditEval benchmark)'
+  authors:
+  - Kaixin Li
+  - Qisheng Hu
+  - Xu Zhao
+  - Hui Chen
+  - Yuxi Xie
+  - Tiedong Liu
+  - Qizhe Xie
+  - Junxian He
+  categories: [training_distillation, benchmark_methodology, tool_implementation]
+  key_claims:
+  - >-
+    Automatic code editing was underexplored largely because of DATA SCARCITY, which is the bottleneck the
+    paper sets out to remove.
+  - >-
+    InstructCoder is presented as the first instruction-tuning dataset for general-purpose code editing,
+    with over 114,000 instruction-input-output triplets covering comment insertion, code optimisation and
+    refactoring.
+  - >-
+    EditEval, the human-written execution-based benchmark introduced alongside it, showed that models of
+    the time often struggled to fulfil edit instructions.
+  techniques:
+  - Instruction-tuning corpus construction at scale for code editing specifically
+  - Seed-and-expand synthetic generation of code-editing instruction triplets
+  - A human-written execution-based evaluation benchmark (EditEval) as the companion instrument
+  reported_results:
+  - >-
+    Over 114,000 instruction-input-output triplets in the InstructCoder dataset, per the abstract.
+  - >-
+    Per-model EditEval scores and the fine-tuning gains were NOT extracted by this dive; the entry exists
+    to resolve a reference and to record the dataset, not to certify its numbers.
+  novelty: low
+  novelty_justification: >-
+    LOW for us. Instruction-tuning dataset construction plus a companion benchmark is a standard 2023
+    pattern, and we do not fine-tune code models. The benchmark is the part later work cites.
+  relevance: low
+  relevance_justification: >-
+    LOW. We do not train or fine-tune code-editing models, so a 114k instruction-tuning corpus has no
+    consumer on our side, and EditEval itself is superseded as an instrument by the larger, in-the-wild
+    intake-1152. It is filed because it is the third comparator in the EDIT-Bench comparison table and
+    because resolving what EditEval actually IS prevented a live misidentification — see notes. Marked low
+    rather than none: the dataset is openly released and would be the obvious starting corpus if we ever
+    did want to tune a local model for edit-instruction following, which our own coder-role work makes
+    conceivable rather than absurd.
+  credibility_score: 2
+  credibility_justification: >-
+    2/6, Medium tier. Peer-reviewed +0 (arXiv v3, no venue confirmed by this dive). Recency -1 (v1
+    2023-10-31, over 24 months). Major lab +1 (NUS, SUTD and HKUST authors; Junxian He and Qizhe Xie are
+    established). Commercial bias 0 (academic, dataset released). Independent corroboration +2: EditEval is
+    used as a comparator by later independent benchmarks including intake-1152 and intake-1157 lineage
+    work. Net 0-1+1+0+2 = 2.
+  verdict: superseded
+  verdict_justification: >-
+    superseded, and the successor is NAMED as the rubric requires: for the benchmark half, intake-1152
+    (EDIT-Bench) displaces EditEval — larger (540 vs a small human-written set), collected in the wild
+    rather than hand-written, multi-language, and carrying a context axis EditEval does not have; EDIT-Bench
+    own Table 1 makes exactly this comparison. The DATASET half is not superseded and remains a usable
+    open corpus, which is why the entry is not not_applicable. Chosen over worth_investigating because
+    there is no open question here for us to settle.
+  discovered_via: expansion
+  expanded_from: intake-1152
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    LARGELY SYNTHETIC CORPUS. A 114k instruction-tuning set generated by seed-and-expand inherits the
+    generating model biases, and the paper own benchmark is the only check reported on it.
+  - >-
+    NAME COLLISION IS A REAL HAZARD FOR THIS SOURCE, not a hypothetical one — see notes. Any future citation
+    of "EditEval" must carry the arXiv id.
+  cross_references:
+    chapters: []
+    handoffs: [tool-use-eval-contract.md, canonical-judge-suite-revamp.md]
+    experiments: []
+    intake_entries: [intake-1152, intake-1157]
+    intake_entry_notes:
+    - 'intake-1152 (EDIT-Bench) — cites EditEval as reference 22 and supersedes it as an instrument.'
+    - 'intake-1157 (CanItEdit) — the contemporaneous, also execution-based comparator; the two are usually cited together.'
+  recommended_actions:
+  - >-
+    Cite EditEval only with its arXiv id attached, because of the name collision recorded in notes.
+  - >-
+    If a local coder-role edit-instruction tuning experiment is ever proposed, this is the obvious open
+    starting corpus. Not proposed here.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16 as part of the CanItEdit/EditEval/Copilot-Arena bundle.
+    IDENTIFICATION HAZARD RESOLVED BY THIS DIVE, and it nearly went wrong. "EditEval" names TWO different
+    benchmarks: arXiv:2209.13331 is EditEval, an instruction-based benchmark for TEXT improvements (Meta),
+    and the code-editing EditEval that EDIT-Bench actually cites is introduced inside THIS paper,
+    arXiv:2310.20329. A search-driven ingest would very plausibly have filed 2209.13331 — the search engine
+    surfaced it first and it carries the exact name. The correct id was established by resolving EDIT-Bench
+    own reference list rather than by trusting the search result. Metadata from the arXiv API 2026-08-18:
+    v3, published 2023-10-31, updated 2024-02-28.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18. Ingested and dived in one pass. The dive PRODUCT here is an identification,
+    not a finding: EditEval-the-code-benchmark lives inside InstructCoder (2310.20329) and is NOT the
+    identically-named text benchmark 2209.13331, which the search path surfaced first and which would have
+    entered the index as a wrong-source entry had the reference list not been resolved directly. Verdict
+    set to superseded with intake-1152 named as the successor for the benchmark half, while recording that
+    the dataset half is not superseded.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed in the abstract.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed in the abstract: over 114,000 triplets, first such dataset by the authors claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed in the abstract; the specific per-model scores were not extracted and are not relied on anywhere in this entry.'
+  integration_disposition: declined
+  disposition_evidence:
+  - 'We do not fine-tune code-editing models, so the 114k corpus has no consumer on our side.'
+  - 'The benchmark half is superseded by intake-1152 for any purpose we would have.'
+  reader_should_conclude: >-
+    Remember one thing from this entry: EditEval is ambiguous. The code-editing EditEval is arXiv:2310.20329
+    (inside InstructCoder); arXiv:2209.13331 is a different, text-editing benchmark with the same name.
+    Otherwise this source is superseded by intake-1152 and needs no further attention.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+
+- id: intake-1159
+  arxiv_id: null
+  url: https://github.com/can1357/oh-my-pi/tree/main/packages/snapcompact
+  source_type: repo
+  title: '@oh-my-pi/snapcompact — Bitmap-Frame (Optical) Context Compression for Vision-Capable LLMs'
+  authors:
+  - 'Can Bölük (can1357)'
+  categories: [context_management, tool_implementation, multimodal, cost_aware_routing]
+  key_claims:
+  - >-
+    Instead of asking an LLM to summarize discarded conversation history, snapcompact SERIALIZES the
+    history and RENDERS IT AS PIXEL-FONT TEXT INTO DENSE PNG FRAMES that vision models read back directly.
+  - >-
+    The whole pass is LOCAL AND DETERMINISTIC — no LLM call, no API key, and no latency beyond rendering.
+    This is the property that distinguishes it from every summarization-based compaction we track.
+  - >-
+    Frame geometry is chosen PER PROVIDER against real image billing, because the providers price images
+    on incompatible formulas. Gemini 3.x bills a fixed per-image budget at any pixel size, so larger frames
+    are free characters; OpenAI patch billing is area-proportional, so larger frames cannot help; Anthropic
+    high-res lines get larger frames under a visual-token cap; Kimi processor downscales past 1792px.
+  - >-
+    The archive persists as bounded source text PLUS rendered frames and is reconstructed on every context
+    rebuild into ordered blocks — plain text at the oldest edge, imaged middle, plain text at the newest edge.
+  techniques:
+  - Optical/bitmap context compression — text rasterized to pixel-font PNG frames consumed as image blocks
+  - Provider-aware frame geometry selected against per-provider image billing formulas (a billing-arbitrage optimization)
+  - Deterministic local compaction with no summarization model in the path
+  - Aggressive pre-render normalization — ANSI stripped, whitespace collapsed, box-drawing and emoji folded to ASCII, stopwords dimmed
+  - Frame height that hugs printed rows so partially filled frames do not bill blank pixel area
+  reported_results:
+  - >-
+    THE LOAD-BEARING CLAIM, quoted from docs/compaction.md at head 37eee719: the shape table comes from
+    200k-token evals in packages/snapcompact "where bitmap frames preserved QA recall at lower billed-token
+    cost than raw text for vision-capable models".
+  - >-
+    NO EVAL RESULTS ARE COMMITTED. The research directory contains roughly 70 Python scripts — a SQuAD
+    harness, 22 numbered experiments (exp01 patch-alignment through exp22 TTF-6pt), per-provider best-shape
+    sweeps, logit-lens dumps, activation probes and black-box occlusion tests — but NO results file in any
+    format. The recall-versus-cost claim is therefore NOT independently checkable from the repository.
+  - 'Implementation size: 2,040 lines of TypeScript in one module, plus native rasterization and PNG encoding in pi-natives.'
+  novelty: high
+  novelty_justification: >-
+    HIGH, and this is the most genuinely novel artifact surfaced in the entire session — more so than the
+    hashline format that occasioned it. Our cross-reference map already tracks "optical self-compression"
+    as a context_management search term, meaning we recognised the concept; this is a SHIPPING,
+    permissively-licensed implementation of it with provider-specific billing optimization built in. The
+    billing-arbitrage element in particular — exploiting that Gemini bills a flat per-image budget so
+    resolution is free — is an optimization I have not seen stated anywhere else in the index.
+  relevance: high
+  relevance_justification: >-
+    HIGH and directly owned. tool-output-compression.md and context-folding-progressive.md both do
+    LLM-mediated compaction, which costs a model call, adds latency, is nondeterministic, and is exactly
+    the failure surface our own prompt-determinism work exists to contain. This is a deterministic,
+    zero-inference alternative for the same job. Two further hooks: it is a concrete consumer of the
+    vision path we already run for multimodal-pipeline.md, and the per-provider billing analysis is
+    directly relevant to cost-aware routing. The caveat is severe and is why this is a candidate rather
+    than a conclusion — the recall claim has no committed evidence.
+  credibility_score: 1
+  credibility_justification: >-
+    1/6, Low tier, and the low score is doing real work here rather than being a formality. Peer-reviewed
+    +0. Recency +1 (live at head 37eee719, 2026-08-16). Known contributor +1. Commercial bias 0 (MIT,
+    free). Independent corroboration +0. Then -1 for a specific, verified defect: the central empirical
+    claim (bitmap frames preserve QA recall at lower billed-token cost) is sourced to evals whose RESULTS
+    ARE NOT COMMITTED — only the scripts are. A claim whose evidence is described but not shipped is
+    weaker than one with no claim at all, because it invites reliance it cannot support.
+  verdict: worth_investigating
+  verdict_justification: >-
+    worth_investigating, and it is the strongest such verdict in this cohort. The mechanism is novel,
+    permissively licensed, deterministic, and aimed squarely at a problem two of our active handoffs own —
+    but the one number that would justify adopting it is unpublished. Not adopt_component: adopting on an
+    uncheckable recall claim would be exactly the fail-open pattern our own doctrine warns about. Not
+    adopt_patterns: the pattern alone is uninformative without the recall-versus-cost tradeoff. Not
+    not_applicable and not superseded.
+  discovered_via: expansion
+  expanded_from: intake-1148
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    THE CENTRAL EMPIRICAL CLAIM HAS NO COMMITTED EVIDENCE. Verified by direct search of the package:
+    approximately 70 experiment scripts and zero results artifacts in any format. "Chosen by SQuAD recall
+    evals" is unfalsifiable as shipped.
+  - >-
+    THE APPROACH INHERITS EVERY VISION-PATH WEAKNESS. It requires a vision-capable reader; it converts an
+    exactly-addressable text history into pixels that cannot be grepped, diffed or partially quoted; and
+    OCR-through-the-model failure is silent and content-dependent rather than loud.
+  - >-
+    THE BILLING ARBITRAGE IS A MOVING TARGET. The entire per-provider shape table is pinned to provider
+    image-pricing formulas that can change without notice, at which point the geometry is silently wrong
+    rather than broken.
+  - >-
+    PROVIDER-SPECIFIC TUNING DOES NOT TRANSFER TO OUR STACK AS-IS. Every measured shape targets a hosted
+    frontier vision model. We serve local models, so the shape table would have to be re-derived for our
+    own readers, and no evidence here says the technique survives that transfer.
+  cross_references:
+    chapters: []
+    handoffs: [tool-output-compression.md, context-folding-progressive.md, multimodal-pipeline.md, delegation-context-preassembly.md]
+    experiments: []
+    intake_entries: [intake-1148, intake-1160]
+    intake_entry_notes:
+    - 'intake-1148 — the parent harness. This package is filed separately because it is independently published on npm, is 2,040 lines of self-contained implementation with its own README, CHANGELOG and eval program, and makes empirical claims of its own — unlike packages/hashline, which was correctly declined at Stage 1 as a subtree of the tool under study.'
+    - 'intake-1160 (metaharness) — the sibling package that RUNS the snapcompact evals, among others.'
+  recommended_actions:
+  - >-
+    The decisive question is one number, and it is cheap to get: for a fixed history, what is billed-token
+    cost and QA recall for bitmap frames versus raw text, ON A READER WE ACTUALLY SERVE. Nothing about
+    this technique should be adopted before that is measured on our own stack.
+  - >-
+    Independently of adoption, record the provider image-billing asymmetry (flat per-image budget versus
+    area-proportional patch billing) as a cost-aware-routing input — it is true regardless of whether we
+    ever render a frame.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16. DEVIATION FROM MY OWN STAGE-1 CONVENTION, stated explicitly:
+    at Stage 1 I declined packages/hashline and packages/typescript-edit-benchmark as "not separate sources
+    — subtrees of intake-1148", and I proposed treating this package the same way. On reading it I minted
+    it as its own entry instead, because it is separately published on npm, self-contained, and makes its
+    own empirical claims — the companion-artifact rule that makes a project page distinct from its repo
+    applies here for the same reason. If the operator prefers it folded back into intake-1148 that is a
+    one-line change. Read at head 37eee71978951fccf66b21f7e3e2b74596ac9d74; README, docs/compaction.md and
+    the research directory listing all read directly.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18 (source-level, at the pinned head). Ingested and dived in one pass. The dive
+    changed this item STATUS in the session twice over: it entered as a low-priority subtree I had proposed
+    handling as a footnote on intake-1148, and it leaves as the most novel artifact in the cohort and a
+    high-relevance candidate against two active handoffs. The dive also established the reason it is NOT an
+    adopt: the recall-versus-cost claim in docs/compaction.md is sourced to evals whose results are not
+    committed — roughly 70 scripts, zero result files — so the number that would justify adoption cannot be
+    checked from the repository. Both the promotion and the blocking defect are findings of the same read.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed verbatim in the package README and in docs/compaction.md.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: the README states the pass is local and deterministic with no LLM call, and the implementation carries no model call in the render path.'
+  - claim_index: 2
+    effect: unaffected
+    note: >-
+      Confirmed in detail in docs/compaction.md, including the per-provider formulas and the consequence
+      that Gemini fixed per-image budget makes larger frames free characters.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed in docs/compaction.md — bounded source text plus frames under preserveData, rebuilt as oldest-text / imaged-middle / newest-text.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'The mechanism is novel, deterministic and aimed at a job tool-output-compression.md and context-folding-progressive.md already own, so it is a live candidate rather than knowledge.'
+  - 'Disposition is monitor, NOT awaiting_dive: the source HAS been dived (see dive_corrections). What is outstanding is a measurement on OUR OWN readers, which is our work to schedule, not a further read of the source.'
+  - 'The recall-versus-cost claim is uncheckable as shipped (no committed eval results), so adoption cannot proceed on the vendor claim.'
+  - 'Every published shape targets a hosted frontier vision reader; transfer to the local models we serve is unmeasured.'
+  reader_should_conclude: >-
+    Treat this as the most interesting thing in the cohort AND as unproven. Optical compaction is a real,
+    shipping, deterministic alternative to summarization-based compaction, and the provider billing
+    asymmetry it exploits is worth knowing on its own. But do not cite "preserves QA recall at lower cost"
+    as established — that claim ships without its evidence, and it was measured on hosted frontier vision
+    models, not on anything we serve.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created:
+  - optical-context-compression.md
+
+- id: intake-1160
+  arxiv_id: null
+  url: https://github.com/can1357/oh-my-pi/tree/main/packages/metaharness
+  source_type: repo
+  title: '@oh-my-pi/pi-metaharness — Unified Benchmark Manager with Experiment/Run/Trace Model and Live Dashboard'
+  authors:
+  - 'Can Bölük (can1357)'
+  categories: [benchmark_methodology, autonomous_research, tool_implementation, agent_architecture]
+  key_claims:
+  - >-
+    ONE manager for heterogeneous repository benchmarks. Harbor, TypeScript-edit and snapcompact runs share
+    a single experiment / run / trace model, a SQLite store, a REST plus SSE API and one dashboard, with
+    per-benchmark ADAPTERS normalizing live progress, scores, token usage, costs and traces while
+    benchmark-native artifacts stay on disk.
+  - >-
+    RUN FROM SOURCE, NOT FROM A BUILD. The runner bind-mounts the repository read-only into each task
+    container and executes the agent straight from TypeScript source, so an edit applies to the next trial
+    with no rebuild step.
+  - >-
+    CREDENTIALS NEVER ENTER THE CONTAINERS. A generated models.yml points every provider baseUrl at a
+    host-side auth gateway which resolves credentials outside the sandbox; trial setup needs zero outbound
+    network because a linux dependency tree and bun binary are cached and mounted in.
+  - >-
+    The runner polls each trial result file for progress, spend and outcomes rather than owning trial
+    execution itself.
+  techniques:
+  - Adapter-normalized experiment/run/trace schema over heterogeneous benchmark harnesses
+  - Read-only source bind-mount with a cached platform-specific dependency tree, giving rebuild-free iteration
+  - Host-side auth gateway so sandboxed trials hold no credentials while still reaching real providers
+  - Offline-by-construction trial setup (no outbound network during container start)
+  - SQLite store plus REST/SSE for live progress, with native artifacts left in place
+  reported_results:
+  - >-
+    NO MEASUREMENTS. This is infrastructure, not a study: it reports no benchmark results of its own, and
+    the entry makes no empirical claim. Recorded explicitly so nobody later reads a number out of it.
+  novelty: medium
+  novelty_justification: >-
+    MEDIUM. Experiment/run/trace with a SQLite store and a live dashboard is a conventional design and we
+    have built comparable surfaces ourselves. Two elements lift it above low: the host-side auth gateway,
+    which cleanly solves credentials-in-sandbox without per-trial secret injection, and rebuild-free
+    source bind-mounting, which removes a build step from every iteration.
+  relevance: medium
+  relevance_justification: >-
+    MEDIUM, on architecture rather than results. We own several benchmark and dashboard surfaces —
+    benchmark-results-dashboard.md, eval-tower-verification.md, scoring-infra-standardization.md — and our
+    dashboard plane rule requires every surface to carry a data contract, a health probe and a freshness
+    envelope. This package is an external, permissively-licensed instance of exactly that normalization
+    problem, and its two distinctive elements map onto live concerns of ours: the auth gateway is directly
+    applicable to sandboxed eval fan-out, and adapter-normalized scoring is what scoring-infra-standardization.md
+    is for. Not high: we are not going to adopt a Bun/TypeScript benchmark manager, and it makes no
+    measurement that could inform a decision.
+  credibility_score: null
+  credibility_justification: >-
+    NULL, per the rubric, and this is the correct use of null rather than an evasion: this is a repository
+    package making NO empirical claim. There is no result to be credible about. Note the deliberate
+    contrast with intake-1159, its sibling package, which is scored 1 precisely because it DOES make an
+    empirical claim and ships without the evidence.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    adopt_patterns. Two specific patterns are worth carrying — host-side auth gateway for sandboxed trials,
+    and adapter normalization over heterogeneous harnesses — neither of which requires importing any code.
+    Not adopt_component: foreign runtime, tightly coupled to its own repository layout. Not
+    worth_investigating: there is no open question, the design is legible from the README. Not
+    not_applicable and not superseded.
+  discovered_via: expansion
+  expanded_from: intake-1148
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - >-
+    NO EMPIRICAL CLAIM MEANS NO CONTRADICTING EVIDENCE IS POSSIBLE. Recorded rather than left null so the
+    absence reads as deliberate rather than as an omitted Tier-2b pass.
+  - >-
+    COUPLING CAVEAT, from reading the README rather than from a critic: the design assumes containerized
+    trials, a Bun toolchain and this repository own layout. The transferable content is the two patterns,
+    not the system.
+  cross_references:
+    chapters: [06-benchmarking-framework.md]
+    handoffs: [benchmark-results-dashboard.md, scoring-infra-standardization.md, eval-tower-verification.md, fleet-fanout-measurement.md]
+    experiments: []
+    intake_entries: [intake-1148, intake-1159, intake-1150]
+    intake_entry_notes:
+    - 'intake-1148 — the parent harness; filed separately for the same reason as intake-1159 (independently published package with its own README and function).'
+    - 'intake-1159 (snapcompact) — one of the benchmark families this manager runs.'
+    - 'intake-1150 — the TypeScript-edit benchmark whose successor runs under this manager; the run reports that dive relied on predate it.'
+  recommended_actions:
+  - >-
+    Note the HOST-SIDE AUTH GATEWAY pattern for sandboxed eval fan-out: trials reach real providers while
+    holding no credentials, via a generated config pointing at a host-resolved gateway. This is the one
+    element with a clear read-across to our own sandboxed evaluation work.
+  - >-
+    Note adapter-normalized experiment/run/trace as prior art for scoring-infra-standardization.md; do not
+    import, and do not treat an external convention as a reason to change ours.
+  notes: >-
+    Stage-2b, operator-selected 2026-08-16. Filed as its own entry rather than as an intake-1148 footnote,
+    on the same reasoning recorded in intake-1159 notes and with the same offer to fold it back if the
+    operator prefers. Read at head 37eee71978951fccf66b21f7e3e2b74596ac9d74 — README and src listing read
+    directly; the server, store and adapter sources were NOT read line by line, and no claim here depends
+    on them.
+  dive_corrections: >-
+    STAGE-2b DIVE 2026-08-18 (source-level, at the pinned head). Ingested and dived in one pass. Nothing
+    overturned and nothing manufactured: this is infrastructure with no empirical claim, and it is filed at
+    that weight — credibility_score null, reported_results explicitly empty, relevance medium on
+    architecture alone. The dive product is the identification of two specific transferable patterns (the
+    host-side auth gateway and adapter normalization) and, equally, the explicit statement that no number
+    from this package can ever be cited, because it produces none.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed in the package README opening.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: bind-mounts the repo read-only and runs from packages/coding-agent/src/cli.ts, with a cached linux node_modules tree.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed: generated models.yml routes provider baseUrls at a host pm2 auth gateway; the gateway resolves credentials host-side.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed: the runner/serve layer polls each trial result.json for progress, spend and outcomes.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Foreign Bun/TypeScript runtime tightly coupled to its own repository layout; nothing is importable.'
+  - 'Produces no measurement, so it cannot inform any gated decision — only architecture.'
+  reader_should_conclude: >-
+    Take two patterns and nothing else: a host-side auth gateway so sandboxed trials never hold
+    credentials, and adapter normalization over heterogeneous benchmark harnesses. This package publishes
+    no measurements, so never cite a number from it.
+  verification: dive-verified
+  handoffs_updated:
+  - scoring-infra-standardization.md
+  handoffs_created: []

@@ -245,6 +245,21 @@ to infer a favorable value; a row with any unresolved field cannot enter an EPYC
 | **917** — KAT-Coder-V2.5-Dev, Verified `69.40` | `KAT-Coder-V2.5-Dev × claude_code@2.1.195` (pin recorded). | Full/split detail not supplied with the card result. | Not disclosed. | Card says each model/eval set ran once: `n=1`, no repetitions/variance/seeds. | Vendor in-house result; no independent evaluation found. The reported gain is below the vendor-vs-vendor baseline gap, so it is hypothesis-grade only. |
 | **924** — Qwopus Fusion, astropy `7/15`; parent claims also cite `152/202` and `335/500` | Fusion harness/version not disclosed; parent figures are distinct parent-model × undisclosed-harness results and must not be inherited by Fusion. | Fusion is an astropy-only `15`-item slice; parent rows use incompatible `202`-slice and full-`500` denominators. | Selection method for the 202 slice not disclosed. | No reproducible n/reps/seeds; the `7/15` is a single small slice. | Self-report only; the benched Q4 artifact is incomplete and non-MTP, while the usable MTP Q5 artifact is unbenched. No Fusion comparison claim is admissible. |
 
+### Phase 3 — external infrastructure prior art (2026-08-18, intake-1160 metaharness, dive-verified)
+
+Prior art only. **Nothing is imported**, and the package publishes no measurements, so no number from
+it can ever be cited.
+
+- [ ] **3a. Host-side auth gateway for sandboxed eval fan-out.** Trials run in containers holding
+  **no credentials**: a generated `models.yml` points every provider `baseUrl` at a host-side gateway
+  that resolves secrets outside the sandbox, and a cached dependency tree plus mounted runtime means
+  trial setup needs zero outbound network. Directly applicable to our sandboxed eval fan-out, where
+  secret handling is currently per-runner.
+- [ ] **3b. Adapter-normalized experiment/run/trace as prior art.** One schema, SQLite store, REST/SSE,
+  per-benchmark adapters normalizing progress/scores/tokens/costs/traces while benchmark-native
+  artifacts stay on disk. Note as an external instance of this handoff's own problem. **Do NOT import,
+  and do NOT treat an external convention as a reason to change ours.**
+
 ## Reporting
 Update this handoff + progress after each phase. Per-phase commits. 1c and 2b do not start without an operator
 gate (production reward path / agentic build). See [[project_architect_model_selection_bench]],
