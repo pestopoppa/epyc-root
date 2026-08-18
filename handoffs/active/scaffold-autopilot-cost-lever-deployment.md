@@ -159,7 +159,7 @@ T0.1 (coordinate/approve) ─┬─> T0.2 (host GPU reasoner)
 
 ## 6. Cross-cutting concerns
 
-- **GPU-reasoner residency/contention.** The MI210 is a shared, budgeted resource; `fable5-window2-findings-05b-mi210-inference-architecture.md` owns the residency plan (Gate R). Adding a resident reasoner competes with any other GPU role. Respect the co-residency arithmetic (§3.6): IQ4_XS co-resides with a qwen35 beneficiary; Q8 does not.
+- **GPU-reasoner residency/contention.** The MI210 is a shared, budgeted resource; `fable5-window2-findings-02-heterogeneous-gpu.md` owns the residency plan (Gate R) *(corrected 2026-08-18 from findings-05b, now archived)*. Adding a resident reasoner competes with any other GPU role. Respect the co-residency arithmetic (§3.6): IQ4_XS co-resides with a qwen35 beneficiary; Q8 does not.
 - **Quality-parity gating (no regression where nothink already works).** The headroom-conditional finding is the whole point: the lever must be **inert on saturated/strong-nothink task-classes** (gemma-31B 8=8). The gate (§8) MUST include a no-regression check on those classes, not just a win check on the weak ones (`feedback_per_suite_gate_resolution_artifact`, `feedback_eval_saturation_masks_model_gap`).
 - **Measurement-trust boundary.** The keep/deploy decision needs a **protocol-id**, not the study's observations (§8). MEASUREMENT.md and the eval tower are human-amendment-only.
 - **Two distinct cost surfaces (do not conflate).** Pareto `cost` = memory `cost_tier` (§3.1); episodic reward `cost_ratio` = per-role wall-clock (§3.2); blended GPU+CPU wall-clock naturally lands on `speed` and on an *extended* `cost_metrics`. Getting this wrong makes the scaffold look free (it isn't — GPU residency + prefill tax are real).

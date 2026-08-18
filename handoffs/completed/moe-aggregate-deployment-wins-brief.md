@@ -1,5 +1,14 @@
 # Brief (for the orchestrator / CPU session): two zero-code MoE-on-GPU aggregate wins
 
+> **COMPLETED / HISTORICAL LEDGER — archived 2026-08-18.** The brief itself is delivered
+> (its one task box is closed) and the measured role→config recommendations stand as evidence.
+> **The operator PRODUCTION HOLD of 2026-07-04 is NOT lifted by this archival** — these remain
+> experimental-validated recommendations, not a deployment authorisation.
+> **Where the open work went:** the "Still open" item — Q8-MMQ GEMM efficiency at aggregate
+> batch — is owned by [`mi210-q8-dequant-gemv-roofline.md`](../active/mi210-q8-dequant-gemv-roofline.md)
+> (INF-37), whose §20 L3-MoE / L15 quantized-MMQ section carries exactly that bet. Nothing was
+> orphaned by archiving this file.
+
 **⏸ PRODUCTION HOLD (operator 2026-07-04): do NOT deploy to production. Keep all changes experimental.** These are experimental-validated recommendations; before any production push they require **CPU-numerical-correctness verification** (untestable now — CPU busy with production inference). Production-push authority is **operator-only**.
 
 **Status**: MEASURED role→config recommendations, **no kernel change**. From the MI210 GPU campaign (2026-07-04, gemma-4-26B-A4B, the clean MoE-no-GDN test vehicle). All numbers **OBSERVATION** (no P-GPU-1) — gate any production enablement through `/workspace/MEASUREMENT.md`. **Applies IF/when a MoE role is hosted on the MI210 (the residency bet, findings-02 Gate R)** — this is not a change to the current CPU production stack.

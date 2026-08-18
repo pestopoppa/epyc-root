@@ -308,7 +308,7 @@ Prior art: Speculative Chain-of-Thought (arXiv:2504.19095) — small model draft
 ## Dependencies / cross-cutting
 
 - **`gpu-drafter-mi200-investigation.md`** — this lane is the **text-level alternative** to the spec-dec drafter farm; it deliberately sidesteps the N5 vocab/M-RoPE/GDN blocker class. If both land, the sidecar (quality) and the drafter (latency) are complementary, not competing.
-- **`fable5-window2-findings-05b-mi210-inference-architecture.md`** — owns MI210 residency (Gate R), MTP/kernel work, and the frontdoor-residency bet G3 depends on.
+- **`fable5-window2-findings-02-heterogeneous-gpu.md`** (EVL-20) — owns MI210 residency (Gate R) and the frontdoor-residency bet G3 depends on; kernel work is `mi210-q8-dequant-gemv-roofline.md` (INF-37). *(Corrected 2026-08-18: this previously named findings-05b, which is a supplement and is now archived to `handoffs/completed/`.)*
 - **`eval-tower-verification.md`** — scoring infra; the A/B points eval-tower suites at GPU `llama-server` endpoints.
 - **`swarm-dataset-distillation.md`** — if the scaffold pattern works, an in-house SFT (seeded from the finite un-redacted Fable-5 CoT corpus, intake-776) could specialize a domain-aligned scaffold generator. Downstream, gated on G1/G2.
 - **`routing-intelligence.md`** — a proven sidecar becomes a routing decision (which roles/queries get a scaffold).

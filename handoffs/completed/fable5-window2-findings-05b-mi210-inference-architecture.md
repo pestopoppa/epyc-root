@@ -1,5 +1,19 @@
 # Window-2 findings 05b — MI210 single-GPU inference architecture (supplement to findings-02, §4B one level down)
 
+> **COMPLETED / HISTORICAL LEDGER — archived 2026-08-18.** A findings supplement, retained as
+> evidence. Every lever its "Still OPEN" line named has a live owner elsewhere, verified before
+> archival:
+> - **Q8 dequant-GEMV (single-stream) and the aggregate MMQ GEMM bet** →
+>   [`mi210-q8-dequant-gemv-roofline.md`](../active/mi210-q8-dequant-gemv-roofline.md) (INF-37, open).
+> - **N-gram / prompt-lookup GPU speculation** → [`fable5-window2-findings-05c-mi210-lever-category-matrix.md`](../active/fable5-window2-findings-05c-mi210-lever-category-matrix.md)
+>   (EVL-48), which **SUPERSEDES this file's "untested"**: L12 is now MEASURED NEGATIVE on 27B-Q8
+>   (plain 28.4 → best ngram-simple 27.7). Do not re-derive it from the text below.
+> - **EAGLE-3 / tree-draft on dense targets** → the same 05c matrix, row L10, with the GDN carve-out.
+>   Tree-draft itself is SHELVED ([completed](tree-draft-forward-port-plan.md)).
+> - **Gate R / MI210 residency** is owned by [`fable5-window2-findings-02-heterogeneous-gpu.md`](../active/fable5-window2-findings-02-heterogeneous-gpu.md)
+>   (EVL-20), not by this supplement — two active handoffs previously misattributed it here and
+>   were corrected at archival.
+
 **2026-07-03.** Companion to [findings-02](fable5-window2-findings-02-heterogeneous-gpu.md) (fleet placement) and the empirical campaign ([progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md)). Where findings-02 asked *which roles migrate*, this asks *what makes inference on one MI210 as fast as it can be* — the kernel/head/quant layer the bench sweep can't reach by itself. **Every throughput number here is an OBSERVATION** (no P-GPU-1; contended host, single runs) and gates nothing; the value is the architecture + the decisive experiment behind each claim. Substrate: gfx90a/CDNA2, 64 GB HBM2e (~1.64 TB/s), ROCm 6.2; HIP build `/mnt/raid0/llm/llama.cpp-mi210-hip/build-hip`; **kernel work lands in `llama.cpp-experimental`** (operator rule).
 
 ## 0. The frame is half-wrong — say it first
