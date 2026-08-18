@@ -179,6 +179,54 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertTrue(activity["gpu"]["claim_held"])
         self.assertIn("mi210", activity["gpu"]["detail"].lower())
 
+    def test_held_identity_bound_build_transaction_is_the_active_stage(self) -> None:
+        manifest_sha = "b" * 64
+        proposal_sha = "c" * 64
+        build_key = "d" * 64
+        state = {
+            "updated_at": _iso(5), "next": 1, "complete": False,
+            "iterations": [],
+            "inflight": {
+                "candidate": {"source_manifest_sha256": manifest_sha,
+                              "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "row": {"proposal_sha256": proposal_sha,
+                        "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "lease": {"admitted": True,
+                          "device_claim_probe_released": {"released_at": _iso(6)}},
+            },
+        }
+        (self.state / "state.json").write_text(json.dumps(state))
+        entry = self.operations / "build-cache/entries" / build_key
+        locks = self.operations / "build-cache/locks"
+        entry.mkdir(parents=True)
+        locks.mkdir(parents=True)
+        (entry / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key,
+            "build_contract": {
+                "build_key": build_key,
+                "patch_bundle_sha256": manifest_sha,
+                "proposal_sha256": proposal_sha,
+                "deployment_config_sha256": "a" * 64,
+            },
+        }))
+        build_lock = locks / f"build-{build_key}.lock"
+        build_lock.touch()
+        with build_lock.open("r+") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            activity = self._active_payload()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "build")
+        self.assertIn("Compiling", activity["phase"]["label"])
+        self.assertIn("build completion", activity["waiting_on"])
+        self.assertFalse(activity["gpu"]["expected_now"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["source_materialization"]["state"], "complete")
+        self.assertEqual(pipeline["build"]["state"], "running")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "build_transaction_observed")
+
     def test_terminal_source_materialization_failure_is_not_idle_or_resumable(self) -> None:
         self._write_events([
             _event("planner_started", seconds_ago=240),

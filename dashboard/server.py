@@ -3275,6 +3275,7 @@ _DISCOVERY_STAGE_STALL_S = {
     # synthetic heartbeats or execution timeouts.
     "planner": 900.0,
     "critic": 900.0,
+    "build": 1800.0,
 }
 
 
@@ -3325,9 +3326,73 @@ def _discovery_safe_error(value: object) -> dict | None:
     return {"type": kind[:100], "detail": safe}
 
 
+def _discovery_build_observation(operations_root: Path, state: dict | None,
+                                 config_sha256: object) -> dict | None:
+    """Identify the exact active source-build transaction from sealed inputs.
+
+    This is an operator observation, not execution authority.  It only reports
+    a build when one real cache entry binds the current inflight manifest,
+    proposal, deployment identity, and held build lock.  Merely finding a log
+    or process name is deliberately insufficient.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    if not isinstance(inflight, dict) or not isinstance(config_sha256, str):
+        return None
+    candidate = inflight.get("candidate")
+    row = inflight.get("row")
+    if not isinstance(candidate, dict) or not isinstance(row, dict):
+        return None
+    manifest_sha = candidate.get("source_manifest_sha256")
+    proposal_sha = row.get("proposal_sha256")
+    if (not isinstance(manifest_sha, str) or not isinstance(proposal_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None
+            or re.fullmatch(r"[0-9a-f]{64}", proposal_sha) is None):
+        return None
+    entries = operations_root / "build-cache" / "entries"
+    try:
+        if entries.is_symlink() or not entries.is_dir():
+            return None
+        children = list(entries.iterdir())[:128]
+    except OSError:
+        return None
+    matches = []
+    for entry in children:
+        if (entry.is_symlink() or not entry.is_dir()
+                or re.fullmatch(r"[0-9a-f]{64}", entry.name) is None):
+            continue
+        intent_path = entry / "intent.json"
+        present, intent, error = _read_json_object(intent_path, "source build intent")
+        if not present or intent is None or error:
+            continue
+        contract = intent.get("build_contract")
+        if (intent.get("schema") != "epyc.autokernel.gpu_source_build_intent.v1"
+                or intent.get("build_key") != entry.name
+                or not isinstance(contract, dict)
+                or contract.get("build_key") != entry.name
+                or contract.get("patch_bundle_sha256") != manifest_sha
+                or contract.get("proposal_sha256") != proposal_sha
+                or contract.get("deployment_config_sha256") != config_sha256):
+            continue
+        terminal = entry / "terminal.json"
+        if terminal.exists() or terminal.is_symlink():
+            continue
+        lock = operations_root / "build-cache" / "locks" / f"build-{entry.name}.lock"
+        if not _discovery_lock_held(lock):
+            continue
+        try:
+            started_at = datetime.fromtimestamp(
+                intent_path.stat().st_mtime, timezone.utc
+            ).isoformat().replace("+00:00", "Z")
+        except OSError:
+            continue
+        matches.append({"stage": "build", "state": "running",
+                        "started_at": started_at, "build_key": entry.name})
+    return matches[0] if len(matches) == 1 else None
+
+
 def _discovery_activity(*, lock_held: bool, state: dict | None,
                         events: list[dict], checkpoint: dict | None,
-                        now: float) -> dict:
+                        operation_observation: dict | None, now: float) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -3405,7 +3470,10 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                          if isinstance(row.get("ts"), str)), default=None)
     state_at = state.get("updated_at") if isinstance(state, dict) else None
     checkpoint_at = checkpoint.get("written_at") if checkpoint else None
-    semantic_times = [value for value in (last_event_at, state_at, checkpoint_at)
+    operation_at = (operation_observation.get("started_at")
+                    if isinstance(operation_observation, dict) else None)
+    semantic_times = [value for value in
+                      (last_event_at, state_at, checkpoint_at, operation_at)
                       if isinstance(value, str)]
     last_progress_at = max(semantic_times) if semantic_times else None
     last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
@@ -3449,14 +3517,24 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     elif isinstance(inflight, dict):
         inflight_phase = inflight.get("phase")
         lease_phase = lease.get("phase") if isinstance(lease, dict) else None
-        stage = ("benchmark" if inflight_phase == "measurement"
-                 or lease_phase == "measurement" else "source_materialization")
+        if (isinstance(operation_observation, dict)
+                and operation_observation.get("stage") == "build"):
+            stage = "build"
+            pipeline["source_materialization"]["state"] = "complete"
+            pipeline["build"]["started_at"] = operation_observation["started_at"]
+            label = ("Compiling the sealed anchor and candidate" if lock_held
+                     else "Controller stopped during source build")
+            waiting_on = ("anchor/candidate build completion" if lock_held
+                          else "build recovery audit")
+        else:
+            stage = ("benchmark" if inflight_phase == "measurement"
+                     or lease_phase == "measurement" else "source_materialization")
+            label = ("Validating and materializing source" if lock_held
+                     else "Controller stopped during candidate screening")
+            waiting_on = ("source validation/materialization checkpoint" if lock_held
+                          else "recovery audit")
         pipeline[stage]["state"] = "running" if lock_held else "interrupted"
         status = "running" if lock_held else "stopped"
-        label = ("Validating and materializing source" if lock_held
-                 else "Controller stopped during candidate screening")
-        waiting_on = ("source validation/materialization checkpoint" if lock_held
-                      else "recovery audit")
         recoverability = "reconcile_required"
     elif lock_held:
         latest_event = events[-1].get("event") if events else None
@@ -3489,11 +3567,26 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                  "detail": "durable lifecycle is advancing" if lock_held else "controller is not active"}
 
     if checkpoint:
-        transitions.append({"ts": checkpoint["written_at"], "stage": stage,
-                            "phase": stage,
+        checkpoint_stage = {
+            "discovery_pre_screen_intent": "source_materialization",
+            "discovery_screen_ambiguous": "source_materialization",
+            "discovery_waiting_resource": "resource_admission",
+            "discovery_screened": "decision",
+            "discovery_complete": "decision",
+        }.get(checkpoint.get("state"), stage)
+        transitions.append({"ts": checkpoint["written_at"], "stage": checkpoint_stage,
+                            "phase": checkpoint_stage,
                             "state": "checkpoint", "event": checkpoint["state"],
                             "label": f"STOP_STATE seq {checkpoint.get('seq')}",
                             "detail": f"STOP_STATE seq {checkpoint.get('seq')}"})
+    if isinstance(operation_observation, dict):
+        transitions.append({
+            "ts": operation_observation["started_at"], "stage": "build",
+            "phase": "build", "state": "running",
+            "event": "build_transaction_observed",
+            "label": "sealed build transaction active",
+            "detail": f"build {operation_observation['build_key'][:12]}…",
+        })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
@@ -3611,9 +3704,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     latest_ts = max(event_times) if event_times else None
     checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
     now = time.time()
+    build_observation = _discovery_build_observation(
+        operations_root, state, config.get("config_sha256"))
     activity = _discovery_activity(
         lock_held=lock_held, state=state, events=all_events,
-        checkpoint=checkpoint, now=now)
+        checkpoint=checkpoint, operation_observation=build_observation, now=now)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
