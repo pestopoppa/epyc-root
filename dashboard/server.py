@@ -3344,6 +3344,8 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
         return None
     manifest_sha = candidate.get("source_manifest_sha256")
     proposal_sha = row.get("proposal_sha256")
+    manifest = candidate.get("manifest")
+    candidate_id = manifest.get("candidate_id") if isinstance(manifest, dict) else None
     if (not isinstance(manifest_sha, str) or not isinstance(proposal_sha, str)
             or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None
             or re.fullmatch(r"[0-9a-f]{64}", proposal_sha) is None):
@@ -3385,8 +3387,33 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
             ).isoformat().replace("+00:00", "Z")
         except OSError:
             continue
+        arm = None
+        arm_started_at = started_at
+        logs = entry / "logs"
+        if (isinstance(candidate_id, str)
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}", candidate_id)):
+            candidate_start = logs / f"{candidate_id}.log.build-sandbox.json"
+            if candidate_start.is_file() and not candidate_start.is_symlink():
+                arm = "candidate"
+                try:
+                    arm_started_at = datetime.fromtimestamp(
+                        candidate_start.stat().st_mtime, timezone.utc
+                    ).isoformat().replace("+00:00", "Z")
+                except OSError:
+                    continue
+        if arm is None:
+            anchor_start = logs / "akc-anchor.log.build-sandbox.json"
+            if anchor_start.is_file() and not anchor_start.is_symlink():
+                arm = "anchor"
+                try:
+                    arm_started_at = datetime.fromtimestamp(
+                        anchor_start.stat().st_mtime, timezone.utc
+                    ).isoformat().replace("+00:00", "Z")
+                except OSError:
+                    continue
         matches.append({"stage": "build", "state": "running",
-                        "started_at": started_at, "build_key": entry.name})
+                        "started_at": arm_started_at, "build_key": entry.name,
+                        "arm": arm})
     return matches[0] if len(matches) == 1 else None
 
 
@@ -3522,9 +3549,15 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             stage = "build"
             pipeline["source_materialization"]["state"] = "complete"
             pipeline["build"]["started_at"] = operation_observation["started_at"]
-            label = ("Compiling the sealed anchor and candidate" if lock_held
+            arm = operation_observation.get("arm")
+            build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
+                           else "Compiling anchor arm 1 of 2" if arm == "anchor"
+                           else "Compiling the sealed anchor and candidate")
+            label = (build_label if lock_held
                      else "Controller stopped during source build")
-            waiting_on = ("anchor/candidate build completion" if lock_held
+            waiting_on = (("candidate build completion" if arm == "candidate"
+                           else "anchor build completion" if arm == "anchor"
+                           else "anchor/candidate build completion") if lock_held
                           else "build recovery audit")
         else:
             stage = ("benchmark" if inflight_phase == "measurement"
@@ -3584,8 +3617,11 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             "ts": operation_observation["started_at"], "stage": "build",
             "phase": "build", "state": "running",
             "event": "build_transaction_observed",
-            "label": "sealed build transaction active",
-            "detail": f"build {operation_observation['build_key'][:12]}…",
+            "label": (f"{operation_observation.get('arm')} arm active"
+                      if operation_observation.get("arm") else
+                      "sealed build transaction active"),
+            "detail": (f"{operation_observation.get('arm') or 'build'} "
+                       f"{operation_observation['build_key'][:12]}…"),
         })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")

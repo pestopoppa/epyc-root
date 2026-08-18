@@ -188,6 +188,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             "iterations": [],
             "inflight": {
                 "candidate": {"source_manifest_sha256": manifest_sha,
+                              "manifest": {"candidate_id": "akc-candidate-1"},
                               "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
                 "row": {"proposal_sha256": proposal_sha,
                         "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
@@ -212,20 +213,25 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         }))
         build_lock = locks / f"build-{build_key}.lock"
         build_lock.touch()
+        logs = entry / "logs"
+        logs.mkdir()
+        (logs / "akc-candidate-1.log.build-sandbox.json").write_text("{}")
         with build_lock.open("r+") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             activity = self._active_payload()["activity"]
 
         self.assertEqual(activity["status"], "running")
         self.assertEqual(activity["phase"]["id"], "build")
-        self.assertIn("Compiling", activity["phase"]["label"])
-        self.assertIn("build completion", activity["waiting_on"])
+        self.assertEqual(activity["phase"]["label"], "Compiling candidate arm 2 of 2")
+        self.assertEqual(activity["waiting_on"], "candidate build completion")
         self.assertFalse(activity["gpu"]["expected_now"])
         pipeline = {row["id"]: row for row in activity["pipeline"]}
         self.assertEqual(pipeline["source_materialization"]["state"], "complete")
         self.assertEqual(pipeline["build"]["state"], "running")
         self.assertEqual(activity["transitions"][-1]["event"],
                          "build_transaction_observed")
+        self.assertEqual(activity["transitions"][-1]["label"],
+                         "candidate arm active")
 
     def test_terminal_source_materialization_failure_is_not_idle_or_resumable(self) -> None:
         self._write_events([
