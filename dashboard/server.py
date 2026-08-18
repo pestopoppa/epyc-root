@@ -3253,6 +3253,307 @@ def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str 
     return rows[-200:], None
 
 
+_DISCOVERY_PIPELINE = (
+    ("planner", "Planner"),
+    ("critic", "Critic review"),
+    ("authorization", "Governance authorization"),
+    ("resource_admission", "Resource admission"),
+    ("source_materialization", "Source validation / materialization"),
+    ("build", "Compile anchor and candidate"),
+    ("correctness", "Correctness proof"),
+    ("dispatch_proof", "Dispatch attribution"),
+    ("profile", "Kernel profile"),
+    ("benchmark", "Whole-model benchmark"),
+    ("decision", "Classify result"),
+)
+_DISCOVERY_STALL_S = 300.0
+
+
+def _discovery_checkpoint(path: Path) -> dict | None:
+    """Return the latest allowlisted STOP_STATE without exposing journal data."""
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as handle:
+            handle.seek(max(0, size - 128 * 1024))
+            raw = handle.read(128 * 1024)
+    except (FileNotFoundError, OSError):
+        return None
+    latest = None
+    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        payload = row.get("payload") if isinstance(row, dict) else None
+        digest = payload.get("controller_state_sha256") if isinstance(payload, dict) else None
+        if (row.get("journal_schema") != "epyc.autokernel.journal_entry.v1"
+                or row.get("kind") != "STOP_STATE" or not isinstance(payload, dict)
+                or not isinstance(payload.get("state"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", payload["state"]) is None
+                or not isinstance(digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+                or not isinstance(row.get("seq"), int)
+                or not isinstance(row.get("written_at"), str)):
+            continue
+        latest = {
+            "seq": row.get("seq"), "state": payload["state"],
+            "written_at": row["written_at"],
+            "controller_state_sha256": payload.get("controller_state_sha256"),
+        }
+    return latest
+
+
+def _discovery_safe_error(value: object) -> dict | None:
+    if not isinstance(value, dict):
+        return None
+    kind = value.get("type")
+    message = value.get("message")
+    if not isinstance(kind, str) or not isinstance(message, str):
+        return None
+    # Errors may contain source paths, but never actor prompts or output. Keep
+    # this bounded because it is rendered prominently and crosses a trust seam.
+    safe = " ".join(message.split())[:500]
+    return {"type": kind[:100], "detail": safe}
+
+
+def _discovery_activity(*, lock_held: bool, state: dict | None,
+                        events: list[dict], checkpoint: dict | None,
+                        now: float) -> dict:
+    """Derive an honest lifecycle view from durable producer facts.
+
+    This does not invent percentage progress. A lock proves controller
+    liveness, an event proves an actor transition, and a STOP_STATE/state pair
+    proves only its last durable boundary.
+    """
+    pipeline = {stage: {"id": stage, "label": label, "state": "not_reached"}
+                for stage, label in _DISCOVERY_PIPELINE}
+    transitions: list[dict] = []
+    started: dict[str, str] = {}
+    event_stage = {
+        "planner_started": ("planner", "running"),
+        "planner_completed": ("planner", "complete"),
+        "planner_failed": ("planner", "failed"),
+        "critic_started": ("critic", "running"),
+        "critic_completed": ("critic", "complete"),
+        "critic_failed": ("critic", "failed"),
+    }
+    for row in events:
+        event = row.get("event")
+        ts = row.get("ts")
+        if event not in event_stage or not isinstance(ts, str):
+            continue
+        stage, stage_state = event_stage[event]
+        pipeline[stage]["state"] = stage_state
+        if stage_state == "running":
+            pipeline[stage]["started_at"] = ts
+            started[stage] = ts
+        else:
+            if stage in started:
+                pipeline[stage]["started_at"] = started[stage]
+                pipeline[stage]["elapsed_s"] = max(
+                    0.0, _parse_semantic_timestamp(ts)
+                    - _parse_semantic_timestamp(started[stage]))
+            pipeline[stage]["completed_at"] = ts
+        detail = row.get("model") or row.get("provider") or event
+        result = row.get("result")
+        if isinstance(result, dict) and isinstance(result.get("decision"), str):
+            detail = f"decision: {result['decision']}"
+        transitions.append({"ts": ts, "stage": stage, "phase": stage,
+                            "state": stage_state, "event": event,
+                            "label": str(detail)[:160],
+                            "detail": str(detail)[:160]})
+
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    pending = state.get("pending") if isinstance(state, dict) else None
+    iterations = (state.get("iterations") if isinstance(state, dict)
+                  and isinstance(state.get("iterations"), list) else [])
+    complete = bool(state and state.get("complete") is True)
+    failure = _discovery_safe_error(
+        inflight.get("exception") if isinstance(inflight, dict) else None)
+    hypothesis = None
+    turn = state.get("next") if isinstance(state, dict) else None
+    lease = None
+    if isinstance(inflight, dict):
+        candidate = inflight.get("candidate")
+        row = inflight.get("row")
+        if isinstance(candidate, dict):
+            hypothesis = candidate.get("hypothesis_id")
+        if hypothesis is None and isinstance(row, dict):
+            hypothesis = row.get("hypothesis_id")
+        lease = inflight.get("lease")
+        pipeline["authorization"]["state"] = "complete"
+        pipeline["resource_admission"]["state"] = (
+            "complete" if isinstance(lease, dict) and lease.get("admitted") is True
+            else "running")
+    elif isinstance(pending, dict):
+        row = pending.get("row")
+        hypothesis = row.get("hypothesis_id") if isinstance(row, dict) else None
+        lease = row.get("lease") if isinstance(row, dict) else None
+        pipeline["authorization"]["state"] = "complete"
+        pipeline["resource_admission"]["state"] = "waiting"
+
+    last_event_at = max((row.get("ts") for row in events
+                         if isinstance(row.get("ts"), str)), default=None)
+    state_at = state.get("updated_at") if isinstance(state, dict) else None
+    checkpoint_at = checkpoint.get("written_at") if checkpoint else None
+    semantic_times = [value for value in (last_event_at, state_at, checkpoint_at)
+                      if isinstance(value, str)]
+    last_progress_at = max(semantic_times) if semantic_times else None
+    last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
+                           if last_progress_at else None)
+    progress_age = max(0.0, now - last_progress_epoch) if last_progress_epoch else None
+
+    status = "idle"
+    stage = "planner"
+    label = "Awaiting launch"
+    waiting_on = "controller launch"
+    recoverability = "not_required"
+    failure_view = {"detected": False, "stage": None, "detail": None,
+                    "recovery": None}
+    if failure is not None:
+        status = "failed"
+        stage = "source_materialization"
+        label = "Source materialization failed"
+        waiting_on = "fresh candidate attempt after controller repair"
+        recoverability = "ambiguous_checkpoint_requires_fresh_deployment"
+        pipeline[stage]["state"] = "failed"
+        pipeline[stage]["completed_at"] = state_at or checkpoint_at
+        failure_view = {
+            "detected": True, "stage": stage,
+            "detail": f"{failure['type']}: {failure['detail']}",
+            "recovery": "Do not resume this ambiguous operation; launch a fresh sealed deployment after repair.",
+            "source_proof_created": False, "runner_started": False,
+            "gpu_screen_started": False,
+        }
+    elif complete:
+        status = "complete"
+        stage = "decision"
+        label = "Campaign complete"
+        waiting_on = "operator review"
+        pipeline[stage]["state"] = "complete"
+    elif isinstance(pending, dict):
+        status = "waiting"
+        stage = "resource_admission"
+        label = "Waiting for governed resource admission"
+        waiting_on = "GPU/inference-window availability"
+        recoverability = "same_candidate_retry"
+    elif isinstance(inflight, dict):
+        inflight_phase = inflight.get("phase")
+        lease_phase = lease.get("phase") if isinstance(lease, dict) else None
+        stage = ("benchmark" if inflight_phase == "measurement"
+                 or lease_phase == "measurement" else "source_materialization")
+        pipeline[stage]["state"] = "running" if lock_held else "interrupted"
+        status = "running" if lock_held else "stopped"
+        label = ("Validating and materializing source" if lock_held
+                 else "Controller stopped during candidate screening")
+        waiting_on = ("source validation/materialization checkpoint" if lock_held
+                      else "recovery audit")
+        recoverability = "reconcile_required"
+    elif lock_held:
+        latest_event = events[-1].get("event") if events else None
+        if latest_event == "planner_started":
+            stage, label, waiting_on = "planner", "Planner model call", "planner completion"
+        elif latest_event == "critic_started":
+            stage, label, waiting_on = "critic", "Critic model call", "critic decision"
+        elif latest_event == "planner_completed":
+            stage, label, waiting_on = ("critic", "Preparing critic review",
+                                        "critic lifecycle checkpoint")
+        elif latest_event == "critic_completed":
+            stage, label, waiting_on = ("authorization", "Governance and admission",
+                                        "pre-screen checkpoint")
+        else:
+            stage, label, waiting_on = ("planner", "Controller starting",
+                                        "first durable checkpoint from planner")
+        status = "running"
+        pipeline[stage]["state"] = "running"
+
+    if lock_held and progress_age is not None and progress_age > _DISCOVERY_STALL_S:
+        status = "stalled"
+        stall = {"state": "stalled", "threshold_s": _DISCOVERY_STALL_S,
+                 "detail": "Controller lock is held but no durable transition advanced; exact substage heartbeat is not instrumented."}
+    elif status == "failed":
+        stall = {"state": "failed", "threshold_s": _DISCOVERY_STALL_S,
+                 "detail": failure_view["detail"]}
+    else:
+        stall = {"state": "healthy", "threshold_s": _DISCOVERY_STALL_S,
+                 "detail": "durable lifecycle is advancing" if lock_held else "controller is not active"}
+
+    if checkpoint:
+        transitions.append({"ts": checkpoint["written_at"], "stage": stage,
+                            "phase": stage,
+                            "state": "checkpoint", "event": checkpoint["state"],
+                            "label": f"STOP_STATE seq {checkpoint.get('seq')}",
+                            "detail": f"STOP_STATE seq {checkpoint.get('seq')}"})
+    transitions.sort(key=lambda row: row["ts"])
+    stage_started_at = pipeline[stage].get("started_at")
+    if not stage_started_at:
+        stage_started_at = (last_event_at if status in {"running", "stalled", "failed"}
+                            else state_at or checkpoint_at or last_progress_at)
+    stage_start_epoch = (_parse_semantic_timestamp(stage_started_at)
+                         if stage_started_at else None)
+    elapsed_s = max(0.0, now - stage_start_epoch) if stage_start_epoch else None
+    if status in {"failed", "complete", "stopped"} and state_at and stage_start_epoch:
+        elapsed_s = max(0.0, _parse_semantic_timestamp(state_at) - stage_start_epoch)
+
+    probe_released = (isinstance(lease, dict)
+                      and isinstance(lease.get("device_claim_probe_released"), dict)
+                      and lease["device_claim_probe_released"].get("released_at") is not None)
+    probe_open = (lease.get("device_claim_probe_open")
+                  if isinstance(lease, dict) else None)
+    claim_held = bool(isinstance(probe_open, dict)
+                      and probe_open.get("state") == "held"
+                      and probe_open.get("released_at") is None
+                      and not probe_released)
+    gpu_expected = stage in {"correctness", "dispatch_proof", "profile", "benchmark"}
+    abandoned = [row for row in iterations if isinstance(row, dict)
+                 and row.get("status") == "abandoned"]
+    retest = [row for row in iterations if isinstance(row, dict)
+              and row.get("status") == "retest"]
+    history_rows = [{key: row.get(key) for key in
+                     ("turn", "hypothesis_id", "status", "effect_fraction")}
+                    for row in (*abandoned, *retest)]
+    return {
+        "status": status,
+        "phase": {"id": stage, "label": label, "started_at": stage_started_at,
+                  "elapsed_s": elapsed_s},
+        "turn": turn, "hypothesis_id": hypothesis,
+        "last_progress_at": last_progress_at, "progress_age_s": progress_age,
+        "waiting_on": waiting_on, "stall": stall,
+        "gpu": {"expected_now": gpu_expected, "claim_held": claim_held,
+                "detail": (f"MI210 {lease.get('device_id', 'device')} claim is held"
+                           if claim_held else
+                           "admission probe was released; no GPU screening began"
+                           if probe_released else
+                           "no identity-bound GPU claim is evidenced")},
+        "checkpoint": {"available": checkpoint is not None,
+                       "kind": "STOP_STATE" if checkpoint else None,
+                       "state": checkpoint.get("state") if checkpoint else None,
+                       "seq": checkpoint.get("seq") if checkpoint else None,
+                       "at": checkpoint_at,
+                       "detail": ("durable but not automatically resumable"
+                                  if checkpoint and recoverability.startswith("ambiguous")
+                                  else "latest durable controller boundary" if checkpoint
+                                  else "no durable controller checkpoint")},
+        "resume": {"required": status in {"failed", "stopped"},
+                   "possible": recoverability in {"same_candidate_retry", "not_required"},
+                   "recoverability": ("ambiguous" if recoverability.startswith("ambiguous")
+                                      else recoverability),
+                   "disposition": recoverability,
+                   "detail": ("Cannot resume this ambiguous inflight operation"
+                              if recoverability.startswith("ambiguous")
+                              else "same candidate may be retried" if recoverability == "same_candidate_retry"
+                              else "no resume action is required")},
+        "failure": failure_view,
+        "pipeline": list(pipeline.values()),
+        "transitions": transitions[-100:],
+        "completed_iterations": len(iterations),
+        "history": {"abandoned_count": len(abandoned),
+                    "retest_count": len(retest),
+                    "summary": f"{len(abandoned)} abandoned · {len(retest)} retest",
+                    "rows": history_rows},
+    }
+
+
 def _discovery_live_read() -> tuple[dict, panels.Observation]:
     candidates: list[tuple[bool, float, Path, dict, Path, Path]] = []
     try:
@@ -3298,10 +3599,16 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
-    if lock_held:
-        observed_ts = time.time()
-    else:
-        observed_ts = _parse_semantic_timestamp(latest_ts) if latest_ts else stamp
+    checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+    now = time.time()
+    activity = _discovery_activity(
+        lock_held=lock_held, state=state, events=all_events,
+        checkpoint=checkpoint, now=now)
+    # Poll time is not producer progress. In particular, a held controller lock
+    # must not keep a stuck stage green forever.
+    observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
+                   if activity.get("last_progress_at") else
+                   _parse_semantic_timestamp(latest_ts) if latest_ts else stamp)
     state_view = None
     if state is not None:
         iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
@@ -3318,15 +3625,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "schema": "epyc.dashboard.autokernel_live.v1",
         "available": True, "active": lock_held, "ambiguous_active": ambiguous,
         "observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
         "state": state_view, "state_error": state_error,
+        "activity": activity,
         "autokernel_log": all_events, "planner_log": planner_events,
         "log_error": all_error, "planner_log_error": planner_error,
         "status_message": (
-            "controller lock held; planner is running and has not reached its first durable checkpoint"
-            if lock_held and state_view is None and not planner_events else
-            "controller lock held" if lock_held else
-            "controller is not running; showing the latest durable deployment"),
+            f"{activity['status'].upper()} — {activity['phase']['label']}; "
+            f"waiting on {activity['waiting_on']}"),
         "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),

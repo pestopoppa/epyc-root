@@ -91,6 +91,26 @@
     overflow-wrap:anywhere;background:#090c10;border:1px solid var(--border);border-radius:7px;
     padding:10px;color:#b9c2cc;font:11px/1.5 ui-monospace,Menlo,Consolas,monospace}
   .live-foot{color:var(--muted);font-size:11px;margin-top:7px}
+  .live-summary{border:1px solid var(--border);border-left:5px solid var(--accent);border-radius:9px;
+    background:var(--panel2);padding:15px;margin-bottom:12px}
+  .live-summary.failed{border-left-color:var(--bad);background:rgba(248,81,73,.07)}
+  .live-summary.stalled,.live-summary.waiting{border-left-color:var(--warn);background:rgba(210,153,34,.07)}
+  .live-summary.complete{border-left-color:var(--good)}
+  .live-title{font-size:22px;font-weight:750;line-height:1.2;margin:4px 0 8px}
+  .live-facts{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--muted)}
+  .live-facts b{color:var(--text)}
+  .pipeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0}
+  .pipe-step{border:1px solid var(--border);border-radius:7px;padding:7px;font-size:10px;color:var(--muted)}
+  .pipe-step.complete{border-color:#1f4d38;color:var(--good)}
+  .pipe-step.running{border-color:#245d8f;color:var(--accent);box-shadow:0 0 7px rgba(96,165,250,.22)}
+  .pipe-step.failed,.pipe-step.interrupted{border-color:#7a2823;color:var(--bad)}
+  .pipe-step.waiting{border-color:#6a5118;color:var(--warn)}
+  .timeline{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-size:11px}
+  .timeline-row{display:grid;grid-template-columns:170px 130px 1fr;gap:8px;border-left:2px solid var(--border);padding-left:9px}
+  .history-disclosure{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  .history-disclosure>summary{cursor:pointer;color:var(--muted);font-weight:650}
+  .history-rows{margin-top:8px;max-height:320px;overflow:auto}
+  .raw-live{margin-bottom:20px}.raw-live>summary{cursor:pointer;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
   @media(max-width:760px){.activity-grid{grid-template-columns:1fr}}
   @media(max-width:760px){.state-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.hero,.winner-grid,.strategy-grid{grid-template-columns:1fr 1fr}}
@@ -115,11 +135,24 @@
 
   <div class="reporting" id="reporting"></div>
 
+  <section class="panel" id="autokernel-live-state-panel">
+    <h2>Current AutoKernel state <span class="tag">derived from durable transitions</span></h2>
+    <div id="ak-live-summary" class="live-summary"><div class="empty">connecting to controller state…</div></div>
+    <div id="ak-live-pipeline" class="pipeline"></div>
+    <div id="ak-live-timeline" class="timeline"></div>
+    <details id="ak-live-history" class="history-disclosure">
+      <summary id="ak-live-history-summary">Abandoned / retest history</summary>
+      <div id="ak-live-history-rows" class="history-rows"></div>
+    </details>
+  </section>
+
   <section class="panel" id="progression-panel">
     <h2>Kernel progression <span class="tag">discovery ≠ promotion</span></h2>
     <div id="progression"><div class="empty">loading CPU/GPU candidate funnel…</div></div>
   </section>
 
+  <details class="raw-live">
+  <summary>Raw redacted lifecycle logs</summary>
   <div class="live-grid">
     <section class="panel" id="autokernel-live-panel">
       <h2 class="live-head"><span class="live-dot" id="ak-live-dot"></span>AutoKernel log <span class="tag">live</span></h2>
@@ -132,6 +165,7 @@
       <div class="live-foot" id="planner-live-foot">no prompts or model text are exported</div>
     </section>
   </div>
+  </details>
 
   <details class="diagnostics">
   <summary>Evidence &amp; diagnostics — receipts, controls, implementation and raw campaign detail</summary>
@@ -338,12 +372,21 @@ function renderProgression(d){
 
   const strategy=p.strategy||{};
   h+='<div class="strategy-grid">';
-  [["Pursued",strategy.pursued||[]],["Accepted for next gate",strategy.accepted||[]],["Abandoned / retest",strategy.abandoned||[]]].forEach(function(group){
+  [["Pursued",strategy.pursued||[]],["Accepted for next gate",strategy.accepted||[]]].forEach(function(group){
     h+='<div class="strategy-card"><div class="hero-label">'+group[0]+'</div>';
     if(!group[1].length) h+='<div class="meta">none evidenced</div>';
     group[1].forEach(function(r){ const ev=(r.evidence||[]).slice(-1)[0]||{}; h+='<div class="meta"><b>'+esc(r.lane)+' '+esc(r.candidate)+'</b> · '+esc(r.stage||"—")+' · '+esc(effectPct(r))+' · '+esc(r.workload)+'<br><b>Gate:</b> '+esc(r.current_gate||"—")+'<br><code>'+esc(ev.path||"—")+'</code></div>'; });
     h+='</div>';
   }); h+='</div>';
+  const abandoned=strategy.abandoned||[];
+  const screened=abandoned.filter(r=>r.stage==="screened_out").length;
+  const inconclusive=abandoned.filter(r=>r.stage==="inconclusive").length;
+  h+='<details id="ak-progression-abandoned" class="strategy-card history-disclosure">';
+  h+='<summary>Abandoned / retest — '+abandoned.length+' rows · '+inconclusive+' inconclusive · '+screened+' screened out</summary>';
+  h+='<div class="history-rows">';
+  if(!abandoned.length) h+='<div class="meta">none evidenced</div>';
+  abandoned.forEach(function(r){ const ev=(r.evidence||[]).slice(-1)[0]||{}; h+='<div class="meta"><b>'+esc(r.lane)+' '+esc(r.candidate)+'</b> · '+esc(r.stage||"—")+' · '+esc(effectPct(r))+' · '+esc(r.workload)+'<br><b>Gate:</b> '+esc(r.current_gate||"—")+'<br><code>'+esc(ev.path||"—")+'</code></div>'; });
+  h+='</div></details>';
 
   const queue=Array.isArray(p.unexplored)?p.unexplored:[];
   h+='<div class="strategy-card" style="margin-top:10px"><div class="hero-label">Unexplored / ready hypotheses</div>';
@@ -829,11 +872,58 @@ function liveLine(row){
   return [row.ts||"—", row.event||"event", row.hypothesis_id||"—",
           row.model||"—", facts.join(" ")].filter(Boolean).join(" · ");
 }
+function elapsedText(value){
+  if(typeof value!=="number"||!isFinite(value)) return "unknown";
+  const seconds=Math.max(0,Math.round(value));
+  if(seconds<60) return seconds+" s";
+  const minutes=Math.floor(seconds/60), rest=seconds%60;
+  if(minutes<60) return minutes+" min"+(rest?" "+rest+" s":"");
+  const hours=Math.floor(minutes/60), mins=minutes%60;
+  return hours+" h"+(mins?" "+mins+" min":"");
+}
 function renderLive(d){
-  const active=d.active===true;
+  const active=d.active===true, a=d.activity||{};
+  const phase=a.phase||{}, gpu=a.gpu||{}, checkpoint=a.checkpoint||{};
+  const failure=a.failure||{}, resume=a.resume||{}, stall=a.stall||{};
+  const status=String(a.status||(active?"running":"unknown"));
+  const summary=$("#ak-live-summary");
+  summary.className="live-summary "+status;
+  let hero='<div class="hero-label">'+esc(status.toUpperCase())+' · '+esc(d.deployment||"no deployment")+'</div>';
+  hero+='<div class="live-title">'+esc(phase.label||d.status_message||"State unavailable")+'</div>';
+  hero+='<div class="live-facts">';
+  hero+='<span><b>Stage elapsed:</b> '+esc(elapsedText(phase.elapsed_s))+'</span>';
+  hero+='<span><b>Waiting on:</b> '+esc(a.waiting_on||"unknown")+'</span>';
+  hero+='<span><b>Hypothesis:</b> '+esc(a.hypothesis_id||"—")+'</span>';
+  hero+='<span><b>Turn:</b> '+esc(a.turn==null?"—":a.turn)+'</span>';
+  hero+='<span><b>GPU:</b> '+(gpu.expected_now?"expected now":"not expected now")+' · '+(gpu.claim_held?"claim held":"no claim")+'</span>';
+  hero+='<span><b>Checkpoint:</b> '+(checkpoint.available?esc(checkpoint.state||checkpoint.kind||"available"):esc(checkpoint.detail||"No completed durable checkpoint yet"))+'</span>';
+  hero+='</div>';
+  hero+='<div class="live-foot">'+esc(gpu.detail||"")+' · '+esc(stall.state||"unknown")+' — '+esc(stall.detail||"")+'</div>';
+  if(failure.detected){
+    hero+='<div class="fail" style="margin-top:10px"><b>'+esc(failure.detail||"controller failure")+'</b><br>'+esc(failure.recovery||"")+'</div>';
+  }
+  if(resume.required||resume.possible===false){
+    hero+='<div class="live-foot"><b>Recovery:</b> '+esc(resume.detail||resume.disposition||"recovery audit required")+'</div>';
+  }
+  summary.innerHTML=hero;
+
+  $("#ak-live-pipeline").innerHTML=(a.pipeline||[]).map(step=>
+    '<div class="pipe-step '+esc(step.state||"")+'"><b>'+esc(step.label||step.id||"stage")+'</b><br>'+esc(step.state||"not reached")+(typeof step.elapsed_s==="number"?' · '+esc(elapsedText(step.elapsed_s)):'')+'</div>'
+  ).join("");
+  $("#ak-live-timeline").innerHTML=(a.transitions||[]).map(row=>
+    '<div class="timeline-row"><span>'+esc(row.ts||"—")+'</span><b>'+esc(row.phase||row.stage||"event")+'</b><span>'+esc(row.label||row.detail||row.event||"transition")+'</span></div>'
+  ).join("")||'<div class="muted">No durable transition has been reported yet.</div>';
+  const history=a.history||{abandoned_count:0,retest_count:0,rows:[]};
+  $("#ak-live-history-summary").textContent=history.summary||
+    ((history.abandoned_count||0)+" abandoned · "+(history.retest_count||0)+" retest");
+  $("#ak-live-history-rows").innerHTML=(history.rows||[]).map(row=>
+    '<div class="meta"><b>turn '+esc(row.turn==null?"—":row.turn)+' · '+esc(row.hypothesis_id||"—")+'</b> · '+esc(row.status||"—")+'</div>'
+  ).join("")||'<div class="muted">No abandoned or retest rows in this deployment.</div>';
+
+  const exactPlanner=active&&phase.id==="planner";
   $("#ak-live-dot").className="live-dot"+(active?" on":"");
-  $("#planner-live-dot").className="live-dot"+(active?" on":"");
-  const header=(d.observed_at||"—")+" · "+(d.deployment||"no deployment")+"\n"+
+  $("#planner-live-dot").className="live-dot"+(exactPlanner?" on":"");
+  const header="dashboard refreshed "+(d.dashboard_observed_at||d.observed_at||"—")+" · "+(d.deployment||"no deployment")+"\n"+
     (d.status_message||d.error||"status unavailable");
   const ak=(d.autokernel_log||[]).map(liveLine);
   const planner=(d.planner_log||[]).map(liveLine);
@@ -843,7 +933,7 @@ function renderLive(d){
     "no durable planner event yet"])].join("\n");
   const fresh=d._freshness||{};
   $("#ak-live-foot").textContent=(active?"controller lock held":"controller idle")+" · "+
-    (fresh.staleness_class||"missing")+" · "+ak.length+" event(s)";
+    (fresh.staleness_class||"missing")+" · "+ak.length+" event(s) · raw diagnostics";
   $("#planner-live-foot").textContent=planner.length+" event(s) · "+(d.telemetry_note||"");
 }
 async function loadLive(){

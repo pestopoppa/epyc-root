@@ -321,6 +321,14 @@ process.stdout.write(JSON.stringify(out));
         self.assertIsNotNone(details, "abandoned/retest history needs a details disclosure")
         self.assertNotRegex("".join(details.groups()), r"\bopen\b",
                             "abandoned/retest history must be collapsed by default")
+        progression = re.search(
+            r"<details\b([^>]*)\bid=\\?['\"]ak-progression-abandoned\\?['\"]([^>]*)>",
+            html, re.I)
+        self.assertIsNotNone(
+            progression,
+            "the large progression abandoned/retest wall needs its own disclosure")
+        self.assertNotRegex("".join(progression.groups()), r"\bopen\b",
+                            "progression abandoned/retest rows must be collapsed")
 
         payload = {
             "active": True,
