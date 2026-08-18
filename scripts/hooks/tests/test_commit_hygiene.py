@@ -34,7 +34,33 @@ def run(cmd: str, env: dict | None = None) -> int:
 
 
 # (command, expected_rc, env, description)
+_PY_HEREDOC = """python3 - <<'HD1'
+old = "git commit -m x -- a.md"
+HD1
+echo done"""
+
+_CAT_HEREDOC = """cat > f.md <<'HD2'
+Run: git add -A && git commit -a -m "do it"
+HD2
+echo written"""
+
+_SHELL_HEREDOC = """bash <<'HD3'
+git commit -a -m "this really does commit"
+HD3"""
+
+_COMMIT_F_HEREDOC = """git commit -F - -- a.md <<'HD4'
+subject line
+HD4"""
 CASES: list[tuple[str, int, dict, str]] = [
+    # ---- heredoc bodies are stdin DATA, not commands (measured false positive 2026-08-18) ----
+    # `_SEP` splits on newlines, so every body line was tokenised as its own command: a Python
+    # heredoc whose SOURCE merely contained the text of a commit was read as a commit and
+    # blocked for a stale fetch. Each permissive case is PAIRED with an enforcement case,
+    # because a hook that simply stopped looking at heredocs would pass the permissive half.
+    (_PY_HEREDOC, 0, STALE, "python heredoc whose data mentions a commit"),
+    (_CAT_HEREDOC, 0, STALE, "cat>file heredoc writing git commands as file text"),
+    (_SHELL_HEREDOC, 2, STALE, "bash heredoc - body IS commands, still enforced"),
+    (_COMMIT_F_HEREDOC, 2, STALE, "commit -F - opener line still checked"),
     # ---- rule A: wholesale staging must BLOCK ----
     ("git add -A", 2, FRESH, "git add -A"),
     ("git add --all", 2, FRESH, "git add --all"),

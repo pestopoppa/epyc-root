@@ -150,6 +150,58 @@ def is_shared(path: str) -> bool:
     return common is not None and common in _seed_common_dirs()
 
 
+# A heredoc BODY is stdin data, not shell commands — except when the command receiving it is
+# itself a shell, where the body really is commands and must stay enforced.
+_HEREDOC_OPEN = re.compile(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_-]*)\1")
+_SHELL_WORDS = frozenset(("bash", "sh", "zsh", "dash", "ksh", "fish", "eval", "source"))
+
+
+def _receives_into_shell(opener_line: str) -> bool:
+    """Does this heredoc feed a shell? Then its body is commands and is kept."""
+    try:
+        toks = shlex.split(opener_line)
+    except ValueError:
+        return True                       # unparseable -> keep, erring toward enforcement
+    for t in toks:
+        base = t.rsplit("/", 1)[-1]
+        if base in _SHELL_WORDS:
+            return True
+    return False
+
+
+def strip_heredoc_bodies(cmd: str) -> str:
+    """Drop heredoc bodies before segmentation.
+
+    MEASURED 2026-08-18. `_SEP` splits on newlines, so every LINE of a heredoc body became its
+    own "segment" and was tokenised as a command. A `python3 - <<'PY' ... PY` whose Python
+    source merely CONTAINED the text `git commit` was therefore read as a commit and blocked
+    for a stale fetch — the exact false-positive class this module's own docstring warns about
+    ("an over-broad matcher is worse than a missing one, because a false block stalls a session
+    for a reason it cannot see").
+
+    Opener LINES are always kept: `git commit -F - <<'MSG'` is a real commit whose message
+    arrives on stdin, and that must still be checked. Only the body is data.
+    """
+    out, lines = [], cmd.split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        out.append(line)                              # the opener line is a real command
+        m = _HEREDOC_OPEN.search(line)
+        if not m:
+            i += 1
+            continue
+        delim, keep = m.group(2), _receives_into_shell(line)
+        i += 1
+        while i < len(lines) and lines[i].strip() != delim:
+            if keep:
+                out.append(lines[i])
+            i += 1
+        if i < len(lines):                            # the terminator line itself
+            i += 1
+    return "\n".join(out)
+
+
 def git_invocations(segment: str) -> list[list[str]]:
     """Tokenised git invocations in one segment. Malformed quoting -> none."""
     try:
@@ -341,6 +393,12 @@ def main() -> int:
     if payload.get("tool_name") != "Bash":
         return 0
     cmd = (payload.get("tool_input") or {}).get("command") or ""
+    if "git" not in cmd:
+        return 0
+    # Heredoc bodies are stdin DATA, not commands (see strip_heredoc_bodies). Stripped once
+    # here so every downstream segmentation — both rule loops and fetch_precedes_commit —
+    # sees the same view and cannot disagree about what the command contains.
+    cmd = strip_heredoc_bodies(cmd)
     if "git" not in cmd:
         return 0
 
