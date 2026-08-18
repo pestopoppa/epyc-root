@@ -513,7 +513,7 @@ Zero were bulk-acked. What survived as live work:
   three verdict functions before and after, byte-identical. The module's docstring carries the
   incident record — the same defect, four times, dated — so a fifth author reads why before writing
   a fifth copy.
-- [ ] **`test_hook_worktree_resolution.py` has 2 failing tests** (`test_env_override_wins_over_everything`,
+- [x] **`test_hook_worktree_resolution.py` has 2 failing tests** ✅ 2026-08-18 (`25726a78`) — both were the TEST, not the cascade, and neither was about resolution: the tier-1 stub fixture hard-coded two hook names while `pre-commit.extras` had chained a third through the same variable, and the sparse fixture rmtree-d the whole `scripts/hooks` tree, which trips the later-added observer census on registry rows pointing into it. Fixed by DISCOVERING the chain rather than naming it, and by simulating sparseness the way tier 2 actually detects it (remove the one probe file). Its sibling was passing for the WRONG REASON — asserting `rc != 0` and getting non-zero from the census, not from resolution. Also removed a `git worktree prune` from the fixture teardown: the command that destroyed all five lanes on 2026-08-12 had no business in a test. 8 passed, was 2 failed / 6 passed. ORIGINAL NOTE: (`test_env_override_wins_over_everything`,
   `test_sparse_worktree_fallback_allows_a_clean_commit_too`). Confirmed **pre-existing** on 2026-08-18
   by stashing the guard-sweep work and re-running: identical 2 failed / 6 passed. Untouched by that
   sweep and filed here rather than left in prose. Not blocked on anything.
