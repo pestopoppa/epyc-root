@@ -3255,6 +3255,7 @@ def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str 
 
 _DISCOVERY_PIPELINE = (
     ("planner", "Planner"),
+    ("planner_validation", "Validate planner output"),
     ("critic", "Critic review"),
     ("authorization", "Governance authorization"),
     ("resource_admission", "Resource admission"),
@@ -3452,6 +3453,8 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         "planner_started": ("planner", "running"),
         "planner_completed": ("planner", "complete"),
         "planner_failed": ("planner", "failed"),
+        "planner_validation_failed": ("planner_validation", "failed"),
+        "planner_validation_refused": ("planner_validation", "failed"),
         "critic_started": ("critic", "running"),
         "critic_completed": ("critic", "complete"),
         "critic_failed": ("critic", "failed"),
@@ -3489,6 +3492,13 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     complete = bool(state and state.get("complete") is True)
     failure = _discovery_safe_error(
         inflight.get("exception") if isinstance(inflight, dict) else None)
+    latest_event = events[-1].get("event") if events else None
+    validation_event = (latest_event if latest_event in
+                        {"planner_validation_failed", "planner_validation_refused"}
+                        else None)
+    planner_validation_interrupted = bool(
+        not lock_held and state is None and checkpoint is None
+        and operation_observation is None and latest_event == "planner_completed")
     hypothesis = None
     turn = state.get("next") if isinstance(state, dict) else None
     lease = None
@@ -3559,6 +3569,44 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             "source_proof_created": False, "runner_started": False,
             "gpu_screen_started": False,
         }
+    elif validation_event is not None or planner_validation_interrupted:
+        status = "failed"
+        stage = "planner_validation"
+        label = ("Planner output refused by local validation"
+                 if validation_event == "planner_validation_refused" else
+                 "Planner validation failed" if validation_event else
+                 "Controller stopped during planner validation")
+        waiting_on = "fresh sealed deployment after controller repair"
+        recoverability = "planner_validation_requires_fresh_deployment"
+        planner_completed_at = next(
+            (row.get("ts") for row in reversed(events)
+             if row.get("event") == "planner_completed"), None)
+        pipeline[stage]["state"] = "failed"
+        pipeline[stage]["started_at"] = planner_completed_at or last_event_at
+        pipeline[stage]["completed_at"] = last_event_at
+        detail = (
+            "Planner output was refused by local validation (producer lifecycle event)."
+            if validation_event == "planner_validation_refused" else
+            "Planner validation failed (producer lifecycle event)."
+            if validation_event == "planner_validation_failed" else
+            "Controller stopped after the planner actor completed; the producer "
+            "did not persist the exact planner-validation exception."
+        )
+        failure_view = {
+            "detected": True, "stage": stage, "detail": detail,
+            "recovery": ("Do not resume this attempt; repair the controller and "
+                         "launch a fresh sealed deployment."),
+            "source_proof_created": False, "runner_started": False,
+            "gpu_screen_started": False,
+        }
+        if planner_validation_interrupted:
+            transitions.append({
+                "ts": last_event_at, "stage": stage, "phase": stage,
+                "state": "inferred_failure",
+                "event": "planner_validation_interrupted",
+                "label": "controller exited before a planner-validation checkpoint",
+                "detail": "exact exception was not persisted by the producer",
+            })
     elif complete:
         status = "complete"
         stage = "decision"
@@ -3608,7 +3656,6 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         status = "running" if lock_held else "stopped"
         recoverability = "reconcile_required"
     elif lock_held:
-        latest_event = events[-1].get("event") if events else None
         if latest_event == "planner_started":
             stage, label, waiting_on = "planner", "Planner model call", "planner completion"
         elif latest_event == "critic_started":
@@ -3701,6 +3748,8 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         "gpu": {"expected_now": gpu_expected, "claim_held": claim_held,
                 "detail": (f"MI210 {lease.get('device_id', 'device')} claim is held"
                            if claim_held else
+                           "GPU screening was not reached"
+                           if stage == "planner_validation" and status == "failed" else
                            "admission probe was released; no GPU screening began"
                            if probe_released else
                            "no identity-bound GPU claim is evidenced")},
@@ -3720,6 +3769,8 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                    "disposition": recoverability,
                    "detail": ("Cannot resume this ambiguous inflight operation"
                               if recoverability.startswith("ambiguous")
+                              else "Cannot resume; repair the controller and launch a fresh sealed deployment"
+                              if recoverability == "planner_validation_requires_fresh_deployment"
                               else "same candidate may be retried" if recoverability == "same_candidate_retry"
                               else "no resume action is required")},
         "failure": failure_view,

@@ -9,7 +9,7 @@
   v6 is separately reported as unlaunched.
 - Added API and DOM acceptance coverage for failed-v5 plus unlaunched-v6
   coexistence; abandoned/retest history remains collapsed.
-- Validation: 117 dashboard unit/DOM tests pass; `git diff --check` and
+- Validation: 121 dashboard unit/DOM tests pass; `git diff --check` and
   `py_compile` pass. The environment has no `pytest` module, so the pytest-only
   runtime-JS module was not runnable here.
 - The :8100 dashboard was not reloaded; deployment remains under operator/main
@@ -17,3 +17,8 @@
 - Live-v7 follow-up: older unlaunched bundles are now omitted from the
   forward-looking field. Exact coverage proves active v7 supersedes unlaunched
   v6 instead of presenting v6 as “available next.”
+- Live-v7 terminal follow-up: a lockless `planner_completed` with no later
+  critic/state/checkpoint is now a failed `planner_validation` boundary. The
+  hero names the missing exact-exception telemetry, forbids resume, and shows
+  GPU screening as not reached; explicit future validation-failed/refused events
+  are also consumed.

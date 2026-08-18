@@ -180,6 +180,15 @@ when the unlaunched bundle is newer in seal/progress order than the selected
 meaningful campaign; once v7 is active, an older unlaunched v6 is superseded
 history rather than an “available next” deployment.
 
+The live fold also distinguishes actor completion from controller completion. If
+the planner reports `planner_completed`, the controller lock then disappears,
+and no critic event, state, checkpoint, or operation follows, the page reports a
+terminal `planner_validation` interruption—not “idle / awaiting launch.” It says
+that the exact exception was not persisted, marks resume unsafe, and records that
+GPU screening was never reached. Explicit future
+`planner_validation_failed`/`planner_validation_refused` lifecycle events map to
+the same stage without relying on that inference.
+
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
 and strict campaign receipts into

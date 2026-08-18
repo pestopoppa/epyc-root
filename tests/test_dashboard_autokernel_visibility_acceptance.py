@@ -142,6 +142,61 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(activity["stall"]["state"], "healthy")
         self.assertEqual(activity["stall"]["threshold_s"], 900.0)
 
+    def test_v7_exit_after_planner_completion_is_validation_failure(self) -> None:
+        """Two actor events are not a launch-idle state after the lock exits."""
+        self._write_events([
+            _event("planner_started", seconds_ago=90),
+            _event("planner_completed", seconds_ago=30,
+                   result={"returncode": 0}),
+        ])
+
+        payload = server.discovery_live_payload()
+        activity = payload["activity"]
+
+        self.assertFalse(payload["active"])
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "planner_validation")
+        self.assertIsNone(activity["hypothesis_id"])
+        self.assertFalse(activity["checkpoint"]["available"])
+        self.assertTrue(activity["failure"]["detected"])
+        self.assertEqual(activity["failure"]["stage"], "planner_validation")
+        self.assertIn("did not persist", activity["failure"]["detail"])
+        self.assertIn("exact planner-validation exception",
+                      activity["failure"]["detail"])
+        self.assertFalse(activity["resume"]["possible"])
+        self.assertIn("fresh sealed deployment", activity["resume"]["detail"])
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertIn("not reached", activity["gpu"]["detail"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"]["state"], "complete")
+        self.assertEqual(pipeline["planner_validation"]["state"], "failed")
+        self.assertEqual(pipeline["critic"]["state"], "not_reached")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "planner_validation_interrupted")
+
+    def test_explicit_planner_validation_terminal_events_are_consumed(self) -> None:
+        for event in ("planner_validation_failed", "planner_validation_refused"):
+            with self.subTest(event=event):
+                self._write_events([
+                    _event("planner_started", seconds_ago=90),
+                    _event("planner_completed", seconds_ago=30,
+                           result={"returncode": 0}),
+                    _event(event, seconds_ago=29, channel="autokernel",
+                           model="local-validator", provider="controller"),
+                ])
+
+                activity = server.discovery_live_payload()["activity"]
+
+                self.assertEqual(activity["status"], "failed")
+                self.assertEqual(activity["phase"]["id"], "planner_validation")
+                self.assertTrue(activity["failure"]["detected"])
+                self.assertIn("producer lifecycle event",
+                              activity["failure"]["detail"])
+                pipeline = {row["id"]: row for row in activity["pipeline"]}
+                self.assertEqual(pipeline["planner"]["state"], "complete")
+                self.assertEqual(pipeline["planner_validation"]["state"], "failed")
+
     def test_gpu_expected_and_claimed_are_two_independent_facts(self) -> None:
         self._write_events([
             _event("planner_started", seconds_ago=180),
@@ -579,6 +634,62 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("1 retest", history_summary)
         self.assertIn("akh-old-a", history_rows)
         self.assertIn("akh-retest", history_rows)
+
+    def test_planner_validation_interruption_is_visible_in_hero_and_pipeline(self) -> None:
+        payload = {
+            "active": False,
+            "observed_at": _iso(0),
+            "deployment": "campaign-v7",
+            "autokernel_log": [],
+            "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "failed",
+                "phase": {"id": "planner_validation",
+                          "label": "Controller stopped during planner validation",
+                          "elapsed_s": 30},
+                "stall": {"state": "failed",
+                          "detail": "planner validation interrupted"},
+                "waiting_on": "fresh sealed deployment after controller repair",
+                "hypothesis_id": None,
+                "turn": None,
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "GPU screening was not reached"},
+                "checkpoint": {"available": False,
+                               "detail": "no durable controller checkpoint"},
+                "resume": {"required": True, "possible": False,
+                           "detail": "Cannot resume; repair the controller and launch a fresh sealed deployment"},
+                "failure": {
+                    "detected": True, "stage": "planner_validation",
+                    "detail": "Controller stopped after the planner actor completed; the producer did not persist the exact planner-validation exception.",
+                    "recovery": "Do not resume this attempt; repair the controller and launch a fresh sealed deployment.",
+                },
+                "pipeline": [
+                    {"id": "planner", "label": "Planner", "state": "complete"},
+                    {"id": "planner_validation",
+                     "label": "Validate planner output", "state": "failed"},
+                    {"id": "critic", "label": "Critic review",
+                     "state": "not_reached"},
+                ],
+                "transitions": [],
+                "history": {"abandoned_count": 0, "retest_count": 0,
+                            "summary": "0 abandoned · 0 retest", "rows": []},
+            },
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+
+        for token in ("failed", "planner validation", "did not persist",
+                      "fresh sealed deployment", "GPU screening was not reached"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("Planner", pipeline)
+        self.assertIn("complete", pipeline)
+        self.assertIn("Validate planner output", pipeline)
+        self.assertIn("failed", pipeline)
+        self.assertIn("Critic review", pipeline)
+        self.assertIn("not_reached", pipeline)
 
     def test_failed_campaign_and_newer_unlaunched_bundle_render_separately(self) -> None:
         payload = {
