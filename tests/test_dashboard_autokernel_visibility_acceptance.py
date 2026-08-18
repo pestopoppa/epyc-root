@@ -131,6 +131,16 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             sorted(row["ts"] for row in transitions),
             "the transition timeline must be chronological")
 
+    def test_planner_uses_its_sealed_actor_budget_before_stall_warning(self) -> None:
+        self._write_events([_event("planner_started", seconds_ago=600)])
+
+        activity = self._active_payload()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "planner")
+        self.assertEqual(activity["stall"]["state"], "healthy")
+        self.assertEqual(activity["stall"]["threshold_s"], 900.0)
+
     def test_gpu_expected_and_claimed_are_two_independent_facts(self) -> None:
         self._write_events([
             _event("planner_started", seconds_ago=180),

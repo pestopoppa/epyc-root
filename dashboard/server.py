@@ -3267,6 +3267,15 @@ _DISCOVERY_PIPELINE = (
     ("decision", "Classify result"),
 )
 _DISCOVERY_STALL_S = 300.0
+_DISCOVERY_STAGE_STALL_S = {
+    # The sealed Claude critic has a 900-second process timeout, and the Codex
+    # planner has historically needed several minutes for the full source
+    # catalogue.  A five-minute generic warning would therefore report known
+    # healthy actor calls as stalled.  These are no-transition budgets, not
+    # synthetic heartbeats or execution timeouts.
+    "planner": 900.0,
+    "critic": 900.0,
+}
 
 
 def _discovery_checkpoint(path: Path) -> dict | None:
@@ -3467,15 +3476,16 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         status = "running"
         pipeline[stage]["state"] = "running"
 
-    if lock_held and progress_age is not None and progress_age > _DISCOVERY_STALL_S:
+    stall_threshold = _DISCOVERY_STAGE_STALL_S.get(stage, _DISCOVERY_STALL_S)
+    if lock_held and progress_age is not None and progress_age > stall_threshold:
         status = "stalled"
-        stall = {"state": "stalled", "threshold_s": _DISCOVERY_STALL_S,
+        stall = {"state": "stalled", "threshold_s": stall_threshold,
                  "detail": "Controller lock is held but no durable transition advanced; exact substage heartbeat is not instrumented."}
     elif status == "failed":
-        stall = {"state": "failed", "threshold_s": _DISCOVERY_STALL_S,
+        stall = {"state": "failed", "threshold_s": stall_threshold,
                  "detail": failure_view["detail"]}
     else:
-        stall = {"state": "healthy", "threshold_s": _DISCOVERY_STALL_S,
+        stall = {"state": "healthy", "threshold_s": stall_threshold,
                  "detail": "durable lifecycle is advancing" if lock_held else "controller is not active"}
 
     if checkpoint:
