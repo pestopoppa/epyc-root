@@ -306,6 +306,60 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "candidate_attribution_failed")
 
+    def test_v13_released_terminal_does_not_expect_gpu_now(self) -> None:
+        acquired_at = "2026-08-18T23:52:50.625980+00:00"
+        released_at = "2026-08-18T23:53:46.922940+00:00"
+        state = json.loads((self.state_root / "state.json").read_text())
+        state["updated_at"] = "2026-08-18T23:53:47.267355Z"
+        state["inflight"]["exception"] = {
+            "type": "EvidenceProducerError",
+            "message": ("runtime maps did not prove the sealed arm during "
+                        "child execution"),
+        }
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        self._receipt(
+            "proof/correctness/receipt.json",
+            "epyc.autokernel.targeted_correctness_receipt.v3",
+            status="complete", result="PASS", overall="OK",
+            passed_cases=1139, expected_cases=1139,
+            ended_at="2026-08-18T23:53:45.559262Z",
+            device_claim_open={
+                "schema": "epyc.autokernel.device_claim_receipt.v1",
+                "campaign_id": "ak-discovery-" + "a" * 16,
+                "claim_id": "akd-a27c5e21725a4e37",
+                "device_id": "mi210_0", "acquired_at": acquired_at,
+            })
+        attribution = self.operation / "proof/attribution-candidate"
+        attribution.mkdir()
+        for name in ("stdout.txt", "stderr.txt", "timestamps.csv"):
+            (attribution / name).write_text("\n")
+        claims = self.operations / "claims"
+        claims.mkdir()
+        receipt = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "claim_id": "akd-a27c5e21725a4e37", "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": 2096922, "holder_start_ticks": 48012147,
+            "acquired_at": acquired_at, "released_at": released_at,
+        }
+        (claims / "device.jsonl").write_text(json.dumps({
+            "schema": "epyc.autokernel.device_claim_journal.v1",
+            "kind": "claim_released", "created_at": released_at,
+            "detail": {"receipt": receipt},
+        }) + "\n")
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "candidate_attribution")
+        self.assertEqual(activity["failure"]["stage"], "candidate_attribution")
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertTrue(activity["gpu"]["claim_released"])
+        self.assertTrue(activity["gpu"]["screen_started"])
+        self.assertTrue(activity["correctness"]["execution_completed"])
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",

@@ -4766,7 +4766,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                             and probe_open.get("released_at") is None
                             and not probe_released)
     claim_held = source_claim_held or probe_claim_held
-    gpu_expected = stage in {
+    gpu_expected = status in {"running", "stalled"} and stage in {
         "correctness", "candidate_attribution", "anchor_attribution",
         "dispatch_proof", "profile", "measurement_graphs_off_screen",
         "target_runtime_graphs_on_screen", "benchmark",
