@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -202,6 +203,47 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                       "measurement_graphs_off_screen",
                       "target_runtime_graphs_on_screen", "benchmark"):
             self.assertEqual(pipeline[stage], "complete", stage)
+
+    def test_live_source_claim_starts_correctness_clock_at_claim_acquisition(self) -> None:
+        """v11: a held correctness claim must not inherit pre-screen time."""
+        acquired_at = _now()
+        holder_pid = os.getpid()
+        holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
+                                 .read_text().split()[21])
+        claims = self.operations / "claims"
+        claims.mkdir()
+        receipt = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "claim_id": "akd-1a2840d5bfe6433e",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": holder_pid,
+            "holder_start_ticks": holder_start_ticks,
+            "acquired_at": acquired_at,
+            "released_at": None,
+        }
+        (claims / "device.jsonl").write_text(json.dumps({
+            "schema": "epyc.autokernel.device_claim_journal.v1",
+            "kind": "claim_acquired", "created_at": acquired_at,
+            "detail": {"receipt": receipt},
+        }) + "\n")
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["phase"]["id"], "correctness")
+        self.assertEqual(activity["phase"]["started_at"], acquired_at)
+        self.assertLess(activity["phase"]["elapsed_s"], 5)
+        self.assertTrue(activity["correctness"]["execution_started"])
+        self.assertFalse(activity["correctness"]["execution_completed"])
+        self.assertEqual(activity["correctness"]["started_at"], acquired_at)
+        self.assertTrue(activity["gpu"]["claim_held"])
+        self.assertTrue(activity["gpu"]["expected_now"])
+        self.assertEqual(activity["stall"]["state"], "healthy")
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["correctness"]["state"], "running")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "correctness_execution_started")
 
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",

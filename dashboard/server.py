@@ -3922,7 +3922,8 @@ def _discovery_postbuild_observation(operations_root: Path,
     }
 
 
-def _discovery_claim_observation(operations_root: Path) -> dict | None:
+def _discovery_claim_observation(operations_root: Path,
+                                 campaign_id: str | None) -> dict | None:
     """Return the latest identity-proven source-proof claim state."""
     path = operations_root / "claims" / "device.jsonl"
     try:
@@ -3945,6 +3946,8 @@ def _discovery_claim_observation(operations_root: Path) -> dict | None:
                 or not isinstance(receipt, dict)
                 or receipt.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
                 or receipt.get("purpose") != "AutoKernel GPU source proof and throughput"
+                or not isinstance(campaign_id, str)
+                or receipt.get("campaign_id") != campaign_id
                 or not isinstance(receipt.get("claim_id"), str)):
             continue
         latest[receipt["claim_id"]] = {"kind": row["kind"], "receipt": receipt,
@@ -3953,6 +3956,10 @@ def _discovery_claim_observation(operations_root: Path) -> dict | None:
         return None
     row = max(latest.values(), key=lambda value: str(value.get("at") or ""))
     receipt = row["receipt"]
+    acquired_at = receipt.get("acquired_at")
+    if (not isinstance(acquired_at, str)
+            or _parse_semantic_timestamp(acquired_at) is None):
+        return None
     held = row["kind"] == "claim_acquired" and receipt.get("released_at") is None
     if held:
         pid, ticks = receipt.get("holder_pid"), receipt.get("holder_start_ticks")
@@ -3965,7 +3972,7 @@ def _discovery_claim_observation(operations_root: Path) -> dict | None:
     return {"claim_held": held, "claim_released": not held,
             "claim_id": receipt.get("claim_id"),
             "device_id": receipt.get("device_id"),
-            "acquired_at": receipt.get("acquired_at"),
+            "acquired_at": acquired_at,
             "released_at": receipt.get("released_at"),
             "identity_live": held}
 
@@ -4290,13 +4297,15 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                     if isinstance(operation_observation, dict) else None)
     correctness_at = (correctness_observation.get("completed_at")
                       if isinstance(correctness_observation, dict) else None)
+    claim_at = (claim_observation.get("acquired_at")
+                if isinstance(claim_observation, dict) else None)
     postbuild_at = max(
         (row.get("at") for row in postbuild_observation.get("receipts", {}).values()
          if isinstance(row, dict) and isinstance(row.get("at"), str)),
         default=None) if isinstance(postbuild_observation, dict) else None
     semantic_times = [value for value in
                       (last_event_at, state_at, checkpoint_at, operation_at,
-                       correctness_at, postbuild_at)
+                       correctness_at, claim_at, postbuild_at)
                       if isinstance(value, str)]
     last_progress_at = max(semantic_times) if semantic_times else None
     last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
@@ -4580,6 +4589,20 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         status = "running"
         pipeline[stage]["state"] = "running"
 
+    source_claim_held = bool(
+        isinstance(claim_observation, dict)
+        and claim_observation.get("claim_held") is True
+        and claim_observation.get("identity_live") is True)
+    active_correctness_started = bool(
+        stage == "correctness" and lock_held and source_claim_held
+        and isinstance(claim_at, str))
+    if active_correctness_started:
+        # The sealed build/materialization/policy chain identifies correctness
+        # as the first incomplete stage; the live source-proof claim is the
+        # first durable fact that execution actually began.
+        pipeline["correctness"]["state"] = "running"
+        pipeline["correctness"]["started_at"] = claim_at
+
     stall_threshold = _DISCOVERY_STAGE_STALL_S.get(stage, _DISCOVERY_STALL_S)
     if lock_held and progress_age is not None and progress_age > stall_threshold:
         status = "stalled"
@@ -4647,6 +4670,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 "label": "correctness output parser rejected the completed result",
                 "detail": failure_view["detail"],
             })
+    elif active_correctness_started:
+        transitions.append({
+            "ts": claim_at, "stage": "correctness", "phase": "correctness",
+            "state": "running", "event": "correctness_execution_started",
+            "label": "GPU correctness execution started",
+            "detail": f"claim {str(claim_observation.get('claim_id'))[:12]}… held",
+        })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
@@ -4667,8 +4697,6 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                             and probe_open.get("state") == "held"
                             and probe_open.get("released_at") is None
                             and not probe_released)
-    source_claim_held = bool(isinstance(claim_observation, dict)
-                             and claim_observation.get("claim_held") is True)
     claim_held = source_claim_held or probe_claim_held
     gpu_expected = stage in {
         "correctness", "candidate_attribution", "anchor_attribution",
@@ -4932,6 +4960,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "total": correctness_observation["total"],
             "summary": correctness_observation["summary"],
         } if historical_gpu_screen else {
+            "execution_started": True,
+            "execution_completed": False,
+            "validation_passed": None,
+            "started_at": claim_at,
+            "completed_at": None,
+            "elapsed_s": elapsed_s,
+        } if active_correctness_started else {
             "execution_started": False, "execution_completed": False,
             "validation_passed": None,
         }),
@@ -5092,13 +5127,14 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         operations_root, state)
     postbuild_observation = _discovery_postbuild_observation(
         operations_root, state)
-    claim_observation = _discovery_claim_observation(operations_root)
-    refusal_observation = _discovery_refusal_observation(
-        bundle, state, all_events)
     config_sha256 = config.get("config_sha256")
     campaign_id = (f"ak-discovery-{config_sha256[:16]}"
                    if isinstance(config_sha256, str)
                    and re.fullmatch(r"[0-9a-f]{64}", config_sha256) else None)
+    claim_observation = _discovery_claim_observation(
+        operations_root, campaign_id)
+    refusal_observation = _discovery_refusal_observation(
+        bundle, state, all_events)
     activity = _discovery_activity(
         lock_held=lock_held, campaign_id=campaign_id,
         state=state, events=all_events,
