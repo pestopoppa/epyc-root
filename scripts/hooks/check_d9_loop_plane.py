@@ -35,6 +35,20 @@ or, for a scripted operator run:
 There is no silent bypass. `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` deliberately does
 NOT apply here: that flag exists for the fetch-staleness check, and reusing it
 would let one escape hatch open two doors.
+
+WHAT IT MATCHES ON, corrected 2026-08-18. The question is always "what will this
+commit RECORD", and only git can answer it — so the answer comes from
+`git diff --cached` (plain commit) or `git diff HEAD -- <pathspec>` (pathspec
+commit), never from deciding that a token in the command line looks like a path.
+
+The defect that forced this: the first implementation took every token after the
+FIRST `--` to end-of-string. A commit chained ahead of an unrelated
+`scripts/coordination/...` invocation therefore read that script's path as part
+of the commit's pathspec and refused a commit that touched no guarded file at
+all. A guard that fires on text rather than on effect teaches people to route
+around it — which is how the unguarded path this hook exists to close got there
+in the first place. The pathspec is now scoped to the commit's own shell segment
+and handed to git verbatim.
 """
 
 from __future__ import annotations
@@ -70,24 +84,95 @@ def is_guarded(path: str) -> bool:
     return path.startswith(GUARDED_PREFIXES) or path in GUARDED_EXACT
 
 
-def staged_paths() -> list[str]:
+def _run(args: list[str]) -> list[str] | None:
+    """Run a git command; None on failure so callers can tell empty from broken."""
     try:
-        out = subprocess.run(["git", "diff", "--cached", "--name-only"],
-                             capture_output=True, text=True, timeout=15)
+        out = subprocess.run(args, capture_output=True, text=True, timeout=15)
     except (OSError, subprocess.SubprocessError):
-        return []
+        return None
+    if out.returncode != 0:
+        return None
     return [l.strip() for l in out.stdout.splitlines() if l.strip()]
 
 
-def commit_paths_from_cmd(cmd: str) -> list[str]:
-    """Paths after a `--` pathspec separator, if the command uses one."""
+def staged_paths() -> list[str]:
+    return _run(["git", "diff", "--cached", "--name-only"]) or []
+
+
+def dirty_paths() -> list[str]:
+    """Everything modified vs HEAD, staged or not. A commit can only ever record a subset."""
+    return _run(["git", "diff", "HEAD", "--name-only"]) or []
+
+
+# Shell separators that END a command. `shlex.split` keeps these as standalone tokens while
+# leaving any that appear INSIDE a quoted -m message embedded in that message's token, so
+# splitting on them is safe for commit messages containing ';' or '|'.
+_SEPARATORS = frozenset((";", "&&", "||", "|", "\n"))
+
+
+def _segments(toks):
+    segs, cur = [], []
+    for t in toks:
+        if t in _SEPARATORS:
+            if cur:
+                segs.append(cur)
+            cur = []
+        else:
+            cur.append(t)
+    if cur:
+        segs.append(cur)
+    return segs
+
+
+def commit_pathspec(cmd: str):
+    """The pathspec of the `git commit` in `cmd`, or None if it has none.
+
+    SCOPED TO THE COMMIT'S OWN SEGMENT. The 2026-08-18 defect this fixes: the previous
+    implementation took every token after the FIRST `--` to end-of-string, so a chained
+    commit followed by an unrelated `python3 scripts/coordination/...` invocation swept
+    that script's path in and refused a commit that touched no guarded file. Everything
+    after a shell separator belongs to a different command, not to this commit's pathspec.
+    """
     try:
         toks = shlex.split(cmd)
     except ValueError:
-        return []
-    if "--" not in toks:
-        return []
-    return [t for t in toks[toks.index("--") + 1:] if not t.startswith("-")]
+        return None
+    for seg in _segments(toks):
+        if "commit" not in seg:
+            continue
+        try:
+            gi = seg.index("git")
+        except ValueError:
+            continue
+        if seg.index("commit") < gi:
+            continue
+        if "--" not in seg:
+            return None
+        paths = [t for t in seg[seg.index("--") + 1:] if not t.startswith("-")]
+        return paths or None
+    return None
+
+
+def commit_targets(cmd: str):
+    """What this commit will actually record, ACCORDING TO GIT — never parsed path text.
+
+    Two shapes, because they read different sources:
+      * `git commit -- <pathspec>` bypasses the index and records the WORKING TREE state of
+        those paths, so the answer is `git diff HEAD --name-only -- <pathspec>`. The pathspec
+        is handed to git verbatim; this function never itself decides whether a token names a
+        file, so directories, globs and `:(exclude)` magic behave as git defines them.
+      * a plain `git commit` records the INDEX, so the answer is `git diff --cached`.
+
+    On any git failure the fallback is deliberately over-broad — staged plus every dirty path
+    — so a malformed pathspec produces a refusal to inspect rather than a silent allow.
+    """
+    spec = commit_pathspec(cmd)
+    if spec is None:
+        return staged_paths()
+    named = _run(["git", "diff", "HEAD", "--name-only", "--"] + spec)
+    if named is None:
+        return sorted(set(staged_paths()) | set(dirty_paths()))
+    return named
 
 
 def main() -> int:
@@ -109,9 +194,12 @@ def main() -> int:
     if ACK_RE.search(cmd):
         return 0
 
-    # Prefer the explicit pathspec; fall back to what is staged.
-    paths = commit_paths_from_cmd(cmd) or staged_paths()
-    guarded = sorted({p for p in paths if is_guarded(p)})
+    # Cheap exit first: if no guarded file is modified vs HEAD at all, no commit of any
+    # shape can record one, and the command's tokens never need to be looked at.
+    if not any(is_guarded(p) for p in dirty_paths()):
+        return 0
+
+    guarded = sorted({p for p in commit_targets(cmd) if is_guarded(p)})
     if not guarded:
         return 0
 
