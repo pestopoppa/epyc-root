@@ -2,8 +2,61 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-16 (the 2026-08-13 numbers are recorded here with their provenance status: real measurements, no write-side claim tuple, so none of them can gate a parser or routing decision)
-**Sources**: 16+ documents
+**Last compiled**: 2026-08-18 (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+**Sources**: 19+ documents
+
+## Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
+
+**Confidence: verified** — read from the ported lane run record, the handoff's annotated rows, and
+the named research commits; corrections below supersede the matching statements in the 2026-08-16
+update, which is retained unedited per the append-never-edit rule.
+
+### CORRECTION: the 18-page demo ran on the requantized, quant-compliant model
+
+The 2026-08-16 update below states the default Unlimited-OCR artifact was "still non-compliant"
+(`output.weight` at Q6_K against a required `lm_head >= Q8_0`). The ported 2026-08-13 lane record
+shows the compliance work happened **before** the 22:18Z demo: the model was requantized as
+`Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB; `llama-quantize --allow-requantize
+--output-tensor-type q8_0`, `output.weight` verified q8_0 via `llama-gguf`, the other 154 tensors
+byte-copied rather than re-quantized — no double-quant loss), `DEFAULT_MODEL` was repointed
+(research `c733e1ee`), **and the demo ran on it**. What the artifact-gate row still requires is the
+immutable SHA-256 + tensor-audit *record* — the compliance gap that remains is documentary, not
+material. The rest of the 2026-08-16 assessment stands: prompt/profile mismatch (not "root cause"),
+canonical-recipe A/B still owed, no ClaimTuple.
+
+### The `held_s` receipt understated a hold that was in fact full-interval — fixed forward, not backfilled
+
+The stored `inference_window.json` reports `held_s = 1.002881998` and must still never be cited as
+full-interval residency proof for the first run. The root cause is now known: the receipt stamped
+`held_s` right after `wait_for_health` (~1s in), while the flock itself **was** held for the entire
+launch→queries→terminate interval. The fix (research `aca459d9`) recomputes `held_s` at release from
+the lease's acquisition stamp, with a test asserting it. The two statements coexist deliberately:
+the *mechanism* held for the whole run, but the *stored receipt* cannot prove it — so the first
+run's receipt stays inadmissible and the fix applies only to future receipts. A defective receipt is
+corrected by the next run's evidence, never by editing the stored one.
+
+### The write-side wiring row survived a namespace collision
+
+The ODL-P2 ClaimTuple wiring task was filed by the run's author on the lane as "SC37" — a number the
+main tree had independently given to a different task (and a second colliding filing took SC41). On
+forward-port it was renumbered **SC42** with the collision recorded inline and content unchanged.
+The row itself is unchanged in substance: the adapter has no write hook, one witness per run (the
+run-level locator, not per-page), and the hook must exist before any successor run — retrofitting on
+read remains impossible.
+
+### Source References (2026-08-18 lane-record corrections)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — the annotated quant-compliance row (requantized artifact, `DEFAULT_MODEL` repoint, the demo ran
+  on it, SHA-256/tensor-audit still owed) and the run-detail annotation on the Unlimited-OCR status
+  row.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the ported
+  run record: requantization before the demo, the grant saga, the demo receipts, and the `held_s`
+  defect root-cause and fix.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
+  SC42 row with the renumbering note and the write-side contract.
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the ODL-P2 source
+  register row the wiring task resolves against.
 
 ## Compiled Update — 2026-08-16: the numbers behind the 2026-08-13 observations, and why none of them carries warrant
 

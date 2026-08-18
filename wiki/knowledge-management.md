@@ -2,8 +2,82 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-16 (the source register moved to design-time filing, and three of its newest rows are deliberately not measurements; A14's write-side trigger and the earlier projection/correction findings are retained below)
-**Sources**: 40+ documents
+**Last compiled**: 2026-08-18 (151 wiki links rotted with every lint pass green and link integrity became pass 7; the compile watermark proved load-bearing when `git clean` destroyed it; four handoffs held split identities invisibly; parallel lanes minted colliding SC numbers; A14 is landed-and-audited but still not wired)
+**Sources**: 44+ documents
+
+## Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
+
+**Confidence: verified** — every defect below was reproduced or mutation-tested before its guard was
+recorded as built; counts are from the live tree at the recording session's boundary.
+
+### 151 dangling wiki links, with every lint pass green
+
+A routine handoff prune rotted 151 of this wiki's links while the entire lint suite stayed green,
+because the coverage had two holes that compounded: the crossref pass ran **handoff→wiki only**, and
+it accepted a link-target basename found in *either* `active/` or `completed/` — so moving a handoff
+between them was invisible — while **nothing resolved wiki→repo at all**. The fix is lint pass 7,
+`wiki_link_targets` (dangling target = ERROR, dangling anchor = WARNING), verified with five
+mutations covering both the checks and the reporter counting them. The instructive failure was the
+pass's own first mutation: the anchor check's dedup key ignored the anchor, so a plain link earlier
+in a page masked a broken anchor later — a key-too-wide defect inside the guard being built to catch
+staleness. 18 of the 151 resolved only through the `/workspace/repos/` symlinks, which had
+themselves silently vanished (below); after symlink repair plus pass 7, all 3,183 relative wiki
+links resolve.
+
+### The watermark is untracked-but-load-bearing state — and `git clean` found it
+
+The same `git clean` event recorded in `INC-20260816-git-clean-shared-clone` destroyed
+`wiki/.last_compile`, and the damage shape is worth keeping: the next compile did not fail — it
+confidently reported **844 new sources (the whole repo) instead of 51**, because an absent watermark
+and an epoch watermark are indistinguishable to the scanner. It had to be reconstructed from the
+last genuine `--touch`. Watermarks, receipts, symlinks and staged artifacts share one class:
+untracked operational state that no commit protects and no diff shows, whose loss surfaces later as
+unrelated-looking breakage. The standing rule: such state must be tracked, live off-tree, or be
+listed in a manifest a restorer can replay — and `git clean` never runs in the shared clone.
+
+### Four handoffs held split identities, and the checker was blind to all four
+
+Four handoffs existed simultaneously in `active/` and `completed/`; `index_state.py --check` could
+not see any of them. It now carries a **SPLIT IDENTITY** pass whose only exemption is a deliberate
+compatibility pointer (a body containing `../completed/<name>`), mutation-verified to fire exactly
+once per reintroduced duplicate. One of the four mattered materially: `fable5-window2-findings-05`
+had been archived on 2026-08-13 *while still holding a live go/no-go*, so the resolution kept the
+newer **active** copy and renamed the completed one — the duplicate-resolution direction is decided
+by content recency, not by which directory "should" win.
+
+### Parallel lanes mint colliding ids; renumber at port time, record the collision inline
+
+Two sessions independently filed belief-kernel wiring tasks as "SC37" while a third SC37 already
+existed on `main`. The forward-port renumbered them (SC41, SC42) with the collision recorded inline
+and content unchanged. Sequential ids handed out by whoever files next are a shared-clone artifact:
+they cannot be minted safely in parallel lanes, so the reconciliation step must treat id assignment
+as port-time work — and must *say so* in the row, or the old number's citations dangle silently
+(the wiki and a progress entry already cited one of the colliding numbers by the time the port ran).
+
+### A14: landed, independently audited — and still not wired, which is the point
+
+The A14 merge-gate surface is on the orchestrator branch as `c61b8184`, and an independent merge
+audit ACCEPTED it (same stable patch-id and six-file `+299/-0` diff as its source commit, the merge
+gate classifying the range autonomous, 118 focused tests passing). Zero `gate_decisions` have been
+emitted — the API is down and the code unpushed — so SC19 stays open **until the producer-written
+adapter emits its first tuple**. This extends the 2026-08-13 finding below with its second half: an
+*audit-accepted* landing is still not wiring; the row closes on the first emitted tuple, not on any
+amount of code provenance.
+
+### Source References (2026-08-18 KB integrity)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  the wrap-up findings: the 151-link rot mechanism, pass 7 with its five mutations, the `repos/`
+  repair, and the split-identity pass with its one material case.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`: the watermark loss, the 844-vs-51 false report, and the
+  untracked-but-load-bearing rule.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
+  SC41/SC42 renumbering notes and the A14 status with its independent merge audit.
+- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
+  — the wrap-up narrative in which the split-identity check and the link-rot repair were built.
+- [`.claude/skills/project-wiki/scripts/lint_wiki.py`](../.claude/skills/project-wiki/scripts/lint_wiki.py)
+  — pass 7 as shipped.
 
 ## Compiled Update — 2026-08-16: the register moved to design time, and three of its newest rows are not measurements at all
 

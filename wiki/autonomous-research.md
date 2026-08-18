@@ -2,8 +2,116 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-16 (manual AutoKernel execution stopped in favour of a controller-first correction; two independently designed autonomy ladders compared, both short of their own evidence bar)
-**Sources**: 112+ documents
+**Last compiled**: 2026-08-18 (the AutoKernel controller graph is sealed and validated with zero inference executed; planner conditioning became a reviewed portfolio with an exact spend set, threshold-shaped levers, scoped retirements and inactive counterfactuals; the reward-integrity gaps our own audit found are closed as regression requirements; the gfx90a correctness oracle is implemented sealed)
+**Sources**: 117+ documents
+
+## Compiled Update — 2026-08-18: the controller graph is sealed — and the planner's memory is now a reviewed portfolio, not prose
+
+**Confidence: verified** for graph identity, test counts, commit pins, and the portfolio's recorded
+decisions — all read from the sources' dated rows; **no campaign has run** (`inference_executed=false`
+is the validated state, and the live endpoint reports `active=false`).
+
+### The v3 seal: a deployable identity, validated without spending a single inference
+
+The controller-first implementation reached research `main` via merge `0d701b9ae`; the reviewed
+product tip is `6807a0b10`. The immutable bundle
+`gpu-discovery-quant-ladder-occupancy-v3` validates with `inference_executed=false` and graph
+SHA-256 `31af931de1da…`, binding one `gpt-5.6-sol/high` planner and one independent
+`claude-fable-5/high` critic (both receive the complete sealed planner context), source/dispatch
+authority, the timed output oracle, protected-tree snapshots, device reservations, and 29 immutable
+evidence carriers. The full merged-tree hardware-free gate passed **303/303**, with three explicitly
+*expected* failures documenting future machine-policy work — AK-ADM-1's acceptance criterion is
+those three becoming ordinary passes, i.e. the six currently prompt-bound planner limitations
+(exact kernel instantiation, command phase, static-tool execution, Q4_K correctness, the Q8
+native-path premise, IQ residency) promoted into typed pre-model enforcement.
+
+Before the next long campaign, **AK-RSM-1** makes stop/resume an explicit contract:
+content-addressed receipts for every stage (assignment → planner → critic → authorization → build →
+correctness → attribution → runner → classification), a graceful stop latch, and same-graph restart
+tests proving completed stages never repeat. The launch itself (**AK-RUN-V3**) is deliberately a
+fresh state root with one named external prerequisite — a restored Docker socket followed by exact
+inspection of the pinned planner image — never a migrated stale bundle. And the AK-RUN-2 mutation
+rehearsal's prep is **already staged on disk** (proposal manifest, source-patch manifest, comment-only
+patch, fresh-source plan, verified present 2026-08-16): what remains is execution, not authoring.
+
+### Planner conditioning as a portfolio: exact spend, thresholds, scoped retirements, inactive counterfactuals
+
+The eligible autonomous spend set is exact and short: Q5 type-specific dequant, a genuinely new Q8
+quantizer mechanism, production-shape FA/GQA7 work, and RMS direct load/reduction. Around it, four
+governance shapes worth naming because each is a *kind* of memory, not just a row:
+
+- **A threshold-shaped lever.** The IQ2_XXS occupancy hypothesis is restated as a mechanism with a
+  cliff, not a direction: the production `true,false` instantiation via `v_perm_b32` must land at
+  ≤64 true *and* allocated VGPR, scratch 0, spill 0, eight waves/SIMD — **a 65–70 VGPR result has no
+  predicted payoff at all.** A lever that cannot cross the threshold has no value case to rank.
+- **A scoped retirement.** "Batching closes the dequant gap" is retired as a `design_prior` warning
+  for the exact MI210/Goedel-8B B1–B32 regime measured — deliberately *not* a family-wide
+  do-not-repeat, so narrower per-format hypotheses and governed re-entry stay legal. Retiring the
+  blanket claim without over-widening the retirement is itself the discipline.
+- **An inactive counterfactual.** IQ1_S is retained as a sign-discriminating falsifier with zero
+  expected value, empty templates, and **zero autonomous spend** — the operator explicitly does not
+  need an IQ1 run. Catalogue presence grants no execution; reopen requires operator direction plus a
+  practical IQ1 serving decision. Keeping the falsifier without funding it is the difference between
+  memory and a backlog.
+- **A refusal gate with a named unlock.** The four Q4_K MMQ receipts (stock 18/43, the DP4A and
+  least-squares negatives, the diagnostic 172/172 repair) are bound as immutable `candidate_only`
+  evidence, and source authoring / performance ranking **refuse** until a *committed clean-source*
+  repair passes the unchanged 172/172 κ=1.5 matrix — the uncommitted diagnostic cannot unlock
+  anything. The exact generic "Q8 per-element fp-dequant" premise is a DNR because that path is
+  already integer-native DP4A.
+
+### The reward-integrity gaps our own audit found are now closed as regression requirements
+
+The three exploit classes that neither upstream timing-harness repository covered — our own
+32.8%-timing-loophole family — are implemented and retained in the graph as regression
+requirements: **phase detection** (a candidate correct during correctness rounds that degrades once
+timing starts — closed by fail-closed source detection plus a cross-arm timed-output semantic
+oracle, with an independently-red black-box phase-switch case green under the dynamic oracle);
+**compile/capture-replay** (candidate-added `torch.compile`/graph-capture specializing on
+value-identical timed inputs — rejected, graphs off, address *and* content rotation, validated
+timed outputs before any timing authority); and **side-stream timing** (C3 surfaces now require
+full-device synchronization or the exact tracked fence-after-start/join-before-stop contract;
+event-only timing is refused).
+
+### The correctness oracle is sealed, and an identity conflation was corrected on the way
+
+The SOL-ExecBench port is now usable as a gfx90a **correctness-only** provider: LOCAL/gfx90a
+planning, exact source/runtime/workload identities, ten fresh live-reference rounds,
+`scoring.enabled=false` — real fresh-input verification that a stored reference tensor cannot
+substitute for, available with no measured constants. The live 193-workload run has not happened, so
+the parent empirical task stays open. Two record-hygiene corrections travel with it: the earlier
+"all seeds bf16/fp16" claim conflated oracle-workload identity with candidate metadata — the k145
+oracle surface is actually **fp32** while HyRA's candidate metadata names fp16, and k227 is
+bf16-only; the provider deliberately keeps those identities separate. And the seed bound-quality
+classes are persisted so `S` stops being quoted where it is meaningless: above ~100× headroom the
+SOL score degenerates into plain speedup with no roofline content (four of the eight seeds are in
+that vacuous class), gfx90a SOL *scoring* is blocked without measured constants, and numeric SOL
+fields are kept out of author prompts entirely.
+
+### A latent exposure is machine-remembered, not closed
+
+The gfx90a low-quant VALU/occupancy penalty costs production nothing today — no IQ-format role is
+GPU-resident — and the finding is bound into planner memory as exactly that: zero current live-stack
+payoff, ineligible for spend, **with a mandatory reprice on any registry transition that makes an
+IQ-format GGUF resident on the MI210**. The enforcement trigger is owned by AK-ADM-1's typed
+machine policy. This is the standing pattern for latent exposures: never recorded as "not a
+problem" (which is how they get closed by mistake), never left as prose a planner can forget.
+
+### Source References (2026-08-18 sealed controller)
+
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the 2026-08-16
+  checkpoint: merge/tip/bundle/graph identities, the 303/303 gate, the spend set, AK-RSM-1 /
+  AK-RUN-V3 / AK-ADM-1, the §22 AK-QL closures, and the staged AK-RUN-2 prep.
+- [`progress/2026-08/2026-08-16-inference.md`](../progress/2026-08/2026-08-16-inference.md) — the
+  owning session's record of the seal, the planner/critic binding, and the portfolio decisions.
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — RVP-C6-11/12/13
+  closures with mechanisms, and RVP-C2-6c/6d (the receipt binding and the committed-clean-source
+  unlock).
+- [`agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — C5-3a
+  (sealed correctness-only provider), C5-4 (bound-quality classes), and the fp32/fp16 identity
+  correction.
+- [`mi210-q8-dequant-gemv-roofline.md`](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) —
+  INF37-IQ-1: the latent-residency binding and its AK-ADM-1 enforcement hand-off.
 
 ## Compiled Update — 2026-08-16: an autonomous loop is defined by what it cannot invoke — and both of ours are short of their own promotion bar
 

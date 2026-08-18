@@ -2,8 +2,110 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-16 (measurement resolution is a gate concept: the measured band does not block, the blocking bound was never measured, and only the candidate side of every comparison is ever re-measured)
-**Sources**: 120+ documents
+**Last compiled**: 2026-08-18 (banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
+**Sources**: 127+ documents
+
+## Compiled Update — 2026-08-18: banked cells, look-alike run dirs, and instruments that were lying before the experiment started
+
+**Confidence: verified** — every claim below carries a run directory, commit, source line, or live
+re-execution in its source; nothing here is restated from memory.
+
+### The A7 re-run is 24 manifests, not 40 — and the trap is a look-alike directory
+
+The E5/A7 corrected-placement grid fired 2026-08-13 under a full-machine grant and was stopped by an
+operator STOP-ALL 30 minutes in. What that leaves is **partially banked scope, not a clean 40-cell
+re-run**:
+
+- Group `gemma4_26b_a4b_q4km_mtp` is **COMPLETE — 8/8 cells, every cell `decision_grade=True`, 0.0%
+  error. Do not re-run.** Banked at
+  `data/batched_decode/a7-gemma4_26b_a4b_q4km_mtp-20260813T223750Z/` in the research repo.
+- **The look-alike trap**: the sibling dir `…223703Z/` — same group, timestamps 47 seconds apart —
+  is the **aborted first attempt**, with no `cells.jsonl` and no `summary.csv`. Anything citing the
+  gemma results must cite the `223750Z` dir; a path-glob or "latest-looking dir" heuristic picks
+  wrong here. The discriminator is the presence of the terminal artifacts, not the timestamp.
+- Group `qwen36_27b_q8` is **EXCLUDED by operator ruling** (coordinator msg-94, W3 dropped as
+  GPU-resident tenant); its partial dir has no `cells.jsonl` and the partial cells were correctly
+  discarded. Do not reinstate without a new ruling.
+- Remaining scope: `qwen36_q8_0` (12) + `qwen3_next_80b` (8) = **24 manifests**. The launcher is
+  archived with both of its 2026-08-13 fixes baked in — `setsid` so tool timeouts cannot SIGTERM the
+  region lock into orphaned `llama-server`s, and `sudo -n` for the inter-group `drop_caches`.
+
+Sizing the next exclusive window at 40 cells would burn hours of a scarce quiet window redoing
+banked, decision-grade work. The reboot-staging inventory's B1 row now carries the same annotation,
+so the window request and the run scope stay consistent.
+
+### CJ-1c closed twice over: the scorer is canonical, and the park was a screening artifact
+
+The suite that produced the 2026-07-24 verbose-penalty artifact (A4 15% false parse-failures vs A1
+0%; gpqa 43.4→53.0 on re-score) now has its confirmation trace: GPQA-Diamond scoring runs through
+the **canonical** `answer_scoring.extract_letter_answer`, not a bespoke extractor — adapters set
+`scoring_method="multiple_choice"` with empty config, the runners score via `score_response`
+re-exported from the single canonical module, and the rescore tooling uses the same functions.
+`gpqa_diamond_cot` is registered and is the framing to wire (the letter-only prompt suppresses
+reasoning by design). 12/12 scoring tests pass.
+
+The meta-finding is that this row accumulated **two independent false signals**: it was parked
+`unknown` by a screener fed a hand-written 241-char paraphrase instead of the 452-char verbatim row
+text (which resolves cleanly), and the park note was written unaware the work had *already been
+completed* on a stranded lane branch whose patches had never reached `main`. A row's apparent state
+is a function of the dispatch path's fidelity and the repo's merge state, not just of the row.
+
+### Attestation caveats age: two of three DCP-6 blockers were falsified by checking the live host
+
+The 2026-06-19 `dcp6a-deploy-boundary-check` attestation carried three caveats that had been treated
+as standing blockers for two months. Checked against the live host, **two are false**: the
+"deleted llama-server executables" — the binary exists, rebuilt 2026-08-10; and the "missing
+`AUTOPILOT_TOOL_SENTINELS` on the API parent" — it is set at launch (`orchestrator_stack.py:2198`).
+Only the feature-flag intent diffs and the need for a host-quiet window remain. An attestation is a
+statement about the host *at its timestamp*; re-verify its caveats against the live system before
+letting them gate work. The falsified wordings are retained struck-through in the handoff so they
+are not re-raised.
+
+### Two cache-stats fields measured the wrong quantity — the instrument lied before the A/B began
+
+The RTE-Prefix prefix-cache audit found its own measurement channel defective in two ways, both
+verified against llama.cpp v9 server source before the fix:
+
+- `get_slots()` read `n_past`/`n_cache` — fields **removed in v9**, so the reading was always 0. The
+  v9 fields are `n_prompt_tokens` / `n_prompt_tokens_cache` (`server_slot::to_json`).
+- The cache-stats collector read response-level `tokens_cached`, which is **total slot KV
+  occupancy** — non-zero for nearly every non-empty prompt — so `cache_hits` inflated on almost
+  every request. The true KV-reuse count is `timings.cache_n` (= `n_prompt_tokens_cache`).
+
+A field that exists, parses, and returns a plausible number can still measure a different quantity
+than its name suggests; both defects were fixed and tested before the flag-gated prompt-order A/B
+was allowed to fire, because an A/B run through a lying hit-counter would have produced a confident
+wrong verdict either way.
+
+### 19/40 empty SWE rows were a grammar mismatch, not model failure
+
+The Qwen3.8-27B agentic SWE run produced 21 patches and 19 *empty* instances. The empties are a
+**harness scoring artifact**: the model emitted its native
+`<tool_call><function=bash><parameter=command>` grammar, which the harness's `ACTION:` grammar
+parser did not recognise, so those episodes recorded nothing. The parser now translates the native
+grammar (20/20 unit tests); the 15/40 figure is provisional and understated until the re-run. Same
+family as the standing rule that a cross-arm parse-failure gap is a scoring artifact to re-score
+offline, not a model gap — here the "gap" was 19 silently-empty rows inside one arm.
+
+### Source References (2026-08-18)
+
+- [`batched-decode-measurement.md`](../handoffs/active/batched-decode-measurement.md) — the
+  partially-banked annotation: banked gemma dir, the aborted `223703Z` sibling, the operator
+  exclusion, the 24-manifest remaining scope, and the archived launcher with its two fixes.
+- [`reboot-gated-inventory-and-staging.md`](../handoffs/active/reboot-gated-inventory-and-staging.md)
+  — the B1 cluster row updated to the banked scope, so window sizing matches reality.
+- [`progress/2026-08/2026-08-13-mainA.md`](../progress/2026-08/2026-08-13-mainA.md) — the A7 firing
+  sessions the annotations were verified against.
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/canonical-judge-suite-revamp.md) — the
+  CJ-1c canonical-scorer trace and the paraphrase-park correction note above it.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the original
+  CJ-1c completion evidence (trace, 12/12 tests, `gpqa_diamond_cot` mandate).
+- [`bep-dcp-falsification-harness.md`](../handoffs/active/bep-dcp-falsification-harness.md) — the
+  two falsified attestation caveats with their live-host evidence.
+- [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the two
+  cache-stats instrumentation defects and their v9-source verification.
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+  — the 21-patches/19-empty split and the native tool-call grammar fix.
 
 ## Compiled Update — 2026-08-16: measurement RESOLUTION as a first-class gate concept — the measured band does not block, and the blocking bound was never measured
 

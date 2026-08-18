@@ -2,8 +2,58 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-16 (a decode-vs-depth curve and an MTP workload gate on the new stock-27B arm were both manufactured by the prompt; batched np numbers and the concurrency-accounting rule that makes them readable; earlier serving findings retained)
-**Sources**: 71 documents
+**Last compiled**: 2026-08-18 (the declined Qwen3.8-27B coding ladder was later authorized and ran — LCB-hard tops the 27B class, SWE-40 is provisional/understated by a harness grammar mismatch; the stale axis table flagged below is reconciled with the retraction shipped in the table itself)
+**Sources**: 74 documents
+
+## Compiled Update — 2026-08-18: the declined coding ladder ran — and the stale axis table got reconciled the right way
+
+**Confidence: verified** — ladder figures are from the completed architect bench on the frozen v9
+kernel (seeded temp 0.6, MTP, reasoning off), read from the handoff's populated rows; the SWE cell
+is explicitly provisional and is quoted only with that label.
+
+### The ladder: operator-declined, then operator-authorized — the cell's history stays visible
+
+The 2026-08-14 decline ("quality will improve certainly") was later reversed by the operator ("both
+rungs, proceed"), and the full ladder ran on the same recipe the candidates artifact already uses,
+so the results slot directly into the row: **LCB-hard 52.8% (28/53) — tops the 27B class**;
+**BCB-hard 31.1% (28/90) — ties stock 27B**; humaneval 96.3%; aime25 76.7 / gpqa-cot 81.3 /
+mmlu_pro 56.7 / olympiad_hard 47.1. The handoff records the supersession explicitly rather than
+overwriting the decline — an `operator-declined` cell is a state with a history, not a permanent
+verdict, and the record shows authorization preceded the run (the bench was never silently re-run
+past a standing decline).
+
+### SWE-40 = 15/40 is provisional and understated, and the reason is the harness
+
+19 of 40 agentic instances came back empty because the harness's `ACTION:` grammar parser did not
+recognise the model's native `<tool_call><function=…>` tool-call grammar — a scoring artifact, not
+model failure (the full mechanism is compiled on
+[Benchmark Methodology](benchmark-methodology.md)). The parser fix is written and staged; the re-run
+is parked on one named container-local blocker (the devcontainer's Docker socket is an orphaned
+bind-mount whose inode was pinned across a host dockerd upgrade — the host and all 40 eval
+containers are healthy). Until the merged re-run lands, 37.5% is a floor to be finalized, not a
+result to rank with.
+
+### The axis-table conflict below is resolved — and the resolution direction is the lesson
+
+The 2026-08-16 update below flagged a standing source conflict: the candidate-surface handoff's axis
+table still showed the retracted synthetic cells (`37.15 → 13.61`, "MTP HURTS at depth") as ✅
+measured beneath a completion note retracting them. That is now reconciled: the table itself carries
+the corrected flat-curve rows (~45 t/s single-stream 2k–32k, peak aggregate 157.3 t/s @ np8/2k) with
+an explicit **RETRACTED — do not cite** block for the synthetic values. The reconciliation merge
+deliberately took the rewritten-rows form over a union — a union would have preserved the retracted
+✅ cells *beside* their retraction, and a ✅ cell gets quoted downstream without the paragraph that
+withdraws it. Corrections must land in the cell being quoted, not in prose beneath it.
+
+### Source References (2026-08-18 coding ladder)
+
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+  — the "Coding ladder — WAS RUN" section with all rungs, the corrected axis table with its
+  RETRACTED block, the 21-patches/19-empty split, and the parked re-run's exact next steps.
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — the arm's
+  verified identity and throughput evidence the ladder rows sit beside.
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  the reconciliation-merge "instructive case" naming this exact table as why union is the worst
+  outcome for a retraction.
 
 ## Compiled Update — 2026-08-16: a decode-vs-depth curve and an MTP workload gate, both manufactured by the prompt
 

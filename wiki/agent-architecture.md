@@ -2,8 +2,129 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-16 (the coordination layer was restructured: code owns the loop, the machine stopped reading panes, and a lane worktree was shown to isolate the index but not the repo's singletons)
-**Sources**: 93+ documents
+**Last compiled**: 2026-08-18 (close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Sources**: 99+ documents
+
+## Compiled Update — 2026-08-18: reachable-from-origin is not merged — the stranded-patch class, the `git clean` signature, and a triage that read all 51 messages
+
+**Confidence: verified** — every mechanism below is backed by a named commit, incident entry, or
+file:line in the sources; the two guards are verified as BUILT and live-run, not filed.
+
+### The strand class: every backup sweep called 19 unmerged patches "safe"
+
+Two retired (tombstoned) identities — `mainC` and `mainD` — left 19 commits on their lane branches
+whose **content never reached `main`**: 10 on `lane/mainC`, 9 on `lane/mainD`. Every backup sweep had
+called them safe, because the sweep's instrument was `git rev-list <branch> --not --remotes=origin`,
+which answers *"is this commit reachable from origin somewhere?"* — and lane branches are pushed, so
+the answer is always yes. **Reachability is not merge.** The correct discriminator is `git cherry`
+against `main`: patch-id membership, which also survives cherry-picks and per-file ports that
+ancestry checks cannot see. Run for the first time, it found the 19; they were adjudicated per patch
+and ported in `10ff9bdf` — with the corrections-win rule applied at port time: the lane's "ROOT
+CAUSE" framing for the ODL-P2 output-format finding was deliberately **not** ported, because `main`'s
+audit had already demoted it to "demonstrated prompt/profile mismatch", and re-porting it would have
+undone a correction.
+
+Both recurrence shapes now have fleet_watch guards (commit `96ccad1a`, under operator D9-ack):
+**`REPO-SEQUENCER-STALE`** (a per-repo abandoned cherry-pick/merge/rebase head older than 2h — the
+shape of the 3-day research-repo wedge) and **`RETIRED-LANE-UNMERGED`** (`git cherry` patch-id count
+per retired identity — the stranded-patch shape above, whose 19 patches are the guard's founding
+fixture). Suite 137→159 tests, 3/3 new mutations caught, real-probe tests against throwaway repos.
+After the port, the lane worktrees and branches were removed by explicit path so the guard comes up
+quiet rather than permanently red.
+
+### `-s ours` was recommended, then refuted the same day: file presence is not content equality
+
+The OP-11 divergence (`main` 89 ahead / 111 behind `origin/main`) drew a recommendation to record the
+reconciliation as `git merge -s ours origin/main`, on the evidence that `git diff --name-status HEAD
+origin/main` showed zero `A` entries — reported as "the content is reconciled". **That measures file
+PRESENCE, not content equality, and the second was claimed having tested only the first.** Measured
+against the merge base: origin changed 104 files, local changed 269, and **103 were changed on BOTH
+sides** — so `-s ours` would have kept local content for all 103 and discarded origin's half of each
+**with no conflict raised and nothing in the resulting diff to review**: a silent 103-file revert of
+another session's work, not a graph-only operation. The recommendation was withdrawn in the handoff
+with the refutation attached. The executed resolution was a real per-file three-way merge in an
+isolated detached worktree (36 conflicts, four subagents on disjoint sets) under the policy: union by
+default; never drop a rule, guard, test or task; **retractions win over what they retract**; genuine
+contradictions preserved and reported, never silently picked.
+
+The instructive case for why *naive union is the worst outcome*: local carried a retraction note
+*beneath* table rows still reading `✅ 37.15 t/s … MTP HURTS at depth`, while origin had rewritten the
+rows themselves. Union preserves both the retracted cells and their retraction — and a `✅ measured`
+cell gets quoted downstream without the paragraph that withdraws it. Origin's rewrite was correct.
+
+### The `git clean` damage signature: exactly the untracked state that no commit protects
+
+`INC-20260816-git-clean-shared-clone` folds two dated events into one signature: a live
+`git clean -ffdx`-class operation in the SHARED clone destroyed at least four unrelated things —
+29 registered worktrees (2026-08-12), and on 2026-08-16 the `retirements/` receipts directory, the
+`wiki/.last_compile` watermark, staged doctrine artifacts, and (strongly suspected, same event) the
+`/workspace/repos/` symlinks. **Each loss was discovered independently, days later, by a different
+session tripping over it — none by the session that ran the clean.** That is the characteristic
+shape: `git clean` removes exactly the untracked operational state (watermarks, receipts, symlinks,
+staged artifacts) that no commit protects and no diff shows, so the cost surfaces as
+unrelated-looking breakage. Rule fed: never `git clean` in the shared clone or any lane worktree;
+untracked-but-load-bearing state must be tracked, live off-tree, or be listed in a manifest a
+restorer can replay.
+
+### The 51-message triage: read individually, and what only that could find
+
+All 51 routed bus messages (2026-07-29 → 2026-08-16) were dispositioned individually against the
+repo, each disposition backed by a commit / file:line / handoff row; zero bulk-acks. Findings that
+only per-message reading produced:
+
+- **`BUS_ROOT` derived from `__file__` in three modules — writes silently lost in every lane
+  worktree.** One file was fixed when the auditor flagged the class on 2026-08-12; a second
+  instance *survived a full rewrite* of its file; the third (`alarm_channel.py`) was written
+  2026-08-16 **after** the audit — proof that per-file assertions can never cover the next file.
+  All three now use `session_bus.get_bus_root()`, and an AST sweep
+  (`tests/test_bus_root_resolution.py`) fails on ANY `scripts/coordination/*.py` module deriving a
+  bus root from `__file__`; mutation-verified three ways.
+- **`monitor:file` service identities are structurally invisible to the fleet-health plane.** The
+  liveness predicate watches `exec:` runners; the `auditor` identity accumulated 111 undrained inbox
+  rows and 23 `stuck-unreachable` advisories in one day — audit *results* flow (headless invocation
+  writes verdicts fine) but nothing drains packets *addressed to* the identity, so a missed
+  invocation sat invisible until manual triage. Open: either a re-invoke sweep for unanswered
+  `action_required` packets, or stop addressing bus rows to identities nothing drains.
+- **The screener-paraphrase defect**: a pool dispatch screened a worker against hand-written
+  `--row-text` — a 241-char paraphrase — and parked the row `unknown`, while the real 452-char row
+  text matches its checkbox verbatim and resolves cleanly. "The task TEXT is the identity" cuts both
+  ways: the dispatch path must pass row text through **byte-for-byte**; free-hand `--row-text` is
+  forbidden when the row resolves.
+- **The relay ledger's 296 flagged rows have never been adjudicated** — nothing distinguishes
+  "handled by a handler" from "dropped", and the drop mechanism is corroborated, not hypothetical:
+  two of 13 sampled messages in this very triage carried `NOT-IN-INBOX` markers.
+- **A refutation banked so it does not resurface**: "the hardware-backfill runner never landed" —
+  in fact `5af987ef` shipped the 777-line runner plus supervisor and tests, the roster row exists,
+  and the supervisor process is running.
+
+### Two dispatch-plane detector gaps, measured not speculated
+
+- **Cross-file duplicate-TASK detection must be semantic.** Exact-text scanning returned 0
+  duplicates over a corpus where a hand audit found **14 real pairs** — index rows summarize the
+  same task in different words. Acceptance test for any future detector: it must rediscover those
+  14 known pairs.
+- **`backlog_row_check.py` misses mid-text owner declarations** — reproduced live: a row screens
+  DISPATCHABLE while its own next line reads "Owner: the stack owner (`inference`), NOT this lane",
+  because `_OWNER_PREFIX` is `.match()`-anchored to the body's first characters. The narrowness is
+  deliberate (documented 21/1258 precision), so the fix is scoped: match a bolded `Owner:` lead-in
+  at the start of ANY body line, and re-measure against the live corpus without regressing.
+
+### Source References (2026-08-18 reconciliation close-out)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  the wrap-up findings block: the two guards as built, the OP-11 `-s ours` refutation with the
+  103-both-changed table, the merge policy, and the full bus-triage disposition list.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`: both dated events, the forensic commits, and the rule fed.
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) —
+  the duplicate-task detector requirement with its 14-pair validation set, and the `_OWNER_PREFIX`
+  false-negative with the measured precision constraint.
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/canonical-judge-suite-revamp.md) — the
+  CJ-1c paraphrase-screening artifact: the park, the verbatim re-resolution, and the RTG-52 filing.
+- [`progress/2026-08/2026-08-13-mainC.md`](../progress/2026-08/2026-08-13-mainC.md) — the live
+  reproduction of the mid-text owner miss during a 60-row premise screen (19 VERIFIED / 41 REJECT).
+- [`progress/2026-08/2026-08-16-coordinator-agent.md`](../progress/2026-08/2026-08-16-coordinator-agent.md)
+  — the reconciliation-with-origin narrative and the per-file forward-port mechanism.
 
 ## Compiled Update — 2026-08-16: code owns the loop — the machine stops reading panes, and a worktree isolates the index but not the singletons
 

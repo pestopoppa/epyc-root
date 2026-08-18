@@ -486,6 +486,12 @@ Zero were bulk-acked. What survived as live work:
   rationales report mutation-probe FAILs that are benign over-matches: the probe expects the
   diff to touch every file the task TEXT mentions, and both pilots' prose named files outside
   their deliverable (pilot-03 → RTG-52 itself, pilot-04 → `worker_runner.py`).
+- [ ] **D9 hook: fire on the COMMIT PATHSPEC, not the command string.** Measured false
+  positive 2026-08-18: a compound shell command that *invoked* `serialized_push.py` and
+  `session_bus.py` as tools was refused although its `git commit` pathspec touched only
+  handoffs. It fails closed (right direction), but a guard that refuses unrelated work
+  trains people to split commands rather than to respect the gate. The fix is itself
+  D9-gated.
 - [ ] **The probe over-match above is itself a defect worth one line of code**: the mutation
   probe should resolve expected-touched files from the row's stated deliverable, not from every
   path-shaped token in the task text — two of four pilot audits FAIL-noised on it.
