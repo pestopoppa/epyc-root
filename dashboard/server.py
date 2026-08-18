@@ -3465,6 +3465,9 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         if event not in event_stage or not isinstance(ts, str):
             continue
         stage, stage_state = event_stage[event]
+        if stage == "critic":
+            pipeline["planner_validation"]["state"] = "complete"
+            pipeline["planner_validation"]["completed_at"] = ts
         pipeline[stage]["state"] = stage_state
         if stage_state == "running":
             pipeline[stage]["started_at"] = ts
@@ -3502,6 +3505,9 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     hypothesis = None
     turn = state.get("next") if isinstance(state, dict) else None
     lease = None
+    pending_phase = pending.get("phase") if isinstance(pending, dict) else None
+    pending_authorized = bool(
+        isinstance(pending, dict) and isinstance(pending.get("authorization"), dict))
     if isinstance(inflight, dict):
         candidate = inflight.get("candidate")
         row = inflight.get("row")
@@ -3516,10 +3522,28 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             else "running")
     elif isinstance(pending, dict):
         row = pending.get("row")
-        hypothesis = row.get("hypothesis_id") if isinstance(row, dict) else None
-        lease = row.get("lease") if isinstance(row, dict) else None
-        pipeline["authorization"]["state"] = "complete"
-        pipeline["resource_admission"]["state"] = "waiting"
+        candidate = pending.get("candidate")
+        if isinstance(candidate, dict):
+            hypothesis = candidate.get("hypothesis_id")
+        if hypothesis is None and isinstance(row, dict):
+            hypothesis = row.get("hypothesis_id")
+        pipeline["planner_validation"]["state"] = "complete"
+        if pending_phase == "critic_pending":
+            # planner_checkpointed proves local plan/manifest validation, not
+            # critic acceptance or authorization. Preserve a running actor fact.
+            if pipeline["critic"]["state"] == "not_reached":
+                pipeline["critic"]["state"] = "waiting"
+        elif pending_phase == "critic_complete":
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "running"
+        elif pending_authorized:
+            lease = row.get("lease") if isinstance(row, dict) else None
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "complete"
+            pipeline["resource_admission"]["state"] = "waiting"
+        else:
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "running"
 
     last_event_at = max((row.get("ts") for row in events
                          if isinstance(row.get("ts"), str)), default=None)
@@ -3614,11 +3638,36 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         waiting_on = "operator review"
         pipeline[stage]["state"] = "complete"
     elif isinstance(pending, dict):
-        status = "waiting"
-        stage = "resource_admission"
-        label = "Waiting for governed resource admission"
-        waiting_on = "GPU/inference-window availability"
-        recoverability = "same_candidate_retry"
+        if pending_phase == "critic_pending":
+            stage = "critic"
+            if latest_event == "critic_started" and lock_held:
+                status = "running"
+                label = "Critic review"
+                waiting_on = "critic review completion"
+            elif latest_event == "critic_completed":
+                status = "waiting" if lock_held else "stopped"
+                label = "Critic completed; awaiting durable checkpoint"
+                waiting_on = "critic checkpoint persistence"
+            else:
+                status = "waiting" if lock_held else "stopped"
+                label = "Waiting to start critic review"
+                waiting_on = "critic review"
+        elif pending_phase == "critic_complete":
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Governance authorization"
+            waiting_on = "authorization decision"
+        elif pending_authorized:
+            status = "waiting"
+            stage = "resource_admission"
+            label = "Waiting for governed resource admission"
+            waiting_on = "GPU/inference-window availability"
+            recoverability = "same_candidate_retry"
+        else:
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Governance authorization"
+            waiting_on = "authorization decision"
     elif isinstance(inflight, dict):
         inflight_phase = inflight.get("phase")
         lease_phase = lease.get("phase") if isinstance(lease, dict) else None

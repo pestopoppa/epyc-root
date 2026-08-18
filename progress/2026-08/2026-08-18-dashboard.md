@@ -9,7 +9,7 @@
   v6 is separately reported as unlaunched.
 - Added API and DOM acceptance coverage for failed-v5 plus unlaunched-v6
   coexistence; abandoned/retest history remains collapsed.
-- Validation: 121 dashboard unit/DOM tests pass; `git diff --check` and
+- Validation: 123 dashboard unit/DOM tests pass; `git diff --check` and
   `py_compile` pass. The environment has no `pytest` module, so the pytest-only
   runtime-JS module was not runnable here.
 - The :8100 dashboard was not reloaded; deployment remains under operator/main
@@ -22,3 +22,7 @@
   hero names the missing exact-exception telemetry, forbids resume, and shows
   GPU screening as not reached; explicit future validation-failed/refused events
   are also consumed.
+- Live-v8 ordering follow-up: `critic_pending` plus an active critic actor now
+  keeps the hero/pipeline in critic review. Authorization and resource admission
+  remain not reached until their own durable boundaries; exact API/DOM coverage
+  pins the seq-3 planner-checkpointed state.

@@ -235,6 +235,67 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertTrue(activity["gpu"]["claim_held"])
         self.assertIn("mi210", activity["gpu"]["detail"].lower())
 
+    def test_v8_critic_pending_actor_outranks_resource_admission(self) -> None:
+        self._write_events([
+            _event("planner_started", seconds_ago=180),
+            _event("planner_completed", seconds_ago=60,
+                   result={"returncode": 0}),
+            _event("critic_started", seconds_ago=30, channel="autokernel",
+                   model="claude-fable-5", provider="claude"),
+        ])
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": _iso(31),
+            "next": 1,
+            "complete": False,
+            "terminal_reason": None,
+            "inflight": None,
+            "iterations": [],
+            "pending": {
+                "phase": "critic_pending",
+                "candidate": {
+                    "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                },
+                "row": {
+                    "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                },
+            },
+        }))
+        journal = self.state / "journal"
+        journal.mkdir()
+        (journal / "events.jsonl").write_text(json.dumps({
+            "campaign_id": "ak-discovery-v8",
+            "event_id": "akj-000000000003-planner-checkpointed",
+            "journal_schema": "epyc.autokernel.journal_entry.v1",
+            "kind": "STOP_STATE",
+            "payload": {
+                "controller_state_sha256": "c" * 64,
+                "state": "discovery_planner_checkpointed",
+            },
+            "record_id": None,
+            "seq": 3,
+            "written_at": _iso(31),
+        }) + "\n")
+
+        payload = self._active_payload()
+        activity = payload["activity"]
+
+        self.assertTrue(payload["active"])
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "critic")
+        self.assertEqual(activity["phase"]["label"], "Critic review")
+        self.assertEqual(activity["waiting_on"], "critic review completion")
+        self.assertEqual(activity["hypothesis_id"],
+                         "akh-v2-q5-type-specific-dequant")
+        self.assertFalse(activity["gpu"]["expected_now"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"]["state"], "complete")
+        self.assertEqual(pipeline["planner_validation"]["state"], "complete")
+        self.assertEqual(pipeline["critic"]["state"], "running")
+        self.assertEqual(pipeline["authorization"]["state"], "not_reached")
+        self.assertEqual(pipeline["resource_admission"]["state"], "not_reached")
+        self.assertTrue(activity["checkpoint"]["available"])
+        self.assertEqual(activity["checkpoint"]["seq"], 3)
+
     def test_held_identity_bound_build_transaction_is_the_active_stage(self) -> None:
         manifest_sha = "b" * 64
         proposal_sha = "c" * 64
@@ -689,6 +750,59 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("Validate planner output", pipeline)
         self.assertIn("failed", pipeline)
         self.assertIn("Critic review", pipeline)
+        self.assertIn("not_reached", pipeline)
+
+    def test_active_critic_pending_is_visible_in_hero_and_pipeline(self) -> None:
+        payload = {
+            "active": True,
+            "observed_at": _iso(0),
+            "deployment": "campaign-v8",
+            "autokernel_log": [],
+            "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "running",
+                "phase": {"id": "critic", "label": "Critic review",
+                          "elapsed_s": 30},
+                "stall": {"state": "healthy",
+                          "detail": "durable lifecycle is advancing"},
+                "waiting_on": "critic review completion",
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                "turn": 1,
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "no identity-bound GPU claim is evidenced"},
+                "checkpoint": {"available": True, "kind": "STOP_STATE",
+                               "state": "discovery_planner_checkpointed",
+                               "seq": 3},
+                "resume": {"required": False, "possible": True},
+                "failure": {"detected": False},
+                "pipeline": [
+                    {"id": "planner", "label": "Planner", "state": "complete"},
+                    {"id": "planner_validation",
+                     "label": "Validate planner output", "state": "complete"},
+                    {"id": "critic", "label": "Critic review", "state": "running"},
+                    {"id": "authorization", "label": "Governance authorization",
+                     "state": "not_reached"},
+                    {"id": "resource_admission", "label": "Resource admission",
+                     "state": "not_reached"},
+                ],
+                "transitions": [],
+                "history": {"abandoned_count": 0, "retest_count": 0,
+                            "summary": "0 abandoned · 0 retest", "rows": []},
+            },
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+
+        for token in ("running", "campaign-v8", "Critic review",
+                      "critic review completion", "akh-v2-q5-type-specific-dequant",
+                      "not expected now", "discovery_planner_checkpointed"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("Critic review", pipeline)
+        self.assertIn("running", pipeline)
+        self.assertIn("Resource admission", pipeline)
         self.assertIn("not_reached", pipeline)
 
     def test_failed_campaign_and_newer_unlaunched_bundle_render_separately(self) -> None:

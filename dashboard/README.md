@@ -189,6 +189,14 @@ GPU screening was never reached. Explicit future
 `planner_validation_failed`/`planner_validation_refused` lifecycle events map to
 the same stage without relying on that inference.
 
+Pending-state phases retain their controller ordering. A durable
+`pending.phase: critic_pending` plus `critic_started` is rendered as active
+critic review, with planner validation complete and authorization/resource
+admission not reached. `critic_complete` advances to authorization; resource
+admission is shown only after the pending record carries a persisted
+authorization. This prevents a live critic actor from being mislabeled as an
+idle GPU wait.
+
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
 and strict campaign receipts into
