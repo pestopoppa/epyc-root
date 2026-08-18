@@ -14,3 +14,6 @@
   runtime-JS module was not runnable here.
 - The :8100 dashboard was not reloaded; deployment remains under operator/main
   session control.
+- Live-v7 follow-up: older unlaunched bundles are now omitted from the
+  forward-looking field. Exact coverage proves active v7 supersedes unlaunched
+  v6 instead of presenting v6 as “available next.”

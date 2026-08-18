@@ -3809,12 +3809,21 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     launched = [row for row in candidates if row["launched"]]
     unlaunched = [row for row in candidates if not row["launched"]]
     ambiguous = len(active) > 1
+    def campaign_order(row: dict) -> tuple[float, float]:
+        stamp = (max(row["producer_stamp"], row["config_stamp"])
+                 if row["launched"] else row["config_stamp"])
+        return stamp, row["config_stamp"]
+
     selected = max(
-        active or launched or candidates,
-        key=lambda row: ((row["producer_stamp"] if row["launched"]
-                          else row["config_stamp"]), row["config_stamp"]))
+        active or launched or candidates, key=campaign_order)
     newest_unlaunched = (max(unlaunched, key=lambda row: row["config_stamp"])
                          if unlaunched else None)
+    if (newest_unlaunched is not None
+            and campaign_order(newest_unlaunched) <= campaign_order(selected)):
+        # An older sealed bundle is superseded history, not an available "next"
+        # deployment. In particular, launching v7 must make an unlaunched v6
+        # disappear from this forward-looking field.
+        newest_unlaunched = None
     lock_held = selected["lock_held"]
     bundle = selected["bundle"]
     config = selected["config"]

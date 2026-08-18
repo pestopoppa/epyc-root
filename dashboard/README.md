@@ -175,7 +175,10 @@ the newest producer-authored progress timestamp. A newer config-file mtime never
 turns a real failed run into “idle.” The newest bundle with no controller state,
 checkpoint, or lifecycle event is exposed separately as
 `newest_unlaunched_deployment` (`launch_state: not_launched`); it is availability
-context and does not affect liveness or freshness.
+context and does not affect liveness or freshness. That field is populated only
+when the unlaunched bundle is newer in seal/progress order than the selected
+meaningful campaign; once v7 is active, an older unlaunched v6 is superseded
+history rather than an “available next” deployment.
 
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen

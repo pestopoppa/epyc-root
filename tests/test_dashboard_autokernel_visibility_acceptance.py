@@ -429,6 +429,40 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(sealed["deployment"], "campaign-v6")
         self.assertEqual(sealed["launch_state"], "not_launched")
 
+    def test_active_v7_supersedes_older_unlaunched_v6(self) -> None:
+        base_stamp = (self.bundle / "config/deployment.json").stat().st_mtime
+
+        def add_bundle(name: str, stamp: float) -> tuple[Path, Path]:
+            bundle = self.bundle.parent / name
+            state = bundle / "state"
+            operations = bundle / "operations"
+            (bundle / "config").mkdir(parents=True)
+            state.mkdir()
+            (operations / "live").mkdir(parents=True)
+            (state / "controller.run.lock").touch()
+            config_path = bundle / "config/deployment.json"
+            config_path.write_text(json.dumps({
+                "config_sha256": ("6" if name.endswith("v6") else "7") * 64,
+                "controller": {
+                    "state_root": str(state),
+                    "operations_root": str(operations),
+                },
+            }))
+            os.utime(config_path, (stamp, stamp))
+            return state, operations
+
+        add_bundle("campaign-v6", base_stamp + 10)
+        v7_state, _ = add_bundle("campaign-v7", base_stamp + 20)
+
+        with (v7_state / "controller.run.lock").open("r") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(payload["active"])
+        self.assertEqual(payload["deployment"], "campaign-v7")
+        self.assertEqual(payload["activity"]["status"], "running")
+        self.assertFalse(payload["newest_unlaunched_deployment"]["available"])
+
 
 @unittest.skipIf(shutil.which("node") is None, "node unavailable")
 class AutoKernelVisibilityRenderingTest(unittest.TestCase):
