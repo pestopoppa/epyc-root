@@ -308,6 +308,16 @@ malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generate
 
 **Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. **"At wrap-up" here means the OPERATOR-INVOKED `/wrap-up`** — pruning is one of the two operator-cadence steps (ruling 2026-08-16 at the top of this file); a per-task wrap-up refreshes `Next action` cells and adds a row for a handoff it created, and leaves deleting/archiving rows and handoff compaction for the operator's cadence. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
 
+**Do NOT select prune candidates by `open == 0`.** That reads the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION, and it is wrong often enough to destroy live work: measured 2026-08-18, of 15 handoffs reporting `open == 0`, **13 were false positives** — compatibility pointers whose whole job is to keep a path resolving, handoffs whose open work is stated in prose and never checkboxed, prompts and notes-only references that never carried tasks, and handoffs whose remaining boxes are guarded/blocked rather than done. Use the generated signal instead, which is conservative by construction (a candidate needs boxes, none open, and no disqualifying status phrase):
+
+```bash
+python3 scripts/handoffs/index_state.py            # refresh, then read the signal:
+python3 -c "import json;h=json.load(open('handoffs/active/.index-state.json'))['handoffs'];\
+[print(k,'|',v['row_id']) for k,v in sorted(h.items()) if v['prune']['candidate']]"
+```
+
+Everything it rejects carries a named `blocker` (`pointer`, `frozen`, `not-a-task-list`, `prose-open`, `no-checkboxes`, `undispatchable-tasks`, `open-tasks`) and the `evidence` line that produced it, so you can overrule a rejection deliberately rather than by re-deriving it. It is a **screen, not a verdict** — a candidate still needs a human read before it is archived.
+
 - **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and delete its index row.
 - **Not complete, but the row's `Next action` is stale** → keep the handoff active and rewrite that one cell. Chronology belongs in the progress log; superseded narration belongs in `handoffs/archived/<index>-history-through-YYYY-MM-DD.md`, never in a cell.
 - Point handoff *status* at the machine-readable source of truth (`.index-state.json`, `execution_manifest.jsonl`, test names) instead of re-narrating it in prose, so the index can't drift.

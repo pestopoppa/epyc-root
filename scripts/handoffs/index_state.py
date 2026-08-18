@@ -29,6 +29,27 @@ DELIBERATELY NOT INFERRED: whether the work is still WANTED. Form-screening cann
 that all passed form checks. So `open` counts here are an upper bound on real work, and quoting
 them as a backlog size would restate that same over-count. This tool reports form and recency;
 a human still certifies want.
+
+WHY `open == 0` IS NOT "COMPLETE", and why `prune` exists. The wrap-up routine prunes finished
+rows, and the obvious signal — `open == 0` — is the same category error as using mtime for
+`last_advanced`: it reads the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION. Measured
+2026-08-18 across 15 handoffs that reported `open == 0`; the first four inspected were all
+false positives, in three distinct ways:
+
+    meta-harness-optimization.md   a RETAINED COMPATIBILITY POINTER whose whole job is to keep a
+                                   path alive; archiving it breaks the routing it exists to provide
+    benchmark-results-dashboard.md status line says "artifact ingestion and UI remain open" —
+                                   live work, stated in prose, never checkboxed
+    fable5-architecture-review-2.md "a prompt, not a task list", status READY — nothing to complete
+    orchestrator-nps4-48x4-notes.md "notes-only topology reference; not an implementation queue"
+
+Pruning on `open == 0` would have archived live work out of the active tree. So `scan_handoff`
+now also reads the STATUS REGION (title + `**Status**` lines) and emits `prune`, which is
+CONSERVATIVE BY CONSTRUCTION: `candidate` is true only when boxes exist, none are open, and no
+blocker phrase was found. Anything unrecognised stays a non-candidate. A blocker is reported
+with the evidence line that produced it, so the reader can overrule it without re-deriving it.
+This is a screen, not a verdict — same contract as the rest of this module: it reports form,
+a human still certifies want.
 """
 
 from __future__ import annotations
@@ -146,6 +167,74 @@ def last_advanced(path: Path) -> str | None:
     return None
 
 
+# Status-region phrases that make `open == 0` mean something OTHER than "complete".
+# Ordered: the first match wins, so the most disqualifying reasons are listed first.
+# Deliberately phrase-based and narrow — a miss costs a false prune CANDIDATE (which a human
+# then reviews), while a wrong match costs a handoff that can never be pruned. Prefer misses.
+_PRUNE_BLOCKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    # 1. Pointers and frozen docs: archiving these BREAKS something that still resolves.
+    ("pointer", re.compile(
+        r"compatibility\s+pointer|retained\s+pointer|\bpointer\b.*\bretained\b"
+        r"|do\s+not\s+add\s+new|no\s+standalone\s+implementation\s+queue", re.I)),
+    ("frozen", re.compile(r"\bfrozen\b|\bimmutable\b|do\s+not\s+modify", re.I)),
+    # 2. Documents that never carried tasks, so "0 open" was always true and never meant done.
+    ("not-a-task-list", re.compile(
+        r"not\s+an?\s+implementation\s+queue|not\s+a\s+task\s+list|notes[-\s]only"
+        r"|\breference\b\s*(?:doc|only|$)|a\s+prompt,\s*not\s+a\s+task", re.I)),
+    # 3. Open work asserted in PROSE while the boxes say nothing. The expensive case.
+    ("prose-open", re.compile(
+        r"remains?\s+open|still\s+open|remain\s+outstanding|outstanding\b"
+        r"|\bin\s+progress\b|\bawaiting\b|\bpending\b|\bREADY\b|\bunresolved\b"
+        r"|remains?\s+(?:gated|blocked)|not\s+yet\s+(?:run|started|validated)", re.I)),
+)
+
+# A handoff's status region: the H1 title plus any `**Status...**` line. Bounded so a long
+# handoff whose BODY happens to contain "pending" is not disqualified by its own task text.
+_STATUS_LINE = re.compile(r"^\s*(?:#\s|\*\*Status)", re.I)
+_STATUS_SCAN_LINES = 40
+
+
+def status_region(path: Path) -> list[str]:
+    """Title + status lines only — never the task body (see `_STATUS_SCAN_LINES`)."""
+    out = []
+    try:
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            for i, line in enumerate(fh):
+                if i >= _STATUS_SCAN_LINES:
+                    break
+                if _STATUS_LINE.match(line):
+                    out.append(line.rstrip("\n"))
+    except OSError:
+        return []
+    return out
+
+
+def prune_signal(path: Path, boxes: dict) -> dict:
+    """Is `open == 0` here evidence of completion, or an artifact?
+
+    Returns `{candidate, blocker, evidence}`. `candidate` is true ONLY for a handoff that
+    has boxes, has none open, and shows no disqualifying status phrase. Everything else —
+    including a handoff with no boxes at all — is a non-candidate with a stated reason.
+    """
+    if boxes["total"] == 0:
+        return {"candidate": False, "blocker": "no-checkboxes",
+                "evidence": "handoff carries no task boxes, so `open == 0` was never a completion signal"}
+    if boxes["open"]:
+        return {"candidate": False, "blocker": "open-tasks", "evidence": None}
+    if boxes["blocked"] or boxes["guarded"]:
+        # No OPEN boxes, but boxes that classify() refused to dispatch. Not finished work:
+        # a guarded/blocked box is unresolved, and archiving it would bury the reason.
+        return {"candidate": False, "blocker": "undispatchable-tasks",
+                "evidence": f"{boxes['blocked']} blocked + {boxes['guarded']} guarded box(es) "
+                            f"remain unresolved despite 0 open"}
+    for line in status_region(path):
+        for name, rx in _PRUNE_BLOCKERS:
+            m = rx.search(line)
+            if m:
+                return {"candidate": False, "blocker": name, "evidence": line.strip()[:200]}
+    return {"candidate": True, "blocker": None, "evidence": None}
+
+
 def scan_handoff(path: Path) -> dict:
     """Box counts for one handoff, classified so non-tasks do not inflate `open`."""
     open_n = closed_n = guarded_n = blocked_n = 0
@@ -206,6 +295,7 @@ def collect() -> dict:
     for name, p in sorted(handoff_paths().items()):
         st = scan_handoff(p)
         row = owner.get(name)
+        st["prune"] = prune_signal(p, st)
         st["last_advanced"] = last_advanced(p)
         st["state"] = "blocked" if p.parent == BLOCKED else "active"
         st["owner_index"] = row["index"] if row else None
