@@ -3842,6 +3842,36 @@ def _discovery_postbuild_observation(operations_root: Path,
     if {"measurement_graphs_off_screen", "target_runtime_graphs_on_screen"}.issubset(receipts):
         completed.append("benchmark")
         first_incomplete = "decision"
+    correctness_execution = None
+    correctness_body = receipts.get("correctness", {}).get("body", {})
+    passed_cases = correctness_body.get("passed_cases")
+    expected_cases = correctness_body.get("expected_cases")
+    correctness_open = correctness_body.get("device_claim_open")
+    correctness_started = (correctness_open.get("acquired_at")
+                           if isinstance(correctness_open, dict) else None)
+    correctness_ended = correctness_body.get("ended_at")
+    if (isinstance(passed_cases, int) and not isinstance(passed_cases, bool)
+            and isinstance(expected_cases, int)
+            and not isinstance(expected_cases, bool)
+            and passed_cases == expected_cases and expected_cases > 0
+            and correctness_body.get("overall") == "OK"
+            and isinstance(correctness_started, str)
+            and isinstance(correctness_ended, str)
+            and _parse_semantic_timestamp(correctness_started) is not None
+            and _parse_semantic_timestamp(correctness_ended) is not None
+            and _parse_semantic_timestamp(correctness_ended) >=
+            _parse_semantic_timestamp(correctness_started)):
+        correctness_execution = {
+            "started_at": correctness_started,
+            "completed_at": correctness_ended,
+            "elapsed_s": (_parse_semantic_timestamp(correctness_ended)
+                          - _parse_semantic_timestamp(correctness_started)),
+            "passed": passed_cases, "total": expected_cases,
+            "summary": f"{passed_cases}/{expected_cases} tests passed",
+            "claim_id": correctness_open.get("claim_id"),
+            "device_id": correctness_open.get("device_id"),
+            "claim_released": False,
+        }
     pair_body = pair["body"] if pair else {}
     comparison = (pair_body.get("exact_duration_comparison")
                   if isinstance(pair_body.get("exact_duration_comparison"), dict)
@@ -3888,6 +3918,7 @@ def _discovery_postbuild_observation(operations_root: Path,
     return {
         "operation_key": operation_key, "repetition": repetition,
         "completed": completed, "first_incomplete_stage": first_incomplete,
+        "correctness_execution": correctness_execution,
         "receipts": receipts, "pair_complete": pair is not None,
         "bundle_complete": bundle is not None, "arm_order": arm_order,
         "skipped": skipped,
@@ -4134,6 +4165,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     if (not isinstance(operation_observation, dict)
             or operation_observation.get("stage") != "evidence_binding"):
         postbuild_observation = None
+    receipt_correctness_observation = (
+        postbuild_observation.get("correctness_execution")
+        if isinstance(postbuild_observation, dict) else None)
+    execution_observation = (
+        correctness_observation if isinstance(correctness_observation, dict)
+        else receipt_correctness_observation
+        if isinstance(receipt_correctness_observation, dict) else None)
     transitions: list[dict] = []
     started: dict[str, str] = {}
     event_stage = {
@@ -4295,8 +4333,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     checkpoint_at = checkpoint.get("written_at") if checkpoint else None
     operation_at = (operation_observation.get("started_at")
                     if isinstance(operation_observation, dict) else None)
-    correctness_at = (correctness_observation.get("completed_at")
-                      if isinstance(correctness_observation, dict) else None)
+    correctness_at = (execution_observation.get("completed_at")
+                      if isinstance(execution_observation, dict) else None)
     claim_at = (claim_observation.get("acquired_at")
                 if isinstance(claim_observation, dict) else None)
     postbuild_at = max(
@@ -4332,15 +4370,24 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         status = "failed"
         observed_stage = (operation_observation.get("stage")
                           if isinstance(operation_observation, dict) else None)
+        postbuild_failure_stage = (
+            postbuild_observation.get("first_incomplete_stage")
+            if isinstance(postbuild_observation, dict) else None)
         correctness_parse_failed = bool(
             isinstance(correctness_observation, dict)
             and failure.get("type") == "EvidenceProducerError"
             and "correctness stdout" in failure.get("detail", "").lower())
         stage = ("correctness_validation" if correctness_parse_failed else
+                 postbuild_failure_stage
+                 if postbuild_failure_stage in _DISCOVERY_POSTBUILD_STAGES else
                  observed_stage if observed_stage in {"build", "evidence_binding"}
                  else "source_materialization")
         label = ("Correctness result parsing failed after GPU proof"
                  if stage == "correctness_validation" else
+                 "Candidate attribution failed during runtime identity binding"
+                 if stage == "candidate_attribution" else
+                 "Anchor attribution failed during runtime identity binding"
+                 if stage == "anchor_attribution" else
                  "Evidence binding failed after completed build"
                  if stage == "evidence_binding" else
                  "Source build failed" if stage == "build" else
@@ -4349,8 +4396,10 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         recoverability = "ambiguous_checkpoint_requires_fresh_deployment"
         pipeline["source_materialization"]["state"] = (
             "complete" if stage in {"build", "evidence_binding",
-                                    "correctness_validation"} else "failed")
-        if stage in {"evidence_binding", "correctness_validation"}:
+                                    "correctness_validation"}
+            or stage in _DISCOVERY_POSTBUILD_STAGES else "failed")
+        if (stage in {"evidence_binding", "correctness_validation"}
+                or stage in _DISCOVERY_POSTBUILD_STAGES):
             pipeline["build"]["state"] = "complete"
         if stage == "correctness_validation":
             pipeline["evidence_binding"]["state"] = "complete"
@@ -4363,6 +4412,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 "elapsed_s"]
             pipeline[stage]["started_at"] = correctness_observation[
                 "completed_at"]
+        elif stage in _DISCOVERY_POSTBUILD_STAGES:
+            pipeline["evidence_binding"]["state"] = "complete"
+            pipeline[stage]["started_at"] = correctness_at or postbuild_at
         elif isinstance(operation_observation, dict):
             pipeline[stage]["started_at"] = operation_observation.get("started_at")
         pipeline[stage]["state"] = "failed"
@@ -4371,11 +4423,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "detected": True, "stage": stage,
             "detail": f"{failure['type']}: {failure['detail']}",
             "recovery": "Do not resume this ambiguous operation; launch a fresh sealed deployment after repair.",
-            "source_proof_created": False,
-            "correctness_output_created": stage == "correctness_validation",
-            "runner_started": stage == "correctness_validation",
-            "gpu_screen_started": stage == "correctness_validation",
-            "correctness_execution_completed": stage == "correctness_validation",
+            "source_proof_created": stage in _DISCOVERY_POSTBUILD_STAGES,
+            "correctness_output_created": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
+            "runner_started": stage in {
+                "measurement_graphs_off_screen",
+                "target_runtime_graphs_on_screen"},
+            "gpu_screen_started": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
+            "correctness_execution_completed": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
         }
     elif validation_event is not None or planner_validation_interrupted:
         status = "failed"
@@ -4652,19 +4712,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "detail": (f"{operation_observation.get('arm') or observed_stage} "
                        f"{operation_observation['build_key'][:12]}…"),
         })
-    if isinstance(correctness_observation, dict):
+    if isinstance(execution_observation, dict):
         transitions.append({
-            "ts": correctness_observation["completed_at"],
+            "ts": execution_observation["completed_at"],
             "stage": "correctness", "phase": "correctness",
             "state": "complete", "event": "correctness_execution_complete",
             "label": (f"GPU correctness execution complete · "
-                      f"{correctness_observation['summary']}"),
-            "detail": (f"claim {str(correctness_observation.get('claim_id'))[:12]}… "
+                      f"{execution_observation['summary']}"),
+            "detail": (f"claim {str(execution_observation.get('claim_id'))[:12]}… "
                        "released"),
         })
         if stage == "correctness_validation" and status == "failed":
             transitions.append({
-                "ts": state_at or correctness_observation["completed_at"],
+                "ts": state_at or execution_observation["completed_at"],
                 "stage": stage, "phase": stage, "state": "failed",
                 "event": "correctness_validation_failed",
                 "label": "correctness output parser rejected the completed result",
@@ -4676,6 +4736,14 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "state": "running", "event": "correctness_execution_started",
             "label": "GPU correctness execution started",
             "detail": f"claim {str(claim_observation.get('claim_id'))[:12]}… held",
+        })
+    if (status == "failed" and stage in _DISCOVERY_POSTBUILD_STAGES
+            and stage != "correctness_validation"):
+        transitions.append({
+            "ts": state_at or correctness_at or postbuild_at,
+            "stage": stage, "phase": stage, "state": "failed",
+            "event": f"{stage}_failed", "label": label,
+            "detail": failure_view["detail"],
         })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
@@ -4703,7 +4771,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "dispatch_proof", "profile", "measurement_graphs_off_screen",
         "target_runtime_graphs_on_screen", "benchmark",
     }
-    historical_gpu_screen = isinstance(correctness_observation, dict)
+    historical_gpu_screen = isinstance(execution_observation, dict)
     gpu_operation_started = bool(
         historical_gpu_screen
         or isinstance(claim_observation, dict)
@@ -4821,7 +4889,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                     isinstance(claim_observation, dict)
                     and claim_observation.get("claim_released") is True
                     or historical_gpu_screen and
-                    correctness_observation.get("claim_released")),
+                    execution_observation.get("claim_released")),
                 "claim_id": (claim_observation.get("claim_id")
                              if isinstance(claim_observation, dict) else None),
                 "device_id": (claim_observation.get("device_id")
@@ -4835,8 +4903,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                            if isinstance(claim_observation, dict)
                            and claim_observation.get("claim_released") is True else
                            (f"GPU correctness ran for "
-                            f"{correctness_observation['elapsed_s']:.1f}s; "
-                            f"{correctness_observation['summary']}; claim released")
+                            f"{execution_observation['elapsed_s']:.1f}s; "
+                            f"{execution_observation['summary']}; claim released")
                            if historical_gpu_screen else
                            "GPU screening was not reached"
                            if stage == "planner_validation" and status == "failed" else
@@ -4951,14 +5019,16 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "correctness": ({
             "execution_started": True,
             "execution_completed": True,
-            "validation_passed": False if stage == "correctness_validation"
-            and status == "failed" else None,
-            "started_at": correctness_observation["started_at"],
-            "completed_at": correctness_observation["completed_at"],
-            "elapsed_s": correctness_observation["elapsed_s"],
-            "passed": correctness_observation["passed"],
-            "total": correctness_observation["total"],
-            "summary": correctness_observation["summary"],
+            "validation_passed": (
+                False if stage == "correctness_validation" and status == "failed"
+                else True if isinstance(receipt_correctness_observation, dict)
+                else None),
+            "started_at": execution_observation["started_at"],
+            "completed_at": execution_observation["completed_at"],
+            "elapsed_s": execution_observation["elapsed_s"],
+            "passed": execution_observation["passed"],
+            "total": execution_observation["total"],
+            "summary": execution_observation["summary"],
         } if historical_gpu_screen else {
             "execution_started": True,
             "execution_completed": False,

@@ -245,6 +245,67 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "correctness_execution_started")
 
+    def test_v11_runtime_identity_failure_is_candidate_attribution_terminal(self) -> None:
+        started_at = "2026-08-18T22:55:06.002345+00:00"
+        ended_at = "2026-08-18T22:56:01.130533Z"
+        build_completed = datetime.fromisoformat(
+            "2026-08-18T22:55:04.585924+00:00").timestamp()
+        terminal = self.operations / "build-cache/entries" / ("d" * 64) / "terminal.json"
+        os.utime(terminal, (build_completed, build_completed))
+        state = json.loads((self.state_root / "state.json").read_text())
+        state["updated_at"] = "2026-08-18T22:56:02.752711Z"
+        state["inflight"]["exception"] = {
+            "type": "EvidenceProducerError",
+            "message": ("rocprof/candidate execution failed: runtime maps must "
+                        "prove exactly one owned KFD process for the sealed arm"),
+        }
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        self._receipt(
+            "proof/correctness/receipt.json",
+            "epyc.autokernel.targeted_correctness_receipt.v3",
+            status="complete", result="PASS", overall="OK",
+            passed_cases=1139, expected_cases=1139, ended_at=ended_at,
+            device_claim_open={
+                "schema": "epyc.autokernel.device_claim_receipt.v1",
+                "campaign_id": "ak-discovery-" + "a" * 16,
+                "claim_id": "akd-1a2840d5bfe6433e",
+                "device_id": "mi210_0", "acquired_at": started_at,
+            })
+        attribution = self.operation / "proof/attribution-candidate"
+        attribution.mkdir()
+        (attribution / "stdout.txt").write_text("")
+        (attribution / "stderr.txt").write_text(
+            "runtime maps must prove exactly one owned KFD process\n")
+        (attribution / "timestamps.csv").write_text(
+            "start_ns,end_ns\n1,2\n")
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "candidate_attribution")
+        self.assertEqual(activity["phase"]["label"],
+                         "Candidate attribution failed during runtime identity binding")
+        self.assertEqual(activity["failure"]["stage"], "candidate_attribution")
+        self.assertIn("exactly one owned KFD process",
+                      activity["failure"]["detail"])
+        pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
+        for stage in ("source_materialization", "build", "evidence_binding",
+                      "correctness", "correctness_validation"):
+            self.assertEqual(pipeline[stage], "complete", stage)
+        self.assertEqual(pipeline["candidate_attribution"], "failed")
+        for stage in ("anchor_attribution", "dispatch_proof", "profile",
+                      "measurement_graphs_off_screen",
+                      "target_runtime_graphs_on_screen", "decision"):
+            self.assertEqual(pipeline[stage], "not_reached", stage)
+        self.assertTrue(activity["correctness"]["execution_completed"])
+        self.assertTrue(activity["correctness"]["validation_passed"])
+        self.assertEqual(activity["correctness"]["summary"],
+                         "1139/1139 tests passed")
+        self.assertEqual(activity["correctness"]["started_at"], started_at)
+        self.assertEqual(activity["correctness"]["completed_at"], ended_at)
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "candidate_attribution_failed")
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
