@@ -1,12 +1,87 @@
 [
-  {"expect": 0, "why": "commit message merely mentions the word", "cmd": "git commit -m \"blocked a drop_caches that would corrupt inference\""},
-  {"expect": 0, "why": "grep for the word", "cmd": "grep -rn drop_caches scripts/"},
-  {"expect": 0, "why": "prose in an echo", "cmd": "echo \"the drop_caches rule fires under a live holder\""},
-  {"expect": 0, "why": "reading a file that mentions it", "cmd": "cat notes.md | grep drop_caches"},
-  {"expect": 0, "why": "unrelated command", "cmd": "git status"},
-  {"expect": 2, "why": "redirect write", "cmd": "echo 3 > /proc/sys/vm/drop_caches"},
-  {"expect": 2, "why": "redirect, no space", "cmd": "sync; echo 3 >/proc/sys/vm/drop_caches"},
-  {"expect": 2, "why": "sudo tee", "cmd": "echo 3 | sudo tee /proc/sys/vm/drop_caches"},
-  {"expect": 2, "why": "tee -a", "cmd": "echo 1 | tee -a /proc/sys/vm/drop_caches"},
-  {"expect": 2, "why": "sysctl -w", "cmd": "sudo sysctl -w vm.drop_caches=3"}
+ {
+  "expect": 0,
+  "why": "commit message merely mentions the word",
+  "cmd": "git commit -m \"blocked a drop_caches that would corrupt inference\""
+ },
+ {
+  "expect": 0,
+  "why": "grep for the word",
+  "cmd": "grep -rn drop_caches scripts/"
+ },
+ {
+  "expect": 0,
+  "why": "prose in an echo",
+  "cmd": "echo \"the drop_caches rule fires under a live holder\""
+ },
+ {
+  "expect": 0,
+  "why": "reading a file that mentions it",
+  "cmd": "cat notes.md | grep drop_caches"
+ },
+ {
+  "expect": 0,
+  "why": "unrelated command",
+  "cmd": "git status"
+ },
+ {
+  "expect": 2,
+  "why": "redirect write",
+  "cmd": "echo 3 > /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "redirect, no space",
+  "cmd": "sync; echo 3 >/proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "sudo tee",
+  "cmd": "echo 3 | sudo tee /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "tee -a",
+  "cmd": "echo 1 | tee -a /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "sysctl -w",
+  "cmd": "sudo sysctl -w vm.drop_caches=3"
+ },
+ {
+  "expect": 0,
+  "why": "heredoc body documenting a write",
+  "cmd": "cat > notes.md <<'ZQ'\nrun: echo 3 > /proc/sys/vm/drop_caches\nZQ"
+ },
+ {
+  "expect": 0,
+  "why": "grep searching for the full write pattern",
+  "cmd": "grep -rn \"echo 3 > /proc/sys/vm/drop_caches\" docs/"
+ },
+ {
+  "expect": 0,
+  "why": "quoted string containing a write",
+  "cmd": "echo \"3 > /proc/sys/vm/drop_caches\""
+ },
+ {
+  "expect": 0,
+  "why": "shell comment containing a write",
+  "cmd": "ls   # echo 3 > /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 0,
+  "why": "bus message reporting the pattern",
+  "cmd": "python3 bus.py append --json '{\"note\":\"blocked on echo 3 > /proc/sys/vm/drop_caches\"}'"
+ },
+ {
+  "expect": 2,
+  "why": "sudo tee after separator split (regression guard)",
+  "cmd": "echo 1 | sudo tee /proc/sys/vm/drop_caches"
+ },
+ {
+  "expect": 2,
+  "why": "write in the second segment of a chain",
+  "cmd": "sync && echo 3 > /proc/sys/vm/drop_caches"
+ }
 ]

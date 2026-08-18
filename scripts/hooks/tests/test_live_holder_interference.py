@@ -1,12 +1,17 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """Tests for scripts/hooks/check_live_holder_interference.sh (rider R10).
 
-WHY THE CASES LIVE IN A JSON FILE. A PreToolUse hook matches the text of a
-command, so it cannot distinguish "a command that writes drop_caches" from "a
-command that mentions writing drop_caches". A test that embeds the dangerous
-patterns as literals therefore gets blocked by the very hook it is testing —
-which happened during bring-up, twice. Keeping the cases in a data file means
-this runner's own command line never contains them.
+WHY THE CASES LIVE IN A JSON FILE. A test that embeds the dangerous patterns as
+literals gets blocked by the very hook it is testing — which happened during
+bring-up, twice. Keeping the cases in a data file means this runner's own command
+line never contains them.
+
+  (The original reason given here was that the hook "cannot distinguish a command
+  that writes drop_caches from one that mentions writing drop_caches". As of
+  2026-08-18 it can: drop_caches_write_scan.py strips heredoc bodies, quoted runs
+  and comments before matching. The data file is still the right shape — a test
+  runner should not have to rely on a guard being correct in order to test it —
+  but the claim it rested on is no longer true.)
 
 Usage:
     scripts/hooks/tests/test_live_holder_interference.py            # drop_caches rules
@@ -16,6 +21,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
 import json
 import os
 import subprocess
@@ -38,29 +45,53 @@ def run_hook(payload: dict, env: dict | None = None) -> int:
     ).returncode
 
 
+@contextlib.contextmanager
+def synthetic_region():
+    """Hold a GLOBAL region lock in an ISOLATED dir, so block cases always run.
+
+    The block half of this suite used to depend on the host happening to have a region
+    claimed — "the normal state on this host while the orchestrator serves". When nothing
+    held one, every `expect: 2` case SKIPPED and the suite still printed "all checks
+    passed", so the enforcement half could rot unnoticed while the permissive half stayed
+    green. Measured 2026-08-18: with no holder, 5 of 5 block cases skipped.
+
+    A real flock in a temp dir removes the dependency. The dir is isolated on purpose —
+    creating a `cpu_region.GLOBAL.*` file in the SHARED lock dir would make every other
+    session's region check see a claim that does not exist.
+    """
+    d = tempfile.mkdtemp()
+    lock = Path(d) / "cpu_region.GLOBAL.pytest-synthetic.lock"
+    lock.touch()
+    fh = lock.open("w")
+    try:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield d
+    finally:
+        try:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+        except OSError:
+            pass
+        fh.close()
+
+
 def test_drop_caches() -> list[str]:
     """Data-driven: allow mentions, block real writes.
 
-    Expectations assume at least one CPU region is currently claimed, which is
-    the normal state on this host while the orchestrator serves. When nothing
-    holds a region the block cases cannot fire, so they are skipped rather than
-    reported as failures.
+    Allow cases run against the live host. Block cases run under a SYNTHETIC held region
+    (see synthetic_region) so they are deterministic and never silently skipped.
     """
     failures: list[str] = []
     empty = tempfile.mkdtemp()
-    holder_present = run_hook(
-        {"tool_name": "Bash", "tool_input": {"command": "echo 3 > /proc/sys/vm/" + "drop_caches"}}
-    ) == 2
-    for case in json.loads(CASES.read_text()):
-        expect = case["expect"]
-        if expect == 2 and not holder_present:
-            print(f"  SKIP  (no region held)  {case['why']}")
-            continue
-        rc = run_hook({"tool_name": "Bash", "tool_input": {"command": case["cmd"]}})
-        ok = rc == expect
-        print(f"  {'PASS' if ok else 'FAIL'}  rc={rc} want={expect}  {case['why']}")
-        if not ok:
-            failures.append(case["why"])
+    cases = json.loads(CASES.read_text())
+    with synthetic_region() as held:
+        for case in cases:
+            expect = case["expect"]
+            env = {"EPYC_REGION_LOCK_DIR": held} if expect == 2 else None
+            rc = run_hook({"tool_name": "Bash", "tool_input": {"command": case["cmd"]}}, env=env)
+            ok = rc == expect
+            print(f"  {'PASS' if ok else 'FAIL'}  rc={rc} want={expect}  {case['why']}")
+            if not ok:
+                failures.append(case["why"])
 
     # Allow-path proof that does not depend on host state: an empty lock dir.
     rc = run_hook({"tool_name": "Bash",

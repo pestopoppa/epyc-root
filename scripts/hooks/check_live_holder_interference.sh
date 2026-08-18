@@ -65,7 +65,24 @@ if [[ "$TOOL" == "Bash" ]]; then
   # over-broad matcher is the failure mode this hook is supposed to avoid, since
   # a false block stalls a session for a reason it cannot see. Prose, grep
   # patterns and commit messages that merely mention drop_caches now pass.
-  if printf '%s' "$CMD" | grep -qE '(>|>>|\|[[:space:]]*(sudo[[:space:]]+)?tee([[:space:]]+-a)?)[[:space:]]*/proc/sys/vm/drop_caches|sysctl[^;&|]*\bvm\.drop_caches[[:space:]]*='; then
+  # SCOPED TO INVOCATIONS, NOT TEXT (2026-08-18). The regex below used to run against the
+  # RAW command, so any text merely CONTAINING a drop_caches write matched: a heredoc
+  # writing docs about this guard, a grep searching for the pattern, a bus message
+  # reporting it. The defect was LATENT, which is worse than loud — it can only reach the
+  # block when a region is actually held, so it fires rarely and during a bench, exactly
+  # when a session can least afford to debug an unexplained refusal. The scanner strips
+  # heredoc bodies, quoted runs and comments first, reusing pytest_worker_scan's strippers
+  # (the repo's one correct copy, shared with the pkill and operator-apply scanners).
+  #
+  # Fail CLOSED if the scanner cannot run: a missed drop_caches under a live region
+  # silently corrupts a bench, which costs far more than a rephrase.
+  _DC_SCAN="$(dirname "${BASH_SOURCE[0]}")/drop_caches_write_scan.py"
+  if command -v python3 >/dev/null 2>&1 && [[ -f "$_DC_SCAN" ]]; then
+    DC_VERDICT=$(printf '%s' "$CMD" | python3 "$_DC_SCAN" 2>/dev/null) || DC_VERDICT="write"
+  else
+    DC_VERDICT=$(printf '%s' "$CMD" | grep -qE '(>|>>|\|[[:space:]]*(sudo[[:space:]]+)?tee([[:space:]]+-a)?)[[:space:]]*/proc/sys/vm/drop_caches|sysctl[^;&|]*\bvm\.drop_caches[[:space:]]*=' && echo write || echo "")
+  fi
+  if [[ "$DC_VERDICT" == "write" ]]; then
     if REGION=$(held_region); then
       cat >&2 <<EOF
 BLOCKED: drop_caches while a CPU region is claimed ($REGION).
