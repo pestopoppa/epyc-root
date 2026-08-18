@@ -13,7 +13,7 @@ Take GLM-5.2 UD-IQ2_M (754B glm_moe_dsa, ~239GB, downloaded, true >64K stale-bin
 
 **2026-07-18 acceleration-gating note (v7 lever audit).** GLM-5.2 **acceleration** EV is
 *contingent on this quality gate*, not standalone. The two real GLM kernel levers — the
-native-GLM-MTP forward-graph port ([tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md),
+native-GLM-MTP forward-graph port ([tree-draft-forward-port-plan.md](../completed/tree-draft-forward-port-plan.md),
 +34–89% decode) and the real sparse final-attention path ([llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md)
 D2, currently DSA-DENSE-MASK) — are explicitly **sequenced AFTER GC-shadow-repair4b → P-REV-1**.
 Rationale: the flagship GLM role is cross-family patch reviewer, and patch-review still

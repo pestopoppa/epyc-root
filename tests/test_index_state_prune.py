@@ -139,6 +139,69 @@ class PruneSignalTest(unittest.TestCase):
         self.assertTrue(sig["candidate"])
         self.assertIsNone(sig["blocker"])
 
+    # ---- structural open-work assertions outside the status region -------
+    #
+    # Measured 2026-08-18, SECOND PASS: four handoffs passed the status-region screen above and
+    # were still live. Every one announced it structurally — in a heading, or in a line-leading
+    # bold run — rather than in its status line. These are those four, reduced.
+
+    def test_open_section_heading_blocks(self):
+        """moe-aggregate-deployment-wins-brief.md — `## Still open (GPU-kernel, our side)`."""
+        p = _write(self.tmp, "still_open.md",
+                   "# Brief\n**Status**: MEASURED role->config recommendations.\n\n"
+                   "## Win 1\ntext\n\n## Still open (GPU-kernel, our side)\n- a thing\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertFalse(sig["candidate"])
+        self.assertEqual(sig["blocker"], "open-section")
+        self.assertIn("Still open", sig["evidence"])
+
+    def test_open_questions_heading_blocks(self):
+        """granite-97m-r2-bench-plan.md — a live question under `## Open Questions`."""
+        p = _write(self.tmp, "open_q.md",
+                   "# Bench plan\n**Status**: phases landed.\n\n## Open Questions\n\n"
+                   "- Is the K2 chunker scoped to ship before this bench wants to run?\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertFalse(sig["candidate"])
+        self.assertEqual(sig["blocker"], "open-section")
+
+    def test_line_leading_bold_assertion_blocks(self):
+        """fable5-window2-findings-05b — `**Still OPEN (not measured-dead):** the Q8 kernel`."""
+        p = _write(self.tmp, "bold_open.md",
+                   "# Findings\n**Status**: findings supplement.\n\n"
+                   "**Still OPEN (not measured-dead):** the Q8 dequant-GEMV kernel.\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertFalse(sig["candidate"])
+        self.assertEqual(sig["blocker"], "open-assertion")
+
+    def test_mostly_done_status_blocks(self):
+        """gpu-candidates-surface-qwen38-update.md — "MOSTLY DONE ... parked on a restart"."""
+        p = _write(self.tmp, "mostly.md",
+                   "# GPU candidates surface\n"
+                   "**Status**: MOSTLY DONE — the agentic re-run is parked on a devcontainer restart.\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertFalse(sig["candidate"])
+        self.assertEqual(sig["blocker"], "prose-open")
+
+    # ---- the screen must not become vacuous ------------------------------
+
+    def test_bold_run_without_an_open_marker_does_not_block(self):
+        """Bold is everywhere in these documents; only an OPEN MARKER inside it may block."""
+        p = _write(self.tmp, "bold_ok.md",
+                   "# Thing\n**Status**: complete.\n\n"
+                   "**Bottom line up front:** everything landed and was validated.\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertTrue(sig["candidate"],
+                        "an ordinary bold lead-in blocked; the screen is over-matching")
+
+    def test_task_line_mentioning_remaining_does_not_block(self):
+        """A closed task whose TEXT says 'remaining' is not an open-work assertion."""
+        p = _write(self.tmp, "task_text.md",
+                   "# Thing\n**Status**: complete.\n\n"
+                   "- [x] Fold the remaining rows into the table\n")
+        sig = index_state.prune_signal(p, ALL_CLOSED)
+        self.assertTrue(sig["candidate"],
+                        "a closed task line blocked; the screen is over-matching")
+
     # ---- scope: the body must not disqualify the handoff -----------------
 
     def test_body_text_does_not_leak_into_the_status_region(self):

@@ -149,7 +149,7 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
   [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) Axis-B.
 - Teleport transport: AXA-2 in the mi210 roadmap.
 - Dead lanes (do not revive as-is): tree-draft/DySpec, external-drafter Stage-1/2
-  ([tree-draft-forward-port-plan.md](tree-draft-forward-port-plan.md)).
+  ([tree-draft-forward-port-plan.md](../completed/tree-draft-forward-port-plan.md)).
 
 ## Reporting
 

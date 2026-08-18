@@ -185,8 +185,29 @@ _PRUNE_BLOCKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("prose-open", re.compile(
         r"remains?\s+open|still\s+open|remain\s+outstanding|outstanding\b"
         r"|\bin\s+progress\b|\bawaiting\b|\bpending\b|\bREADY\b|\bunresolved\b"
-        r"|remains?\s+(?:gated|blocked)|not\s+yet\s+(?:run|started|validated)", re.I)),
+        r"|remains?\s+(?:gated|blocked)|not\s+yet\s+(?:run|started|validated)"
+        # measured 2026-08-18: phrases that survived the first cut and still meant live work
+        r"|mostly\s+done|partially\s+(?:done|complete)|still\s+landing|parked\s+on"
+        r"|\bhold\b|do\s+not\s+deploy", re.I)),
 )
+
+# Section headings that ASSERT open work. Structural like the status region — a heading is a
+# claim about the document, not incidental body prose — so this stays bounded and legible.
+# Measured 2026-08-18: four handoffs survived the status-region screen and were still live,
+# every one of them announcing it in a heading ("## Still open", "## Open Questions",
+# "## NEXT STEP — top of queue"). Headings are checked over the WHOLE file; unlike body text
+# there is no length at which a heading stops being a structural claim.
+_OPEN_HEADING = re.compile(
+    r"^#{1,6}\s+.*\b(?:still\s+open|open\s+questions?|open\s+items?|next\s+steps?"
+    r"|remaining|outstanding|to\s*do|todo|not\s+done|blockers?)\b", re.I | re.M)
+
+# A LINE-LEADING BOLD RUN is the other structural way these documents assert open work —
+# `**Still OPEN (not measured-dead):** the Q8 dequant-GEMV kernel ...`. Deliberately narrow:
+# the bold must OPEN the line (optionally after a list bullet) and the marker must sit inside
+# the bold run, so an ordinary task line mentioning "remaining" cannot trip it.
+_OPEN_BOLD = re.compile(
+    r"^\s*(?:[-*]\s+)?\*\*[^*\n]{0,80}?\b(?:still\s+open|open\b|remaining|outstanding"
+    r"|not\s+done|todo)\b[^*\n]{0,80}?\*\*", re.I | re.M)
 
 # A handoff's status region: the H1 title plus any `**Status...**` line. Bounded so a long
 # handoff whose BODY happens to contain "pending" is not disqualified by its own task text.
@@ -229,9 +250,17 @@ def prune_signal(path: Path, boxes: dict) -> dict:
                             f"remain unresolved despite 0 open"}
     for line in status_region(path):
         for name, rx in _PRUNE_BLOCKERS:
-            m = rx.search(line)
-            if m:
+            if rx.search(line):
                 return {"candidate": False, "blocker": name, "evidence": line.strip()[:200]}
+    try:
+        body = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        body = ""
+    for rx, name in ((_OPEN_HEADING, "open-section"), (_OPEN_BOLD, "open-assertion")):
+        m = rx.search(body)
+        if m:
+            return {"candidate": False, "blocker": name,
+                    "evidence": m.group(0).strip()[:200]}
     return {"candidate": True, "blocker": None, "evidence": None}
 
 

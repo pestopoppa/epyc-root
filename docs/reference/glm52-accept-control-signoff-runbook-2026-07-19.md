@@ -80,7 +80,7 @@ Governance context:
 - `/mnt/raid0/llm/epyc-root/handoffs/active/glm52-reviewer-capability-gates.md`
 - `/mnt/raid0/llm/epyc-root/docs/reference/glm52-accept-control-signoff-packet-2026-07-18.md`
 - `/mnt/raid0/llm/epyc-root/handoffs/active/v7-promotion.md`
-- `/mnt/raid0/llm/epyc-root/handoffs/active/tree-draft-forward-port-plan.md`
+- `/mnt/raid0/llm/epyc-root/handoffs/completed/tree-draft-forward-port-plan.md`
 - `/mnt/raid0/llm/epyc-root/docs/reference/glm-mtp-contract-generalization-audit-2026-07-19.md`
 
 ## Manual Attention Flags
