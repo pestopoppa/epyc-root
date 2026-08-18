@@ -23,6 +23,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import fcntl
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -382,6 +383,52 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertIn("retest", history["summary"].lower())
         self.assertEqual(len(history["rows"]), 3)
 
+    def test_newer_sealed_bundle_does_not_mask_failed_launched_campaign(self) -> None:
+        """A config mtime is availability, never a replacement for run truth."""
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": _iso(5),
+            "next": 1,
+            "complete": False,
+            "terminal_reason": None,
+            "pending": None,
+            "iterations": [],
+            "inflight": {
+                "phase": "screen",
+                "exception": {
+                    "type": "DeploymentFactoryError",
+                    "message": "candidate manifest canonical carrier hash mismatch",
+                },
+            },
+        }))
+        next_bundle = self.bundle.parent / "campaign-v6"
+        next_state = next_bundle / "state"
+        next_operations = next_bundle / "operations"
+        (next_bundle / "config").mkdir(parents=True)
+        next_state.mkdir()
+        (next_operations / "live").mkdir(parents=True)
+        (next_state / "controller.run.lock").touch()
+        next_config = next_bundle / "config/deployment.json"
+        next_config.write_text(json.dumps({
+            "config_sha256": "b" * 64,
+            "controller": {
+                "state_root": str(next_state),
+                "operations_root": str(next_operations),
+            },
+        }))
+        newer = datetime.now(timezone.utc).timestamp() + 60
+        os.utime(next_config, (newer, newer))
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["deployment"], "campaign-a")
+        self.assertEqual(payload["activity"]["status"], "failed")
+        self.assertIn("canonical carrier hash mismatch",
+                      payload["activity"]["failure"]["detail"])
+        sealed = payload["newest_unlaunched_deployment"]
+        self.assertTrue(sealed["available"])
+        self.assertEqual(sealed["deployment"], "campaign-v6")
+        self.assertEqual(sealed["launch_state"], "not_launched")
+
 
 @unittest.skipIf(shutil.which("node") is None, "node unavailable")
 class AutoKernelVisibilityRenderingTest(unittest.TestCase):
@@ -499,11 +546,16 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("akh-old-a", history_rows)
         self.assertIn("akh-retest", history_rows)
 
-    def test_source_materialization_failure_renders_stop_and_recovery(self) -> None:
+    def test_failed_campaign_and_newer_unlaunched_bundle_render_separately(self) -> None:
         payload = {
             "active": False,
             "observed_at": _iso(0),
-            "deployment": "campaign-a",
+            "deployment": "campaign-v5",
+            "newest_unlaunched_deployment": {
+                "available": True,
+                "deployment": "campaign-v6",
+                "launch_state": "not_launched",
+            },
             "autokernel_log": [],
             "planner_log": [],
             "telemetry_note": "allowlisted lifecycle facts only",
@@ -541,7 +593,9 @@ process.stdout.write(JSON.stringify(out));
         for token in ("failed", "Source materialization failed",
                       "SourceCandidateError", "discovery_screen_ambiguous",
                       "Cannot resume", "GPU screening was not reached",
-                      "Repair source declaration"):
+                      "Repair source declaration", "campaign-v5",
+                      "Available next deployment", "campaign-v6",
+                      "sealed, not launched"):
             self.assertIn(token.lower(), summary.lower())
 
 

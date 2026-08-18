@@ -169,7 +169,13 @@ decisions and transcript hashes. Prompts, model text, commands, environment and
 credentials are structurally excluded. `/api/kernel/live` also observes the
 deployment's controller lock, so a long first planner call is visible before its
 first durable state checkpoint; that lock observation never exposes or scrapes
-the ephemeral actor container.
+the ephemeral actor container. When several sealed deployments coexist, the
+activity hero selects a held controller first, then the terminal deployment with
+the newest producer-authored progress timestamp. A newer config-file mtime never
+turns a real failed run into “idle.” The newest bundle with no controller state,
+checkpoint, or lifecycle event is exposed separately as
+`newest_unlaunched_deployment` (`launch_state: not_launched`); it is availability
+context and does not affect liveness or freshness.
 
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen

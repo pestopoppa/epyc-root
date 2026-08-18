@@ -3734,7 +3734,7 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
 
 
 def _discovery_live_read() -> tuple[dict, panels.Observation]:
-    candidates: list[tuple[bool, float, Path, dict, Path, Path]] = []
+    candidates: list[dict] = []
     try:
         configs = list(AUTOKERNEL_DEPLOYMENTS_ROOT.glob("*/config/deployment.json"))[:512]
     except OSError as exc:
@@ -3756,29 +3756,80 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             continue
         lock_held = _discovery_lock_held(state_root / "controller.run.lock")
         try:
-            stamp = max(config_path.stat().st_mtime,
-                        (state_root / "state.json").stat().st_mtime)
+            config_stamp = config_path.stat().st_mtime
         except OSError:
-            stamp = config_path.stat().st_mtime
-        candidates.append((lock_held, stamp, bundle, config, state_root, operations_root))
+            continue
+        state_present, state, state_error = _read_json_object(
+            state_root / "state.json", "discovery state")
+        all_events, all_error = _discovery_events(
+            operations_root / "live" / "autokernel.jsonl", None)
+        planner_events, planner_error = _discovery_events(
+            operations_root / "live" / "planner.jsonl", "planner")
+        checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+        producer_times = [
+            _parse_semantic_timestamp(value) for value in (
+                state.get("updated_at") if isinstance(state, dict) else None,
+                checkpoint.get("written_at") if checkpoint else None,
+                *(row.get("ts") for row in (*all_events, *planner_events)),
+            )
+        ]
+        producer_times = [value for value in producer_times if value is not None]
+        launched = bool(lock_held or state_present or all_events or all_error
+                        or planner_events or planner_error
+                        or checkpoint is not None)
+        # A deployment config's mtime says only when a bundle was sealed.  It is
+        # not producer progress and therefore cannot supersede a real terminal
+        # campaign in the activity hero.
+        producer_stamp = max(producer_times, default=0.0)
+        if launched and not producer_times:
+            for producer_path in (
+                    state_root / "state.json",
+                    state_root / "journal" / "events.jsonl",
+                    operations_root / "live" / "autokernel.jsonl",
+                    operations_root / "live" / "planner.jsonl"):
+                try:
+                    producer_stamp = max(producer_stamp, producer_path.stat().st_mtime)
+                except OSError:
+                    continue
+        candidates.append({
+            "lock_held": lock_held, "config_stamp": config_stamp,
+            "producer_stamp": producer_stamp, "launched": launched,
+            "bundle": bundle, "config": config, "state_root": state_root,
+            "operations_root": operations_root, "state": state,
+            "state_error": state_error, "all_events": all_events,
+            "all_error": all_error, "planner_events": planner_events,
+            "planner_error": planner_error, "checkpoint": checkpoint,
+        })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
                    "active": False, "error": "no valid discovery deployment found",
                    "autokernel_log": [], "planner_log": []}
         return payload, panels.Observation(False, detail=payload["error"])
-    active = [row for row in candidates if row[0]]
+    active = [row for row in candidates if row["lock_held"]]
+    launched = [row for row in candidates if row["launched"]]
+    unlaunched = [row for row in candidates if not row["launched"]]
     ambiguous = len(active) > 1
-    selected = max(active or candidates, key=lambda row: row[1])
-    lock_held, stamp, bundle, config, state_root, operations_root = selected
-    _, state, state_error = _read_json_object(state_root / "state.json", "discovery state")
-    all_events, all_error = _discovery_events(
-        operations_root / "live" / "autokernel.jsonl", None)
-    planner_events, planner_error = _discovery_events(
-        operations_root / "live" / "planner.jsonl", "planner")
+    selected = max(
+        active or launched or candidates,
+        key=lambda row: ((row["producer_stamp"] if row["launched"]
+                          else row["config_stamp"]), row["config_stamp"]))
+    newest_unlaunched = (max(unlaunched, key=lambda row: row["config_stamp"])
+                         if unlaunched else None)
+    lock_held = selected["lock_held"]
+    bundle = selected["bundle"]
+    config = selected["config"]
+    state_root = selected["state_root"]
+    operations_root = selected["operations_root"]
+    state = selected["state"]
+    state_error = selected["state_error"]
+    all_events = selected["all_events"]
+    all_error = selected["all_error"]
+    planner_events = selected["planner_events"]
+    planner_error = selected["planner_error"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
-    checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+    checkpoint = selected["checkpoint"]
     now = time.time()
     build_observation = _discovery_build_observation(
         operations_root, state, config.get("config_sha256"))
@@ -3789,7 +3840,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
                    if activity.get("last_progress_at") else
-                   _parse_semantic_timestamp(latest_ts) if latest_ts else stamp)
+                   _parse_semantic_timestamp(latest_ts) if latest_ts else
+                   (selected["producer_stamp"] or selected["config_stamp"])
+                   if selected["launched"] else
+                   selected["config_stamp"])
     state_view = None
     if state is not None:
         iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
@@ -3808,6 +3862,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
+        "newest_unlaunched_deployment": ({
+            "available": True,
+            "deployment": newest_unlaunched["bundle"].name,
+            "config_sha256": newest_unlaunched["config"].get("config_sha256"),
+            "launch_state": "not_launched",
+            "sealed_at": datetime.fromtimestamp(
+                newest_unlaunched["config_stamp"], timezone.utc
+            ).isoformat().replace("+00:00", "Z"),
+        } if newest_unlaunched else {"available": False}),
         "state": state_view, "state_error": state_error,
         "activity": activity,
         "autokernel_log": all_events, "planner_log": planner_events,

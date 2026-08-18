@@ -905,6 +905,10 @@ function renderLive(d){
   if(resume.required||resume.possible===false){
     hero+='<div class="live-foot"><b>Recovery:</b> '+esc(resume.detail||resume.disposition||"recovery audit required")+'</div>';
   }
+  const sealed=d.newest_unlaunched_deployment||{};
+  if(sealed.available){
+    hero+='<div class="live-foot"><b>Available next deployment:</b> '+esc(sealed.deployment||"sealed bundle")+' · sealed, not launched</div>';
+  }
   summary.innerHTML=hero;
 
   $("#ak-live-pipeline").innerHTML=(a.pipeline||[]).map(step=>

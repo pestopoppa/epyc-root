@@ -1406,6 +1406,23 @@ class HealthPayloadFoldTest(unittest.TestCase):
 class KernelDataHealthProbeTest(unittest.TestCase):
     """The directory probe reads Kernel-R&D data health, not hub transport."""
 
+    def setUp(self):
+        # These tests exercise the terminal kernel contract. Keep the independent
+        # live-discovery input deterministic instead of inheriting whichever
+        # AutoKernel campaign happens to be active or failed on the host.
+        self._live_patch = mock.patch.object(
+            server, "_discovery_live_read", return_value=(
+                {"active": False, "deployment": "test-terminal-campaign",
+                 "status_message": "COMPLETE — test fixture"},
+                panels.Observation(
+                    artifact_present=True, timestamp=_NOW,
+                    source="test live-discovery fixture", populated=True,
+                    producer_idle=True)))
+        self._live_patch.start()
+
+    def tearDown(self):
+        self._live_patch.stop()
+
     def test_absent_export_is_http_503_with_an_absent_verdict(self):
         with _ProgressionFile(None):
             with _KernelFile(None):

@@ -67,6 +67,37 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertFalse(payload["available"])
         self.assertEqual(payload["autokernel_log"], [])
 
+    def test_active_campaign_outranks_newer_terminal_progress(self) -> None:
+        terminal = self.bundle.parent / "campaign-terminal"
+        terminal_state = terminal / "state"
+        terminal_operations = terminal / "operations"
+        (terminal / "config").mkdir(parents=True)
+        terminal_state.mkdir()
+        (terminal_operations / "live").mkdir(parents=True)
+        (terminal_state / "controller.run.lock").touch()
+        (terminal / "config/deployment.json").write_text(json.dumps({
+            "config_sha256": "b" * 64,
+            "controller": {
+                "state_root": str(terminal_state),
+                "operations_root": str(terminal_operations),
+            },
+        }))
+        (terminal_state / "state.json").write_text(json.dumps({
+            "updated_at": "2099-01-01T00:00:00Z",
+            "complete": False,
+            "iterations": [],
+            "inflight": {
+                "exception": {"type": "RuntimeError", "message": "terminal"},
+            },
+        }))
+
+        with (self.state / "controller.run.lock").open("r") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(payload["active"])
+        self.assertEqual(payload["deployment"], "campaign-a")
+
 
 if __name__ == "__main__":
     unittest.main()
