@@ -28,63 +28,16 @@ import re
 import sys
 
 MAX_WORKERS = 16
-_SEPARATORS = re.compile(r"(?:\|\||&&|[;|\n])")
+# Shell-text scanning moved to shell_scan.py on 2026-08-18 — the same strippers were
+# needed by four guards and this module was an odd home for them (the name implies
+# pytest scope). Re-exported here because process_pattern_kill_scan.py and
+# operator_apply_copy_scan.py imported them from this module by name.
+from shell_scan import (  # noqa: E402,F401
+    SEPARATORS as _SEPARATORS, segments, strip_comments, strip_heredocs, strip_quoted)
+
 _PYTEST = re.compile(r"(?:^|[\s/])pytest\b")
 _AUTO = re.compile(r"(?:^|\s)-n[\s=]*auto\b")
 _COUNT = re.compile(r"(?:^|\s)-n[\s=]*([0-9]+)")
-
-
-def strip_quoted(text: str) -> str:
-    """Blank the CONTENTS of quoted runs, preserving length and the quotes.
-
-    Length is preserved so offsets stay meaningful; the quote characters stay so a
-    caller can still see that a quoted run was present.
-    """
-    out: list[str] = []
-    quote: str | None = None
-    for char in text:
-        if quote is not None:
-            if char == quote:
-                quote = None
-                out.append(char)
-            else:
-                out.append(" ")
-        elif char in ("'", '"'):
-            quote = char
-            out.append(char)
-        else:
-            out.append(char)
-    return "".join(out)
-
-
-_HEREDOC = re.compile(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1")
-
-
-def strip_heredocs(text: str) -> str:
-    """Blank heredoc BODIES. They are data being written, not commands being run.
-
-    Found by this guard blocking its own test fixture: a heredoc listing
-    ``pytest -n auto`` as an example input was read as an invocation. Same class as
-    the quoted-argument case — the guard was matching text rather than commands.
-
-    ORDER MATTERS: this must run BEFORE quote stripping. A quoted heredoc marker
-    (``<<'EOF'``) would otherwise have its name blanked as a quoted run, leaving
-    ``<<''`` — no detectable terminator, and the body scanned as commands again.
-    """
-    lines = text.split("\n")
-    out: list[str] = []
-    terminator: str | None = None
-    for line in lines:
-        if terminator is not None:
-            out.append("")
-            if line.strip() == terminator:
-                terminator = None
-            continue
-        out.append(line)
-        found = _HEREDOC.search(line)
-        if found:
-            terminator = found.group(2)
-    return "\n".join(out)
 
 
 def unsafe_worker_verdict(command: str) -> str:

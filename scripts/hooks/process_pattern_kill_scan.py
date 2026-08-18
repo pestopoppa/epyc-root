@@ -23,7 +23,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pytest_worker_scan import _SEPARATORS, strip_heredocs, strip_quoted  # noqa: E402
+from shell_scan import SEPARATORS as _SEPARATORS  # noqa: E402
+from shell_scan import strip_comments, strip_heredocs, strip_quoted  # noqa: E402
 
 # A shell COMMENT is documentation, not an invocation — and this guard exists in a
 # repo whose agents write about the banned command constantly. C47 (2026-08-12): the
@@ -32,11 +33,6 @@ from pytest_worker_scan import _SEPARATORS, strip_heredocs, strip_quoted  # noqa
 # file to send it. `strip_quoted` covers quoted mentions and missed this one.
 # Anchored at start-of-line or after whitespace, which is the real shell rule, so
 # `$#` and `url#frag` are untouched.
-_COMMENT = re.compile(r"(?:(?<=^)|(?<=\s))#[^\n]*")
-
-
-def strip_comments(text: str) -> str:
-    return _COMMENT.sub(" ", text)
 
 # Command word, optionally path-qualified, optionally behind a runner prefix.
 _TARGET = re.compile(r"(?:^|[\s/])(pkill|pgrep)\b")

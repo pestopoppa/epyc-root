@@ -30,7 +30,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from pytest_worker_scan import _SEPARATORS, strip_heredocs, strip_quoted  # noqa: E402
+from shell_scan import segments  # noqa: E402
 
 # A real write: a redirect or a tee into the file, or a sysctl assignment. Unchanged from
 # the original guard — only the TEXT it is applied to changed.
@@ -44,16 +44,10 @@ _WRITE = re.compile(
     r"|(?:^|\s)(?:sudo\s+)?tee(?:\s+-a)?\s+/proc/sys/vm/drop_caches"
     r"|sysctl[^;&|]*\bvm\.drop_caches\s*=")
 
-# `strip_quoted` blanks quoted CONTENTS but keeps the quote characters, so a quoted path
-# survives as `"                          "`. That is deliberate: it means a quoted
-# drop_caches path can no longer match, which is what we want — `echo "3 > /proc/sys/vm/
-# drop_caches"` prints a string, it does not write the file.
-_COMMENT = re.compile(r"(?:(?<=^)|(?<=\s))#[^\n]*")
 
 
 def drop_caches_write(command: str) -> bool:
-    text = _COMMENT.sub("", strip_quoted(strip_heredocs(command)))
-    return any(_WRITE.search(seg) for seg in _SEPARATORS.split(text))
+    return any(_WRITE.search(seg) for seg in segments(command))
 
 
 def main() -> int:

@@ -49,7 +49,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pytest_worker_scan import _SEPARATORS, strip_heredocs, strip_quoted  # noqa: E402
+from shell_scan import SEPARATORS as _SEPARATORS  # noqa: E402
+from shell_scan import strip_comments, strip_heredocs, strip_quoted  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
