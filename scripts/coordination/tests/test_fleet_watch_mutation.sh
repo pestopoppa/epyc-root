@@ -262,8 +262,12 @@ mutate 19 "an UNREADABLE queue is treated as an EMPTY one (the fail-open)" \
     '    if tsv=$(fw_queue_rows) || tsv=""; then' \
     "unreadable queue"
 
+# Repointed 2026-08-16: ownership moved from an inline case into fw_owns_key
+# (so the repo-state key families can be owned by prefix). The mutation now
+# neuters the call site instead of the deleted case line — the property under
+# test is unchanged: a key this script does not own is never touched.
 mutate 20 "the clear sweep stops checking which keys this script OWNS" \
-    '        case " ${FW_OWNED_KEYS} " in *" ${key} "*) ;; *) continue ;; esac' \
+    '        fw_owns_key "$key" || continue' \
     '        :' \
     "foreign alarm key is left ACTIVE"
 

@@ -287,6 +287,17 @@ fw_regions_text() { [ -n "$FIX_REGIONS" ] || return 1; printf '%s' "$FIX_REGIONS
 fw_queue_rows()   { [ "$FIX_TSV_OK" = 0 ] || return 1; printf '%s' "$FIX_TSV"; }
 fw_capture_pane() { printf 'PANE TEXT MUST NEVER REACH A DECISION\n'; }
 
+# Repo-state probes (the INC-20260816 guards). Neutral by default so the
+# pre-existing cases stay hermetic: without these overrides every cycle would
+# run REAL git against the live clone, and lane/mainC's genuinely stranded
+# patches would fire RETIRED-LANE-UNMERGED inside unrelated fixtures.
+FIX_REPO_OK=0
+FIX_REPO_STATE=$'root\tnone\t0\norchestrator\tnone\t0\nresearch\tnone\t0'
+FIX_RETIRED_OK=0
+FIX_RETIRED=""
+fw_repo_state_rows()   { [ "$FIX_REPO_OK" = 0 ] || return 1; printf '%s' "$FIX_REPO_STATE"; }
+fw_retired_lane_rows() { [ "$FIX_RETIRED_OK" = 0 ] || return 1; printf '%s' "$FIX_RETIRED"; }
+
 fw_alarm_active() {
     [ "$FAKE_ALARM_READABLE" = 0 ] || return 1
     local k
@@ -722,6 +733,116 @@ for i in 1 2 3; do fw_run_cycle; fw_emit; done
 logged=$(cat "$FLEET_WATCH_LOG")
 chk_contains "backslashes in a task_id are not re-interpreted" "$logged" 'C:\new\table'
 chk "no stray newline injected by an escape" "$(grep -c 'QUEUE-AGING unscreened' "$FLEET_WATCH_LOG")" "1"
+
+# =============================================================================
+# [6] REPO-STATE GUARDS (INC-20260816). Both directions for both guards, plus
+# the three-valued contract and the persistence gate — the same properties the
+# compute detectors must prove, because these reuse that exact machinery.
+# =============================================================================
+printf '\n[6] repo-state guards\n'
+
+# healthy: quiet sequencers, no retired lanes -> silence
+reset_all
+FIX_GPU='{"card0":{"GPU use (%)":"55","GPU Memory Allocated (VRAM%)":"71"}}'
+FIX_REGIONS=$'  q0  HELD   bench\n  q1  free   \n  q2  free   \n  q3  free   '
+FIX_TSV=""; FIX_TSV_OK=0
+FIX_REPO_STATE=$'root\tnone\t0\nresearch\tnone\t0'; FIX_RETIRED=""
+cycles 4
+chk_lacks "quiet sequencers raise nothing" "$LAST_OUT" "REPO-SEQUENCER-STALE"
+chk_lacks "no retired lanes raise nothing" "$LAST_OUT" "RETIRED-LANE-UNMERGED"
+chk "no repo-state alarm on the healthy fixture" "$(printf '%s\n' ${ALARM_LOG[@]+"${ALARM_LOG[@]}"} | grep -c 'repo-sequencer\|retired-lane')" "0"
+
+# a FRESH sequencer head (a live merge) must NOT fire — age gates it
+reset_all
+FIX_REPO_STATE=$'research\tcherry-pick\t120'
+cycles 4
+chk_lacks "a 2-minute-old cherry-pick is a live operation, not a wedge" "$LAST_OUT" "REPO-SEQUENCER-STALE"
+
+# a STALE sequencer fires — after persistence, not before
+reset_all
+FIX_REPO_STATE=$'research\tcherry-pick\t260000'
+cycles 1
+chk_lacks "stale sequencer does NOT fire on cycle 1 (persistence)" "$LAST_OUT" "REPO-SEQUENCER-STALE"
+cycles 2
+chk_contains "stale sequencer fires after persistence" "$LAST_OUT" "REPO-SEQUENCER-STALE research"
+chk_contains "the finding names the operation" "$LAST_OUT" "cherry-pick"
+chk_contains "alarm raised with the routed fix" "$(printf '%s\n' ${ALARM_LOG[@]+"${ALARM_LOG[@]}"})" "NOTIFIED repo-sequencer-stale-research"
+
+# UNREADABLE repo: reported, treated neither as clean nor as stale
+reset_all
+FIX_REPO_STATE=$'research\tunreadable\t0'
+cycles 4
+chk_lacks "an unreadable repo asserts no staleness" "$LAST_OUT" "REPO-SEQUENCER-STALE"
+chk_contains "an unreadable repo is REPORTED, not skipped" \
+    "$(printf '%s\n' ${FW_OBSERVATIONS[@]+"${FW_OBSERVATIONS[@]}"})" "REPO-UNREADABLE research"
+
+# whole probe failing: nothing asserted, nothing cleared
+reset_all
+FIX_REPO_OK=1
+cycles 4
+chk_lacks "probe failure asserts nothing" "$LAST_OUT" "REPO-SEQUENCER-STALE"
+chk_contains "probe failure is observed" \
+    "$(printf '%s\n' ${FW_OBSERVATIONS[@]+"${FW_OBSERVATIONS[@]}"})" "REPO-STATE-UNREADABLE"
+FIX_REPO_OK=0
+
+# retired lane with unmerged CONTENT fires; zero-count (graph residue) does not
+reset_all
+FIX_RETIRED=$'mainD\t9\nmainA\t0'
+cycles 3
+chk_contains "a retired lane with 9 unmerged patches fires" "$LAST_OUT" "RETIRED-LANE-UNMERGED lane/mainD: 9"
+chk_lacks "graph residue (cherry count 0) never fires" "$LAST_OUT" "lane/mainA"
+chk_contains "the alarm names the fix (port then delete the LOCAL branch)" \
+    "$(printf '%s\n' ${ALARM_LOG[@]+"${ALARM_LOG[@]}"})" "NOTIFIED retired-lane-unmerged-mainD"
+
+# resolution: patches ported, LOCAL branch deleted. The probe still emits a
+# row for the retired id (count 0) precisely so the key stays ELIGIBLE and the
+# clear sweep can resolve it — the first draft dropped the id with the branch,
+# which would have wedged the alarm active forever.
+FIX_RETIRED=$'mainD\t0\nmainA\t0'
+FAKE_ACTIVE[retired-lane-unmerged-mainD]=1
+cycles 4
+chk_contains "clearing the strand resolves the alarm (prefix-owned key)" \
+    "$(printf '%s\n' ${ALARM_LOG[@]+"${ALARM_LOG[@]}"})" "CLEARED retired-lane-unmerged-mainD"
+
+# The REAL probes, against throwaway fixtures. Everything above replaces the
+# probe layer, so a mutation INSIDE fw_repo_state_rows / fw_retired_lane_rows
+# is invisible to it — the exact blindness that let a __file__-relative
+# BUS_ROOT survive a full rewrite of its file. These run the sourced originals
+# in a subshell against a disposable git repo and a synthetic roster.
+printf '\n[6b] real repo-state probes (throwaway fixtures)\n'
+
+PROBE_TMP="$TMP/probe-fixture"
+mkdir -p "$PROBE_TMP/repo-a"
+git -C "$PROBE_TMP/repo-a" init -q 2>/dev/null
+out=$(bash -c "source '$SCRIPT'; SEQ_REPOS='a=$PROBE_TMP/repo-a'; fw_repo_state_rows")
+chk "real probe: clean repo reads none" "$out" "$(printf 'a\tnone\t0')"
+
+# an ABANDONED cherry-pick: head file backdated 3 days
+echo deadbeef > "$PROBE_TMP/repo-a/.git/CHERRY_PICK_HEAD"
+touch -d '3 days ago' "$PROBE_TMP/repo-a/.git/CHERRY_PICK_HEAD"
+out=$(bash -c "source '$SCRIPT'; SEQ_REPOS='a=$PROBE_TMP/repo-a'; fw_repo_state_rows")
+chk_contains "real probe: stale cherry-pick detected with a 3-day age" "$out" "$(printf 'a\tcherry-pick\t2')"
+rm -f "$PROBE_TMP/repo-a/.git/CHERRY_PICK_HEAD"
+
+# a missing repo is unreadable, never none
+out=$(bash -c "source '$SCRIPT'; SEQ_REPOS='gone=$PROBE_TMP/no-such-repo'; fw_repo_state_rows")
+chk "real probe: missing repo reads unreadable, not clean" "$out" "$(printf 'gone\tunreadable\t0')"
+
+# retired-lane probe: synthetic roster + a repo where lane/x holds one real
+# patch and lane/y only graph residue (nothing) — cherry must say 1 and 0.
+mkdir -p "$PROBE_TMP/repo-b"
+(   cd "$PROBE_TMP/repo-b" && git init -q -b main . 2>/dev/null &&
+    git -c user.email=t@t -c user.name=t commit -q --allow-empty -m base &&
+    git branch lane/x && git branch lane/y &&
+    git checkout -q lane/x && echo stranded > f.txt && git add f.txt &&
+    git -c user.email=t@t -c user.name=t commit -q -m stranded-patch &&
+    git checkout -q main ) 2>/dev/null
+ROSTER_FIX="$PROBE_TMP/roster.yaml"
+printf -- '- {id: x, role: retired, lanes: [], endpoint: "retired:x", drain: none}\n- {id: y, role: retired, lanes: [], endpoint: "retired:y", drain: none}\n- {id: live1, role: main, lanes: [], endpoint: "tmux:agent:live1", drain: boundary}\n' > "$ROSTER_FIX"
+out=$(bash -c "source '$SCRIPT'; SEQ_REPOS='b=$PROBE_TMP/repo-b'; ROSTER_FILE='$ROSTER_FIX'; fw_retired_lane_rows")
+chk_contains "real probe: a stranded patch counts 1 (git cherry)" "$out" "$(printf 'x\t1')"
+chk_contains "real probe: an identical lane counts 0, stays eligible" "$out" "$(printf 'y\t0')"
+chk_lacks    "real probe: live identities are never scanned" "$out" "live1"
 
 # =============================================================================
 printf '\n=========================================\n'

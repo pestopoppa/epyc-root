@@ -147,6 +147,27 @@ AGE_THRESHOLD_S="${FLEET_WATCH_AGE_THRESHOLD_S:-21600}"
 # queue is EXPECTED, not an anomaly, and nothing is raised.
 CAPACITY="${FLEET_WATCH_CAPACITY:-4}"
 
+# ---- repo state (the two guards from INC-20260816 / the mainD strand) ------
+# 1. STALE SEQUENCER STATE. The research repo sat unable to commit for THREE
+#    DAYS behind an abandoned cherry-pick (2026-08-13 → 16), the second such
+#    wedge in four days. Nothing watched for it: this file monitors the
+#    coordination plane, and a wedged .git sequencer is invisible to every
+#    probe above. The signature is a sequencer head (CHERRY_PICK_HEAD /
+#    MERGE_HEAD / REVERT_HEAD / rebase-merge) whose mtime is old — a live
+#    merge is minutes old, an abandoned one ages forever, and while it ages
+#    EVERY commit in that repo is refused.
+# 2. RETIRED LANES WITH UNMERGED PATCHES. Tombstoning an identity (P3-1)
+#    retires the roster row, not the lane branch — mainD's lane held 9 real
+#    unlanded patches (a complete ODL-P2 run, a root-cause finding) that were
+#    reachable from origin and therefore looked "safe" to every backup sweep,
+#    while never having reached main. `git cherry` (patch-id, merges skipped)
+#    is the discriminator: rev-list counts graph residue, cherry counts CONTENT.
+# Colon-separated "name=path" list; default covers the shared clone and the
+# two sub-repos that wedged before.
+SEQ_REPOS="${FLEET_WATCH_SEQ_REPOS:-root=${_FW_DIR}/../..:orchestrator=${_FW_DIR}/../../repos/epyc-orchestrator:research=${_FW_DIR}/../../repos/epyc-inference-research}"
+SEQ_AGE_THRESHOLD_S="${FLEET_WATCH_SEQ_AGE_S:-7200}"   # 2h: a live merge is minutes old
+ROSTER_FILE="${FLEET_WATCH_ROSTER:-${_FW_DIR}/../../coordination/session-bus/config.yaml}"
+
 # ---- the alarm channel ------------------------------------------------------
 # P0-1. The ONE operator-reachable push mechanism. It already emits once on
 # state change and keeps its own active-key state, so this file MUST NOT add a
@@ -215,6 +236,11 @@ FW_OWNED_KEYS="compute-idle-with-queued-work"
 FW_OWNED_KEYS="${FW_OWNED_KEYS} gpu-idle-with-queued-work cpu-idle-with-queued-work"
 for _c in $FW_CLASSES; do FW_OWNED_KEYS="${FW_OWNED_KEYS} queue-aging-${_c}"; done
 FW_OWNED_KEYS="${FW_OWNED_KEYS} queue-aging-unowned"
+# Repo-state keys are DYNAMIC (one per repo name / retired id), so ownership is
+# claimed by PREFIX in fw_owns_key below rather than enumerated here — an
+# unenumerable key family left off this list would be raised forever and never
+# resolved (the same trap the per-resource split comment warns about).
+FW_OWNED_KEY_PREFIXES="repo-sequencer-stale- retired-lane-unmerged-"
 unset _c
 
 FW_VERDICT=""
@@ -276,6 +302,68 @@ fw_regions_text() {
     out=$(timeout 15 "$RL" status 2>/dev/null) || return 1
     [ -n "$out" ] || return 1
     printf '%s' "$out"
+}
+
+# Sequencer state per watched repo. One line per repo:
+#   <name>\t<state>\t<age_s>
+# state: none | cherry-pick | merge | rebase | revert | unreadable. `unreadable`
+# is a REAL row, not a skip — a repo that vanished is a finding, and reporting
+# it as `none` would be the fail-open shape rule 2 exists to kill.
+# Ages come from the sequencer head's mtime: a live operation is minutes old.
+fw_repo_state_rows() {
+    local entry name path gitdir state head now age
+    now=$(date +%s) || return 1
+    local IFS=':'
+    for entry in $SEQ_REPOS; do
+        name="${entry%%=*}"; path="${entry#*=}"
+        [ -n "$name" ] && [ -n "$path" ] || continue
+        gitdir=$(cd "$path" 2>/dev/null && timeout 10 git rev-parse --git-dir 2>/dev/null) || {
+            printf '%s\tunreadable\t0\n' "$name"; continue; }
+        case "$gitdir" in /*) ;; *) gitdir="${path}/${gitdir}" ;; esac
+        state=none; head=""
+        if   [ -f "${gitdir}/CHERRY_PICK_HEAD" ]; then state=cherry-pick; head="${gitdir}/CHERRY_PICK_HEAD"
+        elif [ -d "${gitdir}/rebase-merge" ] || [ -d "${gitdir}/rebase-apply" ]; then
+             state=rebase; head="${gitdir}/rebase-merge"; [ -d "$head" ] || head="${gitdir}/rebase-apply"
+        elif [ -f "${gitdir}/MERGE_HEAD" ];  then state=merge;  head="${gitdir}/MERGE_HEAD"
+        elif [ -f "${gitdir}/REVERT_HEAD" ]; then state=revert; head="${gitdir}/REVERT_HEAD"
+        fi
+        age=0
+        if [ -n "$head" ]; then
+            age=$(( now - $(stat -c %Y "$head" 2>/dev/null || printf '%s' "$now") ))
+            [ "$age" -ge 0 ] || age=0
+        fi
+        printf '%s\t%s\t%s\n' "$name" "$state" "$age"
+    done
+    return 0
+}
+
+# Retired identities whose lane branch still holds CONTENT main lacks. One line
+# per retired id that has a local lane branch:
+#   <id>\t<unmerged_patch_count>
+# `git cherry` compares by PATCH-ID and skips merge commits, so graph residue
+# (a post-promotion sync merge) counts 0 while a real stranded patch counts 1 —
+# rev-list cannot make that distinction and false-alarms forever.
+fw_retired_lane_rows() {
+    local repo id n
+    repo="${SEQ_REPOS%%:*}"; repo="${repo#*=}"        # first entry = the shared clone
+    [ -f "$ROSTER_FILE" ] || return 1
+    grep -oE '\{ *id: *[A-Za-z0-9_-]+, *role: *retired' "$ROSTER_FILE" 2>/dev/null \
+      | grep -oE 'id: *[A-Za-z0-9_-]+' | awk '{print $2}' | sort -u \
+      | while read -r id; do
+            [ -n "$id" ] || continue
+            # A retired id with NO local lane branch still gets a row, count 0.
+            # Deleting the branch is the documented RESOLUTION of this alarm —
+            # if the id vanished from these rows instead, its alarm key would
+            # drop out of the eligible set and the clear sweep could never
+            # resolve it (rule 2 cuts both ways).
+            if timeout 10 git -C "$repo" rev-parse -q --verify "refs/heads/lane/${id}" >/dev/null 2>&1; then
+                n=$(timeout 30 git -C "$repo" cherry main "lane/${id}" 2>/dev/null | grep -c '^+')
+            else
+                n=0
+            fi
+            printf '%s\t%s\n' "$id" "${n:-0}"
+        done
+    return 0
 }
 
 # The queue, folded to ONE line per task_id (the LAST record wins — queue.jsonl
@@ -886,6 +974,59 @@ fw_run_cycle() {
         done
     fi
 
+    # ---- 4b. REPO STATE --------------------------------------------------
+    # Both guards follow the compute-idle contract exactly: three-valued
+    # (unreadable raises nothing and clears nothing), persistence-gated, one
+    # owner and one routed fix per alarm, emit-once via the channel.
+    local rs_rows rl_rows rname rstate rage rid rcount
+    if rs_rows=$(fw_repo_state_rows); then
+        while IFS=$'\t' read -r rname rstate rage; do
+            [ -n "$rname" ] || continue
+            key="repo-sequencer-stale-${rname}"
+            if [ "$rstate" = "unreadable" ]; then
+                FW_OBSERVATIONS+=("REPO-UNREADABLE ${rname} could not be probed — sequencer state is UNKNOWN this cycle (reported, NOT treated as clean)")
+                continue
+            fi
+            eligible_keys="${eligible_keys} ${key}"
+            if [ "$rstate" != "none" ] && [ "$rage" -ge "$SEQ_AGE_THRESHOLD_S" ]; then
+                fw_track "$key" 1
+            else
+                fw_track "$key" 0
+            fi
+            if fw_is_on "$key"; then
+                want_keys="${want_keys} ${key}"
+                FW_FINDINGS+=("REPO-SEQUENCER-STALE ${rname}: ${rstate} in progress for $(fw_hours "$rage")h — EVERY commit in that repo is being refused")
+                fw_alarm_raise "$key" "warning" \
+                    "Repo '${rname}' has a ${rstate} in progress for $(fw_hours "$rage")h (threshold $(fw_hours "$SEQ_AGE_THRESHOLD_S")h). While it stands, every commit in that repo is refused — this exact shape blocked the research repo for 3 days (INC-20260816). OWNER: coordinator-agent. FIX: finish or abort it; for an abandoned cherry-pick, 'git cherry-pick --quit' forgets the sequencer without touching index or worktree." \
+                    "$(fw_evidence_json repo "$rname" sequencer "$rstate" age_h "$(fw_hours "$rage")" threshold_h "$(fw_hours "$SEQ_AGE_THRESHOLD_S")" owner "coordinator-agent")"
+            fi
+        done <<< "$rs_rows"
+    else
+        FW_OBSERVATIONS+=("REPO-STATE-UNREADABLE sequencer probe failed entirely — nothing asserted, nothing cleared")
+    fi
+
+    if rl_rows=$(fw_retired_lane_rows); then
+        while IFS=$'\t' read -r rid rcount; do
+            [ -n "$rid" ] || continue
+            key="retired-lane-unmerged-${rid}"
+            eligible_keys="${eligible_keys} ${key}"
+            if [ "${rcount:-0}" -gt 0 ] 2>/dev/null; then
+                fw_track "$key" 1
+            else
+                fw_track "$key" 0
+            fi
+            if fw_is_on "$key"; then
+                want_keys="${want_keys} ${key}"
+                FW_FINDINGS+=("RETIRED-LANE-UNMERGED lane/${rid}: ${rcount} patch(es) whose content never reached main (git cherry, merges skipped)")
+                fw_alarm_raise "$key" "warning" \
+                    "Retired identity '${rid}' left ${rcount} unmerged patch(es) on lane/${rid} — content that never reached main (patch-id comparison; graph residue counts 0). mainD stranded a complete ODL-P2 run this way. OWNER: coordinator-agent. FIX: adjudicate and port the patches, then delete the LOCAL branch (it is preserved on origin) so this alarm clears." \
+                    "$(fw_evidence_json retired_id "$rid" unmerged_patches "$rcount" branch "lane/${rid}" owner "coordinator-agent")"
+            fi
+        done <<< "$rl_rows"
+    else
+        FW_OBSERVATIONS+=("RETIRED-LANE-UNREADABLE roster or clone could not be probed — stranded-lane state is UNKNOWN this cycle")
+    fi
+
     # ---- 5. CLEAR SWEEP -------------------------------------------------
     fw_reconcile_alarms "$want_keys" "$eligible_keys"
 
@@ -922,6 +1063,19 @@ fw_run_cycle() {
 # a previous fleet_watch process is still resolvable after a restart — and no
 # alarm raised by the daemon, a supervisor or a human is ever touched, because
 # the sweep intersects with FW_OWNED_KEYS first.
+# Ownership test for the clear sweep. Static keys are enumerated in
+# FW_OWNED_KEYS; the repo-state families are per-repo / per-identity and
+# therefore owned by PREFIX. Everything else — daemon, supervisor, or
+# human-raised alarms — is never touched.
+fw_owns_key() {
+    local key="$1" p
+    case " ${FW_OWNED_KEYS} " in *" ${key} "*) return 0 ;; esac
+    for p in ${FW_OWNED_KEY_PREFIXES:-}; do
+        case "$key" in "$p"*) return 0 ;; esac
+    done
+    return 1
+}
+
 fw_reconcile_alarms() {
     local want="$1" eligible="$2" active key
     if ! active=$(fw_alarm_active); then
@@ -929,7 +1083,7 @@ fw_reconcile_alarms() {
         return 0
     fi
     for key in $active; do
-        case " ${FW_OWNED_KEYS} " in *" ${key} "*) ;; *) continue ;; esac
+        fw_owns_key "$key" || continue
         case " ${eligible} "        in *" ${key} "*) ;; *) continue ;; esac
         case " ${want} "            in *" ${key} "*) continue ;; esac
         # Hysteresis on the way down too: only resolve once the condition has
@@ -947,7 +1101,7 @@ fw_reconcile_alarms() {
 fw_validate_config() {
     local name val bad=0
     for name in INTERVAL PERSIST_CYCLES MAX_LOG_BYTES LOG_KEEP MAX_TEXT_CHARS \
-                AGE_THRESHOLD_S CAPACITY EVIDENCE_LINES; do
+                AGE_THRESHOLD_S CAPACITY EVIDENCE_LINES SEQ_AGE_THRESHOLD_S; do
         val="${!name}"
         # A non-numeric INTERVAL makes `sleep` fail instantly and turns this into
         # a busy loop that pins a core on a shared host. Fail LOUDLY at startup,
@@ -965,7 +1119,9 @@ fw_validate_config() {
 # two-space-indented finding lines beneath it, and `session_bus.py`'s boundary
 # report greps this file for a line containing COMPUTE-IDLE. New condition
 # tokens are additive (QUEUE-AGING, QUEUE-AGING-UNOWNED, QUEUE-UNREADABLE,
-# ALARM-CLEARED, ALARM-STATE-UNREADABLE); COMPUTE-IDLE keeps its exact spelling.
+# ALARM-CLEARED, ALARM-STATE-UNREADABLE, REPO-SEQUENCER-STALE, REPO-UNREADABLE,
+# RETIRED-LANE-UNMERGED, RETIRED-LANE-UNREADABLE); COMPUTE-IDLE keeps its exact
+# spelling.
 # RETIRED with the pane heuristics: STUCK-INPUT, IDLE-CANDIDATE, PANE-DEAD,
 # PANE-UNREADABLE, DETECTOR-BLIND, FLEET-UNREADABLE.
 fw_emit() {
