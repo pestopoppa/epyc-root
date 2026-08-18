@@ -33,8 +33,11 @@
   .stat{display:flex;flex-direction:column;gap:2px}
   .stat .n{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
   .stat .l{font-size:11px;color:var(--muted)}
-  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px}
+  section.panel,details.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px}
   section.panel h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  details.panel>summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  details.panel>summary .summary-headline{float:right;text-transform:none;letter-spacing:0;font-size:11px;font-weight:500}
+  details.panel[open]>summary{margin-bottom:12px}
   svg{width:100%;height:auto;display:block;overflow:visible}
   table{border-collapse:collapse;width:100%;font-size:12.5px;display:block;overflow-x:auto}
   th,td{border-bottom:1px solid var(--border);padding:6px 10px;text-align:left;white-space:nowrap}
@@ -95,7 +98,7 @@
   .live-head{display:flex;align-items:center;gap:8px}
   .live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
   .live-dot.on{background:var(--good);box-shadow:0 0 8px var(--good)}
-  pre.live-log{margin:0;min-height:92px;max-height:145px;overflow:auto;white-space:pre-wrap;
+  pre.live-log{margin:0;min-height:150px;max-height:230px;overflow:auto;white-space:pre-wrap;
     overflow-wrap:anywhere;background:#090c10;border:1px solid var(--border);border-radius:7px;
     padding:10px;color:#b9c2cc;font:11px/1.5 ui-monospace,Menlo,Consolas,monospace}
   pre.live-log.full{min-height:190px;max-height:420px;margin-top:8px}
@@ -114,6 +117,7 @@
   .pipe-step.running{border-color:#245d8f;color:var(--accent);box-shadow:0 0 7px rgba(96,165,250,.22)}
   .pipe-step.failed,.pipe-step.interrupted{border-color:#7a2823;color:var(--bad)}
   .pipe-step.waiting{border-color:#6a5118;color:var(--warn)}
+  .pipe-step.skipped{border-color:#4d3f14;color:var(--warn)}
   .timeline{display:flex;flex-direction:column;gap:5px;margin:10px 0;font-size:11px}
   .timeline-row{display:grid;grid-template-columns:170px 130px 1fr;gap:8px;border-left:2px solid var(--border);padding-left:9px}
   .last-transition{border-left:3px solid var(--accent);padding:7px 10px;margin:10px 0;font-size:11px;background:var(--panel2)}
@@ -163,11 +167,6 @@
     </details>
   </section>
 
-  <section class="panel" id="progression-panel">
-    <h2>Kernel progression <span class="tag">discovery ≠ promotion</span></h2>
-    <div id="progression"><div class="empty">loading CPU/GPU candidate funnel…</div></div>
-  </section>
-
   <div class="live-grid">
     <section class="panel" id="autokernel-live-panel">
       <h2 class="live-head"><span class="live-dot" id="ak-live-dot"></span>AutoKernel log tail <span class="tag">live pulse</span></h2>
@@ -188,6 +187,11 @@
       </details>
     </section>
   </div>
+
+  <details class="panel" id="progression-panel">
+    <summary>Kernel progression <span class="tag">discovery ≠ promotion</span><span id="progression-headline" class="summary-headline">loading headline…</span></summary>
+    <div id="progression"><div class="empty">loading CPU/GPU candidate funnel…</div></div>
+  </details>
 
   <details class="diagnostics">
   <summary>Evidence &amp; diagnostics — receipts, controls, implementation and raw campaign detail</summary>
@@ -360,6 +364,12 @@ function renderProgression(d){
   const rows=Array.isArray(p.candidates)?p.candidates:[];
   const cpu=rows.filter(r=>r.lane==="CPU"), gpu=rows.filter(r=>r.lane==="GPU");
   const best=list=>list.slice().sort((a,b)=>(b.effect_fraction||-Infinity)-(a.effect_fraction||-Infinity))[0];
+  const cpuLeader=best(cpu), gpuLeader=best(gpu), funnel=p.funnel||{};
+  const headline=[];
+  if(cpuLeader) headline.push("CPU "+String(cpuLeader.candidate||cpuLeader.hypothesis||"—")+" "+effectPct(cpuLeader));
+  if(gpuLeader) headline.push("GPU "+String(gpuLeader.candidate||gpuLeader.hypothesis||"—")+" "+effectPct(gpuLeader));
+  if(Number.isFinite(funnel.pursued)) headline.push(String(funnel.pursued)+" pursued");
+  $("#progression-headline").textContent=headline.join(" · ")||"no candidate headline";
   const phaseInfo=function(r){
     const workload=String((r||{}).workload||""), metric=String((r||{}).metric||"");
     const decode=/decode/i.test(workload)||/^decode_/i.test(metric);
@@ -384,7 +394,6 @@ function renderProgression(d){
     const phase=phaseInfo(r);
     return '<div class="'+cardClass+'"><div><b>'+esc(r.lane||"—")+' · '+esc(r.candidate||r.hypothesis||"—")+'</b><span class="stage">'+esc(r.stage||r.state||"—")+'</span></div><div class="effect '+(r.effect_fraction>=0?'ok':'fail')+'">'+esc(effectPct(r))+'</div><div class="result-headline">'+esc(phase.title)+' · '+esc(r.workload||phase.detail)+'</div>'+resultDetails(r)+'</div>';
   };
-  const funnel=p.funnel||{};
   let h='<div class="hero">';
   h+='<div class="hero-card production"><div class="hero-label">Production freeze</div>';
   if(prod.available) h+='<div class="hero-value">'+esc(prod.branch||"—")+'</div><div><code>'+esc(String(prod.head||"").slice(0,12))+'</code> · '+esc(prod.version||"—")+'</div><div class="muted">'+esc(prod.status||"—")+' · experimental results cannot mutate this anchor</div>';
@@ -907,6 +916,11 @@ function liveLine(row){
   const result=row.result||{};
   const facts=[];
   if(result.decision) facts.push("decision="+result.decision);
+  if(result.stage) facts.push("stage="+result.stage);
+  if(result.first_incomplete_stage) facts.push("resume="+result.first_incomplete_stage);
+  if(result.replication) facts.push("replication="+result.replication);
+  if(Array.isArray(result.arm_order_schedule)) facts.push("order="+result.arm_order_schedule.join("→"));
+  if(result.refusal_type) facts.push("refusal="+result.refusal_type);
   if(result.returncode!=null) facts.push("exit="+result.returncode);
   if(result.stdout_sha256) facts.push("stdout="+String(result.stdout_sha256).slice(0,12));
   return [row.ts||"—", row.event||"event", row.hypothesis_id||"—",
@@ -925,6 +939,7 @@ function renderLive(d){
   const active=d.active===true, a=d.activity||{};
   const phase=a.phase||{}, gpu=a.gpu||{}, proof=a.correctness||{}, checkpoint=a.checkpoint||{};
   const failure=a.failure||{}, resume=a.resume||{}, stall=a.stall||{};
+  const contract=a.stage_contract||{}, refusal=a.refusal||{}, retry=a.provider_retry||{};
   const status=String(a.status||(active?"running":"unknown"));
   const summary=$("#ak-live-summary");
   summary.className="live-summary "+status;
@@ -935,6 +950,13 @@ function renderLive(d){
   hero+='<span><b>Hypothesis:</b> '+esc(a.hypothesis_id||"—")+'</span>';
   hero+='<span><b>Turn:</b> '+esc(a.turn==null?"—":a.turn)+'</span>';
   hero+='<span><b>GPU:</b> '+(gpu.expected_now?"expected now":"not expected now")+' · '+(gpu.claim_held?"claim held":gpu.claim_released?"claim released":"no claim")+'</span>';
+  hero+='<span><b>First incomplete:</b> '+esc(contract.first_incomplete_stage||phase.id||"—")+'</span>';
+  if(contract.replication) hero+='<span><b>Replication:</b> '+esc(contract.replication)+'</span>';
+  if(Array.isArray(contract.arm_order)) hero+='<span><b>Arm order:</b> '+esc(contract.arm_order.join(" → "))+'</span>';
+  if(contract.exact_attribution_direction) hero+='<span><b>Exact attribution:</b> '+esc(contract.exact_attribution_direction)+(typeof contract.exact_attribution_effect_fraction==="number"?' · '+esc(effectPct({effect_fraction:contract.exact_attribution_effect_fraction})):'')+'</span>';
+  if(typeof contract.target_runtime_effect_fraction==="number") hero+='<span><b>Graphs-on runtime:</b> '+esc(effectPct({effect_fraction:contract.target_runtime_effect_fraction}))+'</span>';
+  else if(contract.target_runtime_executed===false) hero+='<span><b>Graphs-on runtime:</b> skipped · '+esc(contract.target_runtime_reason||"governed short circuit")+'</span>';
+  if(contract.dual_decision_state) hero+='<span><b>Decision evidence:</b> '+esc(contract.dual_decision_state)+'</span>';
   if(proof.execution_started){
     hero+='<span><b>GPU correctness:</b> '+(proof.execution_completed?"execution complete":"running")+' · '+esc(proof.summary||"summary unavailable")+(typeof proof.elapsed_s==="number"?' · '+esc(elapsedText(proof.elapsed_s)):'')+'</span>';
   }
@@ -942,6 +964,19 @@ function renderLive(d){
   hero+='<div class="live-foot">'+esc(gpu.detail||"")+'</div>';
   if(failure.detected){
     hero+='<div class="fail" style="margin-top:10px"><b>'+esc(failure.detail||"controller failure")+'</b><br>'+esc(failure.recovery||"")+'</div>';
+  }
+  if(refusal.detected){
+    hero+='<div class="fail" style="margin-top:10px"><b>Typed refusal: '+esc(refusal.type||"refused")+'</b>'+
+      (refusal.class?' · '+esc(refusal.class):'')+(refusal.stage?' · stage '+esc(refusal.stage):'')+
+      (typeof refusal.scientific_budget_spent==="boolean"?' · scientific budget '+(refusal.scientific_budget_spent?'spent':'not spent'):'')+
+      (refusal.detail?'<br>'+esc(refusal.detail):'')+'</div>';
+  }
+  if(retry.detected){
+    hero+='<div class="muted" style="margin-top:10px"><b>Provider retry: '+esc(retry.actor||"actor")+'</b> · checkpoint preserved'+
+      (typeof retry.provider_attempt==="number"?' · attempt '+esc(retry.provider_attempt):'')+
+      (retry.same_hypothesis?' · same hypothesis':'')+
+      (retry.planner_rerun===false?' · planner will not rerun':'')+
+      (retry.detail?'<br>'+esc(retry.detail):'')+'</div>';
   }
   if(resume.required||resume.possible===false){
     hero+='<div class="live-foot"><b>Recovery:</b> '+esc(resume.detail||resume.disposition||"recovery audit required")+'</div>';
@@ -956,10 +991,12 @@ function renderLive(d){
   const sealed=d.newest_unlaunched_deployment||{};
   $("#ak-live-detail-meta").innerHTML='<b>Waiting on:</b> '+esc(a.waiting_on||"unknown")+
     ' · <b>Checkpoint:</b> '+(checkpoint.available?esc(checkpoint.state||checkpoint.kind||"available"):esc(checkpoint.detail||"none"))+
+    ' · <b>Resume:</b> '+esc(contract.resume_policy||resume.disposition||"unknown")+
+    (contract.arm_order_seed_sha256?' · <b>Arm-order seed:</b> '+esc(String(contract.arm_order_seed_sha256).slice(0,12))+'…':'')+
     ' · <b>Stall:</b> '+esc(stall.state||"unknown")+' — '+esc(stall.detail||"unknown")+
     (sealed.available?' · <b>Available next deployment:</b> '+esc(sealed.deployment||"sealed bundle")+' · sealed, not launched':'');
   $("#ak-live-pipeline").innerHTML=(a.pipeline||[]).map(step=>
-    '<div class="pipe-step '+esc(step.state||"")+'"><b>'+esc(step.label||step.id||"stage")+'</b><br>'+esc(step.state||"not reached")+(typeof step.elapsed_s==="number"?' · '+esc(elapsedText(step.elapsed_s)):'')+'</div>'
+    '<div class="pipe-step '+esc(step.state||"")+'"><b>'+esc(step.label||step.id||"stage")+'</b><br>'+esc(step.state||"not reached")+(typeof step.elapsed_s==="number"?' · '+esc(elapsedText(step.elapsed_s)):'')+(step.detail?'<br>'+esc(step.detail):'')+'</div>'
   ).join("");
   $("#ak-live-timeline").innerHTML=transitions.map(row=>
     '<div class="timeline-row"><span>'+esc(row.ts||"—")+'</span><b>'+esc(row.phase||row.stage||"event")+'</b><span>'+esc(row.label||row.detail||row.event||"transition")+'</span></div>'
@@ -981,8 +1018,11 @@ function renderLive(d){
     "dashboard poll "+(d.dashboard_observed_at||d.observed_at||"—")+" (not producer progress)";
   const ak=(d.autokernel_log||[]).map(liveLine);
   const planner=(d.planner_log||[]).map(liveLine);
-  const actorRows=(d.autokernel_log||[]).filter(row=>row.channel==="planner"||/^critic_/.test(row.event||""));
-  const actors=(actorRows.length?actorRows.map(liveLine):planner);
+  const actorRows=[...(d.planner_log||[]),...(d.autokernel_log||[]).filter(row=>/^critic_/.test(row.event||""))];
+  const actorSeen=new Set();
+  const actors=actorRows.sort((a,b)=>String(a.ts||"").localeCompare(String(b.ts||"")))
+    .filter(row=>{const key=[row.ts,row.event,row.hypothesis_id].join("|");if(actorSeen.has(key))return false;actorSeen.add(key);return true;})
+    .map(liveLine);
   const akEmpty=["no durable lifecycle event yet"];
   const actorEmpty=[active?
     "planner call active; awaiting its first controller-owned lifecycle checkpoint":

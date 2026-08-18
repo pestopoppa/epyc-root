@@ -1163,6 +1163,218 @@ process.stdout.write(JSON.stringify(out));
                       "sealed, not launched"):
             self.assertIn(token.lower(), detail_meta.lower())
 
+    def test_every_cross_strategy_stage_has_a_compact_dom_headline(self) -> None:
+        stages = (
+            "correctness", "correctness_validation", "candidate_attribution",
+            "anchor_attribution", "measurement_graphs_off_screen",
+            "target_runtime_graphs_on_screen", "decision", "replication_s1",
+            "replication_s2", "next_hypothesis",
+        )
+        for index, stage in enumerate(stages, 1):
+            with self.subTest(stage=stage):
+                payload = {
+                    "active": True, "deployment": "campaign-stage-dom",
+                    "dashboard_observed_at": _iso(0),
+                    "autokernel_log": [{
+                        "ts": _iso(1), "channel": "autokernel",
+                        "event": stage + "_started", "hypothesis_id": "akh-stage",
+                        "result": {"stage": stage,
+                                   "first_incomplete_stage": stage,
+                                   "replication": "S2",
+                                   "arm_order_schedule": ["anchor", "candidate"]},
+                    }],
+                    "planner_log": [],
+                    "_freshness": {"staleness_class": "fresh"},
+                    "activity": {
+                        "status": "running", "last_progress_at": _iso(1),
+                        "progress_age_s": 1,
+                        "phase": {"id": stage,
+                                  "label": stage.replace("_", " "),
+                                  "elapsed_s": index},
+                        "hypothesis_id": "akh-stage", "turn": 2,
+                        "waiting_on": stage + " completion",
+                        "gpu": {"expected_now": stage in {
+                            "correctness", "candidate_attribution",
+                            "anchor_attribution", "measurement_graphs_off_screen",
+                            "target_runtime_graphs_on_screen"},
+                            "claim_held": True,
+                            "detail": "MI210 source-proof claim is held"},
+                        "correctness": {"execution_started": stage != "correctness"},
+                        "checkpoint": {"available": True,
+                                       "state": "resume-stage-fixture"},
+                        "resume": {"required": False, "possible": True,
+                                   "disposition": "resume_first_incomplete_stage"},
+                        "stall": {"state": "healthy", "detail": "advancing"},
+                        "failure": {"detected": False},
+                        "refusal": {"detected": False},
+                        "stage_contract": {
+                            "current_stage": stage,
+                            "first_incomplete_stage": stage,
+                            "resume_policy": "execute_once_from_first_incomplete",
+                            "replication": "S2",
+                            "arm_order": ["anchor", "candidate"],
+                            "arm_order_seed_sha256": "a" * 64,
+                        },
+                        "pipeline": [{"id": stage,
+                                      "label": stage.replace("_", " "),
+                                      "state": "running"}],
+                        "transitions": [{"ts": _iso(1), "phase": stage,
+                                         "label": stage + " started"}],
+                        "history": {"summary": "0 abandoned · 0 retest",
+                                    "rows": []},
+                    },
+                }
+                nodes = self._render_live(payload)
+                hero = nodes["ak-live-summary"]["innerHTML"]
+                pulse = nodes["ak-live-log"]["textContent"]
+                self.assertIn(stage.replace("_", " "), hero)
+                for token in ("First incomplete", "S2", "anchor → candidate",
+                              "claim held"):
+                    self.assertIn(token.lower(), hero.lower(), token)
+                self.assertIn("stage=" + stage, pulse)
+
+    def test_typed_refusal_and_restart_checkpoint_are_headline_visible(self) -> None:
+        for refusal in ("authoring_refused", "critic_refused", "compile_refused",
+                        "correctness_falsified", "attribution_route_falsified"):
+            with self.subTest(refusal=refusal):
+                payload = {
+                    "active": False, "deployment": "campaign-refusal",
+                    "autokernel_log": [], "planner_log": [],
+                    "_freshness": {"staleness_class": "fresh"},
+                    "activity": {
+                        "status": "stopped",
+                        "phase": {"id": "candidate_attribution",
+                                  "label": "Controller stopped", "elapsed_s": 2},
+                        "gpu": {"expected_now": True, "claim_held": False,
+                                "claim_released": True,
+                                "detail": "source-proof claim released"},
+                        "stage_contract": {
+                            "first_incomplete_stage": "candidate_attribution",
+                            "resume_policy": "execute_once_from_first_incomplete",
+                        },
+                        "refusal": {"detected": True, "type": refusal,
+                                    "detail": "typed fixture"},
+                        "resume": {"required": True, "possible": True,
+                                   "detail": "Resume at candidate_attribution"},
+                        "failure": {"detected": False},
+                        "correctness": {"execution_started": True,
+                                        "execution_completed": True,
+                                        "summary": "1/1 tests passed"},
+                        "checkpoint": {"available": True,
+                                       "state": "candidate_attribution_complete"},
+                        "stall": {"state": "healthy", "detail": "stopped"},
+                        "waiting_on": "resume",
+                        "pipeline": [], "transitions": [],
+                        "history": {"summary": "0 abandoned · 0 retest",
+                                    "rows": []},
+                    },
+                }
+                hero = self._render_live(payload)["ak-live-summary"]["innerHTML"]
+                for token in (refusal, "candidate_attribution", "claim released",
+                              "Resume at candidate_attribution"):
+                    self.assertIn(token.lower(), hero.lower(), token)
+
+    def test_only_pulse_and_headline_surfaces_are_open_by_default(self) -> None:
+        html = PAGE.read_text(encoding="utf-8")
+        progression = re.search(
+            r'<details\b([^>]*)\bid="progression-panel"([^>]*)>', html, re.I)
+        self.assertIsNotNone(progression)
+        self.assertNotRegex("".join(progression.groups()), r"\bopen\b")
+        self.assertLess(html.index('id="autokernel-live-panel"'),
+                        html.index('id="progression-panel"'))
+        self.assertLess(html.index('id="planner-live-panel"'),
+                        html.index('id="progression-panel"'))
+        for log_id in ("ak-live-log", "planner-live-log"):
+            self.assertRegex(html, rf'<pre class="live-log" id="{log_id}">',
+                             log_id)
+
+    def test_provider_retry_checkpoint_is_visible_without_looking_terminal(self) -> None:
+        payload = {
+            "active": False, "deployment": "campaign-provider-retry",
+            "autokernel_log": [], "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "stopped",
+                "phase": {"id": "critic",
+                          "label": "Critic provider interrupted", "elapsed_s": 3},
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "GPU not expected"},
+                "stage_contract": {"first_incomplete_stage": "critic",
+                                   "resume_policy": "resume_critic_provider_retry"},
+                "refusal": {"detected": False},
+                "provider_retry": {"detected": True, "actor": "critic",
+                                   "same_hypothesis": False,
+                                   "planner_rerun": False,
+                                   "detail": "critic_pending is durable"},
+                "resume": {"required": True, "possible": True,
+                           "detail": "retry only the critic"},
+                "failure": {"detected": False},
+                "correctness": {"execution_started": False},
+                "checkpoint": {"available": True, "state": "critic_pending"},
+                "stall": {"state": "healthy", "detail": "checkpointed"},
+                "waiting_on": "controller restart", "pipeline": [],
+                "transitions": [],
+                "history": {"summary": "0 abandoned · 0 retest", "rows": []},
+            },
+        }
+        hero = self._render_live(payload)["ak-live-summary"]["innerHTML"]
+        for token in ("Provider retry", "critic", "checkpoint preserved",
+                      "planner will not rerun", "retry only the critic"):
+            self.assertIn(token.lower(), hero.lower(), token)
+        self.assertNotIn("Typed refusal", hero)
+
+    def test_nonpositive_exact_measurement_explains_graphs_on_short_circuit(self) -> None:
+        payload = {
+            "active": True, "deployment": "campaign-short-circuit",
+            "autokernel_log": [], "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "running",
+                "phase": {"id": "decision", "label": "Classify result",
+                          "elapsed_s": 1},
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "claim_released": True, "detail": "claim released"},
+                "stage_contract": {
+                    "first_incomplete_stage": "decision",
+                    "exact_attribution_direction": "neutral",
+                    "exact_attribution_effect_fraction": 0.0,
+                    "target_runtime_executed": False,
+                    "target_runtime_reason": "nonpositive_exact_duration",
+                    "dual_decision_state": "measured_nonpositive_exact_short_circuit",
+                },
+                "refusal": {"detected": False},
+                "provider_retry": {"detected": False},
+                "resume": {"required": False, "possible": True},
+                "failure": {"detected": False},
+                "correctness": {"execution_started": True,
+                                "execution_completed": True,
+                                "summary": "1/1 tests passed"},
+                "checkpoint": {"available": True, "state": "exact_measured"},
+                "stall": {"state": "healthy", "detail": "advancing"},
+                "waiting_on": "classification",
+                "pipeline": [
+                    {"id": "measurement_graphs_off_screen",
+                     "label": "Graphs-off measurement screen", "state": "skipped",
+                     "detail": "exact attribution was nonpositive"},
+                    {"id": "target_runtime_graphs_on_screen",
+                     "label": "Graphs-on target-runtime screen", "state": "skipped",
+                     "detail": "short-circuited by exact attribution"},
+                ],
+                "transitions": [],
+                "history": {"summary": "0 abandoned · 0 retest", "rows": []},
+            },
+        }
+        nodes = self._render_live(payload)
+        hero = nodes["ak-live-summary"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+        for token in ("Exact attribution", "neutral", "Graphs-on runtime",
+                      "skipped", "nonpositive_exact_duration",
+                      "measured_nonpositive_exact_short_circuit"):
+            self.assertIn(token.lower(), hero.lower(), token)
+        for token in ("Graphs-off measurement screen", "Graphs-on target-runtime screen",
+                      "short-circuited by exact attribution"):
+            self.assertIn(token.lower(), pipeline.lower(), token)
+
 
 if __name__ == "__main__":
     unittest.main()

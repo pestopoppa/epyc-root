@@ -54,6 +54,7 @@ import concurrent.futures
 import fcntl
 import hashlib
 import json
+import math
 import os
 import re
 import subprocess
@@ -3264,11 +3265,26 @@ _DISCOVERY_PIPELINE = (
     ("evidence_binding", "Bind build to proof plan"),
     ("correctness", "Correctness proof"),
     ("correctness_validation", "Validate correctness result"),
+    ("candidate_attribution", "Candidate dispatch attribution"),
+    ("anchor_attribution", "Anchor dispatch attribution"),
     ("dispatch_proof", "Dispatch attribution"),
     ("profile", "Kernel profile"),
+    ("measurement_graphs_off_screen", "Graphs-off measurement screen"),
+    ("target_runtime_graphs_on_screen", "Graphs-on target-runtime screen"),
     ("benchmark", "Whole-model benchmark"),
     ("decision", "Classify result"),
+    ("replication_s1", "Replication S1"),
+    ("replication_s2", "Replication S2"),
+    ("next_hypothesis", "Automatic next hypothesis"),
 )
+
+_DISCOVERY_POSTBUILD_STAGES = (
+    "correctness", "correctness_validation", "candidate_attribution",
+    "anchor_attribution", "dispatch_proof", "profile",
+    "measurement_graphs_off_screen", "target_runtime_graphs_on_screen",
+    "benchmark", "decision",
+)
+_DISCOVERY_PIPELINE_DICT = dict(_DISCOVERY_PIPELINE)
 _DISCOVERY_STALL_S = 300.0
 _DISCOVERY_STAGE_STALL_S = {
     # The sealed Claude critic has a 900-second process timeout, and the Codex
@@ -3539,10 +3555,479 @@ def _discovery_correctness_observation(operations_root: Path,
     }
 
 
+def _discovery_stage_receipt(path: Path, *, operation_root: Path,
+                             schemas: set[str],
+                             manifest_sha256: str | None = None) -> dict | None:
+    """Read one bounded, self-hashed operation receipt for operator projection.
+
+    This is deliberately narrower than producer-side validation.  It cannot
+    authorize execution or a scientific decision; it only lets the dashboard
+    report that the exact operation has a durable terminal for a stage.
+    """
+    try:
+        resolved_root = operation_root.resolve(strict=True)
+        path.resolve(strict=True).relative_to(resolved_root)
+        cursor = path.parent
+        while cursor != operation_root:
+            if cursor.is_symlink():
+                return None
+            cursor = cursor.parent
+        info = path.lstat()
+        if (path.is_symlink() or not path.is_file() or info.st_nlink != 1
+                or info.st_size > 4 * 1024 * 1024):
+            return None
+        raw = path.read_bytes()
+        after = path.lstat()
+    except OSError:
+        return None
+    if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+            != (after.st_dev, after.st_ino, after.st_size,
+                after.st_mtime_ns, after.st_nlink)):
+        return None
+    try:
+        body = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if (not isinstance(body, dict) or body.get("schema") not in schemas
+            or body.get("promotion_claim") is not False):
+        return None
+    screen_receipt = (
+        body.get("schema") == "epyc.autokernel.gpu_candidate_only_screen.v2")
+    if (not screen_receipt
+            and body.get("authority") !=
+            "nonpromotable_candidate_only_discovery"):
+        return None
+    if (manifest_sha256 is not None
+            and body.get("schema") != "epyc.autokernel.gpu_candidate_only_screen.v2"
+            and body.get("manifest_sha256") != manifest_sha256):
+        return None
+    native = body.get("receipt_sha256") or body.get("result_sha256")
+    if isinstance(native, str) and re.fullmatch(r"[0-9a-f]{64}", native):
+        key = "receipt_sha256" if "receipt_sha256" in body else "result_sha256"
+        if hashlib.sha256(json.dumps(
+                {name: value for name, value in body.items() if name != key},
+                sort_keys=True, separators=(",", ":")).encode()).hexdigest() != native:
+            return None
+    else:
+        return None
+    at = next((body.get(key) for key in (
+        "ended_at", "completed_at", "observed_at", "created_at", "released_at")
+        if isinstance(body.get(key), str)), None)
+    if at is None:
+        at = datetime.fromtimestamp(
+            info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z")
+    return {"path": str(path), "body": body, "at": at,
+            "file_sha256": hashlib.sha256(raw).hexdigest()}
+
+
+def _discovery_postbuild_observation(operations_root: Path,
+                                     state: dict | None) -> dict | None:
+    """Project the exact resumable proof/screen receipt sequence.
+
+    Completed stages are accepted only from their operation-scoped native
+    receipts.  The first missing receipt is therefore also the producer's
+    resumable first-incomplete boundary; file names elsewhere do not count.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    candidate = inflight.get("candidate") if isinstance(inflight, dict) else None
+    operation_key = inflight.get("operation_key") if isinstance(inflight, dict) else None
+    manifest_sha = (candidate.get("source_manifest_sha256")
+                    if isinstance(candidate, dict) else None)
+    if (not isinstance(operation_key, str)
+            or re.fullmatch(r"[0-9a-f]{64}", operation_key) is None
+            or not isinstance(manifest_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None):
+        return None
+    operation = operations_root / operation_key
+    try:
+        if operation.is_symlink() or not operation.is_dir():
+            return None
+    except OSError:
+        return None
+    intent_present, intent, intent_error = _read_json_object(
+        operation / "intent.json", "GPU source operation intent")
+    if (not intent_present or intent is None or intent_error
+            or intent.get("schema") != "epyc.autokernel.gpu_source_operation.v1"
+            or intent.get("operation_key") != operation_key
+            or intent.get("manifest_sha256") != manifest_sha):
+        return None
+    policy_present, policy, policy_error = _read_json_object(
+        operation / "evidence-policy.json", "GPU source evidence policy")
+    policy_order = (policy.get("attribution_arm_order")
+                    if policy_present and isinstance(policy, dict)
+                    and not policy_error
+                    and policy.get("schema") ==
+                    "epyc.autokernel.gpu_source_execution_policy.v2"
+                    and policy.get("manifest_sha256") == manifest_sha else None)
+    if (not isinstance(policy_order, list) or len(policy_order) != 2
+            or set(policy_order) != {"candidate", "anchor"}):
+        policy_order = ["candidate", "anchor"]
+    lease = inflight.get("lease") if isinstance(inflight, dict) else None
+    repetition = lease.get("repetition") if isinstance(lease, dict) else None
+    if not isinstance(repetition, int) or isinstance(repetition, bool) or repetition < 1:
+        repetition = 1
+    proof = operation / "proof"
+    runner = operation / "runner" / f"s{repetition}"
+    attribution_specs = tuple((
+        f"{arm}_attribution", proof / f"attribution-{arm}" / "receipt.json",
+        {"epyc.autokernel.gpu_kernel_attribution.v2"})
+        for arm in policy_order)
+    specs = (
+        ("correctness", proof / "correctness" / "receipt.json",
+         {"epyc.autokernel.targeted_correctness_receipt.v3"}),
+        *attribution_specs,
+        ("measurement_graphs_off_screen",
+         runner / "measurement-graphs-off" / "result.json",
+         {"epyc.autokernel.gpu_candidate_only_screen.v2"}),
+        ("target_runtime_graphs_on_screen",
+         runner / "target-runtime-graphs-on" / "result.json",
+         {"epyc.autokernel.gpu_candidate_only_screen.v2"}),
+    )
+    receipts: dict[str, dict] = {}
+    for stage, path, schemas in specs:
+        receipt = _discovery_stage_receipt(
+            path, operation_root=operation, schemas=schemas,
+            manifest_sha256=manifest_sha)
+        if receipt is None:
+            break
+        body = receipt["body"]
+        if stage == "correctness" and (
+                body.get("status") != "complete" or body.get("result") != "PASS"):
+            break
+        if stage in {"candidate_attribution", "anchor_attribution"} and (
+                body.get("status") != "complete" or body.get("result") != "PASS"):
+            break
+        if stage.endswith("_screen") and (
+                body.get("non_promotable") is not True
+                or body.get("hip_residency_proved") is not True
+                or body.get("runtime_graphs") != (
+                    "off" if stage == "measurement_graphs_off_screen" else "on")):
+            break
+        receipts[stage] = receipt
+    completed = list(receipts)
+    if "correctness" in receipts:
+        completed.append("correctness_validation")
+    first_incomplete = next(
+        (stage for stage, _path, _schemas in specs if stage not in receipts),
+        "decision")
+    pair = _discovery_stage_receipt(
+        proof / "attribution-pair.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.gpu_kernel_attribution_pair.v1"},
+        manifest_sha256=manifest_sha)
+    bundle = _discovery_stage_receipt(
+        proof / "proof-bundle.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.gpu_source_evidence_bundle.v1"},
+        manifest_sha256=manifest_sha)
+    exact_outcome = _discovery_stage_receipt(
+        runner / "exact-attribution-outcome.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.exact_attribution_outcome.v1"},
+        manifest_sha256=manifest_sha)
+    skipped: dict[str, str] = {}
+    if pair is not None and {"candidate_attribution", "anchor_attribution"}.issubset(receipts):
+        completed.append("dispatch_proof")
+    if bundle is not None and "dispatch_proof" in completed:
+        completed.append("profile")
+    if first_incomplete == "measurement_graphs_off_screen":
+        if pair is None:
+            first_incomplete = "dispatch_proof"
+        elif bundle is None:
+            first_incomplete = "profile"
+    if exact_outcome is not None:
+        outcome_body = exact_outcome["body"]
+        exact_effect = outcome_body.get("exact_attribution_effect_fraction")
+        if (outcome_body.get("status") != "complete"
+                or outcome_body.get("classification") != "screened_out"
+                or outcome_body.get("target_runtime_executed") is not False
+                or outcome_body.get("target_runtime_reason") !=
+                "nonpositive_exact_duration"
+                or isinstance(exact_effect, bool)
+                or not isinstance(exact_effect, (int, float))
+                or not math.isfinite(float(exact_effect))
+                or float(exact_effect) > 0):
+            exact_outcome = None
+        else:
+            skipped = {
+                "measurement_graphs_off_screen": "exact attribution was nonpositive",
+                "target_runtime_graphs_on_screen": "short-circuited by exact attribution",
+            }
+            completed.append("decision")
+            first_incomplete = "decision"
+    if {"measurement_graphs_off_screen", "target_runtime_graphs_on_screen"}.issubset(receipts):
+        completed.append("benchmark")
+        first_incomplete = "decision"
+    pair_body = pair["body"] if pair else {}
+    comparison = (pair_body.get("exact_duration_comparison")
+                  if isinstance(pair_body.get("exact_duration_comparison"), dict)
+                  else {})
+    exact_effect_value = comparison.get("relative_improvement_fraction")
+    if (isinstance(exact_effect_value, bool)
+            or not isinstance(exact_effect_value, (int, float))
+            or not math.isfinite(float(exact_effect_value))
+            or comparison.get("direction") != (
+                "improved" if exact_effect_value > 0 else
+                "regressed" if exact_effect_value < 0 else "neutral")):
+        comparison = {}
+    screen = receipts.get("target_runtime_graphs_on_screen", {}).get("body", {})
+    arm_order = (pair_body.get("attribution_arm_order")
+                 or pair_body.get("arm_order_schedule")
+                 or screen.get("arm_order_schedule") or policy_order)
+    transitions = [{
+        "ts": receipt["at"], "stage": stage, "phase": stage,
+        "state": "complete", "event": f"{stage}_completed",
+        "label": _DISCOVERY_PIPELINE_DICT.get(stage, stage),
+        "detail": f"receipt {receipt['file_sha256'][:12]}…",
+    } for stage, receipt in receipts.items()]
+    if pair is not None:
+        transitions.append({
+            "ts": pair["at"], "stage": "dispatch_proof", "phase": "dispatch_proof",
+            "state": "complete", "event": "dispatch_proof_completed",
+            "label": _DISCOVERY_PIPELINE_DICT["dispatch_proof"],
+            "detail": f"receipt {pair['file_sha256'][:12]}…",
+        })
+    if bundle is not None:
+        transitions.append({
+            "ts": bundle["at"], "stage": "profile", "phase": "profile",
+            "state": "complete", "event": "profile_bundle_completed",
+            "label": _DISCOVERY_PIPELINE_DICT["profile"],
+            "detail": f"receipt {bundle['file_sha256'][:12]}…",
+        })
+    if exact_outcome is not None:
+        transitions.append({
+            "ts": exact_outcome["at"], "stage": "decision", "phase": "decision",
+            "state": "complete", "event": "exact_attribution_nonpositive",
+            "label": "Exact attribution nonpositive; target runtime short-circuited",
+            "detail": f"receipt {exact_outcome['file_sha256'][:12]}…",
+        })
+    return {
+        "operation_key": operation_key, "repetition": repetition,
+        "completed": completed, "first_incomplete_stage": first_incomplete,
+        "receipts": receipts, "pair_complete": pair is not None,
+        "bundle_complete": bundle is not None, "arm_order": arm_order,
+        "skipped": skipped,
+        "arm_order_seed_sha256": (
+                                   pair_body.get("attribution_arm_order_seed_sha256")
+                                   or pair_body.get("arm_order_seed_sha256")
+                                   or screen.get("arm_order_seed_sha256")
+                                   or (policy.get("attribution_arm_order_seed_sha256")
+                                       if isinstance(policy, dict) else None)),
+        "exact_direction": comparison.get("direction"),
+        "exact_attribution_effect_fraction": comparison.get(
+            "relative_improvement_fraction"),
+        "target_runtime_effect_fraction": screen.get("median_relative"),
+        "target_runtime_executed": (
+            exact_outcome["body"].get("target_runtime_executed")
+            if exact_outcome is not None else
+            True if "target_runtime_graphs_on_screen" in receipts else None),
+        "target_runtime_reason": (
+            exact_outcome["body"].get("target_runtime_reason")
+            if exact_outcome is not None else None),
+        "dual_decision_state": (
+            "measured_nonpositive_exact_short_circuit"
+            if exact_outcome is not None else
+            "exact_and_graphs_on_complete"
+            if (isinstance(comparison.get("relative_improvement_fraction"),
+                           (int, float))
+                and not isinstance(comparison.get("relative_improvement_fraction"), bool)
+                and isinstance(screen.get("median_relative"), (int, float))
+                and not isinstance(screen.get("median_relative"), bool))
+            else "awaiting_dual_evidence"),
+        "transitions": transitions,
+    }
+
+
+def _discovery_claim_observation(operations_root: Path) -> dict | None:
+    """Return the latest identity-proven source-proof claim state."""
+    path = operations_root / "claims" / "device.jsonl"
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as handle:
+            handle.seek(max(0, size - 128 * 1024))
+            raw = handle.read(128 * 1024)
+    except (FileNotFoundError, OSError):
+        return None
+    latest: dict[str, dict] = {}
+    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        detail = row.get("detail") if isinstance(row, dict) else None
+        receipt = detail.get("receipt") if isinstance(detail, dict) else None
+        if (row.get("schema") != "epyc.autokernel.device_claim_journal.v1"
+                or row.get("kind") not in {"claim_acquired", "claim_released"}
+                or not isinstance(receipt, dict)
+                or receipt.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
+                or receipt.get("purpose") != "AutoKernel GPU source proof and throughput"
+                or not isinstance(receipt.get("claim_id"), str)):
+            continue
+        latest[receipt["claim_id"]] = {"kind": row["kind"], "receipt": receipt,
+                                        "at": row.get("created_at")}
+    if not latest:
+        return None
+    row = max(latest.values(), key=lambda value: str(value.get("at") or ""))
+    receipt = row["receipt"]
+    held = row["kind"] == "claim_acquired" and receipt.get("released_at") is None
+    if held:
+        pid, ticks = receipt.get("holder_pid"), receipt.get("holder_start_ticks")
+        try:
+            observed = int((Path("/proc") / str(pid) / "stat").read_text(
+                encoding="utf-8").split()[21])
+        except (OSError, ValueError, IndexError):
+            observed = None
+        held = isinstance(pid, int) and isinstance(ticks, int) and observed == ticks
+    return {"claim_held": held, "claim_released": not held,
+            "claim_id": receipt.get("claim_id"),
+            "device_id": receipt.get("device_id"),
+            "acquired_at": receipt.get("acquired_at"),
+            "released_at": receipt.get("released_at"),
+            "identity_live": held}
+
+
+def _discovery_refusal_observation(bundle: Path, state: dict | None,
+                                   events: list[dict]) -> dict | None:
+    """Discover a governed refusal from its typed fields, not a guessed path.
+
+    The producer owns the eventual receipt filename and schema.  The dashboard
+    follows only a declared path below the selected deployment, verifies its
+    exact byte hash, then requires the canonical refusal fields to agree.
+    """
+    accepted_types = {
+        "SourceApplyRefusal", "CompileRefusal", "CorrectnessRefusal",
+        "DispatchAttributionRefusal",
+    }
+    dispositions = {
+        "authoring_refused", "correctness_falsified",
+        "attribution_route_falsified",
+    }
+    stage_types = {
+        "source_apply": "SourceApplyRefusal",
+        "compile": "CompileRefusal",
+        "correctness": "CorrectnessRefusal",
+        "dispatch_attribution": "DispatchAttributionRefusal",
+    }
+    candidates: list[dict] = []
+    if isinstance(state, dict):
+        for owner in (state, state.get("inflight")):
+            if isinstance(owner, dict) and isinstance(owner.get("refusal"), dict):
+                candidates.append(owner["refusal"])
+        iterations = state.get("iterations")
+        if isinstance(iterations, list):
+            for row in reversed(iterations[-25:]):
+                if not isinstance(row, dict):
+                    continue
+                if isinstance(row.get("refusal"), dict):
+                    candidates.append(row["refusal"])
+                if ({"stage", "scientific_budget_spent"}.issubset(row)
+                        and ("disposition" in row or "status" in row)
+                        and ("receipt_path" in row
+                             or "stage_receipt_path" in row)
+                        and ("receipt_sha256" in row
+                             or "stage_receipt_sha256" in row)):
+                    candidates.append(row)
+    for event in reversed(events):
+        result = event.get("result") if isinstance(event, dict) else None
+        if isinstance(result, dict):
+            candidates.append(result)
+    for value in candidates:
+        stage = value.get("stage")
+        refusal_type = (value.get("refusal_type") or value.get("type")
+                        or value.get("class") or stage_types.get(stage))
+        disposition = value.get("disposition") or value.get("status")
+        expected = value.get("receipt_sha256") or value.get("stage_receipt_sha256")
+        spent = value.get("scientific_budget_spent")
+        if (refusal_type not in accepted_types or disposition not in dispositions
+                or not isinstance(stage, str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", stage) is None
+                or not isinstance(expected, str)
+                or re.fullmatch(r"[0-9a-f]{64}", expected) is None
+                or not isinstance(spent, bool)):
+            continue
+        raw_path = value.get("receipt_path") or value.get("stage_receipt_path")
+        if not isinstance(raw_path, str):
+            continue
+        path = Path(raw_path)
+        if not path.is_absolute():
+            path = bundle / path
+        try:
+            root = bundle.resolve(strict=True)
+            path.resolve(strict=True).relative_to(root)
+            cursor = path.parent
+            while cursor != bundle:
+                if cursor.is_symlink():
+                    raise ValueError("refusal receipt parent is a symlink")
+                cursor = cursor.parent
+            info = path.lstat()
+            if (path.is_symlink() or not path.is_file() or info.st_nlink != 1
+                    or info.st_size > 1024 * 1024):
+                continue
+            raw = path.read_bytes()
+            after = path.lstat()
+        except (OSError, ValueError):
+            continue
+        if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+                != (after.st_dev, after.st_ino, after.st_size,
+                    after.st_mtime_ns, after.st_nlink)):
+            continue
+        try:
+            receipt = json.loads(raw.decode("utf-8", "strict"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if not isinstance(receipt, dict):
+            continue
+        native_hash = receipt.get("receipt_sha256")
+        if isinstance(native_hash, str) and re.fullmatch(
+                r"[0-9a-f]{64}", native_hash):
+            try:
+                calculated_native = hashlib.sha256(json.dumps(
+                    {key: item for key, item in receipt.items()
+                     if key != "receipt_sha256"},
+                    sort_keys=True, separators=(",", ":"),
+                    ensure_ascii=False, allow_nan=False).encode("utf-8")).hexdigest()
+            except (TypeError, ValueError):
+                continue
+            if calculated_native != native_hash:
+                continue
+        else:
+            native_hash = None
+        # Every controller ``stage_receipt_sha256`` binds the exact file bytes.
+        # Build terminals additionally carry a native self-hash and name their
+        # stage ``failure_stage``; both properties are validated independently.
+        if expected != hashlib.sha256(raw).hexdigest():
+            continue
+        receipt_stage = receipt.get("stage") or receipt.get("failure_stage")
+        if (not isinstance(receipt.get("schema"), str)
+                or not receipt["schema"].startswith("epyc.autokernel.")
+                or (receipt_stage is not None
+                    and receipt_stage not in {stage, refusal_type})
+                or ("disposition" in receipt
+                    and receipt.get("disposition") != disposition)
+                or ("scientific_budget_spent" in receipt
+                    and receipt.get("scientific_budget_spent") is not spent)):
+            continue
+        receipt_type = (receipt.get("refusal_type") or receipt.get("type")
+                        or receipt.get("class"))
+        if receipt_type is not None and receipt_type != refusal_type:
+            continue
+        return {
+            "detected": True, "type": refusal_type,
+            "stage": stage, "disposition": disposition,
+            "scientific_budget_spent": spent,
+            "receipt_path": str(path), "receipt_sha256": expected,
+            "detail": value.get("reason") or value.get("message"),
+        }
+    return None
+
+
 def _discovery_activity(*, lock_held: bool, state: dict | None,
                         events: list[dict], checkpoint: dict | None,
                         operation_observation: dict | None,
-                        correctness_observation: dict | None, now: float) -> dict:
+                        correctness_observation: dict | None,
+                        postbuild_observation: dict | None,
+                        claim_observation: dict | None,
+                        refusal_observation: dict | None, now: float) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -3562,6 +4047,31 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         "critic_started": ("critic", "running"),
         "critic_completed": ("critic", "complete"),
         "critic_failed": ("critic", "failed"),
+        "correctness_started": ("correctness", "running"),
+        "correctness_completed": ("correctness", "complete"),
+        "correctness_validation_completed": ("correctness_validation", "complete"),
+        "correctness_validation_failed": ("correctness_validation", "failed"),
+        "candidate_attribution_started": ("candidate_attribution", "running"),
+        "candidate_attribution_completed": ("candidate_attribution", "complete"),
+        "anchor_attribution_started": ("anchor_attribution", "running"),
+        "anchor_attribution_completed": ("anchor_attribution", "complete"),
+        "measurement_graphs_off_screen_started": ("measurement_graphs_off_screen", "running"),
+        "measurement_graphs_off_screen_completed": ("measurement_graphs_off_screen", "complete"),
+        "target_runtime_graphs_on_screen_started": ("target_runtime_graphs_on_screen", "running"),
+        "target_runtime_graphs_on_screen_completed": ("target_runtime_graphs_on_screen", "complete"),
+        "decision_started": ("decision", "running"),
+        "decision_completed": ("decision", "complete"),
+        "replication_s1_started": ("replication_s1", "running"),
+        "replication_s1_completed": ("replication_s1", "complete"),
+        "replication_s2_started": ("replication_s2", "running"),
+        "replication_s2_completed": ("replication_s2", "complete"),
+        "next_hypothesis_started": ("next_hypothesis", "running"),
+        "next_hypothesis_selected": ("next_hypothesis", "complete"),
+        "authoring_refused": ("planner_validation", "failed"),
+        "critic_refused": ("critic", "failed"),
+        "compile_refused": ("build", "failed"),
+        "correctness_falsified": ("correctness_validation", "failed"),
+        "attribution_route_falsified": ("dispatch_proof", "failed"),
     }
     for row in events:
         event = row.get("event")
@@ -3594,8 +4104,12 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
 
     inflight = state.get("inflight") if isinstance(state, dict) else None
     pending = state.get("pending") if isinstance(state, dict) else None
+    planning = state.get("planning") if isinstance(state, dict) else None
     iterations = (state.get("iterations") if isinstance(state, dict)
                   and isinstance(state.get("iterations"), list) else [])
+    latest_iteration = iterations[-1] if iterations else None
+    latest_iteration_status = (latest_iteration.get("status")
+                               if isinstance(latest_iteration, dict) else None)
     complete = bool(state and state.get("complete") is True)
     failure = _discovery_safe_error(
         inflight.get("exception") if isinstance(inflight, dict) else None)
@@ -3657,9 +4171,13 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                     if isinstance(operation_observation, dict) else None)
     correctness_at = (correctness_observation.get("completed_at")
                       if isinstance(correctness_observation, dict) else None)
+    postbuild_at = max(
+        (row.get("at") for row in postbuild_observation.get("receipts", {}).values()
+         if isinstance(row, dict) and isinstance(row.get("at"), str)),
+        default=None) if isinstance(postbuild_observation, dict) else None
     semantic_times = [value for value in
                       (last_event_at, state_at, checkpoint_at, operation_at,
-                       correctness_at)
+                       correctness_at, postbuild_at)
                       if isinstance(value, str)]
     last_progress_at = max(semantic_times) if semantic_times else None
     last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
@@ -3673,6 +4191,15 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     recoverability = "not_required"
     failure_view = {"detected": False, "stage": None, "detail": None,
                     "recovery": None}
+    if isinstance(postbuild_observation, dict):
+        for completed_stage in postbuild_observation.get("completed", []):
+            if completed_stage in pipeline:
+                pipeline[completed_stage]["state"] = "complete"
+        for skipped_stage, reason in postbuild_observation.get("skipped", {}).items():
+            if skipped_stage in pipeline:
+                pipeline[skipped_stage]["state"] = "skipped"
+                pipeline[skipped_stage]["detail"] = reason
+        transitions.extend(postbuild_observation.get("transitions", []))
     if failure is not None:
         status = "failed"
         observed_stage = (operation_observation.get("stage")
@@ -3760,6 +4287,36 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                 "label": "controller exited before a planner-validation checkpoint",
                 "detail": "exact exception was not persisted by the producer",
             })
+    elif latest_iteration_status == "planner_transient":
+        stage = "planner"
+        pipeline[stage]["state"] = "waiting"
+        status = "running" if lock_held else "stopped"
+        label = "Planner provider interrupted; same hypothesis remains retryable"
+        waiting_on = ("automatic planner retry" if lock_held else
+                      "controller restart at planner retry checkpoint")
+        recoverability = "resume_planner_provider_retry"
+        hypothesis = latest_iteration.get("hypothesis_id")
+    elif latest_iteration_status in {
+            "authoring_refused", "correctness_falsified",
+            "attribution_route_falsified"}:
+        refused_stage = latest_iteration.get("stage")
+        failed_stage = {
+            "source_apply": "source_materialization",
+            "compile": "build",
+            "correctness": "correctness_validation",
+            "dispatch_attribution": "dispatch_proof",
+        }.get(refused_stage)
+        if failed_stage is not None:
+            pipeline[failed_stage]["state"] = "failed"
+        stage = "next_hypothesis"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        status = "running" if lock_held else "stopped"
+        label = (f"{latest_iteration_status.replace('_', ' ')}; advancing to next hypothesis"
+                 if lock_held else
+                 f"{latest_iteration_status.replace('_', ' ')}; next hypothesis checkpointed")
+        waiting_on = ("next eligible portfolio hypothesis" if lock_held else
+                      "controller restart from typed terminal")
+        recoverability = "resume_controller_checkpoint"
     elif complete:
         status = "complete"
         stage = "decision"
@@ -3779,8 +4336,14 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                 waiting_on = "critic checkpoint persistence"
             else:
                 status = "waiting" if lock_held else "stopped"
-                label = "Waiting to start critic review"
-                waiting_on = "critic review"
+                if latest_event == "critic_failed":
+                    label = "Critic provider interrupted; checkpoint preserved"
+                    waiting_on = ("automatic critic retry" if lock_held else
+                                  "controller restart at critic checkpoint")
+                    recoverability = "resume_critic_provider_retry"
+                else:
+                    label = "Waiting to start critic review"
+                    waiting_on = "critic review"
         elif pending_phase == "critic_complete":
             status = "running" if lock_held else "stopped"
             stage = "authorization"
@@ -3802,7 +4365,31 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         lease_phase = lease.get("phase") if isinstance(lease, dict) else None
         observed_stage = (operation_observation.get("stage")
                           if isinstance(operation_observation, dict) else None)
-        if observed_stage in {"build", "evidence_binding"}:
+        postbuild_stage = (postbuild_observation.get("first_incomplete_stage")
+                           if isinstance(postbuild_observation, dict) else None)
+        live_event_stage = event_stage.get(latest_event)
+        live_postbuild_stage = (
+            live_event_stage[0] if live_event_stage is not None
+            and live_event_stage[1] == "running"
+            and live_event_stage[0] in _DISCOVERY_POSTBUILD_STAGES
+            and live_event_stage[0] not in (
+                postbuild_observation.get("completed", [])
+                if isinstance(postbuild_observation, dict) else []) else None)
+        if (live_postbuild_stage or postbuild_stage) in _DISCOVERY_POSTBUILD_STAGES:
+            stage = live_postbuild_stage or postbuild_stage
+            replication = postbuild_observation.get("repetition")
+            label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
+            if isinstance(replication, int):
+                label += f" · S{replication}"
+            label = (label if lock_held else
+                     f"Controller stopped before {label.lower()}")
+            waiting_on = (f"{_DISCOVERY_PIPELINE_DICT.get(stage, stage)} completion"
+                          if lock_held else
+                          f"resume from first incomplete stage: {stage}")
+            pipeline["source_materialization"]["state"] = "complete"
+            pipeline["build"]["state"] = "complete"
+            pipeline["evidence_binding"]["state"] = "complete"
+        elif observed_stage in {"build", "evidence_binding"}:
             stage = observed_stage
             pipeline["source_materialization"]["state"] = "complete"
             pipeline[stage]["started_at"] = operation_observation["started_at"]
@@ -3832,9 +4419,30 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                           else "recovery audit")
         pipeline[stage]["state"] = "running" if lock_held else "interrupted"
         status = "running" if lock_held else "stopped"
-        recoverability = "reconcile_required"
+        recoverability = ("resume_first_incomplete_stage"
+                          if postbuild_stage in _DISCOVERY_POSTBUILD_STAGES
+                          else "reconcile_required")
+    elif (checkpoint is not None
+          and checkpoint.get("state") in {"discovery_screened",
+                                          "discovery_recovered_screen"}
+          and latest_event != "planner_started"):
+        pipeline["decision"]["state"] = "complete"
+        stage = "next_hypothesis"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        status = "running" if lock_held else "stopped"
+        label = ("Selecting the next eligible hypothesis" if lock_held else
+                 "Stopped at the next-hypothesis checkpoint")
+        waiting_on = ("next planner selection" if lock_held else
+                      "controller restart from the durable screened result")
+        recoverability = "resume_controller_checkpoint"
     elif lock_held:
-        if latest_event == "planner_started":
+        mapped = event_stage.get(latest_event)
+        if mapped is not None and mapped[0] not in {"planner", "critic"}:
+            stage = mapped[0]
+            label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
+            waiting_on = (f"{label} completion" if mapped[1] == "running"
+                          else "next durable lifecycle transition")
+        elif latest_event == "planner_started":
             stage, label, waiting_on = "planner", "Planner model call", "planner completion"
         elif latest_event == "critic_started":
             stage, label, waiting_on = "critic", "Critic model call", "critic decision"
@@ -3867,6 +4475,7 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
             "discovery_pre_screen_intent": "source_materialization",
             "discovery_waiting_resource": "resource_admission",
             "discovery_screened": "decision",
+            "discovery_recovered_screen": "decision",
             "discovery_complete": "decision",
         }.get(checkpoint.get("state"), stage)
         transitions.append({"ts": checkpoint["written_at"], "stage": checkpoint_stage,
@@ -3874,6 +4483,16 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                             "state": "checkpoint", "event": checkpoint["state"],
                             "label": f"STOP_STATE seq {checkpoint.get('seq')}",
                             "detail": f"STOP_STATE seq {checkpoint.get('seq')}"})
+        if checkpoint.get("state") in {"discovery_screened",
+                                       "discovery_recovered_screen"}:
+            transitions.append({
+                "ts": checkpoint["written_at"], "stage": "next_hypothesis",
+                "phase": "next_hypothesis",
+                "state": "running" if lock_held else "waiting",
+                "event": "next_hypothesis_transition",
+                "label": "screen decision durable; advancing automatically",
+                "detail": "next portfolio binding will be selected by the controller",
+            })
     if isinstance(operation_observation, dict):
         observed_stage = operation_observation["stage"]
         transitions.append({
@@ -3922,12 +4541,25 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                       and lease["device_claim_probe_released"].get("released_at") is not None)
     probe_open = (lease.get("device_claim_probe_open")
                   if isinstance(lease, dict) else None)
-    claim_held = bool(isinstance(probe_open, dict)
-                      and probe_open.get("state") == "held"
-                      and probe_open.get("released_at") is None
-                      and not probe_released)
-    gpu_expected = stage in {"correctness", "dispatch_proof", "profile", "benchmark"}
+    probe_claim_held = bool(isinstance(probe_open, dict)
+                            and probe_open.get("state") == "held"
+                            and probe_open.get("released_at") is None
+                            and not probe_released)
+    source_claim_held = bool(isinstance(claim_observation, dict)
+                             and claim_observation.get("claim_held") is True)
+    claim_held = source_claim_held or probe_claim_held
+    gpu_expected = stage in {
+        "correctness", "candidate_attribution", "anchor_attribution",
+        "dispatch_proof", "profile", "measurement_graphs_off_screen",
+        "target_runtime_graphs_on_screen", "benchmark",
+    }
     historical_gpu_screen = isinstance(correctness_observation, dict)
+    gpu_operation_started = bool(
+        historical_gpu_screen
+        or isinstance(claim_observation, dict)
+        and isinstance(claim_observation.get("acquired_at"), str)
+        or isinstance(postbuild_observation, dict)
+        and postbuild_observation.get("completed"))
     abandoned = [row for row in iterations if isinstance(row, dict)
                  and row.get("status") == "abandoned"]
     retest = [row for row in iterations if isinstance(row, dict)
@@ -3935,6 +4567,76 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
     history_rows = [{key: row.get(key) for key in
                      ("turn", "hypothesis_id", "status", "effect_fraction")}
                     for row in (*abandoned, *retest)]
+    latest_result = events[-1].get("result") if events else None
+    latest_result = latest_result if isinstance(latest_result, dict) else {}
+    refusal_event = next((row for row in reversed(events)
+                          if row.get("event") in {
+                              "authoring_refused", "critic_refused",
+                              "compile_refused", "correctness_falsified",
+                              "attribution_route_falsified"}), None)
+    refusal_type = refusal_event.get("event") if refusal_event else None
+    if refusal_type is None and isinstance(latest_iteration, dict):
+        refusal_type = {
+            "planner_refused": "authoring_refused",
+            "planner_contract_refused": "authoring_refused",
+            "critic_reject": "critic_refused",
+        }.get(latest_iteration.get("status"))
+        if latest_iteration.get("status") == "screen_refused":
+            candidate_refusal = latest_iteration.get("refusal_type")
+            refusal_type = (candidate_refusal if candidate_refusal in {
+                "compile_refused", "correctness_falsified",
+                "attribution_route_falsified"} else "screen_refused")
+    refusal_result = (refusal_event.get("result")
+                      if isinstance(refusal_event, dict)
+                      and isinstance(refusal_event.get("result"), dict) else {})
+    if isinstance(refusal_observation, dict):
+        refusal_type = refusal_observation.get("disposition")
+    arm_order = (postbuild_observation.get("arm_order")
+                 if isinstance(postbuild_observation, dict) else None)
+    if arm_order is None:
+        arm_order = latest_result.get("arm_order_schedule")
+    repetition = (postbuild_observation.get("repetition")
+                  if isinstance(postbuild_observation, dict) else None)
+    iteration_repetition = (latest_iteration.get("repetition")
+                            if isinstance(latest_iteration, dict) else None)
+    if (repetition is None and isinstance(iteration_repetition, int)
+            and not isinstance(iteration_repetition, bool)
+            and iteration_repetition in {1, 2}):
+        repetition = iteration_repetition
+    pending_confirmation = bool(
+        isinstance(pending, dict) and pending.get("confirmation") is True)
+    latest_is_replication = bool(
+        repetition == 2 or isinstance(latest_iteration, dict)
+        and isinstance(latest_iteration.get("replication_of"), str))
+    if repetition is None and pending_confirmation:
+        repetition = 2
+    elif repetition is None and latest_is_replication:
+        repetition = 2
+    if repetition == 2 or pending_confirmation or latest_is_replication:
+        pipeline["replication_s1"]["state"] = "complete"
+    if repetition == 1:
+        pipeline["replication_s1"]["state"] = (
+            "interrupted" if status == "stopped" else
+            "complete" if stage in {"decision", "next_hypothesis"}
+            and pipeline["decision"]["state"] == "complete" else "running")
+    if pending_confirmation:
+        pipeline["replication_s2"]["state"] = (
+            "waiting" if not lock_held else "running")
+    elif repetition == 2:
+        pipeline["replication_s2"]["state"] = (
+            "complete" if latest_is_replication and not isinstance(inflight, dict)
+            else "interrupted" if status == "stopped" else "running")
+    first_incomplete = (latest_result.get("first_incomplete_stage") or
+                        (postbuild_observation.get("first_incomplete_stage")
+                         if isinstance(postbuild_observation, dict) else stage))
+    iteration_exact_effect = (latest_iteration.get(
+        "exact_attribution_effect_fraction")
+        if isinstance(latest_iteration, dict) else None)
+    iteration_target_effect = (latest_iteration.get(
+        "target_runtime_effect_fraction")
+        if isinstance(latest_iteration, dict) else None)
+    iteration_target_executed = (latest_iteration.get("target_runtime_executed")
+                                 if isinstance(latest_iteration, dict) else None)
     return {
         "status": status,
         "phase": {"id": stage, "label": label, "started_at": stage_started_at,
@@ -3943,11 +4645,24 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
         "last_progress_at": last_progress_at, "progress_age_s": progress_age,
         "waiting_on": waiting_on, "stall": stall,
         "gpu": {"expected_now": gpu_expected, "claim_held": claim_held,
-                "screen_started": historical_gpu_screen,
-                "claim_released": bool(historical_gpu_screen and
-                                       correctness_observation.get("claim_released")),
-                "detail": (f"MI210 {lease.get('device_id', 'device')} claim is held"
-                           if claim_held else
+                "screen_started": gpu_operation_started,
+                "claim_released": bool(
+                    isinstance(claim_observation, dict)
+                    and claim_observation.get("claim_released") is True
+                    or historical_gpu_screen and
+                    correctness_observation.get("claim_released")),
+                "claim_id": (claim_observation.get("claim_id")
+                             if isinstance(claim_observation, dict) else None),
+                "device_id": (claim_observation.get("device_id")
+                              if isinstance(claim_observation, dict) else
+                              lease.get("device_id") if isinstance(lease, dict) else None),
+                "detail": (f"MI210 {(claim_observation or {}).get('device_id', 'device')} source-proof claim is held"
+                           if source_claim_held else
+                           f"MI210 {lease.get('device_id', 'device')} admission-probe claim is held"
+                           if probe_claim_held else
+                           f"MI210 {(claim_observation or {}).get('device_id', 'device')} source-proof claim released"
+                           if isinstance(claim_observation, dict)
+                           and claim_observation.get("claim_released") is True else
                            (f"GPU correctness ran for "
                             f"{correctness_observation['elapsed_s']:.1f}s; "
                             f"{correctness_observation['summary']}; claim released")
@@ -3957,6 +4672,111 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                            "admission probe was released; no GPU screening began"
                            if probe_released else
                            "no identity-bound GPU claim is evidenced")},
+        "stage_contract": {
+            "current_stage": stage,
+            "first_incomplete_stage": first_incomplete,
+            "resume_policy": ("execute_once_from_first_incomplete"
+                              if recoverability == "resume_first_incomplete_stage"
+                              else recoverability),
+            "repetition": repetition,
+            "replication": (f"S{repetition}" if isinstance(repetition, int)
+                            else None),
+            "arm_order": arm_order,
+            "arm_order_seed_sha256": (
+                postbuild_observation.get("arm_order_seed_sha256")
+                if isinstance(postbuild_observation, dict) else None),
+            "exact_attribution_direction": (
+                postbuild_observation.get("exact_direction")
+                if isinstance(postbuild_observation, dict) else
+                "improved" if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect > 0 else
+                "regressed" if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect < 0 else
+                "neutral" if iteration_exact_effect == 0 else None),
+            "exact_attribution_effect_fraction": (
+                postbuild_observation.get("exact_attribution_effect_fraction")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get(
+                    "exact_attribution_effect_fraction") is not None
+                else iteration_exact_effect),
+            "target_runtime_effect_fraction": (
+                postbuild_observation.get("target_runtime_effect_fraction")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get("target_runtime_effect_fraction") is not None
+                else iteration_target_effect),
+            "target_runtime_executed": (
+                postbuild_observation.get("target_runtime_executed")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get("target_runtime_executed") is not None
+                else iteration_target_executed),
+            "target_runtime_reason": (
+                postbuild_observation.get("target_runtime_reason")
+                if isinstance(postbuild_observation, dict) else
+                latest_iteration.get("target_runtime_reason")
+                if isinstance(latest_iteration, dict) else None),
+            "dual_decision_state": (
+                postbuild_observation.get("dual_decision_state")
+                if isinstance(postbuild_observation, dict) else
+                "measured_nonpositive_exact_short_circuit"
+                if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect <= 0
+                and iteration_target_executed is False else
+                "exact_and_graphs_on_complete"
+                if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and isinstance(iteration_target_effect, (int, float))
+                and not isinstance(iteration_target_effect, bool) else None),
+        },
+        "refusal": {
+            "detected": refusal_type is not None,
+            "type": refusal_type,
+            "class": (refusal_observation.get("type")
+                      if isinstance(refusal_observation, dict) else None),
+            "stage": (refusal_observation.get("stage")
+                      if isinstance(refusal_observation, dict) else None),
+            "scientific_budget_spent": (
+                refusal_observation.get("scientific_budget_spent")
+                if isinstance(refusal_observation, dict) else None),
+            "receipt_sha256": (
+                refusal_observation.get("receipt_sha256")
+                if isinstance(refusal_observation, dict) else None),
+            "detail": (refusal_observation.get("detail")
+                       if isinstance(refusal_observation, dict) else
+                       (refusal_result.get("reason")
+                        or latest_iteration.get("reason")
+                        if isinstance(latest_iteration, dict) else None)),
+        },
+        "provider_retry": {
+            "detected": recoverability in {
+                "resume_planner_provider_retry",
+                "resume_critic_provider_retry"},
+            "actor": ("planner" if recoverability == "resume_planner_provider_retry"
+                      else "critic" if recoverability == "resume_critic_provider_retry"
+                      else None),
+            "same_hypothesis": recoverability == "resume_planner_provider_retry",
+            "planner_rerun": False if recoverability == "resume_critic_provider_retry"
+                            else None,
+            "provider_attempt": (
+                planning.get("provider_attempt")
+                if recoverability == "resume_planner_provider_retry"
+                and isinstance(planning, dict)
+                and isinstance(planning.get("provider_attempt"), int)
+                and not isinstance(planning.get("provider_attempt"), bool) else
+                state.get("planner_provider_attempt")
+                if recoverability == "resume_planner_provider_retry"
+                and isinstance(state, dict)
+                and isinstance(state.get("planner_provider_attempt"), int)
+                and not isinstance(state.get("planner_provider_attempt"), bool)
+                else None),
+            "detail": (latest_iteration.get("reason")
+                       if recoverability == "resume_planner_provider_retry"
+                       and isinstance(latest_iteration, dict) else
+                       "critic_pending is durable; only critic review retries"
+                       if recoverability == "resume_critic_provider_retry" else None),
+        },
         "correctness": ({
             "execution_started": True,
             "execution_completed": True,
@@ -3982,7 +4802,12 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                                   else "latest durable controller boundary" if checkpoint
                                   else "no durable controller checkpoint")},
         "resume": {"required": status in {"failed", "stopped"},
-                   "possible": recoverability in {"same_candidate_retry", "not_required"},
+                   "possible": recoverability in {
+                       "same_candidate_retry", "not_required",
+                       "resume_first_incomplete_stage",
+                       "resume_controller_checkpoint",
+                       "resume_planner_provider_retry",
+                       "resume_critic_provider_retry"},
                    "recoverability": ("ambiguous" if recoverability.startswith("ambiguous")
                                       else recoverability),
                    "disposition": recoverability,
@@ -3990,6 +4815,14 @@ def _discovery_activity(*, lock_held: bool, state: dict | None,
                               if recoverability.startswith("ambiguous")
                               else "Cannot resume; repair the controller and launch a fresh sealed deployment"
                               if recoverability == "planner_validation_requires_fresh_deployment"
+                              else f"Resume at {first_incomplete}; completed stage receipts are revalidated and reused"
+                              if recoverability == "resume_first_incomplete_stage"
+                              else "Restart the controller; the screened decision is durable and the next hypothesis is selected automatically"
+                              if recoverability == "resume_controller_checkpoint"
+                              else "Restart the controller; retry the same hypothesis from its durable planner checkpoint"
+                              if recoverability == "resume_planner_provider_retry"
+                              else "Restart the controller; retry only the critic from critic_pending without rerunning the planner"
+                              if recoverability == "resume_critic_provider_retry"
                               else "same candidate may be retried" if recoverability == "same_candidate_retry"
                               else "no resume action is required")},
         "failure": failure_view,
@@ -4114,10 +4947,18 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         operations_root, state, config.get("config_sha256"))
     correctness_observation = _discovery_correctness_observation(
         operations_root, state)
+    postbuild_observation = _discovery_postbuild_observation(
+        operations_root, state)
+    claim_observation = _discovery_claim_observation(operations_root)
+    refusal_observation = _discovery_refusal_observation(
+        bundle, state, all_events)
     activity = _discovery_activity(
         lock_held=lock_held, state=state, events=all_events,
         checkpoint=checkpoint, operation_observation=build_observation,
-        correctness_observation=correctness_observation, now=now)
+        correctness_observation=correctness_observation,
+        postbuild_observation=postbuild_observation,
+        claim_observation=claim_observation,
+        refusal_observation=refusal_observation, now=now)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])

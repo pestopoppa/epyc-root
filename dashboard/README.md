@@ -207,6 +207,40 @@ falling backward to `evidence_binding` or claiming that GPU screening never ran.
 Dispatch attribution, profiling, and benchmarking remain `not_reached` unless
 their own evidence exists.
 
+The cross-strategy lifecycle is projected from the inflight operation's native,
+self-hashed receipts, never from process names or an output-directory mtime:
+`proof/correctness/receipt.json`,
+`proof/attribution-{candidate,anchor}/receipt.json`,
+`proof/attribution-pair.json`, `proof/proof-bundle.json`, and
+`runner/sN/{measurement-graphs-off,target-runtime-graphs-on}/result.json`.
+Those receipts expose correctness execution/validation, both attribution arms,
+the graphs-off measurement screen, the separate graphs-on target-runtime
+screen, decision, S1/S2, the counterbalanced attribution order, and the exact
+first incomplete resume stage. A stopped controller keeps completed receipts
+complete and names the one stage a restart will execute; it does not fall back
+to a generic failed screen. The operation-owned device-claim journal supplies
+expected/held/released state, with a held claim requiring the captured PID and
+start tick to remain live. A durable screened checkpoint is rendered as the
+automatic transition to the next portfolio hypothesis, whether the controller
+is still running or waiting for restart.
+
+Governed terminal rows are also headline state. `source_apply` and `compile`
+map to `authoring_refused`; correctness maps to `correctness_falsified`; and
+dispatch attribution maps to `attribution_route_falsified`. The dashboard
+follows the row's declared `stage_receipt_path`, verifies
+`stage_receipt_sha256` against the exact file bytes, and then projects the
+typed class, stage, disposition, and `scientific_budget_spent` value. This
+includes both per-arm attribution refusals and the cross-arm
+`proof/attribution-pair-refusal.json` invariant terminal. Planner provider
+interruptions remain `planner_transient` on the same turn and expose
+the durable `provider_attempt`; a critic interruption resumes only from
+`pending.phase=critic_pending`. Neither is displayed as a scientific refusal.
+A nonpositive exact-attribution result is instead measured evidence from
+`runner/sN/exact-attribution-outcome.json`: both runtime screens show as
+governed skips, the graphs-on call is explicitly unexecuted, and the loop moves
+through decision to the next hypothesis. Completed iteration rows retain both
+exact-attribution and target-runtime effects plus their S1/S2 repetition.
+
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
 and strict campaign receipts into
@@ -225,7 +259,10 @@ timeline, and implementation/readiness diagnostics are closed by default. Poll
 time is labelled as dashboard refresh, never producer progress, while each live
 tail shows the last producer timestamp and age. Strategy and unexplored
 hypotheses form the second layer; all former detailed cards remain under
-**Evidence & diagnostics**.
+**Evidence & diagnostics**. The whole progression surface is itself closed by
+default behind a one-line CPU leader, GPU leader, and funnel headline. The two
+short log tails are never inside a disclosure: they are the loop's operational
+pulse, not optional evidence detail.
 When progression is populated but strict champion/headroom/release owners are
 unreported, panel and global health say `degraded`, never `ok` and no longer the
 false `absent`/“nobody is reporting” state.
