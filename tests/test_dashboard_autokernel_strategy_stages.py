@@ -448,6 +448,47 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                          "2026-08-19T01:45:16.613149Z")
         self.assertEqual(activity["transitions"][-1]["event"], "planner_started")
 
+        # Exact next live boundary: turn 2 planner has completed and the
+        # controller has durably checkpointed/started its critic.  The prior
+        # turn refusal must remain history, not retake the headline.
+        state = json.loads((self.state_root / "state.json").read_text())
+        state["planning"] = None
+        state["pending"] = {
+            "phase": "critic_pending", "turn": 2,
+            "candidate": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+            "row": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+        }
+        state["updated_at"] = "2026-08-19T01:52:10.921284Z"
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        critic_started = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": "2026-08-19T01:52:10.931000Z",
+            "channel": "autokernel", "event": "critic_started",
+            "campaign_id": campaign,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "claude", "model": "claude-fable-5",
+            "effort": "high",
+        }
+        with (self.operations / "live/autokernel.jsonl").open("a") as handle:
+            handle.write(json.dumps(critic_started) + "\n")
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["phase"]["id"], "critic")
+        self.assertEqual(activity["phase"]["started_at"],
+                         "2026-08-19T01:52:10.931000Z")
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"]["state"], "complete")
+        self.assertEqual(pipeline["planner_validation"]["state"], "complete")
+        self.assertEqual(pipeline["critic"]["state"], "running")
+        for stage in ("authorization", "source_materialization", "build",
+                      "correctness", "next_hypothesis"):
+            self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        self.assertEqual(activity["transitions"][-1]["event"], "critic_started")
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",

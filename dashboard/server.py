@@ -4262,6 +4262,12 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         lock_held and latest_event == "planner_started"
         and isinstance(planning, dict)
         and not isinstance(pending, dict) and not isinstance(inflight, dict))
+    active_critic_turn = bool(
+        lock_held and latest_event == "critic_started"
+        and isinstance(pending, dict)
+        and pending.get("phase") == "critic_pending"
+        and not isinstance(inflight, dict))
+    active_new_turn = active_planner_turn or active_critic_turn
     validation_event = (latest_event if latest_event in
                         {"planner_validation_failed", "planner_validation_refused"}
                         else None)
@@ -4504,6 +4510,24 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         status = "running"
         label = "Planner model call"
         waiting_on = "planner completion"
+        recoverability = "not_required"
+    elif active_critic_turn:
+        # A later turn's durable critic checkpoint/event also outranks the
+        # previous turn's terminal iteration.  Rebuild the current pipeline
+        # solely from facts the new pending row proves; never carry the prior
+        # authoring refusal into this turn's headline.
+        for name, row in pipeline.items():
+            row.clear()
+            row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                        "state": "not_reached"})
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "complete"
+        pipeline["critic"]["state"] = "running"
+        pipeline["critic"]["started_at"] = last_event_at
+        stage = "critic"
+        status = "running"
+        label = "Critic review"
+        waiting_on = "critic review completion"
         recoverability = "not_required"
     elif latest_iteration_status == "planner_transient":
         stage = "planner"
@@ -4775,7 +4799,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "event": f"{stage}_failed", "label": label,
             "detail": failure_view["detail"],
         })
-    if active_planner_turn and isinstance(refusal_observation, dict):
+    if active_new_turn and isinstance(refusal_observation, dict):
         refusal_checkpoint_state = {
             "authoring_refused": "discovery_authoring_refused",
             "correctness_falsified": "discovery_correctness_falsified",
@@ -4860,8 +4884,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     if isinstance(refusal_observation, dict):
         refusal_type = refusal_observation.get("disposition")
     headline_refusal_observation = (
-        None if active_planner_turn else refusal_observation)
-    if active_planner_turn:
+        None if active_new_turn else refusal_observation)
+    if active_new_turn:
         refusal_type = None
     arm_order = (postbuild_observation.get("arm_order")
                  if isinstance(postbuild_observation, dict) else None)
@@ -5036,7 +5060,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "receipt_sha256": (
                 headline_refusal_observation.get("receipt_sha256")
                 if isinstance(headline_refusal_observation, dict) else None),
-            "detail": (None if active_planner_turn else
+            "detail": (None if active_new_turn else
                        headline_refusal_observation.get("detail")
                        if isinstance(headline_refusal_observation, dict) else
                        (refusal_result.get("reason")
