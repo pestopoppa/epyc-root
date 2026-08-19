@@ -4278,6 +4278,21 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                             if isinstance(inflight, dict) else None)
     current_inflight_turn = (current_inflight_row.get("turn")
                              if isinstance(current_inflight_row, dict) else None)
+    current_pending_row = (pending.get("row")
+                           if isinstance(pending, dict) else None)
+    current_pending_turn = (
+        pending.get("turn") if isinstance(pending, dict)
+        and isinstance(pending.get("turn"), int)
+        and not isinstance(pending.get("turn"), bool) else
+        current_pending_row.get("turn")
+        if isinstance(current_pending_row, dict) else None)
+    active_pending_new_turn = bool(
+        lock_held
+        and isinstance(current_pending_turn, int)
+        and not isinstance(current_pending_turn, bool)
+        and isinstance(latest_terminal_turn, int)
+        and not isinstance(latest_terminal_turn, bool)
+        and current_pending_turn > latest_terminal_turn)
     active_inflight_new_turn = bool(
         lock_held
         and isinstance(current_inflight_turn, int)
@@ -4286,6 +4301,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         and not isinstance(latest_terminal_turn, bool)
         and current_inflight_turn > latest_terminal_turn)
     active_new_turn = (active_planner_turn or active_critic_turn
+                       or active_pending_new_turn
                        or active_inflight_new_turn)
     validation_event = (latest_event if latest_event in
                         {"planner_validation_failed", "planner_validation_refused"}
@@ -4548,6 +4564,23 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         label = "Critic review"
         waiting_on = "critic review completion"
         recoverability = "not_required"
+    elif active_pending_new_turn:
+        # Planner validation has durably checkpointed the newer turn, but the
+        # critic actor has not emitted critic_started yet.  This short seam is
+        # a real waiting state; do not inherit the previous turn's completed
+        # critic or typed terminal while crossing it.
+        for name, row in pipeline.items():
+            row.clear()
+            row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                        "state": "not_reached"})
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "complete"
+        pipeline["critic"]["state"] = "waiting"
+        stage = "critic"
+        status = "waiting"
+        label = "Waiting to start critic review"
+        waiting_on = "critic review"
+        recoverability = "not_required"
     elif latest_iteration_status == "planner_transient":
         stage = "planner"
         pipeline[stage]["state"] = "waiting"
@@ -4557,7 +4590,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       "controller restart at planner retry checkpoint")
         recoverability = "resume_planner_provider_retry"
         hypothesis = latest_iteration.get("hypothesis_id")
-    elif (not active_inflight_new_turn and latest_iteration_status in {
+    elif (not (active_pending_new_turn or active_inflight_new_turn)
+          and latest_iteration_status in {
             "authoring_refused", "correctness_falsified",
             "attribution_route_falsified"}):
         refused_stage = latest_iteration.get("stage")

@@ -496,6 +496,34 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         }
         state["updated_at"] = "2026-08-19T01:52:10.921284Z"
         (self.state_root / "state.json").write_text(json.dumps(state))
+        planner_completed = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": "2026-08-19T01:52:10.512242Z",
+            "channel": "planner", "event": "planner_completed",
+            "campaign_id": campaign,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "codex", "model": "gpt-5.6-sol",
+            "effort": "high",
+        }
+        with (self.operations / "live/autokernel.jsonl").open("a") as handle:
+            handle.write(json.dumps(planner_completed) + "\n")
+        with (self.operations / "live/planner.jsonl").open("a") as handle:
+            handle.write(json.dumps(planner_completed) + "\n")
+
+        # Exact inter-actor gap: pending turn 2 is durable, but critic_started
+        # has not landed yet. The completed turn-1 refusal must not flicker back
+        # into the headline during this window.
+        activity = self._active()["activity"]
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["phase"]["id"], "critic")
+        self.assertEqual(activity["status"], "waiting")
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["critic"]["state"], "waiting")
+        self.assertEqual(pipeline["source_materialization"]["state"],
+                         "not_reached")
+        self.assertEqual(pipeline["next_hypothesis"]["state"], "not_reached")
+
         critic_started = {
             "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
             "ts": "2026-08-19T01:52:10.931000Z",
