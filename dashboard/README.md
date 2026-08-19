@@ -163,7 +163,16 @@ journal timestamp, not export time, drives freshness.
 
 Live discovery visibility is a separate producer contract:
 `operations/live/{autokernel,planner}.jsonl`, schema
-`epyc.autokernel.discovery_live_event.v1`. The actor seam writes only an
+`epyc.autokernel.discovery_live_event.v2` (consumer also accepts the exact
+historical `v1` field set), frozen at producer commit
+`76301d6647586a25f2d56de1b93f1da9ac11a3fa`. v2 binds every row to a
+64-hex operation key and content-derived `ake-<sha256>` event identity. Planner
+rows are mirrored byte-identically into both physical streams; the hub
+deduplicates matching identities, degrades health on a missing mirror, and drops
+same-identity payload, timestamp, duplicate, or sequence-order corruption.
+Append-only `visibility_degraded` state markers remain visibly auditable as
+historical incidents but do not keep current health red after exact mirror
+equality is restored. The actor seam writes only an
 allowlisted lifecycle vocabulary, provider/model identities, return codes,
 decisions and transcript hashes. Prompts, model text, commands, environment and
 credentials are structurally excluded. `/api/kernel/live` also observes the

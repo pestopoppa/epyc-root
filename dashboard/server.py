@@ -179,6 +179,13 @@ AUTOKERNEL_DEPLOYMENTS_ROOT = Path(os.environ.get(
     "AUTOKERNEL_DEPLOYMENTS_ROOT",
     "/mnt/raid0/llm/autokernel/deployments"))
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMA = "epyc.autokernel.discovery_live_event.v1"
+AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 = "epyc.autokernel.discovery_live_event.v2"
+AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA = \
+    "76301d6647586a25f2d56de1b93f1da9ac11a3fa"
+AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS = frozenset({
+    AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+    AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+})
 ARENA_ATTEMPT_DISPOSITIONS_JSON = Path(os.environ.get(
     "ARENA_ATTEMPT_DISPOSITIONS_JSON",
     str(Path(__file__).resolve().parent / "arena_attempt_dispositions.json")))
@@ -3222,36 +3229,316 @@ def _safe_bundle_path(value: object, bundle: Path) -> Path | None:
     return path
 
 
+def _discovery_event_result(value: object, event: str,
+                            *, version: int) -> dict | None:
+    """Project one secret-free actor result, or refuse the whole event."""
+    if value is None:
+        if event in {"planner_completed", "planner_failed", "planner_refused",
+                     "critic_completed"}:
+            raise ValueError("terminal actor event lacks its exact typed result")
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("result is not an object")
+    allowed = {"returncode", "stdout_sha256", "stderr_sha256", "decision",
+               "refusal_type", "refusal_reason_sha256"}
+    if set(value) - allowed:
+        raise ValueError("result contains non-allowlisted fields")
+    projected: dict = {}
+    if "returncode" in value:
+        code = value["returncode"]
+        if isinstance(code, bool) or not isinstance(code, int):
+            raise ValueError("returncode is not an integer")
+        projected["returncode"] = code
+    for key in ("stdout_sha256", "stderr_sha256", "refusal_reason_sha256"):
+        if key in value:
+            if key == "refusal_reason_sha256" and event != "planner_refused":
+                raise ValueError("refusal digest is not on a planner refusal")
+            item = value[key]
+            if not isinstance(item, str) or re.fullmatch(r"[0-9a-f]{64}", item) is None:
+                raise ValueError(f"invalid {key}")
+            projected[key] = item
+    if "decision" in value:
+        if value["decision"] not in {"accept", "reject", "revise"}:
+            raise ValueError("invalid critic decision")
+        projected["decision"] = value["decision"]
+    if "refusal_type" in value:
+        if event != "planner_refused" or value["refusal_type"] != "planner_output_refusal":
+            raise ValueError("invalid planner refusal type")
+        projected["refusal_type"] = value["refusal_type"]
+    if event == "planner_refused" and set(projected) != {
+            "returncode", "stdout_sha256", "stderr_sha256",
+            "refusal_type", "refusal_reason_sha256"}:
+        raise ValueError("planner refusal lacks its exact typed result")
+    if event == "planner_refused" and projected.get("returncode") != 0:
+        raise ValueError("planner refusal does not bind a successful actor exit")
+    if (event == "planner_completed"
+            and (set(projected) != {
+                "returncode", "stdout_sha256", "stderr_sha256"}
+                 or projected.get("returncode") != 0)):
+        raise ValueError("invalid planner completion result")
+    if (event == "planner_failed"
+            and (set(projected) != {
+                "returncode", "stdout_sha256", "stderr_sha256"}
+                 or projected.get("returncode") == 0)):
+        raise ValueError("invalid planner failure result")
+    if event == "critic_completed" and set(projected) != {
+            "stdout_sha256", "stderr_sha256", "decision"}:
+        raise ValueError("invalid critic completion result")
+    if event in {"planner_started", "critic_started", "critic_failed"}:
+        raise ValueError("lifecycle marker carries a result")
+    return projected
+
+
 def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str | None]:
-    """Read a bounded tail of the producer's allowlisted live-event contract."""
+    """Read a bounded tail of the strict v1/v2 live-event contracts."""
     try:
         size = path.stat().st_size
+        offset = max(0, size - 128 * 1024)
         with path.open("rb") as handle:
-            handle.seek(max(0, size - 128 * 1024))
+            handle.seek(offset)
             raw = handle.read(128 * 1024)
     except FileNotFoundError:
         return [], None
     except OSError as exc:
         return [], f"live event stream unreadable: {exc}"
     rows: list[dict] = []
-    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+    rejected = 0
+    lines = raw.decode("ascii", "replace").splitlines()
+    # A bounded tail may begin in the middle of a valid JSONL record. It is not
+    # a producer contract rejection; discard that incomplete prefix before
+    # counting malformed rows.
+    if offset and lines:
+        lines = lines[1:]
+    for line in lines[-300:]:
         try:
             row = json.loads(line)
         except json.JSONDecodeError:
+            rejected += 1
             continue
-        if (not isinstance(row, dict)
-                or row.get("schema") != AUTOKERNEL_DISCOVERY_EVENT_SCHEMA
+        if not isinstance(row, dict) or row.get("schema") not in \
+                AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS:
+            rejected += 1
+            continue
+        version = 2 if row["schema"] == AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 else 1
+        required = {"schema", "ts", "channel", "event", "campaign_id",
+                    "hypothesis_id", "provider", "model", "effort"}
+        allowed = required | {"result"}
+        if version == 2:
+            required |= {"event_id", "operation_key"}
+            allowed |= {"event_id", "operation_key"}
+        text_fields = ("channel", "event", "campaign_id", "hypothesis_id",
+                       "provider", "model", "effort")
+        if (not required.issubset(row) or set(row) - allowed
                 or channel is not None and row.get("channel") != channel
-                or set(row) - {"schema", "ts", "channel", "event", "campaign_id",
-                                   "hypothesis_id", "provider", "model", "effort", "result"}):
+                or row.get("channel") not in {"autokernel", "planner"}
+                or any(not isinstance(row.get(key), str)
+                       or re.fullmatch(r"[a-zA-Z0-9_.:-]{1,160}", row[key]) is None
+                       for key in text_fields)
+                or not isinstance(row.get("ts"), str)
+                or re.fullmatch(
+                    r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                    r"(?:\.[0-9]{1,6})?Z", row["ts"]) is None
+                or _parse_semantic_timestamp(row["ts"]) is None):
+            rejected += 1
+            continue
+        lifecycle_events = {
+            "planner_started", "planner_completed", "planner_failed",
+            "planner_refused", "critic_started", "critic_completed",
+            "critic_failed",
+        }
+        expected_channel = (
+            "planner" if row["event"].startswith("planner_") else
+            "autokernel" if row["event"].startswith("critic_") else None)
+        if row["event"] not in lifecycle_events or row["channel"] != expected_channel:
+            rejected += 1
+            continue
+        if version == 2:
+            if (re.fullmatch(r"ake-[0-9a-f]{64}", row["event_id"]) is None
+                    or re.fullmatch(r"[0-9a-f]{64}", row["operation_key"]) is None):
+                rejected += 1
+                continue
+            identity = {key: row[key] for key in required
+                        if key not in {"channel", "event_id", "ts"}}
+            expected_id = "ake-" + hashlib.sha256(json.dumps(
+                identity, sort_keys=True, separators=(",", ":")
+            ).encode("ascii")).hexdigest()
+            if row["event_id"] != expected_id:
+                rejected += 1
+                continue
+        try:
+            result = _discovery_event_result(
+                row.get("result"), row["event"], version=version)
+        except ValueError:
+            rejected += 1
             continue
         # The producer contract contains no prompt, model text, command, env, or
         # credential fields. Re-project the allowlist anyway: consumers do not
         # become a secret exfiltration path if a future writer drifts.
-        rows.append({key: row[key] for key in (
-            "ts", "channel", "event", "campaign_id", "hypothesis_id",
-            "provider", "model", "effort", "result") if key in row})
-    return rows[-200:], None
+        projected = {key: row[key] for key in (
+            "schema", "event_id", "operation_key", "ts", "channel", "event",
+            "campaign_id", "hypothesis_id", "provider", "model", "effort")
+            if key in row}
+        if result is not None:
+            projected["result"] = result
+        rows.append(projected)
+    error = (f"{rejected} live event row{'s' if rejected != 1 else ''} "
+             "rejected by telemetry contract" if rejected else None)
+    return rows[-200:], error
+
+
+def _discovery_reconcile_events(all_rows: list[dict],
+                                planner_rows: list[dict],
+                                all_error: str | None,
+                                planner_error: str | None) -> tuple[
+                                    list[dict], list[dict], list[dict], dict]:
+    """Deduplicate v2 identity and expose dual-stream visibility defects."""
+    stream_rows = {"autokernel": all_rows, "planner": planner_rows}
+    by_stream: dict[str, dict[str, list[dict]]] = {
+        "autokernel": {}, "planner": {}}
+    for stream, rows in stream_rows.items():
+        for row in rows:
+            event_id = row.get("event_id")
+            if isinstance(event_id, str):
+                by_stream[stream].setdefault(event_id, []).append(row)
+    ids = set(by_stream["autokernel"]) | set(by_stream["planner"])
+    conflicts: set[str] = set()
+    duplicates = {
+        event_id for event_id in ids
+        if len(by_stream["autokernel"].get(event_id, [])) > 1
+        or len(by_stream["planner"].get(event_id, [])) > 1}
+    unique: dict[str, dict] = {}
+    for event_id in ids:
+        candidates = (by_stream["autokernel"].get(event_id, [])
+                      + by_stream["planner"].get(event_id, []))
+        canonical = {json.dumps(
+            {key: value for key, value in row.items() if key != "ts"},
+            sort_keys=True, separators=(",", ":"))
+                     for row in candidates}
+        if len(canonical) != 1:
+            conflicts.add(event_id)
+        elif candidates:
+            unique[event_id] = candidates[0]
+    timestamp_divergence = sorted(
+        event_id for event_id in ids if event_id not in conflicts
+        and len({row.get("ts") for row in (
+            by_stream["autokernel"].get(event_id, [])
+            + by_stream["planner"].get(event_id, []))}) > 1)
+    all_planner_sequence = [row["event_id"] for row in all_rows
+                            if isinstance(row.get("event_id"), str)
+                            and row.get("channel") == "planner"]
+    planner_sequence = [row["event_id"] for row in planner_rows
+                        if isinstance(row.get("event_id"), str)]
+    common_sequence_ids = set(all_planner_sequence) & set(planner_sequence)
+    order_divergence = (
+        [item for item in all_planner_sequence if item in common_sequence_ids]
+        != [item for item in planner_sequence if item in common_sequence_ids])
+    corruptions = conflicts | duplicates | set(timestamp_divergence)
+    if order_divergence:
+        corruptions |= common_sequence_ids
+    all_floor = min((str(rows[0].get("ts") or "")
+                     for rows in by_stream["autokernel"].values() if rows),
+                    default=None)
+    planner_floor = min((str(rows[0].get("ts") or "")
+                         for rows in by_stream["planner"].values() if rows),
+                        default=None)
+    # Compare only the overlapping bounded tails. A planner-only stream can
+    # legitimately retain older planner rows that fell out of the global
+    # stream's 200-row window because intervening critic rows consumed it.
+    missing_planner = sorted(
+        event_id for event_id, rows in by_stream["autokernel"].items()
+        if event_id not in by_stream["planner"]
+        and any(row.get("channel") == "planner" for row in rows)
+        and (planner_floor is None
+             or str(rows[0].get("ts") or "") >= planner_floor))
+    missing_autokernel = sorted(
+        event_id for event_id, rows in by_stream["planner"].items()
+        if event_id not in by_stream["autokernel"]
+        and (all_floor is None or str(rows[0].get("ts") or "") >= all_floor))
+
+    def visible(rows: list[dict]) -> list[dict]:
+        seen: set[str] = set()
+        out: list[dict] = []
+        for row in rows:
+            event_id = row.get("event_id")
+            if event_id in corruptions or isinstance(event_id, str) and event_id in seen:
+                continue
+            if isinstance(event_id, str):
+                seen.add(event_id)
+            out.append(row)
+        return out
+
+    visible_all = visible(all_rows)
+    visible_planner = visible(planner_rows)
+    legacy = [row for row in visible_all
+              if row.get("schema") == AUTOKERNEL_DISCOVERY_EVENT_SCHEMA]
+    merged = legacy + [row for event_id, row in unique.items()
+                       if event_id not in corruptions]
+    merged.sort(key=lambda row: str(row.get("ts") or ""))
+    problems = []
+    if all_error:
+        problems.append(f"AutoKernel stream: {all_error}")
+    if planner_error:
+        problems.append(f"planner stream: {planner_error}")
+    if conflicts:
+        problems.append(
+            f"{len(conflicts)} conflicting event "
+            f"{'identities' if len(conflicts) != 1 else 'identity'} dropped")
+    if duplicates:
+        problems.append(f"{len(duplicates)} duplicate event identit"
+                        f"{'ies' if len(duplicates) != 1 else 'y'} dropped")
+    if timestamp_divergence:
+        problems.append(f"{len(timestamp_divergence)} event timestamp"
+                        f"{'s' if len(timestamp_divergence) != 1 else ''} "
+                        "diverge across streams and were dropped")
+    if order_divergence:
+        problems.append("planner mirror event order diverges; overlapping rows were dropped")
+    if missing_planner:
+        problems.append(f"{len(missing_planner)} planner event"
+                        f"{'s' if len(missing_planner) != 1 else ''} missing from planner stream")
+    if missing_autokernel:
+        problems.append(f"{len(missing_autokernel)} planner event"
+                        f"{'s' if len(missing_autokernel) != 1 else ''} missing from AutoKernel stream")
+    has_v2 = bool(ids)
+    integrity = {
+        "state": ("conflict" if corruptions else "degraded" if problems else
+                  "verified" if has_v2 else "legacy"),
+        "verified": has_v2 and not problems,
+        "detail": ("; ".join(problems) if problems else
+                   "v2 event identities agree across required streams" if has_v2 else
+                   "legacy v1 telemetry has no cross-stream event identity"),
+        "conflict_count": len(conflicts),
+        "duplicate_identity_count": len(duplicates),
+        "order_divergence": order_divergence,
+        "missing_planner_count": len(missing_planner),
+        "missing_autokernel_count": len(missing_autokernel),
+        "timestamp_divergence_count": len(timestamp_divergence),
+        "dropped_event_count": len(corruptions),
+    }
+    return merged[-200:], visible_all[-200:], visible_planner[-200:], integrity
+
+
+def _discovery_state_visibility_degraded(state: dict | None) -> list[dict]:
+    """Project producer-persisted telemetry failures without raw error text."""
+    values = state.get("visibility_degraded") if isinstance(state, dict) else None
+    if not isinstance(values, list):
+        return []
+    projected: list[dict] = []
+    for value in values[-100:]:
+        if (not isinstance(value, dict)
+                or set(value) != {"event", "operation_key", "error_type",
+                                  "error_sha256"}
+                or not isinstance(value.get("event"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", value["event"]) is None
+                or not isinstance(value.get("operation_key"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", value["operation_key"]) is None
+                or not isinstance(value.get("error_type"), str)
+                or re.fullmatch(r"[a-zA-Z0-9_.]{1,100}",
+                                value["error_type"]) is None
+                or not isinstance(value.get("error_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", value["error_sha256"]) is None):
+            continue
+        projected.append(dict(value))
+    return projected
 
 
 _DISCOVERY_PIPELINE = (
@@ -4189,6 +4476,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "planner_started": ("planner", "running"),
         "planner_completed": ("planner", "complete"),
         "planner_failed": ("planner", "failed"),
+        "planner_refused": ("planner_validation", "failed"),
         "planner_validation_failed": ("planner_validation", "failed"),
         "planner_validation_refused": ("planner_validation", "failed"),
         "critic_started": ("critic", "running"),
@@ -4308,7 +4596,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                        or active_pending_new_turn
                        or active_inflight_new_turn)
     validation_event = (latest_event if latest_event in
-                        {"planner_validation_failed", "planner_validation_refused"}
+                        {"planner_validation_failed", "planner_validation_refused",
+                         "planner_refused"}
                         else None)
     planner_validation_interrupted = bool(
         not lock_held and state is None and checkpoint is None
@@ -4407,6 +4696,20 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         if (isinstance(planning_turn, int)
                 and not isinstance(planning_turn, bool) and planning_turn > 0):
             turn = planning_turn
+
+    if (hypothesis is None and validation_event is not None
+            and isinstance(campaign_id, str) and events):
+        terminal_event = events[-1]
+        terminal_hypothesis = terminal_event.get("hypothesis_id")
+        if (terminal_event.get("campaign_id") == campaign_id
+                and isinstance(terminal_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 terminal_hypothesis)):
+            hypothesis = terminal_hypothesis
+        if (isinstance(latest_iteration, dict)
+                and isinstance(latest_iteration.get("turn"), int)
+                and not isinstance(latest_iteration.get("turn"), bool)):
+            turn = latest_iteration["turn"]
 
     last_event_at = max((row.get("ts") for row in events
                          if isinstance(row.get("ts"), str)), default=None)
@@ -4554,11 +4857,30 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 stage == "correctness_validation"
                 or isinstance(execution_observation, dict)),
         }
+    elif (validation_event == "planner_refused"
+          or latest_iteration_status == "planner_refused"):
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "failed"
+        pipeline["next_hypothesis"]["state"] = (
+            "running" if lock_held else "waiting")
+        status = "running" if lock_held else "stopped"
+        stage = "next_hypothesis"
+        label = "Planner output refused; advancing to next hypothesis"
+        waiting_on = ("next eligible portfolio hypothesis" if lock_held else
+                      "controller restart from planner-refusal checkpoint")
+        recoverability = "resume_controller_checkpoint"
+        if isinstance(latest_iteration, dict):
+            if isinstance(latest_iteration.get("hypothesis_id"), str):
+                hypothesis = latest_iteration["hypothesis_id"]
+            if (isinstance(latest_iteration.get("turn"), int)
+                    and not isinstance(latest_iteration.get("turn"), bool)):
+                turn = latest_iteration["turn"]
     elif validation_event is not None or planner_validation_interrupted:
         status = "failed"
         stage = "planner_validation"
         label = ("Planner output refused by local validation"
-                 if validation_event == "planner_validation_refused" else
+                 if validation_event in {"planner_validation_refused",
+                                         "planner_refused"} else
                  "Planner validation failed" if validation_event else
                  "Controller stopped during planner validation")
         waiting_on = "fresh sealed deployment after controller repair"
@@ -4567,20 +4889,39 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             (row.get("ts") for row in reversed(events)
              if row.get("event") == "planner_completed"), None)
         pipeline[stage]["state"] = "failed"
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner"]["completed_at"] = planner_completed_at or last_event_at
         pipeline[stage]["started_at"] = planner_completed_at or last_event_at
         pipeline[stage]["completed_at"] = last_event_at
-        detail = (
-            "Planner output was refused by local validation (producer lifecycle event)."
-            if validation_event == "planner_validation_refused" else
-            "Planner validation failed (producer lifecycle event)."
-            if validation_event == "planner_validation_failed" else
-            "Controller stopped after the planner actor completed; the producer "
-            "did not persist the exact planner-validation exception."
-        )
+        refusal_digest = (
+            events[-1].get("result", {}).get("refusal_reason_sha256")
+            if validation_event == "planner_refused"
+            and isinstance(events[-1].get("result"), dict) else None)
+        if isinstance(refusal_digest, str):
+            detail = ("Planner output was refused by local validation; reason "
+                      f"sha256 {refusal_digest[:12]}… (raw reason is not telemetry).")
+        elif validation_event == "planner_refused":
+            detail = "Planner output was refused by local validation."
+        elif validation_event == "planner_validation_refused":
+            detail = ("Planner output was refused by local validation "
+                      "(producer lifecycle event).")
+        elif validation_event == "planner_validation_failed":
+            detail = "Planner validation failed (producer lifecycle event)."
+        else:
+            detail = ("Controller stopped after the planner actor completed; the "
+                      "producer did not persist the exact planner-validation exception.")
+        if validation_event == "planner_refused":
+            waiting_on = ("automatic next eligible hypothesis" if lock_held else
+                          "controller restart from planner-refusal checkpoint")
+            recoverability = "resume_controller_checkpoint"
         failure_view = {
             "detected": True, "stage": stage, "detail": detail,
-            "recovery": ("Do not resume this attempt; repair the controller and "
-                         "launch a fresh sealed deployment."),
+            "recovery": (
+                "The refusal is durable and spent no scientific budget; continue "
+                "with the next eligible hypothesis."
+                if validation_event == "planner_refused" else
+                "Do not resume this attempt; repair the controller and launch a "
+                "fresh sealed deployment."),
             "source_proof_created": False, "runner_started": False,
             "gpu_screen_started": False,
         }
@@ -4994,13 +5335,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     latest_result = latest_result if isinstance(latest_result, dict) else {}
     refusal_event = next((row for row in reversed(events)
                           if row.get("event") in {
+                              "planner_refused",
                               "authoring_refused", "critic_refused",
                               "compile_refused", "correctness_falsified",
                               "attribution_route_falsified"}), None)
     refusal_type = refusal_event.get("event") if refusal_event else None
+    planner_refusal_detected = bool(
+        isinstance(refusal_event, dict)
+        and refusal_event.get("event") == "planner_refused"
+        or isinstance(latest_iteration, dict)
+        and latest_iteration.get("status") == "planner_refused")
     if refusal_type is None and isinstance(latest_iteration, dict):
         refusal_type = {
-            "planner_refused": "authoring_refused",
+            "planner_refused": "planner_output_refusal",
             "planner_contract_refused": "authoring_refused",
             "critic_reject": "critic_refused",
         }.get(latest_iteration.get("status"))
@@ -5012,12 +5359,15 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     refusal_result = (refusal_event.get("result")
                       if isinstance(refusal_event, dict)
                       and isinstance(refusal_event.get("result"), dict) else {})
+    if planner_refusal_detected:
+        refusal_type = "planner_output_refusal"
     if isinstance(refusal_observation, dict):
         refusal_type = refusal_observation.get("disposition")
     headline_refusal_observation = (
         None if active_new_turn else refusal_observation)
     if active_new_turn:
         refusal_type = None
+        planner_refusal_detected = False
     arm_order = (postbuild_observation.get("arm_order")
                  if isinstance(postbuild_observation, dict) else None)
     if arm_order is None:
@@ -5184,19 +5534,26 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "class": (headline_refusal_observation.get("type")
                       if isinstance(headline_refusal_observation, dict) else None),
             "stage": (headline_refusal_observation.get("stage")
-                      if isinstance(headline_refusal_observation, dict) else None),
+                      if isinstance(headline_refusal_observation, dict) else
+                      "planner_validation" if planner_refusal_detected
+                      else None),
             "scientific_budget_spent": (
                 headline_refusal_observation.get("scientific_budget_spent")
-                if isinstance(headline_refusal_observation, dict) else None),
+                if isinstance(headline_refusal_observation, dict) else
+                False if planner_refusal_detected else None),
             "receipt_sha256": (
                 headline_refusal_observation.get("receipt_sha256")
                 if isinstance(headline_refusal_observation, dict) else None),
             "detail": (None if active_new_turn else
                        headline_refusal_observation.get("detail")
                        if isinstance(headline_refusal_observation, dict) else
-                       (refusal_result.get("reason")
-                        or latest_iteration.get("reason")
-                        if isinstance(latest_iteration, dict) else None)),
+                       (f"reason sha256 {refusal_result['refusal_reason_sha256'][:12]}…"
+                        if planner_refusal_detected
+                        and isinstance(refusal_result.get(
+                            "refusal_reason_sha256"), str) else
+                        latest_iteration.get("reason")
+                        if isinstance(latest_iteration, dict)
+                        and not planner_refusal_detected else None)),
         },
         "provider_retry": {
             "detected": recoverability in {
@@ -5326,6 +5683,26 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             operations_root / "live" / "autokernel.jsonl", None)
         planner_events, planner_error = _discovery_events(
             operations_root / "live" / "planner.jsonl", "planner")
+        (lifecycle_events, visible_all_events, visible_planner_events,
+         telemetry_integrity) = _discovery_reconcile_events(
+             all_events, planner_events, all_error, planner_error)
+        state_visibility_failures = _discovery_state_visibility_degraded(state)
+        if state_visibility_failures:
+            telemetry_integrity = dict(telemetry_integrity)
+            # This producer field is append-only and has no resolution marker.
+            # It proves a historical visibility incident, while the reconciled
+            # physical streams above answer whether visibility is degraded NOW.
+            # Keep those facts separate instead of inventing a recovery state or
+            # keeping /api/health red forever after a successfully repaired copy.
+            telemetry_integrity["historical_visibility_loss"] = {
+                "detected": True,
+                "count": len(state_visibility_failures),
+                "markers": state_visibility_failures,
+                "detail": (
+                    f"producer recorded {len(state_visibility_failures)} historical "
+                    f"telemetry visibility incident"
+                    f"{'s' if len(state_visibility_failures) != 1 else ''}"),
+            }
         checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
         producer_times = [
             _parse_semantic_timestamp(value) for value in (
@@ -5360,6 +5737,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             "state_error": state_error, "all_events": all_events,
             "all_error": all_error, "planner_events": planner_events,
             "planner_error": planner_error, "checkpoint": checkpoint,
+            "lifecycle_events": lifecycle_events,
+            "visible_all_events": visible_all_events,
+            "visible_planner_events": visible_planner_events,
+            "telemetry_integrity": telemetry_integrity,
         })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
@@ -5396,6 +5777,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     all_error = selected["all_error"]
     planner_events = selected["planner_events"]
     planner_error = selected["planner_error"]
+    lifecycle_events = selected["lifecycle_events"]
+    visible_all_events = selected["visible_all_events"]
+    visible_planner_events = selected["visible_planner_events"]
+    telemetry_integrity = selected["telemetry_integrity"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
@@ -5414,10 +5799,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     claim_observation = _discovery_claim_observation(
         operations_root, campaign_id)
     refusal_observation = _discovery_refusal_observation(
-        bundle, state, all_events)
+        bundle, state, lifecycle_events)
     activity = _discovery_activity(
         lock_held=lock_held, campaign_id=campaign_id,
-        state=state, events=all_events,
+        state=state, events=lifecycle_events,
         checkpoint=checkpoint, operation_observation=build_observation,
         correctness_observation=correctness_observation,
         postbuild_observation=postbuild_observation,
@@ -5460,12 +5845,16 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         } if newest_unlaunched else {"available": False}),
         "state": state_view, "state_error": state_error,
         "activity": activity,
-        "autokernel_log": all_events, "planner_log": planner_events,
+        "autokernel_log": visible_all_events,
+        "planner_log": visible_planner_events,
         "log_error": all_error, "planner_log_error": planner_error,
+        "telemetry_integrity": telemetry_integrity,
         "status_message": (
             f"{activity['status'].upper()} — {activity['phase']['label']}; "
             f"waiting on {activity['waiting_on']}"),
-        "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+        "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+        "telemetry_contracts_accepted": sorted(AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS),
+        "telemetry_producer_commit": AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
     }
@@ -5473,11 +5862,16 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         artifact_present=True, timestamp=observed_ts,
         source="controller lock + durable discovery telemetry",
         populated=bool(lock_held or all_events or planner_events or state_view),
-        detail=("multiple controller locks are held" if ambiguous else payload["status_message"]),
+        detail=("multiple controller locks are held" if ambiguous else
+                f"{payload['status_message']}; telemetry visibility: "
+                f"{telemetry_integrity['detail']}"),
         evidence=str(operations_root / "live"),
         silence_budget_s=(activity.get("stall", {}).get("threshold_s")
                           if lock_held else None),
-        producer_idle=bool(state_view and state_view.get("complete") is True))
+        producer_idle=bool(state_view and state_view.get("complete") is True),
+        unreported=(("telemetry_stream_integrity",)
+                    if telemetry_integrity["state"] in {"degraded", "conflict"}
+                    else ()))
     return payload, obs
 
 

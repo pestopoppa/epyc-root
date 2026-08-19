@@ -504,6 +504,8 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             "hypothesis_id": "akh-v2-q5-type-specific-dequant",
             "provider": "codex", "model": "gpt-5.6-sol",
             "effort": "high",
+            "result": {"returncode": 0, "stdout_sha256": "a" * 64,
+                       "stderr_sha256": "b" * 64},
         }
         with (self.operations / "live/autokernel.jsonl").open("a") as handle:
             handle.write(json.dumps(planner_completed) + "\n")
@@ -592,7 +594,9 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         critic_completed = dict(critic_started)
         critic_completed.update({
             "ts": "2026-08-19T01:54:12.709191Z",
-            "event": "critic_completed", "result": {"decision": "accept"},
+            "event": "critic_completed",
+            "result": {"decision": "accept", "stdout_sha256": "a" * 64,
+                       "stderr_sha256": "b" * 64},
         })
         with (self.operations / "live/autokernel.jsonl").open("a") as handle:
             handle.write(json.dumps(critic_completed) + "\n")

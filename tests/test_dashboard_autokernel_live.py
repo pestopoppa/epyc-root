@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -33,6 +34,26 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
     def tearDown(self) -> None:
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = self._old_root
         self.temp.cleanup()
+
+    def _v2_event(self, *, event: str = "planner_started",
+                  result: dict | None = None) -> dict:
+        row = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+            "ts": "2026-08-19T05:00:00Z", "channel": "planner",
+            "event": event,
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "codex", "model": "gpt-5.6-sol",
+            "effort": "high", "operation_key": "b" * 64,
+        }
+        identity = {key: value for key, value in row.items()
+                    if key not in {"ts", "channel"}}
+        row["event_id"] = "ake-" + hashlib.sha256(json.dumps(
+            identity, sort_keys=True, separators=(",", ":")
+        ).encode("ascii")).hexdigest()
+        if result is not None:
+            row["result"] = result
+        return row
 
     def test_active_precheckpoint_planner_is_visible(self) -> None:
         with (self.state / "controller.run.lock").open("r") as handle:
@@ -86,6 +107,235 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(len(payload["planner_log"]), 1)
         self.assertNotIn("secret text", json.dumps(payload))
         self.assertNotIn("prompt", payload["planner_log"][0])
+
+    def test_v2_dual_stream_identity_is_verified_and_deduplicated(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event, sort_keys=True) + "\n"
+        (self.operations / "live/autokernel.jsonl").write_text(encoded)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["telemetry_integrity"]["state"], "verified")
+        self.assertTrue(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["telemetry_producer_commit"],
+                         "76301d6647586a25f2d56de1b93f1da9ac11a3fa")
+        self.assertEqual(len(payload["autokernel_log"]), 1)
+        self.assertEqual(len(payload["planner_log"]), 1)
+        self.assertEqual(payload["autokernel_log"][0]["event_id"],
+                         event["event_id"])
+        transitions = [row for row in payload["activity"]["transitions"]
+                       if row.get("event") == "planner_started"]
+        self.assertEqual(len(transitions), 1)
+        self.assertEqual(payload["_freshness"]["unreported"], [])
+
+    def test_v2_missing_planner_copy_degrades_but_keeps_pulse_visible(self) -> None:
+        event = self._v2_event()
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        integrity = payload["telemetry_integrity"]
+        self.assertEqual(integrity["state"], "degraded")
+        self.assertEqual(integrity["missing_planner_count"], 1)
+        self.assertEqual(len(payload["autokernel_log"]), 1)
+        self.assertEqual(payload["planner_log"], [])
+        self.assertEqual(payload["activity"]["transitions"][0]["event"],
+                         "planner_started")
+        self.assertEqual(payload["_freshness"]["unreported"],
+                         ["telemetry_stream_integrity"])
+        health = server.health_payload()
+        self.assertEqual(health["panels"]["kernel_live"]["unreported"],
+                         ["telemetry_stream_integrity"])
+        self.assertNotEqual(health["status"], "ok")
+
+    def test_v2_same_identity_with_different_payload_is_alarmed_and_dropped(self) -> None:
+        base_result = {"returncode": 0, "stdout_sha256": "c" * 64,
+                       "stderr_sha256": "d" * 64}
+        all_event = self._v2_event(event="planner_completed", result=base_result)
+        planner_event = {**all_event, "result": {
+            **base_result, "stdout_sha256": "e" * 64}}
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(all_event) + "\n")
+        (self.operations / "live/planner.jsonl").write_text(
+            json.dumps(planner_event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        integrity = payload["telemetry_integrity"]
+        self.assertEqual(integrity["state"], "conflict")
+        self.assertEqual(integrity["conflict_count"], 1)
+        self.assertEqual(integrity["dropped_event_count"], 1)
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertEqual(payload["planner_log"], [])
+        self.assertNotIn("planner_completed", json.dumps(
+            payload["activity"]["transitions"]))
+        self.assertEqual(payload["_freshness"]["unreported"],
+                         ["telemetry_stream_integrity"])
+
+    def test_v2_invalid_identity_or_extra_field_is_dropped_secret_free(self) -> None:
+        event = self._v2_event()
+        event["event_id"] = "ake-not-a-sha"
+        event["prompt"] = "SECRET ACTOR TEXT"
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
+        self.assertIn("rejected by telemetry contract",
+                      payload["telemetry_integrity"]["detail"])
+        self.assertNotIn("SECRET ACTOR TEXT", json.dumps(payload))
+
+    def test_v2_wrong_actor_channel_is_rejected(self) -> None:
+        # _v2_event deliberately emits channel=planner; that is invalid for a
+        # critic lifecycle event even though the identity hash excludes channel.
+        event = self._v2_event(event="critic_started")
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
+        self.assertIn("rejected by telemetry contract",
+                      payload["telemetry_integrity"]["detail"])
+
+    def test_v1_forbids_v2_identity_fields(self) -> None:
+        event = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": "2026-08-19T05:00:00Z", "channel": "planner",
+            "event": "planner_started",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "codex", "model": "gpt-5.6-sol", "effort": "high",
+            "event_id": "ake-" + "b" * 64, "operation_key": "c" * 64,
+        }
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertIn("rejected by telemetry contract",
+                      payload["telemetry_integrity"]["detail"])
+
+    def test_v2_terminal_result_shape_is_exact(self) -> None:
+        event = self._v2_event(
+            event="planner_completed", result={"returncode": 0})
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertIn("rejected by telemetry contract",
+                      payload["telemetry_integrity"]["detail"])
+
+    def test_v2_cross_stream_timestamp_divergence_is_dropped_as_corruption(self) -> None:
+        event = self._v2_event()
+        drifted = {**event, "ts": "2026-08-19T05:00:01Z"}
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+        (self.operations / "live/planner.jsonl").write_text(
+            json.dumps(drifted) + "\n")
+
+        payload = server.discovery_live_payload()
+
+        integrity = payload["telemetry_integrity"]
+        self.assertEqual(integrity["state"], "conflict")
+        self.assertEqual(integrity["timestamp_divergence_count"], 1)
+        self.assertEqual(integrity["dropped_event_count"], 1)
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertEqual(payload["planner_log"], [])
+
+    def test_v2_mirror_order_divergence_is_dropped_as_corruption(self) -> None:
+        started = self._v2_event()
+        completed = self._v2_event(event="planner_completed", result={
+            "returncode": 0, "stdout_sha256": "c" * 64,
+            "stderr_sha256": "d" * 64,
+        })
+        completed["ts"] = "2026-08-19T05:00:01Z"
+        global_rows = [started, completed]
+        planner_rows = [completed, started]
+        (self.operations / "live/autokernel.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in global_rows))
+        (self.operations / "live/planner.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in planner_rows))
+
+        payload = server.discovery_live_payload()
+
+        integrity = payload["telemetry_integrity"]
+        self.assertEqual(integrity["state"], "conflict")
+        self.assertTrue(integrity["order_divergence"])
+        self.assertEqual(integrity["dropped_event_count"], 2)
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertEqual(payload["planner_log"], [])
+
+    def test_v2_planner_refusal_is_typed_secret_free_and_advances(self) -> None:
+        reason_digest = "f" * 64
+        event = self._v2_event(event="planner_refused", result={
+            "returncode": 0, "stdout_sha256": "c" * 64,
+            "stderr_sha256": "d" * 64,
+            "refusal_type": "planner_output_refusal",
+            "refusal_reason_sha256": reason_digest,
+        })
+        encoded = json.dumps(event) + "\n"
+        (self.operations / "live/autokernel.jsonl").write_text(encoded)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": event["ts"], "next": 2, "complete": False,
+            "iterations": [{
+                "turn": 1, "hypothesis_id": event["hypothesis_id"],
+                "status": "planner_refused",
+                "refusal_type": "planner_output_refusal",
+                "scientific_budget_spent": False,
+                "reason": "RAW PLANNER REASON MUST NOT CROSS DASHBOARD",
+            }],
+        }))
+
+        payload = server.discovery_live_payload()
+        activity = payload["activity"]
+
+        self.assertEqual(activity["status"], "stopped")
+        self.assertEqual(activity["phase"]["id"], "next_hypothesis")
+        self.assertEqual(activity["hypothesis_id"], event["hypothesis_id"])
+        self.assertEqual(activity["turn"], 1)
+        self.assertTrue(activity["refusal"]["detected"])
+        self.assertEqual(activity["refusal"]["type"],
+                         "planner_output_refusal")
+        self.assertFalse(activity["refusal"]["scientific_budget_spent"])
+        self.assertIn(reason_digest[:12], activity["refusal"]["detail"])
+        self.assertNotIn("RAW PLANNER REASON", json.dumps(payload))
+        self.assertFalse(activity["gpu"]["expected_now"])
+        pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"], "complete")
+        self.assertEqual(pipeline["planner_validation"], "failed")
+        self.assertEqual(pipeline["next_hypothesis"], "waiting")
+
+    def test_state_side_visibility_failure_is_visible_as_historical_loss(self) -> None:
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-19T05:01:00Z", "next": 1,
+            "complete": False, "iterations": [],
+            "visibility_degraded": [{
+                "event": "planner_refused", "operation_key": "b" * 64,
+                "error_type": "OSError", "error_sha256": "c" * 64,
+            }],
+        }))
+
+        payload = server.discovery_live_payload()
+        integrity = payload["telemetry_integrity"]
+
+        self.assertEqual(integrity["state"], "legacy")
+        historical = integrity["historical_visibility_loss"]
+        self.assertTrue(historical["detected"])
+        self.assertEqual(historical["count"], 1)
+        self.assertEqual(historical["markers"][0]["error_type"],
+                         "OSError")
+        self.assertEqual(payload["_freshness"]["unreported"], [])
+        self.assertNotIn("error", historical["markers"][0])
 
     def test_v16_planner_terminal_failure_is_not_projected_as_idle(self) -> None:
         """Exact v16 seam: a typed planning failure must remain visible."""

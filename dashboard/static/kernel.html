@@ -915,6 +915,8 @@ async function load(){
 function liveLine(row){
   const result=row.result||{};
   const facts=[];
+  if(row.event_id) facts.push("id="+String(row.event_id).slice(0,16)+"…");
+  if(row.operation_key) facts.push("op="+String(row.operation_key).slice(0,12)+"…");
   if(result.decision) facts.push("decision="+result.decision);
   if(result.stage) facts.push("stage="+result.stage);
   if(result.first_incomplete_stage) facts.push("resume="+result.first_incomplete_stage);
@@ -944,6 +946,14 @@ function renderLive(d){
   const summary=$("#ak-live-summary");
   summary.className="live-summary "+status;
   let hero='<div class="hero-label">'+esc(status.toUpperCase())+' · '+esc(d.deployment||"no deployment")+'</div>';
+  const integrity=d.telemetry_integrity||{};
+  if(integrity.state==="degraded"||integrity.state==="conflict"){
+    hero+='<div class="fail" style="margin:8px 0"><b>Telemetry visibility '+esc(integrity.state)+'</b><br>'+esc(integrity.detail||"dual-stream integrity could not be proved")+'</div>';
+  }
+  const historicalVisibility=integrity.historical_visibility_loss||{};
+  if(historicalVisibility.detected){
+    hero+='<div class="muted" style="margin:8px 0"><b>Historical telemetry visibility loss recorded</b><br>'+esc(historicalVisibility.detail||"producer persisted a visibility incident marker")+'</div>';
+  }
   hero+='<div class="live-title">'+esc(phase.label||d.status_message||"State unavailable")+'</div>';
   hero+='<div class="live-facts">';
   hero+='<span><b>Stage elapsed:</b> '+esc(elapsedText(phase.elapsed_s))+'</span>';

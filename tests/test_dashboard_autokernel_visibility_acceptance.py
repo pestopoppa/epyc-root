@@ -58,7 +58,21 @@ def _event(event: str, *, seconds_ago: int, channel: str = "planner",
         "model": model,
         "effort": "high",
     }
-    if result is not None:
+    if event in {"planner_completed", "planner_failed"}:
+        row["result"] = {
+            "returncode": 0 if event == "planner_completed" else 1,
+            "stdout_sha256": "a" * 64,
+            "stderr_sha256": "b" * 64,
+            **(result or {}),
+        }
+    elif event == "critic_completed":
+        row["result"] = {
+            "stdout_sha256": "a" * 64,
+            "stderr_sha256": "b" * 64,
+            "decision": "accept",
+            **(result or {}),
+        }
+    elif result is not None:
         row["result"] = result
     return row
 
@@ -322,7 +336,7 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "planner_validation_interrupted")
 
-    def test_explicit_planner_validation_terminal_events_are_consumed(self) -> None:
+    def test_noncontract_planner_validation_events_are_rejected(self) -> None:
         for event in ("planner_validation_failed", "planner_validation_refused"):
             with self.subTest(event=event):
                 self._write_events([
@@ -333,13 +347,18 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
                            model="local-validator", provider="controller"),
                 ])
 
-                activity = server.discovery_live_payload()["activity"]
+                payload = server.discovery_live_payload()
+                activity = payload["activity"]
 
                 self.assertEqual(activity["status"], "failed")
                 self.assertEqual(activity["phase"]["id"], "planner_validation")
                 self.assertTrue(activity["failure"]["detected"])
-                self.assertIn("producer lifecycle event",
+                self.assertIn("did not persist",
                               activity["failure"]["detail"])
+                self.assertEqual(payload["telemetry_integrity"]["state"],
+                                 "degraded")
+                self.assertIn("rejected by telemetry contract",
+                              payload["telemetry_integrity"]["detail"])
                 pipeline = {row["id"]: row for row in activity["pipeline"]}
                 self.assertEqual(pipeline["planner"]["state"], "complete")
                 self.assertEqual(pipeline["planner_validation"]["state"], "failed")
@@ -1011,6 +1030,14 @@ process.stdout.write(JSON.stringify(out));
             "dashboard_observed_at": "2026-08-18T20:00:00Z",
             "status_message": "STALLED — critic",
             "autokernel_log": events, "planner_log": events[:-1],
+            "telemetry_integrity": {
+                "state": "degraded", "verified": False,
+                "detail": "1 planner event missing from planner stream",
+                "historical_visibility_loss": {
+                    "detected": True,
+                    "detail": "producer recorded 1 historical telemetry visibility incident",
+                },
+            },
             "_freshness": {"staleness_class": "aging"},
             "activity": {
                 "status": "stalled", "last_progress_at": "2026-08-18T19:58:00Z",
@@ -1047,7 +1074,9 @@ process.stdout.write(JSON.stringify(out));
         full = nodes["ak-live-log-full"]["textContent"]
 
         for token in ("STALLED", "Critic review", "4 min", "akh-q5",
-                      "Turn", "GPU", "no claim"):
+                      "Turn", "GPU", "no claim", "Telemetry visibility degraded",
+                      "1 planner event missing from planner stream",
+                      "Historical telemetry visibility loss recorded"):
             self.assertIn(token.lower(), summary.lower())
         self.assertIn("last visible transition", last)
         for hidden in ("hidden critic method detail", "hidden-checkpoint-state",
