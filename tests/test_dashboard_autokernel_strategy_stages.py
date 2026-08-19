@@ -135,6 +135,87 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         }
         path.write_text(json.dumps(_sealed(base), sort_keys=True) + "\n")
 
+    def _complete_source_proof(self) -> None:
+        self._receipt("proof/correctness/receipt.json",
+                      "epyc.autokernel.targeted_correctness_receipt.v3",
+                      status="complete", result="PASS")
+        for arm in ("candidate", "anchor"):
+            self._receipt(
+                f"proof/attribution-{arm}/receipt.json",
+                "epyc.autokernel.gpu_kernel_attribution.v2",
+                status="complete", result="PASS")
+        self._receipt(
+            "proof/attribution-pair.json",
+            "epyc.autokernel.gpu_kernel_attribution_pair.v1",
+            attribution_arm_order=["candidate", "anchor"],
+            attribution_arm_order_seed_sha256="c" * 64,
+            exact_duration_comparison={
+                "direction": "improved",
+                "relative_improvement_fraction": 0.01})
+        self._receipt("proof/proof-bundle.json",
+                      "epyc.autokernel.gpu_source_evidence_bundle.v1")
+
+    def _runner_preflight(self, *, graph_mode: str,
+                          order: list[str]) -> tuple[Path, str]:
+        name = ("measurement-graphs-off" if graph_mode == "off"
+                else "target-runtime-graphs-on")
+        output = self.operation / "runner/s1" / name
+        output.mkdir(parents=True)
+        os.chmod(output, 0o700)
+        path = output / "preflight.json"
+        raw = (json.dumps({"runtime_graphs": graph_mode,
+                           "arm_order_schedule": order},
+                          sort_keys=True) + "\n").encode()
+        path.write_bytes(raw)
+        os.chmod(path, 0o600)
+        return output, hashlib.sha256(json.dumps(
+            {"runtime_graphs": graph_mode, "arm_order_schedule": order},
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")).hexdigest()
+
+    def _process_receipt(self, output: Path, *, graph_mode: str, arm: str,
+                         preflight_sha256: str,
+                         stdout: bytes = b"{}\n") -> tuple[Path, str, dict]:
+        root = output / f"process-{arm}"
+        root.mkdir(mode=0o700)
+        stderr = b"private runner detail"
+        for name, raw in (("stdout.bin", stdout), ("stderr.bin", stderr)):
+            (root / name).write_bytes(raw)
+            os.chmod(root / name, 0o600)
+        def binding(name: str, raw: bytes) -> dict:
+            digest = hashlib.sha256(raw).hexdigest()
+            return {"path": name, "observed_size": len(raw),
+                    "observed_sha256": digest, "stored_size": len(raw),
+                    "stored_sha256": digest, "truncated": False}
+        body = {
+            "schema": "epyc.autokernel.gpu_discovery_process_receipt.v1",
+            "status": "process_complete",
+            "identity": {
+                "repetitions": 3,
+                "runtime_graphs": graph_mode, "runtime_arm": arm,
+                "process_context": {
+                    "campaign_id": "ak-discovery-" + "a" * 16,
+                    "arm": arm, "workload": "pp512",
+                    "metric": "prompt_tokens_per_s",
+                    "runtime_graphs": graph_mode, "prompt_tokens": 512,
+                    "generation_tokens": 0, "tokens_per_repetition": 512,
+                    "preflight_sha256": preflight_sha256,
+                },
+            },
+            "returncode": 0,
+            "residency": [{"gpu_vram_bytes": 1}],
+            "supervisor_elapsed_s": 1.0,
+            "teardown": {"completed": True},
+            "output_bound_bytes": 8 * 1024 * 1024,
+            "stdout": binding("stdout.bin", stdout),
+            "stderr": binding("stderr.bin", stderr),
+        }
+        receipt = _sealed(body)
+        path = root / "receipt.json"
+        path.write_text(json.dumps(receipt, sort_keys=True) + "\n")
+        os.chmod(path, 0o600)
+        return path, hashlib.sha256(path.read_bytes()).hexdigest(), receipt
+
     def _active(self) -> dict:
         with (self.state_root / "controller.run.lock").open("r") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -204,6 +285,213 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                       "measurement_graphs_off_screen",
                       "target_runtime_graphs_on_screen", "benchmark"):
             self.assertEqual(pipeline[stage], "complete", stage)
+
+    def test_completed_measurement_arm_is_visible_as_reusable_checkpoint(self) -> None:
+        self._complete_source_proof()
+        output, preflight_sha = self._runner_preflight(
+            graph_mode="off", order=["anchor", "candidate"])
+        self._process_receipt(
+            output, graph_mode="off", arm="anchor",
+            preflight_sha256=preflight_sha)
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["phase"]["id"],
+                         "measurement_graphs_off_screen")
+        self.assertIn("candidate after anchor checkpoint reuse",
+                      activity["phase"]["label"])
+        contract = activity["stage_contract"]
+        self.assertEqual(contract["first_incomplete_stage"],
+                         "measurement_graphs_off_screen")
+        self.assertEqual(contract["measurement_process_progress"], {
+            "stage": "measurement_graphs_off_screen",
+            "runtime_graphs": "off", "completed_arms": ["anchor"],
+            "next_arm": "candidate", "checkpoint_reuse": True,
+        })
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["measurement_graphs_off_screen"]["state"],
+                         "running")
+        self.assertIn("revalidated and reused",
+                      pipeline["measurement_graphs_off_screen"]["detail"])
+        self.assertTrue(any(
+            row.get("event") == "measurement_process_checkpointed"
+            and row.get("label", "").startswith("anchor process complete")
+            for row in activity["transitions"]))
+
+    def test_graphs_on_checkpoint_is_the_exact_first_incomplete_stage(self) -> None:
+        self._complete_source_proof()
+        self._receipt(
+            "runner/s1/measurement-graphs-off/result.json",
+            "epyc.autokernel.gpu_candidate_only_screen.v2",
+            status="complete", state="decided", ok=True,
+            runtime_graphs="off",
+            arm_order_schedule=["candidate", "anchor"])
+        output, preflight_sha = self._runner_preflight(
+            graph_mode="on", order=["candidate", "anchor"])
+        self._process_receipt(
+            output, graph_mode="on", arm="candidate",
+            preflight_sha256=preflight_sha)
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["phase"]["id"],
+                         "target_runtime_graphs_on_screen")
+        self.assertIn("anchor after candidate checkpoint reuse",
+                      activity["phase"]["label"])
+        contract = activity["stage_contract"]
+        self.assertEqual(contract["first_incomplete_stage"],
+                         "target_runtime_graphs_on_screen")
+        self.assertEqual(contract["measurement_process_progress"], {
+            "stage": "target_runtime_graphs_on_screen",
+            "runtime_graphs": "on", "completed_arms": ["candidate"],
+            "next_arm": "anchor", "checkpoint_reuse": True,
+        })
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["measurement_graphs_off_screen"]["state"],
+                         "complete")
+        self.assertEqual(pipeline["target_runtime_graphs_on_screen"]["state"],
+                         "running")
+
+    def test_measurement_output_refusal_projects_secret_free_exact_arm(self) -> None:
+        self._complete_source_proof()
+        output, preflight_sha = self._runner_preflight(
+            graph_mode="off", order=["anchor", "candidate"])
+        self._process_receipt(
+            output, graph_mode="off", arm="anchor",
+            preflight_sha256=preflight_sha)
+        candidate_path, candidate_sha, candidate = self._process_receipt(
+            output, graph_mode="off", arm="candidate",
+            preflight_sha256=preflight_sha,
+            stdout=b'{"avg_ns":5120000000,"samples_ns":[5120000000,5120000000,5120000000],"avg_ts":101.000000,"samples_ts":[100.0,100.0,100.0]}\n')
+        public_binding_keys = (
+            "observed_size", "observed_sha256", "stored_size",
+            "stored_sha256", "truncated")
+        diagnostic = {
+            "schema": "epyc.autokernel.measurement_output_refusal_diagnostic.v1",
+            "diagnostic_available": True,
+            "measurement_identity": {
+                "campaign_id": "ak-discovery-" + "a" * 16,
+                "arm": "candidate", "workload": "pp512",
+                "metric": "prompt_tokens_per_s", "runtime_graphs": "off",
+                "prompt_tokens": 512, "generation_tokens": 0,
+                "tokens_per_repetition": 512, "repetitions": 3,
+                "preflight_sha256": preflight_sha,
+            },
+            "native_fields": {
+                "avg_ns": 5120000000,
+                "samples_ns": [5120000000, 5120000000, 5120000000],
+                "avg_ts_decimal": "101.000000",
+                "samples_ts_decimal": ["100.0", "100.0", "100.0"],
+            },
+            "rederived": {"samples_ts": [100.0, 100.0, 100.0],
+                          "avg_ts": 100.0},
+            "stdout": {key: candidate["stdout"][key]
+                       for key in public_binding_keys},
+            "stderr": {key: candidate["stderr"][key]
+                       for key in public_binding_keys},
+        }
+        reason = "PRIVATE RAW TIMING REASON"
+        body = {
+            "schema": "epyc.autokernel.gpu_discovery_output_refusal.v1",
+            "status": "measurement_output_refused",
+            "scientific_budget_spent": False,
+            "process_receipt_path": str(candidate_path.resolve()),
+            "process_receipt_file_sha256": candidate_sha,
+            "reason_code": "avg_ts_rounding",
+            "reason_sha256": hashlib.sha256(reason.encode()).hexdigest(),
+            "diagnostic": diagnostic,
+        }
+        refusal = _sealed(body)
+        refusal_path = output / "process-candidate-refusal.json"
+        refusal_path.write_text(json.dumps(refusal, sort_keys=True) + "\n")
+        os.chmod(refusal_path, 0o600)
+        state = json.loads((self.state_root / "state.json").read_text())
+        state.pop("inflight")
+        state["next"] = 2
+        state["iterations"] = [{
+            "turn": 1, "hypothesis_id": "akh-stage-fixture",
+            "portfolio_hypothesis_id": "akh-stage-fixture",
+            "source_manifest_sha256": self.manifest_sha,
+            "portfolio_decision_policy": {"max_distinct_candidates": 2},
+            "status": "measurement_output_refused",
+            "stage": "measurement_output", "reason": reason,
+            "stage_receipt_path": str(refusal_path.resolve()),
+            "stage_receipt_sha256": hashlib.sha256(
+                refusal_path.read_bytes()).hexdigest(),
+            "scientific_budget_spent": False,
+        }]
+        state["portfolio_measurement_output_failures"] = {
+            "akh-stage-fixture": [self.manifest_sha]}
+        (self.state_root / "state.json").write_text(json.dumps(state))
+
+        payload = self._active()
+        activity = payload["activity"]
+
+        self.assertEqual(payload["measurement_output_producer_commit"],
+                         "eb689b0d3239f7af538015a7ccb098fe8169f9e6")
+        self.assertEqual(activity["phase"]["id"], "next_hypothesis")
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
+                         "next_hypothesis")
+        refusal_view = activity["refusal"]
+        self.assertTrue(refusal_view["detected"])
+        self.assertEqual(refusal_view["type"], "measurement_output_refused")
+        self.assertEqual(refusal_view["class"], "MeasurementOutputRefusal")
+        self.assertEqual(refusal_view["stage"], "measurement_output")
+        self.assertFalse(refusal_view["scientific_budget_spent"])
+        output_view = refusal_view["measurement_output"]
+        self.assertEqual(output_view["arm"], "candidate")
+        self.assertEqual(output_view["screen_stage"],
+                         "measurement_graphs_off_screen")
+        self.assertEqual(output_view["reason_code"], "avg_ts_rounding")
+        self.assertEqual(output_view["reusable_completed_arms"], ["anchor"])
+        self.assertEqual(output_view["recovery"], {
+            "disposition": "retry_distinct_candidate",
+            "distinct_candidate_count": 1,
+            "max_distinct_candidates": 2,
+            "scientific_terminal": False,
+            "next": "next_distinct_candidate",
+        })
+        self.assertEqual(output_view["native_fields"]["avg_ts_decimal"],
+                         "101.000000")
+        self.assertEqual(output_view["rederived"]["avg_ts"], 100.0)
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["measurement_graphs_off_screen"]["state"],
+                         "failed")
+        self.assertIn("reusable completed arm: anchor",
+                      pipeline["measurement_graphs_off_screen"]["detail"])
+        self.assertNotIn(reason, json.dumps(payload))
+        self.assertNotIn("private runner detail", json.dumps(payload))
+
+        state["portfolio_measurement_output_failures"][
+            "akh-stage-fixture"].append("f" * 64)
+        state["portfolio_skips"] = {"akh-stage-fixture": {
+            "disposition": "bounded_measurement_output_refused",
+            "scientific_terminal": False, "distinct_candidate_count": 2,
+            "stage_receipt_path": str(refusal_path.resolve()),
+            "stage_receipt_sha256": hashlib.sha256(
+                refusal_path.read_bytes()).hexdigest(),
+        }}
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        bounded = self._active()["activity"]["refusal"][
+            "measurement_output"]["recovery"]
+        self.assertEqual(bounded["disposition"],
+                         "bounded_measurement_output_refused")
+        self.assertEqual(bounded["next"], "next_portfolio_hypothesis")
+        self.assertFalse(bounded["scientific_terminal"])
+
+        # Rehashed diagnostic widening is still rejected and must not make the
+        # raw state reason cross the dashboard boundary.
+        refusal["diagnostic"]["private_stderr"] = "SECRET WIDENING"
+        refusal = _sealed({key: value for key, value in refusal.items()
+                           if key != "receipt_sha256"})
+        refusal_path.write_text(json.dumps(refusal, sort_keys=True) + "\n")
+        state["iterations"][0]["stage_receipt_sha256"] = hashlib.sha256(
+            refusal_path.read_bytes()).hexdigest()
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        tampered = self._active()
+        self.assertFalse(tampered["activity"]["refusal"]["detected"])
+        self.assertNotIn(reason, json.dumps(tampered))
+        self.assertNotIn("SECRET WIDENING", json.dumps(tampered))
 
     def test_live_source_claim_starts_correctness_clock_at_claim_acquisition(self) -> None:
         """v11: a held correctness claim must not inherit pre-screen time."""

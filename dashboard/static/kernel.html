@@ -942,6 +942,8 @@ function renderLive(d){
   const phase=a.phase||{}, gpu=a.gpu||{}, proof=a.correctness||{}, checkpoint=a.checkpoint||{};
   const failure=a.failure||{}, resume=a.resume||{}, stall=a.stall||{};
   const contract=a.stage_contract||{}, refusal=a.refusal||{}, retry=a.provider_retry||{};
+  const processProgress=contract.measurement_process_progress||{};
+  const outputRefusal=refusal.measurement_output||{};
   const status=String(a.status||(active?"running":"unknown"));
   const summary=$("#ak-live-summary");
   summary.className="live-summary "+status;
@@ -978,8 +980,13 @@ function renderLive(d){
     hero+='<div class="fail" style="margin-top:10px"><b>'+esc(failure.detail||"controller failure")+'</b><br>'+esc(failure.recovery||"")+'</div>';
   }
   if(refusal.detected){
+    const outputRecovery=outputRefusal.recovery||{};
     hero+='<div class="fail" style="margin-top:10px"><b>Typed refusal: '+esc(refusal.type||"refused")+'</b>'+
       (refusal.class?' · '+esc(refusal.class):'')+(refusal.stage?' · stage '+esc(refusal.stage):'')+
+      (outputRefusal.arm?' · '+esc(outputRefusal.arm)+' · graphs-'+esc(outputRefusal.runtime_graphs||"?"):'')+
+      (outputRefusal.reason_code?' · '+esc(outputRefusal.reason_code):'')+
+      ((outputRefusal.reusable_completed_arms||[]).length?' · reusable '+esc(outputRefusal.reusable_completed_arms.join(", ")):'')+
+      (outputRecovery.disposition?' · recovery '+esc(outputRecovery.disposition)+' '+esc(outputRecovery.distinct_candidate_count)+'/'+esc(outputRecovery.max_distinct_candidates):'')+
       (typeof refusal.scientific_budget_spent==="boolean"?' · scientific budget '+(refusal.scientific_budget_spent?'spent':'not spent'):'')+
       (refusal.detail?'<br>'+esc(refusal.detail):'')+'</div>';
   }
@@ -1004,6 +1011,7 @@ function renderLive(d){
   $("#ak-live-detail-meta").innerHTML='<b>Waiting on:</b> '+esc(a.waiting_on||"unknown")+
     ' · <b>Checkpoint:</b> '+(checkpoint.available?esc(checkpoint.state||checkpoint.kind||"available"):esc(checkpoint.detail||"none"))+
     ' · <b>Resume:</b> '+esc(contract.resume_policy||resume.disposition||"unknown")+
+    ((processProgress.completed_arms||[]).length?' · <b>Process checkpoint reuse:</b> '+esc(processProgress.completed_arms.join(", "))+' complete; next '+esc(processProgress.next_arm||"stage result"):'')+
     (contract.arm_order_seed_sha256?' · <b>Arm-order seed:</b> '+esc(String(contract.arm_order_seed_sha256).slice(0,12))+'…':'')+
     ' · <b>Stall:</b> '+esc(stall.state||"unknown")+' — '+esc(stall.detail||"unknown")+
     (sealed.available?' · <b>Available next deployment:</b> '+esc(sealed.deployment||"sealed bundle")+' · sealed, not launched':'');

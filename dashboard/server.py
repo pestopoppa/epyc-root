@@ -65,6 +65,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from fractions import Fraction
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -183,6 +184,8 @@ AUTOKERNEL_DISCOVERY_EVENT_SCHEMA = "epyc.autokernel.discovery_live_event.v1"
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 = "epyc.autokernel.discovery_live_event.v2"
 AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA = \
     "76301d6647586a25f2d56de1b93f1da9ac11a3fa"
+AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA = \
+    "eb689b0d3239f7af538015a7ccb098fe8169f9e6"
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS = frozenset({
     AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
     AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
@@ -4275,6 +4278,221 @@ def _discovery_stage_receipt(path: Path, *, operation_root: Path,
             "file_sha256": hashlib.sha256(raw).hexdigest()}
 
 
+def _discovery_private_file(path: Path, *, operation_root: Path,
+                            maximum: int) -> tuple[bytes, os.stat_result] | None:
+    """Read one producer-private operation file without following aliases."""
+    fd = None
+    try:
+        root = operation_root.resolve(strict=True)
+        path.parent.resolve(strict=True).relative_to(root)
+        cursor = path.parent
+        while cursor != operation_root:
+            if cursor.is_symlink():
+                return None
+            cursor = cursor.parent
+        flags = os.O_RDONLY | os.O_CLOEXEC
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        fd = os.open(path, flags)
+        before = os.fstat(fd)
+        named_before = path.lstat()
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.geteuid()
+                or stat.S_IMODE(before.st_mode) & 0o077
+                or before.st_size > maximum
+                or (named_before.st_dev, named_before.st_ino) !=
+                (before.st_dev, before.st_ino)):
+            return None
+        chunks = []
+        remaining = before.st_size
+        while remaining:
+            chunk = os.read(fd, min(1024 * 1024, remaining))
+            if not chunk:
+                return None
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+        after = os.fstat(fd)
+        named_after = path.lstat()
+    except (OSError, ValueError):
+        return None
+    finally:
+        if fd is not None:
+            os.close(fd)
+    epoch = lambda value: (
+        value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns,
+        value.st_ctime_ns, value.st_nlink, value.st_uid,
+        stat.S_IFMT(value.st_mode), stat.S_IMODE(value.st_mode))
+    if epoch(before) != epoch(after) or epoch(before) != epoch(named_after):
+        return None
+    return raw, before
+
+
+def _discovery_content_hash(value: object) -> str | None:
+    """Match the producer's warning-strict canonical JSON content hash."""
+    try:
+        canonical = json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _discovery_runner_preflight(output: Path, *, operation_root: Path,
+                                graph_mode: str) -> dict | None:
+    captured = _discovery_private_file(
+        output / "preflight.json", operation_root=operation_root,
+        maximum=1024 * 1024)
+    if captured is None:
+        return None
+    raw, info = captured
+    try:
+        body = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    order = body.get("arm_order_schedule") if isinstance(body, dict) else None
+    if (not isinstance(body, dict) or body.get("runtime_graphs") != graph_mode
+            or not isinstance(order, list) or len(order) != 2
+            or set(order) != {"anchor", "candidate"}):
+        return None
+    content_hash = _discovery_content_hash(body)
+    if content_hash is None:
+        return None
+    return {
+        "arm_order": list(order),
+        "sha256": content_hash,
+        "at": datetime.fromtimestamp(
+            info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
+def _discovery_process_receipt(root: Path, *, operation_root: Path,
+                               graph_mode: str, arm: str,
+                               preflight_sha256: str) -> dict | None:
+    """Validate one reusable per-arm process checkpoint without raw output."""
+    try:
+        root.resolve(strict=True).relative_to(operation_root.resolve(strict=True))
+        info = root.lstat()
+        if (root.is_symlink() or not root.is_dir()
+                or info.st_uid != os.geteuid()
+                or info.st_nlink != 2
+                or stat.S_IMODE(info.st_mode) != 0o700
+                or {entry.name for entry in root.iterdir()} != {
+                    "stdout.bin", "stderr.bin", "receipt.json"}):
+            return None
+    except (OSError, ValueError):
+        return None
+    files: dict[str, tuple[bytes, os.stat_result]] = {}
+    for name, maximum in (("stdout.bin", 8 * 1024 * 1024),
+                          ("stderr.bin", 8 * 1024 * 1024),
+                          ("receipt.json", 4 * 1024 * 1024)):
+        captured = _discovery_private_file(
+            root / name, operation_root=operation_root, maximum=maximum)
+        if captured is None:
+            return None
+        files[name] = captured
+    try:
+        receipt = json.loads(files["receipt.json"][0].decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(receipt, dict):
+        return None
+    unsigned = {key: value for key, value in receipt.items()
+                if key != "receipt_sha256"}
+    identity = receipt.get("identity")
+    context = identity.get("process_context") if isinstance(identity, dict) else None
+    repetitions = identity.get("repetitions") if isinstance(identity, dict) else None
+    if (receipt.get("schema") !=
+            "epyc.autokernel.gpu_discovery_process_receipt.v1"
+            or receipt.get("status") != "process_complete"
+            or receipt.get("receipt_sha256") != _discovery_content_hash(unsigned)
+            or not isinstance(identity, dict)
+            or identity.get("runtime_graphs") != graph_mode
+            or identity.get("runtime_arm") != arm
+            or isinstance(repetitions, bool)
+            or not isinstance(repetitions, int) or repetitions < 1
+            or not isinstance(context, dict)
+            or set(context) != {
+                "campaign_id", "preflight_sha256", "arm", "workload",
+                "metric", "runtime_graphs", "prompt_tokens",
+                "generation_tokens", "tokens_per_repetition"}
+            or re.fullmatch(r"ak-discovery-[0-9a-f]{16}", str(
+                context.get("campaign_id"))) is None
+            or context.get("arm") != arm
+            or context.get("runtime_graphs") != graph_mode
+            or context.get("preflight_sha256") != preflight_sha256
+            or not isinstance(context.get("workload"), str)
+            or not context["workload"]
+            or not isinstance(context.get("metric"), str)
+            or not context["metric"]
+            or any(isinstance(context.get(key), bool)
+                   or not isinstance(context.get(key), int)
+                   or context[key] < 0 for key in (
+                       "prompt_tokens", "generation_tokens"))
+            or isinstance(context.get("tokens_per_repetition"), bool)
+            or not isinstance(context.get("tokens_per_repetition"), int)
+            or context["tokens_per_repetition"] < 1
+            or context["tokens_per_repetition"] != (
+                context["prompt_tokens"] + context["generation_tokens"])
+            or isinstance(receipt.get("returncode"), bool)
+            or not isinstance(receipt.get("returncode"), int)
+            or not isinstance(receipt.get("residency"), list)
+            or (receipt["returncode"] == 0 and not receipt["residency"])
+            or any(not isinstance(sample, dict)
+                   for sample in receipt["residency"])
+            or isinstance(receipt.get("supervisor_elapsed_s"), bool)
+            or not isinstance(receipt.get("supervisor_elapsed_s"), (int, float))
+            or not math.isfinite(float(receipt["supervisor_elapsed_s"]))
+            or receipt["supervisor_elapsed_s"] < 0
+            or not isinstance(receipt.get("teardown"), dict)
+            or receipt.get("output_bound_bytes") != 8 * 1024 * 1024):
+        return None
+    for label in ("stdout", "stderr"):
+        binding = receipt.get(label)
+        raw = files[f"{label}.bin"][0]
+        if (not isinstance(binding, dict)
+                or set(binding) != {"path", "observed_size", "observed_sha256",
+                                    "stored_size", "stored_sha256", "truncated"}
+                or binding.get("path") != f"{label}.bin"
+                or binding.get("stored_size") != len(raw)
+                or binding.get("stored_sha256") != hashlib.sha256(raw).hexdigest()
+                or not isinstance(binding.get("observed_size"), int)
+                or isinstance(binding.get("observed_size"), bool)
+                or binding["observed_size"] < len(raw)
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    binding.get("observed_sha256"))) is None
+                or binding.get("truncated") is not (
+                    binding["observed_size"] > len(raw))
+                or (binding["truncated"] is False
+                    and binding["observed_sha256"] != binding["stored_sha256"])):
+            return None
+    receipt_raw, receipt_info = files["receipt.json"]
+    return {
+        "arm": arm, "runtime_graphs": graph_mode,
+        "receipt_path": str(root / "receipt.json"),
+        "receipt_file_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+        "stdout": {key: receipt["stdout"].get(key) for key in (
+            "observed_size", "observed_sha256", "stored_size",
+            "stored_sha256", "truncated")},
+        "stderr": {key: receipt["stderr"].get(key) for key in (
+            "observed_size", "observed_sha256", "stored_size",
+            "stored_sha256", "truncated")},
+        "measurement_identity": {
+            "campaign_id": context["campaign_id"], "arm": arm,
+            "workload": context["workload"], "metric": context["metric"],
+            "runtime_graphs": graph_mode,
+            "prompt_tokens": context["prompt_tokens"],
+            "generation_tokens": context["generation_tokens"],
+            "tokens_per_repetition": context["tokens_per_repetition"],
+            "repetitions": repetitions,
+            "preflight_sha256": preflight_sha256,
+        },
+        "at": datetime.fromtimestamp(
+            receipt_info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
 def _discovery_postbuild_observation(operations_root: Path,
                                      state: dict | None) -> dict | None:
     """Project the exact resumable proof/screen receipt sequence.
@@ -4365,6 +4583,41 @@ def _discovery_postbuild_observation(operations_root: Path,
     first_incomplete = next(
         (stage for stage, _path, _schemas in specs if stage not in receipts),
         "decision")
+    process_progress = None
+    screen_outputs = {
+        "measurement_graphs_off_screen": (
+            runner / "measurement-graphs-off", "off"),
+        "target_runtime_graphs_on_screen": (
+            runner / "target-runtime-graphs-on", "on"),
+    }
+    if first_incomplete in screen_outputs:
+        output, graph_mode = screen_outputs[first_incomplete]
+        preflight = _discovery_runner_preflight(
+            output, operation_root=operation, graph_mode=graph_mode)
+        if preflight is not None:
+            process_receipts = []
+            for arm in preflight["arm_order"]:
+                root = output / f"process-{arm}"
+                if not root.exists() and not root.is_symlink():
+                    break
+                process = _discovery_process_receipt(
+                    root, operation_root=operation, graph_mode=graph_mode,
+                    arm=arm, preflight_sha256=preflight["sha256"])
+                if process is None:
+                    process_receipts = []
+                    break
+                process_receipts.append(process)
+            if process_receipts:
+                completed_arms = [item["arm"] for item in process_receipts]
+                process_progress = {
+                    "stage": first_incomplete, "runtime_graphs": graph_mode,
+                    "arm_order": preflight["arm_order"],
+                    "completed_arms": completed_arms,
+                    "next_arm": (preflight["arm_order"][len(completed_arms)]
+                                 if len(completed_arms) < 2 else None),
+                    "checkpoint_reuse": True,
+                    "receipts": process_receipts,
+                }
     pair = _discovery_stage_receipt(
         proof / "attribution-pair.json",
         operation_root=operation,
@@ -4465,6 +4718,15 @@ def _discovery_postbuild_observation(operations_root: Path,
         "label": _DISCOVERY_PIPELINE_DICT.get(stage, stage),
         "detail": f"receipt {receipt['file_sha256'][:12]}…",
     } for stage, receipt in receipts.items()]
+    if process_progress is not None:
+        transitions.extend({
+            "ts": process["at"], "stage": first_incomplete,
+            "phase": first_incomplete, "state": "checkpointed",
+            "event": "measurement_process_checkpointed",
+            "label": (f"{process['arm']} process complete; checkpoint will be "
+                      "revalidated and reused"),
+            "detail": f"receipt {process['receipt_file_sha256'][:12]}…",
+        } for process in process_progress["receipts"])
     if pair is not None:
         transitions.append({
             "ts": pair["at"], "stage": "dispatch_proof", "phase": "dispatch_proof",
@@ -4492,6 +4754,7 @@ def _discovery_postbuild_observation(operations_root: Path,
         "correctness_execution": correctness_execution,
         "receipts": receipts, "pair_complete": pair is not None,
         "bundle_complete": bundle is not None, "arm_order": arm_order,
+        "process_progress": process_progress,
         "skipped": skipped,
         "arm_order_seed_sha256": (
                                    pair_body.get("attribution_arm_order_seed_sha256")
@@ -4579,6 +4842,248 @@ def _discovery_claim_observation(operations_root: Path,
             "identity_live": held}
 
 
+def _discovery_measurement_output_refusal(
+        receipt: dict, path: Path, bundle: Path) -> dict | None:
+    """Validate and project the v17 secret-free output-refusal diagnostic."""
+    if set(receipt) != {
+            "schema", "status", "scientific_budget_spent",
+            "process_receipt_path", "process_receipt_file_sha256",
+            "reason_code", "reason_sha256", "diagnostic", "receipt_sha256"}:
+        return None
+    if (receipt.get("schema") !=
+            "epyc.autokernel.gpu_discovery_output_refusal.v1"
+            or receipt.get("status") != "measurement_output_refused"
+            or receipt.get("scientific_budget_spent") is not False
+            or re.fullmatch(r"[a-z0-9_]{1,100}", str(
+                receipt.get("reason_code"))) is None
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                receipt.get("reason_sha256"))) is None
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                receipt.get("process_receipt_file_sha256"))) is None):
+        return None
+    diagnostic = receipt.get("diagnostic")
+    if (not isinstance(diagnostic, dict) or set(diagnostic) != {
+            "schema", "diagnostic_available", "measurement_identity",
+            "native_fields", "rederived", "stdout", "stderr"}
+            or diagnostic.get("schema") !=
+            "epyc.autokernel.measurement_output_refusal_diagnostic.v1"
+            or not isinstance(diagnostic.get("diagnostic_available"), bool)):
+        return None
+    identity = diagnostic.get("measurement_identity")
+    if (not isinstance(identity, dict) or set(identity) != {
+            "campaign_id", "arm", "workload", "metric", "runtime_graphs",
+            "prompt_tokens", "generation_tokens", "tokens_per_repetition",
+            "repetitions", "preflight_sha256"}
+            or identity.get("arm") not in {"anchor", "candidate"}
+            or identity.get("runtime_graphs") not in {"off", "on"}
+            or not isinstance(identity.get("campaign_id"), str)
+            or re.fullmatch(r"ak-discovery-[0-9a-f]{16}",
+                            identity["campaign_id"]) is None
+            or not isinstance(identity.get("workload"), str)
+            or not isinstance(identity.get("metric"), str)
+            or any(isinstance(identity.get(key), bool)
+                   or not isinstance(identity.get(key), int)
+                   or identity[key] < 0 for key in (
+                       "prompt_tokens", "generation_tokens"))
+            or any(isinstance(identity.get(key), bool)
+                   or not isinstance(identity.get(key), int)
+                   or identity[key] < 1 for key in (
+                       "tokens_per_repetition", "repetitions"))
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                identity.get("preflight_sha256"))) is None):
+        return None
+    native = diagnostic.get("native_fields")
+    rederived = diagnostic.get("rederived")
+    if (not isinstance(native, dict) or set(native) != {
+            "avg_ns", "samples_ns", "avg_ts_decimal", "samples_ts_decimal"}
+            or not isinstance(rederived, dict)
+            or set(rederived) != {"samples_ts", "avg_ts"}):
+        return None
+    repetitions = identity["repetitions"]
+    if (native["avg_ns"] is not None and (
+            isinstance(native["avg_ns"], bool)
+            or not isinstance(native["avg_ns"], int))):
+        return None
+    if native["samples_ns"] is not None and (
+            not isinstance(native["samples_ns"], list)
+            or len(native["samples_ns"]) != repetitions
+            or any(isinstance(value, bool) or not isinstance(value, int)
+                   or value <= 0 for value in native["samples_ns"])):
+        return None
+    decimal_re = r"-?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?"
+    if native["avg_ts_decimal"] is not None and re.fullmatch(
+            decimal_re, str(native["avg_ts_decimal"])) is None:
+        return None
+    if native["samples_ts_decimal"] is not None and (
+            not isinstance(native["samples_ts_decimal"], list)
+            or len(native["samples_ts_decimal"]) != repetitions
+            or any(re.fullmatch(decimal_re, str(value)) is None
+                   for value in native["samples_ts_decimal"])):
+        return None
+    samples_ts = rederived["samples_ts"]
+    avg_ts = rederived["avg_ts"]
+    if (samples_ts is not None and (
+            not isinstance(samples_ts, list)
+            or len(samples_ts) != repetitions
+            or any(isinstance(item, bool)
+                   or not isinstance(item, (int, float))
+                   or not math.isfinite(float(item)) for item in samples_ts))):
+        return None
+    if (avg_ts is not None and (
+            isinstance(avg_ts, bool) or not isinstance(avg_ts, (int, float))
+            or not math.isfinite(float(avg_ts)))):
+        return None
+    if diagnostic["diagnostic_available"] is not any(
+            value is not None for value in native.values()):
+        return None
+    if native["samples_ns"] is None:
+        if samples_ts is not None or avg_ts is not None:
+            return None
+    else:
+        exact = [
+            Fraction(1_000_000_000 * identity["tokens_per_repetition"], value)
+            for value in native["samples_ns"]]
+        exact_samples = [float(value) for value in exact]
+        exact_average = float(sum(exact, Fraction(0, 1)) / repetitions)
+        if (samples_ts != exact_samples
+                or avg_ts != exact_average):
+            return None
+    arm = identity["arm"]
+    graph_mode = identity["runtime_graphs"]
+    expected_name = f"process-{arm}-refusal.json"
+    output = path.parent
+    try:
+        operation = path.parents[3]
+        operation.resolve(strict=True).relative_to(bundle.resolve(strict=True))
+    except (OSError, ValueError, IndexError):
+        return None
+    if (path.name != expected_name
+            or re.fullmatch(r"[0-9a-f]{64}", operation.name) is None):
+        return None
+    preflight = _discovery_runner_preflight(
+        output, operation_root=operation, graph_mode=graph_mode)
+    if (preflight is None
+            or preflight["sha256"] != identity["preflight_sha256"]):
+        return None
+    process = _discovery_process_receipt(
+        output / f"process-{arm}", operation_root=operation,
+        graph_mode=graph_mode, arm=arm,
+        preflight_sha256=preflight["sha256"])
+    if (process is None
+            or process["receipt_file_sha256"] !=
+            receipt["process_receipt_file_sha256"]
+            or str(Path(str(receipt.get("process_receipt_path"))).resolve()) !=
+            str(Path(process["receipt_path"]).resolve())
+            or diagnostic["stdout"] != process["stdout"]
+            or diagnostic["stderr"] != process["stderr"]
+            or identity != process["measurement_identity"]):
+        return None
+    refused_index = preflight["arm_order"].index(arm)
+    reusable_arms = []
+    for completed_arm in preflight["arm_order"][:refused_index]:
+        completed_process = _discovery_process_receipt(
+            output / f"process-{completed_arm}", operation_root=operation,
+            graph_mode=graph_mode, arm=completed_arm,
+            preflight_sha256=preflight["sha256"])
+        if completed_process is None:
+            return None
+        reusable_arms.append(completed_arm)
+    repetition_match = re.fullmatch(r"s([1-9][0-9]*)", path.parents[1].name)
+    if repetition_match is None:
+        return None
+    intent_present, intent, intent_error = _read_json_object(
+        operation / "intent.json", "GPU source operation intent")
+    if (not intent_present or not isinstance(intent, dict) or intent_error
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                intent.get("manifest_sha256"))) is None):
+        return None
+    proof_observation = _discovery_postbuild_observation(
+        operation.parent, {"inflight": {
+            "operation_key": operation.name,
+            "candidate": {"source_manifest_sha256":
+                          intent["manifest_sha256"]},
+            "lease": {"repetition": int(repetition_match.group(1))},
+        }})
+    screen_stage = ("measurement_graphs_off_screen" if graph_mode == "off"
+                    else "target_runtime_graphs_on_screen")
+    if (not isinstance(proof_observation, dict)
+            or proof_observation.get("first_incomplete_stage") != screen_stage):
+        return None
+    completed_pipeline = [
+        "source_materialization", "build", "evidence_binding",
+        *proof_observation.get("completed", []),
+    ]
+    return {
+        "arm": arm, "runtime_graphs": graph_mode,
+        "screen_stage": screen_stage,
+        "workload": identity["workload"], "metric": identity["metric"],
+        "reason_code": receipt["reason_code"],
+        "reason_sha256": receipt["reason_sha256"],
+        "diagnostic_available": diagnostic["diagnostic_available"],
+        "native_fields": dict(native), "rederived": dict(rederived),
+        "process_receipt_sha256": process["receipt_file_sha256"],
+        "arm_order": preflight["arm_order"],
+        "reusable_completed_arms": reusable_arms,
+        "completed_pipeline": list(dict.fromkeys(completed_pipeline)),
+    }
+
+
+def _discovery_measurement_output_recovery(
+        state: dict | None, iteration: dict | None,
+        refusal: dict | None) -> dict | None:
+    """Project the producer's bounded, non-scientific candidate recovery."""
+    if (not isinstance(state, dict) or not isinstance(iteration, dict)
+            or not isinstance(refusal, dict)):
+        return None
+    hypothesis = (iteration.get("portfolio_hypothesis_id")
+                  or iteration.get("hypothesis_id"))
+    failures_by_hypothesis = state.get("portfolio_measurement_output_failures")
+    failures = (failures_by_hypothesis.get(hypothesis)
+                if isinstance(failures_by_hypothesis, dict)
+                and isinstance(hypothesis, str) else None)
+    if (not isinstance(failures, list) or not failures
+            or len(set(failures)) != len(failures)
+            or any(not isinstance(value, str)
+                   or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                   for value in failures)):
+        return None
+    manifest = iteration.get("source_manifest_sha256")
+    if not isinstance(manifest, str) or manifest not in failures:
+        return None
+    policy = iteration.get("portfolio_decision_policy")
+    budget = (policy.get("max_distinct_candidates")
+              if isinstance(policy, dict) else None)
+    if (not isinstance(budget, int) or isinstance(budget, bool) or budget < 1
+            or len(failures) > budget):
+        return None
+    skips = state.get("portfolio_skips")
+    skip = (skips.get(hypothesis) if isinstance(skips, dict) else None)
+    bounded = False
+    if skip is not None:
+        if (not isinstance(skip, dict)
+                or skip.get("disposition") !=
+                "bounded_measurement_output_refused"
+                or skip.get("scientific_terminal") is not False
+                or skip.get("distinct_candidate_count") != len(failures)
+                or skip.get("stage_receipt_path") !=
+                refusal.get("receipt_path")
+                or skip.get("stage_receipt_sha256") !=
+                refusal.get("receipt_sha256")):
+            return None
+        bounded = True
+    if bounded is not (len(failures) >= budget):
+        return None
+    return {
+        "disposition": ("bounded_measurement_output_refused" if bounded
+                        else "retry_distinct_candidate"),
+        "distinct_candidate_count": len(failures),
+        "max_distinct_candidates": budget,
+        "scientific_terminal": False,
+        "next": ("next_portfolio_hypothesis" if bounded
+                 else "next_distinct_candidate"),
+    }
+
+
 def _discovery_refusal_observation(bundle: Path, state: dict | None,
                                    events: list[dict]) -> dict | None:
     """Discover a governed refusal from its typed fields, not a guessed path.
@@ -4589,17 +5094,18 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
     """
     accepted_types = {
         "SourceApplyRefusal", "CompileRefusal", "CorrectnessRefusal",
-        "DispatchAttributionRefusal",
+        "DispatchAttributionRefusal", "MeasurementOutputRefusal",
     }
     dispositions = {
         "authoring_refused", "correctness_falsified",
-        "attribution_route_falsified",
+        "attribution_route_falsified", "measurement_output_refused",
     }
     stage_types = {
         "source_apply": "SourceApplyRefusal",
         "compile": "CompileRefusal",
         "correctness": "CorrectnessRefusal",
         "dispatch_attribution": "DispatchAttributionRefusal",
+        "measurement_output": "MeasurementOutputRefusal",
     }
     candidates: list[dict] = []
     if isinstance(state, dict):
@@ -4704,6 +5210,12 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
                         or receipt.get("class"))
         if receipt_type is not None and receipt_type != refusal_type:
             continue
+        measurement_output = None
+        if refusal_type == "MeasurementOutputRefusal":
+            measurement_output = _discovery_measurement_output_refusal(
+                receipt, path, bundle)
+            if measurement_output is None:
+                continue
         return {
             "detected": True, "type": refusal_type,
             "stage": stage, "disposition": disposition,
@@ -4711,7 +5223,14 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
             "receipt_path": str(path), "receipt_sha256": expected,
             "at": datetime.fromtimestamp(
                 info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
-            "detail": value.get("reason") or value.get("message"),
+            "detail": (
+                f"{measurement_output['arm']} "
+                f"{measurement_output['runtime_graphs']}-graphs output refused: "
+                f"{measurement_output['reason_code']} · reason sha256 "
+                f"{measurement_output['reason_sha256'][:12]}…"
+                if measurement_output is not None else
+                value.get("reason") or value.get("message")),
+            "measurement_output": measurement_output,
         }
     return None
 
@@ -5287,16 +5806,33 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     elif (not (active_pending_new_turn or active_inflight_new_turn)
           and latest_iteration_status in {
             "authoring_refused", "correctness_falsified",
-            "attribution_route_falsified"}):
+            "attribution_route_falsified", "measurement_output_refused"}):
         refused_stage = latest_iteration.get("stage")
+        measurement_refusal = (
+            refusal_observation.get("measurement_output")
+            if isinstance(refusal_observation, dict) else None)
         failed_stage = {
             "source_apply": "source_materialization",
             "compile": "build",
             "correctness": "correctness_validation",
             "dispatch_attribution": "dispatch_proof",
         }.get(refused_stage)
+        if (refused_stage == "measurement_output"
+                and isinstance(measurement_refusal, dict)):
+            failed_stage = measurement_refusal.get("screen_stage")
+            for completed_stage in measurement_refusal.get(
+                    "completed_pipeline", []):
+                if completed_stage in pipeline:
+                    pipeline[completed_stage]["state"] = "complete"
         if failed_stage is not None:
             pipeline[failed_stage]["state"] = "failed"
+            if isinstance(measurement_refusal, dict):
+                reusable = measurement_refusal.get("reusable_completed_arms") or []
+                pipeline[failed_stage]["detail"] = (
+                    f"{measurement_refusal.get('arm')} arm output refused · "
+                    f"{measurement_refusal.get('reason_code')}"
+                    + (f" · reusable completed arm: {', '.join(reusable)}"
+                       if reusable else ""))
         stage = "next_hypothesis"
         pipeline[stage]["state"] = "running" if lock_held else "waiting"
         status = "running" if lock_held else "stopped"
@@ -5375,6 +5911,17 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
             if isinstance(replication, int):
                 label += f" · S{replication}"
+            process_progress = postbuild_observation.get("process_progress")
+            if (isinstance(process_progress, dict)
+                    and process_progress.get("stage") == stage):
+                completed_arms = process_progress.get("completed_arms") or []
+                next_arm = process_progress.get("next_arm")
+                if isinstance(next_arm, str):
+                    label += (f" · {next_arm} after "
+                              f"{', '.join(completed_arms)} checkpoint reuse")
+                pipeline[stage]["detail"] = (
+                    f"completed process {'arm' if len(completed_arms) == 1 else 'arms'} "
+                    f"{', '.join(completed_arms)} will be revalidated and reused")
             label = (label if lock_held else
                      f"Controller stopped before {label.lower()}")
             waiting_on = (f"{_DISCOVERY_PIPELINE_DICT.get(stage, stage)} completion"
@@ -5557,6 +6104,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "authoring_refused": "discovery_authoring_refused",
             "correctness_falsified": "discovery_correctness_falsified",
             "attribution_route_falsified": "discovery_attribution_route_falsified",
+            "measurement_output_refused": "discovery_measurement_output_refused",
         }.get(refusal_observation.get("disposition"))
         refusal_checkpoint = next((row for row in reversed(
             checkpoint.get("history", []) if isinstance(checkpoint, dict) else [])
@@ -5659,6 +6207,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         planner_refusal_detected = False
     arm_order = (postbuild_observation.get("arm_order")
                  if isinstance(postbuild_observation, dict) else None)
+    if (arm_order is None and isinstance(refusal_observation, dict)
+            and isinstance(refusal_observation.get("measurement_output"), dict)):
+        arm_order = refusal_observation["measurement_output"].get("arm_order")
     if arm_order is None:
         arm_order = latest_result.get("arm_order_schedule")
     iteration_repetition = (latest_iteration.get("repetition")
@@ -5724,6 +6275,16 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         if isinstance(latest_iteration, dict) else None)
     iteration_target_executed = (latest_iteration.get("target_runtime_executed")
                                  if isinstance(latest_iteration, dict) else None)
+    measurement_output_view = (
+        dict(headline_refusal_observation["measurement_output"])
+        if isinstance(headline_refusal_observation, dict)
+        and isinstance(headline_refusal_observation.get(
+            "measurement_output"), dict) else None)
+    if measurement_output_view is not None:
+        measurement_recovery = _discovery_measurement_output_recovery(
+            state, latest_iteration, headline_refusal_observation)
+        if measurement_recovery is not None:
+            measurement_output_view["recovery"] = measurement_recovery
     return {
         "status": status,
         "phase": {"id": stage, "label": label, "started_at": stage_started_at,
@@ -5816,6 +6377,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 and not isinstance(iteration_exact_effect, bool)
                 and isinstance(iteration_target_effect, (int, float))
                 and not isinstance(iteration_target_effect, bool) else None),
+            "measurement_process_progress": (
+                {key: postbuild_observation["process_progress"].get(key)
+                 for key in ("stage", "runtime_graphs", "completed_arms",
+                             "next_arm", "checkpoint_reuse")}
+                if isinstance(postbuild_observation, dict)
+                and isinstance(postbuild_observation.get("process_progress"), dict)
+                else None),
         },
         "refusal": {
             "detected": refusal_type is not None,
@@ -5842,7 +6410,11 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                             "refusal_reason_sha256"), str) else
                         latest_iteration.get("reason")
                         if isinstance(latest_iteration, dict)
-                        and not planner_refusal_detected else None)),
+                        and not planner_refusal_detected
+                        and latest_iteration.get("status") !=
+                        "measurement_output_refused" else None)),
+            "measurement_output": (
+                measurement_output_view),
         },
         "provider_retry": {
             "detected": recoverability in {
@@ -6145,6 +6717,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
         "telemetry_contracts_accepted": sorted(AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS),
         "telemetry_producer_commit": AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA,
+        "measurement_output_producer_commit":
+            AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
     }

@@ -1118,6 +1118,67 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("committing the dual telemetry stream transaction", summary)
         self.assertNotIn("Telemetry visibility degraded", summary)
 
+    def test_measurement_refusal_and_completed_arm_reuse_are_headline_visible(self) -> None:
+        payload = {
+            "active": False, "deployment": "campaign-output-refusal",
+            "autokernel_log": [], "planner_log": [],
+            "telemetry_integrity": {"state": "verified", "verified": True},
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "stopped", "waiting_on": "next hypothesis",
+                "phase": {"id": "next_hypothesis",
+                          "label": "measurement output refused",
+                          "elapsed_s": 0},
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "claim_released": True},
+                "failure": {"detected": False}, "transitions": [],
+                "resume": {"required": False, "possible": True,
+                           "disposition": "resume_controller_checkpoint"},
+                "stage_contract": {
+                    "first_incomplete_stage": "next_hypothesis",
+                    "resume_policy": "resume_controller_checkpoint",
+                    "measurement_process_progress": {
+                        "stage": "measurement_graphs_off_screen",
+                        "runtime_graphs": "off",
+                        "completed_arms": ["anchor"],
+                        "next_arm": "candidate", "checkpoint_reuse": True,
+                    },
+                },
+                "refusal": {
+                    "detected": True,
+                    "type": "measurement_output_refused",
+                    "class": "MeasurementOutputRefusal",
+                    "stage": "measurement_output",
+                    "scientific_budget_spent": False,
+                    "detail": ("candidate off-graphs output refused: "
+                               "avg_ts_rounding · reason sha256 abcdef…"),
+                    "measurement_output": {
+                        "arm": "candidate", "runtime_graphs": "off",
+                        "reason_code": "avg_ts_rounding",
+                        "reusable_completed_arms": ["anchor"],
+                        "recovery": {
+                            "disposition": "retry_distinct_candidate",
+                            "distinct_candidate_count": 1,
+                            "max_distinct_candidates": 3,
+                        },
+                    },
+                },
+                "pipeline": [],
+            },
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        detail = nodes["ak-live-detail-meta"]["innerHTML"]
+
+        for token in ("measurement_output_refused", "MeasurementOutputRefusal",
+                      "candidate", "graphs-off", "avg_ts_rounding",
+                      "reusable anchor", "retry_distinct_candidate 1/3",
+                      "scientific budget not spent"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("Process checkpoint reuse", detail)
+        self.assertIn("anchor complete; next candidate", detail)
+
     def test_planner_validation_interruption_is_visible_in_hero_and_pipeline(self) -> None:
         payload = {
             "active": False,

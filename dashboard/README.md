@@ -256,6 +256,23 @@ includes both per-arm attribution refusals and the cross-arm
 interruptions remain `planner_transient` on the same turn and expose
 the durable `provider_attempt`; a critic interruption resumes only from
 `pending.phase=critic_pending`. Neither is displayed as a scientific refusal.
+A measurement invocation is additionally resumable at its exact arm boundary
+under the contract frozen at producer commit
+`eb689b0d3239f7af538015a7ccb098fe8169f9e6`. The hub validates the canonical
+`preflight.json` content hash and each private
+`process-{anchor,candidate}/receipt.json`
+(`epyc.autokernel.gpu_discovery_process_receipt.v1`) before it calls an arm
+complete or reusable. A process checkpoint names the completed arms, the next
+arm, graph mode, and first incomplete screen without exposing the mode-0600
+stdout/stderr bytes. A terminal sibling `process-<arm>-refusal.json`
+(`epyc.autokernel.gpu_discovery_output_refusal.v1`) is rendered as
+`measurement_output_refused`: its exact arm, timing-validation reason code,
+bounded native/rederived timing carriers, and reusable earlier arms remain
+visible, while the raw controller reason and captured process output never
+cross the dashboard API. The matching
+`portfolio_measurement_output_failures`/`portfolio_skips` state is projected as
+either a distinct-candidate retry or the bounded non-scientific skip, including
+the exact attempt count and next recovery boundary.
 A nonpositive exact-attribution result is instead measured evidence from
 `runner/sN/exact-attribution-outcome.json`: both runtime screens show as
 governed skips, the graphs-on call is explicitly unexecuted, and the loop moves
