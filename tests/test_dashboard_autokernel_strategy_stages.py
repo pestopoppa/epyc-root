@@ -360,6 +360,94 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertTrue(activity["gpu"]["screen_started"])
         self.assertTrue(activity["correctness"]["execution_completed"])
 
+    def test_v14_new_planner_turn_outranks_prior_authoring_refusal(self) -> None:
+        receipt_path = self.state_root / "stage-outcomes/source-apply.json"
+        receipt_path.parent.mkdir()
+        receipt = _sealed({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "state": "failed", "failure_stage": "source_apply",
+            "build_key": "f" * 64, "promotion_claim": False,
+        })
+        raw = (json.dumps(receipt, sort_keys=True, separators=(",", ":"))
+               + "\n").encode()
+        receipt_path.write_bytes(raw)
+        refused_at = datetime.fromisoformat(
+            "2026-08-19T01:45:16.613149+00:00").timestamp()
+        os.utime(receipt_path, (refused_at, refused_at))
+        (self.state_root / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-19T01:45:16.621284Z",
+            "next": 2, "complete": False,
+            "iterations": [{
+                "turn": 1,
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                "status": "authoring_refused", "stage": "source_apply",
+                "stage_receipt_path": str(receipt_path),
+                "stage_receipt_sha256": hashlib.sha256(raw).hexdigest(),
+                "scientific_budget_spent": False,
+                "reason": "committed diff derives undeclared file-scope symbols",
+            }],
+            "planning": {"turn": 2, "provider_attempt": 1},
+            "pending": None, "inflight": None,
+        }))
+        campaign = "ak-discovery-" + "a" * 16
+        events = [
+            ("planner", "planner_started", "2026-08-19T01:36:33.711555Z"),
+            ("planner", "planner_completed", "2026-08-19T01:43:53.515551Z"),
+            ("autokernel", "critic_started", "2026-08-19T01:43:53.927490Z"),
+            ("autokernel", "critic_completed", "2026-08-19T01:45:13.425467Z"),
+            ("planner", "planner_started", "2026-08-19T01:45:16.797464Z"),
+        ]
+        rows = [{
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": ts, "channel": channel, "event": event,
+            "campaign_id": campaign,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "claude" if channel == "autokernel" else "codex",
+            "model": "claude-fable-5" if channel == "autokernel" else "gpt-5.6-sol",
+            "effort": "high",
+        } for channel, event, ts in events]
+        (self.operations / "live/autokernel.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in rows))
+        (self.operations / "live/planner.jsonl").write_text(
+            "".join(json.dumps(row) + "\n" for row in rows
+                    if row["channel"] == "planner"))
+        journal = self.state_root / "journal"
+        journal.mkdir()
+        checkpoints = [
+            (6, "discovery_authoring_refused",
+             "2026-08-19T01:45:16.613149Z"),
+            (8, "discovery_planner_entering",
+             "2026-08-19T01:45:16.621284Z"),
+        ]
+        (journal / "events.jsonl").write_text("".join(json.dumps({
+            "journal_schema": "epyc.autokernel.journal_entry.v1",
+            "kind": "STOP_STATE", "seq": seq, "written_at": written_at,
+            "payload": {"state": checkpoint_state,
+                        "controller_state_sha256": "c" * 64},
+        }) + "\n" for seq, checkpoint_state, written_at in checkpoints))
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["phase"]["id"], "planner")
+        self.assertEqual(activity["phase"]["label"], "Planner model call")
+        self.assertEqual(activity["phase"]["started_at"],
+                         "2026-08-19T01:45:16.797464Z")
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"]["state"], "running")
+        self.assertNotIn("completed_at", pipeline["planner"])
+        for stage in ("planner_validation", "critic", "authorization",
+                      "source_materialization", "next_hypothesis"):
+            self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
+        refusal_transition = next(
+            row for row in activity["transitions"]
+            if row["event"] == "discovery_authoring_refused")
+        self.assertEqual(refusal_transition["ts"],
+                         "2026-08-19T01:45:16.613149Z")
+        self.assertEqual(activity["transitions"][-1]["event"], "planner_started")
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",

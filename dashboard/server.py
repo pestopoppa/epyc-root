@@ -3308,6 +3308,7 @@ def _discovery_checkpoint(path: Path) -> dict | None:
     except (FileNotFoundError, OSError):
         return None
     latest = None
+    history: list[dict] = []
     for line in raw.decode("ascii", "replace").splitlines()[-300:]:
         try:
             row = json.loads(line)
@@ -3329,6 +3330,9 @@ def _discovery_checkpoint(path: Path) -> dict | None:
             "written_at": row["written_at"],
             "controller_state_sha256": payload.get("controller_state_sha256"),
         }
+        history.append(latest)
+    if latest is not None:
+        latest = {**latest, "history": history[-25:]}
     return latest
 
 
@@ -4138,6 +4142,8 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
             "stage": stage, "disposition": disposition,
             "scientific_budget_spent": spent,
             "receipt_path": str(path), "receipt_sha256": expected,
+            "at": datetime.fromtimestamp(
+                info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
             "detail": value.get("reason") or value.get("message"),
         }
     return None
@@ -4221,6 +4227,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         pipeline[stage]["state"] = stage_state
         if stage_state == "running":
             pipeline[stage]["started_at"] = ts
+            pipeline[stage].pop("completed_at", None)
+            pipeline[stage].pop("elapsed_s", None)
             started[stage] = ts
         else:
             if stage in started:
@@ -4250,6 +4258,10 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     failure = _discovery_safe_error(
         inflight.get("exception") if isinstance(inflight, dict) else None)
     latest_event = events[-1].get("event") if events else None
+    active_planner_turn = bool(
+        lock_held and latest_event == "planner_started"
+        and isinstance(planning, dict)
+        and not isinstance(pending, dict) and not isinstance(inflight, dict))
     validation_event = (latest_event if latest_event in
                         {"planner_validation_failed", "planner_validation_refused"}
                         else None)
@@ -4475,6 +4487,24 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 "label": "controller exited before a planner-validation checkpoint",
                 "detail": "exact exception was not persisted by the producer",
             })
+    elif active_planner_turn:
+        # A typed terminal closes the prior turn only. Once the same controller
+        # durably enters the next planning turn, that newer lifecycle event owns
+        # the headline and current pipeline; the refusal remains historical.
+        for name, row in pipeline.items():
+            if name != "planner":
+                row.clear()
+                row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                            "state": "not_reached"})
+        stage = "planner"
+        pipeline[stage]["state"] = "running"
+        pipeline[stage]["started_at"] = last_event_at
+        pipeline[stage].pop("completed_at", None)
+        pipeline[stage].pop("elapsed_s", None)
+        status = "running"
+        label = "Planner model call"
+        waiting_on = "planner completion"
+        recoverability = "not_required"
     elif latest_iteration_status == "planner_transient":
         stage = "planner"
         pipeline[stage]["state"] = "waiting"
@@ -4745,6 +4775,26 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "event": f"{stage}_failed", "label": label,
             "detail": failure_view["detail"],
         })
+    if active_planner_turn and isinstance(refusal_observation, dict):
+        refusal_checkpoint_state = {
+            "authoring_refused": "discovery_authoring_refused",
+            "correctness_falsified": "discovery_correctness_falsified",
+            "attribution_route_falsified": "discovery_attribution_route_falsified",
+        }.get(refusal_observation.get("disposition"))
+        refusal_checkpoint = next((row for row in reversed(
+            checkpoint.get("history", []) if isinstance(checkpoint, dict) else [])
+            if row.get("state") == refusal_checkpoint_state), None)
+        transitions.append({
+            "ts": (refusal_checkpoint.get("written_at")
+                   if isinstance(refusal_checkpoint, dict) else
+                   refusal_observation.get("at") or state_at or last_event_at),
+            "stage": "next_hypothesis", "phase": "next_hypothesis",
+            "state": "complete",
+            "event": refusal_checkpoint_state or "prior_turn_refusal",
+            "label": (f"prior turn {refusal_observation.get('disposition', 'refused')}"
+                      ", scientific budget unspent"),
+            "detail": refusal_observation.get("detail"),
+        })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
@@ -4809,6 +4859,10 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       and isinstance(refusal_event.get("result"), dict) else {})
     if isinstance(refusal_observation, dict):
         refusal_type = refusal_observation.get("disposition")
+    headline_refusal_observation = (
+        None if active_planner_turn else refusal_observation)
+    if active_planner_turn:
+        refusal_type = None
     arm_order = (postbuild_observation.get("arm_order")
                  if isinstance(postbuild_observation, dict) else None)
     if arm_order is None:
@@ -4972,18 +5026,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "refusal": {
             "detected": refusal_type is not None,
             "type": refusal_type,
-            "class": (refusal_observation.get("type")
-                      if isinstance(refusal_observation, dict) else None),
-            "stage": (refusal_observation.get("stage")
-                      if isinstance(refusal_observation, dict) else None),
+            "class": (headline_refusal_observation.get("type")
+                      if isinstance(headline_refusal_observation, dict) else None),
+            "stage": (headline_refusal_observation.get("stage")
+                      if isinstance(headline_refusal_observation, dict) else None),
             "scientific_budget_spent": (
-                refusal_observation.get("scientific_budget_spent")
-                if isinstance(refusal_observation, dict) else None),
+                headline_refusal_observation.get("scientific_budget_spent")
+                if isinstance(headline_refusal_observation, dict) else None),
             "receipt_sha256": (
-                refusal_observation.get("receipt_sha256")
-                if isinstance(refusal_observation, dict) else None),
-            "detail": (refusal_observation.get("detail")
-                       if isinstance(refusal_observation, dict) else
+                headline_refusal_observation.get("receipt_sha256")
+                if isinstance(headline_refusal_observation, dict) else None),
+            "detail": (None if active_planner_turn else
+                       headline_refusal_observation.get("detail")
+                       if isinstance(headline_refusal_observation, dict) else
                        (refusal_result.get("reason")
                         or latest_iteration.get("reason")
                         if isinstance(latest_iteration, dict) else None)),
@@ -5265,6 +5320,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         populated=bool(lock_held or all_events or planner_events or state_view),
         detail=("multiple controller locks are held" if ambiguous else payload["status_message"]),
         evidence=str(operations_root / "live"),
+        silence_budget_s=(activity.get("stall", {}).get("threshold_s")
+                          if lock_held else None),
         producer_idle=bool(state_view and state_view.get("complete") is True))
     return payload, obs
 

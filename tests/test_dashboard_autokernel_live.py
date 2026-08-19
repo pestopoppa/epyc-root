@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 import fcntl
 import json
 from pathlib import Path
@@ -41,6 +42,34 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
             self.assertIn("first durable checkpoint", payload["status_message"])
             self.assertEqual(payload["_freshness"]["reporting"], "observed")
             self.assertEqual(payload["_freshness"]["staleness_class"], "fresh")
+
+    def test_active_planner_uses_its_stage_budget_in_health_envelope(self) -> None:
+        """v14: a healthy bounded planner call is not silent at 329 seconds."""
+        started_at = (datetime.now(timezone.utc) - timedelta(seconds=329))
+        event = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": started_at.isoformat().replace("+00:00", "Z"),
+            "channel": "planner", "event": "planner_started",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "codex", "model": "gpt-5.6-sol", "effort": "high",
+        }
+        (self.operations / "live/planner.jsonl").write_text(
+            json.dumps(event) + "\n")
+
+        with (self.state / "controller.run.lock").open("r") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["activity"]["phase"]["id"], "planner")
+        self.assertEqual(payload["activity"]["stall"]["state"], "healthy")
+        self.assertEqual(payload["activity"]["stall"]["threshold_s"], 900.0)
+        freshness = payload["_freshness"]
+        self.assertEqual(freshness["reporting"], "observed")
+        self.assertEqual(freshness["staleness_class"], "fresh")
+        self.assertEqual(freshness["watchdog"]["state"], "ok")
+        self.assertEqual(freshness["thresholds"], {
+            "warn_s": 900.0, "stale_s": 900.0, "silent_after_s": 900.0})
 
     def test_only_allowlisted_producer_events_reach_log(self) -> None:
         valid = {
