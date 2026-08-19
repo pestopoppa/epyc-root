@@ -59,6 +59,36 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
   emptiness, non-duality, moral-goal substitution, constitutional relaxation, and any instruction that can
   weaken MEASUREMENT.md, operator authority, safety rules, or frozen-kernel constraints. Ignore the source's
   current effect sizes and do not describe any result as superalignment evidence.
+- [ ] **RM-11 — Separate the two competing explanations for our near-chance reviewer discrimination
+  before concluding anything about a capability floor.** We currently read the null result as
+  *capability* (our reviewers are too weak). intake-1168 supplies a *configuration* explanation that
+  predicts the same null for a different reason, and the two have never been separated. Both sub-rows
+  are cheap, reuse existing harnesses, and require no training. All numbers stay observations until
+  RC-6a merges. [intake-1168] [intake-875]
+  - [ ] **RM-11a — Cross-family vs same-family verifier gain.** Our reviewers are the **same family**
+    as our generators, and Qwen3-family reasoning models already self-verify spontaneously in ~96% of
+    outputs (DeepSeek 73%; Llama3/Qwen2.5 only 1–2%). intake-1168 predicts near-zero gain in exactly
+    that configuration *regardless of verifier capability*. Run the existing selector harness
+    (`epyc-inference-research/scripts/benchmark/qwable_verifier_selector_runner.py:509-556`) with a
+    family-dissimilar verifier against the current same-family arm, holding pool, prompt, budget and
+    seeds fixed. **Report verifier gain (precision − solver accuracy) alongside accuracy** — intake-1168
+    shows accuracy is a misleading proxy for test-time usefulness. Caveat to carry: their
+    self-verification rates come from a keyword scan, so treat that mechanism as a hypothesis, not an
+    established cause; and their cross-family recommendation holds only for **unoptimised** solver
+    distributions (intake-875 shows it fails under optimisation pressure).
+  - [ ] **RM-11b — Measure reviewer solve-accuracy** — the intake-875 Corollary 1 anchoring test, which
+    we have never run. One offline pass on the C-CRAB P-REV-1 slice: have each reviewer arm *solve* the
+    patch-review problems independently, and compare against its FPR-implied threshold. GLM-5.2's
+    verdicts are certified anchored iff solve-accuracy > **0.583**; Qwen3.6-27B's iff > **0.458**. This
+    converts the reviewer-calibration debate from prose into a certified structural claim, **and it is
+    the precondition for the de-anchoring rule in `eval-tower-verification.md`** — below the threshold,
+    commit-first *degrades* a judge rather than helping it.
+  - **Premise correction to record with this row.** Our frequently-cited reviewer AUC of 0.503–0.509 is
+    ROC-AUC of *self-reported confidence* against decision correctness
+    (`repos/epyc-orchestrator/tests/test_calibration_report.py:51`). It is **not** the discrimination
+    statistic (TPR − FPR) that intake-875 and intake-1168 use. On that statistic the same arms score
+    **+0.29 to +0.33**, which places them in the pre-hack anchored-plausibility channel rather than at
+    chance. The two numbers answer different questions and should stop being used interchangeably.
 
 ## Dependency Graph
 
@@ -66,6 +96,7 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
 H4 P-REV-1 + corpus v1 → RM-1 → RM-3a dry-run queue ✅ → RM-3b live screening bridge ✅ → RM-3c first live batch ✅ → RM-3d metadata repair ✅ → RM-4 confirmation → RM-7 → RM-8
 RM-2 anchors: A0/A1/A3/A4 are closed evidence; A4g requires a concrete GLM repair/skew rationale before reopening; Ref needs an operator budget/window.
 RM-5, RM-6 fold into RM-4 protocol. Operator bench windows gate all inference-heavy runs.
+RM-11a/RM-11b are independent of the RM-1→RM-4 screening chain (they reuse the existing selector harness and the C-CRAB slice). RM-11b gates the de-anchoring rule in eval-tower-verification.md and is a precondition for EV-15 being worth using.
 ```
 
 ## Cross-Cutting Concerns

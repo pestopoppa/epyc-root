@@ -1,221 +1,277 @@
 {
-  "session_id": "b4f19d70-8c2a-4e63-9a15-1d7e0c3b6f52",
-  "started_at": "2026-08-16T20:00:00Z",
-  "last_checkpoint": "2026-08-18T01:00:00Z",
+  "session_id": "7c3a1e94-5b62-4d08-9f11-2a6e8c40d7b3",
+  "started_at": "2026-08-18T20:30:00Z",
+  "last_checkpoint": "2026-08-19T04:00:00Z",
   "phase": 5,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake (2 submitted URLs + 3 expansion)",
+  "stage": "stage2b-complete-gate-closed-ready-for-stage3",
+  "session_kind": "research-intake (2 submitted URLs + 5 expansion)",
   "previous_session": {
-    "session_id": "e7c41a02-3d55-4b91-9c60-2a1f7d8e4b13",
+    "session_id": "b4f19d70-8c2a-4e63-9a15-1d7e0c3b6f52",
     "stage": "stage4-complete",
-    "mandate": "Ingest two operator-submitted arXiv papers: MEGA (self-evolving agent optimization via Wisdom Graph) and Phantom Guardrails, and expand the surrounding harness-optimization / acceptance-rule literature.",
-    "note": "Completed 2026-08-15, all four gates CLOSED. Not resumed; this is a fresh mandate. next_intake_id carried forward from 1148."
+    "mandate": "oh-my-pi (omp) coding agent ingest",
+    "note": "Closed and unrelated; not resumed. ID sequence continued from next_intake_id 1161."
   },
-  "mandate": "Ingest two operator-submitted sources on the oh-my-pi (omp) coding agent \u2014 the GitHub repository and the omp.sh project landing page \u2014 and expand the surrounding edit-format / harness-benchmark literature.",
+  "mandate": "Ingest two operator-submitted sources on LLM-as-a-Verifier: the project website llm-as-a-verifier.com and the GitHub repository (anchored at the Terminal-Bench 2.1 self-verification section).",
   "submitted_url_count": 2,
-  "submitted_inline_material_count": 0,
   "sources_submitted": [
-    "https://github.com/can1357/oh-my-pi",
-    "https://omp.sh/"
+    {
+      "url": "https://llm-as-a-verifier.com/",
+      "disposition": "NEW ENTRY intake-1161 (distinct live artifact; not a collision)"
+    },
+    {
+      "url": "https://github.com/llm-as-a-verifier/llm-as-a-verifier#self-verification-terminal-bench-21",
+      "disposition": "EXACT URL COLLISION with intake-363 - no entry minted, re-encounter recorded per rule 2b"
+    }
   ],
   "dedup_sweep": {
-    "run": "2026-08-16, unbounded over all 81,034 pre-existing lines / 1,143 entries. No head/tail/truncating filter anywhere in the pipeline.",
-    "collisions_found": 0,
-    "patterns": [
-      "oh-my-pi",
-      "omp.sh",
-      "can1357",
-      "2510.12487",
-      "2511.04486",
-      "Diff-XYZ / diff-xyz",
-      "EDIT-Bench / EditBench",
-      "hashline",
-      "str_replace",
-      "apply_patch",
-      "edit format"
+    "run": true,
+    "no_truncating_filter": true,
+    "method": "normalized compare of all 1156 url and 1156 arxiv_id fields (scheme/www/trailing-slash/version stripped) plus substring sweep",
+    "collisions_found": [
+      {
+        "submitted": "github.com/llm-as-a-verifier/llm-as-a-verifier",
+        "existing": "intake-363",
+        "action": "re-encounter note, no new entry"
+      },
+      {
+        "found_via": "README link",
+        "id": "2607.05391",
+        "existing": "intake-804",
+        "action": "re-encounter note, no new entry"
+      }
     ],
-    "notable": "Zero hits for hashline, str_replace, apply_patch and edit-format-as-a-variable across all 1,143 prior entries \u2014 this is the basis for the novelty:high scoring on intake-1148/1150. intake-473 (badlogic/pi-mono, pi-agent-core) is the FORK UPSTREAM of oh-my-pi and is recorded as a lineage cross-reference, NOT a duplicate: different URL, different repository, and the entire hashline / native-Rust / harness-benchmark contribution postdates the fork.",
-    "no_truncating_filter": true
+    "near_miss": [
+      {
+        "submitted": "llm-as-a-verifier.com",
+        "existing": "intake-362 (llm-as-a-verifier.notion.site)",
+        "ruling": "NOT a collision - different host, both live simultaneously, .com carries ablations absent from the others; minted as intake-1161 with a reader_should_conclude guard naming the artifact family"
+      }
+    ]
   },
-  "max_existing_intake_id": 1147,
-  "next_intake_id": 1161,
-  "expansion_count": 3,
+  "max_existing_intake_id": 1160,
+  "next_intake_id": 1172,
+  "expansion_count": 5,
   "expansion_cap": 10,
   "expansion_cap_reached": false,
   "processed_urls": [
-    "https://github.com/can1357/oh-my-pi",
-    "https://omp.sh/",
-    "https://blog.can.ac/2026/02/12/the-harness-problem/",
-    "https://arxiv.org/abs/2510.12487",
-    "https://arxiv.org/abs/2511.04486",
-    "https://cursor.com/blog/instant-apply",
-    "https://aider.chat/docs/unified-diffs.html",
-    "https://arxiv.org/abs/2409.12186",
-    "https://arxiv.org/abs/2502.09328",
-    "https://arxiv.org/abs/2312.12450",
-    "https://arxiv.org/abs/2310.20329",
-    "https://github.com/can1357/oh-my-pi/tree/main/packages/snapcompact",
-    "https://github.com/can1357/oh-my-pi/tree/main/packages/metaharness"
+    "https://llm-as-a-verifier.com/",
+    "https://github.com/llm-as-a-verifier/llm-as-a-verifier",
+    "https://arxiv.org/abs/2607.05391",
+    "https://arxiv.org/abs/2503.03064",
+    "https://arxiv.org/abs/2601.03444",
+    "https://arxiv.org/abs/2603.12520",
+    "https://arxiv.org/abs/2408.15240",
+    "https://github.com/llm-as-a-verifier/TurboAgent",
+    "https://artificialanalysis.ai/evaluations/terminalbench-v2-1"
   ],
   "entries_processed": [
-    "intake-1148",
-    "intake-1149",
-    "intake-1150",
-    "intake-1151",
-    "intake-1152",
-    "intake-1153",
-    "intake-1154",
-    "intake-1155",
-    "intake-1156",
-    "intake-1157",
-    "intake-1158",
-    "intake-1159",
-    "intake-1160"
+    "intake-1161",
+    "intake-1162",
+    "intake-1163",
+    "intake-1164",
+    "intake-1165",
+    "intake-1166"
+  ],
+  "entries_re_encountered_not_minted": [
+    "intake-362",
+    "intake-363",
+    "intake-804"
   ],
   "provenance_pins": {
-    "intake-1148": "github.com/can1357/oh-my-pi head 37eee71978951fccf66b21f7e3e2b74596ac9d74, committed 2026-08-16T07:21:05Z; raw README.md 44,503 bytes sha256 e57966ed5c6f...; repo page read 2026-08-16",
-    "intake-1149": "omp.sh index shell 6,026 bytes sha256 89b37c9f5593...; /assets/index-BzcJmtQE.js 296,910 bytes; retrieved 2026-08-16",
-    "intake-1150": "blog.can.ac/2026/02/12/the-harness-problem/ 45,183 bytes sha256 bf6cf1a3f6da...; retrieved 2026-08-16",
-    "intake-1151": "arXiv:2510.12487v2 (published 2025-10-14, updated 2025-11-17), abstract via arXiv API 2026-08-16",
-    "intake-1152": "arXiv:2511.04486v2 (published 2025-11-06, updated 2025-11-17), abstract via arXiv API 2026-08-16"
-  },
-  "expansion_declined": [
-    {
-      "candidate": "aider edit-format leaderboard / benchmark (cited by intake-1150 for the GPT-4 Turbo 26%->59% swing)",
-      "reason": "The index already carries five aider references and the specific figure is second-hand inside intake-1150, where it is recorded as needing its own verification. Ingesting the leaderboard as an entry would add a moving web page, not a source; better handled as a dive check on intake-1150's prior-art paragraph."
+    "llm-as-a-verifier repo": {
+      "commit": "115de305f23ed89bc42e86e010853c40059f3f7d",
+      "date": "2026-08-14T20:32:51Z",
+      "version": "0.2.0",
+      "license": "MIT"
     },
-    {
-      "candidate": "Cursor fast-apply blog post (cited by intake-1150 for the 70B apply model and the sub-400-line full-rewrite finding)",
-      "reason": "Closed-source vendor product with no self-hostable artifact; the transferable claim (full-file rewrite beats diffs under 400 lines) is already captured verbatim in intake-1150's reported_results as a second-hand figure a dive must check. Not declined as not_applicable \u2014 declined as redundant at Stage 1."
+    "TurboAgent repo": {
+      "commit": "eeb61be9cb618ea9c52262cebf15092e7c185146",
+      "date": "2026-07-24T17:39:56Z",
+      "version": "0.1.3",
+      "license": "Apache-2.0"
     },
-    {
-      "candidate": "packages/hashline and packages/typescript-edit-benchmark inside the oh-my-pi monorepo",
-      "reason": "Not separate sources \u2014 they are subtrees of intake-1148 and are named there as the dive targets. Minting entries for a repo's own packages would inflate the index with non-independent records."
+    "arXiv 2607.05391": {
+      "version": "v2",
+      "submitted": "2026-07-07",
+      "v1": "2026-07-06"
     },
-    {
-      "candidate": "Third-party oh-my-pi write-ups (Better Stack guide, explainx.ai, yuv.ai, agent field guide, beginner tutorial)",
-      "reason": "All five restate the project's own figures with no independent measurement, and at least one already disagrees with the README on basic counts. Recorded as restatement-not-corroboration in intake-1148's contradicting_evidence rather than ingested."
+    "arXiv 2503.03064": {
+      "version": "v2",
+      "submitted": "2025-09-26"
+    },
+    "llama.cpp production tree": {
+      "branch": "production-consolidated-v9",
+      "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+      "access": "read-only, unmodified"
     }
-  ],
-  "companion_artifacts_noted_not_ingested": [
-    "https://www.npmjs.com/package/@oh-my-pi/pi-coding-agent \u2014 distribution artifact only",
-    "https://huggingface.co/datasets/JetBrains-Research/diff-xyz \u2014 dataset card read as part of intake-1151; no independent claims beyond the paper"
-  ],
+  },
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 2,
-      "verbatim": "deep dive all",
+      "verbatim": "Proceed with all recommended deep-dives.",
       "disposition": "planned",
-      "plan_ref": "stage2-dive-selection",
-      "effect": "Read as selecting ALL FOUR ranked dives (intake-1150, intake-1148, intake-1151, intake-1152). intake-1149 (omp.sh) was declined for a dive at Stage 1 as having no independent content; under 'all' it is verified INSIDE the intake-1148 dive rather than skipped, so no submitted source goes unexamined."
+      "plan_ref": "stage2-dives: intake-363, intake-875x1161/804, intake-1162, intake-1164, intake-804"
     },
     {
       "seq": 2,
       "stage": 2,
-      "verbatim": "all",
+      "verbatim": "Dangling venv interpreter - fixed, and it had a second cause the report didn't reach. ... uv python install also failed: the rebuild left ~/.cache/uv/{archive-v0,interpreter-v4} root-owned, so uv couldn't repair itself. Fixed ownership, then installed 3.11.16. ... scripts/validate/validate_intake.sh -> OK, 1162 entries, exit 0 - the intake gate is live again. ... kb-search documented the wrong interpreter ... now points at the venv ... health_check.sh gained a Tooling Interpreters section",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Operator repaired the environment. Stage 2 must now use scripts/validate/validate_intake.sh (the real gate) rather than the scratchpad venv workaround."
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "entry_verdict.py:493-497 - confirmed unsatisfiable, fixed. ... Now substring-matched, with degenerate markers checked first so binary_probabilities still fails closed, plus confidence_is_real (already stamped by the eval tower) accepted as an explicit signal. Four regression tests, each mutation-tested ... 709 passed, 38 skipped.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Defect surfaced in Stage 1 was real and is now closed by the operator. Any Stage-3 plan item proposing to fix it must be dropped as already done."
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "BACKLOG-DISPATCH-QUEUE.md:880 - not a defect; I deliberately left it. ... that file's own header reads SUPERSEDED 2026-08-11 - DO NOT DISPATCH... retained as evidence, not as work, and the 34.5% anchor-rot measurement was taken against exactly this content - editing a row out would corrupt the record and fix nothing.",
+      "disposition": "declined",
+      "plan_ref": null,
+      "note": "OPERATOR CORRECTION of a Stage-1 finding. The Stage-1 report was wrong: it verified the row's work was complete but never checked whether the containing file was still a live dispatch surface. It is not. No Stage-3 plan item; do not re-raise this row in any future session."
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "Committed as 07073fe8 (pathspec-limited; progress entry at progress/2026-08/2026-08-19.md).",
+      "disposition": "context-only",
+      "plan_ref": null
+    },
+    {
+      "seq": 6,
+      "stage": "2b",
+      "verbatim": "[quoted the five Strongly-recommend rows] - deep dive all of them",
       "disposition": "planned",
-      "plan_ref": "stage2b-selection",
-      "effect": "Operator selected ALL SIX dive-surfaced items for Stage 2b, INCLUDING the two I recommended declining (Qwen2.5-Coder floor paper; Copilot Arena / CanItEdit / EditEval). My declines are therefore overridden and every item is ingested-and-dived. Item 6 is a bundle of three distinct sources and expands accordingly. Items 3-4 (metaharness, snapcompact) run as additional dive targets WITHIN intake-1148 per the subtree convention, not as new entries; if the operator wants them as separate entries that is a one-line change."
+      "plan_ref": "stage2b: 2210.10760, 2512.02304, github.com/dubai03nsr/distributional-judge, 2602.19313, 2603.04304 -> intake-1167..1171, each persisted dive-verified or dive-overturned",
+      "note": "Operator selected the five strongly-recommended dive-surfaced sources. The Recommend and Worth-considering tiers were NOT selected in this round; they are recorded as not-selected (still available), NOT as permanent declines, since the operator did not rule on them."
     }
   ],
   "open_gates": {
-    "stage1": "CLOSED 2026-08-16 \u2014 5 entries persisted stage1-unverified, validate_intake.sh exit 0, git status handoffs/ clean of intake-caused changes.",
-    "stage2": "CLOSED 2026-08-16 \u2014 all four selected dives complete, all five entries promoted to dive-verified with claim_anchors, claim_corrections and dive_corrections; validate_intake.sh exit 0.",
-    "stage2b": "CLOSED 2026-08-18 \u2014 all operator-selected sources ingested-and-dived (8 entries, dive-verified), declines recorded in bearing entries, validate_intake.sh exit 0.",
-    "stage3": "CLOSED 2026-08-18 \u2014 plan approved via ExitPlanMode.",
-    "stage4": "CLOSED 2026-08-18 \u2014 approved plan implemented exactly; both gates exit 0. Uncommitted by design."
+    "stage1": "CLOSED - validator exit 0, handoffs clean, all relevance>=medium entries carry a dive recommendation or explicit decline",
+    "stage2": "CLOSED",
+    "stage2b": "CLOSED - all five operator-selected sources ingested and dived; non-selected recorded on bearing entries",
+    "stage3": "READY - awaiting plan-mode construction",
+    "stage4": "NOT STARTED"
   },
   "stage1_hypotheses_requiring_dive": [
-    "ALL STAGE-1 HYPOTHESES ARE NOW RESOLVED. (1) Self-attribution: benchmark figures verified against 134 primary run reports. (2) README-vs-blog discrepancy: RESOLVED in the source's favour (v1 prose vs v2 table). (3) Diff-XYZ contradiction: DISSOLVED \u2014 construct difference, the paper disclaims the reading. (4) HS-4 cooperation surface: CONFIRMED sufficient config-only (compat.extraBody). (5) hashline vs current_shas: OVERTURNED \u2014 shipped hashline is file-granularity, same as current_shas.",
-    "NEW, carried to Stage 3 as the only open measurement question: snapcompact's recall-versus-billed-cost claim (intake-1159) ships without its evidence and was measured on hosted frontier vision readers, not on models we serve. Adoption cannot proceed on the vendor claim."
+    "The Gemini-dependency blocker recorded in intake-362/363 is obsolete; llama-server v9 can serve as the verifier backend. Plumbing verified by reading; NOT verified by running.",
+    "DEEPSEEK_EFFORT=high (llm-verifier 0.2.0 default) may collapse the score distribution per intake-1162's CoT finding, working against the mechanism.",
+    "The granularity axis (G=20) may be API-cap-shaped rather than optimal: Gemini caps at 20 top logprobs, SNR is flat 0.797->0.799 from G=16, and intake-1162 found mean accuracy flat-to-worse from K=9 to K=99.",
+    "LLM-as-a-Verifier's oracle-headroom recovery on coding may sit below intake-1164's own pairwise baseline of 61.2 percent - arithmetic not yet done.",
+    "intake-875's reward-hacking result is in this method's exact use case and has never been reconciled with intake-362/363/804."
+  ],
+  "environment_defects_observed": [
+    "RESOLVED 2026-08-19 by operator (commit 07073fe8): orchestrator venv interpreter restored to 3.11.16; root-owned ~/.cache/uv was the second cause; validate_intake.sh live again; kb-search SKILL.md repointed; health_check.sh gained a Tooling Interpreters check.",
+    "RESOLVED 2026-08-19 by operator (commit 07073fe8): entry_verdict.py confidence_source gate now substring-matched with degenerate markers checked first.",
+    "NOT A DEFECT (operator ruling 2026-08-19): BACKLOG-DISPATCH-QUEUE.md:880 - the file is a SUPERSEDED evidence record, not a live dispatch surface, and is the substrate of the 34.5% anchor-rot measurement. Stage-1 finding withdrawn."
   ],
   "frozen_or_pointer_handoffs_flagged": [
-    "handoffs/active/meta-harness-optimization.md is a RETAINED COMPATIBILITY POINTER \u2014 'Do not add new Meta-Harness implementation work here.' It is the intuitive owner for harness-optimization intake and must NOT be named as an owning handoff in a Stage-3 plan. Route to harness-selection-and-integration.md, batched-edit-parallel-apply.md, or tool-use-eval-contract.md instead."
+    "decision-aware-routing.md - DAR-3 and DAR-6 FROZEN per fable5-findings-02",
+    "learned-routing-controller.md - Phases 1.5+ FROZEN for expansion; P1.5.2 logprob collection frozen",
+    "autopilot-continuous-optimization.md - active but AutoPilot intentionally stopped; AP-27 is a pointer to eval-tower-verification.md"
   ],
   "stage2_dives": [
     {
-      "intake": "intake-1150",
-      "verdict": "dive-verified",
-      "method": "Extracted all 134 benchmark run reports ever committed from full repo history (16,749 commits); 71 present at blog-era commit f8e915e14. Recomputed every per-model delta independently.",
-      "headline": "Headline CONFIRMED exactly (4/60 -> 41/60); +15pts-avg-over-patch independently recomputed as +15.61. Protocol OVERTURNED (n=60 not 180; headline cells are single-shot). Stage-1 README-vs-blog discrepancy RESOLVED IN THE SOURCE'S FAVOUR (v1 prose vs v2 table, both real). Noise floor MEASURED from author's own repeats: median 3.75pp, max 17.8pp. Against str_replace the effect is +2.97pp mean \u2014 inside that floor."
+      "entry": "intake-363",
+      "kind": "source + EMPIRICAL",
+      "result": "BLOCKER OVERTURNED",
+      "verification": "dive-verified",
+      "note": "Gemini-dependency rationale false at pinned commit 115de305. Empirically confirmed on llama.cpp v9: OAI logprob shape, no top_logprobs cap (20/40/64), pre-sampler head (temp 0 == temp 1 byte-identical), 19/20 A-T letters in head. Two new findings: thinking models put <think> at position 0 so the head contains zero score letters and fails SILENTLY; and verifier COMPETENCE is the real blocker (n=8 smoke test, 7/8 correct-over-buggy, bimodal gaps, one confident inversion)."
     },
     {
-      "intake": "intake-1148",
-      "verdict": "dive-verified",
-      "headline": "Per-line content hashes \u2014 the mechanism scored novelty:high \u2014 were ABANDONED by the author (commits 30793c165 / 7c6457652, May 2026) for a file-level 4-hex tag + plain line numbers. All published benchmarks measure the abandoned format; the shipped format has never been benchmarked. Stage-1 'line vs our file granularity' framing OVERTURNED: shipped hashline is file-granularity, same as current_shas. HS-4 cooperation surface CONFIRMED sufficient config-only (compat.extraBody -> Object.assign(params, extraBody))."
+      "entry": "intake-804",
+      "kind": "source",
+      "result": "MIS-FILED, re-graded",
+      "verification": "dive-verified",
+      "note": "novelty duplicate->medium, verdict already_integrated->worth_investigating, cred 3->4. round_robin technique was the BASELINE not the contribution. Open-weight Qwen 3.6 35B/SGLang verifier confirmed as a HEADLINE result. G=20 is an API cap, saturated by G=16. PPT LOSES to full round-robin (67.13 @ 9630 vs 67.42 @ 13111). Terminology trap recorded: 'open verifier' in Appendix A means logprob-exposing, not open-weight."
     },
     {
-      "intake": "intake-1149",
-      "verdict": "dive-verified",
-      "headline": "Confirmed correct filing; nothing overturned. Verified inside the 1148 dive rather than skipped."
+      "entry": "intake-1162",
+      "kind": "source",
+      "result": "ENTRY NUMBERS WERE v1; CORRECTED",
+      "verification": "dive-verified",
+      "note": "ar5iv silently serves v1. Stage-1 'verified' 92/120 from ar5iv and wrongly overrode a correct sub-agent report of 42/48. Corrected to 42/48 and 14/16 at v2. Granularity figures were mislabelled (tie-subset column, not the expectation). CoT criticism holds for pairwise SCORING (the regime LLM-as-a-Verifier uses) but effect size for a strong judge is ~+0.5pp, not +6.5pp, and REVERSES in pairwise ranking."
     },
     {
-      "intake": "intake-1151",
-      "verdict": "dive-verified",
-      "headline": "THIS SESSION'S OWN STAGE-1 HEADLINE OVERTURNED. The 'contradiction' with intake-1150 does not exist; the paper explicitly disclaims production prediction and is non-reasoning/greedy/single-pass, and its 'smaller open models' means sub-7B Qwen2.5-Coder (a floor effect). Net: NEITHER source measures the band we serve."
+      "entry": "intake-1164",
+      "kind": "source",
+      "result": "STAGE-1 TENSION RETIRED; our own result recomputed worse",
+      "verification": "dive-verified",
+      "note": "Recovery computed: TB2 37.8%, SWE-V 25.3%, MedAgent 64.6% - inside this paper's own 12.3-68.6% best-of-4 band and above its objective-label rows. Pairwise is REGIME-DEPENDENT (loses to pointwise under budget-matched best-of-4). Table 6 r_within thresholds contradict the paper's own Appendix N - adopt the metric, reject the thresholds. Our parked 2026-07-06 selector result recomputes to 9.1% recovery (not the ~25% recorded at Stage 1); MARGINAL parking confirmed and strengthened."
     },
     {
-      "intake": "intake-1152",
-      "verdict": "dive-verified",
-      "headline": "540/40/1 CONFIRMED (claude-sonnet-4). SCOPE CORRECTION: uses whole-file regeneration, no edit format \u2014 orthogonal to hashline, not a check on it. Context finding is sharper than the abstract: MORE CONTEXT IS NOT MONOTONICALLY BETTER (glm-4.6 -8.15pp from adding cursor position; highlighting hurts 2 of 7 models). Venue unresolved; credibility stays 3."
+      "entry": "intake-875",
+      "kind": "source + reconciliation",
+      "result": "VERDICT (2) BOUNDS",
+      "verification": "dive-verified",
+      "note": "The LiveCodeBench best-of-N arm is TRAINING-FREE, so selection-only is NOT a safe harbour. But the inflating quantity is the judge's own score; true pass still rises 0.27->0.29 and LLM-as-a-Verifier reports only harness-executed rates. Five conditions B1-B5. De-anchoring figure in our index was MISATTRIBUTED across judges and is corrected. Ensembling is structurally excluded (Proposition 2). RL-dense-reward arm is REFUTED-pending-verification while the selection arm is bounded."
     }
   ],
   "stage2b": {
-    "entries": [
-      "intake-1153",
-      "intake-1154",
-      "intake-1155",
-      "intake-1156",
-      "intake-1157",
-      "intake-1158",
-      "intake-1159",
-      "intake-1160"
+    "selected": [
+      "2210.10760",
+      "2512.02304",
+      "github.com/dubai03nsr/distributional-judge",
+      "2602.19313",
+      "2603.04304"
     ],
     "uncapped": true,
-    "note": "Operator selected ALL six dive-surfaced items; item 6 was a 3-source bundle, and two repo subtrees were promoted to their own entries, so 6 selections produced 8 entries. All landed dive-verified, never stage1-unverified.",
-    "declines_recorded": [
-      {
-        "source": "Chatbot Arena (arXiv:2403.04132)",
-        "recorded_in": "intake-1152 dive_corrections",
-        "reason": "Not in the operator-selected bundle; one step further from code than Copilot Arena (intake-1156), which was ingested and carries the same methodological finding in a coding setting."
-      }
+    "id_range": "intake-1167..1171",
+    "status": "complete",
+    "dedup": "all five swept unbounded against 1,162 entries: zero entry-level collisions (2210.10760, 2602.19313 and 2603.04304 each appear once as a referenced_arxiv_ids string only, which is a mention, not an entry; the repo has no match)",
+    "entries": [
+      "intake-1167",
+      "intake-1168",
+      "intake-1169",
+      "intake-1170",
+      "intake-1171"
     ],
-    "convention_deviation": "At Stage 1 I declined repo subtrees as non-sources. snapcompact and metaharness were promoted to their own entries (intake-1159/1160) because both are independently published npm packages with their own README, function and (for snapcompact) empirical claims. Offered to the operator as reversible.",
+    "all_persisted_as": "dive-verified (never stage1-unverified), so every number is quotable in the Stage-3 plan",
+    "results": {
+      "intake-1167": "best-of-3/5 is 35-60x below the overoptimization turn in n - pool size is NOT our risk. The binding condition is a VERIFIER COMPETENCE floor: below ~2000 comparisons / near-chance val loss there is NO safe n at all.",
+      "intake-1168": "supplies a COMPETING explanation for our near-chance reviewer discrimination - same-family configuration plus generators that already self-verify ~96% of the time - which must be tested before any capability-floor conclusion. Also: raw logprob is partly a style prior and needs per-generator normalisation.",
+      "intake-1169": "the reference implementation is aggregation-only; no inference path exists. No LICENSE, so clean-room reimplement. Produced golden validation vectors and five executed defects. The exact pairwise joint is unimplemented and cheap on our hardware.",
+      "intake-1170": "LLM-as-a-Verifier expectation mechanism IS novel over TOPReward, but the TOPReward comparison in intake-804 is not a fair fight on four counts, and the chat-template hazard (~50% signal loss) is a direct trap for our build.",
+      "intake-1171": "V1 claims O(N)-scale four months earlier with an adaptive schedule, so PPT complexity is not an advance over its own baseline. V1 gets the same graded tie-free signal from TEXT ratings with no logprobs. Its scheduler is provably inert at N<=7."
+    },
     "corrections_pushed_upstream": [
-      "intake-1150 (Cursor misattribution, aider model swap, GPT-3.5 figure unlocated, stencil.so URL alias)",
-      "intake-1148 (independent line-number argument against the direction the shipped format moved)",
-      "intake-1152 (Chatbot Arena decline recorded)"
-    ]
+      "intake-804: the V1-is-non-monotonic claim written by this session earlier today was MIS-ATTRIBUTED and is withdrawn; V1 published only to 3N and claims monotonic scaling. Replaced with the stronger objection that intake-804 benchmarked its baseline out of envelope.",
+      "intake-804: recorded that PPT complexity is not an advance over V1, that the TOPReward comparison has four fair-fight defects, and that novelty is squeezed from two sides.",
+      "intake-1162: recorded that the reference implementation is aggregation-only, so no future session re-reads it expecting an inference path."
+    ],
+    "recommendation_declined": "The intake-1170 dive recommended dropping intake-804 novelty medium -> low. DECLINED by the owning session: our rubric defines low as well-covered-in-chapters and medium as related-work-exists-plus-new-results, and a paper contributing four benchmarks plus a full ablation suite meets medium regardless of mechanism priority. The priority finding is recorded in dive_corrections instead, where it stays legible.",
+    "declines_recorded": "Non-selected dive-surfaced sources are recorded on their bearing entries (intake-804, intake-875, intake-1162, intake-1164) as NOT-SELECTED rather than declined, since the operator ruled only on the strongly-recommended tier."
   },
-  "stage4": {
-    "plan": "/home/node/.claude/plans/jolly-gliding-harp.md (operator-approved 2026-08-18)",
-    "handoffs_amended": [
-      "harness-selection-and-integration.md",
-      "batched-edit-parallel-apply.md",
-      "canonical-judge-suite-revamp.md",
-      "delegation-context-preassembly.md",
-      "speculative-decoding-mtp-refresh.md",
-      "architect-model-selection-bench.md",
-      "scoring-infra-standardization.md"
+  "stage4": {},
+  "stage2_index_writes": {
+    "entries_promoted_to_dive_verified": [
+      "intake-363",
+      "intake-804",
+      "intake-875",
+      "intake-1162",
+      "intake-1164"
     ],
-    "handoffs_created": [
-      "optical-context-compression.md"
+    "entries_corrected_not_dived": [
+      "intake-362",
+      "intake-1161",
+      "intake-1163",
+      "intake-1165"
     ],
-    "index_rows_added": [
-      "RTG-53 in routing-and-optimization-index.md (deps UFH-07, INF-41)"
-    ],
-    "checkbox_counts": {
-      "new_open": 15,
-      "new_done_2026_08_18": 2,
-      "note": "12 open across 7 existing handoffs + 3 in the new stub; HS-1d and BEP-6 land [x] because the dives settled them."
-    },
-    "intake_entries_written_back": 13,
+    "follow_up_closed": "intake-804 RECOMMENDED FOLLOW-UP, open 39 days, executed 2026-08-19 with two recorded deviations (arxiv_id NOT set on 362/363 - would duplicate and hard-fail validation; RoboRewardBench 87.4 NOT copied to 363 - belongs to the paper, not the repo)",
     "gates": {
-      "validate_intake.sh": "exit 0 (1,156 entries)",
-      "index_state.py --check": "exit 0, 0 problems \u2014 new stub owned by exactly one row (RTG-53), no orphans, no duplicate ownership",
-      "deletions_in_handoffs": "0 (the only 4 deleted lines are the regenerated master-index rollup counts)"
-    },
-    "not_committed": "Left UNSTAGED deliberately. Staging in this shared tree is itself a hazard \u2014 staged files ride into a parallel session's commit. Awaiting operator go-ahead for a pathspec-limited commit."
-  }
+      "validate_intake.sh": "exit 0 (1162 entries)",
+      "git_status_handoffs": "clean",
+      "depends_on_edges": 3
+    }
+  },
+  "defects_found_not_fixed": [
+    "13 PRE-EXISTING index entries carry a malformed list item where an unquoted colon-space turned a claim/technique string into a single-key mapping: intake-218/239/350/991/994/995/996 (key_claims), intake-498 (reported_results), intake-502/505/506/688/779 (techniques). The validator does not catch it and yaml.safe_load parses it happily, so any consumer iterating claims as strings gets a dict. Found while fixing the same defect in my own edit. NOT repaired - they are other sessions' claim text and rewriting it risks changing meaning."
+  ]
 }

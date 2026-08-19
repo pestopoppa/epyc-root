@@ -14516,7 +14516,8 @@
   reported_results:
   - 'Terminal-Bench 2: 86.4% (baseline Forge Pass@1: 81.8%)'
   - 'SWE-Bench Verified: 77.8% (baseline: 76.1%)'
-  references: []
+  references:
+  - 'CANONICAL CITATION: Kwok, Li, Atreya, Liu, Jiang, Finn, Pavone, Stoica, Mirhoseini - LLM-as-a-Verifier: A General-Purpose Verification Framework, arXiv:2607.05391v2 (2026-07-07). Recorded as intake-804. NOTE: arxiv_id is deliberately NOT set on this entry - it would duplicate intake-804 and duplicate arxiv_id is a hard validation error. Cite intake-804 for the paper.'
   novelty: high
   relevance: medium
   credibility_score: null
@@ -14542,6 +14543,8 @@
   notes: 'Notion project page for LLM-as-a-Verifier framework. Page content not directly fetchable (Notion JS rendering). Information derived from associated GitHub repo (intake-363) and web search. The project page and repo together describe a logprob-based verification framework that generalizes LLM-as-a-Judge by using multi-criteria, repeated verification with granularity scaling.
 
     RELEVANCE TO EPYC: Tangentially related to AP-27 eval tower formalization. The methodology (logprob scoring, criteria decomposition) could inform how we design verification functions for T0/T1/T2 tiers. However, the Gemini API dependency makes direct adoption infeasible for local inference. The key insight is that structured verification with probability-based scoring outperforms single-pass LLM judgment.
+
+    2026-08-18 RE-ENCOUNTER (research-intake Stage 1): resurfaced when the operator submitted https://llm-as-a-verifier.com/ together with the GitHub repo URL. No new entry was minted for the repo (exact url collision with intake-363). The .com website is a DISTINCT, simultaneously live artifact and is filed as intake-1161; this Notion page is unchanged and still live. Note that the notes above record this page as never actually fetched - its claims were derived from the repo and web search - whereas intake-1161 was read directly, so prefer intake-1161 for anything this entry asserts. NOT DIVED; nothing promoted here.
 
     '
   integration_disposition: integrated
@@ -14574,9 +14577,12 @@
   - 'Terminal-Bench 2: 86.4% (76.9/89 tasks, Forge+GPT-5.4 trajectories)'
   - 'SWE-Bench Verified: 77.8% (389/500 instances, Claude Opus+Gemini trajectories)'
   - 'Baselines: Forge 81.8% Pass@1, Claude/Gemini 75.6-76.8% Pass@1'
+  - 'MedAgentBench (added upstream since ingest; read verbatim in the README at commit 115de305): Pass@1 70.2% -> 73.3%, Oracle 75.0%, base model Claude Opus 4.8 best-of-5, AgentBench harness.'
+  - 'RoboRewardBench is named in the README banner but its figure (87.4%) is reported in the PAPER, not this repo - it is recorded on intake-804 and deliberately NOT copied here, to avoid cross-contaminating this entry with another source''s number.'
   references:
   - 'Terminal-Bench 2 leaderboard: huggingface.co/datasets/harborframework/terminal-bench-2-leaderboard'
   - 'SWE-bench experiments: github.com/swe-bench/experiments'
+  - 'CANONICAL CITATION: Kwok, Li, Atreya, Liu, Jiang, Finn, Pavone, Stoica, Mirhoseini - LLM-as-a-Verifier: A General-Purpose Verification Framework, arXiv:2607.05391v2 (2026-07-07). Recorded as intake-804. NOTE: arxiv_id is deliberately NOT set on this entry - it would duplicate intake-804 and duplicate arxiv_id is a hard validation error. Cite intake-804 for the paper.'
   novelty: high
   relevance: medium
   credibility_score: null
@@ -14599,7 +14605,8 @@
     - intake-368
     - intake-371
   handoffs_updated:
-  - autopilot-continuous-optimization.md
+  - 'autopilot-continuous-optimization.md'
+  - 'eval-tower-verification.md'
   handoffs_created: []
   notes: 'Python repo (100 stars, 4 forks) implementing logprob-based trajectory verification. Dependencies: google-genai, tqdm, Vertex AI API key. Data includes 5 Terminal-Bench trajectories and 3 SWE-bench runs.
 
@@ -14607,7 +14614,92 @@
 
     Key limitation: Gemini API dependency. Would need to adapt for local models (e.g., using llama.cpp logprob extraction). The approach is model-agnostic in principle but the implementation is Gemini-specific. 100 stars suggests early traction but not yet widely validated.
 
+    2026-08-18 RE-ENCOUNTER (research-intake Stage 1): the operator re-submitted this exact URL with the anchor #self-verification-terminal-bench-21. Per the no-duplicate rule no new entry was minted. A re-read at pinned commit 115de305f23ed89bc42e86e010853c40059f3f7d (2026-08-14, release 0.2.0, LICENSE = MIT) shows this entry has DRIFTED and is a strong dive candidate. Observed, NOT promoted: (a) the blocking rationale recorded above - Gemini API dependency, would need to adapt for local models - is contradicted at that commit by llm_verifier/fine_grained_reward.py, which builds a client for any OpenAI-compatible server returning token-level logprobs (vLLM, SGLang, OpenAI, DeepSeek), defaults call_openai to top_logprobs=20, and defines GRANULARITY=20 over single-token score letters A-T; pyproject.toml also ships a vllm extra to self-host the verifier. (b) The ranking algorithm is now a Probabilistic Pivot Tournament at O(Nk); the round-robin recorded above is the baseline it is measured against. (c) The recorded baseline framing - Forge Pass@1 81.8 percent, 76.9/89 tasks, GPT-5.4 - is superseded by the Capy harness, GPT-5.5 and Pass@1 83.1 percent. (d) New since ingest: a Terminal-Bench 2.1 self-verification benchmark, prefix-cache optimization, a DeepSeek backend and token accounting. Companion entries added the same day: intake-1161 (website), intake-1166 (TurboAgent proxy), intake-1162 / intake-1164 / intake-1165 (prior-art and audit literature). NOT DIVED - verification field unchanged and none of the above may be quoted downstream until a Stage-2 dive lands.
+
     '
+  verification: dive-verified
+  dive_corrections: >-
+    STAGE-2 DIVE 2026-08-19 (source-level at pinned commit 115de305f23ed89bc42e86e010853c40059f3f7d,
+    release 0.2.0, LICENSE MIT; PLUS an empirical run on our own stack). THE RECORDED ADOPTION BLOCKER IS
+    OVERTURNED. This entry concluded "Key limitation: Gemini API dependency. Would need to adapt for local
+    models (e.g. using llama.cpp logprob extraction)." That is false at the pinned commit and it was the
+    single rationale that kept this source out of our work for four months.
+
+
+    SOURCE EVIDENCE: llm_verifier/fine_grained_reward.py:126-128 builds a client for "any OpenAI-compatible
+    server that returns token-level logprobs (vLLM, SGLang, OpenAI, DeepSeek)"; call_openai defaults to
+    top_logprobs=20 (line 403); GRANULARITY=20 with single-token score letters A-T (lines 69-88);
+    pyproject.toml ships a [vllm] extra whose comment reads "Self-host the verifier model". The companion
+    paper (intake-804) goes further: its RoboRewardBench headline of 87.4 percent is produced by Qwen 3.6
+    35B served over SGLang - an OPEN-WEIGHT, SELF-HOSTED verifier - and Table 5 shows the mechanism working
+    on an 8B backbone (MAE 1.11 -> 0.72).
+
+
+    EMPIRICAL EVIDENCE (run by the owning session, llama.cpp production-consolidated-v9 @
+    0db32c06e3e550065b78311a6031ef3dd2c4f27c, CPU-only Qwen3-1.7B-Q8_0, server started and confirmed
+    terminated): llama-server /v1/chat/completions returns the exact OpenAI logprob shape
+    {id, token, bytes, logprob, top_logprobs[]}; top_logprobs has NO CAP (20, 40 and 64 each returned
+    exactly that many); the reported head is PRE-SAMPLER (temperature 0.0 and 1.0 return byte-identical
+    logprobs, so post_sampling_probs=false gives the unmodified distribution and Eq. 3.1 is not silently
+    distorted); with thinking disabled, 19 of 20 A-T letters appear in the top-20 head with score-token
+    mass 1.0000 and the expectation computes cleanly under the package's own phi (A=20 ... T=1).
+
+
+    TWO FINDINGS THAT COST MORE THAN THE CONFIRMATION. (1) On a thinking model the score is NOT at token 0:
+    Qwen3 emitted <think> first, the head contained ZERO score letters, and the expectation was undefined
+    while still returning a well-formed logprob array. This fails silently and must be handled by
+    enable_thinking=false or a forced prefix to the scoring position - see intake-1162 Appendix C.1, which
+    specifies exactly this prefill for local models. (2) Plumbing was never the blocker; VERIFIER COMPETENCE
+    is. Over 8 correct/buggy code pairs the 1.7B model ranked correct above buggy in 7 of 8, but the gaps
+    were violently bimodal (+0.08, +0.31, +0.96 on three pairs; +15 to +19 on four) with one CONFIDENT
+    INVERSION - correct max(a) scored 10.6 while buggy a[0] scored 18.9. That is n=8, one small model, toy
+    tasks, K=1, C=1: a SMOKE TEST of the mechanism, NOT a measurement, and it must not gate anything. It
+    does relocate the open question from "can llama.cpp serve this" (decisively yes) to "is any local model
+    we would run competent enough to be the verifier", which is the same question intake-875 answers with a
+    capability threshold.
+
+
+    NOT overturned: the reward formula, the three scaling axes, and the direction of the reported gains.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'The R(t,tau) formula is confirmed verbatim in the README How-it-works section and implemented in llm_verifier/fine_grained_reward.py. Unchanged by this dive.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Superseded framing, not a wrong number. The recorded "86.4 percent vs 81.8 percent, 76.9/89 tasks, Forge+GPT-5.4" no longer exists upstream. At the pinned commit the same benchmark reads Capy harness, GPT-5.5 proposer, Pass@1 83.1 -> 86.5, oracle 92.1. Direction and rough magnitude survive; every specific token in the old claim does not.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'SWE-Bench Verified is now 78.2 percent against the same 76.1 percent pool mean (was recorded as 77.8). Minor upward revision, conclusion unchanged.'
+  - claim_index: 3
+    effect: overturned
+    note: 'FALSE at the pinned commit. Scoring is no longer Gemini/Vertex-specific: fine_grained_reward.py:126-128 accepts any OpenAI-compatible server returning token-level logprobs, and the paper''s own open-weight verifier is Qwen 3.6 35B over SGLang. This is the claim that carried the adoption blocker.'
+  - claim_index: 4
+    effect: overturned
+    note: 'The flags --granularity / --n-verifications / --criteria no longer appear in the README. GRANULARITY=20 survives as a module constant; repeat count is now expressed via --n-evaluations (the README shows "--pivots 2 --n-evaluations 8 --seed 0 --max-workers 50" as an OVERRIDE EXAMPLE, not documented defaults - do not record those as defaults); the paper''s stated default is K=8, not the 4 recorded here. Dependency list has also drifted: DEEPSEEK_API_KEY and OpenAI-compatible backends are now supported alongside google-genai.'
+  claim_anchors:
+  - claim_index: 3
+    kind: line-range
+    locator: 'llm_verifier/fine_grained_reward.py:126-128 (docstring of create_openai_client)'
+    quote: 'Build an ``openai`` client for any OpenAI-compatible server that returns token-level logprobs (vLLM, SGLang, OpenAI, DeepSeek).'
+    source_revision: 'github.com/llm-as-a-verifier/llm-as-a-verifier@115de305f23ed89bc42e86e010853c40059f3f7d'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: line-range
+    locator: 'llm_verifier/fine_grained_reward.py:69 and :403'
+    quote: 'GRANULARITY = 20 ... def call_openai(client, prompt, model=DEFAULT_MODEL, top_logprobs=20, images=None):'
+    source_revision: 'github.com/llm-as-a-verifier/llm-as-a-verifier@115de305f23ed89bc42e86e010853c40059f3f7d'
+    verified_by: 'research-intake/stage2'
+  depends_on:
+  - entry: intake-804
+    claim_index: 3
+    why: 'This entry overturns its own recorded Gemini-dependency blocker partly on intake-804''s open-weight Qwen 3.6 35B / SGLang verifier. If that were retracted the overturning would lose its strongest external leg - though the pinned source code and the empirical llama-server run still carry it independently.'
+  reader_should_conclude: >-
+    The Gemini-dependency blocker recorded in the notes above is DEAD - do not cite it, and do not re-derive
+    it. Local adoption is a configuration change (OPENAI_BASE_URL pointed at llama-server), not a
+    re-implementation. Two things replace it as the real questions: whether a local model is COMPETENT
+    enough to be the verifier (intake-875 supplies a capability threshold and a cheap test for it), and
+    whether reasoning-before-score collapses the distribution the score is read from (intake-1162). Any
+    number in this entry older than 2026-08-19 describes a superseded upstream state.
 - id: intake-364
   arxiv_id: null
   url: https://github.com/firecrawl
@@ -44125,17 +44217,30 @@
   - score_granularity_scaling
   - repeated_verification_k_rounds
   - criteria_decomposition
-  - round_robin_tournament_ranking
+  - probabilistic_pivot_tournament
+  - ring_based_pivot_selection
+  - bradley_terry_preference_conversion
+  - two_stage_reasoning_scoring_split
   reported_results:
   - 'Terminal-Bench V2: 86.5%'
   - 'SWE-Bench Verified: 78.2%'
   - 'RoboRewardBench: 87.4%'
   - 'MedAgentBench: 73.3%'
-  referenced_arxiv_ids: []
-  novelty: duplicate
+  referenced_arxiv_ids:
+  - '2603.04304'
+  - '2602.19313'
+  - '2601.00675'
+  - '2306.05685'
+  - '2408.15240'
+  - '2305.20050'
+  - '2110.14168'
+  - '2407.21787'
+  - '2506.15799'
+  - '2310.06770'
+  novelty: medium
   relevance: medium
   discovered_via: input
-  verdict: already_integrated
+  verdict: worth_investigating
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -44149,14 +44254,123 @@
     intake_entries:
     - intake-362
     - intake-363
-  credibility_score: 3
+  credibility_score: 4
   contradicting_evidence:
-  - Prior intake (362/363) noted logprob-reliability and LLM-judge bias caveats; reference implementation is Gemini/Vertex-AI-specific (closed API), so local adoption requires re-implementing scoring via llama.cpp logprob extraction.
+  - 'RETRACTED 2026-08-19 by Stage-2 dive (text retained for record): "reference implementation is Gemini/Vertex-AI-specific (closed API), so local adoption requires re-implementing scoring via llama.cpp logprob extraction." This is FALSE. The 87.4 percent RoboRewardBench headline is produced by Qwen 3.6 35B served over SGLang (an open-weight self-hosted verifier), and the released code accepts any OpenAI-compatible logprob server. The logprob-reliability and LLM-judge-bias caveats in the same line are NOT retracted.'
+  - 'STILL STANDING: the SOTA framing is stale. Artificial Analysis, running Terminal-Bench v2.1 independently (Terminus 2 harness, e2b sandbox, pass@1 over 3 repeats), lists GPT-5.6 Sol (xhigh) 89.5 percent, Claude Opus 5 89.1 percent and Grok 4.6 88.4 percent, all above 86.5 percent (retrieved 2026-08-18). Not apples-to-apples - that is v2.1/Terminus 2 versus this paper''s V2/Capy - and it does NOT touch the +3.4pp-over-own-Pass@1 selection claim, which is what the method actually asserts.'
+  - 'The reported gains are modest and expensive: +3.4pp (Terminal-Bench V2), +2.1pp (SWE-Bench Verified), +3.1pp (MedAgentBench) over Pass@1, each costing N-times generation plus K=8 repeated verifications plus the tournament passes.'
   handoffs_updated:
-  - reviewer-calibration-accounting.md
+  - 'reviewer-calibration-accounting.md'
+  - 'eval-tower-verification.md'
   handoffs_created: []
-  notes: 'already_integrated / novelty duplicate: same framework already captured as intake-362 (Notion) + intake-363 (GitHub repo, 2026-04-14) with near-identical Terminal-Bench V2 (86.5 vs 86.4) and SWE-Bench Verified (78.2 vs 77.8). This is the canonical arXiv write-up. RECOMMENDED FOLLOW-UP (operator): attach arxiv_id 2607.05391 + confirmed author list to intake-362/363 as canonical citation, and record the two added benchmarks (RoboRewardBench 87.4, MedAgentBench 73.3).'
+  notes: 'already_integrated / novelty duplicate: same framework already captured as intake-362 (Notion) + intake-363 (GitHub repo, 2026-04-14) with near-identical Terminal-Bench V2 (86.5 vs 86.4) and SWE-Bench Verified (78.2 vs 77.8). This is the canonical arXiv write-up. FOLLOW-UP CLOSED 2026-08-19 by the Stage-2 dive session (it had been open and unchanged for 39 days, which by the recurrence check means it was never blocked). Executed as: a CANONICAL CITATION line naming this entry, the arXiv id and the nine authors added to the references field of intake-362 and intake-363; the MedAgentBench figures added to intake-363 from its own README at the pinned commit. Two deliberate deviations from the literal request, both recorded rather than silently taken: (i) arxiv_id was NOT set on intake-362/363 - doing so would duplicate this entrys arxiv_id, which is a hard validation error, so the citation is carried in references instead; (ii) RoboRewardBench 87.4 was NOT copied onto intake-363, because that figure is reported in this paper and not in that repo, and copying it would cross-contaminate the entry with another sources number. 2026-08-18 RE-ENCOUNTER (research-intake Stage 1): resurfaced via the README of the operator-submitted repo URL, which links this paper. No new entry minted (exact arxiv_id collision). Version check: arXiv reports v2 submitted 2026-07-07 (v1 2026-07-06) and the recorded url already pins v2, so this entry has NOT drifted on version. Two defects observed and deliberately NOT corrected in Stage 1: (a) techniques lists round_robin_tournament_ranking, but Algorithm 1 of v2 is the Probabilistic Pivot Tournament at O(Nk) and round-robin is the baseline it is compared against; (b) the RECOMMENDED FOLLOW-UP recorded above has been open and un-actioned for 38 days. NOT DIVED.'
   ingested_date: '2026-07-11'
+  verification: dive-verified
+  dive_corrections: >-
+    STAGE-2 DIVE 2026-08-19, read at arXiv:2607.05391v2 (current; API-confirmed, two versions only, the
+    recorded url already pinned v2 so this entry had NOT drifted on version). Full text parsed locally from
+    arxiv.org/html/2607.05391v2; no summarising fetch was used for any number.
+
+
+    THE ENTRY WAS MATERIALLY MIS-FILED and is re-graded: novelty duplicate -> medium, verdict
+    already_integrated -> worth_investigating, credibility_score 3 -> 4, referenced_arxiv_ids populated
+    (was an empty list against a ~88-reference paper). It is a strict SUPERSET of intake-362/363, adding
+    two whole domains (RoboRewardBench, MedAgentBench) and six tables that appear nowhere else in this
+    index: the SNR-by-granularity decomposition, the judge-versus-verifier tie case study, the PPT
+    budget-accuracy trade, harness generalization, PRM/ORM results, and the two-stage logit-restricted
+    workaround.
+
+
+    TECHNIQUE DEFECT CORRECTED: round_robin_tournament_ranking was recorded as a technique of this paper.
+    It is the BASELINE the contribution replaces. Algorithm 1 is the Probabilistic Pivot Tournament with
+    ring-based pivot selection, at O(Nk) versus O(N^2). Three further contributions were missing entirely
+    and have been added.
+
+
+    WHAT THE DIVE ESTABLISHED THAT CHANGES OUR POSITION. (1) The open-weight verifier is real and it carries
+    a HEADLINE number, not just an appendix: Qwen 3.6 35B over SGLang produces the 87.4 percent
+    RoboRewardBench result (section 5.3) and the VOC 0.966 progress-tracking result, and Table 5 shows the
+    mechanism improving an 8B backbone from MAE 1.11 to 0.72. (2) TERMINOLOGY TRAP, recorded so no
+    downstream plan repeats it: Appendix A says the workaround routes reasoning through "an open verifier
+    whose logits are accessible" and Appendix B.6 instantiates that as GEMINI 2.5 FLASH. There, "open"
+    means logprob-exposing, NOT open-weight. The genuine open-weight evidence is in 5.3 and B.7, never in
+    A or B.6. (3) G=20 is an API CAP that coincides with a 20-letter single-token alphabet, not an optimum:
+    Gemini "allows us to extract up to 20 top logprobs per scoring token", and SNR gains only +0.002 from
+    G=16 to G=20. Self-hosting lifts the cap but there is nothing above it worth having. (4) PPT DOES NOT
+    BEAT full round-robin: 67.13 percent at 9,630 pairs versus 67.42 percent at 13,111 (Table 9). It trades
+    0.29pp for 26.5 percent fewer comparisons and beats only the V1 baseline, and NOTE THE CORRECTION BELOW on how that
+    baseline was run. At best-of-3/best-of-5 pool sizes PPT is pointless - round-robin is 3 to 10
+    comparisons. (5) ATTRIBUTION: the paper bundles the discrete-to-continuous switch into its granularity
+    curve, because its left endpoint G=1 IS the discrete judge. Table 2 is the only clean separation, at
+    fixed G=5: discrete-to-continuous moves 12/100 to 69/100 wins and ties 88 to 0, while G=5 to G=20 moves
+    69 to 77. Scoring the 88 ties as losses gives 88 percent of the gain to the expectation step; under a
+    fair random tie-break it is about 62 percent. Either way the EXPECTATION is the large lever and
+    granularity is the small one. (6) The K=16 accuracy is 77.5 percent - a genuine internal typo, 77.4
+    appears once in the section-4 overview against 77.5 in the section-4.2 body and the Figure 7 caption.
+
+
+    NO ABLATION OF VERIFIER SIZE EXISTS in this paper - confirmed by exhaustive search, and it is the gap
+    that matters most to us, since it decides whether a small local model can be the verifier.
+    CORRECTION 2026-08-19, issued by the Stage-2b dive of intake-1171 against text this same session wrote earlier today. This entry previously recorded that the V1 baseline curve is itself non-monotonic because 7N scores worse than 5N. THAT ATTRIBUTION IS WRONG and is withdrawn. V1 publishes ONLY 1x, 2x and 3x budget multipliers - twice in the paper and again in its released repo - and explicitly claims MONOTONIC performance scaling with compute. The 5N and 7N points in Table 11 are THIS PAPER extrapolation to 2.3x beyond V1 published envelope, at hyperparameters V1 deliberately fixed and declined to tune. The corrected objection is stronger than the one it replaces: this paper benchmarked its baseline OUT OF ENVELOPE and then reported beating it. Never repeat the non-monotonic wording.
+
+    FURTHER 2026-08-19, from the Stage-2b dives. (1) PPT COMPLEXITY IS NOT AN ADVANCE OVER ITS OWN BASELINE: V1 (intake-1171) explicitly claims O(N)-scale pairwise verification four months earlier and reaches it with an ADAPTIVE schedule, where PPT uses FIXED pivots, and V1 own ablation shows adaptive pairing beating non-adaptive by 3.8 points. Combined with PPT losing 0.29 points to full round-robin on this paper own Table 9, the decline to implement PPT is confirmed on better grounds. Its one surviving genuine contribution is the ring pass for positional bias, which V1 lacks entirely. (2) THE TOPReward COMPARISON IN THIS PAPER IS NOT A FAIR FIGHT (intake-1170): TOPReward never ran RoboRewardBench, its reward is a LOG-probability rather than the raw P(true) this paper scored it in, it is built on video-language backbones rather than the general text model used here, and an OpenAI-compatible endpoint almost certainly applied a chat template, which TOPReward own ablation shows HALVES the metric. Those four defects explain the reported gap without invoking the saturation this paper attributes to it - and that saturation characterisation appears nowhere in TOPReward, whose unbounded-below log formulation argues against it. (3) NOVELTY IS SQUEEZED FROM TWO SIDES: intake-1162 holds the expectation-over-a-graded-distribution mechanism sixteen months earlier, and intake-1170 holds logit-probing-as-reward four months earlier while itself crediting the principle to prior NLP work. What survives is the engineering composition - granularity, repeats, criteria decomposition, tournament, four domains - not the mechanism. The intake-1170 dive recommended dropping novelty to low; that specific change was DECLINED and novelty stays medium, because our rubric defines low as well-covered-in-chapters and medium as related-work-exists-plus-new-results, and a paper contributing four benchmarks and a full ablation suite meets medium regardless of mechanism priority. Recording the priority finding here keeps it legible instead of compressing it into a scalar.
+
+    STAGE-2b DISPOSITION OF THIS ENTRY DIVE-SURFACED SOURCES, recorded 2026-08-19 so none is silently lost or re-derived. SELECTED by the operator and now ingested-and-dived: intake-1170 (TOPReward, 2602.19313) and intake-1171 (V1, 2603.04304). NOT SELECTED in this round and therefore not ingested: 2603.02115 Robometer, 2601.00675 RoboReward (owner of the RoboRewardBench benchmark this paper reports 87.4 percent against - its provenance therefore remains unfiled), and 2506.15799 DSRL (the RL algorithm behind the 1.8x sample-efficiency claim). All three are robotics-bound, which is why they ranked below the selected tier. These are recorded as NOT-SELECTED rather than declined - the operator ruled only on the strongly-recommended tier, so they remain available for a later Stage-2b round and should not be re-surfaced as new discoveries.
+
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The paper claims verification is a "distinct and underexplored" scaling axis. It never claims it is COMPARABLE IN MAGNITUDE to pre-training or test-time compute; the entry''s word "comparable" was an unsupported strengthening, and the measured returns (+4.4pp over a 20x granularity sweep, saturating by G=16) do not support it.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED and the best-supported claim in the paper. Table 2: a discrete 1-5 judge ties in 88/100 evaluations; the expectation over the same 1-5 scale eliminates ties and ranks correctly in 69/100. Corroborated at 4.2, 5.3 and Appendix B.6.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED verbatim for all three axes (G 73.1->77.5, K 74.7->77.5, C 75.2-76.4 single -> 78.3 ensembled) and the training-free claim. Note separately that the granularity axis is the weakest of the three and is confounded with the discrete-to-continuous switch at its G=1 endpoint.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'CONFIRMED as reported (LIBERO/DSRL-SAC ~1.8x, MATH/GRPO ~1.1x, progress-tracking VOC 0.966) but two caveats now attach: the GRPO gain is near-noise, and the paper concedes its RL experiments are limited to single-turn settings. See the depends_on edge to intake-875 - the RL-dense-reward arm sits in a regime that entry refutes, unlike the selection arm.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Section 3.2, Probabilistic Pivot Tournament'
+    quote: 'We propose a budget-efficient alternative, Probabilistic Pivot Tournament (PPT), illustrated in Fig. 6, in which every candidate is compared only against a small set of k<<N pivots, reducing the budget from O(N^2) to O(Nk).'
+    quote_sha256: '3e38d3c200347f3e573d7f06aec72e5756e5a4ee84a1c4af84a063a114b82ead'
+    source_revision: 'arXiv:2607.05391v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'Section 4, Verification Scaling'
+    quote: 'For all scaling experiments, we use Gemini 2.5 Flash as the verifier, which allows us to extract up to 20 top logprobs per scoring token.'
+    quote_sha256: 'c92d5c2e9cb9b818e602a5e9b85a974ddf51fdb980afee4800008a1821b1af2f'
+    source_revision: 'arXiv:2607.05391v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'Appendix B.7, Off-policy RL (DSRL-SAC)'
+    quote: 'The verifier is Qwen 3.6 35B served over SGLang and queried with the task instruction and a uniform sub-sample of Nf=10 rendered frames per rollout'
+    quote_sha256: '992ec16e2d30f4a507fa6e186abd5a1409773c65238f5616ba524ef0c13a002c'
+    source_revision: 'arXiv:2607.05391v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Appendix B.2, Table 9 discussion'
+    quote: 'k=9 achieves 67.13% accuracy with 9,630 pairs, approaching full round-robin performance while using substantially fewer comparisons.'
+    quote_sha256: '7a6e8a031fcbe7eb4f6013db482eda8583a791b6cef0d7233eba6b7f2c986da1'
+    source_revision: 'arXiv:2607.05391v2'
+    verified_by: 'research-intake/stage2'
+  depends_on:
+  - entry: intake-875
+    claim_index: 3
+    why: 'The RL-dense-reward claim rests on optimising a policy against a reference-free candidate-conditioned judge. intake-875 refutes exactly that configuration, so if its result stands the SAC/GRPO application is in the refuted regime while the selection arm is only bounded. Retracting intake-875 would restore this claim to unqualified.'
+  reader_should_conclude: >-
+    Cite THIS entry, not intake-362/363, for anything about the paper: they predate it and their numbers are
+    superseded. Three things must travel with any citation. First, the open-weight verifier is real and
+    load-bearing (Qwen 3.6 35B over SGLang, section 5.3), so the old Gemini-dependency blocker is dead.
+    Second, "open verifier" in Appendix A means logprob-exposing, NOT open-weight - do not cite Appendix A
+    as open-weight evidence. Third, do NOT implement the Probabilistic Pivot Tournament at our pool sizes:
+    it loses 0.29pp to full round-robin and only pays off near N=20. The transferable, cheap parts are the
+    expectation step and the ring-pass positional-bias cancellation.
 - id: intake-805
   arxiv_id: '2606.25234'
   url: https://www.goodfire.ai/research/bsf-vision
@@ -48174,8 +48388,8 @@
   reported_results:
   - 'GSM8K, Qwen3-4B policy, n=1319: judge pass rate 0.716 -> 0.938 under self-play, while hidden-anchor accuracy stays 0.209 -> 0.202; judge-truth gap 0.735.'
   - 'False-positive rate on wrong answers: 0.651 -> 0.906 for the self-judge.'
-  - 'Cross-family transfer of the hack (wrong-answer FPR, before -> after): Llama-3.1-8B 0.480 -> 0.568; Gemma-3-12B 0.764 -> 0.918; three-family Min ensemble 0.438 -> 0.552 — the ensemble still accepts ~55% of hacked wrong answers.'
-  - 'VERIFIED: best-of-N on LiveCodeBench, judge-selected gap 0.20 at k=1 widening to 0.588 at k=16 (95% CI [0.506, 0.669]), while unit-test pass rate on the selected candidate moves only 0.27 -> 0.29. De-anchored judging cuts gap@16 to 0.227.'
+  - 'Cross-family transfer of the hack (wrong-answer FPR, before -> after): Llama-3.1-8B 0.480 -> 0.568; Gemma-3-12B 0.764 -> 0.918; three-family Min ensemble 0.438 -> 0.552 — the ensemble still accepts ~55% of hacked wrong answers - but 55% is SEED 0, the most conservative; the three-seed mean is 65%.'
+  - 'VERIFIED: best-of-N on LiveCodeBench, judge-selected gap 0.20 at k=1 widening to 0.588 at k=16 (95% CI [0.506, 0.669]), while unit-test pass rate on the selected candidate moves only 0.27 -> 0.29. CORRECTED 2026-08-19 - the de-anchoring figure here was MISATTRIBUTED. The 0.227 belongs to a DIFFERENT, 4.7x larger judge: the 8B judge falls 0.378 -> 0.227. The 1.7B judge that produced the 0.588 gets WORSE under commit-first, 0.588 -> 0.637. Table 6 in full: 1.7B 0.637 / 4B 0.308 / 8B 0.227 / 14B 0.225. As previously written this implied a 61 percent reduction; the truth is -8 percent same-judge (wrong direction) or -40 percent on a larger judge. This arm is also TRAINING-FREE: base Qwen3-1.7B, 120 LiveCodeBench problems, N=16, no DPO.'
   - 'De-anchoring ablation: commit-first FPR 0.012; blind-solve FPR 0.012 with discrimination 0.96; a plain "verify/recompute" prompt gives FPR 0.719 — telling the judge to check its work does NOT help, only independent commitment does.'
   - 'AIME-2024, Ministral-3-8B, 30 problems: single-sample judge-truth gap +0.143 clean, +0.290 under a lenient judge prompt.'
   referenced_arxiv_ids:
@@ -48227,7 +48441,9 @@
     - 'intake-874 (rubric reward hacking — same conclusion from the training side)'
     - 'intake-876 (judge agreement metrics — the reporting-side complement)'
   handoffs_updated:
-  - eval-tower-verification.md
+  - 'eval-tower-verification.md'
+  - 'reviewer-model-ablations.md'
+  - 'vidya-belief-substrate-program.md'
   handoffs_created: []
   contradicting_evidence:
   - Single-author arXiv preprint (2026-07-07), not peer-reviewed, no independent replication of these numbers. All figures are observations, not protocol-certified.
@@ -48238,6 +48454,132 @@
   novelty_justification: 'The failure mode (judges rewarding plausibility, reward overoptimization, sycophancy, RLAIF drift) is well covered by the works this paper cites, so the diagnosis is not new. What is new and usable: (a) a hidden-anchor protocol that QUANTIFIES judge-truth divergence rather than asserting it; (b) evidence that hacked errors transfer across judge families and defeat a min-vote ensemble — directly undercutting the cross-family-ensembling defense we already treat as strong; (c) the (1 - accuracy) bound telling you a priori which regimes are exploitable; (d) the sharp negative result that a "verify/recompute" prompt does nothing (FPR 0.719) while independent commitment collapses FPR to ~0.012. That last contrast is the genuinely novel, directly actionable piece.'
   relevance_justification: 'Lands squarely on live surfaces. We run llm_judge scoring in the eval tower, we have an open direction to re-enable graded Claude-as-Judge in cost-aware rewards, EV-9 has an unselected rubric-judge role, RD-2 grades reviewer decisions with majority-k, and autopilot does Pareto/Bradley-Terry selection over candidates. The best-of-N result is the exact shape of our exposure: judge-measured selection quality can improve monotonically with N while true quality is flat, so any autopilot or reviewer gain attributed to judge-selected best-of-N is unverified until an independent anchor is attached. It also supplies a concrete counter to a rule we already codified — cross-family verification is our documented "strongest defense" in eval-tower-verification.md, and this paper shows a three-family ensemble still passing 55% of hacked wrong answers.'
   verdict_justification: 'adopt_patterns — the value is protocol, not code. It offers a practical mitigation adoptable as an eval-tower rule, in two parts. (1) ANCHOR RULE: any judge-scored metric used to gate a decision must be paired with a judge-independent verifier (exact-match, unit tests, code execution, or a held-out anchor), and the judge-vs-anchor gap reported alongside the judge number; a widening gap under increasing N is the reward-hacking signature. (2) DE-ANCHORING RULE: where a judge must be used for selection, run it commit-first or blind-solve rather than the current show-the-candidate-and-ask pattern — a bolt-on prompt change with a large reported effect (FPR 0.906 -> 0.012), noting that a plain double-check instruction is measured to be worthless. Concretely this should (a) become a PROPOSED rule in eval-tower-verification.md next to the existing cross-family rule, with the ensemble caveat recorded against it; (b) gate any re-enablement of graded Claude-as-Judge on an anchored gap report; (c) inform EV-9 judge-role selection and RM-5 robustness probes; (d) trigger a retrospective check of whether any autopilot best-of-N gain rests on judge-measured scores alone. NOT adopt_component: no released artifact, single-author preprint, numbers not protocol-certified. The rule change is a human-amendment-only trust-boundary edit and must go to the operator, not be applied by an agent.'
+  verification: dive-verified
+  source_revision: 'arXiv:2607.05904v1'
+  dive_corrections: >-
+    STAGE-2 DIVE 2026-08-19, read at arXiv:2607.05904v1 (only version). Dived to reconcile this entry
+    against the LLM-as-a-Verifier family (intake-804/363/1161), which it appeared to contradict and never
+    had been reconciled with.
+
+
+    THE CRUX, AND IT GOES AGAINST US: the LiveCodeBench best-of-N result is SELECTION-ONLY and requires no
+    training at all. The paper states it in the section opening - the arc "replicates with no training at
+    all, using best-of-N rejection sampling as a training-free proxy for optimizing against the judge" -
+    and Appendix A documents a fixed pool of 120 problems, N=16, from a BASE un-optimised Qwen3-1.7B. So the
+    hoped-for escape hatch (that the reward-hacking basin only forms when a policy is optimised against the
+    judge) does NOT exist. Pure best-of-N over fixed independent rollouts reproduces inflation, cross-family
+    transfer and the capability-dependent fix.
+
+
+    TWO NUMERIC DEFECTS CORRECTED IN reported_results: the de-anchoring figure was misattributed across
+    judges (see that field), and the ensemble figure quoted the most conservative seed (55 percent) where
+    the three-seed mean is 65 percent - this entry was UNDER-reporting the severity.
+
+
+    TWO FACTS THE ENTRY OMITTED, BOTH CUTTING AGAINST US. (1) The de-anchoring fix has a CAPABILITY
+    THRESHOLD: it HURTS a judge that cannot solve the task, helping only larger judges and plateauing by 8B.
+    (2) On CODE the fix leaves a large residual - de-anchored gap@16 floors at 0.225-0.227 even at 14B,
+    never approaching zero, whereas the headline FPR collapse 0.906 -> 0.012 is a MATH/exact-match result.
+    Our production judging domain is code, so the entry''s headline number was being read as if it
+    transferred, and it does not.
+
+
+    ENSEMBLING IS STRUCTURALLY EXCLUDED, NOT MERELY WEAK. Proposition 2 proves any non-decreasing
+    aggregation over reference-free verdicts is monotone in the shared plausibility signal and bounded below
+    by the product of individual FPRs. Min-vote is the strictest monotone rule and still fails; majority-k,
+    weighted vote and Bradley-Terry consensus are all inside the proposition. On code the three-judge Min
+    ensemble accepts 16.4 percent of wrong programs, 2.38x the independence prediction. Training against the
+    ensemble makes it worse (Min FPR 41.2 -> 73.3 percent). Consequence for our own doctrine: cross-family
+    verification remains valid against self-favouring/collusion bias but is FALSIFIED as an anti-reward-
+    hacking defence. The axis that works is independence-from-the-candidate, not diversity-of-judge.
+
+
+    RECONCILIATION VERDICT: (2) BOUNDS - not refutes, not orthogonal. The two papers measure different
+    quantities and only one is contested. This entry''s inflating quantity is the JUDGE''S OWN score
+    (gap@k = judge-pass minus true-pass), which runs 0.20 -> 0.588. LLM-as-a-Verifier''s headline quantity
+    is the HARNESS-EXECUTED pass rate, with an oracle ceiling that is only computable when per-candidate
+    ground truth exists. In the very experiment where the judge-measured gap reaches 0.588, the TRUE
+    unit-test pass rate of the selected candidate still rises 0.27 -> 0.29 - a small real gain beside a
+    large fictitious one. LLM-as-a-Verifier reports the small real one and never the fictitious one. A
+    framework cannot be refuted by a result it independently reproduces. The bound''s own arithmetic also
+    predicts light exposure there: VA-Gap <= 1 - EM, and that method runs at Pass@1 about 0.83 (ceiling
+    0.17) versus this paper''s arm at EM about 0.30 (ceiling 0.70).
+
+
+    THE FIVE CONDITIONS OF THE BOUND. B1 report only anchor-measured gains, never verifier-measured - a
+    verifier score rising with N is the hacking signature, not evidence. B2 high-EM regime only; the
+    exploitable gap is capped by realised error headroom, so pointing this at a task where our agents run at
+    0.20-0.40 true accuracy opens the ceiling to 0.60-0.80. B3 the verifier must be able to SOLVE the task;
+    below that threshold commit-first inverts and degrades the judge. B4 no ensemble mitigation exists.
+    B5 SELECTION ONLY - the RL-dense-reward arm (SAC/GRPO) is optimising a policy against a reference-free
+    candidate-conditioned judge, which is precisely the configuration this paper refutes. That split
+    (selection bounded, RL-reward refuted-pending-verification) was recorded nowhere in this index before.
+
+
+    APPLIED TO OUR REVIEWER PLANE. Corollary 1 yields a cheap certified anchoring test we have never run:
+    a judge''s verdicts are certified anchored iff its independent solve-accuracy exceeds an FPR-implied
+    threshold. From the C-CRAB P-REV-1 arms that is solve-acc > 0.583 for GLM-5.2 and > 0.458 for
+    Qwen3.6-27B. We have never measured reviewer solve-accuracy. Note also a premise correction: our
+    reported reviewer AUC 0.503-0.509 is ROC-AUC of SELF-REPORTED CONFIDENCE against correctness, which is
+    not this paper''s discrimination (TPR - FPR); on the latter those arms score +0.29 to +0.33, squarely in
+    the paper''s pre-hack anchored plausibility channel. Because B3 is unmeasured for us, adopting
+    commit-first unconditionally could measurably make our reviewer plane WORSE.
+    STAGE-2b DISPOSITION OF THIS ENTRY DIVE-SURFACED SOURCES, recorded 2026-08-19 so none is silently lost or re-derived. SELECTED by the operator and now ingested-and-dived: intake-1167 (Gao et al. scaling laws, 2210.10760) and intake-1168 (Lu et al. verification payoff, 2512.02304). NOT SELECTED in this round and therefore not ingested: 2510.23038 tool-integrated RL judges (the route for code, where de-anchoring leaves a 0.225 residual), 2407.04622 weak judges supervising strong models (our reviewer plane exactly), 2407.04549 spontaneous reward hacking in self-refinement (the nearest independent corroboration of this single-author entry), 2310.02743 and 2312.09244 on reward-model ensembles, 2605.09959 G-Zero, and the four RLHF-overoptimization background papers. Esary-Proschan-Walkup 1967 was declined outright - it is the 1967 association inequality behind Proposition 2 and should be cited directly rather than given an entry. These are recorded as NOT-SELECTED rather than declined - the operator ruled only on the strongly-recommended tier, so they remain available for a later Stage-2b round and should not be re-surfaced as new discoveries.
+
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Verification asymmetry and the false-positive basin - CONFIRMED. The VA-Gap decomposition and the bound VA-Gap <= 1 - EM are elementary and correct, and Table 1 shows the bound approached in exposed regimes (0.735 against a 0.791 ceiling).'
+  - claim_index: 1
+    effect: narrowed
+    note: 'CONFIRMED for the Qwen3-4B headline, but "all measured gain is reward hacking" states an inevitability the paper explicitly disclaims: under DPO, entry into the basin is stochastic (3 of 5 seeds hack; 2 are clean matched negative controls). Its signature is reliable, its occurrence is not.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Transfer CONFIRMED exactly. The ensemble figure was UNDER-reported: 55 percent is seed 0, three-seed mean is 65 percent. Strengthened rather than weakened - Proposition 2 shows this is structural, so cross-family ensembling is not a partial defence but an excluded one.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'The analytic bound is CONFIRMED. Note the entry records only the loose second form; the tighter first form and Proposition 1 judge-side ceiling (FPR <= 1 - solve-acc) are the ones that actually govern de-anchoring, and Corollary 1 turns the latter into a measurable test.'
+  - claim_index: 4
+    effect: narrowed
+    note: 'De-anchoring CONFIRMED on math (commit-first FPR 0.012, blind-solve 0.012 at discrimination 0.96, plain verify/recompute useless at 0.719) but the entry omitted both conditions: it requires a verifier that can solve the task and it leaves a 0.225-0.227 residual on code. Not a general fix.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Section 5.3, first paragraph'
+    quote: 'The same arc - inflation, cross-family transfer, and a de-anchoring fix with a capability threshold - replicates with no training at all, using best-of-N rejection sampling as a training-free proxy for optimizing against the judge'
+    quote_sha256: 'df0a4544141e73229e210b2e1125154f3c7a2209ed4587db06922aa27198289d'
+    source_revision: 'arXiv:2607.05904v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'Section 5.3, second paragraph'
+    quote: 'committing hurts the 1.7B judge, whose own committed solutions are mostly wrong (0.588 to 0.637), and helps every larger judge, plateauing by 8B'
+    quote_sha256: '716c64c1f8d2ffffbd1e242cc067592537a71dba788e632238451b51578c7731'
+    source_revision: 'arXiv:2607.05904v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'Section 4, Proposition 2'
+    quote_sha256: '392e3dcf8f5011602b1ee5a4682558a4846d7fd59df7db195fd04b48b0c8c63b'
+    quote: 'any non-decreasing aggregation rule over reference-free verdicts is monotone in the shared plausibility signal and is bounded below by the product of the individual false-positive rates'
+    source_revision: 'arXiv:2607.05904v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'Section 4, Equation 2'
+    quote: 'VA-Gap <= (1 - EM) - EM * FNR <= 1 - EM.'
+    quote_sha256: 'b3a82b329ecc6d1f35fa5ab0a4e0e56b53c6ede1a07df5b1d8713222ab48c530'
+    source_revision: 'arXiv:2607.05904v1'
+    verified_by: 'research-intake/stage2'
+  reader_should_conclude: >-
+    This BOUNDS judge-guided best-of-N; it does not refute it, and it is not orthogonal. The
+    training-free-proxy result means selection-only is NOT a safe harbour. Carry the five conditions B1-B5
+    recorded in dive_corrections with any citation, and in particular carry B5: the selection arm of
+    LLM-as-a-Verifier is bounded, but its RL-dense-reward arm sits in this paper''s refuted regime. Do NOT
+    reach for a cross-family local ensemble as a mitigation - Proposition 2 excludes every monotone
+    aggregation rule, and this is a 1967 association inequality, not a preprint heuristic. Do NOT deploy
+    commit-first on our reviewer pool before measuring reviewer solve-accuracy: below the capability
+    threshold it degrades the judge.
 - id: intake-876
   arxiv_id: '2606.00093'
   url: https://arxiv.org/abs/2606.00093
@@ -82866,3 +83208,1405 @@
   handoffs_updated:
   - scoring-infra-standardization.md
   handoffs_created: []
+- id: intake-1161
+  arxiv_id: null
+  url: https://llm-as-a-verifier.com/
+  source_type: blog
+  title: 'LLM-as-a-Verifier: project website and documentation (llm-as-a-verifier.com)'
+  authors:
+  - Jacky Kwok
+  - Shulu Li
+  - Pranav Atreya
+  - Yuejiang Liu
+  - Yixing Jiang
+  - Chelsea Finn
+  - Marco Pavone
+  - Ion Stoica
+  - Azalia Mirhoseini
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - agent_architecture
+  - reinforcement_learning
+  key_claims:
+  - Continuous scoring by expectation over score-token logprobs removes the tie rate that collapses discrete LLM-judge comparisons; the site's own case study reports 88/100 ties for a discrete judge versus 0/100 for the continuous verifier.
+  - Score granularity is presented as a scaling axis, but the site's own SNR table moves only 0.775 (G=1) to 0.799 (G=20) at K=16 - the large effect is continuous-vs-discrete, not granularity.
+  - Probabilistic Pivot Tournament ranks best-of-N at O(Nk) instead of round-robin O(N^2) by comparing each candidate only against k pivots, with a ring pass intended to cancel positional bias.
+  - A two-stage 'closed-model workaround' routes a logit-restricted model's reasoning through an open verifier whose logits are readable, reported as 80.1% vs 74.9% on Terminal-Bench V2 at K=1.
+  - The verifier score is offered as a drop-in dense reward for RL, reported as ~1.8x sample efficiency on LIBERO (SAC) and ~1.1x on MATH (GRPO).
+  techniques:
+  - Fine-grained reward estimation by expectation over score-token logprobs
+  - Probabilistic Pivot Tournament (PPT) ranking
+  - Score granularity scaling (G up to 20; letter scale A-T in the implementation)
+  - Repeated evaluation (K passes)
+  - Criteria decomposition (C sub-criteria)
+  - Two-stage open-verifier routing for logit-restricted models
+  reported_results:
+  - 'Terminal-Bench V2: Pass@1 83.1% -> LLM-as-a-Verifier 86.5%, Oracle 92.1% (verifier Gemini 2.5 Flash)'
+  - 'SWE-Bench Verified: Pass@1 76.1% -> 78.2%, Oracle 84.4%'
+  - 'MedAgentBench: Pass@1 70.2% -> 73.3%, Oracle 75.0%'
+  - 'RoboRewardBench preference accuracy: LLM-as-a-Verifier 87.4% vs RoboReward-8B 81.4%, LLM-as-a-Judge (discrete) 70.8%'
+  - 'SNR by granularity at K=16: G=1 0.775, G=4 0.786, G=16 0.797, G=20 0.799'
+  - 'Judge-vs-verifier case study (n=100): discrete G=5 12 correct / 88 tie / 0 wrong; continuous G=5 69/0/31; continuous G=20 77/0/23'
+  - 'Closed-model workaround at K=1: 80.1% accuracy / 0.0% tie rate vs GPT-5.5 integer scores 74.9% / 10.9%'
+  references:
+  - https://arxiv.org/abs/2607.05391
+  - https://github.com/llm-as-a-verifier/llm-as-a-verifier
+  - https://github.com/llm-as-a-verifier/TurboAgent
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'Independently run leaderboard beats the headline: artificialanalysis.ai/evaluations/terminalbench-v2-1 (retrieved 2026-08-18, "Terminus 2 agent harness in an e2b sandbox... pass@1 averaged over 3 repeats") lists GPT-5.6 Sol (xhigh) 89.5%, Claude Opus 5 89.1%, Grok 4.6 88.4% - all above 86.5%. NOT apples-to-apples (that is Terminal-Bench 2.1/Terminus 2; the site reports V2/Capy) and it does not touch the +3.4pp-over-own-Pass@1 selection claim, but the standing word SOTA is unsafe to repeat. PROVISIONAL - a dive should settle version comparability.'
+  - 'The granularity axis is weakly supported by the site''s own numbers: SNR 0.775 (G=1) -> 0.799 (G=20) at K=16. The large effect is continuous-vs-discrete (88/100 ties -> 0/100), not granularity. See intake-1162, whose granularity ablation found mean accuracy "similar or decrease[d]" from K=9 to K=99.'
+  - 'intake-875 (2607.05904) reports judge-guided best-of-N on LiveCodeBench where the judge-measured gap widens 0.20 at k=1 to 0.588 at k=16 while true unit-test pass moves only 0.27 -> 0.29 - the reward-hacking signature, in this method''s exact use case. RECONCILED 2026-08-19 by the Stage-2 dive of intake-875: verdict (2) BOUNDS - not refutes, not orthogonal. Critically, that LiveCodeBench arm is TRAINING-FREE (base Qwen3-1.7B, fixed pool, N=16), so selection-only is not a safe harbour. But the quantity that inflates is the JUDGEs own score, while this framework reports harness-executed pass rates; in the same experiment the true pass rate still rises 0.27 -> 0.29. Five conditions B1-B5 are recorded in intake-875 dive_corrections; note especially B5, under which this frameworks RL-dense-reward arm - unlike its selection arm - sits in the refuted regime.'
+  - 'The site is STALER than the repo it documents: no Terminal-Bench 2.1 and no DeepSeek backend, both of which shipped in repo v0.2.0 on 2026-08-14. It also states no software license, while the repo LICENSE is MIT.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-362
+    - intake-363
+    - intake-804
+    - intake-875
+    - intake-1162
+    - intake-1164
+    - intake-1166
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  reader_should_conclude: >-
+    This entry is the project WEBSITE for a framework we already hold three other ways: intake-362 (the
+    older, still-live Notion project page), intake-363 (the GitHub repo) and intake-804 (the arXiv paper).
+    Treat all four as ONE artifact family. None of them is independent corroboration of any other, and a
+    claim appearing in several of them has one source, not several. Cite intake-804 for the paper's
+    results, intake-363 for what the code does, and this entry only for the ablations that appear
+    nowhere else (the SNR-by-granularity table, the judge-vs-verifier tie case study, and the
+    closed-model workaround).
+  notes: 'Operator-submitted 2026-08-18 alongside the GitHub repo URL. Kept as a distinct entry rather
+    than folded into intake-362 because it is a different artifact at a different host (GitHub Pages,
+    with a /docs/ tree) that is live SIMULTANEOUSLY with the Notion page, and because it carries three
+    ablations found nowhere else in the index. The alternative - a fourth near-duplicate record of one
+    framework - is the defect the reader_should_conclude directive above exists to prevent; fold it into
+    intake-362 if the operator prefers.
+
+
+    NOT DIVED. Every number here is as reported by the site and is stage1-unverified.'
+  dive_corrections: >-
+    2026-08-19: this entry was NOT itself dived - it was explicitly declined in favour of diving intake-804,
+    on the ground that the paper is the authoritative source for every ablation the website carries.
+    verification therefore REMAINS stage1-unverified and no number here may be quoted downstream on its own
+    authority. What changed is that its distinctive content was independently verified at dive grade
+    elsewhere and should be cited from there: the SNR-by-granularity table, the judge-versus-verifier tie
+    case study and the two-stage closed-model workaround are all confirmed verbatim in intake-804
+    (arXiv:2607.05391v2). The dive also settled the attribution this entry flagged at Stage 1 - the large
+    lever is the discrete-to-continuous switch, not granularity, and the paper''s own granularity curve
+    bundles the two because its G=1 endpoint IS the discrete judge. The open reconciliation flag in
+    contradicting_evidence is resolved; see that field.
+- id: intake-1162
+  arxiv_id: '2503.03064'
+  url: https://arxiv.org/abs/2503.03064
+  source_type: paper
+  title: Improving LLM-as-a-Judge Inference with the Judgment Distribution
+  authors:
+  - Victor Wang
+  - Michael J. Q. Zhang
+  - Eunsol Choi
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - llm_prompting
+  key_claims:
+  - Taking the MEAN of the judgment distribution beats taking the mode (greedy decoding) in 42 of 48 cases across pointwise, pairwise and listwise settings (arXiv v2) - the same core mechanism LLM-as-a-Verifier proposes, published ~16 months earlier.
+  - Chain-of-thought COLLAPSES the spread of the judgment distribution and often harms performance, and harms the mean more than the mode - 'absolute +6.5% for mean vs. +1.4% for mode' from REMOVING CoT.
+  - Increasing score granularity from K=9 to K=99 leaves mean accuracy 'similar or decrease[d]'; granularity mainly rescues discrete tie-prone methods, not the expectation.
+  - Risk-aversion-based derivations (risk-averse mean, probability of superiority, quantiles) often beat the plain mean.
+  - For pairwise ranking a COARSE Likert-2 scale performed best (74.2 vs 73.2 for Likert-3, 70.0 for Likert-5).
+  techniques:
+  - Mean of the judgment distribution (expectation over score-token probabilities)
+  - Risk-averse mean via lower semi-deviation
+  - Probability of superiority
+  - Quantile-based preference derivation
+  - Pre- vs post-aggregation position-bias correction
+  reported_results:
+  - 'Mean outperforms mode in 42 out of 48 cases on RewardBench and MT-Bench (arXiv:2503.03064v2, appears 3x). The superseded v1 figure was 92 out of 120: same runs, but v1 counted the four RewardBench subsets separately and so inflated the apparent N by 2.5x. Cite 42/48.'
+  - 'No-CoT outperforms CoT in 14 out of 16 cases when using the mean for pointwise or pairwise scoring (v2; the superseded v1 figure was 30 out of 40).'
+  - 'Removing CoT: absolute +6.5% for mean vs +1.4% for mode, POINTWISE scoring on RewardBench, averaged over four judges. SCOPE MATTERS: that average is dominated by the three 7-8B judges; GPT-4o''s own pointwise gain from dropping CoT is +0.6. In the pairwise-SCORING regime that a best-of-N tournament actually uses, the strong-judge effect is about +0.5pp, not +6.5pp.'
+  - 'Granularity K=9 -> K=99 leaves the EXPECTATION flat-to-worse (Table 6, overall accuracy): GPT-4o RewardBench 88.0 -> 86.7, MT-Bench 83.2 -> 82.9; Llama-3.1-8B RewardBench 79.3 -> 79.3, MT-Bench 81.5 -> 81.3. Every large POSITIVE delta belongs to a discrete method ([mean] +5.7, medi +6.2). CORRECTION 2026-08-19: this row previously recorded 67 -> 53 and 64 -> 61, which are Table 5''s tie-SUBSET column (mean''s accuracy over the shrinking set where a discrete method predicts a tie), not the expectation''s accuracy. Same conclusion, wrong evidence.'
+  - 'Likert scale for pairwise RANKING (Llama-3.1-8B, pre-aggregation mean): Likert-2 74.2 > Likert-3 73.2 > Likert-5 70.0'
+  - 'Pre- versus post-aggregation of the two presentation orders is the LARGEST effect in the paper and is free: 56.7 -> 73.1 using the mode on RewardBench. Aggregate the two orders at the distribution level BEFORE taking central tendency.'
+  - 'Risk-averse mean (ram) beats the plain mean in 7 of 8 cells but by at most +0.6pp (79.9 vs 79.3); quantile and probability-of-superiority read-outs do NOT beat the mean on accuracy, only on MSE/calibration (.096 vs .102).'
+  - 'API truncation is quantified: at K=99 with GPT-4o, no-CoT distributions place only 0.88/0.90 of the mass inside the top-20 logprobs the OpenAI API returns, versus over 0.99 under CoT - so the K=99 result is CONFOUNDED by truncation, and a local server with an uncapped head does not have this problem.'
+  references:
+  - EMNLP 2025 Findings
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-1161
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'No contradiction surfaced in a bounded search (provisional). This entry is itself contradicting evidence for intake-1161/804.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-1161
+    - intake-804
+    - intake-1165
+  handoffs_updated:
+  - 'eval-tower-verification.md'
+  - 'reviewer-calibration-accounting.md'
+  handoffs_created: []
+  notes: 'Expansion from intake-1161, discovered via the Stage-1 contradiction pass. CORRECTED 2026-08-19 - the Stage-1 text here was
+    WRONG and is retained only so the error is not silently repaired: it read "92 out of 120 appears three
+    times verbatim, and a sub-agent report of 42 of 48 was WRONG and discarded." The opposite is true. The
+    owning session verified against ar5iv, which SILENTLY SERVES v1 for this paper; the sub-agent figure it
+    overrode was the current one. "No-CoT outperforms CoT in 30 out of 40 cases when using the
+    mean" and the +6.5%/+1.4% CoT-removal figures were likewise read directly.
+
+
+    WHY THIS MATTERS TO US, unverified and for a dive to settle: llm-verifier v0.2.0 defaults its
+    DeepSeek backend to DEEPSEEK_EFFORT=high (CHANGELOG 0.2.0), i.e. heavy reasoning before the score
+    token - precisely the condition this paper reports as collapsing the score distribution. If that
+    reads across, the shipped default is working against the mechanism. This is a hypothesis, not a
+    finding.
+
+
+    Also note this paper is ABSENT from the LLM-as-a-Verifier reference list as extracted from arXiv
+    v2, despite establishing the core mechanism first. Worth confirming against the published
+    bibliography before making anything of it.
+
+
+    NOT DIVED beyond the specific figures named above.'
+  verification: dive-verified
+  source_revision: 'arXiv:2503.03064v2'
+  dive_corrections: >-
+    STAGE-2 DIVE 2026-08-19, read at arXiv:2503.03064v2 (current per the arXiv API: v2 2025-09-26, v1
+    2025-03-04; EMNLP 2025 Findings). THE ENTRY''S TWO HEADLINE NUMBERS WERE v1 FIGURES and are corrected
+    to 42/48 and 14/16.
+
+
+    THE VERSION TRAP, recorded because it caused a real error and will catch the next session too:
+    ar5iv.labs.arxiv.org SILENTLY SERVES v1 for this paper. The Stage-1 pass "verified" 92/120 verbatim
+    against ar5iv and, on that basis, overrode a sub-agent that had correctly reported 42/48 from the live
+    version. Byte-level confirmation by the owning session: arxiv.org/html/2503.03064v1 and the ar5iv
+    rendering each contain "92 out of 120" three times and "42 out of 48" zero times;
+    arxiv.org/html/2503.03064v2 is the exact inverse. Verifying that a string exists in A source is not
+    verifying it against the CURRENT source. For version-sensitive figures use
+    arxiv.org/html/<id>v<N> with the API-reported version, never ar5iv.
+
+
+    NOTHING WAS RETRACTED UPSTREAM. v1 printed the four RewardBench subsets plus MT-Bench (4 models x 3
+    settings x 5 columns x 2 CoT conditions = 120); v2 moved that breakdown to an appendix and prints
+    RewardBench-total plus MT-Bench (4 x 3 x 2 x 2 = 48). Same runs, same per-cell numbers. So 92/120 was
+    never false, but it counts correlated subset cells and inflates the apparent N by 2.5x. 42/48 is the
+    citable figure and the direction and strength are unchanged.
+
+
+    A THIRD FIGURE SET WAS MISLABELLED: the recorded granularity numbers (GPT-4o 67 -> 53, Llama 64 -> 61)
+    are Table 5''s tie-SUBSET column, not the expectation''s accuracy. As written they would be read as
+    "the expectation degrades 14 points under finer granularity", which the paper does not say. Corrected
+    to Table 6''s overall figures, which are flat-to-slightly-negative. The CONCLUSION is unchanged and is
+    now better supported: granularity is a tie-breaking remedy for DISCRETIZATION and buys nothing for a
+    method that never rounds - Proposition 1 and the Table 24 flip rates (mean .042/.048 versus [mean]
+    .139/.218) make that a mechanism argument, not just an empirical one.
+
+
+    THE CoT CRITICISM HOLDS AND IS SHARPER THAN THE ENTRY STATED, BUT ITS EFFECT SIZE IS SMALLER. The
+    mechanism is SHARPENING: "the initial entropy in the judgment is lost as the model commits to one
+    instantiation of a reasoning trace", measured as standard deviation falling 1.4x to 32x under CoT, and
+    at K=99 the top-token mass rising from 0.88 to over 0.99. Critically, the paper''s three regimes are
+    NOT interchangeable: no-CoT wins 14/16 in pointwise/pairwise SCORING, but CoT WINS in pairwise RANKING
+    (7 of 8 cells; Prometheus-2-7B collapses 75.4 -> 33.4 without it). LLM-as-a-Verifier''s prompt emits two
+    independent integer score tokens, so it is pairwise SCORING - the regime where no-CoT wins. The
+    criticism therefore applies. But the honest effect size for a STRONG judge in that regime is about
+    +0.5pp (GPT-4o 87.1 -> 87.6), not the +6.5pp headline, which is pointwise and carried by 7-8B judges.
+    Do NOT cite this paper as a blanket "reasoning before scoring is harmful" - it is not, and it never
+    tested a modern long-reasoning model.
+
+
+    TWO LOCAL-ONLY ADVANTAGES THE AUTHORS NAME AND COULD NOT USE, which are the most actionable content
+    here for us: (1) no top-20 logprob cap, so the expectation normalises exactly over all K score tokens
+    (their K=99 GPT-4o result is confounded by exactly this truncation); (2) the exact pairwise joint is
+    "feasible with local models but not with API-access models where inference cost scales with K" - they
+    fall back to conditioning on a greedily decoded first score, an approximation any two-scores-in-one-
+    prompt design silently inherits, and which prefix-cached forward passes make affordable for us.
+
+
+    Appendix C.1 is a complete implementation spec for a local verifier: force a prefix of the assistant
+    response, use a single output token position, restrict to the K score-token ids, softmax at temperature
+    1. Zero generated tokens.
+    STAGE-2b DISPOSITION OF THIS ENTRY DIVE-SURFACED SOURCES, recorded 2026-08-19 so none is silently lost or re-derived. SELECTED by the operator and now ingested-and-dived: intake-1169 (the distributional-judge reference implementation). NOT SELECTED in this round and therefore not ingested: 2406.10267 expectation-over-logprobs outside judging (would push the priority date back further still), 2312.08358 distributional preference learning (origin of the first-percentile and probability-of-superiority read-outs), 2409.10164 quantile regression for distributional reward models, 2410.16007 are language model logits calibrated (a precondition for the whole mechanism), 2410.07069 REIFE, 2405.05894 product-of-experts comparative assessment, and 2406.15657 FIRST. These are recorded as NOT-SELECTED rather than declined - the operator ruled only on the strongly-recommended tier, so they remain available for a later Stage-2b round and should not be re-surfaced as new discoveries.
+
+    REFERENCE IMPLEMENTATION, recorded 2026-08-19 so no future session re-reads it expecting an inference path: the released code (now at github.com/victorwang37/distributional-judge after an owner rename, pinned at 4061b7f09367611ca5922461973c90a8d92e250c, unchanged since 2025-03-06 and never updated for the v2 camera-ready that still cites it) contains ONLY the Table 3 aggregation math - 309 lines of torch - plus dataset subsetting. There is no inference, tokenization, logprob read-out, prompt, backend, test or LICENSE. The read-out procedure lives in this paper Appendix C.1, not in the code. Full analysis, golden validation vectors and five reproduced defects are at intake-1169.
+
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: 'Mechanism and 16-month priority CONFIRMED. The COUNT is superseded: 42 of 48 in v2, not 92 of 120 (a v1 figure over correlated subset cells). Direction and strength unchanged - v2 abstract still says the mean "consistently outperforms taking the mode ... in all evaluation settings".'
+  - claim_index: 1
+    effect: narrowed
+    note: 'CONFIRMED verbatim, but under-scoped as recorded. The +6.5 versus +1.4 figures are POINTWISE scoring on RewardBench averaged over four judges and are dominated by the three 7-8B models; GPT-4o alone gains +0.6. Also v2 states the companion count as 14/16, not 30/40.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'The conclusion stands and is now backed by mechanism (Proposition 1, Table 24 flip rates) as well as by Table 6. Only the EVIDENCE was wrong - see the reported_results correction replacing the tie-subset column with Table 6 overall accuracy.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Overstated as "often beat the plain mean". Only risk-averse mean (ram) beats it, in 7 of 8 cells and by at most +0.6pp; quantile and probability-of-superiority match or trail the mean on accuracy and win only on MSE. Cheap to implement as extra read-out modes, not worth a measurement campaign.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'CONFIRMED verbatim (Table 8: Likert-2 74.2 > Likert-3 73.2 > Likert-5 70.0). Note the regime: this is pairwise RANKING with a preference token, not the pairwise SCORING path a score-token verifier uses.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'Section 3.3 / Table 1 caption'
+    quote: 'The mean outperforms the mode in 42 out of 48 cases.'
+    quote_sha256: '93adb7768f5718a9acc505ed042a2c94bded19b880079649a2677f4df6c1294a'
+    source_revision: 'arXiv:2503.03064v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Section 3.3, "CoT often harms LLM-as-a-judge"'
+    quote: 'For the scoring settings, no-CoT outperforms CoT in 14 out of 16 cases when using the mean. For the pairwise ranking setting, CoT outperforms no-CoT, except with GPT-4o on RewardBench.'
+    quote_sha256: '6e93236cb7b36b2d76cce27d585269260d9fcf995cea235510832684b0048417'
+    source_revision: 'arXiv:2503.03064v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Section 3.3, mechanism'
+    quote: 'We interpret the harmful effect of CoT on pointwise scoring with the smaller models as being due to sharpening, whereby the initial entropy in the judgment is lost as the model commits to one instantiation of a reasoning trace.'
+    quote_sha256: '1b6c6c4c07598d79fd532edb78de5e725b849834f9428d0a8c2f62e09f34b6cd'
+    source_revision: 'arXiv:2503.03064v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'Section 4.2, Study: Score Granularity and Ties'
+    quote: 'Table 5 further shows that granularizing the score space from K=9 to K=99 improves the expressivity of the discrete methods (except for mode), drastically reducing the rate of ties, while mean accuracies remain similar or decrease.'
+    quote_sha256: '57e4b605b448bfb272d2330d3306d6525a480ce1949fa8f2869abd85e12911a2'
+    source_revision: 'arXiv:2503.03064v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'Appendix C.1 (local-model implementation spec)'
+    quote: 'For the local models (Llama-3.1-8B, Mistral-7B, Prometheus-2-7B) in no-CoT prompting, we force a prefix of the assistant''s response (e.g. "Rating A: ") and use a single output token as the judgment token position.'
+    quote_sha256: 'e2ce23580a7308e3effaee47ae1f4890e7ca21ff3e0954da2923a67fb5d3237a'
+    source_revision: 'arXiv:2503.03064v2'
+    verified_by: 'research-intake/stage2'
+  reader_should_conclude: >-
+    Cite 42/48 and 14/16, from arXiv:2503.03064v2 - and never verify this paper against ar5iv, which serves
+    v1. Use it for three things: the priority claim (this mechanism predates LLM-as-a-Verifier by 16 months
+    and is absent from that paper''s 88-entry bibliography, which is a completeness observation about their
+    related work and NOT an accusation); the mechanism argument that granularity is a remedy for
+    discretization and buys nothing once you take the expectation; and Appendix C.1, which is a complete
+    build spec for a local verifier. Do NOT cite it as a blanket claim that reasoning-before-scoring is
+    harmful - that holds for pairwise SCORING at about +0.5pp for a strong judge, and REVERSES in pairwise
+    ranking.
+- id: intake-1163
+  arxiv_id: '2601.03444'
+  url: https://arxiv.org/abs/2601.03444
+  source_type: paper
+  title: 'Grading Scale Impact on LLM-as-a-Judge: Human-LLM Alignment Is Highest on 0-5 Grading Scale'
+  authors:
+  - Weiyue Li
+  - Minda Zhao
+  - Weixuan Dong
+  - Jiahui Cai
+  - Yuze Wei
+  - Michael Pocress
+  - Yi Li
+  - Wanyan Yuan
+  - Xiaoyue Wang
+  - Ruoyu Hou
+  - Kaiyuan Lou
+  - Wenqi Zeng
+  - Yutong Yang
+  - Yilun Du
+  - Mengyu Wang
+  categories:
+  - benchmark_methodology
+  - llm_prompting
+  key_claims:
+  - Aggregated over tasks, a 0-5 grading scale yields the strongest human-LLM alignment (ICC 0.853, nMAE 0.111).
+  - The relationship between scale granularity and alignment is NON-MONOTONIC - 0-10 is worst (ICC 0.805), not the finest 0-100 scale (ICC 0.840), so this is not evidence that finer scales are simply noisier.
+  - Inter-scale agreement is high on objective/mixed-criteria benchmarks and drops sharply on subjective open-ended ones (MT-Bench, SummEval).
+  - Scale design should be treated as a controllable protocol component rather than a fixed convention.
+  techniques:
+  - Intraclass Correlation Coefficient (absolute agreement, two-way random effects)
+  - Normalized Mean Absolute Error
+  - Fully crossed 12-human-rater x 6-LLM design over 150 pooled items
+  reported_results:
+  - 'Pooled: 0-5 ICC 0.853 / nMAE 0.111; 0-100 ICC 0.840 / 0.115; 0-10 ICC 0.805 / 0.122'
+  - 'Per-benchmark on 0-5: STS-B ICC_LLM 0.969; MT-Bench 0.632; SummEval 0.573'
+  - 'Model-wise on 0-5: GPT 0.816 > Gemini 0.782 > Llama 0.744 > Mistral 0.596'
+  - 'Temperature ablation (T in 0.1-1.0): agreement largely insensitive; scale ordering stable'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-1161
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'Scope limits its transfer: the objective is absolute-score agreement with humans (ICC/nMAE) on a mix that includes highly subjective benchmarks, NOT within-prompt ranking accuracy on objectively checkable tasks. It does not establish which scale is best for ranking candidate solutions.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-1161
+    - intake-1162
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  reader_should_conclude: >-
+    Do NOT cite this as a refutation of granularity-20 scoring. The Stage-1 contradiction pass initially
+    framed it that way and the framing was WRONG on two counts: the scale-vs-alignment relationship is
+    non-monotonic (0-10 is worst, not the finest 0-100), and the objective is human agreement on
+    subjective quality, not ranking verifiable solutions. It is context on scale design, not evidence
+    against LLM-as-a-Verifier. The real granularity counter-evidence is intake-1162.
+  notes: 'Expansion from intake-1161 via the Stage-1 contradiction pass. Ingested primarily to CORRECT
+    an overstated contradiction rather than to support one - the extracting sub-agent explicitly pushed
+    back on the framing it was given, which is why the entry exists in this shape.
+
+
+    NOT DIVED. Author affiliations were reported by the extractor but not independently verified.
+
+
+    2026-08-19 Stage-2 cross-finding (this entry was NOT dived): the Stage-2 dive of intake-1162 supplies the
+    granularity counter-evidence this entry was mistakenly recruited for at Stage 1, and does it on the right
+    objective - within-prompt ranking rather than absolute human agreement. Cite intake-1162 Table 6 for
+    granularity, and this entry only for scale design against human raters. The two are not in conflict and
+    no reconciliation work is warranted.'
+- id: intake-1164
+  arxiv_id: '2603.12520'
+  url: https://arxiv.org/abs/2603.12520
+  source_type: paper
+  title: When LLM Judge Scores Look Good but Best-of-N Decisions Fail
+  authors:
+  - Eddie Landesberg
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - routing_intelligence
+  key_claims:
+  - Global judge-oracle correlation is a MISLEADING audit metric for best-of-N because it is inflated by prompt-level baseline agreement, while selection depends on within-prompt ranking.
+  - A judge at global r=0.47 captured only 21.0% of the improvement perfect selection would achieve over random on a 5,000-prompt best-of-4 Chatbot Arena benchmark.
+  - 'Coarse pointwise scoring creates ties in 67% of pairwise comparisons. Ties are NOT the dominant loss mechanism though - the tie-free Gaussian ceiling at r_within 0.27 is 27% recovery against 21.0% observed, so ties cost about 6pp of a ~79pp shortfall, and the weak within-prompt correlation itself is the dominant loss.'
+  - Switching from pointwise to explicit PAIRWISE judging raises recovery from 21.1% to 61.2% and cuts the tie rate from 59.8% to 3.9% - BUT the paper disowns this comparison (best-of-2, and 500 of the 7,000 pairs are near-perfect controls that inflate it), and under budget-matched best-of-4 round-robin pairwise UNDERPERFORMS pointwise for both judges tested (Table 16).
+  - The correct audit for judge-guided selection reports within-prompt signal, tie rate and recovery/top-1 accuracy, not global agreement; roughly r_within >= 0.4 is needed for meaningful best-of-4 recovery.
+  techniques:
+  - Recovery rate = (E[O_judge] - E[O_random]) / (E[O_oracle] - E[O_random])
+  - Within-prompt correlation (r_within) as an audit statistic
+  - Pairwise-Borda judging
+  - Matched-pair audit design
+  reported_results:
+  - 'Main benchmark (5,000 prompts, best-of-4, judge GPT-5): global r 0.471, recovery 21.0% [18.9%, 23.3%]'
+  - 'Matched-pair best-of-2 audit (7,000 pairs): pointwise recovery 21.1% -> pairwise 61.2%; ties 59.8% -> 3.9%; p_eff 60.5% -> 80.6%'
+  - 'Multi-judge (500 prompts): GPT-5.2 global .87 / within .70 / recovery 69.4%; Gemini-2.5-flash .47 / .27 / 23.8%; Llama-3.3-70B .31 / .23 / 18.6%'
+  - 'Label-strategy ablation (n=3,741): pointwise r_within .267 / tie 65.1% / PCS@4 31.8% / recovery 20.7% vs Pairwise-Borda .359 / 41.2% / 40.8% / 51.3%'
+  - 'PPE-MATH (512 prompts, 32 candidates): global r 0.38, within-prompt r 0.30, recovery 30%'
+  references: []
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-1161
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'Single-author arXiv preprint with no stated venue; credibility_score 2 reflects that. Its own multi-judge table shows global r and recovery moving TOGETHER across five judges, which limits how far the headline critique generalizes.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    - gpu-cot-scaffold-sidecar.md
+    experiments: []
+    intake_entries:
+    - intake-1161
+    - intake-875
+  handoffs_updated:
+  - 'gpu-cot-scaffold-sidecar.md'
+  handoffs_created: []
+  notes: 'Expansion from intake-1161 via the Stage-1 contradiction pass. The framing supplied to the
+    extractor ("judges do not work for selection") was WRONG and the extractor overturned it; the
+    corrected reading is recorded above.
+
+
+    OPEN TENSION worth a dive, arithmetic not yet verified: this paper reports 61.2% recovery for
+    PAIRWISE judging, and roughly r_within >= 0.4 as the bar for meaningful best-of-4 recovery.
+    LLM-as-a-Verifier is a pairwise, tie-free method, yet the oracle headroom it recovers on the coding
+    benchmarks appears to sit well below that pairwise figure. If that holds, the interesting question
+    is not whether the method works but why it underperforms this paper''s own pairwise baseline on
+    exactly the task class we care about. The recovery percentages implied for LLM-as-a-Verifier are a
+    Stage-1 derivation from published table values, NOT a figure either source reports - do not quote
+    them until a dive computes them properly.
+
+
+    Directly relevant to a result we already own: our own verifier/selector best-of-N study
+    (progress/2026-07/2026-07-06-cot-study-complete.md) captured +2pp of an +8pp structural ceiling,
+    i.e. ~25% recovery, and was parked as MARGINAL. That is the same metric this paper formalizes, and
+    our candidate-pass distribution was bimodal (36/40), meaning the errors were systematic. Any reopen
+    should be argued in this paper''s terms.
+
+
+    NOT DIVED.'
+  verification: dive-verified
+  source_revision: 'arXiv:2603.12520v1'
+  dive_corrections: >-
+    STAGE-2 DIVE 2026-08-19, read at arXiv:2603.12520v1 (current; no revision since ingest). THIS ENTRY HAS
+    NOW SURVIVED TWO FRAMING CORRECTIONS AND NEEDED A THIRD.
+
+
+    Stage 1 first framed the paper as "judges do not work for selection" - wrong. The Stage-1 correction
+    then framed its fix, pairwise judging, as "most of what LLM-as-a-Verifier already does" - ALSO wrong,
+    and the paper disowns it explicitly: "under strict best-of-4 round-robin with explicit token accounting,
+    full pairwise underperforms pointwise for both a smaller judge (GPT-4.1-mini) and a stronger judge pilot
+    (GPT-5) (Table 16)" - 26.2 percent versus 12.3 percent, and 79.8 versus 68.6. The 61.2 percent headline
+    is best-of-2 and inflated by 500 near-perfect control pairs, both conceded in section 5.4. Pairwise is
+    REGIME-DEPENDENT, not the fix.
+
+
+    THE OPEN TENSION RECORDED AT STAGE 1 IS RETIRED - IT DOES NOT HOLD. Stage 1 suspected LLM-as-a-Verifier
+    recovered far less oracle headroom than this paper''s pairwise baseline. Computed properly under the
+    paper''s own definition, Recovery = (E[O_judge] - E[O_random]) / (E[O_oracle] - E[O_random]):
+    Terminal-Bench V2 (86.5 - 83.1)/(92.1 - 83.1) = 37.8 percent; SWE-Bench Verified (78.2 - 76.1)/(84.4 -
+    76.1) = 25.3 percent; MedAgentBench (73.3 - 70.2)/(75.0 - 70.2) = 64.6 percent. The Pass@1-for-random
+    substitution was checked and is licensed in all three rows (SWE-Bench exactly by construction, since the
+    three-model pool mean is 76.13 percent; the other two because they are i.i.d. draws from one policy).
+    Those figures sit INSIDE this paper''s own best-of-4 pairwise spread of 12.3 to 68.6 percent and ABOVE
+    its only objective-label rows (PPE-MATH, 30 to 31.8 percent). Most striking: the paper''s within-policy
+    fresh-draw pilot is the exact regime of Terminal-Bench and MedAgentBench and is its WORST result at 2.2
+    percent recovery - LLM-as-a-Verifier beats that by an order of magnitude.
+
+
+    THREE CAVEATS THAT MUST TRAVEL WITH THOSE RECOVERY NUMBERS. (1) Recovery is not comparable across pools:
+    MedAgentBench''s 64.6 percent is 3.1pp absolute over a 4.8pp headroom, and this paper itself shows
+    recovery moving 21.0 -> 67.2 percent purely by changing pool composition. Never report recovery without
+    its denominator and n. (2) In a HETEROGENEOUS pool the denominator is gameable: on SWE-Bench a zero-cost
+    "always pick Opus 4.5" policy scores 76.8 percent, above the 76.1 percent random baseline, so recovery
+    against that free constant policy is 18.4 percent, not 25.3. The paper never addresses this. (3)
+    LLM-as-a-Verifier reports no confidence intervals; on 89 Terminal-Bench tasks its +3.4pp is about +3
+    tasks against an 8-task headroom.
+
+
+    OUR OWN PARKED RESULT RECOMPUTES WORSE, NOT BETTER, AND THE MARGINAL DISPOSITION IS STRENGTHENED. The
+    Stage-1 note put the 2026-07-06 verifier/selector study at about 25 percent recovery. Under the correct
+    definition E[O_random] is the POOL MEAN, not the separately-drawn pass@1: from the candidate-pass
+    distribution {0:12, 1:2, 3:1, 4:1, 5:24}, sum = 129 over 200, so E[O_random] = 64.5 percent (not 62.5).
+    With E[O_oracle] = 70.0 and E[O_judge] = 65.0, recovery = 0.5/5.5 = 9.1 percent - the verifier beat
+    random tie-breaking by 0.20 questions out of 40. Implied r_within about 0.09.
+
+
+    METHODOLOGY - ADOPT THE METRIC, REJECT THE THRESHOLDS. The audit contract (report r_within, tie rate,
+    recovery and top-1, not global r) is sound and is what this entry was ingested for. But Table 6''s
+    r_within thresholds are internally inconsistent with the paper''s own Appendix N: Table 6 requires
+    r_within 0.42 for 50 percent recovery while Appendix N''s tie-free ideal gives recovery = r_within =
+    0.50, i.e. the table''s low end is EASIER than the theoretical optimum, which is impossible under its own
+    model. Inverting Table 6 at the measured r_within 0.267 predicts 30-35 percent against 21.0 percent
+    observed. Use Appendix N''s closed form (recovery approximately equals r_within in the tie-free limit),
+    which is simpler and correct for tie-free selectors. Also note the paper''s "oracle" is an undescribed
+    upstream proxy label except on PPE-MATH and the external datasets, and CIs are reported for Table 2 only
+    - Table 16, which carries checklist item 4, rests on n=40 with no interval.
+
+
+    THE QUANTIZATION ABLATION IS NEAR-VACUOUS: the judge already emits only about 20 distinct values, so
+    re-quantising to 20 bins is a no-op by construction, and the identical rows (0.267 -> 0.267) are the
+    tell. The paper draws a substantive conclusion from a degenerate manipulation. Its Appendix I also shows
+    20 bins costing only 2.7pp versus continuous, which contradicts its own "meaningful bottleneck" gloss.
+    STAGE-2b DISPOSITION OF THIS ENTRY DIVE-SURFACED SOURCES, recorded 2026-08-19 so none is silently lost or re-derived. SELECTED by the operator and now ingested-and-dived: none from this entry list. NOT SELECTED in this round and therefore not ingested: Jeong et al. BlackboxNLP 2025 on pairwise comparison amplifying evaluator bias (the counterweight to our own pairwise enthusiasm, and the mechanism by which the Table 16 reversal could occur), 2603.05399 Judge Reliability Harness, 2602.00521 IRT-based judge diagnosis, Gao et al. NAACL 2025 on system-level ranking, and 2607.13347 on judge scores as unreliable optimisation signals (the closest thing to independent corroboration of this entry thesis). These are recorded as NOT-SELECTED rather than declined - the operator ruled only on the strongly-recommended tier, so they remain available for a later Stage-2b round and should not be re-surfaced as new discoveries.
+
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED and the strongest claim in the paper - backed by the between-context variance decomposition (judge 74 percent, oracle 81 percent) and a formal non-identifiability result in Appendix K.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED exactly, with a correct cluster-bootstrap CI [18.9, 23.3] resampling on prompt. Caveat recorded separately: the oracle here is an undescribed upstream proxy label, not ground truth.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'The 67 percent tie rate is real; the inference that ties are the DOMINANT loss mechanism is not, and the paper contradicts it three ways (Appendix N tie-free ceiling 27 percent vs 21.0 observed, so ties cost ~6pp of a ~79pp shortfall; Table 5 quantization no-op; Table 15 on three external datasets).'
+  - claim_index: 3
+    effect: overturned
+    note: 'The four numbers are exact but the inference "the failure is fixable, not intrinsic" is overturned by the paper itself. Section 5.4 concedes the 61.2 percent is best-of-2 and control-inflated; Table 16 shows pairwise LOSING to pointwise under budget-matched best-of-4. The apples-to-apples best-of-4 figure is Pairwise-Borda at 51.3 percent, which the paper labels exploratory (full 4-candidate round-robin exists for 0.02 percent of prompts).'
+  - claim_index: 4
+    effect: narrowed
+    note: 'The audit contract is CONFIRMED verbatim and should be adopted. The r_within >= 0.4 threshold attached to it is NOT quantitatively sound - it contradicts Appendix N and over-predicts the paper''s own headline by roughly 14pp. Adopt the contract, drop the threshold.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'Section 3.2, Equation 1'
+    quote: 'Recovery = (E[O_judge] - E[O_random]) / (E[O_oracle] - E[O_random])'
+    quote_sha256: '1b60cd73b9d884985cfc41f121678deb2e2501ba604e65c8a871046d58c167bd'
+    source_revision: 'arXiv:2603.12520v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'Section 7.1, Scope of the Evidence'
+    quote: 'But that gain is not universal: under strict best-of-4 round-robin with explicit token accounting, full pairwise underperforms pointwise for both a smaller judge (GPT-4.1-mini) and a stronger judge pilot (GPT-5) (Table 16).'
+    quote_sha256: '6b00c5833c186de043505f759cbe545e5c506c79e75f54a80f2c2861ae3a2e9e'
+    source_revision: 'arXiv:2603.12520v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'Appendix N, Result'
+    quote: 'In the idealized Gaussian/no-tie world, expected best-of-n recovery equals within-prompt correlation.'
+    quote_sha256: '8b11d08acd9c3f28f58a9fdc6aff0461ada6b8adc315265647db94ccae1396e4'
+    source_revision: 'arXiv:2603.12520v1'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'Section 7.5, Practical Checklist item 2'
+    quote: 'Report within-prompt metrics. Include r_within, tie rates, recovery, and PCS, not just global r.'
+    quote_sha256: '851c2043f2ac6cbaab6d41efa7a94241d0aa332fa624dec37cbc54547848e895'
+    source_revision: 'arXiv:2603.12520v1'
+    verified_by: 'research-intake/stage2'
+  depends_on:
+  - entry: intake-804
+    why: 'The recovery figures computed in this entry''s dive_corrections (37.8 / 25.3 / 64.6 percent) are derived arithmetic over intake-804''s Pass@1 and Oracle numbers. If those were retracted or revised, every recovery figure here would have to be recomputed.'
+  reader_should_conclude: >-
+    ADOPT the metric, REJECT the thresholds. The audit contract - recovery rate, within-prompt correlation,
+    tie rate, top-1 - is what this entry is for, with two mandatory amendments: always publish the
+    denominator and n, and in heterogeneous pools also report recovery against the best free constant
+    policy. Do NOT gate on Table 6''s r_within numbers; use Appendix N''s recovery-equals-r_within instead.
+    Two Stage-1 readings are dead and must not be revived: this paper does NOT say judges fail at
+    selection, and pairwise judging is NOT a general fix. Our own parked verifier/selector result recomputes
+    to 9.1 percent recovery under this definition, which confirms rather than reopens the MARGINAL parking.
+- id: intake-1165
+  arxiv_id: '2408.15240'
+  url: https://arxiv.org/abs/2408.15240
+  source_type: paper
+  title: 'Generative Verifiers: Reward Modeling as Next-Token Prediction'
+  authors:
+  - Lunjun Zhang
+  - Arian Hosseini
+  - Hritik Bansal
+  - Mehran Kazemi
+  - Aviral Kumar
+  - Rishabh Agarwal
+  categories:
+  - benchmark_methodology
+  - training_distillation
+  - cost_aware_routing
+  key_claims:
+  - Train verifiers with the next-token-prediction objective jointly on verification and solution generation rather than as discriminative classifiers.
+  - The reward is the model's own next-token probability for a single 'Yes' token - r_Direct(x,y) = p_theta(Yes|x,y,I) - i.e. a BINARY logprob read, the direct ancestor of graded score-token expectation.
+  - Majority voting over K independently sampled verification rationales - r_MajV@K averages the Yes-probability across K samples - is the same repeated-evaluation axis later reused by LLM-as-a-Verifier.
+  - GenRM outperforms discriminative verifiers, DPO verifiers and LLM-as-a-Judge on best-of-N.
+  - Verification quality scales favorably with model size and test-time compute.
+  techniques:
+  - GenRM (direct generative verifier, Yes-token probability)
+  - GenRM-CoT (verification rationale before the Yes token)
+  - MajV@K majority voting over sampled rationales
+  - Joint verification + generation next-token training
+  - Synthetic verification rationales / reference-guided grading
+  reported_results:
+  - 'Algorithmic tasks best-of-N: 5% -> 45.3%'
+  - 'GSM8K: 73% -> 93.4% (Gemma2-9B verifier on Gemini 1.0 Pro solutions; 73% is the discriminative-RM baseline)'
+  - 'Easy-to-hard generalization: MATH 28% -> 44.6%; MMLU abstract algebra 37.9% -> 53.5%'
+  - 'GenRM-CoT matches a discriminative verifier best-of-32 using 6.4x fewer solutions'
+  - 'Synthetic-rationale quality ablation (Gemma-7B): 91.7% with guidance vs 87.8% without'
+  references: []
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-1161
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'No dedicated limitations section exists in the paper; its final section is Conclusion & Future Work.'
+  - 'GenRM-CoT places a reasoning chain before the Yes token, which intake-1162 reports collapses the very judgment distribution the score is read from. The two lines of work are in tension on this point.'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-1161
+    - intake-1162
+    - intake-875
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  reader_should_conclude: >-
+    This is the ANCESTOR to cite when asking what is actually new in LLM-as-a-Verifier. GenRM already
+    established reward-as-token-probability and repeated-evaluation-by-majority-vote; what is added
+    downstream is the graded multi-token score scale, criteria decomposition, and the pivot tournament.
+    It also matters that GenRM's verifiers were open-weight Gemma models - the closed model appears only
+    as the generator being scored.
+  notes: 'Expansion from intake-1161. ICLR 2025. The reward is a strictly BINARY Yes-token probability,
+    not a graded scale - confirmed by the extractor and the distinction that separates it from
+    LLM-as-a-Verifier.
+
+
+    Several per-baseline table values were flagged by the extractor as read off a figure rather than
+    quoted text and were therefore NOT recorded here. Only the arrow-form headline numbers are carried.
+
+
+    NOT DIVED.
+
+
+    2026-08-19 Stage-2 cross-finding (this entry was NOT dived): PROMOTED IN IMPORTANCE by the intake-875
+    dive, which names generative verifiers as the TRAINED analogue of de-anchoring - models trained to solve
+    before they judge. That matters because intake-875 establishes a verifier CAPABILITY THRESHOLD below
+    which prompt-level commit-first inverts and degrades the judge. If our local reviewer pool fails that
+    threshold, this line of work is the alternative route to the same independence property, and we already
+    hold the entry. Note also that GenRM verifiers were open-weight Gemma models throughout; the proprietary
+    model appears only as the generator being scored.'
+- id: intake-1166
+  arxiv_id: null
+  url: https://github.com/llm-as-a-verifier/TurboAgent
+  source_type: repo
+  title: 'TurboAgent: best-of-N LLM API proxy applying LLM-as-a-Verifier to coding agents'
+  authors: []
+  categories:
+  - agent_architecture
+  - harness_optimization
+  - inference_serving
+  key_claims:
+  - A local FastAPI proxy sits between a coding-agent client and upstream providers, fans each request out to N concurrent candidates, and returns the best one selected by a Probabilistic Pivot Tournament.
+  - Selection logic is entirely delegated to the separate llm-verifier package; this repo only wraps config, a majority-voting shortcut and visualizer records.
+  - The verifier and progress monitor are hard-wired to Google genai (Vertex AI or Gemini AI Studio) - there is no code path to point the verifier at an arbitrary OpenAI-compatible base URL.
+  - A post-hoc progress monitor scores the selected response for observability only and never changes what the client receives.
+  techniques:
+  - Best-of-N concurrent inference behind an Anthropic/OpenAI-compatible proxy
+  - Probabilistic Pivot Tournament selection delegated to llm-verifier
+  - Majority-voting shortcut when candidates agree
+  - LLM-based context/prompt refinement
+  reported_results: []
+  references:
+  - https://github.com/llm-as-a-verifier/llm-as-a-verifier
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-1161
+  ingested_date: '2026-08-18'
+  contradicting_evidence:
+  - 'Publishes no benchmark numbers of its own - README and all fetched sources contain no accuracy or latency figures. Nothing here corroborates the llm-as-a-verifier results; do not cite this entry for any measurement.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-1161
+    - intake-363
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  reader_should_conclude: >-
+    Read at commit eeb61be9cb618ea9c52262cebf15092e7c185146 (2026-07-24). As shipped this is NOT usable
+    on our stack: the verifier and progress monitor construct a google.genai client and nothing else, so
+    the component that reads logprobs cannot be pointed at a local server. That is the OPPOSITE of the
+    research repo (intake-363), which at its own head supports any OpenAI-compatible endpoint returning
+    logprobs. Do not generalize the research repo's local support to this proxy. Take the PROXY SHAPE as
+    a pattern - best-of-N behind a drop-in API endpoint, selection invisible to the client - not the
+    implementation.
+  notes: 'Expansion from intake-1161. Read at pinned commit eeb61be9cb618ea9c52262cebf15092e7c185146
+    dated 2026-07-24, version 0.1.3 - note this is OLDER than the research repo head read the same day,
+    so its Gemini-only verifier may simply predate the OpenAI-compatible backend work.
+
+
+    LICENSE was read as full text at the pinned SHA and is Apache-2.0 (the pyproject defers to the file
+    rather than naming an SPDX identifier). Dependencies: fastapi, uvicorn, httpx, litellm, llm-verifier,
+    pyyaml, python-dotenv; Python >=3.10.
+
+
+    The generator path routes through litellm with no base-URL plumbing in this repo; whether an
+    unprefixed model name can be aimed at a local server via litellm''s own env conventions was marked
+    INFERRED, not verified.
+
+
+    NOT DIVED beyond the source read described above.'
+- id: intake-1167
+  arxiv_id: '2210.10760'
+  url: https://arxiv.org/abs/2210.10760
+  source_type: paper
+  title: Scaling Laws for Reward Model Overoptimization
+  authors:
+  - Leo Gao
+  - John Schulman
+  - Jacob Hilton
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - reinforcement_learning
+  key_claims:
+  - Gold reward under best-of-n follows R_bon(d) = d(alpha - beta*d) where d = sqrt(KL), a form DISTINCT from the RL/PPO form d(alpha - beta*log d); the gold curve rises, peaks and declines while the proxy curve rises monotonically and gives no turn signal.
+  - Best-of-n optimisation distance is analytic in n - KL_bon = log n - (n-1)/n - so d grows only as sqrt(log n). Validated by a genuine advance prediction from n<=1,000 out to n=60,000.
+  - alpha and beta vary approximately logarithmically with proxy reward-model size; beta (the turn-down term) falls with size, so larger proxies overoptimize later and higher.
+  - Below roughly 2,000 preference comparisons a reward model stays near chance and confers essentially no gold improvement at ANY optimisation distance - its gold curve is negative and declining from KL near zero.
+  - Larger policies gain less from best-of-n but their gold scores peak at almost the same KL, so the danger threshold does not move to protect a stronger policy.
+  - Gold is SYNTHETIC - a 6B InstructGPT reward model standing in for humans, with deterministic labels - and adversarial Goodhart is explicitly outside the studied regime.
+  techniques:
+  - best_of_n_with_unbiased_intermediate_n_estimator
+  - sqrt_KL_as_optimisation_coordinate
+  - synthetic_gold_reward_model_labelling
+  - closed_form_optimal_n_via_alpha_over_2beta
+  - goodhart_taxonomy_mapped_onto_alpha_and_beta
+  - validation_loss_as_size_independent_robustness_instrument
+  reported_results:
+  - BoN gold form R_bon(d) = d(alpha_bon - beta_bon*d); RL gold form R_RL(d) = d(alpha_RL - beta_RL*log d); d = sqrt(D_KL(pi||pi_init)); R(0) := 0.
+  - KL_bon = log n - (n-1)/n (attributed to Stiennon et al. 2020 Appendix G.3).
+  - 'Advance prediction: form fitted on data to n=1,000 (KL ~6 nats), validated to n=60,000 (KL ~10 nats).'
+  - Gold RM is the 6B model of Ouyang et al. 2022; proxy RMs span 3M to 3B; 100,000 synthetic comparisons with 10 percent held out.
+  - 'Data floor: for amounts of data less than around 2,000 comparisons there is very little improvement over near-chance loss.'
+  - 'Epoch control: validation loss 0.686109 (1x2000), 0.654857 (1x8000), 0.683869 (4x2000); four epochs of 2,000 gives no change in gold score whatsoever.'
+  - 'Policy sweep 1.2B vs 6B: gold scores peak at almost the same KL.'
+  referenced_arxiv_ids:
+  - '2203.02155'
+  - '2009.01325'
+  - '2204.05862'
+  - '2112.09332'
+  - '1707.06347'
+  - '1803.04585'
+  - '2102.03896'
+  - '2201.03544'
+  - '2203.07472'
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-875
+  ingested_date: '2026-08-19'
+  contradicting_evidence:
+  - Gold is a 6B sibling model of the proxies, not task truth. Proxy and gold share architecture, corpus and pipeline, so correlated failure modes are scored as SUCCESS - the measured beta is a lower bound on the true one and real-world overoptimization is plausibly worse than measured.
+  - Adversarial Goodhart is explicitly excluded, and the authors warn the laws may break down when it appears. Our regime (2026 agentic policies against a small local verifier) is exactly the adaptive-exploitation setting intake-875 demonstrates and this paper declares out of scope.
+  - 'Dive-surfaced correction: arXiv 2401.01879 (Beirami et al.) states verbatim that the KL_bon = log n - (n-1)/n expression is NOT an equality but an UPPER BOUND on the actual KL divergence. The load-bearing equation of this entry is therefore conservative, not exact.'
+  - 'Paper defect found by the dive: the Figure 12 caption labels alpha/(2*beta) as max BoN gold score. Differentiating the paper own form gives argmax d* = alpha/(2*beta) and max = alpha^2/(4*beta). The plotted range (1.43-3.63) matches the argmax, not the peak heights (~0.5-1.2) visible in Figure 1a. Anyone citing Figure 12 as a max-score curve is wrong by a factor of alpha/2.'
+  - No numeric alpha or beta is tabulated anywhere in the paper - the coefficients exist only as scatter points in Figure 3. All per-size turning points are figure read-offs plus derivation, never quotable paper values.
+  - Per-item behaviour is non-monotone and sign-flipping (Table 2 tracks one prompt from n=1 to 30,000 with gold going -0.52, -0.02, +0.48, -0.15, -0.34, ... +0.55). These are POPULATION-level laws and must never gate a single trajectory decision.
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-875
+    - intake-804
+    - intake-1164
+    - intake-1168
+  handoffs_updated:
+  - 'reviewer-model-ablations.md'
+  handoffs_created: []
+  verification: dive-verified
+  source_revision: arXiv:2210.10760v1
+  dive_corrections: 'STAGE-2b COMBINED INGEST+DIVE 2026-08-19, read at arXiv:2210.10760v1 (only version; never revised). Peer-review status verified independently at PMLR v202 (ICML 2023). Ingested to supply the quantitative backbone under conditions B1 and B2 recorded on intake-875.
+
+
+    THE DECISION-RELEVANT ANSWER: at our pool sizes we are nowhere near the turn. KL_bon = log n - (n-1)/n puts n=3 at 0.43 nats and n=5 at 0.81 nats, while the EARLIEST gold peak across all nine proxy sizes is at KL ~4.2 nats (n ~184) for the weakest 3M proxy. Best-of-3 to best-of-5 sits at 32-44 percent of the turning distance and captures 54-68 percent of the total available gold gain, on the steeply rising limb, roughly 35-60x below the turn IN N. On the overoptimization axis alone this paper argues for pushing n UP, not down. These points are also MEASURED rather than extrapolated - the paper uses an unbiased all-intermediate-n estimator, so n=3 and n=5 are inside the measured domain.
+
+
+    THE SHARPER CONDITION, WHICH MATTERS MORE THAN N: safety is a property of the VERIFIER, not of n. For a proxy trained on fewer than ~2,000 comparisons the gold curve is negative and declining from KL near zero - alpha is effectively <= 0 and there is NO safe n; every n > 1 is past the turn. This is the single most important transfer to our situation, because it converts the question from how many candidates to whether our verifier clears a competence floor - the same question intake-875 poses via its capability threshold and my own empirical smoke test raised.
+
+
+    A GOLD-FREE-ISH INSTRUMENT: Figure 5 collapses all nine RM sizes onto one monotone band of validation loss versus gold score at n=1000, crossing zero at val loss ~0.66 and reaching -0.6 at chance. A verifier near chance makes best-of-n ACTIVELY WORSE than best-of-1 regardless of its size. This removes the need for gold labels at inference time but not for anchor data at qualification time - which is exactly the shape of condition B1.
+
+
+    WHAT THE PAPER DOES NOT GIVE US: no stopping rule (the d* = alpha/(2*beta) rule is a two-line derivation from its own boxed form, which it plots in Figure 12 but never states as guidance); no proxy-only detector - the proxy rises monotonically past the gold peak with no kink; no numeric coefficients; and no measurement against task truth, since its gold is itself a model. Our unit-test and exact-match anchors are a STRONGER ground truth than this paper has, so its numbers do not transfer automatically.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim from the two boxed equations, and visually in Figure 1a where every proxy curve rises monotonically across 0-10 nats while gold turns over for proxies at or below 85M.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED. The dive independently recomputed KL_bon and reproduced both of the paper own stated anchors (5.909 nats at n=1,000 against its stated ~6; 10.002 at n=60,000 against its stated ~10). See contradicting_evidence for the Beirami correction that this is an upper bound, not an equality.
+  - claim_index: 2
+    effect: narrowed
+    note: Trend CONFIRMED verbatim. Magnitudes NOT FOUND IN SOURCE - no numeric alpha or beta appears anywhere, only scatter points in Figure 3, and the constant value of alpha_RL is never stated. Any per-size turning point is a derivation over figure read-offs.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim, and visible in Figure 4a where the 120/250/500/1000/2000-comparison gold curves are negative and declining from KL near zero. This is the condition that governs our case.
+  - claim_index: 4
+    effect: narrowed
+    note: CONFIRMED verbatim but the paper studies only TWO policy sizes (1.2B and 6B) and itself lists finer policy-size scaling as future work. Directional, not a law. Note it supports intake-875 condition B2 by a DIFFERENT mechanism - here the peak KL is policy-independent and only the achievable headroom shrinks, whereas intake-875 bounds the exploitable gap by (1 - true accuracy). Two independent supports, not one.
+  - claim_index: 5
+    effect: unaffected
+    note: CONFIRMED verbatim. The synthetic-gold and excluded-adversarial-Goodhart caveats are the authors own and are recorded in contradicting_evidence because they condition every number here.
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 2, best-of-n KL
+    quote: 'The KL distances for BoN are computed analytically:  $\text{KL}_{\text{bo}n}=\log n-\frac{n-1}{n}$  (Stiennon et al. 2020, Appendix G.3).'
+    quote_sha256: 50a800153ade2890b568b03eb93a8f13cb245dac9b705006a88674544952db12
+    source_revision: arXiv:2210.10760v1
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 3.3, data threshold
+    quote: For all RM sizes, we observe that for amounts of data less than around 2,000 comparisons
+    quote_sha256: 12fe0a2b10569b682f5b781e4f023546db19451f9d74dc3d6d57be98670c562c
+    source_revision: arXiv:2210.10760v1
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Section 3.4, peak KL invariance
+    quote: while we might expect that a larger policy overoptimizes substantially faster, contrary to intuition, we find that both gold scores peak at almost the same KL
+    quote_sha256: 0b5f3cb0b22d6f022aa2ad9ef3eb8d2750bfd691ff984b3d5d76b579c83118d2
+    source_revision: arXiv:2210.10760v1
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Section 4.2.4, adversarial Goodhart excluded
+    quote: We do not expect the effects of adversarial Goodhart to be captured in this work, as the models involved are not powerful enough to implement adversarial strategies.
+    quote_sha256: c8bd1407caf150d4c780adf65d74056d11bad1c5d9a1fb441d1d96a3e6877157
+    source_revision: arXiv:2210.10760v1
+    verified_by: research-intake/stage2b
+  depends_on:
+  - entry: intake-875
+    why: This entry is ingested as the quantitative backbone under intake-875 conditions B1 and B2. If intake-875 reconciliation verdict were retracted, the framing of this entry as a safety backbone for judge-guided selection would have to be restated, though its own scaling results would stand independently.
+  reader_should_conclude: Use this for FOUR things and nothing else. (1) KL_bon = log n - (n-1)/n as the standard x-axis for any best-of-N result we report - raw n badly understates how sublinear the selection pressure is. (2) The finding that best-of-3 to best-of-5 is far below the overoptimization turn, so pool size is NOT our risk. (3) The near-chance floor - a verifier below it makes best-of-N worse than best-of-1 at every n, which relocates the risk from n onto verifier competence. (4) d* = alpha/(2*beta) as a stopping rule ONCE alpha and beta are fitted for OUR verifier. Do NOT import any n* number from this paper as a gate - they are figure-derived, synthetic-gold, non-adversarial, population-level, and fitted for a trained pairwise reward model rather than a logprob-expectation scorer.
+  notes: Stage-2b, operator-selected 2026-08-19 from the intake-875 dive-surfaced list. Ingested and dived in one pass. The paper is nearly four years old and widely replicated, so its content is not new to the field - it is new to US, as the missing denominator under conditions B1 and B2. It supplies a METHOD we can run, not a table we can read off - every n* here is parameterised by coefficients we do not have for our own verifier.
+- id: intake-1168
+  arxiv_id: '2512.02304'
+  url: https://arxiv.org/abs/2512.02304
+  source_type: paper
+  title: When Does Verification Pay Off? A Closer Look at LLMs as Solution Verifiers
+  authors:
+  - Jack Lu
+  - Ryan Teehan
+  - Jinran Jin
+  - Mengye Ren
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  - routing_intelligence
+  key_claims:
+  - Cross-family verification yields higher verifier gain than intra-family, which yields more than self-verification; gain falls monotonically as solver and verifier solution distributions become more similar.
+  - Verifier ACCURACY is a misleading proxy for test-time usefulness; verifier GAIN (precision minus solver accuracy) is the figure of merit and is estimable from a single verification round.
+  - Reasoning post-training raises solver accuracy substantially (Qwen2.5 +8.2 percent, Qwen3 +35.4 percent) while RAISING false-positive rate and REDUCING self- and intra-family verifier gain.
+  - Strong reasoning models gain little from forced self-verification because they already self-verify spontaneously - Qwen3 96 percent and DeepSeek 73 percent of outputs, versus 1-2 percent for Llama3 and Qwen2.5.
+  - Math, logic and structured tasks are inherently more verifiable and yield larger gains than knowledge-recall tasks, where verifying an answer requires essentially the same knowledge as solving it.
+  techniques:
+  - prompted_off_the_shelf_binary_cot_verifier
+  - verifier_gain_metric
+  - rejection_sampling_to_ten_attempts
+  - self_intra_cross_family_decomposition
+  - solution_embedding_cosine_similarity
+  - normalised_generation_loglikelihood_as_similarity
+  - spontaneous_self_verification_keyword_scan
+  reported_results:
+  - Qwen2.5 solvers improve by 8.2 percent on average, while Qwen3 solvers show a striking 35.4 percent gain (solver accuracy from post-training).
+  - Qwen3 and DeepSeek self-verify in 96 percent and 73 percent of outputs respectively, while Llama3 and Qwen2.5 self-verify in only 1-2 percent.
+  - Higher generation log-likelihood correlates with higher FPR (intra-family slope +0.238, cross-family slope +0.459) and lower verifier gain (intra-family +0.043, cross-family -0.183).
+  - 'Scale: 37 models across 7 families and 9 benchmarks; 12x12 solver-verifier pairs for the rejection-sampling validation; 24 intra-family and 108 cross-family pairs for the similarity analysis.'
+  referenced_arxiv_ids:
+  - '2412.02674'
+  - '2509.17995'
+  - '2404.17140'
+  - '2411.17501'
+  - '2407.21787'
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-875
+  ingested_date: '2026-08-19'
+  contradicting_evidence:
+  - 'DIRECTIONAL ONLY. The dive grepped every decimal in the body: the ONLY numbers in the running text are the two solver post-training gains, the three self-verification rates and the four Appendix H slopes. There is not a single verifier-gain magnitude or Pearson r in prose - all headline evidence lives in figures. Any numeric claim attributed to this paper beyond those listed is unsourced.'
+  - It does NOT answer the generator-verifier capability-gap question. No gap axis is analysed; verifier size effects are averaged over solvers, marginalising the gap out. A capability floor cannot be extracted from it, and citing it as evidence about a weak verifier would be over-claiming. The paper hands that question off to arXiv 2404.17140, which we do not hold.
+  - Method is BINARY accept/reject with CoT, not logprob-based. It bounds the general value of LLM verification, NOT the expectation-over-score-tokens mechanism.
+  - Protocol is sequential rejection sampling (generate until the verifier accepts, up to ten attempts), not argmax over a fixed pool. Verifier gain converges to precision under that protocol - it is not directly the right figure of merit for best-of-N without adaptation.
+  - Single-turn question-answer pairs with ground-truth labels only. The authors themselves flag multi-turn as unstudied future work, and agent trajectories - our actual target - are neither single-turn nor ground-truth-labelled.
+  - 'TENSION with intake-875: this paper central design rule (prefer a cross-family verifier) is the defence intake-875 reports as structurally excluded by its Proposition 2. Both can hold - this paper measures UNOPTIMISED solver distributions, intake-875 measures distributions OPTIMISED against the judge - but the scope boundary must travel with the rule. Our autopilot best-of-N loop is exactly such an optimiser.'
+  - The spontaneous-self-verification rates are measured by keyword scan (wait, hold on, mistake), a substring-matching proxy. Treat the 96/73/1-2 split as a coarse screen, not a measurement.
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    - reviewer-model-ablations.md
+    experiments: []
+    intake_entries:
+    - intake-875
+    - intake-804
+    - intake-1167
+    - intake-1162
+  handoffs_updated:
+  - 'reviewer-model-ablations.md'
+  - 'reviewer-calibration-accounting.md'
+  handoffs_created: []
+  verification: dive-verified
+  source_revision: arXiv:2512.02304v2
+  dive_corrections: 'STAGE-2b COMBINED INGEST+DIVE 2026-08-19, read at arXiv:2512.02304v2 (current; v1 2025-12-02, v2 2026-04-21, version confirmed inside the document body so the ar5iv-serves-v1 hazard did not apply). ICLR 2026 workshop (AI with Recursive Self-Improvement), CC BY 4.0.
+
+
+    THE SINGLE MOST VALUABLE FINDING FOR US - A COMPETING EXPLANATION FOR OUR OWN NULL RESULT. Our measured local reviewer discrimination sits near chance, and this session had provisionally concluded from an empirical smoke test that VERIFIER COMPETENCE is the blocker. This paper offers a CONFIGURATION explanation instead: our reviewers are SAME-FAMILY as our generators, and our generators are Qwen3-family reasoning models that already self-verify spontaneously in ~96 percent of outputs. Lu et al. predict near-zero verifier gain in exactly that configuration regardless of how capable the verifier is. The two explanations are cheaply separable - re-run the reviewer ablation with a family-dissimilar verifier - and that experiment should happen BEFORE any conclusion about a capability floor is recorded.
+
+
+    A DESIGN PREREQUISITE FOR ANY LOGPROB VERIFIER WE BUILD, arriving sideways from an appendix about something else. Appendix H reports that generation log-likelihood conflates two signals - distributional similarity between solver and verifier, and the intrinsic predictability of the solver text independent of the evaluating model - giving the concrete example that short Llama3 outputs score higher than DeepSeek long backtracking chains regardless of similarity. A raw logprob score therefore rewards conventional, short, predictable text over correct text. It is a STYLE PRIOR as much as a correctness signal and must be normalised per-generator (they subtract each solver mean across verifiers) before it means anything. This is defect-avoidance, not a refinement.
+
+
+    WHAT IT DOES NOT DELIVER, stated plainly so it is not over-cited: no capability-gap analysis, no verifier-gain magnitudes in text, binary rather than logprob method, rejection sampling rather than best-of-N, and single-turn labelled tasks rather than agent trajectories. See contradicting_evidence.
+
+
+    ONE WORDING CORRECTION to how this source was characterised when it was surfaced: the claim is about verifier GAIN, not reliability. Cross-family verification actually has LOWER F1 than self-verification - higher usable lift, worse classification quality.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED as to direction, from the abstract and the section 5.2 and 5.3 takeaways. Magnitudes NOT FOUND IN TEXT.
+  - claim_index: 1
+    effect: narrowed
+    note: The definition and the claim are explicit, but the VALIDATION rests on one figure and no Pearson r appears in prose - only that the correlation strengthens from 3 to 10 attempts. Predictive strength is asserted, not quantified in text. Also note gain is defined for BINARY verifiers and needs a thresholding convention before it applies to a scalar logprob score.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED. Solver post-training numbers are exact (8.2 and 35.4 percent); the FPR and gain deltas are directional only.
+  - claim_index: 3
+    effect: narrowed
+    note: The RATES are exact and confirmed, but the CAUSAL link is explicitly the authors hypothesis, tested only by keyword-scan correlation and never by intervention. Record as hypothesis, not established mechanism - which is precisely why the family-dissimilar re-test is worth running rather than assumed.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED, with the authors own note that AIME is an outlier possibly contaminated by post-training.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: verification across model families is more effective than either self-verification or verification within the same family, and more generally that the benefits of verification decrease as the solver and verifier become more similar
+    quote_sha256: 3144045112a24e7979fda450d664f819986defdf4cd692f70cc312225e5e8fb1
+    source_revision: arXiv:2512.02304v2
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 5.2
+    quote: Indeed, Qwen3 and DeepSeek self-verify in 96% and 73% of outputs, respectively, while Llama3 and Qwen2.5 self-verify in only 1-2%.
+    quote_sha256: b7c7e01dca76214e05ad4afb95de8b42ddc5be9fbcb58411e5072becb3053e1a
+    source_revision: arXiv:2512.02304v2
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 4, Evaluation
+    quote: To evaluate verifiers, we give each model the problem and solver answer to generate CoT reasoning before producing a boxed "correct" or "incorrect" as the final judgment.
+    quote_sha256: 72d0576ae024706b636f2c6cb26c6aba706d30644626556825e494112b1106c7
+    source_revision: arXiv:2512.02304v2
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Appendix H
+    quote: 'After normalization, the same directional findings emerge (Figure 11): higher generation log-likelihood correlates with higher FPR (intra-family slope =+0.238, cross-family slope =+0.459) and lower verifier gain (intra-family slope =+0.043, cross-family slope =-0.183), consistent with the cosine similarity results in Figure 5.'
+    quote_sha256: 514e15b17c3031e4b32941e1480f453e61bbba790afec8c2482d023aee32cd16
+    source_revision: arXiv:2512.02304v2
+    verified_by: research-intake/stage2b
+  depends_on: []
+  reader_should_conclude: 'Its highest value to us is a COMPETING EXPLANATION, not a recommendation: our near-chance reviewer discrimination may be a same-family configuration artifact rather than a capability limit, because our Qwen3-family generators already self-verify ~96 percent of the time. Test that before concluding anything about a capability floor. Adopt verifier gain as the figure of merit and per-generator logprob normalisation as a build prerequisite. Do NOT cite this as evidence about weak-verifier capability - it contains no capability-gap analysis. Do NOT cite any magnitude from it - the only numbers in its text are four solver/self-verification figures and four slopes. And never carry its cross-family design rule without intake-875 scope boundary attached.'
+  notes: Stage-2b, operator-selected 2026-08-19 from the intake-875 dive-surfaced list. Ingested and dived in one pass. All 37 models are open-weight and self-hostable and include our exact families (Qwen3, Qwen2.5, Llama3, DeepSeek-R1-Distill), so the study is reproducible on our hardware - which is what makes the family-dissimilar re-test cheap rather than aspirational.
+- id: intake-1169
+  arxiv_id: null
+  url: https://github.com/dubai03nsr/distributional-judge
+  source_type: repo
+  title: distributional-judge - reference implementation for Improving LLM-as-a-Judge Inference with the Judgment Distribution
+  authors:
+  - Victor Wang
+  categories:
+  - benchmark_methodology
+  - tool_implementation
+  - local_inference
+  key_claims:
+  - 'The repository is aggregation math ONLY - 309 lines of torch across two files that map a pre-formed probability vector over K score options to a comparison scalar. It contains NO inference code: no tokenizer, no backend, no prompt, no logprob read-out, no normalization.'
+  - All eight Table 3 read-outs are implemented and match the paper definitions - mode, mean, rounded mean, median, first percentile, risk-averse mean via lower semi-deviation, quantile integral, and probability of superiority.
+  - Pre-aggregation over the two presentation orders, the paper largest reported effect, is a single line forming the mixture distribution; both pre and post aggregation are implemented for mode, median and mean.
+  - Pairwise scoring implements the GREEDY-CONDITIONING APPROXIMATION rather than the exact joint - the first response distribution is collapsed to a delta at its argmax. The paper states the exact joint is feasible with local models but not with API models, leaving it open.
+  - The repo has NO LICENSE, NO tests, NO fixtures and NO expected outputs; risk-averse mean, probability of superiority and quantile are pointwise-only; and the pairwise module carries four reproduced defects.
+  techniques:
+  - expectation_over_score_token_probabilities
+  - risk_averse_mean_via_lower_semideviation
+  - probability_of_superiority_under_independent_coupling
+  - quantile_integral_comparison
+  - pre_versus_post_aggregation_of_presentation_orders
+  - greedy_conditioning_proxy_for_pairwise_delta
+  reported_results: []
+  references:
+  - https://arxiv.org/abs/2503.03064
+  novelty: low
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-1162
+  ingested_date: '2026-08-19'
+  contradicting_evidence:
+  - It does NOT remove the implementation ambiguity it was selected to remove. Every question about how the probability vector is BUILT - token position, logprob read-out, renormalization, tokenization, backend - is absent from the code. Those live in the paper Appendix C.1, not here.
+  - NO LICENSE, verified four ways (tree API lists five blobs and none is a licence; LICENSE, LICENSE.md, LICENSE.txt and COPYING all 404; the GitHub API reports license null). All rights reserved by default - we may READ and reimplement from the CC BY 4.0 paper, but must NOT vendor or redistribute the code.
+  - 'Five defects reproduced by EXECUTION, not inspection: hardcoded dim=1 in two places breaking any batched input; hardcoded .float() breaking float64; in-place mutation of the caller tensor; and no validation that the input distribution sums to one, which silently returns wrong answers on exactly the unnormalized input a truncated logprob head produces.'
+  - Neither repo nor paper specifies a fallback when a score token is absent from the logprob head - the hazard that a 20-way alphabet against a 20-entry head creates. That gap is ours to close.
+  - 'Unmaintained: last push 2025-03-06, never updated for the EMNLP camera-ready or the arXiv v2 that still cites this URL, and the owner has since renamed (dubai03nsr redirects to victorwang37). Two stars.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-1162
+    - intake-804
+  handoffs_updated:
+  - 'eval-tower-verification.md'
+  handoffs_created: []
+  verification: dive-verified
+  source_revision: 4061b7f09367611ca5922461973c90a8d92e250c
+  dive_corrections: 'STAGE-2b COMBINED INGEST+DIVE 2026-08-19, read at pinned commit 4061b7f09367611ca5922461973c90a8d92e250c (2025-03-06), the full tree (5 blobs, 309 lines of Python). Selected on the expectation that it would remove all implementation ambiguity from a local build. IT DOES NOT, and that is the finding.
+
+
+    WHAT IT IS NOT: a pure post-processing math library with zero inference side. Exhaustive negative grep over all four text files returns zero hits for logprob, top_logprobs, tokenizer, token_id, encode, openai, vllm, transformers, api_key, requests, softmax, logit, temperature, renorm and test. There is no HTTP client, no tokenizer, no model loader, no prompt template, no config, no requirements file. The read-out procedure is specified in the paper Appendix C.1, not in the code.
+
+
+    WHAT IT DELIVERED INSTEAD, which is worth more than what it lacked. (1) All eight read-outs verified against the paper Table 3 with exact formulas, and four minor discrepancies pinned - a strict rather than inclusive quantile boundary, undocumented tie-splitting on the mode, an independence product coupling that is correct pointwise but silently wrong if reused on correlated pairwise scores, and inconsistent guard constants between the two files. (2) GOLDEN VALIDATION VECTORS produced by EXECUTING the reference implementation, including a K=5 case where risk-averse mean flips sign against the mean and a K=9 case where quantile and probability-of-superiority disagree in sign - these make a clean-room port objectively checkable rather than eyeballed. (3) Five defects reproduced by execution. (4) Confirmation that pre-aggregation - the paper largest single effect - is one line, and that the exact pairwise joint is left UNDONE because the authors could not afford it on an API budget. On our hardware that is K prefill-only continuations of a shared prefix, which is the one place we can straightforwardly exceed the reference.
+
+
+    A DERIVATION WORTH CARRYING, produced by the dive and labelled as inference rather than source: softmaxing the K judgment logits at temperature 1 - the paper stated procedure - is mathematically IDENTICAL to exponentiating the K score-token logprobs from an OpenAI-shaped head and renormalizing over just those K, because the full-vocabulary denominator cancels. This holds ONLY at temperature 1, which pins a design constant. All mass on non-score tokens is discarded, not redistributed.
+
+
+    LICENSING CONSEQUENCE: absent licence converts this from adopt_component to adopt_patterns. We reimplement the Table 3 formulas from the CC BY 4.0 paper and cite the repo as prior art only.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED by exhaustive negative grep and by the complete five-blob tree listing at the pinned SHA.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED - eight of eight read-outs match the paper Table 3, with four minor implementation discrepancies pinned in dive_corrections.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED at pairwise_methods.py line 18; the mixture construction matches Appendix B.2.1 term for term, and the s1/s2 naming is explicit in the code.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED with the code comment stating outright that X1 is treated as a constant equal to the greedily decoded score. The exact joint is the exploitable gap for us.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED - absence of licence verified four independent ways, and all five defects reproduced by execution rather than inferred from reading.
+  claim_anchors:
+  - claim_index: 2
+    kind: line-range
+    locator: pairwise_methods.py:18
+    quote: sym_probs = (probs[..., ::2, :] + torch.flip(probs[..., 1::2, :], [-1])) / 2
+    quote_sha256: fe58a76724d40cb19bc9710c1d1256e876c708962c6ef13187af0a5518eb59f0
+    source_revision: 4061b7f09367611ca5922461973c90a8d92e250c
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: pairwise_methods.py:121-127
+    quote: '# treat X1 as a constant equal to the greedily decoded score'
+    quote_sha256: a585af682b9dab6aaf3097f23c504e65d87fdce50e1259b9e9ba5b7f66d59480
+    source_revision: 4061b7f09367611ca5922461973c90a8d92e250c
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: pointwise_methods.py:3-5 (input contract)
+    quote: '# p1 and p2 are tensors of equal shape that are pairs of probability distributions over 1 to k (k = p1.shape[-1]).'
+    quote_sha256: d5c36bb2c8b18a50fa8cef837d74bc46a4a5d2b70cd005143c6a0a5a2d90ff11
+    source_revision: 4061b7f09367611ca5922461973c90a8d92e250c
+    verified_by: research-intake/stage2b
+  depends_on:
+  - entry: intake-1162
+    why: This entry is the reference implementation OF that paper. Every claim here about method fidelity is a claim about correspondence to that paper Table 3; if the paper method were retracted or revised, the meaning of this code would change with it.
+  reader_should_conclude: 'Do NOT expect an inference path here - there is none, and that was the reason it was selected. Use it for exactly three things: the eight read-out formulas, the one-line pre-aggregation construction, and the golden validation vectors recorded by the dive. REIMPLEMENT CLEAN-ROOM from the CC BY 4.0 paper - the repo has no licence and must not be vendored. Note the exact pairwise joint is unimplemented here and is cheap on our hardware, which is the one place we can exceed the reference rather than merely match it.'
+  notes: 'Stage-2b, operator-selected 2026-08-19 from the intake-1162 dive-surfaced list. Ingested and dived in one pass at a pinned commit. reported_results is deliberately EMPTY: the repository publishes no benchmark numbers, no tables and no logs - its README is title, paper link and abstract. Every number associated with this work belongs to arXiv:2503.03064v2 and is recorded on intake-1162; none is copied here. credibility_score is null and that is correct, not an omission - the repo makes no independent empirical claim, so there is nothing to score; its code-versus-paper fidelity was verified per-claim instead.'
+- id: intake-1170
+  arxiv_id: '2602.19313'
+  url: https://arxiv.org/abs/2602.19313
+  source_type: paper
+  title: 'TOPReward: Token Probabilities as Hidden Zero-Shot Rewards for Robotics'
+  authors:
+  - Shirui Chen
+  - Cole Harrison
+  - Ying-Chun Lee
+  - Angela Jin Yang
+  - Zhongzheng Ren
+  - Lillian J. Ratliff
+  - Jiafei Duan
+  - Dieter Fox
+  - Ranjay Krishna
+  categories:
+  - benchmark_methodology
+  - reinforcement_learning
+  - multimodal
+  key_claims:
+  - A dense progress reward can be obtained zero-shot as the LOG-PROBABILITY OF A SINGLE affirmative token under a binary completion query, with no reward-model training and no annotated progress labels.
+  - Open-source VLM failure at progress estimation is a TEXT-GENERATION bottleneck rather than a video-understanding one - probing the logit recovers a signal that generating a number destroys.
+  - The training-free token-probability reward matches or beats reward models trained on roughly a million comparisons.
+  - The reward is grounded in the instruction rather than merely frame index, evidenced by a Sinkhorn diagonal mass far above chance and a large gap between matched and mismatched instructions.
+  - The logit-based formulation is severely prompt-format-sensitive - applying a chat template degrades voc by nearly 50 percent on one backbone and 20 percent on another.
+  techniques:
+  - single_token_logprob_as_reward
+  - binary_completion_query_continuous_readout
+  - forced_token_teacher_scored_probability
+  - true_false_logprob_margin
+  - empirical_answer_token_selection_by_separation
+  - direct_prompt_scoring_no_chat_template
+  reported_results:
+  - 'Open X-Embodiment voc: TOPReward with Qwen3-VL-8B 0.874 versus GVL with the same backbone 0.218 and trained Robometer-4B 0.838.'
+  - 'ManiRewardBench voc: TOPReward with Qwen3-VL-8B 0.942 versus trained Robometer-4B 0.858.'
+  - 'Success detection: Qwen3-VL-32B 0.965 ROC-AUC and Qwen3-VL-8B 0.939, both exceeding the trained Robometer-4B success head at 0.930.'
+  - Chat template degrades Qwen3-VL-8B performance by nearly 50 percent and Molmo2-8B by 20 percent (bimanual row 0.947 falling to 0.269).
+  - 'Instruction grounding: Sinkhorn diagonal mass 0.420 for TOPReward Qwen3-VL-8B versus 0.149 for Robometer-4B, against a random baseline of 0.05.'
+  referenced_arxiv_ids:
+  - '2509.17321'
+  - '2601.00675'
+  novelty: medium
+  relevance: low
+  credibility_score: 5
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-804
+  ingested_date: '2026-08-19'
+  contradicting_evidence:
+  - Domain-limited to robot manipulation. There is NO general-domain scope claim anywhere - every scope statement is bounded to manipulation trajectories over video. Any transfer to code or agent-trajectory verification is our inference, not the authors claim.
+  - Principal benchmark (ManiRewardBench) is the authors own; no variance, seeds or confidence intervals on any main table; the real-robot experiment is 10 trials across 6 tasks.
+  - The paper never acknowledges a saturation problem - the word does not appear. The saturation characterisation is made ONLY by intake-804, and this paper log-probability formulation with its explicit unbounded-below range argues directly against it.
+  cross_references:
+    chapters: []
+    handoffs:
+    - eval-tower-verification.md
+    - reviewer-calibration-accounting.md
+    experiments: []
+    intake_entries:
+    - intake-804
+    - intake-1162
+    - intake-1161
+  handoffs_updated:
+  - 'eval-tower-verification.md'
+  handoffs_created: []
+  verification: dive-verified
+  source_revision: arXiv:2602.19313v2
+  dive_corrections: 'STAGE-2b COMBINED INGEST+DIVE 2026-08-19, read at arXiv:2602.19313v2 (current; v1 2026-02-22, v2 2026-07-22). v1 was also fetched to test for mechanism drift - the core reward formulation is unchanged in substance.
+
+
+    SELECTED TO TEST WHETHER IT COLLAPSES intake-804 NOVELTY. IT DOES NOT. TOPReward reward is the log-probability of ONE token under a binary True/False completion query. There is no summation over outcome tokens weighted by ordinal values - the defining move of an expectation. Its richest multi-token form is a two-point True-minus-False margin, a contrast rather than an expectation, and the one multi-token variant it tried was explicitly rejected as less effective. Granularity does not appear in the paper at all. So the expectation-over-a-graded-scale mechanism IS genuinely distinct.
+
+
+    BUT THE DIVE FOUND SOMETHING MORE IMPORTANT - THE COMPARISON RECORDED AGAINST THIS WORK IS NOT A FAIR FIGHT, on four independent counts, and every one is evidenced. (1) DIFFERENT BENCHMARK: TOPReward never ran RoboRewardBench - the string, and the figure attributed to it, appear nowhere in this paper. That row is intake-804 own re-implementation. (2) DIFFERENT BACKBONE FAMILY: intake-804 ran it on a general text model, whereas TOPReward whole thesis is that a VIDEO-language representation carries the signal. (3) DIFFERENT READOUT SPACE: intake-804 row is labelled raw P(true) while this paper equation is a LOG-probability, which is unbounded below and does not compress near one - the saturation artifact is a property of the raw-probability space the competitor chose. (4) CHAT TEMPLATE almost certainly applied via an OpenAI-compatible endpoint, and this paper own ablation shows that HALVES voc on the relevant backbone. TOPReward self-reports voc 0.874 to 0.942; the competitor reports it at 0.565, and counts (2) to (4) explain that gap without invoking saturation at all.
+
+
+    THE ONE DIRECTLY TRANSFERABLE FINDING, and it is a trap we would otherwise have walked into: the chat-template hazard. A generation-oriented chat template costs roughly half the signal in logprob scoring. This composes with the failure this session observed empirically on llama-server, where a thinking model emitted a reasoning token at position zero so the head contained no score letters at all. Both are template-shaped ways the score position silently moves, and both fail without an error.
+
+
+    NET EFFECT ON intake-804 NOVELTY: narrower than either prior-art paper alone suggests, squeezed from two sides - intake-1162 holds the expectation mechanism sixteen months earlier, and this paper holds logit-probing-as-reward four months earlier (and itself credits the principle to prior NLP work rather than claiming it). What survives is the engineering composition, not the mechanism. The dive recommended dropping intake-804 novelty to low; the owning session DECLINED that specific change and kept medium, because our rubric defines low as well-covered-in-chapters and medium as related-work-exists-plus-new-results, and a paper contributing four benchmarks and a full ablation suite meets medium regardless of mechanism priority. The priority finding is recorded here and in intake-804 dive_corrections instead, where it is legible, rather than compressed into a scalar.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED - the reward equation is the log-probability of a single affirmative token, and the answer token True was selected empirically for being single-token and maximally separating.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED, and it is the paper central thesis - the same backbone moves from 0.218 to 0.874 voc purely by reading the logit instead of generating a number.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED against Robometer-4B on two benchmarks and on success detection.
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED via both the Sinkhorn diagonal-mass control and a scalar matched-versus-mismatched instruction contrast.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED and elevated - this is the finding with the clearest transfer to our own stack, and the authors list it in their own limitations.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 3.1, Key idea
+    quote: We use the VLM's internal output, i.e., predicted token probabilities as the reward. Concretely, we ask the model to judge whether the observed trajectory completes the instruction and score the probability of an affirmative answer (e.g. the token True).
+    quote_sha256: 6a59224327f694ab505489ca2837d589272a59a21fe02c1e6c05b0e755f2b3dc
+    source_revision: arXiv:2602.19313v2
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Section 5, Limitations
+    quote: Finally, TOPReward is sensitive to chat template formatting and answer-token choice, so deployments should validate the prompt and tokenizer behavior for the chosen VLM backbone.
+    quote_sha256: ee8eaaa671012c2da2e50b60880fb231daff96780aa8424694ed3ac831b55f2e
+    source_revision: arXiv:2602.19313v2
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Appendix E.2, Table 6 caption
+    quote: 'Table 6: Effect of Chat Template on TOPReward VOC. Chat template degrades Qwen3-VL-8B performance by nearly 50% and Molmo2-8B by 20%, demonstrating that the logit-based formulation is sensitive to prompt formatting.'
+    quote_sha256: f7b1f89f66aa482e900134d3ff4cefe2cbd0bffa807cf5432d59cd76b8224d45
+    source_revision: arXiv:2602.19313v2
+    verified_by: research-intake/stage2b
+  depends_on: []
+  reader_should_conclude: 'Cite this for TWO things only. First, as prior art for logit-probing-as-reward - NOT for the expectation mechanism, which it does not do (single token, binary query, no graded scale). Second, and more usefully, for the chat-template hazard: a generation-oriented template costs roughly half the signal in logprob scoring, which is a direct operating constraint on anything we build against llama-server. Do NOT cite the figure attributed to this work in intake-804 as TOPReward own result - it is a re-implementation on a benchmark this paper never ran, with a non-video backbone in raw-probability space and probably a chat template applied. Most of the paper is robotics and is dead weight for us.'
+  notes: 'Stage-2b, operator-selected 2026-08-19 from the intake-804 dive-surfaced list. Ingested and dived in one pass. relevance is deliberately LOW despite a high credibility score: we do not do robotics and nothing transfers as-is. The value is mechanism-level - the readout primitive, the empirical answer-token selection, and above all the chat-template hazard.'
+- id: intake-1171
+  arxiv_id: '2603.04304'
+  url: https://arxiv.org/abs/2603.04304
+  source_type: paper
+  title: 'V1: Unifying Generation and Self-Verification for Parallel Reasoners'
+  authors:
+  - Harman Singh
+  - Xiuyu Li
+  - Kusha Sareen
+  - Monishwaran Maheswaran
+  - Sijun Tan
+  - Xiaoxia Wu
+  - Junxiong Wang
+  - Alpay Ariyak
+  - Qingyang Wu
+  - Samir Khaki
+  - Rishabh Tiwari
+  - Long Lian
+  - Yucheng Lu
+  - Boyi Li
+  - Alane Suhr
+  - Ben Athiwaratkun
+  - Kurt Keutzer
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - cost_aware_routing
+  - reinforcement_learning
+  key_claims:
+  - Pointwise self-verification suffers calibration collapse - absolute scores are identifiable only up to monotonic transformations so they lack a globally comparable scale - and pairwise comparison is the better-posed primitive.
+  - V1-Infer, a two-phase uncertainty-guided Swiss tournament with margin-weighted win-rate aggregation, achieves accurate ranking at O(N)-scale pairwise verification rather than the full pairwise count, improving Pass@1 by up to 10 percent over pointwise at equal budget.
+  - Self-aggregation suffers diversity collapse whereas pairwise self-verification preserves diversity and reaches higher accuracy with fewer model calls.
+  - V1-PairRL, co-training one model as generator and pairwise self-verifier on-policy, yields 7 to 9 percent test-time-scaling gains over standard RL and over pointwise co-training.
+  - Gains concentrate where they are needed - plus 23.7 points on hard problems where Pass@1 is 40.2 percent, versus near-zero on easy problems where Pass@1 is already 99.3 percent.
+  techniques:
+  - pairwise_self_verification
+  - uncertainty_guided_swiss_tournament_ranking
+  - minimum_degree_topology_coverage
+  - margin_weighted_win_rate_aggregation
+  - on_policy_generator_verifier_co_training
+  - sparsity_threshold_verifier_reward
+  reported_results:
+  - 'CodeContests at N=16: GPT-OSS-20B improves from 66.06 to 73.33 percent and Qwen3-4B-Instruct from 39.4 to 46.1 percent, versus pointwise.'
+  - 'SWE-bench Lite (300 instances, N=8, Gemini-2.5-Flash): pairwise 33.3 percent resolve rate versus pointwise 28.3 and vanilla first-candidate 26.3.'
+  - 'Scheduler ablation on LiveCodeBench-v6 at budget 3x: V1-Infer 76.3 percent versus random pairing 72.5 percent.'
+  - 'By difficulty: hard problems Pass@1 40.2 percent rising to 63.9 percent at budget 3x; easy problems already at 99.3 percent Pass@1.'
+  - 'V1-PairRL on LiveCodeBench-v5: 53.9 percent at 2x budget versus V1-PointRL 47.4 percent.'
+  - 'Scheduler parameters, deliberately untuned across all benchmarks: minimum degree 2, Swiss window 8, confidence floor 0.1.'
+  referenced_arxiv_ids:
+  - '2509.26626'
+  - '2505.04842'
+  - '2512.02304'
+  - '2504.01005'
+  - '2507.17797'
+  - '2509.06870'
+  - '2501.12948'
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: adopt_patterns
+  discovered_via: expansion
+  expanded_from: intake-804
+  ingested_date: '2026-08-19'
+  contradicting_evidence:
+  - All Section 4 inference results are SINGLE-SEED - the paper states outright that base-model inference experiments are run once. Only the trained-model results are three-seed means.
+  - NO limitations section and no future-work section anywhere. The section titled Limitations is a critique of PRIOR work, not of V1.
+  - NO positional-bias control - zero occurrences of positional, position bias, swap or order randomisation in the full text, despite an explicit Solution A / Solution B prompt structure. This is a genuine gap and is the one place intake-804 ring pass is a real improvement.
+  - The released code has NO LICENSE (the file 404s and the GitHub API reports null), so it is all-rights-reserved by default. It also covers V1-Infer only - the PairRL training code is absent and no trained weights were located.
+  - The SWE-bench Lite result is the one CLOSED-model experiment (Gemini-2.5-Flash for both generation and verification); every LiveCodeBench, CodeContests and math number is open-weight.
+  - Smallest N studied anywhere is 8. Nothing in the paper speaks to whether parallel generate-and-verify pays off at the pool sizes we actually run.
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - eval-tower-verification.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-804
+    - intake-746
+    - intake-1162
+  handoffs_updated:
+  - 'eval-tower-verification.md'
+  handoffs_created: []
+  verification: dive-verified
+  source_revision: arXiv:2603.04304v1
+  dive_corrections: 'STAGE-2b COMBINED INGEST+DIVE 2026-08-19, read at arXiv:2603.04304v1 (only version). Selected to test the two grounds on which this session had declined to implement intake-804 Probabilistic Pivot Tournament. One ground is refuted as stated, the other is strengthened, and the decline stands on better reasoning.
+
+
+    GROUND 2 IS MIS-ATTRIBUTED AND ITS WORDING MUST BE WITHDRAWN. This session recorded on intake-804 that V1 own budget curve is non-monotonic because 7N scores worse than 5N. That is wrong about attribution. V1 publishes ONLY 1x, 2x and 3x budget multipliers - in the paper twice and in its released repo - and explicitly claims MONOTONIC performance scaling with compute. The 5N and 7N points are intake-804 own extrapolation to 2.3x beyond V1 published envelope, at hyperparameters V1 deliberately fixed and declined to tune. The corrected objection is stronger than the original: intake-804 benchmarked its baseline OUT OF ENVELOPE and then reported beating it. There is also a mechanical reason to expect degradation there - the scheduler prefers unseen near-ties, so once those are exhausted additional budget is forced onto progressively less informative pairs.
+
+
+    GROUND 1 IS MATERIALLY STRENGTHENED. V1-Infer explicitly claims O(N)-scale pairwise verification, published four months EARLIER, and achieves it with an ADAPTIVE schedule (minimum-degree coverage then near-tie Swiss refinement) where the pivot tournament uses FIXED pivots - and V1 own ablation shows adaptive pairing beating non-adaptive by 3.8 points. So the pivot tournament both loses 0.29 points to full round-robin on intake-804 own table AND fails to advance the complexity class of the baseline it measures against. Its remaining genuine contribution is the ring pass for positional bias, which V1 entirely lacks.
+
+
+    THE FINDING THAT MOST CHANGES WHAT WE WOULD BUILD. V1 obtains the same graded, tie-free signal from TEXT ratings plus margin weighting - weight equals the rating gap over nine, floored at 0.1, aggregated as a weighted win rate - with NO logprobs at all. Two independent papers, two different mechanisms, the same lever. This session had separately established empirically that llama-server can serve the logprob route; V1 shows we may not need it, and the text route is strictly easier to deploy.
+
+
+    AND THE ALGORITHM IS PROVABLY INERT AT OUR SCALE. Derived by the dive from the paper own published parameters, not stated by it: V1 maximum budget is 3N while exhaustive round-robin is N(N-1)/2, and 3N is greater than or equal to that whenever N is at most 7. At N=3 the minimum-degree rule alone forces all three pairs and the Swiss phase never runs; at N=5 the 2x budget IS round-robin. N=8 is precisely the smallest N at which the schedule has anything to schedule, which is very likely why the paper starts there. So at pool sizes 3 to 5 the algorithmic contribution has no work to do, and what remains is the pairwise primitive and the aggregation formula - exactly the part that costs nothing.
+
+
+    RECOMMENDED SPLIT: adopt the pairwise primitive and margin-weighted aggregation at exhaustive round-robin, ADD an order swap per pair to buy the positional-bias cancellation V1 lacks, and reject both the Swiss scheduler (inert at our N) and PairRL (needs training infrastructure we do not have). Reimplement from the paper equations rather than vendoring, because the repo is unlicensed.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED with the identifiability argument quoted in full. Note the paper controls for it properly - its pointwise baseline uses the identical 1-to-10 scale so the structural variable is isolated.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED. The O(N)-scale claim is explicit in the appendix, and it is what undercuts intake-804 complexity novelty. Separately note the scheduler is inert at N of 7 or below, by arithmetic on the paper own parameters.
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED against the self-aggregation baseline already held as intake-746.
+  - claim_index: 3
+    effect: narrowed
+    note: CONFIRMED as reported, but demonstrated on exactly one 4B model in one domain, and the training code is not released. Not adoptable by us in any case - we have no RL training infrastructure.
+  - claim_index: 4
+    effect: unaffected
+    note: 'CONFIRMED, and it is the most decision-relevant row in the paper: verification buys nothing where Pass@1 is already high, which is the same shape as our own saturated-suite finding and as the oracle-headroom caveat recorded on intake-1164.'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 4.1, Verification Budget
+    quote: V1-Infer allows flexible control over the verification budget. We report results for budget multipliers of 1x, 2x, and 3x the number of initially generated solutions (N). For example, with N=16 and budget 2x, we perform 32 pairwise comparisons.
+    quote_sha256: b2453128f8998ee2c692bc94bf8aba83649d50c8e5b8df8956ee5565056d5cbc
+    source_revision: arXiv:2603.04304v1
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Figure 4 caption
+    quote: V1-Infer consistently outperforms pointwise self-verification at equivalent budgets and shows monotonic performance scaling with compute.
+    quote_sha256: ea3e2216b0ff9b0212d2979ced7087384f11de46043c26cafcd10aff85e198e3
+    source_revision: arXiv:2603.04304v1
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Appendix D, closing paragraph
+    quote: The above procedures jointly ensure (i) early stabilization of the comparison topology via minimum-degree coverage and (ii) efficient use of remaining budget through uncertainty-focused Swiss refinement, enabling accurate ranking with O(N)-scale pairwise verification.
+    quote_sha256: 651dfe94578ca12b05b7c55f2ab34d6f461232fecfbd80ba1a4953f83d227b26
+    source_revision: arXiv:2603.04304v1
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Section 4.3, difficulty breakdown
+    quote: On easy problems, Pass@1 is already near-optimal (99.3%). However, on hard problems where Pass@1 is only 40.2%, pairwise verification with budget 3x achieves 63.9%, a gain of +23.7%.
+    quote_sha256: 392a2ebda6e8865c82e0dc327f7c605582bc0b397604627bdcef6521f850b3fe
+    source_revision: arXiv:2603.04304v1
+    verified_by: research-intake/stage2b
+  depends_on:
+  - entry: intake-804
+    claim_index: 1
+    why: This entry is the BASELINE that intake-804 pivot tournament measures itself against. The corrected reading here - that V1 published only to 3N and claims monotonic scaling - is what invalidates the non-monotonicity objection recorded on intake-804, and the O(N)-scale claim here is what undercuts that entry complexity novelty. If intake-804 tables were retracted the relationship would have to be restated.
+  reader_should_conclude: The operative finding is that the graded tie-free signal is obtainable from TEXT ratings plus margin weighting, with no logprob plumbing - roughly twenty lines, training-free, deployable on any llama-server. At our 3-to-5 pool sizes use exhaustive round-robin plus an order swap plus margin-weighted aggregation; do NOT build V1 Swiss scheduler, which is provably inert at N of 7 or below, and do NOT build the pivot tournament either. Never repeat the claim that V1 own budget curve is non-monotonic - V1 published only to 3N and claims the opposite; the 5N and 7N points are a third-party extrapolation beyond its envelope. The repo is unlicensed, so reimplement from the paper equations.
+  notes: 'Stage-2b, operator-selected 2026-08-19 from the intake-804 dive-surfaced list. Ingested and dived in one pass. credibility_score 3 reflects a deliberate refusal to credit an unverified venue claim: the GitHub repo description asserts ICML 2026 but neither the paper nor the project page corroborates it, so the peer-review line scored zero. If that acceptance is confirmed the score should rise to 4. The N-at-most-7 degeneracy is the dive arithmetic over the paper own published parameters, not a paper statement.'

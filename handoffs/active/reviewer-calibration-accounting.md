@@ -28,6 +28,31 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
 - [x] **RC-7 — Evidence-plane alignment** ✅ 2026-07-17 (docstring alignment note + `to_question_ledger_row()` adapter stub — decision≈question): per-decision rows follow per-question-ledger conventions (decision ≈ question); cross-ref both handoffs.
 - [ ] **RC-8 — Baseline run**: current self-review (architect alias) in shadow on corpus v1 — the first FA/FR numbers. **Broken-grader guardrail**: read transcripts before trusting a surprising number (CORE-Bench 42→95% was grader repair, not model change).
 - [x] **RC-9 — Rubric persistence** ✅ 2026-07-29 (`review_ledger.v2`; focused validation: 94 passed, 1 expected skip): full rubric and per-item grade snapshots now persist in nullable canonical-JSON `rubric_json` / `per_item_grades_json` columns. The additive migration preserves pre-RC-9 rows; legacy writers remain valid, and readers retain raw forensic columns while exposing decoded `rubric` / `per_item_grades` aliases. This is an accounting schema change only — no reviewer metric or instrument claim was produced. **Staleness audit 2026-07-29:** the prior ledger had `rubric_version` only, with no rubric/grade payload; its append writer has HIGH impact (analysis, tests, Autopilot, and trace modules), so this was implemented as a separately reviewed additive schema + backward-compatible writer/read change.
+- [ ] **RC-10 — Evaluate a logprob-expectation confidence construction against the existing ledger and
+  corpus.** The intake-804 cross-link below (Research Intake Cross-Link — 2026-07-29) has been prose
+  only since it was filed; this is its first runnable entry point, and it inherits that block's scope
+  boundaries verbatim — **evaluate an alternate confidence construction against the existing
+  ledger/corpus and calibration panel; do not replace the typed decision, alter a threshold, or infer a
+  reviewer-quality improvement from the paper.** Preserve objective-verifier precedence and cross-family
+  separation. [intake-804] [intake-1162] [intake-1168]
+  - **What to run.** A/B the current discrete construction against an expectation over the score-token
+    distribution on `nearmiss-v1` (11,516 rows, sha `1c50c025…`) via
+    `scripts/analysis/reviewer_calibration_report.py`, reporting Brier/ECE/AUC on both arms. Smallest
+    implementation site is `repos/epyc-orchestrator/src/pipeline_monitor/model_grader.py:159-168` —
+    replace `choice_scores.get(classification)` with `Σ_g p(v_g)·φ(v_g)` over the existing
+    `choice_strings`. The read-out spec, the T=1 constraint and the silent-failure guards are specified
+    once in `eval-tower-verification.md` EV-15b/EV-15c — reuse them, do not restate them here.
+  - **Per-generator normalisation is a prerequisite, not a refinement.** intake-1168 Appendix H finds
+    that raw log-likelihood conflates distributional similarity with the *intrinsic predictability* of
+    the generator's text — short, conventional output scores higher regardless of correctness. Subtract
+    each generator's mean across verifiers before the score means anything, or the construction is
+    partly a **style prior** rather than a correctness signal. An un-normalised arm is not a valid
+    comparison.
+  - **Prompt-framing caveat to record alongside any result.** With unit-test ground truth held fixed, a
+    one-word strict-versus-lenient change in the judge prompt swung one model from **−0.106 to +0.722**
+    (intake-875 Table 5). Any A/B here must hold framing byte-identical across arms and say so.
+  - **Standing constraint (RC-6a):** until the operator PR merges, every number this row produces is an
+    **observation** and MUST NOT gate any keep/revert/deploy/promote decision in H5/H7.
 
 ## Dependency Graph
 

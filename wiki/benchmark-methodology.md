@@ -2,8 +2,121 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-19 (a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
+**Last compiled**: 2026-08-19 (judge-guided selection: recovery rate and its pool-mean denominator, best-of-N safety is a verifier property not an n property, the lever is continuous ordering not bin count, and a "verbatim" check that read a stale mirror; a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
 **Sources**: 127+ documents
+
+## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
+
+**Confidence: verified** — every figure below comes from a `dive-verified` intake entry read at a
+pinned revision, or from a llama-server run executed and terminated by the compiling session on
+2026-08-19.
+
+### Verifying that a string exists in *a* source is not verifying it against the *current* source
+
+A session confirmed a headline win-count "verbatim, appears 3× in the paper" against
+`ar5iv.labs.arxiv.org`, and on that basis overrode a sub-agent that had reported a different figure.
+**ar5iv silently serves v1** for that paper. Byte-level check: v1 and the ar5iv rendering contain
+`92 out of 120` three times and `42 out of 48` zero times; `arxiv.org/html/<id>v2` is the exact
+inverse. Nothing was retracted upstream — v1 printed four benchmark subsets separately and v2 moved
+them to an appendix, so the superseded figure counts **correlated subset cells and inflates the
+apparent N by 2.5×**.
+
+**The rule this yields**: for any version-sensitive figure, fetch `arxiv.org/html/<id>v<N>` with the
+version the arXiv API reports, and identity-check the returned body by title before trusting it. A
+verbatim quote is evidence about a *document*, not about the *current* document. The same session
+also observed a fetch returning one paper's body under another paper's URL, which is the same class
+of defect one layer down.
+
+### Recovery rate is the audit metric for judge-guided selection — and its denominator is the pool mean
+
+Global judge–oracle correlation is inflated by prompt-level baseline agreement and does not predict
+selection performance; the quantity that does is
+`Recovery = (E[O_judge] − E[O_random]) / (E[O_oracle] − E[O_random])`, reported alongside
+within-prompt correlation and tie rate.
+
+**`E[O_random]` is uniform random choice *within the candidate pool*, not a separately-drawn pass@1.**
+Getting that wrong flatters the result. Recomputing a locally parked selector study: from the
+candidate-pass distribution `{0:12, 1:2, 3:1, 4:1, 5:24}`, Σ = 129 over 200, so `E[O_random] = 64.5%`
+— not the 62.5% pass@1 that had been substituted. With oracle 70.0% and judge-selected 65.0%,
+recovery is `0.5/5.5 = 9.1%`, not the ~25% a first pass estimated. In absolute terms the verifier beat
+random tie-breaking by **0.20 questions out of 40**.
+
+Two amendments the metric needs and its source paper does not supply:
+
+- **Always publish the denominator and n.** Recovery is scale-free and explodes as headroom narrows —
+  one benchmark row showed 64.6% recovery that was 3.1 pp absolute over a 4.8 pp headroom. The same
+  paper shows recovery moving 21.0% → 67.2% purely by changing candidate-pool composition.
+- **In a heterogeneous pool, also report recovery against the best free constant policy.** Where the
+  pool mixes models, "always pick model X" can already beat random at zero cost; crediting the
+  selector for that gain is a denominator artifact, not selection skill.
+
+### Best-of-N safety is a property of the verifier, not of n
+
+The overoptimization scaling law puts best-of-3 and best-of-5 at 0.43 and 0.81 nats
+(`KL_bon = log n − (n−1)/n`, so distance grows only as `√log n`), against an earliest measured gold
+peak around 4.2 nats — roughly 35–60× below the turn *in n*. **Pool size at our scale is not the
+risk.** The binding condition is elsewhere in the same paper: below roughly 2,000 training
+comparisons a proxy stays near chance and its gold curve is negative and declining from KL ≈ 0, so
+**there is no safe n at all**. Validation loss predicts this across model sizes — near-chance loss maps
+to *negative* gold at n=1000 — which makes a held-out qualification pass the gate, not a bigger pool.
+
+Carry two caveats with those numbers: that paper's "gold" is itself a 6B sibling model rather than
+task truth, so correlated failures are scored as success and its curvature is a *lower* bound; and it
+excludes adversarial Goodhart explicitly. A separate result shows judge-guided best-of-N inflating the
+judge's own measured score to a 0.588 gap at k=16 while true unit-test pass moved only 0.27 → 0.29 —
+and that arm is **training-free**, so "we are only selecting, not optimizing" is not a safe harbour.
+
+### The lever is a continuous forced ordering, not more bins — three independent sources agree
+
+Coarse discrete judging fails by producing **ties**: 88 of 100 comparisons tied for one discrete judge,
+66.5% tie rate for another. Taking an expectation over the score-token distribution eliminates them.
+What does *not* carry the gain is granularity: SNR moves only 0.775 → 0.799 from G=1 to G=20;
+increasing a score space from K=9 to K=99 leaves expectation accuracy "similar or decrease[d]" while
+helping only the tie-prone discrete methods; and a third source measures 20 bins costing just 2.7 pp
+versus continuous. Two of those three sources nonetheless *attribute* their own result to granularity,
+because their granularity curves start at G=1 — where an "expectation over one token" is the discrete
+judge, silently bundling the discrete→continuous switch into the granularity axis.
+
+**Practical consequence**: take the expectation, set granularity to a constant in the 9–20 range, and
+do not fund a granularity sweep. A text-rating margin (`w = max(|r_i − r_j|/9, τ)`, weighted win rate)
+reaches the same tie-free ordering with no logprob plumbing at all.
+
+### Two silent failure modes in logprob scoring, and one benchmark run outside its baseline's envelope
+
+Verified by running it: `llama-server` on the frozen production tree returns the OpenAI logprob shape
+with **no `top_logprobs` ceiling** (20, 40 and 64 all honored) and a **pre-sampler** head (temperature
+0.0 and 1.0 return byte-identical logprobs, provided `post_sampling_probs` stays false). Both failure
+modes below return a well-formed logprob array containing nothing scoreable, and neither raises:
+
+1. **A thinking model emits its reasoning token at position 0**, so the head contains zero score
+   tokens and the expectation is undefined.
+2. **A generation-oriented chat template costs roughly half the signal** — measured at ~50% on one
+   backbone and ~20% on another, by a source whose whole method is a forced-token logprob read.
+
+Separately, a methodological failure worth naming: one paper reported beating a baseline at budgets
+**2.3× beyond anything that baseline published**, using parameters the baseline had deliberately left
+untuned, and the resulting non-monotonicity was then read as a property of the baseline. **A
+comparison run outside the comparator's published envelope measures the extrapolation, not the
+comparator.**
+
+### Source References
+
+- `research/intake_index.yaml` intake-1164 (arXiv:2603.12520) — the recovery-rate definition, the
+  denominator, and the pool-composition sensitivity
+- `research/intake_index.yaml` intake-1167 (arXiv:2210.10760) — the best-of-n KL bridge, the ~2,000
+  comparison floor, and the validation-loss instrument
+- `research/intake_index.yaml` intake-1162 (arXiv:2503.03064) — the v1/v2 version trap, the granularity
+  ablation, and the local-model read-out spec
+- `research/intake_index.yaml` intake-875 (arXiv:2607.05904) — the training-free best-of-N inflation
+  result and the verification-asymmetry bound
+- `research/intake_index.yaml` intake-1170 (arXiv:2602.19313) — the chat-template hazard
+- `research/intake_index.yaml` intake-1171 (arXiv:2603.04304) — the out-of-envelope comparison and the
+  text-rating margin alternative
+- [Eval tower verification](../handoffs/active/eval-tower-verification.md) — EV-15, and the corrected
+  logprob-truncation section
+- [Reviewer model ablations](../handoffs/active/reviewer-model-ablations.md) — RM-11a/RM-11b, the two
+  experiments this knowledge gates
+- [`progress/2026-08/2026-08-19-research-intake.md`](../progress/2026-08/2026-08-19-research-intake.md) — session record
 
 ## Compiled Update — 2026-08-19: a gate can be unsatisfiable by the only real signal the stack produces
 

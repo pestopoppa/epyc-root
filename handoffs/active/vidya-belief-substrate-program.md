@@ -467,6 +467,35 @@ deliberately — decide them, do not just implement them.
       corpus is one row per night/window, so the honest answer may be a hand-written record rather
       than an adapter — in which case record that verdict here instead of leaving the row open.
 
+- [ ] SC43 **Wire the verifier/selector measurement on the write side BEFORE the first RM-11 run is
+      scored** (filed 2026-08-19 via research intake, operator-approved Stage-3 plan
+      `cuddly-sauteeing-cherny`). RM-11a/RM-11b in
+      [`reviewer-model-ablations.md`](reviewer-model-ablations.md) and RC-10 in
+      [`reviewer-calibration-accounting.md`](reviewer-calibration-accounting.md) will produce verifier
+      gain, recovery rate, within-prompt correlation, tie rate and reviewer solve-accuracy — a
+      measurement class this substrate does not currently carry. The nearest existing row is the
+      eval-tower per-suite resolution band (SC37), which measures *instrument resolution*, not verifier
+      quality; this is adjacent, not the same source.
+      **Locator — this is the hazard that decides the row.** Key on the **run / selection episode**,
+      never on the individual score. A verification pass is C criteria × K repeats × N candidates, so a
+      single run emits C·K·N scores; keyed per-score, support would be counted C·K·N times and the run
+      would manufacture its own corroboration. That is exactly SC6-HAZARD (support counted by source
+      locator) in a new costume.
+      **Emit the raw K-vector, not just the scalar.** Per call record the full probability vector over
+      the K score tokens, `retained_mass`, `K`, the read-out method and the aggregation timing
+      (pre- vs post-order-aggregation). The scalar alone cannot be reconstructed into anything richer
+      later — `benchmarks/results` (4,562 files, 0 of 200 sampled carrying a usable claim tuple) is the
+      standing proof that the read side cannot be retrofitted.
+      **Authority boundary.** The adapter *projects* into a `ClaimTuple`; `claim_tuple.grade()` decides.
+      Do not author a second grading ladder — the registry refuses one. Class is `measurement`; carry
+      `protocol_id`, `reps` + `reps_basis`, `date`, `attestation_*`, `category` and `metric_direction`.
+      Note that until RC-6a merges these are **observations** and cannot gate a decision, so the tuple
+      must not be graded as if they could.
+      **Price it first** per the P2 discipline: if RM-11 turns out to be a one-shot pair of runs rather
+      than a recurring producer, the honest answer may be a hand-written record instead of an adapter —
+      in which case record that verdict here rather than leaving the row open. Add the matching source
+      row to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) either way.
+
 ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?)
 
 Audit finding that opened this section: **nothing outside `scripts/vidya/` read the fold.** A grep

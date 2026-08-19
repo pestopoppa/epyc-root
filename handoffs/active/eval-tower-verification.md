@@ -63,16 +63,42 @@ Store `logprob_confidence` per question — the model's own confidence in its an
 
 ### Logprob Truncation: Non-Issue
 
-llama.cpp `get_token_probabilities()` at `tools/server/server-common.cpp` L1755:
-1. Calls `llama_get_logits_ith(ctx, idx)` for full vocabulary (128K+ tokens)
-2. Creates `vector<llama_token_data>` with ALL tokens
-3. Sorts by logit descending, applies softmax over ENTIRE distribution
-4. Returns top `n_probs` entries — no hard-coded upper limit
+- [x] ✅ 2026-08-19 — **Re-verified against the frozen v9 tree AND empirically, correcting two defects in
+      what this section previously asserted.** [intake-363]
 
-| Aspect | Gemini API (k=20) | llama.cpp (unlimited) |
+**Corrections to the prior text.** (1) It cited `get_token_probabilities()` at
+`tools/server/server-common.cpp` **L1755**; the actual location in `production-consolidated-v9`
+(`0db32c06e3e5`) is **`server-common.cpp:1256`**. (2) It claimed unconditional full-vocabulary softmax.
+In v9 that function reads `llama_get_sampled_candidates_ith()` / `llama_get_sampled_logits_count_ith()`,
+so full-vocab holds only when `sampled_ids == nullptr`; with backend sampling active the logits array
+is already a subset. **True by default, but now conditional** — do not re-cite it as unconditional.
+
+**What was verified by running it** (llama-server on v9, CPU-only, server started and confirmed
+terminated by the verifying session):
+
+| Property | Result |
+|---|---|
+| `top_logprobs` ceiling | **None.** Requests for 20, 40 and 64 each returned exactly that many. `server-common.cpp:1141` maps `top_logprobs → n_probs` with default 20 and no clamp. |
+| Response shape on `/v1/chat/completions` | `{id, token, bytes, logprob, top_logprobs[]}` — the exact OpenAI shape (`server-task.cpp:312-331`) |
+| Head is pre-sampler? | **Yes** — temp 0.0 and temp 1.0 return byte-identical logprobs, so the expectation is not silently distorted **provided `post_sampling_probs` stays false** (its default) |
+| Score-token coverage | 19 of 20 A–T letters present in the top-20 head, score-token mass ≈ 1.0000 |
+
+**Two silent failure modes** found while verifying, both of which return a well-formed logprob array
+containing nothing scoreable — neither raises an error:
+
+1. **A thinking model puts its reasoning token at position 0**, so the head contains *zero* score
+   letters and the expectation is undefined. Requires `enable_thinking:false` or a forced prefix to the
+   scoring position.
+2. **A generation-oriented chat template costs roughly half the signal** — TOPReward's own ablation
+   measures ~50% VOC loss on one backbone and ~20% on another. [intake-1170]
+
+Note also that the `TODO: The response format of this option is not yet OAI-compatible` comment at
+`server-common.cpp:1140` is **stale relative to the code beneath it**.
+
+| Aspect | Gemini API (k=20) | llama.cpp v9 (uncapped) |
 |--------|--------------------|-----------------------|
-| Score token coverage | May miss low-prob tokens | Complete |
-| Probability mass | ~80% accuracy | Zero truncation loss |
+| Score token coverage | Capped at 20 top logprobs | Uncapped; 20/40/64 all honored |
+| Probability mass | ~0.88–0.90 retained at K=99 [intake-1162] | No API truncation; renormalize over the K score tokens |
 | Determinism | Non-deterministic (GPU routing) | Deterministic at temp=0 |
 | Cost | API pricing | Local compute only |
 
@@ -81,7 +107,7 @@ llama.cpp `get_token_probabilities()` at `tools/server/server-common.cpp` L1755:
 **The biggest risk**: Repeated verification can AMPLIFY bias. From arxiv:2603.18740, adversarial success increased from 52% (first attempt) to 87% after 4 iterative review rounds.
 
 **Mitigations** (in order of effectiveness):
-1. **Cross-family verification**: Different model family for verifier vs generator. Gemini verifying GPT: +4.6pp. Same-family: +1.7pp. This is the strongest defense.
+1. **Cross-family verification**: Different model family for verifier vs generator. Gemini verifying GPT: +4.6pp. Same-family: +1.7pp. ~~This is the strongest defense.~~ **⚠ CONTESTED 2026-08-19 — see the "split the cross-family claim" operator-review candidate below.** It is falsified as an anti-*reward-hacking* defence (intake-875 Proposition 2 excludes every monotone aggregation rule; a three-family min-vote still accepts ~65% of hacked wrong answers) but survives as an anti-*collusion* / self-favouring-bias control, and only while nothing is optimising against the verifier. Do not cite this line unscoped.
 2. **Criteria decomposition**: Forces attention to specific aspects (error signals, output matching) rather than holistic judgment.
 3. **Pairwise comparison**: A vs B framing is more resistant than absolute scoring.
 4. **"Do NOT trust agent self-assessment"**: Explicit debiasing instruction in verification prompts.
@@ -516,10 +542,17 @@ Three new entries converge on one finding: **our judge-scored numbers currently 
   - Relevance: a full-text search of the 865-entry index returned **zero** hits for kappa / Krippendorff / inter-annotator / inter-rater before this run. Neither MEASUREMENT.md nor MEASUREMENT_POLICY.md mentions agreement statistics at all.
 
 - [ ] Operator-review candidate (EV, judge validity): adopt an **anchor rule** — any judge-scored metric used to gate a decision must be paired with a judge-independent verifier (exact-match, unit tests, code execution, or held-out anchor), with the judge-vs-anchor gap reported alongside the judge number; a gap that widens with N is the reward-hacking signature. [intake-875]
-- [ ] Operator-review candidate (EV, judge validity): adopt a **de-anchoring rule** for judges used in *selection* (commit-first or blind-solve rather than show-candidate-and-ask). Record against it the caveat that cross-family ensembling is only a partial defense. [intake-875]
+- [ ] Operator-review candidate (EV, judge validity): adopt a **de-anchoring rule** for judges used in *selection* (commit-first or blind-solve rather than show-candidate-and-ask), **GATED on a measured verifier solve-accuracy threshold**. Record against it the caveat that cross-family ensembling is only a partial defense. [intake-875]
+      - **Amended 2026-08-19 after the intake-875 dive.** The rule as originally drafted was unconditional and, adopted that way, could measurably make the reviewer plane *worse*. De-anchoring has a **capability threshold**: it helps judges that can solve the task and *hurts* those that cannot — the 1.7B judge in that paper goes 0.588 → **0.637** (worse) under commit-first, while the 8B goes 0.378 → 0.227 and it plateaus by 8B. Corollary 1 gives the gate: a judge's verdicts are certified anchored iff its independent solve-accuracy exceeds an FPR-implied threshold (0.583 for GLM-5.2, 0.458 for Qwen3.6-27B on the C-CRAB slice). **That number has never been measured for our pool — RM-11b measures it, and this rule should not be adopted before it lands.**
+      - Second amendment: the FPR→0.012 collapse this rule leans on is a **math / exact-match** result. On **code** — our actual judging domain — de-anchored gap@16 floors at 0.225–0.227 even at 14B, never approaching zero. The rule is a large improvement, not a fix.
 - [ ] Operator-review candidate (EV-6): run the **dual-judge offline audit** — score a held-out set with a clean rubric and with a deliberately bias-augmented rubric, report the gap per reviewer/judge config. Runnable on our stack today, no training required. [intake-874]
 - [ ] Operator-review candidate (EV-9 / RM-5): extend the bias-robustness probe set with the four CHERRL bias families and add exploitability (can the *author* cheaply emit the pattern?) as a second reporting axis. [intake-874]
-- [ ] Operator-review candidate: retrospectively check whether any autopilot best-of-N / candidate-selection gain rests on judge-measured scores alone, with no independent anchor. [intake-875]
+- [ ] Operator-review candidate: quantify the judge-scored fraction of the autopilot quality objective — count distinct `scoring_method: llm_judge|rubric` questions per suite and their weight in the Pareto quality axis. **PRE-ESTABLISHED 2026-08-19, which is why this is now a bounded count rather than an open-ended audit**: autopilot's selection function contains **no LLM judge** (`pareto_archive.py:660-678` builds the Bradley-Terry matrix by axis-wise Borda over numeric objectives), and the rubric multi-judge path is **gated off in production** (`AUTOPILOT_RUBRIC_JUDGE_ROLES` appears only in tests and defaults empty, `eval_tower.py:3439-3446`). Occurrence counts across orchestrator suites put `llm_judge` at 49 and `rubric` at 20 against ~9,400 total, i.e. ~0.7%. Residual exposure is (i) that ~0.7% rolling into the quality axis and (ii) the reviewer decision plane, which is genuinely candidate-conditioned reference-free judging and is tracked separately at RD-2. [intake-875]
+- [ ] Operator-review candidate (EV-6, judge validity): **split the cross-family claim at the top of this file** — it is currently stated once, as one rule, and it is true of one failure mode and false of the other. Do NOT delete it; scope it. [intake-875] [intake-1168]
+      - **FALSIFIED as an anti-reward-hacking defence.** Proposition 2 in intake-875 proves that *any* non-decreasing aggregation over reference-free verdicts is monotone in the shared plausibility signal and bounded below by the product of individual FPRs — which covers majority-k, min-vote and Bradley-Terry consensus alike. Measured: the three-family min-vote ensemble still accepts **~65%** of hacked wrong answers (three-seed mean; our records previously carried **55%**, which is seed 0, the most conservative). On code the same ensemble accepts 16.4% of wrong programs, 2.38× the independence prediction. Training against the ensemble makes it *worse* (Min FPR 41.2% → 73.3%). The axis that works is independence-from-the-candidate, **not** diversity-of-judge.
+      - **SURVIVES as an anti-collusion / self-favouring-bias control** — its original EV-6 justification, and independently supported by intake-1168, which finds verifier *gain* highest cross-family and lowest in self-verification, with FPR rising under self- and intra-family verification.
+      - **Scope boundary that must travel with the surviving half**: intake-1168 measures **unoptimised** solver distributions; intake-875 measures distributions **optimised against the judge**. The cross-family rule is valid only while nothing is optimising against the verifier — and a best-of-N selection loop is exactly such an optimiser.
+      - Note the internal inconsistency this resolves: the claim near the top of this file and the intake-875 finding recorded further down have coexisted unreconciled.
 
 ### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision
 
@@ -663,3 +696,71 @@ floor, though it gates stagnation rather than acceptance).
 regression because candidate and incumbent used different denominators — *not* sampling noise. Cite it
 for the "an unchanged config scores a regression" framing and for deriving a constant from 396
 journaled trials. It is **not** precedent for a measured noise band.
+
+---
+
+## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument)
+
+Source round: intake-362/363/804 re-encountered and dived; intake-875 reconciled; new entries
+intake-1161…1171. The re-ingest overturned the rationale that kept this source unused since
+2026-04-14 — see the corrected "Logprob Truncation" section above, and the `dive_corrections` on
+intake-363.
+
+**Why this is EV-15 and not EV-5.** EV-5 deploys ThinkPRM for **step-level process** verification
+inside T2. EV-15 is a **trajectory-level selection** read-out — a scoring instrument, not a tier
+verifier. They share the cross-family constraint and nothing else.
+
+**Scope discipline, stated once.** EV-15 builds and validates an *instrument*. It does **not** deploy
+a selector, does not touch T0/T1/T2 reward semantics (AP-27 specifies "state matching, not
+LLM-as-judge" for verification functions and nothing here proposes otherwise), and does not by itself
+justify best-of-N anywhere. Whether the instrument is worth using is decided by RM-11a/RM-11b in
+`reviewer-model-ablations.md`, not here.
+
+### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide
+
+- [ ] **EV-15a — Clean-room port of the eight read-out formulas.** Implement mode, mean, rounded mean,
+      median, 1st percentile, risk-averse mean (lower semi-deviation), quantile integral and
+      probability of superiority **from the CC BY 4.0 paper's Table 3**, not from the reference repo —
+      that repo carries **no LICENSE** (verified four ways) and is all-rights-reserved. Validate against
+      the golden vectors recorded on intake-1169, which include a K=5 case where risk-averse mean flips
+      sign against the mean and a K=9 case where quantile and probability-of-superiority disagree in
+      sign. Fix the four defects the dive reproduced by execution while porting (hardcoded `dim=1`
+      breaking batched input, hardcoded `.float()` breaking float64, in-place mutation of the caller's
+      tensor, no sum-to-one validation). [intake-1162] [intake-1169]
+- [ ] **EV-15b — Pin the read-out spec.** Force an assistant prefix, read completion **position 0**,
+      restrict to the K score-token ids, `exp` then renormalize **over those K only**. Temperature
+      **1.0 exactly**: softmaxing the K judgment logits at T=1 is mathematically identical to
+      exponentiating the K score-token logprobs and renormalizing, because the full-vocab denominator
+      cancels — and that equivalence holds at T=1 and nowhere else. Mass on non-score tokens is
+      discarded, not redistributed. First implementation is **K=9, single-digit alphabet, no-CoT**:
+      single-token in every tokenizer we run, and it sidesteps the token-bias artifact that appears at
+      large K. [intake-1162] [intake-1169]
+- [ ] **EV-15c — Guard the two silent failure modes**, both of which return a well-formed logprob array
+      containing nothing scoreable and neither of which raises: (i) a thinking model emitting its
+      reasoning token at position 0, and (ii) a generation-oriented chat template, which costs ~50% of
+      the signal on one backbone and ~20% on another. Assert the score position before trusting a
+      score; fail loudly. [intake-1170]
+- [ ] **EV-15d — `retained_mass` as a first-class per-call field, with a refusal floor.** Assert all K
+      score tokens are present in the head; if any is absent treat its probability as 0 **and record
+      the retained mass**, refusing the judgment below a stated floor. **Neither the paper nor its
+      reference implementation specifies this fallback** — it is our gap to close, and the retained-mass
+      field is what makes the hazard detectable instead of silent. [intake-1169]
+- [ ] **EV-15e — Pre-aggregation over both presentation orders is REQUIRED, not optional**, and must be
+      asserted in the implementation rather than requested in the prompt. It is the single largest
+      effect in intake-1162 (56.7 → 73.1 on one arm) and it is one line. Pair it with an **order swap
+      per comparison** — this is how we take the positional-bias-cancellation insight from the pivot
+      tournament **without adopting the pivot tournament**, which is separately declined. [intake-1162]
+      [intake-804]
+- [ ] **EV-15f — Record the cheaper alternative before building the expensive one.** intake-1171 (V1)
+      obtains the same graded, tie-free signal from **text ratings plus margin weighting**
+      (`w = max(|r_i − r_j|/9, τ)`, `μ = Σwv/Σw`, τ=0.1) with **no logprob plumbing at all**, in ~20
+      lines. Two independent papers, two mechanisms, one lever. Build the text route first and treat
+      the logprob route as an upgrade that must earn itself against it. [intake-1171]
+
+**Deliberately NOT in EV-15**, with reasons recorded so they are not re-proposed: the Probabilistic
+Pivot Tournament (loses 0.29pp to full round-robin at 9,630 vs 13,111 comparisons, and its O(Nk) is not
+an advance over V1's earlier O(N)-scale adaptive schedule; at N=3–5 round-robin is 3–10 comparisons);
+V1's Swiss scheduler (provably inert at our pool sizes — its max budget is 3N while round-robin is
+N(N−1)/2, so 3N ≥ C(N,2) for all N ≤ 7); granularity beyond G≈16–20 (SNR gains +0.002 from G=16→20,
+and intake-1162 finds finer granularity flat-to-worse for the expectation specifically); and vendoring
+the reference implementation (no licence).
