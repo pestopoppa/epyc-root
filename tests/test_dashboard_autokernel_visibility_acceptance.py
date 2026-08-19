@@ -1095,6 +1095,29 @@ process.stdout.write(JSON.stringify(out));
             self.assertEqual(nodes[node_id]["scrollTop"],
                              nodes[node_id]["scrollHeight"], node_id)
 
+    def test_live_hero_distinguishes_atomic_telemetry_commit_from_degradation(self) -> None:
+        payload = {
+            "active": True, "deployment": "campaign-atomic-write",
+            "autokernel_log": [], "planner_log": [],
+            "telemetry_integrity": {
+                "state": "producer_write_in_progress", "verified": False,
+                "detail": "producer is committing the dual telemetry stream transaction",
+            },
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "running",
+                "phase": {"id": "planner", "label": "Planning", "elapsed_s": 3},
+                "gpu": {"expected_now": False, "claim_held": False},
+                "failure": {"detected": False}, "transitions": [],
+            },
+        }
+
+        summary = self._render_live(payload)["ak-live-summary"]["innerHTML"]
+
+        self.assertIn("Telemetry commit in progress", summary)
+        self.assertIn("committing the dual telemetry stream transaction", summary)
+        self.assertNotIn("Telemetry visibility degraded", summary)
+
     def test_planner_validation_interruption_is_visible_in_hero_and_pipeline(self) -> None:
         payload = {
             "active": False,

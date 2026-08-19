@@ -949,6 +949,8 @@ function renderLive(d){
   const integrity=d.telemetry_integrity||{};
   if(integrity.state==="degraded"||integrity.state==="conflict"){
     hero+='<div class="fail" style="margin:8px 0"><b>Telemetry visibility '+esc(integrity.state)+'</b><br>'+esc(integrity.detail||"dual-stream integrity could not be proved")+'</div>';
+  }else if(integrity.state==="producer_write_in_progress"){
+    hero+='<div class="muted" style="margin:8px 0"><b>Telemetry commit in progress</b><br>'+esc(integrity.detail||"waiting for the producer to finish both pulse-log writes")+'</div>';
   }
   const historicalVisibility=integrity.historical_visibility_loss||{};
   if(historicalVisibility.detected){

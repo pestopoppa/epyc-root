@@ -57,6 +57,7 @@ import json
 import math
 import os
 import re
+import stat
 import subprocess
 import sys
 import threading
@@ -3289,18 +3290,9 @@ def _discovery_event_result(value: object, event: str,
     return projected
 
 
-def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str | None]:
-    """Read a bounded tail of the strict v1/v2 live-event contracts."""
-    try:
-        size = path.stat().st_size
-        offset = max(0, size - 128 * 1024)
-        with path.open("rb") as handle:
-            handle.seek(offset)
-            raw = handle.read(128 * 1024)
-    except FileNotFoundError:
-        return [], None
-    except OSError as exc:
-        return [], f"live event stream unreadable: {exc}"
+def _discovery_events_from_raw(raw: bytes, offset: int,
+                               channel: str | None) -> tuple[list[dict], str | None]:
+    """Validate one already-snapshotted bounded event-stream tail."""
     rows: list[dict] = []
     rejected = 0
     lines = raw.decode("ascii", "replace").splitlines()
@@ -3384,6 +3376,130 @@ def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str 
     error = (f"{rejected} live event row{'s' if rejected != 1 else ''} "
              "rejected by telemetry contract" if rejected else None)
     return rows[-200:], error
+
+
+_DISCOVERY_STREAM_LOCK_WAIT_S = 0.25
+_DISCOVERY_STREAM_LOCK_RETRY_S = 0.005
+
+
+def _discovery_event_streams(root: Path) -> tuple[
+        list[dict], str | None, list[dict], str | None,
+        list[dict], list[dict], list[dict], dict, str]:
+    """Read the global+planner mirror under one producer-compatible snapshot.
+
+    The producer takes exclusive locks in global-then-planner order around its
+    dual write. Taking shared locks in the same order means the dashboard sees
+    either side of that transaction, never its transient one-file midpoint.
+    """
+    paths = (root / "autokernel.jsonl", root / "planner.jsonl")
+    deadline = time.monotonic() + _DISCOVERY_STREAM_LOCK_WAIT_S
+    while True:
+        fds: list[int | None] = [None, None]
+        locked: list[int] = []
+        errors: list[str | None] = [None, None]
+        snapshots: list[tuple[bytes, int]] = [(b"", 0), (b"", 0)]
+        retry = False
+        write_in_progress = False
+        try:
+            # Open and lock in the producer's global-then-planner order. Both
+            # locks remain held through parsing and reconciliation below.
+            for index, path in enumerate(paths):
+                try:
+                    fds[index] = os.open(
+                        path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+                except FileNotFoundError:
+                    continue
+                except OSError as exc:
+                    errors[index] = f"live event stream unreadable: {exc}"
+            for fd in fds:
+                if fd is None:
+                    continue
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                    locked.append(fd)
+                except BlockingIOError:
+                    write_in_progress = True
+                    break
+            if write_in_progress:
+                retry = time.monotonic() < deadline
+            else:
+                for index, (path, fd) in enumerate(zip(paths, fds)):
+                    if fd is None:
+                        # If a missing stream appeared after the opens, do not
+                        # compare it with the other stream's older generation.
+                        try:
+                            path.lstat()
+                        except FileNotFoundError:
+                            continue
+                        except OSError as exc:
+                            errors[index] = f"live event stream unreadable: {exc}"
+                        else:
+                            retry = time.monotonic() < deadline
+                        continue
+                    try:
+                        info = os.fstat(fd)
+                        path_info = path.lstat()
+                        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+                                or not stat.S_ISREG(path_info.st_mode)
+                                or (info.st_dev, info.st_ino)
+                                != (path_info.st_dev, path_info.st_ino)):
+                            raise OSError(
+                                "telemetry stream is not the current single-link regular file")
+                        offset = max(0, info.st_size - 128 * 1024)
+                        snapshots[index] = (
+                            os.pread(fd, 128 * 1024, offset), offset)
+                    except OSError as exc:
+                        errors[index] = f"live event stream unreadable: {exc}"
+                if not retry:
+                    all_rows, all_parse_error = _discovery_events_from_raw(
+                        *snapshots[0], channel=None)
+                    planner_rows, planner_parse_error = _discovery_events_from_raw(
+                        *snapshots[1], channel="planner")
+                    all_error = errors[0] or all_parse_error
+                    planner_error = errors[1] or planner_parse_error
+                    (lifecycle_events, visible_all_events,
+                     visible_planner_events,
+                     telemetry_integrity) = _discovery_reconcile_events(
+                         all_rows, planner_rows, all_error, planner_error)
+                    return (
+                        all_rows, all_error, planner_rows, planner_error,
+                        lifecycle_events, visible_all_events,
+                        visible_planner_events, telemetry_integrity, "stable")
+        finally:
+            for fd in reversed(locked):
+                fcntl.flock(fd, fcntl.LOCK_UN)
+            for fd in reversed(fds):
+                if fd is not None:
+                    os.close(fd)
+        if retry:
+            time.sleep(_DISCOVERY_STREAM_LOCK_RETRY_S)
+            continue
+        if write_in_progress:
+            integrity = {
+                "state": "producer_write_in_progress", "verified": False,
+                "detail": "producer is committing the dual telemetry stream transaction",
+                "conflict_count": 0, "duplicate_identity_count": 0,
+                "order_divergence": False, "missing_planner_count": 0,
+                "missing_autokernel_count": 0,
+                "timestamp_divergence_count": 0, "dropped_event_count": 0,
+            }
+            return ([], None, [], None, [], [], [], integrity,
+                    "producer_write_in_progress")
+        # A file appeared repeatedly while opening the pair. Surface an
+        # unreadable stable snapshot rather than spin beyond the HTTP budget.
+        errors[0] = errors[0] or "live event streams changed during snapshot"
+        all_rows, all_parse_error = _discovery_events_from_raw(
+            *snapshots[0], channel=None)
+        planner_rows, planner_parse_error = _discovery_events_from_raw(
+            *snapshots[1], channel="planner")
+        all_error = errors[0] or all_parse_error
+        planner_error = errors[1] or planner_parse_error
+        (lifecycle_events, visible_all_events, visible_planner_events,
+         telemetry_integrity) = _discovery_reconcile_events(
+             all_rows, planner_rows, all_error, planner_error)
+        return (all_rows, all_error, planner_rows, planner_error,
+                lifecycle_events, visible_all_events, visible_planner_events,
+                telemetry_integrity, "unstable")
 
 
 def _discovery_reconcile_events(all_rows: list[dict],
@@ -5679,13 +5795,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             continue
         state_present, state, state_error = _read_json_object(
             state_root / "state.json", "discovery state")
-        all_events, all_error = _discovery_events(
-            operations_root / "live" / "autokernel.jsonl", None)
-        planner_events, planner_error = _discovery_events(
-            operations_root / "live" / "planner.jsonl", "planner")
-        (lifecycle_events, visible_all_events, visible_planner_events,
-         telemetry_integrity) = _discovery_reconcile_events(
-             all_events, planner_events, all_error, planner_error)
+        (all_events, all_error, planner_events, planner_error,
+         lifecycle_events, visible_all_events, visible_planner_events,
+         telemetry_integrity, telemetry_snapshot_status
+         ) = _discovery_event_streams(operations_root / "live")
         state_visibility_failures = _discovery_state_visibility_degraded(state)
         if state_visibility_failures:
             telemetry_integrity = dict(telemetry_integrity)
@@ -5714,6 +5827,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         producer_times = [value for value in producer_times if value is not None]
         launched = bool(lock_held or state_present or all_events or all_error
                         or planner_events or planner_error
+                        or telemetry_snapshot_status == "producer_write_in_progress"
                         or checkpoint is not None)
         # A deployment config's mtime says only when a bundle was sealed.  It is
         # not producer progress and therefore cannot supersede a real terminal
@@ -5741,6 +5855,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             "visible_all_events": visible_all_events,
             "visible_planner_events": visible_planner_events,
             "telemetry_integrity": telemetry_integrity,
+            "telemetry_snapshot_status": telemetry_snapshot_status,
         })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
@@ -5781,6 +5896,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     visible_all_events = selected["visible_all_events"]
     visible_planner_events = selected["visible_planner_events"]
     telemetry_integrity = selected["telemetry_integrity"]
+    telemetry_snapshot_status = selected["telemetry_snapshot_status"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
@@ -5849,6 +5965,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "planner_log": visible_planner_events,
         "log_error": all_error, "planner_log_error": planner_error,
         "telemetry_integrity": telemetry_integrity,
+        "telemetry_snapshot_status": telemetry_snapshot_status,
         "status_message": (
             f"{activity['status'].upper()} — {activity['phase']['label']}; "
             f"waiting on {activity['waiting_on']}"),

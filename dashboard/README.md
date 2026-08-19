@@ -170,6 +170,12 @@ historical `v1` field set), frozen at producer commit
 rows are mirrored byte-identically into both physical streams; the hub
 deduplicates matching identities, degrades health on a missing mirror, and drops
 same-identity payload, timestamp, duplicate, or sequence-order corruption.
+The hub opens and takes shared locks on both streams in the producer's
+global-then-planner order and holds them through one bounded snapshot and
+reconciliation. It therefore cannot mistake the transaction's global-first
+midpoint for a missing mirror. A writer that outlasts the bounded snapshot wait
+is shown as `producer_write_in_progress` without gating health; an unlocked,
+actually missing mirror remains degraded and health-gating.
 Append-only `visibility_degraded` state markers remain visibly auditable as
 historical incidents but do not keep current health red after exact mirror
 equality is restored. The actor seam writes only an

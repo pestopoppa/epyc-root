@@ -4,8 +4,11 @@ from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
+import threading
+import time
 import unittest
 
 from dashboard import server
@@ -129,6 +132,76 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(len(transitions), 1)
         self.assertEqual(payload["_freshness"]["unreported"], [])
 
+    def test_dual_stream_snapshot_waits_for_producer_transaction(self) -> None:
+        """A global-first partial write must never become a degraded API read."""
+        event = self._v2_event()
+        encoded = (json.dumps(event, sort_keys=True, separators=(",", ":"))
+                   + "\n").encode("ascii")
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        global_path.touch()
+        planner_path.touch()
+        partial_written = threading.Event()
+        allow_second_write = threading.Event()
+        reader_started = threading.Event()
+        reader_done = threading.Event()
+        result: list[dict] = []
+        failures: list[BaseException] = []
+
+        def writer() -> None:
+            fds: list[int] = []
+            try:
+                for path in (global_path, planner_path):
+                    fds.append(os.open(path, os.O_RDWR | os.O_APPEND))
+                for fd in fds:
+                    fcntl.flock(fd, fcntl.LOCK_EX)
+                os.write(fds[0], encoded)
+                os.fsync(fds[0])
+                partial_written.set()
+                if not allow_second_write.wait(5):
+                    raise TimeoutError("test did not release producer transaction")
+                os.write(fds[1], encoded)
+                os.fsync(fds[1])
+            except BaseException as exc:  # surfaced in the owning test thread
+                failures.append(exc)
+            finally:
+                for fd in reversed(fds):
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                    finally:
+                        os.close(fd)
+
+        def reader() -> None:
+            try:
+                reader_started.set()
+                result.append(server.discovery_live_payload())
+            except BaseException as exc:  # surfaced in the owning test thread
+                failures.append(exc)
+            finally:
+                reader_done.set()
+
+        writer_thread = threading.Thread(target=writer)
+        reader_thread = threading.Thread(target=reader)
+        writer_thread.start()
+        self.assertTrue(partial_written.wait(5))
+        reader_thread.start()
+        self.assertTrue(reader_started.wait(5))
+        try:
+            self.assertFalse(
+                reader_done.wait(0.1),
+                "consumer observed the producer's one-stream transaction midpoint")
+        finally:
+            allow_second_write.set()
+        writer_thread.join(5)
+        reader_thread.join(5)
+
+        self.assertFalse(failures)
+        self.assertFalse(writer_thread.is_alive())
+        self.assertFalse(reader_thread.is_alive())
+        self.assertEqual(result[0]["telemetry_integrity"]["state"], "verified")
+        self.assertEqual(len(result[0]["autokernel_log"]), 1)
+        self.assertEqual(len(result[0]["planner_log"]), 1)
+
     def test_v2_missing_planner_copy_degrades_but_keeps_pulse_visible(self) -> None:
         event = self._v2_event()
         (self.operations / "live/autokernel.jsonl").write_text(
@@ -149,6 +222,37 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(health["panels"]["kernel_live"]["unreported"],
                          ["telemetry_stream_integrity"])
         self.assertNotEqual(health["status"], "ok")
+
+    def test_busy_producer_transaction_is_bounded_and_not_health_gating(self) -> None:
+        """A stuck writer gets a pulse response, not false mirror corruption."""
+        event = self._v2_event()
+        encoded = (json.dumps(event, sort_keys=True, separators=(",", ":"))
+                   + "\n").encode("ascii")
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        global_path.touch()
+        planner_path.touch()
+        fds = [os.open(path, os.O_RDWR | os.O_APPEND)
+               for path in (global_path, planner_path)]
+        try:
+            for fd in fds:
+                fcntl.flock(fd, fcntl.LOCK_EX)
+            os.write(fds[0], encoded)
+            started = time.monotonic()
+            payload = server.discovery_live_payload()
+            elapsed = time.monotonic() - started
+        finally:
+            for fd in reversed(fds):
+                fcntl.flock(fd, fcntl.LOCK_UN)
+                os.close(fd)
+
+        self.assertLess(elapsed, 1.0)
+        self.assertEqual(payload["telemetry_snapshot_status"],
+                         "producer_write_in_progress")
+        self.assertEqual(payload["telemetry_integrity"]["state"],
+                         "producer_write_in_progress")
+        self.assertEqual(payload["telemetry_integrity"]["missing_planner_count"], 0)
+        self.assertEqual(payload["_freshness"]["unreported"], [])
 
     def test_v2_same_identity_with_different_payload_is_alarmed_and_dropped(self) -> None:
         base_result = {"returncode": 0, "stdout_sha256": "c" * 64,
