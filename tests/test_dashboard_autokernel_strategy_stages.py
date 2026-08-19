@@ -232,7 +232,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
 
         activity = self._active()["activity"]
 
-        self.assertEqual(activity["phase"]["id"], "source_materialization")
+        self.assertEqual(activity["phase"]["id"], "correctness")
         self.assertEqual(activity["phase"]["started_at"], acquired_at)
         self.assertLess(activity["phase"]["elapsed_s"], 5)
         self.assertTrue(activity["correctness"]["execution_started"])
