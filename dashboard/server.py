@@ -4294,8 +4294,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         and not isinstance(latest_terminal_turn, bool)
         and current_pending_turn > latest_terminal_turn)
     active_inflight_new_turn = bool(
-        lock_held
-        and isinstance(current_inflight_turn, int)
+        isinstance(current_inflight_turn, int)
         and not isinstance(current_inflight_turn, bool)
         and isinstance(latest_terminal_turn, int)
         and not isinstance(latest_terminal_turn, bool)
@@ -4672,6 +4671,11 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 if isinstance(postbuild_observation, dict) else []) else None)
         if (live_postbuild_stage or postbuild_stage) in _DISCOVERY_POSTBUILD_STAGES:
             stage = live_postbuild_stage or postbuild_stage
+            # The first incomplete stage cannot begin before the newest
+            # validated predecessor receipt.  Use that durable boundary for
+            # the clock; never inherit pre-screen state.updated_at.
+            pipeline[stage]["started_at"] = (
+                postbuild_at or correctness_at or state_at)
             replication = postbuild_observation.get("repetition")
             label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
             if isinstance(replication, int):
@@ -4880,8 +4884,16 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     stage_start_epoch = (_parse_semantic_timestamp(stage_started_at)
                          if stage_started_at else None)
     elapsed_s = max(0.0, now - stage_start_epoch) if stage_start_epoch else None
-    if status in {"failed", "complete", "stopped"} and state_at and stage_start_epoch:
-        elapsed_s = max(0.0, _parse_semantic_timestamp(state_at) - stage_start_epoch)
+    if status in {"failed", "complete", "stopped"} and stage_start_epoch:
+        terminal_candidates = [
+            _parse_semantic_timestamp(value) for value in
+            (state_at, checkpoint_at, last_progress_at)
+            if isinstance(value, str)
+        ]
+        terminal_candidates = [value for value in terminal_candidates
+                               if value is not None]
+        if terminal_candidates:
+            elapsed_s = max(0.0, max(terminal_candidates) - stage_start_epoch)
 
     probe_released = (isinstance(lease, dict)
                       and isinstance(lease.get("device_claim_probe_released"), dict)

@@ -232,7 +232,7 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
 
         activity = self._active()["activity"]
 
-        self.assertEqual(activity["phase"]["id"], "correctness")
+        self.assertEqual(activity["phase"]["id"], "source_materialization")
         self.assertEqual(activity["phase"]["started_at"], acquired_at)
         self.assertLess(activity["phase"]["elapsed_s"], 5)
         self.assertTrue(activity["correctness"]["execution_started"])
@@ -611,13 +611,42 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "build_transaction_observed")
 
+        # Exact stopped seam from v15: the newer turn's inflight checkpoint
+        # remains durable after the controller lock is released. It still
+        # supersedes the prior turn's typed terminal; fail closed at the first
+        # receipt not durably validated instead of resurrecting that refusal.
+        intent = json.loads((self.operation / "intent.json").read_text())
+        intent["manifest_sha256"] = current_manifest_sha
+        (self.operation / "intent.json").write_text(json.dumps(intent))
+        policy = json.loads((self.operation / "evidence-policy.json").read_text())
+        policy["manifest_sha256"] = current_manifest_sha
+        (self.operation / "evidence-policy.json").write_text(json.dumps(policy))
+        activity = server.discovery_live_payload()["activity"]
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["status"], "stopped")
+        self.assertEqual(activity["phase"]["id"], "source_materialization")
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["source_materialization"]["state"],
+                         "interrupted")
+        self.assertEqual(pipeline["build"]["state"], "not_reached")
+        self.assertEqual(pipeline["next_hypothesis"]["state"], "not_reached")
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
                       status="complete", result="PASS")
+        state = json.loads((self.state_root / "state.json").read_text())
+        state["updated_at"] = "2026-08-19T03:10:42.115034Z"
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        receipt = json.loads(
+            (self.operation / "proof/correctness/receipt.json").read_text())
         activity = server.discovery_live_payload()["activity"]
         self.assertEqual(activity["status"], "stopped")
         self.assertEqual(activity["phase"]["id"], "candidate_attribution")
+        self.assertEqual(activity["phase"]["started_at"], receipt["ended_at"])
+        self.assertGreaterEqual(activity["phase"]["elapsed_s"], 0)
+        self.assertLess(activity["phase"]["elapsed_s"], 5)
         self.assertTrue(activity["resume"]["possible"])
         self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
                          "candidate_attribution")
