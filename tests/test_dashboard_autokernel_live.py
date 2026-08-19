@@ -367,6 +367,67 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(payload["autokernel_log"], [])
         self.assertNotIn("ATTACKER BYTE MUTATION", json.dumps(payload))
 
+    def test_between_stream_path_swap_fails_final_pair_validation(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        replacement = self.operations / "between-stream-replacement.jsonl"
+        global_path.write_text(encoded)
+        planner_path.write_text(encoded)
+        replacement.write_text('{"prompt":"ATTACKER BETWEEN STREAMS"}\n')
+        real_pread = os.pread
+        calls = 0
+        swapped = False
+
+        def swapping_second_pread(fd: int, count: int, offset: int) -> bytes:
+            nonlocal calls, swapped
+            calls += 1
+            raw = real_pread(fd, count, offset)
+            if calls == 2:
+                swapped = True
+                os.replace(replacement, global_path)
+            return raw
+
+        with mock.patch.object(
+                server.os, "pread", side_effect=swapping_second_pread):
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(swapped)
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertNotEqual(payload["telemetry_integrity"]["state"], "verified")
+        self.assertNotIn("ATTACKER BETWEEN STREAMS", json.dumps(payload))
+
+    def test_between_stream_byte_mutation_fails_final_pair_validation(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        global_path.write_text(encoded)
+        planner_path.write_text(encoded)
+        real_pread = os.pread
+        calls = 0
+        mutated = False
+
+        def mutating_second_pread(fd: int, count: int, offset: int) -> bytes:
+            nonlocal calls, mutated
+            calls += 1
+            raw = real_pread(fd, count, offset)
+            if calls == 2:
+                mutated = True
+                with global_path.open("a") as handle:
+                    handle.write('{"prompt":"ATTACKER BETWEEN STREAMS BYTE"}\n')
+            return raw
+
+        with mock.patch.object(
+                server.os, "pread", side_effect=mutating_second_pread):
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(mutated)
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertNotEqual(payload["telemetry_integrity"]["state"], "verified")
+        self.assertNotIn("ATTACKER BETWEEN STREAMS BYTE", json.dumps(payload))
+
     def test_v2_same_identity_with_different_payload_is_alarmed_and_dropped(self) -> None:
         base_result = {"returncode": 0, "stdout_sha256": "c" * 64,
                        "stderr_sha256": "d" * 64}

@@ -3399,6 +3399,8 @@ def _discovery_event_streams(root: Path) -> tuple[
         locked: list[int] = []
         errors: list[str | None] = [None, None]
         snapshots: list[tuple[bytes, int]] = [(b"", 0), (b"", 0)]
+        baselines: list[os.stat_result | None] = [None, None]
+        absent_at_open = [False, False]
         retry = False
         write_in_progress = False
         identity_drift = False
@@ -3420,6 +3422,12 @@ def _discovery_event_streams(root: Path) -> tuple[
                         != (root_info.st_dev, root_info.st_ino)):
                     raise OSError("telemetry stream directory identity is not trusted")
                 directory_trusted = True
+            except FileNotFoundError:
+                # A sealed deployment may predate live telemetry entirely.
+                # Absence is legacy/no pulse, not a corrupt stream directory.
+                if dir_fd is not None:
+                    os.close(dir_fd)
+                    dir_fd = None
             except OSError as exc:
                 message = f"live event stream directory unreadable: {exc}"
                 errors = [message, message]
@@ -3431,6 +3439,7 @@ def _discovery_event_streams(root: Path) -> tuple[
                         name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
                         dir_fd=dir_fd)
                 except FileNotFoundError:
+                    absent_at_open[index] = True
                     continue
                 except OSError as exc:
                     errors[index] = f"live event stream unreadable: {exc}"
@@ -3496,6 +3505,7 @@ def _discovery_event_streams(root: Path) -> tuple[
                             identity_drift = True
                             snapshots[index] = (b"", 0)
                             break
+                        baselines[index] = before
                     except OSError as exc:
                         errors[index] = f"live event stream unreadable: {exc}"
                 if identity_drift:
@@ -3540,10 +3550,78 @@ def _discovery_event_streams(root: Path) -> tuple[
                      visible_planner_events,
                      telemetry_integrity) = _discovery_reconcile_events(
                          all_rows, planner_rows, all_error, planner_error)
-                    return (
-                        all_rows, all_error, planner_rows, planner_error,
-                        lifecycle_events, visible_all_events,
-                        visible_planner_events, telemetry_integrity, "stable")
+                    if not directory_trusted or dir_fd is None:
+                        return (
+                            all_rows, all_error, planner_rows, planner_error,
+                            lifecycle_events, visible_all_events,
+                            visible_planner_events, telemetry_integrity, "stable")
+                    # The first stream can still change while the second is
+                    # read or while the immutable byte snapshots are parsed.
+                    # Revalidate the whole pair together immediately before
+                    # return; per-file postchecks alone leave that cross-stream
+                    # gap. Advisory SH locks bind cooperating producers, while
+                    # this final identity/content epoch pass catches mutation
+                    # by a writer that disregards the lock contract.
+                    final_stable = True
+                    try:
+                        final_dir = os.fstat(dir_fd)
+                        final_root = root.lstat()
+                        final_stable = (
+                            stat.S_ISDIR(final_dir.st_mode)
+                            and stat.S_ISDIR(final_root.st_mode)
+                            and final_dir.st_uid == os.geteuid()
+                            and final_root.st_uid == os.geteuid()
+                            and (final_dir.st_dev, final_dir.st_ino)
+                            == (final_root.st_dev, final_root.st_ino)
+                            and (dir_info.st_dev, dir_info.st_ino)
+                            == (final_dir.st_dev, final_dir.st_ino))
+                        for check_index, (name, fd, baseline) in enumerate(
+                                zip(names, fds, baselines)):
+                            if not final_stable:
+                                break
+                            if fd is None:
+                                if not absent_at_open[check_index]:
+                                    continue
+                                try:
+                                    os.stat(name, dir_fd=dir_fd,
+                                            follow_symlinks=False)
+                                except FileNotFoundError:
+                                    continue
+                                final_stable = False
+                                break
+                            if baseline is None:
+                                continue
+                            final_fd = os.fstat(fd)
+                            final_path = os.stat(
+                                name, dir_fd=dir_fd, follow_symlinks=False)
+                            final_stable = (
+                                stat.S_ISREG(final_fd.st_mode)
+                                and final_fd.st_nlink == 1
+                                and final_fd.st_uid == os.geteuid()
+                                and stat.S_ISREG(final_path.st_mode)
+                                and final_path.st_nlink == 1
+                                and final_path.st_uid == os.geteuid()
+                                and (final_fd.st_dev, final_fd.st_ino)
+                                == (final_path.st_dev, final_path.st_ino)
+                                and (baseline.st_dev, baseline.st_ino,
+                                     baseline.st_size, baseline.st_mtime_ns,
+                                     baseline.st_ctime_ns)
+                                == (final_fd.st_dev, final_fd.st_ino,
+                                    final_fd.st_size, final_fd.st_mtime_ns,
+                                    final_fd.st_ctime_ns))
+                    except OSError:
+                        final_stable = False
+                    if final_stable:
+                        return (
+                            all_rows, all_error, planner_rows, planner_error,
+                            lifecycle_events, visible_all_events,
+                            visible_planner_events, telemetry_integrity, "stable")
+                    identity_drift = True
+                    retry = time.monotonic() < deadline
+                    if not retry:
+                        errors[0] = errors[0] or (
+                            "live event streams changed during final snapshot validation")
+                        snapshots = [(b"", 0), (b"", 0)]
         finally:
             for fd in reversed(locked):
                 fcntl.flock(fd, fcntl.LOCK_UN)
