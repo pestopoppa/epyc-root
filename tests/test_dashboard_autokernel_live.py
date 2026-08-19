@@ -10,6 +10,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 
 from dashboard import server
 
@@ -253,6 +254,118 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
                          "producer_write_in_progress")
         self.assertEqual(payload["telemetry_integrity"]["missing_planner_count"], 0)
         self.assertEqual(payload["_freshness"]["unreported"], [])
+
+    def test_telemetry_symlink_is_refused(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        target = self.operations / "symlink-target.jsonl"
+        target.write_text(encoded)
+        (self.operations / "live/autokernel.jsonl").symlink_to(target)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertIn("unreadable", payload["log_error"])
+
+    def test_telemetry_hardlink_is_refused(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        target = self.operations / "hardlink-target.jsonl"
+        target.write_text(encoded)
+        os.link(target, self.operations / "live/autokernel.jsonl")
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["telemetry_integrity"]["state"], "degraded")
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertIn("single-link regular file", payload["log_error"])
+
+    def test_pre_open_path_swap_cannot_export_replacement_bytes(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        replacement = self.operations / "pre-open-replacement.jsonl"
+        global_path.write_text(encoded)
+        planner_path.write_text(encoded)
+        replacement.write_text('{"prompt":"ATTACKER PRE OPEN"}\n')
+        real_open = os.open
+        swapped = False
+
+        def swapping_open(path: object, flags: int, mode: int = 0o777,
+                          *, dir_fd: int | None = None) -> int:
+            nonlocal swapped
+            if path == "autokernel.jsonl" and not swapped:
+                swapped = True
+                os.replace(replacement, global_path)
+            return real_open(path, flags, mode, dir_fd=dir_fd)
+
+        with mock.patch.object(server.os, "open", side_effect=swapping_open):
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(swapped)
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertNotIn("ATTACKER PRE OPEN", json.dumps(payload))
+
+    def test_post_read_path_swap_is_retried_and_never_verified(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        replacement = self.operations / "post-read-replacement.jsonl"
+        global_path.write_text(encoded)
+        planner_path.write_text(encoded)
+        replacement.write_text('{"prompt":"ATTACKER POST READ"}\n')
+        real_pread = os.pread
+        swapped = False
+
+        def swapping_pread(fd: int, count: int, offset: int) -> bytes:
+            nonlocal swapped
+            raw = real_pread(fd, count, offset)
+            if not swapped:
+                swapped = True
+                os.replace(replacement, global_path)
+            return raw
+
+        with mock.patch.object(server.os, "pread", side_effect=swapping_pread):
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(swapped)
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertNotIn("ATTACKER POST READ", json.dumps(payload))
+
+    def test_in_place_byte_mutation_during_read_is_retried_and_refused(self) -> None:
+        event = self._v2_event()
+        encoded = json.dumps(event) + "\n"
+        global_path = self.operations / "live/autokernel.jsonl"
+        planner_path = self.operations / "live/planner.jsonl"
+        global_path.write_text(encoded)
+        planner_path.write_text(encoded)
+        real_pread = os.pread
+        mutated = False
+
+        def mutating_pread(fd: int, count: int, offset: int) -> bytes:
+            nonlocal mutated
+            raw = real_pread(fd, count, offset)
+            if not mutated:
+                mutated = True
+                global_path.write_text('{"prompt":"ATTACKER BYTE MUTATION"}\n')
+            return raw
+
+        with mock.patch.object(server.os, "pread", side_effect=mutating_pread):
+            payload = server.discovery_live_payload()
+
+        self.assertTrue(mutated)
+        self.assertFalse(payload["telemetry_integrity"]["verified"])
+        self.assertEqual(payload["autokernel_log"], [])
+        self.assertNotIn("ATTACKER BYTE MUTATION", json.dumps(payload))
 
     def test_v2_same_identity_with_different_payload_is_alarmed_and_dropped(self) -> None:
         base_result = {"returncode": 0, "stdout_sha256": "c" * 64,

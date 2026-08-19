@@ -172,7 +172,10 @@ deduplicates matching identities, degrades health on a missing mirror, and drops
 same-identity payload, timestamp, duplicate, or sequence-order corruption.
 The hub opens and takes shared locks on both streams in the producer's
 global-then-planner order and holds them through one bounded snapshot and
-reconciliation. It therefore cannot mistake the transaction's global-first
+reconciliation. Directory/file descriptors are no-follow, owner-bound,
+single-link, and checked against their current path identities both before and
+after each read; size/mtime/ctime drift also invalidates the attempt. The hub
+therefore cannot mistake the transaction's global-first
 midpoint for a missing mirror. A writer that outlasts the bounded snapshot wait
 is shown as `producer_write_in_progress` without gating health; an unlocked,
 actually missing mirror remains degraded and health-gating.

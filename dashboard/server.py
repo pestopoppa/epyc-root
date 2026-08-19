@@ -3391,22 +3391,45 @@ def _discovery_event_streams(root: Path) -> tuple[
     dual write. Taking shared locks in the same order means the dashboard sees
     either side of that transaction, never its transient one-file midpoint.
     """
-    paths = (root / "autokernel.jsonl", root / "planner.jsonl")
+    names = ("autokernel.jsonl", "planner.jsonl")
     deadline = time.monotonic() + _DISCOVERY_STREAM_LOCK_WAIT_S
     while True:
+        dir_fd: int | None = None
         fds: list[int | None] = [None, None]
         locked: list[int] = []
         errors: list[str | None] = [None, None]
         snapshots: list[tuple[bytes, int]] = [(b"", 0), (b"", 0)]
         retry = False
         write_in_progress = False
+        identity_drift = False
+        directory_trusted = False
         try:
             # Open and lock in the producer's global-then-planner order. Both
             # locks remain held through parsing and reconciliation below.
-            for index, path in enumerate(paths):
+            try:
+                dir_fd = os.open(
+                    root, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+                    | os.O_DIRECTORY)
+                dir_info = os.fstat(dir_fd)
+                root_info = root.lstat()
+                if (not stat.S_ISDIR(dir_info.st_mode)
+                        or not stat.S_ISDIR(root_info.st_mode)
+                        or dir_info.st_uid != os.geteuid()
+                        or root_info.st_uid != os.geteuid()
+                        or (dir_info.st_dev, dir_info.st_ino)
+                        != (root_info.st_dev, root_info.st_ino)):
+                    raise OSError("telemetry stream directory identity is not trusted")
+                directory_trusted = True
+            except OSError as exc:
+                message = f"live event stream directory unreadable: {exc}"
+                errors = [message, message]
+            for index, name in enumerate(names):
+                if dir_fd is None or not directory_trusted:
+                    break
                 try:
                     fds[index] = os.open(
-                        path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+                        name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+                        dir_fd=dir_fd)
                 except FileNotFoundError:
                     continue
                 except OSError as exc:
@@ -3423,12 +3446,12 @@ def _discovery_event_streams(root: Path) -> tuple[
             if write_in_progress:
                 retry = time.monotonic() < deadline
             else:
-                for index, (path, fd) in enumerate(zip(paths, fds)):
+                for index, (name, fd) in enumerate(zip(names, fds)):
                     if fd is None:
                         # If a missing stream appeared after the opens, do not
                         # compare it with the other stream's older generation.
                         try:
-                            path.lstat()
+                            os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
                         except FileNotFoundError:
                             continue
                         except OSError as exc:
@@ -3437,20 +3460,76 @@ def _discovery_event_streams(root: Path) -> tuple[
                             retry = time.monotonic() < deadline
                         continue
                     try:
-                        info = os.fstat(fd)
-                        path_info = path.lstat()
-                        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
-                                or not stat.S_ISREG(path_info.st_mode)
-                                or (info.st_dev, info.st_ino)
-                                != (path_info.st_dev, path_info.st_ino)):
+                        before = os.fstat(fd)
+                        path_before = os.stat(
+                            name, dir_fd=dir_fd, follow_symlinks=False)
+                        if (not stat.S_ISREG(before.st_mode)
+                                or before.st_nlink != 1
+                                or before.st_uid != os.geteuid()
+                                or not stat.S_ISREG(path_before.st_mode)
+                                or path_before.st_nlink != 1
+                                or path_before.st_uid != os.geteuid()
+                                or (before.st_dev, before.st_ino)
+                                != (path_before.st_dev, path_before.st_ino)):
                             raise OSError(
                                 "telemetry stream is not the current single-link regular file")
-                        offset = max(0, info.st_size - 128 * 1024)
+                        offset = max(0, before.st_size - 128 * 1024)
                         snapshots[index] = (
                             os.pread(fd, 128 * 1024, offset), offset)
+                        after = os.fstat(fd)
+                        path_after = os.stat(
+                            name, dir_fd=dir_fd, follow_symlinks=False)
+                        if (not stat.S_ISREG(after.st_mode)
+                                or after.st_nlink != 1
+                                or after.st_uid != os.geteuid()
+                                or not stat.S_ISREG(path_after.st_mode)
+                                or path_after.st_nlink != 1
+                                or path_after.st_uid != os.geteuid()
+                                or (after.st_dev, after.st_ino)
+                                != (path_after.st_dev, path_after.st_ino)
+                                or (before.st_dev, before.st_ino,
+                                    before.st_size, before.st_mtime_ns,
+                                    before.st_ctime_ns)
+                                != (after.st_dev, after.st_ino,
+                                    after.st_size, after.st_mtime_ns,
+                                    after.st_ctime_ns)):
+                            identity_drift = True
+                            snapshots[index] = (b"", 0)
+                            break
                     except OSError as exc:
                         errors[index] = f"live event stream unreadable: {exc}"
+                if identity_drift:
+                    retry = time.monotonic() < deadline
+                    if not retry:
+                        errors[index] = errors[index] or (
+                            "live event streams changed during snapshot")
+                if (not retry and not identity_drift and dir_fd is not None
+                        and directory_trusted):
+                    try:
+                        dir_after = os.fstat(dir_fd)
+                        root_after = root.lstat()
+                        if (not stat.S_ISDIR(dir_after.st_mode)
+                                or not stat.S_ISDIR(root_after.st_mode)
+                                or dir_after.st_uid != os.geteuid()
+                                or root_after.st_uid != os.geteuid()
+                                or (dir_after.st_dev, dir_after.st_ino)
+                                != (root_after.st_dev, root_after.st_ino)
+                                or (dir_info.st_dev, dir_info.st_ino)
+                                != (dir_after.st_dev, dir_after.st_ino)):
+                            identity_drift = True
+                            retry = time.monotonic() < deadline
+                            if not retry:
+                                errors[0] = errors[0] or (
+                                    "live event stream directory changed during snapshot")
+                    except OSError as exc:
+                        identity_drift = True
+                        retry = time.monotonic() < deadline
+                        if not retry:
+                            errors[0] = errors[0] or (
+                                f"live event stream directory unreadable: {exc}")
                 if not retry:
+                    if identity_drift:
+                        snapshots = [(b"", 0), (b"", 0)]
                     all_rows, all_parse_error = _discovery_events_from_raw(
                         *snapshots[0], channel=None)
                     planner_rows, planner_parse_error = _discovery_events_from_raw(
@@ -3471,6 +3550,8 @@ def _discovery_event_streams(root: Path) -> tuple[
             for fd in reversed(fds):
                 if fd is not None:
                     os.close(fd)
+            if dir_fd is not None:
+                os.close(dir_fd)
         if retry:
             time.sleep(_DISCOVERY_STREAM_LOCK_RETRY_S)
             continue
