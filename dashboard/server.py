@@ -4262,6 +4262,11 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     complete = bool(state and state.get("complete") is True)
     failure = _discovery_safe_error(
         inflight.get("exception") if isinstance(inflight, dict) else None)
+    planning_failure = _discovery_safe_error(
+        planning.get("failure") if isinstance(planning, dict) else None)
+    planner_terminal_failure = bool(
+        planning_failure is not None and isinstance(checkpoint, dict)
+        and checkpoint.get("state") == "discovery_planner_terminal_failure")
     latest_event = events[-1].get("event") if events else None
     active_planner_turn = bool(
         lock_held and latest_event == "planner_started"
@@ -4379,6 +4384,30 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                                  event_hypothesis)):
             hypothesis = event_hypothesis
 
+    # A terminal planner attempt has no pending/inflight row, but its durable
+    # planning checkpoint still binds the selected portfolio hypothesis.  Use
+    # that identity only when its authoring assignment agrees with this sealed
+    # deployment campaign; never resurrect a hypothesis from an unrelated or
+    # merely historical event.
+    if (hypothesis is None and planner_terminal_failure
+            and isinstance(planning, dict) and isinstance(campaign_id, str)):
+        binding = planning.get("portfolio_binding")
+        context = planning.get("context")
+        assignment = (context.get("authoring_assignment")
+                      if isinstance(context, dict) else None)
+        terminal_hypothesis = (binding.get("hypothesis_id")
+                               if isinstance(binding, dict) else None)
+        if (isinstance(assignment, dict)
+                and assignment.get("campaign_id") == campaign_id
+                and isinstance(terminal_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 terminal_hypothesis)):
+            hypothesis = terminal_hypothesis
+        planning_turn = planning.get("turn")
+        if (isinstance(planning_turn, int)
+                and not isinstance(planning_turn, bool) and planning_turn > 0):
+            turn = planning_turn
+
     last_event_at = max((row.get("ts") for row in events
                          if isinstance(row.get("ts"), str)), default=None)
     state_at = state.get("updated_at") if isinstance(state, dict) else None
@@ -4418,7 +4447,43 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 pipeline[skipped_stage]["state"] = "skipped"
                 pipeline[skipped_stage]["detail"] = reason
         transitions.extend(postbuild_observation.get("transitions", []))
-    if failure is not None:
+    if planner_terminal_failure:
+        # The planner actor can return successfully and still be rejected by
+        # the controller-owned telemetry/output validator.  v16 persisted this
+        # exact STOP_STATE plus a bounded typed error in planning.failure.  It
+        # is a failed terminal, not an idle campaign and not a provider retry.
+        validation_failure = planning_failure["type"] == "TelemetryError"
+        stage = "planner_validation" if validation_failure else "planner"
+        status = "failed"
+        label = ("Planner telemetry validation failed" if validation_failure
+                 else "Planner terminated before a reusable checkpoint")
+        waiting_on = "fresh sealed deployment after planner seam repair"
+        recoverability = "planner_validation_requires_fresh_deployment"
+        if validation_failure:
+            pipeline["planner"]["state"] = "complete"
+            pipeline["planner"]["completed_at"] = state_at or checkpoint_at
+        pipeline[stage]["state"] = "failed"
+        pipeline[stage]["started_at"] = state_at or checkpoint_at
+        pipeline[stage]["completed_at"] = checkpoint_at or state_at
+        failure_view = {
+            "detected": True,
+            "stage": stage,
+            "detail": f"{planning_failure['type']}: {planning_failure['detail']}",
+            "recovery": ("Repair the planner telemetry/output contract, then "
+                         "launch a fresh sealed deployment; no GPU stage was reached."),
+            "source_proof_created": False,
+            "correctness_output_created": False,
+            "runner_started": False,
+            "gpu_screen_started": False,
+        }
+        transitions.append({
+            "ts": checkpoint_at or state_at,
+            "stage": stage, "phase": stage, "state": "failed",
+            "event": "discovery_planner_terminal_failure",
+            "label": label,
+            "detail": failure_view["detail"],
+        })
+    elif failure is not None:
         status = "failed"
         observed_stage = (operation_observation.get("stage")
                           if isinstance(operation_observation, dict) else None)
@@ -4788,6 +4853,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
 
     if checkpoint:
         checkpoint_stage = {
+            "discovery_planner_terminal_failure": "planner_validation",
             "discovery_pre_screen_intent": "source_materialization",
             "discovery_waiting_resource": "resource_admission",
             "discovery_screened": "decision",

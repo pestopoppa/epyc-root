@@ -87,6 +87,73 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertNotIn("secret text", json.dumps(payload))
         self.assertNotIn("prompt", payload["planner_log"][0])
 
+    def test_v16_planner_terminal_failure_is_not_projected_as_idle(self) -> None:
+        """Exact v16 seam: a typed planning failure must remain visible."""
+        campaign_id = "ak-discovery-" + "a" * 16
+        started_at = "2026-08-19T04:42:39.059499Z"
+        failed_at = "2026-08-19T04:48:25.206346Z"
+        hypothesis_id = "akh-v2-q5-type-specific-dequant"
+        event = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": started_at, "channel": "planner",
+            "event": "planner_started", "campaign_id": campaign_id,
+            "hypothesis_id": hypothesis_id, "provider": "codex",
+            "model": "gpt-5.6-sol", "effort": "high",
+        }
+        (self.operations / "live/autokernel.jsonl").write_text(
+            json.dumps(event) + "\n")
+        (self.operations / "live/planner.jsonl").write_text(
+            json.dumps(event) + "\n")
+        planning = {
+            "turn": 1, "phase": "actor_entering",
+            "portfolio_binding": {"hypothesis_id": hypothesis_id},
+            "context": {"authoring_assignment": {
+                "campaign_id": campaign_id,
+            }},
+            "failure": {
+                "type": "TelemetryError",
+                "message": "telemetry result contains a non-allowlisted field",
+            },
+        }
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-19T04:48:25.203592Z",
+            "next": 1, "complete": False, "iterations": [],
+            "planning": planning,
+        }))
+        journal = self.state / "journal"
+        journal.mkdir()
+        (journal / "events.jsonl").write_text(json.dumps({
+            "journal_schema": "epyc.autokernel.journal_entry.v1",
+            "event_id": "akj-000000000003-29f8feef6dc9",
+            "kind": "STOP_STATE", "seq": 3, "written_at": failed_at,
+            "payload": {
+                "state": "discovery_planner_terminal_failure",
+                "controller_state_sha256": "c" * 64,
+            },
+        }) + "\n")
+
+        payload = server.discovery_live_payload()
+        activity = payload["activity"]
+
+        self.assertFalse(payload["active"])
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "planner_validation")
+        self.assertEqual(activity["hypothesis_id"], hypothesis_id)
+        self.assertEqual(activity["turn"], 1)
+        self.assertTrue(activity["failure"]["detected"])
+        self.assertEqual(activity["failure"]["stage"], "planner_validation")
+        self.assertIn("non-allowlisted field", activity["failure"]["detail"])
+        self.assertIn("fresh sealed deployment", activity["failure"]["recovery"])
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"], "complete")
+        self.assertEqual(pipeline["planner_validation"], "failed")
+        self.assertEqual(pipeline["critic"], "not_reached")
+        self.assertIn("FAILED", payload["status_message"])
+        self.assertEqual(payload["autokernel_log"][0]["event"], "planner_started")
+        self.assertEqual(payload["planner_log"][0]["event"], "planner_started")
+
     def test_path_escape_in_deployment_is_not_read(self) -> None:
         config_path = self.bundle / "config/deployment.json"
         config = json.loads(config_path.read_text())
