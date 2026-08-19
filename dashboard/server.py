@@ -3295,6 +3295,11 @@ _DISCOVERY_STAGE_STALL_S = {
     "planner": 900.0,
     "critic": 900.0,
     "build": 1800.0,
+    # The governed test-backend-ops correctness plan has an 1800-second
+    # execution timeout.  A live held source-proof claim is positive actor
+    # evidence throughout that window; the generic five-minute budget would
+    # falsely mark a healthy 1139-case ROCm suite stalled.
+    "correctness": 1800.0,
 }
 
 

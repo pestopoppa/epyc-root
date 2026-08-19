@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
 import json
@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from dashboard import server
 
@@ -245,6 +246,38 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "correctness_execution_started")
 
+    def test_live_correctness_claim_uses_governed_1800_second_budget(self) -> None:
+        acquired_at = (datetime.now(timezone.utc) - timedelta(seconds=600)
+                       ).isoformat().replace("+00:00", "Z")
+        holder_pid = os.getpid()
+        holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
+                                 .read_text().split()[21])
+        claims = self.operations / "claims"
+        claims.mkdir()
+        receipt = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "claim_id": "akd-correctness-budget",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": holder_pid,
+            "holder_start_ticks": holder_start_ticks,
+            "acquired_at": acquired_at,
+            "released_at": None,
+        }
+        (claims / "device.jsonl").write_text(json.dumps({
+            "schema": "epyc.autokernel.device_claim_journal.v1",
+            "kind": "claim_acquired", "created_at": acquired_at,
+            "detail": {"receipt": receipt},
+        }) + "\n")
+
+        activity = self._active()["activity"]
+
+        self.assertEqual(activity["phase"]["id"], "correctness")
+        self.assertGreater(activity["phase"]["elapsed_s"], 590)
+        self.assertEqual(activity["stall"]["state"], "healthy")
+        self.assertEqual(activity["stall"]["threshold_s"], 1800.0)
+
     def test_v11_runtime_identity_failure_is_candidate_attribution_terminal(self) -> None:
         started_at = "2026-08-18T22:55:06.002345+00:00"
         ended_at = "2026-08-18T22:56:01.130533Z"
@@ -360,7 +393,10 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertTrue(activity["gpu"]["screen_started"])
         self.assertTrue(activity["correctness"]["execution_completed"])
 
-    def test_v14_new_planner_turn_outranks_prior_authoring_refusal(self) -> None:
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-19T01:55:00+00:00").timestamp())
+    def test_v14_new_planner_turn_outranks_prior_authoring_refusal(
+            self, _time: mock.Mock) -> None:
         receipt_path = self.state_root / "stage-outcomes/source-apply.json"
         receipt_path.parent.mkdir()
         receipt = _sealed({
