@@ -4267,7 +4267,21 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         and isinstance(pending, dict)
         and pending.get("phase") == "critic_pending"
         and not isinstance(inflight, dict))
-    active_new_turn = active_planner_turn or active_critic_turn
+    latest_terminal_turn = (latest_iteration.get("turn")
+                            if isinstance(latest_iteration, dict) else None)
+    current_inflight_row = (inflight.get("row")
+                            if isinstance(inflight, dict) else None)
+    current_inflight_turn = (current_inflight_row.get("turn")
+                             if isinstance(current_inflight_row, dict) else None)
+    active_inflight_new_turn = bool(
+        lock_held
+        and isinstance(current_inflight_turn, int)
+        and not isinstance(current_inflight_turn, bool)
+        and isinstance(latest_terminal_turn, int)
+        and not isinstance(latest_terminal_turn, bool)
+        and current_inflight_turn > latest_terminal_turn)
+    active_new_turn = (active_planner_turn or active_critic_turn
+                       or active_inflight_new_turn)
     validation_event = (latest_event if latest_event in
                         {"planner_validation_failed", "planner_validation_refused"}
                         else None)
@@ -4538,9 +4552,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       "controller restart at planner retry checkpoint")
         recoverability = "resume_planner_provider_retry"
         hypothesis = latest_iteration.get("hypothesis_id")
-    elif latest_iteration_status in {
+    elif (not active_inflight_new_turn and latest_iteration_status in {
             "authoring_refused", "correctness_falsified",
-            "attribution_route_falsified"}:
+            "attribution_route_falsified"}):
         refused_stage = latest_iteration.get("stage")
         failed_stage = {
             "source_apply": "source_materialization",

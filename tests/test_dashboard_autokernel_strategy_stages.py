@@ -489,6 +489,64 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             self.assertEqual(pipeline[stage]["state"], "not_reached", stage)
         self.assertEqual(activity["transitions"][-1]["event"], "critic_started")
 
+        build_key = "a" * 64
+        current_manifest_sha = "1" * 64
+        current_proposal_sha = "2" * 64
+        build_entry = self.operations / "build-cache/entries" / build_key
+        build_entry.mkdir(parents=True)
+        (build_entry / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "build_key": build_key,
+            "build_contract": {
+                "build_key": build_key,
+                "patch_bundle_sha256": current_manifest_sha,
+                "proposal_sha256": current_proposal_sha,
+                "deployment_config_sha256": "a" * 64,
+            },
+        }))
+        lock_path = self.operations / f"build-cache/locks/build-{build_key}.lock"
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        lock_path.touch()
+        state["pending"] = None
+        state["inflight"] = {
+            "operation_key": self.operation_key,
+            "candidate": {
+                "source_manifest_sha256": current_manifest_sha,
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                "manifest": {"candidate_id": "akc-discovery-2"},
+            },
+            "row": {
+                "turn": 2,
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+                "proposal_sha256": current_proposal_sha,
+            },
+            "lease": {"admitted": True, "device_id": "mi210_0",
+                      "repetition": 1},
+        }
+        state["updated_at"] = "2026-08-19T01:54:13.140134Z"
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        critic_completed = dict(critic_started)
+        critic_completed.update({
+            "ts": "2026-08-19T01:54:12.709191Z",
+            "event": "critic_completed", "result": {"decision": "accept"},
+        })
+        with (self.operations / "live/autokernel.jsonl").open("a") as handle:
+            handle.write(json.dumps(critic_completed) + "\n")
+        with lock_path.open() as build_lock:
+            fcntl.flock(build_lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            activity = self._active()["activity"]
+
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["phase"]["id"], "build")
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(pipeline["source_materialization"]["state"], "running")
+        self.assertEqual(pipeline["build"]["state"], "running")
+        self.assertEqual(pipeline["next_hypothesis"]["state"], "not_reached")
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "build_transaction_observed")
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
