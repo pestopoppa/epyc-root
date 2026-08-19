@@ -240,6 +240,16 @@ for VENV_PY in \
     "interpreter is a dangling symlink ($(readlink -f "$VENV_PY" 2>/dev/null || echo unresolved)) — venv-backed gates (validate_intake.sh, kb-search) are DISABLED; repair with: uv python install \$(grep '^version_info' \"$(dirname "$(dirname "$VENV_PY")")/pyvenv.cfg\" | cut -d= -f2 | xargs | cut -d. -f1,2)"
 done
 
+# The repair path needs its own check: the same rebuild left ~/.cache/uv root-owned,
+# so `uv python install` failed with Permission denied before it could fix anything.
+UV_CACHE="${UV_CACHE_DIR:-${HOME}/.cache/uv}"
+if [[ -d "$UV_CACHE" ]]; then
+  UV_UNWRITABLE=$(find "$UV_CACHE" -maxdepth 1 -mindepth 1 -type d ! -writable 2>/dev/null | head -3 | tr '\n' ' ')
+  check "uv cache is writable (the venv repair path)" \
+    "[ -z \"$UV_UNWRITABLE\" ]" \
+    "not writable: ${UV_UNWRITABLE:-?} — 'uv python install' will fail with Permission denied; repair with: sudo chown -R \$(id -un):\$(id -gn) $UV_CACHE"
+fi
+
 echo ""
 
 # ============================================

@@ -67,3 +67,21 @@ record that measurement was taken against, and would fix nothing: the live path 
 `backlog_queue_gen.py --generate`, and a fresh generation (5,412 lines) **does not emit this row**.
 Screening confirms the class: `backlog_row_check --ref intake-derived-work-2026-07-25.md:208` →
 `ANCHOR_ROT`. No edit made — deliberately.
+
+### Follow-ups closed in the same pass
+
+The uv **cache** ownership was the reason the venv could not be repaired, so `health_check.sh`
+checks it too — an interpreter check that passes while the repair path is broken would just move
+the dead end one step later. Both checks were mutation-tested against synthetic breakage (dangling
+symlink → detected, prints `uv python install 3.11`; unwritable cache subdir → detected).
+
+### Derived actionables
+
+| Item | Disposition |
+|---|---|
+| Audit the other `.claude/skills/` for a documented command whose interpreter lacks the imports | **Filed** — `non-inference-backlog.md` OBS-12. kb-search is fixed; nothing ties a skill's documented command to a working interpreter, so a sibling defect stays invisible until a session hits it. |
+| The `entry_verdict.py` confidence-gate correction | **Filed** — `eval-tower-loop-robustness-audit-2026-07-20.md` D6a (`- [x]`), with the ownership crossing flagged in the box. |
+| The venv wipe + its detector | **Filed** — `non-inference-backlog.md` OBS-11 (`- [x]`). |
+| `/mnt/raid0/llm/venv` → `/home/daniele/miniforge3/bin` (dangling) | **Declined, explicitly.** A legacy venv pointing at a host-user conda that has never existed inside the container. Not this incident, no consumer found, and "repairing" it would mean recreating an interpreter nobody invokes. |
+| Removing the stale row from `BACKLOG-DISPATCH-QUEUE.md:880` | **Declined, explicitly.** The file is SUPERSEDED and retained as the evidence the 34.5% anchor-rot measurement was taken against; the live generator already omits the row. Editing it would corrupt the record and change no behaviour. |
+| `validate_intake.sh`'s failure was reported as silent | **No action.** It is loud — the wrapper probes each interpreter for `import yaml` and exits 1 with an explicit "no Python with PyYAML found" message. The gate was disabled, but not quietly; no hardening needed. |

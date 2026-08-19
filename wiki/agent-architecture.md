@@ -2,8 +2,39 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-18 (close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-19 (stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
+
+## Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
+
+**Confidence: verified** — from the closed task in the loop-owned-fleet handoff, backed by commit
+`25726a78` and a re-run (8 passed).
+
+`test_hook_worktree_resolution.py` carried 2 failing / 6 passing tests, confirmed **pre-existing**
+by stashing an unrelated guard sweep and re-running to an identical 2/6. Both failures were the
+TEST, not the worktree-resolution cascade they appeared to indict, and — the part worth compiling —
+**neither failure was about resolution at all**:
+
+- the tier-1 stub fixture hard-coded two hook names, while `pre-commit.extras` had since chained a
+  third through the same variable. The fixture froze a list the production config had grown past.
+- the sparse fixture `rmtree`-d the whole `scripts/hooks` tree, which trips an observer census
+  added to the codebase *after* the fixture was written. The fixture deleted the very signal a
+  later control inspects.
+
+Both are the same class: **a fixture that constructs the world by enumeration or by deletion goes
+stale silently, and its staleness surfaces as a failure in the subsystem it was built to exercise.**
+That misattribution is the expensive part — a red test in a resolution suite reads as a resolution
+bug, and the cascade gets audited before the fixture does. Rule out the test method before calling
+it a defect in the code under test; and when auditing a fixture, audit what it *removes*, not only
+what it sets up — clearing the signal a control depends on lets a broken implementation pass just as
+easily as it fails a working one.
+
+### Source References (2026-08-19)
+
+- [`handoffs/active/loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+  — the closed `test_hook_worktree_resolution.py` task and its pre-existence check.
+- Commit `25726a78` — "worktree-resolution tests: the fixtures were stale, the cascade was fine".
+- Commit `e8e93262` — the task closure.
 
 ## Compiled Update — 2026-08-18: reachable-from-origin is not merged — the stranded-patch class, the `git clean` signature, and a triage that read all 51 messages
 

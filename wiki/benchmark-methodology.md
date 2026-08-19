@@ -2,8 +2,79 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-18 (banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
+**Last compiled**: 2026-08-19 (a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
 **Sources**: 127+ documents
+
+## Compiled Update — 2026-08-19: a gate can be unsatisfiable by the only real signal the stack produces
+
+**Confidence: verified** — the defect, the fix and the four regression tests were read, run and
+mutation-tested in-tree on 2026-08-19; every claim below names a file, a value, or a test outcome.
+
+### The EV-11 fix left a gate that could only ever reject real confidence
+
+The EV-11 entry below records the phantom (`confidence = float(correct)` → ECE pinned to 0.0) and
+its 2026-07-20 fix: `entry_verdict.decide()` refuses an EV-4-style PASS unless a non-degenerate
+confidence signal is supplied. **That gate was unsatisfiable by our own stack for a month.**
+`_confidence_nondegeneracy` matched `confidence_source` by **equality** against
+`{logprob, logprobs, probabilities, completion_probabilities}`, but the only real value the eval
+tower emits is `completion_probabilities_geomean` — the qualified name of the plumbing landed in the
+same EV-11 work. It matched neither the accept set nor the degenerate markers
+(`proxy` / `float(correct)` / `binary`), so it fell through to *"no non-degenerate signal was
+supplied"*. The `float(correct)` phantom the gate exists to catch was rejected correctly; the real
+logprob confidence the gate was written to admit was rejected too.
+
+**The failure shape is worth naming, because no test caught it.** A guard that fails closed on the
+degenerate case *and* on the real case is indistinguishable from a working guard when every test
+feeds it either a degenerate value or a hand-written accept-set literal. The existing coverage did
+exactly that: one test asserted `"binary float(correct) proxy"` downgrades, another passed the
+boolean `confidence_nondegenerate: True` — neither ever presented the string a producer actually
+emits. **A gate's tests must include a value taken from the producer, not from the gate's own accept
+set**; an accept set is a restatement of the code, so testing against it can only ever confirm the
+spelling the author already chose.
+
+Fix (`scripts/coordination/entry_verdict.py`): substring match over `logprob` / `logit` /
+`probabilit*` so qualified producer names pass; degenerate markers checked **first**, so a name
+carrying both (`binary_probabilities`) still fails closed; and `confidence_is_real` — the boolean
+EvalTower `_aggregate` already stamps — accepted as an explicit non-degeneracy signal. Four
+regression tests, each mutation-tested: reverting the matcher fails three, swapping the two branches
+fails the ordering test. Suites: `scripts/coordination/tests/` + `tests/vidya/`, 709 passed / 38
+skipped.
+
+### An environment rebuild can disable a gate without failing anything that reports
+
+Separately and on the same day: a devcontainer rebuild emptied `~/.local/share/uv/python/`, leaving
+`repos/epyc-orchestrator/.venv/bin/python` a dangling symlink while its 367 site-packages stayed
+intact. Every venv-backed gate — `scripts/validate/validate_intake.sh` (the intake skill's Phase-5
+gate) and `kb-search` — was down for **every session**, and the repair path was blocked too: the
+same rebuild left `~/.cache/uv/{archive-v0,interpreter-v4}` root-owned, so `uv python install`
+died on `Permission denied` before it could fix anything.
+
+Two methodology points generalize past this incident:
+
+- **Derive blast radius structurally, not from the symptom.** The reported symptom was one script
+  failing. The scope question is *which venvs point at an interpreter that no longer resolves* —
+  answered by testing the `home` line of every `pyvenv.cfg` under `/workspace` and
+  `/mnt/raid0/llm`. Result: only this venv (the one other dangling hit is a legacy venv aimed at a
+  host-user conda that never existed in-container).
+- **A detector for the failure needs a detector for the repair path.** `health_check.sh` now
+  resolves the orchestrator and research venv interpreters **and** checks uv-cache writability,
+  each failing with its exact repair command. Checking only the interpreter would have moved the
+  dead end one step later — you learn the venv is broken and still cannot fix it. Both checks were
+  mutation-tested against synthetic breakage rather than assumed live.
+
+### Source References (2026-08-19)
+
+- `scripts/coordination/entry_verdict.py` — `_confidence_nondegeneracy`, the equality-matched
+  accept set and its replacement.
+- `scripts/coordination/tests/test_entry_verdict.py` — the four mutation-tested regression tests.
+- [`handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md`](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md)
+  — D6 (the original gate) and D6a (this correction).
+- [`handoffs/active/eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) L149
+  — the plumbing that makes `completion_probabilities_geomean` the stack's real confidence source.
+- [`handoffs/active/non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) OBS-11 /
+  OBS-12 — the venv wipe, its detector, and the open skill-interpreter sweep.
+- [`progress/2026-08/2026-08-19-defect-triage.md`](../progress/2026-08/2026-08-19-defect-triage.md)
+  — full session record, including the two explicit declines.
 
 ## Compiled Update — 2026-08-18: banked cells, look-alike run dirs, and instruments that were lying before the experiment started
 
