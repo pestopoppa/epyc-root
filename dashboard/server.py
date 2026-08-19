@@ -5072,17 +5072,31 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             isinstance(correctness_observation, dict)
             and failure.get("type") == "EvidenceProducerError"
             and "correctness stdout" in failure.get("detail", "").lower())
+        failure_detail_lower = str(failure.get("detail") or "").lower()
+        attribution_identity_failure = (
+            "runtime maps" in failure_detail_lower
+            or "owned kfd process" in failure_detail_lower
+            or "runtime identity" in failure_detail_lower)
+        attribution_timing_failure = (
+            "avg_ts" in failure_detail_lower
+            and "samples_ts" in failure_detail_lower)
         stage = ("correctness_validation" if correctness_parse_failed else
                  postbuild_failure_stage
                  if postbuild_failure_stage in _DISCOVERY_POSTBUILD_STAGES else
                  observed_stage if observed_stage in {"build", "evidence_binding"}
                  else "source_materialization")
+        attribution_arm = ("Candidate" if stage == "candidate_attribution"
+                           else "Anchor")
+        attribution_label = (
+            f"{attribution_arm} attribution failed during runtime identity binding"
+            if attribution_identity_failure else
+            f"{attribution_arm} attribution timing receipt validation failed"
+            if attribution_timing_failure else
+            f"{attribution_arm} attribution evidence validation failed")
         label = ("Correctness result parsing failed after GPU proof"
                  if stage == "correctness_validation" else
-                 "Candidate attribution failed during runtime identity binding"
-                 if stage == "candidate_attribution" else
-                 "Anchor attribution failed during runtime identity binding"
-                 if stage == "anchor_attribution" else
+                 attribution_label
+                 if stage in {"candidate_attribution", "anchor_attribution"} else
                  "Evidence binding failed after completed build"
                  if stage == "evidence_binding" else
                  "Source build failed" if stage == "build" else

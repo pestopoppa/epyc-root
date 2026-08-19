@@ -339,6 +339,48 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(activity["transitions"][-1]["event"],
                          "candidate_attribution_failed")
 
+    def test_v17_timing_consistency_failure_is_not_mislabeled_identity(self) -> None:
+        ended_at = "2026-08-19T06:53:20.386965+00:00"
+        state = json.loads((self.state_root / "state.json").read_text())
+        state["updated_at"] = "2026-08-19T06:55:52.135000Z"
+        state["inflight"]["exception"] = {
+            "type": "RuntimeError",
+            "message": ("GPU discovery native avg_ts does not rederive "
+                        "from samples_ts"),
+        }
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        policy = json.loads((self.operation / "evidence-policy.json").read_text())
+        policy["attribution_arm_order"] = ["anchor", "candidate"]
+        (self.operation / "evidence-policy.json").write_text(json.dumps(policy))
+        self._receipt(
+            "proof/correctness/receipt.json",
+            "epyc.autokernel.targeted_correctness_receipt.v3",
+            status="complete", result="PASS", overall="OK",
+            passed_cases=1139, expected_cases=1139, ended_at=ended_at)
+        attribution = self.operation / "proof/attribution-anchor"
+        attribution.mkdir()
+        (attribution / "stdout.txt").write_text("")
+        (attribution / "stderr.txt").write_text(
+            "native avg_ts does not rederive from samples_ts\n")
+        (attribution / "timestamps.csv").write_text(
+            "start_ns,end_ns\n1,2\n")
+
+        activity = server.discovery_live_payload()["activity"]
+
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "anchor_attribution")
+        self.assertEqual(
+            activity["phase"]["label"],
+            "Anchor attribution timing receipt validation failed")
+        self.assertNotIn("runtime identity", activity["phase"]["label"])
+        self.assertIn("avg_ts", activity["failure"]["detail"])
+        self.assertEqual(activity["stage_contract"]["arm_order"],
+                         ["anchor", "candidate"])
+        pipeline = {row["id"]: row["state"]
+                    for row in activity["pipeline"]}
+        self.assertEqual(pipeline["anchor_attribution"], "failed")
+        self.assertEqual(pipeline["candidate_attribution"], "not_reached")
+
     def test_v13_released_terminal_does_not_expect_gpu_now(self) -> None:
         acquired_at = "2026-08-18T23:52:50.625980+00:00"
         released_at = "2026-08-18T23:53:46.922940+00:00"
