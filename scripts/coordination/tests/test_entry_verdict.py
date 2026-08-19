@@ -256,6 +256,96 @@ class TestForkCoverage(unittest.TestCase):
         self.assertEqual(v.action, ev.CAT_PASS)
         self.assertEqual(v.ledger_status, ev.DONE_PASS)
 
+    def _confidence_gate_table(self):
+        return [
+            {
+                "gate": "Does EV-4 produce a complete calibration baseline?",
+                "evidence": "6 metrics per role",
+                "fork": {
+                    "pass": {
+                        "rule": "all 6 metrics recorded per role AND confidence distribution non-degenerate",
+                        "action": ["flip EV-4"],
+                        "next": "DONE_PASS",
+                    },
+                    "marginal": {
+                        "rule": "all metrics recorded but confidence is the binary float(correct) proxy",
+                        "action": ["record observation"],
+                        "next": "DONE_MARGINAL_OBS",
+                    },
+                    "ambiguous": {
+                        "action": ["operator adjudicate"],
+                        "next": "HELD_AMBIGUOUS",
+                    },
+                },
+            }
+        ]
+
+    def test_pass_rule_accepts_the_stacks_real_confidence_source(self):
+        # `completion_probabilities_geomean` is the ONLY real confidence source
+        # the eval tower emits (handoffs/active/eval-tower-verification.md).
+        # An equality check against bare carrier names failed it.
+        e = make_entry(task_id="EV-4", gate_table=self._confidence_gate_table())
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metric_count": 6,
+                "required_metric_count": 6,
+                "confidence_source": "completion_probabilities_geomean",
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_PASS)
+        self.assertEqual(v.ledger_status, ev.DONE_PASS)
+
+    def test_pass_rule_accepts_confidence_is_real_flag(self):
+        e = make_entry(task_id="EV-4", gate_table=self._confidence_gate_table())
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metric_count": 6,
+                "required_metric_count": 6,
+                "confidence_is_real": True,
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_PASS)
+        self.assertEqual(v.ledger_status, ev.DONE_PASS)
+
+    def test_confidence_is_real_false_still_downgrades(self):
+        e = make_entry(task_id="EV-4", gate_table=self._confidence_gate_table())
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metrics_complete": True,
+                "confidence_is_real": False,
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_MARGINAL)
+        self.assertEqual(v.ledger_status, ev.DONE_MARGINAL_OBS)
+
+    def test_degenerate_marker_beats_a_real_carrier_name(self):
+        # A qualified name may contain both; degeneracy must win.
+        e = make_entry(task_id="EV-4", gate_table=self._confidence_gate_table())
+        v = ev.decide(
+            e,
+            OK_EXEC,
+            {
+                "safety_gate": "PASS",
+                "sequential": "confirmed",
+                "metrics_complete": True,
+                "confidence_source": "binary_probabilities",
+            },
+        )
+        self.assertEqual(v.action, ev.CAT_MARGINAL)
+        self.assertEqual(v.ledger_status, ev.DONE_MARGINAL_OBS)
+
 
 class TestAutonomyPolicyRevertScope(unittest.TestCase):
     def test_reference_relaunch_auto(self):

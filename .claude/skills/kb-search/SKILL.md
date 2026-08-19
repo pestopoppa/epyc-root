@@ -33,8 +33,15 @@ The retrieval index is ColBERT-backed (GTE-ModernColBERT-v1 ONNX INT8, 128-dim p
 ## How to invoke
 
 ```bash
-python3 /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query "your question"
+/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query "your question"
 ```
+
+> **Use the orchestrator venv interpreter, not bare `python3`.** The retrieval stack needs
+> `numpy` + `onnxruntime`, which the devcontainer's system `python3` does not have — a bare
+> `python3` invocation dies on `ModuleNotFoundError: numpy` inside `colbert_encoder.py`.
+> Same convention as `.claude/hooks/post_commit_kb_rag_update.sh` (`KB_RAG_PYTHON`).
+> If the venv interpreter itself is a dangling symlink, restore it with `uv python install 3.11`
+> (its `pyvenv.cfg` pins a uv-managed CPython 3.11).
 
 Defaults: top-K = 8 ranked chunks. Add `--top-k 3` for tighter results, `--json` for parseable output.
 
@@ -50,7 +57,7 @@ Result schema:
 
 1. Query the KB:
    ```
-   python3 /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query "<question>"
+   /workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query "<question>"
    ```
 2. Read the top 1-3 results in full via the `Read` tool using the returned `file_path` and `line_range`.
 3. If results are insufficient, try a reformulated query (semantic variants, related concepts) before falling back to grep.
@@ -61,13 +68,13 @@ Result schema:
 The index is rebuilt incrementally on commit via `.claude/hooks/post_commit_kb_rag_update.sh`. To rebuild from scratch:
 
 ```bash
-python3 /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py build
+/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py build
 ```
 
 To check index state:
 
 ```bash
-python3 /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py stats
+/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py stats
 ```
 
 ## Boundaries

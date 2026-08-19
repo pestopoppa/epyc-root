@@ -217,6 +217,32 @@ fi
 echo ""
 
 # ============================================
+# 6b. TOOLING INTERPRETERS
+# ============================================
+# WHY: the orchestrator venv pins a uv-managed CPython. A devcontainer rebuild can
+# wipe /home/node/.local/share/uv/python/, leaving .venv/bin/python a dangling
+# symlink — every venv-backed gate (intake validation, kb-search, kb_rag hooks)
+# then fails at invocation time, session by session, with no single owner.
+# Repair: `uv python install 3.11` (version comes from .venv/pyvenv.cfg).
+
+echo "--- Tooling Interpreters ---"
+
+for VENV_PY in \
+  "${PROJECT_ROOT}/repos/epyc-orchestrator/.venv/bin/python" \
+  "${PROJECT_ROOT}/repos/epyc-inference-research/.venv/bin/python"; do
+  VENV_NAME="$(basename "$(dirname "$(dirname "$(dirname "$VENV_PY")")")")"
+  if [[ ! -L "$VENV_PY" && ! -f "$VENV_PY" ]]; then
+    echo "⏭️  SKIP: $VENV_NAME venv not present"
+    continue
+  fi
+  check "$VENV_NAME venv interpreter resolves" \
+    "\"$VENV_PY\" -c 'import sys' >/dev/null 2>&1" \
+    "interpreter is a dangling symlink ($(readlink -f "$VENV_PY" 2>/dev/null || echo unresolved)) — venv-backed gates (validate_intake.sh, kb-search) are DISABLED; repair with: uv python install \$(grep '^version_info' \"$(dirname "$(dirname "$VENV_PY")")/pyvenv.cfg\" | cut -d= -f2 | xargs | cut -d. -f1,2)"
+done
+
+echo ""
+
+# ============================================
 # 7. SUMMARY
 # ============================================
 

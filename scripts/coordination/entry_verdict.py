@@ -477,6 +477,8 @@ def _confidence_nondegeneracy(
                 "confidence_distribution_nondegenerate",
                 "ece_nondegenerate",
                 "calibration_nondegenerate",
+                # The eval tower stamps this one on every aggregate row.
+                "confidence_is_real",
             ),
         )
     )
@@ -492,10 +494,17 @@ def _confidence_nondegeneracy(
     )
     if source is not None:
         text = str(source).strip().lower()
-        if text in {"logprob", "logprobs", "probabilities", "completion_probabilities"}:
-            return True, None
+        # Degenerate markers first: a value may name both a real carrier and a
+        # degenerate derivation (e.g. "binary_probabilities"), and degeneracy wins.
         if "proxy" in text or "float(correct)" in text or "binary" in text:
             return False, f"pass rule requires non-degenerate confidence; confidence_source={source}"
+        # Substring, not equality: real producers emit qualified names such as
+        # `completion_probabilities_geomean` (the eval tower's only real source).
+        if any(
+            marker in text
+            for marker in ("logprob", "logit", "probabilities", "probability")
+        ):
+            return True, None
 
     return None, "pass rule requires a non-degenerate confidence/ECE signal, but none was supplied"
 
