@@ -1,7 +1,11 @@
 # GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm
 
-**Status**: MOSTLY DONE — artifact updated across all sections (2026-08-15); SWE FAIL_TO_PASS + agentic
-rung still landing — **the agentic re-run is parked on a devcontainer restart** (2026-08-16).
+**Status**: DONE for the SWE rung (2026-08-20). The devcontainer blocker cleared; both protocols are
+now scored and in the artifact. **Agentic SWE-40 = 21/40 (52.5%)** — re-run after fixing the harness
+tool-call parser (`3bf16c3f`), superseding the provisional 15/40. **Oracle SWE-40 = 20/40 (50.0%)** vs
+stock 27B's 23/40 — a **non-resolving** difference (paired exact McNemar p = 0.375, 5 discordant), so
+read it as a tie on SWE, not a regression. Remaining: re-collect the 24-cell grid at the measured
+`n-max 8` optimum (the grid was captured at 4, ~8.7% below peak).
 **Created**: 2026-08-14
 **Priority**: P2 (presentation surface; not evidence authority)
 **Effort**: Low — re-populate one candidate row with already-partial Qwen3.8-27B data + fill the gaps
