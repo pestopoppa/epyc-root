@@ -287,7 +287,7 @@ Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-c
 
 **Already fixed in this pass (2026-08-20), recorded so the reasoning is not re-derived:**
 
-- **Every KV slot save was failing.** `prefix_cache.py` built the filename with `os.path.join(...)`,
+- [x] **KV-0a — Every KV slot save was failing; fixed.** ✅ 2026-08-20 `prefix_cache.py` built the filename with `os.path.join(...)`,
   producing a `/`-containing string; llama-server rejects those via
   `fs_validate_filename(allow_subdirs=false)` before it concatenates `--slot-save-path`. Proof it
   never worked: the 75 retained slot artifacts on disk are **all** `kv_migrate_*` from the sibling
@@ -296,12 +296,12 @@ Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-c
   Two compounding defects fixed alongside: the restore path did a **client-side** `os.path.exists()`
   on a **server-side** filename, and both backend methods caught `httpx.RequestError`, which does
   **not** cover `HTTPStatusError` — so a 4xx propagated instead of returning `False` as documented.
-- **Roles sharing one llama-server were evicting each other.** Under `shared_with`, several roles
+- [x] **KV-0b — Roles sharing one llama-server were evicting each other; fixed.** ✅ 2026-08-20 Under `shared_with`, several roles
   resolve to one physical server, but the legacy loop built a **separate `PrefixRouter` per role**,
   each allocating `id_slot` in `[0, num_slots)` from its own private LRU — so two roles both emitted
   `id_slot=0` and silently clobbered each other, unobservably. Now one router per physical URL
   (`_router_for`), matching the shape the fleet layer already had. 3 regression tests added.
-- **`radix_cache.py` deleted** (480 lines + shim). Verified dead: its only two importers were the
+- [x] **KV-0c — `radix_cache.py` deleted** (480 lines + shim). ✅ 2026-08-20 Verified dead: its only two importers were the
   file importing itself. It also carried an unexercised stale-slot bug and a docstring claiming path
   compression it did not implement. 20 tests that exercised the unwired module went with it — green
   tests over dead code manufacture exactly the false confidence this handoff exists to avoid.
@@ -333,6 +333,11 @@ Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-c
   KVFlow's own eviction-only ablation on an H100; the other 1.18× comes from prefetching we cannot
   port (llama-server slot restore is on the shared task loop and a failed restore is destructive).
   **NOT the RLM tree and NOT the autopilot loop** — neither materialises children in advance.
+- [ ] **KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it.** It makes
+  SEVEN full-length passes (3 string scans + 4 `re.sub`) over prompts of tens of KB and then
+  **discards everything past char 256**. It has NEVER been measured: grepping both prefix-cache
+  files for timing primitives returns 3 hits, all docstring prose, zero code. Cheap to instrument,
+  and it may dominate the routing cost the rest of this section is trying to improve.
 - [ ] **KV-5 — Correct `wiki/kv-cache.md`** so KVFlow is named as the ORIGIN of workflow-aware KV
   residency, with its own venue (NeurIPS 2025), its own 1.11× ablation and its Apache-2.0
   implementation — not solely as the denominator of PBKV's self-reported 1.26×. Note also that 1.26×
