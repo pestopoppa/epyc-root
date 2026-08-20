@@ -92,6 +92,23 @@ results slot straight into this row.
   peak aggregate 157.3 t/s @np8/2k. (The earlier "37→13.6 decline / MTP reversal" was a synthetic
   random-word-prompt artifact — corrected; real prompts give a flat MTP curve.)
 - [x] **Update the verdict prose** — bottom line + verdict card re-read with Qwen3.8-27B as the new 27B coding bar.
+- [x] **SWE-40 finalised on BOTH protocols** ✅ 2026-08-20 — agentic **21/40 (52.5%)** (supersedes the
+  provisional 15/40; harness tool-call parser fixed, `3bf16c3f`) and oracle **20/40 (50.0%)**, a
+  non-resolving difference vs stock 27B's 23/40 (paired exact McNemar **p = 0.375**, 5 discordant).
+- [x] **Artifact reworked to best-configuration results only** ✅ 2026-08-20 — per operator instruction the
+  surface tracks the best measured config per arm. Removed: the spec-off baseline column and the
+  "N× over plain" ratio, the `FF 27B (non-MTP)` grid, the MTP workload-gate card, and every
+  non-best FF rate. Headline is now **70.0 t/s** (dFlash2 block-8, np=1) as best *measured* with the
+  parity caveat, alongside **55.46 t/s** as best *selectable*.
+- [ ] **Re-collect the 24-cell np×depth grid at `n-max 8`** — the published grid was captured at
+  `n-max 4`, i.e. ~8.7% under the measured optimum, and its cells were WITHDRAWN from the artifact
+  rather than shipped below peak. Needs GPU; blocked only on compute availability.
+- [ ] **Depth-sweep the other arms (A4, A3, A1, FF, Laguna)** — none was ever draft-depth swept, so
+  their published figures are best-KNOWN, not best-POSSIBLE. Qwen3.8 gained 8.7% from its sweep
+  alone; the same headroom plausibly exists here and would change cross-arm ranking.
+- [ ] **Restore the MTP workload-gate finding somewhere durable** — it was removed from the artifact
+  because it only exists as a comparison against a non-best config (MTP is net-negative for FF on
+  single-stream deep RAG). It survives in this handoff and the wiki, but has no home on any surface.
 
 ## Deps
 

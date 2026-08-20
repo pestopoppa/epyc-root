@@ -68,6 +68,15 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
     Qwen3.6's across would be a false attestation.
   - Validator: **0 problems** (this required fixing a pre-existing duplicate-key defect that had been
     failing the validator closed for the whole file — commit `a94e0e01`).
+- [x] **dFlash2 np1 folded in as decision context, selection UNCHANGED** ✅ 2026-08-20 — cross-session
+  campaign measured **70.0 decode t/s** at matched np=1 vs a same-campaign MTP n-max-8 arm at 55.2
+  (+26.81%), acceptance 0.628 vs 0.482. Independently verified here: `campaign-summary.json` SHA-256
+  matches `e4f9e21f…` and the figures re-read correctly. Their matched MTP arm reproduces our 55.46 to
+  within 0.5%. Recorded in the registry (`bd40ca94`) as `challenger_under_evaluation`, status
+  `np1_only_NOT_SELECTABLE`; `spec_type: draft-mtp` / `n_max: 8` untouched. **No selection published.**
+- [ ] **DFlash2 selection decision** — BLOCKED on three named gates before it may displace MTP: np2/4/8
+  scaling, exact greedy parity at temp 0, and the block-verify dispatch proof. Owned by the autokernel
+  session under INF-62; this row exists so the registry side has a visible decision point.
 - [ ] **Stack-change checklist / `stack_change_pipeline.py` regenerate** — NOT run. Nothing is serving
   (`:8083` unbound), so config and runtime agree only by both being absent. `live == config` is
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its

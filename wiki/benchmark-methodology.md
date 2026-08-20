@@ -2540,3 +2540,51 @@ and a source can pass one while failing the other.**
 - [Architect model selection bench](../handoffs/active/architect-model-selection-bench.md) — CAL-1, where the rank-correlation prior is recorded
 - [Canonical judge suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-7a–d, the judge-free suite designs derived from this cohort
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+## Compiled Update — 2026-08-20: a capture can lie about its own protocol, and a duplicate YAML key can silently delete evidence
+
+**A merged capture can mix two protocols with nothing recording which row came from which.** The
+Qwen3.8-27B SWE-oracle `per_question.jsonl` was a 40-row `endpoint=chat` run merged with a 3-row
+`endpoint=completion` regen. Both invocations recorded their own endpoint correctly in *their own*
+`result.json` — the loss happened at the **merge**, because the per-row schema had no endpoint field.
+Consequence: 2 of the 20 resolved instances in the scored result came from the completion rows, and the
+mix was invisible to every downstream consumer. Chat-endpoint rows alone resolve 18.
+
+**The completion path is greedy, so recorded `temperature`/`seed` can be inert.** `v7_quality_gate_runner`
+pins `top_k: 1` on `/v1/completions` and never sends `top_p` or `enable_thinking`. A capture whose meta
+says `temperature: 0.6, seed: 42` therefore attests to sampling that did not happen. Rows now carry
+`effective_request` — endpoint, request path, and the sampling **actually applied** — and `meta` declares
+its own sampling fields as requested-not-effective. Schema version deliberately not bumped: the field is
+additive and the converter pins v4.
+
+**Endpoint choice changes model behaviour, not just accounting.** The chat path wraps the prompt in a
+tool-aware template; on the raw completion path there is no such framing. The same prompt tokenises to
+2321 vs 2309 tokens respectively — the 12-token delta is exactly the `<|im_start|>…<think></think>`
+wrapper. Replaying a completion-endpoint row through the chat path produced a `<tool_call>` and a
+76-token completion where the original produced 2991 tokens and a valid patch. **A replay that gets the
+endpoint wrong is not a replay.**
+
+**Concurrent batched serving is not bitwise reproducible even when decoding is greedy.** With `-np 4`,
+batch composition varies with request timing, so greedy decoding still diverged: only 1 of 40 responses
+reproduced byte-for-byte across campaigns at matched geometry. Plan for *re-measurement*, not replay, on
+any `np > 1` capture.
+
+**A duplicate YAML key silently discards data and can fail a validator closed for everyone.** A registry
+role's `performance` block carried two `evidence:` keys in one mapping. PyYAML keeps the last, so an
+earlier list of artifact paths was dropped on every parse — and the strict loader failed the *whole file*,
+meaning no registry change anywhere could be validated. It survived from the commit that introduced it
+until found incidentally. Two cheap controls would have caught it: run the strict validator in a gate, and
+enforce one path style (the same artifact appeared once absolute and once repo-relative, which is what made
+the duplicate non-obvious to a reader).
+
+**A test file with no `__main__` block passes vacuously.** `python3 test_v7_quality_gate_runner.py` exits
+0 having executed nothing — the tests are pytest-fixture based. This is the "check that passes for a reason
+unrelated to what it tests" shape: verify a suite actually *counts* what it claims before trusting a green
+result, and mutation-test any new guard.
+
+### Source References
+
+- [`progress/2026-08/2026-08-20.md`](../progress/2026-08/2026-08-20.md) — the mixed-protocol capture, the endpoint investigation, and the duplicate-key fix
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md) — both SWE protocols and their provenance caveats
+- `epyc-inference-research` commits `baf36757` (`effective_request` provenance + mutation-verified test) and `a94e0e01` (duplicate `evidence` key) — direct commit reads
+- [Speculative Decoding](speculative-decoding.md) — the same session's per-artifact draft-depth finding

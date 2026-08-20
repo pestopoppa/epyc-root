@@ -1002,3 +1002,58 @@ matters because that monotonicity assumption is load-bearing for any future auto
 - [`progress/2026-07/2026-07-31.md`](../progress/2026-07/2026-07-31.md) — §16 (the reconciliation narrative and the `stack_change_pipeline check` 42→2 figure) and §18 (the draft-max sweep and the 122B monotonicity violation)
 - `epyc-orchestrator` commits `2874ed73` (membership-test fix) and `6390b871` (lean-registry data fix) — direct commit reads
 - [Benchmark Methodology](benchmark-methodology.md) — the OPTIMUM/BASELINE/CANDIDATE grammar that the acceptance-dilution finding parallels
+
+## Compiled Update — 2026-08-20: draft depth is a per-ARTIFACT measurement, and a stack-template override can silently beat it
+
+**`draft_max` does not survive a model swap.** When `architect_general`/`coder_escalation` moved from
+Qwen3.6-27B-MTP-Q8_0 to Qwen3.8-27B-Q8_0, the inherited `draft_max: 4` was *correct for the artifact it
+described* and wrong for the new one. Re-measured on Qwen3.8-27B (np=1, 12 real olympiadbench prompts,
+2048-token cap, v9 `0db32c06e`/build 10125, one flag varied):
+
+| `--spec-draft-n-max` | 2 | 3 | 4 | 6 | **8** | 12 |
+|---|---|---|---|---|---|---|
+| decode t/s | 39.77 | 46.61 | 51.03 | 55.22 | **55.46** | 51.14 |
+| draft acceptance | 0.842 | 0.773 | 0.702 | 0.579 | 0.482 | — |
+
+The optimum is **6–8** (n6 vs n8 inside noise), and the curve turns over by 12. Speculation is worth
+**2.00×** over spec-off on this model at n-max 8.
+
+**This reconciles with — rather than contradicts — the earlier "n_max 6 and 8 are clearly bad" row above.**
+That verdict was measured on the Qwen3.6-35B / 122B era artifacts. Depth optimum is a property of the
+*drafter/target pair*, so a depth verdict is only ever valid for the artifact it was measured on. The
+single-proposer monotonicity assumption (acceptance falls as depth grows) **held cleanly here**
+(0.842 → 0.482), which is the expected shape; the 122B's rising-acceptance violation remains the
+composed-recipe exception, not the rule.
+
+**Suffix decay is real and quantified on our own drafter.** Acceptance nearly halving from depth 2 to 8
+is precisely the effect block-diffusion drafters (DFlash2) claim to fix — so the headroom a block drafter
+can claim on our hardware is bounded by that decay, not by vendor headline ratios.
+
+**A `spec_overrides` entry in the stack template silently outranks the registry's measured optimum.**
+`epyc-orchestrator/stack_templates/default.yaml` carried `spec_overrides.draft_max: 24` for
+`architect_general` while the master registry carried the measured `4` for the same artifact. The
+override wins at stack-assembly time, so the assembled stack drafted at 24 against a measured-4 model.
+Two sources of truth for one knob, and the *unmeasured* one was winning. Keep the template override in
+step with `speculative_decoding_policy.draft_max`, or do not carry one.
+
+**`model_role` is load-bearing when swapping a served artifact.** `model_descriptors.py:1233-1244`
+substitutes the `model_role` role's config when an alias's model id differs from its `server_mode` entry
+(recording `ignored_model_id`). Swapping `model_path` while leaving a stale `model_role` therefore
+**serves the OLD artifact while the registry reads as swapped** — a `live != config` failure that no
+YAML check catches.
+
+**DFlash2 challenger, np1 only (2026-08-20).** A forward-port of llama.cpp PR #27342 onto an isolated
+experimental branch measured **70.0 decode t/s** at matched np=1 versus a same-campaign MTP n-max-8 arm at
+**55.2** (+26.81%), mean acceptance **0.628 vs 0.482**, 12/12 prompts per arm, zero errors. The matched
+MTP arm reproduces the 55.46 figure above to within 0.5%, which cross-validates both campaigns. It is
+**not selectable**: np2/4/8 scaling, exact greedy parity, and the block-verify dispatch path are all
+unproven, and it needs a non-production binary. Frozen v9 cannot load DFlash2 weights at all — v9's loader
+is DFlash1 and expects 81 tensors plus a `target_hidden_size` key the DFlash2 GGUF does not carry (got 58).
+
+### Source References
+
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — the registry swap, the `model_role` trap, and the re-measured `draft_max`
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-1…DF2-6, the v9 loader incompatibility, and the decision rule
+- [`progress/2026-08/2026-08-20.md`](../progress/2026-08/2026-08-20.md) — the depth sweep, the swap, and the DFlash2 np1 campaign
+- `epyc-inference-research` commits `b376dadd` (swap + draft_max), `bd40ca94` (DFlash2 decision context) — direct commit reads
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the earlier per-model draft-max sweep this update reconciles with
