@@ -112,3 +112,40 @@ filed as intake-1207. The doctrine's own evidence is in the table at the top of 
 14 defects are carried as D1–D14 in `.research-session.json`. **D13 is a recurrence** — intake-1186's
 HS-4 row has now gone un-applied across two consecutive passes with an unchanged blocker, which by
 the CLAUDE.md recurrence check is proof it was never blocked. It goes first.
+
+---
+
+## F — W5.3 visual-communication standard: recorded, not yet homed
+
+The operator's third steering item — *"transitioning to a more visual communication standard for
+complex code architecture topics"* — is **approved work with no owning handoff**. Per the standing
+doctrine that a new handoff raised mid-sweep goes into the amendment plan rather than being written
+on the spot, it is recorded here with its evidence cap so the next session inherits the constraint
+rather than rediscovering it.
+
+**The measured ceiling (intake-1195, CodeCity ICSE 2011 — the only real effect size in this batch):**
+
+- **+24.26% correctness** (F(1,37)=14.722, p=.001) and **−12.01% completion time** (p=.043), n=41,
+  against an Eclipse+Excel baseline.
+- **The aggregate is real but the boundary is narrower than usually reported.** The commonly-cited
+  "+24%/−12% only on big-picture tasks" is wrong: those are whole-task-set ANOVA figures. The
+  overview/focused split lives in a *secondary descriptive* section with **zero inferential
+  statistics**, and its actual finding is **parity with a spreadsheet** on focused tasks, not loss.
+- **The caveat that actually matters:** the single worst-for-CodeCity task was **excluded before the
+  ANOVA**, so the headline is over 9 of 10 designed tasks with the worst one removed.
+- **The time result is one participant from non-significance** (p=.043, no power analysis, no
+  correction for two dependent variables). Do not quote it with the confidence of the correctness result.
+
+**Scale caution, and it is not hypothetical for us.** The largest system *measured* was 4,656
+classes; the largest city ever *rendered* in that line was ~30,000 artifacts, and that is a
+build-time claim with no comprehension evidence attached. **Our GitNexus graph is 45,391 nodes /
+62,296 edges** — beyond anything this literature ever rendered, let alone measured. The thesis is
+explicit that at large scale the overview is lost and that drawing all dependency edges causes
+over-plotting, which is *why* CodeCity ships on-demand per-entity relations and never an all-edges
+view. **Any atlas we generate inherits both problems and has zero evidence behind it.**
+
+**Therefore, whoever picks this up:** scope claims to orientation and onboarding; do **not** extend
+them to focused debugging or precise lookup, where the honest prior is parity with grep. Ship a
+level-of-detail story before pixels. And if an atlas is built, evaluate it with CodeCity's *design* —
+correctness and completion time as paired DVs, a task set split overview-vs-precision, a **real**
+baseline (our own `gitnexus` CLI + grep, not a strawman), and blind grading against a pre-built oracle.

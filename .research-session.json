@@ -3,7 +3,7 @@
   "started_at": "2026-08-19T20:50:00Z",
   "last_checkpoint": "2026-08-20T13:10:00Z",
   "phase": 5,
-  "stage": "stage4-in-progress",
+  "stage": "stage4-complete-pending-operator-ratification",
   "session_kind": "research-intake (14 submitted sources)",
   "previous_session": {
     "session_id": "7c3a1e94-5b62-4d08-9f11-2a6e8c40d7b3",
@@ -104,7 +104,7 @@
     }
   ],
   "open_gates": [
-    "stage3-plan-approval (OPERATOR)"
+    "operator-ratification of 3 trust-boundary edits"
   ],
   "expansion_cap_reached": true,
   "entries_processed": {
@@ -270,5 +270,35 @@
     "digests": "tmp/intake-20260819/results/S2B-*.notes.md (9 files, all 16 entries covered)",
     "nimbleness_doctrine_result": "VINDICATED. Three of the four highest-value findings came from artifacts that are unmerged (SGLang RFC #27574, cordis PR #39/#41) or NOT PUBLIC AT ALL (deepseek-harness/cordis, 404 - the artifact was reached through the vendored copy instead).",
     "closeout_ledger": "research/intake-stage2b-closeout-2026-08-20.md (TRACKED - deliberately not tmp/, per defect D4)"
+  },
+  "stage4": {
+    "completed": [
+      "W1.1 slot-save path + 2 compounding defects",
+      "W1.2 shared-server PrefixRouter collision",
+      "W1.3 radix_cache.py deleted",
+      "W2 disposal-contract conformance suite (gap witness + 6 xfail invariants)",
+      "W3 D4 inline sources tracked / D11 re-derived + script committed",
+      "W4 six index corrections (D1,D2,D6,D9,D10,intake-668->950)",
+      "W5.1 AFC-P5.E5/E6 riders",
+      "W6.1-6.5 harness rows + KV ownership section",
+      "W5.3 recorded in close-out ledger section F"
+    ],
+    "blocked_pending_operator": [
+      "D3 CLAUDE.md GitNexus counts",
+      "W5.2 AGENT_INSTRUCTIONS.md dual prose standard",
+      "W7 OPERATING_CONSTRAINTS.md nimbleness doctrine + reload invariants"
+    ],
+    "ratify_script": "research/sources/intake-20260819/ratify_intake_20260820_trust_boundary_edits.sh (--check clean: 3 edits, 0 problems)",
+    "commits": [
+      "epyc-orchestrator 2db54487",
+      "epyc-root 9096f233"
+    ],
+    "self_corrections": [
+      "D11 misfiled - grepped the OUTPUT not the INPUT; artifact existed with SHA256SUMS",
+      "agents/shared/ does NOT exceed the corpus max once experiment variants are excluded (8787 vs 8951)",
+      "2.4x skew ratio is top_32-specific, decays 3.98x->1.42x",
+      "trust-boundary probe was vacuous (hook reads stdin, not argv)",
+      "slot-save 4xx PROPAGATES rather than returning False (HTTPStatusError is not a RequestError)"
+    ]
   }
 }
