@@ -46,6 +46,7 @@ hub found.
 from __future__ import annotations
 
 import inspect
+import math
 import time
 from dataclasses import dataclass, replace
 from types import MappingProxyType
@@ -728,12 +729,23 @@ class Observation:
     #: The producer has DECLARED it is not running (e.g. the AutoKernel controller
     #: reports ``stopped``). Silence is then expected, not evidence of death.
     producer_idle: bool = False
+    #: A running producer may have a stage-specific no-transition budget wider
+    #: than its panel's generic silence budget (for example a bounded planner
+    #: model call). This is producer-observed state, not a synthetic heartbeat.
+    silence_budget_s: Optional[float] = None
     #: Sections/subsystems the producer itself flagged as unreported.
     unreported: Sequence[str] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.artifact_present, bool):
             raise RegistryError("Observation.artifact_present must be a bool")
+        if (self.silence_budget_s is not None
+                and (isinstance(self.silence_budget_s, bool)
+                     or not isinstance(self.silence_budget_s, (int, float))
+                     or not math.isfinite(float(self.silence_budget_s))
+                     or self.silence_budget_s <= 0)):
+            raise RegistryError(
+                "Observation.silence_budget_s must be a positive finite number")
         object.__setattr__(self, "unreported", tuple(self.unreported or ()))
         if self.evidence is not None and (not isinstance(self.evidence, str)
                                           or not self.evidence.strip()):
@@ -869,6 +881,13 @@ def envelope(source: PanelSource, obs: Observation, *,
         raise RegistryError(f"envelope: expected PanelSource, got {type(source).__name__}")
     if not isinstance(obs, Observation):
         raise RegistryError(f"envelope: expected Observation, got {type(obs).__name__}")
+    if obs.silence_budget_s is not None:
+        if not source.watched or source.kind in LIVE_KINDS:
+            raise RegistryError(
+                "envelope: dynamic silence budget requires a watched producer")
+        budget = float(obs.silence_budget_s)
+        source = replace(source, warn_s=budget, stale_s=budget,
+                         silent_after_s=budget)
     now = time.time() if now is None else now
 
     # A report dated in the FUTURE cannot date anything. ``age`` is clamped at

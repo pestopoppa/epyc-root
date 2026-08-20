@@ -54,8 +54,10 @@ import concurrent.futures
 import fcntl
 import hashlib
 import json
+import math
 import os
 import re
+import stat
 import subprocess
 import sys
 import threading
@@ -63,6 +65,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from fractions import Fraction
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -178,6 +181,15 @@ AUTOKERNEL_DEPLOYMENTS_ROOT = Path(os.environ.get(
     "AUTOKERNEL_DEPLOYMENTS_ROOT",
     "/mnt/raid0/llm/autokernel/deployments"))
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMA = "epyc.autokernel.discovery_live_event.v1"
+AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 = "epyc.autokernel.discovery_live_event.v2"
+AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA = \
+    "76301d6647586a25f2d56de1b93f1da9ac11a3fa"
+AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA = \
+    "eb689b0d3239f7af538015a7ccb098fe8169f9e6"
+AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS = frozenset({
+    AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+    AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+})
 ARENA_ATTEMPT_DISPOSITIONS_JSON = Path(os.environ.get(
     "ARENA_ATTEMPT_DISPOSITIONS_JSON",
     str(Path(__file__).resolve().parent / "arena_attempt_dispositions.json")))
@@ -3221,40 +3233,3925 @@ def _safe_bundle_path(value: object, bundle: Path) -> Path | None:
     return path
 
 
-def _discovery_events(path: Path, channel: str | None) -> tuple[list[dict], str | None]:
-    """Read a bounded tail of the producer's allowlisted live-event contract."""
+def _discovery_event_result(value: object, event: str,
+                            *, version: int) -> dict | None:
+    """Project one secret-free actor result, or refuse the whole event."""
+    if value is None:
+        if event in {"planner_completed", "planner_failed", "planner_refused",
+                     "critic_completed"}:
+            raise ValueError("terminal actor event lacks its exact typed result")
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("result is not an object")
+    allowed = {"returncode", "stdout_sha256", "stderr_sha256", "decision",
+               "refusal_type", "refusal_reason_sha256"}
+    if set(value) - allowed:
+        raise ValueError("result contains non-allowlisted fields")
+    projected: dict = {}
+    if "returncode" in value:
+        code = value["returncode"]
+        if isinstance(code, bool) or not isinstance(code, int):
+            raise ValueError("returncode is not an integer")
+        projected["returncode"] = code
+    for key in ("stdout_sha256", "stderr_sha256", "refusal_reason_sha256"):
+        if key in value:
+            if key == "refusal_reason_sha256" and event != "planner_refused":
+                raise ValueError("refusal digest is not on a planner refusal")
+            item = value[key]
+            if not isinstance(item, str) or re.fullmatch(r"[0-9a-f]{64}", item) is None:
+                raise ValueError(f"invalid {key}")
+            projected[key] = item
+    if "decision" in value:
+        if value["decision"] not in {"accept", "reject", "revise"}:
+            raise ValueError("invalid critic decision")
+        projected["decision"] = value["decision"]
+    if "refusal_type" in value:
+        if event != "planner_refused" or value["refusal_type"] != "planner_output_refusal":
+            raise ValueError("invalid planner refusal type")
+        projected["refusal_type"] = value["refusal_type"]
+    if event == "planner_refused" and set(projected) != {
+            "returncode", "stdout_sha256", "stderr_sha256",
+            "refusal_type", "refusal_reason_sha256"}:
+        raise ValueError("planner refusal lacks its exact typed result")
+    if event == "planner_refused" and projected.get("returncode") != 0:
+        raise ValueError("planner refusal does not bind a successful actor exit")
+    if (event == "planner_completed"
+            and (set(projected) != {
+                "returncode", "stdout_sha256", "stderr_sha256"}
+                 or projected.get("returncode") != 0)):
+        raise ValueError("invalid planner completion result")
+    if (event == "planner_failed"
+            and (set(projected) != {
+                "returncode", "stdout_sha256", "stderr_sha256"}
+                 or projected.get("returncode") == 0)):
+        raise ValueError("invalid planner failure result")
+    if event == "critic_completed" and set(projected) != {
+            "stdout_sha256", "stderr_sha256", "decision"}:
+        raise ValueError("invalid critic completion result")
+    if event in {"planner_started", "critic_started", "critic_failed"}:
+        raise ValueError("lifecycle marker carries a result")
+    return projected
+
+
+def _discovery_events_from_raw(raw: bytes, offset: int,
+                               channel: str | None) -> tuple[list[dict], str | None]:
+    """Validate one already-snapshotted bounded event-stream tail."""
+    rows: list[dict] = []
+    rejected = 0
+    lines = raw.decode("ascii", "replace").splitlines()
+    # A bounded tail may begin in the middle of a valid JSONL record. It is not
+    # a producer contract rejection; discard that incomplete prefix before
+    # counting malformed rows.
+    if offset and lines:
+        lines = lines[1:]
+    for line in lines[-300:]:
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            rejected += 1
+            continue
+        if not isinstance(row, dict) or row.get("schema") not in \
+                AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS:
+            rejected += 1
+            continue
+        version = 2 if row["schema"] == AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 else 1
+        required = {"schema", "ts", "channel", "event", "campaign_id",
+                    "hypothesis_id", "provider", "model", "effort"}
+        allowed = required | {"result"}
+        if version == 2:
+            required |= {"event_id", "operation_key"}
+            allowed |= {"event_id", "operation_key"}
+        text_fields = ("channel", "event", "campaign_id", "hypothesis_id",
+                       "provider", "model", "effort")
+        if (not required.issubset(row) or set(row) - allowed
+                or channel is not None and row.get("channel") != channel
+                or row.get("channel") not in {"autokernel", "planner"}
+                or any(not isinstance(row.get(key), str)
+                       or re.fullmatch(r"[a-zA-Z0-9_.:-]{1,160}", row[key]) is None
+                       for key in text_fields)
+                or not isinstance(row.get("ts"), str)
+                or re.fullmatch(
+                    r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                    r"(?:\.[0-9]{1,6})?Z", row["ts"]) is None
+                or _parse_semantic_timestamp(row["ts"]) is None):
+            rejected += 1
+            continue
+        lifecycle_events = {
+            "planner_started", "planner_completed", "planner_failed",
+            "planner_refused", "critic_started", "critic_completed",
+            "critic_failed",
+        }
+        expected_channel = (
+            "planner" if row["event"].startswith("planner_") else
+            "autokernel" if row["event"].startswith("critic_") else None)
+        if row["event"] not in lifecycle_events or row["channel"] != expected_channel:
+            rejected += 1
+            continue
+        if version == 2:
+            if (re.fullmatch(r"ake-[0-9a-f]{64}", row["event_id"]) is None
+                    or re.fullmatch(r"[0-9a-f]{64}", row["operation_key"]) is None):
+                rejected += 1
+                continue
+            identity = {key: row[key] for key in required
+                        if key not in {"channel", "event_id", "ts"}}
+            expected_id = "ake-" + hashlib.sha256(json.dumps(
+                identity, sort_keys=True, separators=(",", ":")
+            ).encode("ascii")).hexdigest()
+            if row["event_id"] != expected_id:
+                rejected += 1
+                continue
+        try:
+            result = _discovery_event_result(
+                row.get("result"), row["event"], version=version)
+        except ValueError:
+            rejected += 1
+            continue
+        # The producer contract contains no prompt, model text, command, env, or
+        # credential fields. Re-project the allowlist anyway: consumers do not
+        # become a secret exfiltration path if a future writer drifts.
+        projected = {key: row[key] for key in (
+            "schema", "event_id", "operation_key", "ts", "channel", "event",
+            "campaign_id", "hypothesis_id", "provider", "model", "effort")
+            if key in row}
+        if result is not None:
+            projected["result"] = result
+        rows.append(projected)
+    error = (f"{rejected} live event row{'s' if rejected != 1 else ''} "
+             "rejected by telemetry contract" if rejected else None)
+    return rows[-200:], error
+
+
+_DISCOVERY_STREAM_LOCK_WAIT_S = 0.25
+_DISCOVERY_STREAM_LOCK_RETRY_S = 0.005
+
+
+def _discovery_event_streams(root: Path) -> tuple[
+        list[dict], str | None, list[dict], str | None,
+        list[dict], list[dict], list[dict], dict, str]:
+    """Read the global+planner mirror under one producer-compatible snapshot.
+
+    The producer takes exclusive locks in global-then-planner order around its
+    dual write. Taking shared locks in the same order means the dashboard sees
+    either side of that transaction, never its transient one-file midpoint.
+    """
+    names = ("autokernel.jsonl", "planner.jsonl")
+    deadline = time.monotonic() + _DISCOVERY_STREAM_LOCK_WAIT_S
+    while True:
+        dir_fd: int | None = None
+        fds: list[int | None] = [None, None]
+        locked: list[int] = []
+        errors: list[str | None] = [None, None]
+        snapshots: list[tuple[bytes, int]] = [(b"", 0), (b"", 0)]
+        baselines: list[os.stat_result | None] = [None, None]
+        absent_at_open = [False, False]
+        retry = False
+        write_in_progress = False
+        identity_drift = False
+        directory_trusted = False
+        try:
+            # Open and lock in the producer's global-then-planner order. Both
+            # locks remain held through parsing and reconciliation below.
+            try:
+                dir_fd = os.open(
+                    root, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+                    | os.O_DIRECTORY)
+                dir_info = os.fstat(dir_fd)
+                root_info = root.lstat()
+                if (not stat.S_ISDIR(dir_info.st_mode)
+                        or not stat.S_ISDIR(root_info.st_mode)
+                        or dir_info.st_uid != os.geteuid()
+                        or root_info.st_uid != os.geteuid()
+                        or (dir_info.st_dev, dir_info.st_ino)
+                        != (root_info.st_dev, root_info.st_ino)):
+                    raise OSError("telemetry stream directory identity is not trusted")
+                directory_trusted = True
+            except FileNotFoundError:
+                # A sealed deployment may predate live telemetry entirely.
+                # Absence is legacy/no pulse, not a corrupt stream directory.
+                if dir_fd is not None:
+                    os.close(dir_fd)
+                    dir_fd = None
+            except OSError as exc:
+                message = f"live event stream directory unreadable: {exc}"
+                errors = [message, message]
+            for index, name in enumerate(names):
+                if dir_fd is None or not directory_trusted:
+                    break
+                try:
+                    fds[index] = os.open(
+                        name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+                        dir_fd=dir_fd)
+                except FileNotFoundError:
+                    absent_at_open[index] = True
+                    continue
+                except OSError as exc:
+                    errors[index] = f"live event stream unreadable: {exc}"
+            for fd in fds:
+                if fd is None:
+                    continue
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+                    locked.append(fd)
+                except BlockingIOError:
+                    write_in_progress = True
+                    break
+            if write_in_progress:
+                retry = time.monotonic() < deadline
+            else:
+                for index, (name, fd) in enumerate(zip(names, fds)):
+                    if fd is None:
+                        # If a missing stream appeared after the opens, do not
+                        # compare it with the other stream's older generation.
+                        try:
+                            os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+                        except FileNotFoundError:
+                            continue
+                        except OSError as exc:
+                            errors[index] = f"live event stream unreadable: {exc}"
+                        else:
+                            retry = time.monotonic() < deadline
+                        continue
+                    try:
+                        before = os.fstat(fd)
+                        path_before = os.stat(
+                            name, dir_fd=dir_fd, follow_symlinks=False)
+                        if (not stat.S_ISREG(before.st_mode)
+                                or before.st_nlink != 1
+                                or before.st_uid != os.geteuid()
+                                or not stat.S_ISREG(path_before.st_mode)
+                                or path_before.st_nlink != 1
+                                or path_before.st_uid != os.geteuid()
+                                or (before.st_dev, before.st_ino)
+                                != (path_before.st_dev, path_before.st_ino)):
+                            raise OSError(
+                                "telemetry stream is not the current single-link regular file")
+                        offset = max(0, before.st_size - 128 * 1024)
+                        snapshots[index] = (
+                            os.pread(fd, 128 * 1024, offset), offset)
+                        after = os.fstat(fd)
+                        path_after = os.stat(
+                            name, dir_fd=dir_fd, follow_symlinks=False)
+                        if (not stat.S_ISREG(after.st_mode)
+                                or after.st_nlink != 1
+                                or after.st_uid != os.geteuid()
+                                or not stat.S_ISREG(path_after.st_mode)
+                                or path_after.st_nlink != 1
+                                or path_after.st_uid != os.geteuid()
+                                or (after.st_dev, after.st_ino)
+                                != (path_after.st_dev, path_after.st_ino)
+                                or (before.st_dev, before.st_ino,
+                                    before.st_size, before.st_mtime_ns,
+                                    before.st_ctime_ns)
+                                != (after.st_dev, after.st_ino,
+                                    after.st_size, after.st_mtime_ns,
+                                    after.st_ctime_ns)):
+                            identity_drift = True
+                            snapshots[index] = (b"", 0)
+                            break
+                        baselines[index] = before
+                    except OSError as exc:
+                        errors[index] = f"live event stream unreadable: {exc}"
+                if identity_drift:
+                    retry = time.monotonic() < deadline
+                    if not retry:
+                        errors[index] = errors[index] or (
+                            "live event streams changed during snapshot")
+                if (not retry and not identity_drift and dir_fd is not None
+                        and directory_trusted):
+                    try:
+                        dir_after = os.fstat(dir_fd)
+                        root_after = root.lstat()
+                        if (not stat.S_ISDIR(dir_after.st_mode)
+                                or not stat.S_ISDIR(root_after.st_mode)
+                                or dir_after.st_uid != os.geteuid()
+                                or root_after.st_uid != os.geteuid()
+                                or (dir_after.st_dev, dir_after.st_ino)
+                                != (root_after.st_dev, root_after.st_ino)
+                                or (dir_info.st_dev, dir_info.st_ino)
+                                != (dir_after.st_dev, dir_after.st_ino)):
+                            identity_drift = True
+                            retry = time.monotonic() < deadline
+                            if not retry:
+                                errors[0] = errors[0] or (
+                                    "live event stream directory changed during snapshot")
+                    except OSError as exc:
+                        identity_drift = True
+                        retry = time.monotonic() < deadline
+                        if not retry:
+                            errors[0] = errors[0] or (
+                                f"live event stream directory unreadable: {exc}")
+                if not retry:
+                    if identity_drift:
+                        snapshots = [(b"", 0), (b"", 0)]
+                    all_rows, all_parse_error = _discovery_events_from_raw(
+                        *snapshots[0], channel=None)
+                    planner_rows, planner_parse_error = _discovery_events_from_raw(
+                        *snapshots[1], channel="planner")
+                    all_error = errors[0] or all_parse_error
+                    planner_error = errors[1] or planner_parse_error
+                    (lifecycle_events, visible_all_events,
+                     visible_planner_events,
+                     telemetry_integrity) = _discovery_reconcile_events(
+                         all_rows, planner_rows, all_error, planner_error)
+                    if not directory_trusted or dir_fd is None:
+                        return (
+                            all_rows, all_error, planner_rows, planner_error,
+                            lifecycle_events, visible_all_events,
+                            visible_planner_events, telemetry_integrity, "stable")
+                    # The first stream can still change while the second is
+                    # read or while the immutable byte snapshots are parsed.
+                    # Revalidate the whole pair together immediately before
+                    # return; per-file postchecks alone leave that cross-stream
+                    # gap. Advisory SH locks bind cooperating producers, while
+                    # this final identity/content epoch pass catches mutation
+                    # by a writer that disregards the lock contract.
+                    final_stable = True
+                    try:
+                        final_dir = os.fstat(dir_fd)
+                        final_root = root.lstat()
+                        final_stable = (
+                            stat.S_ISDIR(final_dir.st_mode)
+                            and stat.S_ISDIR(final_root.st_mode)
+                            and final_dir.st_uid == os.geteuid()
+                            and final_root.st_uid == os.geteuid()
+                            and (final_dir.st_dev, final_dir.st_ino)
+                            == (final_root.st_dev, final_root.st_ino)
+                            and (dir_info.st_dev, dir_info.st_ino)
+                            == (final_dir.st_dev, final_dir.st_ino))
+                        for check_index, (name, fd, baseline) in enumerate(
+                                zip(names, fds, baselines)):
+                            if not final_stable:
+                                break
+                            if fd is None:
+                                if not absent_at_open[check_index]:
+                                    continue
+                                try:
+                                    os.stat(name, dir_fd=dir_fd,
+                                            follow_symlinks=False)
+                                except FileNotFoundError:
+                                    continue
+                                final_stable = False
+                                break
+                            if baseline is None:
+                                continue
+                            final_fd = os.fstat(fd)
+                            final_path = os.stat(
+                                name, dir_fd=dir_fd, follow_symlinks=False)
+                            final_stable = (
+                                stat.S_ISREG(final_fd.st_mode)
+                                and final_fd.st_nlink == 1
+                                and final_fd.st_uid == os.geteuid()
+                                and stat.S_ISREG(final_path.st_mode)
+                                and final_path.st_nlink == 1
+                                and final_path.st_uid == os.geteuid()
+                                and (final_fd.st_dev, final_fd.st_ino)
+                                == (final_path.st_dev, final_path.st_ino)
+                                and (baseline.st_dev, baseline.st_ino,
+                                     baseline.st_size, baseline.st_mtime_ns,
+                                     baseline.st_ctime_ns)
+                                == (final_fd.st_dev, final_fd.st_ino,
+                                    final_fd.st_size, final_fd.st_mtime_ns,
+                                    final_fd.st_ctime_ns))
+                    except OSError:
+                        final_stable = False
+                    if final_stable:
+                        return (
+                            all_rows, all_error, planner_rows, planner_error,
+                            lifecycle_events, visible_all_events,
+                            visible_planner_events, telemetry_integrity, "stable")
+                    identity_drift = True
+                    retry = time.monotonic() < deadline
+                    if not retry:
+                        errors[0] = errors[0] or (
+                            "live event streams changed during final snapshot validation")
+                        snapshots = [(b"", 0), (b"", 0)]
+        finally:
+            for fd in reversed(locked):
+                fcntl.flock(fd, fcntl.LOCK_UN)
+            for fd in reversed(fds):
+                if fd is not None:
+                    os.close(fd)
+            if dir_fd is not None:
+                os.close(dir_fd)
+        if retry:
+            time.sleep(_DISCOVERY_STREAM_LOCK_RETRY_S)
+            continue
+        if write_in_progress:
+            integrity = {
+                "state": "producer_write_in_progress", "verified": False,
+                "detail": "producer is committing the dual telemetry stream transaction",
+                "conflict_count": 0, "duplicate_identity_count": 0,
+                "order_divergence": False, "missing_planner_count": 0,
+                "missing_autokernel_count": 0,
+                "timestamp_divergence_count": 0, "dropped_event_count": 0,
+            }
+            return ([], None, [], None, [], [], [], integrity,
+                    "producer_write_in_progress")
+        # A file appeared repeatedly while opening the pair. Surface an
+        # unreadable stable snapshot rather than spin beyond the HTTP budget.
+        errors[0] = errors[0] or "live event streams changed during snapshot"
+        all_rows, all_parse_error = _discovery_events_from_raw(
+            *snapshots[0], channel=None)
+        planner_rows, planner_parse_error = _discovery_events_from_raw(
+            *snapshots[1], channel="planner")
+        all_error = errors[0] or all_parse_error
+        planner_error = errors[1] or planner_parse_error
+        (lifecycle_events, visible_all_events, visible_planner_events,
+         telemetry_integrity) = _discovery_reconcile_events(
+             all_rows, planner_rows, all_error, planner_error)
+        return (all_rows, all_error, planner_rows, planner_error,
+                lifecycle_events, visible_all_events, visible_planner_events,
+                telemetry_integrity, "unstable")
+
+
+def _discovery_reconcile_events(all_rows: list[dict],
+                                planner_rows: list[dict],
+                                all_error: str | None,
+                                planner_error: str | None) -> tuple[
+                                    list[dict], list[dict], list[dict], dict]:
+    """Deduplicate v2 identity and expose dual-stream visibility defects."""
+    stream_rows = {"autokernel": all_rows, "planner": planner_rows}
+    by_stream: dict[str, dict[str, list[dict]]] = {
+        "autokernel": {}, "planner": {}}
+    for stream, rows in stream_rows.items():
+        for row in rows:
+            event_id = row.get("event_id")
+            if isinstance(event_id, str):
+                by_stream[stream].setdefault(event_id, []).append(row)
+    ids = set(by_stream["autokernel"]) | set(by_stream["planner"])
+    conflicts: set[str] = set()
+    duplicates = {
+        event_id for event_id in ids
+        if len(by_stream["autokernel"].get(event_id, [])) > 1
+        or len(by_stream["planner"].get(event_id, [])) > 1}
+    unique: dict[str, dict] = {}
+    for event_id in ids:
+        candidates = (by_stream["autokernel"].get(event_id, [])
+                      + by_stream["planner"].get(event_id, []))
+        canonical = {json.dumps(
+            {key: value for key, value in row.items() if key != "ts"},
+            sort_keys=True, separators=(",", ":"))
+                     for row in candidates}
+        if len(canonical) != 1:
+            conflicts.add(event_id)
+        elif candidates:
+            unique[event_id] = candidates[0]
+    timestamp_divergence = sorted(
+        event_id for event_id in ids if event_id not in conflicts
+        and len({row.get("ts") for row in (
+            by_stream["autokernel"].get(event_id, [])
+            + by_stream["planner"].get(event_id, []))}) > 1)
+    all_planner_sequence = [row["event_id"] for row in all_rows
+                            if isinstance(row.get("event_id"), str)
+                            and row.get("channel") == "planner"]
+    planner_sequence = [row["event_id"] for row in planner_rows
+                        if isinstance(row.get("event_id"), str)]
+    common_sequence_ids = set(all_planner_sequence) & set(planner_sequence)
+    order_divergence = (
+        [item for item in all_planner_sequence if item in common_sequence_ids]
+        != [item for item in planner_sequence if item in common_sequence_ids])
+    corruptions = conflicts | duplicates | set(timestamp_divergence)
+    if order_divergence:
+        corruptions |= common_sequence_ids
+    all_floor = min((str(rows[0].get("ts") or "")
+                     for rows in by_stream["autokernel"].values() if rows),
+                    default=None)
+    planner_floor = min((str(rows[0].get("ts") or "")
+                         for rows in by_stream["planner"].values() if rows),
+                        default=None)
+    # Compare only the overlapping bounded tails. A planner-only stream can
+    # legitimately retain older planner rows that fell out of the global
+    # stream's 200-row window because intervening critic rows consumed it.
+    missing_planner = sorted(
+        event_id for event_id, rows in by_stream["autokernel"].items()
+        if event_id not in by_stream["planner"]
+        and any(row.get("channel") == "planner" for row in rows)
+        and (planner_floor is None
+             or str(rows[0].get("ts") or "") >= planner_floor))
+    missing_autokernel = sorted(
+        event_id for event_id, rows in by_stream["planner"].items()
+        if event_id not in by_stream["autokernel"]
+        and (all_floor is None or str(rows[0].get("ts") or "") >= all_floor))
+
+    def visible(rows: list[dict]) -> list[dict]:
+        seen: set[str] = set()
+        out: list[dict] = []
+        for row in rows:
+            event_id = row.get("event_id")
+            if event_id in corruptions or isinstance(event_id, str) and event_id in seen:
+                continue
+            if isinstance(event_id, str):
+                seen.add(event_id)
+            out.append(row)
+        return out
+
+    visible_all = visible(all_rows)
+    visible_planner = visible(planner_rows)
+    legacy = [row for row in visible_all
+              if row.get("schema") == AUTOKERNEL_DISCOVERY_EVENT_SCHEMA]
+    merged = legacy + [row for event_id, row in unique.items()
+                       if event_id not in corruptions]
+    merged.sort(key=lambda row: str(row.get("ts") or ""))
+    problems = []
+    if all_error:
+        problems.append(f"AutoKernel stream: {all_error}")
+    if planner_error:
+        problems.append(f"planner stream: {planner_error}")
+    if conflicts:
+        problems.append(
+            f"{len(conflicts)} conflicting event "
+            f"{'identities' if len(conflicts) != 1 else 'identity'} dropped")
+    if duplicates:
+        problems.append(f"{len(duplicates)} duplicate event identit"
+                        f"{'ies' if len(duplicates) != 1 else 'y'} dropped")
+    if timestamp_divergence:
+        problems.append(f"{len(timestamp_divergence)} event timestamp"
+                        f"{'s' if len(timestamp_divergence) != 1 else ''} "
+                        "diverge across streams and were dropped")
+    if order_divergence:
+        problems.append("planner mirror event order diverges; overlapping rows were dropped")
+    if missing_planner:
+        problems.append(f"{len(missing_planner)} planner event"
+                        f"{'s' if len(missing_planner) != 1 else ''} missing from planner stream")
+    if missing_autokernel:
+        problems.append(f"{len(missing_autokernel)} planner event"
+                        f"{'s' if len(missing_autokernel) != 1 else ''} missing from AutoKernel stream")
+    has_v2 = bool(ids)
+    integrity = {
+        "state": ("conflict" if corruptions else "degraded" if problems else
+                  "verified" if has_v2 else "legacy"),
+        "verified": has_v2 and not problems,
+        "detail": ("; ".join(problems) if problems else
+                   "v2 event identities agree across required streams" if has_v2 else
+                   "legacy v1 telemetry has no cross-stream event identity"),
+        "conflict_count": len(conflicts),
+        "duplicate_identity_count": len(duplicates),
+        "order_divergence": order_divergence,
+        "missing_planner_count": len(missing_planner),
+        "missing_autokernel_count": len(missing_autokernel),
+        "timestamp_divergence_count": len(timestamp_divergence),
+        "dropped_event_count": len(corruptions),
+    }
+    return merged[-200:], visible_all[-200:], visible_planner[-200:], integrity
+
+
+def _discovery_state_visibility_degraded(state: dict | None) -> list[dict]:
+    """Project producer-persisted telemetry failures without raw error text."""
+    values = state.get("visibility_degraded") if isinstance(state, dict) else None
+    if not isinstance(values, list):
+        return []
+    projected: list[dict] = []
+    for value in values[-100:]:
+        if (not isinstance(value, dict)
+                or set(value) != {"event", "operation_key", "error_type",
+                                  "error_sha256"}
+                or not isinstance(value.get("event"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", value["event"]) is None
+                or not isinstance(value.get("operation_key"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", value["operation_key"]) is None
+                or not isinstance(value.get("error_type"), str)
+                or re.fullmatch(r"[a-zA-Z0-9_.]{1,100}",
+                                value["error_type"]) is None
+                or not isinstance(value.get("error_sha256"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", value["error_sha256"]) is None):
+            continue
+        projected.append(dict(value))
+    return projected
+
+
+_DISCOVERY_PIPELINE = (
+    ("planner", "Planner"),
+    ("planner_validation", "Validate planner output"),
+    ("critic", "Critic review"),
+    ("authorization", "Governance authorization"),
+    ("resource_admission", "Resource admission"),
+    ("source_materialization", "Source validation / materialization"),
+    ("build", "Compile anchor and candidate"),
+    ("evidence_binding", "Bind build to proof plan"),
+    ("correctness", "Correctness proof"),
+    ("correctness_validation", "Validate correctness result"),
+    ("candidate_attribution", "Candidate dispatch attribution"),
+    ("anchor_attribution", "Anchor dispatch attribution"),
+    ("dispatch_proof", "Dispatch attribution"),
+    ("profile", "Kernel profile"),
+    ("measurement_graphs_off_screen", "Graphs-off measurement screen"),
+    ("target_runtime_graphs_on_screen", "Graphs-on target-runtime screen"),
+    ("benchmark", "Whole-model benchmark"),
+    ("decision", "Classify result"),
+    ("replication_s1", "Replication S1"),
+    ("replication_s2", "Replication S2"),
+    ("next_hypothesis", "Automatic next hypothesis"),
+)
+
+_DISCOVERY_POSTBUILD_STAGES = (
+    "correctness", "correctness_validation", "candidate_attribution",
+    "anchor_attribution", "dispatch_proof", "profile",
+    "measurement_graphs_off_screen", "target_runtime_graphs_on_screen",
+    "benchmark", "decision",
+)
+_DISCOVERY_PIPELINE_DICT = dict(_DISCOVERY_PIPELINE)
+_EXPERIMENTAL_RUNTIME_PIPELINE = (
+    ("experimental_build", "Experimental build"),
+    ("cpu_gpu_regression", "CPU + GPU regression"),
+    ("matched_np1", "Matched np=1 comparison"),
+    ("concurrency_grid", "Concurrency grid np=2/4/8"),
+    ("greedy_parity", "Greedy token parity"),
+    ("decision", "Runtime candidate decision"),
+)
+_EXPERIMENTAL_RUNTIME_STAGES = tuple(
+    stage for stage, _label in _EXPERIMENTAL_RUNTIME_PIPELINE)
+_EXPERIMENTAL_RUNTIME_PIPELINE_DICT = dict(_EXPERIMENTAL_RUNTIME_PIPELINE)
+_EXPERIMENTAL_RUNTIME_SCHEMA = \
+    "epyc.autokernel.experimental_runtime_dashboard.v1"
+_EXPERIMENTAL_RUNTIME_RECEIPT_SCHEMA = \
+    "epyc.autokernel.experimental_runtime_stage_receipt.v1"
+_DISCOVERY_STALL_S = 300.0
+_DISCOVERY_STAGE_STALL_S = {
+    # The sealed Claude critic has a 900-second process timeout, and the Codex
+    # planner has historically needed several minutes for the full source
+    # catalogue.  A five-minute generic warning would therefore report known
+    # healthy actor calls as stalled.  These are no-transition budgets, not
+    # synthetic heartbeats or execution timeouts.
+    "planner": 900.0,
+    "critic": 900.0,
+    "build": 1800.0,
+    # The governed test-backend-ops correctness plan has an 1800-second
+    # execution timeout.  A live held source-proof claim is positive actor
+    # evidence throughout that window; the generic five-minute budget would
+    # falsely mark a healthy 1139-case ROCm suite stalled.
+    "correctness": 1800.0,
+}
+
+
+def _discovery_checkpoint(path: Path) -> dict | None:
+    """Return the latest allowlisted STOP_STATE without exposing journal data."""
     try:
         size = path.stat().st_size
         with path.open("rb") as handle:
             handle.seek(max(0, size - 128 * 1024))
             raw = handle.read(128 * 1024)
-    except FileNotFoundError:
-        return [], None
-    except OSError as exc:
-        return [], f"live event stream unreadable: {exc}"
-    rows: list[dict] = []
+    except (FileNotFoundError, OSError):
+        return None
+    latest = None
+    history: list[dict] = []
     for line in raw.decode("ascii", "replace").splitlines()[-300:]:
         try:
             row = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if (not isinstance(row, dict)
-                or row.get("schema") != AUTOKERNEL_DISCOVERY_EVENT_SCHEMA
-                or channel is not None and row.get("channel") != channel
-                or set(row) - {"schema", "ts", "channel", "event", "campaign_id",
-                                   "hypothesis_id", "provider", "model", "effort", "result"}):
+        payload = row.get("payload") if isinstance(row, dict) else None
+        digest = payload.get("controller_state_sha256") if isinstance(payload, dict) else None
+        if (row.get("journal_schema") != "epyc.autokernel.journal_entry.v1"
+                or row.get("kind") != "STOP_STATE" or not isinstance(payload, dict)
+                or not isinstance(payload.get("state"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", payload["state"]) is None
+                or not isinstance(digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+                or not isinstance(row.get("seq"), int)
+                or not isinstance(row.get("written_at"), str)):
             continue
-        # The producer contract contains no prompt, model text, command, env, or
-        # credential fields. Re-project the allowlist anyway: consumers do not
-        # become a secret exfiltration path if a future writer drifts.
-        rows.append({key: row[key] for key in (
-            "ts", "channel", "event", "campaign_id", "hypothesis_id",
-            "provider", "model", "effort", "result") if key in row})
-    return rows[-200:], None
+        latest = {
+            "seq": row.get("seq"), "state": payload["state"],
+            "written_at": row["written_at"],
+            "controller_state_sha256": payload.get("controller_state_sha256"),
+        }
+        history.append(latest)
+    if latest is not None:
+        # Keep the same bounded journal window used by the strict parser. A
+        # long-running campaign may advance many checkpoints after a typed
+        # terminal; retaining only the last 25 would force its pulse/history
+        # timestamp to fall back to the receipt mtime instead of the exact
+        # durable STOP_STATE boundary.
+        latest = {**latest, "history": history[-300:]}
+    return latest
+
+
+def _discovery_safe_error(value: object) -> dict | None:
+    if not isinstance(value, dict):
+        return None
+    kind = value.get("type")
+    message = value.get("message")
+    if not isinstance(kind, str) or not isinstance(message, str):
+        return None
+    # Errors may contain source paths, but never actor prompts or output. Keep
+    # this bounded because it is rendered prominently and crosses a trust seam.
+    safe = " ".join(message.split())[:500]
+    return {"type": kind[:100], "detail": safe}
+
+
+def _discovery_native_receipt_hash_valid(body: object) -> bool:
+    """Validate the producer's canonical, content-addressed receipt field."""
+    if not isinstance(body, dict):
+        return False
+    native = body.get("receipt_sha256")
+    if not isinstance(native, str) or re.fullmatch(r"[0-9a-f]{64}", native) is None:
+        return False
+    try:
+        canonical = json.dumps(
+            {key: value for key, value in body.items()
+             if key != "receipt_sha256"},
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError):
+        return False
+    return hashlib.sha256(canonical).hexdigest() == native
+
+
+def _discovery_completed_build_materialization(
+        *, entry: Path, intent_path: Path, terminal: dict,
+        contract: dict) -> bool:
+    """Require the exact sealed terminal -> materialization receipt chain."""
+    build = terminal.get("build")
+    materialization_raw = (build.get("materialization_receipt")
+                           if isinstance(build, dict) else None)
+    materialization_sha = (build.get("materialization_sha256")
+                           if isinstance(build, dict) else None)
+    if (terminal.get("promotion_claim") is not False
+            or not _discovery_native_receipt_hash_valid(terminal)
+            or not isinstance(build, dict)
+            or build.get("build_key") != entry.name
+            or not isinstance(materialization_raw, str)
+            or not isinstance(materialization_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", materialization_sha) is None):
+        return False
+    try:
+        intent_sha = hashlib.sha256(intent_path.read_bytes()).hexdigest()
+    except OSError:
+        return False
+    if terminal.get("intent_file_sha256") != intent_sha:
+        return False
+    materialization_path = Path(materialization_raw)
+    try:
+        resolved_entry = entry.resolve(strict=True)
+        resolved = materialization_path.resolve(strict=True)
+        resolved.relative_to(resolved_entry)
+        info = materialization_path.lstat()
+        if (materialization_path.is_symlink()
+                or not materialization_path.is_file()
+                or info.st_nlink != 1 or info.st_size > 4 * 1024 * 1024):
+            return False
+        raw = materialization_path.read_bytes()
+        after = materialization_path.lstat()
+    except (OSError, ValueError):
+        return False
+    if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+            != (after.st_dev, after.st_ino, after.st_size,
+                after.st_mtime_ns, after.st_nlink)
+            or hashlib.sha256(raw).hexdigest() != materialization_sha):
+        return False
+    try:
+        materialization = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    return bool(
+        isinstance(materialization, dict)
+        and materialization.get("schema") ==
+        "epyc.autokernel.gpu_source_materialization.v1"
+        and materialization.get("authority") ==
+        "nonpromotable_candidate_only_discovery"
+        and materialization.get("promotion_claim") is False
+        and materialization.get("build_key") == entry.name
+        and materialization.get("operation_key") == entry.name
+        and materialization.get("manifest_sha256") ==
+        contract.get("patch_bundle_sha256")
+        and materialization.get("build_contract") == contract
+        and _discovery_native_receipt_hash_valid(materialization)
+    )
+
+
+def _discovery_build_observation(operations_root: Path, state: dict | None,
+                                 config_sha256: object) -> dict | None:
+    """Identify the exact active source-build transaction from sealed inputs.
+
+    This is an operator observation, not execution authority.  It only reports
+    a build when one real cache entry binds the current inflight manifest,
+    proposal, deployment identity, and held build lock.  Merely finding a log
+    or process name is deliberately insufficient.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    if not isinstance(inflight, dict) or not isinstance(config_sha256, str):
+        return None
+    candidate = inflight.get("candidate")
+    row = inflight.get("row")
+    if not isinstance(candidate, dict) or not isinstance(row, dict):
+        return None
+    manifest_sha = candidate.get("source_manifest_sha256")
+    proposal_sha = row.get("proposal_sha256")
+    manifest = candidate.get("manifest")
+    candidate_id = manifest.get("candidate_id") if isinstance(manifest, dict) else None
+    if (not isinstance(manifest_sha, str) or not isinstance(proposal_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None
+            or re.fullmatch(r"[0-9a-f]{64}", proposal_sha) is None):
+        return None
+    entries = operations_root / "build-cache" / "entries"
+    try:
+        if entries.is_symlink() or not entries.is_dir():
+            return None
+        children = list(entries.iterdir())[:128]
+    except OSError:
+        return None
+    matches = []
+    for entry in children:
+        if (entry.is_symlink() or not entry.is_dir()
+                or re.fullmatch(r"[0-9a-f]{64}", entry.name) is None):
+            continue
+        intent_path = entry / "intent.json"
+        present, intent, error = _read_json_object(intent_path, "source build intent")
+        if not present or intent is None or error:
+            continue
+        contract = intent.get("build_contract")
+        if (intent.get("schema") != "epyc.autokernel.gpu_source_build_intent.v1"
+                or intent.get("build_key") != entry.name
+                or not isinstance(contract, dict)
+                or contract.get("build_key") != entry.name
+                or contract.get("patch_bundle_sha256") != manifest_sha
+                or contract.get("proposal_sha256") != proposal_sha
+                or contract.get("deployment_config_sha256") != config_sha256):
+            continue
+        terminal = entry / "terminal.json"
+        if terminal.exists() or terminal.is_symlink():
+            present, terminal_body, error = _read_json_object(
+                terminal, "source build terminal")
+            if (not present or terminal_body is None or error
+                    or terminal_body.get("schema") !=
+                    "epyc.autokernel.gpu_source_build_terminal.v1"
+                    or terminal_body.get("build_key") != entry.name
+                    or terminal_body.get("state") != "complete"
+                    or not _discovery_completed_build_materialization(
+                        entry=entry, intent_path=intent_path,
+                        terminal=terminal_body, contract=contract)):
+                continue
+            try:
+                completed_at = datetime.fromtimestamp(
+                    terminal.stat().st_mtime, timezone.utc
+                ).isoformat().replace("+00:00", "Z")
+            except OSError:
+                continue
+            matches.append({"stage": "evidence_binding", "state": "running",
+                            "started_at": completed_at,
+                            "build_key": entry.name, "arm": "complete"})
+            continue
+        lock = operations_root / "build-cache" / "locks" / f"build-{entry.name}.lock"
+        if not _discovery_lock_held(lock):
+            continue
+        try:
+            started_at = datetime.fromtimestamp(
+                intent_path.stat().st_mtime, timezone.utc
+            ).isoformat().replace("+00:00", "Z")
+        except OSError:
+            continue
+        arm = None
+        arm_started_at = started_at
+        logs = entry / "logs"
+        if (isinstance(candidate_id, str)
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}", candidate_id)):
+            candidate_start = logs / f"{candidate_id}.log.build-sandbox.json"
+            if candidate_start.is_file() and not candidate_start.is_symlink():
+                arm = "candidate"
+                try:
+                    arm_started_at = datetime.fromtimestamp(
+                        candidate_start.stat().st_mtime, timezone.utc
+                    ).isoformat().replace("+00:00", "Z")
+                except OSError:
+                    continue
+        if arm is None:
+            anchor_start = logs / "akc-anchor.log.build-sandbox.json"
+            if anchor_start.is_file() and not anchor_start.is_symlink():
+                arm = "anchor"
+                try:
+                    arm_started_at = datetime.fromtimestamp(
+                        anchor_start.stat().st_mtime, timezone.utc
+                    ).isoformat().replace("+00:00", "Z")
+                except OSError:
+                    continue
+        matches.append({"stage": "build", "state": "running",
+                        "started_at": arm_started_at, "build_key": entry.name,
+                        "arm": arm})
+    return matches[0] if len(matches) == 1 else None
+
+
+def _discovery_correctness_observation(operations_root: Path,
+                                       state: dict | None) -> dict | None:
+    """Return an identity-bound completed correctness execution, if present.
+
+    A stdout filename alone is not proof that AutoKernel reached the GPU.  Bind
+    the operation directory to the inflight manifest and operation key, require
+    the sealed evidence policy, then require the operation-scoped release
+    receipt.  The result summary is deliberately narrow: it reports the native
+    backend test total, not the looser ``N/N backends passed`` line which caused
+    the v10 producer parser to reject otherwise completed output.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    if not isinstance(inflight, dict):
+        return None
+    operation_key = inflight.get("operation_key")
+    candidate = inflight.get("candidate")
+    manifest_sha = (candidate.get("source_manifest_sha256")
+                    if isinstance(candidate, dict) else None)
+    if (not isinstance(operation_key, str)
+            or re.fullmatch(r"[0-9a-f]{64}", operation_key) is None
+            or not isinstance(manifest_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None):
+        return None
+    operation = operations_root / operation_key
+    try:
+        if operation.is_symlink() or not operation.is_dir():
+            return None
+    except OSError:
+        return None
+    intent_path = operation / "intent.json"
+    policy_path = operation / "evidence-policy.json"
+    release_path = operation / "reservation-release.json"
+    proof_root = operation / "proof"
+    correctness_root = proof_root / "correctness"
+    try:
+        if any(path.is_symlink() for path in (
+                intent_path, policy_path, release_path, proof_root,
+                correctness_root)):
+            return None
+    except OSError:
+        return None
+    present, intent, error = _read_json_object(
+        intent_path, "GPU source operation intent")
+    if (not present or intent is None or error
+            or intent.get("schema") != "epyc.autokernel.gpu_source_operation.v1"
+            or intent.get("operation_key") != operation_key
+            or intent.get("manifest_sha256") != manifest_sha):
+        return None
+    present, policy, error = _read_json_object(
+        policy_path, "GPU source evidence policy")
+    if (not present or policy is None or error
+            or policy.get("schema") !=
+            "epyc.autokernel.gpu_source_execution_policy.v1"
+            or policy.get("manifest_sha256") != manifest_sha):
+        return None
+    stdout_path = correctness_root / "stdout.txt"
+    try:
+        if (stdout_path.is_symlink() or not stdout_path.is_file()
+                or stdout_path.stat().st_size > 2 * 1024 * 1024):
+            return None
+        raw = stdout_path.read_bytes()
+    except OSError:
+        return None
+    summaries = re.findall(rb"(?m)^\s*(\d+)/(\d+) tests passed\s*$", raw)
+    if len(summaries) != 1:
+        return None
+    passed, total = (int(value) for value in summaries[0])
+    if passed != total or total <= 0:
+        return None
+    present, release, error = _read_json_object(
+        release_path, "GPU source reservation release")
+    claim = release.get("device_claim_released") if isinstance(release, dict) else None
+    if (not present or release is None or error
+            or release.get("schema") !=
+            "epyc.autokernel.gpu_source_reservation_release.v1"
+            or release.get("operation_key") != operation_key
+            or not isinstance(claim, dict)
+            or claim.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
+            or claim.get("purpose") != "AutoKernel GPU source proof and throughput"
+            or not isinstance(claim.get("acquired_at"), str)
+            or not isinstance(claim.get("released_at"), str)):
+        return None
+    started = _parse_semantic_timestamp(claim["acquired_at"])
+    completed = _parse_semantic_timestamp(claim["released_at"])
+    if started is None or completed is None or completed < started:
+        return None
+    return {
+        "stage": "correctness_validation",
+        "state": "execution_complete",
+        "started_at": claim["acquired_at"],
+        "completed_at": claim["released_at"],
+        "elapsed_s": completed - started,
+        "operation_key": operation_key,
+        "device_id": claim.get("device_id"),
+        "claim_id": claim.get("claim_id"),
+        "claim_released": True,
+        "passed": passed,
+        "total": total,
+        "summary": f"{passed}/{total} tests passed",
+    }
+
+
+def _discovery_stage_receipt(path: Path, *, operation_root: Path,
+                             schemas: set[str],
+                             manifest_sha256: str | None = None) -> dict | None:
+    """Read one bounded, self-hashed operation receipt for operator projection.
+
+    This is deliberately narrower than producer-side validation.  It cannot
+    authorize execution or a scientific decision; it only lets the dashboard
+    report that the exact operation has a durable terminal for a stage.
+    """
+    try:
+        resolved_root = operation_root.resolve(strict=True)
+        path.resolve(strict=True).relative_to(resolved_root)
+        cursor = path.parent
+        while cursor != operation_root:
+            if cursor.is_symlink():
+                return None
+            cursor = cursor.parent
+        info = path.lstat()
+        if (path.is_symlink() or not path.is_file() or info.st_nlink != 1
+                or info.st_size > 4 * 1024 * 1024):
+            return None
+        raw = path.read_bytes()
+        after = path.lstat()
+    except OSError:
+        return None
+    if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+            != (after.st_dev, after.st_ino, after.st_size,
+                after.st_mtime_ns, after.st_nlink)):
+        return None
+    try:
+        body = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if (not isinstance(body, dict) or body.get("schema") not in schemas
+            or body.get("promotion_claim") is not False):
+        return None
+    screen_receipt = (
+        body.get("schema") == "epyc.autokernel.gpu_candidate_only_screen.v2")
+    if (not screen_receipt
+            and body.get("authority") !=
+            "nonpromotable_candidate_only_discovery"):
+        return None
+    if (manifest_sha256 is not None
+            and body.get("schema") != "epyc.autokernel.gpu_candidate_only_screen.v2"
+            and body.get("manifest_sha256") != manifest_sha256):
+        return None
+    native = body.get("receipt_sha256") or body.get("result_sha256")
+    if isinstance(native, str) and re.fullmatch(r"[0-9a-f]{64}", native):
+        key = "receipt_sha256" if "receipt_sha256" in body else "result_sha256"
+        if hashlib.sha256(json.dumps(
+                {name: value for name, value in body.items() if name != key},
+                sort_keys=True, separators=(",", ":")).encode()).hexdigest() != native:
+            return None
+    else:
+        return None
+    at = next((body.get(key) for key in (
+        "ended_at", "completed_at", "observed_at", "created_at", "released_at")
+        if isinstance(body.get(key), str)), None)
+    if at is None:
+        at = datetime.fromtimestamp(
+            info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z")
+    return {"path": str(path), "body": body, "at": at,
+            "file_sha256": hashlib.sha256(raw).hexdigest()}
+
+
+def _discovery_runner_plan_proof_seal(
+        operation: Path, runner: Path, *, operation_key: str,
+        manifest_sha256: str, policy_order: list[str]) -> dict | None:
+    """Project oversized proof receipts through the sealed runner plan.
+
+    Exact attribution receipts can legitimately contain tens of megabytes of
+    per-dispatch timings, and the pair/bundle recursively embed them.  Loading
+    those bodies on every dashboard refresh would defeat the bounded 4 MiB
+    receipt reader above.  The producer creates ``runner-plan.json`` only after
+    it has reopened and validated both attribution arms, their pair, and the
+    proof bundle.  Treat that compact, self-hashed downstream receipt as the
+    lifecycle seal, but only while every predecessor remains the same regular,
+    single-link, owner-controlled file epoch that predates the plan.
+
+    This is a visibility projection, never execution authorization.  Any
+    missing predecessor, alias, permission drift, post-plan mutation, or plan
+    identity/path mismatch fails closed to the ordinary receipt sequence.
+    """
+    plan_path = operation / "runner-plan.json"
+    plan = _discovery_stage_receipt(
+        plan_path, operation_root=operation,
+        schemas={"epyc.autokernel.gpu_source_runner_plan.v1"})
+    if plan is None:
+        return None
+    body = plan["body"]
+    expected_keys = {
+        "schema", "authority", "promotion_claim", "operation_key",
+        "measurement_graphs_off_output_dir",
+        "target_runtime_graphs_on_output_dir", "receipt_sha256",
+    }
+    expected_outputs = {
+        "measurement_graphs_off_output_dir":
+            runner / "measurement-graphs-off",
+        "target_runtime_graphs_on_output_dir":
+            runner / "target-runtime-graphs-on",
+    }
+    if (set(body) != expected_keys
+            or body.get("operation_key") != operation_key
+            or any(not isinstance(body.get(key), str)
+                   or Path(body[key]) != expected
+                   for key, expected in expected_outputs.items())):
+        return None
+    try:
+        plan_info = plan_path.lstat()
+    except OSError:
+        return None
+
+    paths = {
+        f"{arm}_attribution":
+            operation / "proof" / f"attribution-{arm}" / "receipt.json"
+        for arm in policy_order
+    }
+    paths.update({
+        "pair": operation / "proof" / "attribution-pair.json",
+        "bundle": operation / "proof" / "proof-bundle.json",
+    })
+    sealed: dict[str, dict] = {}
+    try:
+        resolved_root = operation.resolve(strict=True)
+        for name, path in paths.items():
+            path.resolve(strict=True).relative_to(resolved_root)
+            cursor = path.parent
+            while cursor != operation:
+                if cursor.is_symlink():
+                    return None
+                cursor = cursor.parent
+            before = path.lstat()
+            if (path.is_symlink() or not stat.S_ISREG(before.st_mode)
+                    or before.st_uid != os.geteuid() or before.st_nlink != 1
+                    or stat.S_IMODE(before.st_mode) & 0o022
+                    or before.st_size <= 0 or before.st_size > 256 * 1024 * 1024
+                    or before.st_mtime_ns > plan_info.st_mtime_ns
+                    or before.st_ctime_ns > plan_info.st_ctime_ns):
+                return None
+            after = path.lstat()
+            epoch = lambda value: (
+                value.st_dev, value.st_ino, value.st_size,
+                value.st_mtime_ns, value.st_ctime_ns, value.st_nlink,
+                value.st_uid, stat.S_IFMT(value.st_mode),
+                stat.S_IMODE(value.st_mode))
+            if epoch(before) != epoch(after):
+                return None
+            sealed[name] = {
+                "path": str(path),
+                "at": datetime.fromtimestamp(
+                    before.st_mtime, timezone.utc
+                ).isoformat().replace("+00:00", "Z"),
+                "seal_sha256": plan["file_sha256"],
+                "body": (
+                    {"schema": "epyc.autokernel.gpu_kernel_attribution.v2",
+                     "status": "complete", "result": "PASS",
+                     "manifest_sha256": manifest_sha256,
+                     "arm": name.removesuffix("_attribution")}
+                    if name.endswith("_attribution") else
+                    {"schema":
+                     "epyc.autokernel.gpu_kernel_attribution_pair.v1",
+                     "manifest_sha256": manifest_sha256,
+                     "attribution_arm_order": list(policy_order)}
+                    if name == "pair" else
+                    {"schema":
+                     "epyc.autokernel.gpu_source_evidence_bundle.v1"}),
+            }
+    except (OSError, ValueError):
+        return None
+    return sealed
+
+
+def _discovery_private_file(path: Path, *, operation_root: Path,
+                            maximum: int) -> tuple[bytes, os.stat_result] | None:
+    """Read one producer-private operation file without following aliases."""
+    fd = None
+    try:
+        root = operation_root.resolve(strict=True)
+        path.parent.resolve(strict=True).relative_to(root)
+        cursor = path.parent
+        while cursor != operation_root:
+            if cursor.is_symlink():
+                return None
+            cursor = cursor.parent
+        flags = os.O_RDONLY | os.O_CLOEXEC
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        fd = os.open(path, flags)
+        before = os.fstat(fd)
+        named_before = path.lstat()
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.geteuid()
+                or stat.S_IMODE(before.st_mode) & 0o077
+                or before.st_size > maximum
+                or (named_before.st_dev, named_before.st_ino) !=
+                (before.st_dev, before.st_ino)):
+            return None
+        chunks = []
+        remaining = before.st_size
+        while remaining:
+            chunk = os.read(fd, min(1024 * 1024, remaining))
+            if not chunk:
+                return None
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+        after = os.fstat(fd)
+        named_after = path.lstat()
+    except (OSError, ValueError):
+        return None
+    finally:
+        if fd is not None:
+            os.close(fd)
+    epoch = lambda value: (
+        value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns,
+        value.st_ctime_ns, value.st_nlink, value.st_uid,
+        stat.S_IFMT(value.st_mode), stat.S_IMODE(value.st_mode))
+    if epoch(before) != epoch(after) or epoch(before) != epoch(named_after):
+        return None
+    return raw, before
+
+
+def _discovery_content_hash(value: object) -> str | None:
+    """Match the producer's warning-strict canonical JSON content hash."""
+    try:
+        canonical = json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _discovery_runner_preflight(output: Path, *, operation_root: Path,
+                                graph_mode: str) -> dict | None:
+    captured = _discovery_private_file(
+        output / "preflight.json", operation_root=operation_root,
+        maximum=1024 * 1024)
+    if captured is None:
+        return None
+    raw, info = captured
+    try:
+        body = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    order = body.get("arm_order_schedule") if isinstance(body, dict) else None
+    if (not isinstance(body, dict) or body.get("runtime_graphs") != graph_mode
+            or not isinstance(order, list) or len(order) != 2
+            or set(order) != {"anchor", "candidate"}):
+        return None
+    content_hash = _discovery_content_hash(body)
+    if content_hash is None:
+        return None
+    return {
+        "arm_order": list(order),
+        "sha256": content_hash,
+        "at": datetime.fromtimestamp(
+            info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
+def _discovery_process_receipt(root: Path, *, operation_root: Path,
+                               graph_mode: str, arm: str,
+                               preflight_sha256: str) -> dict | None:
+    """Validate one reusable per-arm process checkpoint without raw output."""
+    try:
+        root.resolve(strict=True).relative_to(operation_root.resolve(strict=True))
+        info = root.lstat()
+        if (root.is_symlink() or not root.is_dir()
+                or info.st_uid != os.geteuid()
+                or info.st_nlink != 2
+                or stat.S_IMODE(info.st_mode) != 0o700
+                or {entry.name for entry in root.iterdir()} != {
+                    "stdout.bin", "stderr.bin", "receipt.json"}):
+            return None
+    except (OSError, ValueError):
+        return None
+    files: dict[str, tuple[bytes, os.stat_result]] = {}
+    for name, maximum in (("stdout.bin", 8 * 1024 * 1024),
+                          ("stderr.bin", 8 * 1024 * 1024),
+                          ("receipt.json", 4 * 1024 * 1024)):
+        captured = _discovery_private_file(
+            root / name, operation_root=operation_root, maximum=maximum)
+        if captured is None:
+            return None
+        files[name] = captured
+    try:
+        receipt = json.loads(files["receipt.json"][0].decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(receipt, dict):
+        return None
+    unsigned = {key: value for key, value in receipt.items()
+                if key != "receipt_sha256"}
+    identity = receipt.get("identity")
+    context = identity.get("process_context") if isinstance(identity, dict) else None
+    repetitions = identity.get("repetitions") if isinstance(identity, dict) else None
+    if (receipt.get("schema") !=
+            "epyc.autokernel.gpu_discovery_process_receipt.v1"
+            or receipt.get("status") != "process_complete"
+            or receipt.get("receipt_sha256") != _discovery_content_hash(unsigned)
+            or not isinstance(identity, dict)
+            or identity.get("runtime_graphs") != graph_mode
+            or identity.get("runtime_arm") != arm
+            or isinstance(repetitions, bool)
+            or not isinstance(repetitions, int) or repetitions < 1
+            or not isinstance(context, dict)
+            or set(context) != {
+                "campaign_id", "preflight_sha256", "arm", "workload",
+                "metric", "runtime_graphs", "prompt_tokens",
+                "generation_tokens", "tokens_per_repetition"}
+            or re.fullmatch(r"ak-discovery-[0-9a-f]{16}", str(
+                context.get("campaign_id"))) is None
+            or context.get("arm") != arm
+            or context.get("runtime_graphs") != graph_mode
+            or context.get("preflight_sha256") != preflight_sha256
+            or not isinstance(context.get("workload"), str)
+            or not context["workload"]
+            or not isinstance(context.get("metric"), str)
+            or not context["metric"]
+            or any(isinstance(context.get(key), bool)
+                   or not isinstance(context.get(key), int)
+                   or context[key] < 0 for key in (
+                       "prompt_tokens", "generation_tokens"))
+            or isinstance(context.get("tokens_per_repetition"), bool)
+            or not isinstance(context.get("tokens_per_repetition"), int)
+            or context["tokens_per_repetition"] < 1
+            or context["tokens_per_repetition"] != (
+                context["prompt_tokens"] + context["generation_tokens"])
+            or isinstance(receipt.get("returncode"), bool)
+            or not isinstance(receipt.get("returncode"), int)
+            or not isinstance(receipt.get("residency"), list)
+            or (receipt["returncode"] == 0 and not receipt["residency"])
+            or any(not isinstance(sample, dict)
+                   for sample in receipt["residency"])
+            or isinstance(receipt.get("supervisor_elapsed_s"), bool)
+            or not isinstance(receipt.get("supervisor_elapsed_s"), (int, float))
+            or not math.isfinite(float(receipt["supervisor_elapsed_s"]))
+            or receipt["supervisor_elapsed_s"] < 0
+            or not isinstance(receipt.get("teardown"), dict)
+            or receipt.get("output_bound_bytes") != 8 * 1024 * 1024):
+        return None
+    for label in ("stdout", "stderr"):
+        binding = receipt.get(label)
+        raw = files[f"{label}.bin"][0]
+        if (not isinstance(binding, dict)
+                or set(binding) != {"path", "observed_size", "observed_sha256",
+                                    "stored_size", "stored_sha256", "truncated"}
+                or binding.get("path") != f"{label}.bin"
+                or binding.get("stored_size") != len(raw)
+                or binding.get("stored_sha256") != hashlib.sha256(raw).hexdigest()
+                or not isinstance(binding.get("observed_size"), int)
+                or isinstance(binding.get("observed_size"), bool)
+                or binding["observed_size"] < len(raw)
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    binding.get("observed_sha256"))) is None
+                or binding.get("truncated") is not (
+                    binding["observed_size"] > len(raw))
+                or (binding["truncated"] is False
+                    and binding["observed_sha256"] != binding["stored_sha256"])):
+            return None
+    receipt_raw, receipt_info = files["receipt.json"]
+    return {
+        "arm": arm, "runtime_graphs": graph_mode,
+        "receipt_path": str(root / "receipt.json"),
+        "receipt_file_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+        "stdout": {key: receipt["stdout"].get(key) for key in (
+            "observed_size", "observed_sha256", "stored_size",
+            "stored_sha256", "truncated")},
+        "stderr": {key: receipt["stderr"].get(key) for key in (
+            "observed_size", "observed_sha256", "stored_size",
+            "stored_sha256", "truncated")},
+        "measurement_identity": {
+            "campaign_id": context["campaign_id"], "arm": arm,
+            "workload": context["workload"], "metric": context["metric"],
+            "runtime_graphs": graph_mode,
+            "prompt_tokens": context["prompt_tokens"],
+            "generation_tokens": context["generation_tokens"],
+            "tokens_per_repetition": context["tokens_per_repetition"],
+            "repetitions": repetitions,
+            "preflight_sha256": preflight_sha256,
+        },
+        "at": datetime.fromtimestamp(
+            receipt_info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
+def _discovery_postbuild_observation(operations_root: Path,
+                                     state: dict | None) -> dict | None:
+    """Project the exact resumable proof/screen receipt sequence.
+
+    Completed stages are accepted only from their operation-scoped native
+    receipts.  The first missing receipt is therefore also the producer's
+    resumable first-incomplete boundary; file names elsewhere do not count.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    candidate = inflight.get("candidate") if isinstance(inflight, dict) else None
+    operation_key = inflight.get("operation_key") if isinstance(inflight, dict) else None
+    manifest_sha = (candidate.get("source_manifest_sha256")
+                    if isinstance(candidate, dict) else None)
+    if (not isinstance(operation_key, str)
+            or re.fullmatch(r"[0-9a-f]{64}", operation_key) is None
+            or not isinstance(manifest_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None):
+        return None
+    operation = operations_root / operation_key
+    try:
+        if operation.is_symlink() or not operation.is_dir():
+            return None
+    except OSError:
+        return None
+    intent_present, intent, intent_error = _read_json_object(
+        operation / "intent.json", "GPU source operation intent")
+    if (not intent_present or intent is None or intent_error
+            or intent.get("schema") != "epyc.autokernel.gpu_source_operation.v1"
+            or intent.get("operation_key") != operation_key
+            or intent.get("manifest_sha256") != manifest_sha):
+        return None
+    policy_present, policy, policy_error = _read_json_object(
+        operation / "evidence-policy.json", "GPU source evidence policy")
+    if (not policy_present or not isinstance(policy, dict) or policy_error
+            or policy.get("schema") !=
+            "epyc.autokernel.gpu_source_execution_policy.v2"
+            or policy.get("manifest_sha256") != manifest_sha):
+        return None
+    policy_order = policy.get("attribution_arm_order")
+    if (not isinstance(policy_order, list) or len(policy_order) != 2
+            or set(policy_order) != {"candidate", "anchor"}):
+        return None
+    lease = inflight.get("lease") if isinstance(inflight, dict) else None
+    repetition = lease.get("repetition") if isinstance(lease, dict) else None
+    if not isinstance(repetition, int) or isinstance(repetition, bool) or repetition < 1:
+        repetition = 1
+    proof = operation / "proof"
+    runner = operation / "runner" / f"s{repetition}"
+    attribution_specs = tuple((
+        f"{arm}_attribution", proof / f"attribution-{arm}" / "receipt.json",
+        {"epyc.autokernel.gpu_kernel_attribution.v2"})
+        for arm in policy_order)
+    specs = (
+        ("correctness", proof / "correctness" / "receipt.json",
+         {"epyc.autokernel.targeted_correctness_receipt.v3"}),
+        *attribution_specs,
+        ("measurement_graphs_off_screen",
+         runner / "measurement-graphs-off" / "result.json",
+         {"epyc.autokernel.gpu_candidate_only_screen.v2"}),
+        ("target_runtime_graphs_on_screen",
+         runner / "target-runtime-graphs-on" / "result.json",
+         {"epyc.autokernel.gpu_candidate_only_screen.v2"}),
+    )
+    runner_proof_seal = _discovery_runner_plan_proof_seal(
+        operation, runner, operation_key=operation_key,
+        manifest_sha256=manifest_sha, policy_order=policy_order)
+    receipts: dict[str, dict] = {}
+    for stage, path, schemas in specs:
+        receipt = _discovery_stage_receipt(
+            path, operation_root=operation, schemas=schemas,
+            manifest_sha256=manifest_sha)
+        if (receipt is None and isinstance(runner_proof_seal, dict)
+                and stage in runner_proof_seal):
+            receipt = runner_proof_seal[stage]
+        if receipt is None:
+            break
+        body = receipt["body"]
+        if stage == "correctness" and (
+                body.get("status") != "complete" or body.get("result") != "PASS"):
+            break
+        if stage in {"candidate_attribution", "anchor_attribution"} and (
+                body.get("status") != "complete" or body.get("result") != "PASS"):
+            break
+        if stage.endswith("_screen") and (
+                body.get("non_promotable") is not True
+                or body.get("hip_residency_proved") is not True
+                or body.get("runtime_graphs") != (
+                    "off" if stage == "measurement_graphs_off_screen" else "on")):
+            break
+        receipts[stage] = receipt
+    completed = list(receipts)
+    if "correctness" in receipts:
+        completed.append("correctness_validation")
+    first_incomplete = next(
+        (stage for stage, _path, _schemas in specs if stage not in receipts),
+        "decision")
+    process_progress = None
+    screen_outputs = {
+        "measurement_graphs_off_screen": (
+            runner / "measurement-graphs-off", "off"),
+        "target_runtime_graphs_on_screen": (
+            runner / "target-runtime-graphs-on", "on"),
+    }
+    if first_incomplete in screen_outputs:
+        output, graph_mode = screen_outputs[first_incomplete]
+        preflight = _discovery_runner_preflight(
+            output, operation_root=operation, graph_mode=graph_mode)
+        if preflight is not None:
+            process_receipts = []
+            for arm in preflight["arm_order"]:
+                root = output / f"process-{arm}"
+                if not root.exists() and not root.is_symlink():
+                    break
+                process = _discovery_process_receipt(
+                    root, operation_root=operation, graph_mode=graph_mode,
+                    arm=arm, preflight_sha256=preflight["sha256"])
+                if process is None:
+                    process_receipts = []
+                    break
+                process_receipts.append(process)
+            if process_receipts:
+                completed_arms = [item["arm"] for item in process_receipts]
+                process_progress = {
+                    "stage": first_incomplete, "runtime_graphs": graph_mode,
+                    "started_at": preflight["at"],
+                    "arm_order": preflight["arm_order"],
+                    "completed_arms": completed_arms,
+                    "next_arm": (preflight["arm_order"][len(completed_arms)]
+                                 if len(completed_arms) < 2 else None),
+                    "checkpoint_reuse": True,
+                    "receipts": process_receipts,
+                }
+    pair = _discovery_stage_receipt(
+        proof / "attribution-pair.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.gpu_kernel_attribution_pair.v1"},
+        manifest_sha256=manifest_sha)
+    if pair is None and isinstance(runner_proof_seal, dict):
+        pair = runner_proof_seal.get("pair")
+    bundle = _discovery_stage_receipt(
+        proof / "proof-bundle.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.gpu_source_evidence_bundle.v1"},
+        manifest_sha256=manifest_sha)
+    if bundle is None and isinstance(runner_proof_seal, dict):
+        bundle = runner_proof_seal.get("bundle")
+    exact_outcome = _discovery_stage_receipt(
+        runner / "exact-attribution-outcome.json",
+        operation_root=operation,
+        schemas={"epyc.autokernel.exact_attribution_outcome.v1"},
+        manifest_sha256=manifest_sha)
+    skipped: dict[str, str] = {}
+    if pair is not None and {"candidate_attribution", "anchor_attribution"}.issubset(receipts):
+        completed.append("dispatch_proof")
+    if bundle is not None and "dispatch_proof" in completed:
+        completed.append("profile")
+    if first_incomplete == "measurement_graphs_off_screen":
+        if pair is None:
+            first_incomplete = "dispatch_proof"
+        elif bundle is None:
+            first_incomplete = "profile"
+    if exact_outcome is not None:
+        outcome_body = exact_outcome["body"]
+        exact_effect = outcome_body.get("exact_attribution_effect_fraction")
+        if (outcome_body.get("status") != "complete"
+                or outcome_body.get("classification") != "screened_out"
+                or outcome_body.get("target_runtime_executed") is not False
+                or outcome_body.get("target_runtime_reason") !=
+                "nonpositive_exact_duration"
+                or isinstance(exact_effect, bool)
+                or not isinstance(exact_effect, (int, float))
+                or not math.isfinite(float(exact_effect))
+                or float(exact_effect) > 0):
+            exact_outcome = None
+        else:
+            skipped = {
+                "measurement_graphs_off_screen": "exact attribution was nonpositive",
+                "target_runtime_graphs_on_screen": "short-circuited by exact attribution",
+            }
+            completed.append("decision")
+            first_incomplete = "decision"
+    if {"measurement_graphs_off_screen", "target_runtime_graphs_on_screen"}.issubset(receipts):
+        completed.append("benchmark")
+        first_incomplete = "decision"
+    correctness_execution = None
+    correctness_body = receipts.get("correctness", {}).get("body", {})
+    passed_cases = correctness_body.get("passed_cases")
+    expected_cases = correctness_body.get("expected_cases")
+    correctness_open = correctness_body.get("device_claim_open")
+    correctness_started = (correctness_open.get("acquired_at")
+                           if isinstance(correctness_open, dict) else None)
+    correctness_ended = correctness_body.get("ended_at")
+    if (isinstance(passed_cases, int) and not isinstance(passed_cases, bool)
+            and isinstance(expected_cases, int)
+            and not isinstance(expected_cases, bool)
+            and passed_cases == expected_cases and expected_cases > 0
+            and correctness_body.get("overall") == "OK"
+            and isinstance(correctness_started, str)
+            and isinstance(correctness_ended, str)
+            and _parse_semantic_timestamp(correctness_started) is not None
+            and _parse_semantic_timestamp(correctness_ended) is not None
+            and _parse_semantic_timestamp(correctness_ended) >=
+            _parse_semantic_timestamp(correctness_started)):
+        correctness_execution = {
+            "started_at": correctness_started,
+            "completed_at": correctness_ended,
+            "elapsed_s": (_parse_semantic_timestamp(correctness_ended)
+                          - _parse_semantic_timestamp(correctness_started)),
+            "passed": passed_cases, "total": expected_cases,
+            "summary": f"{passed_cases}/{expected_cases} tests passed",
+            "claim_id": correctness_open.get("claim_id"),
+            "device_id": correctness_open.get("device_id"),
+            "claim_released": False,
+        }
+    pair_body = pair["body"] if pair else {}
+    comparison = (pair_body.get("exact_duration_comparison")
+                  if isinstance(pair_body.get("exact_duration_comparison"), dict)
+                  else {})
+    exact_effect_value = comparison.get("relative_improvement_fraction")
+    if (isinstance(exact_effect_value, bool)
+            or not isinstance(exact_effect_value, (int, float))
+            or not math.isfinite(float(exact_effect_value))
+            or comparison.get("direction") != (
+                "improved" if exact_effect_value > 0 else
+                "regressed" if exact_effect_value < 0 else "neutral")):
+        comparison = {}
+    screen = receipts.get("target_runtime_graphs_on_screen", {}).get("body", {})
+    arm_order = (pair_body.get("attribution_arm_order")
+                 or pair_body.get("arm_order_schedule")
+                 or screen.get("arm_order_schedule") or policy_order)
+    transitions = [{
+        "ts": receipt["at"], "stage": stage, "phase": stage,
+        "state": "complete", "event": f"{stage}_completed",
+        "label": _DISCOVERY_PIPELINE_DICT.get(stage, stage),
+        "detail": (
+            f"receipt {receipt['file_sha256'][:12]}…"
+            if isinstance(receipt.get("file_sha256"), str) else
+            f"sealed by runner plan {receipt['seal_sha256'][:12]}…"),
+    } for stage, receipt in receipts.items()]
+    if process_progress is not None:
+        transitions.extend({
+            "ts": process["at"], "stage": first_incomplete,
+            "phase": first_incomplete, "state": "checkpointed",
+            "event": "measurement_process_checkpointed",
+            "label": (f"{process['arm']} process complete; checkpoint will be "
+                      "revalidated and reused"),
+            "detail": f"receipt {process['receipt_file_sha256'][:12]}…",
+        } for process in process_progress["receipts"])
+    if pair is not None:
+        transitions.append({
+            "ts": pair["at"], "stage": "dispatch_proof", "phase": "dispatch_proof",
+            "state": "complete", "event": "dispatch_proof_completed",
+            "label": _DISCOVERY_PIPELINE_DICT["dispatch_proof"],
+            "detail": (
+                f"receipt {pair['file_sha256'][:12]}…"
+                if isinstance(pair.get("file_sha256"), str) else
+                f"sealed by runner plan {pair['seal_sha256'][:12]}…"),
+        })
+    if bundle is not None:
+        transitions.append({
+            "ts": bundle["at"], "stage": "profile", "phase": "profile",
+            "state": "complete", "event": "profile_bundle_completed",
+            "label": _DISCOVERY_PIPELINE_DICT["profile"],
+            "detail": (
+                f"receipt {bundle['file_sha256'][:12]}…"
+                if isinstance(bundle.get("file_sha256"), str) else
+                f"sealed by runner plan {bundle['seal_sha256'][:12]}…"),
+        })
+    if exact_outcome is not None:
+        transitions.append({
+            "ts": exact_outcome["at"], "stage": "decision", "phase": "decision",
+            "state": "complete", "event": "exact_attribution_nonpositive",
+            "label": "Exact attribution nonpositive; target runtime short-circuited",
+            "detail": f"receipt {exact_outcome['file_sha256'][:12]}…",
+        })
+    return {
+        "operation_key": operation_key, "repetition": repetition,
+        "completed": completed, "first_incomplete_stage": first_incomplete,
+        "correctness_execution": correctness_execution,
+        "receipts": receipts, "pair_complete": pair is not None,
+        "bundle_complete": bundle is not None, "arm_order": arm_order,
+        "process_progress": process_progress,
+        "skipped": skipped,
+        "arm_order_seed_sha256": (
+                                   pair_body.get("attribution_arm_order_seed_sha256")
+                                   or pair_body.get("arm_order_seed_sha256")
+                                   or screen.get("arm_order_seed_sha256")
+                                   or (policy.get("attribution_arm_order_seed_sha256")
+                                       if isinstance(policy, dict) else None)),
+        "exact_direction": comparison.get("direction"),
+        "exact_attribution_effect_fraction": comparison.get(
+            "relative_improvement_fraction"),
+        "target_runtime_effect_fraction": screen.get("median_relative"),
+        "target_runtime_executed": (
+            exact_outcome["body"].get("target_runtime_executed")
+            if exact_outcome is not None else
+            True if "target_runtime_graphs_on_screen" in receipts else None),
+        "target_runtime_reason": (
+            exact_outcome["body"].get("target_runtime_reason")
+            if exact_outcome is not None else None),
+        "dual_decision_state": (
+            "measured_nonpositive_exact_short_circuit"
+            if exact_outcome is not None else
+            "exact_and_graphs_on_complete"
+            if (isinstance(comparison.get("relative_improvement_fraction"),
+                           (int, float))
+                and not isinstance(comparison.get("relative_improvement_fraction"), bool)
+                and isinstance(screen.get("median_relative"), (int, float))
+                and not isinstance(screen.get("median_relative"), bool))
+            else "awaiting_dual_evidence"),
+        "transitions": transitions,
+    }
+
+
+def _discovery_claim_observation(
+        operations_root: Path, campaign_id: str | None,
+        *, purpose: str =
+        "AutoKernel GPU source proof and throughput") -> dict | None:
+    """Return the latest identity-proven source-proof claim state."""
+    path = operations_root / "claims" / "device.jsonl"
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as handle:
+            handle.seek(max(0, size - 128 * 1024))
+            raw = handle.read(128 * 1024)
+    except (FileNotFoundError, OSError):
+        return None
+    latest: dict[str, dict] = {}
+    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        detail = row.get("detail") if isinstance(row, dict) else None
+        receipt = detail.get("receipt") if isinstance(detail, dict) else None
+        if (row.get("schema") != "epyc.autokernel.device_claim_journal.v1"
+                or row.get("kind") not in {"claim_acquired", "claim_released"}
+                or not isinstance(receipt, dict)
+                or receipt.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
+                or receipt.get("purpose") != purpose
+                or not isinstance(campaign_id, str)
+                or receipt.get("campaign_id") != campaign_id
+                or not isinstance(receipt.get("claim_id"), str)):
+            continue
+        latest[receipt["claim_id"]] = {"kind": row["kind"], "receipt": receipt,
+                                        "at": row.get("created_at")}
+    if not latest:
+        return None
+    row = max(latest.values(), key=lambda value: str(value.get("at") or ""))
+    receipt = row["receipt"]
+    acquired_at = receipt.get("acquired_at")
+    if (not isinstance(acquired_at, str)
+            or _parse_semantic_timestamp(acquired_at) is None):
+        return None
+    held = row["kind"] == "claim_acquired" and receipt.get("released_at") is None
+    if held:
+        pid, ticks = receipt.get("holder_pid"), receipt.get("holder_start_ticks")
+        try:
+            observed = int((Path("/proc") / str(pid) / "stat").read_text(
+                encoding="utf-8").split()[21])
+        except (OSError, ValueError, IndexError):
+            observed = None
+        held = isinstance(pid, int) and isinstance(ticks, int) and observed == ticks
+    return {"claim_held": held, "claim_released": not held,
+            "claim_id": receipt.get("claim_id"),
+            "device_id": receipt.get("device_id"),
+            "acquired_at": acquired_at,
+            "released_at": receipt.get("released_at"),
+            "identity_live": held}
+
+
+def _discovery_measurement_output_refusal(
+        receipt: dict, path: Path, bundle: Path) -> dict | None:
+    """Validate and project the v17 secret-free output-refusal diagnostic."""
+    if set(receipt) != {
+            "schema", "status", "scientific_budget_spent",
+            "process_receipt_path", "process_receipt_file_sha256",
+            "reason_code", "reason_sha256", "diagnostic", "receipt_sha256"}:
+        return None
+    if (receipt.get("schema") !=
+            "epyc.autokernel.gpu_discovery_output_refusal.v1"
+            or receipt.get("status") != "measurement_output_refused"
+            or receipt.get("scientific_budget_spent") is not False
+            or re.fullmatch(r"[a-z0-9_]{1,100}", str(
+                receipt.get("reason_code"))) is None
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                receipt.get("reason_sha256"))) is None
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                receipt.get("process_receipt_file_sha256"))) is None):
+        return None
+    diagnostic = receipt.get("diagnostic")
+    if (not isinstance(diagnostic, dict) or set(diagnostic) != {
+            "schema", "diagnostic_available", "measurement_identity",
+            "native_fields", "rederived", "stdout", "stderr"}
+            or diagnostic.get("schema") !=
+            "epyc.autokernel.measurement_output_refusal_diagnostic.v1"
+            or not isinstance(diagnostic.get("diagnostic_available"), bool)):
+        return None
+    identity = diagnostic.get("measurement_identity")
+    if (not isinstance(identity, dict) or set(identity) != {
+            "campaign_id", "arm", "workload", "metric", "runtime_graphs",
+            "prompt_tokens", "generation_tokens", "tokens_per_repetition",
+            "repetitions", "preflight_sha256"}
+            or identity.get("arm") not in {"anchor", "candidate"}
+            or identity.get("runtime_graphs") not in {"off", "on"}
+            or not isinstance(identity.get("campaign_id"), str)
+            or re.fullmatch(r"ak-discovery-[0-9a-f]{16}",
+                            identity["campaign_id"]) is None
+            or not isinstance(identity.get("workload"), str)
+            or not isinstance(identity.get("metric"), str)
+            or any(isinstance(identity.get(key), bool)
+                   or not isinstance(identity.get(key), int)
+                   or identity[key] < 0 for key in (
+                       "prompt_tokens", "generation_tokens"))
+            or any(isinstance(identity.get(key), bool)
+                   or not isinstance(identity.get(key), int)
+                   or identity[key] < 1 for key in (
+                       "tokens_per_repetition", "repetitions"))
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                identity.get("preflight_sha256"))) is None):
+        return None
+    native = diagnostic.get("native_fields")
+    rederived = diagnostic.get("rederived")
+    if (not isinstance(native, dict) or set(native) != {
+            "avg_ns", "samples_ns", "avg_ts_decimal", "samples_ts_decimal"}
+            or not isinstance(rederived, dict)
+            or set(rederived) != {"samples_ts", "avg_ts"}):
+        return None
+    repetitions = identity["repetitions"]
+    if (native["avg_ns"] is not None and (
+            isinstance(native["avg_ns"], bool)
+            or not isinstance(native["avg_ns"], int))):
+        return None
+    if native["samples_ns"] is not None and (
+            not isinstance(native["samples_ns"], list)
+            or len(native["samples_ns"]) != repetitions
+            or any(isinstance(value, bool) or not isinstance(value, int)
+                   or value <= 0 for value in native["samples_ns"])):
+        return None
+    decimal_re = r"-?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?"
+    if native["avg_ts_decimal"] is not None and re.fullmatch(
+            decimal_re, str(native["avg_ts_decimal"])) is None:
+        return None
+    if native["samples_ts_decimal"] is not None and (
+            not isinstance(native["samples_ts_decimal"], list)
+            or len(native["samples_ts_decimal"]) != repetitions
+            or any(re.fullmatch(decimal_re, str(value)) is None
+                   for value in native["samples_ts_decimal"])):
+        return None
+    samples_ts = rederived["samples_ts"]
+    avg_ts = rederived["avg_ts"]
+    if (samples_ts is not None and (
+            not isinstance(samples_ts, list)
+            or len(samples_ts) != repetitions
+            or any(isinstance(item, bool)
+                   or not isinstance(item, (int, float))
+                   or not math.isfinite(float(item)) for item in samples_ts))):
+        return None
+    if (avg_ts is not None and (
+            isinstance(avg_ts, bool) or not isinstance(avg_ts, (int, float))
+            or not math.isfinite(float(avg_ts)))):
+        return None
+    if diagnostic["diagnostic_available"] is not any(
+            value is not None for value in native.values()):
+        return None
+    if native["samples_ns"] is None:
+        if samples_ts is not None or avg_ts is not None:
+            return None
+    else:
+        exact = [
+            Fraction(1_000_000_000 * identity["tokens_per_repetition"], value)
+            for value in native["samples_ns"]]
+        exact_samples = [float(value) for value in exact]
+        exact_average = float(sum(exact, Fraction(0, 1)) / repetitions)
+        if (samples_ts != exact_samples
+                or avg_ts != exact_average):
+            return None
+    arm = identity["arm"]
+    graph_mode = identity["runtime_graphs"]
+    expected_name = f"process-{arm}-refusal.json"
+    output = path.parent
+    try:
+        operation = path.parents[3]
+        operation.resolve(strict=True).relative_to(bundle.resolve(strict=True))
+    except (OSError, ValueError, IndexError):
+        return None
+    if (path.name != expected_name
+            or re.fullmatch(r"[0-9a-f]{64}", operation.name) is None):
+        return None
+    preflight = _discovery_runner_preflight(
+        output, operation_root=operation, graph_mode=graph_mode)
+    if (preflight is None
+            or preflight["sha256"] != identity["preflight_sha256"]):
+        return None
+    process = _discovery_process_receipt(
+        output / f"process-{arm}", operation_root=operation,
+        graph_mode=graph_mode, arm=arm,
+        preflight_sha256=preflight["sha256"])
+    if (process is None
+            or process["receipt_file_sha256"] !=
+            receipt["process_receipt_file_sha256"]
+            or str(Path(str(receipt.get("process_receipt_path"))).resolve()) !=
+            str(Path(process["receipt_path"]).resolve())
+            or diagnostic["stdout"] != process["stdout"]
+            or diagnostic["stderr"] != process["stderr"]
+            or identity != process["measurement_identity"]):
+        return None
+    refused_index = preflight["arm_order"].index(arm)
+    reusable_arms = []
+    for completed_arm in preflight["arm_order"][:refused_index]:
+        completed_process = _discovery_process_receipt(
+            output / f"process-{completed_arm}", operation_root=operation,
+            graph_mode=graph_mode, arm=completed_arm,
+            preflight_sha256=preflight["sha256"])
+        if completed_process is None:
+            return None
+        reusable_arms.append(completed_arm)
+    repetition_match = re.fullmatch(r"s([1-9][0-9]*)", path.parents[1].name)
+    if repetition_match is None:
+        return None
+    intent_present, intent, intent_error = _read_json_object(
+        operation / "intent.json", "GPU source operation intent")
+    if (not intent_present or not isinstance(intent, dict) or intent_error
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                intent.get("manifest_sha256"))) is None):
+        return None
+    proof_observation = _discovery_postbuild_observation(
+        operation.parent, {"inflight": {
+            "operation_key": operation.name,
+            "candidate": {"source_manifest_sha256":
+                          intent["manifest_sha256"]},
+            "lease": {"repetition": int(repetition_match.group(1))},
+        }})
+    screen_stage = ("measurement_graphs_off_screen" if graph_mode == "off"
+                    else "target_runtime_graphs_on_screen")
+    if (not isinstance(proof_observation, dict)
+            or proof_observation.get("first_incomplete_stage") != screen_stage):
+        return None
+    completed_pipeline = [
+        "source_materialization", "build", "evidence_binding",
+        *proof_observation.get("completed", []),
+    ]
+    return {
+        "arm": arm, "runtime_graphs": graph_mode,
+        "screen_stage": screen_stage,
+        "workload": identity["workload"], "metric": identity["metric"],
+        "reason_code": receipt["reason_code"],
+        "reason_sha256": receipt["reason_sha256"],
+        "diagnostic_available": diagnostic["diagnostic_available"],
+        "native_fields": dict(native), "rederived": dict(rederived),
+        "process_receipt_sha256": process["receipt_file_sha256"],
+        "arm_order": preflight["arm_order"],
+        "reusable_completed_arms": reusable_arms,
+        "completed_pipeline": list(dict.fromkeys(completed_pipeline)),
+    }
+
+
+def _discovery_measurement_output_recovery(
+        state: dict | None, iteration: dict | None,
+        refusal: dict | None) -> dict | None:
+    """Project the producer's bounded, non-scientific candidate recovery."""
+    if (not isinstance(state, dict) or not isinstance(iteration, dict)
+            or not isinstance(refusal, dict)):
+        return None
+    hypothesis = (iteration.get("portfolio_hypothesis_id")
+                  or iteration.get("hypothesis_id"))
+    failures_by_hypothesis = state.get("portfolio_measurement_output_failures")
+    failures = (failures_by_hypothesis.get(hypothesis)
+                if isinstance(failures_by_hypothesis, dict)
+                and isinstance(hypothesis, str) else None)
+    if (not isinstance(failures, list) or not failures
+            or len(set(failures)) != len(failures)
+            or any(not isinstance(value, str)
+                   or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                   for value in failures)):
+        return None
+    manifest = iteration.get("source_manifest_sha256")
+    if not isinstance(manifest, str) or manifest not in failures:
+        return None
+    policy = iteration.get("portfolio_decision_policy")
+    budget = (policy.get("max_distinct_candidates")
+              if isinstance(policy, dict) else None)
+    if (not isinstance(budget, int) or isinstance(budget, bool) or budget < 1
+            or len(failures) > budget):
+        return None
+    skips = state.get("portfolio_skips")
+    skip = (skips.get(hypothesis) if isinstance(skips, dict) else None)
+    bounded = False
+    if skip is not None:
+        if (not isinstance(skip, dict)
+                or skip.get("disposition") !=
+                "bounded_measurement_output_refused"
+                or skip.get("scientific_terminal") is not False
+                or skip.get("distinct_candidate_count") != len(failures)
+                or skip.get("stage_receipt_path") !=
+                refusal.get("receipt_path")
+                or skip.get("stage_receipt_sha256") !=
+                refusal.get("receipt_sha256")):
+            return None
+        bounded = True
+    if bounded is not (len(failures) >= budget):
+        return None
+    return {
+        "disposition": ("bounded_measurement_output_refused" if bounded
+                        else "retry_distinct_candidate"),
+        "distinct_candidate_count": len(failures),
+        "max_distinct_candidates": budget,
+        "scientific_terminal": False,
+        "next": ("next_portfolio_hypothesis" if bounded
+                 else "next_distinct_candidate"),
+    }
+
+
+def _discovery_refusal_observation(bundle: Path, state: dict | None,
+                                   events: list[dict]) -> dict | None:
+    """Discover a governed refusal from its typed fields, not a guessed path.
+
+    The producer owns the eventual receipt filename and schema.  The dashboard
+    follows only a declared path below the selected deployment, verifies its
+    exact byte hash, then requires the canonical refusal fields to agree.
+    """
+    accepted_types = {
+        "SourceApplyRefusal", "CompileRefusal", "CorrectnessRefusal",
+        "DispatchAttributionRefusal", "MeasurementOutputRefusal",
+    }
+    dispositions = {
+        "authoring_refused", "correctness_falsified",
+        "attribution_route_falsified", "measurement_output_refused",
+    }
+    stage_types = {
+        "source_apply": "SourceApplyRefusal",
+        "compile": "CompileRefusal",
+        "correctness": "CorrectnessRefusal",
+        "dispatch_attribution": "DispatchAttributionRefusal",
+        "measurement_output": "MeasurementOutputRefusal",
+    }
+    candidates: list[dict] = []
+    if isinstance(state, dict):
+        for owner in (state, state.get("inflight")):
+            if isinstance(owner, dict) and isinstance(owner.get("refusal"), dict):
+                candidates.append(owner["refusal"])
+        iterations = state.get("iterations")
+        if isinstance(iterations, list):
+            for row in reversed(iterations[-25:]):
+                if not isinstance(row, dict):
+                    continue
+                if isinstance(row.get("refusal"), dict):
+                    candidates.append(row["refusal"])
+                if ({"stage", "scientific_budget_spent"}.issubset(row)
+                        and ("disposition" in row or "status" in row)
+                        and ("receipt_path" in row
+                             or "stage_receipt_path" in row)
+                        and ("receipt_sha256" in row
+                             or "stage_receipt_sha256" in row)):
+                    candidates.append(row)
+    for event in reversed(events):
+        result = event.get("result") if isinstance(event, dict) else None
+        if isinstance(result, dict):
+            candidates.append(result)
+    for value in candidates:
+        stage = value.get("stage")
+        refusal_type = (value.get("refusal_type") or value.get("type")
+                        or value.get("class") or stage_types.get(stage))
+        disposition = value.get("disposition") or value.get("status")
+        expected = value.get("receipt_sha256") or value.get("stage_receipt_sha256")
+        spent = value.get("scientific_budget_spent")
+        if (refusal_type not in accepted_types or disposition not in dispositions
+                or not isinstance(stage, str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}", stage) is None
+                or not isinstance(expected, str)
+                or re.fullmatch(r"[0-9a-f]{64}", expected) is None
+                or not isinstance(spent, bool)):
+            continue
+        raw_path = value.get("receipt_path") or value.get("stage_receipt_path")
+        if not isinstance(raw_path, str):
+            continue
+        path = Path(raw_path)
+        if not path.is_absolute():
+            path = bundle / path
+        try:
+            root = bundle.resolve(strict=True)
+            path.resolve(strict=True).relative_to(root)
+            cursor = path.parent
+            while cursor != bundle:
+                if cursor.is_symlink():
+                    raise ValueError("refusal receipt parent is a symlink")
+                cursor = cursor.parent
+            info = path.lstat()
+            if (path.is_symlink() or not path.is_file() or info.st_nlink != 1
+                    or info.st_size > 1024 * 1024):
+                continue
+            raw = path.read_bytes()
+            after = path.lstat()
+        except (OSError, ValueError):
+            continue
+        if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
+                != (after.st_dev, after.st_ino, after.st_size,
+                    after.st_mtime_ns, after.st_nlink)):
+            continue
+        try:
+            receipt = json.loads(raw.decode("utf-8", "strict"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if not isinstance(receipt, dict):
+            continue
+        native_hash = receipt.get("receipt_sha256")
+        if isinstance(native_hash, str) and re.fullmatch(
+                r"[0-9a-f]{64}", native_hash):
+            try:
+                calculated_native = hashlib.sha256(json.dumps(
+                    {key: item for key, item in receipt.items()
+                     if key != "receipt_sha256"},
+                    sort_keys=True, separators=(",", ":"),
+                    ensure_ascii=False, allow_nan=False).encode("utf-8")).hexdigest()
+            except (TypeError, ValueError):
+                continue
+            if calculated_native != native_hash:
+                continue
+        else:
+            native_hash = None
+        # Every controller ``stage_receipt_sha256`` binds the exact file bytes.
+        # Build terminals additionally carry a native self-hash and name their
+        # stage ``failure_stage``; both properties are validated independently.
+        if expected != hashlib.sha256(raw).hexdigest():
+            continue
+        receipt_stage = receipt.get("stage") or receipt.get("failure_stage")
+        if (not isinstance(receipt.get("schema"), str)
+                or not receipt["schema"].startswith("epyc.autokernel.")
+                or (receipt_stage is not None
+                    and receipt_stage not in {stage, refusal_type})
+                or ("disposition" in receipt
+                    and receipt.get("disposition") != disposition)
+                or ("scientific_budget_spent" in receipt
+                    and receipt.get("scientific_budget_spent") is not spent)):
+            continue
+        receipt_type = (receipt.get("refusal_type") or receipt.get("type")
+                        or receipt.get("class"))
+        if receipt_type is not None and receipt_type != refusal_type:
+            continue
+        measurement_output = None
+        if refusal_type == "MeasurementOutputRefusal":
+            measurement_output = _discovery_measurement_output_refusal(
+                receipt, path, bundle)
+            if measurement_output is None:
+                continue
+        return {
+            "detected": True, "type": refusal_type,
+            "stage": stage, "disposition": disposition,
+            "scientific_budget_spent": spent,
+            "receipt_path": str(path), "receipt_sha256": expected,
+            "at": datetime.fromtimestamp(
+                info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+            "detail": (
+                f"{measurement_output['arm']} "
+                f"{measurement_output['runtime_graphs']}-graphs output refused: "
+                f"{measurement_output['reason_code']} · reason sha256 "
+                f"{measurement_output['reason_sha256'][:12]}…"
+                if measurement_output is not None else
+                value.get("reason") or value.get("message")),
+            "measurement_output": measurement_output,
+        }
+    return None
+
+
+def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
+                        state: dict | None,
+                        events: list[dict], checkpoint: dict | None,
+                        operation_observation: dict | None,
+                        correctness_observation: dict | None,
+                        postbuild_observation: dict | None,
+                        claim_observation: dict | None,
+                        refusal_observation: dict | None,
+                        refusal_history_observations: list[dict],
+                        now: float) -> dict:
+    """Derive an honest lifecycle view from durable producer facts.
+
+    This does not invent percentage progress. A lock proves controller
+    liveness, an event proves an actor transition, and a STOP_STATE/state pair
+    proves only its last durable boundary.
+    """
+    pipeline = {stage: {"id": stage, "label": label, "state": "not_reached"}
+                for stage, label in _DISCOVERY_PIPELINE}
+    # A proof-plan declaration is not evidence that source materialization or
+    # compilation finished.  Post-build receipts become visible only behind
+    # the exact sealed terminal -> materialization chain observed above.
+    if (not isinstance(operation_observation, dict)
+            or operation_observation.get("stage") != "evidence_binding"):
+        postbuild_observation = None
+    receipt_correctness_observation = (
+        postbuild_observation.get("correctness_execution")
+        if isinstance(postbuild_observation, dict) else None)
+    execution_observation = (
+        correctness_observation if isinstance(correctness_observation, dict)
+        else receipt_correctness_observation
+        if isinstance(receipt_correctness_observation, dict) else None)
+    transitions: list[dict] = []
+    started: dict[str, str] = {}
+    event_stage = {
+        "planner_started": ("planner", "running"),
+        "planner_completed": ("planner", "complete"),
+        "planner_failed": ("planner", "failed"),
+        "planner_refused": ("planner_validation", "failed"),
+        "planner_validation_failed": ("planner_validation", "failed"),
+        "planner_validation_refused": ("planner_validation", "failed"),
+        "critic_started": ("critic", "running"),
+        "critic_completed": ("critic", "complete"),
+        "critic_failed": ("critic", "failed"),
+        "correctness_started": ("correctness", "running"),
+        "correctness_completed": ("correctness", "complete"),
+        "correctness_validation_completed": ("correctness_validation", "complete"),
+        "correctness_validation_failed": ("correctness_validation", "failed"),
+        "candidate_attribution_started": ("candidate_attribution", "running"),
+        "candidate_attribution_completed": ("candidate_attribution", "complete"),
+        "anchor_attribution_started": ("anchor_attribution", "running"),
+        "anchor_attribution_completed": ("anchor_attribution", "complete"),
+        "measurement_graphs_off_screen_started": ("measurement_graphs_off_screen", "running"),
+        "measurement_graphs_off_screen_completed": ("measurement_graphs_off_screen", "complete"),
+        "target_runtime_graphs_on_screen_started": ("target_runtime_graphs_on_screen", "running"),
+        "target_runtime_graphs_on_screen_completed": ("target_runtime_graphs_on_screen", "complete"),
+        "decision_started": ("decision", "running"),
+        "decision_completed": ("decision", "complete"),
+        "replication_s1_started": ("replication_s1", "running"),
+        "replication_s1_completed": ("replication_s1", "complete"),
+        "replication_s2_started": ("replication_s2", "running"),
+        "replication_s2_completed": ("replication_s2", "complete"),
+        "next_hypothesis_started": ("next_hypothesis", "running"),
+        "next_hypothesis_selected": ("next_hypothesis", "complete"),
+        "authoring_refused": ("planner_validation", "failed"),
+        "critic_refused": ("critic", "failed"),
+        "compile_refused": ("build", "failed"),
+        "correctness_falsified": ("correctness_validation", "failed"),
+        "attribution_route_falsified": ("dispatch_proof", "failed"),
+    }
+    for row in events:
+        event = row.get("event")
+        ts = row.get("ts")
+        if event not in event_stage or not isinstance(ts, str):
+            continue
+        stage, stage_state = event_stage[event]
+        if stage == "critic":
+            pipeline["planner_validation"]["state"] = "complete"
+            pipeline["planner_validation"]["completed_at"] = ts
+        pipeline[stage]["state"] = stage_state
+        if stage_state == "running":
+            pipeline[stage]["started_at"] = ts
+            pipeline[stage].pop("completed_at", None)
+            pipeline[stage].pop("elapsed_s", None)
+            started[stage] = ts
+        else:
+            if stage in started:
+                pipeline[stage]["started_at"] = started[stage]
+                pipeline[stage]["elapsed_s"] = max(
+                    0.0, _parse_semantic_timestamp(ts)
+                    - _parse_semantic_timestamp(started[stage]))
+            pipeline[stage]["completed_at"] = ts
+        detail = row.get("model") or row.get("provider") or event
+        result = row.get("result")
+        if isinstance(result, dict) and isinstance(result.get("decision"), str):
+            detail = f"decision: {result['decision']}"
+        transitions.append({"ts": ts, "stage": stage, "phase": stage,
+                            "state": stage_state, "event": event,
+                            "label": str(detail)[:160],
+                            "detail": str(detail)[:160]})
+
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    pending = state.get("pending") if isinstance(state, dict) else None
+    planning = state.get("planning") if isinstance(state, dict) else None
+    iterations = (state.get("iterations") if isinstance(state, dict)
+                  and isinstance(state.get("iterations"), list) else [])
+    latest_iteration = iterations[-1] if iterations else None
+    latest_iteration_status = (latest_iteration.get("status")
+                               if isinstance(latest_iteration, dict) else None)
+    complete = bool(state and state.get("complete") is True)
+    failure = _discovery_safe_error(
+        inflight.get("exception") if isinstance(inflight, dict) else None)
+    planning_failure = _discovery_safe_error(
+        planning.get("failure") if isinstance(planning, dict) else None)
+    planner_terminal_failure = bool(
+        planning_failure is not None and isinstance(checkpoint, dict)
+        and checkpoint.get("state") == "discovery_planner_terminal_failure")
+    latest_event = events[-1].get("event") if events else None
+    active_planner_turn = bool(
+        lock_held and latest_event == "planner_started"
+        and isinstance(planning, dict)
+        and not isinstance(pending, dict) and not isinstance(inflight, dict))
+    active_critic_turn = bool(
+        lock_held and latest_event == "critic_started"
+        and isinstance(pending, dict)
+        and pending.get("phase") == "critic_pending"
+        and not isinstance(inflight, dict))
+    latest_terminal_turn = (latest_iteration.get("turn")
+                            if isinstance(latest_iteration, dict) else None)
+    current_inflight_row = (inflight.get("row")
+                            if isinstance(inflight, dict) else None)
+    current_inflight_turn = (current_inflight_row.get("turn")
+                             if isinstance(current_inflight_row, dict) else None)
+    current_pending_row = (pending.get("row")
+                           if isinstance(pending, dict) else None)
+    current_pending_turn = (
+        pending.get("turn") if isinstance(pending, dict)
+        and isinstance(pending.get("turn"), int)
+        and not isinstance(pending.get("turn"), bool) else
+        current_pending_row.get("turn")
+        if isinstance(current_pending_row, dict) else None)
+    active_pending_new_turn = bool(
+        lock_held
+        and isinstance(current_pending_turn, int)
+        and not isinstance(current_pending_turn, bool)
+        and isinstance(latest_terminal_turn, int)
+        and not isinstance(latest_terminal_turn, bool)
+        and current_pending_turn > latest_terminal_turn)
+    active_inflight_new_turn = bool(
+        isinstance(current_inflight_turn, int)
+        and not isinstance(current_inflight_turn, bool)
+        and isinstance(latest_terminal_turn, int)
+        and not isinstance(latest_terminal_turn, bool)
+        and current_inflight_turn > latest_terminal_turn)
+    active_new_turn = (active_planner_turn or active_critic_turn
+                       or active_pending_new_turn
+                       or active_inflight_new_turn)
+    validation_event = (latest_event if latest_event in
+                        {"planner_validation_failed", "planner_validation_refused",
+                         "planner_refused"}
+                        else None)
+    planner_validation_interrupted = bool(
+        not lock_held and state is None and checkpoint is None
+        and operation_observation is None and latest_event == "planner_completed")
+    hypothesis = None
+    turn = state.get("next") if isinstance(state, dict) else None
+    lease = None
+    pending_phase = pending.get("phase") if isinstance(pending, dict) else None
+    pending_authorized = bool(
+        isinstance(pending, dict) and isinstance(pending.get("authorization"), dict))
+    if isinstance(inflight, dict):
+        candidate = inflight.get("candidate")
+        row = inflight.get("row")
+        if isinstance(candidate, dict):
+            hypothesis = candidate.get("hypothesis_id")
+        if hypothesis is None and isinstance(row, dict):
+            hypothesis = row.get("hypothesis_id")
+        lease = inflight.get("lease")
+        pipeline["authorization"]["state"] = "complete"
+        pipeline["resource_admission"]["state"] = (
+            "complete" if isinstance(lease, dict) and lease.get("admitted") is True
+            else "running")
+    elif isinstance(pending, dict):
+        row = pending.get("row")
+        candidate = pending.get("candidate")
+        if isinstance(candidate, dict):
+            hypothesis = candidate.get("hypothesis_id")
+        if hypothesis is None and isinstance(row, dict):
+            hypothesis = row.get("hypothesis_id")
+        pipeline["planner_validation"]["state"] = "complete"
+        if pending_phase == "critic_pending":
+            # planner_checkpointed proves local plan/manifest validation, not
+            # critic acceptance or authorization. Preserve a running actor fact.
+            if pipeline["critic"]["state"] == "not_reached":
+                pipeline["critic"]["state"] = "waiting"
+        elif pending_phase == "critic_complete":
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "running"
+        elif pending_authorized:
+            lease = row.get("lease") if isinstance(row, dict) else None
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "complete"
+            pipeline["resource_admission"]["state"] = "waiting"
+        else:
+            pipeline["critic"]["state"] = "complete"
+            pipeline["authorization"]["state"] = "running"
+
+    # Before planner output is checkpointed there is intentionally no pending
+    # or inflight candidate.  The producer's active lifecycle event is the only
+    # durable hypothesis identity available in that window.  Accept it only
+    # from the newest event for this sealed deployment campaign, only while the
+    # controller lock proves activity, and only from the allowlisted active
+    # event/field grammar.
+    if (hypothesis is None and lock_held and not isinstance(pending, dict)
+            and not isinstance(inflight, dict) and isinstance(campaign_id, str)):
+        active_hypothesis_events = {
+            "planner_started", "critic_started", "correctness_started",
+            "candidate_attribution_started", "anchor_attribution_started",
+            "measurement_graphs_off_screen_started",
+            "target_runtime_graphs_on_screen_started", "decision_started",
+            "replication_s1_started", "replication_s2_started",
+            "next_hypothesis_started",
+        }
+        latest_campaign_event = next(
+            (row for row in reversed(events)
+             if row.get("campaign_id") == campaign_id), None)
+        event_hypothesis = (latest_campaign_event.get("hypothesis_id")
+                            if isinstance(latest_campaign_event, dict)
+                            and latest_campaign_event.get("event") in
+                            active_hypothesis_events else None)
+        if (isinstance(event_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 event_hypothesis)):
+            hypothesis = event_hypothesis
+
+    # A terminal planner attempt has no pending/inflight row, but its durable
+    # planning checkpoint still binds the selected portfolio hypothesis.  Use
+    # that identity only when its authoring assignment agrees with this sealed
+    # deployment campaign; never resurrect a hypothesis from an unrelated or
+    # merely historical event.
+    if (hypothesis is None and planner_terminal_failure
+            and isinstance(planning, dict) and isinstance(campaign_id, str)):
+        binding = planning.get("portfolio_binding")
+        context = planning.get("context")
+        assignment = (context.get("authoring_assignment")
+                      if isinstance(context, dict) else None)
+        terminal_hypothesis = (binding.get("hypothesis_id")
+                               if isinstance(binding, dict) else None)
+        if (isinstance(assignment, dict)
+                and assignment.get("campaign_id") == campaign_id
+                and isinstance(terminal_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 terminal_hypothesis)):
+            hypothesis = terminal_hypothesis
+        planning_turn = planning.get("turn")
+        if (isinstance(planning_turn, int)
+                and not isinstance(planning_turn, bool) and planning_turn > 0):
+            turn = planning_turn
+
+    if (hypothesis is None and validation_event is not None
+            and isinstance(campaign_id, str) and events):
+        terminal_event = events[-1]
+        terminal_hypothesis = terminal_event.get("hypothesis_id")
+        if (terminal_event.get("campaign_id") == campaign_id
+                and isinstance(terminal_hypothesis, str)
+                and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                                 terminal_hypothesis)):
+            hypothesis = terminal_hypothesis
+        if (isinstance(latest_iteration, dict)
+                and isinstance(latest_iteration.get("turn"), int)
+                and not isinstance(latest_iteration.get("turn"), bool)):
+            turn = latest_iteration["turn"]
+
+    last_event_at = max((row.get("ts") for row in events
+                         if isinstance(row.get("ts"), str)), default=None)
+    state_at = state.get("updated_at") if isinstance(state, dict) else None
+    checkpoint_at = checkpoint.get("written_at") if checkpoint else None
+    operation_at = (operation_observation.get("started_at")
+                    if isinstance(operation_observation, dict) else None)
+    correctness_at = (execution_observation.get("completed_at")
+                      if isinstance(execution_observation, dict) else None)
+    claim_at = (claim_observation.get("acquired_at")
+                if isinstance(claim_observation, dict) else None)
+    postbuild_times = []
+    if isinstance(postbuild_observation, dict):
+        postbuild_times.extend(
+            row.get("at")
+            for row in postbuild_observation.get("receipts", {}).values()
+            if isinstance(row, dict) and isinstance(row.get("at"), str))
+        process_progress = postbuild_observation.get("process_progress")
+        if isinstance(process_progress, dict):
+            if isinstance(process_progress.get("started_at"), str):
+                postbuild_times.append(process_progress["started_at"])
+            postbuild_times.extend(
+                row.get("at") for row in process_progress.get("receipts", [])
+                if isinstance(row, dict) and isinstance(row.get("at"), str))
+    postbuild_at = max(postbuild_times, default=None)
+    semantic_times = [value for value in
+                      (last_event_at, state_at, checkpoint_at, operation_at,
+                       correctness_at, claim_at, postbuild_at)
+                      if isinstance(value, str)]
+    last_progress_at = max(semantic_times) if semantic_times else None
+    last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
+                           if last_progress_at else None)
+    progress_age = max(0.0, now - last_progress_epoch) if last_progress_epoch else None
+
+    status = "idle"
+    stage = "planner"
+    label = "Awaiting launch"
+    waiting_on = "controller launch"
+    recoverability = "not_required"
+    failure_view = {"detected": False, "stage": None, "detail": None,
+                    "recovery": None}
+    if isinstance(postbuild_observation, dict):
+        for completed_stage in postbuild_observation.get("completed", []):
+            if completed_stage in pipeline:
+                pipeline[completed_stage]["state"] = "complete"
+        for skipped_stage, reason in postbuild_observation.get("skipped", {}).items():
+            if skipped_stage in pipeline:
+                pipeline[skipped_stage]["state"] = "skipped"
+                pipeline[skipped_stage]["detail"] = reason
+        transitions.extend(postbuild_observation.get("transitions", []))
+    if planner_terminal_failure:
+        # The planner actor can return successfully and still be rejected by
+        # the controller-owned telemetry/output validator.  v16 persisted this
+        # exact STOP_STATE plus a bounded typed error in planning.failure.  It
+        # is a failed terminal, not an idle campaign and not a provider retry.
+        validation_failure = planning_failure["type"] == "TelemetryError"
+        stage = "planner_validation" if validation_failure else "planner"
+        status = "failed"
+        label = ("Planner telemetry validation failed" if validation_failure
+                 else "Planner terminated before a reusable checkpoint")
+        waiting_on = "fresh sealed deployment after planner seam repair"
+        recoverability = "planner_validation_requires_fresh_deployment"
+        if validation_failure:
+            pipeline["planner"]["state"] = "complete"
+            pipeline["planner"]["completed_at"] = state_at or checkpoint_at
+        pipeline[stage]["state"] = "failed"
+        pipeline[stage]["started_at"] = state_at or checkpoint_at
+        pipeline[stage]["completed_at"] = checkpoint_at or state_at
+        failure_view = {
+            "detected": True,
+            "stage": stage,
+            "detail": f"{planning_failure['type']}: {planning_failure['detail']}",
+            "recovery": ("Repair the planner telemetry/output contract, then "
+                         "launch a fresh sealed deployment; no GPU stage was reached."),
+            "source_proof_created": False,
+            "correctness_output_created": False,
+            "runner_started": False,
+            "gpu_screen_started": False,
+        }
+        transitions.append({
+            "ts": checkpoint_at or state_at,
+            "stage": stage, "phase": stage, "state": "failed",
+            "event": "discovery_planner_terminal_failure",
+            "label": label,
+            "detail": failure_view["detail"],
+        })
+    elif failure is not None:
+        status = "failed"
+        observed_stage = (operation_observation.get("stage")
+                          if isinstance(operation_observation, dict) else None)
+        postbuild_failure_stage = (
+            postbuild_observation.get("first_incomplete_stage")
+            if isinstance(postbuild_observation, dict) else None)
+        correctness_parse_failed = bool(
+            isinstance(correctness_observation, dict)
+            and failure.get("type") == "EvidenceProducerError"
+            and "correctness stdout" in failure.get("detail", "").lower())
+        failure_detail_lower = str(failure.get("detail") or "").lower()
+        attribution_identity_failure = (
+            "runtime maps" in failure_detail_lower
+            or "owned kfd process" in failure_detail_lower
+            or "runtime identity" in failure_detail_lower)
+        attribution_timing_failure = (
+            "avg_ts" in failure_detail_lower
+            and "samples_ts" in failure_detail_lower)
+        stage = ("correctness_validation" if correctness_parse_failed else
+                 postbuild_failure_stage
+                 if postbuild_failure_stage in _DISCOVERY_POSTBUILD_STAGES else
+                 observed_stage if observed_stage in {"build", "evidence_binding"}
+                 else "source_materialization")
+        attribution_arm = ("Candidate" if stage == "candidate_attribution"
+                           else "Anchor")
+        attribution_label = (
+            f"{attribution_arm} attribution failed during runtime identity binding"
+            if attribution_identity_failure else
+            f"{attribution_arm} attribution timing receipt validation failed"
+            if attribution_timing_failure else
+            f"{attribution_arm} attribution evidence validation failed")
+        label = ("Correctness result parsing failed after GPU proof"
+                 if stage == "correctness_validation" else
+                 attribution_label
+                 if stage in {"candidate_attribution", "anchor_attribution"} else
+                 "Graphs-off measurement evidence validation failed"
+                 if stage == "measurement_graphs_off_screen" else
+                 "Graphs-on target-runtime evidence validation failed"
+                 if stage == "target_runtime_graphs_on_screen" else
+                 "Evidence binding failed after completed build"
+                 if stage == "evidence_binding" else
+                 "Source build failed" if stage == "build" else
+                 "Source materialization failed")
+        waiting_on = "fresh candidate attempt after controller repair"
+        recoverability = "ambiguous_checkpoint_requires_fresh_deployment"
+        pipeline["source_materialization"]["state"] = (
+            "complete" if stage in {"build", "evidence_binding",
+                                    "correctness_validation"}
+            or stage in _DISCOVERY_POSTBUILD_STAGES else "failed")
+        if (stage in {"evidence_binding", "correctness_validation"}
+                or stage in _DISCOVERY_POSTBUILD_STAGES):
+            pipeline["build"]["state"] = "complete"
+        if stage == "correctness_validation":
+            pipeline["evidence_binding"]["state"] = "complete"
+            pipeline["correctness"]["state"] = "complete"
+            pipeline["correctness"]["started_at"] = correctness_observation[
+                "started_at"]
+            pipeline["correctness"]["completed_at"] = correctness_observation[
+                "completed_at"]
+            pipeline["correctness"]["elapsed_s"] = correctness_observation[
+                "elapsed_s"]
+            pipeline[stage]["started_at"] = correctness_observation[
+                "completed_at"]
+        elif stage in _DISCOVERY_POSTBUILD_STAGES:
+            pipeline["evidence_binding"]["state"] = "complete"
+            process_progress = (
+                postbuild_observation.get("process_progress")
+                if isinstance(postbuild_observation, dict) else None)
+            pipeline[stage]["started_at"] = (
+                process_progress.get("started_at")
+                if isinstance(process_progress, dict)
+                and process_progress.get("stage") == stage
+                and isinstance(process_progress.get("started_at"), str)
+                else postbuild_at or correctness_at)
+        elif isinstance(operation_observation, dict):
+            pipeline[stage]["started_at"] = operation_observation.get("started_at")
+        pipeline[stage]["state"] = "failed"
+        pipeline[stage]["completed_at"] = state_at or checkpoint_at
+        failure_view = {
+            "detected": True, "stage": stage,
+            "detail": f"{failure['type']}: {failure['detail']}",
+            "recovery": "Do not resume this ambiguous operation; launch a fresh sealed deployment after repair.",
+            "source_proof_created": stage in _DISCOVERY_POSTBUILD_STAGES,
+            "correctness_output_created": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
+            "runner_started": stage in {
+                "measurement_graphs_off_screen",
+                "target_runtime_graphs_on_screen"},
+            "gpu_screen_started": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
+            "correctness_execution_completed": (
+                stage == "correctness_validation"
+                or isinstance(execution_observation, dict)),
+        }
+    elif (validation_event == "planner_refused"
+          or latest_iteration_status == "planner_refused"):
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "failed"
+        pipeline["next_hypothesis"]["state"] = (
+            "running" if lock_held else "waiting")
+        status = "running" if lock_held else "stopped"
+        stage = "next_hypothesis"
+        label = "Planner output refused; advancing to next hypothesis"
+        waiting_on = ("next eligible portfolio hypothesis" if lock_held else
+                      "controller restart from planner-refusal checkpoint")
+        recoverability = "resume_controller_checkpoint"
+        if isinstance(latest_iteration, dict):
+            if isinstance(latest_iteration.get("hypothesis_id"), str):
+                hypothesis = latest_iteration["hypothesis_id"]
+            if (isinstance(latest_iteration.get("turn"), int)
+                    and not isinstance(latest_iteration.get("turn"), bool)):
+                turn = latest_iteration["turn"]
+    elif validation_event is not None or planner_validation_interrupted:
+        status = "failed"
+        stage = "planner_validation"
+        label = ("Planner output refused by local validation"
+                 if validation_event in {"planner_validation_refused",
+                                         "planner_refused"} else
+                 "Planner validation failed" if validation_event else
+                 "Controller stopped during planner validation")
+        waiting_on = "fresh sealed deployment after controller repair"
+        recoverability = "planner_validation_requires_fresh_deployment"
+        planner_completed_at = next(
+            (row.get("ts") for row in reversed(events)
+             if row.get("event") == "planner_completed"), None)
+        pipeline[stage]["state"] = "failed"
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner"]["completed_at"] = planner_completed_at or last_event_at
+        pipeline[stage]["started_at"] = planner_completed_at or last_event_at
+        pipeline[stage]["completed_at"] = last_event_at
+        refusal_digest = (
+            events[-1].get("result", {}).get("refusal_reason_sha256")
+            if validation_event == "planner_refused"
+            and isinstance(events[-1].get("result"), dict) else None)
+        if isinstance(refusal_digest, str):
+            detail = ("Planner output was refused by local validation; reason "
+                      f"sha256 {refusal_digest[:12]}… (raw reason is not telemetry).")
+        elif validation_event == "planner_refused":
+            detail = "Planner output was refused by local validation."
+        elif validation_event == "planner_validation_refused":
+            detail = ("Planner output was refused by local validation "
+                      "(producer lifecycle event).")
+        elif validation_event == "planner_validation_failed":
+            detail = "Planner validation failed (producer lifecycle event)."
+        else:
+            detail = ("Controller stopped after the planner actor completed; the "
+                      "producer did not persist the exact planner-validation exception.")
+        if validation_event == "planner_refused":
+            waiting_on = ("automatic next eligible hypothesis" if lock_held else
+                          "controller restart from planner-refusal checkpoint")
+            recoverability = "resume_controller_checkpoint"
+        failure_view = {
+            "detected": True, "stage": stage, "detail": detail,
+            "recovery": (
+                "The refusal is durable and spent no scientific budget; continue "
+                "with the next eligible hypothesis."
+                if validation_event == "planner_refused" else
+                "Do not resume this attempt; repair the controller and launch a "
+                "fresh sealed deployment."),
+            "source_proof_created": False, "runner_started": False,
+            "gpu_screen_started": False,
+        }
+        if planner_validation_interrupted:
+            transitions.append({
+                "ts": last_event_at, "stage": stage, "phase": stage,
+                "state": "inferred_failure",
+                "event": "planner_validation_interrupted",
+                "label": "controller exited before a planner-validation checkpoint",
+                "detail": "exact exception was not persisted by the producer",
+            })
+    elif active_planner_turn:
+        # A typed terminal closes the prior turn only. Once the same controller
+        # durably enters the next planning turn, that newer lifecycle event owns
+        # the headline and current pipeline; the refusal remains historical.
+        for name, row in pipeline.items():
+            if name != "planner":
+                row.clear()
+                row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                            "state": "not_reached"})
+        stage = "planner"
+        pipeline[stage]["state"] = "running"
+        pipeline[stage]["started_at"] = last_event_at
+        pipeline[stage].pop("completed_at", None)
+        pipeline[stage].pop("elapsed_s", None)
+        status = "running"
+        label = "Planner model call"
+        waiting_on = "planner completion"
+        recoverability = "not_required"
+    elif active_critic_turn:
+        # A later turn's durable critic checkpoint/event also outranks the
+        # previous turn's terminal iteration.  Rebuild the current pipeline
+        # solely from facts the new pending row proves; never carry the prior
+        # authoring refusal into this turn's headline.
+        for name, row in pipeline.items():
+            row.clear()
+            row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                        "state": "not_reached"})
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "complete"
+        pipeline["critic"]["state"] = "running"
+        pipeline["critic"]["started_at"] = last_event_at
+        stage = "critic"
+        status = "running"
+        label = "Critic review"
+        waiting_on = "critic review completion"
+        recoverability = "not_required"
+    elif active_pending_new_turn:
+        # Planner validation has durably checkpointed the newer turn, but the
+        # critic actor has not emitted critic_started yet.  This short seam is
+        # a real waiting state; do not inherit the previous turn's completed
+        # critic or typed terminal while crossing it.
+        for name, row in pipeline.items():
+            row.clear()
+            row.update({"id": name, "label": _DISCOVERY_PIPELINE_DICT[name],
+                        "state": "not_reached"})
+        pipeline["planner"]["state"] = "complete"
+        pipeline["planner_validation"]["state"] = "complete"
+        pipeline["critic"]["state"] = "waiting"
+        stage = "critic"
+        status = "waiting"
+        label = "Waiting to start critic review"
+        waiting_on = "critic review"
+        recoverability = "not_required"
+    elif latest_iteration_status == "planner_transient":
+        stage = "planner"
+        pipeline[stage]["state"] = "waiting"
+        status = "running" if lock_held else "stopped"
+        label = "Planner provider interrupted; same hypothesis remains retryable"
+        waiting_on = ("automatic planner retry" if lock_held else
+                      "controller restart at planner retry checkpoint")
+        recoverability = "resume_planner_provider_retry"
+        hypothesis = latest_iteration.get("hypothesis_id")
+    elif (not (active_pending_new_turn or active_inflight_new_turn)
+          and latest_iteration_status in {
+            "authoring_refused", "correctness_falsified",
+            "attribution_route_falsified", "measurement_output_refused"}):
+        refused_stage = latest_iteration.get("stage")
+        measurement_refusal = (
+            refusal_observation.get("measurement_output")
+            if isinstance(refusal_observation, dict) else None)
+        failed_stage = {
+            "source_apply": "source_materialization",
+            "compile": "build",
+            "correctness": "correctness_validation",
+            "dispatch_attribution": "dispatch_proof",
+        }.get(refused_stage)
+        if (refused_stage == "measurement_output"
+                and isinstance(measurement_refusal, dict)):
+            failed_stage = measurement_refusal.get("screen_stage")
+            for completed_stage in measurement_refusal.get(
+                    "completed_pipeline", []):
+                if completed_stage in pipeline:
+                    pipeline[completed_stage]["state"] = "complete"
+        if failed_stage is not None:
+            pipeline[failed_stage]["state"] = "failed"
+            if isinstance(measurement_refusal, dict):
+                reusable = measurement_refusal.get("reusable_completed_arms") or []
+                pipeline[failed_stage]["detail"] = (
+                    f"{measurement_refusal.get('arm')} arm output refused · "
+                    f"{measurement_refusal.get('reason_code')}"
+                    + (f" · reusable completed arm: {', '.join(reusable)}"
+                       if reusable else ""))
+        stage = "next_hypothesis"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        status = "running" if lock_held else "stopped"
+        label = (f"{latest_iteration_status.replace('_', ' ')}; advancing to next hypothesis"
+                 if lock_held else
+                 f"{latest_iteration_status.replace('_', ' ')}; next hypothesis checkpointed")
+        waiting_on = ("next eligible portfolio hypothesis" if lock_held else
+                      "controller restart from typed terminal")
+        recoverability = "resume_controller_checkpoint"
+    elif complete:
+        status = "complete"
+        stage = "decision"
+        label = "Campaign complete"
+        waiting_on = "operator review"
+        pipeline[stage]["state"] = "complete"
+    elif isinstance(pending, dict):
+        if pending_phase == "critic_pending":
+            stage = "critic"
+            if latest_event == "critic_started" and lock_held:
+                status = "running"
+                label = "Critic review"
+                waiting_on = "critic review completion"
+            elif latest_event == "critic_completed":
+                status = "waiting" if lock_held else "stopped"
+                label = "Critic completed; awaiting durable checkpoint"
+                waiting_on = "critic checkpoint persistence"
+            else:
+                status = "waiting" if lock_held else "stopped"
+                if latest_event == "critic_failed":
+                    label = "Critic provider interrupted; checkpoint preserved"
+                    waiting_on = ("automatic critic retry" if lock_held else
+                                  "controller restart at critic checkpoint")
+                    recoverability = "resume_critic_provider_retry"
+                else:
+                    label = "Waiting to start critic review"
+                    waiting_on = "critic review"
+        elif pending_phase == "critic_complete":
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Governance authorization"
+            waiting_on = "authorization decision"
+        elif pending_authorized:
+            status = "waiting"
+            stage = "resource_admission"
+            label = "Waiting for governed resource admission"
+            waiting_on = "GPU/inference-window availability"
+            recoverability = "same_candidate_retry"
+        else:
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Governance authorization"
+            waiting_on = "authorization decision"
+    elif isinstance(inflight, dict):
+        inflight_phase = inflight.get("phase")
+        lease_phase = lease.get("phase") if isinstance(lease, dict) else None
+        observed_stage = (operation_observation.get("stage")
+                          if isinstance(operation_observation, dict) else None)
+        postbuild_stage = (postbuild_observation.get("first_incomplete_stage")
+                           if isinstance(postbuild_observation, dict) else None)
+        live_event_stage = event_stage.get(latest_event)
+        live_postbuild_stage = (
+            live_event_stage[0] if live_event_stage is not None
+            and live_event_stage[1] == "running"
+            and live_event_stage[0] in _DISCOVERY_POSTBUILD_STAGES
+            and live_event_stage[0] not in (
+                postbuild_observation.get("completed", [])
+                if isinstance(postbuild_observation, dict) else []) else None)
+        if (live_postbuild_stage or postbuild_stage) in _DISCOVERY_POSTBUILD_STAGES:
+            stage = live_postbuild_stage or postbuild_stage
+            # The first incomplete stage cannot begin before the newest
+            # validated predecessor receipt.  Use that durable boundary for
+            # the clock; never inherit pre-screen state.updated_at.
+            pipeline[stage]["started_at"] = (
+                postbuild_observation.get("process_progress", {}).get(
+                    "started_at")
+                if isinstance(postbuild_observation.get("process_progress"), dict)
+                and postbuild_observation["process_progress"].get("stage") == stage
+                and isinstance(postbuild_observation["process_progress"].get(
+                    "started_at"), str)
+                else postbuild_at or correctness_at or state_at)
+            replication = postbuild_observation.get("repetition")
+            label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
+            if isinstance(replication, int):
+                label += f" · S{replication}"
+            process_progress = postbuild_observation.get("process_progress")
+            if (isinstance(process_progress, dict)
+                    and process_progress.get("stage") == stage):
+                completed_arms = process_progress.get("completed_arms") or []
+                next_arm = process_progress.get("next_arm")
+                if isinstance(next_arm, str):
+                    label += (f" · {next_arm} after "
+                              f"{', '.join(completed_arms)} checkpoint reuse")
+                pipeline[stage]["detail"] = (
+                    f"completed process {'arm' if len(completed_arms) == 1 else 'arms'} "
+                    f"{', '.join(completed_arms)} will be revalidated and reused")
+            label = (label if lock_held else
+                     f"Controller stopped before {label.lower()}")
+            waiting_on = (f"{_DISCOVERY_PIPELINE_DICT.get(stage, stage)} completion"
+                          if lock_held else
+                          f"resume from first incomplete stage: {stage}")
+            pipeline["source_materialization"]["state"] = "complete"
+            pipeline["build"]["state"] = "complete"
+            pipeline["evidence_binding"]["state"] = "complete"
+        elif observed_stage in {"build", "evidence_binding"}:
+            stage = observed_stage
+            pipeline[stage]["started_at"] = operation_observation["started_at"]
+            if stage == "evidence_binding":
+                pipeline["source_materialization"]["state"] = "complete"
+                pipeline["build"]["state"] = "complete"
+                label = ("Binding completed builds to the proof plan" if lock_held
+                         else "Controller stopped during evidence binding")
+                waiting_on = ("proof-plan binding completion" if lock_held
+                              else "evidence-binding recovery audit")
+            else:
+                pipeline["source_materialization"]["state"] = "running"
+                pipeline["source_materialization"]["detail"] = (
+                    "build transaction is active; materialization receipt is not sealed")
+                arm = operation_observation.get("arm")
+                build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
+                               else "Compiling anchor arm 1 of 2" if arm == "anchor"
+                               else "Compiling the sealed anchor and candidate")
+                label = (build_label if lock_held
+                         else "Controller stopped during source build")
+                waiting_on = (("candidate build completion" if arm == "candidate"
+                               else "anchor build completion" if arm == "anchor"
+                               else "anchor/candidate build completion") if lock_held
+                              else "build recovery audit")
+        else:
+            stage = ("benchmark" if inflight_phase == "measurement"
+                     or lease_phase == "measurement" else "source_materialization")
+            label = ("Validating and materializing source" if lock_held
+                     else "Controller stopped during candidate screening")
+            waiting_on = ("source validation/materialization checkpoint" if lock_held
+                          else "recovery audit")
+        pipeline[stage]["state"] = "running" if lock_held else "interrupted"
+        status = "running" if lock_held else "stopped"
+        recoverability = ("resume_first_incomplete_stage"
+                          if postbuild_stage in _DISCOVERY_POSTBUILD_STAGES
+                          else "reconcile_required")
+    elif (checkpoint is not None
+          and checkpoint.get("state") in {"discovery_screened",
+                                          "discovery_recovered_screen"}
+          and latest_event != "planner_started"):
+        pipeline["decision"]["state"] = "complete"
+        stage = "next_hypothesis"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        status = "running" if lock_held else "stopped"
+        label = ("Selecting the next eligible hypothesis" if lock_held else
+                 "Stopped at the next-hypothesis checkpoint")
+        waiting_on = ("next planner selection" if lock_held else
+                      "controller restart from the durable screened result")
+        recoverability = "resume_controller_checkpoint"
+    elif lock_held:
+        mapped = event_stage.get(latest_event)
+        if mapped is not None and mapped[0] not in {"planner", "critic"}:
+            stage = mapped[0]
+            label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
+            waiting_on = (f"{label} completion" if mapped[1] == "running"
+                          else "next durable lifecycle transition")
+        elif latest_event == "planner_started":
+            stage, label, waiting_on = "planner", "Planner model call", "planner completion"
+        elif latest_event == "critic_started":
+            stage, label, waiting_on = "critic", "Critic model call", "critic decision"
+        elif latest_event == "planner_completed":
+            stage, label, waiting_on = ("critic", "Preparing critic review",
+                                        "critic lifecycle checkpoint")
+        elif latest_event == "critic_completed":
+            stage, label, waiting_on = ("authorization", "Governance and admission",
+                                        "pre-screen checkpoint")
+        else:
+            stage, label, waiting_on = ("planner", "Controller starting",
+                                        "first durable checkpoint from planner")
+        status = "running"
+        pipeline[stage]["state"] = "running"
+
+    source_claim_held = bool(
+        isinstance(claim_observation, dict)
+        and claim_observation.get("claim_held") is True
+        and claim_observation.get("identity_live") is True)
+    active_correctness_started = bool(
+        stage == "correctness" and lock_held and source_claim_held
+        and isinstance(claim_at, str))
+    if active_correctness_started:
+        # The sealed build/materialization/policy chain identifies correctness
+        # as the first incomplete stage; the live source-proof claim is the
+        # first durable fact that execution actually began.
+        pipeline["correctness"]["state"] = "running"
+        pipeline["correctness"]["started_at"] = claim_at
+
+    stall_threshold = _DISCOVERY_STAGE_STALL_S.get(stage, _DISCOVERY_STALL_S)
+    if lock_held and progress_age is not None and progress_age > stall_threshold:
+        status = "stalled"
+        stall = {"state": "stalled", "threshold_s": stall_threshold,
+                 "detail": "Controller lock is held but no durable transition advanced; exact substage heartbeat is not instrumented."}
+    elif status == "failed":
+        stall = {"state": "failed", "threshold_s": stall_threshold,
+                 "detail": failure_view["detail"]}
+    else:
+        stall = {"state": "healthy", "threshold_s": stall_threshold,
+                 "detail": "durable lifecycle is advancing" if lock_held else "controller is not active"}
+
+    if checkpoint:
+        checkpoint_stage = {
+            "discovery_planner_terminal_failure": "planner_validation",
+            "discovery_pre_screen_intent": "source_materialization",
+            "discovery_waiting_resource": "resource_admission",
+            "discovery_screened": "decision",
+            "discovery_recovered_screen": "decision",
+            "discovery_complete": "decision",
+        }.get(checkpoint.get("state"), stage)
+        transitions.append({"ts": checkpoint["written_at"], "stage": checkpoint_stage,
+                            "phase": checkpoint_stage,
+                            "state": "checkpoint", "event": checkpoint["state"],
+                            "label": f"STOP_STATE seq {checkpoint.get('seq')}",
+                            "detail": f"STOP_STATE seq {checkpoint.get('seq')}"})
+        if checkpoint.get("state") in {"discovery_screened",
+                                       "discovery_recovered_screen"}:
+            transitions.append({
+                "ts": checkpoint["written_at"], "stage": "next_hypothesis",
+                "phase": "next_hypothesis",
+                "state": "running" if lock_held else "waiting",
+                "event": "next_hypothesis_transition",
+                "label": "screen decision durable; advancing automatically",
+                "detail": "next portfolio binding will be selected by the controller",
+            })
+    if isinstance(operation_observation, dict):
+        observed_stage = operation_observation["stage"]
+        transitions.append({
+            "ts": operation_observation["started_at"], "stage": observed_stage,
+            "phase": observed_stage, "state": "running",
+            "event": ("build_transaction_complete" if observed_stage == "evidence_binding"
+                      else "build_transaction_observed"),
+            "label": ("both build arms complete" if observed_stage == "evidence_binding"
+                      else f"{operation_observation.get('arm')} arm active"
+                      if operation_observation.get("arm") else
+                      "sealed build transaction active"),
+            "detail": (f"{operation_observation.get('arm') or observed_stage} "
+                       f"{operation_observation['build_key'][:12]}…"),
+        })
+    if isinstance(execution_observation, dict):
+        transitions.append({
+            "ts": execution_observation["completed_at"],
+            "stage": "correctness", "phase": "correctness",
+            "state": "complete", "event": "correctness_execution_complete",
+            "label": (f"GPU correctness execution complete · "
+                      f"{execution_observation['summary']}"),
+            "detail": (f"claim {str(execution_observation.get('claim_id'))[:12]}… "
+                       "released"),
+        })
+        if stage == "correctness_validation" and status == "failed":
+            transitions.append({
+                "ts": state_at or execution_observation["completed_at"],
+                "stage": stage, "phase": stage, "state": "failed",
+                "event": "correctness_validation_failed",
+                "label": "correctness output parser rejected the completed result",
+                "detail": failure_view["detail"],
+            })
+    elif active_correctness_started:
+        transitions.append({
+            "ts": claim_at, "stage": "correctness", "phase": "correctness",
+            "state": "running", "event": "correctness_execution_started",
+            "label": "GPU correctness execution started",
+            "detail": f"claim {str(claim_observation.get('claim_id'))[:12]}… held",
+        })
+    if (status == "failed" and stage in _DISCOVERY_POSTBUILD_STAGES
+            and stage != "correctness_validation"):
+        transitions.append({
+            "ts": state_at or correctness_at or postbuild_at,
+            "stage": stage, "phase": stage, "state": "failed",
+            "event": f"{stage}_failed", "label": label,
+            "detail": failure_view["detail"],
+        })
+    prior_terminal = None
+    prior_terminals = []
+    historical_refusal_observations = [
+        observation for observation in refusal_history_observations
+        if (not isinstance(observation.get("turn"), int)
+            or isinstance(observation.get("turn"), bool)
+            or not isinstance(turn, int) or isinstance(turn, bool)
+            or observation["turn"] < turn)
+    ]
+    if ((active_new_turn or planner_terminal_failure)
+            and historical_refusal_observations):
+        checkpoint_states = {
+            "authoring_refused": "discovery_authoring_refused",
+            "correctness_falsified": "discovery_correctness_falsified",
+            "attribution_route_falsified": "discovery_attribution_route_falsified",
+            "measurement_output_refused": "discovery_measurement_output_refused",
+        }
+        history = (checkpoint.get("history", [])
+                   if isinstance(checkpoint, dict) else [])
+        consumed: dict[str, int] = {}
+        for observation in historical_refusal_observations:
+            checkpoint_state = checkpoint_states.get(
+                observation.get("disposition"))
+            matches = [row for row in history
+                       if row.get("state") == checkpoint_state]
+            index = consumed.get(checkpoint_state, 0)
+            refusal_checkpoint = matches[index] if index < len(matches) else None
+            consumed[checkpoint_state] = index + 1
+            terminal = {
+                "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
+                "ts": (refusal_checkpoint.get("written_at")
+                       if isinstance(refusal_checkpoint, dict) else
+                       observation.get("at") or state_at or last_event_at),
+                "event": checkpoint_state or "prior_turn_refusal",
+                "turn": observation.get("turn"),
+                "hypothesis_id": observation.get("hypothesis_id"),
+                "status": observation.get("disposition"),
+                "stage": observation.get("stage"),
+                "scientific_budget_spent": observation.get(
+                    "scientific_budget_spent"),
+                "detail": observation.get("detail"),
+            }
+            prior_terminals.append(terminal)
+            transitions.append({
+                "ts": terminal["ts"],
+                "stage": "next_hypothesis", "phase": "next_hypothesis",
+                "state": "complete", "event": terminal["event"],
+                "label": (f"prior turn {terminal.get('status', 'refused')}"
+                          ", scientific budget unspent"),
+                "detail": terminal["detail"],
+            })
+        prior_terminal = prior_terminals[-1] if prior_terminals else None
+    transitions.sort(key=lambda row: row["ts"])
+    stage_started_at = pipeline[stage].get("started_at")
+    if not stage_started_at:
+        stage_started_at = (last_event_at if status in {"running", "stalled", "failed"}
+                            else state_at or checkpoint_at or last_progress_at)
+    stage_start_epoch = (_parse_semantic_timestamp(stage_started_at)
+                         if stage_started_at else None)
+    elapsed_s = max(0.0, now - stage_start_epoch) if stage_start_epoch else None
+    if status in {"failed", "complete", "stopped"} and stage_start_epoch:
+        terminal_candidates = [
+            _parse_semantic_timestamp(value) for value in
+            (state_at, checkpoint_at, last_progress_at)
+            if isinstance(value, str)
+        ]
+        terminal_candidates = [value for value in terminal_candidates
+                               if value is not None]
+        if terminal_candidates:
+            elapsed_s = max(0.0, max(terminal_candidates) - stage_start_epoch)
+
+    probe_released = (isinstance(lease, dict)
+                      and isinstance(lease.get("device_claim_probe_released"), dict)
+                      and lease["device_claim_probe_released"].get("released_at") is not None)
+    probe_open = (lease.get("device_claim_probe_open")
+                  if isinstance(lease, dict) else None)
+    probe_claim_held = bool(isinstance(probe_open, dict)
+                            and probe_open.get("state") == "held"
+                            and probe_open.get("released_at") is None
+                            and not probe_released)
+    claim_held = source_claim_held or probe_claim_held
+    gpu_expected = status in {"running", "stalled"} and stage in {
+        "correctness", "candidate_attribution", "anchor_attribution",
+        "dispatch_proof", "profile", "measurement_graphs_off_screen",
+        "target_runtime_graphs_on_screen", "benchmark",
+    }
+    historical_gpu_screen = isinstance(execution_observation, dict)
+    gpu_operation_started = bool(
+        historical_gpu_screen
+        or isinstance(claim_observation, dict)
+        and isinstance(claim_observation.get("acquired_at"), str)
+        or isinstance(postbuild_observation, dict)
+        and postbuild_observation.get("completed"))
+    abandoned = [row for row in iterations if isinstance(row, dict)
+                 and row.get("status") == "abandoned"]
+    retest = [row for row in iterations if isinstance(row, dict)
+              and row.get("status") == "retest"]
+    history_rows = [{key: row.get(key) for key in
+                     ("turn", "hypothesis_id", "status", "effect_fraction")}
+                    for row in (*abandoned, *retest)]
+    latest_result = events[-1].get("result") if events else None
+    latest_result = latest_result if isinstance(latest_result, dict) else {}
+    refusal_event = next((row for row in reversed(events)
+                          if row.get("event") in {
+                              "planner_refused",
+                              "authoring_refused", "critic_refused",
+                              "compile_refused", "correctness_falsified",
+                              "attribution_route_falsified"}), None)
+    refusal_type = refusal_event.get("event") if refusal_event else None
+    planner_refusal_detected = bool(
+        isinstance(refusal_event, dict)
+        and refusal_event.get("event") == "planner_refused"
+        or isinstance(latest_iteration, dict)
+        and latest_iteration.get("status") == "planner_refused")
+    if refusal_type is None and isinstance(latest_iteration, dict):
+        refusal_type = {
+            "planner_refused": "planner_output_refusal",
+            "planner_contract_refused": "authoring_refused",
+            "critic_reject": "critic_refused",
+        }.get(latest_iteration.get("status"))
+        if latest_iteration.get("status") == "screen_refused":
+            candidate_refusal = latest_iteration.get("refusal_type")
+            refusal_type = (candidate_refusal if candidate_refusal in {
+                "compile_refused", "correctness_falsified",
+                "attribution_route_falsified"} else "screen_refused")
+    refusal_result = (refusal_event.get("result")
+                      if isinstance(refusal_event, dict)
+                      and isinstance(refusal_event.get("result"), dict) else {})
+    if planner_refusal_detected:
+        refusal_type = "planner_output_refusal"
+    if isinstance(refusal_observation, dict):
+        refusal_type = refusal_observation.get("disposition")
+    historical_refusal_only = active_new_turn or planner_terminal_failure
+    headline_refusal_observation = (
+        None if historical_refusal_only else refusal_observation)
+    if historical_refusal_only:
+        refusal_type = None
+        planner_refusal_detected = False
+    arm_order = (postbuild_observation.get("arm_order")
+                 if isinstance(postbuild_observation, dict) else None)
+    if (arm_order is None and isinstance(refusal_observation, dict)
+            and isinstance(refusal_observation.get("measurement_output"), dict)):
+        arm_order = refusal_observation["measurement_output"].get("arm_order")
+    if arm_order is None:
+        arm_order = latest_result.get("arm_order_schedule")
+    iteration_repetition = (latest_iteration.get("repetition")
+                            if isinstance(latest_iteration, dict) else None)
+    iteration_decision = bool(
+        isinstance(latest_iteration, dict)
+        and isinstance(latest_iteration.get("result_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}",
+                         latest_iteration["result_sha256"]) is not None
+        and isinstance(iteration_repetition, int)
+        and not isinstance(iteration_repetition, bool)
+        and iteration_repetition in {1, 2})
+    pending_confirmation = bool(
+        isinstance(pending, dict) and pending.get("confirmation") is True)
+    inflight_confirmation = bool(
+        isinstance(inflight, dict) and inflight.get("confirmation") is True)
+    inflight_result = (inflight.get("result")
+                       if isinstance(inflight, dict) else None)
+    inflight_decision = bool(
+        isinstance(inflight_result, dict)
+        and isinstance(inflight_result.get("result_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}",
+                         inflight_result["result_sha256"]) is not None)
+    permit_repetition = (lease.get("repetition")
+                         if isinstance(lease, dict) else None)
+    if (not isinstance(permit_repetition, int)
+            or isinstance(permit_repetition, bool)
+            or permit_repetition not in {1, 2}):
+        permit_repetition = 2 if inflight_confirmation else 1
+    repetition = (
+        iteration_repetition if iteration_decision else
+        2 if pending_confirmation or inflight_confirmation else
+        permit_repetition if inflight_decision else None)
+    latest_is_replication = bool(
+        iteration_decision and iteration_repetition == 2
+        or isinstance(latest_iteration, dict)
+        and isinstance(latest_iteration.get("replication_of"), str))
+    if (iteration_decision and iteration_repetition == 2
+            or pending_confirmation or inflight_confirmation
+            or latest_is_replication):
+        pipeline["replication_s1"]["state"] = "complete"
+    elif iteration_decision and iteration_repetition == 1:
+        pipeline["replication_s1"]["state"] = "complete"
+    elif inflight_decision and permit_repetition == 1:
+        pipeline["replication_s1"]["state"] = (
+            "interrupted" if status == "stopped" else "running")
+    if pending_confirmation:
+        pipeline["replication_s2"]["state"] = "waiting"
+    elif inflight_confirmation:
+        pipeline["replication_s2"]["state"] = (
+            "interrupted" if status == "stopped" else "running")
+    elif iteration_decision and iteration_repetition == 2:
+        pipeline["replication_s2"]["state"] = (
+            "complete" if latest_is_replication else "not_reached")
+    first_incomplete = (latest_result.get("first_incomplete_stage") or
+                        (postbuild_observation.get("first_incomplete_stage")
+                         if isinstance(postbuild_observation, dict) else stage))
+    iteration_exact_effect = (latest_iteration.get(
+        "exact_attribution_effect_fraction")
+        if isinstance(latest_iteration, dict) else None)
+    iteration_target_effect = (latest_iteration.get(
+        "target_runtime_effect_fraction")
+        if isinstance(latest_iteration, dict) else None)
+    iteration_target_executed = (latest_iteration.get("target_runtime_executed")
+                                 if isinstance(latest_iteration, dict) else None)
+    measurement_output_view = (
+        dict(headline_refusal_observation["measurement_output"])
+        if isinstance(headline_refusal_observation, dict)
+        and isinstance(headline_refusal_observation.get(
+            "measurement_output"), dict) else None)
+    if measurement_output_view is not None:
+        measurement_recovery = _discovery_measurement_output_recovery(
+            state, latest_iteration, headline_refusal_observation)
+        if measurement_recovery is not None:
+            measurement_output_view["recovery"] = measurement_recovery
+    return {
+        "status": status,
+        "phase": {"id": stage, "label": label, "started_at": stage_started_at,
+                  "elapsed_s": elapsed_s},
+        "turn": turn, "hypothesis_id": hypothesis,
+        "last_progress_at": last_progress_at, "progress_age_s": progress_age,
+        "waiting_on": waiting_on, "stall": stall,
+        "gpu": {"expected_now": gpu_expected, "claim_held": claim_held,
+                "screen_started": gpu_operation_started,
+                "claim_released": bool(
+                    isinstance(claim_observation, dict)
+                    and claim_observation.get("claim_released") is True
+                    or historical_gpu_screen and
+                    execution_observation.get("claim_released")),
+                "claim_id": (claim_observation.get("claim_id")
+                             if isinstance(claim_observation, dict) else None),
+                "device_id": (claim_observation.get("device_id")
+                              if isinstance(claim_observation, dict) else
+                              lease.get("device_id") if isinstance(lease, dict) else None),
+                "detail": (f"MI210 {(claim_observation or {}).get('device_id', 'device')} source-proof claim is held"
+                           if source_claim_held else
+                           f"MI210 {lease.get('device_id', 'device')} admission-probe claim is held"
+                           if probe_claim_held else
+                           f"MI210 {(claim_observation or {}).get('device_id', 'device')} source-proof claim released"
+                           if isinstance(claim_observation, dict)
+                           and claim_observation.get("claim_released") is True else
+                           (f"GPU correctness ran for "
+                            f"{execution_observation['elapsed_s']:.1f}s; "
+                            f"{execution_observation['summary']}; claim released")
+                           if historical_gpu_screen else
+                           "GPU screening was not reached"
+                           if stage == "planner_validation" and status == "failed" else
+                           "admission probe was released; no GPU screening began"
+                           if probe_released else
+                           "no identity-bound GPU claim is evidenced")},
+        "stage_contract": {
+            "current_stage": stage,
+            "first_incomplete_stage": first_incomplete,
+            "resume_policy": ("execute_once_from_first_incomplete"
+                              if recoverability == "resume_first_incomplete_stage"
+                              else recoverability),
+            "repetition": repetition,
+            "replication": (f"S{repetition}" if isinstance(repetition, int)
+                            else None),
+            "arm_order": arm_order,
+            "arm_order_seed_sha256": (
+                postbuild_observation.get("arm_order_seed_sha256")
+                if isinstance(postbuild_observation, dict) else None),
+            "exact_attribution_direction": (
+                postbuild_observation.get("exact_direction")
+                if isinstance(postbuild_observation, dict) else
+                "improved" if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect > 0 else
+                "regressed" if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect < 0 else
+                "neutral" if iteration_exact_effect == 0 else None),
+            "exact_attribution_effect_fraction": (
+                postbuild_observation.get("exact_attribution_effect_fraction")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get(
+                    "exact_attribution_effect_fraction") is not None
+                else iteration_exact_effect),
+            "target_runtime_effect_fraction": (
+                postbuild_observation.get("target_runtime_effect_fraction")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get("target_runtime_effect_fraction") is not None
+                else iteration_target_effect),
+            "target_runtime_executed": (
+                postbuild_observation.get("target_runtime_executed")
+                if isinstance(postbuild_observation, dict)
+                and postbuild_observation.get("target_runtime_executed") is not None
+                else iteration_target_executed),
+            "target_runtime_reason": (
+                postbuild_observation.get("target_runtime_reason")
+                if isinstance(postbuild_observation, dict) else
+                latest_iteration.get("target_runtime_reason")
+                if isinstance(latest_iteration, dict) else None),
+            "dual_decision_state": (
+                postbuild_observation.get("dual_decision_state")
+                if isinstance(postbuild_observation, dict) else
+                "measured_nonpositive_exact_short_circuit"
+                if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and iteration_exact_effect <= 0
+                and iteration_target_executed is False else
+                "exact_and_graphs_on_complete"
+                if isinstance(iteration_exact_effect, (int, float))
+                and not isinstance(iteration_exact_effect, bool)
+                and isinstance(iteration_target_effect, (int, float))
+                and not isinstance(iteration_target_effect, bool) else None),
+            "measurement_process_progress": (
+                {key: postbuild_observation["process_progress"].get(key)
+                 for key in ("stage", "runtime_graphs", "completed_arms",
+                             "next_arm", "checkpoint_reuse")}
+                if isinstance(postbuild_observation, dict)
+                and isinstance(postbuild_observation.get("process_progress"), dict)
+                else None),
+        },
+        "refusal": {
+            "detected": refusal_type is not None,
+            "type": refusal_type,
+            "class": (headline_refusal_observation.get("type")
+                      if isinstance(headline_refusal_observation, dict) else None),
+            "stage": (headline_refusal_observation.get("stage")
+                      if isinstance(headline_refusal_observation, dict) else
+                      "planner_validation" if planner_refusal_detected
+                      else None),
+            "scientific_budget_spent": (
+                headline_refusal_observation.get("scientific_budget_spent")
+                if isinstance(headline_refusal_observation, dict) else
+                False if planner_refusal_detected else None),
+            "receipt_sha256": (
+                headline_refusal_observation.get("receipt_sha256")
+                if isinstance(headline_refusal_observation, dict) else None),
+            "detail": (None if historical_refusal_only else
+                       headline_refusal_observation.get("detail")
+                       if isinstance(headline_refusal_observation, dict) else
+                       (f"reason sha256 {refusal_result['refusal_reason_sha256'][:12]}…"
+                        if planner_refusal_detected
+                        and isinstance(refusal_result.get(
+                            "refusal_reason_sha256"), str) else
+                        latest_iteration.get("reason")
+                        if isinstance(latest_iteration, dict)
+                        and not planner_refusal_detected
+                        and latest_iteration.get("status") !=
+                        "measurement_output_refused" else None)),
+            "measurement_output": (
+                measurement_output_view),
+        },
+        "provider_retry": {
+            "detected": recoverability in {
+                "resume_planner_provider_retry",
+                "resume_critic_provider_retry"},
+            "actor": ("planner" if recoverability == "resume_planner_provider_retry"
+                      else "critic" if recoverability == "resume_critic_provider_retry"
+                      else None),
+            "same_hypothesis": recoverability == "resume_planner_provider_retry",
+            "planner_rerun": False if recoverability == "resume_critic_provider_retry"
+                            else None,
+            "provider_attempt": (
+                planning.get("provider_attempt")
+                if recoverability == "resume_planner_provider_retry"
+                and isinstance(planning, dict)
+                and isinstance(planning.get("provider_attempt"), int)
+                and not isinstance(planning.get("provider_attempt"), bool) else
+                state.get("planner_provider_attempt")
+                if recoverability == "resume_planner_provider_retry"
+                and isinstance(state, dict)
+                and isinstance(state.get("planner_provider_attempt"), int)
+                and not isinstance(state.get("planner_provider_attempt"), bool)
+                else None),
+            "detail": (latest_iteration.get("reason")
+                       if recoverability == "resume_planner_provider_retry"
+                       and isinstance(latest_iteration, dict) else
+                       "critic_pending is durable; only critic review retries"
+                       if recoverability == "resume_critic_provider_retry" else None),
+        },
+        "correctness": ({
+            "execution_started": True,
+            "execution_completed": True,
+            "validation_passed": (
+                False if stage == "correctness_validation" and status == "failed"
+                else True if isinstance(receipt_correctness_observation, dict)
+                else None),
+            "started_at": execution_observation["started_at"],
+            "completed_at": execution_observation["completed_at"],
+            "elapsed_s": execution_observation["elapsed_s"],
+            "passed": execution_observation["passed"],
+            "total": execution_observation["total"],
+            "summary": execution_observation["summary"],
+        } if historical_gpu_screen else {
+            "execution_started": True,
+            "execution_completed": False,
+            "validation_passed": None,
+            "started_at": claim_at,
+            "completed_at": None,
+            "elapsed_s": elapsed_s,
+        } if active_correctness_started else {
+            "execution_started": False, "execution_completed": False,
+            "validation_passed": None,
+        }),
+        "checkpoint": {"available": checkpoint is not None,
+                       "kind": "STOP_STATE" if checkpoint else None,
+                       "state": checkpoint.get("state") if checkpoint else None,
+                       "seq": checkpoint.get("seq") if checkpoint else None,
+                       "at": checkpoint_at,
+                       "detail": ("durable but not automatically resumable"
+                                  if checkpoint and recoverability.startswith("ambiguous")
+                                  else "latest durable controller boundary" if checkpoint
+                                  else "no durable controller checkpoint")},
+        "resume": {"required": status in {"failed", "stopped"},
+                   "possible": recoverability in {
+                       "same_candidate_retry", "not_required",
+                       "resume_first_incomplete_stage",
+                       "resume_controller_checkpoint",
+                       "resume_planner_provider_retry",
+                       "resume_critic_provider_retry"},
+                   "recoverability": ("ambiguous" if recoverability.startswith("ambiguous")
+                                      else recoverability),
+                   "disposition": recoverability,
+                   "detail": ("Cannot resume this ambiguous inflight operation"
+                              if recoverability.startswith("ambiguous")
+                              else "Cannot resume; repair the controller and launch a fresh sealed deployment"
+                              if recoverability == "planner_validation_requires_fresh_deployment"
+                              else f"Resume at {first_incomplete}; completed stage receipts are revalidated and reused"
+                              if recoverability == "resume_first_incomplete_stage"
+                              else "Restart the controller; the screened decision is durable and the next hypothesis is selected automatically"
+                              if recoverability == "resume_controller_checkpoint"
+                              else "Restart the controller; retry the same hypothesis from its durable planner checkpoint"
+                              if recoverability == "resume_planner_provider_retry"
+                              else "Restart the controller; retry only the critic from critic_pending without rerunning the planner"
+                              if recoverability == "resume_critic_provider_retry"
+                              else "same candidate may be retried" if recoverability == "same_candidate_retry"
+                              else "no resume action is required")},
+        "failure": failure_view,
+        # This is controller-journal history, deliberately separate from both
+        # physical telemetry streams and from the current-turn refusal/failure
+        # headline.  The UI may show it in the always-visible pulse without
+        # claiming that an actor emitted a telemetry event.
+        "prior_terminal": prior_terminal,
+        "pipeline": list(pipeline.values()),
+        "transitions": transitions[-100:],
+        "completed_iterations": len(iterations),
+        "history": {"abandoned_count": len(abandoned),
+                    "retest_count": len(retest),
+                    "terminal_count": len(prior_terminals),
+                    "summary": (f"{len(abandoned)} abandoned · {len(retest)} retest"
+                                + (f" · {len(prior_terminals)} prior terminal"
+                                   f"{'s' if len(prior_terminals) != 1 else ''}"
+                                   if prior_terminals else "")),
+                    "rows": history_rows,
+                    "terminal_rows": prior_terminals},
+    }
+
+
+def _experimental_runtime_descriptor(config: dict, bundle: Path) -> dict | None:
+    """Validate the dashboard-facing identity of one runtime sibling."""
+    value = config.get("experimental_runtime")
+    if (not isinstance(config.get("config_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", config["config_sha256"]) is None
+            or not isinstance(value, dict) or set(value) != {
+            "schema", "candidate_id", "runtime_root", "stage_order",
+            "stage_budgets_s"}
+            or value.get("schema") != _EXPERIMENTAL_RUNTIME_SCHEMA
+            or not isinstance(value.get("candidate_id"), str)
+            or re.fullmatch(r"[a-z0-9][a-z0-9_.-]{0,127}",
+                            value["candidate_id"]) is None
+            or value.get("stage_order") != list(_EXPERIMENTAL_RUNTIME_STAGES)):
+        return None
+    runtime_root = _safe_bundle_path(value.get("runtime_root"), bundle)
+    budgets = value.get("stage_budgets_s")
+    if (runtime_root is None or not isinstance(budgets, dict)
+            or set(budgets) != set(_EXPERIMENTAL_RUNTIME_STAGES)
+            or any(isinstance(budget, bool) or not isinstance(budget, int)
+                   or budget < 60 or budget > 86400
+                   for budget in budgets.values())):
+        return None
+    try:
+        if runtime_root.exists() and (
+                runtime_root.is_symlink() or not runtime_root.is_dir()):
+            return None
+    except OSError:
+        return None
+    return {
+        "candidate_id": value["candidate_id"],
+        "runtime_root": runtime_root,
+        "stage_budgets_s": dict(budgets),
+    }
+
+
+def _experimental_runtime_result(stage: str, value: object) -> dict | None:
+    """Project one stage's compact, secret-free headline result."""
+    if not isinstance(value, dict):
+        return None
+    finite_number = lambda item: (
+        isinstance(item, (int, float)) and not isinstance(item, bool)
+        and math.isfinite(float(item)))
+    if stage == "experimental_build":
+        if (set(value) != {"hip_binary_sha256", "cpu_binary_sha256",
+                           "dflash2_gguf_sha256", "mmq_path_check"}
+                or value.get("mmq_path_check") != "pass"
+                or any(re.fullmatch(r"[0-9a-f]{64}", str(value.get(key))) is None
+                       for key in ("hip_binary_sha256", "cpu_binary_sha256",
+                                   "dflash2_gguf_sha256"))):
+            return None
+    elif stage == "cpu_gpu_regression":
+        if (set(value) != {"cpu_pass", "gpu_pass"}
+                or value.get("cpu_pass") is not True
+                or value.get("gpu_pass") is not True):
+            return None
+    elif stage == "matched_np1":
+        if (set(value) != {"plain_decode_tps", "mtp_decode_tps",
+                           "dflash2_decode_tps", "dflash2_acceptance",
+                           "comparator_tps"}
+                or any(not finite_number(value.get(key))
+                       or float(value[key]) <= 0 for key in (
+                           "plain_decode_tps", "mtp_decode_tps",
+                           "dflash2_decode_tps", "comparator_tps"))
+                or not finite_number(value.get("dflash2_acceptance"))
+                or not 0 <= float(value["dflash2_acceptance"]) <= 1
+                or float(value["comparator_tps"]) != 55.46):
+            return None
+    elif stage == "concurrency_grid":
+        if (set(value) != {"np_values", "mtp_np8_tps", "dflash2_np8_tps"}
+                or value.get("np_values") != [2, 4, 8]
+                or any(not finite_number(value.get(key))
+                       or float(value[key]) <= 0
+                       for key in ("mtp_np8_tps", "dflash2_np8_tps"))):
+            return None
+    elif stage == "greedy_parity":
+        if (set(value) != {"exact_token_parity", "compared_tokens"}
+                or not isinstance(value.get("exact_token_parity"), bool)
+                or isinstance(value.get("compared_tokens"), bool)
+                or not isinstance(value.get("compared_tokens"), int)
+                or value["compared_tokens"] < 1):
+            return None
+    elif stage == "decision":
+        if (set(value) != {"decision", "reason_code"}
+                or value.get("decision") not in {
+                    "runtime_candidate_selected", "runtime_candidate_rejected"}
+                or not isinstance(value.get("reason_code"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}",
+                                value["reason_code"]) is None):
+            return None
+    else:
+        return None
+    return dict(value)
+
+
+def _experimental_runtime_receipts(
+        descriptor: dict, campaign_id: str | None) -> dict:
+    """Validate the ordered stage chain and derive its first missing receipt."""
+    runtime_root = descriptor["runtime_root"]
+    candidate_id = descriptor["candidate_id"]
+    receipts: dict[str, dict] = {}
+    predecessor_file_sha256 = None
+    invalid_stage = None
+    for stage in _EXPERIMENTAL_RUNTIME_STAGES:
+        path = runtime_root / "stages" / stage / "receipt.json"
+        if not path.exists() and not path.is_symlink():
+            break
+        captured = _discovery_private_file(
+            path, operation_root=runtime_root, maximum=4 * 1024 * 1024)
+        if captured is None:
+            invalid_stage = stage
+            break
+        raw, info = captured
+        try:
+            body = json.loads(raw.decode("utf-8", "strict"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            invalid_stage = stage
+            break
+        if not isinstance(body, dict) or set(body) != {
+                "schema", "campaign_kind", "campaign_id", "candidate_id",
+                "stage", "status", "started_at", "ended_at",
+                "predecessor_receipt_file_sha256", "evidence_sha256", "result",
+                "receipt_sha256"}:
+            invalid_stage = stage
+            break
+        started_at = body.get("started_at")
+        ended_at = body.get("ended_at")
+        result = _experimental_runtime_result(stage, body.get("result"))
+        unsigned = {key: value for key, value in body.items()
+                    if key != "receipt_sha256"}
+        if (body.get("schema") != _EXPERIMENTAL_RUNTIME_RECEIPT_SCHEMA
+                or body.get("campaign_kind") != "experimental_runtime"
+                or body.get("campaign_id") != campaign_id
+                or body.get("candidate_id") != candidate_id
+                or body.get("stage") != stage
+                or body.get("status") != "complete"
+                or body.get("predecessor_receipt_file_sha256") !=
+                predecessor_file_sha256
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    body.get("evidence_sha256"))) is None
+                or body.get("receipt_sha256") !=
+                _discovery_content_hash(unsigned)
+                or not isinstance(started_at, str)
+                or not isinstance(ended_at, str)
+                or _parse_semantic_timestamp(started_at) is None
+                or _parse_semantic_timestamp(ended_at) is None
+                or _parse_semantic_timestamp(ended_at) <
+                _parse_semantic_timestamp(started_at)
+                or result is None):
+            invalid_stage = stage
+            break
+        file_sha256 = hashlib.sha256(raw).hexdigest()
+        receipts[stage] = {
+            "path": str(path), "file_sha256": file_sha256,
+            "started_at": started_at, "ended_at": ended_at,
+            "result": result,
+            "at": datetime.fromtimestamp(
+                info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+        predecessor_file_sha256 = file_sha256
+    first_incomplete = next(
+        (stage for stage in _EXPERIMENTAL_RUNTIME_STAGES
+         if stage not in receipts), None)
+    return {
+        "receipts": receipts, "first_incomplete_stage": first_incomplete,
+        "invalid_stage": invalid_stage,
+    }
+
+
+def _experimental_runtime_activity(
+        *, lock_held: bool, campaign_id: str | None, state: dict | None,
+        events: list[dict], descriptor: dict,
+        claim_observation: dict | None, now: float) -> dict:
+    """Render the isolated six-stage runtime sibling from durable receipts."""
+    observation = _experimental_runtime_receipts(descriptor, campaign_id)
+    receipts = observation["receipts"]
+    first_incomplete = observation["first_incomplete_stage"]
+    invalid_stage = observation["invalid_stage"]
+    pipeline = {
+        stage: {"id": stage, "label": label, "state": "not_reached"}
+        for stage, label in _EXPERIMENTAL_RUNTIME_PIPELINE}
+    transitions = []
+    for stage, receipt in receipts.items():
+        pipeline[stage].update({
+            "state": "complete", "started_at": receipt["started_at"],
+            "completed_at": receipt["ended_at"],
+            "elapsed_s": max(0.0, _parse_semantic_timestamp(
+                receipt["ended_at"]) - _parse_semantic_timestamp(
+                    receipt["started_at"])),
+            "detail": f"receipt {receipt['file_sha256'][:12]}…",
+        })
+        transitions.append({
+            "ts": receipt["ended_at"], "stage": stage, "phase": stage,
+            "state": "complete", "event": f"{stage}_completed",
+            "label": _EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage],
+            "detail": f"receipt {receipt['file_sha256'][:12]}…",
+        })
+    runtime_state = (state.get("experimental_runtime")
+                     if isinstance(state, dict) else None)
+    state_candidate = (runtime_state.get("candidate_id")
+                       if isinstance(runtime_state, dict) else None)
+    active_stage = (runtime_state.get("active_stage")
+                    if isinstance(runtime_state, dict) else None)
+    active_step = (runtime_state.get("active_step")
+                   if isinstance(runtime_state, dict) else None)
+    state_started_at = (runtime_state.get("stage_started_at")
+                        if isinstance(runtime_state, dict) else None)
+    state_identity_valid = bool(
+        isinstance(runtime_state, dict)
+        and state_candidate == descriptor["candidate_id"]
+        and (active_stage is None or active_stage in _EXPERIMENTAL_RUNTIME_STAGES)
+        and active_step in {None, "none", "cpu", "gpu"}
+        and (state_started_at is None
+             or isinstance(state_started_at, str)
+             and _parse_semantic_timestamp(state_started_at) is not None))
+    failure = {"detected": False, "stage": None, "detail": None,
+               "recovery": None}
+    if first_incomplete is None:
+        stage = "decision"
+        status = "complete"
+        label = "Runtime candidate decision complete"
+        waiting_on = "no further runtime stage"
+        resume_policy = "not_required"
+    elif invalid_stage is not None:
+        stage = invalid_stage
+        status = "failed"
+        label = f"{_EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage]} receipt refused"
+        waiting_on = "repair the invalid stage receipt"
+        resume_policy = "receipt_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": f"invalid or identity-drifted {stage} receipt",
+            "recovery": "Repair the exact receipt; later stages remain untrusted.",
+        }
+    elif (isinstance(runtime_state, dict) and not state_identity_valid):
+        stage = first_incomplete
+        status = "failed"
+        label = "Experimental runtime state identity refused"
+        waiting_on = "repair the runtime state identity"
+        resume_policy = "state_identity_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": "runtime state candidate/stage/substep identity is invalid",
+            "recovery": "Do not infer progress from this state; receipts remain authoritative.",
+        }
+    elif lock_held and active_stage not in {None, first_incomplete}:
+        stage = first_incomplete
+        status = "failed"
+        label = "Experimental runtime stage order drift"
+        waiting_on = f"resume only from {first_incomplete}"
+        resume_policy = "state_identity_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": (f"state claims {active_stage}; first incomplete receipt "
+                       f"is {first_incomplete}"),
+            "recovery": "Reconcile state to the first incomplete durable stage.",
+        }
+    else:
+        stage = first_incomplete
+        status = "running" if lock_held else "stopped"
+        label = _EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage]
+        waiting_on = (f"{label} completion" if lock_held else
+                      f"restart from first incomplete stage: {stage}")
+        resume_policy = "execute_once_from_first_incomplete"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        if state_started_at is not None and active_stage == stage:
+            pipeline[stage]["started_at"] = state_started_at
+        if lock_held and active_stage == stage:
+            transitions.append({
+                "ts": state_started_at or state.get("updated_at"),
+                "stage": stage, "phase": stage, "state": "running",
+                "event": f"{stage}_active",
+                "label": label,
+                "detail": f"active substep: {active_step or 'unspecified'}",
+            })
+    receipt_times = [receipt["ended_at"] for receipt in receipts.values()]
+    event_times = [row.get("ts") for row in events
+                   if isinstance(row.get("ts"), str)]
+    state_at = state.get("updated_at") if isinstance(state, dict) else None
+    progress_times = [value for value in (*receipt_times, *event_times, state_at)
+                      if isinstance(value, str)
+                      and _parse_semantic_timestamp(value) is not None]
+    last_progress_at = max(progress_times) if progress_times else None
+    last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
+                           if last_progress_at else None)
+    progress_age = (max(0.0, now - last_progress_epoch)
+                    if last_progress_epoch is not None else None)
+    stage_started_at = pipeline[stage].get("started_at")
+    if stage_started_at is None:
+        stage_started_at = (state_started_at if active_stage == stage else
+                            receipts[next(reversed(receipts))]["ended_at"]
+                            if receipts else state_at)
+    stage_start_epoch = (_parse_semantic_timestamp(stage_started_at)
+                         if isinstance(stage_started_at, str) else None)
+    if status == "complete":
+        elapsed_s = pipeline[stage].get("elapsed_s")
+    elif (status in {"stopped", "failed"} and stage_start_epoch is not None
+          and last_progress_epoch is not None):
+        elapsed_s = max(0.0, last_progress_epoch - stage_start_epoch)
+    else:
+        elapsed_s = (max(0.0, now - stage_start_epoch)
+                     if stage_start_epoch is not None else None)
+    threshold = descriptor["stage_budgets_s"].get(stage, _DISCOVERY_STALL_S)
+    if (lock_held and status == "running" and progress_age is not None
+            and progress_age > threshold):
+        status = "stalled"
+        stall = {"state": "stalled", "threshold_s": threshold,
+                 "detail": "No durable runtime transition advanced within the sealed stage budget."}
+    elif status == "failed":
+        stall = {"state": "failed", "threshold_s": threshold,
+                 "detail": failure["detail"]}
+    else:
+        stall = {"state": "healthy", "threshold_s": threshold,
+                 "detail": ("durable runtime lifecycle is advancing" if lock_held
+                            else "controller is not active")}
+    claim_held = bool(
+        isinstance(claim_observation, dict)
+        and claim_observation.get("claim_held") is True
+        and claim_observation.get("identity_live") is True)
+    gpu_stage = stage in {"matched_np1", "concurrency_grid", "greedy_parity"}
+    if stage == "cpu_gpu_regression":
+        gpu_stage = active_step == "gpu"
+    gpu_expected = bool(status in {"running", "stalled"} and gpu_stage)
+    results = {stage_name: receipt["result"]
+               for stage_name, receipt in receipts.items()}
+    decision = results.get("decision", {}).get("decision")
+    return {
+        "campaign_kind": "experimental_runtime",
+        "status": status,
+        "phase": {"id": stage, "label": label,
+                  "started_at": stage_started_at, "elapsed_s": elapsed_s},
+        "turn": state.get("next") if isinstance(state, dict) else None,
+        "hypothesis_id": None,
+        "last_progress_at": last_progress_at,
+        "progress_age_s": progress_age,
+        "waiting_on": waiting_on,
+        "stall": stall,
+        "gpu": {
+            "expected_now": gpu_expected, "claim_held": claim_held,
+            "claim_released": bool(isinstance(claim_observation, dict)
+                                   and claim_observation.get(
+                                       "claim_released") is True),
+            "claim_id": (claim_observation.get("claim_id")
+                         if isinstance(claim_observation, dict) else None),
+            "device_id": (claim_observation.get("device_id")
+                          if isinstance(claim_observation, dict) else None),
+            "screen_started": bool(receipts or claim_observation),
+            "detail": ("MI210 experimental-runtime claim is held" if claim_held
+                       else "GPU is expected for the active runtime substep"
+                       if gpu_expected else
+                       "GPU is not expected for the active runtime substep"),
+        },
+        "stage_contract": {
+            "campaign_kind": "experimental_runtime",
+            "current_stage": stage,
+            "first_incomplete_stage": first_incomplete,
+            "resume_policy": resume_policy,
+            "repetition": None, "replication": None,
+            "arm_order": None, "arm_order_seed_sha256": None,
+            "exact_attribution_direction": None,
+            "exact_attribution_effect_fraction": None,
+            "target_runtime_effect_fraction": None,
+            "target_runtime_executed": None,
+            "target_runtime_reason": None,
+            "dual_decision_state": None,
+            "measurement_process_progress": None,
+        },
+        "runtime_campaign": {
+            "candidate_id": descriptor["candidate_id"],
+            "excluded_from_kernel_frontier": True,
+            "active_step": active_step,
+            "completed_stages": list(receipts),
+            "matched_np1": results.get("matched_np1"),
+            "concurrency_grid": results.get("concurrency_grid"),
+            "greedy_parity": results.get("greedy_parity"),
+            "decision": decision,
+        },
+        "correctness": {
+            "execution_started": "cpu_gpu_regression" in receipts,
+            "execution_completed": "cpu_gpu_regression" in receipts,
+            "validation_passed": bool(
+                results.get("cpu_gpu_regression", {}).get("cpu_pass") is True
+                and results.get("cpu_gpu_regression", {}).get("gpu_pass") is True),
+            "summary": ("CPU + GPU regression passed"
+                        if "cpu_gpu_regression" in receipts else None),
+            "started_at": None, "completed_at": None, "elapsed_s": None,
+        },
+        "checkpoint": {"available": bool(receipts),
+                       "state": "runtime_stage_receipts" if receipts else None,
+                       "detail": f"{len(receipts)} / 6 stages complete"},
+        "resume": {
+            "required": bool(not lock_held and first_incomplete is not None),
+            "possible": invalid_stage is None and not failure["detected"],
+            "disposition": resume_policy,
+            "detail": (f"Restart at {first_incomplete}; completed receipts are reused"
+                       if not lock_held and first_incomplete is not None else
+                       "No resume action is required"),
+        },
+        "failure": failure,
+        "refusal": {"detected": False, "type": None, "class": None,
+                    "stage": None, "scientific_budget_spent": None,
+                    "receipt_sha256": None, "detail": None,
+                    "measurement_output": None},
+        "provider_retry": {"detected": False, "actor": None,
+                           "same_hypothesis": None, "planner_rerun": None,
+                           "provider_attempt": None, "detail": None},
+        "pipeline": list(pipeline.values()),
+        "transitions": sorted(transitions, key=lambda row: str(row.get("ts")))[-100:],
+        "completed_iterations": 1 if decision is not None else 0,
+        "history": {"abandoned_count": 0, "retest_count": 0,
+                    "summary": "experimental runtime sibling · no source history",
+                    "rows": []},
+    }
 
 
 def _discovery_live_read() -> tuple[dict, panels.Observation]:
-    candidates: list[tuple[bool, float, Path, dict, Path, Path]] = []
+    candidates: list[dict] = []
     try:
         configs = list(AUTOKERNEL_DEPLOYMENTS_ROOT.glob("*/config/deployment.json"))[:512]
     except OSError as exc:
@@ -3270,44 +7167,207 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         controller = config.get("controller")
         if not isinstance(controller, dict):
             continue
+        campaign_kind = config.get("campaign_kind", "kernel_source")
+        if campaign_kind not in {"kernel_source", "experimental_runtime"}:
+            continue
+        runtime_descriptor = None
+        if campaign_kind == "experimental_runtime":
+            runtime_descriptor = _experimental_runtime_descriptor(config, bundle)
+            if runtime_descriptor is None:
+                continue
         state_root = _safe_bundle_path(controller.get("state_root"), bundle)
         operations_root = _safe_bundle_path(controller.get("operations_root"), bundle)
         if state_root is None or operations_root is None:
             continue
         lock_held = _discovery_lock_held(state_root / "controller.run.lock")
         try:
-            stamp = max(config_path.stat().st_mtime,
-                        (state_root / "state.json").stat().st_mtime)
+            config_stamp = config_path.stat().st_mtime
         except OSError:
-            stamp = config_path.stat().st_mtime
-        candidates.append((lock_held, stamp, bundle, config, state_root, operations_root))
+            continue
+        state_present, state, state_error = _read_json_object(
+            state_root / "state.json", "discovery state")
+        (all_events, all_error, planner_events, planner_error,
+         lifecycle_events, visible_all_events, visible_planner_events,
+         telemetry_integrity, telemetry_snapshot_status
+         ) = _discovery_event_streams(operations_root / "live")
+        state_visibility_failures = _discovery_state_visibility_degraded(state)
+        if state_visibility_failures:
+            telemetry_integrity = dict(telemetry_integrity)
+            # This producer field is append-only and has no resolution marker.
+            # It proves a historical visibility incident, while the reconciled
+            # physical streams above answer whether visibility is degraded NOW.
+            # Keep those facts separate instead of inventing a recovery state or
+            # keeping /api/health red forever after a successfully repaired copy.
+            telemetry_integrity["historical_visibility_loss"] = {
+                "detected": True,
+                "count": len(state_visibility_failures),
+                "markers": state_visibility_failures,
+                "detail": (
+                    f"producer recorded {len(state_visibility_failures)} historical "
+                    f"telemetry visibility incident"
+                    f"{'s' if len(state_visibility_failures) != 1 else ''}"),
+            }
+        checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+        producer_times = [
+            _parse_semantic_timestamp(value) for value in (
+                state.get("updated_at") if isinstance(state, dict) else None,
+                checkpoint.get("written_at") if checkpoint else None,
+                *(row.get("ts") for row in (*all_events, *planner_events)),
+            )
+        ]
+        producer_times = [value for value in producer_times if value is not None]
+        launched = bool(lock_held or state_present or all_events or all_error
+                        or planner_events or planner_error
+                        or telemetry_snapshot_status == "producer_write_in_progress"
+                        or checkpoint is not None)
+        # A deployment config's mtime says only when a bundle was sealed.  It is
+        # not producer progress and therefore cannot supersede a real terminal
+        # campaign in the activity hero.
+        producer_stamp = max(producer_times, default=0.0)
+        if launched and not producer_times:
+            for producer_path in (
+                    state_root / "state.json",
+                    state_root / "journal" / "events.jsonl",
+                    operations_root / "live" / "autokernel.jsonl",
+                    operations_root / "live" / "planner.jsonl"):
+                try:
+                    producer_stamp = max(producer_stamp, producer_path.stat().st_mtime)
+                except OSError:
+                    continue
+        candidates.append({
+            "lock_held": lock_held, "config_stamp": config_stamp,
+            "producer_stamp": producer_stamp, "launched": launched,
+            "bundle": bundle, "config": config, "state_root": state_root,
+            "operations_root": operations_root, "state": state,
+            "campaign_kind": campaign_kind,
+            "runtime_descriptor": runtime_descriptor,
+            "state_error": state_error, "all_events": all_events,
+            "all_error": all_error, "planner_events": planner_events,
+            "planner_error": planner_error, "checkpoint": checkpoint,
+            "lifecycle_events": lifecycle_events,
+            "visible_all_events": visible_all_events,
+            "visible_planner_events": visible_planner_events,
+            "telemetry_integrity": telemetry_integrity,
+            "telemetry_snapshot_status": telemetry_snapshot_status,
+        })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
                    "active": False, "error": "no valid discovery deployment found",
                    "autokernel_log": [], "planner_log": []}
         return payload, panels.Observation(False, detail=payload["error"])
-    active = [row for row in candidates if row[0]]
+    active = [row for row in candidates if row["lock_held"]]
+    launched = [row for row in candidates if row["launched"]]
+    unlaunched = [row for row in candidates if not row["launched"]]
     ambiguous = len(active) > 1
-    selected = max(active or candidates, key=lambda row: row[1])
-    lock_held, stamp, bundle, config, state_root, operations_root = selected
-    _, state, state_error = _read_json_object(state_root / "state.json", "discovery state")
-    all_events, all_error = _discovery_events(
-        operations_root / "live" / "autokernel.jsonl", None)
-    planner_events, planner_error = _discovery_events(
-        operations_root / "live" / "planner.jsonl", "planner")
+    def campaign_order(row: dict) -> tuple[float, float]:
+        stamp = (max(row["producer_stamp"], row["config_stamp"])
+                 if row["launched"] else row["config_stamp"])
+        return stamp, row["config_stamp"]
+
+    selected = max(
+        active or launched or candidates, key=campaign_order)
+    newest_unlaunched = (max(unlaunched, key=lambda row: row["config_stamp"])
+                         if unlaunched else None)
+    if (newest_unlaunched is not None
+            and campaign_order(newest_unlaunched) <= campaign_order(selected)):
+        # An older sealed bundle is superseded history, not an available "next"
+        # deployment. In particular, launching v7 must make an unlaunched v6
+        # disappear from this forward-looking field.
+        newest_unlaunched = None
+    lock_held = selected["lock_held"]
+    bundle = selected["bundle"]
+    config = selected["config"]
+    state_root = selected["state_root"]
+    operations_root = selected["operations_root"]
+    campaign_kind = selected["campaign_kind"]
+    runtime_descriptor = selected["runtime_descriptor"]
+    state = selected["state"]
+    state_error = selected["state_error"]
+    all_events = selected["all_events"]
+    all_error = selected["all_error"]
+    planner_events = selected["planner_events"]
+    planner_error = selected["planner_error"]
+    lifecycle_events = selected["lifecycle_events"]
+    visible_all_events = selected["visible_all_events"]
+    visible_planner_events = selected["visible_planner_events"]
+    telemetry_integrity = selected["telemetry_integrity"]
+    telemetry_snapshot_status = selected["telemetry_snapshot_status"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
-    if lock_held:
-        observed_ts = time.time()
+    checkpoint = selected["checkpoint"]
+    now = time.time()
+    config_sha256 = config.get("config_sha256")
+    campaign_id = (f"ak-discovery-{config_sha256[:16]}"
+                   if isinstance(config_sha256, str)
+                   and re.fullmatch(r"[0-9a-f]{64}", config_sha256) else None)
+    if campaign_kind == "experimental_runtime":
+        claim_observation = _discovery_claim_observation(
+            operations_root, campaign_id,
+            purpose="AutoKernel experimental runtime validation and measurement")
+        activity = _experimental_runtime_activity(
+            lock_held=lock_held, campaign_id=campaign_id,
+            state=state, events=lifecycle_events,
+            descriptor=runtime_descriptor,
+            claim_observation=claim_observation, now=now)
     else:
-        observed_ts = _parse_semantic_timestamp(latest_ts) if latest_ts else stamp
+        build_observation = _discovery_build_observation(
+            operations_root, state, config.get("config_sha256"))
+        correctness_observation = _discovery_correctness_observation(
+            operations_root, state)
+        postbuild_observation = _discovery_postbuild_observation(
+            operations_root, state)
+        claim_observation = _discovery_claim_observation(
+            operations_root, campaign_id)
+        refusal_observation = _discovery_refusal_observation(
+            bundle, state, lifecycle_events)
+        refusal_history_observations = []
+        if isinstance(state, dict) and isinstance(state.get("iterations"), list):
+            for iteration in state["iterations"][-25:]:
+                if not isinstance(iteration, dict):
+                    continue
+                observation = _discovery_refusal_observation(
+                    bundle, {"iterations": [iteration]}, [])
+                if observation is None:
+                    continue
+                refusal_history_observations.append({
+                    **observation,
+                    "turn": iteration.get("turn"),
+                    "hypothesis_id": iteration.get("hypothesis_id"),
+                })
+        activity = _discovery_activity(
+            lock_held=lock_held, campaign_id=campaign_id,
+            state=state, events=lifecycle_events,
+            checkpoint=checkpoint, operation_observation=build_observation,
+            correctness_observation=correctness_observation,
+            postbuild_observation=postbuild_observation,
+            claim_observation=claim_observation,
+            refusal_observation=refusal_observation,
+            refusal_history_observations=refusal_history_observations,
+            now=now)
+    # Poll time is not producer progress. In particular, a held controller lock
+    # must not keep a stuck stage green forever.
+    observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
+                   if activity.get("last_progress_at") else
+                   _parse_semantic_timestamp(latest_ts) if latest_ts else
+                   (selected["producer_stamp"] or selected["config_stamp"])
+                   if selected["launched"] else
+                   selected["config_stamp"])
     state_view = None
     if state is not None:
         iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
+        planner_terminal = bool(
+            not lock_held and isinstance(checkpoint, dict)
+            and checkpoint.get("state") == "discovery_planner_terminal_failure"
+            and activity.get("status") == "failed"
+            and isinstance(activity.get("failure"), dict)
+            and activity["failure"].get("detected") is True)
         state_view = {
             "updated_at": state.get("updated_at"), "next": state.get("next"),
-            "complete": state.get("complete"), "terminal_reason": state.get("terminal_reason"),
+            "complete": (True if planner_terminal else state.get("complete")),
+            "terminal_reason": (
+                activity["failure"].get("detail") if planner_terminal
+                else state.get("terminal_reason")),
             "pending": state.get("pending") is not None,
             "inflight": state.get("inflight") is not None,
             "iterations": [{key: row.get(key) for key in
@@ -3318,16 +7378,33 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "schema": "epyc.dashboard.autokernel_live.v1",
         "available": True, "active": lock_held, "ambiguous_active": ambiguous,
         "observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
+        "campaign_kind": campaign_kind,
+        "newest_unlaunched_deployment": ({
+            "available": True,
+            "deployment": newest_unlaunched["bundle"].name,
+            "config_sha256": newest_unlaunched["config"].get("config_sha256"),
+            "launch_state": "not_launched",
+            "sealed_at": datetime.fromtimestamp(
+                newest_unlaunched["config_stamp"], timezone.utc
+            ).isoformat().replace("+00:00", "Z"),
+        } if newest_unlaunched else {"available": False}),
         "state": state_view, "state_error": state_error,
-        "autokernel_log": all_events, "planner_log": planner_events,
+        "activity": activity,
+        "autokernel_log": visible_all_events,
+        "planner_log": visible_planner_events,
         "log_error": all_error, "planner_log_error": planner_error,
+        "telemetry_integrity": telemetry_integrity,
+        "telemetry_snapshot_status": telemetry_snapshot_status,
         "status_message": (
-            "controller lock held; planner is running and has not reached its first durable checkpoint"
-            if lock_held and state_view is None and not planner_events else
-            "controller lock held" if lock_held else
-            "controller is not running; showing the latest durable deployment"),
-        "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            f"{activity['status'].upper()} — {activity['phase']['label']}; "
+            f"waiting on {activity['waiting_on']}"),
+        "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+        "telemetry_contracts_accepted": sorted(AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS),
+        "telemetry_producer_commit": AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA,
+        "measurement_output_producer_commit":
+            AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
     }
@@ -3335,9 +7412,16 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         artifact_present=True, timestamp=observed_ts,
         source="controller lock + durable discovery telemetry",
         populated=bool(lock_held or all_events or planner_events or state_view),
-        detail=("multiple controller locks are held" if ambiguous else payload["status_message"]),
+        detail=("multiple controller locks are held" if ambiguous else
+                f"{payload['status_message']}; telemetry visibility: "
+                f"{telemetry_integrity['detail']}"),
         evidence=str(operations_root / "live"),
-        producer_idle=bool(state_view and state_view.get("complete") is True))
+        silence_budget_s=(activity.get("stall", {}).get("threshold_s")
+                          if lock_held else None),
+        producer_idle=bool(state_view and state_view.get("complete") is True),
+        unreported=(("telemetry_stream_integrity",)
+                    if telemetry_integrity["state"] in {"degraded", "conflict"}
+                    else ()))
     return payload, obs
 
 
