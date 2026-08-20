@@ -28,6 +28,24 @@ Exactly two things remain:
   absolute; baseline recall < 0.90 ⇒ operating point `none`. Decision-fork table below. Factor
   in post-restructure savings (mild 1.6% / medium 20% / aggressive 39% of words) — the
   structural-deletion pass already captured most of the original win.
+- [ ] **AFC-P5.E5 — denominate the compression target in WORDS, not lines, and re-derive the
+  savings table.** External corpus evidence (intake-1199, re-derived from the authors' Zenodo
+  replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile by words but
+  only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES systematically
+  under-finds**, and E4's savings table above is already denominated in words, so the two are
+  currently measuring different things. Re-express the mild/medium/aggressive figures against a
+  word baseline before E4 consumes them.
+- [ ] **AFC-P5.E6 — correct the "we exceed the corpus maximum" framing before it propagates.**
+  Measured 2026-08-20 (`research/sources/intake-20260819/EVIDENCE-agent-file-and-moe-measurements.md`):
+  the widely-repeated version of this claim does **not** survive scrutiny, in two ways. (a) The
+  10,424-word figure for `agents/shared/` **includes three `ENGINEERING_STANDARDS.compressed-*`
+  variants** — outputs of this handoff's own experiment, not loaded policy. Live tree = **8,787
+  words, which is 164 words UNDER** the 8,951-word corpus maximum. (b) It compares a 7-file TREE
+  total against a SINGLE-FILE maximum, which is a category error; our largest single file is
+  `OPERATING_CONSTRAINTS.md` at **3,949 words**, comfortably inside corpus norms.
+  **The genuinely anomalous figure is structural, not volumetric: `CLAUDE.md` carries 22 H2
+  headings against a corpus average of 2.7 categorised L1/L2 headings.** Retarget the work at
+  heading proliferation rather than word count, and stop quoting the exceeds-the-maximum line.
 
 **Decision forks (for E4)**:
 

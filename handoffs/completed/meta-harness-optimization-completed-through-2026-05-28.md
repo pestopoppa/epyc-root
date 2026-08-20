@@ -143,7 +143,7 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Reported results: TerminalBench-2 rank delta of ~28 positions from harness alone (same Opus 4.6 model)
   - Delta from current approach: Our PromptForge does mutation but lacks systematic back-pressure loops feeding specific failure signals to harness components. The instruction budget concept (14-22% token overhead) is not tracked in our eval tower.
 - **[intake-272] "Evaluating AGENTS.md" (arXiv:2602.11988)** — ETH Zurich
-  - Relevance: Context files REDUCE task success rates and increase inference cost by 20%+
+  - Relevance: Context files increase inference cost by 20%+ (both arms; ~19% even developer-provided, p=0.0126). CORRECTED 2026-08-20 vs v2 -- NO significant success-rate reduction; +2.4% for developer-provided files
   - Key technique: Empirical evaluation of AI-generated vs human-written agent context files on SWE-bench
   - Delta from current approach: Direct threat to PromptForge code mutations that add instructions. Our thin-map architecture may be optimal, but needs empirical validation. **Action**: add instruction token budget tracking to eval tower; consider "minimal context" ablation in PromptForge.
 - **[intake-338] "Agent Lightning"** (Microsoft Research) — Zero-code agent optimization
