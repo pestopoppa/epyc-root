@@ -30,6 +30,14 @@ returned KFD/VRAM to baseline. The repair boundary is to keep controller-owned c
 of planner context and convert invalid planner intent into a secret-free typed refusal with bounded
 retry; no mutable repair worktree may be treated as a successor deployment.
 
+The repair then landed at immutable research `de1d93d5`, hiding controller-owned FA candidate geometry
+from the planner and preserving the anchor-only authority. Fresh v20 passed two byte-identical
+validate-only passes and launched from a new deployment/state root with graph SHA-256
+`283b590df7dcd7e6157af775e5ad827a23513c036923d75ef59d59a822dc5d82`. Its first durable state is
+Q5 turn 1 `actor_entering` with `planner_started`; v19 was neither reused nor modified. Zero GPU claim,
+empty KFD, and 0% VRAM during this planner call are affirmative phase-correct evidence, not evidence
+that the later GPU phase failed to run.
+
 ### Source References (2026-08-20 v19 checkpoint)
 
 - [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
