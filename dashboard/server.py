@@ -3917,7 +3917,12 @@ def _discovery_checkpoint(path: Path) -> dict | None:
         }
         history.append(latest)
     if latest is not None:
-        latest = {**latest, "history": history[-25:]}
+        # Keep the same bounded journal window used by the strict parser. A
+        # long-running campaign may advance many checkpoints after a typed
+        # terminal; retaining only the last 25 would force its pulse/history
+        # timestamp to fall back to the receipt mtime instead of the exact
+        # durable STOP_STATE boundary.
+        latest = {**latest, "history": history[-300:]}
     return latest
 
 
@@ -6275,7 +6280,15 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         })
     prior_terminal = None
     prior_terminals = []
-    if active_new_turn and refusal_history_observations:
+    historical_refusal_observations = [
+        observation for observation in refusal_history_observations
+        if (not isinstance(observation.get("turn"), int)
+            or isinstance(observation.get("turn"), bool)
+            or not isinstance(turn, int) or isinstance(turn, bool)
+            or observation["turn"] < turn)
+    ]
+    if ((active_new_turn or planner_terminal_failure)
+            and historical_refusal_observations):
         checkpoint_states = {
             "authoring_refused": "discovery_authoring_refused",
             "correctness_falsified": "discovery_correctness_falsified",
@@ -6285,7 +6298,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         history = (checkpoint.get("history", [])
                    if isinstance(checkpoint, dict) else [])
         consumed: dict[str, int] = {}
-        for observation in refusal_history_observations:
+        for observation in historical_refusal_observations:
             checkpoint_state = checkpoint_states.get(
                 observation.get("disposition"))
             matches = [row for row in history
@@ -6397,9 +6410,10 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         refusal_type = "planner_output_refusal"
     if isinstance(refusal_observation, dict):
         refusal_type = refusal_observation.get("disposition")
+    historical_refusal_only = active_new_turn or planner_terminal_failure
     headline_refusal_observation = (
-        None if active_new_turn else refusal_observation)
-    if active_new_turn:
+        None if historical_refusal_only else refusal_observation)
+    if historical_refusal_only:
         refusal_type = None
         planner_refusal_detected = False
     arm_order = (postbuild_observation.get("arm_order")
@@ -6598,7 +6612,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "receipt_sha256": (
                 headline_refusal_observation.get("receipt_sha256")
                 if isinstance(headline_refusal_observation, dict) else None),
-            "detail": (None if active_new_turn else
+            "detail": (None if historical_refusal_only else
                        headline_refusal_observation.get("detail")
                        if isinstance(headline_refusal_observation, dict) else
                        (f"reason sha256 {refusal_result['refusal_reason_sha256'][:12]}…"
@@ -7342,9 +7356,18 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     state_view = None
     if state is not None:
         iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
+        planner_terminal = bool(
+            not lock_held and isinstance(checkpoint, dict)
+            and checkpoint.get("state") == "discovery_planner_terminal_failure"
+            and activity.get("status") == "failed"
+            and isinstance(activity.get("failure"), dict)
+            and activity["failure"].get("detected") is True)
         state_view = {
             "updated_at": state.get("updated_at"), "next": state.get("next"),
-            "complete": state.get("complete"), "terminal_reason": state.get("terminal_reason"),
+            "complete": (True if planner_terminal else state.get("complete")),
+            "terminal_reason": (
+                activity["failure"].get("detail") if planner_terminal
+                else state.get("terminal_reason")),
             "pending": state.get("pending") is not None,
             "inflight": state.get("inflight") is not None,
             "iterations": [{key: row.get(key) for key in

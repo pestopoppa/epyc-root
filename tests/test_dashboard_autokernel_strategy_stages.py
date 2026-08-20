@@ -1191,6 +1191,77 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual([row["event"] for row in payload["autokernel_log"]],
                          ["planner_started"])
 
+        # Exact v19 terminal residual: a later FA planner attempt fails before
+        # it can create an iteration row. Historical Q5 source refusals remain
+        # visible, but they cannot become the current turn's refusal card.
+        terminal_hypothesis = "akh-v2-fa-gqa7-pair-tail"
+        state = json.loads((self.state_root / "state.json").read_text())
+        state.update({
+            "updated_at": "2026-08-20T17:42:21.172908Z",
+            "next": 11, "complete": False, "terminal_reason": None,
+            "planning": {
+                "turn": 11, "phase": "actor_entering",
+                "portfolio_binding": {
+                    "hypothesis_id": terminal_hypothesis,
+                },
+                "context": {"authoring_assignment": {
+                    "campaign_id": "ak-discovery-" + "a" * 16,
+                }},
+                "failure": {
+                    "type": "DiscoveryControllerError",
+                    "message": "dispatch route id is not deployed authority",
+                },
+            },
+        })
+        (self.state_root / "state.json").write_text(json.dumps(state))
+        terminal_event = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
+            "ts": "2026-08-20T17:30:38.979120Z",
+            "channel": "planner", "event": "planner_started",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "hypothesis_id": terminal_hypothesis,
+            "provider": "codex", "model": "gpt-5.6-sol",
+            "effort": "high",
+        }
+        encoded = json.dumps(terminal_event) + "\n"
+        (self.operations / "live/autokernel.jsonl").write_text(encoded)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+        with (journal / "events.jsonl").open("a") as handle:
+            handle.write(json.dumps({
+                "journal_schema": "epyc.autokernel.journal_entry.v1",
+                "kind": "STOP_STATE", "seq": 58,
+                "written_at": "2026-08-20T17:42:21.176515Z",
+                "payload": {
+                    "state": "discovery_planner_terminal_failure",
+                    "controller_state_sha256": "9" * 64,
+                },
+            }) + "\n")
+        _time.return_value = datetime.fromisoformat(
+            "2026-08-20T17:43:00+00:00").timestamp()
+
+        terminal_payload = server.discovery_live_payload()
+        terminal_activity = terminal_payload["activity"]
+        self.assertFalse(terminal_payload["active"])
+        self.assertEqual(terminal_activity["status"], "failed")
+        self.assertEqual(terminal_activity["turn"], 11)
+        self.assertEqual(terminal_activity["hypothesis_id"],
+                         terminal_hypothesis)
+        self.assertEqual(terminal_activity["phase"]["id"], "planner")
+        self.assertTrue(terminal_activity["failure"]["detected"])
+        self.assertIn("not deployed authority",
+                      terminal_activity["failure"]["detail"])
+        self.assertFalse(terminal_activity["refusal"]["detected"])
+        self.assertIsNone(terminal_activity["refusal"]["type"])
+        self.assertEqual(terminal_activity["prior_terminal"], second_prior)
+        self.assertEqual(terminal_activity["history"]["terminal_rows"],
+                         [first_prior, second_prior])
+        self.assertEqual(sum(
+            row["event"] == "discovery_authoring_refused"
+            for row in terminal_activity["transitions"]), 2)
+        self.assertTrue(terminal_payload["state"]["complete"])
+        self.assertIn("not deployed authority",
+                      terminal_payload["state"]["terminal_reason"])
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
