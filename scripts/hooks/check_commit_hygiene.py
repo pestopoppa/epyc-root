@@ -378,6 +378,30 @@ def fetch_precedes_commit(cmd: str, repo: str) -> bool:
     return fetch_at is not None and commit_at is not None and fetch_at < commit_at
 
 
+def dirty_paths(repo: str, paths: list[str]) -> list[str]:
+    """Which of `paths` have uncommitted changes in `repo`?
+
+    A destructive path-restore only DESTROYS something when the target is dirty.
+    Clean paths are a no-op, so blocking them would be noise -- and a guard that
+    cries wolf is bypassed, which is worse than no guard.
+    """
+    if not paths:
+        return []
+    try:
+        out = subprocess.run(
+            ["git", "-C", repo, "status", "--porcelain", "--"] + paths,
+            capture_output=True, text=True, timeout=10,
+        ).stdout
+    except Exception:
+        return []                      # cannot tell -> do not block
+    seen = []
+    for line in out.splitlines():
+        name = line[3:].strip()
+        if name:
+            seen.append(name)
+    return seen
+
+
 def block(message: str) -> int:
     print(message.rstrip(), file=sys.stderr)
     return 2
@@ -407,7 +431,7 @@ def main() -> int:
     for segment in _SEP.split(cmd):
         for tokens in git_invocations(segment):
             sub, args, dash_c = subcommand_of(tokens)
-            if sub not in {"add", "commit"}:
+            if sub not in {"add", "commit", "checkout", "restore", "stash"}:
                 continue
             repo = resolve_repo(cmd, segment, dash_c)
             if repo is None:
@@ -430,7 +454,75 @@ Stage explicit paths, then verify:
 
 Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 (once you have checked the staged set).""")
 
+            if sub in {"checkout", "restore"}:
+                # A path-restore that reverts a PEER's uncommitted work leaves no
+                # conflict and NO REFLOG -- there is nothing to recover from. It is
+                # the one destructive git shape with no undo. Measured 2026-08-20:
+                # a `git checkout -- <path>` written inside a speculative "would
+                # this happen?" line actually ran and wiped both the author's edits
+                # and another session's uncommitted work.
+                #
+                # `git restore --staged <p>` touches the INDEX ONLY and is the
+                # correct way to unstage a peer's file before committing, so it
+                # stays allowed. Anything that reaches the worktree does not.
+                touches_worktree = not (
+                    sub == "restore"
+                    and "--staged" in flags
+                    and "--worktree" not in flags
+                    and "-W" not in flags
+                )
+                # For `checkout`, only the explicit `--` pathspec form is
+                # unambiguous; `git checkout <branch>` must never be caught.
+                explicit_paths = positionals if (sub == "restore" or "--" in args) else []
+                if touches_worktree and explicit_paths:
+                    lost = dirty_paths(repo, explicit_paths)
+                    if lost:
+                        return block(f"""BLOCKED: `git {sub}` would discard uncommitted work in a shared repo ({repo}).
+
+These paths have uncommitted changes and are about to be overwritten:
+    {chr(10) + '    '.join(lost)}
+
+/workspace and /mnt/raid0/llm/<repo> are ONE clone, so those edits may belong to a
+parallel session. This shape leaves no conflict and NO REFLOG -- once it runs the
+content is gone.
+
+Inspect first, and if the hunks are not yours, leave them alone:
+    git diff -- {' '.join(explicit_paths[:3])}
+
+To unstage without touching the worktree, use:  git restore --staged <path>
+
+Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 (once you have confirmed the loss is yours to take).""")
+
+            if sub == "stash":
+                verb = positionals[0] if positionals else "push"
+                if verb in {"push", "save"}:
+                    return block(f"""BLOCKED: `git stash` in a shared repo ({repo}).
+
+stash captures UNTRACKED files too, and the runtime plane (logs/,
+coordination/session-bus/, share/) gains files between your stash and your pop --
+so the pop fails "already exists, no checkout", restores the tracked half, and
+leaves the untracked half in an entry that looks like lost work.
+
+Compare against a clean tree without touching this one:
+    git worktree add --detach /tmp/clean origin/main     # `remove` after, NEVER `prune`
+
+Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+
             if sub == "commit":
+                if positionals:
+                    return block(f"""BLOCKED: `git commit -- <pathspec>` on a shared repo ({repo}).
+
+A pathspec commit BYPASSES THE INDEX: it commits the WORKING-TREE state of those
+paths, so a parallel session's uncommitted hunks in the same file ride into your
+commit under your name and message. Proven: commit dada0bbc.
+
+Stage exactly your own hunks, then commit the index with NO pathspec:
+    git diff -- {positionals[0]}          # LOOK FIRST -- whose hunks are these?
+    git add -p {positionals[0]}           # or: git apply --cached mine.patch
+    git commit -m "..."                    # no pathspec: commits the index
+
+Override: EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1""")
+
                 if "--all" in flags or short_cluster_has(flags, "a"):
                     return block(f"""BLOCKED: `git commit -a/--all` on a shared repo ({repo}).
 

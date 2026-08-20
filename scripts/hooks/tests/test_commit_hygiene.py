@@ -111,7 +111,55 @@ CASES: list[tuple[str, int, dict, str]] = [
 ]
 
 
+#: A path this test makes dirty itself. The earlier draft pointed at a tracked
+#: handoff and passed only while that file happened to be uncommitted -- it went
+#: green or red depending on unrelated repo state, which is a test that reports
+#: something other than what it claims. Untracked shows as `??` in porcelain,
+#: which is exactly what dirty_paths() reads.
+DIRTY_PROBE = ".hook_dirty_probe"
+
+# ---- command-shape rules (added 2026-08-20) ---------------------------------
+# These close the three shapes that are destructive in a SHARED tree regardless
+# of who runs them, so the guard tests SHAPE, not identity. Every enforcement
+# case is PAIRED with the compliant idiom it must not catch -- a guard that
+# forbade `git restore --staged` would forbid the very repair it recommends.
+CASES += [
+    ("git commit -m 'x' -- handoffs/active/master-handoff-index.md", 2, FRESH,
+     "pathspec commit bypasses the index (dada0bbc)"),
+    ("git commit -m 'x'", 0, FRESH,
+     "PAIR: plain index commit still allowed"),
+    ("git -C /tmp/sandbox commit -m 'x' -- foo.txt", 0, FRESH,
+     "PAIR: pathspec commit outside the shared repos is not our business"),
+
+    (f"git checkout -- {DIRTY_PROBE}", 2, FRESH,
+     "path-restore over a DIRTY path: no conflict, no reflog"),
+    ("git checkout -- .gitignore", 0, FRESH,
+     "PAIR: path-restore over a CLEAN path is a no-op, not a loss"),
+    ("git checkout main", 0, FRESH,
+     "PAIR: checking out a BRANCH is untouched"),
+    ("git checkout -b lane/mainA", 0, FRESH,
+     "PAIR: creating a branch is untouched"),
+    ("git restore --staged handoffs/active/master-handoff-index.md", 0, FRESH,
+     "PAIR: --staged is index-only and is the RECOMMENDED repair"),
+
+    ("git stash", 2, FRESH,
+     "stash captures untracked runtime files that reappear before the pop"),
+    ("git stash push -m wip", 2, FRESH, "stash push"),
+    ("git stash list", 0, FRESH, "PAIR: read-only stash subcommands allowed"),
+]
+
+
 def main() -> int:
+    failures: list[str] = []
+    probe = REPO_ROOT / DIRTY_PROBE
+    probe.write_text("dirty fixture for the path-restore rule\n")
+    try:
+        return _run_cases()
+    finally:
+        probe.unlink(missing_ok=True)
+
+
+def _run_cases() -> int:
     failures: list[str] = []
     for cmd, expect, env, why in CASES:
         rc = run(cmd, env)

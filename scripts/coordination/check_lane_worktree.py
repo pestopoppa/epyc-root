@@ -111,6 +111,12 @@ RUNTIME_PREFIXES: tuple[str, ...] = (
     "logs/",                      # agent_audit.log, daemon logs, pidfiles, canvases
     "tmp/",                       # scratch; .gitignored except .gitkeep
     "tokens/",                    # defensive: token-queue.md under an alternate top-level spelling
+    "share/",                     # tool runtime caches (share/fastmcp/version_cache.json); written
+                                  # by a running tool, never authored. Classified 2026-08-20: it was
+                                  # the only `unmatched` path on this host, and an UNMATCHED bucket
+                                  # is a coverage gap, not a decision — a blocking guard cannot have
+                                  # one. (Distinct from AMBIGUOUS_*, which is a deliberate refusal
+                                  # to split and must keep reporting UNKNOWN.)
 )
 
 #: Generated or session-scoped files whose plane is genuinely arguable. They are
