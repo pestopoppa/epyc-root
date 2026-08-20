@@ -1,6 +1,6 @@
 # GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm
 
-**Status**: DONE for the SWE rung (2026-08-20). The devcontainer blocker cleared; both protocols are
+**Status**: ACTIVE — SWE rung complete; best-configuration refreshes remain (2026-08-20). The devcontainer blocker cleared; both protocols are
 now scored and in the artifact. **Agentic SWE-40 = 21/40 (52.5%)** — re-run after fixing the harness
 tool-call parser (`3bf16c3f`), superseding the provisional 15/40. **Oracle SWE-40 = 20/40 (50.0%)** vs
 stock 27B's 23/40 — a **non-resolving** difference (paired exact McNemar p = 0.375, 5 discordant), so
@@ -12,25 +12,9 @@ read it as a tie on SWE, not a regression. Remaining: re-collect the 24-cell gri
 
 ## NEXT STEP — top of queue
 
-1. **Commit the harness parser fix (do this first).**
-   `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/agentic_swe_harness.py` is modified
-   (+43 lines, staged): `_translate_native_tool_calls()` maps Qwen3.x's native
-   `<tool_call><function=bash><parameter=command>…` grammar to the harness's `ACTION:` grammar (grep/read/
-   edit/done), plus a defensive `_sha256_file()` for early-return instances. **It is staged but NOT committed** —
-   the shared research clone is mid-merge from another session (`U` files under
-   `scripts/kernel_rnd/autokernel/`), so `git commit` refuses. **Do NOT touch the conflict.** Once the other
-   session's merge clears, commit from the research repo (file is already `git add`ed):
-   `git -C /mnt/raid0/llm/epyc-inference-research commit -m "agentic_swe_harness: translate native tool-call grammar to ACTION:; defensive _sha256_file"`.
-   The fix is safe in the working tree + index and will survive the wait.
-2. **Recreate this devcontainer from the host.** Its `/var/run/docker.sock` is an **orphaned bind-mount**
-   (inode pinned from Aug 13; the host dockerd unlinked + recreated the socket at 13:58:01 during the
-   29.7.1→29.7.2 apt upgrade). Container-local and irreparable from inside — the host docker and all 40
-   `sweb.eval.*` containers are healthy and untouched. This is the **only** blocker on the SWE re-run.
-3. **Re-run the SWE agentic harness** on the 19 previously-empty instances (parser fix now active):
-   swebench `run_evaluation --max_workers 8 --run_id q38-agentic-final` (instances list
-   `/tmp/opencode/swe_remaining.txt`, script pattern `/tmp/opencode/q38_agentic3.sh`), merge with the 21
-   patches from run 1, re-run FAIL_TO_PASS, and write **SWE-40 = resolved/40** into the artifact's
-   coding-ladder cell + verdict card (currently **15/40 = 37.5%, provisional/understated**).
+Re-collect Qwen3.8's 24-cell np × depth grid at measured `n-max 8`, then depth-sweep the other arms
+under their own best draft settings. The existing Qwen3.8 grid used `n-max 4`, about 8.7% below peak.
+Do not rerun the closed SWE protocols or revive the cleared devcontainer/parser blocker.
 
 ## The artifact
 
@@ -87,7 +71,7 @@ results slot straight into this row.
 
 - [x] **Populate the throughput row** — Qwen3.8-27B flat ~45 t/s MTP decode, pp512 prefill 727 t/s, era v9 `0db32c06e`.
 - [x] **Prefill pp512** — `727.29 ± 28.00 t/s` (`llama-bench -ngl 999 -nkvo 1 -p 512 -r 3`).
-- [x] **Coding-ladder cell** — populated (LCB 52.8% / BCB 31.1% / SWE 15/40 provisional); SWE finalizes on re-run.
+- [x] **Coding-ladder cell** — populated (LCB 52.8% / BCB 31.1% / agentic SWE 21/40 / oracle SWE 20/40). ✅ 2026-08-20
 - [x] **RAG-at-depth + MTP workload-gate** — measured: single-stream decode FLAT ~45 t/s (47.6@2k → 45.0@32k);
   peak aggregate 157.3 t/s @np8/2k. (The earlier "37→13.6 decline / MTP reversal" was a synthetic
   random-word-prompt artifact — corrected; real prompts give a flat MTP curve.)

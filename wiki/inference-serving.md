@@ -2,8 +2,33 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-18 (the declined Qwen3.8-27B coding ladder was later authorized and ran — LCB-hard tops the 27B class, SWE-40 is provisional/understated by a harness grammar mismatch; the stale axis table flagged below is reconciled with the retraction shipped in the table itself)
-**Sources**: 74 documents
+**Last compiled**: 2026-08-20 (Qwen3.8-27B's DFlash2 sibling now has a full experimental gfx90a build and a matched np1 win over optimized MTP; concurrency and parity gates still prohibit production adoption)
+**Sources**: 77 documents
+
+## Compiled Update — 2026-08-20: the Qwen3.8 serving successor has a faster drafter candidate, not a deployment change
+
+**Confidence: verified observation, explicitly nonpromotable.** The DFlash2 result is relevant because
+Qwen3.8-27B is the guaranteed successor to the Qwen3.6-27B production variant, but the production
+kernel and lineup remain unchanged.
+
+The experimental DFlash2 build reached **70.0 decode t/s** at np1 against **55.2 t/s** for matched
+MTP8 and **29.4 t/s** plain, with mean acceptance **0.62804** versus MTP's **0.48246**. This is the
+right incumbent comparison: DFlash2's +26.81% over optimized MTP is materially stronger evidence than
+its +138.10% over plain. The candidate was built from frozen-v9 ancestry in an isolated branch and
+passed real CPU/GPU smoke; frozen production was not edited.
+
+Serving adoption remains gated on the concurrency grid, exact greedy parity, and proof that the
+DFlash2 block-verify workload reaches the intended optimized dispatch. The prospective measurement
+hook must be integrated before the next grid so throughput and weighted acceptance are written with
+the original claim, residency, build, model, protocol, and manifest identities. Historical np1 evidence
+is immutable pre-hook evidence and must not be upgraded by a read-side reconstruction.
+
+### Source References (2026-08-20 Qwen3.8 DFlash2 serving candidate)
+
+- [Qwen3.8 replacement handoff](../handoffs/active/qwen38-27b-replace-qwen36.md) — production-successor context and existing registry boundary.
+- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — matched metrics, build identity, and mandatory residual gates.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — governed `experimental_runtime` stage/receipt chain and nonpromotion boundary.
+- [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact branch, evidence hashes, cleanup, and carrier integration order.
 
 ## Compiled Update — 2026-08-18: the declined coding ladder ran — and the stale axis table got reconciled the right way
 

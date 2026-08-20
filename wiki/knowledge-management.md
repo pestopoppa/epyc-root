@@ -2,8 +2,31 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-18 (151 wiki links rotted with every lint pass green and link integrity became pass 7; the compile watermark proved load-bearing when `git clean` destroyed it; four handoffs held split identities invisibly; parallel lanes minted colliding SC numbers; A14 is landed-and-audited but still not wired)
-**Sources**: 44+ documents
+**Last compiled**: 2026-08-20 (DFlash2's next runtime panel now has a prospective native claim-carrier pair; the completed np1 panel remains correctly unprojectable rather than being reconstructed on read)
+**Sources**: 47+ documents
+
+## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
+
+**Confidence: verified implementation boundary.** The producer and reader exist on pushed integration
+branches, and synthetic projection tests pass; this does not retrofit the completed np1 campaign.
+
+The DFlash2 carrier pair records six arms times two metrics (decode throughput and weighted draft
+acceptance) with exact campaign, manifest, build, model, protocol, released-claim, KFD, and VRAM
+identity. It declares `higher_better` and delegates grading to the shared `ClaimTuple` ladder rather
+than inventing a DFlash2-specific grade. The research producer must integrate before the root reader.
+
+The completed DF2-4 np1 campaign finalized before that write hook existed, so it emits zero rows.
+Reconstructing a tuple from request logs would invent warrant at read time and erase the distinction
+between measured evidence and evidence captured under the belief contract. DF2-5 is therefore the
+first eligible native source; its finalizer must write the carriers while original claim and residency
+witnesses still exist.
+
+### Source References (2026-08-20 DFlash2 claim carrier)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — SC44 integration order, carrier schema, and pre-hook zero-row rule.
+- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — immutable DF2-4 evidence and DF2-5 measurement plan.
+- [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact producer/reader commits and operational boundary.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — runtime-campaign receipt chain and no-source-champion authority.
 
 ## Compiled Update — 2026-08-18: link integrity became a lint pass, and the watermark proved load-bearing
 

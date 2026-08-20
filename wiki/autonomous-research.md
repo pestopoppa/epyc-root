@@ -2,8 +2,40 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-18 (the AutoKernel controller graph is sealed and validated with zero inference executed; planner conditioning became a reviewed portfolio with an exact spend set, threshold-shaped levers, scoped retirements and inactive counterfactuals; the reward-integrity gaps our own audit found are closed as regression requirements; the gfx90a correctness oracle is implemented sealed)
-**Sources**: 117+ documents
+**Last compiled**: 2026-08-20 (v19 proved the cross-arm seed repair on hardware and advanced through Q5/Q8, then failed closed before GPU work when planner output named controller-owned FA candidate routes outside sealed anchor-only authority)
+**Sources**: 120+ documents
+
+## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
+
+**Confidence: verified** for terminal receipts, paired effects, cleanup, and the exact failure string.
+None of the Q5/Q8 observations is a champion or promotion result.
+
+V18's graphs-on stage failed closed for a sound reason: its anchor and candidate used different hidden
+seeds. Product commits `d0e59dca` and `b9d06347` made oracle-protected arms share one seed and added a
+full-run seam regression. Fresh sealed v19 then proved seed 8613 on both graphs-on arms in both
+execution orders. This is the useful recovery pattern: repair the generator, discard the poisoned
+receipt, seal a fresh deployment, and prove the invariant live.
+
+V19 advanced through bounded Q5 and Q8 screens without turning favorable point estimates into wins.
+Q5 and Q8 candidate 1 became inconclusive when their reversed-order graphs-on effects changed sign;
+Q8 candidate 2 stopped after negative attribution; Q8 candidate 3 had positive runtime estimates in
+both orders but remained inconclusive under the sealed portfolio policy. Three undeclared-file-scope
+authoring refusals spent no GPU science budget and advanced rather than starving the portfolio.
+
+Turn 11 exposed a different control-plane defect before any GPU work. The planner copied semantic FA
+candidate route ids (`gqa7_bulk_pairs`, `gqa7_scalar_tail`) into `expected_dispatch`, but the sealed
+plan authority permits only the anchor route. The controller raised
+`DiscoveryControllerError: dispatch route id is not deployed authority`, released every claim, and
+returned KFD/VRAM to baseline. The repair boundary is to keep controller-owned candidate geometry out
+of planner context and convert invalid planner intent into a secret-free typed refusal with bounded
+retry; no mutable repair worktree may be treated as a successor deployment.
+
+### Source References (2026-08-20 v19 checkpoint)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact v18/v19 identities, effects, planner-authority failure, cleanup, and repair task.
+- [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
+- [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — sibling runtime campaign boundary and write-side evidence requirement.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
 
 ## Compiled Update — 2026-08-18: the controller graph is sealed — and the planner's memory is now a reviewed portfolio, not prose
 
