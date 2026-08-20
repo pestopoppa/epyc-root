@@ -36,6 +36,7 @@ retry; no mutable repair worktree may be treated as a successor deployment.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — self-contained live campaign chronology and dashboard deployment.
 - [DFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md) — sibling runtime campaign boundary and write-side evidence requirement.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective claim-carrier integration boundary for future DFlash2 panels.
+- [AutoKernel dashboard progress](../progress/2026-08/2026-08-18-dashboard.md) — actor-aware lifecycle projection and the bounded campaign-selection surface now promoted to root main.
 
 ## Compiled Update — 2026-08-18: the controller graph is sealed — and the planner's memory is now a reviewed portfolio, not prose
 
