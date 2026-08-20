@@ -66,14 +66,14 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
 
 ## Tasks
 
-- [ ] **DF2-1 — Build.** Fresh production tip → `llama.cpp-experimental`, apply PR #27342, build HIP/gfx90a.
+- [x] **DF2-1 — Build.** Fresh production tip → `llama.cpp-experimental`, apply PR #27342, build HIP/gfx90a. ✅ 2026-08-20
       Forward-port our local gfx90a patches into the candidate, **notably `a6b4b5263`** (routes small Q8_0
       MTP-verify batches to MMQ, `ne11<=1`, +17.4% single-stream MTP on MI210).
 - [ ] **DF2-2 — Check the MMQ patch still fires.** `a6b4b5263` is *MTP-verify-shaped* (`ne11<=1`); a dFlash2
       block verify has `ne11≈8` and may land on a less-tuned path. **This is the single most likely cause of a
       disappointing first number** — confirm before attributing any shortfall to dFlash2 itself.
-- [ ] **DF2-3 — No-regression validation vs v9** (GPU + CPU) before any comparison is quoted.
-- [ ] **DF2-4 — Matched comparison.** Replay the exact protocol above (same 12 prompts, np=1, 2048 cap) with
+- [x] **DF2-3 — No-regression validation vs v9** (GPU + CPU) before any comparison is quoted. ✅ 2026-08-20
+- [x] **DF2-4 — Matched comparison.** Replay the exact protocol above (same 12 prompts, np=1, 2048 cap) with ✅ 2026-08-20
       `--spec-type draft-dflash` + `incoai/Qwen3.8-27B-DFlash2-GGUF:Q8_0`
       (already downloaded: `/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf`, 2,056,414,752 bytes, Apache-2.0).
       Report decode t/s **and** acceptance against the table above.
