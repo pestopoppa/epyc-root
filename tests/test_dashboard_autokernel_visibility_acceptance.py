@@ -1179,6 +1179,87 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("Process checkpoint reuse", detail)
         self.assertIn("anchor complete; next candidate", detail)
 
+    def test_experimental_runtime_stage_and_headlines_are_visible(self) -> None:
+        payload = {
+            "active": True, "deployment": "dflash2-runtime-fixture",
+            "campaign_kind": "experimental_runtime",
+            "autokernel_log": [], "planner_log": [],
+            "telemetry_integrity": {"state": "verified", "verified": True},
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "campaign_kind": "experimental_runtime",
+                "status": "running", "waiting_on": "concurrency grid completion",
+                "phase": {"id": "concurrency_grid",
+                          "label": "Concurrency grid np=2/4/8",
+                          "elapsed_s": 90},
+                "gpu": {"expected_now": True, "claim_held": True,
+                        "claim_released": False,
+                        "detail": "MI210 experimental-runtime claim is held"},
+                "failure": {"detected": False}, "transitions": [],
+                "resume": {"required": False, "possible": True,
+                           "disposition": "execute_once_from_first_incomplete"},
+                "stage_contract": {
+                    "campaign_kind": "experimental_runtime",
+                    "first_incomplete_stage": "concurrency_grid",
+                    "resume_policy": "execute_once_from_first_incomplete",
+                },
+                "runtime_campaign": {
+                    "candidate_id": "dflash2-qwen38-27b",
+                    "excluded_from_kernel_frontier": True,
+                    "active_step": "gpu",
+                    "matched_np1": {
+                        "dflash2_decode_tps": 59.12,
+                        "mtp_decode_tps": 55.46,
+                        "comparator_tps": 55.46,
+                    },
+                    "concurrency_grid": {
+                        "dflash2_np8_tps": 161.4,
+                        "mtp_np8_tps": 157.3,
+                    },
+                    "greedy_parity": {"exact_token_parity": True},
+                    "decision": "runtime_candidate_selected",
+                },
+                "refusal": {"detected": False},
+                "provider_retry": {"detected": False},
+                "correctness": {"execution_started": False},
+                "checkpoint": {"available": True,
+                               "state": "runtime_stage_receipts"},
+                "stall": {"state": "healthy", "detail": "advancing"},
+                "pipeline": [
+                    {"id": stage, "label": label,
+                     "state": "running" if stage == "concurrency_grid"
+                     else "complete" if index < 3 else "not_reached"}
+                    for index, (stage, label) in enumerate((
+                        ("experimental_build", "Experimental build"),
+                        ("cpu_gpu_regression", "CPU + GPU regression"),
+                        ("matched_np1", "Matched np=1 comparison"),
+                        ("concurrency_grid", "Concurrency grid np=2/4/8"),
+                        ("greedy_parity", "Greedy token parity"),
+                        ("decision", "Runtime candidate decision"),
+                    ))],
+                "history": {"abandoned_count": 0, "retest_count": 0,
+                            "rows": []},
+            },
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        detail = nodes["ak-live-detail-meta"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+
+        for token in ("experimental runtime", "dflash2-qwen38-27b",
+                      "concurrency grid np=2/4/8", "first incomplete",
+                      "excluded from kernel-source champions",
+                      "dflash2 59.12 t/s", "mtp 55.46", "np=8",
+                      "greedy parity", "pass", "runtime_candidate_selected"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("Runtime substep", detail)
+        self.assertIn("gpu", detail)
+        for stage in ("Experimental build", "CPU + GPU regression",
+                      "Matched np=1 comparison", "Concurrency grid np=2/4/8",
+                      "Greedy token parity", "Runtime candidate decision"):
+            self.assertIn(stage, pipeline)
+
     def test_planner_validation_interruption_is_visible_in_hero_and_pipeline(self) -> None:
         payload = {
             "active": False,

@@ -3850,6 +3850,21 @@ _DISCOVERY_POSTBUILD_STAGES = (
     "benchmark", "decision",
 )
 _DISCOVERY_PIPELINE_DICT = dict(_DISCOVERY_PIPELINE)
+_EXPERIMENTAL_RUNTIME_PIPELINE = (
+    ("experimental_build", "Experimental build"),
+    ("cpu_gpu_regression", "CPU + GPU regression"),
+    ("matched_np1", "Matched np=1 comparison"),
+    ("concurrency_grid", "Concurrency grid np=2/4/8"),
+    ("greedy_parity", "Greedy token parity"),
+    ("decision", "Runtime candidate decision"),
+)
+_EXPERIMENTAL_RUNTIME_STAGES = tuple(
+    stage for stage, _label in _EXPERIMENTAL_RUNTIME_PIPELINE)
+_EXPERIMENTAL_RUNTIME_PIPELINE_DICT = dict(_EXPERIMENTAL_RUNTIME_PIPELINE)
+_EXPERIMENTAL_RUNTIME_SCHEMA = \
+    "epyc.autokernel.experimental_runtime_dashboard.v1"
+_EXPERIMENTAL_RUNTIME_RECEIPT_SCHEMA = \
+    "epyc.autokernel.experimental_runtime_stage_receipt.v1"
 _DISCOVERY_STALL_S = 300.0
 _DISCOVERY_STAGE_STALL_S = {
     # The sealed Claude critic has a 900-second process timeout, and the Codex
@@ -4787,8 +4802,10 @@ def _discovery_postbuild_observation(operations_root: Path,
     }
 
 
-def _discovery_claim_observation(operations_root: Path,
-                                 campaign_id: str | None) -> dict | None:
+def _discovery_claim_observation(
+        operations_root: Path, campaign_id: str | None,
+        *, purpose: str =
+        "AutoKernel GPU source proof and throughput") -> dict | None:
     """Return the latest identity-proven source-proof claim state."""
     path = operations_root / "claims" / "device.jsonl"
     try:
@@ -4810,7 +4827,7 @@ def _discovery_claim_observation(operations_root: Path,
                 or row.get("kind") not in {"claim_acquired", "claim_released"}
                 or not isinstance(receipt, dict)
                 or receipt.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
-                or receipt.get("purpose") != "AutoKernel GPU source proof and throughput"
+                or receipt.get("purpose") != purpose
                 or not isinstance(campaign_id, str)
                 or receipt.get("campaign_id") != campaign_id
                 or not isinstance(receipt.get("claim_id"), str)):
@@ -6512,6 +6529,423 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     }
 
 
+def _experimental_runtime_descriptor(config: dict, bundle: Path) -> dict | None:
+    """Validate the dashboard-facing identity of one runtime sibling."""
+    value = config.get("experimental_runtime")
+    if (not isinstance(config.get("config_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", config["config_sha256"]) is None
+            or not isinstance(value, dict) or set(value) != {
+            "schema", "candidate_id", "runtime_root", "stage_order",
+            "stage_budgets_s"}
+            or value.get("schema") != _EXPERIMENTAL_RUNTIME_SCHEMA
+            or not isinstance(value.get("candidate_id"), str)
+            or re.fullmatch(r"[a-z0-9][a-z0-9_.-]{0,127}",
+                            value["candidate_id"]) is None
+            or value.get("stage_order") != list(_EXPERIMENTAL_RUNTIME_STAGES)):
+        return None
+    runtime_root = _safe_bundle_path(value.get("runtime_root"), bundle)
+    budgets = value.get("stage_budgets_s")
+    if (runtime_root is None or not isinstance(budgets, dict)
+            or set(budgets) != set(_EXPERIMENTAL_RUNTIME_STAGES)
+            or any(isinstance(budget, bool) or not isinstance(budget, int)
+                   or budget < 60 or budget > 86400
+                   for budget in budgets.values())):
+        return None
+    try:
+        if runtime_root.exists() and (
+                runtime_root.is_symlink() or not runtime_root.is_dir()):
+            return None
+    except OSError:
+        return None
+    return {
+        "candidate_id": value["candidate_id"],
+        "runtime_root": runtime_root,
+        "stage_budgets_s": dict(budgets),
+    }
+
+
+def _experimental_runtime_result(stage: str, value: object) -> dict | None:
+    """Project one stage's compact, secret-free headline result."""
+    if not isinstance(value, dict):
+        return None
+    finite_number = lambda item: (
+        isinstance(item, (int, float)) and not isinstance(item, bool)
+        and math.isfinite(float(item)))
+    if stage == "experimental_build":
+        if (set(value) != {"hip_binary_sha256", "cpu_binary_sha256",
+                           "dflash2_gguf_sha256", "mmq_path_check"}
+                or value.get("mmq_path_check") != "pass"
+                or any(re.fullmatch(r"[0-9a-f]{64}", str(value.get(key))) is None
+                       for key in ("hip_binary_sha256", "cpu_binary_sha256",
+                                   "dflash2_gguf_sha256"))):
+            return None
+    elif stage == "cpu_gpu_regression":
+        if (set(value) != {"cpu_pass", "gpu_pass"}
+                or value.get("cpu_pass") is not True
+                or value.get("gpu_pass") is not True):
+            return None
+    elif stage == "matched_np1":
+        if (set(value) != {"plain_decode_tps", "mtp_decode_tps",
+                           "dflash2_decode_tps", "dflash2_acceptance",
+                           "comparator_tps"}
+                or any(not finite_number(value.get(key))
+                       or float(value[key]) <= 0 for key in (
+                           "plain_decode_tps", "mtp_decode_tps",
+                           "dflash2_decode_tps", "comparator_tps"))
+                or not finite_number(value.get("dflash2_acceptance"))
+                or not 0 <= float(value["dflash2_acceptance"]) <= 1
+                or float(value["comparator_tps"]) != 55.46):
+            return None
+    elif stage == "concurrency_grid":
+        if (set(value) != {"np_values", "mtp_np8_tps", "dflash2_np8_tps"}
+                or value.get("np_values") != [2, 4, 8]
+                or any(not finite_number(value.get(key))
+                       or float(value[key]) <= 0
+                       for key in ("mtp_np8_tps", "dflash2_np8_tps"))):
+            return None
+    elif stage == "greedy_parity":
+        if (set(value) != {"exact_token_parity", "compared_tokens"}
+                or not isinstance(value.get("exact_token_parity"), bool)
+                or isinstance(value.get("compared_tokens"), bool)
+                or not isinstance(value.get("compared_tokens"), int)
+                or value["compared_tokens"] < 1):
+            return None
+    elif stage == "decision":
+        if (set(value) != {"decision", "reason_code"}
+                or value.get("decision") not in {
+                    "runtime_candidate_selected", "runtime_candidate_rejected"}
+                or not isinstance(value.get("reason_code"), str)
+                or re.fullmatch(r"[a-z0-9_]{1,100}",
+                                value["reason_code"]) is None):
+            return None
+    else:
+        return None
+    return dict(value)
+
+
+def _experimental_runtime_receipts(
+        descriptor: dict, campaign_id: str | None) -> dict:
+    """Validate the ordered stage chain and derive its first missing receipt."""
+    runtime_root = descriptor["runtime_root"]
+    candidate_id = descriptor["candidate_id"]
+    receipts: dict[str, dict] = {}
+    predecessor_file_sha256 = None
+    invalid_stage = None
+    for stage in _EXPERIMENTAL_RUNTIME_STAGES:
+        path = runtime_root / "stages" / stage / "receipt.json"
+        if not path.exists() and not path.is_symlink():
+            break
+        captured = _discovery_private_file(
+            path, operation_root=runtime_root, maximum=4 * 1024 * 1024)
+        if captured is None:
+            invalid_stage = stage
+            break
+        raw, info = captured
+        try:
+            body = json.loads(raw.decode("utf-8", "strict"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            invalid_stage = stage
+            break
+        if not isinstance(body, dict) or set(body) != {
+                "schema", "campaign_kind", "campaign_id", "candidate_id",
+                "stage", "status", "started_at", "ended_at",
+                "predecessor_receipt_file_sha256", "evidence_sha256", "result",
+                "receipt_sha256"}:
+            invalid_stage = stage
+            break
+        started_at = body.get("started_at")
+        ended_at = body.get("ended_at")
+        result = _experimental_runtime_result(stage, body.get("result"))
+        unsigned = {key: value for key, value in body.items()
+                    if key != "receipt_sha256"}
+        if (body.get("schema") != _EXPERIMENTAL_RUNTIME_RECEIPT_SCHEMA
+                or body.get("campaign_kind") != "experimental_runtime"
+                or body.get("campaign_id") != campaign_id
+                or body.get("candidate_id") != candidate_id
+                or body.get("stage") != stage
+                or body.get("status") != "complete"
+                or body.get("predecessor_receipt_file_sha256") !=
+                predecessor_file_sha256
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    body.get("evidence_sha256"))) is None
+                or body.get("receipt_sha256") !=
+                _discovery_content_hash(unsigned)
+                or not isinstance(started_at, str)
+                or not isinstance(ended_at, str)
+                or _parse_semantic_timestamp(started_at) is None
+                or _parse_semantic_timestamp(ended_at) is None
+                or _parse_semantic_timestamp(ended_at) <
+                _parse_semantic_timestamp(started_at)
+                or result is None):
+            invalid_stage = stage
+            break
+        file_sha256 = hashlib.sha256(raw).hexdigest()
+        receipts[stage] = {
+            "path": str(path), "file_sha256": file_sha256,
+            "started_at": started_at, "ended_at": ended_at,
+            "result": result,
+            "at": datetime.fromtimestamp(
+                info.st_mtime, timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+        predecessor_file_sha256 = file_sha256
+    first_incomplete = next(
+        (stage for stage in _EXPERIMENTAL_RUNTIME_STAGES
+         if stage not in receipts), None)
+    return {
+        "receipts": receipts, "first_incomplete_stage": first_incomplete,
+        "invalid_stage": invalid_stage,
+    }
+
+
+def _experimental_runtime_activity(
+        *, lock_held: bool, campaign_id: str | None, state: dict | None,
+        events: list[dict], descriptor: dict,
+        claim_observation: dict | None, now: float) -> dict:
+    """Render the isolated six-stage runtime sibling from durable receipts."""
+    observation = _experimental_runtime_receipts(descriptor, campaign_id)
+    receipts = observation["receipts"]
+    first_incomplete = observation["first_incomplete_stage"]
+    invalid_stage = observation["invalid_stage"]
+    pipeline = {
+        stage: {"id": stage, "label": label, "state": "not_reached"}
+        for stage, label in _EXPERIMENTAL_RUNTIME_PIPELINE}
+    transitions = []
+    for stage, receipt in receipts.items():
+        pipeline[stage].update({
+            "state": "complete", "started_at": receipt["started_at"],
+            "completed_at": receipt["ended_at"],
+            "elapsed_s": max(0.0, _parse_semantic_timestamp(
+                receipt["ended_at"]) - _parse_semantic_timestamp(
+                    receipt["started_at"])),
+            "detail": f"receipt {receipt['file_sha256'][:12]}…",
+        })
+        transitions.append({
+            "ts": receipt["ended_at"], "stage": stage, "phase": stage,
+            "state": "complete", "event": f"{stage}_completed",
+            "label": _EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage],
+            "detail": f"receipt {receipt['file_sha256'][:12]}…",
+        })
+    runtime_state = (state.get("experimental_runtime")
+                     if isinstance(state, dict) else None)
+    state_candidate = (runtime_state.get("candidate_id")
+                       if isinstance(runtime_state, dict) else None)
+    active_stage = (runtime_state.get("active_stage")
+                    if isinstance(runtime_state, dict) else None)
+    active_step = (runtime_state.get("active_step")
+                   if isinstance(runtime_state, dict) else None)
+    state_started_at = (runtime_state.get("stage_started_at")
+                        if isinstance(runtime_state, dict) else None)
+    state_identity_valid = bool(
+        isinstance(runtime_state, dict)
+        and state_candidate == descriptor["candidate_id"]
+        and (active_stage is None or active_stage in _EXPERIMENTAL_RUNTIME_STAGES)
+        and active_step in {None, "none", "cpu", "gpu"}
+        and (state_started_at is None
+             or isinstance(state_started_at, str)
+             and _parse_semantic_timestamp(state_started_at) is not None))
+    failure = {"detected": False, "stage": None, "detail": None,
+               "recovery": None}
+    if first_incomplete is None:
+        stage = "decision"
+        status = "complete"
+        label = "Runtime candidate decision complete"
+        waiting_on = "no further runtime stage"
+        resume_policy = "not_required"
+    elif invalid_stage is not None:
+        stage = invalid_stage
+        status = "failed"
+        label = f"{_EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage]} receipt refused"
+        waiting_on = "repair the invalid stage receipt"
+        resume_policy = "receipt_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": f"invalid or identity-drifted {stage} receipt",
+            "recovery": "Repair the exact receipt; later stages remain untrusted.",
+        }
+    elif (isinstance(runtime_state, dict) and not state_identity_valid):
+        stage = first_incomplete
+        status = "failed"
+        label = "Experimental runtime state identity refused"
+        waiting_on = "repair the runtime state identity"
+        resume_policy = "state_identity_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": "runtime state candidate/stage/substep identity is invalid",
+            "recovery": "Do not infer progress from this state; receipts remain authoritative.",
+        }
+    elif lock_held and active_stage not in {None, first_incomplete}:
+        stage = first_incomplete
+        status = "failed"
+        label = "Experimental runtime stage order drift"
+        waiting_on = f"resume only from {first_incomplete}"
+        resume_policy = "state_identity_repair_required"
+        pipeline[stage]["state"] = "failed"
+        failure = {
+            "detected": True, "stage": stage,
+            "detail": (f"state claims {active_stage}; first incomplete receipt "
+                       f"is {first_incomplete}"),
+            "recovery": "Reconcile state to the first incomplete durable stage.",
+        }
+    else:
+        stage = first_incomplete
+        status = "running" if lock_held else "stopped"
+        label = _EXPERIMENTAL_RUNTIME_PIPELINE_DICT[stage]
+        waiting_on = (f"{label} completion" if lock_held else
+                      f"restart from first incomplete stage: {stage}")
+        resume_policy = "execute_once_from_first_incomplete"
+        pipeline[stage]["state"] = "running" if lock_held else "waiting"
+        if state_started_at is not None and active_stage == stage:
+            pipeline[stage]["started_at"] = state_started_at
+        if lock_held and active_stage == stage:
+            transitions.append({
+                "ts": state_started_at or state.get("updated_at"),
+                "stage": stage, "phase": stage, "state": "running",
+                "event": f"{stage}_active",
+                "label": label,
+                "detail": f"active substep: {active_step or 'unspecified'}",
+            })
+    receipt_times = [receipt["ended_at"] for receipt in receipts.values()]
+    event_times = [row.get("ts") for row in events
+                   if isinstance(row.get("ts"), str)]
+    state_at = state.get("updated_at") if isinstance(state, dict) else None
+    progress_times = [value for value in (*receipt_times, *event_times, state_at)
+                      if isinstance(value, str)
+                      and _parse_semantic_timestamp(value) is not None]
+    last_progress_at = max(progress_times) if progress_times else None
+    last_progress_epoch = (_parse_semantic_timestamp(last_progress_at)
+                           if last_progress_at else None)
+    progress_age = (max(0.0, now - last_progress_epoch)
+                    if last_progress_epoch is not None else None)
+    stage_started_at = pipeline[stage].get("started_at")
+    if stage_started_at is None:
+        stage_started_at = (state_started_at if active_stage == stage else
+                            receipts[next(reversed(receipts))]["ended_at"]
+                            if receipts else state_at)
+    stage_start_epoch = (_parse_semantic_timestamp(stage_started_at)
+                         if isinstance(stage_started_at, str) else None)
+    if status == "complete":
+        elapsed_s = pipeline[stage].get("elapsed_s")
+    elif (status in {"stopped", "failed"} and stage_start_epoch is not None
+          and last_progress_epoch is not None):
+        elapsed_s = max(0.0, last_progress_epoch - stage_start_epoch)
+    else:
+        elapsed_s = (max(0.0, now - stage_start_epoch)
+                     if stage_start_epoch is not None else None)
+    threshold = descriptor["stage_budgets_s"].get(stage, _DISCOVERY_STALL_S)
+    if (lock_held and status == "running" and progress_age is not None
+            and progress_age > threshold):
+        status = "stalled"
+        stall = {"state": "stalled", "threshold_s": threshold,
+                 "detail": "No durable runtime transition advanced within the sealed stage budget."}
+    elif status == "failed":
+        stall = {"state": "failed", "threshold_s": threshold,
+                 "detail": failure["detail"]}
+    else:
+        stall = {"state": "healthy", "threshold_s": threshold,
+                 "detail": ("durable runtime lifecycle is advancing" if lock_held
+                            else "controller is not active")}
+    claim_held = bool(
+        isinstance(claim_observation, dict)
+        and claim_observation.get("claim_held") is True
+        and claim_observation.get("identity_live") is True)
+    gpu_stage = stage in {"matched_np1", "concurrency_grid", "greedy_parity"}
+    if stage == "cpu_gpu_regression":
+        gpu_stage = active_step == "gpu"
+    gpu_expected = bool(status in {"running", "stalled"} and gpu_stage)
+    results = {stage_name: receipt["result"]
+               for stage_name, receipt in receipts.items()}
+    decision = results.get("decision", {}).get("decision")
+    return {
+        "campaign_kind": "experimental_runtime",
+        "status": status,
+        "phase": {"id": stage, "label": label,
+                  "started_at": stage_started_at, "elapsed_s": elapsed_s},
+        "turn": state.get("next") if isinstance(state, dict) else None,
+        "hypothesis_id": None,
+        "last_progress_at": last_progress_at,
+        "progress_age_s": progress_age,
+        "waiting_on": waiting_on,
+        "stall": stall,
+        "gpu": {
+            "expected_now": gpu_expected, "claim_held": claim_held,
+            "claim_released": bool(isinstance(claim_observation, dict)
+                                   and claim_observation.get(
+                                       "claim_released") is True),
+            "claim_id": (claim_observation.get("claim_id")
+                         if isinstance(claim_observation, dict) else None),
+            "device_id": (claim_observation.get("device_id")
+                          if isinstance(claim_observation, dict) else None),
+            "screen_started": bool(receipts or claim_observation),
+            "detail": ("MI210 experimental-runtime claim is held" if claim_held
+                       else "GPU is expected for the active runtime substep"
+                       if gpu_expected else
+                       "GPU is not expected for the active runtime substep"),
+        },
+        "stage_contract": {
+            "campaign_kind": "experimental_runtime",
+            "current_stage": stage,
+            "first_incomplete_stage": first_incomplete,
+            "resume_policy": resume_policy,
+            "repetition": None, "replication": None,
+            "arm_order": None, "arm_order_seed_sha256": None,
+            "exact_attribution_direction": None,
+            "exact_attribution_effect_fraction": None,
+            "target_runtime_effect_fraction": None,
+            "target_runtime_executed": None,
+            "target_runtime_reason": None,
+            "dual_decision_state": None,
+            "measurement_process_progress": None,
+        },
+        "runtime_campaign": {
+            "candidate_id": descriptor["candidate_id"],
+            "excluded_from_kernel_frontier": True,
+            "active_step": active_step,
+            "completed_stages": list(receipts),
+            "matched_np1": results.get("matched_np1"),
+            "concurrency_grid": results.get("concurrency_grid"),
+            "greedy_parity": results.get("greedy_parity"),
+            "decision": decision,
+        },
+        "correctness": {
+            "execution_started": "cpu_gpu_regression" in receipts,
+            "execution_completed": "cpu_gpu_regression" in receipts,
+            "validation_passed": bool(
+                results.get("cpu_gpu_regression", {}).get("cpu_pass") is True
+                and results.get("cpu_gpu_regression", {}).get("gpu_pass") is True),
+            "summary": ("CPU + GPU regression passed"
+                        if "cpu_gpu_regression" in receipts else None),
+            "started_at": None, "completed_at": None, "elapsed_s": None,
+        },
+        "checkpoint": {"available": bool(receipts),
+                       "state": "runtime_stage_receipts" if receipts else None,
+                       "detail": f"{len(receipts)} / 6 stages complete"},
+        "resume": {
+            "required": bool(not lock_held and first_incomplete is not None),
+            "possible": invalid_stage is None and not failure["detected"],
+            "disposition": resume_policy,
+            "detail": (f"Restart at {first_incomplete}; completed receipts are reused"
+                       if not lock_held and first_incomplete is not None else
+                       "No resume action is required"),
+        },
+        "failure": failure,
+        "refusal": {"detected": False, "type": None, "class": None,
+                    "stage": None, "scientific_budget_spent": None,
+                    "receipt_sha256": None, "detail": None,
+                    "measurement_output": None},
+        "provider_retry": {"detected": False, "actor": None,
+                           "same_hypothesis": None, "planner_rerun": None,
+                           "provider_attempt": None, "detail": None},
+        "pipeline": list(pipeline.values()),
+        "transitions": sorted(transitions, key=lambda row: str(row.get("ts")))[-100:],
+        "completed_iterations": 1 if decision is not None else 0,
+        "history": {"abandoned_count": 0, "retest_count": 0,
+                    "summary": "experimental runtime sibling · no source history",
+                    "rows": []},
+    }
+
+
 def _discovery_live_read() -> tuple[dict, panels.Observation]:
     candidates: list[dict] = []
     try:
@@ -6529,6 +6963,14 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         controller = config.get("controller")
         if not isinstance(controller, dict):
             continue
+        campaign_kind = config.get("campaign_kind", "kernel_source")
+        if campaign_kind not in {"kernel_source", "experimental_runtime"}:
+            continue
+        runtime_descriptor = None
+        if campaign_kind == "experimental_runtime":
+            runtime_descriptor = _experimental_runtime_descriptor(config, bundle)
+            if runtime_descriptor is None:
+                continue
         state_root = _safe_bundle_path(controller.get("state_root"), bundle)
         operations_root = _safe_bundle_path(controller.get("operations_root"), bundle)
         if state_root is None or operations_root is None:
@@ -6593,6 +7035,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             "producer_stamp": producer_stamp, "launched": launched,
             "bundle": bundle, "config": config, "state_root": state_root,
             "operations_root": operations_root, "state": state,
+            "campaign_kind": campaign_kind,
+            "runtime_descriptor": runtime_descriptor,
             "state_error": state_error, "all_events": all_events,
             "all_error": all_error, "planner_events": planner_events,
             "planner_error": planner_error, "checkpoint": checkpoint,
@@ -6631,6 +7075,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     config = selected["config"]
     state_root = selected["state_root"]
     operations_root = selected["operations_root"]
+    campaign_kind = selected["campaign_kind"]
+    runtime_descriptor = selected["runtime_descriptor"]
     state = selected["state"]
     state_error = selected["state_error"]
     all_events = selected["all_events"]
@@ -6647,28 +7093,38 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     latest_ts = max(event_times) if event_times else None
     checkpoint = selected["checkpoint"]
     now = time.time()
-    build_observation = _discovery_build_observation(
-        operations_root, state, config.get("config_sha256"))
-    correctness_observation = _discovery_correctness_observation(
-        operations_root, state)
-    postbuild_observation = _discovery_postbuild_observation(
-        operations_root, state)
     config_sha256 = config.get("config_sha256")
     campaign_id = (f"ak-discovery-{config_sha256[:16]}"
                    if isinstance(config_sha256, str)
                    and re.fullmatch(r"[0-9a-f]{64}", config_sha256) else None)
-    claim_observation = _discovery_claim_observation(
-        operations_root, campaign_id)
-    refusal_observation = _discovery_refusal_observation(
-        bundle, state, lifecycle_events)
-    activity = _discovery_activity(
-        lock_held=lock_held, campaign_id=campaign_id,
-        state=state, events=lifecycle_events,
-        checkpoint=checkpoint, operation_observation=build_observation,
-        correctness_observation=correctness_observation,
-        postbuild_observation=postbuild_observation,
-        claim_observation=claim_observation,
-        refusal_observation=refusal_observation, now=now)
+    if campaign_kind == "experimental_runtime":
+        claim_observation = _discovery_claim_observation(
+            operations_root, campaign_id,
+            purpose="AutoKernel experimental runtime validation and measurement")
+        activity = _experimental_runtime_activity(
+            lock_held=lock_held, campaign_id=campaign_id,
+            state=state, events=lifecycle_events,
+            descriptor=runtime_descriptor,
+            claim_observation=claim_observation, now=now)
+    else:
+        build_observation = _discovery_build_observation(
+            operations_root, state, config.get("config_sha256"))
+        correctness_observation = _discovery_correctness_observation(
+            operations_root, state)
+        postbuild_observation = _discovery_postbuild_observation(
+            operations_root, state)
+        claim_observation = _discovery_claim_observation(
+            operations_root, campaign_id)
+        refusal_observation = _discovery_refusal_observation(
+            bundle, state, lifecycle_events)
+        activity = _discovery_activity(
+            lock_held=lock_held, campaign_id=campaign_id,
+            state=state, events=lifecycle_events,
+            checkpoint=checkpoint, operation_observation=build_observation,
+            correctness_observation=correctness_observation,
+            postbuild_observation=postbuild_observation,
+            claim_observation=claim_observation,
+            refusal_observation=refusal_observation, now=now)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
@@ -6695,6 +7151,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
+        "campaign_kind": campaign_kind,
         "newest_unlaunched_deployment": ({
             "available": True,
             "deployment": newest_unlaunched["bundle"].name,

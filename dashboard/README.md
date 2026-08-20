@@ -279,6 +279,20 @@ governed skips, the graphs-on call is explicitly unexecuted, and the loop moves
 through decision to the next hypothesis. Completed iteration rows retain both
 exact-attribution and target-runtime effects plus their S1/S2 repetition.
 
+An explicitly sealed `campaign_kind: experimental_runtime` uses an isolated
+dashboard adapter rather than the kernel-source pipeline. Its deployment
+descriptor has schema `epyc.autokernel.experimental_runtime_dashboard.v1`, a
+bundle-contained runtime root, the fixed DFlash2 sibling stage order
+`experimental_build → cpu_gpu_regression → matched_np1 → concurrency_grid →
+greedy_parity → decision`, and a bounded silence budget for every stage. Each
+completed stage is proven by a private, self-hashed
+`epyc.autokernel.experimental_runtime_stage_receipt.v1` receipt chained to the
+exact preceding receipt file hash. The first missing or invalid receipt is the
+only resumable boundary. The live API exposes compact np=1, np=8, parity, and
+decision headlines and marks the sibling excluded from the kernel-source
+champion frontier; it never feeds these results to discovery progression.
+Deployments without `campaign_kind` retain the existing kernel-source behavior.
+
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
 and strict campaign receipts into
