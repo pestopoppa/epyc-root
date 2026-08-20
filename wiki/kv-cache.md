@@ -223,9 +223,38 @@ Five May 2026 papers spanning write-time admission, read-time eviction, per-head
 
 **PBKV** (intake-554, arxiv:2605.06472, Zheng et al., CC-BY 4.0) — **standout for EPYC orchestrator**. Operates at the **workflow/orchestrator residency layer**, not the attention kernel. History-conditioned next-agent-invocation predictor drives KV residency decisions. 1.85× over LRU on dynamic workflows, 1.26× over KVFlow on static. Maps directly onto frontdoor → coder/worker hand-off pattern where shared long prompts pay BW-bound re-prefill cost. **No fine-tuning needed.** Requires tiny next-agent predictor + llama.cpp prefix-cache hooks (soft-depends on RadixAttention prefix-tree work in `llama-cpp-fork-rebase.md`).
 
+**KVFlow** (intake-1196, arXiv:2507.07400, Pan et al., UCSD + AWS) — **the ORIGIN of workflow-aware KV
+residency, and the paper PBKV's 1.26× is measured against.** Recorded here in its own right because our
+index previously carried it only as PBKV's denominator, which inverted the reading for our own use case.
+Peer-reviewed at **NeurIPS 2025**, with an Apache-2.0 implementation released. An Agent Step Graph yields a
+per-agent *steps-to-execution* value propagated into the KV radix tree: the value lands on the last node of
+each agent's fixed prompt, internal nodes take the **minimum** across children, dynamic suffixes always get
+highest eviction priority, and conflicts at nodes shared between concurrent workflows resolve to the most
+conservative priority.
+
+Three things to carry, all from a source-level dive:
+
+- **The camera-ready prices the portable half at 1.11×.** Its optimization breakdown — present only in the
+  NeurIPS version — gives workflow-aware eviction *alone* an average **1.11×**; the jump to 1.29× comes from
+  overlapped prefetching, which does **not** port to our stack (llama-server slot save/restore runs on the
+  shared task loop and a failed restore is destructive). **1.11× is the honest ceiling for us.**
+- **An arXiv version check is not a version check.** arXiv has exactly one version of this paper, so a
+  freshness check passes while the version of record diverges underneath it. The NeurIPS camera-ready
+  deleted a testbed, added a baseline and a limitations section, and changed the body's headline numbers.
+  For any paper with a venue, fetch the proceedings separately.
+- **PBKV's 1.26× is on STATIC workflows — KVFlow's design centre.** A 1.26× increment there means KVFlow
+  retains most of the available gain on *declared* topologies, which is exactly what our delegation path is
+  (`compute_waves()` already computes a cycle-checked wave index that **is** a steps-to-execution value).
+  Filing KVFlow as "beaten" inverts the reading for the one workload where we would actually use it. Note
+  also the asymmetry in what our index recorded: PBKV is an undived preprint, KVFlow is peer-reviewed.
+
+**Do not quote 1.83× or 2.19×** as the value of workflow-aware eviction: 1.83× is the full system on
+hardware we do not have and its stated configuration was removed from the version of record, and 2.19× is
+an arithmetic ratio (1.25/0.57) against a HiCache version that no longer exists.
+
 **Cluster-wide gate** — [`streaming-llm-baseline.md`](../handoffs/active/streaming-llm-baseline.md) (master P#45 MED): land a clean sink + sliding-window baseline in `epyc-llama` to measure the **easy-floor** any KV reduction method must beat. Of the 5 papers above, only KVP explicitly compares to StreamingLLM. Without an internal floor, LU-KV / KVP / ForesightKV gain rankings are unanchored against the simplest competing technique. Gate criteria flip cluster prioritization: if StreamingLLM at 50% budget preserves ≥95% accuracy on representative workloads, **demote** attention-kernel methods (LU-KV/KVP/ForesightKV) — their incremental gain over the floor is too small to justify kernel work. PBKV stays prioritized because it operates at the orchestrator layer and **composes with** sink+window rather than replacing it.
 
-**Sources**: [intake-538](https://arxiv.org/abs/2605.14037) SP-KV · [intake-551](https://arxiv.org/abs/2602.10238) KVP · [intake-552](https://arxiv.org/abs/2602.08585) LU-KV · [intake-553](https://arxiv.org/abs/2602.03203) ForesightKV · [intake-554](https://arxiv.org/abs/2605.06472) PBKV · [Steele falsification](https://arxiv.org/abs/2601.14279) · [Deep-dive](../research/deep-dives/2026-05-19-kv-admission-cluster.md) · [StreamingLLM baseline gate](../handoffs/active/streaming-llm-baseline.md)
+**Sources**: [intake-538](https://arxiv.org/abs/2605.14037) SP-KV · [intake-551](https://arxiv.org/abs/2602.10238) KVP · [intake-552](https://arxiv.org/abs/2602.08585) LU-KV · [intake-553](https://arxiv.org/abs/2602.03203) ForesightKV · [intake-554](https://arxiv.org/abs/2605.06472) PBKV · [Steele falsification](https://arxiv.org/abs/2601.14279) · [Deep-dive](../research/deep-dives/2026-05-19-kv-admission-cluster.md) · [StreamingLLM baseline gate](../handoffs/active/streaming-llm-baseline.md) · [intake-1196](https://arxiv.org/abs/2507.07400) KVFlow (NeurIPS 2025; cite the proceedings, not the preprint) · [prefix-cache ownership + KV rows](../handoffs/active/attention-matching-kv-compaction.md)
 
 ## Per-slot context is a hard split, and "safer KV quant" can cost more memory (2026-08-03)
 

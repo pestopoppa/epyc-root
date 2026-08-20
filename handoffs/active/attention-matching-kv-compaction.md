@@ -338,7 +338,7 @@ Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-c
   **discards everything past char 256**. It has NEVER been measured: grepping both prefix-cache
   files for timing primitives returns 3 hits, all docstring prose, zero code. Cheap to instrument,
   and it may dominate the routing cost the rest of this section is trying to improve.
-- [ ] **KV-5 — Correct `wiki/kv-cache.md`** so KVFlow is named as the ORIGIN of workflow-aware KV
+- [x] **KV-5 — Correct `wiki/kv-cache.md`** ✅ 2026-08-20 (done in the wrap-up wiki sweep) so KVFlow is named as the ORIGIN of workflow-aware KV
   residency, with its own venue (NeurIPS 2025), its own 1.11× ablation and its Apache-2.0
   implementation — not solely as the denominator of PBKV's self-reported 1.26×. Note also that 1.26×
   **on static workflows** means KVFlow retains most of the gain on declared topologies, which is
