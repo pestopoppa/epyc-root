@@ -1013,6 +1013,77 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("akh-old-a", history_rows)
         self.assertIn("akh-retest", history_rows)
 
+    def test_v19_prior_terminal_is_in_visible_pulse_without_replacing_planner(
+            self) -> None:
+        prior = {
+            "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
+            "ts": "2026-08-20T14:54:41.804047Z",
+            "event": "discovery_authoring_refused", "turn": 3,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "status": "authoring_refused", "stage": "source_apply",
+            "scientific_budget_spent": False,
+            "detail": "undeclared symbols ['<file-scope>']",
+        }
+        planner = {
+            "ts": "2026-08-20T14:54:41.990920Z", "channel": "planner",
+            "event": "planner_started",
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "model": "gpt-5.6-sol",
+        }
+        payload = {
+            "active": True, "deployment": "gpu-discovery-v19",
+            "dashboard_observed_at": "2026-08-20T14:55:00Z",
+            "autokernel_log": [planner], "planner_log": [planner],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "running", "last_progress_at": planner["ts"],
+                "progress_age_s": 18,
+                "phase": {"id": "planner", "label": "Planner model call",
+                          "started_at": planner["ts"], "elapsed_s": 18},
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant", "turn": 4,
+                "waiting_on": "planner completion",
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "no identity-bound GPU claim"},
+                "correctness": {"execution_started": False},
+                "checkpoint": {"available": True,
+                               "state": "discovery_planner_entering"},
+                "stall": {"state": "healthy", "detail": "advancing"},
+                "failure": {"detected": False},
+                "refusal": {"detected": False},
+                "resume": {"required": False, "possible": True},
+                "stage_contract": {"first_incomplete_stage": "planner"},
+                "pipeline": [{"id": "planner", "label": "Planner",
+                              "state": "running"}],
+                "prior_terminal": prior,
+                "transitions": [
+                    {"ts": prior["ts"], "phase": "next_hypothesis",
+                     "event": prior["event"],
+                     "label": "prior turn authoring_refused"},
+                    {"ts": planner["ts"], "phase": "planner",
+                     "event": "planner_started", "label": "planner started"},
+                ],
+                "history": {"abandoned_count": 0, "retest_count": 0,
+                            "terminal_count": 1,
+                            "summary": "0 abandoned · 0 retest · 1 prior terminal",
+                            "rows": [], "terminal_rows": [prior]},
+            },
+        }
+        nodes = self._render_live(payload)
+        hero = nodes["ak-live-summary"]["innerHTML"]
+        pulse = nodes["ak-live-log"]["textContent"]
+        history = nodes["ak-live-history-rows"]["innerHTML"]
+        self.assertIn("Planner model call", hero)
+        self.assertIn("Turn:</b> 4", hero)
+        self.assertNotIn("Typed refusal", hero)
+        for token in ("JOURNAL", "discovery_authoring_refused", "turn=3",
+                      "status=authoring_refused", "stage=source_apply",
+                      "science=unspent", "&lt;file-scope&gt;"):
+            target = history if token == "&lt;file-scope&gt;" else pulse
+            self.assertIn(token, target)
+        self.assertIn("planner_started", pulse)
+        self.assertIn("authoring_refused", history)
+        self.assertIn("science unspent", history)
+
     def test_live_pulse_tail_stays_visible_but_full_stream_and_detail_collapse(self) -> None:
         events = [
             {"ts": f"2026-08-18T19:5{i}:00Z", "channel": "planner",

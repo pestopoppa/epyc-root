@@ -928,6 +928,16 @@ function liveLine(row){
   return [row.ts||"—", row.event||"event", row.hypothesis_id||"—",
           row.model||"—", facts.join(" ")].filter(Boolean).join(" · ");
 }
+function controllerLine(row){
+  const facts=[];
+  if(row.turn!=null) facts.push("turn="+row.turn);
+  if(row.status) facts.push("status="+row.status);
+  if(row.stage) facts.push("stage="+row.stage);
+  if(typeof row.scientific_budget_spent==="boolean") facts.push("science="+(row.scientific_budget_spent?"spent":"unspent"));
+  if(row.detail) facts.push(row.detail);
+  return [row.ts||"—", "JOURNAL", row.event||"controller_terminal",
+          row.hypothesis_id||"—", facts.join(" ")].filter(Boolean).join(" · ");
+}
 function elapsedText(value){
   if(typeof value!=="number"||!isFinite(value)) return "unknown";
   const seconds=Math.max(0,Math.round(value));
@@ -1035,9 +1045,15 @@ function renderLive(d){
   const history=a.history||{abandoned_count:0,retest_count:0,rows:[]};
   $("#ak-live-history-summary").textContent=history.summary||
     ((history.abandoned_count||0)+" abandoned · "+(history.retest_count||0)+" retest");
-  $("#ak-live-history-rows").innerHTML=(history.rows||[]).map(row=>
+  const ordinaryHistory=(history.rows||[]).map(row=>
     '<div class="meta"><b>turn '+esc(row.turn==null?"—":row.turn)+' · '+esc(row.hypothesis_id||"—")+'</b> · '+esc(row.status||"—")+'</div>'
-  ).join("")||'<div class="muted">No abandoned or retest rows in this deployment.</div>';
+  );
+  const terminalHistory=(history.terminal_rows||[]).map(row=>
+    '<div class="meta"><b>turn '+esc(row.turn==null?"—":row.turn)+' · '+esc(row.hypothesis_id||"—")+'</b> · '+esc(row.status||"terminal")+
+    (row.stage?' · '+esc(row.stage):'')+(typeof row.scientific_budget_spent==="boolean"?' · science '+(row.scientific_budget_spent?'spent':'unspent'):'')+
+    (row.detail?'<br>'+esc(row.detail):'')+'</div>'
+  );
+  $("#ak-live-history-rows").innerHTML=[...ordinaryHistory,...terminalHistory].join("")||'<div class="muted">No abandoned, retest, or prior-terminal rows in this deployment.</div>';
 
   const exactActor=active&&(phase.id==="planner"||phase.id==="critic");
   $("#ak-live-dot").className="live-dot"+(active?" on":"");
@@ -1047,7 +1063,9 @@ function renderLive(d){
   const producerAge=typeof a.progress_age_s==="number"?elapsedText(a.progress_age_s):"unknown age";
   const header="STATE "+cue+" · producer last "+producerAt+" · age "+producerAge+"\n"+
     "dashboard poll "+(d.dashboard_observed_at||d.observed_at||"—")+" (not producer progress)";
-  const ak=(d.autokernel_log||[]).map(liveLine);
+  const akRows=(d.autokernel_log||[]).map(row=>({ts:row.ts||"",line:liveLine(row)}));
+  if(a.prior_terminal) akRows.push({ts:a.prior_terminal.ts||"",line:controllerLine(a.prior_terminal)});
+  const ak=akRows.sort((x,y)=>String(x.ts).localeCompare(String(y.ts))).map(row=>row.line);
   const planner=(d.planner_log||[]).map(liveLine);
   const actorRows=[...(d.planner_log||[]),...(d.autokernel_log||[]).filter(row=>/^critic_/.test(row.event||""))];
   const actorSeen=new Set();

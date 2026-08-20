@@ -6271,6 +6271,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "event": f"{stage}_failed", "label": label,
             "detail": failure_view["detail"],
         })
+    prior_terminal = None
     if active_new_turn and isinstance(refusal_observation, dict):
         refusal_checkpoint_state = {
             "authoring_refused": "discovery_authoring_refused",
@@ -6281,16 +6282,29 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         refusal_checkpoint = next((row for row in reversed(
             checkpoint.get("history", []) if isinstance(checkpoint, dict) else [])
             if row.get("state") == refusal_checkpoint_state), None)
-        transitions.append({
+        prior_terminal = {
+            "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
             "ts": (refusal_checkpoint.get("written_at")
                    if isinstance(refusal_checkpoint, dict) else
                    refusal_observation.get("at") or state_at or last_event_at),
+            "event": refusal_checkpoint_state or "prior_turn_refusal",
+            "turn": latest_terminal_turn,
+            "hypothesis_id": (latest_iteration.get("hypothesis_id")
+                              if isinstance(latest_iteration, dict) else None),
+            "status": refusal_observation.get("disposition"),
+            "stage": refusal_observation.get("stage"),
+            "scientific_budget_spent": refusal_observation.get(
+                "scientific_budget_spent"),
+            "detail": refusal_observation.get("detail"),
+        }
+        transitions.append({
+            "ts": prior_terminal["ts"],
             "stage": "next_hypothesis", "phase": "next_hypothesis",
             "state": "complete",
-            "event": refusal_checkpoint_state or "prior_turn_refusal",
+            "event": prior_terminal["event"],
             "label": (f"prior turn {refusal_observation.get('disposition', 'refused')}"
                       ", scientific budget unspent"),
-            "detail": refusal_observation.get("detail"),
+            "detail": prior_terminal["detail"],
         })
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
@@ -6674,13 +6688,23 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                               else "same candidate may be retried" if recoverability == "same_candidate_retry"
                               else "no resume action is required")},
         "failure": failure_view,
+        # This is controller-journal history, deliberately separate from both
+        # physical telemetry streams and from the current-turn refusal/failure
+        # headline.  The UI may show it in the always-visible pulse without
+        # claiming that an actor emitted a telemetry event.
+        "prior_terminal": prior_terminal,
         "pipeline": list(pipeline.values()),
         "transitions": transitions[-100:],
         "completed_iterations": len(iterations),
         "history": {"abandoned_count": len(abandoned),
                     "retest_count": len(retest),
-                    "summary": f"{len(abandoned)} abandoned · {len(retest)} retest",
-                    "rows": history_rows},
+                    "terminal_count": 1 if prior_terminal is not None else 0,
+                    "summary": (f"{len(abandoned)} abandoned · {len(retest)} retest"
+                                + (" · 1 prior terminal"
+                                   if prior_terminal is not None else "")),
+                    "rows": history_rows,
+                    "terminal_rows": ([prior_terminal]
+                                      if prior_terminal is not None else [])},
     }
 
 

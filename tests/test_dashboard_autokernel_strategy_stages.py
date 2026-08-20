@@ -1060,6 +1060,105 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(pipeline["build"]["state"], "not_reached")
         self.assertEqual(pipeline["next_hypothesis"]["state"], "not_reached")
 
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-20T14:55:00+00:00").timestamp())
+    def test_v19_turn4_planner_keeps_prior_turn3_authoring_refusal_in_pulse(
+            self, _time: mock.Mock) -> None:
+        receipt_path = self.state_root / "stage-outcomes/source-apply.json"
+        receipt_path.parent.mkdir()
+        receipt = _sealed({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "state": "failed", "failure_stage": "source_apply",
+            "build_key": "f" * 64, "promotion_claim": False,
+        })
+        raw = (json.dumps(receipt, sort_keys=True, separators=(",", ":"))
+               + "\n").encode()
+        receipt_path.write_bytes(raw)
+        refused_at = datetime.fromisoformat(
+            "2026-08-20T14:54:41.804047+00:00").timestamp()
+        os.utime(receipt_path, (refused_at, refused_at))
+        reason = ("committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives "
+                  "undeclared symbols ['<file-scope>']")
+        (self.state_root / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-20T14:54:41.810970Z",
+            "next": 4, "complete": False, "scientific_attempts": 2,
+            "iterations": [
+                {"turn": 1, "hypothesis_id":
+                 "akh-v2-q5-type-specific-dequant", "status": "candidate",
+                 "scientific_budget_spent": True},
+                {"turn": 2, "hypothesis_id":
+                 "akh-v2-q5-type-specific-dequant", "status": "inconclusive",
+                 "scientific_budget_spent": True},
+                {"turn": 3, "hypothesis_id":
+                 "akh-v2-q5-type-specific-dequant",
+                 "status": "authoring_refused", "stage": "source_apply",
+                 "stage_receipt_path": str(receipt_path),
+                 "stage_receipt_sha256": hashlib.sha256(raw).hexdigest(),
+                 "scientific_budget_spent": False, "reason": reason},
+            ],
+            "planning": {"turn": 4, "provider_attempt": 1},
+            "pending": None, "inflight": None,
+        }))
+        row = {
+            "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
+            "ts": "2026-08-20T14:54:41.990920Z",
+            "channel": "planner", "event": "planner_started",
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "provider": "codex", "model": "gpt-5.6-sol",
+            "effort": "high", "operation_key": "4" * 64,
+        }
+        identity = {key: value for key, value in row.items()
+                    if key not in {"ts", "channel"}}
+        row["event_id"] = "ake-" + hashlib.sha256(json.dumps(
+            identity, sort_keys=True, separators=(",", ":")
+        ).encode("ascii")).hexdigest()
+        encoded = json.dumps(row) + "\n"
+        (self.operations / "live/autokernel.jsonl").write_text(encoded)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+        journal = self.state_root / "journal"
+        journal.mkdir()
+        (journal / "events.jsonl").write_text("".join(json.dumps({
+            "journal_schema": "epyc.autokernel.journal_entry.v1",
+            "kind": "STOP_STATE", "seq": seq, "written_at": written_at,
+            "payload": {"state": checkpoint_state,
+                        "controller_state_sha256": digest * 64},
+        }) + "\n" for seq, checkpoint_state, written_at, digest in (
+            (16, "discovery_authoring_refused",
+             "2026-08-20T14:54:41.804047Z", "c"),
+            (18, "discovery_planner_entering",
+             "2026-08-20T14:54:41.813645Z", "d"),
+        )))
+
+        payload = self._active()
+        activity = payload["activity"]
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["turn"], 4)
+        self.assertEqual(activity["phase"]["id"], "planner")
+        self.assertEqual(activity["phase"]["started_at"],
+                         "2026-08-20T14:54:41.990920Z")
+        self.assertFalse(activity["failure"]["detected"])
+        self.assertFalse(activity["refusal"]["detected"])
+        prior = activity["prior_terminal"]
+        self.assertEqual(prior, {
+            "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
+            "ts": "2026-08-20T14:54:41.804047Z",
+            "event": "discovery_authoring_refused", "turn": 3,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "status": "authoring_refused", "stage": "source_apply",
+            "scientific_budget_spent": False, "detail": reason,
+        })
+        self.assertEqual(activity["history"]["terminal_rows"], [prior])
+        self.assertIn("1 prior terminal", activity["history"]["summary"])
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "planner_started")
+        self.assertTrue(any(row["event"] == "discovery_authoring_refused"
+                            for row in activity["transitions"]))
+        # The physical v2 telemetry stays exact: the journal marker is exposed
+        # separately and never forged into the actor stream.
+        self.assertEqual([row["event"] for row in payload["autokernel_log"]],
+                         ["planner_started"])
+
     def test_stopped_operation_names_first_incomplete_resume_stage(self) -> None:
         self._receipt("proof/correctness/receipt.json",
                       "epyc.autokernel.targeted_correctness_receipt.v3",
