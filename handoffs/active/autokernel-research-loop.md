@@ -81,6 +81,11 @@ This sibling may run after the current AutoKernel controller reaches a clean bou
 not reuse source-campaign build/evidence roots or silently alter the four-strategy budget. Its first
 implementation seam is a typed runtime-campaign template plus dashboard stages
 `experimental_build → cpu_gpu_regression → matched_np1 → concurrency_grid → greedy_parity → decision`.
+The template must declare `campaign_kind=experimental_runtime`, separate build/proof/measurement roots,
+the fixed stage order, and a runtime-specific receipt predecessor chain. Runtime receipts may update
+the runtime candidate view and live pulse, but are explicitly excluded from source-champion/frontier
+selection. GPU expectation is derived from a held identity-bound claim in the active runtime substep;
+released or terminal claims always project `expected_now=false`.
 
 **Historical checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
 discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and

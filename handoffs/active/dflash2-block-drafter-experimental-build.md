@@ -14,6 +14,13 @@ not an additional source-mutation portfolio arm. It reuses AutoKernel's planner/
 stop/resume, typed refusal, telemetry, and dashboard pulse contracts, while owning separate build,
 proof, and measurement roots. No DFlash2 result may enter the kernel-source champion frontier.
 
+The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
+`matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
+build/model/protocol identities, predecessor hash, and (for GPU stages) the claim window. A stopped
+campaign resumes at the first missing or invalid receipt and never reruns a sealed cell. The dashboard
+must identify this as `campaign_kind=experimental_runtime`, keep the AutoKernel/planner tails open,
+and show only headline np1/np8/parity/decision values while keeping raw grids and receipts collapsed.
+
 ## Objective
 
 Decide, on measured evidence, whether the dFlash2 block-diffusion drafter beats our in-file MTP head for
