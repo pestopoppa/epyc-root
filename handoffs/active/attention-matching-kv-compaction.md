@@ -273,3 +273,68 @@ Online compaction (repeated 50% compactions preserving reasoning state) opens a 
 - [ ] P3 compare AM quality vs Expected Attention at 5x/10x/20x
 - [ ] P4 test AM + Hadamard q4_0 stacking quality under dual compression
 - [ ] Deferred L4c: true NNLS attention scoring (graph modification) - not yet needed
+
+## Prefix-cache ownership and the 2026-08-20 intake findings
+
+**Ownership gap, filed here because nothing else owns it.** No ACTIVE handoff owns `PrefixRouter`
+or the orchestrator prefix-cache path. The original owner, `handoffs/archived/radix-attention.md`,
+is ARCHIVED "VERIFIED 2026-01-09" with its Next Steps stopping at *"Integration testing with live
+llama-server"* — i.e. the integration was never done. `repl-turn-efficiency.md` touches
+`PrefixRouter` only incidentally (both boxes ticked, compacted). Adopting the rows below is what
+closes that gap; re-home them if a better owner appears.
+
+Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-core cluster).
+
+**Already fixed in this pass (2026-08-20), recorded so the reasoning is not re-derived:**
+
+- **Every KV slot save was failing.** `prefix_cache.py` built the filename with `os.path.join(...)`,
+  producing a `/`-containing string; llama-server rejects those via
+  `fs_validate_filename(allow_subdirs=false)` before it concatenates `--slot-save-path`. Proof it
+  never worked: the 75 retained slot artifacts on disk are **all** `kv_migrate_*` from the sibling
+  `concurrency_aware.py` path, and there are **zero** `slot_<id>_<hash>.bin` files anywhere. Fixed by
+  emitting a bare filename (`_slot_state_filename`, mirroring `concurrency_aware._slot_filename`).
+  Two compounding defects fixed alongside: the restore path did a **client-side** `os.path.exists()`
+  on a **server-side** filename, and both backend methods caught `httpx.RequestError`, which does
+  **not** cover `HTTPStatusError` — so a 4xx propagated instead of returning `False` as documented.
+- **Roles sharing one llama-server were evicting each other.** Under `shared_with`, several roles
+  resolve to one physical server, but the legacy loop built a **separate `PrefixRouter` per role**,
+  each allocating `id_slot` in `[0, num_slots)` from its own private LRU — so two roles both emitted
+  `id_slot=0` and silently clobbered each other, unobservably. Now one router per physical URL
+  (`_router_for`), matching the shape the fleet layer already had. 3 regression tests added.
+- **`radix_cache.py` deleted** (480 lines + shim). Verified dead: its only two importers were the
+  file importing itself. It also carried an unexercised stale-slot bug and a docstring claiming path
+  compression it did not implement. 20 tests that exercised the unwired module went with it — green
+  tests over dead code manufacture exactly the false confidence this handoff exists to avoid.
+
+**Open rows:**
+
+- [ ] **KV-1 — Count DISTINCT hot prefixes per window against resolved slot count, per role and per
+  shared server, from existing logs. ZERO INFERENCE.** This gates everything below. Production
+  `num_slots` is **2**; `coder_primary` and `coder_escalation` both declare `slots: 1`. **At slots=1
+  there is no eviction order to improve**, and at 2 it is a coin flip. This gate has now been named
+  in two consecutive passes (intake-1182's dive, then intake-1196) with an unchanged blocker — by
+  the CLAUDE.md recurrence check that is proof it was never blocked. Do it before anything else here.
+- [ ] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** Both are
+  already present at the call site (`model_server.py:91` requires `role`;
+  `inference.py:755-767` attaches the session id) and the router receives **only prompt text**; role
+  is consulted at exactly one hardcoded frontdoor-REPL bypass. We are discarding for free the
+  identity signal KVFlow had to invent a client-ID scheme to recover.
+- [ ] **KV-3 — Evaluate switching to llama.cpp's NATIVE token-level LCP slot selection.** It is
+  strictly better than a 256-char SHA-256 exact match, already shipped, and currently **overridden**
+  rather than off: `slot_prompt_similarity` defaults to `0.1f`, but our explicit `id_slot` takes
+  tier-one priority ahead of it (`server-context.cpp:1541` before `:1549`). Config + call-site
+  change, no kernel work. **Gated on KV-1 and on the shared-router fix having landed.** Note our
+  Python hit-rate counter is a proxy for a quantity it does not measure — `n_past` is decided in C++.
+- [ ] **KV-4 — If KV-1 shows working set > slot count, THEN consider workflow-aware eviction.**
+  Replace the LRU victim choice with an argmax over steps-to-execution, sourced from the delegation
+  DAG that already exists (`parallel_step_executor.py:75` `compute_waves()` — the wave index **is** a
+  steps-to-execution value, already cycle-checked; `routes/delegate.py:86-98` enumerates the whole
+  plan at `dry_run=True` for zero LLM calls). **Record the ceiling on the row: 1.11×**, which is
+  KVFlow's own eviction-only ablation on an H100; the other 1.18× comes from prefetching we cannot
+  port (llama-server slot restore is on the shared task loop and a failed restore is destructive).
+  **NOT the RLM tree and NOT the autopilot loop** — neither materialises children in advance.
+- [ ] **KV-5 — Correct `wiki/kv-cache.md`** so KVFlow is named as the ORIGIN of workflow-aware KV
+  residency, with its own venue (NeurIPS 2025), its own 1.11× ablation and its Apache-2.0
+  implementation — not solely as the denominator of PBKV's self-reported 1.26×. Note also that 1.26×
+  **on static workflows** means KVFlow retains most of the gain on declared topologies, which is
+  exactly what our delegation path is; filing it as "beaten" inverts the reading for our own use case.
