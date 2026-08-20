@@ -94,18 +94,74 @@ The installed topology facilities are executable and mandatory, but cannot estab
 service rate or kernel-vs-barrier attribution by themselves. `numastat` measures placement and
 NUMA event deltas; it must never be converted from page faults into a sustained-bandwidth claim.
 
-### 4.2 Required perf recovery — no automatic system install
+### 4.2 Required post-reboot counter toolchain — no automatic system install
 
-Before Phase 0, an operator or maintenance transaction must stage an Ubuntu tool matching the
-running kernel (expected package name `linux-tools-6.14.0-37-generic`, plus its exact
-dependencies), either by restoring the distro package or extracting it into an evidence-bound
-read-only tool directory. Package availability is not assumed: failure to obtain and validate it
-is a STOP. The runner must not run `apt install`, alter sysctls or enable a kernel PMU.
+After the planned post-v10 reboot, an operator or maintenance transaction must stage:
 
-Record package/source URL or package provenance, package SHA-256, extracted file manifest,
-`perf version`, executable SHA-256 and shared-library resolution. A `perf` binary from another
-kernel/tool release is allowed only after all named-event probes below pass and its version skew
-is disclosed.
+1. Ubuntu `linux-tools-common`, `linux-tools-generic`, and the exact
+   `linux-tools-$(uname -r)` package for the rebooted kernel; and
+2. AMD uProf 5.3 for Linux, including `AMDuProfPcm`.
+
+Do not pin the present `6.14.0-37-generic` package name across the reboot. Package availability is
+not assumed: failure to obtain and validate either tool is a STOP. The measurement runner must
+not itself run `apt install`, alter sysctls, load a module or install a profiling driver.
+
+AMD's current uProf guide is the tool authority:
+
+- <https://docs.amd.com/r/en-US/57368-uProf-user-guide/Linux>
+- <https://docs.amd.com/r/en-US/57368-uProf-user-guide/4.5.-AMDuProfPcm-Command-Line-Options>
+
+The guide identifies `memory` as approximate read/write bandwidth across memory channels,
+`pipeline_util` as the Zen 4 top-down pipeline view, and `ipc`, `dc`, `l3`, and `ccm_bw` as
+supported metric groups. It also documents Linux perf mode and `amd_uncore`. These names are
+authoritative only after the installed binary lists and numerically exercises them on this exact
+EPYC 9655/kernel.
+
+Record package/source URLs and provenance, package SHA-256s, extracted/installed file manifests,
+`perf version`, `AMDuProfPcm -v`, executable SHA-256s and shared-library resolution. A `perf`
+binary from another kernel/tool release is allowed only after all named-event probes below pass
+and its version skew is disclosed. uProf version skew from the ratified 5.3 authority requires a
+new protocol amendment.
+
+Maintenance preflight, outside any benchmark window:
+
+```bash
+uname -r
+perf version
+AMDuProfPcm -v
+AMDuProfPcm -h
+AMDuProfPcm -n
+AMDuProfPcm -l
+```
+
+If perf mode is selected, the maintenance receipt must also show the exact `amd_uncore` module
+state and the effective `perf_event_paranoid`/NMI-watchdog values. AMD documents `amd_uncore` for
+DF/L3 PMCs and may require a more permissive perf policy for system-wide DF collection. Any
+`modprobe` or sysctl change is an explicit operator/maintenance action recorded in host
+attestation; it is never performed implicitly by the campaign.
+
+Run these hardware-free numeric uProf probes before model loading, each to a fresh private output
+directory:
+
+```bash
+AMDuProfPcm -m ipc -C -A system,package -O <probe-ipc> -- sleep 0.2
+AMDuProfPcm -m memory -a -A system,package -O <probe-memory> -- sleep 0.2
+AMDuProfPcm -m pipeline_util -C -A system -O <probe-pipeline> -- sleep 0.2
+AMDuProfPcm -m dc,l3,ccm_bw -C -A system,package -O <probe-locality> -- sleep 0.2
+```
+
+The installed `-h` output decides whether a comma-separated metric set and each aggregation are
+supported. If a combined probe is refused, split it into one fresh invocation per listed metric;
+never rename or substitute a metric. Every required CSV must contain finite numeric values,
+positive enabled/running duration and the expected system/package rows. Unsupported, missing,
+zero-duration or privilege-refused output blocks Phase 0.
+
+uProf PCM `memory` is the primary bandwidth authority. It must expose total read/write bandwidth
+and the available channel/package breakdown throughout the actual decode window. `pipeline_util`
+is the primary top-down stall-class authority. The core-side perf events below are independent
+cross-checks and hotspot inputs; they are not substitutes for missing PCM output.
+
+### 4.3 Required perf cross-check
 
 The same host/kernel was historically calibrated with these core-PMU aliases:
 
@@ -140,21 +196,28 @@ failure, missing alias or zero enabled/running time fails the preflight. Do not 
 raw event codes. A raw code is admissible only when bound to the AMD family-26 model-2 PPR revision
 and independently cross-checked against the named alias.
 
-### 4.3 Counter panels
+### 4.4 Counter panels
 
-Counter pressure previously caused multiplexing above roughly five simultaneous events. Use
-separate fixed diagnostic repetitions, not a large multiplexed group:
+Run uProf and perf in separate diagnostic repetitions: neither tool may perturb or multiplex the
+other. Counter pressure previously caused perf multiplexing above roughly five simultaneous
+events. Use separate fixed panels, not a large group:
+
+- Panel U0: uProf `memory`, system/package/channel aggregation.
+- Panel U1: uProf `ipc,pipeline_util`, split if required by installed help.
+- Panel U2: uProf `dc,l3,ccm_bw`, split if required by installed help.
 
 - Panel C0: `cycles,instructions,cache-references,cache-misses`.
 - Panel C1: `ls_dmnd_fills_from_sys.dram_io_all,ls_hw_pf_dc_fills.dram_io_all,cycles,instructions`.
 - Panel C2: `ls_dmnd_fills_from_sys.dram_io_near,ls_dmnd_fills_from_sys.dram_io_far,cycles,instructions`.
 - Optional C3: the three `fp_ops_retired_*` aliases, diagnostic only.
 
-Each panel uses the same fixed decode workload and five repetitions. Panel order is randomized
+Each U/C panel uses the same fixed decode workload and five repetitions. Panel order is randomized
 from the committed campaign seed. Throughput claims come from unprofiled canonical samples;
 profiled rates are diagnostic and are never pooled with them.
 
-Reject a panel if any event's `time_running/time_enabled < 0.90`, if counts are non-finite, or if
+Reject a perf panel if any event's `time_running/time_enabled < 0.90`; reject a uProf panel if its
+reported collection duration does not cover the complete decode bracket. Reject either if values
+are non-finite or if
 the model does not generate the exact expected token count. Re-run the complete panel once after
 a fresh host/cache reset; a second failure yields `mixed_or_unresolved` and stops Phase 0.
 
@@ -173,7 +236,7 @@ The 460 GB/s practical socket reference may be shown beside the proxy. It is not
 measurement. If the proxy exceeds 1.25× that reference or near+far differs from the independently
 measured demand-all count by more than 5%, attribution is invalid and stops.
 
-### 4.4 Kernel/barrier and TP-eligible share
+### 4.5 Kernel/barrier and TP-eligible share
 
 Use two diagnostic instruments:
 
@@ -193,18 +256,19 @@ TP-eligible wall share is the sum of Q/K/V, attention-output, FFN gate/up and FF
 divided by complete steady-state token time. Samples must overlap decode; after-run snapshots are
 not evidence of the phenomenon.
 
-### 4.5 Attribution table and stop rule
+### 4.6 Attribution table and stop rule
 
 All thresholds below are proposed policy values and require human ratification.
 
 | Class | Required evidence |
 |---|---|
-| `dram_service_dominated` | median DRAM-fill proxy ≥70% of 460 GB/s; GEMV/repack sample share ≥70%; traced barrier/wait share <15% |
-| `sync_or_scheduling_dominated` | proxy <70%; traced barrier/wait share ≥15%; far-fill fraction <20% |
-| `remote_or_placement_dominated` | proxy <70%; far-fill fraction ≥20% **or** measured local page fraction misses intended placement by >10 percentage points |
-| `mixed_or_unresolved` | more than one row matches, no row matches, trace overhead fails, or any required panel is invalid/unavailable |
+| `dram_service_dominated` | median uProf PCM total memory bandwidth ≥70% of 460 GB/s; GEMV/repack sample share ≥70%; traced barrier/wait share <15% |
+| `sync_or_scheduling_dominated` | PCM bandwidth <70%; traced barrier/wait share ≥15%; far-fill fraction <20%; pipeline panel supports a non-bandwidth stall interpretation |
+| `remote_or_placement_dominated` | PCM bandwidth <70%; far-fill fraction ≥20% **or** measured local page fraction misses intended placement by >10 percentage points; uProf `dc`/`ccm_bw` does not contradict the classification |
+| `mixed_or_unresolved` | more than one row matches, no row matches, trace overhead fails, uProf/perf disagree materially, or any required panel is invalid/unavailable |
 
-Only `sync_or_scheduling_dominated` and `remote_or_placement_dominated` may pass the attribution
+The 460 GB/s reference and 70% threshold remain proposed human policy, not facts supplied by
+uProf. Only `sync_or_scheduling_dominated` and `remote_or_placement_dominated` may pass the attribution
 part of Phase 0. `dram_service_dominated` fails the reopen probe. `mixed_or_unresolved` is a STOP,
 not a negative and not permission to proceed.
 
@@ -234,7 +298,7 @@ triage ratio, never described as single-stream TP scaling.
   not imported from another protocol by implication.
 
 Phase 0 PASS requires the aggregate-ratio lower bound ≥1.50, TP-eligible-share lower bound ≥0.60,
-and a permitted attribution class. Any other result follows §4.5 and the handoff decision table.
+and a permitted attribution class. Any other result follows §4.6 and the handoff decision table.
 
 ## 6. Phase 1 repeated-collective design
 
@@ -363,7 +427,8 @@ bandwidth. Collective results must say `AllReduce` and name the algorithm/transp
 - [ ] Confirm fixed n=10 Phase 0, n=30 Phase 1/later phases, bootstrap construction and seed rule.
 - [ ] Confirm the full decision table, including INCONCLUSIVE/STOP behavior.
 - [ ] Confirm trace-only instrumentation and its 2% overhead gate.
-- [ ] Confirm restored `perf` provenance and named-event preflight.
+- [ ] Confirm restored AMD uProf PCM + `perf` provenance, maintenance actions, numeric preflights,
+  and the rule that a fill proxy cannot replace missing channel/package bandwidth.
 - [ ] Confirm Qwen2.5 mechanism model and Qwen3.8/second-quant control policy.
 - [ ] Bind exact runner/schema/tool hashes and evidence path.
 - [ ] Apply the protocol, Annex B/registry change and receipt through the atomic human-only

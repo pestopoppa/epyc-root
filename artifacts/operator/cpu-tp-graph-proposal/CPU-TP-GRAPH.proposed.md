@@ -51,7 +51,7 @@ Every row is a hard precondition, not a phase task.
 | P-D | Host health eligible under Annex B | **FAIL:** uptime exceeded one week | Operator-initiated reboot and post-reboot attestation; drop-caches alone is insufficient |
 | P-E | Reopen attempt recorded under INF-25 | **FAIL:** no accepted new trigger/profile exists | Dated INF-25 note; leave CPU1's permanent checklist boxes unchecked |
 | P-F | TP measurement protocol ratified | **FAIL:** the linked annex is a human-review draft only | Human ratification receipt plus registry/annex transaction |
-| P-G | Counter toolchain preflight passes | **FAIL:** `perf` frontend absent; no DF/UMC PMU, uProf, LIKWID or PCM installed | Evidence-bound `perf` recovery and numeric event probes, or STOP |
+| P-G | Counter toolchain preflight passes | **FAIL:** `perf` frontend and AMD uProf PCM are absent; no DF/UMC PMU source is currently exposed | Evidence-bound post-reboot uProf PCM + `perf` recovery and numeric probes, or STOP |
 
 The blocked file deliberately has no active index row. Index ownership changes only after the
 operator accepts the trigger and the prerequisites pass.
@@ -211,7 +211,8 @@ measure per-node and barrier time; it must pass its instrumentation-overhead/par
 2. Re-read model metadata and record v9 binary, libraries, model and host identity.
 3. Measure a current single-instance baseline and a new four-node aggregate headroom arm under
    the proposed protocol. Do not use the April MoE bundle as the gate.
-4. Capture core-side DRAM-fill proxy, IPC, local/far fill fraction, CPU utilization,
+4. Capture uProf PCM channel/package DRAM bandwidth, Zen 4 pipeline utilization, IPC,
+   core-side local/far fill cross-checks, CPU utilization,
    `numa_maps`, kernel/barrier sample share, and TP-eligible wall-time share using the exact
    instrument plan in the annex.
 5. Emit one bottleneck class. An unavailable or invalid counter panel yields
