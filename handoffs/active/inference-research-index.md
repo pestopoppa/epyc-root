@@ -19,7 +19,7 @@
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
-| INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-1 — build PR #27342 on llama.cpp-experimental from fresh production tip and forward-port the gfx90a MMQ patch a6b4b5263 | INF-50 |
+| INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-1 — build PR #27342 on llama.cpp-experimental from fresh production tip and forward-port the gfx90a MMQ patch a6b4b5263 | INF-06, INF-50 |
 | INF-11 | deepseek v4 flash 0731 dspark | [deepseek-v4-flash-0731-dspark.md](deepseek-v4-flash-0731-dspark.md) | Run the matched standardized-versus-control DFlash throughput, acceptance and exact-parity comparison | — |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |

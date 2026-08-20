@@ -9,6 +9,11 @@
 [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) (DFlash NO-GO on **CPU** — sequential
 DeltaNet verification, not a DFlash defect; does not apply to this GPU path)
 
+**AutoKernel routing:** this is the Qwen3.8-27B replacement campaign's `experimental_runtime` sibling,
+not an additional source-mutation portfolio arm. It reuses AutoKernel's planner/critic, device claim,
+stop/resume, typed refusal, telemetry, and dashboard pulse contracts, while owning separate build,
+proof, and measurement roots. No DFlash2 result may enter the kernel-source champion frontier.
+
 ## Objective
 
 Decide, on measured evidence, whether the dFlash2 block-diffusion drafter beats our in-file MTP head for

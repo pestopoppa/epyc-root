@@ -55,6 +55,33 @@ planner logs; it currently reports `active=false` because no campaign is running
       and IQ residency before model judgment. Acceptance is the three current expected-failure tests
       becoming ordinary passing tests.
 
+### DFlash2/Qwen3.8 sibling campaign
+
+`INF-62` is now an AutoKernel-consumable **`experimental_runtime`** campaign, not a fifth
+source-mutation strategy. It is directly relevant to the planned Qwen3.6-27B → Qwen3.8-27B
+production replacement and must share the controller's planner/critic checkpointing, device claim,
+stop/resume, telemetry, dashboard pulse, and typed refusal machinery. Its candidate is a complete
+`llama.cpp-experimental` build from the frozen production tip plus PR #27342 and the reviewed gfx90a
+patch set; production v9 remains read-only.
+
+The campaign contract is deliberately separate from the four kernel-source hypotheses:
+
+1. **Build gate:** seal production base, PR/patch commits, experimental tree, compiler/ROCm inputs,
+   HIP/CPU binaries, DFlash2 GGUF identity, and the MMQ-path check before inference. A build or
+   no-regression refusal spends no science budget and advances the handoff, never the source portfolio.
+2. **Matched measurement:** use the handoff's fixed 12-prompt, 2048-token, `np=1` protocol with
+   plain, MTP, and DFlash2 rows; then run the declared `np=2/4/8` grid and exact greedy-token parity.
+   Receipts bind prompt/config/model/build/spec-type identities, acceptance, decode rate, and claim
+   windows. The MTP n-max-8 result (55.46 t/s) is the predeclared single-stream comparator.
+3. **Decision:** DFlash2 may displace MTP only if it beats 55.46 t/s at `np=1`, remains competitive
+   at `np=8`, and passes exact parity. Otherwise emit a durable `runtime_candidate_rejected` result;
+   do not convert a vendor claim or a plain-baseline gain into a champion.
+
+This sibling may run after the current AutoKernel controller reaches a clean boundary, but it must
+not reuse source-campaign build/evidence roots or silently alter the four-strategy budget. Its first
+implementation seam is a typed runtime-campaign template plus dashboard stages
+`experimental_build → cpu_gpu_regression → matched_np1 → concurrency_grid → greedy_parity → decision`.
+
 **Historical checkpoint (2026-08-13 22:14 UTC):** the manual campaign proved that cheap CPU and GPU
 discovery can keep the machine busy, but it also proved that an ad-hoc chain of one-off launchers and
 watchers is not the autonomous loop. The durable nonpromotable leaders remain CPU IQK prefill
