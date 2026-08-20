@@ -1061,8 +1061,8 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self.assertEqual(pipeline["next_hypothesis"]["state"], "not_reached")
 
     @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
-        "2026-08-20T14:55:00+00:00").timestamp())
-    def test_v19_turn4_planner_keeps_prior_turn3_authoring_refusal_in_pulse(
+        "2026-08-20T15:02:00+00:00").timestamp())
+    def test_v19_turn5_planner_retains_turn3_and_turn4_authoring_refusals(
             self, _time: mock.Mock) -> None:
         receipt_path = self.state_root / "stage-outcomes/source-apply.json"
         receipt_path.parent.mkdir()
@@ -1074,14 +1074,29 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         raw = (json.dumps(receipt, sort_keys=True, separators=(",", ":"))
                + "\n").encode()
         receipt_path.write_bytes(raw)
+        second_receipt_path = (
+            self.state_root / "stage-outcomes/source-apply-turn4.json")
+        second_receipt = _sealed({
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "state": "failed", "failure_stage": "source_apply",
+            "build_key": "9" * 64, "promotion_claim": False,
+        })
+        second_raw = (json.dumps(
+            second_receipt, sort_keys=True, separators=(",", ":"))
+            + "\n").encode()
+        second_receipt_path.write_bytes(second_raw)
         refused_at = datetime.fromisoformat(
             "2026-08-20T14:54:41.804047+00:00").timestamp()
         os.utime(receipt_path, (refused_at, refused_at))
+        second_refused_at = datetime.fromisoformat(
+            "2026-08-20T15:01:34.693749+00:00").timestamp()
+        os.utime(second_receipt_path,
+                 (second_refused_at, second_refused_at))
         reason = ("committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives "
                   "undeclared symbols ['<file-scope>']")
         (self.state_root / "state.json").write_text(json.dumps({
-            "updated_at": "2026-08-20T14:54:41.810970Z",
-            "next": 4, "complete": False, "scientific_attempts": 2,
+            "updated_at": "2026-08-20T15:01:34.700827Z",
+            "next": 5, "complete": False, "scientific_attempts": 2,
             "iterations": [
                 {"turn": 1, "hypothesis_id":
                  "akh-v2-q5-type-specific-dequant", "status": "candidate",
@@ -1095,18 +1110,24 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                  "stage_receipt_path": str(receipt_path),
                  "stage_receipt_sha256": hashlib.sha256(raw).hexdigest(),
                  "scientific_budget_spent": False, "reason": reason},
+                {"turn": 4, "hypothesis_id":
+                 "akh-v2-q5-type-specific-dequant",
+                 "status": "authoring_refused", "stage": "source_apply",
+                 "stage_receipt_path": str(second_receipt_path),
+                 "stage_receipt_sha256": hashlib.sha256(second_raw).hexdigest(),
+                 "scientific_budget_spent": False, "reason": reason},
             ],
-            "planning": {"turn": 4, "provider_attempt": 1},
+            "planning": {"turn": 5, "provider_attempt": 0},
             "pending": None, "inflight": None,
         }))
         row = {
             "schema": server.AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
-            "ts": "2026-08-20T14:54:41.990920Z",
+            "ts": "2026-08-20T15:01:34.880872Z",
             "channel": "planner", "event": "planner_started",
             "campaign_id": "ak-discovery-" + "a" * 16,
             "hypothesis_id": "akh-v2-q5-type-specific-dequant",
             "provider": "codex", "model": "gpt-5.6-sol",
-            "effort": "high", "operation_key": "4" * 64,
+            "effort": "high", "operation_key": "5" * 64,
         }
         identity = {key: value for key, value in row.items()
                     if key not in {"ts", "channel"}}
@@ -1128,32 +1149,43 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
              "2026-08-20T14:54:41.804047Z", "c"),
             (18, "discovery_planner_entering",
              "2026-08-20T14:54:41.813645Z", "d"),
+            (22, "discovery_authoring_refused",
+             "2026-08-20T15:01:34.693749Z", "e"),
+            (24, "discovery_planner_entering",
+             "2026-08-20T15:01:34.703540Z", "f"),
         )))
 
         payload = self._active()
         activity = payload["activity"]
         self.assertEqual(activity["status"], "running")
-        self.assertEqual(activity["turn"], 4)
+        self.assertEqual(activity["turn"], 5)
         self.assertEqual(activity["phase"]["id"], "planner")
         self.assertEqual(activity["phase"]["started_at"],
-                         "2026-08-20T14:54:41.990920Z")
+                         "2026-08-20T15:01:34.880872Z")
         self.assertFalse(activity["failure"]["detected"])
         self.assertFalse(activity["refusal"]["detected"])
         prior = activity["prior_terminal"]
-        self.assertEqual(prior, {
+        first_prior = {
             "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
             "ts": "2026-08-20T14:54:41.804047Z",
             "event": "discovery_authoring_refused", "turn": 3,
             "hypothesis_id": "akh-v2-q5-type-specific-dequant",
             "status": "authoring_refused", "stage": "source_apply",
             "scientific_budget_spent": False, "detail": reason,
-        })
-        self.assertEqual(activity["history"]["terminal_rows"], [prior])
-        self.assertIn("1 prior terminal", activity["history"]["summary"])
+        }
+        second_prior = {
+            **first_prior, "ts": "2026-08-20T15:01:34.693749Z",
+            "turn": 4,
+        }
+        self.assertEqual(prior, second_prior)
+        self.assertEqual(activity["history"]["terminal_rows"],
+                         [first_prior, second_prior])
+        self.assertIn("2 prior terminals", activity["history"]["summary"])
         self.assertEqual(activity["transitions"][-1]["event"],
                          "planner_started")
-        self.assertTrue(any(row["event"] == "discovery_authoring_refused"
-                            for row in activity["transitions"]))
+        self.assertEqual(sum(
+            row["event"] == "discovery_authoring_refused"
+            for row in activity["transitions"]), 2)
         # The physical v2 telemetry stays exact: the journal marker is exposed
         # separately and never forged into the actor stream.
         self.assertEqual([row["event"] for row in payload["autokernel_log"]],

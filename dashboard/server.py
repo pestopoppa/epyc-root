@@ -5386,7 +5386,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                         correctness_observation: dict | None,
                         postbuild_observation: dict | None,
                         claim_observation: dict | None,
-                        refusal_observation: dict | None, now: float) -> dict:
+                        refusal_observation: dict | None,
+                        refusal_history_observations: list[dict],
+                        now: float) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -6272,40 +6274,49 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             "detail": failure_view["detail"],
         })
     prior_terminal = None
-    if active_new_turn and isinstance(refusal_observation, dict):
-        refusal_checkpoint_state = {
+    prior_terminals = []
+    if active_new_turn and refusal_history_observations:
+        checkpoint_states = {
             "authoring_refused": "discovery_authoring_refused",
             "correctness_falsified": "discovery_correctness_falsified",
             "attribution_route_falsified": "discovery_attribution_route_falsified",
             "measurement_output_refused": "discovery_measurement_output_refused",
-        }.get(refusal_observation.get("disposition"))
-        refusal_checkpoint = next((row for row in reversed(
-            checkpoint.get("history", []) if isinstance(checkpoint, dict) else [])
-            if row.get("state") == refusal_checkpoint_state), None)
-        prior_terminal = {
-            "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
-            "ts": (refusal_checkpoint.get("written_at")
-                   if isinstance(refusal_checkpoint, dict) else
-                   refusal_observation.get("at") or state_at or last_event_at),
-            "event": refusal_checkpoint_state or "prior_turn_refusal",
-            "turn": latest_terminal_turn,
-            "hypothesis_id": (latest_iteration.get("hypothesis_id")
-                              if isinstance(latest_iteration, dict) else None),
-            "status": refusal_observation.get("disposition"),
-            "stage": refusal_observation.get("stage"),
-            "scientific_budget_spent": refusal_observation.get(
-                "scientific_budget_spent"),
-            "detail": refusal_observation.get("detail"),
         }
-        transitions.append({
-            "ts": prior_terminal["ts"],
-            "stage": "next_hypothesis", "phase": "next_hypothesis",
-            "state": "complete",
-            "event": prior_terminal["event"],
-            "label": (f"prior turn {refusal_observation.get('disposition', 'refused')}"
-                      ", scientific budget unspent"),
-            "detail": prior_terminal["detail"],
-        })
+        history = (checkpoint.get("history", [])
+                   if isinstance(checkpoint, dict) else [])
+        consumed: dict[str, int] = {}
+        for observation in refusal_history_observations:
+            checkpoint_state = checkpoint_states.get(
+                observation.get("disposition"))
+            matches = [row for row in history
+                       if row.get("state") == checkpoint_state]
+            index = consumed.get(checkpoint_state, 0)
+            refusal_checkpoint = matches[index] if index < len(matches) else None
+            consumed[checkpoint_state] = index + 1
+            terminal = {
+                "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
+                "ts": (refusal_checkpoint.get("written_at")
+                       if isinstance(refusal_checkpoint, dict) else
+                       observation.get("at") or state_at or last_event_at),
+                "event": checkpoint_state or "prior_turn_refusal",
+                "turn": observation.get("turn"),
+                "hypothesis_id": observation.get("hypothesis_id"),
+                "status": observation.get("disposition"),
+                "stage": observation.get("stage"),
+                "scientific_budget_spent": observation.get(
+                    "scientific_budget_spent"),
+                "detail": observation.get("detail"),
+            }
+            prior_terminals.append(terminal)
+            transitions.append({
+                "ts": terminal["ts"],
+                "stage": "next_hypothesis", "phase": "next_hypothesis",
+                "state": "complete", "event": terminal["event"],
+                "label": (f"prior turn {terminal.get('status', 'refused')}"
+                          ", scientific budget unspent"),
+                "detail": terminal["detail"],
+            })
+        prior_terminal = prior_terminals[-1] if prior_terminals else None
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
@@ -6698,13 +6709,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "completed_iterations": len(iterations),
         "history": {"abandoned_count": len(abandoned),
                     "retest_count": len(retest),
-                    "terminal_count": 1 if prior_terminal is not None else 0,
+                    "terminal_count": len(prior_terminals),
                     "summary": (f"{len(abandoned)} abandoned · {len(retest)} retest"
-                                + (" · 1 prior terminal"
-                                   if prior_terminal is not None else "")),
+                                + (f" · {len(prior_terminals)} prior terminal"
+                                   f"{'s' if len(prior_terminals) != 1 else ''}"
+                                   if prior_terminals else "")),
                     "rows": history_rows,
-                    "terminal_rows": ([prior_terminal]
-                                      if prior_terminal is not None else [])},
+                    "terminal_rows": prior_terminals},
     }
 
 
@@ -7296,6 +7307,20 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             operations_root, campaign_id)
         refusal_observation = _discovery_refusal_observation(
             bundle, state, lifecycle_events)
+        refusal_history_observations = []
+        if isinstance(state, dict) and isinstance(state.get("iterations"), list):
+            for iteration in state["iterations"][-25:]:
+                if not isinstance(iteration, dict):
+                    continue
+                observation = _discovery_refusal_observation(
+                    bundle, {"iterations": [iteration]}, [])
+                if observation is None:
+                    continue
+                refusal_history_observations.append({
+                    **observation,
+                    "turn": iteration.get("turn"),
+                    "hypothesis_id": iteration.get("hypothesis_id"),
+                })
         activity = _discovery_activity(
             lock_held=lock_held, campaign_id=campaign_id,
             state=state, events=lifecycle_events,
@@ -7303,7 +7328,9 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             correctness_observation=correctness_observation,
             postbuild_observation=postbuild_observation,
             claim_observation=claim_observation,
-            refusal_observation=refusal_observation, now=now)
+            refusal_observation=refusal_observation,
+            refusal_history_observations=refusal_history_observations,
+            now=now)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
