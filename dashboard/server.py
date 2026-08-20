@@ -4293,6 +4293,113 @@ def _discovery_stage_receipt(path: Path, *, operation_root: Path,
             "file_sha256": hashlib.sha256(raw).hexdigest()}
 
 
+def _discovery_runner_plan_proof_seal(
+        operation: Path, runner: Path, *, operation_key: str,
+        manifest_sha256: str, policy_order: list[str]) -> dict | None:
+    """Project oversized proof receipts through the sealed runner plan.
+
+    Exact attribution receipts can legitimately contain tens of megabytes of
+    per-dispatch timings, and the pair/bundle recursively embed them.  Loading
+    those bodies on every dashboard refresh would defeat the bounded 4 MiB
+    receipt reader above.  The producer creates ``runner-plan.json`` only after
+    it has reopened and validated both attribution arms, their pair, and the
+    proof bundle.  Treat that compact, self-hashed downstream receipt as the
+    lifecycle seal, but only while every predecessor remains the same regular,
+    single-link, owner-controlled file epoch that predates the plan.
+
+    This is a visibility projection, never execution authorization.  Any
+    missing predecessor, alias, permission drift, post-plan mutation, or plan
+    identity/path mismatch fails closed to the ordinary receipt sequence.
+    """
+    plan_path = operation / "runner-plan.json"
+    plan = _discovery_stage_receipt(
+        plan_path, operation_root=operation,
+        schemas={"epyc.autokernel.gpu_source_runner_plan.v1"})
+    if plan is None:
+        return None
+    body = plan["body"]
+    expected_keys = {
+        "schema", "authority", "promotion_claim", "operation_key",
+        "measurement_graphs_off_output_dir",
+        "target_runtime_graphs_on_output_dir", "receipt_sha256",
+    }
+    expected_outputs = {
+        "measurement_graphs_off_output_dir":
+            runner / "measurement-graphs-off",
+        "target_runtime_graphs_on_output_dir":
+            runner / "target-runtime-graphs-on",
+    }
+    if (set(body) != expected_keys
+            or body.get("operation_key") != operation_key
+            or any(not isinstance(body.get(key), str)
+                   or Path(body[key]) != expected
+                   for key, expected in expected_outputs.items())):
+        return None
+    try:
+        plan_info = plan_path.lstat()
+    except OSError:
+        return None
+
+    paths = {
+        f"{arm}_attribution":
+            operation / "proof" / f"attribution-{arm}" / "receipt.json"
+        for arm in policy_order
+    }
+    paths.update({
+        "pair": operation / "proof" / "attribution-pair.json",
+        "bundle": operation / "proof" / "proof-bundle.json",
+    })
+    sealed: dict[str, dict] = {}
+    try:
+        resolved_root = operation.resolve(strict=True)
+        for name, path in paths.items():
+            path.resolve(strict=True).relative_to(resolved_root)
+            cursor = path.parent
+            while cursor != operation:
+                if cursor.is_symlink():
+                    return None
+                cursor = cursor.parent
+            before = path.lstat()
+            if (path.is_symlink() or not stat.S_ISREG(before.st_mode)
+                    or before.st_uid != os.geteuid() or before.st_nlink != 1
+                    or stat.S_IMODE(before.st_mode) & 0o022
+                    or before.st_size <= 0 or before.st_size > 256 * 1024 * 1024
+                    or before.st_mtime_ns > plan_info.st_mtime_ns
+                    or before.st_ctime_ns > plan_info.st_ctime_ns):
+                return None
+            after = path.lstat()
+            epoch = lambda value: (
+                value.st_dev, value.st_ino, value.st_size,
+                value.st_mtime_ns, value.st_ctime_ns, value.st_nlink,
+                value.st_uid, stat.S_IFMT(value.st_mode),
+                stat.S_IMODE(value.st_mode))
+            if epoch(before) != epoch(after):
+                return None
+            sealed[name] = {
+                "path": str(path),
+                "at": datetime.fromtimestamp(
+                    before.st_mtime, timezone.utc
+                ).isoformat().replace("+00:00", "Z"),
+                "seal_sha256": plan["file_sha256"],
+                "body": (
+                    {"schema": "epyc.autokernel.gpu_kernel_attribution.v2",
+                     "status": "complete", "result": "PASS",
+                     "manifest_sha256": manifest_sha256,
+                     "arm": name.removesuffix("_attribution")}
+                    if name.endswith("_attribution") else
+                    {"schema":
+                     "epyc.autokernel.gpu_kernel_attribution_pair.v1",
+                     "manifest_sha256": manifest_sha256,
+                     "attribution_arm_order": list(policy_order)}
+                    if name == "pair" else
+                    {"schema":
+                     "epyc.autokernel.gpu_source_evidence_bundle.v1"}),
+            }
+    except (OSError, ValueError):
+        return None
+    return sealed
+
+
 def _discovery_private_file(path: Path, *, operation_root: Path,
                             maximum: int) -> tuple[bytes, os.stat_result] | None:
     """Read one producer-private operation file without following aliases."""
@@ -4571,11 +4678,17 @@ def _discovery_postbuild_observation(operations_root: Path,
          runner / "target-runtime-graphs-on" / "result.json",
          {"epyc.autokernel.gpu_candidate_only_screen.v2"}),
     )
+    runner_proof_seal = _discovery_runner_plan_proof_seal(
+        operation, runner, operation_key=operation_key,
+        manifest_sha256=manifest_sha, policy_order=policy_order)
     receipts: dict[str, dict] = {}
     for stage, path, schemas in specs:
         receipt = _discovery_stage_receipt(
             path, operation_root=operation, schemas=schemas,
             manifest_sha256=manifest_sha)
+        if (receipt is None and isinstance(runner_proof_seal, dict)
+                and stage in runner_proof_seal):
+            receipt = runner_proof_seal[stage]
         if receipt is None:
             break
         body = receipt["body"]
@@ -4626,6 +4739,7 @@ def _discovery_postbuild_observation(operations_root: Path,
                 completed_arms = [item["arm"] for item in process_receipts]
                 process_progress = {
                     "stage": first_incomplete, "runtime_graphs": graph_mode,
+                    "started_at": preflight["at"],
                     "arm_order": preflight["arm_order"],
                     "completed_arms": completed_arms,
                     "next_arm": (preflight["arm_order"][len(completed_arms)]
@@ -4638,11 +4752,15 @@ def _discovery_postbuild_observation(operations_root: Path,
         operation_root=operation,
         schemas={"epyc.autokernel.gpu_kernel_attribution_pair.v1"},
         manifest_sha256=manifest_sha)
+    if pair is None and isinstance(runner_proof_seal, dict):
+        pair = runner_proof_seal.get("pair")
     bundle = _discovery_stage_receipt(
         proof / "proof-bundle.json",
         operation_root=operation,
         schemas={"epyc.autokernel.gpu_source_evidence_bundle.v1"},
         manifest_sha256=manifest_sha)
+    if bundle is None and isinstance(runner_proof_seal, dict):
+        bundle = runner_proof_seal.get("bundle")
     exact_outcome = _discovery_stage_receipt(
         runner / "exact-attribution-outcome.json",
         operation_root=operation,
@@ -4731,7 +4849,10 @@ def _discovery_postbuild_observation(operations_root: Path,
         "ts": receipt["at"], "stage": stage, "phase": stage,
         "state": "complete", "event": f"{stage}_completed",
         "label": _DISCOVERY_PIPELINE_DICT.get(stage, stage),
-        "detail": f"receipt {receipt['file_sha256'][:12]}…",
+        "detail": (
+            f"receipt {receipt['file_sha256'][:12]}…"
+            if isinstance(receipt.get("file_sha256"), str) else
+            f"sealed by runner plan {receipt['seal_sha256'][:12]}…"),
     } for stage, receipt in receipts.items()]
     if process_progress is not None:
         transitions.extend({
@@ -4747,14 +4868,20 @@ def _discovery_postbuild_observation(operations_root: Path,
             "ts": pair["at"], "stage": "dispatch_proof", "phase": "dispatch_proof",
             "state": "complete", "event": "dispatch_proof_completed",
             "label": _DISCOVERY_PIPELINE_DICT["dispatch_proof"],
-            "detail": f"receipt {pair['file_sha256'][:12]}…",
+            "detail": (
+                f"receipt {pair['file_sha256'][:12]}…"
+                if isinstance(pair.get("file_sha256"), str) else
+                f"sealed by runner plan {pair['seal_sha256'][:12]}…"),
         })
     if bundle is not None:
         transitions.append({
             "ts": bundle["at"], "stage": "profile", "phase": "profile",
             "state": "complete", "event": "profile_bundle_completed",
             "label": _DISCOVERY_PIPELINE_DICT["profile"],
-            "detail": f"receipt {bundle['file_sha256'][:12]}…",
+            "detail": (
+                f"receipt {bundle['file_sha256'][:12]}…"
+                if isinstance(bundle.get("file_sha256"), str) else
+                f"sealed by runner plan {bundle['seal_sha256'][:12]}…"),
         })
     if exact_outcome is not None:
         transitions.append({
@@ -5532,10 +5659,20 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       if isinstance(execution_observation, dict) else None)
     claim_at = (claim_observation.get("acquired_at")
                 if isinstance(claim_observation, dict) else None)
-    postbuild_at = max(
-        (row.get("at") for row in postbuild_observation.get("receipts", {}).values()
-         if isinstance(row, dict) and isinstance(row.get("at"), str)),
-        default=None) if isinstance(postbuild_observation, dict) else None
+    postbuild_times = []
+    if isinstance(postbuild_observation, dict):
+        postbuild_times.extend(
+            row.get("at")
+            for row in postbuild_observation.get("receipts", {}).values()
+            if isinstance(row, dict) and isinstance(row.get("at"), str))
+        process_progress = postbuild_observation.get("process_progress")
+        if isinstance(process_progress, dict):
+            if isinstance(process_progress.get("started_at"), str):
+                postbuild_times.append(process_progress["started_at"])
+            postbuild_times.extend(
+                row.get("at") for row in process_progress.get("receipts", [])
+                if isinstance(row, dict) and isinstance(row.get("at"), str))
+    postbuild_at = max(postbuild_times, default=None)
     semantic_times = [value for value in
                       (last_event_at, state_at, checkpoint_at, operation_at,
                        correctness_at, claim_at, postbuild_at)
@@ -5633,6 +5770,10 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                  if stage == "correctness_validation" else
                  attribution_label
                  if stage in {"candidate_attribution", "anchor_attribution"} else
+                 "Graphs-off measurement evidence validation failed"
+                 if stage == "measurement_graphs_off_screen" else
+                 "Graphs-on target-runtime evidence validation failed"
+                 if stage == "target_runtime_graphs_on_screen" else
                  "Evidence binding failed after completed build"
                  if stage == "evidence_binding" else
                  "Source build failed" if stage == "build" else
@@ -5659,7 +5800,15 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 "completed_at"]
         elif stage in _DISCOVERY_POSTBUILD_STAGES:
             pipeline["evidence_binding"]["state"] = "complete"
-            pipeline[stage]["started_at"] = correctness_at or postbuild_at
+            process_progress = (
+                postbuild_observation.get("process_progress")
+                if isinstance(postbuild_observation, dict) else None)
+            pipeline[stage]["started_at"] = (
+                process_progress.get("started_at")
+                if isinstance(process_progress, dict)
+                and process_progress.get("stage") == stage
+                and isinstance(process_progress.get("started_at"), str)
+                else postbuild_at or correctness_at)
         elif isinstance(operation_observation, dict):
             pipeline[stage]["started_at"] = operation_observation.get("started_at")
         pipeline[stage]["state"] = "failed"
@@ -5923,7 +6072,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             # validated predecessor receipt.  Use that durable boundary for
             # the clock; never inherit pre-screen state.updated_at.
             pipeline[stage]["started_at"] = (
-                postbuild_at or correctness_at or state_at)
+                postbuild_observation.get("process_progress", {}).get(
+                    "started_at")
+                if isinstance(postbuild_observation.get("process_progress"), dict)
+                and postbuild_observation["process_progress"].get("stage") == stage
+                and isinstance(postbuild_observation["process_progress"].get(
+                    "started_at"), str)
+                else postbuild_at or correctness_at or state_at)
             replication = postbuild_observation.get("repetition")
             label = _DISCOVERY_PIPELINE_DICT.get(stage, stage)
             if isinstance(replication, int):

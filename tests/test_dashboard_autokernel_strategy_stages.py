@@ -155,6 +155,41 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         self._receipt("proof/proof-bundle.json",
                       "epyc.autokernel.gpu_source_evidence_bundle.v1")
 
+    def _runner_plan(self) -> Path:
+        path = self.operation / "runner-plan.json"
+        path.write_text(json.dumps(_sealed({
+            "schema": "epyc.autokernel.gpu_source_runner_plan.v1",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "promotion_claim": False,
+            "operation_key": self.operation_key,
+            "measurement_graphs_off_output_dir": str(
+                self.operation / "runner/s1/measurement-graphs-off"),
+            "target_runtime_graphs_on_output_dir": str(
+                self.operation / "runner/s1/target-runtime-graphs-on"),
+        }), sort_keys=True) + "\n")
+        return path
+
+    def _oversized_receipt(self, relative: str, schema: str,
+                           **fields: object) -> Path:
+        path = self.operation / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        body = {
+            "schema": schema,
+            "authority": "nonpromotable_candidate_only_discovery",
+            "promotion_claim": False,
+            "manifest_sha256": self.manifest_sha,
+            "ended_at": _now(),
+            # The v18 attribution arrays made each native receipt 46 MiB and
+            # recursively expanded its pair/bundle to 106/126 MiB.  A 4 MiB
+            # valid JSON member crosses the same dashboard safety boundary
+            # without making the focused fixture needlessly huge.
+            "exact_dispatch_payload": "x" * (4 * 1024 * 1024),
+            **fields,
+        }
+        path.write_text(json.dumps(_sealed(body), sort_keys=True) + "\n")
+        self.assertGreater(path.stat().st_size, 4 * 1024 * 1024)
+        return path
+
     def _runner_preflight(self, *, graph_mode: str,
                           order: list[str]) -> tuple[Path, str]:
         name = ("measurement-graphs-off" if graph_mode == "off"
@@ -285,6 +320,65 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
                       "measurement_graphs_off_screen",
                       "target_runtime_graphs_on_screen", "benchmark"):
             self.assertEqual(pipeline[stage], "complete", stage)
+
+    def test_v18_oversized_proofs_use_runner_plan_seal_and_show_active_screen(
+            self) -> None:
+        policy_path = self.operation / "evidence-policy.json"
+        policy = json.loads(policy_path.read_text())
+        policy["attribution_arm_order"] = ["anchor", "candidate"]
+        policy["attribution_arm_order_seed_sha256"] = "8" * 64
+        policy_path.write_text(json.dumps(policy))
+        self._receipt("proof/correctness/receipt.json",
+                      "epyc.autokernel.targeted_correctness_receipt.v3",
+                      status="complete", result="PASS")
+        for arm in ("anchor", "candidate"):
+            self._oversized_receipt(
+                f"proof/attribution-{arm}/receipt.json",
+                "epyc.autokernel.gpu_kernel_attribution.v2",
+                arm=arm, status="complete", result="PASS")
+        self._oversized_receipt(
+            "proof/attribution-pair.json",
+            "epyc.autokernel.gpu_kernel_attribution_pair.v1",
+            attribution_arm_order=["anchor", "candidate"],
+            attribution_arm_order_seed_sha256="8" * 64)
+        self._oversized_receipt(
+            "proof/proof-bundle.json",
+            "epyc.autokernel.gpu_source_evidence_bundle.v1")
+        self._runner_plan()
+        output, preflight_sha = self._runner_preflight(
+            graph_mode="off", order=["anchor", "candidate"])
+        self._process_receipt(
+            output, graph_mode="off", arm="anchor",
+            preflight_sha256=preflight_sha)
+
+        activity = self._active()["activity"]
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(activity["phase"]["id"],
+                         "measurement_graphs_off_screen")
+        for stage in ("anchor_attribution", "candidate_attribution",
+                      "dispatch_proof", "profile"):
+            self.assertEqual(pipeline[stage]["state"], "complete")
+        progress = activity["stage_contract"]["measurement_process_progress"]
+        self.assertEqual(activity["stage_contract"]["arm_order"],
+                         ["anchor", "candidate"])
+        self.assertEqual(progress["stage"], "measurement_graphs_off_screen")
+        self.assertEqual(progress["completed_arms"], ["anchor"])
+        self.assertEqual(progress["next_arm"], "candidate")
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
+                         "measurement_graphs_off_screen")
+        self.assertTrue(any(
+            row.get("event") == "anchor_attribution_completed"
+            and "sealed by runner plan" in row.get("detail", "")
+            for row in activity["transitions"]))
+
+        # The plan is a downstream seal, not a blanket existence check.  A
+        # predecessor changed after it was sealed must fail closed again.
+        mutated = (self.operation /
+                   "proof/attribution-anchor/receipt.json")
+        mutated.write_text(mutated.read_text() + " ")
+        activity = self._active()["activity"]
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
+                         "anchor_attribution")
 
     def test_completed_measurement_arm_is_visible_as_reusable_checkpoint(self) -> None:
         self._complete_source_proof()
