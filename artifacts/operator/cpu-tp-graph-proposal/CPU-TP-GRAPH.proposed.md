@@ -297,6 +297,12 @@ seed three bounded hypotheses:
 
 Those are future campaign inputs, not permission to mutate the current campaign or production.
 
+The corresponding hardware-free Phase 0/1 preflight is frozen in
+`epyc-inference-research` commit `e6a4e4b7443442d305a0a991b697cbc0013d3b16`. Its runner SHA-256
+is `318427c6f1aad2f934a523f66b04b330b99469b094a36c94af876c01ab79f026`, its schema-manifest
+SHA-256 is `43cb00274e7afa54b1d6e83cd2a721a837e17db7dcabdb5820bc6b5b4055f502`, and it refuses all
+benchmark execution until a human-ratified successor binds the exact protocol authority.
+
 ## Activation and completion
 
 On a Phase 0 + Phase 1 PASS:
