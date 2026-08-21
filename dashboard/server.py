@@ -189,6 +189,8 @@ AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA = \
     "76301d6647586a25f2d56de1b93f1da9ac11a3fa"
 AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA = \
     "eb689b0d3239f7af538015a7ccb098fe8169f9e6"
+AUTOKERNEL_SUPERVISOR_SCHEMA_PRODUCER_SHA = \
+    "b62d63f8f9caecac597ebd9f1b3b7b098623dc71"
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS = frozenset({
     AUTOKERNEL_DISCOVERY_EVENT_SCHEMA,
     AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
@@ -7156,6 +7158,7 @@ def _experimental_runtime_activity(
 _SUPERVISOR_LEDGER_SCHEMA = "epyc.autokernel.discovery_supervisor_ledger.v2"
 _SUPERVISOR_IDENTITY_SCHEMA = "epyc.autokernel.discovery_supervisor_identity.v2"
 _SUPERVISOR_SPEC_SCHEMA = "epyc.autokernel.discovery_supervisor_spec.v2"
+_SUPERVISOR_SPEC_SCHEMA_V3 = "epyc.autokernel.discovery_supervisor_spec.v3"
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
@@ -7177,8 +7180,40 @@ def _strict_json_bytes(raw: bytes) -> dict | None:
     return value if isinstance(value, dict) else None
 
 
+def _canonical_json_bytes(value: object) -> bytes:
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False).encode("utf-8")
+
+
+def _stat_identity(info: os.stat_result, *, sized: bool) -> dict:
+    value = {
+        "dev": info.st_dev, "ino": info.st_ino,
+        "mode": stat.S_IMODE(info.st_mode), "nlink": info.st_nlink,
+        "uid": info.st_uid,
+    }
+    if sized:
+        value["size"] = info.st_size
+    return value
+
+
+def _identity_map(value: object, *, sized: bool,
+                  allowed_uids: set[int] | None = None) -> bool:
+    keys = {"dev", "ino", "mode", "nlink", "uid"} | ({"size"} if sized else set())
+    if not isinstance(value, dict) or set(value) != keys:
+        return False
+    if any(isinstance(value[key], bool) or not isinstance(value[key], int)
+           for key in keys):
+        return False
+    return (value["dev"] >= 0 and value["ino"] > 0 and value["nlink"] >= 1
+            and 0 <= value["mode"] <= 0o7777
+            and (not sized or value["size"] >= 0)
+            and (allowed_uids is None or value["uid"] in allowed_uids))
+
+
 def _owned_regular_snapshot_at(directory_fd: int, name: str,
-                               *, max_bytes: int) -> tuple[bytes, os.stat_result] | None:
+                               *, max_bytes: int,
+                               expected_mode: int = 0o600) -> tuple[bytes, os.stat_result] | None:
     """Read a same-owner, single-link regular file through a pinned directory."""
     flags = os.O_RDONLY | os.O_CLOEXEC
     if hasattr(os, "O_NOFOLLOW"):
@@ -7195,7 +7230,7 @@ def _owned_regular_snapshot_at(directory_fd: int, name: str,
             return None
         if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
                 or before.st_uid != os.geteuid()
-                or before.st_mode & 0o077
+                or stat.S_IMODE(before.st_mode) != expected_mode
                 or before.st_size < 0 or before.st_size > max_bytes
                 or not stat.S_ISREG(path_before.st_mode)
                 or path_before.st_nlink != 1
@@ -7226,16 +7261,50 @@ def _owned_regular_snapshot_at(directory_fd: int, name: str,
         os.close(fd)
 
 
-def _supervisor_ledger(raw: bytes) -> list[dict] | None:
-    """Validate the terminal supervisor hash chain and its exact event grammar."""
+def _supervisor_process(value: object, *, child: bool) -> bool:
+    keys = {"pid", "start_ticks", "boot_id", "host",
+            "host_id_source", "host_id_sha256"}
+    if child:
+        keys |= {"pgid", "argv_sha256"}
+    if not isinstance(value, dict) or set(value) != keys:
+        return False
+    integer_keys = {"pid", "start_ticks"} | ({"pgid"} if child else set())
+    if any(isinstance(value[key], bool) or not isinstance(value[key], int)
+           or value[key] <= 0 for key in integer_keys):
+        return False
+    if any(not isinstance(value[key], str) or not value[key]
+           or len(value[key]) > 256
+           for key in ("boot_id", "host", "host_id_source")):
+        return False
+    return (re.fullmatch(r"[0-9a-f]{64}", str(value["host_id_sha256"])) is not None
+            and (not child or re.fullmatch(
+                r"[0-9a-f]{64}", str(value["argv_sha256"])) is not None))
+
+
+def _supervisor_tmux(value: object, supervisor: object) -> bool:
+    if (not isinstance(value, dict) or set(value) != {
+            "session_id", "pane_id", "pane_pid", "pane_start_ticks"}
+            or not _supervisor_process(supervisor, child=False)):
+        return False
+    return (all(isinstance(value[key], str)
+                and re.fullmatch(r"[%$][0-9]{1,12}", value[key]) is not None
+                for key in ("session_id", "pane_id"))
+            and value["pane_pid"] == supervisor["pid"]
+            and value["pane_start_ticks"] == supervisor["start_ticks"])
+
+
+def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
+                       session_name: str, runtime_root: Path) -> list[dict] | None:
+    """Validate canonical ledger rows and the producer's max-restart-0 FSM."""
     try:
         lines = raw.decode("ascii").splitlines()
     except UnicodeDecodeError:
         return None
-    if not lines or len(lines) > 64:
+    if len(lines) != 5 or not raw.endswith(b"\n"):
         return None
     rows: list[dict] = []
     previous = None
+    previous_time = None
     for sequence, line in enumerate(lines, 1):
         row = _strict_json_bytes(line.encode("ascii"))
         if (row is None or set(row) != {
@@ -7249,32 +7318,266 @@ def _supervisor_ledger(raw: bytes) -> list[dict] | None:
                 or not isinstance(row.get("written_at"), str)
                 or _parse_semantic_timestamp(row["written_at"]) is None
                 or re.fullmatch(r"[0-9a-f]{64}", str(
-                    row.get("record_sha256"))) is None):
+                    row.get("record_sha256"))) is None
+                or line.encode("ascii") != _canonical_json_bytes(row)):
+            return None
+        written = _parse_semantic_timestamp(row["written_at"])
+        if previous_time is not None and written < previous_time:
             return None
         body = dict(row)
         digest = body.pop("record_sha256")
-        expected = hashlib.sha256(json.dumps(
-            body, sort_keys=True, separators=(",", ":")
-        ).encode("ascii")).hexdigest()
+        expected = hashlib.sha256(_canonical_json_bytes(body)).hexdigest()
         if digest != expected:
             return None
         rows.append(row)
         previous = digest
+        previous_time = written
     if [row["event"] for row in rows] != [
             "supervisor_started", "child_started", "child_exited",
             "restarts_exhausted", "supervisor_stopped"]:
         return None
+    started = rows[0]["payload"]
+    child_start = rows[1]["payload"]
     child_exit = rows[2]["payload"]
     exhausted = rows[3]["payload"]
     stopped = rows[4]["payload"]
     return_code = child_exit.get("return_code")
-    if (isinstance(return_code, bool) or not isinstance(return_code, int)
+    supervisor = started.get("supervisor")
+    tmux = started.get("tmux")
+    cgroup = child_start.get("cgroup")
+    cleanup = child_exit.get("cleanup_actions")
+    if (set(started) != {"spec_sha256", "session_name", "supervisor", "tmux"}
+            or started.get("spec_sha256") != spec_sha256
+            or started.get("session_name") != session_name
+            or not _supervisor_process(supervisor, child=False)
+            or not _supervisor_tmux(tmux, supervisor)
+            or set(child_start) != {
+                "restart_count", "child", "stdout", "stderr", "cgroup"}
+            or child_start.get("restart_count") != 0
+            or not _supervisor_process(child_start.get("child"), child=True)
+            or child_start.get("stdout") != str(runtime_root / "controller.stdout.log")
+            or child_start.get("stderr") != str(runtime_root / "controller.stderr.log")
+            or not isinstance(cgroup, dict)
+            or set(cgroup) != {"dev", "ino", "mode", "nlink", "path", "uid"}
+            or not _identity_map({key: cgroup[key] for key in (
+                "dev", "ino", "mode", "nlink", "uid")}, sized=False)
+            or not isinstance(cgroup.get("path"), str)
+            or not cgroup["path"].startswith("/sys/fs/cgroup/epyc-autokernel-")
+            or set(child_exit) != {
+                "restart_count", "return_code", "cleanup_actions", "stop_signal"}
+            or child_exit.get("restart_count") != 0
+            or not isinstance(cleanup, list) or not cleanup
+            or any(item not in {"cgroup.remove", "cgroup.kill", "SIGTERM", "SIGKILL"}
+                   for item in cleanup)
+            or child_exit.get("stop_signal") is not None
+            or isinstance(return_code, bool) or not isinstance(return_code, int)
             or return_code == 0
+            or set(exhausted) != {
+                "restart_count", "max_restarts", "last_return_code"}
+            or exhausted.get("restart_count") != 0
             or exhausted.get("last_return_code") != return_code
             or exhausted.get("max_restarts") != 0
+            or set(stopped) != {
+                "exit_code", "restart_count", "stop_signal", "supervisor"}
+            or stopped.get("restart_count") != 0
+            or stopped.get("stop_signal") is not None
+            or stopped.get("supervisor") != supervisor
             or stopped.get("exit_code") != return_code):
         return None
     return rows
+
+
+def _owned_public_snapshot(path: Path, *, max_bytes: int) \
+        -> tuple[bytes, os.stat_result] | None:
+    """Snapshot an owner-bound sealed input whose mode may be read-only public."""
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    parent_fd = None
+    try:
+        parent_info = path.parent.lstat()
+        if (not stat.S_ISDIR(parent_info.st_mode)
+                or parent_info.st_uid != os.geteuid()
+                or stat.S_IMODE(parent_info.st_mode) & 0o022):
+            return None
+        parent_fd = os.open(path.parent, flags)
+        pinned = os.fstat(parent_fd)
+        if ((pinned.st_dev, pinned.st_ino) !=
+                (parent_info.st_dev, parent_info.st_ino)):
+            return None
+        leaf = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        mode = stat.S_IMODE(leaf.st_mode)
+        if mode & 0o022:
+            return None
+        snapshot = _owned_regular_snapshot_at(
+            parent_fd, path.name, max_bytes=max_bytes, expected_mode=mode)
+        after = path.parent.lstat()
+        if ((pinned.st_dev, pinned.st_ino, pinned.st_mtime_ns, pinned.st_ctime_ns)
+                != (after.st_dev, after.st_ino,
+                    after.st_mtime_ns, after.st_ctime_ns)):
+            return None
+        return snapshot
+    except OSError:
+        return None
+    finally:
+        if parent_fd is not None:
+            os.close(parent_fd)
+
+
+def _supervisor_launch_spec(
+        raw: bytes, *, runtime_root: Path, runtime_info: os.stat_result,
+        config_path: Path, config: dict,
+        config_source: tuple[bytes, os.stat_result],
+        config_copy: tuple[bytes, os.stat_result]) -> tuple[dict, str] | None:
+    """Validate the full v2 producer grammar and rederive its content identity."""
+    value = _strict_json_bytes(raw)
+    v2_expected = {
+        "schema", "kind", "runtime_root", "runtime_root_identity",
+        "deployment_config", "validate_only", "canary", "python",
+        "restart_policy", "termination_policy", "execution_closure",
+        "execution_modules", "cgroup"}
+    v3_expected = v2_expected | {"graph_execution_modules"}
+    schema = value.get("schema") if isinstance(value, dict) else None
+    if (value is None
+            or schema == _SUPERVISOR_SPEC_SCHEMA and set(value) != v2_expected
+            or schema == _SUPERVISOR_SPEC_SCHEMA_V3 and set(value) != v3_expected
+            or schema not in {_SUPERVISOR_SPEC_SCHEMA, _SUPERVISOR_SPEC_SCHEMA_V3}
+            or raw != _canonical_json_bytes(value) + b"\n"
+            or value.get("kind") != "deployment"
+            or value.get("runtime_root") != str(runtime_root)
+            or value.get("runtime_root_identity") !=
+            _stat_identity(runtime_info, sized=False)
+            or value.get("validate_only") is not False
+            or value.get("canary") is not None):
+        return None
+    python_path = value.get("python")
+    if (not isinstance(python_path, str) or not Path(python_path).is_absolute()
+            or ".." in Path(python_path).parts):
+        return None
+    restart = value.get("restart_policy")
+    termination = value.get("termination_policy")
+    if (restart != {"max_restarts": 0, "delay_seconds": 2.0}
+            or not isinstance(termination, dict)
+            or set(termination) != {"term_grace_seconds", "kill_grace_seconds"}
+            or any(isinstance(termination[key], bool)
+                   or not isinstance(termination[key], (int, float))
+                   or not math.isfinite(float(termination[key]))
+                   or not 0.1 <= float(termination[key]) <= 60.0
+                   for key in termination)):
+        return None
+    deployment = value.get("deployment_config")
+    source_raw, source_info = config_source
+    copy_raw, copy_info = config_copy
+    try:
+        source_value = _strict_json_bytes(source_raw)
+        copy_value = _strict_json_bytes(copy_raw)
+    except ValueError:
+        return None
+    if (not isinstance(deployment, dict) or set(deployment) != {
+            "source_path", "source_identity", "runtime_leaf",
+            "canonical_sha256", "canonical_size", "identity"}
+            or deployment.get("source_path") != str(config_path)
+            or deployment.get("source_identity") !=
+            _stat_identity(source_info, sized=True)
+            or deployment.get("runtime_leaf") != "deployment-config.json"
+            or deployment.get("identity") != _stat_identity(copy_info, sized=True)
+            or deployment.get("canonical_size") != len(copy_raw)
+            or deployment.get("canonical_sha256") !=
+            hashlib.sha256(copy_raw).hexdigest()
+            or source_value != config or copy_value != config
+            or copy_raw != _canonical_json_bytes(config) + b"\n"):
+        return None
+    closure = value.get("execution_closure")
+    if (not isinstance(closure, dict) or set(closure) != {
+            "path", "content_sha256", "manifest", "manifest_sha256",
+            "root_identity"}
+            or not isinstance(closure.get("path"), str)
+            or not Path(closure["path"]).is_absolute()
+            or Path(closure["path"]).parent !=
+            Path("/var/lib/epyc-autokernel/execution-closures")
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                closure.get("content_sha256"))) is None
+            or Path(closure["path"]).name != closure["content_sha256"]
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                closure.get("manifest_sha256"))) is None
+            or not _identity_map(closure.get("root_identity"), sized=False,
+                                 allowed_uids={0})
+            or not isinstance(closure.get("manifest"), dict)):
+        return None
+    manifest = closure["manifest"]
+    content_manifest = {}
+    for relative, binding in manifest.items():
+        if (not isinstance(relative, str) or not relative.startswith("scripts/")
+                or ".." in Path(relative).parts
+                or not isinstance(binding, dict)
+                or set(binding) != {"sha256", "source", "closure"}
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    binding.get("sha256"))) is None
+                or not _identity_map(binding.get("source"), sized=True)
+                or not _identity_map(binding.get("closure"), sized=True,
+                                     allowed_uids={0})):
+            return None
+        content_manifest[relative] = binding["sha256"]
+    if (hashlib.sha256(_canonical_json_bytes(manifest)).hexdigest()
+            != closure["manifest_sha256"]
+            or hashlib.sha256(_canonical_json_bytes(content_manifest)).hexdigest()
+            != closure["content_sha256"]):
+        return None
+    modules = value.get("execution_modules")
+    module_files = {
+        "supervisor": "discovery_supervisor.py",
+        "deployment_factory": "discovery_deployment_factory.py",
+        "secure_runtime": "discovery_supervisor_secure.py"}
+    if not isinstance(modules, dict) or set(modules) != set(module_files):
+        return None
+    for module, filename in module_files.items():
+        binding = modules[module]
+        expected_path = (Path(closure["path"]) /
+                         "scripts/kernel_rnd/autokernel/controller" / filename)
+        if (not isinstance(binding, dict) or set(binding) != {"path", "sha256"}
+                or binding.get("path") != str(expected_path)
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    binding.get("sha256"))) is None
+                or manifest.get(
+                    f"scripts/kernel_rnd/autokernel/controller/{filename}", {}
+                ).get("sha256") != binding["sha256"]):
+            return None
+    if schema == _SUPERVISOR_SPEC_SCHEMA_V3:
+        graph_roles = {
+            "deployment_factory", "discovery_controller", "hypotheses",
+            "do_not_repeat", "discovery_telemetry", "gpu_discovery_runner",
+            "gpu_source_adapter", "discovery_static_registry",
+            "discovery_supervisor", "discovery_supervisor_secure",
+            "discovery_deployment", "gpu_load_admission",
+            "split_runtime_verifier", "inference_window", "cpu_region_claim",
+            "worktree", "source_candidate", "instrument_integrity",
+            "t0_provider", "evaluator_integrity", "gpu_source_evidence",
+            "gpu_source_proofs", "gpu_discovery_beliefs", "device_claim",
+            "device_sampler", "gpu_residency_sampler", "codex_container_actor",
+            "claude_fable5_critic_actor", "hypothesis_portfolio"}
+        graph_modules = value.get("graph_execution_modules")
+        if not isinstance(graph_modules, dict) or set(graph_modules) != graph_roles:
+            return None
+        for binding in graph_modules.values():
+            if (not isinstance(binding, dict)
+                    or set(binding) != {"logical_path", "sha256"}
+                    or not isinstance(binding.get("logical_path"), str)
+                    or not binding["logical_path"].startswith("scripts/")
+                    or ".." in Path(binding["logical_path"]).parts
+                    or re.fullmatch(r"[0-9a-f]{64}", str(
+                        binding.get("sha256"))) is None
+                    or manifest.get(binding["logical_path"], {}).get("sha256")
+                    != binding["sha256"]):
+                return None
+    cgroup = value.get("cgroup")
+    expected_cgroup = (
+        "epyc-autokernel-" + hashlib.sha256(
+            str(runtime_root).encode("utf-8")).hexdigest()[:24])
+    if (not isinstance(cgroup, dict) or set(cgroup) != {"name", "base"}
+            or cgroup.get("base") != "/sys/fs/cgroup"
+            or cgroup.get("name") != expected_cgroup):
+        return None
+    return value, hashlib.sha256(_canonical_json_bytes(value)).hexdigest()
 
 
 def _supervisor_terminal_observation(bundle: Path, config_path: Path,
@@ -7298,7 +7601,7 @@ def _supervisor_terminal_observation(bundle: Path, config_path: Path,
         root_info = root.lstat()
         if (not stat.S_ISDIR(root_info.st_mode)
                 or root_info.st_uid != os.geteuid()
-                or root_info.st_mode & 0o077):
+                or stat.S_IMODE(root_info.st_mode) != 0o700):
             return None
         root_fd = os.open(root, flags)
         pinned_root = os.fstat(root_fd)
@@ -7310,7 +7613,7 @@ def _supervisor_terminal_observation(bundle: Path, config_path: Path,
         path_info = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
         if (not stat.S_ISDIR(runtime_info.st_mode)
                 or runtime_info.st_uid != os.geteuid()
-                or runtime_info.st_mode & 0o077
+                or stat.S_IMODE(runtime_info.st_mode) != 0o700
                 or not stat.S_ISDIR(path_info.st_mode)
                 or (runtime_info.st_dev, runtime_info.st_ino)
                 != (path_info.st_dev, path_info.st_ino)):
@@ -7328,66 +7631,73 @@ def _supervisor_terminal_observation(bundle: Path, config_path: Path,
         }
         if any(value is None for value in snapshots.values()):
             return None
-        identity = _strict_json_bytes(snapshots["identity.json"][0])
-        deployment_config = _strict_json_bytes(
-            snapshots["deployment-config.json"][0])
-        launch_spec = _strict_json_bytes(snapshots["launch-spec.json"][0])
-        ledger = _supervisor_ledger(snapshots["death-ledger.jsonl"][0])
+        source_snapshot = _owned_public_snapshot(config_path, max_bytes=256 * 1024)
+        if source_snapshot is None:
+            return None
+        identity_raw = snapshots["identity.json"][0]
+        identity = _strict_json_bytes(identity_raw)
+        spec_result = _supervisor_launch_spec(
+            snapshots["launch-spec.json"][0], runtime_root=root / name,
+            runtime_info=runtime_info, config_path=config_path, config=config,
+            config_source=source_snapshot,
+            config_copy=snapshots["deployment-config.json"])
+        if spec_result is None:
+            return None
+        launch_spec, spec_sha256 = spec_result
+        session_name = "ak-" + spec_sha256[:24]
+        ledger = _supervisor_ledger(
+            snapshots["death-ledger.jsonl"][0], spec_sha256=spec_sha256,
+            session_name=session_name, runtime_root=root / name)
         stderr = snapshots["controller.stderr.log"][0]
         expected_identity_keys = {
             "child", "exit_code", "restart_count", "schema", "session_name",
             "spec_sha256", "state", "supervisor", "tmux", "tmux_socket_name",
             "updated_at"}
         if (identity is None or set(identity) != expected_identity_keys
+                or identity_raw != _canonical_json_bytes(identity) + b"\n"
                 or identity.get("schema") != _SUPERVISOR_IDENTITY_SCHEMA
+                or identity.get("spec_sha256") != spec_sha256
+                or identity.get("session_name") != session_name
+                or identity.get("tmux_socket_name") !=
+                "epyc-autokernel-supervisors"
                 or identity.get("state") != "stopped"
                 or identity.get("child") is not None
                 or identity.get("restart_count") != 0
                 or isinstance(identity.get("exit_code"), bool)
                 or not isinstance(identity.get("exit_code"), int)
                 or identity["exit_code"] == 0
-                or re.fullmatch(r"[0-9a-f]{64}", str(
-                    identity.get("spec_sha256"))) is None
+                or not _supervisor_process(identity.get("supervisor"), child=False)
+                or not _supervisor_tmux(
+                    identity.get("tmux"), identity.get("supervisor"))
                 or not isinstance(identity.get("updated_at"), str)
                 or _parse_semantic_timestamp(identity["updated_at"]) is None
-                or deployment_config != config
-                or launch_spec is None or ledger is None):
+                or ledger is None):
             return None
-        source_info = config_path.stat(follow_symlinks=False)
-        deployment_binding = launch_spec.get("deployment_config")
-        canonical_raw = snapshots["deployment-config.json"][0]
-        expected_source_identity = {
-            "dev": source_info.st_dev, "ino": source_info.st_ino,
-            "mode": stat.S_IMODE(source_info.st_mode), "nlink": source_info.st_nlink,
-            "size": source_info.st_size, "uid": source_info.st_uid,
-        }
-        if (launch_spec.get("schema") != _SUPERVISOR_SPEC_SCHEMA
-                or launch_spec.get("kind") != "deployment"
-                or launch_spec.get("validate_only") is not False
-                or launch_spec.get("runtime_root") != str(root / name)
-                or not isinstance(deployment_binding, dict)
-                or deployment_binding.get("runtime_leaf") != "deployment-config.json"
-                or deployment_binding.get("source_path") != str(config_path)
-                or deployment_binding.get("source_identity") != expected_source_identity
-                or deployment_binding.get("canonical_size") != len(canonical_raw)
-                or deployment_binding.get("canonical_sha256") !=
-                hashlib.sha256(canonical_raw).hexdigest()
-                or launch_spec.get("restart_policy") != {
-                    "delay_seconds": 2.0, "max_restarts": 0}
-                or ledger[0]["payload"].get("spec_sha256") !=
-                identity["spec_sha256"]
-                or ledger[-1]["payload"].get("exit_code") !=
-                identity["exit_code"]):
+        first_payload = ledger[0]["payload"]
+        final_payload = ledger[-1]["payload"]
+        identity_time = _parse_semantic_timestamp(identity["updated_at"])
+        final_time = _parse_semantic_timestamp(ledger[-1]["written_at"])
+        if (identity.get("supervisor") != first_payload["supervisor"]
+                or identity.get("tmux") != first_payload["tmux"]
+                or final_payload.get("supervisor") != identity["supervisor"]
+                or final_payload.get("exit_code") != identity["exit_code"]
+                or identity_time < final_time or identity_time - final_time > 5.0
+                or identity_time > time.time() + 5.0):
             return None
         # Revalidate the directory binding after every file snapshot.
         runtime_after = os.fstat(runtime_fd)
         path_after = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
+        root_after = root.lstat()
         if ((runtime_info.st_dev, runtime_info.st_ino,
              runtime_info.st_mtime_ns, runtime_info.st_ctime_ns)
                 != (runtime_after.st_dev, runtime_after.st_ino,
                     runtime_after.st_mtime_ns, runtime_after.st_ctime_ns)
                 or (runtime_after.st_dev, runtime_after.st_ino)
-                != (path_after.st_dev, path_after.st_ino)):
+                != (path_after.st_dev, path_after.st_ino)
+                or (pinned_root.st_dev, pinned_root.st_ino,
+                    pinned_root.st_mtime_ns, pinned_root.st_ctime_ns)
+                != (root_after.st_dev, root_after.st_ino,
+                    root_after.st_mtime_ns, root_after.st_ctime_ns)):
             return None
         mismatch = stderr.rstrip().endswith(_SUPERVISOR_GRAPH_MISMATCH)
         if not mismatch:
@@ -7766,6 +8076,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "telemetry_producer_commit": AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA,
         "measurement_output_producer_commit":
             AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA,
+        "supervisor_schema_producer_commit":
+            AUTOKERNEL_SUPERVISOR_SCHEMA_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
     }

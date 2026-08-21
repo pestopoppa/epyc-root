@@ -49,24 +49,47 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         runtime = server.AUTOKERNEL_SUPERVISORS_ROOT / bundle.name
         runtime.mkdir(mode=0o700)
         config = json.loads(config_path.read_text())
-        canonical = json.dumps(
-            config, sort_keys=True, separators=(",", ":")).encode("ascii")
+        canonical = server._canonical_json_bytes(config) + b"\n"
+        copied = runtime / "deployment-config.json"
+        copied.write_bytes(canonical)
+        copied.chmod(0o600)
         source = config_path.stat()
-        spec_sha = "d" * 64
-        updated_at = "2026-08-21T00:35:10.589385Z"
-        identity = {
-            "child": None, "exit_code": 1, "restart_count": 0,
-            "schema": server._SUPERVISOR_IDENTITY_SCHEMA,
-            "session_name": "ak-" + "e" * 24,
-            "spec_sha256": spec_sha, "state": "stopped",
-            "supervisor": {}, "tmux": {},
-            "tmux_socket_name": "epyc-autokernel-supervisors",
-            "updated_at": updated_at,
-        }
+        copy_info = copied.stat()
+        runtime_info = runtime.stat()
+        module_files = {
+            "supervisor": "discovery_supervisor.py",
+            "deployment_factory": "discovery_deployment_factory.py",
+            "secure_runtime": "discovery_supervisor_secure.py"}
+        manifest = {}
+        module_hashes = {}
+        for index, (module, filename) in enumerate(module_files.items(), 1):
+            digest = hashlib.sha256(module.encode()).hexdigest()
+            relative = f"scripts/kernel_rnd/autokernel/controller/{filename}"
+            manifest[relative] = {
+                "sha256": digest,
+                "source": {"dev": 1, "ino": index, "mode": 0o644,
+                           "nlink": 1, "size": index, "uid": os.geteuid()},
+                "closure": {"dev": 2, "ino": index, "mode": 0o444,
+                            "nlink": 1, "size": index, "uid": 0},
+            }
+            module_hashes[module] = digest
+        content_manifest = {key: value["sha256"]
+                            for key, value in manifest.items()}
+        content_sha = hashlib.sha256(
+            server._canonical_json_bytes(content_manifest)).hexdigest()
+        closure = Path("/var/lib/epyc-autokernel/execution-closures") / content_sha
         launch_spec = {
             "schema": server._SUPERVISOR_SPEC_SCHEMA, "kind": "deployment",
-            "validate_only": False, "runtime_root": str(runtime),
+            "runtime_root": str(runtime),
+            "runtime_root_identity": {
+                "dev": runtime_info.st_dev, "ino": runtime_info.st_ino,
+                "mode": 0o700, "nlink": runtime_info.st_nlink,
+                "uid": runtime_info.st_uid},
             "restart_policy": {"delay_seconds": 2.0, "max_restarts": 0},
+            "termination_policy": {"kill_grace_seconds": 5.0,
+                                   "term_grace_seconds": 10.0},
+            "validate_only": False, "canary": None,
+            "python": "/usr/bin/python3",
             "deployment_config": {
                 "runtime_leaf": "deployment-config.json",
                 "source_path": str(config_path),
@@ -77,15 +100,73 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
                 },
                 "canonical_size": len(canonical),
                 "canonical_sha256": hashlib.sha256(canonical).hexdigest(),
+                "identity": {
+                    "dev": copy_info.st_dev, "ino": copy_info.st_ino,
+                    "mode": 0o600, "nlink": copy_info.st_nlink,
+                    "size": copy_info.st_size, "uid": copy_info.st_uid},
             },
+            "execution_closure": {
+                "path": str(closure), "content_sha256": content_sha,
+                "manifest": manifest,
+                "manifest_sha256": hashlib.sha256(
+                    server._canonical_json_bytes(manifest)).hexdigest(),
+                "root_identity": {"dev": 2, "ino": 99, "mode": 0o555,
+                                  "nlink": 3, "uid": 0},
+            },
+            "execution_modules": {
+                module: {"path": str(
+                    closure / "scripts/kernel_rnd/autokernel/controller" / filename),
+                         "sha256": module_hashes[module]}
+                for module, filename in module_files.items()
+            },
+            "cgroup": {"base": "/sys/fs/cgroup", "name": (
+                "epyc-autokernel-" + hashlib.sha256(
+                    str(runtime).encode()).hexdigest()[:24])},
+        }
+        spec_sha = hashlib.sha256(
+            server._canonical_json_bytes(launch_spec)).hexdigest()
+        session_name = "ak-" + spec_sha[:24]
+        supervisor = {
+            "pid": 1001, "start_ticks": 2002,
+            "boot_id": "boot-fixture", "host": "fixture-host",
+            "host_id_source": "kernel-hostname",
+            "host_id_sha256": "a" * 64}
+        tmux = {"session_id": "$0", "pane_id": "%0",
+                "pane_pid": 1001, "pane_start_ticks": 2002}
+        child = {**supervisor, "pid": 1002, "start_ticks": 2003,
+                 "pgid": 1002, "argv_sha256": "b" * 64}
+        final_at = "2026-08-21T00:35:10.587741Z"
+        updated_at = "2026-08-21T00:35:10.589385Z"
+        identity = {
+            "child": None, "exit_code": 1, "restart_count": 0,
+            "schema": server._SUPERVISOR_IDENTITY_SCHEMA,
+            "session_name": session_name,
+            "spec_sha256": spec_sha, "state": "stopped",
+            "supervisor": supervisor, "tmux": tmux,
+            "tmux_socket_name": "epyc-autokernel-supervisors",
+            "updated_at": updated_at,
         }
         events = [
-            ("supervisor_started", {"spec_sha256": spec_sha}),
-            ("child_started", {"restart_count": 0}),
-            ("child_exited", {"return_code": 1}),
-            ("restarts_exhausted", {"last_return_code": 1,
+            ("supervisor_started", {
+                "spec_sha256": spec_sha, "session_name": session_name,
+                "supervisor": supervisor, "tmux": tmux}),
+            ("child_started", {
+                "restart_count": 0, "child": child,
+                "stdout": str(runtime / "controller.stdout.log"),
+                "stderr": str(runtime / "controller.stderr.log"),
+                "cgroup": {"dev": 31, "ino": 55, "mode": 0o700,
+                           "nlink": 2, "path": (
+                               "/sys/fs/cgroup/" + launch_spec["cgroup"]["name"] +
+                               "-1001-0"), "uid": os.geteuid()}}),
+            ("child_exited", {"restart_count": 0, "return_code": 1,
+                              "cleanup_actions": ["cgroup.remove"],
+                              "stop_signal": None}),
+            ("restarts_exhausted", {"restart_count": 0,
+                                    "last_return_code": 1,
                                     "max_restarts": 0}),
-            ("supervisor_stopped", {"exit_code": 1}),
+            ("supervisor_stopped", {"exit_code": 1, "restart_count": 0,
+                                    "stop_signal": None,
+                                    "supervisor": supervisor}),
         ]
         previous = None
         ledger = []
@@ -94,18 +175,15 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
                 "event": event, "payload": payload,
                 "previous_sha256": previous,
                 "schema": server._SUPERVISOR_LEDGER_SCHEMA,
-                "sequence": sequence, "written_at": updated_at,
+                "sequence": sequence, "written_at": final_at,
             }
-            digest = hashlib.sha256(json.dumps(
-                row, sort_keys=True, separators=(",", ":")
-            ).encode("ascii")).hexdigest()
+            digest = hashlib.sha256(server._canonical_json_bytes(row)).hexdigest()
             row["record_sha256"] = digest
-            ledger.append(json.dumps(row, sort_keys=True, separators=(",", ":")))
+            ledger.append(server._canonical_json_bytes(row).decode("utf-8"))
             previous = digest
         files = {
-            "identity.json": json.dumps(identity),
-            "deployment-config.json": canonical.decode("ascii"),
-            "launch-spec.json": json.dumps(launch_spec),
+            "identity.json": server._canonical_json_bytes(identity) + b"\n",
+            "launch-spec.json": server._canonical_json_bytes(launch_spec) + b"\n",
             "death-ledger.jsonl": "\n".join(ledger) + "\n",
             "controller.stderr.log": (
                 "unsafe actor output: SECRET PROMPT MUST NOT ESCAPE\n"
@@ -114,9 +192,46 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         }
         for name, body in files.items():
             path = runtime / name
-            path.write_text(body)
+            if isinstance(body, bytes):
+                path.write_bytes(body)
+            else:
+                path.write_text(body)
             path.chmod(0o600)
         return runtime
+
+    def _rewrite_supervisor_ledger(self, runtime: Path,
+                                   rows: list[dict]) -> None:
+        previous = None
+        encoded = []
+        for sequence, source in enumerate(rows, 1):
+            row = dict(source)
+            row["sequence"] = sequence
+            row["previous_sha256"] = previous
+            row.pop("record_sha256", None)
+            digest = hashlib.sha256(
+                server._canonical_json_bytes(row)).hexdigest()
+            row["record_sha256"] = digest
+            encoded.append(server._canonical_json_bytes(row))
+            previous = digest
+        (runtime / "death-ledger.jsonl").write_bytes(
+            b"\n".join(encoded) + b"\n")
+
+    def _rebind_supervisor_spec(self, runtime: Path, spec: dict) -> None:
+        spec_sha = hashlib.sha256(
+            server._canonical_json_bytes(spec)).hexdigest()
+        session_name = "ak-" + spec_sha[:24]
+        (runtime / "launch-spec.json").write_bytes(
+            server._canonical_json_bytes(spec) + b"\n")
+        identity_path = runtime / "identity.json"
+        identity = json.loads(identity_path.read_text())
+        identity["spec_sha256"] = spec_sha
+        identity["session_name"] = session_name
+        identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
+        rows = [json.loads(line) for line in
+                (runtime / "death-ledger.jsonl").read_text().splitlines()]
+        rows[0]["payload"]["spec_sha256"] = spec_sha
+        rows[0]["payload"]["session_name"] = session_name
+        self._rewrite_supervisor_ledger(runtime, rows)
 
     def _v2_event(self, *, event: str = "planner_started",
                   result: dict | None = None) -> dict:
@@ -875,6 +990,190 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertTrue(payload["newest_unlaunched_deployment"]["available"])
         self.assertEqual(payload["newest_unlaunched_deployment"]["deployment"],
                          "campaign-v21")
+
+    def test_supervisor_v2_spec_requires_exact_canonical_13_key_grammar(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        spec_path = runtime / "launch-spec.json"
+        original = json.loads(spec_path.read_text())
+        self.assertEqual(len(original), 13)
+        for key in tuple(original):
+            with self.subTest(remove=key):
+                mutated = dict(original)
+                mutated.pop(key)
+                spec_path.write_bytes(server._canonical_json_bytes(mutated) + b"\n")
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+        mutated = dict(original)
+        mutated["unexpected"] = "field"
+        spec_path.write_bytes(server._canonical_json_bytes(mutated) + b"\n")
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+        spec_path.write_text(json.dumps(original, indent=2) + "\n")
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+    def test_supervisor_v3_spec_is_a_separate_exact_graph_module_contract(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        spec = json.loads((runtime / "launch-spec.json").read_text())
+        spec["schema"] = server._SUPERVISOR_SPEC_SCHEMA_V3
+        roles = {
+            "deployment_factory", "discovery_controller", "hypotheses",
+            "do_not_repeat", "discovery_telemetry", "gpu_discovery_runner",
+            "gpu_source_adapter", "discovery_static_registry",
+            "discovery_supervisor", "discovery_supervisor_secure",
+            "discovery_deployment", "gpu_load_admission",
+            "split_runtime_verifier", "inference_window", "cpu_region_claim",
+            "worktree", "source_candidate", "instrument_integrity",
+            "t0_provider", "evaluator_integrity", "gpu_source_evidence",
+            "gpu_source_proofs", "gpu_discovery_beliefs", "device_claim",
+            "device_sampler", "gpu_residency_sampler", "codex_container_actor",
+            "claude_fable5_critic_actor", "hypothesis_portfolio"}
+        logical_path, manifest_row = next(iter(
+            spec["execution_closure"]["manifest"].items()))
+        spec["graph_execution_modules"] = {
+            role: {"logical_path": logical_path,
+                   "sha256": manifest_row["sha256"]}
+            for role in roles}
+        self._rebind_supervisor_spec(runtime, spec)
+        self.assertIsNotNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+        missing = json.loads(json.dumps(spec))
+        missing["graph_execution_modules"].pop("hypothesis_portfolio")
+        self._rebind_supervisor_spec(runtime, missing)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+        extra = json.loads(json.dumps(spec))
+        extra["graph_execution_modules"]["unexpected_role"] = {
+            "logical_path": logical_path, "sha256": manifest_row["sha256"]}
+        self._rebind_supervisor_spec(runtime, extra)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+    def test_coherent_spec_rehash_cannot_forge_runtime_or_config_identity(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        original = json.loads((runtime / "launch-spec.json").read_text())
+        for path in (("runtime_root_identity", "ino"),
+                     ("deployment_config", "identity", "ino"),
+                     ("deployment_config", "source_identity", "ino")):
+            with self.subTest(path=path):
+                mutated = json.loads(json.dumps(original))
+                target = mutated
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] += 1
+                self._rebind_supervisor_spec(runtime, mutated)
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+
+    def test_ledger_payload_fsm_rejects_every_missing_or_extra_key(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        original = [json.loads(line) for line in
+                    (runtime / "death-ledger.jsonl").read_text().splitlines()]
+        for index, row in enumerate(original):
+            for key in tuple(row["payload"]):
+                with self.subTest(event=row["event"], missing=key):
+                    mutated = json.loads(json.dumps(original))
+                    mutated[index]["payload"].pop(key)
+                    self._rewrite_supervisor_ledger(runtime, mutated)
+                    self.assertIsNone(server._supervisor_terminal_observation(
+                        self.bundle, config_path, config))
+            with self.subTest(event=row["event"], extra=True):
+                mutated = json.loads(json.dumps(original))
+                mutated[index]["payload"]["unexpected"] = "field"
+                self._rewrite_supervisor_ledger(runtime, mutated)
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+
+    def test_rehashed_ledger_binding_tamper_and_unsafe_stderr_are_refused(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        original = [json.loads(line) for line in
+                    (runtime / "death-ledger.jsonl").read_text().splitlines()]
+        mutations = (
+            lambda rows: rows[0]["payload"].__setitem__("session_name", "ak-" + "0" * 24),
+            lambda rows: rows[1]["payload"].__setitem__("stderr", "/tmp/escape"),
+            lambda rows: rows[2]["payload"].__setitem__("restart_count", 1),
+            lambda rows: rows[3]["payload"].__setitem__("last_return_code", 2),
+            lambda rows: rows[4]["payload"].__setitem__("exit_code", 2),
+        )
+        for index, mutate in enumerate(mutations):
+            with self.subTest(binding=index):
+                rows = json.loads(json.dumps(original))
+                mutate(rows)
+                self._rewrite_supervisor_ledger(runtime, rows)
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+
+        self._rewrite_supervisor_ledger(runtime, original)
+        stderr = runtime / "controller.stderr.log"
+        stderr.write_text(
+            "DeploymentFactoryError: durable deployment graph differs "
+            "from current sealed graph\nunsafe tail\n")
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+    def test_identity_time_must_follow_terminal_ledger_with_bounded_skew(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        identity_path = runtime / "identity.json"
+        identity = json.loads(identity_path.read_text())
+        for timestamp in ("2026-08-21T00:35:09Z",
+                          "2026-08-21T00:35:20Z",
+                          "2099-01-01T00:00:00Z"):
+            with self.subTest(timestamp=timestamp):
+                mutated = dict(identity)
+                mutated["updated_at"] = timestamp
+                identity_path.write_bytes(
+                    server._canonical_json_bytes(mutated) + b"\n")
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+
+    def test_supervisor_runtime_root_and_file_identity_are_fail_closed(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        runtime.chmod(0o755)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+        runtime.chmod(0o700)
+
+        ledger = runtime / "death-ledger.jsonl"
+        ledger.chmod(0o644)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+        ledger.chmod(0o600)
+
+        target = runtime / "ledger-target"
+        target.write_bytes(ledger.read_bytes())
+        target.chmod(0o600)
+        ledger.unlink()
+        os.link(target, ledger)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+    def test_supervisor_stderr_ceiling_and_terminal_signature_are_fail_closed(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        stderr = runtime / "controller.stderr.log"
+        stderr.write_bytes(b"x" * (64 * 1024 + 1))
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+        stderr.write_text("signature absent\n")
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
 
 
 if __name__ == "__main__":
