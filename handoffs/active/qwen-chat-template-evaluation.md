@@ -347,6 +347,11 @@ anything.
       Do not bundle this with CT-1. *(package drafted 2026-08-21, awaiting operator — see
       "CT-5 decision package" above; recommendation is hold status quo + authorise a measurement-only
       thinking-ON A/B on `architect_general`, and decline the community-template pilot on CT-3 grounds)*
+- [ ] **CT-8 — belief-kernel wiring for CT-1 measurements** (filed at first-measurement time per the
+      standing rule). The A/B emits per-question JSONL + per-suite summary; before any result gates a
+      template adoption, add the write-side hook: producer-authored claim tuples with (model,
+      template_sha256, suite, n, sampling config, kernel/binary identity, paired-flip counts).
+      Source-table row added to `scripts/vidya/adapters/README.md` 2026-08-21.
 - [x] **CT-6** — Sweep the embedded template of every production GGUF and tabulate the defect
       matrix ✅ 2026-08-21 (table above; three distinct templates, all defects Qwen3.8-only, the
       retention gap incumbent-only)

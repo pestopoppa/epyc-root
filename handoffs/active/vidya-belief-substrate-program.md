@@ -258,6 +258,21 @@ deliberately — decide them, do not just implement them.
       ladder. The 2026-08-13 MMQ-MFMA s2 screen predates the hook and must emit zero rows rather than be
       retrofitted. Source-register row is in `scripts/vidya/adapters/README.md`; producer/read hook is
       being implemented prospectively.
+- [ ] **SC44 — Integrate the completed AutoKernel experimental-runtime DFlash2 prospective hook before DF2-5.**
+      The DF2-4 matched np1 campaign finalized three exact arms (plain, MTP8, DFlash2 block8) with
+      12 scored prompts each, higher-is-better decode throughput, draft-acceptance numerators and
+      denominators, exact candidate/binary/target/draft-model/protocol identities, and released MI210
+      claim plus KFD/VRAM witnesses. Its finalizer did not write a native `ClaimTuple`, so the completed
+      campaign at `artifacts/architect-bench-gpu-20260814/dflash2_np1_20260820/` is immutable pre-hook
+      evidence and MUST emit zero rows rather than be reconstructed on read. Before DF2-5 np2/4/8,
+      integrate research `71b81a8e849a7b4f75160fceb9d720e1f91dc11b` first, then root adapter
+      `e0376ea19d85af5aba41b855fa6fee5ca5926176`. The implementation writes 6 arms × throughput and
+      weighted-acceptance carriers, uses the campaign locator rather than treating request rows as
+      independent witnesses, binds exact claim/release/residency and manifest hashes, declares
+      `metric_direction=higher_better`, and delegates grading to `claim_tuple.grade()`. Cross-repo
+      synthetic projection yields 12/12 Witnessed/Attested rows; actual DF2-4 yields zero. Preserve the
+      `experimental_runtime` / no-kernel-champion / no-promotion boundary. Source-register row is in
+      `scripts/vidya/adapters/README.md`. Keep this row open only until both pushed commits are integrated.
 - [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
       prospectively before its next run.** *(Filed as "SC37" on lane/mainD 2026-08-13 by `mainD`,
       the author of the run, at the run; renumbered on forward-port because SC37 was independently
@@ -890,6 +905,13 @@ Standard checkbox discipline (`- [x] … ✅ YYYY-MM-DD`; mid-flight discoveries
 lines). Maintain the master-index and research-evaluation-index rows; on completion, extract
 findings to docs, move to `completed/`, delete the master-index row.
 
+- [ ] **SC46 — wire the CT-1 chat-template A/B into the belief kernel on the write side** (filed
+      2026-08-21 at first-measurement time; first run in flight the same hour). Producer: the CT-1
+      runner (per-question JSONL + per-suite summary, scored by orchestrator `debug_scorer`).
+      Tuple must carry (model, template_sha256, suite, n, sampling config, kernel/binary identity,
+      paired-flip counts) — the template axis is the whole point, per the E-7 amendment. Source-table
+      row: `scripts/vidya/adapters/README.md`; consumer task: CT-8 in
+      `handoffs/active/qwen-chat-template-evaluation.md`.
 - [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed
       2026-08-21 by the `/research-intake` Stage-4 pass that ingested it (`intake-1225`, dive-verified,
       MIT, HPDC'24, credibility 6/6 — the highest of that cohort). ParEval is a candidate C5 secondary
