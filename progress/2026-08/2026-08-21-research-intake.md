@@ -279,3 +279,34 @@ plus `master-handoff-index.md` still hold the peer's pre-existing *staged* blobs
 which predate `9cb94047`. I deliberately did **not** reset them — that is their staging to own — but a
 plain `git commit` from that stale index would drop my SC47 and the FlashInfer adapter row from the
 tip. Both survive in `9cb94047`; re-add from the working tree before committing.
+
+### `arXiv:2604.06056` ingested — `RVP-PWR-3` closed, and our own power instrument now has a datasheet
+
+**`intake-1251`** (McDaniel et al., ORNL/HPE/AMD, v2 2026-04-09, CC BY 4.0). Index at **1,247**. The one
+source in this whole wave that lands on our *exact* architecture: MI250X is gfx90a/CDNA2.
+
+**All four figures `intake-1238` carried at medium confidence are CONFIRMED verbatim**, none overturned —
+the averaging window is undocumented (II-B), MI250X average power takes *"a few seconds to fully capture the
+transition from idle to TDP"* (V-A2), *"aliasing begins below roughly 4 ms on MI250X"* (V-A3), and the
+cumulative energy counter refreshes *"at 1 ms granularity"* in microjoules (II-B). Read via two targeted
+passes over the paper's own LaTeXML rendering — the route `intake-1238` could not take, since the PDF
+exceeds the fetch limit. This closes the loop on the `intake-1222` energy overturn: we verified the
+accumulator exists and accumulates on this host; this paper establishes *why* it is the field to use and
+quantifies what the alternative field gets wrong on the same silicon. Our measured **15.30 µJ/tick** LSB is
+something the paper does **not** state — we hold a number it lacks.
+
+**Three caveats that must travel with any citation, and one is a real credibility cap.** (1) These authors
+used **no external physical meter** — Cray PM is their highest reference and its accuracy is *vendor-asserted
+from product-development testing*. That is the specific gap between this and `intake-1238`, which had a
+physical meter and scores 6/6 to this one's 4/6; the relative lag/aliasing findings rest on the square-wave
+probe and are unaffected, but this may never be cited as external validation of an **absolute** watt figure.
+(2) **MI250X is dual-die OAM; our MI210 is single-die** — timing characteristics are expected-to-hold and
+worth confirming, absolute joules are not ours. (3) Dense HPC linear algebra, **zero ML/inference content**,
+no statement on single-GPU applicability — so the token-cadence **phase-lock hazard remains unmeasured by
+either paper.** That gap is ours (`RVP-PWR-2`), and this paper hands us the instrument to close it.
+
+Also found: **its own central equation cannot be applied as published** — `W_conf` is defined in terms of
+t_d/t_r/t_f and no numeric values for them appear anywhere, only Figure 5. Filed as **`RVP-PWR-5`** (measure
+them ourselves; the square-wave sweep produces them as a by-product) and **`RVP-PWR-6`** (adopt the
+runtime-vs-power decomposition — a joules-per-token win that is entirely a tokens-per-second win is a
+different engineering fact from one that lowers draw, and we currently do not separate them at all).

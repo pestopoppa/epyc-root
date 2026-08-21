@@ -1340,13 +1340,41 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       PERIODIC at the token cadence, this is close to a worst case: a token period near a harmonic of the
       sampling window can **PHASE-LOCK and produce a stable, repeatable, and completely wrong power number.**
       A number that reproduces across runs is not thereby correct.
-- [ ] **RVP-PWR-3 — Ingest and PDF-verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — arguably
-      higher-value than anything else in this batch, because MI250X IS gfx90a.** "Fine-Grained Power and
-      Energy Attribution on AMD GPU/APU-Based Exascale Nodes", Frontier MI250X and Portage MI300A at up to
-      512 GPUs. Preliminary (MEDIUM confidence, HTML fetch only — the PDF exceeded the fetch size limit):
-      rocm-smi average power there uses undocumented filtering, lags several seconds to full TDP, and has an
-      aliasing cutoff around **4 ms**; the cumulative energy counter at ~1 ms bypasses it. **Do not cite
-      those figures until the PDF is read.**
+- [x] **RVP-PWR-3 — Ingest and verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — DONE
+      2026-08-21, ingested as `intake-1251#record`.** It was indeed higher-value than anything else in that
+      batch, because MI250X IS gfx90a. **All four preliminary figures CONFIRMED VERBATIM** against the
+      paper's own LaTeXML rendering with section anchors, none overturned: the averaging window is
+      undocumented (II-B), MI250X average power takes _"a few seconds to fully capture the transition from
+      idle to TDP"_ (V-A2), _"aliasing begins below roughly 4 ms on MI250X"_ (V-A3), and the cumulative
+      energy counter refreshes _"at 1 ms granularity"_ in **microjoules** (II-B). **The figures are now
+      citeable.** Scope note on how it was read: two targeted passes over `arxiv.org/html/2604.06056v2` (the
+      CURRENT version), not the PDF — which remains unread, and whose only unique content is Figure 5, where
+      the confidence-window parameters are shown visually and **never stated numerically anywhere in the
+      paper**. **THREE THINGS THAT MUST TRAVEL WITH ANY CITATION:** (1) these authors used **NO external
+      physical meter** — Cray PM is their highest reference and its accuracy is vendor-asserted from
+      product-development testing, so unlike `intake-1238` this may never be cited as external validation of
+      an ABSOLUTE watt figure (the relative lag/aliasing findings rest on the square-wave probe and are
+      unaffected); (2) **MI250X is dual-die OAM, our MI210 is single-die** — treat the TIMING characteristics
+      as expected-to-hold and worth confirming, and any absolute joule figure as not ours; (3) the workloads
+      are dense HPC linear algebra with **zero ML or inference content** and no statement about single-GPU
+      applicability, so the token-cadence phase-lock hazard remains unmeasured by either paper — that gap is
+      ours to close in RVP-PWR-2, which this paper now hands us the instrument for.
+- [ ] **RVP-PWR-5 — Re-measure the three CONFIDENCE-WINDOW parameters on the MI210, because the paper
+      does not publish them.** `intake-1251#record` defines `W_conf = [t_s + t_d + t_r, t_e - t_d - t_f]`
+      (delay, 10-90% rise, 90-10% fall) and states that outside it _"measurements are dominated by sensor
+      transition effects"_ — but **no consolidated numeric values for t_d, t_r or t_f appear anywhere**, so
+      **its own central equation cannot be applied as published.** They are characterised only visually in
+      Figure 5. Fold this into RVP-PWR-2's square-wave sweep, which produces exactly these three quantities
+      as a by-product. Until we have them, we cannot legitimately gate any phase-level power attribution.
+- [ ] **RVP-PWR-6 — Adopt the RUNTIME-VS-POWER DECOMPOSITION for every energy claim, which we currently do
+      not do at all.** `intake-1251#record` separates energy savings caused by shortening time-to-solution
+      from savings caused by lowering instantaneous power, and finds mixed precision _"primarily improves
+      energy efficiency by shortening time-to-solution rather than dramatically reducing instantaneous
+      power"_ (Frontier rocHPL 179.9 KJ → rocHPL-MxP 38.5 KJ, 79%). **This is directly applicable to every
+      quantisation and kernel change we make** — a joules-per-token improvement that is entirely a
+      tokens-per-second improvement is a different engineering fact from one that lowers draw, and they
+      imply different next moves. The 79%/31%/27% numbers themselves are dense-linear-algebra results and
+      must **never** be carried across to a decode workload.
 - [ ] **RVP-PWR-4 — Adopt the SC24 protocol shape for any energy claim we ever make.** Locked clocks,
       thermal warm-up, rise-time discard, a BOUNDED DECLARED WINDOW, median-of-N, idle-subtracted dynamic
       energy, and external ground truth where obtainable. Never quote the 35%/65% figure without its scope
