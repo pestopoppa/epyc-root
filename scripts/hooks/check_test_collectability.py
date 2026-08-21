@@ -71,12 +71,15 @@ def analyse(path: Path) -> tuple[list[str], list[str]]:
         args = [a.arg for a in node.args.args]
         if drop_self and args and args[0] in ("self", "cls"):
             args = args[1:]
-        # A test taking non-fixture positional args is not collectable either --
-        # pytest errors on fixture lookup. Counted as not-collectable on purpose.
-        if args and not set(args) & FIXTURE_NAMES:
-            return
+        # pytest COLLECTS any test_* callable regardless of its parameters. A
+        # parameter it cannot resolve becomes a loud setup ERROR, which is the
+        # opposite of a vacuous pass -- so arg shape must not decide collectability.
+        # Filtering on a builtin-fixture allowlist misjudged every suite using a
+        # conftest fixture: it reported ordinary class-based orchestrator suites
+        # (e.g. tests/unit/test_repl_state.py, TestREPLStateCheckpoint) as "runs
+        # nothing either way". Third false-positive class found before filing.
         collectable.append(node.name)
-        if set(args) & FIXTURE_NAMES:
+        if args:
             fixture_using.append(node.name)
 
     for node in tree.body:
@@ -85,7 +88,13 @@ def analyse(path: Path) -> tuple[list[str], list[str]]:
         # lint report 237 orchestrator files as "runs nothing either way" when they
         # were ordinary class-based suites. A lint with false positives gets switched
         # off, so it must model the collector it is reasoning about.
-        if isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+        # ANY top-level class, not just `Test*`: pytest collects unittest.TestCase
+        # subclasses by base class, whatever they are named. Restricting to the
+        # Test* prefix reported scripts/coordination/tests/test_promote_lane.py --
+        # from which pytest collects 22 tests -- as running nothing. Over-counting
+        # collectables is the SAFE direction for a gate; under-counting blocks
+        # legitimate commits, and this one was already live when it was found.
+        if isinstance(node, ast.ClassDef):
             for sub in node.body:
                 consider(sub, drop_self=True)
     return collectable, fixture_using
