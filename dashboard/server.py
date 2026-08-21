@@ -5766,7 +5766,7 @@ def _discovery_v27_prebuild_resource_wait(
 
 
 _DISCOVERY_V27_CUMULATIVE_SCHEMA = (
-    "epyc.autokernel.cumulative_performance.v1")
+    "epyc.autokernel.cumulative_performance.v2")
 _DISCOVERY_V27_PRODUCTION_COMMIT = (
     "0db32c06e3e550065b78311a6031ef3dd2c4f27c")
 _DISCOVERY_V27_COMPARATOR_KEYS = {
@@ -6499,13 +6499,176 @@ def _discovery_v27_full_correctness(value: object, pair: dict) -> bool:
             if key != "result_sha256"}))
 
 
+_DISCOVERY_V27_MEASUREMENT_REF_SCHEMA = (
+    "epyc.autokernel.cumulative_measurement_ref.v1")
+_DISCOVERY_V27_MEASUREMENT_STAGES = {
+    "incremental_graphs_off": "measurement-graphs-off",
+    "incremental_graphs_on": "target-runtime-graphs-on",
+    "production_graphs_on": "cumulative-vs-production-graphs-on",
+}
+
+
+def _discovery_v27_measurement_carrier(
+        reference: object, *, role: str, operation_key: str,
+        contract: dict) -> dict | None:
+    """Open one exact producer carrier at its contract-owned operation path."""
+    if (not isinstance(reference, dict)
+            or set(reference) != {"schema", "role", "path", "sha256"}
+            or reference.get("schema") !=
+               _DISCOVERY_V27_MEASUREMENT_REF_SCHEMA
+            or reference.get("role") != role
+            or not _discovery_sha256(reference.get("sha256"))
+            or not _discovery_sha256(operation_key)):
+        return None
+    bundle = Path(str(contract.get("bundle_root", "")))
+    operations_root = _safe_bundle_path(
+        contract.get("operations_root"), bundle)
+    path = _safe_bundle_path(reference.get("path"), bundle)
+    if operations_root is None or path is None:
+        return None
+    operation_root = operations_root / operation_key
+    repetition = None
+    if role == "exact_route":
+        expected = operation_root / "proof/attribution-pair.json"
+    else:
+        stage = _DISCOVERY_V27_MEASUREMENT_STAGES.get(role)
+        try:
+            relative = path.relative_to(operation_root / "runner")
+        except ValueError:
+            return None
+        if (stage is None or len(relative.parts) != 3
+                or re.fullmatch(r"s[1-9][0-9]*", relative.parts[0]) is None
+                or relative.parts[1:] != (stage, "result.json")):
+            return None
+        repetition = relative.parts[0]
+        expected = operation_root / "runner" / repetition / stage / \
+            "result.json"
+    try:
+        if (path != expected or not path.is_absolute()
+                or path.resolve(strict=False) != path):
+            return None
+    except OSError:
+        return None
+    snapshot = _owned_public_snapshot(path, max_bytes=16 * 1024 * 1024)
+    if (snapshot is None
+            or hashlib.sha256(snapshot[0]).hexdigest() !=
+               reference["sha256"]):
+        return None
+    body = _strict_json_bytes(snapshot[0])
+    native_key = ("receipt_sha256" if role == "exact_route"
+                  else "result_sha256")
+    if (body is None or not _discovery_sha256(body.get(native_key))
+            or body[native_key] != _discovery_content_hash({
+                key: item for key, item in body.items()
+                if key != native_key})):
+        return None
+    return {
+        "body": body, "path": path, "operation_root": operation_root,
+        "repetition": repetition, "sha256": reference["sha256"],
+    }
+
+
+def _discovery_v27_exact_route_effect(body: object) -> float | None:
+    if (not isinstance(body, dict)
+            or body.get("schema") !=
+               "epyc.autokernel.gpu_kernel_attribution_pair.v2"
+            or body.get("authority") !=
+               "nonpromotable_candidate_only_discovery"
+            or body.get("non_promotable") is not True
+            or body.get("promotion_claim") is not False):
+        return None
+    comparison = body.get("exact_duration_comparison")
+    required = {
+        "candidate_routes", "anchor_routes", "candidate_total_duration_ns",
+        "anchor_total_duration_ns", "relative_improvement_fraction",
+        "direction", "all_candidate_routes_present",
+        "all_anchor_routes_present", "statistic"}
+    if not isinstance(comparison, dict) or set(comparison) != required:
+        return None
+
+    def total(rows: object) -> int | None:
+        if not isinstance(rows, dict) or not rows:
+            return None
+        values = []
+        for signature, row in rows.items():
+            if (not isinstance(signature, str) or not signature
+                    or not isinstance(row, dict)
+                    or type(row.get("total_duration_ns")) is not int
+                    or row["total_duration_ns"] <= 0
+                    or type(row.get("calls")) is not int
+                    or row["calls"] <= 0):
+                return None
+            values.append(row["total_duration_ns"])
+        return sum(values)
+
+    candidate_total = total(comparison.get("candidate_routes"))
+    anchor_total = total(comparison.get("anchor_routes"))
+    if candidate_total is None or anchor_total is None:
+        return None
+    effect = (anchor_total - candidate_total) / anchor_total
+    direction = ("improved" if candidate_total < anchor_total else
+                 "regressed" if candidate_total > anchor_total else
+                 "neutral")
+    if (comparison.get("candidate_total_duration_ns") != candidate_total
+            or comparison.get("anchor_total_duration_ns") != anchor_total
+            or comparison.get("relative_improvement_fraction") != effect
+            or comparison.get("direction") != direction
+            or comparison.get("all_candidate_routes_present") is not True
+            or comparison.get("all_anchor_routes_present") is not True
+            or comparison.get("statistic") !=
+               "sum_exact_route_total_duration_ns"):
+        return None
+    return effect
+
+
+def _discovery_v27_runner_effect(
+        body: object, *, graph_mode: str, factor_name: str) -> float | None:
+    if (not isinstance(body, dict)
+            or body.get("schema") !=
+               "epyc.autokernel.gpu_candidate_only_screen.v2"
+            or body.get("authority") !=
+               "nonpromotable_candidate_only_discovery"
+            or body.get("non_promotable") is not True
+            or body.get("promotion_claim") is not False
+            or body.get("hip_residency_proved") is not True
+            or body.get("runtime_graphs") != graph_mode
+            or not isinstance(body.get("sole_factor"), dict)
+            or body["sole_factor"].get("name") != factor_name):
+        return None
+    center = body.get("baseline_center")
+    samples = body.get("candidate_samples")
+    if (isinstance(center, bool) or not isinstance(center, (int, float))
+            or not math.isfinite(float(center)) or center <= 0
+            or not isinstance(samples, list) or not samples):
+        return None
+    observed = []
+    for row in samples:
+        if (isinstance(row, bool) or not isinstance(row, (int, float))
+                or not math.isfinite(float(row)) or row <= 0):
+            return None
+        observed.append(float(row))
+    effects = [(row - float(center)) / float(center) for row in observed]
+    ordered = sorted(effects)
+    middle = len(ordered) // 2
+    measured = (ordered[middle] if len(ordered) % 2 else
+                (ordered[middle - 1] + ordered[middle]) / 2)
+    if (body.get("relative_effects") != effects
+            or body.get("median_relative") != measured):
+        return None
+    return measured
+
+
 def _discovery_v27_incremental_comparison(
-        value: object, pair: dict, correctness: dict) -> bool:
+        value: object, pair: dict, correctness: dict,
+        contract: dict) -> bool:
     keys = {
         "schema", "operation_key", "build_pair_sha256",
         "correctness_result_sha256", "exact_route_receipt_sha256",
+        "exact_route_receipt_ref",
         "expected_route_set_sha256", "graphs_off_receipt_sha256",
+        "graphs_off_receipt_ref",
         "graphs_on_receipt_sha256", "target_runtime_frame_sha256",
+        "graphs_on_receipt_ref",
         "exact_route_effect_fraction", "graphs_off_effect_fraction",
         "graphs_on_effect_fraction", "classification",
         "exact_route_executed", "graphs_off_executed",
@@ -6513,7 +6676,7 @@ def _discovery_v27_incremental_comparison(
     }
     if (not isinstance(value, dict) or set(value) != keys
             or value.get("schema") !=
-               "epyc.autokernel.incremental_composition_comparison.v2"
+               "epyc.autokernel.incremental_composition_comparison.v3"
             or value.get("operation_key") != pair.get("operation_key")
             or value.get("build_pair_sha256") != pair.get("pair_sha256")
             or value.get("correctness_result_sha256") !=
@@ -6526,6 +6689,30 @@ def _discovery_v27_incremental_comparison(
                 "graphs_off_receipt_sha256", "graphs_on_receipt_sha256",
                 "target_runtime_frame_sha256", "result_sha256"))):
         return False
+    carriers = (
+        _discovery_v27_measurement_carrier(
+            value.get("exact_route_receipt_ref"), role="exact_route",
+            operation_key=value["operation_key"], contract=contract),
+        _discovery_v27_measurement_carrier(
+            value.get("graphs_off_receipt_ref"),
+            role="incremental_graphs_off",
+            operation_key=value["operation_key"], contract=contract),
+        _discovery_v27_measurement_carrier(
+            value.get("graphs_on_receipt_ref"),
+            role="incremental_graphs_on",
+            operation_key=value["operation_key"], contract=contract),
+    )
+    if (any(row is None for row in carriers)
+            or len({row["operation_root"] for row in carriers}) != 1
+            or carriers[0]["repetition"] is not None
+            or carriers[1]["repetition"] != carriers[2]["repetition"]
+            or value.get("exact_route_receipt_sha256") !=
+               carriers[0]["sha256"]
+            or value.get("graphs_off_receipt_sha256") !=
+               carriers[1]["sha256"]
+            or value.get("graphs_on_receipt_sha256") !=
+               carriers[2]["sha256"]):
+        return False
     effect_keys = (
         "exact_route_effect_fraction", "graphs_off_effect_fraction",
         "graphs_on_effect_fraction")
@@ -6534,12 +6721,22 @@ def _discovery_v27_incremental_comparison(
            or not math.isfinite(float(value[key])) for key in effect_keys):
         return False
     effects = tuple(float(value[key]) for key in effect_keys)
+    derived = (
+        _discovery_v27_exact_route_effect(carriers[0]["body"]),
+        _discovery_v27_runner_effect(
+            carriers[1]["body"], graph_mode="off",
+            factor_name="source_patch"),
+        _discovery_v27_runner_effect(
+            carriers[2]["body"], graph_mode="on",
+            factor_name="source_patch"),
+    )
     classification = (
         "candidate" if all(effect > 0 for effect in effects)
         else "screened_out" if all(effect <= 0 for effect in effects)
         else "inconclusive")
     return bool(
-        value.get("classification") == classification
+        None not in derived and effects == derived
+        and value.get("classification") == classification
         and value["result_sha256"] == _discovery_content_hash({
             key: item for key, item in value.items()
             if key != "result_sha256"}))
@@ -6627,9 +6824,14 @@ def _discovery_v27_cumulative_performance(
         "incremental_graphs_off_effect_fraction",
         "incremental_graphs_on_effect_fraction",
         "cumulative_graphs_on_effect_fraction",
+        "incremental_exact_route_receipt_sha256",
+        "incremental_exact_route_receipt_ref",
         "incremental_graphs_off_receipt_sha256",
+        "incremental_graphs_off_receipt_ref",
         "incremental_graphs_on_receipt_sha256",
+        "incremental_graphs_on_receipt_ref",
         "production_graphs_on_receipt_sha256",
+        "production_graphs_on_receipt_ref",
         "incremental_graphs_off_frame_sha256",
         "incremental_graphs_on_frame_sha256",
         "production_graphs_on_frame_sha256",
@@ -6649,6 +6851,7 @@ def _discovery_v27_cumulative_performance(
                 "incremental_comparison_result_sha256", "model_sha256",
                 "workload_sha256", "runtime_config_sha256",
                 "protocol_frame_sha256",
+                "incremental_exact_route_receipt_sha256",
                 "incremental_graphs_off_receipt_sha256",
                 "incremental_graphs_on_receipt_sha256",
                 "production_graphs_on_receipt_sha256",
@@ -6659,6 +6862,19 @@ def _discovery_v27_cumulative_performance(
             or receipt.get("result_sha256") != _discovery_content_hash({
                 key: item for key, item in receipt.items()
                 if key != "result_sha256"})):
+        return unavailable
+    operations_root = _safe_bundle_path(
+        contract.get("operations_root"), bundle)
+    expected_performance_path = (
+        operations_root / receipt["operation_key"] /
+        "cumulative-performance.json"
+        if operations_root is not None else None)
+    try:
+        if (expected_performance_path is None
+                or path != expected_performance_path
+                or path.resolve(strict=False) != path):
+            return unavailable
+    except OSError:
         return unavailable
     static = contract.get("frozen_production_comparator")
     frozen = receipt.get("frozen_production")
@@ -6717,7 +6933,7 @@ def _discovery_v27_cumulative_performance(
             or not _discovery_v27_composition_build_pair(build_pair)
             or not _discovery_v27_full_correctness(correctness, build_pair)
             or not _discovery_v27_incremental_comparison(
-                comparison, build_pair, correctness)):
+                comparison, build_pair, correctness, contract)):
         return unavailable
     candidate_authority = plan["candidate_authority"]
     anchor_authority = plan["anchor_authority"]
@@ -6844,10 +7060,18 @@ def _discovery_v27_cumulative_performance(
                comparison.get("graphs_off_effect_fraction")
             or receipt.get("incremental_graphs_on_effect_fraction") !=
                comparison.get("graphs_on_effect_fraction")
+            or receipt.get("incremental_exact_route_receipt_sha256") !=
+               comparison.get("exact_route_receipt_sha256")
             or receipt.get("incremental_graphs_off_receipt_sha256") !=
                comparison.get("graphs_off_receipt_sha256")
             or receipt.get("incremental_graphs_on_receipt_sha256") !=
                comparison.get("graphs_on_receipt_sha256")
+            or receipt.get("incremental_exact_route_receipt_ref") !=
+               comparison.get("exact_route_receipt_ref")
+            or receipt.get("incremental_graphs_off_receipt_ref") !=
+               comparison.get("graphs_off_receipt_ref")
+            or receipt.get("incremental_graphs_on_receipt_ref") !=
+               comparison.get("graphs_on_receipt_ref")
             or len({
                 receipt["incremental_graphs_off_frame_sha256"],
                 receipt["incremental_graphs_on_frame_sha256"],
@@ -6856,6 +7080,34 @@ def _discovery_v27_cumulative_performance(
                 receipt["incremental_graphs_off_receipt_sha256"],
                 receipt["incremental_graphs_on_receipt_sha256"],
                 receipt["production_graphs_on_receipt_sha256"]}) != 3):
+        return unavailable
+    carrier_specs = (
+        ("incremental_exact_route_receipt_ref", "exact_route", None,
+         None),
+        ("incremental_graphs_off_receipt_ref", "incremental_graphs_off",
+         "off", "source_patch"),
+        ("incremental_graphs_on_receipt_ref", "incremental_graphs_on",
+         "on", "source_patch"),
+        ("production_graphs_on_receipt_ref", "production_graphs_on",
+         "on", "cumulative_production"),
+    )
+    carriers = tuple(
+        _discovery_v27_measurement_carrier(
+            receipt.get(key), role=role,
+            operation_key=receipt["operation_key"], contract=contract)
+        for key, role, _mode, _factor in carrier_specs)
+    if (any(row is None for row in carriers)
+            or len({row["operation_root"] for row in carriers}) != 1
+            or carriers[0]["repetition"] is not None
+            or len({row["repetition"] for row in carriers[1:]}) != 1
+            or receipt.get("incremental_exact_route_receipt_sha256") !=
+               carriers[0]["sha256"]
+            or receipt.get("incremental_graphs_off_receipt_sha256") !=
+               carriers[1]["sha256"]
+            or receipt.get("incremental_graphs_on_receipt_sha256") !=
+               carriers[2]["sha256"]
+            or receipt.get("production_graphs_on_receipt_sha256") !=
+               carriers[3]["sha256"]):
         return unavailable
     numeric_keys = (
         "incremental_exact_route_effect_fraction",
@@ -6868,7 +7120,21 @@ def _discovery_v27_cumulative_performance(
         return unavailable
     incremental = tuple(float(receipt[key]) for key in numeric_keys[:3])
     cumulative_on = float(receipt[numeric_keys[3]])
+    derived = (
+        _discovery_v27_exact_route_effect(carriers[0]["body"]),
+        _discovery_v27_runner_effect(
+            carriers[1]["body"], graph_mode="off",
+            factor_name="source_patch"),
+        _discovery_v27_runner_effect(
+            carriers[2]["body"], graph_mode="on",
+            factor_name="source_patch"),
+        _discovery_v27_runner_effect(
+            carriers[3]["body"], graph_mode="on",
+            factor_name="cumulative_production"),
+    )
     if any(value <= -1.0 for value in (*incremental, cumulative_on)):
+        return unavailable
+    if None in derived or (*incremental, cumulative_on) != derived:
         return unavailable
     incremental_class = (
         "candidate" if all(value > 0 for value in incremental)

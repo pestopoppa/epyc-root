@@ -56,6 +56,62 @@ def _digest(label: str) -> str:
     return hashlib.sha256(label.encode()).hexdigest()
 
 
+def _write_measurement_carrier(
+        path: Path, body: dict, *, role: str, native_key: str) -> dict:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    body = copy.deepcopy(body)
+    body[native_key] = server._discovery_content_hash(body)
+    raw = (json.dumps(body, sort_keys=True, indent=2) + "\n").encode()
+    path.write_bytes(raw)
+    return {
+        "schema": server._DISCOVERY_V27_MEASUREMENT_REF_SCHEMA,
+        "role": role, "path": str(path),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+    }
+
+
+def _exact_measurement(effect: float) -> tuple[dict, float]:
+    anchor_total = 1_000_000
+    candidate_total = round(anchor_total * (1.0 - effect))
+    derived = (anchor_total - candidate_total) / anchor_total
+    return ({
+        "schema": "epyc.autokernel.gpu_kernel_attribution_pair.v2",
+        "authority": "nonpromotable_candidate_only_discovery",
+        "non_promotable": True, "promotion_claim": False,
+        "exact_duration_comparison": {
+            "candidate_routes": {"candidate": {
+                "total_duration_ns": candidate_total, "calls": 9}},
+            "anchor_routes": {"anchor": {
+                "total_duration_ns": anchor_total, "calls": 9}},
+            "candidate_total_duration_ns": candidate_total,
+            "anchor_total_duration_ns": anchor_total,
+            "relative_improvement_fraction": derived,
+            "direction": ("improved" if derived > 0 else
+                          "regressed" if derived < 0 else "neutral"),
+            "all_candidate_routes_present": True,
+            "all_anchor_routes_present": True,
+            "statistic": "sum_exact_route_total_duration_ns",
+        },
+    }, derived)
+
+
+def _runner_measurement(
+        effect: float, *, graph_mode: str, factor_name: str) \
+        -> tuple[dict, float]:
+    center = 1_000_000.0
+    samples = [center * (1.0 + effect)]
+    effects = [(row - center) / center for row in samples]
+    return ({
+        "schema": "epyc.autokernel.gpu_candidate_only_screen.v2",
+        "authority": "nonpromotable_candidate_only_discovery",
+        "non_promotable": True, "promotion_claim": False,
+        "hip_residency_proved": True, "runtime_graphs": graph_mode,
+        "sole_factor": {"name": factor_name},
+        "baseline_center": center, "candidate_samples": samples,
+        "relative_effects": effects, "median_relative": effects[0],
+    }, effects[0])
+
+
 def _composition_authority(
         *, accepted: list[dict], campaign_id: str,
         production_base_commit: str, instrument_commit: str) -> dict:
@@ -190,25 +246,43 @@ def _full_correctness(pair: dict) -> dict:
 
 
 def _incremental_comparison(
-        pair: dict, correctness: dict, effect: float) -> dict:
-    effects = (effect, effect, effect)
+        pair: dict, correctness: dict, effect: float,
+        operation_root: Path) -> dict:
+    exact, exact_effect = _exact_measurement(effect)
+    off, off_effect = _runner_measurement(
+        effect, graph_mode="off", factor_name="source_patch")
+    on, on_effect = _runner_measurement(
+        effect, graph_mode="on", factor_name="source_patch")
+    exact_ref = _write_measurement_carrier(
+        operation_root / "proof/attribution-pair.json", exact,
+        role="exact_route", native_key="receipt_sha256")
+    off_ref = _write_measurement_carrier(
+        operation_root / "runner/s1/measurement-graphs-off/result.json",
+        off, role="incremental_graphs_off", native_key="result_sha256")
+    on_ref = _write_measurement_carrier(
+        operation_root / "runner/s1/target-runtime-graphs-on/result.json",
+        on, role="incremental_graphs_on", native_key="result_sha256")
+    effects = (exact_effect, off_effect, on_effect)
     classification = (
         "candidate" if all(value > 0 for value in effects)
         else "screened_out" if all(value <= 0 for value in effects)
         else "inconclusive")
     return _seal({
-        "schema": "epyc.autokernel.incremental_composition_comparison.v2",
+        "schema": "epyc.autokernel.incremental_composition_comparison.v3",
         "operation_key": pair["operation_key"],
         "build_pair_sha256": pair["pair_sha256"],
         "correctness_result_sha256": correctness["result_sha256"],
-        "exact_route_receipt_sha256": _digest("incremental-exact-route"),
+        "exact_route_receipt_sha256": exact_ref["sha256"],
+        "exact_route_receipt_ref": exact_ref,
         "expected_route_set_sha256": _digest("expected-route-set"),
-        "graphs_off_receipt_sha256": "d" * 64,
-        "graphs_on_receipt_sha256": "e" * 64,
+        "graphs_off_receipt_sha256": off_ref["sha256"],
+        "graphs_off_receipt_ref": off_ref,
+        "graphs_on_receipt_sha256": on_ref["sha256"],
+        "graphs_on_receipt_ref": on_ref,
         "target_runtime_frame_sha256": _digest("target-runtime-frame"),
-        "exact_route_effect_fraction": effect,
-        "graphs_off_effect_fraction": effect,
-        "graphs_on_effect_fraction": effect,
+        "exact_route_effect_fraction": exact_effect,
+        "graphs_off_effect_fraction": off_effect,
+        "graphs_on_effect_fraction": on_effect,
         "classification": classification,
         "exact_route_executed": True,
         "graphs_off_executed": True,
@@ -475,6 +549,7 @@ class V27Fixture(V26Fixture):
         plan = _composition_plan()
         operation_key = plan["operation_key"]
         plan_sha256 = plan["plan_sha256"]
+        operation_root = self.bundle / "operations" / operation_key
         anchor_identity = _build_identity("e" * 40, "1")
         candidate_identity = _build_identity("f" * 40, "a")
         def build_binding(identity: dict, patch_sha256: str) -> dict:
@@ -494,7 +569,19 @@ class V27Fixture(V26Fixture):
             "operation_key": operation_key, "plan_sha256": plan_sha256,
             "anchor": anchor, "candidate": candidate,
         }, "pair_sha256")
-        incremental_values = (incremental, incremental, incremental)
+        correctness = _full_correctness(build_pair)
+        comparison = _incremental_comparison(
+            build_pair, correctness, incremental, operation_root)
+        incremental_values = tuple(comparison[key] for key in (
+            "exact_route_effect_fraction", "graphs_off_effect_fraction",
+            "graphs_on_effect_fraction"))
+        production_body, cumulative = _runner_measurement(
+            cumulative, graph_mode="on", factor_name="cumulative_production")
+        production_ref = _write_measurement_carrier(
+            operation_root /
+            "runner/s1/cumulative-vs-production-graphs-on/result.json",
+            production_body, role="production_graphs_on",
+            native_key="result_sha256")
         incremental_class = (
             "candidate" if all(value > 0 for value in incremental_values)
             else "screened_out"
@@ -515,9 +602,6 @@ class V27Fixture(V26Fixture):
         claimed_reason = (
             reason if promotion_eligible_override is None
             else "cumulative_screened_out")
-        correctness = _full_correctness(build_pair)
-        comparison = _incremental_comparison(
-            build_pair, correctness, incremental)
         lever = plan["candidate_authority"]["accepted"][-1]
         terminal = {
             "schema": "epyc.autokernel.cumulative_composition_terminal.v3",
@@ -623,16 +707,29 @@ class V27Fixture(V26Fixture):
                 self.comparator["measurement_protocol_sha256"]),
             "metric": "decode_tokens_per_s",
             "metric_direction": "higher_better",
-            "incremental_exact_route_effect_fraction": incremental,
-            "incremental_graphs_off_effect_fraction": incremental,
-            "incremental_graphs_on_effect_fraction": incremental,
+            "incremental_exact_route_effect_fraction":
+                comparison["exact_route_effect_fraction"],
+            "incremental_graphs_off_effect_fraction":
+                comparison["graphs_off_effect_fraction"],
+            "incremental_graphs_on_effect_fraction":
+                comparison["graphs_on_effect_fraction"],
             "cumulative_graphs_on_effect_fraction": cumulative,
+            "incremental_exact_route_receipt_sha256": comparison[
+                "exact_route_receipt_sha256"],
+            "incremental_exact_route_receipt_ref": comparison[
+                "exact_route_receipt_ref"],
             "incremental_graphs_off_receipt_sha256": comparison[
                 "graphs_off_receipt_sha256"],
+            "incremental_graphs_off_receipt_ref": comparison[
+                "graphs_off_receipt_ref"],
             "incremental_graphs_on_receipt_sha256": comparison[
                 "graphs_on_receipt_sha256"],
+            "incremental_graphs_on_receipt_ref": comparison[
+                "graphs_on_receipt_ref"],
             "production_graphs_on_receipt_sha256": (
-                "d" * 64 if measurement_receipt_alias else "0" * 64),
+                comparison["graphs_off_receipt_sha256"]
+                if measurement_receipt_alias else production_ref["sha256"]),
+            "production_graphs_on_receipt_ref": production_ref,
             "incremental_graphs_off_frame_sha256": off_frame,
             "incremental_graphs_on_frame_sha256": on_frame,
             "production_graphs_on_frame_sha256": production_frame,
@@ -642,7 +739,7 @@ class V27Fixture(V26Fixture):
             "promotion_reason": claimed_reason,
             "composition_terminal_sha256": core_sha256,
         }, "result_sha256")
-        path = self.bundle / "evidence" / "cumulative-performance.json"
+        path = operation_root / "cumulative-performance.json"
         raw = (json.dumps(performance, sort_keys=True, indent=2) + "\n").encode()
         path.write_bytes(raw)
         binding = {"path": str(path),
@@ -1045,6 +1142,9 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
     def test_nested_producer_carriers_require_exact_schemas(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
             state, _, _ = fixture.cumulative_state()
             terminal = state["cumulative_composition_terminal"]
             plan = terminal["plan"]
@@ -1055,13 +1155,13 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self.assertTrue(server._discovery_v27_full_correctness(
                 correctness, pair))
             self.assertTrue(server._discovery_v27_incremental_comparison(
-                comparison, pair, correctness))
+                comparison, pair, correctness, contract))
             mutations = (
                 (server._discovery_v27_composition_plan, plan, "extra"),
                 (lambda value: server._discovery_v27_full_correctness(
                     value, pair), correctness, "extra"),
                 (lambda value: server._discovery_v27_incremental_comparison(
-                    value, pair, correctness), comparison, "extra"),
+                    value, pair, correctness, contract), comparison, "extra"),
             )
             for validate, value, key in mutations:
                 with self.subTest(schema=value["schema"]):
@@ -1946,6 +2046,60 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                         server, "_discovery_lock_held", return_value=False):
                 payload, _ = server._discovery_live_read()
             self.assertEqual(payload["activity"]["performance"], performance)
+
+    def test_coherently_resealed_summary_cannot_change_headline(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            receipt["cumulative_graphs_on_effect_fraction"] = .06
+            state = _reseal_cumulative_state(state, receipt, path)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
+
+    def test_resealed_carrier_summary_and_alias_paths_refuse(self) -> None:
+        for name in ("summary", "alias"):
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                reference = receipt["production_graphs_on_receipt_ref"]
+                carrier_path = Path(reference["path"])
+                if name == "summary":
+                    body = json.loads(carrier_path.read_text(encoding="utf-8"))
+                    body.pop("result_sha256")
+                    body["median_relative"] = .06
+                    body = _seal(body, "result_sha256")
+                    raw = (json.dumps(
+                        body, sort_keys=True, indent=2) + "\n").encode()
+                    carrier_path.write_bytes(raw)
+                    new_sha = hashlib.sha256(raw).hexdigest()
+                    reference["sha256"] = new_sha
+                    receipt["production_graphs_on_receipt_sha256"] = new_sha
+                    receipt["cumulative_graphs_on_effect_fraction"] = .06
+                else:
+                    alias = (fixture.bundle / "aliases" /
+                             receipt["operation_key"] / "runner/s1" /
+                             "cumulative-vs-production-graphs-on/result.json")
+                    alias.parent.mkdir(parents=True)
+                    alias.write_bytes(carrier_path.read_bytes())
+                    reference["path"] = str(alias)
+                state = _reseal_cumulative_state(state, receipt, path)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertEqual(
+                    performance["promotion_reason"],
+                    "producer_authority_unavailable")
 
     def test_cumulative_authority_fails_closed_for_bad_states(
             self) -> None:
