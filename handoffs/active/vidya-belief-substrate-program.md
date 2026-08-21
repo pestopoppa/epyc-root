@@ -912,6 +912,16 @@ findings to docs, move to `completed/`, delete the master-index row.
       paired-flip counts) — the template axis is the whole point, per the E-7 amendment. Source-table
       row: `scripts/vidya/adapters/README.md`; consumer task: CT-8 in
       `handoffs/active/qwen-chat-template-evaluation.md`.
+- [ ] **SC48 — wire the MI210 power-sensor probe suite into the belief kernel on the write side**
+      (filed 2026-08-21 by the session that produced it, at first measurement per the immediate-wiring
+      rule). `scripts/benchmark/power_sensor_probe/` (research @ `df40658a`) emits per-run JSON
+      (`analysis*.json`): idle/plateau watts, averaged-field t_d/t_r/t_f, derived-power response, FFT
+      peak/floor per commanded frequency, sampler cadence. Two runs exist with persistence. These are
+      OBSERVATIONS (no protocol id, gate nothing) — the adapter must carry that grade, PROJECT into a
+      `ClaimTuple` (metric_direction varies per field: watts lower-is-better only for idle; response
+      times lower-better; peak_over_floor higher-better) and let `claim_tuple.grade()` decide; it must
+      NOT write a new grading rule. Every tuple must carry the API-scaling caveat (raw counter x 15.3)
+      and the load-generator identity (1024^2 fp16 mm, sync-per-op).
 - [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.**
       Filed 2026-08-21 from `intake-1245#record` (FlashInfer-Bench, arXiv:2601.00227v1, Apache-2.0, repo @
       `40e6ca78`). **It is a write-side claim-tuple carrier in all but name**: an immutable

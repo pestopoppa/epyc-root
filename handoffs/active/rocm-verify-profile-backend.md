@@ -1325,12 +1325,24 @@ control codes via `nvdisasm` while AMD CDNA expresses dependencies through `s_wa
 port. Buying an MI300 would solve (1) and leave (3) untouched. A metric list at least has a proven analogue:
 our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 
-- [ ] **RVP-C4-10 — Settle GPA's input availability on the MI210 with one bounded probe (~30 min).** Run
+- [x] **RVP-C4-10 ✅ 2026-08-21 — Settle GPA's input availability on the MI210 with one bounded probe (~30 min).** Run
       `rocprofv3 --pc-sampling-beta-enabled` against one trivial HIP kernel and dump the per-sample record
       schema. Two decision-grade outcomes: the flag errors/does not exist on 6.2 → the C4-template question
       closes NEGATIVE until a ROCm upgrade is on the table; or it emits records → inspect whether any
       stall-reason field is populated under host-trap (docs say it will be absent). **Record what the
       hardware actually emits rather than concluding absence from documentation.**
+      **RESULT 2026-08-21 (measured, not doc-inferred): PC SAMPLING ON ROCm 6.2 IS A STUB.** The CLI
+      flag does not exist (`rocprofv3: error: unrecognized arguments: --pc-sampling-beta-enabled`,
+      SDK 0.4.0-66). The LIBRARY exports the API (`rocprofiler_query_pc_sampling_agent_configurations`,
+      `rocprofiler_configure_pc_sampling_service` both present in `librocprofiler-sdk.so`) — but calling
+      it against the live agent (enumerates cleanly as `gfx90a / AMD Instinct MI210`) returns **status 16
+      "API function is defined but not implemented"**, with the SDK's own log printing `pc_sampling.cpp:53]
+      PC sampling unavailable`. So the answer is stronger than "needs 6.4": at 6.2 there is NOTHING to
+      configure — no host-trap, no stochastic, no record schema to inspect. **The GPA C4-template question
+      closes NEGATIVE at this ROCm version by direct measurement.** The one caveat that stays doc-based:
+      whether a 6.4+ upgrade would yield stall reasons on gfx90a (docs say host-trap only, stall reasons
+      stochastic-exclusive = CDNA3+) remains untested because untestable here. Probe source:
+      `tmp/intake-20260821/pcs_probe/probe.c` (session scratch; ~40 lines, gcc against the side-loaded SDK).
 - [ ] **RVP-C4-11 — Require every C4 prescription to carry an ESTIMATED speedup, and log estimate-vs-achieved
       error.** GPA publishes estimated beside achieved for all 26 optimization rows, **mean error 4.1%**
       (worst rows 42% and 26%, both latency-hiding — do not quote the mean as the accuracy of any single
@@ -1370,7 +1382,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       the rsmi C API; and a 5 s IDLE window overlaps no workload, so per our own Observation Windows rule this
       is evidence about the **INSTRUMENT**, not about any run — agreement at idle is necessary but NOT
       sufficient, since filtering cannot bias a flat signal.
-- [ ] **RVP-PWR-2 — Run the aliasing probe on gfx90a under LOAD, which is where any divergence appears.**
+- [x] **RVP-PWR-2 ✅ 2026-08-21 (first pass; see caveat in the result block) — Run the aliasing probe on gfx90a under LOAD, which is where any divergence appears.**
       `intake-1238#record` (SC24, >70 GPUs, external-meter validated) shows the vendor power field is a
       firmware boxcar average over a window SHORTER than its own update period — 25% of runtime sampled on
       A100/H100. The probe is vendor-neutral: a periodic square-wave workload of controlled duty cycle swept
@@ -1396,6 +1408,20 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       average"_ in microwatts, so the vendor's own metric table confirms the filtering our probe is trying to
       bound. Report the knee **as a median with an interval**, matching their Figure 6 treatment across
       512 GPUs; on one MI210 the interval is across repeats, not devices, and must be labelled as such.
+      **RESULT 2026-08-21** (same probe suite @ `df40658a`): sampler sustained **107 µs/sample** via ctypes
+      on librocm_smi64 (1700x the CLI); the energy counter's **1 ms refresh CONFIRMED on-die** (236 distinct
+      values in 236 ms). FFT of derived power against commanded periods: 10 Hz → 9.9 Hz peak at 34.3 dB;
+      **250 Hz — the paper's aliased case — resolves CLEAN at 249.94 Hz, 32.2 dB (n=1, the one cell still
+      wanting repeats)**. Forcing analysis past Nyquist (500 Hz command at a 2 ms bin) produces the textbook
+      signature — peak shifted to 187.7 Hz, prominence collapsed to 2.8 dB — **validating the detection test
+      itself**. FINDING: the paper's ~4 ms knee is an INSTRUMENTATION-LAYER cost (consistent with its own
+      wording), not a sensor limit; with our sampler the floor is the counter's Nyquist (500 Hz). **API TRAP
+      recorded for every future consumer: `rsmi_dev_energy_count_get` returns the RAW COUNTER — energy_uJ =
+      counter x 15.3 (counter_resolution). The CLI pre-multiplies; the API does not; a naive dE/dt
+      under-reads by exactly 15.3x and looks plausible.** Load-generator lesson: sync every op, or the async
+      backlog stretches the realized period (measured: exactly halved frequency). Remaining, deliberately
+      not claimed: the token-cadence phase-lock measurement on a REAL decode workload — that needs a served
+      model and belongs at the next serving boundary.
 - [x] **RVP-PWR-3 — Ingest and verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — DONE
       2026-08-21, ingested as `intake-1251#record`.** It was indeed higher-value than anything else in that
       batch, because MI250X IS gfx90a. **All four preliminary figures CONFIRMED VERBATIM** against the
@@ -1419,13 +1445,19 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       are dense HPC linear algebra with **zero ML or inference content** and no statement about single-GPU
       applicability, so the token-cadence phase-lock hazard remains unmeasured by either paper — that gap is
       ours to close in RVP-PWR-2, which this paper now hands us the instrument for.
-- [ ] **RVP-PWR-5 — Re-measure the three CONFIDENCE-WINDOW parameters on the MI210, because the paper
+- [x] **RVP-PWR-5 ✅ 2026-08-21 — Re-measure the three CONFIDENCE-WINDOW parameters on the MI210, because the paper
       does not publish them.** `intake-1251#record` defines `W_conf = [t_s + t_d + t_r, t_e - t_d - t_f]`
       (delay, 10-90% rise, 90-10% fall) and states that outside it _"measurements are dominated by sensor
       transition effects"_ — but **no consolidated numeric values for t_d, t_r or t_f appear anywhere**, so
       **its own central equation cannot be applied as published.** They are characterised only visually in
       Figure 5. Fold this into RVP-PWR-2's square-wave sweep, which produces exactly these three quantities
       as a by-product. Until we have them, we cannot legitimately gate any phase-level power attribution.
+      **MEASURED 2026-08-21, TWO-RUN PERSISTENCE** (research `scripts/benchmark/power_sensor_probe/` @
+      `df40658a`): averaged field **t_d = 192.7 / 184.1 ms**, **t_r(10-90) = 4418 / 3913 ms**,
+      **t_f(90-10) = 3566 / 3479 ms** (idle 59.8/60.8 W, plateau 224.1/224.5 W). CONSEQUENCE: a phase must
+      exceed **~8 s** before the averaged field has ANY attributable interior — below that, dE/dt from the
+      energy counter is the only instrument (its own response: t_d ≤12 ms, t_r ≤2 ms). W_conf is now
+      computable on this part.
 - [ ] **RVP-PWR-6 — Adopt the RUNTIME-VS-POWER DECOMPOSITION for every energy claim, which we currently do
       not do at all.** `intake-1251#record` separates energy savings caused by shortening time-to-solution
       from savings caused by lowering instantaneous power, and finds mixed precision _"primarily improves

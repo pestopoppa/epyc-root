@@ -411,3 +411,21 @@ patch-identical twin-commit divergence (ccee7873 local / b3291d43 origin, same p
 a superset-safe `-s ours` merge, same as the first. Peer's live Stage-2b work (+4,102 uncommitted
 index lines, CT-5c progress edits) left strictly untouched. GPU-arm follow-ons remain with the codex
 agent per the dispatch; this session is quiescent pending compute or new operator input.
+
+### GPU compute pass (operator-directed): RVP-C4-10, PWR-2, PWR-5 all closed with hardware evidence
+
+GPU verified idle first (zero KFD clients via sysfs + host-wide fd scan; 59 W energy-derived draw; the
+100% busy field exposed as a latched telemetry artifact — itself corroborating intake-1251). Then, in
+~3 minutes of total GPU across five bounded runs: **RVP-C4-10** — PC sampling on ROCm 6.2 is a STUB
+(API exported, returns status 16 "defined but not implemented" against the live gfx90a agent; CLI flag
+absent) — the GPA/C4-template question closes NEGATIVE by measurement. **RVP-PWR-5** — the confidence-
+window parameters the paper never published, measured with two-run persistence: averaged field
+t_d ~190 ms, t_r ~4.2 s, t_f ~3.5 s → a phase needs ~8 s before any attributable interior exists.
+**RVP-PWR-2** — sampler at 107 µs/sample confirms the 1 ms counter cadence on-die; 250 Hz (the paper's
+aliased case) resolves CLEAN at 32 dB, so the 4 ms knee was their instrumentation cost, not the
+sensor's; the FFT detection signature validated by forcing aliasing past an analysis Nyquist. **API
+trap found the hard way**: `rsmi_dev_energy_count_get` returns the RAW counter (×15.3 to µJ) — a naive
+dE/dt under-reads 15.3× and looks plausible; and an async load backlog exactly halved a commanded wave
+frequency until sync-per-op. Suite + results: research `scripts/benchmark/power_sensor_probe/` @
+`df40658a`. SC48 belief-kernel wiring filed at first measurement. Remaining, deliberately unclaimed:
+the token-cadence phase-lock measurement needs a REAL decode workload at the next serving boundary.
