@@ -64,7 +64,7 @@ class V26Fixture:
         }, "carrier_sha256")
         self.input_rows = {}
         for name in (
-                "model", "workload", "runtime_config", "admission_policy",
+                "model", "workload", "runtime_config",
                 "hypothesis_portfolio", "hypothesis_evidence_manifest",
                 "hypothesis_portfolio_contract"):
             raw = f"sealed-{name}\n".encode()
@@ -72,6 +72,17 @@ class V26Fixture:
             path.write_bytes(raw)
             self.input_rows[name] = {
                 "path": str(path), "sha256": hashlib.sha256(raw).hexdigest()}
+        self.admission = _seal({
+            "schema": "epyc.autokernel.gpu_load_admission_policy.v2",
+            "version": "fixture-admission-v1", "examples": [], "profiles": [],
+        }, "policy_sha256")
+        admission_path = self.inputs / "admission_policy.json"
+        admission_raw = server._canonical_json_bytes(self.admission) + b"\n"
+        admission_path.write_bytes(admission_raw)
+        self.input_rows["admission_policy"] = {
+            "path": str(admission_path),
+            "sha256": hashlib.sha256(admission_raw).hexdigest(),
+        }
         carrier_path = self.inputs / "preauthored.json"
         carrier_raw = server._canonical_json_bytes(self.carrier) + b"\n"
         carrier_path.write_bytes(carrier_raw)
@@ -245,6 +256,8 @@ class V26Fixture:
             "hypothesis_author": "reviewed-eb26918-continuation",
             "historical_correctness_authority": "provenance_only",
             "modern_governed_correctness_required": True,
+            "source_manifest_sha256": "6" * 64,
+            "candidate_semantic_sha256": "7" * 64,
         }
         pending = {
             "phase": "preauthored_ready", "row": row,
@@ -258,12 +271,24 @@ class V26Fixture:
         state = _seal({
             "schema": "epyc.autokernel.discovery_controller.v7",
             "authority": "nonpromotable_candidate_only_discovery",
+            "roster": copy.deepcopy(server._DISCOVERY_V26_ROSTER),
             "iterations": [], "next": 1, "scientific_attempts": 0,
             "complete": False, "pending": pending,
             "deployment_identity_sha256": self.config["config_sha256"],
+            "planner_context_sha256": server._discovery_content_hash({
+                "planner_context_sha256": self.planner["context_sha256"],
+                "admission_policy_sha256": self.admission["policy_sha256"],
+                "admission_policy_version": self.admission["version"],
+                "deployment_identity_sha256": self.config["config_sha256"],
+            }),
             "experiment_template_registry_sha256": "f" * 64,
+            "admission_corpus_sha256": self.admission["policy_sha256"],
+            "admission_corpus_version": self.admission["version"],
             "hypothesis_portfolio_sha256": "c" * 64,
             "carry_forward_sha256": "0" * 64,
+            "preauthored_continuation_sha256": self.carrier["carrier_sha256"],
+            "preauthored_source_backed_diff_sha256": "b" * 64,
+            "updated_at": "2026-08-21T12:00:00Z",
         }, "state_sha256")
         return state, authority
 
@@ -412,7 +437,7 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             fixture = V26Fixture(Path(directory))
             path = fixture.write_journal([
                 ("discovery_planner_transient", "1" * 64),
-                ("discovery_planning_started", "2" * 64),
+                ("discovery_planner_intent", "2" * 64),
             ])
             checkpoint = server._discovery_v26_checkpoint(
                 path, now=1_787_313_601.0)
@@ -454,6 +479,13 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             future = copy.deepcopy(valid_rows)
             future[1]["written_at"] = "2099-01-01T00:00:00Z"
             mutations["future timestamp"] = (future, True, True)
+            unknown_phase = copy.deepcopy(valid_rows)
+            unknown_phase[1]["payload"]["state"] = "discovery_forged"
+            unknown_phase[1]["event_id"] = (
+                "akj-000000000002-" + server._discovery_content_hash(
+                    unknown_phase[1]["payload"])[:12])
+            mutations["unknown producer phase"] = (
+                unknown_phase, True, True)
             for label, (rows, canonical, newline) in mutations.items():
                 with self.subTest(label=label):
                     write_rows(rows, canonical=canonical, newline=newline)
@@ -487,7 +519,12 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             repeated = copy.deepcopy(state)
             repeated["iterations"] = [transient, second, {
                 "turn": 1, "status": "planner_refused",
-                "scientific_budget_spent": False}]
+                "reason": "malformed actor output",
+                "refusal_type": "planner_output_refusal",
+                "scientific_budget_spent": False,
+                "telemetry_event": "planner_refused",
+                "telemetry_status": "emitted",
+                "planner_operation_key": "4" * 64}]
             repeated["next"] = 2
             repeated["planner_provider_attempt"] = 2
             repeated = _seal(repeated, "state_sha256")
@@ -593,7 +630,89 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             self.assertIsNone(server._discovery_v26_state_contract(
                 malformed, contract))
 
+            ambiguity_mutations = {
+                "empty receipt path": lambda value: value[
+                    "infrastructure_ambiguities"][0].update(
+                        stage_receipt_path=""),
+                "duplicate operation": lambda value: value[
+                    "infrastructure_ambiguities"].append(copy.deepcopy(
+                        value["infrastructure_ambiguities"][0])),
+                "epoch gap": lambda value: value[
+                    "infrastructure_ambiguities"][0].update(retry_epoch=1),
+                "malformed earlier row": lambda value: value[
+                    "infrastructure_ambiguities"].insert(0, {
+                        **copy.deepcopy(value["infrastructure_ambiguities"][0]),
+                        "operation_key": "e" * 64,
+                        "stage_receipt_path": "",
+                    }),
+            }
+            for label, mutate in ambiguity_mutations.items():
+                with self.subTest(ambiguity=label):
+                    changed = copy.deepcopy(variants["ambiguity_retry"])
+                    mutate(changed)
+                    changed = _seal(changed, "state_sha256")
+                    self.assertIsNone(server._discovery_v26_state_contract(
+                        changed, contract))
+
+    def test_v26_state_exact_grammar_holders_terminal_and_budget(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V26Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v26_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, _ = fixture.checkpoint()
+
+            terminal = copy.deepcopy(state)
+            terminal.pop("pending")
+            terminal.update(complete=True, terminal_reason="portfolio_exhausted")
+            terminal = _seal(terminal, "state_sha256")
+            self.assertIsNotNone(server._discovery_v26_state_contract(
+                terminal, contract))
+
+            mutations = {
+                "missing complete": lambda value: value.pop("complete"),
+                "missing roster": lambda value: value.pop("roster"),
+                "changed roster": lambda value: value["roster"].update(
+                    member_count=3),
+                "unknown top key": lambda value: value.update(
+                    raw_secret="must-not-project"),
+                "pending plus inflight": lambda value: value.update(
+                    inflight={"phase": "forged"}),
+                "pending plus planning": lambda value: value.update(
+                    planning={"phase": "forged"}),
+                "explicit null inflight": lambda value: value.update(
+                    inflight=None),
+                "complete plus pending": lambda value: value.update(
+                    complete=True, terminal_reason="portfolio_exhausted"),
+                "terminal while incomplete": lambda value: value.update(
+                    terminal_reason="portfolio_exhausted"),
+                "budget above authority": lambda value: value.update(
+                    scientific_attempts=contract["max_iterations"] + 1),
+                "missing planner link": lambda value: value.pop(
+                    "planner_context_sha256"),
+                "changed admission link": lambda value: value.update(
+                    admission_corpus_sha256="0" * 64),
+                "future state timestamp": lambda value: value.update(
+                    updated_at="2099-01-01T00:00:00Z"),
+            }
+            for label, mutate in mutations.items():
+                with self.subTest(label=label):
+                    changed = copy.deepcopy(state)
+                    mutate(changed)
+                    changed = _seal(changed, "state_sha256")
+                    self.assertIsNone(server._discovery_v26_state_contract(
+                        changed, contract))
+
     def test_coherently_rehashed_graph_mutations_fail_closed(self) -> None:
+        def promote_structural_tail(fixture: V26Fixture) -> None:
+            surface = fixture.graph["template_surfaces"][
+                "cuda-mmvq-q5-onewave-continuation-v1"]
+            structural = copy.deepcopy(surface["excluded_signatures"][0])
+            reward = {**structural, "kernel_name": "structural_tail_promoted"}
+            fixture.graph["portfolio_dispatch_authority"][
+                "akh-v2-q5-onewave-preauthored"].append(reward)
+            surface["dispatch_signatures"].append(structural)
+
         mutations = {
             "role path swap": lambda fixture: fixture.graph[
                 "execution_modules"]["preauthored_continuation"].update(
@@ -603,12 +722,7 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
                 "template_surfaces"][
                     "cuda-mmvq-q5-onewave-continuation-v1"].update(
                         excluded_signatures=[]),
-            "tail promoted into reward": lambda fixture: fixture.graph[
-                "portfolio_dispatch_authority"][
-                    "akh-v2-q5-onewave-preauthored"].append(
-                        fixture.graph["template_surfaces"][
-                            "cuda-mmvq-q5-onewave-continuation-v1"
-                        ]["excluded_signatures"][0]),
+            "tail promoted into reward": promote_structural_tail,
         }
         for label, mutate in mutations.items():
             with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
@@ -618,6 +732,9 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
                     fixture.graph["portfolio_dispatch_authority_sha256"] = (
                         server._discovery_controller_state_hash(
                             fixture.graph["portfolio_dispatch_authority"]))
+                    fixture.graph["template_surfaces_sha256"] = (
+                        server._discovery_controller_state_hash(
+                            fixture.graph["template_surfaces"]))
                 if label == "structural tail missing":
                     fixture.graph["template_surfaces_sha256"] = (
                         server._discovery_controller_state_hash(
@@ -635,13 +752,43 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             state, _ = fixture.checkpoint()
             wrong_count = copy.deepcopy(state)
             wrong_count.pop("pending")
-            wrong_count["iterations"] = [
-                {"turn": 1, "scientific_budget_spent": False},
-                {"turn": 2, "scientific_budget_spent": True},
-                {"turn": 3, "scientific_budget_spent": False},
-            ]
-            wrong_count["next"] = 4
+            science_row = {
+                "turn": 1, "status": "candidate",
+                "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+                "portfolio_hypothesis_id":
+                    "akh-v2-q5-onewave-preauthored",
+                "proposal_sha256": "1" * 64,
+                "source_manifest_sha256": "6" * 64,
+                "candidate_semantic_sha256": "7" * 64,
+                "portfolio_record_sha256": "2" * 64,
+                "portfolio_binding": {}, "portfolio_decision_policy": {},
+                "operation_key": "3" * 64,
+                "result_sha256": "4" * 64,
+                "evidence": {"baseline": "5" * 64, "source": "6" * 64,
+                             "dispatch": "7" * 64},
+                "effect_fraction": 0.1, "series_effect_fraction": 0.1,
+                "series_key": "8" * 64,
+                "component_series_keys": ["9" * 64],
+                "exact_attribution_effect_fraction": 0.1,
+                "target_runtime_effect_fraction": 0.1,
+                "target_runtime_executed": True,
+                "target_runtime_reason": None,
+                "stages": [], "repetition": 1,
+                "scientific_budget_spent": True,
+            }
+            wrong_count["iterations"] = [science_row]
+            wrong_count["next"] = 2
             wrong_count["scientific_attempts"] = 2
+            wrong_count["candidate_semantic_registry_schema"] = (
+                "epyc.autokernel.candidate_semantic_registry.v1")
+            wrong_count["attempted_candidate_identities"] = {
+                "7" * 64: {
+                    "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+                    "attempts": [{"operation_key": "3" * 64,
+                                  "result_sha256": "4" * 64,
+                                  "disposition": "candidate",
+                                  "repetition": 1}],
+                }}
             wrong_count = _seal(wrong_count, "state_sha256")
             self.assertIsNone(server._discovery_v26_state_contract(
                 wrong_count, contract))
@@ -652,6 +799,22 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             projected = server._discovery_v26_state_contract(
                 exact_count, contract)
             self.assertEqual(projected["scientific_attempts"], 1)
+
+            bare_boolean = copy.deepcopy(exact_count)
+            bare_boolean["iterations"] = [{
+                "turn": 1, "status": "candidate",
+                "scientific_budget_spent": True}]
+            bare_boolean.pop("candidate_semantic_registry_schema")
+            bare_boolean.pop("attempted_candidate_identities")
+            bare_boolean = _seal(bare_boolean, "state_sha256")
+            self.assertIsNone(server._discovery_v26_state_contract(
+                bare_boolean, contract))
+
+            nested_secret = copy.deepcopy(exact_count)
+            nested_secret["iterations"][0]["raw_secret"] = "must-not-project"
+            nested_secret = _seal(nested_secret, "state_sha256")
+            self.assertIsNone(server._discovery_v26_state_contract(
+                nested_secret, contract))
 
             wrong_origin = copy.deepcopy(state)
             authority = wrong_origin["pending"]["preauthored_continuation"]

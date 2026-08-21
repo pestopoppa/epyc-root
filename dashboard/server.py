@@ -4001,6 +4001,96 @@ _DISCOVERY_V26_PREAUTHORED_CHECKPOINT_KEYS = {
     "origin", "author", "historical_commit",
     "modern_governed_correctness_required", "receipt_sha256",
 }
+_DISCOVERY_V26_ROSTER = {
+    "schema": "epyc.autokernel.discovery_roster.v3",
+    "members": [
+        {"provider": "codex", "model": "gpt-5.6-sol",
+         "effort": "high", "role": "planner"},
+        {"provider": "claude", "model": "claude-fable-5",
+         "effort": "high", "role": "critic"},
+    ],
+    "claude_members": 1,
+    "member_count": 2,
+}
+_DISCOVERY_V26_STATE_REQUIRED = {
+    "schema", "authority", "roster", "iterations", "next",
+    "scientific_attempts", "complete", "deployment_identity_sha256",
+    "planner_context_sha256", "experiment_template_registry_sha256",
+    "admission_corpus_sha256", "admission_corpus_version",
+    "hypothesis_portfolio_sha256", "carry_forward_sha256",
+    "preauthored_continuation_sha256",
+    "preauthored_source_backed_diff_sha256", "updated_at", "state_sha256",
+}
+_DISCOVERY_V26_STATE_OPTIONAL = {
+    "pending", "inflight", "planning", "planner_provider_attempt",
+    "visibility_degraded", "attempted_candidate_identities",
+    "candidate_semantic_registry_schema", "infrastructure_ambiguities",
+    "portfolio_attribution_failures", "portfolio_authoring_failures",
+    "portfolio_measurement_output_failures", "portfolio_skips",
+    "portfolio_terminals", "portfolio_validations", "terminal_reason",
+}
+_DISCOVERY_V26_CHECKPOINT_STATES = {
+    "discovery_authorization_refused",
+    "discovery_attribution_route_falsified",
+    "discovery_candidate_semantic_repeat_refused",
+    "discovery_complete",
+    "discovery_correctness_falsified",
+    "discovery_critic_checkpointed",
+    "discovery_critic_refused",
+    "discovery_dry_run_authorized",
+    "discovery_measurement_output_refused",
+    "discovery_paused",
+    "discovery_planner_checkpointed",
+    "discovery_planner_contract_refused",
+    "discovery_planner_entering",
+    "discovery_planner_intent",
+    "discovery_planner_refused",
+    "discovery_planner_telemetry_recovery",
+    "discovery_planner_terminal_failure",
+    "discovery_planner_transient",
+    "discovery_portfolio_dnr_refused",
+    "discovery_portfolio_exhausted",
+    "discovery_post_screen_result",
+    "discovery_pre_screen_intent",
+    "discovery_pre_screen_reacquired",
+    "discovery_preauthored_checkpointed",
+    "discovery_recovered_screen",
+    "discovery_screen_ambiguous",
+    "discovery_screen_infrastructure_ambiguity",
+    "discovery_screen_refused",
+    "discovery_screen_resumable_interruption",
+    "discovery_screened",
+    "discovery_visibility_degraded",
+    "discovery_waiting_resource",
+    "discovery_authoring_refused",
+}
+_DISCOVERY_V26_ITERATION_KEYS = {
+    "turn", "status", "reason", "refusal_type", "statement", "falsifier",
+    "regime", "hypothesis_id", "proposal_sha256",
+    "source_manifest_sha256", "experiment_intent", "mechanism_id",
+    "target_surface", "target_symbol", "context_sha256",
+    "candidate_semantic_sha256", "portfolio_hypothesis_id",
+    "portfolio_binding", "portfolio_record_sha256",
+    "portfolio_decision_policy", "portfolio_exact_dnr_check",
+    "portfolio_disposition", "priority", "current_bundle_eligibility",
+    "critic", "authorization", "campaign_ledger_dnr_outcome",
+    "campaign_ledger_dnr_reasons", "preauthored_continuation",
+    "authoring_turn", "hypothesis_origin", "hypothesis_author",
+    "historical_correctness_authority",
+    "modern_governed_correctness_required", "operation_key", "lease",
+    "replication_of", "result_sha256", "evidence", "effect_fraction",
+    "series_effect_fraction", "series_key", "component_series_keys",
+    "exact_attribution_effect_fraction", "target_runtime_effect_fraction",
+    "target_runtime_executed", "target_runtime_reason", "stages",
+    "repetition", "scientific_budget_spent", "classification",
+    "correctness_status", "stage", "stage_receipt_path",
+    "stage_receipt_sha256", "receipt_path", "schema", "authority",
+    "idempotency_key", "threshold", "promotion_claim",
+    "operator_decision_required", "planner_operation_key",
+    "planner_checkpoint_reused", "telemetry_event", "telemetry_status",
+    "telemetry_failure", "telemetry_failures", "telemetry_recovery",
+    "visibility_degraded",
+}
 
 
 def _discovery_sha256(value: object) -> bool:
@@ -4068,6 +4158,11 @@ def _discovery_v26_contract(config_path: Path, config: object,
     if any(not isinstance(config.get(key), dict)
            or set(config[key]) != keys for key, keys in exact_nested.items()):
         return None
+    max_iterations = config["controller"].get("max_iterations")
+    if (isinstance(max_iterations, bool)
+            or not isinstance(max_iterations, int)
+            or not 1 <= max_iterations <= 1000):
+        return None
     inputs = config.get("immutable_inputs")
     input_keys = {"model", "workload", "runtime_config", "admission_policy",
                   "hypothesis_portfolio", "hypothesis_evidence_manifest",
@@ -4085,7 +4180,20 @@ def _discovery_v26_contract(config_path: Path, config: object,
     carrier_row = _discovery_v26_input(
         inputs["preauthored_continuation"], bundle,
         max_bytes=2 * 1024 * 1024)
-    if carrier_row is None:
+    admission_row = _discovery_v26_input(
+        inputs["admission_policy"], bundle, max_bytes=4 * 1024 * 1024)
+    if carrier_row is None or admission_row is None:
+        return None
+    admission = _strict_json_bytes(admission_row[1])
+    if (not isinstance(admission, dict)
+            or admission.get("schema") !=
+               "epyc.autokernel.gpu_load_admission_policy.v2"
+            or not isinstance(admission.get("version"), str)
+            or not admission["version"]
+            or not _discovery_sha256(admission.get("policy_sha256"))
+            or admission["policy_sha256"] != _discovery_content_hash({
+                key: value for key, value in admission.items()
+                if key != "policy_sha256"})):
         return None
     planner_binding = _discovery_v26_input(
         config.get("planner_context"), bundle, max_bytes=512 * 1024)
@@ -4234,10 +4342,14 @@ def _discovery_v26_contract(config_path: Path, config: object,
                 or len(q5_surface["excluded_signatures"]) != 1):
             return None
         structural = q5_surface["excluded_signatures"][0]
+        route_shape_keys = (
+            "route_id", "calls", "grid", "workgroup", "lds_bytes")
         if (not isinstance(structural, dict)
                 or set(structural) != {"route_id", "calls", "grid",
                                       "workgroup", "lds_bytes"}
-                or any(structural == row for row in q5_routes)):
+                or any(structural == {
+                    key: row[key] for key in route_shape_keys}
+                    for row in q5_routes)):
             return None
     module_hashes = (_DISCOVERY_V26_EXECUTION_MODULE_SHA256
                      if isinstance(_DISCOVERY_V26_EXECUTION_MODULE_SHA256, dict)
@@ -4276,11 +4388,24 @@ def _discovery_v26_contract(config_path: Path, config: object,
         "deployment_identity_sha256": config["config_sha256"],
         "planner_context_file_sha256":
             config["planner_context"]["sha256"],
+        "planner_context_sha256": _discovery_content_hash({
+            "planner_context_sha256": planner["context_sha256"],
+            "admission_policy_sha256": admission["policy_sha256"],
+            "admission_policy_version": admission["version"],
+            "deployment_identity_sha256": config["config_sha256"],
+        }),
+        "admission_corpus_sha256": admission["policy_sha256"],
+        "admission_corpus_version": admission["version"],
+        "max_iterations": config["controller"].get("max_iterations"),
+        "state_root": config["controller"].get("state_root"),
         "template_registry_sha256": planner["template_registry_sha256"],
         "hypothesis_portfolio_sha256":
             planner["hypothesis_portfolio_sha256"],
         "carry_forward_sha256": (
             graph.get("carry_forward_sha256") if graph is not None else None),
+        "preauthored_continuation_sha256": carrier["carrier_sha256"],
+        "preauthored_source_backed_diff_sha256":
+            carrier["patch"].get("source_backed_sha256"),
         "historical_commit": (
             carrier.get("historical_candidate", {}).get("commit")
             if isinstance(carrier.get("historical_candidate"), dict) else None),
@@ -4316,9 +4441,8 @@ def _discovery_v26_checkpoint(path: Path, *, now: float) -> dict | None:
         payload = row.get("payload")
         if (not isinstance(payload, dict)
                 or set(payload) != {"state", "controller_state_sha256"}
-                or not isinstance(payload.get("state"), str)
-                or re.fullmatch(r"discovery_[a-z0-9_]{1,96}",
-                                payload["state"]) is None
+                or payload.get("state") not in
+                   _DISCOVERY_V26_CHECKPOINT_STATES
                 or not _discovery_sha256(
                     payload.get("controller_state_sha256"))):
             return None
@@ -4415,6 +4539,60 @@ def _discovery_v26_planner_transient(row: object, *, turn: int) -> bool:
     return True
 
 
+def _discovery_v26_infrastructure_ambiguities(state: dict) -> bool:
+    events = state.get("infrastructure_ambiguities", [])
+    if not isinstance(events, list):
+        return False
+    seen: set[str] = set()
+    latest: dict[str, int] = {}
+    for event in events:
+        if (not isinstance(event, dict)
+                or set(event) != {
+                    "schema", "operation_key", "source_manifest_sha256",
+                    "candidate_semantic_sha256", "stage_receipt_path",
+                    "stage_receipt_sha256", "reason_sha256", "retry_epoch"}
+                or event.get("schema") !=
+                   "epyc.autokernel.screen_infrastructure_ambiguity.v1"
+                or not all(_discovery_sha256(event.get(key)) for key in (
+                    "operation_key", "source_manifest_sha256",
+                    "candidate_semantic_sha256", "stage_receipt_sha256",
+                    "reason_sha256"))
+                or not isinstance(event.get("stage_receipt_path"), str)
+                or not event["stage_receipt_path"]
+                or isinstance(event.get("retry_epoch"), bool)
+                or not isinstance(event.get("retry_epoch"), int)
+                or event["retry_epoch"] < 0
+                or event["operation_key"] in seen):
+            return False
+        identity = event["candidate_semantic_sha256"]
+        if event["retry_epoch"] != latest.get(identity, -1) + 1:
+            return False
+        latest[identity] = event["retry_epoch"]
+        seen.add(event["operation_key"])
+    for label in ("pending", "inflight"):
+        holder = state.get(label)
+        if holder is None:
+            continue
+        if not isinstance(holder, dict):
+            return False
+        row = holder.get("row")
+        identity = (row.get("candidate_semantic_sha256")
+                    if isinstance(row, dict) else None)
+        epoch = holder.get("infrastructure_retry_epoch", 0)
+        if (isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0
+                or epoch > 0 and not _discovery_sha256(identity)):
+            return False
+        expected = latest.get(str(identity), -1) + 1
+        if ((epoch or identity in latest)
+                and holder.get("confirmation") is not True
+                and epoch != expected):
+            return False
+        if (label == "inflight" and epoch
+                and holder.get("operation_key") in seen):
+            return False
+    return True
+
+
 def _discovery_v26_preauthored_pending(
         pending: dict, state: dict) -> bool:
     row = pending.get("row")
@@ -4471,41 +4649,300 @@ def _discovery_v26_preauthored_pending(
             and event.get("candidate_semantic_sha256") ==
                 row.get("candidate_semantic_sha256")
             and event.get("retry_epoch") == retry_epoch - 1
+            and isinstance(event.get("stage_receipt_path"), str)
+            and bool(event["stage_receipt_path"])
             and all(_discovery_sha256(event.get(key)) for key in (
                 "stage_receipt_sha256", "reason_sha256")))
 
 
+def _discovery_v26_iteration(row: object, *, turn: int) -> tuple[bool, bool]:
+    """Validate one consuming v26 iteration and return (valid, scientific)."""
+    if (not isinstance(row, dict) or row.get("turn") != turn
+            or set(row) - _DISCOVERY_V26_ITERATION_KEYS
+            or isinstance(row.get("turn"), bool)
+            or not isinstance(row.get("status"), str)):
+        return False, False
+    spent = row.get("scientific_budget_spent")
+    has_result = "result_sha256" in row or "evidence" in row
+    if spent is True or has_result:
+        if (spent is not True
+                or not _discovery_sha256(row.get("result_sha256"))
+                or not _discovery_sha256(row.get("operation_key"))
+                or not _discovery_sha256(
+                    row.get("candidate_semantic_sha256"))
+                or not _discovery_sha256(row.get("source_manifest_sha256"))
+                or not _discovery_sha256(row.get("proposal_sha256"))
+                or not _discovery_sha256(row.get("portfolio_record_sha256"))
+                or not isinstance(row.get("portfolio_hypothesis_id"), str)
+                or row.get("hypothesis_id") !=
+                   row.get("portfolio_hypothesis_id")
+                or not isinstance(row.get("portfolio_binding"), dict)
+                or not isinstance(row.get("portfolio_decision_policy"), dict)
+                or not isinstance(row.get("evidence"), dict)):
+            return False, False
+        evidence = row["evidence"]
+        if row["status"] == "correctness_falsified":
+            valid = bool(
+                row.get("stage") == "correctness"
+                and row.get("classification") == "screened_out"
+                and row.get("correctness_status") == "failed"
+                and _discovery_sha256(row.get("stage_receipt_sha256"))
+                and isinstance(row.get("stage_receipt_path"), str)
+                and row["stage_receipt_path"]
+                and row.get("repetition", 1) in {1, 2}
+                and evidence == {
+                    "correctness_divergence":
+                        row["stage_receipt_sha256"]})
+            return valid, valid
+        if row["status"] == "attribution_route_falsified":
+            valid = bool(
+                row.get("stage") == "dispatch_attribution"
+                and row.get("classification") == "screened_out"
+                and row.get("stage_receipt_sha256") == row["result_sha256"]
+                and isinstance(row.get("stage_receipt_path"), str)
+                and row["stage_receipt_path"]
+                and row.get("repetition", 1) in {1, 2}
+                and evidence == {
+                    "dispatch_attribution": row["result_sha256"]})
+            return valid, valid
+        if row["status"] not in {
+                "baseline", "candidate", "inconclusive",
+                "top_k_replicated_candidate", "screened_out",
+                "replicated_but_subadditive"}:
+            return False, False
+        if (row.get("repetition") not in {1, 2}
+                or set(evidence) != {"baseline", "source", "dispatch"}
+                or not all(_discovery_sha256(evidence.get(key)) for key in
+                           ("baseline", "source", "dispatch"))
+                or not isinstance(row.get("effect_fraction"), (int, float))
+                or isinstance(row.get("effect_fraction"), bool)
+                or not math.isfinite(float(row["effect_fraction"]))
+                or not isinstance(row.get("series_effect_fraction"),
+                                  (int, float))
+                or isinstance(row.get("series_effect_fraction"), bool)
+                or not math.isfinite(float(row["series_effect_fraction"]))
+                or not _discovery_sha256(row.get("series_key"))
+                or not isinstance(row.get("component_series_keys"), list)
+                or not all(_discovery_sha256(value)
+                           for value in row["component_series_keys"])
+                or not isinstance(row.get("target_runtime_executed"), bool)
+                or not isinstance(row.get("stages"), list)):
+            return False, False
+        if ((row["target_runtime_executed"] is True
+             and row.get("target_runtime_reason") is not None)
+                or (row["target_runtime_executed"] is False
+                    and row.get("target_runtime_reason") not in {
+                        "nonpositive_exact_duration",
+                        "not_required_or_unavailable"})):
+            return False, False
+        for key in ("exact_attribution_effect_fraction",
+                    "target_runtime_effect_fraction"):
+            value = row.get(key)
+            if (value is not None and (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(float(value)))):
+                return False, False
+        return True, True
+    non_scientific_statuses = {
+        "planner_refused", "critic_revise", "critic_reject",
+        "screen_refused", "authoring_refused", "planner_contract_refused",
+        "candidate_semantic_repeat_refused", "authorization_refused",
+        "correctness_falsified", "measurement_output_refused",
+        "portfolio_dnr_refused", "dry_run_authorized",
+    }
+    if (spent not in {None, False}
+            or row["status"] not in non_scientific_statuses):
+        return False, False
+    if row["status"] == "planner_refused" and not (
+            row.get("refusal_type") == "planner_output_refusal"
+            and row.get("scientific_budget_spent") is False
+            and row.get("telemetry_event") == "planner_refused"
+            and row.get("telemetry_status") == "emitted"
+            and _discovery_sha256(row.get("planner_operation_key"))):
+        return False, False
+    return True, False
+
+
+def _discovery_v26_generic_holder(
+        label: str, holder: object, state: dict, contract: dict) -> bool:
+    if not isinstance(holder, dict):
+        return False
+    if label == "planning":
+        required = {"phase", "turn", "provider_attempt", "operation_key",
+                    "context", "context_sha256", "portfolio_binding",
+                    "workspace"}
+        optional = {"failure", "telemetry_recovery"}
+        if (not required.issubset(holder)
+                or set(holder) - (required | optional)
+                or holder.get("phase") not in {"intent", "actor_entering"}
+                or holder.get("turn") != state.get("next")
+                or isinstance(holder.get("provider_attempt"), bool)
+                or not isinstance(holder.get("provider_attempt"), int)
+                or holder["provider_attempt"] < 0
+                or holder["provider_attempt"] !=
+                   state.get("planner_provider_attempt", 0)
+                or not isinstance(holder.get("context"), dict)
+                or holder.get("context_sha256") !=
+                   _discovery_controller_state_hash(holder["context"])
+                or holder.get("portfolio_binding") is not None
+                   and not isinstance(holder.get("portfolio_binding"), dict)):
+            return False
+        if ("failure" in holder and (
+                not isinstance(holder["failure"], dict)
+                or set(holder["failure"]) != {"type", "message"}
+                or not all(isinstance(holder["failure"].get(key), str)
+                           and holder["failure"][key]
+                           for key in ("type", "message")))):
+            return False
+        if ("telemetry_recovery" in holder
+                and holder["telemetry_recovery"] != {
+                    "schema": "epyc.autokernel.planner_telemetry_recovery.v1",
+                    "disposition":
+                        "resume_checkpoint_and_rederive_refusal"}):
+            return False
+        operation = _discovery_controller_state_hash({
+            "schema": "epyc.autokernel.planning_operation.v1",
+            "turn": holder["turn"],
+            "context_sha256": holder["context_sha256"],
+            "deployment_identity_sha256":
+                contract.get("deployment_identity_sha256"),
+            "provider_attempt": holder["provider_attempt"],
+        })
+        expected_workspace = str(
+            Path(str(contract.get("state_root"))) / "planner-operations" /
+            str(operation) / "workspace")
+        return (holder.get("operation_key") == operation
+                and holder.get("workspace") == expected_workspace)
+    row = holder.get("row")
+    candidate = holder.get("candidate")
+    if (not isinstance(row, dict) or not isinstance(candidate, dict)
+            or row.get("turn") != state.get("next")):
+        return False
+    if label == "inflight":
+        required = {"operation_key", "row", "candidate", "authorization",
+                    "lease", "confirmation", "parent_authorization",
+                    "infrastructure_retry_epoch"}
+        optional = {"preauthored_continuation", "interruption", "result",
+                    "exception"}
+        retry = holder.get("infrastructure_retry_epoch")
+        return bool(
+            required.issubset(holder)
+            and not set(holder) - (required | optional)
+            and _discovery_sha256(holder.get("operation_key"))
+            and row.get("operation_key") == holder["operation_key"]
+            and isinstance(holder.get("authorization"), dict)
+            and isinstance(holder.get("lease"), dict)
+            and isinstance(holder.get("confirmation"), bool)
+            and (holder.get("parent_authorization") is None
+                 or isinstance(holder.get("parent_authorization"), dict))
+            and not isinstance(retry, bool) and isinstance(retry, int)
+            and retry >= 0)
+    phase = holder.get("phase")
+    if phase in {"critic_pending", "critic_complete"}:
+        expected = {"phase", "row", "candidate", "context",
+                    "context_sha256", "confirmation",
+                    "parent_authorization"}
+        return bool(
+            set(holder) == expected
+            and isinstance(holder.get("context"), dict)
+            and holder.get("context_sha256") ==
+                _discovery_controller_state_hash(holder["context"])
+            and holder.get("confirmation") is False
+            and holder.get("parent_authorization") is None)
+    # Waiting, ambiguity-retry, and S2 use the same exact shape validator as
+    # imported Q5 after removing only its source-authority field.
+    synthetic = {**holder, "preauthored_continuation": {}}
+    return _discovery_v26_preauthored_pending(synthetic, state)
+
+
 def _discovery_v26_state_contract(state: object,
-                                  contract: dict) -> dict | None:
+                                  contract: dict, *,
+                                  now: float | None = None) -> dict | None:
+    current_time = time.time() if now is None else now
+    state_time = (_parse_semantic_timestamp(state.get("updated_at"))
+                  if isinstance(state, dict) else None)
     if (not isinstance(state, dict)
+            or not _DISCOVERY_V26_STATE_REQUIRED.issubset(state)
+            or set(state) - (_DISCOVERY_V26_STATE_REQUIRED
+                             | _DISCOVERY_V26_STATE_OPTIONAL)
             or state.get("schema") != "epyc.autokernel.discovery_controller.v7"
             or state.get("authority") !=
                "nonpromotable_candidate_only_discovery"
+            or state.get("roster") != _DISCOVERY_V26_ROSTER
             or not _discovery_sha256(state.get("state_sha256"))
             or state["state_sha256"] != _discovery_controller_state_hash({
                 key: value for key, value in state.items()
                 if key != "state_sha256"})
             or not isinstance(state.get("iterations"), list)
             or isinstance(state.get("next"), bool)
-            or not isinstance(state.get("next"), int)
+            or not isinstance(state.get("next"), int) or state["next"] < 1
             or isinstance(state.get("scientific_attempts"), bool)
-            or not isinstance(state.get("scientific_attempts"), int)):
+            or not isinstance(state.get("scientific_attempts"), int)
+            or state["scientific_attempts"] < 0
+            or not isinstance(state.get("complete"), bool)
+            or state_time is None or state_time > current_time + 5.0
+            or isinstance(contract.get("max_iterations"), bool)
+            or not isinstance(contract.get("max_iterations"), int)
+            or state["scientific_attempts"] > contract["max_iterations"]):
         return None
     sealed_state_links = {
         "deployment_identity_sha256":
             contract.get("deployment_identity_sha256"),
+        "planner_context_sha256": contract.get("planner_context_sha256"),
         "experiment_template_registry_sha256":
             contract.get("template_registry_sha256"),
+        "admission_corpus_sha256": contract.get("admission_corpus_sha256"),
+        "admission_corpus_version": contract.get("admission_corpus_version"),
         "hypothesis_portfolio_sha256":
             contract.get("hypothesis_portfolio_sha256"),
         "carry_forward_sha256": contract.get("carry_forward_sha256"),
+        "preauthored_continuation_sha256":
+            contract.get("preauthored_continuation_sha256"),
+        "preauthored_source_backed_diff_sha256":
+            contract.get("preauthored_source_backed_diff_sha256"),
     }
     if any(state.get(key) != value
            for key, value in sealed_state_links.items()):
         return None
+    mapping_fields = {
+        "attempted_candidate_identities", "portfolio_attribution_failures",
+        "portfolio_authoring_failures", "portfolio_measurement_output_failures",
+        "portfolio_skips", "portfolio_terminals", "portfolio_validations",
+    }
+    if (any(key in state and not isinstance(state[key], dict)
+            for key in mapping_fields)
+            or any(key in state and not isinstance(state[key], dict)
+                   for key in ("pending", "inflight", "planning"))
+            or "visibility_degraded" in state
+            and not isinstance(state["visibility_degraded"], list)
+            or state.get("candidate_semantic_registry_schema") not in {
+                None, "epyc.autokernel.candidate_semantic_registry.v1"}
+            or not _discovery_v26_infrastructure_ambiguities(state)):
+        return None
+    active_holders = [
+        key for key in ("pending", "inflight", "planning")
+        if state.get(key) is not None]
+    if len(active_holders) > 1:
+        return None
+    if state["complete"]:
+        if (active_holders
+                or state.get("terminal_reason") not in {
+                    "portfolio_exhausted", "scientific_budget_exhausted"}
+                or state.get("terminal_reason") ==
+                   "scientific_budget_exhausted"
+                and state["scientific_attempts"] !=
+                    contract["max_iterations"]):
+            return None
+    elif "terminal_reason" in state:
+        return None
+    if active_holders and not _discovery_v26_generic_holder(
+            active_holders[0], state[active_holders[0]], state, contract):
+        return None
     cursor = 1
     transient_count = 0
     transient_operations: set[str] = set()
+    scientific = 0
     for row in state["iterations"]:
         if (isinstance(row, dict)
                 and row.get("status") == "planner_transient"):
@@ -4515,26 +4952,46 @@ def _discovery_v26_state_contract(state: object,
             transient_operations.add(row["planner_operation_key"])
             transient_count += 1
             continue
-        if not isinstance(row, dict) or row.get("turn") != cursor:
+        valid, spent = _discovery_v26_iteration(row, turn=cursor)
+        if not valid:
             return None
+        scientific += int(spent)
         cursor += 1
     if (state["next"] != cursor
             or state.get("planner_provider_attempt", 0) != transient_count
             or isinstance(state.get("planner_provider_attempt", 0), bool)):
         return None
-    scientific = sum(
-        1 for row in state["iterations"] if isinstance(row, dict)
-        and (row.get("scientific_budget_spent") is True
-             or _discovery_sha256(row.get("result_sha256"))
-             and isinstance(row.get("evidence"), dict)))
     if state["scientific_attempts"] != scientific:
         return None
-    holder = (state.get("pending") if isinstance(state.get("pending"), dict)
-              and state["pending"].get("preauthored_continuation") is not None
-              else state.get("inflight")
-              if isinstance(state.get("inflight"), dict)
-              and state["inflight"].get("preauthored_continuation") is not None
-              else None)
+    derived_registry: dict[str, dict] = {}
+    for row in state["iterations"]:
+        if not isinstance(row, dict) or row.get("scientific_budget_spent") is not True:
+            continue
+        identity = row["candidate_semantic_sha256"]
+        entry = derived_registry.setdefault(identity, {
+            "hypothesis_id": row["portfolio_hypothesis_id"], "attempts": []})
+        attempt = {
+            "operation_key": row["operation_key"],
+            "result_sha256": row["result_sha256"],
+            "disposition": row["status"],
+            "repetition": row.get("repetition", 1),
+        }
+        if (entry["hypothesis_id"] != row["portfolio_hypothesis_id"]
+                or attempt in entry["attempts"]
+                or any(value.get("operation_key") == row["operation_key"]
+                       for value in entry["attempts"])):
+            return None
+        entry["attempts"].append(attempt)
+    declared_registry = state.get("attempted_candidate_identities", {})
+    if (declared_registry != derived_registry
+            or bool(derived_registry) != (
+                state.get("candidate_semantic_registry_schema") ==
+                "epyc.autokernel.candidate_semantic_registry.v1")):
+        return None
+    holder = next((state[key] for key in ("pending", "inflight")
+                   if isinstance(state.get(key), dict)
+                   and state[key].get("preauthored_continuation") is not None),
+                  None)
     provenance = None
     if holder is not None:
         authority = holder.get("preauthored_continuation")
@@ -4550,6 +5007,13 @@ def _discovery_v26_state_contract(state: object,
                    _discovery_controller_state_hash({
                        key: value for key, value in authority.items()
                        if key != "receipt_sha256"})
+                or isinstance(authority.get("authoring_turn"), bool)
+                or not isinstance(authority.get("authoring_turn"), int)
+                or authority["authoring_turn"] < 1
+                or not all(_discovery_sha256(authority.get(key)) for key in (
+                    "carrier_sha256", "source_backed_diff_sha256",
+                    "source_manifest_sha256", "candidate_semantic_sha256",
+                    "cross_campaign_candidate_sha256"))
                 or not isinstance(graph_authority, dict)
                 or authority.get("hypothesis_id") !=
                    graph_authority.get("hypothesis_id")
@@ -4569,6 +5033,10 @@ def _discovery_v26_state_contract(state: object,
                 or row.get("hypothesis_id") != authority["hypothesis_id"]
                 or row.get("turn") != state["next"]
                 or row.get("authoring_turn") != authority["authoring_turn"]
+                or row.get("source_manifest_sha256") !=
+                   authority["source_manifest_sha256"]
+                or row.get("candidate_semantic_sha256") !=
+                   authority["candidate_semantic_sha256"]
                 or row.get("hypothesis_origin") != authority["origin"]
                 or row.get("hypothesis_author") != authority["author"]
                 or row.get("historical_correctness_authority") !=
@@ -4589,7 +5057,8 @@ def _discovery_v26_state_contract(state: object,
             "carrier_sha256": authority["carrier_sha256"],
             "source_manifest_sha256": authority["source_manifest_sha256"],
         }
-    return {"scientific_attempts": scientific, "provenance": provenance}
+    return {"scientific_attempts": scientific, "provenance": provenance,
+            "updated_at_unix": state_time}
 
 
 def _discovery_portfolio_terminal_checkpoint(
@@ -11171,7 +11640,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         if (v26_state is not None
                 and (checkpoint is None
                      or checkpoint.get("controller_state_sha256") !=
-                        state.get("state_sha256"))):
+                        state.get("state_sha256")
+                     or _parse_semantic_timestamp(
+                         checkpoint.get("written_at")) is None
+                     or _parse_semantic_timestamp(
+                         checkpoint.get("written_at")) <
+                        v26_state["updated_at_unix"] - 0.1
+                     or _parse_semantic_timestamp(
+                         checkpoint.get("written_at")) >
+                        v26_state["updated_at_unix"] + 5.0)):
             # A self-hashed state file is not a producer checkpoint by itself.
             # Require the append-only controller journal to name the exact same
             # durable state epoch before allowing a v26 campaign to supersede
