@@ -5917,6 +5917,317 @@ def _discovery_v27_composition_build_pair(value: object) -> bool:
         key: item for key, item in value.items() if key != "pair_sha256"})
 
 
+def _discovery_v27_isolated_replication(value: object) -> bool:
+    keys = {
+        "result_sha256", "series_key", "build_identity_sha256",
+        "correctness_receipt_sha256", "attribution_receipt_sha256",
+        "graphs_off_receipt_sha256", "graphs_on_receipt_sha256",
+        "effect_fraction",
+    }
+    return bool(
+        isinstance(value, dict) and set(value) == keys
+        and all(_discovery_sha256(value.get(key)) for key in keys - {
+            "effect_fraction"})
+        and not isinstance(value.get("effect_fraction"), bool)
+        and isinstance(value.get("effect_fraction"), (int, float))
+        and math.isfinite(float(value["effect_fraction"]))
+        and float(value["effect_fraction"]) > 0)
+
+
+def _discovery_v27_source_manifest(value: object) -> str | None:
+    keys = {
+        "schema", "campaign_id", "proposal_id", "candidate_id",
+        "source_tree", "production_base_commit", "instrument_commit",
+        "change_class", "declared_files", "declared_symbols",
+        "mechanism_id", "patch_sha256", "patch_encoding", "patch_base64",
+    }
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") != "epyc.autokernel.source-patch.v1"
+            or not isinstance(value.get("campaign_id"), str)
+            or not value["campaign_id"].startswith("ak-")
+            or not isinstance(value.get("proposal_id"), str)
+            or not value["proposal_id"].startswith("akp-")
+            or not isinstance(value.get("candidate_id"), str)
+            or not value["candidate_id"].startswith("akc-")
+            or value.get("source_tree") != "llama.cpp"
+            or any(re.fullmatch(r"[0-9a-f]{40}", str(value.get(key))) is None
+                   for key in ("production_base_commit", "instrument_commit"))
+            or value.get("change_class") not in {
+                "dispatcher", "arithmetic", "layout", "fusion",
+                "moe_scheduling", "recurrent", "scheduler_policy",
+                "oracle_port", "core_header"}
+            or not isinstance(value.get("mechanism_id"), str)
+            or not value["mechanism_id"]
+            or value.get("patch_encoding") != "base64"
+            or not _discovery_sha256(value.get("patch_sha256"))):
+        return None
+    files = value.get("declared_files")
+    symbols = value.get("declared_symbols")
+    if (not isinstance(files, list) or not files
+            or files != sorted(set(files))
+            or any(not isinstance(path, str) or not path
+                   or path.startswith(("/", "-"))
+                   or "\\" in path or "\x00" in path
+                   or any(part in {"", ".", ".."}
+                          for part in Path(path).parts)
+                   for path in files)
+            or not isinstance(symbols, dict) or set(symbols) != set(files)):
+        return None
+    for path in files:
+        rows = symbols.get(path)
+        if (not isinstance(rows, list) or not rows
+                or rows != sorted(set(rows))
+                or any(not isinstance(symbol, str) or not symbol
+                       for symbol in rows)):
+            return None
+    try:
+        patch = base64.b64decode(value.get("patch_base64"), validate=True)
+    except (TypeError, ValueError):
+        return None
+    if hashlib.sha256(patch).hexdigest() != value["patch_sha256"]:
+        return None
+    return _discovery_content_hash(value)
+
+
+def _discovery_v27_replicated_lever(value: object) -> bool:
+    keys = {
+        "schema", "hypothesis_id", "cross_campaign_candidate_sha256",
+        "manifest", "manifest_sha256", "isolated_disposition",
+        "replications", "lever_sha256",
+    }
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") !=
+               "epyc.autokernel.replicated_positive_lever.v2"
+            or not isinstance(value.get("hypothesis_id"), str)
+            or not value["hypothesis_id"].startswith("akh-")
+            or not _discovery_sha256(
+                value.get("cross_campaign_candidate_sha256"))
+            or value.get("isolated_disposition") !=
+               "top_k_replicated_candidate"
+            or not _discovery_sha256(value.get("manifest_sha256"))
+            or not _discovery_sha256(value.get("lever_sha256"))):
+        return False
+    manifest_sha256 = _discovery_v27_source_manifest(value.get("manifest"))
+    rows = value.get("replications")
+    if (manifest_sha256 is None
+            or value["manifest_sha256"] != manifest_sha256
+            or not isinstance(rows, list) or len(rows) < 2
+            or not all(_discovery_v27_isolated_replication(row)
+                       for row in rows)
+            or len({row["result_sha256"] for row in rows}) != len(rows)
+            or len({row["series_key"] for row in rows}) != 1
+            or len({row["build_identity_sha256"] for row in rows}) != 1):
+        return False
+    return value["lever_sha256"] == _discovery_content_hash({
+        key: item for key, item in value.items() if key != "lever_sha256"})
+
+
+def _discovery_v27_composition_authority(value: object) -> bool:
+    keys = {
+        "schema", "campaign_id", "production_base_commit",
+        "instrument_commit", "ordered_patch_set_sha256", "accepted",
+        "authority_sha256",
+    }
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") !=
+               "epyc.autokernel.cumulative_composition_authority.v1"
+            or not isinstance(value.get("campaign_id"), str)
+            or not value["campaign_id"].startswith("ak-")
+            or any(re.fullmatch(r"[0-9a-f]{40}", str(value.get(key))) is None
+                   for key in ("production_base_commit", "instrument_commit"))
+            or not isinstance(value.get("accepted"), list)
+            or not all(_discovery_v27_replicated_lever(row)
+                       for row in value["accepted"])
+            or not _discovery_sha256(value.get("ordered_patch_set_sha256"))
+            or not _discovery_sha256(value.get("authority_sha256"))):
+        return False
+    accepted = value["accepted"]
+    if (any(row["manifest"].get("campaign_id") != value["campaign_id"]
+            or row["manifest"].get("production_base_commit") !=
+               value["production_base_commit"]
+            or row["manifest"].get("instrument_commit") !=
+               value["instrument_commit"] for row in accepted)
+            or len({row["cross_campaign_candidate_sha256"]
+                    for row in accepted}) != len(accepted)
+            or len({row["manifest_sha256"] for row in accepted}) !=
+               len(accepted)):
+        return False
+    patch_set = _discovery_content_hash({
+        "schema": "epyc.autokernel.ordered_patch_set.v1",
+        "campaign_id": value["campaign_id"],
+        "production_base_commit": value["production_base_commit"],
+        "instrument_commit": value["instrument_commit"],
+        "lever_sha256s": [row["lever_sha256"] for row in accepted],
+        "source_manifest_sha256s": [
+            row["manifest_sha256"] for row in accepted],
+    })
+    return bool(
+        value["ordered_patch_set_sha256"] == patch_set
+        and value["authority_sha256"] == _discovery_content_hash({
+            key: item for key, item in value.items()
+            if key != "authority_sha256"}))
+
+
+def _discovery_v27_composition_plan(value: object) -> bool:
+    keys = {
+        "schema", "attempt_id", "operation_key", "anchor_authority",
+        "candidate_authority", "anchor_patch_set_sha256",
+        "candidate_patch_set_sha256", "ordered_component_lever_sha256s",
+        "ordered_source_manifest_sha256s", "new_lever_sha256",
+        "isolated_result_sha256s", "dnr", "plan_sha256",
+    }
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") !=
+               "epyc.autokernel.cumulative_composition_plan.v1"
+            or any(not _discovery_sha256(value.get(key)) for key in (
+                "attempt_id", "operation_key", "anchor_patch_set_sha256",
+                "candidate_patch_set_sha256", "new_lever_sha256",
+                "plan_sha256"))
+            or not _discovery_v27_composition_authority(
+                value.get("anchor_authority"))
+            or not _discovery_v27_composition_authority(
+                value.get("candidate_authority"))):
+        return False
+    anchor = value["anchor_authority"]
+    candidate = value["candidate_authority"]
+    accepted = candidate["accepted"]
+    dnr = value.get("dnr")
+    dnr_keys = {
+        "schema", "campaign_id", "anchor_patch_set_sha256",
+        "candidate_patch_set_sha256",
+        "proposed_cross_campaign_candidate_sha256", "registry_sha256",
+        "checked_cross_campaign_candidate_sha256s", "outcome",
+        "receipt_sha256",
+    }
+    if (candidate["campaign_id"] != anchor["campaign_id"]
+            or candidate["production_base_commit"] !=
+               anchor["production_base_commit"]
+            or candidate["instrument_commit"] != anchor["instrument_commit"]
+            or len(accepted) != len(anchor["accepted"]) + 1
+            or accepted[:-1] != anchor["accepted"]
+            or not isinstance(dnr, dict) or set(dnr) != dnr_keys
+            or dnr.get("schema") != "epyc.autokernel.composition_dnr.v1"
+            or dnr.get("campaign_id") != anchor["campaign_id"]
+            or dnr.get("anchor_patch_set_sha256") !=
+               anchor["ordered_patch_set_sha256"]
+            or dnr.get("candidate_patch_set_sha256") !=
+               candidate["ordered_patch_set_sha256"]
+            or dnr.get("proposed_cross_campaign_candidate_sha256") !=
+               accepted[-1]["cross_campaign_candidate_sha256"]
+            or not _discovery_sha256(dnr.get("registry_sha256"))
+            or dnr.get("outcome") != "PASS"
+            or not isinstance(
+                dnr.get("checked_cross_campaign_candidate_sha256s"), list)
+            or dnr["checked_cross_campaign_candidate_sha256s"] != sorted(set(
+                dnr["checked_cross_campaign_candidate_sha256s"]))
+            or any(not _discovery_sha256(item) for item in
+                   dnr["checked_cross_campaign_candidate_sha256s"])
+            or dnr["proposed_cross_campaign_candidate_sha256"] in
+               dnr["checked_cross_campaign_candidate_sha256s"]
+            or not {row["cross_campaign_candidate_sha256"]
+                    for row in anchor["accepted"]}.issubset(set(
+                        dnr["checked_cross_campaign_candidate_sha256s"]))
+            or dnr.get("receipt_sha256") != _discovery_content_hash({
+                key: item for key, item in dnr.items()
+                if key != "receipt_sha256"})):
+        return False
+    lever = accepted[-1]
+    if (value["anchor_patch_set_sha256"] !=
+            anchor["ordered_patch_set_sha256"]
+            or value["candidate_patch_set_sha256"] !=
+               candidate["ordered_patch_set_sha256"]
+            or value.get("ordered_component_lever_sha256s") != [
+                row["lever_sha256"] for row in accepted]
+            or value.get("ordered_source_manifest_sha256s") != [
+                row["manifest_sha256"] for row in accepted]
+            or value["new_lever_sha256"] != lever["lever_sha256"]
+            or value.get("isolated_result_sha256s") != [
+                row["result_sha256"] for row in lever["replications"]]):
+        return False
+    body = {
+        key: item for key, item in value.items()
+        if key not in {"operation_key", "plan_sha256"}}
+    operation_key = _discovery_content_hash({
+        "schema": "epyc.autokernel.composition_operation.v1",
+        "attempt_id": value["attempt_id"],
+        "plan_body_sha256": _discovery_content_hash(body),
+    })
+    return bool(
+        value["operation_key"] == operation_key
+        and value["plan_sha256"] == _discovery_content_hash({
+            **body, "operation_key": operation_key}))
+
+
+def _discovery_v27_full_correctness(value: object, pair: dict) -> bool:
+    keys = {
+        "schema", "operation_key", "build_pair_sha256",
+        "candidate_build_identity_sha256", "suite_id", "cases_sha256",
+        "receipt_sha256", "passed", "current_full_suite", "result_sha256",
+    }
+    return bool(
+        isinstance(value, dict) and set(value) == keys
+        and value.get("schema") ==
+            "epyc.autokernel.composition_full_correctness.v1"
+        and value.get("operation_key") == pair.get("operation_key")
+        and value.get("build_pair_sha256") == pair.get("pair_sha256")
+        and value.get("candidate_build_identity_sha256") ==
+            pair["candidate"].get("build_identity_sha256")
+        and isinstance(value.get("suite_id"), str) and value["suite_id"]
+        and all(_discovery_sha256(value.get(key)) for key in (
+            "cases_sha256", "receipt_sha256", "result_sha256"))
+        and value.get("passed") is True
+        and value.get("current_full_suite") is True
+        and value["result_sha256"] == _discovery_content_hash({
+            key: item for key, item in value.items()
+            if key != "result_sha256"}))
+
+
+def _discovery_v27_incremental_comparison(
+        value: object, pair: dict, correctness: dict) -> bool:
+    keys = {
+        "schema", "operation_key", "build_pair_sha256",
+        "correctness_result_sha256", "exact_route_receipt_sha256",
+        "expected_route_set_sha256", "graphs_off_receipt_sha256",
+        "graphs_on_receipt_sha256", "target_runtime_frame_sha256",
+        "exact_route_effect_fraction", "graphs_off_effect_fraction",
+        "graphs_on_effect_fraction", "classification",
+        "exact_route_executed", "graphs_off_executed",
+        "graphs_on_executed", "result_sha256",
+    }
+    if (not isinstance(value, dict) or set(value) != keys
+            or value.get("schema") !=
+               "epyc.autokernel.incremental_composition_comparison.v2"
+            or value.get("operation_key") != pair.get("operation_key")
+            or value.get("build_pair_sha256") != pair.get("pair_sha256")
+            or value.get("correctness_result_sha256") !=
+               correctness.get("result_sha256")
+            or any(value.get(key) is not True for key in (
+                "exact_route_executed", "graphs_off_executed",
+                "graphs_on_executed"))
+            or any(not _discovery_sha256(value.get(key)) for key in (
+                "exact_route_receipt_sha256", "expected_route_set_sha256",
+                "graphs_off_receipt_sha256", "graphs_on_receipt_sha256",
+                "target_runtime_frame_sha256", "result_sha256"))):
+        return False
+    effect_keys = (
+        "exact_route_effect_fraction", "graphs_off_effect_fraction",
+        "graphs_on_effect_fraction")
+    if any(isinstance(value.get(key), bool)
+           or not isinstance(value.get(key), (int, float))
+           or not math.isfinite(float(value[key])) for key in effect_keys):
+        return False
+    effects = tuple(float(value[key]) for key in effect_keys)
+    classification = (
+        "candidate" if all(effect > 0 for effect in effects)
+        else "screened_out" if all(effect <= 0 for effect in effects)
+        else "inconclusive")
+    return bool(
+        value.get("classification") == classification
+        and value["result_sha256"] == _discovery_content_hash({
+            key: item for key, item in value.items()
+            if key != "result_sha256"}))
+
+
 _DISCOVERY_V27_COMPOSITION_TERMINAL_KEYS = {
     "schema", "operation_key", "plan_sha256", "plan", "lever_sha256",
     "cross_campaign_candidate_sha256", "isolated_result_sha256s",
@@ -6080,13 +6391,31 @@ def _discovery_v27_cumulative_performance(
                 if key != "authority_sha256"})):
         return unavailable
     core_sha256 = _discovery_v27_terminal_core_sha256(terminal)
-    if (core_sha256 is None
-            or receipt.get("composition_terminal_sha256") != core_sha256):
-        return unavailable
     ref = terminal.get("cumulative_performance_ref")
+    plan = terminal.get("plan")
     build_pair = terminal.get("build_pair")
     correctness = terminal.get("correctness")
     comparison = terminal.get("comparison")
+    if (core_sha256 is None
+            or receipt.get("composition_terminal_sha256") != core_sha256
+            or not _discovery_v27_composition_plan(plan)
+            or not _discovery_v27_composition_build_pair(build_pair)
+            or not _discovery_v27_full_correctness(correctness, build_pair)
+            or not _discovery_v27_incremental_comparison(
+                comparison, build_pair, correctness)):
+        return unavailable
+    candidate_authority = plan["candidate_authority"]
+    anchor_authority = plan["anchor_authority"]
+    lever = candidate_authority["accepted"][-1]
+    incremental_admissible = comparison["classification"] == "candidate"
+    expected_disposition = (
+        "admitted" if incremental_admissible else "incremental_rollback")
+    expected_reason_code = (
+        "incremental_admitted_promotion_eligible"
+        if incremental_admissible and receipt.get("promotion_eligible") is True
+        else "incremental_admitted_" + str(receipt.get("promotion_reason"))
+        if incremental_admissible
+        else "incremental_" + comparison["classification"])
     if (not isinstance(ref, dict)
             or set(ref) != {"schema", "path", "sha256"}
             or ref.get("schema") !=
@@ -6110,18 +6439,40 @@ def _discovery_v27_cumulative_performance(
                 receipt["accepted_authority_sha256"]
             or terminal.get("disposition") != "admitted"
             and terminal.get("admitted_authority_sha256") is not None
-            or not _discovery_v27_composition_build_pair(build_pair)
             or build_pair.get("operation_key") != receipt["operation_key"]
             or build_pair.get("plan_sha256") != receipt["plan_sha256"]
+            or build_pair.get("operation_key") != plan["operation_key"]
+            or build_pair.get("plan_sha256") != plan["plan_sha256"]
+            or build_pair["anchor"].get("patch_set_sha256") !=
+               anchor_authority["ordered_patch_set_sha256"]
+            or build_pair["candidate"].get("patch_set_sha256") !=
+               candidate_authority["ordered_patch_set_sha256"]
             or build_pair.get("pair_sha256") != receipt["build_pair_sha256"]
             or build_pair["candidate"].get("patch_set_sha256") !=
                receipt["accepted_patch_set_sha256"]
-            or not isinstance(correctness, dict)
             or correctness.get("result_sha256") !=
                receipt["correctness_result_sha256"]
-            or not isinstance(comparison, dict)
             or comparison.get("result_sha256") !=
-               receipt["incremental_comparison_result_sha256"]):
+               receipt["incremental_comparison_result_sha256"]
+            or receipt.get("operation_key") != plan["operation_key"]
+            or receipt.get("plan_sha256") != plan["plan_sha256"]
+            or receipt.get("accepted_authority_sha256") !=
+               candidate_authority["authority_sha256"]
+            or receipt.get("accepted_patch_set_sha256") !=
+               candidate_authority["ordered_patch_set_sha256"]
+            or plan["candidate_authority"]["production_base_commit"] !=
+               frozen["production_commit"]
+            or terminal.get("lever_sha256") != lever["lever_sha256"]
+            or terminal.get("cross_campaign_candidate_sha256") !=
+               lever["cross_campaign_candidate_sha256"]
+            or terminal.get("isolated_result_sha256s") != [
+                row["result_sha256"] for row in lever["replications"]]
+            or terminal.get("scientific_budget_spent") is not True
+            or terminal.get("disposition") != expected_disposition
+            or terminal.get("reason_code") != expected_reason_code
+            or terminal.get("admitted_authority_sha256") != (
+                candidate_authority["authority_sha256"]
+                if incremental_admissible else None)):
         return unavailable
     off_binding = _discovery_v27_measurement_binding(
         model_sha256=contract.get("model_sha256"),
@@ -6172,6 +6523,16 @@ def _discovery_v27_cumulative_performance(
                production_binding[1]
             or receipt.get("production_graphs_on_frame_sha256") !=
                static.get("frame_sha256")
+            or receipt.get("incremental_exact_route_effect_fraction") !=
+               comparison.get("exact_route_effect_fraction")
+            or receipt.get("incremental_graphs_off_effect_fraction") !=
+               comparison.get("graphs_off_effect_fraction")
+            or receipt.get("incremental_graphs_on_effect_fraction") !=
+               comparison.get("graphs_on_effect_fraction")
+            or receipt.get("incremental_graphs_off_receipt_sha256") !=
+               comparison.get("graphs_off_receipt_sha256")
+            or receipt.get("incremental_graphs_on_receipt_sha256") !=
+               comparison.get("graphs_on_receipt_sha256")
             or len({
                 receipt["incremental_graphs_off_frame_sha256"],
                 receipt["incremental_graphs_on_frame_sha256"],

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import base64
 import hashlib
 import json
 import tempfile
@@ -49,6 +50,237 @@ def _build_identity(commit: str, prefix: str) -> dict:
         "config_sha256": chr(ord(prefix) + 3) * 64,
         "linkage_sha256": chr(ord(prefix) + 4) * 64,
     }
+
+
+def _digest(label: str) -> str:
+    return hashlib.sha256(label.encode()).hexdigest()
+
+
+def _composition_authority(
+        *, accepted: list[dict], campaign_id: str,
+        production_base_commit: str, instrument_commit: str) -> dict:
+    patch_set = server._discovery_content_hash({
+        "schema": "epyc.autokernel.ordered_patch_set.v1",
+        "campaign_id": campaign_id,
+        "production_base_commit": production_base_commit,
+        "instrument_commit": instrument_commit,
+        "lever_sha256s": [row["lever_sha256"] for row in accepted],
+        "source_manifest_sha256s": [
+            row["manifest_sha256"] for row in accepted],
+    })
+    return _seal({
+        "schema": "epyc.autokernel.cumulative_composition_authority.v1",
+        "campaign_id": campaign_id,
+        "production_base_commit": production_base_commit,
+        "instrument_commit": instrument_commit,
+        "ordered_patch_set_sha256": patch_set,
+        "accepted": copy.deepcopy(accepted),
+    }, "authority_sha256")
+
+
+def _composition_plan() -> dict:
+    campaign_id = "ak-dashboard-v27-test"
+    production_base_commit = server._DISCOVERY_V27_PRODUCTION_COMMIT
+    instrument_commit = "e" * 40
+    patch = (
+        b"diff --git a/src/test.cpp b/src/test.cpp\n"
+        b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+        b"@@ -1 +1 @@\n-int test() { return 0; }\n"
+        b"+int test() { return 1; }\n")
+    manifest = {
+        "schema": "epyc.autokernel.source-patch.v1",
+        "campaign_id": campaign_id,
+        "proposal_id": "akp-dashboard-v27-test",
+        "candidate_id": "akc-dashboard-v27-test",
+        "source_tree": "llama.cpp",
+        "production_base_commit": production_base_commit,
+        "instrument_commit": instrument_commit,
+        "change_class": "arithmetic",
+        "declared_files": ["src/test.cpp"],
+        "declared_symbols": {"src/test.cpp": ["<file-scope>"]},
+        "mechanism_id": "dashboard-v27-test",
+        "patch_sha256": hashlib.sha256(patch).hexdigest(),
+        "patch_encoding": "base64",
+        "patch_base64": base64.b64encode(patch).decode("ascii"),
+    }
+    manifest_sha256 = server._discovery_content_hash(manifest)
+    replications = [{
+        "result_sha256": _digest(f"isolated-result-{index}"),
+        "series_key": _digest("isolated-series"),
+        "build_identity_sha256": _digest("isolated-build"),
+        "correctness_receipt_sha256": _digest(
+            f"isolated-correctness-{index}"),
+        "attribution_receipt_sha256": _digest(
+            f"isolated-attribution-{index}"),
+        "graphs_off_receipt_sha256": _digest(
+            f"isolated-graphs-off-{index}"),
+        "graphs_on_receipt_sha256": _digest(
+            f"isolated-graphs-on-{index}"),
+        "effect_fraction": .01 + index / 100,
+    } for index in range(2)]
+    lever = _seal({
+        "schema": "epyc.autokernel.replicated_positive_lever.v2",
+        "hypothesis_id": "akh-dashboard-v27-test",
+        "cross_campaign_candidate_sha256": _digest("cross-campaign"),
+        "manifest": manifest,
+        "manifest_sha256": manifest_sha256,
+        "isolated_disposition": "top_k_replicated_candidate",
+        "replications": replications,
+    }, "lever_sha256")
+    anchor = _composition_authority(
+        accepted=[], campaign_id=campaign_id,
+        production_base_commit=production_base_commit,
+        instrument_commit=instrument_commit)
+    candidate = _composition_authority(
+        accepted=[lever], campaign_id=campaign_id,
+        production_base_commit=production_base_commit,
+        instrument_commit=instrument_commit)
+    dnr = _seal({
+        "schema": "epyc.autokernel.composition_dnr.v1",
+        "campaign_id": campaign_id,
+        "anchor_patch_set_sha256": anchor["ordered_patch_set_sha256"],
+        "candidate_patch_set_sha256": candidate[
+            "ordered_patch_set_sha256"],
+        "proposed_cross_campaign_candidate_sha256": lever[
+            "cross_campaign_candidate_sha256"],
+        "registry_sha256": _digest("registry"),
+        "checked_cross_campaign_candidate_sha256s": [],
+        "outcome": "PASS",
+    }, "receipt_sha256")
+    body = {
+        "schema": "epyc.autokernel.cumulative_composition_plan.v1",
+        "attempt_id": _digest("attempt"),
+        "anchor_authority": anchor,
+        "candidate_authority": candidate,
+        "anchor_patch_set_sha256": anchor["ordered_patch_set_sha256"],
+        "candidate_patch_set_sha256": candidate[
+            "ordered_patch_set_sha256"],
+        "ordered_component_lever_sha256s": [lever["lever_sha256"]],
+        "ordered_source_manifest_sha256s": [manifest_sha256],
+        "new_lever_sha256": lever["lever_sha256"],
+        "isolated_result_sha256s": [
+            row["result_sha256"] for row in replications],
+        "dnr": dnr,
+    }
+    operation_key = server._discovery_content_hash({
+        "schema": "epyc.autokernel.composition_operation.v1",
+        "attempt_id": body["attempt_id"],
+        "plan_body_sha256": server._discovery_content_hash(body),
+    })
+    return {
+        **body, "operation_key": operation_key,
+        "plan_sha256": server._discovery_content_hash({
+            **body, "operation_key": operation_key}),
+    }
+
+
+def _full_correctness(pair: dict) -> dict:
+    return _seal({
+        "schema": "epyc.autokernel.composition_full_correctness.v1",
+        "operation_key": pair["operation_key"],
+        "build_pair_sha256": pair["pair_sha256"],
+        "candidate_build_identity_sha256": pair["candidate"][
+            "build_identity_sha256"],
+        "suite_id": "dashboard-v27-current-full-suite",
+        "cases_sha256": _digest("full-suite-cases"),
+        "receipt_sha256": _digest("full-suite-receipt"),
+        "passed": True,
+        "current_full_suite": True,
+    }, "result_sha256")
+
+
+def _incremental_comparison(
+        pair: dict, correctness: dict, effect: float) -> dict:
+    effects = (effect, effect, effect)
+    classification = (
+        "candidate" if all(value > 0 for value in effects)
+        else "screened_out" if all(value <= 0 for value in effects)
+        else "inconclusive")
+    return _seal({
+        "schema": "epyc.autokernel.incremental_composition_comparison.v2",
+        "operation_key": pair["operation_key"],
+        "build_pair_sha256": pair["pair_sha256"],
+        "correctness_result_sha256": correctness["result_sha256"],
+        "exact_route_receipt_sha256": _digest("incremental-exact-route"),
+        "expected_route_set_sha256": _digest("expected-route-set"),
+        "graphs_off_receipt_sha256": "d" * 64,
+        "graphs_on_receipt_sha256": "e" * 64,
+        "target_runtime_frame_sha256": _digest("target-runtime-frame"),
+        "exact_route_effect_fraction": effect,
+        "graphs_off_effect_fraction": effect,
+        "graphs_on_effect_fraction": effect,
+        "classification": classification,
+        "exact_route_executed": True,
+        "graphs_off_executed": True,
+        "graphs_on_executed": True,
+    }, "result_sha256")
+
+
+def _reseal_plan(plan: dict) -> None:
+    body = {
+        key: value for key, value in plan.items()
+        if key not in {"operation_key", "plan_sha256"}}
+    plan["operation_key"] = server._discovery_content_hash({
+        "schema": "epyc.autokernel.composition_operation.v1",
+        "attempt_id": plan["attempt_id"],
+        "plan_body_sha256": server._discovery_content_hash(body),
+    })
+    plan["plan_sha256"] = server._discovery_content_hash({
+        **body, "operation_key": plan["operation_key"]})
+
+
+def _rebind_terminal_nested(terminal: dict, receipt: dict) -> None:
+    plan = terminal["plan"]
+    pair = terminal["build_pair"]
+    correctness = terminal["correctness"]
+    comparison = terminal["comparison"]
+    terminal["operation_key"] = plan["operation_key"]
+    terminal["plan_sha256"] = plan["plan_sha256"]
+    pair["operation_key"] = plan["operation_key"]
+    pair["plan_sha256"] = plan["plan_sha256"]
+    pair.update(_seal(pair, "pair_sha256"))
+    correctness["operation_key"] = pair["operation_key"]
+    correctness["build_pair_sha256"] = pair["pair_sha256"]
+    correctness.update(_seal(correctness, "result_sha256"))
+    comparison["operation_key"] = pair["operation_key"]
+    comparison["build_pair_sha256"] = pair["pair_sha256"]
+    comparison["correctness_result_sha256"] = correctness["result_sha256"]
+    comparison.update(_seal(comparison, "result_sha256"))
+    terminal["correctness_result_sha256"] = correctness["result_sha256"]
+    terminal["comparison_result_sha256"] = comparison["result_sha256"]
+    receipt.update({
+        "operation_key": plan["operation_key"],
+        "plan_sha256": plan["plan_sha256"],
+        "build_pair_sha256": pair["pair_sha256"],
+        "correctness_result_sha256": correctness["result_sha256"],
+        "incremental_comparison_result_sha256": comparison["result_sha256"],
+    })
+
+
+def _reseal_cumulative_state(
+        state: dict, receipt: dict, path: Path) -> dict:
+    terminal = state["cumulative_composition_terminal"]
+    receipt["composition_terminal_sha256"] = (
+        server._discovery_content_hash({
+            key: value for key, value in terminal.items()
+            if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED}))
+    receipt = _seal(receipt, "result_sha256")
+    raw = (json.dumps(receipt, sort_keys=True, indent=2) + "\n").encode()
+    path.write_bytes(raw)
+    binding = {"path": str(path), "sha256": hashlib.sha256(raw).hexdigest()}
+    terminal["cumulative_performance"] = copy.deepcopy(receipt)
+    terminal["cumulative_performance_ref"] = {
+        "schema": "epyc.autokernel.cumulative_performance_ref.v1",
+        **binding,
+    }
+    terminal["cumulative_performance_result_sha256"] = receipt[
+        "result_sha256"]
+    terminal["terminal_sha256"] = server._discovery_content_hash({
+        key: value for key, value in terminal.items()
+        if key != "terminal_sha256"})
+    state["cumulative_performance"] = binding
+    state["cumulative_composition_terminal"] = terminal
+    return _seal(state, "state_sha256")
 
 
 def _frozen_comparator(
@@ -170,23 +402,26 @@ class V27Fixture(V26Fixture):
             production_graphs_mode: str = "on",
             runtime_config_mismatch: bool = False,
             measurement_receipt_alias: bool = False,
-            promotion_eligible_override: bool | None = None,
+        promotion_eligible_override: bool | None = None,
     ) -> tuple[dict, dict, Path]:
         state, _ = self.checkpoint()
-        operation_key = "d" * 64
-        plan_sha256 = "e" * 64
+        plan = _composition_plan()
+        operation_key = plan["operation_key"]
+        plan_sha256 = plan["plan_sha256"]
         anchor_identity = _build_identity("e" * 40, "1")
         candidate_identity = _build_identity("f" * 40, "a")
-        def build_binding(identity: dict, patch: str) -> dict:
+        def build_binding(identity: dict, patch_sha256: str) -> dict:
             return {
-                "patch_set_sha256": patch * 64,
+                "patch_set_sha256": patch_sha256,
                 "source_materialization_receipt_sha256": "4" * 64,
                 "build_identity": identity,
                 "build_identity_sha256":
                     server._discovery_content_hash(identity),
             }
-        anchor = build_binding(anchor_identity, "7")
-        candidate = build_binding(candidate_identity, "8")
+        anchor = build_binding(
+            anchor_identity, plan["anchor_patch_set_sha256"])
+        candidate = build_binding(
+            candidate_identity, plan["candidate_patch_set_sha256"])
         build_pair = _seal({
             "schema": "epyc.autokernel.cumulative_build_pair.v1",
             "operation_key": operation_key, "plan_sha256": plan_sha256,
@@ -213,16 +448,19 @@ class V27Fixture(V26Fixture):
         claimed_reason = (
             reason if promotion_eligible_override is None
             else "cumulative_screened_out")
-        correctness = {"result_sha256": "1" * 64}
-        comparison = {"result_sha256": "2" * 64}
+        correctness = _full_correctness(build_pair)
+        comparison = _incremental_comparison(
+            build_pair, correctness, incremental)
+        lever = plan["candidate_authority"]["accepted"][-1]
         terminal = {
             "schema": "epyc.autokernel.cumulative_composition_terminal.v3",
             "operation_key": operation_key, "plan_sha256": plan_sha256,
-            "plan": {"operation_key": operation_key,
-                     "plan_sha256": plan_sha256},
-            "lever_sha256": "3" * 64,
-            "cross_campaign_candidate_sha256": "4" * 64,
-            "isolated_result_sha256s": ["5" * 64, "6" * 64],
+            "plan": plan,
+            "lever_sha256": lever["lever_sha256"],
+            "cross_campaign_candidate_sha256": lever[
+                "cross_campaign_candidate_sha256"],
+            "isolated_result_sha256s": [
+                row["result_sha256"] for row in lever["replications"]],
             "disposition": disposition, "scientific_budget_spent": True,
             "build_pair": build_pair, "correctness": correctness,
             "comparison": comparison, "cumulative_performance": None,
@@ -233,7 +471,8 @@ class V27Fixture(V26Fixture):
             "promotion_eligible": claimed_eligible,
             "promotion_reason": claimed_reason,
             "admitted_authority_sha256": (
-                "9" * 64 if disposition == "admitted" else None),
+                plan["candidate_authority"]["authority_sha256"]
+                if disposition == "admitted" else None),
             "reason_code": (
                 "incremental_admitted_promotion_eligible"
                 if disposition == "admitted" and claimed_eligible else
@@ -299,7 +538,8 @@ class V27Fixture(V26Fixture):
             "authority": "frozen_production_promotion_gate",
             "promotion_authority": True,
             "operation_key": operation_key, "plan_sha256": plan_sha256,
-            "accepted_authority_sha256": "9" * 64,
+            "accepted_authority_sha256": plan["candidate_authority"][
+                "authority_sha256"],
             "accepted_patch_set_sha256": candidate["patch_set_sha256"],
             "build_pair_sha256": build_pair["pair_sha256"],
             "correctness_result_sha256": correctness["result_sha256"],
@@ -320,8 +560,10 @@ class V27Fixture(V26Fixture):
             "incremental_graphs_off_effect_fraction": incremental,
             "incremental_graphs_on_effect_fraction": incremental,
             "cumulative_graphs_on_effect_fraction": cumulative,
-            "incremental_graphs_off_receipt_sha256": "d" * 64,
-            "incremental_graphs_on_receipt_sha256": "e" * 64,
+            "incremental_graphs_off_receipt_sha256": comparison[
+                "graphs_off_receipt_sha256"],
+            "incremental_graphs_on_receipt_sha256": comparison[
+                "graphs_on_receipt_sha256"],
             "production_graphs_on_receipt_sha256": (
                 "d" * 64 if measurement_receipt_alias else "0" * 64),
             "incremental_graphs_off_frame_sha256": off_frame,
@@ -712,6 +954,151 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self.assertEqual(
                 performance["promotion_reason"],
                 "producer_authority_unavailable")
+
+    def test_coherently_resealed_correctness_authority_refuses(self) -> None:
+        for name, field in (
+                ("failed", "passed"),
+                ("not-current", "current_full_suite")):
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                terminal = state["cumulative_composition_terminal"]
+                terminal["correctness"][field] = False
+                _rebind_terminal_nested(terminal, receipt)
+                state = _reseal_cumulative_state(state, receipt, path)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertEqual(
+                    performance["promotion_reason"],
+                    "producer_authority_unavailable")
+
+    def test_nested_producer_carriers_require_exact_schemas(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            state, _, _ = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            plan = terminal["plan"]
+            pair = terminal["build_pair"]
+            correctness = terminal["correctness"]
+            comparison = terminal["comparison"]
+            self.assertTrue(server._discovery_v27_composition_plan(plan))
+            self.assertTrue(server._discovery_v27_full_correctness(
+                correctness, pair))
+            self.assertTrue(server._discovery_v27_incremental_comparison(
+                comparison, pair, correctness))
+            mutations = (
+                (server._discovery_v27_composition_plan, plan, "extra"),
+                (lambda value: server._discovery_v27_full_correctness(
+                    value, pair), correctness, "extra"),
+                (lambda value: server._discovery_v27_incremental_comparison(
+                    value, pair, correctness), comparison, "extra"),
+            )
+            for validate, value, key in mutations:
+                with self.subTest(schema=value["schema"]):
+                    malformed = copy.deepcopy(value)
+                    malformed[key] = True
+                    self.assertFalse(validate(malformed))
+
+    def test_coherently_resealed_incremental_authority_refuses(self) -> None:
+        def wrong_classification(comparison: dict) -> None:
+            comparison["classification"] = "screened_out"
+
+        def changed_effect(comparison: dict) -> None:
+            comparison["exact_route_effect_fraction"] = .02
+
+        def changed_admissibility(comparison: dict) -> None:
+            comparison.update({
+                "exact_route_effect_fraction": -.01,
+                "graphs_off_effect_fraction": -.01,
+                "graphs_on_effect_fraction": -.01,
+                "classification": "screened_out",
+            })
+
+        def skipped_arm(comparison: dict) -> None:
+            comparison["graphs_off_executed"] = False
+
+        mutations = (
+            ("classification", wrong_classification),
+            ("effect", changed_effect),
+            ("admissibility", changed_admissibility),
+            ("executed", skipped_arm),
+        )
+        for name, mutate in mutations:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                terminal = state["cumulative_composition_terminal"]
+                mutate(terminal["comparison"])
+                _rebind_terminal_nested(terminal, receipt)
+                state = _reseal_cumulative_state(state, receipt, path)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertEqual(
+                    performance["promotion_reason"],
+                    "producer_authority_unavailable")
+
+    def test_coherently_resealed_plan_and_evidence_join_swaps_refuse(
+            self) -> None:
+        def plan_lever(terminal: dict, receipt: dict) -> None:
+            terminal["plan"]["new_lever_sha256"] = "0" * 64
+            _reseal_plan(terminal["plan"])
+            _rebind_terminal_nested(terminal, receipt)
+
+        def terminal_lever(terminal: dict, receipt: dict) -> None:
+            terminal["lever_sha256"] = "0" * 64
+
+        def terminal_isolated(terminal: dict, receipt: dict) -> None:
+            terminal["isolated_result_sha256s"][0] = "0" * 64
+
+        def pair_candidate(terminal: dict, receipt: dict) -> None:
+            terminal["build_pair"]["candidate"][
+                "patch_set_sha256"] = "0" * 64
+            receipt["accepted_patch_set_sha256"] = "0" * 64
+            _rebind_terminal_nested(terminal, receipt)
+
+        def correctness_candidate(terminal: dict, receipt: dict) -> None:
+            terminal["correctness"][
+                "candidate_build_identity_sha256"] = "0" * 64
+            _rebind_terminal_nested(terminal, receipt)
+
+        def accepted_authority(terminal: dict, receipt: dict) -> None:
+            receipt["accepted_authority_sha256"] = "0" * 64
+
+        mutations = (
+            ("plan-lever", plan_lever),
+            ("terminal-lever", terminal_lever),
+            ("terminal-isolated", terminal_isolated),
+            ("pair-candidate", pair_candidate),
+            ("correctness-candidate", correctness_candidate),
+            ("accepted-authority", accepted_authority),
+        )
+        for name, mutate in mutations:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                terminal = state["cumulative_composition_terminal"]
+                mutate(terminal, receipt)
+                state = _reseal_cumulative_state(state, receipt, path)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertEqual(
+                    performance["promotion_reason"],
+                    "producer_authority_unavailable")
 
     def test_final_v27_product_pins_are_deliberately_fail_closed(self) -> None:
         self.assertIsNone(server._DISCOVERY_V27_PRODUCER_COMMIT)
