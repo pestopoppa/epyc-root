@@ -23,11 +23,25 @@ every repo-wide test run, and an interrupted run would leave the fleet's merge g
 failed closed. A lint runs at authoring time, cannot break a test run, and forces
 each exemption to be written down with a reason.
 
+DISCOVERY. pytest's default ``python_files`` is ``test_*.py`` AND ``*_test.py``;
+globbing only the first hid a self-runner that printed "Regression: YES" and exited 0
+(research seal_multi_role_test.py, since renamed seal_multi_role_regression_check.py).
+Both globs are walked, and an explicitly passed
+path of EITHER shape is accepted -- silently dropping a path handed to the gate is
+itself a vacuous pass.
+
+ADVISORY: assertion density. A file whose collectable tests contain no assertion in
+aggregate is reported, never blocked. Resolution follows ONE level of same-file
+indirection (a test calling a local helper that asserts IS asserting), and anything
+unresolvable counts as asserting -- under-flagging is safe for an advisory, while a
+lint with false positives gets switched off.
+
 Exit 0 = clean · 1 = a defective file · 2 = usage error. Never blocks a test run.
 """
 from __future__ import annotations
 
 import ast
+import builtins
 import functools
 import sys
 from pathlib import Path
@@ -41,17 +55,30 @@ DELIBERATE_SELF_RUNNERS: dict[str, str] = {
         "restored in a finally). Collectable => every repo-wide pytest run rewrites a "
         "shared trust-boundary file; an interrupted run leaves the merge gate failed closed.",
     "scripts/hooks/tests/test_commit_hygiene.py":
-        "CASES table drives a PreToolUse hook against the real shared repo; its dirty "
-        "fixture writes into the repo root. Kept self-run so a bare pytest cannot touch it.",
-    "scripts/coordination/tests/test_unblock_artifact.py":
-        "self-runner over coordination artifacts; collectable form not yet reviewed for "
-        "shared-state writes. Exempt until it is.",
+        "CASES drive the live PreToolUse hook against the REAL shared repo (cwd=REPO_ROOT, "
+        "git subprocesses per case), and main() writes .hook_dirty_probe into the repo root "
+        "for the path-restore case. Collectable => two parallel repo-wide pytest runs race on "
+        "that probe (one run's unlink flips the other's expected rc 2 to 0), and an interrupted "
+        "run leaves a stray untracked file that rides into the next `git add -A`. The FRESH/STALE "
+        "cases also key off real FETCH_HEAD mtime, i.e. flaky-by-design off the self-run path. "
+        "Bridging needs a throwaway clone, not a bridge. Reviewed and kept 2026-08-21 (VT-4).",
 }
 
 FIXTURE_NAMES = frozenset({
     "tmp_path", "tmpdir", "monkeypatch", "capsys", "capfd", "caplog",
     "request", "pytestconfig", "recwarn", "tmp_path_factory",
 })
+
+#: pytest's default ``python_files``. BOTH, or the gate has a blind spot by name.
+TEST_FILE_GLOBS = ("test_*.py", "*_test.py")
+
+
+def is_test_filename(name: str) -> bool:
+    return name.startswith("test_") or name.endswith("_test.py")
+
+
+#: Callables that ARE an assertion however they were imported.
+ASSERTING_CALL_NAMES = frozenset({"raises", "fail", "warns", "assert_"})
 
 
 @functools.lru_cache(maxsize=None)
@@ -117,7 +144,7 @@ def has_main_block(path: Path) -> bool:
 @functools.lru_cache(maxsize=None)
 def _mixed_convention_dir(parent: Path) -> bool:
     """Does this file's directory hold BOTH pytest suites and self-runners?"""
-    sibs = [q for q in parent.glob("test_*.py") if q.is_file()]
+    sibs = sorted({q for g in TEST_FILE_GLOBS for q in parent.glob(g) if q.is_file()})
     if len(sibs) < 2:
         return False
     self_runners = 0
@@ -126,6 +153,121 @@ def _mixed_convention_dir(parent: Path) -> bool:
         if not collectable and has_main_block(q):
             self_runners += 1
     return self_runners > 0
+
+
+_BUILTIN_NAMES = frozenset(dir(builtins))
+
+
+def _call_target(node: ast.Call) -> tuple[str, str | None]:
+    """Return (kind, name) for a call: ('name', f) / ('self', m) / ('attr', a)."""
+    fn = node.func
+    if isinstance(fn, ast.Name):
+        return "name", fn.id
+    if isinstance(fn, ast.Attribute):
+        if isinstance(fn.value, ast.Name) and fn.value.id in ("self", "cls"):
+            return "self", fn.attr
+        return "attr", fn.attr
+    return "other", None
+
+
+@functools.lru_cache(maxsize=None)
+def _assertion_model(path: Path) -> tuple[dict[str, bool], frozenset[str], frozenset[str]]:
+    """Per-function 'does it assert (directly)' map, local def names, imported names."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except SyntaxError:
+        return {}, frozenset(), frozenset()
+
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                imported.add((a.asname or a.name).split(".")[0])
+        elif isinstance(node, ast.ImportFrom):
+            for a in node.names:
+                imported.add(a.asname or a.name)
+
+    funcs: dict[str, ast.AST] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            funcs.setdefault(node.name, node)
+
+    direct: dict[str, bool] = {}
+    for name, node in funcs.items():
+        found = False
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Assert):
+                found = True
+                break
+            if isinstance(sub, ast.Call):
+                kind, target = _call_target(sub)
+                if target and (target.startswith("assert") or target in ASSERTING_CALL_NAMES):
+                    found = True
+                    break
+        direct[name] = found
+    return direct, frozenset(funcs), frozenset(imported)
+
+
+def _function_asserts(path: Path, node: ast.AST, depth: int = 1) -> bool:
+    """Does this function assert, following `depth` levels of same-file calls?
+
+    Unresolvable targets count as ASSERTING: an advisory that over-flags gets
+    switched off, and a missed zero-assertion file costs only this notice.
+    """
+    direct, local_defs, imported = _assertion_model(path)
+    calls: list[tuple[str, str]] = []
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Assert):
+            return True
+        if isinstance(sub, ast.Call):
+            kind, target = _call_target(sub)
+            if target is None:
+                continue
+            if target.startswith("assert") or target in ASSERTING_CALL_NAMES:
+                return True
+            calls.append((kind, target))
+
+    if depth <= 0:
+        return False
+
+    _, funcs_tree = _parsed_funcs(path)
+    for kind, target in calls:
+        if kind == "attr":
+            continue                      # module/object method from elsewhere
+        if target in local_defs:
+            if direct.get(target) or _function_asserts(path, funcs_tree[target], depth - 1):
+                return True
+            continue
+        if kind == "self":
+            return True                   # inherited helper -- unresolvable, assume asserts
+        if target in imported or target in _BUILTIN_NAMES:
+            continue
+        return True                       # bare name defined nowhere we can see
+    return False
+
+
+@functools.lru_cache(maxsize=None)
+def _parsed_funcs(path: Path) -> tuple[bool, dict[str, ast.AST]]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except SyntaxError:
+        return False, {}
+    out: dict[str, ast.AST] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            out.setdefault(node.name, node)
+    return True, out
+
+
+def collectable_tests_assert(path: Path) -> bool:
+    """Do this file's collectable test_* functions assert, in aggregate?"""
+    ok, funcs = _parsed_funcs(path)
+    if not ok:
+        return True
+    tests = [n for name, n in funcs.items() if name.startswith("test_")]
+    if not tests:
+        return True
+    return any(_function_asserts(path, t) for t in tests)
 
 
 def check(repo: Path, paths: list[Path]) -> tuple[list[str], list[str]]:
@@ -174,6 +316,16 @@ def check(repo: Path, paths: list[Path]) -> tuple[list[str], list[str]]:
                 f"            raise SystemExit(\"REFUSING: pytest-fixture suite; run: \"\n"
                 f"                             \"python -m pytest {rel} -q\")"
             )
+        # ADVISORY: assertion density. A collectable suite whose tests assert
+        # nothing passes for free. Resolution follows one level of same-file
+        # indirection so a suite that factors its asserts into helpers is NOT
+        # flagged -- that omission would re-create false-positive class #3.
+        if not collectable_tests_assert(p):
+            advisories.append(
+                f"{rel}: {len(collectable)} collectable test(s), ZERO assertions in "
+                f"aggregate -- this file passes without checking anything.\n"
+                f"    Add assertions, or rename it to check_*/probe_* if it is a probe script."
+            )
     return problems, advisories
 
 
@@ -191,11 +343,17 @@ def main(argv: list[str]) -> int:
     else:
         skip = {".git", "__pycache__", "node_modules", "repos", "tmp", "artifacts",
                 "worktrees"}   # nested checkouts of THIS repo -- same files, counted twice
-        paths = [
-            p for p in repo.rglob("test_*.py")
-            if not any(part in skip or part.startswith(".venv") for part in p.parts)
-        ]
-    paths = [p for p in paths if p.is_file() and p.name.startswith("test_")]
+        # Skip-matching is RELATIVE to the repo root: matching on absolute parts
+        # made every path under a `/tmp/...` checkout invisible to the gate.
+        paths = sorted({
+            p for glob in TEST_FILE_GLOBS for p in repo.rglob(glob)
+            if not any(part in skip or part.startswith(".venv")
+                       for part in p.relative_to(repo).parts)
+        })
+    # An explicitly passed path of EITHER shape is checked. Filtering on
+    # `test_` alone silently DROPPED every `*_test.py` handed to the gate by the
+    # pre-commit hook -- a vacuous pass in the gate itself.
+    paths = [p for p in paths if p.is_file() and is_test_filename(p.name)]
 
     problems, advisories = check(repo, paths)
     for problem in problems:

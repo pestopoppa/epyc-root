@@ -217,5 +217,18 @@ def main() -> int:
     return 1 if failed else 0
 
 
+def test_unblock_artifact() -> None:
+    """Make pytest COUNT this suite.
+
+    `main()` takes no argv and every case runs inside a
+    `tempfile.TemporaryDirectory` with the module's REPO_ROOT/BUS_ROOT/RECEIPTS
+    rebound into it (see `fresh`), so collecting this file writes nothing outside
+    the tempdir, touches no session-bus file and mutates no environment. Reviewed
+    2026-08-21 (VT-4); without the bridge pytest collects 0 here and reports
+    success having executed nothing.
+    """
+    assert main() == 0, "unblock_artifact regressions -- see stdout"
+
+
 if __name__ == "__main__":
     sys.exit(main())

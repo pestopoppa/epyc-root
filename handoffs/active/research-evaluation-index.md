@@ -10,7 +10,6 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| EVL-50 | vacuous test suite remediation | [vacuous-test-suite-remediation.md](vacuous-test-suite-remediation.md) | VT-1 — repair scripts/security/test_audit_repository.py: no __main__ AND outside testpaths, so it runs under neither | — |
 | EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: "I will tell | — |
 | EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule | — |
 | EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | E8 RE-ARM (2026-07-26) — AutoPilot E8 baseline reseed = the gating task of the post-v8 | — |
