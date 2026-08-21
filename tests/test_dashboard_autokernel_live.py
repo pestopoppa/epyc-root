@@ -1020,24 +1020,37 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
         spec = json.loads((runtime / "launch-spec.json").read_text())
         spec["schema"] = server._SUPERVISOR_SPEC_SCHEMA_V3
-        roles = {
-            "deployment_factory", "discovery_controller", "hypotheses",
-            "do_not_repeat", "discovery_telemetry", "gpu_discovery_runner",
-            "gpu_source_adapter", "discovery_static_registry",
-            "discovery_supervisor", "discovery_supervisor_secure",
-            "discovery_deployment", "gpu_load_admission",
-            "split_runtime_verifier", "inference_window", "cpu_region_claim",
-            "worktree", "source_candidate", "instrument_integrity",
-            "t0_provider", "evaluator_integrity", "gpu_source_evidence",
-            "gpu_source_proofs", "gpu_discovery_beliefs", "device_claim",
-            "device_sampler", "gpu_residency_sampler", "codex_container_actor",
-            "claude_fable5_critic_actor", "hypothesis_portfolio"}
-        logical_path, manifest_row = next(iter(
-            spec["execution_closure"]["manifest"].items()))
+        manifest = spec["execution_closure"]["manifest"]
+        for index, logical_path in enumerate(
+                server._SUPERVISOR_GRAPH_EXECUTION_MODULES_V3.values(), 100):
+            if logical_path in manifest:
+                continue
+            digest = hashlib.sha256(logical_path.encode()).hexdigest()
+            manifest[logical_path] = {
+                "sha256": digest,
+                "source": {"dev": 1, "ino": index, "mode": 0o644,
+                           "nlink": 1, "size": index, "uid": os.geteuid()},
+                "closure": {"dev": 2, "ino": index, "mode": 0o444,
+                            "nlink": 1, "size": index, "uid": 0},
+            }
+        content_manifest = {key: value["sha256"]
+                            for key, value in manifest.items()}
+        content_sha = hashlib.sha256(
+            server._canonical_json_bytes(content_manifest)).hexdigest()
+        closure = Path("/var/lib/epyc-autokernel/execution-closures") / content_sha
+        spec["execution_closure"].update({
+            "path": str(closure), "content_sha256": content_sha,
+            "manifest_sha256": hashlib.sha256(
+                server._canonical_json_bytes(manifest)).hexdigest()})
+        for module, binding in spec["execution_modules"].items():
+            filename = Path(binding["path"]).name
+            binding["path"] = str(
+                closure / "scripts/kernel_rnd/autokernel/controller" / filename)
         spec["graph_execution_modules"] = {
             role: {"logical_path": logical_path,
-                   "sha256": manifest_row["sha256"]}
-            for role in roles}
+                   "sha256": manifest[logical_path]["sha256"]}
+            for role, logical_path in
+            server._SUPERVISOR_GRAPH_EXECUTION_MODULES_V3.items()}
         self._rebind_supervisor_spec(runtime, spec)
         self.assertIsNotNone(server._supervisor_terminal_observation(
             self.bundle, config_path, config))
@@ -1050,8 +1063,28 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
 
         extra = json.loads(json.dumps(spec))
         extra["graph_execution_modules"]["unexpected_role"] = {
-            "logical_path": logical_path, "sha256": manifest_row["sha256"]}
+            "logical_path": next(iter(manifest)),
+            "sha256": manifest[next(iter(manifest))]["sha256"]}
         self._rebind_supervisor_spec(runtime, extra)
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+
+        roles = list(server._SUPERVISOR_GRAPH_EXECUTION_MODULES_V3)
+        for index, role in enumerate(roles):
+            with self.subTest(swapped_role=role):
+                swapped = json.loads(json.dumps(spec))
+                other = roles[(index + 1) % len(roles)]
+                swapped["graph_execution_modules"][role] = dict(
+                    swapped["graph_execution_modules"][other])
+                self._rebind_supervisor_spec(runtime, swapped)
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+
+        duplicate = json.loads(json.dumps(spec))
+        first = dict(next(iter(duplicate["graph_execution_modules"].values())))
+        duplicate["graph_execution_modules"] = {
+            role: dict(first) for role in roles}
+        self._rebind_supervisor_spec(runtime, duplicate)
         self.assertIsNone(server._supervisor_terminal_observation(
             self.bundle, config_path, config))
 
@@ -1103,7 +1136,13 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         mutations = (
             lambda rows: rows[0]["payload"].__setitem__("session_name", "ak-" + "0" * 24),
             lambda rows: rows[1]["payload"].__setitem__("stderr", "/tmp/escape"),
+            lambda rows: rows[1]["payload"]["cgroup"].__setitem__(
+                "path", rows[1]["payload"]["cgroup"]["path"] + "-forged"),
             lambda rows: rows[2]["payload"].__setitem__("restart_count", 1),
+            lambda rows: rows[2]["payload"].__setitem__(
+                "cleanup_actions", ["SIGTERM", "cgroup.remove"]),
+            lambda rows: rows[2]["payload"].__setitem__(
+                "cleanup_actions", ["cgroup.remove", "cgroup.remove"]),
             lambda rows: rows[3]["payload"].__setitem__("last_return_code", 2),
             lambda rows: rows[4]["payload"].__setitem__("exit_code", 2),
         )

@@ -7159,6 +7159,58 @@ _SUPERVISOR_LEDGER_SCHEMA = "epyc.autokernel.discovery_supervisor_ledger.v2"
 _SUPERVISOR_IDENTITY_SCHEMA = "epyc.autokernel.discovery_supervisor_identity.v2"
 _SUPERVISOR_SPEC_SCHEMA = "epyc.autokernel.discovery_supervisor_spec.v2"
 _SUPERVISOR_SPEC_SCHEMA_V3 = "epyc.autokernel.discovery_supervisor_spec.v3"
+_SUPERVISOR_GRAPH_EXECUTION_MODULES_V3 = {
+    "deployment_factory":
+        "scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py",
+    "discovery_controller":
+        "scripts/kernel_rnd/autokernel/controller/discovery_controller.py",
+    "hypotheses": "scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+    "do_not_repeat": "scripts/kernel_rnd/autokernel/controller/do_not_repeat.py",
+    "discovery_telemetry":
+        "scripts/kernel_rnd/autokernel/controller/discovery_telemetry.py",
+    "gpu_discovery_runner": "scripts/benchmark/run_autokernel_gpu_discovery.py",
+    "gpu_source_adapter":
+        "scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py",
+    "discovery_static_registry":
+        "scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py",
+    "discovery_supervisor":
+        "scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py",
+    "discovery_supervisor_secure":
+        "scripts/kernel_rnd/autokernel/controller/discovery_supervisor_secure.py",
+    "discovery_deployment":
+        "scripts/kernel_rnd/autokernel/controller/discovery_deployment.py",
+    "gpu_load_admission":
+        "scripts/kernel_rnd/autokernel/controller/gpu_load_admission.py",
+    "split_runtime_verifier":
+        "scripts/kernel_rnd/autokernel/controller/split_runtime_verifier.py",
+    "inference_window":
+        "scripts/kernel_rnd/autokernel/execution/inference_window.py",
+    "cpu_region_claim":
+        "scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py",
+    "worktree": "scripts/kernel_rnd/autokernel/execution/worktree.py",
+    "source_candidate": "scripts/kernel_rnd/autokernel/source_candidate.py",
+    "instrument_integrity":
+        "scripts/kernel_rnd/autokernel/execution/instrument_integrity.py",
+    "t0_provider": "scripts/kernel_rnd/autokernel/execution/t0_provider.py",
+    "evaluator_integrity": "scripts/kernel_rnd/autokernel/evaluator/integrity.py",
+    "gpu_source_evidence":
+        "scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py",
+    "gpu_source_proofs":
+        "scripts/kernel_rnd/autokernel/controller/gpu_source_proofs.py",
+    "gpu_discovery_beliefs":
+        "scripts/benchmark/autokernel_gpu_discovery_beliefs.py",
+    "device_claim": "scripts/kernel_rnd/autokernel/resource/device_claim.py",
+    "device_sampler":
+        "scripts/kernel_rnd/autokernel/execution/device_sampler.py",
+    "gpu_residency_sampler":
+        "scripts/kernel_rnd/autokernel/controller/gpu_residency_sampler.py",
+    "codex_container_actor":
+        "scripts/kernel_rnd/autokernel/controller/codex_container_actor.py",
+    "claude_fable5_critic_actor":
+        "scripts/kernel_rnd/autokernel/controller/claude_fable5_critic_actor.py",
+    "hypothesis_portfolio":
+        "scripts/kernel_rnd/autokernel/hypothesis_portfolio.py",
+}
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
@@ -7346,6 +7398,16 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
     tmux = started.get("tmux")
     cgroup = child_start.get("cgroup")
     cleanup = child_exit.get("cleanup_actions")
+    cgroup_name = "epyc-autokernel-" + hashlib.sha256(
+        str(runtime_root).encode("utf-8")).hexdigest()[:24]
+    expected_cgroup_path = (
+        f"/sys/fs/cgroup/{cgroup_name}-{supervisor.get('pid') if isinstance(supervisor, dict) else 0}-0")
+    allowed_cleanup = {
+        ("cgroup.remove",),
+        ("pidfd:SIGTERM", "cgroup.remove"),
+        ("cgroup.kill", "cgroup.remove"),
+        ("pidfd:SIGTERM", "cgroup.kill", "cgroup.remove"),
+    }
     if (set(started) != {"spec_sha256", "session_name", "supervisor", "tmux"}
             or started.get("spec_sha256") != spec_sha256
             or started.get("session_name") != session_name
@@ -7361,14 +7423,13 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
             or set(cgroup) != {"dev", "ino", "mode", "nlink", "path", "uid"}
             or not _identity_map({key: cgroup[key] for key in (
                 "dev", "ino", "mode", "nlink", "uid")}, sized=False)
-            or not isinstance(cgroup.get("path"), str)
-            or not cgroup["path"].startswith("/sys/fs/cgroup/epyc-autokernel-")
+            or cgroup.get("uid") != os.geteuid()
+            or cgroup.get("mode") != 0o700 or cgroup.get("nlink", 0) < 2
+            or cgroup.get("path") != expected_cgroup_path
             or set(child_exit) != {
                 "restart_count", "return_code", "cleanup_actions", "stop_signal"}
             or child_exit.get("restart_count") != 0
-            or not isinstance(cleanup, list) or not cleanup
-            or any(item not in {"cgroup.remove", "cgroup.kill", "SIGTERM", "SIGKILL"}
-                   for item in cleanup)
+            or not isinstance(cleanup, list) or tuple(cleanup) not in allowed_cleanup
             or child_exit.get("stop_signal") is not None
             or isinstance(return_code, bool) or not isinstance(return_code, int)
             or return_code == 0
@@ -7543,30 +7604,19 @@ def _supervisor_launch_spec(
                 ).get("sha256") != binding["sha256"]):
             return None
     if schema == _SUPERVISOR_SPEC_SCHEMA_V3:
-        graph_roles = {
-            "deployment_factory", "discovery_controller", "hypotheses",
-            "do_not_repeat", "discovery_telemetry", "gpu_discovery_runner",
-            "gpu_source_adapter", "discovery_static_registry",
-            "discovery_supervisor", "discovery_supervisor_secure",
-            "discovery_deployment", "gpu_load_admission",
-            "split_runtime_verifier", "inference_window", "cpu_region_claim",
-            "worktree", "source_candidate", "instrument_integrity",
-            "t0_provider", "evaluator_integrity", "gpu_source_evidence",
-            "gpu_source_proofs", "gpu_discovery_beliefs", "device_claim",
-            "device_sampler", "gpu_residency_sampler", "codex_container_actor",
-            "claude_fable5_critic_actor", "hypothesis_portfolio"}
         graph_modules = value.get("graph_execution_modules")
-        if not isinstance(graph_modules, dict) or set(graph_modules) != graph_roles:
+        if (not isinstance(graph_modules, dict)
+                or set(graph_modules) != set(
+                    _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3)):
             return None
-        for binding in graph_modules.values():
+        for role, logical_path in _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3.items():
+            binding = graph_modules[role]
             if (not isinstance(binding, dict)
                     or set(binding) != {"logical_path", "sha256"}
-                    or not isinstance(binding.get("logical_path"), str)
-                    or not binding["logical_path"].startswith("scripts/")
-                    or ".." in Path(binding["logical_path"]).parts
+                    or binding.get("logical_path") != logical_path
                     or re.fullmatch(r"[0-9a-f]{64}", str(
                         binding.get("sha256"))) is None
-                    or manifest.get(binding["logical_path"], {}).get("sha256")
+                    or manifest.get(logical_path, {}).get("sha256")
                     != binding["sha256"]):
                 return None
     cgroup = value.get("cgroup")
