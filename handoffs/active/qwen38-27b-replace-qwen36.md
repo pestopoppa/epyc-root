@@ -1,6 +1,6 @@
 # Qwen3.8-27B — replace Qwen3.6-27B in production
 
-**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **stack-template swap DONE 2026-08-20** — `1cff5162` ("stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)", 2026-08-20 21:52:11Z), whose *only* changed file is `repos/epyc-orchestrator/stack_templates/default.yaml` (`git show --stat`: 1 file, +7/-2). **CORRECTED 2026-08-21 (second pass): the MASTER registry swap IS done** — `b376dadd` ("registry: swap architect_general + coder_escalation to Qwen3.8-27B; draft_max 4 -> 8", 2026-08-20 12:19) is a LOCAL, UNPUSHED commit in **epyc-inference-research**, whose `orchestration/model_registry.yaml` is the TRUE master; the orchestrator's same-named file is the AUTO-GENERATED lean view (banner at its head) and was audited by mistake. What is NOT done is the **compile chain**: `orchestration/model_registry.yaml` contains **zero** occurrences of the fixed string `Qwen3.8` (`grep -F -c` → `0`, re-verified 2026-08-21), and `architect_general` / `coder_escalation` there still carry `model_role: qwen36_27b_mtp_q8_local` (`model_registry.yaml:1501`, `:1398`) — so a registry-vs-stack-template divergence stands until the registry is updated **and** the derived layer regenerated. The previously cited `b376dadd` resolves in none of the three repos (`git cat-file -t` → `fatal: Not a valid object name`). `stack_change_pipeline.py` regenerate + stack-change checklist remain, and those need a stack start — nothing is serving today, so `live == config` is unverified. Full evidence: *Research Intake — 2026-08-21 → Q38-T2*.
+**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **stack-template swap DONE 2026-08-20** — `1cff5162` ("stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)", 2026-08-20 21:52:11Z), whose *only* changed file is `repos/epyc-orchestrator/stack_templates/default.yaml` (`git show --stat`: 1 file, +7/-2). **CORRECTED 2026-08-21 (second pass): the MASTER registry swap IS done** — `b376dadd` ("registry: swap architect_general + coder_escalation to Qwen3.8-27B; draft_max 4 -> 8", 2026-08-20 12:19) is a LOCAL, UNPUSHED commit in **epyc-inference-research**, whose `orchestration/model_registry.yaml` is the TRUE master; the orchestrator's same-named file is the AUTO-GENERATED lean view (banner at its head) and was audited by mistake. What is NOT done is the **compile chain**: `orchestration/model_registry.yaml` contains **zero** occurrences of the fixed string `Qwen3.8` (`grep -F -c` → `0`, re-verified 2026-08-21), and `architect_general` / `coder_escalation` there still carry `model_role: qwen36_27b_mtp_q8_local` (`model_registry.yaml:1501`, `:1398`) — so a registry-vs-stack-template divergence stands until the registry is updated **and** the derived layer regenerated. **THIRD PASS 2026-08-21: the compile chain is now DONE too** — ratification executed (`ratify_qwen38_registry_swap_20260821.sh` v2; orchestrator `7483d7fb`): derived `stack_priors.yaml` verified serving Qwen3.8-27B-Q8_0 @ draft_max 8 on architect_general. (The earlier "`b376dadd` resolves in no repo" was an artifact of the research repo's `safe.directory` config defeating the check; it resolves fine and is on origin since `bb405297`.) Remaining: Q38-T5 stack start + `live == config` checklist (operator-sequenced), Q38-T4 third edit + recompile. Full evidence: *Research Intake — 2026-08-21*.
 **Created**: 2026-08-14
 **Priority**: P2 (model refresh; no production pain forcing it, but a same-day release refresh is cheap to stage)
 **Effort**: Low-Medium — download/smoke/MTP/throughput/architect-bench done; the registry swap is the last step (the 2026-08-14 quality-gate decline was later reversed and the coding ladder ran)
@@ -86,13 +86,32 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 - [ ] **DFlash2 selection decision** — BLOCKED on three named gates before it may displace MTP: np2/4/8
   scaling, exact greedy parity at temp 0, and the block-verify dispatch proof. Owned by the autokernel
   session under INF-62; this row exists so the registry side has a visible decision point.
-- [ ] **Q38-T4 — quarter-port surface drift (pre-existing, surfaced 2026-08-21 by the ratification's
+- [x] **Q38-T4 ✅ 2026-08-21 — CLOSED, and neither proposed fix was the right one: the "drift" was a CHECK-TIME MODE ARTIFACT.** The guard builds its launch view against the realized fleet mode, defaulting to `full` in a clean shell (`stack_change_guard.py:1183-1191`, `stack_numa_mode.py:10`), which filters the half instances out of the view while the master unconditionally projects them into `serving.ports`. Under the PRODUCTION mode (`ORCHESTRATOR_STACK_NUMA_MODE=both`) all 13 errors vanish with ZERO data edits; after a mode-correct `update` (re-pinning the launcher hash the jinja fix had legitimately broken) the check is **FULLY GREEN — `guard: ok`, `guard_strict: ok`, `acceptance: no-inference checks passed`** — the first fully green stack-change check of the campaign. Master, topology, stack template and launch manifest were all correct all along; the ratify script now exports the mode. (Earlier annotation about launch-manifest-vs-accepted_gaps options is superseded. CORRECTED FRAMING 2026-08-21 (after a reverted over-read): the flagged ports are
+      the HALF instances, which are LIVE production config** — `stack_templates/default.yaml:93-94`
+      and `:121-122` launch them (`{port: 8080, numa: HALF_A, threads: 48}` …). The operator's
+      "no quarter instances anymore" covers quarters only (retired 2026-07-30); an over-broad
+      reading briefly removed 2 of 3 half-port sites from the master working tree — caught by the
+      operator, reverted verbatim, and the recompile never ran, so no artifact or serving state was
+      affected. THE REAL FIX therefore runs the other way: represent half mode in
+      `orchestration/launch_manifest.yaml` (whose comments already name the half ports) so
+      `guard_all_surfaces` sees them as launchable — or file exact `(role, gap)` accepted_gaps
+      declarations. Operator to pick the direction; the master is not the defect. Original finding
+      follows. — quarter-port surface drift (pre-existing, surfaced 2026-08-21 by the ratification's
       post-check).** `guard_all_surfaces` fails on frontdoor / ingest_long_context / toolrunner /
       worker_* because their `serving.ports` declare quarter-instance ports (8080/8180/8082/8182/…)
       that `orchestration/launch_manifest.yaml` carries only as comments. Unchanged since 2026-03;
       failed identically before this ratification's writes. Either represent quarter mode in the
       launch manifest or file exact `(role, gap)` `accepted_gaps.yaml` declarations (expiry
       required). Blocks a fully-green `check`; does NOT block the swap surfaces, which verify clean.
+- [ ] **Q38-T5 — post-CT-1 stack start + checklist (operator-directed 2026-08-21).** As soon as
+      CT-1's arms complete: (a) verify no autokernel GPU work is running (none is as of 14:05Z —
+      no codex session listed, no claims, no KFD processes expected); if one appeared, negotiate a
+      quiet window with that codex agent (via workspace-c0 if not directly reachable) before
+      touching the GPU; (b) start the stack via `orchestrator_stack.py` (the lean auto-recompiles
+      at start; derived is already regenerated and verified); (c) run the stack-change checklist:
+      `live == config` — confirm architect_general serves Qwen3.8-27B-Q8_0 at draft_max 8 on
+      :8083, `verify_ggml_linkage.sh`, non-zero VRAM sampled DURING a request, KFD process count;
+      (d) close the ticked-but-stale 2026-08-20 checklist item against this evidence.
 - [ ] **Stack-change checklist / `stack_change_pipeline.py` regenerate** — NOT run. Nothing is serving
   (`:8083` unbound), so config and runtime agree only by both being absent. `live == config` is
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its

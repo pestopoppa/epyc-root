@@ -339,7 +339,19 @@ anything.
       `enable_thinking=false` and stripping the marker — input marking cannot see it, because it
       constrains tokenization, not template control flow. Rendered proof in the analysis above)
 - [ ] **CT-4** — If anything is adopted, pin the exact revision + sha256, not a branch.
-- [ ] **CT-5** — Decide the retention question on its own merits, separately from the terseness
+- [ ] **CT-5 — OPERATOR RULED 2026-08-21: hold (a) as posture, (c) authorised as a measurement
+      ("once you negotiate a quiet GPU window… you can test it out"). Measurement LAUNCHED same hour
+      (GPU idle, window free): `/workspace/tmp/ct5c-gpu/ct5c_runner.py` — Qwen3.8-27B on MI210
+      (v9 HIP, draft-mtp n8, embedded template), 60 pinned gpqa_diamond_cot (seed 42), paired
+      per-request flag flip T0 `enable_thinking=false` vs T1 `true`+`reasoning_effort=medium`
+      (medium = zero-token default, deliberately avoiding the xhigh injection), prod sampling,
+      max_tokens 4096 both arms. Prerequisite (request path cannot emit none/minimal) SATISFIED by
+      Q38-T1 evidence: zero `reasoning_effort` emissions reach llama-server from src/. FINDING: v9
+      has NO `--reasoning-budget` flag — the lever `reasoning-effort-levels.md:359-362` cites does
+      not exist in this build; the tail is bounded by max_tokens and non-termination measured via
+      finish_reason. Box stays open until the measurement decides: tail reproduces → close at (a)
+      permanently; clean → (c) proceeds to a decision. Original task follows.** Decide the retention
+      question on its own merits, separately from the terseness
       prompt. The three incumbent templates discard history reasoning; the community templates keep
       it. Under `enable_thinking=false` this changes nothing, so the real question is whether any
       role should run thinking-ON with retention — which is where the prefix-cache argument would
