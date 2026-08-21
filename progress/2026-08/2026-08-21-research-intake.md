@@ -396,3 +396,18 @@ artifacts never saw it (operator caught it; memory updated with the near-miss).
 GPU mid-run (doctrine: co-residency is scheduling data); exactly 1 latency row overlapped and is
 tagged in `coresidency_annotations.json`. Their RVP-C6-20 falsification succeeded on the granted
 window.
+
+### Post-wrap-up interval (operator /wrap-up, second invocation)
+
+No new task rows; the interval's deliverable was the **codex dispatch draft** relayed via the
+operator: routes RVP-C6-22/23/24 + AK-PM-12 (evaluator hardening, build now), the three ratified
+design constraints (C6 tier stack with L3 dropped; refuse-unknown-part; memory build gated on
+AK-PM-11), five cheap probes (AK-PM-13/16/17, RVP-C4-10/11, C5-14/16), and the episodic-store-quiet
+action — whole-scope transfer on relay. Two shared-tree repairs this interval, both benign artifacts
+of the private-index commit pattern or its twin: (1) the research repo's stale shared index showed my
+six c6_mutants files as staged DELETIONS against the new HEAD — scoped `git reset` fixed it; recorded
+here because the next committer would have swept a 727-line deletion of a pushed harness; (2) a second
+patch-identical twin-commit divergence (ccee7873 local / b3291d43 origin, same parent) reconciled with
+a superset-safe `-s ours` merge, same as the first. Peer's live Stage-2b work (+4,102 uncommitted
+index lines, CT-5c progress edits) left strictly untouched. GPU-arm follow-ons remain with the codex
+agent per the dispatch; this session is quiescent pending compute or new operator input.
