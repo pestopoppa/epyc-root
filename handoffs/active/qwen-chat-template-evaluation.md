@@ -320,7 +320,20 @@ anything.
 
 ## Tasks
 
-- [ ] **CT-1** — A/B one Qwen3.x role via `llama-server --chat-template-file` — arms per CT-1a (the
+- [x] **CT-1 ✅ 2026-08-21 — RAN TO COMPLETION AND RETURNED PERFECT PARITY, for a structural
+      reason verified afterward: for the eval request shape (bare single user turn, no system
+      prompt, no tools, `enable_thinking=false`) the embedded template and epyc-qwen3x-v1 render
+      BYTE-IDENTICAL prompts, so all 160 paired generations were bit-identical (zero flips, every
+      statistic equal to the decimal; artifacts `artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/`).
+      WHAT THIS ESTABLISHES: epyc-v1 is a PROVEN drop-in no-regression replacement on the
+      production single-turn path — 320 real generations through the real engine, zero divergence.
+      WHAT IT CANNOT ESTABLISH (by construction): the templates only diverge on system prompts,
+      tools, multi-turn history and effort steering, none of which this shape exercises. DESIGN
+      LESSON, owned: the arms should have been render-diffed on THE EVAL SHAPE before spending
+      3.2 h of CPU — the 5-second check existed and was run on every shape except that one
+      (probe-config-before-long-runs violation, recorded). The terseness question is unanswered
+      and moves to CT-1b. Original task follows.** A/B one Qwen3.x role via
+      `llama-server --chat-template-file` — arms per CT-1a (the
       built epyc-qwen3x-v1, not the community file) — against its embedded
       template on a pinned eval set. Report **per-suite, never aggregate** (intake-1214: a
       conciseness instruction near-neutral in aggregate carried a 27.69% math penalty for the
@@ -360,9 +373,17 @@ anything.
       answered the OPERATING-POINT question (at 4K total, thinking does not pay) — NOT the
       capability question. Historical context folded in: prior anti-reasoning findings (+33pp
       no-think, R2d tails) were broken-serving artifacts on other models; reasoning has never been
-      measured here with working serving AND adequate budget — until the 16K rerun launched this
-      hour (same 60 pairs, symmetric 16,384 caps, `/workspace/tmp/ct5c-16k/`). Posture (a) stands
-      meanwhile. ORIGINAL RULING + task follow: OPERATOR
+      measured here with working serving AND adequate budget — until the 16K rerun landed at 18:40Z
+      (same 60 pairs, symmetric 16,384 caps; artifacts `artifacts/chat-templates/ct5c-gpu-20260821/rerun-16k/`).
+      **16K RESULT — the budget-artifact hypothesis CONFIRMED in full:** T0 85.0% (51/60, nonterm 0)
+      vs T1 86.7% (52/60, nonterm 1), flips 2:3 IN FAVOUR of thinking (n.s.), mean think 9,693 chars.
+      Both arms rose enormously from the 4K run (70.0/63.3 → 85.0/86.7) — the cap was crushing
+      no-think too. VERDICT: reasoning is NOT worse on this stack — it is statistically TIED at fair
+      budget, and every historical anti-reasoning datum here is now accounted for as infrastructure
+      (loops, termination, templates, or caps). Posture (a) remains optimal on ECONOMICS alone:
+      +21% tokens-per-solved (4,809 vs 3,972) for +1.7pp n.s. on a CoT-prompted suite where visible
+      CoT already captures the reasoning benefit. The thinking axis is now MEASURED on Qwen3.8
+      itself (resolving the uncertified-inheritance caveat from the options table). ORIGINAL RULING + task follow: OPERATOR
       RULED 2026-08-21: hold (a) as posture, (c) authorised as a measurement
       ("once you negotiate a quiet GPU window… you can test it out"). Measurement LAUNCHED same hour
       (GPU idle, window free): `/workspace/tmp/ct5c-gpu/ct5c_runner.py` — Qwen3.8-27B on MI210
@@ -383,6 +404,28 @@ anything.
       Do not bundle this with CT-1. *(package drafted 2026-08-21, awaiting operator — see
       "CT-5 decision package" above; recommendation is hold status quo + authorise a measurement-only
       thinking-ON A/B on `architect_general`, and decline the community-template pilot on CT-3 grounds)*
+- [x] **CT-1b ✅ 2026-08-21 — RAN AND THE TERSENESS PROMPT DELIVERS.** Arm 2 (epyc-v1 + Sharp's
+      terseness block, sha256 `1443ea9ab4bb…4551`, injection-free by construction) vs arm 0
+      (embedded), same 160 pinned ids, fixed 900-token budget (artifacts
+      `ab-cpu-20260821/ct1b-terse/`). Per-suite at the production operating point: math 80.0=80.0%
+      (flips 1:1) at **−34% tokens**; mmlu_pro 37.5→40.0% (4:5) at **−99%** (mean 2.0 tokens — the
+      model finally obeys "letter only"); gpqa_diamond 42.5→**60.0%** (flips **0:7**, McNemar
+      p≈0.016 — the one significant cell) at −99.5%; cruxeval 27.5→30.0% (3:4) at −36% with
+      truncation 21→12. DECOMPOSITION (per the locked rule): the gpqa gain is mostly
+      truncation-avoidance (arm 0 lost 12/40 to the cap; completed-only 53.6 vs 60.0 with
+      non-comparable subsets) — the honest claim is **never worse, significantly better where
+      budget binds, at 34–99.5% fewer answer tokens**. CCoT's math-penalty hazard did NOT
+      materialize (80=80, flips 1:1). WATCH-ITEM, not finding: cruxeval completed-only hints
+      terseness may compress useful working-through on output-prediction (57.9 vs 42.9,
+      selection-biased subsets; paired flips 3:4 ≈ parity). NET FOR THE INTAKE: Sharp's claimed
+      direction (fewer tokens, no accuracy cost) VALIDATES on our stack — via OUR injection-free
+      build, not the community file. Deployment decision is the operator's; the artifact is ready.
+      Original task follows.** the DISCRIMINATING A/B: +terseness variant (Sharp's active ingredient).** Build
+      the arm-2 template (epyc-v1 + Sharp's terseness block — the one component with zero
+      measurement anywhere) and rerun the CT-1 protocol against arm 0; on this shape the renders DO
+      differ (system-turn injection), so the A/B has power. Same runner, same pinned ids, ~3.2 h
+      CPU. Per-suite + flip analysis + MC-scorer decomposition as locked. This is the last open
+      empirical question of the 2026-08-21 intake.
 - [ ] **CT-8 — belief-kernel wiring for CT-1 measurements** (filed at first-measurement time per the
       standing rule). The A/B emits per-question JSONL + per-suite summary; before any result gates a
       template adoption, add the write-side hook: producer-authored claim tuples with (model,

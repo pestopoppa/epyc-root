@@ -1,0 +1,82 @@
+{
+ "math": {
+  "arm0": {
+   "n": 40,
+   "correct": 32,
+   "acc": 0.8,
+   "mean_tokens": 434.8,
+   "truncated": 6,
+   "errors": 0
+  },
+  "arm1": {
+   "n": 40,
+   "correct": 32,
+   "acc": 0.8,
+   "mean_tokens": 289.1,
+   "truncated": 4,
+   "errors": 0
+  },
+  "flips_01": 1,
+  "flips_10": 1
+ },
+ "mmlu_pro": {
+  "arm0": {
+   "n": 40,
+   "correct": 15,
+   "acc": 0.375,
+   "mean_tokens": 241.2,
+   "truncated": 7,
+   "errors": 0
+  },
+  "arm1": {
+   "n": 40,
+   "correct": 16,
+   "acc": 0.4,
+   "mean_tokens": 2.0,
+   "truncated": 0,
+   "errors": 0
+  },
+  "flips_01": 4,
+  "flips_10": 5
+ },
+ "gpqa_diamond": {
+  "arm0": {
+   "n": 40,
+   "correct": 17,
+   "acc": 0.425,
+   "mean_tokens": 434.6,
+   "truncated": 12,
+   "errors": 0
+  },
+  "arm1": {
+   "n": 40,
+   "correct": 24,
+   "acc": 0.6,
+   "mean_tokens": 2.0,
+   "truncated": 0,
+   "errors": 0
+  },
+  "flips_01": 0,
+  "flips_10": 7
+ },
+ "cruxeval": {
+  "arm0": {
+   "n": 40,
+   "correct": 11,
+   "acc": 0.275,
+   "mean_tokens": 611.1,
+   "truncated": 21,
+   "errors": 0
+  },
+  "arm1": {
+   "n": 40,
+   "correct": 12,
+   "acc": 0.3,
+   "mean_tokens": 390.9,
+   "truncated": 12,
+   "errors": 0
+  },
+  "flips_01": 3,
+  "flips_10": 4
+ }
+}

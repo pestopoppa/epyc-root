@@ -1,0 +1,51 @@
+[13:46:48] pinned 160 questions across 4 suites
+[13:46:48] === CT-1 A/B start ===
+[13:46:48] arm0 server pid 3346283 launching (no-mmap load ~1-2 min)
+[13:46:53] arm0 server healthy
+[13:52:41] arm0 math 10/40
+[13:58:22] arm0 math 20/40
+[14:04:44] arm0 math 30/40
+[14:12:50] arm0 math 40/40
+[14:17:17] arm0 mmlu_pro 10/40
+[14:20:54] arm0 mmlu_pro 20/40
+[14:25:51] arm0 mmlu_pro 30/40
+[14:28:01] arm0 mmlu_pro 40/40
+[analysis-note] arm0 mmlu_pro 15/40 (37.5%) at mean 241 tok — low-but-plausible under the known
+letter-only/no-think confound (architect-bench R2: +32pp from a CoT prompt on this protocol).
+ANALYSIS RULE for the cross-arm comparison (per feedback_parse_failure_rate_is_a_scoring_artifact):
+any MC-suite accuracy delta between arms must first be decomposed via the persisted answer_tail into
+(letter-extraction failures) vs (genuinely wrong letters) — a template that changes answer FORMATTING
+would move the scorer, not the model. exact_match suites (math, cruxeval) are <answer>-tag anchored
+and less exposed.
+[14:37:02] arm0 gpqa_diamond 10/40
+[14:43:52] arm0 gpqa_diamond 20/40
+[14:48:55] arm0 gpqa_diamond 30/40
+[14:54:58] arm0 gpqa_diamond 40/40
+[15:03:58] arm0 cruxeval 10/40
+[15:13:02] arm0 cruxeval 20/40
+[15:23:39] arm0 cruxeval 30/40
+[15:31:55] arm0 cruxeval 40/40
+[15:31:55] arm0 complete
+[15:31:55] server pid 3346283 dead, verified
+[15:31:55] arm1 server pid 3856174 launching (no-mmap load ~1-2 min)
+[15:32:00] arm1 server healthy
+[15:36:57] arm1 math 10/40
+[15:41:47] arm1 math 20/40
+[15:47:11] arm1 math 30/40
+[15:54:09] arm1 math 40/40
+[15:58:02] arm1 mmlu_pro 10/40
+[16:01:10] arm1 mmlu_pro 20/40
+[16:05:26] arm1 mmlu_pro 30/40
+[16:07:17] arm1 mmlu_pro 40/40
+[16:14:52] arm1 gpqa_diamond 10/40
+[16:20:25] arm1 gpqa_diamond 20/40
+[16:24:40] arm1 gpqa_diamond 30/40
+[16:29:47] arm1 gpqa_diamond 40/40
+[16:37:22] arm1 cruxeval 10/40
+[16:44:51] arm1 cruxeval 20/40
+[16:53:39] arm1 cruxeval 30/40
+[17:00:40] arm1 cruxeval 40/40
+[17:00:40] arm1 complete
+[17:00:40] server pid 3856174 dead, verified
+[17:00:40] SUMMARY: {"math": {"arm0": {"n": 40, "correct": 32, "acc": 0.8, "mean_tokens": 434.8, "truncated": 6, "errors": 0}, "arm1": {"n": 40, "correct": 32, "acc": 0.8, "mean_tokens": 434.8, "truncated": 6, "errors": 0}, "flips_01": 0, "flips_10": 0}, "mmlu_pro": {"arm0": {"n": 40, "correct": 15, "acc": 0.375, "mean_tokens": 241.2, "truncated": 7, "errors": 0}, "arm1": {"n": 40, "correct": 15, "acc": 0.375, "mean_tokens": 241.2, "truncated": 7, "errors": 0}, "flips_01": 0, "flips_10": 0}, "gpqa_diamond": {"arm0": {"n": 40, "correct": 17, "acc": 0.425, "mean_tokens": 434.6, "truncated": 12, "errors": 0}, "arm1": {"n": 40, "correct": 17, "acc": 0.425, "mean_tokens": 434.6, "truncated": 12, "errors": 0}, "flips_01": 0, "flips_10": 0}, "cruxeval": {"arm0": {"n": 40, "correct": 11, "acc": 0.275, "mean_tokens": 611.1, "truncated": 21, "errors": 0}, "arm1": {"n": 40, "correct": 11, "acc": 0.275, "mean_tokens": 611.1, "truncated": 21, "errors": 0}, "flips_01": 0, "flips_10": 0}}
+[17:00:40] === CT-1 A/B done ===

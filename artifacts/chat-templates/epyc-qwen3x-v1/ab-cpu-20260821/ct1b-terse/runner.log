@@ -1,0 +1,24 @@
+[21:12:46] pinned 160 questions across 4 suites
+[21:12:46] === CT-1b (terseness arm 2 vs existing arm 0) start ===
+[21:12:46] arm1 server pid 821892 launching (no-mmap load ~1-2 min)
+[21:12:51] arm1 server healthy
+[21:16:18] arm1 math 10/40
+[21:19:07] arm1 math 20/40
+[21:22:46] arm1 math 30/40
+[21:26:48] arm1 math 40/40
+[21:27:01] arm1 mmlu_pro 10/40
+[21:27:16] arm1 mmlu_pro 20/40
+[21:27:30] arm1 mmlu_pro 30/40
+[21:27:43] arm1 mmlu_pro 40/40
+[21:27:57] arm1 gpqa_diamond 10/40
+[21:28:11] arm1 gpqa_diamond 20/40
+[21:28:23] arm1 gpqa_diamond 30/40
+[21:28:34] arm1 gpqa_diamond 40/40
+[21:32:42] arm1 cruxeval 10/40
+[21:37:40] arm1 cruxeval 20/40
+[21:42:20] arm1 cruxeval 30/40
+[21:47:15] arm1 cruxeval 40/40
+[21:47:15] arm1 complete
+[21:47:15] server pid 821892 dead, verified
+[21:47:15] SUMMARY: {"math": {"arm0": {"n": 40, "correct": 32, "acc": 0.8, "mean_tokens": 434.8, "truncated": 6, "errors": 0}, "arm1": {"n": 40, "correct": 32, "acc": 0.8, "mean_tokens": 289.1, "truncated": 4, "errors": 0}, "flips_01": 1, "flips_10": 1}, "mmlu_pro": {"arm0": {"n": 40, "correct": 15, "acc": 0.375, "mean_tokens": 241.2, "truncated": 7, "errors": 0}, "arm1": {"n": 40, "correct": 16, "acc": 0.4, "mean_tokens": 2.0, "truncated": 0, "errors": 0}, "flips_01": 4, "flips_10": 5}, "gpqa_diamond": {"arm0": {"n": 40, "correct": 17, "acc": 0.425, "mean_tokens": 434.6, "truncated": 12, "errors": 0}, "arm1": {"n": 40, "correct": 24, "acc": 0.6, "mean_tokens": 2.0, "truncated": 0, "errors": 0}, "flips_01": 0, "flips_10": 7}, "cruxeval": {"arm0": {"n": 40, "correct": 11, "acc": 0.275, "mean_tokens": 611.1, "truncated": 21, "errors": 0}, "arm1": {"n": 40, "correct": 12, "acc": 0.3, "mean_tokens": 390.9, "truncated": 12, "errors": 0}, "flips_01": 3, "flips_10": 4}}
+[21:47:15] === CT-1b done ===

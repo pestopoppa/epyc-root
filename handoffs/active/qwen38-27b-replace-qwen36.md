@@ -103,7 +103,20 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
       failed identically before this ratification's writes. Either represent quarter mode in the
       launch manifest or file exact `(role, gap)` `accepted_gaps.yaml` declarations (expiry
       required). Blocks a fully-green `check`; does NOT block the swap surfaces, which verify clean.
-- [ ] **Q38-T5 — post-CT-1 stack start + checklist (operator-directed 2026-08-21).** As soon as
+- [x] **Q38-T5 ✅ 2026-08-21 22:00Z — STACK STARTED, `live == config` VERIFIED, THE SWAP IS LIVE.**
+      Started under `ORCHESTRATOR_STACK_NUMA_MODE=both`; built-in stack-change gate PASSED at launch
+      (`promotion_gate: ok`, launch roles match registry); 15 servers healthy. Checklist, all five
+      green on :8083 (pid 896239): (1) serves `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` with the
+      documented Unsloth template; (2) flags `--device ROCm0 --jinja --spec-draft-n-max 8` — the
+      measured optimum, live; (3) all four ggml libs from frozen v9 `build-hip` on LIVE process maps;
+      (4) KFD count 4 (designed GPU co-tenancy: architect+vision+sd+embedder); (5) real generation
+      correct (17×23→391), `enable_thinking=false` live-confirmed (empty reasoning_content), VRAM 93%
+      sampled DURING the request. **OPERATOR FLAG, one observation:** the cold-start launcher rejected
+      the `both` lineup (no fleet to adopt) and fell through to priors at `--numa-mode=quarter` —
+      HALF instances launched (:8080/:8180/:8082/:8182/:8185/:8285), FULL instances (:8070/:8072)
+      did NOT. Single-stream frontdoor throughput therefore runs on halves tonight; whether to
+      restart into `both` (full+halves) is a lineup-policy call left to the operator, not churned
+      at 22:00. Original task follows.** post-CT-1 stack start + checklist (operator-directed 2026-08-21).** As soon as
       CT-1's arms complete: (a) verify no autokernel GPU work is running (none is as of 14:05Z —
       no codex session listed, no claims, no KFD processes expected); if one appeared, negotiate a
       quiet window with that codex agent (via workspace-c0 if not directly reachable) before
@@ -112,7 +125,7 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
       `live == config` — confirm architect_general serves Qwen3.8-27B-Q8_0 at draft_max 8 on
       :8083, `verify_ggml_linkage.sh`, non-zero VRAM sampled DURING a request, KFD process count;
       (d) close the ticked-but-stale 2026-08-20 checklist item against this evidence.
-- [ ] **Stack-change checklist / `stack_change_pipeline.py` regenerate** — NOT run. Nothing is serving
+- [x] **Stack-change checklist / `stack_change_pipeline.py` regenerate** ✅ 2026-08-21 — regenerated (mode-correct, fully green check) and the start-time gate re-ran it PASSING; checklist closed under Q38-T5's five-point evidence above. Nothing is serving
   (`:8083` unbound), so config and runtime agree only by both being absent. `live == config` is
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its
   own gates and was deliberately not taken here.

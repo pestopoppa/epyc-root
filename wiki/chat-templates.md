@@ -265,6 +265,33 @@ channel prefixes based on kwargs, ALWAYS use `/v1/chat/completions`.
 
 ---
 
+## Measured 2026-08-21: the terseness prompt pays; thinking-mode deficits were budget artifacts
+
+Sources: `handoffs/active/qwen-chat-template-evaluation.md` (CT-1/CT-1b/CT-5, all dive- and
+run-verified same day), artifacts under `artifacts/chat-templates/`.
+
+**CT-1 (embedded vs epyc-qwen3x-v1, 160 paired questions, CPU):** perfect parity — byte-identical
+renders on the bare single-turn no-think shape, therefore bit-identical generations. epyc-v1 is a
+proven zero-regression drop-in on the production path; the templates only diverge on system
+prompts, tools, history and effort steering. (Method lesson: render-diff the arms ON THE EVAL SHAPE
+before a long run.)
+
+**CT-1b (+terseness arm, same pinned ids, fixed 900-token budget):** never worse, significantly
+better where budget binds, at 34–99.5% fewer answer tokens — math 80=80% at −34%; mmlu_pro
+37.5→40.0% at −99% (mean 2.0 tokens: the model finally obeys "letter only"); gpqa_diamond
+42.5→60.0% (flips 0:7, p≈0.016, mostly truncation-avoidance); cruxeval 27.5→30.0% at −36%. The
+CCoT math-penalty hazard did not materialize. Deployable artifact:
+`epyc-qwen3x-v1/chat_template_terse_arm2.jinja` (sha `1443ea9ab4bb…4551`, injection-free).
+
+**CT-5 (thinking ON vs OFF on Qwen3.8/MI210, 60 paired GPQA-Diamond-CoT):** at a 4,096 cap,
+thinking read −6.7pp — decomposition showed the deficit was ENTIRELY truncation zeros
+(completed-subset 95.1% vs 94.9%). At symmetric 16K caps: **85.0% vs 86.7%, flips 2:3 for
+thinking (n.s.), truncation 0/1** — a statistical tie at +21% tokens-per-solved. Standing rule
+this yields: **an accuracy deficit measured under a token cap is not a quality finding until
+decomposed by finish_reason** — and every anti-reasoning datum this stack produced (think-loops,
+termination defects, caps) has been infrastructure, not model quality. `enable_thinking=false`
+remains posture on economics, now measured on the production model itself.
+
 ## The embedded template is per-MODEL, not per-family (measured 2026-08-21)
 
 The family table above answers *which turn markers* a model uses. It does **not** answer what the

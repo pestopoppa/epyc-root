@@ -1,0 +1,15 @@
+[16:15:35] pinned 60 gpqa_diamond_cot questions
+[16:15:35] === CT-5(c) GPU measurement start ===
+[16:15:35] GPU server pid 4084964 launching
+[16:15:45] GPU server healthy
+[16:16:11] VRAM DURING first completed request: GPU[0]		: GPU Memory Allocated (VRAM%): 55
+[16:38:37] 10/60 questions (both arms)
+[17:08:47] 20/60 questions (both arms)
+[17:24:29] 30/60 questions (both arms)
+[17:45:23] 40/60 questions (both arms)
+[18:16:17] 50/60 questions (both arms)
+[18:40:04] 60/60 questions (both arms)
+[18:40:04] all questions complete
+[18:40:05] server pid 4084964 dead, verified
+[18:40:05] SUMMARY: {"T0": {"n": 60, "correct": 51, "acc": 0.85, "mean_tokens": 3375.9, "nonterm": 0, "errors": 0, "mean_think_chars": 0.0, "tokens_per_solved": 3971.7}, "T1": {"n": 60, "correct": 52, "acc": 0.8667, "mean_tokens": 4168.2, "nonterm": 1, "errors": 0, "mean_think_chars": 9693.0, "tokens_per_solved": 4809.4}, "flips_T0only": 2, "flips_T1only": 3}
+[18:40:05] === CT-5(c) done ===
