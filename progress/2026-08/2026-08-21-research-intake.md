@@ -220,3 +220,26 @@ port, with this disclosure in lieu of a claim.
 **Answering the operator's draft_max question**: 4 was Qwen3.6-27B's own measured optimum (n4 53.1
 t/s, 1.82×, 2026-07-20 sweep); 8 is Qwen3.8's (n8 55.46). Depth is per-model; the pre-ratification
 state was a self-consistent old world, not a mistuned one.
+
+---
+
+## Fifth pass — CT-1 A/B launched; wiring obligation discharged
+
+**CT-1 A/B in flight** (operator: "run the CT-1 A/B on CPU now while the box is idle"). Runner at
+`artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/ct1_ab_runner.py` (live copy in
+`/workspace/tmp/ct1-ab/`, gitignored): arm0 embedded vs arm1 epyc-qwen3x-v1, ONLY the template
+differs; Qwen3.6-35B-A3B CPU under the full codified canonical recipe (`canonical_recipe.py`:
+taskset 0-95 + numactl --interleave=all, OMP spread/cores/active/false, GGML_IQK=1, --no-mmap);
+4 suites × 40 pinned seed-42 questions, identical rows both arms; production sampling temp 0.6 /
+seed 42, `enable_thinking=false`; scored by orchestrator `debug_scorer` (never hand-rolled);
+per-question JSONL = drain points; per-suite + paired-flip reporting. Arm0 healthy at 13:46:53
+(5 s load — 33 GB hot in page cache from the fidelity check). Monitor armed on checkpoints,
+completions, failures, summary.
+
+**Belief-kernel wiring filed at first-measurement time** per the standing rule: source-table row in
+`scripts/vidya/adapters/README.md` (candidate; tuple spec includes template_sha256 — the new axis),
+SC46 in `vidya-belief-substrate-program.md`, CT-8 in the CT stub.
+
+**Shared-index race observed live**: three `MM` entries (a peer session staging its wrap-up-doc
+update) at commit time — this wrap-up committed through a private index per the newly-documented
+pattern.

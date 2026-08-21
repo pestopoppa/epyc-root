@@ -5,6 +5,40 @@
 **Last compiled**: 2026-08-20 (Qwen3.8-27B's DFlash2 sibling now has a full experimental gfx90a build and a matched np1 win over optimized MTP; concurrency and parity gates still prohibit production adoption)
 **Sources**: 77 documents
 
+## Compiled Update — 2026-08-21: the registry has FOUR planes, and a swap is not live until the third one recompiles
+
+Sources: `handoffs/active/qwen38-27b-replace-qwen36.md` (Q38-T2 + same-day correction),
+`progress/2026-08/2026-08-21-research-intake.md`, ratification receipt
+`artifacts/operator/ratify_qwen38_registry_swap_20260821.json`.
+
+The 2026-08-20 Qwen3.8 swap was executed correctly in the true master and STILL would have served
+Qwen3.6 at the next stack start, because the registry is a four-plane compile chain and only the
+first plane was current:
+
+1. **Master** — `epyc-inference-research/orchestration/model_registry.yaml` (11k lines, full
+   record). The swap landed here (`b376dadd`). This is the only hand-edited plane.
+2. **Lean** — `epyc-orchestrator/orchestration/model_registry.yaml`. **AUTO-GENERATED** — the
+   banner at line 1 says so (`compile_lean`, `registry_compiler.py`), filtered to active roles,
+   recompiled at every stack start on cache-key mismatch. Three separate audits in one day edited
+   or audited this file believing it was the master; every one had read it from the middle.
+3. **Derived** — `orchestration/derived/stack_priors.yaml`. Compiled FROM the master by
+   `stack_change_pipeline.py update` — and **NOT recompiled at stack start**: the launcher reads it
+   as-is (`orchestrator_stack.py:252-262`, `-m` from `requirements.model_path` :1062-1071). This is
+   the plane that actually launches; it was nine days stale.
+4. **Descriptors + operator summary** — compiled artifacts downstream of lean; a hand-edit there is
+   discarded on the next recompile.
+
+Operational rules this yields: **a model swap is complete when plane 3 verifies, not when plane 1
+commits**; parity validation compares PORTS only (`stack_templates.py:303`) so a model divergence
+between planes is silent; and the descriptor compile REMOVES a model when no live role references
+it (the master row survives as rollback anchor) — an expected transition that needs
+`--allow-descriptor-model-removal` plus an only-this-removal assertion, not a blanket flag. The
+2026-08-21 ratification (`scripts/operator/ratify_qwen38_registry_swap_20260821.sh`) encodes all of
+this; post-ratification the derived plane verifies Qwen3.8-27B-Q8_0 @ draft_max 8 on
+architect_general. Known residue: `guard_all_surfaces` fails on pre-existing quarter-port drift
+(frontdoor/worker/ingest `serving.ports` vs launch manifest, unchanged since 2026-03) — tracked as
+Q38-T4, does not touch the swap surfaces.
+
 ## Compiled Update — 2026-08-20: the Qwen3.8 serving successor has a faster drafter candidate, not a deployment change
 
 **Confidence: verified observation, explicitly nonpromotable.** The DFlash2 result is relevant because
