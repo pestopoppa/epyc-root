@@ -1223,6 +1223,14 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       to carry: the LLM judge is itself an **unvalidated oracle** — the paper reports no judge-agreement
       study, no human-labelled cheating set and no error rate, so assume the tier has its own FP/FN rate.
       Our judge is sampling-sensitive; pin temperature and seed per `feedback_bench_defaults`.
+      **OPERATOR-RATIFIED 2026-08-21 (option (a) of the decision package), with a binding sequence:**
+      **RVP-C6-20 is a HARD PREREQUISITE — the judge tier gates nothing until it rejects all three
+      hand-authored mutants** (that is its minimal validation set, standing in for the judge-agreement
+      study TritonRL never ran); and **RVP-C6-21 is its STANDING HEALTH CHECK** thereafter — re-run the
+      differential audit whenever the judge model, prompt, or pinned sampling changes, and treat a gap
+      collapse toward zero as the judge going vacuous, not as the corpus going clean. L3 is DROPPED, not
+      deferred: reopen only if the redundancy argument (an execution-path check duplicating L2) is itself
+      refuted.
 - [ ] **RVP-C6-20 — Falsify "L1+L2 is enough" with three hand-authored adversarial gfx90a kernels.** A
       LayerNorm computing mean/variance/normalize but **SKIPPING scale and bias**; a matmul-then-transpose
       **omitting the transpose**; a softmax **omitting the max-subtraction**. All three are invoked and

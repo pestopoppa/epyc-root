@@ -5292,6 +5292,13 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       OpenAI-compatible endpoint, so this costs inference time only. Nine systems into this literature that
       statistic still does not exist. **Gate the entire cross-run-memory build on its outcome**, and note it
       supersedes nothing in AK-PM-4 — SkillBank is still the cheaper in-house answer and must be checked first.
+      **OPERATOR-RATIFIED 2026-08-21 (option (a) of the decision package): DON'T BUILD YET.** The
+      cross-run memory is not built until this ablation returns; AK-PM-12's write-side receipts land NOW
+      regardless, so waiting loses no data. Sequencing: SkillBank A/B (AK-PM-4) → AK-PM-11 → build
+      decision. **One risk accepted with eyes open:** the ablation needs a stable harness, so C2/C3
+      hardening (RVP-C2-8/C2-9) sits on this path and "gated on the ablation" partly means "gated on the
+      substrate" — if that stretches past a reasonable horizon, the correct escalation is a decision
+      package on interim substrate, NOT a quiet start on the memory build.
 - [ ] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the
       read side.** `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with
       it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,
