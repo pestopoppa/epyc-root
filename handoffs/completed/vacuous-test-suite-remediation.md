@@ -1,9 +1,15 @@
 # Vacuous-pass test suites — remediation backlog
 
-**Status**: active (created 2026-08-21) — the mechanical gates are LIVE; what remains is per-file
-repair plus two known coverage gaps in the gate itself.
+> **COMPLETED 2026-08-21.** Historical ledger; the living rules are
+> [`docs/guides/agent-workflows/test-suite-conventions.md`](../../docs/guides/agent-workflows/test-suite-conventions.md)
+> and the gate itself (`scripts/hooks/check_test_collectability.py`).
+
+**Status**: COMPLETED 2026-08-21, same day — all eight tasks closed by a four-agent fan-out
+(VT-1+3 orchestrator, VT-2+6 gate, VT-4+7 exemptions/convention, VT-5+8 research probes), integrated
+and verified by the owning session. Residual: 3 vendored kvpress zero-assertion advisories,
+explicitly DECLINED (upstream NVIDIA code — do not fix).
 **Categories**: verification_integrity, test_infrastructure, quality_gates
-**Parent index**: [`research-evaluation-index.md`](research-evaluation-index.md)
+**Parent index**: was [`research-evaluation-index.md`](../active/research-evaluation-index.md) (row EVL-50, deleted on completion)
 **Related**: [`progress/2026-08/2026-08-20.md`](../../progress/2026-08/2026-08-20.md) (origin);
 [Benchmark Methodology](../../wiki/benchmark-methodology.md) → *a capture can lie about its own protocol*
 
@@ -39,33 +45,55 @@ remainder. Do not read 0/0/0 as "audit closed".
 
 ## Tasks
 
-- [ ] **VT-1 — `epyc-orchestrator/scripts/security/test_audit_repository.py` runs under NEITHER
-      entry point.** No `__main__` (so `python3 file.py` executes nothing) **and** it sits outside
+- [x] **VT-1** ✅ 2026-08-21 — moved to `tests/unit/test_audit_repository.py` (+ the docs-index
+      sibling), `SCRIPT` re-anchored, refusing-`__main__` added. **6/6 pass under the default
+      `testpaths` suite** — first time this security-audit suite has ever executed. Original claim: No `__main__` (so `python3 file.py` executes nothing) **and** it sits outside
       `testpaths = ["tests"]` (`pyproject.toml:134`), so the default `pytest` never collects it.
       A security-audit suite that has never run. Highest single item.
-- [ ] **VT-2 — Close the `*_test.py` glob gap in the gate.** `check_test_collectability.py` globs
+- [x] **VT-2** ✅ 2026-08-21 — both globs in discovery AND explicit-path handling (the old filter
+      silently dropped a passed `*_test.py` — itself a vacuous shape). `seal_multi_role_test.py` →
+      `seal_multi_role_regression_check.py` with honest exit status (`sys.exit(1)` on any regressed or
+      failed-to-run role; JSON unchanged). Pre-commit pathspec widened to match and reinstalled;
+      END-TO-END probe: a `*_test.py` self-runner commit is refused. Original claim: `check_test_collectability.py` globs
       only `test_*.py`, so `research/scripts/benchmark/seal_multi_role_test.py` is invisible to it —
       the audit's HIGH finding that prints `Regression YES!` and then **exits 0** (no `sys.exit`,
       no failure accumulation, no assertion in the file). Fix the glob, then fix that file.
-- [ ] **VT-3 — Decide the orchestrator `testpaths` policy.** Either add `scripts` to `testpaths`
+- [x] **VT-3** ✅ 2026-08-21 — closed BY CONSTRUCTION, not by widening: nothing test-named remains
+      outside `tests/` (2 genuine suites moved in; 2 probes renamed `*_check.py`/`probe_*.py` with
+      their `test_`-prefixed helpers renamed too). `find scripts -name 'test_*.py' -o -name '*_test.py'`
+      → empty. Original claim: Either add `scripts` to `testpaths`
       or forbid the `test_*.py` name outside `tests/`. Four files are currently invisible to the
       suite everyone runs. VT-1 is one of them; fixing the policy fixes the class.
-- [ ] **VT-4 — Review the three `DELIBERATE_SELF_RUNNERS` exemptions.** Each is exempt with a
+- [x] **VT-4** ✅ 2026-08-21 — `test_merge_gate` exemption CONFIRMED accurate; `test_unblock_artifact`
+      verified to touch NO shared state (all writes through rebound globals into tempdirs), bridged
+      (`assert main() == 0`; pytest 1 passed, self-run 27/27), its exemption DELETED;
+      `test_commit_hygiene` KEPT with a firm four-hazard reason (parallel-run probe race, stray
+      untracked file, live-hook subprocesses, FETCH_HEAD-mtime flakiness). Original scope: Each is exempt with a
       written reason, but two were exempted provisionally:
       `scripts/coordination/tests/test_unblock_artifact.py` ("collectable form not yet reviewed for
       shared-state writes") and `scripts/hooks/tests/test_commit_hygiene.py`. `test_merge_gate.py`
       is a firm exemption — it rewrites `coordination/session-bus/human_only_paths.sha256` to
       simulate drift, so a collectable form would mutate a shared trust-boundary file on every
       repo-wide test run and an interrupted run would leave the fleet's merge gate failed closed.
-- [ ] **VT-5 — Zero-assertion probe scripts misnamed as tests** (research): `scripts/voice/test_latency.py`
+- [x] **VT-5** ✅ 2026-08-21 — all three renamed `probe_*.py` (internal `test_`-prefixed functions
+      renamed too; they were collectable with unfulfillable fixtures). Zero live references confirmed
+      before each rename. Originally: (research): `scripts/voice/test_latency.py`
       (+ its duplicate `scripts/voice/voice/test_latency.py`), `scripts/test_summarization.py`.
       They contain no `assert`/`raises`/`fail`. Rename to `check_*`/`probe_*` or give them assertions.
-- [ ] **VT-6 — Assertion-density lint** — flag any `test_*.py` where no collectable test contains
+- [x] **VT-6** ✅ 2026-08-21 — ADVISORY tier added, with one-level same-file helper indirection
+      counted as asserting (else every factored suite false-positives). Precision at scale: 0
+      advisories across 791 orchestrator + 139 root files; catches both known probes on their
+      pre-rename content. Mutation-verified (9/9 caught). Originally: — flag any `test_*.py` where no collectable test contains
       `assert` / `pytest.raises` / `pytest.fail`. Catches the VT-5 class mechanically. Cheap.
-- [ ] **VT-7 — Naming convention** — self-runners get a non-collectable name (`check_*.py`);
+- [x] **VT-7** ✅ 2026-08-21 — `docs/guides/agent-workflows/test-suite-conventions.md` (120 lines,
+      INDEX row added): both measured shapes, the naming rule, all three sanctioned stanzas, the
+      exemption process, and the installer gap. Originally: — self-runners get a non-collectable name (`check_*.py`);
       anything named `test_*` MUST be pytest-collectable. Reference bridge:
       `scripts/coordination/tests/test_bus_supervisor.py:568` (`assert main() == 0`).
-- [ ] **VT-8 — Duplicate legacy files** — `research/scripts/legacy/run_pard_test.py` and
+- [x] **VT-8** ✅ 2026-08-21 — provenance traced: BOTH nested dirs (`legacy/legacy/`, `voice/voice/`)
+      born as self-copies in the initial import commit `0b6f3112`, zero live references, inner
+      `whisper_server.py` actively regressive (missing offline pinning). Both dirs DELETED; survivor
+      `run_pard_test.py` → `run_pard_probe.py` (shape-B self-runner under the widened glob). Originally: — `research/scripts/legacy/run_pard_test.py` and
       `scripts/legacy/legacy/run_pard_test.py` are byte-identical; neither's canonical status is
       known. Determine and delete one.
 
@@ -97,3 +125,12 @@ exemption to be written down with a reason.
 ## Deps
 
 None. VT-1/VT-3 are orchestrator-side; the rest are epyc-root or research.
+
+## Completion record (2026-08-21)
+
+Four Opus agents in parallel, disjoint file scopes, no-commit contract (owning session integrated).
+Final sweep: **0 blocking everywhere** — workspace 139 files / 16 advisory, research 274 / 3 advisory
+(all vendored kvpress, declined), orchestrator 791 / 0. The gate's test suite: 13 tests, 9 mutations
+all caught, and the suite found a fifth latent lint bug in the process (absolute-path skip matching
+made any checkout under a `tmp`-containing path invisible to the default walk). End-to-end: a
+`*_test.py` self-runner commit is refused by the installed pre-commit hook.
