@@ -563,3 +563,61 @@ The compile was then run against the correct 51 and the watermark advanced norma
 - [ ] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
       had this failure shape, its siblings from the same commit should be checked for it rather than
       assumed safe.
+
+## Research Intake Update — 2026-08-21 — is the ColBERT index earning its keep? (`intake-1239`)
+
+_From `intake-1239#record` (GrepSeek, UMass CIIR, arXiv:2605.29307v1). A trained shell-command search agent
+beats the best dense-retrieval baseline on micro-average F1 at **p<0.05**, winning 4 of 7 benchmarks, with
+**NO pre-computed index of any kind** — and loses significantly on single-hop popularity QA. The result is
+entirely **hardware-independent**, which makes it the rare intake item with zero GPU risk and a reason to
+prioritise it against GPU-gated work._
+
+**Why it lands harder here than the headline suggests.** Their corpus is 21M documents / ~14 GB, roughly
+**three orders of magnitude larger** than our markdown KB — and grep's advantage grows as the index's
+amortisation argument weakens, so on a corpus our size the index barely pays for itself. Their agent backbone
+is Qwen3.5-9B with a Qwen3.5-27B tutor, and **we already serve the 27B**. And the most interesting number is
+not the F1, it is **"0 A100-hours of indexing"**: our ColBERT index is a maintenance liability with a
+**staleness** failure mode — an index built yesterday answers about a handoff row deleted today — and grep
+has no staleness mode because there is nothing to stale. That is an operational argument independent of the
+accuracy argument, and it may matter more to us than F1 does.
+
+**The honest counterweight**, and it is why the verdict is `worth_investigating` and not `adopt_patterns`:
+their stated failure modes — brittleness to spelling variation and diacritics, matches returned in FILE ORDER
+with no relevance ranking, overloaded keywords — map onto **precisely our KB's weakest axis**, a corpus dense
+with synonymous governance jargon in which at least one term ("duty cycle") already means two unrelated
+things. Adopting on faith would be importing a Wikipedia-scale result onto a corpus where the mechanism that
+produced it works differently.
+
+- [ ] **KB-GS-1 — Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.**
+      Replicating their GRPO training is weeks of work and answers a question we do not have. Arms: **ColBERT
+      as deployed** / **untrained prompt-only `rg`** / **hybrid** / **GitNexus-only**. Note we already use the
+      grep half constantly and informally — agents grep this repo all day — so the real question the A/B
+      answers is not "should we add grep" but **"is the ColBERT index earning its keep on a corpus this
+      small"**. Roughly one day, no GPU contention.
+- [ ] **KB-GS-2 — Build the question set and the ground truth BEFORE any arm runs, and stratify it.**
+      40-60 questions mined from REAL session needs in the last 60 days of progress files and wrap-ups,
+      stratified into four buckets **because the result is bucket-dependent and an unstratified aggregate
+      would hide exactly the effect**: single-hop lookup (expect a tie), **multi-hop composition** (grep
+      predicted to win — the discriminating bucket, and where their gains concentrate), synonym/semantic
+      (ColBERT predicted to win — grep's stated weakness and our corpus's dominant idiom), and
+      code-structural (GitNexus predicted to win outright, included so we do not replace the wrong tool).
+      PRIMARY METRIC **recall@evidence against human-verified spans built BEFORE any arm runs** — never from
+      an arm's output, or the ground truth inherits that arm's blind spots. n=40-60 per stratum is thin, so
+      **report the minimum detectable effect up front and do not claim a null we are not powered to detect.**
+- [ ] **KB-GS-3 — Add a STALENESS arm; that axis is invisible in the paper and may decide the question for
+      us regardless of F1.** Re-run the same question set after a 200-commit window **without rebuilding the
+      index**. Grep scores whatever the tree says today by construction; ColBERT scores whatever it was built
+      against. If the staleness delta is large, the operational argument settles this independently of any
+      accuracy result.
+- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** Their
+      semantics-preserving sharded-parallel execution reaches **7.6x at 32 shards** with byte-exact
+      equivalence to sequential execution — and our 96-core EPYC 9655 is better suited to it than their
+      setup, so 32 shards is not near our ceiling. Note also that **91% of their end-to-end latency is LLM
+      GENERATION, not grep** (8.67 s total = 7.86 s generation + 0.81 s tool exec), so tool latency is not
+      the thing to optimise and the index is not buying much latency either.
+
+_Caveat on the numbers above: everything except the two anchored abstract quotes came from a
+summariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `intake-1239`. Re-verify before any
+figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same
+direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
+whether the delta is the TRAINING RECIPE rather than the idea._

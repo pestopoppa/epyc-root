@@ -1157,3 +1157,222 @@ and to its verify loop). `--verify` reports 5 present / 0 missing; `rocprofv2` a
 unaffected — the package is additive. **`rocprof-compute` remains UNSATISFIED BY NAME**: we ship `omniperf`,
 and the ROCm 6.3+ rename is what `intake-1223`'s harness checks for with `shutil.which()` at module import
 before `sys.exit(1)`. That name, not rocprofv3, is what still gates the IntelliPerf/guided-tuning tool family.
+
+### C5 — ParEval trials (filed 2026-08-21 by operator decision, after the Stage-3 plan omitted them)
+
+_These two were flagged tier-1 at the Stage-2b close-out but did not reach the approved plan text, so they
+were left neither filed nor declined and surfaced as an open decision. Operator selected both. Source is
+`intake-1225` (MIT, HPDC'24, credibility 6/6 — the highest of that cohort). **SC45 in
+`vidya-belief-substrate-program.md` is a PREREQUISITE for both**: ParEval emits measurements, and the
+write-side adapter must exist before the first run, never after._
+
+- [ ] **RVP-C5-6 — Trial the ParEval serial+omp arms on the EPYC 9655 as a CPU parallel-code substrate.**
+  120 of its 420 tasks (serial + omp) need only `g++ -fopenmp` — **no GPU, no MPI cluster, no ROCm, no
+  PyTorch** — so this is runnable today with a stock toolchain and zero porting. It is the ONLY substrate in
+  our 30+ entry kernel-agent cluster that evaluates CPU parallel-code generation at all; every other entry
+  assumes a GPU kernel is the artifact, which leaves our 96-core first-class inference target uncovered.
+  Two concrete fits: its `efficiency_n@k` metric is speedup-per-thread against a LOCALLY measured
+  best-sequential baseline, which is the same shape our CPU operating-point work already asks (48t vs 96t vs
+  4x48t, NPS4 topology sensitivity); and the paper's own CPU baseline is an **EPYC 7763, 64 cores, swept
+  1-32 threads** — one generation behind ours — so **extending the sweep to 96 threads on Zen5 is a
+  genuinely new datapoint rather than a reproduction**. Deliverable: pass@k + efficiency@k on our CPU, and a
+  go/no-go on ParEval as the SECONDARY CPU-side C5 layer. **Verify LIVE affinity, not a topology hash.**
+  Repo pinned at `9e2a9afafa2c9686fdd3310defde0f9a8c3731c1` (branch `develop`, the default).
+  CAVEAT that must ride with any number: the drivers wrap the timed region in
+  `__attribute__((optimize("O0")))` at a fixed `DRIVER_PROBLEM_SIZE`, so absolute figures are **NOT**
+  comparable to our llama-bench protocol and must never be quoted beside them.
+- [ ] **RVP-C5-7 — Build the ParEval HIP arm on gfx90a and run its 60 HIP tasks as a smoke corpus.** The AMD
+  arm is `hipcc` with **NO `--offload-arch` pin** — it is LESS constrained than that project's own NVIDIA arm,
+  which is hard-pinned to `arch=compute_80,code=sm_80` — and it has been executed on AMD hardware by its
+  authors, so the path is exercised rather than merely present. HARDENING FIRST, because the config is
+  duplicated: add `--offload-arch=gfx90a` to the hip `CXXFLAGS` in **BOTH** `drivers/build-configs.json` AND
+  the copied dict in `drivers/cpp/cpp_driver_wrapper.py` — change one and the other silently disagrees. Then
+  re-derive `drivers/problem-sizes.json` for 64GB HBM2e (the paper sized for an MI50's 16-32GB). **THE GAP
+  THIS CLOSES AND THE ONE IT DOES NOT:** the published AMD results are **MI50 (GCN/Vega20), not CDNA**, and
+  the tree contains zero `gfx` tokens — so "not NVIDIA-pinned" is verified while "validated on CDNA2" is
+  **not**, and a gfx90a claim would be OURS to make. Per our own doctrine a HIP arm that merely BUILDS proves
+  nothing: **prove residency with VRAM sampled DURING the run and a KFD process count**, not by the absence
+  of an error. This would be the first CDNA2 datapoint for ParEval anywhere.
+
+## Research Intake Update — 2026-08-21 (Stage-2b second wave: reward-hacking, measurement and benchmark primaries)
+
+_Filed from three Stage-2b batches that ran after the Stage-3 plan closed: `intake-1238#record` (Yang et al.,
+SC24 power telemetry), `intake-1241#record` (TritonRL), `intake-1242#record` (GPA, CGO 2021),
+`intake-1243#record` (PyTorch KernelAgent/KernelFalcon blog), `intake-1244#record` (CodegenBench),
+`intake-1245#record` (FlashInfer-Bench), `intake-1246#record` (AutoKernel), `intake-1247#record`
+(ParEval-Repo), `intake-1240#record` (GPU Forecasters). **C5 slots are UNCHANGED** — nothing displaces the
+primary (GEAK-eval + AgentKernelArena) or the secondary (KernelGenBench), and the reasons are disjoint rather
+than marginal: CodegenBench has no GPU of any vendor, FlashInfer-Bench has zero AMD content in a 423-path
+tree, AutoKernel is a controller and not a benchmark, and ParEval-Repo dropped its HIP arm._
+
+### C6 — the sufficiency question, answered NEGATIVELY
+
+**L1 + L2 IS NOT A SUFFICIENT C6 GATE.** `intake-1241#record` (TritonRL, Appendix H) enumerates five cheating
+classes; L1 (AST blacklist) covers rule 1 and L2 (Ghost Replay) covers rule 2, leaving **three uncovered**.
+The one that matters is **rule 3, OMISSION**: an operator implemented with a component missing contains no
+blacklisted symbol (L1 passes) **and IS invoked**, so no-op-swapping it changes the output (L2 passes). That
+is Shape C in its purest form. Note the two papers are **complementary, not nested** — KernelGenBench proves
+the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neither alone covers both.
+
+- [ ] **RVP-C6-19 — Add a SEMANTIC-COMPLETENESS tier to C6, and DROP the planned L3.** Port TritonRL's
+      Appendix-H rubric verbatim as an LLM-judge prompt. It is **train-free and hardware-free** — a prompt
+      plus a model call, running on the EPYC host with the GPU idle — and it does not care that we are on
+      gfx90a. The planned L3 (profiler signature) is NVIDIA-only by KernelGenBench's own statement AND is a
+      weaker version of what L2 already proves (another execution-path check), so the correct stack is
+      **L1 + L2 + SEMANTIC JUDGE**, with L3 dropped as unportable and redundant rather than deferred. Caveat
+      to carry: the LLM judge is itself an **unvalidated oracle** — the paper reports no judge-agreement
+      study, no human-labelled cheating set and no error rate, so assume the tier has its own FP/FN rate.
+      Our judge is sampling-sensitive; pin temperature and seed per `feedback_bench_defaults`.
+- [ ] **RVP-C6-20 — Falsify "L1+L2 is enough" with three hand-authored adversarial gfx90a kernels.** A
+      LayerNorm computing mean/variance/normalize but **SKIPPING scale and bias**; a matmul-then-transpose
+      **omitting the transpose**; a softmax **omitting the max-subtraction**. All three are invoked and
+      contain no blacklisted symbol. Confirm the CURRENT gate accepts them, then confirm the new semantic
+      tier rejects them. This is the mutation test our verification doctrine requires — and the mutation must
+      be both **visible AND counted**.
+- [ ] **RVP-C6-21 — Run the DIFFERENTIAL ORACLE AUDIT on our own C6 corpus.** Score the identical generation
+      set **twice**, with and without the functionality/semantic tier, and report the gap as a number.
+      TritonRL measures **+30pp** for a hacking-prone model (AutoTriton 57%→87% on KernelBench L1; 1%→94% on
+      L2) versus **<=3pp** for a robustly-trained one. Needs no ground truth, no GPU and no training — pure
+      re-scoring of existing artifacts. It converts "is our gate doing anything?" from an opinion into a
+      measurement. Note the paper's own <=3pp self-score is **self-graded**; ours would not be.
+- [ ] **RVP-C6-22 — Close the PRECISION-DOWNGRADE gap, which NO source we hold defends against, and which
+      one of them actively REWARDS.** TritonRL has no dtype or tolerance policy anywhere in 31 pages (the
+      words dtype/precision/tolerance/atol/rtol/fp16/bfloat16 do not occur; its correctness check is exact
+      equality over five random inputs). L1 cannot see a dtype choice; L2 cannot (the kernel runs); a
+      semantic judge reading source might catch an obvious fp16 accumulate but has no ground truth for what
+      precision is REQUIRED. **Worse: `intake-1227`'s adaptive tolerance is keyed BY DTYPE** (FP32 1e-5,
+      FP16 1e-3, BF16 0.016) — so if the generated kernel picks its own output dtype, downgrading BUYS a
+      ~160x looser bar and passes. **Pin the required dtype and accumulate precision PER OPERATOR in the C6
+      contract and check them STRUCTURALLY, before tolerance is chosen.** This amends, and does not
+      duplicate, the OPEN `RVP-C2-9`.
+- [ ] **RVP-C6-23 — Adopt FlashInfer-Bench's correctness layer; it is the only gate of the four benchmarks
+      dived that refuses a precision downgrade by construction.** `intake-1245#record` §4: keep the TIGHT
+      per-element bound and budget a fraction `rho` of outlier elements (**matched-ratio rule**, example
+      rho=0.95) explicitly INSTEAD of loosening a global tolerance — a systematic downgrade fails that
+      because it moves the whole population, not 5% of it. Add **outright NaN/Inf rejection** and a recorded
+      **MAXIMUM OBSERVED ERROR** per candidate, which makes a downgrade visible even on a pass.
+      Arch-independent, so it needs no port. First read `flashinfer_bench/bench/evaluators/{lowbit,default}.py`
+      @ `40e6ca78` and extract the ACTUAL default `eps_abs`, `eps_rel` and `rho` — the paper gives the
+      inequality but only an example rho, and we need the numbers before claiming our gate is or is not tighter.
+- [ ] **RVP-C6-24 — Add a NINTH shape to the vacuous-verification catalogue: WRAPPER LAUNDERS A KERNEL
+      FAILURE INTO THE REFERENCE.** `intake-1249#record` Appendix B found agent submissions where the
+      surrounding `ModelNew` catches the kernel-call failure and returns the PyTorch reference — passing
+      correctness while the measured program is the fallback. **The detection mechanism is exact and
+      reusable: replace the fallback return path with a `raise` and re-run**; submissions that only passed
+      via the fallback now fail. It would have credited a baseline with a phantom ~0.96x. This is a mutation
+      test on a harness, precisely our doctrine. Also adopt `intake-1246#record`'s **bitwise-determinism**
+      stage (same input, three runs, bitwise identical) — arch-independent, near-free, and it closes the
+      reward-hacking class that relies on non-determinism, though it says nothing about precision.
+- [ ] **RVP-C6-25 — Record the KernelFalcon test-harness admission as a SIXTH Shape-C instance in
+      `wiki/benchmark-methodology.md`.** It is the cleanest one in the set: the authors name the weakness of
+      their own gate in the same post as the 100%-correctness headline — _"we trust the LLM-generated test
+      harness itself—we don't statically analyze it for cheating"_ — and the follow-up post then wins only
+      **65 of 100** L1 tasks against plain `torch.compile`. Pair it with the existing index datapoint showing
+      the same system at **0.777x** geomean against PRODUCTION baselines: same system, different denominator,
+      win becomes slowdown.
+
+### C4 — extensions to a CLOSED component (the taxonomy stays closed; these are additive)
+
+**GPA is counter-agnostic AND STILL NOT a better C4 template than CudaForge or KernelPro — on our hardware it
+is worse.** `intake-1242#record` falsifies the premise that predating the vendor lock implies portability:
+GPA trades a metric-LIST dependency for a harder INSTRUMENT dependency. Three independent blockers, any one
+fatal: (1) it needs per-sample **stall reasons**, which on AMD come only from **STOCHASTIC** PC sampling =
+CDNA3+; gfx90a is **host-trap only**; (2) rocprofiler-sdk PC sampling needs **ROCm 6.4+** behind
+`--pc-sampling-beta-enabled` and we are pinned at **6.2**; (3) the instruction blamer decodes NVIDIA SASS
+control codes via `nvdisasm` while AMD CDNA expresses dependencies through `s_waitcnt` — a rewrite, not a
+port. Buying an MI300 would solve (1) and leave (3) untouched. A metric list at least has a proven analogue:
+our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
+
+- [ ] **RVP-C4-10 — Settle GPA's input availability on the MI210 with one bounded probe (~30 min).** Run
+      `rocprofv3 --pc-sampling-beta-enabled` against one trivial HIP kernel and dump the per-sample record
+      schema. Two decision-grade outcomes: the flag errors/does not exist on 6.2 → the C4-template question
+      closes NEGATIVE until a ROCm upgrade is on the table; or it emits records → inspect whether any
+      stall-reason field is populated under host-trap (docs say it will be absent). **Record what the
+      hardware actually emits rather than concluding absence from documentation.**
+- [ ] **RVP-C4-11 — Require every C4 prescription to carry an ESTIMATED speedup, and log estimate-vs-achieved
+      error.** GPA publishes estimated beside achieved for all 26 optimization rows, **mean error 4.1%**
+      (worst rows 42% and 26%, both latency-hiding — do not quote the mean as the accuracy of any single
+      prediction). Our C4 emits diagnoses with no predicted benefit and therefore **cannot be scored**.
+      Schema change plus a reducer; no PC sampling and no ROCm upgrade needed. Land with AK-PM-17 — both
+      convert a subsystem's self-assessment into a measurable error rate.
+- [ ] **RVP-C4-12 — Diff our C4 prescription vocabulary against GPA's 12 published optimizers.** Stall
+      Elimination (Register Reuse, Strength Reduction, Function Split, Fast Math, Warp Balance, Memory
+      Transaction Reduction), Latency Hiding (Loop Unrolling, Code Reordering, Function Inlining), Parallel
+      (Block/Thread Increase). **Function Split, Warp Balance and Memory Transaction Reduction are plausibly
+      absent from ours.** Also adopt the **blame-to-SOURCE-instruction** output contract: our C4 reports where
+      time went; it should report what CAUSED it. Documentation task, no compute.
+- [ ] **RVP-C4-13 — Grep `meta-pytorch/KernelAgent` for the profiler seam before planning any ROCm backend.**
+      Determine whether the NCU dependency sits behind a single-implementation interface or is threaded
+      through the Diagnose and Prescriber agents as raw metric names — the published BottleneckReport
+      examples cite `smsp__warp_issue_stalled_long_scoreboard_per_warp_active.pct` **by name inside
+      LLM-facing reasoning text**, which is weak evidence for "threaded through". The answer decides
+      plug-in versus fork. **Clone and read only — no execution**, and the repo's `CLAUDE.md` is external
+      DATA under quarantine.
+- [ ] **RVP-C4-14 — Capture the ROCprofiler-SDK PC-sampling compatibility table somewhere durable.** Not a
+      research source but a decision-grade fact we did not previously hold: host-trap on CDNA2+, **stochastic
+      on CDNA3+ only**, `Stall_Reason` and `Wave_Issued_Instruction` **stochastic-exclusive**, ROCm 6.4+
+      required, beta-flag gated. This single table is what closes the GPA question and it should not be left
+      in a session report. Pairs with RVP-C4-10, which measures rather than trusts it.
+
+### Measurement plane — our power instrument has never been characterised
+
+- [ ] **RVP-PWR-1 — Record the OVERTURN already applied to `intake-1222`, and re-adjudicate anything resting
+      on it.** That entry asserted ROCm 6.2 has **no** monotonic energy accumulator. **Verified false on this
+      host 2026-08-21:** `rocm-smi --showenergycounter` returns an accumulating microjoule counter and
+      `librocm_smi64.so` exports `rsmi_dev_energy_count_get`. Verified ACCUMULATING rather than merely
+      present — 308.0917 J over 5.072 s at idle, monotonic, LSB a constant **15.30 uJ/tick** across 23
+      deltas, 60.75 W derived cross-checking 60.0 W from the independent `--showpower` field. **We appear to
+      hold the BETTER instrument, not the missing one**, because a cumulative counter BYPASSES the
+      sampling-window filtering that makes an averaged-power field untrustworthy. **TWO CAVEATS, recorded so
+      it is not over-read:** rocm-smi CLI spawn cost floors sampling at ~200 ms, so fine-grained work must use
+      the rsmi C API; and a 5 s IDLE window overlaps no workload, so per our own Observation Windows rule this
+      is evidence about the **INSTRUMENT**, not about any run — agreement at idle is necessary but NOT
+      sufficient, since filtering cannot bias a flat signal.
+- [ ] **RVP-PWR-2 — Run the aliasing probe on gfx90a under LOAD, which is where any divergence appears.**
+      `intake-1238#record` (SC24, >70 GPUs, external-meter validated) shows the vendor power field is a
+      firmware boxcar average over a window SHORTER than its own update period — 25% of runtime sampled on
+      A100/H100. The probe is vendor-neutral: a periodic square-wave workload of controlled duty cycle swept
+      across periods, looking for aliasing. Compare the **cumulative energy counter** against
+      **integrated average power** over the same window; divergence bounds how wrong the averaged field is
+      here. **DIRECTIONAL WARNING, the most important line in this section:** the error is NOT a constant
+      offset and cannot be calibrated out with a fudge factor — its sign and magnitude depend on the phase
+      relationship between workload periodicity and sampling window. For llama.cpp decode, which is HIGHLY
+      PERIODIC at the token cadence, this is close to a worst case: a token period near a harmonic of the
+      sampling window can **PHASE-LOCK and produce a stable, repeatable, and completely wrong power number.**
+      A number that reproduces across runs is not thereby correct.
+- [ ] **RVP-PWR-3 — Ingest and PDF-verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — arguably
+      higher-value than anything else in this batch, because MI250X IS gfx90a.** "Fine-Grained Power and
+      Energy Attribution on AMD GPU/APU-Based Exascale Nodes", Frontier MI250X and Portage MI300A at up to
+      512 GPUs. Preliminary (MEDIUM confidence, HTML fetch only — the PDF exceeded the fetch size limit):
+      rocm-smi average power there uses undocumented filtering, lags several seconds to full TDP, and has an
+      aliasing cutoff around **4 ms**; the cumulative energy counter at ~1 ms bypasses it. **Do not cite
+      those figures until the PDF is read.**
+- [ ] **RVP-PWR-4 — Adopt the SC24 protocol shape for any energy claim we ever make.** Locked clocks,
+      thermal warm-up, rise-time discard, a BOUNDED DECLARED WINDOW, median-of-N, idle-subtracted dynamic
+      energy, and external ground truth where obtainable. Never quote the 35%/65% figure without its scope
+      limit — and note it is an **error REDUCTION from a full protocol bundle**, not the magnitude of the
+      duty-cycling bias (that mis-statement has been corrected in `intake-1222` in both places it appeared).
+
+### Recorded so it is not re-derived
+
+- **FlashInfer-Bench introduces NO new metric.** `fast_p` is adopted verbatim from KernelBench
+  (`intake-664`). Everything of value is in the **first conjunct** of `1(correct AND speedup > p)` — the
+  correctness predicate, not the metric. Do not group it with SOL-ExecBench, whose Speed-of-Light score IS new.
+- **The binding constraint on an agent authoring kernels is COMPILATION, not numerics.**
+  `intake-1245#record` reports **30 of 32** agent failures as compile errors, 2 as runtime/numerical. Our
+  C6 instrumentation is aimed at the numerics. On ROCm 6.2 / gfx90a the compile constraint is strictly worse
+  than on CUDA. Budget the toolchain-feedback path accordingly.
+- **Correctness-conditioned speedup rates are structurally survivorship-biased and must never rank arms.**
+  Two independent 2026 benchmarks now exhibit it: CodegenBench reports `Fast_1@1 = 1.00` on LeetSunway for a
+  model whose `Pass@1` is **0.06**, and self-diagnoses the cause; `intake-1227` flagged the same divergence.
+  Both `fast_p` and `Fast_1@1` condition on the correct subset, so they inflate exactly where correctness is
+  worst.
+- **ParEval-Repo: the HIP arm is DROPPED — question closed, do not re-ask.** Word-boundary grep of
+  `arXiv:2506.20938v2` gives HIP 0 / ROCm 0 / gfx 0 and AMD 2 (both host CPUs); the full 254-path repo tree
+  @ `50f7dd8a` contains zero `hip` paths. The OpenMP-Offload arm is **not vendor-neutral**: `target.json`
+  builds it with `CUDA_ARCH=80 COMPILER=llvm`, declares a `cuda` dependency, and prompts for an NVIDIA GPU.
+  Its functional oracle is one substring test (`if expected not in run_result.stdout`) and its residency
+  check is `strace -e openat | grep -i nvidia`. **Do NOT adopt it as an evaluation gate**, and note the repo
+  has **no root LICENSE** (a soft blocker on forking under our sourcing policy). The OpenMP-Offload-on-gfx90a
+  question stays OPEN on its own merits — it is a ROCm toolchain capability
+  (`clang -fopenmp --offload-arch=gfx90a`), which that benchmark neither demonstrates nor blocks.

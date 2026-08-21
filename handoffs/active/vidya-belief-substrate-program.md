@@ -912,6 +912,23 @@ findings to docs, move to `completed/`, delete the master-index row.
       paired-flip counts) — the template axis is the whole point, per the E-7 amendment. Source-table
       row: `scripts/vidya/adapters/README.md`; consumer task: CT-8 in
       `handoffs/active/qwen-chat-template-evaluation.md`.
+- [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.**
+      Filed 2026-08-21 from `intake-1245#record` (FlashInfer-Bench, arXiv:2601.00227v1, Apache-2.0, repo @
+      `40e6ca78`). **It is a write-side claim-tuple carrier in all but name**: an immutable
+      `Definition x Solution x Workload x Evaluation` record with a declared PyTorch reference function, a
+      hardware-parameterised `target_hardware` field on the Solution, an environment snapshot, a correctness
+      verdict and a performance summary — i.e. exactly the shape `benchmarks/results` failed to have, which
+      is why 0 of 200 sampled files there carry a usable claim tuple. Two things to take and one caution.
+      **TAKE (1):** the record shape, as a candidate for our own kernel-candidate carrier. **TAKE (2):** its
+      per-operation-class **evaluator registry** (`default` / `lowbit` / `sampling` / `dsa_sparse_attention`
+      / `dsa_topk_indexer`) is structurally identical to our adapter contract — one ladder per source class,
+      registered, never re-invented per call site — which is **external corroboration that the registry
+      design is right**, and worth recording as such. **CAUTION:** `target_hardware` is DECLARATIVE. Nothing
+      in the 423-path tree implements a non-CUDA device backend, so declaring `gfx90a` would not by itself
+      make anything run, and every measurement in the published corpus is a B200 number. As always the
+      adapter must **PROJECT into a `ClaimTuple` and let `claim_tuple.grade()` decide — it must NOT write a
+      new grading rule.** Read `flashinfer_bench/bench/evaluators/{lowbit,default}.py` at the pinned SHA for
+      the actual tolerance constants before adopting anything (also tracked as RVP-C6-23).
 - [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed
       2026-08-21 by the `/research-intake` Stage-4 pass that ingested it (`intake-1225`, dive-verified,
       MIT, HPDC'24, credibility 6/6 — the highest of that cohort). ParEval is a candidate C5 secondary

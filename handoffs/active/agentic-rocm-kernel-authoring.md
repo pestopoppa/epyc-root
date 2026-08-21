@@ -1030,3 +1030,81 @@ wherever it appears._
       no FP8 — and would need re-specification, which is a taxonomy decision rather than a coding task.
       **The STRUCTURE ports for free; the CONTENT does not.** Revisit only if a gfx90a kernel-authoring
       campaign is separately funded.
+
+## Research Intake Update — 2026-08-21 (Stage-2b second wave: controllers, and what documentation scarcity costs)
+
+_From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `intake-1249#record`
+(KLineage), `intake-1250#record` (Kernel-Smith), `intake-1240#record` (GPU Forecasters)._
+
+- [ ] **C5-14 — Add AutoKernel to the controller roster as the ONLY surveyed kernel controller that needs
+      no vendor profiler.** `intake-1246#record` (MIT, `github.com/RightNow-AI/autokernel` @ `78435821`,
+      1,531 stars): Phase A uses **`torch.profiler` with shape recording only** — zero `ncu`/`nsys` in paper
+      or code. Our environment has rocprof v1/v2/v3 and omniperf and specifically **NO ncu/nsys**, which has
+      been the standing blocker for importing every NVIDIA-native agent, so **Phase A would run on the MI210
+      unmodified**. It is also **train-free and model-agnostic** (BYO coding agent reading `program.md`), so
+      it composes with our existing roster. **HARVEST:** the Amdahl-ranked target selector with explicit
+      move-on criteria (plateau / peak utilisation / time budget / speedup threshold), the
+      fixed-evaluation/mutable-single-file invariant, and the five-stage gate ORDER (smoke → shape sweep →
+      stability → determinism → edge cases), which is cheap-first and arch-independent. **DO NOT HARVEST:**
+      the hardware spec DB (see AK-PM-15 — it fabricates a gfx90a roofline), playbook tier 3 TF32
+      accumulation (no TF32 on gfx90a), tier 5 (TMA/cp.async do not exist on CDNA2), or the CUDA C++ backend.
+      Use FlashInfer-Bench's tolerance policy (RVP-C6-23), **not** AutoKernel's 1e-2/2e-2 blanket, which is
+      loose enough to admit an accumulator downgrade on the fp16/bf16 arms — the more so because its own
+      playbook tier 3 sanctions changing accumulator precision as an optimization.
+- [ ] **C5-15 — Adopt the KLineage BACKWARD-LINEAGE induction mechanism as a design candidate, and test it
+      on one gfx90a expert kernel.** `intake-1249#record` inverts the family's direction: instead of
+      generate-measure-keep-what-was-fast, it walks an EXPERT kernel BACKWARD through validation-gated
+      de-optimizations, then RE-DERIVES each accepted backward step as a forward transition and re-validates
+      it — supervision from expert artifacts rather than agent exploration. It is **train-free** and its
+      profile gate is `triton.testing.do_bench` wall-clock with **`ncu`/`nsight`/`nvprof`/`nvcc` appearing
+      nowhere**, so the machinery has no NVIDIA-profiler dependency. **The decisive open question for us is
+      MODEL DOWNGRADE**: only Claude Opus 4.6 is ever evaluated, and the backward rewriter is the hardest
+      reasoning in the pipeline. Run the loop on ONE gfx90a expert kernel from our own tree (an iqk MMQ path
+      or a Composable Kernel GEMM) with a **locally-served** model; that single question gates the method for
+      us and is answerable with one kernel. Nothing is released, so adoption means reimplementing the
+      induction pipeline AND re-inducing from AMD expert kernels — do not plan around reusing their library.
+      Also lift the nine-field **SkillCard** schema (intent, anchor, carrier, pre, effect, evidence, risk,
+      scope, ver) as a STARTING POINT, noting explicitly that we ADD what they lack: a commit binding and a
+      re-verification predicate (AK-PM-10).
+- [ ] **C5-16 — Supply architecture documentation IN CONTEXT rather than relying on model priors, and cite
+      the first external measurement of what scarcity costs.** `intake-1244#record` (CodegenBench) holds the
+      architecture constant-across-tasks and varies only the chip: `Pass@1` falls from **0.74** on the
+      well-documented architecture to **0.48** on the thinly-documented one, and to **0.00** for one model.
+      **gfx90a/CDNA2 is our Sunway** — our corpus already carries three independent confirmations of CDNA2
+      ecosystem abandonment (AITER dropped CDNA2, HipKittens never supported it, the sol-execbench fork ships
+      zero cdna2 code). This is the citable prior for building a curated in-context CDNA2 reference (ISA
+      excerpts, MI200 tuning-guide facts, wavefront-64 and LDS-bank specifics, MFMA shapes) into the
+      authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
+      HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
+- [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
+      build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should
+      not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without
+      running the kernel** — only coarse ordinal bins (8 log-half-octave) are tractable. Adopt the ordinal
+      reward shape, a calibration metric (ECE or Brier) as a first-class ACCEPTANCE gate, and an explicit
+      DEFERRAL policy so a surrogate must escape to real gfx90a measurement. **Decline the trained
+      forecaster**: A100-conditioned with **zero cross-GPU transfer test performed**, despite its own
+      released dataset spanning three GPU types. Note its baseline search BEATS the surrogate-enhanced
+      search on **2 of 6** tasks by 5-7%, so any adoption needs the equal-budget baseline arm run alongside,
+      never a single-arm demo. **Note-the-method-do-not-build-yet**: optimising the search budget of a loop
+      we have not yet made trustworthy is premature while RVP-C2-8/C2-9 are open.
+
+### Recorded so it is not re-derived — a pattern, no longer an incident
+
+**"SUPPORTS PLATFORM X" IN THIS LITERATURE IS A CAPABILITY STATEMENT WITH NO EVIDENTIARY CONTENT.** Two
+independent papers now ASSERT cross-platform capability and never MEASURE cross-platform transfer:
+`intake-1087#record` (KForge) names cross-platform translation as an optional strategy and never ablates it;
+`intake-1250#record` (Kernel-Smith) runs a MetaX MACA arm in which a **separate model was trained, the task
+formulation changed and the benchmark changed** — so nothing measures what knowledge crossed the vendor
+boundary. Treat such claims as unevidenced until an ablation is shown.
+
+**METHOD TRANSFERS, TRAINED ARTIFACT NEVER DOES** — now well enough evidenced to state once rather than
+re-derive per intake. `intake-1222` (KernelPro), `intake-662` (CudaForge) and `intake-1240` (GPU Forecasters)
+all evaluate on one NVIDIA family and ship artifacts that cannot cross to gfx90a. Every number we would ever
+produce from an NVIDIA-measured corpus on gfx90a is a **RE-MEASUREMENT, never a transfer** — the KLineage and
+daVinci authors are themselves explicit that they do not claim cross-vendor skill transfer, and we must not
+claim it on their behalf.
+
+**LICENSING BLOCKERS to clear BEFORE any download** (open-source-self-hosted-only sourcing policy):
+`github.com/GAIR-NLP/daVinci-kernel` has **no LICENSE file** (blocks reuse of its 960-skill corpus);
+`github.com/parallelcodefoundry/ParEval-Repo` has **no root LICENSE** (GitHub reports `license: null`);
+KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is not permissive.

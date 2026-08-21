@@ -5255,3 +5255,98 @@ predicates have no gfx90a counterpart, the tensor-core skill family collides wit
 the four memory systems — no viable artifact exists: two released nothing, one released a WIP branch whose
 last commit is "tmp: save work", and the one with code is CUDA/Nsight-bound with a memory that does not
 learn.
+
+### 23.7 The memory family, closed out — nine systems, one significance test (2026-08-21, Stage-2b)
+
+_Filed from the memory-successor Stage-2b batch: `intake-1248#record` (daVinci-kernel), `intake-1249#record`
+(KLineage), `intake-1250#record` (Kernel-Smith), plus the `intake-1087` dedup confirmation. The commissioned
+question was: does ANY of them finally run a with-memory vs without-memory ablation with a significance test,
+variance and repeats? **Answer: NO.** Across all nine systems the count of significance tests on a memory
+ablation is **zero**, exactly as it was across intake-1228..1231. The round is nonetheless not a null result,
+because the best-CONSTRUCTED ablation in the family now exists and it **cuts against building.**_
+
+- [ ] **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`
+      with an explicit `reopen_when`.** `intake-1248#record` §4.3 measures skill-free RL at Level 2 Fast_1
+      **51.6%** versus **44.8%** with skills at 8B, and Level 3 **12.3%** versus **10.1%** — i.e. memory is
+      NET NEGATIVE at the loose threshold — while skills dominate at Fast_2 / Fast_1.5, where the skill-free
+      arm collapses to 2.1% and 0.0%. **The effect is threshold-conditional and its SIGN FLIPS between the
+      8B and 14B model** on n=1 cells with zero dispersion, which is the signature of noise and which the
+      paper has no data to rule out. `reopen_when`: a with/without-memory ablation appears with n>=5 repeats
+      and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
+- [ ] **AK-PM-10 — Record that our §19.3 receipt rule is AHEAD of this literature, not behind it.** The
+      commissioned question was whether KLineage — the only paper in the family with VERIFIED in its title —
+      formalises skill-level verification warrants comparable to ours. Measured against our three
+      requirements it **fails all three**: (a) the source receipt is a bare speedup ratio (`ver` fields read
+      literally "3.9x over naive", "194x over naive"), a number and not a locator; (b) there is **no binding
+      to a commit, binary, driver or compiler version** — environment versions are stated once globally for
+      the whole paper, never attached to a skill; (c) there is **no re-verification on anchor move**, no
+      expiry, no demotion and no revocation — admission is one successful trial, permanently. daVinci is the
+      same: an execution-gated admission with no expiry. **NOT ONE of the nine systems has a re-verification
+      contract.** The authors' own scoping is quoted at `intake-1249` claim_anchors: _"We use 'verified' in
+      this empirical sense: admitted skills have passed compile/correctness/profile validation and held-out
+      roundtrip materialization, not formal proof."_ Documentation task; no compute.
+- [ ] **AK-PM-11 — Run the ablation nobody in this literature has run.** Replicate daVinci's Ablation-1
+      shape on OUR hardware with **n>=5 seeds per cell and a paired significance test** — same served model,
+      same task set, skill injection ON vs OFF, gfx90a. **Train-free**: the daVinci repo exposes
+      `SKILL_ENABLE` / `SKILL_LIBRARY_FILE` as runtime flags independent of training and can drive an
+      OpenAI-compatible endpoint, so this costs inference time only. Nine systems into this literature that
+      statistic still does not exist. **Gate the entire cross-run-memory build on its outcome**, and note it
+      supersedes nothing in AK-PM-4 — SkillBank is still the cheaper in-house answer and must be checked first.
+- [ ] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the
+      read side.** `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with
+      it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,
+      alpha=beta=1.2). Train-free, model-agnostic, no RL. Pair it with the two things every paper in the
+      family lacks — a **commit binding** and a **`reopen_when` predicate**. Per our own doctrine the write
+      side is cheap and permanent while retrofitting the read side is impossible: capture the receipts now,
+      defer the retrieval machinery until AK-PM-11 justifies it. **Add an implausible-speedup cap**: with a
+      1.2x floor and no ceiling, nothing filters the top end — daVinci's released 960-skill corpus carries a
+      `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured
+      (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
+      work elision or a timing artifact, not a kernel optimization.
+- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.**
+      `intake-1250#record` measures SGLang **4.78x isolated → 0.28%-0.87% end-to-end** and LMDeploy
+      **1.36x isolated → 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,
+      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel → +2.12% end-to-end vs
+      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the
+      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a
+      deliverable. Zero compute — also read the three merged PRs, which contain the actual LLM-authored
+      kernel source that survived real upstream review.
+- [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
+      source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector
+      WITHOUT the paper behind it. **That premise is FALSE.** `arXiv:2603.21331` (`intake-1246#record`,
+      RightNow-AI) is an unrelated artifact that happens to share the name; "AutoKernel" in this tree is THIS
+      program, and G15 is our own GPU target-selection band, closed `CLOSED_NO_GO` 2026-08-11 (verdict-bearing
+      norm+activation+elementwise share 1.837% / 1.490% against a predeclared 20% floor; receipt SHA-256
+      `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`). **Do NOT retro-cite that paper into
+      RVP-C4-2 or the AK-D37/G15 rows.**
+- [ ] **AK-PM-15 — Add AutoKernel's fabricated-roofline fail-open to the design warnings, with the
+      mechanism named.** A kernel agent carrying a STATIC hardware-spec database will **fail open on gfx90a
+      rather than refuse.** `intake-1246#record`, repo @ `78435821`: the AMD arch table has exactly two keys
+      (`gfx942`, `gfx950`); an MI210 matches neither, torch-on-ROCm exposes no `clock_rate`, and the fallback
+      assigns hardcoded `peak_fp16 = 500.0` TFLOPS and `peak_bw = 2000.0` GB/s against the MI210's real
+      ~181 TFLOPS / ~1638 GB/s. Because the orchestrator's move-on criteria include **peak utilisation**, a
+      fabricated peak does not merely mis-report — **it mis-STEERS the search.** Contrast `intake-1102`
+      (sol-execbench-rocm), which REFUSES an unknown part and names the measurement to take. **RULE: our
+      controller must REFUSE an unknown part, never estimate one.** Cheap confirming probe: reimplement the
+      ~40-line `detect_gpu` branch IN ISOLATION on the MI210 (do NOT run the agent loop, do NOT execute repo
+      code wholesale) and confirm the 500.0/2000.0 reading; if confirmed it is a REPRODUCED fabricated-constant
+      fail-open on our own hardware and belongs in `OPERATING_CONSTRAINTS.md`.
+- [ ] **AK-PM-16 — Retrodict the Amdahl selector against our own closed G15 result.** Feed AutoKernel's
+      ranking logic our strict frozen-v9 B=128 family map (gather/scatter **18.631%**, recurrent **17.464%**,
+      norm+activation+elementwise **1.490%**) and confirm it selects gather/scatter rather than the norm
+      cluster. A pass isolates the defect to the roofline layer and VALIDATES the selector as worth lifting;
+      a fail disqualifies the selector too. Zero inference, uses data we already hold.
+- [ ] **AK-PM-17 — Lift the KernelAgent reflexion schema into the loop's per-round record.** Add
+      `was_diagnosis_correct`, `was_fix_effective`, `expected_outcome`, `actual_outcome`, `lessons[]`,
+      `avoid_patterns[]`, `try_patterns[]` and broadcast to all workers next round (`intake-1243#record`).
+      Hardware-independent, and it yields the **diagnosis-accuracy statistic the loop currently cannot
+      compute** — the exact complement to GPA's estimate-vs-achieved discipline (RVP-C4-11). Land the two together.
+
+_Recorded, not filed: the off-NVIDIA collapse KernelGenBench measured for AutoKernel (87%→25%) is
+**over-determined by the artifact's own published design** and needs no exotic explanation — playbook tier 1
+is block-size tuning carrying the LARGEST claimed gain band (10-50%), so the agent's prior spends its first
+and largest effort on a search whose warp-32 intuitions do not carry to CDNA2's 64-wide wavefronts; tier 5 is
+literally "TMA on Hopper, cp.async on Ampere", instructing a faithful agent to emit instructions that do not
+exist on the target; and the roofline is fabricated (AK-PM-15). **CORRECTION to the hypothesis on record:**
+the "ignores platform-constraint prompts" half is NOT supported by that source — there is no prompt-adherence
+experiment in it — and should stop being asserted._
