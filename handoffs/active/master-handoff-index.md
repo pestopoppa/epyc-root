@@ -71,11 +71,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 52 | 447 | 12 | 2026-07-29 |
+| inference-research | 52 | 445 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 62 | 1 | 2026-07-29 |
 | research-evaluation | 47 | 357 | 11 | 2026-07-29 |
 | reviewer-control-plane | 9 | 34 | 11 | 2026-07-29 |
-| routing-and-optimization | 51 | 420 | 18 | 2026-07-29 |
+| routing-and-optimization | 51 | 419 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 43 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

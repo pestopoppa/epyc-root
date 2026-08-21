@@ -397,67 +397,23 @@ GPU mid-run (doctrine: co-residency is scheduling data); exactly 1 latency row o
 tagged in `coresidency_annotations.json`. Their RVP-C6-20 falsification succeeded on the granted
 window.
 
-### Post-wrap-up interval (operator /wrap-up, second invocation)
+---
 
-No new task rows; the interval's deliverable was the **codex dispatch draft** relayed via the
-operator: routes RVP-C6-22/23/24 + AK-PM-12 (evaluator hardening, build now), the three ratified
-design constraints (C6 tier stack with L3 dropped; refuse-unknown-part; memory build gated on
-AK-PM-11), five cheap probes (AK-PM-13/16/17, RVP-C4-10/11, C5-14/16), and the episodic-store-quiet
-action — whole-scope transfer on relay. Two shared-tree repairs this interval, both benign artifacts
-of the private-index commit pattern or its twin: (1) the research repo's stale shared index showed my
-six c6_mutants files as staged DELETIONS against the new HEAD — scoped `git reset` fixed it; recorded
-here because the next committer would have swept a 727-line deletion of a pushed harness; (2) a second
-patch-identical twin-commit divergence (ccee7873 local / b3291d43 origin, same parent) reconciled with
-a superset-safe `-s ours` merge, same as the first. Peer's live Stage-2b work (+4,102 uncommitted
-index lines, CT-5c progress edits) left strictly untouched. GPU-arm follow-ons remain with the codex
-agent per the dispatch; this session is quiescent pending compute or new operator input.
+## Seventh pass — CT-1b terseness verdict · 16K reasoning verdict · THE SWAP IS LIVE
 
-### GPU compute pass (operator-directed): RVP-C4-10, PWR-2, PWR-5 all closed with hardware evidence
+**16K rerun (18:40Z)**: budget-artifact hypothesis confirmed in full — T0 85.0% / T1 86.7%, nonterm
+0/1, flips 2:3 FOR thinking (n.s.), +21% tokens/solved. Reasoning is statistically TIED at fair
+budget; posture (a) stands on economics alone. Every historical anti-reasoning datum now accounted
+for as infrastructure.
 
-GPU verified idle first (zero KFD clients via sysfs + host-wide fd scan; 59 W energy-derived draw; the
-100% busy field exposed as a latched telemetry artifact — itself corroborating intake-1251). Then, in
-~3 minutes of total GPU across five bounded runs: **RVP-C4-10** — PC sampling on ROCm 6.2 is a STUB
-(API exported, returns status 16 "defined but not implemented" against the live gfx90a agent; CLI flag
-absent) — the GPA/C4-template question closes NEGATIVE by measurement. **RVP-PWR-5** — the confidence-
-window parameters the paper never published, measured with two-run persistence: averaged field
-t_d ~190 ms, t_r ~4.2 s, t_f ~3.5 s → a phase needs ~8 s before any attributable interior exists.
-**RVP-PWR-2** — sampler at 107 µs/sample confirms the 1 ms counter cadence on-die; 250 Hz (the paper's
-aliased case) resolves CLEAN at 32 dB, so the 4 ms knee was their instrumentation cost, not the
-sensor's; the FFT detection signature validated by forcing aliasing past an analysis Nyquist. **API
-trap found the hard way**: `rsmi_dev_energy_count_get` returns the RAW counter (×15.3 to µJ) — a naive
-dE/dt under-reads 15.3× and looks plausible; and an async load backlog exactly halved a commanded wave
-frequency until sync-per-op. Suite + results: research `scripts/benchmark/power_sensor_probe/` @
-`df40658a`. SC48 belief-kernel wiring filed at first measurement. Remaining, deliberately unclaimed:
-the token-cadence phase-lock measurement needs a REAL decode workload at the next serving boundary.
+**CT-1b (21:47Z)**: the terseness prompt DELIVERS — math 80=80% at −34% tokens (flips 1:1, CCoT
+math-hazard absent); mmlu 37.5→40.0% at −99% (mean 2.0 tokens); gpqa 42.5→60.0% (flips 0:7,
+p≈0.016, mostly truncation-avoidance per the locked decomposition); crux 27.5→30.0% at −36%.
+Honest claim: never worse, significantly better where budget binds, 34–99.5% fewer answer tokens.
+Deployable artifact: `chat_template_terse_arm2.jinja` sha `1443ea9ab4bb…4551`, injection-free.
 
-### Token-cadence phase-lock on REAL decode (operator-directed): BOUNDED NEGATIVE
-
-Two llama-bench tg-only runs (122.4 and 30.5 tok/s). Averaged field vs energy-counter truth in the
-settled window: **−0.86% / −0.84% — invariant across a 4× cadence change**, the designed decisive
-test, so the small bias is calibration, not phase. Token cadence near-invisible in the power
-spectrum: steady decode is ~DC at the token scale, so the aliasing hazard has almost nothing to bite.
-All-clear scoped to steady settled decode; transitions and bursty loads keep their measured hazards.
-intake-1238's warning is BOUNDED, not refuted. One incident handled: the b10125 llama-cli is a chat
-REPL that ignored `-no-cnv` — a hung orphan held 10.9 GB VRAM for 10 min, was killed (mine, PID
-captured at launch) with death verified, and its 0.9 GB stdout flood deleted. llama-bench is the
-right decode-load generator. Research @ `bf8fdd93`, pushed. Wiki hw-opt phase-lock line needs the
-measured bound folded in at the NEXT compile sweep (deferred: operator-cadence step).
-
-## Final close-out (operator /wrap-up #3)
-
-Interval deliverable: the **dispatch ADDENDUM** relayed via the operator to the autokernel codex
-agent — supersedes its earlier C4-10 probe assignment (now done: PC sampling is a 6.2 stub), and
-carries the sensor-parameter results, the raw-counter x15.3 API trap, the latched-busy%-field
-warning, the llama-cli-REPL/llama-bench lesson, and the phase-lock bounded negative with pointers
-to RVP-PWR rows, INF-48, SC48 and the probe suite @ research `bf8fdd93`.
-
-Operator-cadence steps this invocation: **wiki sweep COMPLETE** — both deferred items compiled:
-the phase-lock bound + full sensor parameter set into `wiki/hardware-optimization.md`, and the
-peer's concluded CT-5(c) measurement (operating-point result + truncation-artifact correction +
-the new never-cite-thinking-deltas-without-budget-and-truncation rule) into
-`wiki/chat-templates.md`; watermark touched, `total_new` 0. **Prune screen: zero candidates.**
-Third recurrence of the stale-shared-index artifact repaired in the research repo (my
-power_sensor_probe files showing as staged deletions; scoped reset, same benign cause).
-Checkbox flips this interval: 0 (nothing handoff-tracked completed; the addendum was the
-deliverable). Session quiescent: open threads are the codex agent's (dispatch), the 16K CT-5
-rerun (peer's), SkillBank A/B (stack owner), and AK-PM-11 (substrate-gated).
+**Q38-T5 (22:00Z)**: stack started (gate PASSED at launch), 15 servers healthy, five-point
+`live == config` checklist all green — :8083 serves Qwen3.8-27B-Q8_0 @ draft-n-max 8 on frozen-v9
+HIP, generation correct, enable_thinking=false live. **The 2026-08-14→21 swap campaign is closed.**
+Operator flag: cold start fell through to `--numa-mode=quarter` (halves up, fulls not) — lineup-mode
+restart is an operator call.
