@@ -799,6 +799,292 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(pipeline["planner_validation"], "failed")
         self.assertEqual(pipeline["next_hypothesis"], "waiting")
 
+    def test_v25_new_planner_turn_outranks_prior_same_hypothesis_refusal(
+            self) -> None:
+        hypothesis = "akh-v2-q5-type-specific-dequant"
+        first_operation = "1" * 64
+        second_operation = "2" * 64
+        reason_digest = "f" * 64
+
+        def event(kind: str, at: str, operation: str,
+                  result: dict | None = None) -> dict:
+            row = self._v2_event(event=kind, result=result)
+            row["ts"] = at
+            row["operation_key"] = operation
+            identity = {key: value for key, value in row.items()
+                        if key not in {"ts", "channel", "event_id", "result"}}
+            row["event_id"] = "ake-" + hashlib.sha256(json.dumps(
+                identity, sort_keys=True, separators=(",", ":")
+            ).encode("ascii")).hexdigest()
+            return row
+
+        first_started = event(
+            "planner_started", "2026-08-21T05:03:35.223898Z",
+            first_operation)
+        refused = event(
+            "planner_refused", "2026-08-21T05:11:40.141127Z",
+            first_operation, {
+                "returncode": 0, "stdout_sha256": "c" * 64,
+                "stderr_sha256": "d" * 64,
+                "refusal_type": "planner_output_refusal",
+                "refusal_reason_sha256": reason_digest,
+            })
+        second_started = event(
+            "planner_started", "2026-08-21T05:11:40.338103Z",
+            second_operation)
+        rows = [first_started, refused, second_started]
+        encoded = "".join(json.dumps(row) + "\n" for row in rows)
+        (self.operations / "live/autokernel.jsonl").write_text(encoded)
+        (self.operations / "live/planner.jsonl").write_text(encoded)
+        raw_reason = "SourceCandidateError: RAW AUTHORING DETAIL MUST NOT EXPORT"
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-21T05:11:40.148346Z",
+            "next": 2, "complete": False,
+            "iterations": [{
+                "turn": 1, "hypothesis_id": hypothesis,
+                "planner_operation_key": first_operation,
+                "status": "planner_refused",
+                "refusal_type": "planner_output_refusal",
+                "scientific_budget_spent": False,
+                "telemetry_event": "planner_refused",
+                "telemetry_status": "emitted", "reason": raw_reason,
+            }],
+            "planning": {
+                "turn": 2, "operation_key": second_operation,
+                "phase": "actor_entering", "provider_attempt": 0,
+                "portfolio_binding": {"hypothesis_id": hypothesis},
+                "context": {"authoring_assignment": {
+                    "campaign_id": "ak-discovery-" + "a" * 16,
+                    "portfolio_binding": {"hypothesis_id": hypothesis},
+                }},
+            },
+        }))
+
+        observed_now = server._parse_semantic_timestamp(
+            "2026-08-21T05:12:00.000000Z")
+        with (self.state / "controller.run.lock").open("r") as handle, \
+                mock.patch.object(server.time, "time", return_value=observed_now):
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = server.discovery_live_payload()
+        activity = payload["activity"]
+
+        self.assertEqual(payload["telemetry_integrity"]["state"], "verified")
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["id"], "planner")
+        self.assertEqual(activity["phase"]["label"], "Planner model call")
+        self.assertEqual(activity["phase"]["started_at"], second_started["ts"])
+        self.assertEqual(activity["turn"], 2)
+        self.assertEqual(activity["hypothesis_id"], hypothesis)
+        self.assertEqual(activity["waiting_on"], "planner completion")
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertFalse(activity["refusal"]["detected"])
+        pipeline = {row["id"]: row["state"] for row in activity["pipeline"]}
+        self.assertEqual(pipeline["planner"], "running")
+        self.assertEqual(pipeline["planner_validation"], "not_reached")
+        prior = activity["prior_terminal"]
+        self.assertEqual(prior["turn"], 1)
+        self.assertEqual(prior["status"], "planner_refused")
+        self.assertEqual(prior["stage"], "planner_validation")
+        self.assertFalse(prior["scientific_budget_spent"])
+        self.assertIn(reason_digest[:12], prior["detail"])
+        self.assertEqual(activity["history"]["terminal_count"], 1)
+        self.assertEqual(activity["history"]["terminal_rows"], [prior])
+        self.assertEqual(activity["transitions"][-1]["event"],
+                         "planner_started")
+        self.assertNotIn(raw_reason, json.dumps(payload))
+
+    def test_v25_prior_planner_refusal_requires_exact_operation_join(self) -> None:
+        state = {"iterations": [{
+            "turn": 1,
+            "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+            "planner_operation_key": "1" * 64,
+            "status": "planner_refused",
+            "refusal_type": "planner_output_refusal",
+            "scientific_budget_spent": False,
+            "telemetry_event": "planner_refused",
+            "telemetry_status": "emitted",
+        }]}
+        refusal = self._v2_event(event="planner_refused", result={
+            "returncode": 0, "stdout_sha256": "c" * 64,
+            "stderr_sha256": "d" * 64,
+            "refusal_type": "planner_output_refusal",
+            "refusal_reason_sha256": "f" * 64,
+        })
+        refusal["operation_key"] = "2" * 64
+        self.assertEqual(server._discovery_planner_refusal_terminals(
+            state, [refusal], "ak-discovery-" + "a" * 16, 2), [])
+        refusal["operation_key"] = "1" * 64
+        self.assertEqual(server._discovery_planner_refusal_terminals(
+            state, [refusal, dict(refusal)],
+            "ak-discovery-" + "a" * 16, 2), [])
+
+    def test_v25_planner_successor_requires_state_event_freshness_binding(
+            self) -> None:
+        campaign = "ak-discovery-" + "a" * 16
+        hypothesis = "akh-v2-q5-type-specific-dequant"
+        binding = {"hypothesis_id": hypothesis}
+        state = {"next": 2, "updated_at": "2026-08-21T05:11:40.148346Z"}
+        planning = {
+            "turn": 2, "phase": "actor_entering", "provider_attempt": 0,
+            "operation_key": "2" * 64, "portfolio_binding": binding,
+            "context": {"authoring_assignment": {
+                "campaign_id": campaign, "portfolio_binding": binding}},
+        }
+        prior = {
+            "turn": 1, "status": "planner_refused",
+            "hypothesis_id": hypothesis,
+            "refusal_type": "planner_output_refusal",
+            "scientific_budget_spent": False,
+            "telemetry_event": "planner_refused",
+            "telemetry_status": "emitted",
+            "planner_operation_key": "1" * 64,
+        }
+        event = {
+            "event": "planner_started", "campaign_id": campaign,
+            "hypothesis_id": hypothesis, "operation_key": "2" * 64,
+            "ts": "2026-08-21T05:11:40.338103Z",
+        }
+        refusal = {
+            "event": "planner_refused", "campaign_id": campaign,
+            "hypothesis_id": hypothesis, "operation_key": "1" * 64,
+            "ts": "2026-08-21T05:11:40.141127Z",
+            "result": {
+                "returncode": 0, "stdout_sha256": "a" * 64,
+                "stderr_sha256": "b" * 64,
+                "refusal_type": "planner_output_refusal",
+                "refusal_reason_sha256": "c" * 64,
+            },
+        }
+        now = server._parse_semantic_timestamp("2026-08-21T05:12:00Z")
+        self.assertTrue(server._discovery_planner_successor_binding(
+            state, planning, [refusal, event], prior, campaign, now))
+        for field, value in (
+                ("operation_key", "3" * 64),
+                ("ts", "2026-08-21T05:11:40.100000Z"),
+                ("campaign_id", "ak-discovery-" + "b" * 16),
+                ("ts", "2026-08-21T05:12:10.000000Z")):
+            mutated = dict(event)
+            mutated[field] = value
+            with self.subTest(field=field):
+                self.assertFalse(server._discovery_planner_successor_binding(
+                    state, planning, [refusal, mutated], prior, campaign, now))
+
+    def test_v25_critic_and_inflight_require_exact_successor_lineage(self) -> None:
+        campaign = "ak-discovery-" + "a" * 16
+        hypothesis = "akh-v2-q5-type-specific-dequant"
+        prior = {
+            "turn": 1, "hypothesis_id": hypothesis,
+            "status": "planner_refused",
+            "refusal_type": "planner_output_refusal",
+            "scientific_budget_spent": False,
+            "telemetry_event": "planner_refused",
+            "telemetry_status": "emitted",
+            "planner_operation_key": "1" * 64,
+        }
+        refusal_result = {
+            "returncode": 0, "stdout_sha256": "a" * 64,
+            "stderr_sha256": "b" * 64,
+            "refusal_type": "planner_output_refusal",
+            "refusal_reason_sha256": "c" * 64,
+        }
+        planner_result = {"returncode": 0, "stdout_sha256": "d" * 64,
+                          "stderr_sha256": "e" * 64}
+        critic_result = {"decision": "accept", "stdout_sha256": "f" * 64,
+                         "stderr_sha256": "0" * 64}
+        events = [
+            {"event": "planner_refused", "campaign_id": campaign,
+             "hypothesis_id": hypothesis, "operation_key": "1" * 64,
+             "ts": "2026-08-21T05:11:40.141127Z", "result": refusal_result},
+            {"event": "planner_started", "campaign_id": campaign,
+             "hypothesis_id": hypothesis, "operation_key": "2" * 64,
+             "ts": "2026-08-21T05:11:40.338103Z"},
+            {"event": "planner_completed", "campaign_id": campaign,
+             "hypothesis_id": hypothesis, "operation_key": "2" * 64,
+             "ts": "2026-08-21T05:18:09.614081Z", "result": planner_result},
+            {"event": "critic_started", "campaign_id": campaign,
+             "hypothesis_id": hypothesis, "operation_key": "3" * 64,
+             "ts": "2026-08-21T05:18:10.047800Z"},
+        ]
+        pending_state = {"next": 2,
+                         "updated_at": "2026-08-21T05:18:09.900000Z"}
+        pending = {
+            "phase": "critic_pending",
+            "row": {"turn": 2, "hypothesis_id": hypothesis},
+            "candidate": {"hypothesis_id": hypothesis},
+        }
+        now = server._parse_semantic_timestamp("2026-08-21T05:20:00Z")
+        self.assertTrue(server._discovery_pending_successor_binding(
+            pending_state, pending, events, prior, campaign, now))
+        self.assertTrue(server._discovery_pending_successor_binding(
+            pending_state, {**pending, "turn": 2}, events,
+            prior, campaign, now))
+        self.assertFalse(server._discovery_pending_successor_binding(
+            pending_state, {**pending, "turn": 3}, events,
+            prior, campaign, now))
+        critic_index = len(events) - 1
+        for field, value in (
+                ("campaign_id", "ak-discovery-" + "b" * 16),
+                ("operation_key", "2" * 64),
+                ("hypothesis_id", "akh-wrong"),
+                ("ts", "2026-08-21T05:11:40.100000Z"),
+                ("ts", "2026-08-21T05:20:10.000000Z"),
+                ("result", {"unexpected": True})):
+            mutated_events = [dict(row) for row in events]
+            mutated_events[critic_index][field] = value
+            with self.subTest(stage="critic", field=field, value=str(value)[:20]):
+                self.assertFalse(server._discovery_pending_successor_binding(
+                    pending_state, pending, mutated_events, prior, campaign, now))
+
+        complete = {
+            "event": "critic_completed", "campaign_id": campaign,
+            "hypothesis_id": hypothesis, "operation_key": "3" * 64,
+            "ts": "2026-08-21T05:19:50.887498Z", "result": critic_result,
+        }
+        complete_events = [*events, complete]
+        source_operation = "4" * 64
+        inflight_state = {"next": 2,
+                          "updated_at": "2026-08-21T05:19:51.315783Z"}
+        inflight = {
+            "operation_key": source_operation,
+            "row": {"turn": 2, "hypothesis_id": hypothesis,
+                    "operation_key": source_operation},
+            "candidate": {"hypothesis_id": hypothesis},
+        }
+        self.assertTrue(server._discovery_inflight_successor_binding(
+            inflight_state, inflight, complete_events, prior, campaign, now))
+        for field, value in (
+                ("campaign_id", "ak-discovery-" + "b" * 16),
+                ("operation_key", "2" * 64),
+                ("hypothesis_id", "akh-wrong"),
+                ("ts", "2026-08-21T05:18:09.000000Z"),
+                ("ts", "2026-08-21T05:20:10.000000Z"),
+                ("result", {**critic_result, "decision": "reject"})):
+            mutated_events = [dict(row) for row in complete_events]
+            mutated_events[-1][field] = value
+            with self.subTest(stage="inflight", field=field,
+                              value=str(value)[:20]):
+                self.assertFalse(server._discovery_inflight_successor_binding(
+                    inflight_state, inflight, mutated_events, prior,
+                    campaign, now))
+        tampered_inflight = {**inflight, "operation_key": "5" * 64}
+        self.assertFalse(server._discovery_inflight_successor_binding(
+            inflight_state, tampered_inflight, complete_events,
+            prior, campaign, now))
+        for field, value in (
+                ("scientific_budget_spent", True),
+                ("refusal_type", "other_refusal"),
+                ("telemetry_event", "planner_completed"),
+                ("telemetry_status", "missing")):
+            mutated_prior = {**prior, field: value}
+            with self.subTest(stage="prior", field=field):
+                self.assertFalse(server._discovery_pending_successor_binding(
+                    pending_state, pending, events, mutated_prior,
+                    campaign, now))
+                self.assertFalse(server._discovery_inflight_successor_binding(
+                    inflight_state, inflight, complete_events,
+                    mutated_prior, campaign, now))
+
     def test_state_side_visibility_failure_is_visible_as_historical_loss(self) -> None:
         (self.state / "state.json").write_text(json.dumps({
             "updated_at": "2026-08-19T05:01:00Z", "next": 1,

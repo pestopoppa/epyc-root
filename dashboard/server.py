@@ -6891,6 +6891,303 @@ def _discovery_refusal_observation(bundle: Path, state: dict | None,
     return None
 
 
+def _discovery_planner_refusal_iteration(
+        value: object, *, before_turn: int | None = None) -> bool:
+    if not isinstance(value, dict):
+        return False
+    turn = value.get("turn")
+    hypothesis = value.get("hypothesis_id")
+    operation_key = value.get("planner_operation_key")
+    return bool(
+        isinstance(turn, int) and not isinstance(turn, bool) and turn > 0
+        and (before_turn is None or turn < before_turn)
+        and value.get("status") == "planner_refused"
+        and value.get("refusal_type") == "planner_output_refusal"
+        and value.get("scientific_budget_spent") is False
+        and value.get("telemetry_event") == "planner_refused"
+        and value.get("telemetry_status") == "emitted"
+        and isinstance(hypothesis, str)
+        and re.fullmatch(r"akh-[a-z0-9][a-z0-9_.-]{0,196}",
+                         hypothesis) is not None
+        and isinstance(operation_key, str)
+        and re.fullmatch(r"[0-9a-f]{64}", operation_key) is not None)
+
+
+def _discovery_planner_refusal_terminals(
+        state: dict | None, events: list[dict], campaign_id: str | None,
+        current_turn: object) -> list[dict]:
+    """Bind prior planner refusals to both sealed state and typed telemetry.
+
+    A state row alone may contain a raw authoring reason, while an event alone
+    has no turn number.  Only their operation/hypothesis/refusal identity join
+    is sufficient to publish a bounded prior-terminal record.
+    """
+    if (not isinstance(state, dict) or not isinstance(campaign_id, str)
+            or not isinstance(current_turn, int)
+            or isinstance(current_turn, bool) or current_turn <= 1):
+        return []
+    iterations = state.get("iterations")
+    if not isinstance(iterations, list):
+        return []
+    terminals = []
+    consumed_operations: set[str] = set()
+    for iteration in iterations[-25:]:
+        if not isinstance(iteration, dict):
+            continue
+        turn = iteration.get("turn")
+        hypothesis = iteration.get("hypothesis_id")
+        operation_key = iteration.get("planner_operation_key")
+        if (not _discovery_planner_refusal_iteration(
+                iteration, before_turn=current_turn)
+                or operation_key in consumed_operations):
+            continue
+        matches = []
+        for event in events:
+            result = event.get("result") if isinstance(event, dict) else None
+            if (isinstance(result, dict)
+                    and event.get("event") == "planner_refused"
+                    and event.get("campaign_id") == campaign_id
+                    and event.get("hypothesis_id") == hypothesis
+                    and event.get("operation_key") == operation_key
+                    and set(result) == {
+                        "returncode", "stdout_sha256", "stderr_sha256",
+                        "refusal_type", "refusal_reason_sha256"}
+                    and result.get("returncode") == 0
+                    and result.get("refusal_type") ==
+                    "planner_output_refusal"
+                    and all(isinstance(result.get(key), str)
+                            and re.fullmatch(r"[0-9a-f]{64}", result[key])
+                            is not None
+                            for key in ("stdout_sha256", "stderr_sha256",
+                                        "refusal_reason_sha256"))):
+                matches.append(event)
+        if len(matches) != 1:
+            continue
+        event = matches[0]
+        consumed_operations.add(operation_key)
+        terminals.append({
+            "schema": "epyc.dashboard.autokernel_prior_terminal.v1",
+            "ts": event["ts"], "event": "planner_refused",
+            "turn": turn, "hypothesis_id": hypothesis,
+            "status": "planner_refused", "stage": "planner_validation",
+            "scientific_budget_spent": False,
+            "detail": ("planner output refused; reason sha256 "
+                       f"{event['result']['refusal_reason_sha256'][:12]}…"),
+        })
+    return terminals
+
+
+def _discovery_successor_actor_chain(
+        events: list[dict], prior_iteration: dict | None,
+        campaign_id: str | None, expected: tuple[str, ...],
+        now: float) -> list[dict] | None:
+    """Return one exact v2 actor chain after a typed planner refusal."""
+    if (not isinstance(prior_iteration, dict) or not isinstance(campaign_id, str)
+            or not math.isfinite(now)
+            or not _discovery_planner_refusal_iteration(prior_iteration)):
+        return None
+    hypothesis = prior_iteration.get("hypothesis_id")
+    prior_operation = prior_iteration.get("planner_operation_key")
+    refusal_matches = []
+    for event in events:
+        result = event.get("result") if isinstance(event, dict) else None
+        if (isinstance(result, dict)
+                and event.get("event") == "planner_refused"
+                and event.get("campaign_id") == campaign_id
+                and event.get("hypothesis_id") == hypothesis
+                and event.get("operation_key") == prior_operation
+                and set(result) == {
+                    "returncode", "stdout_sha256", "stderr_sha256",
+                    "refusal_type", "refusal_reason_sha256"}
+                and result.get("returncode") == 0
+                and result.get("refusal_type") == "planner_output_refusal"):
+            refusal_matches.append(event)
+    if len(refusal_matches) != 1:
+        return None
+    refusal = refusal_matches[0]
+    refusal_time = _parse_semantic_timestamp(refusal.get("ts"))
+    if refusal_time is None or refusal_time > now + 5.0:
+        return None
+    successors = []
+    for event in events:
+        event_time = (_parse_semantic_timestamp(event.get("ts"))
+                      if isinstance(event, dict) else None)
+        if (event_time is not None and event_time > refusal_time
+                and event.get("campaign_id") == campaign_id
+                and event.get("hypothesis_id") == hypothesis):
+            successors.append(event)
+    if ([event.get("event") for event in successors] != list(expected)
+            or not successors or events[-1] != successors[-1]):
+        return None
+    times = [_parse_semantic_timestamp(event.get("ts")) for event in successors]
+    if (any(value is None or value > now + 5.0 for value in times)
+            or any(right <= left for left, right in zip(times, times[1:]))):
+        return None
+    planner_operation = successors[0].get("operation_key")
+    if (not isinstance(planner_operation, str)
+            or re.fullmatch(r"[0-9a-f]{64}", planner_operation) is None
+            or planner_operation == prior_operation
+            or successors[0].get("result") is not None):
+        return None
+    if len(successors) >= 2:
+        result = successors[1].get("result")
+        if (successors[1].get("operation_key") != planner_operation
+                or not isinstance(result, dict)
+                or set(result) != {
+                    "returncode", "stdout_sha256", "stderr_sha256"}
+                or result.get("returncode") != 0):
+            return None
+    if len(successors) >= 3:
+        critic_operation = successors[2].get("operation_key")
+        if (not isinstance(critic_operation, str)
+                or re.fullmatch(r"[0-9a-f]{64}", critic_operation) is None
+                or critic_operation in {prior_operation, planner_operation}
+                or successors[2].get("result") is not None):
+            return None
+    if len(successors) >= 4:
+        result = successors[3].get("result")
+        if (successors[3].get("operation_key") !=
+                successors[2].get("operation_key")
+                or not isinstance(result, dict)
+                or set(result) != {"stdout_sha256", "stderr_sha256", "decision"}
+                or result.get("decision") != "accept"):
+            return None
+    return successors
+
+
+def _discovery_planner_successor_binding(
+        state: dict | None, planning: dict | None, events: list[dict],
+        prior_iteration: dict | None, campaign_id: str | None,
+        now: float) -> bool:
+    """Prove a planner_started event belongs to the next durable turn."""
+    chain = _discovery_successor_actor_chain(
+        events, prior_iteration, campaign_id, ("planner_started",), now)
+    if (not isinstance(state, dict) or not isinstance(planning, dict)
+            or chain is None or not isinstance(prior_iteration, dict)):
+        return False
+    event = chain[0]
+    turn = planning.get("turn")
+    prior_turn = prior_iteration.get("turn")
+    operation_key = planning.get("operation_key")
+    prior_operation = prior_iteration.get("planner_operation_key")
+    binding = planning.get("portfolio_binding")
+    context = planning.get("context")
+    assignment = (context.get("authoring_assignment")
+                  if isinstance(context, dict) else None)
+    event_time = _parse_semantic_timestamp(event.get("ts"))
+    state_time = _parse_semantic_timestamp(state.get("updated_at"))
+    return bool(
+        prior_iteration.get("status") == "planner_refused"
+        and prior_iteration.get("refusal_type") == "planner_output_refusal"
+        and prior_iteration.get("scientific_budget_spent") is False
+        and isinstance(turn, int) and not isinstance(turn, bool)
+        and isinstance(prior_turn, int) and not isinstance(prior_turn, bool)
+        and turn == prior_turn + 1 and state.get("next") == turn
+        and planning.get("phase") == "actor_entering"
+        and isinstance(planning.get("provider_attempt"), int)
+        and not isinstance(planning.get("provider_attempt"), bool)
+        and planning["provider_attempt"] >= 0
+        and isinstance(operation_key, str)
+        and re.fullmatch(r"[0-9a-f]{64}", operation_key) is not None
+        and operation_key != prior_operation
+        and event.get("event") == "planner_started"
+        and event.get("campaign_id") == campaign_id
+        and event.get("operation_key") == operation_key
+        and event.get("result") is None
+        and isinstance(binding, dict)
+        and isinstance(assignment, dict)
+        and assignment.get("campaign_id") == campaign_id
+        and assignment.get("portfolio_binding") == binding
+        and event.get("hypothesis_id") == binding.get("hypothesis_id")
+        and event_time is not None and state_time is not None
+        and 0 <= event_time - state_time <= 30.0
+        and event_time <= now + 5.0)
+
+
+def _discovery_pending_successor_binding(
+        state: dict | None, pending: dict | None, events: list[dict],
+        prior_iteration: dict | None, campaign_id: str | None,
+        now: float) -> bool:
+    if (not isinstance(state, dict) or not isinstance(pending, dict)
+            or not isinstance(prior_iteration, dict)):
+        return False
+    latest_event = events[-1].get("event") if events else None
+    expected_by_event = {
+        "planner_completed": ("planner_started", "planner_completed"),
+        "critic_started": ("planner_started", "planner_completed",
+                           "critic_started"),
+        "critic_completed": ("planner_started", "planner_completed",
+                             "critic_started", "critic_completed"),
+    }
+    expected = expected_by_event.get(latest_event)
+    chain = (_discovery_successor_actor_chain(
+        events, prior_iteration, campaign_id, expected, now)
+             if expected is not None else None)
+    row = pending.get("row")
+    candidate = pending.get("candidate")
+    row_turn = row.get("turn") if isinstance(row, dict) else None
+    declared_turn = pending.get("turn")
+    turn = declared_turn if isinstance(declared_turn, int) else row_turn
+    hypothesis = row.get("hypothesis_id") if isinstance(row, dict) else None
+    prior_turn = prior_iteration.get("turn")
+    state_time = _parse_semantic_timestamp(state.get("updated_at"))
+    boundary_time = (_parse_semantic_timestamp(chain[-1].get("ts"))
+                     if chain is not None else None)
+    phase = pending.get("phase")
+    time_coherent = bool(
+        state_time is not None and boundary_time is not None
+        and (0 <= boundary_time - state_time <= 30.0
+             if latest_event == "critic_started" else
+             0 <= state_time - boundary_time <= 30.0))
+    return bool(
+        chain is not None
+        and isinstance(row, dict) and isinstance(candidate, dict)
+        and ("turn" not in pending or declared_turn == row_turn)
+        and isinstance(turn, int) and not isinstance(turn, bool)
+        and isinstance(prior_turn, int) and not isinstance(prior_turn, bool)
+        and turn == prior_turn + 1 and state.get("next") == turn
+        and hypothesis == prior_iteration.get("hypothesis_id")
+        and candidate.get("hypothesis_id") == hypothesis
+        and phase in {"critic_pending", "critic_complete"}
+        and (phase == "critic_pending"
+             and latest_event in {"planner_completed", "critic_started"}
+             or phase == "critic_complete" and latest_event == "critic_completed")
+        and time_coherent)
+
+
+def _discovery_inflight_successor_binding(
+        state: dict | None, inflight: dict | None, events: list[dict],
+        prior_iteration: dict | None, campaign_id: str | None,
+        now: float) -> bool:
+    chain = _discovery_successor_actor_chain(
+        events, prior_iteration, campaign_id,
+        ("planner_started", "planner_completed", "critic_started",
+         "critic_completed"), now)
+    if (not isinstance(state, dict) or not isinstance(inflight, dict)
+            or not isinstance(prior_iteration, dict) or chain is None):
+        return False
+    row = inflight.get("row")
+    candidate = inflight.get("candidate")
+    operation_key = inflight.get("operation_key")
+    turn = row.get("turn") if isinstance(row, dict) else None
+    hypothesis = row.get("hypothesis_id") if isinstance(row, dict) else None
+    prior_turn = prior_iteration.get("turn")
+    state_time = _parse_semantic_timestamp(state.get("updated_at"))
+    actor_time = _parse_semantic_timestamp(chain[-1].get("ts"))
+    return bool(
+        isinstance(row, dict) and isinstance(candidate, dict)
+        and isinstance(turn, int) and not isinstance(turn, bool)
+        and isinstance(prior_turn, int) and not isinstance(prior_turn, bool)
+        and turn == prior_turn + 1 and state.get("next") == turn
+        and hypothesis == prior_iteration.get("hypothesis_id")
+        and candidate.get("hypothesis_id") == hypothesis
+        and isinstance(operation_key, str)
+        and re.fullmatch(r"[0-9a-f]{64}", operation_key) is not None
+        and row.get("operation_key") == operation_key
+        and state_time is not None and actor_time is not None
+        and 0 <= state_time - actor_time <= 30.0)
+
+
 def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                         state: dict | None,
                         events: list[dict], checkpoint: dict | None,
@@ -7007,16 +7304,26 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     planner_terminal_failure = bool(
         planning_failure is not None and isinstance(checkpoint, dict)
         and checkpoint.get("state") == "discovery_planner_terminal_failure")
-    latest_event = events[-1].get("event") if events else None
+    latest_event_row = events[-1] if events else None
+    latest_event = (latest_event_row.get("event")
+                    if isinstance(latest_event_row, dict) else None)
     active_planner_turn = bool(
         lock_held and latest_event == "planner_started"
         and isinstance(planning, dict)
-        and not isinstance(pending, dict) and not isinstance(inflight, dict))
+        and not isinstance(pending, dict) and not isinstance(inflight, dict)
+        and (latest_iteration_status != "planner_refused"
+             or _discovery_planner_successor_binding(
+                 state, planning, events, latest_iteration,
+                 campaign_id, now)))
     active_critic_turn = bool(
         lock_held and latest_event == "critic_started"
         and isinstance(pending, dict)
         and pending.get("phase") == "critic_pending"
-        and not isinstance(inflight, dict))
+        and not isinstance(inflight, dict)
+        and (latest_iteration_status != "planner_refused"
+             or _discovery_pending_successor_binding(
+                 state, pending, events, latest_iteration,
+                 campaign_id, now)))
     latest_terminal_turn = (latest_iteration.get("turn")
                             if isinstance(latest_iteration, dict) else None)
     current_inflight_row = (inflight.get("row")
@@ -7037,13 +7344,21 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         and not isinstance(current_pending_turn, bool)
         and isinstance(latest_terminal_turn, int)
         and not isinstance(latest_terminal_turn, bool)
-        and current_pending_turn > latest_terminal_turn)
+        and current_pending_turn > latest_terminal_turn
+        and (latest_iteration_status != "planner_refused"
+             or _discovery_pending_successor_binding(
+                 state, pending, events, latest_iteration,
+                 campaign_id, now)))
     active_inflight_new_turn = bool(
         isinstance(current_inflight_turn, int)
         and not isinstance(current_inflight_turn, bool)
         and isinstance(latest_terminal_turn, int)
         and not isinstance(latest_terminal_turn, bool)
-        and current_inflight_turn > latest_terminal_turn)
+        and current_inflight_turn > latest_terminal_turn
+        and (latest_iteration_status != "planner_refused"
+             or _discovery_inflight_successor_binding(
+                 state, inflight, events, latest_iteration,
+                 campaign_id, now)))
     active_new_turn = (active_planner_turn or active_critic_turn
                        or active_pending_new_turn
                        or active_inflight_new_turn)
@@ -7346,8 +7661,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 stage == "correctness_validation"
                 or isinstance(execution_observation, dict)),
         }
-    elif (validation_event == "planner_refused"
-          or latest_iteration_status == "planner_refused"):
+    elif (not active_new_turn and (
+            validation_event == "planner_refused"
+            or latest_iteration_status == "planner_refused")):
         pipeline["planner"]["state"] = "complete"
         pipeline["planner_validation"]["state"] = "failed"
         pipeline["next_hypothesis"]["state"] = (
@@ -7821,6 +8137,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         })
     prior_terminal = None
     prior_terminals = []
+    if active_new_turn:
+        prior_terminals.extend(_discovery_planner_refusal_terminals(
+            state, events, campaign_id, turn))
     historical_refusal_observations = [
         observation for observation in refusal_history_observations
         if (not isinstance(observation.get("turn"), int)
@@ -7870,7 +8189,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                           ", scientific budget unspent"),
                 "detail": terminal["detail"],
             })
-        prior_terminal = prior_terminals[-1] if prior_terminals else None
+    if prior_terminals:
+        prior_terminals.sort(key=lambda row: row["ts"])
+        prior_terminal = prior_terminals[-1]
     transitions.sort(key=lambda row: row["ts"])
     stage_started_at = pipeline[stage].get("started_at")
     if not stage_started_at:
