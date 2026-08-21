@@ -4023,7 +4023,15 @@ _DISCOVERY_V26_GRAPH_KEYS = {
     "device_reservation", "claim_journal", "graph_sha256",
 }
 _DISCOVERY_V27_GRAPH_KEYS = (
-    _DISCOVERY_V26_GRAPH_KEYS | {"attribution_expectation_erratum"})
+    _DISCOVERY_V26_GRAPH_KEYS | {
+        "attribution_expectation_erratum", "frozen_production_comparator"})
+_DISCOVERY_V27_ERRATUM_FILE_SHA256 = (
+    "22f23f769bd7e10e24d2c642846fa0b739c5ff03b457c56e374d941f01b60a98")
+_DISCOVERY_V27_ERRATUM_SHA256 = (
+    "21f5f1c25c337275293a0c701e23c9da8c5efb835c6803f4c58daa789f2f0b6b")
+_DISCOVERY_V27_ERRATUM_REASON = (
+    "exact dispatch cuda-mmvq-q5-onewave-continuation-v1.anchor.0."
+    "candidate-onewave count/geometry mismatch")
 _DISCOVERY_V27_ERRATUM_SOURCE_KEYS = {
     "schema", "erratum_schema", "erratum_sha256", "file_sha256",
     "operation_key", "attribution_refusal_file_sha256",
@@ -4044,6 +4052,30 @@ _DISCOVERY_V27_ERRATUM_KEYS = {
     "scientific_budget_spent", "do_not_repeat", "replay_authorized",
     "replacement_disposition", "resolution", "erratum_sha256",
 }
+_DISCOVERY_V27_CARRY_KEYS = {
+    "schema", "predecessor_state_file_sha256",
+    "predecessor_journal_file_sha256",
+    "predecessor_state_semantic_sha256", "portfolio_outcomes",
+    "candidate_semantic_sha256", "candidate_patch_sha256",
+    "cross_campaign_candidate_sha256", "attribution_expectation_erratum",
+    "carry_forward_sha256",
+}
+_DISCOVERY_V27_CARRY_OUTCOMES = {
+    "akh-v2-q5-type-specific-dequant": "nominated",
+    "akh-v2-q8-quantizer-new-mechanism": "retire",
+    "akh-v2-fa-gqa7-pair-tail": "bounded_authoring_skip",
+    "akh-v2-rms-direct-load-reduction": "bounded_authoring_skip",
+}
+_DISCOVERY_V27_PREDECESSOR = {
+    "predecessor_state_file_sha256":
+        "7ce6e5561572390e0a1a31ff8a059be3b68c8cfc809a9233c2e22a8ca730ef3c",
+    "predecessor_journal_file_sha256":
+        "a715dbbf8a8e089ea9e356339ceaf8f007bf6191ee0ea699d445c1560ddc5b69",
+    "predecessor_state_semantic_sha256":
+        "9d2d58bfa0d7df68107529c5e29b37c978d53efd78803537eb709ffba37ffd64",
+}
+_DISCOVERY_V27_COMPARATOR_SOURCE_KEYS = {
+    "schema", "file_sha256", "receipt_sha256"}
 _DISCOVERY_V26_PREAUTHORED_GRAPH_KEYS = {
     "schema", "carrier_sha256", "file_sha256", "hypothesis_id",
     "template_id", "patch_sha256", "source_backed_diff_sha256",
@@ -4196,6 +4228,7 @@ def _discovery_v27_erratum(value: object) -> bool:
             or value.get("attribution_refusal_file_sha256") !=
                "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86"
             or value.get("classification") != "attribution_route_falsified"
+            or value.get("reason") != _DISCOVERY_V27_ERRATUM_REASON
             or value.get("scientific_budget_spent") is not False
             or value.get("do_not_repeat") is not False
             or value.get("replay_authorized") is not True
@@ -4204,8 +4237,8 @@ def _discovery_v27_erratum(value: object) -> bool:
             or value.get("resolution") != "unresolved_retry_eligible"
             or value.get("preserved_evidence") !=
                ["source_manifest", "governed_correctness"]
-            or value.get("erratum_sha256") !=
-               _discovery_controller_state_hash({
+            or value.get("erratum_sha256") != _DISCOVERY_V27_ERRATUM_SHA256
+            or value.get("erratum_sha256") != _discovery_content_hash({
                    key: item for key, item in value.items()
                    if key != "erratum_sha256"})):
         return False
@@ -4319,6 +4352,37 @@ def _discovery_v27_erratum(value: object) -> bool:
         "candidate_hip_library_sha256", "anchor_hip_library_sha256",
         "profiler_trace_sha256")) and bool(re.fullmatch(
             r"[0-9a-f]{40}", str(value.get("candidate_source_commit"))))
+
+
+def _discovery_v27_carry_forward(value: object,
+                                 erratum: object) -> bool:
+    """Validate the exact immutable v2 predecessor authority consumed by v27."""
+    if (not isinstance(value, dict) or set(value) != _DISCOVERY_V27_CARRY_KEYS
+            or value.get("schema") !=
+               "epyc.autokernel.discovery_carry_forward.v2"
+            or value.get("portfolio_outcomes") !=
+               _DISCOVERY_V27_CARRY_OUTCOMES
+            or any(value.get(key) != digest for key, digest in
+                   _DISCOVERY_V27_PREDECESSOR.items())
+            or value.get("attribution_expectation_erratum") != erratum
+            or value.get("carry_forward_sha256") !=
+               _discovery_content_hash({
+                   key: item for key, item in value.items()
+                   if key != "carry_forward_sha256"})
+            or any(not _discovery_sha256(value.get(key)) for key in (
+                "predecessor_state_file_sha256",
+                "predecessor_journal_file_sha256",
+                "predecessor_state_semantic_sha256"))):
+        return False
+    replay_keys = (
+        "candidate_semantic_sha256", "candidate_patch_sha256",
+        "cross_campaign_candidate_sha256")
+    if any(not isinstance(value.get(key), list)
+           or value[key] != sorted(set(value[key]))
+           or any(not _discovery_sha256(item) for item in value[key])
+           for key in replay_keys):
+        return False
+    return tuple(len(value[key]) for key in replay_keys) == (13, 8, 8)
 
 
 def _discovery_product_contract(
@@ -4438,15 +4502,40 @@ def _discovery_product_contract(
                carrier["patch"].get("source_backed_sha256")):
         return None
     erratum = None
+    carry_forward = None
+    frozen_comparator = None
     if q5_erratum_required:
         erratum_row = _discovery_v26_input(
             inputs.get("q5_lds0_attribution_erratum"), bundle,
             max_bytes=2 * 1024 * 1024)
-        if erratum_row is None:
+        carry_row = _discovery_v26_input(
+            inputs.get("carry_forward"), bundle,
+            max_bytes=4 * 1024 * 1024)
+        comparator_row = _discovery_v26_input(
+            inputs.get("frozen_production_comparator"), bundle,
+            max_bytes=2 * 1024 * 1024)
+        if (erratum_row is None or carry_row is None or comparator_row is None
+                or inputs["q5_lds0_attribution_erratum"].get("sha256") !=
+                   _DISCOVERY_V27_ERRATUM_FILE_SHA256):
             return None
         erratum = _strict_json_bytes(erratum_row[1])
-        if (not _discovery_v27_erratum(erratum)
-                or erratum_row[1] != _canonical_json_bytes(erratum) + b"\n"):
+        if not _discovery_v27_erratum(erratum):
+            return None
+        carry_forward = _strict_json_bytes(carry_row[1])
+        if not _discovery_v27_carry_forward(carry_forward, erratum):
+            return None
+        frozen_comparator = _strict_json_bytes(comparator_row[1])
+        if not _discovery_v27_frozen_comparator(
+                frozen_comparator,
+                model_sha256=inputs["model"]["sha256"],
+                workload_sha256=inputs["workload"]["sha256"]):
+            return None
+        if (config["production"] != {
+                "path": "/mnt/raid0/llm/llama.cpp",
+                "branch": "production-consolidated-v9",
+                "head": _DISCOVERY_V27_PRODUCTION_COMMIT}
+                or config["instrument"].get("production_ancestor") !=
+                   _DISCOVERY_V27_PRODUCTION_COMMIT):
             return None
     graph_path = _safe_bundle_path(
         str(Path(config["controller"]["state_root"]) / "deployment-graph.json"),
@@ -4583,6 +4672,20 @@ def _discovery_product_contract(
                     or source.get("candidate_semantic_sha256") !=
                        erratum.get("candidate_semantic_sha256")):
                 return None
+            if graph.get("carry_forward_sha256") != carry_forward.get(
+                    "carry_forward_sha256"):
+                return None
+            comparator_source = graph.get("frozen_production_comparator")
+            if (not isinstance(comparator_source, dict)
+                    or set(comparator_source) !=
+                       _DISCOVERY_V27_COMPARATOR_SOURCE_KEYS
+                    or comparator_source.get("schema") !=
+                       "epyc.autokernel.frozen_production_comparator_source.v1"
+                    or comparator_source.get("file_sha256") !=
+                       inputs["frozen_production_comparator"]["sha256"]
+                    or comparator_source.get("receipt_sha256") !=
+                       frozen_comparator.get("receipt_sha256")):
+                return None
     module_hashes = (execution_module_sha256
                      if isinstance(execution_module_sha256, dict)
                      else None)
@@ -4619,6 +4722,9 @@ def _discovery_product_contract(
         "deployment_identity_sha256": config["config_sha256"],
         "planner_context_file_sha256":
             config["planner_context"]["sha256"],
+        "model_sha256": inputs["model"]["sha256"],
+        "workload_sha256": inputs["workload"]["sha256"],
+        "runtime_config_sha256": inputs["runtime_config"]["sha256"],
         "planner_context_sha256": _discovery_content_hash({
             "planner_context_sha256": planner["context_sha256"],
             "admission_policy_sha256": admission["policy_sha256"],
@@ -4645,8 +4751,9 @@ def _discovery_product_contract(
             if isinstance(carrier.get("historical_candidate"), dict) else None),
         **({
             "q5_erratum": erratum,
-            "carry_forward_schema":
-                "epyc.autokernel.discovery_carry_forward.v2",
+            "carry_forward": carry_forward,
+            "carry_forward_schema": carry_forward["schema"],
+            "frozen_production_comparator": frozen_comparator,
         } if q5_erratum_required else {}),
     }
 
@@ -4683,7 +4790,8 @@ def _discovery_v27_contract(config_path: Path, config: object,
             "model", "workload", "runtime_config", "admission_policy",
             "hypothesis_portfolio", "hypothesis_evidence_manifest",
             "hypothesis_portfolio_contract", "preauthored_continuation",
-            "q5_lds0_attribution_erratum"},
+            "q5_lds0_attribution_erratum", "carry_forward",
+            "frozen_production_comparator"},
         graph_keys=_DISCOVERY_V27_GRAPH_KEYS,
         execution_module_sha256=_DISCOVERY_V27_EXECUTION_MODULE_SHA256,
         producer_commit=_DISCOVERY_V27_PRODUCER_COMMIT,
@@ -5159,16 +5267,255 @@ _DISCOVERY_BUILD_IDENTITY_KEYS = {
     "source_commit", "source_sha256", "binary_sha256",
     "hip_library_sha256", "config_sha256", "linkage_sha256",
 }
+_DISCOVERY_V27_POLICY_KEYS = {
+    "schema", "manifest_sha256", "model_sha256", "workload_sha256",
+    "runtime_config_sha256", "candidate_build_identity",
+    "anchor_build_identity", "correctness_argv", "correctness_parser_id",
+    "correctness_backend", "correctness_op", "expected_correctness_cases",
+    "correctness_invocations", "candidate_rocprof_argv",
+    "anchor_rocprof_argv", "profiler_trace_schema_id",
+    "expected_candidate_profiler_dispatch_rows",
+    "expected_anchor_profiler_dispatch_rows", "profiler_transport_policy",
+    "attribution_arm_order_seed_sha256", "attribution_arm_order",
+    "correctness_inputs", "candidate_rocprof_inputs",
+    "anchor_rocprof_inputs", "required_correctness_argv_paths",
+    "required_candidate_rocprof_argv_paths",
+    "required_anchor_rocprof_argv_paths", "execution_cwd",
+    "correctness_environment", "candidate_rocprof_environment",
+    "anchor_rocprof_environment", "shared_runtime", "dispatch",
+}
 
 
 def _discovery_v27_build_identity(value: object) -> bool:
     return bool(
         isinstance(value, dict) and set(value) == _DISCOVERY_BUILD_IDENTITY_KEYS
         and isinstance(value.get("source_commit"), str)
-        and bool(value["source_commit"])
+        and re.fullmatch(r"[0-9a-f]{40}", value["source_commit"]) is not None
         and all(_discovery_sha256(value.get(key)) for key in (
             "source_sha256", "binary_sha256", "hip_library_sha256",
             "config_sha256", "linkage_sha256")))
+
+
+def _discovery_v27_argv(value: object) -> bool:
+    return bool(
+        isinstance(value, list) and value
+        and all(isinstance(item, str) and item and "\0" not in item
+                and re.search(r"[;|&`\n\r]|\$\(", item) is None
+                for item in value)
+        and Path(value[0]).is_absolute())
+
+
+def _discovery_v27_bound_input(value: object) -> bool:
+    return bool(
+        isinstance(value, dict) and set(value) == {"role", "path", "sha256"}
+        and isinstance(value.get("role"), str) and value["role"]
+        and isinstance(value.get("path"), str)
+        and Path(value["path"]).is_absolute()
+        and ".." not in Path(value["path"]).parts
+        and _discovery_sha256(value.get("sha256")))
+
+
+def _discovery_v27_environment(value: object) -> bool:
+    if (not isinstance(value, list) or not value
+            or any(not isinstance(row, list) or len(row) != 2
+                   or any(not isinstance(item, str) or "\0" in item
+                          for item in row)
+                   or not row[0] for row in value)):
+        return False
+    return (len({row[0] for row in value}) == len(value)
+            and "LD_LIBRARY_PATH" in {row[0] for row in value})
+
+
+def _discovery_v27_dispatch(value: object) -> bool:
+    keys = {
+        "candidate_exact", "anchor_exact", "candidate_structural_exact",
+        "anchor_structural_exact", "candidate_forbidden", "anchor_forbidden",
+        "invariants"}
+    if not isinstance(value, dict) or set(value) != keys:
+        return False
+    exact_keys = {"signature", "kernel_pattern", "calls", "grid",
+                  "workgroup", "lds_bytes", "blocks_per_call"}
+    simple_keys = {"signature", "kernel_pattern"}
+    signatures: list[str] = []
+    for name in ("candidate_exact", "anchor_exact",
+                 "candidate_structural_exact", "anchor_structural_exact"):
+        rows = value[name]
+        if (not isinstance(rows, list)
+                or name in {"candidate_exact", "anchor_exact"} and not rows):
+            return False
+        for row in rows:
+            if (not isinstance(row, dict) or set(row) != exact_keys
+                    or not isinstance(row.get("signature"), str)
+                    or not row["signature"]
+                    or not isinstance(row.get("kernel_pattern"), str)
+                    or any(type(row.get(key)) is not int
+                           for key in ("calls", "grid", "workgroup",
+                                       "lds_bytes", "blocks_per_call"))
+                    or min(row["calls"], row["grid"], row["workgroup"],
+                           row["blocks_per_call"]) < 1
+                    or row["lds_bytes"] < 0):
+                return False
+            try:
+                re.compile(row["kernel_pattern"])
+            except re.error:
+                return False
+            signatures.append(row["signature"])
+    for name in ("candidate_forbidden", "anchor_forbidden", "invariants"):
+        rows = value[name]
+        if not isinstance(rows, list):
+            return False
+        for row in rows:
+            if (not isinstance(row, dict) or set(row) != simple_keys
+                    or not isinstance(row.get("signature"), str)
+                    or not row["signature"]
+                    or not isinstance(row.get("kernel_pattern"), str)):
+                return False
+            try:
+                re.compile(row["kernel_pattern"])
+            except re.error:
+                return False
+            signatures.append(row["signature"])
+    return len(signatures) == len(set(signatures))
+
+
+def _discovery_v27_execution_policy(value: object, *, manifest_sha256: str,
+                                    build: dict, contract: dict) -> bool:
+    if (not isinstance(value, dict) or set(value) != _DISCOVERY_V27_POLICY_KEYS
+            or value.get("schema") !=
+               "epyc.autokernel.gpu_source_execution_policy.v2"
+            or value.get("manifest_sha256") != manifest_sha256
+            or value.get("model_sha256") != contract.get("model_sha256")
+            or value.get("workload_sha256") != contract.get("workload_sha256")
+            or value.get("runtime_config_sha256") !=
+               contract.get("runtime_config_sha256")
+            or value.get("candidate_build_identity") !=
+               build.get("candidate_identity")
+            or value.get("anchor_build_identity") !=
+               build.get("anchor_identity")
+            or value.get("correctness_parser_id") !=
+               "ak.t0.backend_ops_console/v1"
+            or not isinstance(value.get("correctness_backend"), str)
+            or not value["correctness_backend"]
+            or not isinstance(value.get("correctness_op"), str)
+            or not value["correctness_op"]
+            or type(value.get("expected_correctness_cases")) is not int
+            or value["expected_correctness_cases"] < 1
+            or not all(_discovery_v27_argv(value.get(key)) for key in (
+                "correctness_argv", "candidate_rocprof_argv",
+                "anchor_rocprof_argv"))
+            or value.get("attribution_arm_order") not in (
+                ["candidate", "anchor"], ["anchor", "candidate"])
+            or not _discovery_sha256(
+                value.get("attribution_arm_order_seed_sha256"))
+            or not _discovery_v27_dispatch(value.get("dispatch"))):
+        return False
+    trace = value.get("profiler_trace_schema_id")
+    candidate_rows = value.get("expected_candidate_profiler_dispatch_rows")
+    anchor_rows = value.get("expected_anchor_profiler_dispatch_rows")
+    if trace == "rocprof-v3-kernel-trace-csv-v1":
+        if (value.get("profiler_transport_policy") !=
+                "require-zero-exit-v1"
+                or any(type(item) is not int or item < 1
+                       for item in (candidate_rows, anchor_rows))):
+            return False
+    elif trace == "rocprof-v1-timestamps-v1":
+        if (value.get("profiler_transport_policy") != "require-zero-exit"
+                or candidate_rows is not None or anchor_rows is not None):
+            return False
+    else:
+        return False
+    for key in ("correctness_inputs", "candidate_rocprof_inputs",
+                "anchor_rocprof_inputs"):
+        rows = value.get(key)
+        if (not isinstance(rows, list) or not rows
+                or any(not _discovery_v27_bound_input(row) for row in rows)
+                or not any(row["role"] == "executable"
+                           and row["path"] == value[
+                               {"correctness_inputs": "correctness_argv",
+                                "candidate_rocprof_inputs":
+                                    "candidate_rocprof_argv",
+                                "anchor_rocprof_inputs":
+                                    "anchor_rocprof_argv"}[key]][0]
+                           for row in rows)):
+            return False
+    for key, argv_key in (
+            ("required_correctness_argv_paths", "correctness_argv"),
+            ("required_candidate_rocprof_argv_paths", "candidate_rocprof_argv"),
+            ("required_anchor_rocprof_argv_paths", "anchor_rocprof_argv")):
+        paths = value.get(key)
+        if (not isinstance(paths, list) or not paths
+                or len(paths) != len(set(paths))
+                or any(not isinstance(path, str) or not Path(path).is_absolute()
+                       or path not in value[argv_key] for path in paths)):
+            return False
+    if (not isinstance(value.get("execution_cwd"), str)
+            or not Path(value["execution_cwd"]).is_absolute()
+            or not all(_discovery_v27_environment(value.get(key)) for key in (
+                "correctness_environment", "candidate_rocprof_environment",
+                "anchor_rocprof_environment"))):
+        return False
+    shared = value.get("shared_runtime")
+    if (shared is not None
+            and (not isinstance(shared, dict)
+                 or set(shared) != {"measurement_binary", "runtime_receipt",
+                                    "anchor_hip_library",
+                                    "candidate_hip_library"}
+                 or any(not _discovery_v27_bound_input(row)
+                        for row in shared.values()))):
+        return False
+    invocations = value.get("correctness_invocations")
+    if not isinstance(invocations, list):
+        return False
+    invocation_ids: list[str] = []
+    base_keys = {"invocation_id", "argv", "backend", "op", "case_set",
+                 "expected_cases", "required_cases"}
+    for row in invocations:
+        if (not isinstance(row, dict)
+                or set(row) not in (base_keys,
+                                    base_keys | {"environment_overrides"})
+                or not isinstance(row.get("invocation_id"), str)
+                or not row["invocation_id"]
+                or not _discovery_v27_argv(row.get("argv"))
+                or not all(isinstance(row.get(key), str) and row[key]
+                           for key in ("backend", "op", "case_set"))
+                or type(row.get("expected_cases")) is not int
+                or row["expected_cases"] < 1
+                or not isinstance(row.get("required_cases"), list)
+                or "environment_overrides" in row
+                and not isinstance(row["environment_overrides"], list)):
+            return False
+        invocation_ids.append(row["invocation_id"])
+    return len(invocation_ids) == len(set(invocation_ids))
+
+
+def _discovery_v27_build_projection(value: object, contract: dict) -> bool:
+    build_keys = ({"candidate_identity", "anchor_identity"}
+                  | _DISCOVERY_POSTBUILD_PATH_FIELDS
+                  | _DISCOVERY_POSTBUILD_SCALAR_FIELDS)
+    if (not isinstance(value, dict) or set(value) != build_keys
+            or not _discovery_v27_build_identity(
+                value.get("candidate_identity"))
+            or not _discovery_v27_build_identity(value.get("anchor_identity"))
+            or value.get("candidate_identity") == value.get("anchor_identity")
+            or any(not _discovery_sha256(value.get(key))
+                   for key in _DISCOVERY_POSTBUILD_SCALAR_FIELDS)):
+        return False
+    bundle = Path(str(contract.get("bundle_root", "")))
+    directory_fields = {
+        "anchor_build", "candidate_build", "common_loader_dir",
+        "anchor_loader_dir", "candidate_loader_dir"}
+    for key in _DISCOVERY_POSTBUILD_PATH_FIELDS:
+        path = _safe_bundle_path(value.get(key), bundle)
+        if path is None:
+            return False
+        try:
+            if (path.is_symlink()
+                    or key in directory_fields and not path.is_dir()
+                    or key not in directory_fields and not path.is_file()):
+                return False
+        except OSError:
+            return False
+    return True
 
 
 def _discovery_v27_postbuild_resource_wait(
@@ -5307,9 +5654,6 @@ def _discovery_v27_postbuild_resource_wait(
         "manifest_sha256", "build", "receipt_sha256",
     }
     build = postbuild.get("build") if isinstance(postbuild, dict) else None
-    build_keys = ({"candidate_identity", "anchor_identity"}
-                  | _DISCOVERY_POSTBUILD_PATH_FIELDS
-                  | _DISCOVERY_POSTBUILD_SCALAR_FIELDS)
     if (not isinstance(postbuild, dict) or set(postbuild) != postbuild_keys
             or postbuild.get("schema") !=
                "epyc.autokernel.gpu_source_postbuild_checkpoint.v1"
@@ -5322,29 +5666,21 @@ def _discovery_v27_postbuild_resource_wait(
                _discovery_controller_state_hash({
                    key: value for key, value in postbuild.items()
                    if key != "receipt_sha256"})
-            or not isinstance(build, dict) or set(build) != build_keys
+            or not _discovery_v27_build_projection(build, contract)
             or build.get("operation_key") != operation_key
             or build.get("build_key") != stage["build_key"]
             or build.get("materialization_sha256") !=
                stage["materialization_sha256"]
-            or not _discovery_v27_build_identity(
-                build.get("candidate_identity"))
-            or not _discovery_v27_build_identity(build.get("anchor_identity"))
-            or build.get("candidate_identity") == build.get("anchor_identity")):
+            ):
         return None
     policy_path = operation_root / "evidence-policy.json"
     policy_snapshot = _owned_public_snapshot(
         policy_path, max_bytes=4 * 1024 * 1024)
     policy = (_strict_json_bytes(policy_snapshot[0])
               if policy_snapshot is not None else None)
-    if (not isinstance(policy, dict)
-            or policy.get("schema") !=
-               "epyc.autokernel.gpu_source_execution_policy.v2"
-            or policy.get("manifest_sha256") != manifest_sha256
-            or policy.get("candidate_build_identity") !=
-               build["candidate_identity"]
-            or policy.get("anchor_build_identity") !=
-               build["anchor_identity"]):
+    if not _discovery_v27_execution_policy(
+            policy, manifest_sha256=manifest_sha256,
+            build=build, contract=contract):
         return None
     return {
         "kind": "postbuild_resource_wait",
@@ -5355,6 +5691,438 @@ def _discovery_v27_postbuild_resource_wait(
         "materialization_sha256": stage["materialization_sha256"],
         "completed_builds_preserved": True,
         "evidence_policy_bound": True,
+    }
+
+
+def _discovery_v27_prebuild_resource_wait(
+        row: object, contract: dict) -> dict | None:
+    """Admit only the exact legacy pre-build lease with no post-build traces."""
+    if not isinstance(row, dict):
+        return None
+    operation_key = row.get("operation_key")
+    lease = row.get("lease")
+    common = {
+        "admitted", "phase", "reason", "operation_key", "promotion_claim",
+        "mode", "device_id", "inference_window_lock", "model_sha256",
+        "load_admission"}
+    if not isinstance(lease, dict):
+        return None
+    reason = lease.get("reason")
+    keys = set(common)
+    if isinstance(reason, str) and reason.startswith("foreign_kfd_"):
+        keys.add("foreign_kfd_pids")
+    else:
+        keys.add("detail")
+    if (set(lease) != keys or not _discovery_sha256(operation_key)
+            or lease.get("operation_key") != operation_key
+            or lease.get("admitted") is not False
+            or lease.get("phase") != "prebuild_probe"
+            or lease.get("promotion_claim") is not False
+            or lease.get("mode") not in {"cold_overlap", "cold_serialized"}
+            or reason not in {
+                "device_busy", "foreign_kfd_busy",
+                "foreign_kfd_inventory_invalid",
+                "foreign_kfd_inventory_unreadable"}
+            or not isinstance(lease.get("device_id"), str)
+            or not lease["device_id"]
+            or not isinstance(lease.get("inference_window_lock"), str)
+            or not lease["inference_window_lock"]
+            or lease.get("model_sha256") != contract.get("model_sha256")
+            or not isinstance(lease.get("load_admission"), dict)
+            or not lease["load_admission"]):
+        return None
+    if reason.startswith("foreign_kfd_"):
+        pids = lease.get("foreign_kfd_pids")
+        if (not isinstance(pids, list) or pids != sorted(set(pids))
+                or any(type(pid) is not int or pid <= 0 for pid in pids)
+                or (reason == "foreign_kfd_busy") != bool(pids)):
+            return None
+    elif not isinstance(lease.get("detail"), str):
+        return None
+    bundle = Path(str(contract.get("bundle_root", "")))
+    operations_root = _safe_bundle_path(contract.get("operations_root"), bundle)
+    if operations_root is None:
+        return None
+    operation_root = operations_root / operation_key
+    forbidden = (
+        operation_root / "postbuild-checkpoint.json",
+        operation_root / "evidence-policy.json",
+        operation_root / "resource-waits")
+    try:
+        if any(path.exists() or path.is_symlink() for path in forbidden):
+            return None
+    except OSError:
+        return None
+    return {
+        "kind": "prebuild_resource_wait", "operation_key": operation_key,
+        "reason": reason, "completed_builds_preserved": False,
+        "evidence_policy_bound": False,
+    }
+
+
+_DISCOVERY_V27_CUMULATIVE_SCHEMA = (
+    "epyc.autokernel.cumulative_performance.v1")
+_DISCOVERY_V27_PRODUCTION_COMMIT = (
+    "0db32c06e3e550065b78311a6031ef3dd2c4f27c")
+_DISCOVERY_V27_COMPARATOR_KEYS = {
+    "schema", "branch", "commit", "build_identity",
+    "build_receipt_sha256", "linkage_receipt_sha256",
+    "runtime_receipt_sha256", "runtime_snapshot_sha256",
+    "measurement_receipt_sha256",
+    "model_sha256", "workload_sha256", "frame_sha256", "graphs_mode",
+    "metric", "direction", "measurement_protocol_sha256",
+    "receipt_sha256"}
+
+
+def _discovery_v27_frozen_comparator(
+        value: object, *, model_sha256: str, workload_sha256: str) -> bool:
+    return bool(
+        isinstance(value, dict) and set(value) == _DISCOVERY_V27_COMPARATOR_KEYS
+        and value.get("schema") ==
+            "epyc.autokernel.frozen_production_comparator.v1"
+        and value.get("branch") == "production-consolidated-v9"
+        and value.get("commit") == _DISCOVERY_V27_PRODUCTION_COMMIT
+        and _discovery_v27_build_identity(value.get("build_identity"))
+        and value["build_identity"].get("source_commit") ==
+            _DISCOVERY_V27_PRODUCTION_COMMIT
+        and all(_discovery_sha256(value.get(key)) for key in (
+            "build_receipt_sha256", "linkage_receipt_sha256",
+            "runtime_receipt_sha256", "runtime_snapshot_sha256",
+            "measurement_receipt_sha256",
+            "model_sha256", "workload_sha256", "frame_sha256",
+            "measurement_protocol_sha256"))
+        and value.get("model_sha256") == model_sha256
+        and value.get("workload_sha256") == workload_sha256
+        and value.get("graphs_mode") in {"graphs_off", "graphs_on"}
+        and value.get("metric") == "tokens_per_second"
+        and value.get("direction") == "higher_is_better"
+        and value.get("receipt_sha256") == _discovery_content_hash({
+            key: item for key, item in value.items()
+            if key != "receipt_sha256"}))
+
+
+def _discovery_v27_performance_unavailable(reason: str) -> dict:
+    return {
+        "available": False,
+        "headline": "Cumulative performance vs frozen production unavailable",
+        "cumulative_vs_frozen_production": None,
+        "incremental_vs_prior_stack": None,
+        "promotion_eligible": False,
+        "promotion_reason": reason,
+    }
+
+
+def _discovery_v27_composition_build_binding(value: object) -> bool:
+    if (not isinstance(value, dict) or set(value) != {
+            "patch_set_sha256", "source_materialization_receipt_sha256",
+            "build_identity", "build_identity_sha256"}
+            or not _discovery_sha256(value.get("patch_set_sha256"))
+            or not _discovery_sha256(
+                value.get("source_materialization_receipt_sha256"))
+            or not _discovery_v27_build_identity(value.get("build_identity"))):
+        return False
+    return value.get("build_identity_sha256") == _discovery_content_hash(
+        value["build_identity"])
+
+
+def _discovery_v27_composition_build_pair(value: object) -> bool:
+    if (not isinstance(value, dict) or set(value) != {
+            "schema", "operation_key", "plan_sha256", "anchor", "candidate",
+            "pair_sha256"}
+            or value.get("schema") !=
+               "epyc.autokernel.cumulative_build_pair.v1"
+            or not _discovery_sha256(value.get("operation_key"))
+            or not _discovery_sha256(value.get("plan_sha256"))
+            or not _discovery_v27_composition_build_binding(
+                value.get("anchor"))
+            or not _discovery_v27_composition_build_binding(
+                value.get("candidate"))
+            or value["anchor"]["build_identity_sha256"] ==
+               value["candidate"]["build_identity_sha256"]):
+        return False
+    return value.get("pair_sha256") == _discovery_content_hash({
+        key: item for key, item in value.items() if key != "pair_sha256"})
+
+
+_DISCOVERY_V27_COMPOSITION_TERMINAL_KEYS = {
+    "schema", "operation_key", "plan_sha256", "plan", "lever_sha256",
+    "cross_campaign_candidate_sha256", "isolated_result_sha256s",
+    "disposition", "scientific_budget_spent", "build_pair", "correctness",
+    "comparison", "cumulative_performance", "cumulative_performance_ref",
+    "correctness_result_sha256", "comparison_result_sha256",
+    "cumulative_performance_result_sha256", "promotion_eligible",
+    "promotion_reason", "admitted_authority_sha256", "reason_code",
+    "infrastructure_receipt_sha256", "attribution_receipt_sha256",
+    "terminal_sha256"}
+_DISCOVERY_V27_TERMINAL_CORE_EXCLUDED = {
+    "cumulative_performance", "cumulative_performance_ref",
+    "cumulative_performance_result_sha256", "terminal_sha256"}
+
+
+def _discovery_v27_terminal_core_sha256(value: object) -> str | None:
+    """Hash the producer's non-circular terminal decision-core projection."""
+    if (not isinstance(value, dict)
+            or set(value) != _DISCOVERY_V27_COMPOSITION_TERMINAL_KEYS
+            or value.get("schema") !=
+               "epyc.autokernel.cumulative_composition_terminal.v3"
+            or value.get("terminal_sha256") != _discovery_content_hash({
+                key: item for key, item in value.items()
+                if key != "terminal_sha256"})
+            or any(not _discovery_sha256(value.get(key)) for key in (
+                "operation_key", "plan_sha256", "lever_sha256",
+                "cross_campaign_candidate_sha256"))
+            or not isinstance(value.get("plan"), dict)
+            or value["plan"].get("operation_key") != value["operation_key"]
+            or value["plan"].get("plan_sha256") != value["plan_sha256"]
+            or not isinstance(value.get("isolated_result_sha256s"), list)
+            or len(value["isolated_result_sha256s"]) < 2
+            or value["isolated_result_sha256s"] != list(dict.fromkeys(
+                value["isolated_result_sha256s"]))
+            or any(not _discovery_sha256(item)
+                   for item in value["isolated_result_sha256s"])
+            or not isinstance(value.get("scientific_budget_spent"), bool)
+            or not isinstance(value.get("promotion_eligible"), bool)
+            or not isinstance(value.get("promotion_reason"), str)
+            or not value["promotion_reason"]
+            or not isinstance(value.get("reason_code"), str)
+            or not value["reason_code"]
+            or any(item is not None and not _discovery_sha256(item)
+                   for item in (
+                       value.get("correctness_result_sha256"),
+                       value.get("comparison_result_sha256"),
+                       value.get("cumulative_performance_result_sha256"),
+                       value.get("admitted_authority_sha256"),
+                       value.get("infrastructure_receipt_sha256"),
+                       value.get("attribution_receipt_sha256")))):
+        return None
+    return _discovery_content_hash({
+        key: item for key, item in value.items()
+        if key not in _DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
+
+
+def _discovery_v27_cumulative_performance(
+        binding: object, terminal: object, contract: dict) -> dict:
+    """Project only producer-sealed promotion authority; never infer it."""
+    unavailable = _discovery_v27_performance_unavailable(
+        "producer_authority_unavailable")
+    if (not isinstance(binding, dict)
+            or set(binding) != {"path", "sha256"}
+            or not _discovery_sha256(binding.get("sha256"))):
+        return unavailable
+    bundle = Path(str(contract.get("bundle_root", "")))
+    path = _safe_bundle_path(binding.get("path"), bundle)
+    snapshot = (_owned_public_snapshot(path, max_bytes=4 * 1024 * 1024)
+                if path is not None else None)
+    if (snapshot is None
+            or hashlib.sha256(snapshot[0]).hexdigest() != binding["sha256"]):
+        return unavailable
+    receipt = _strict_json_bytes(snapshot[0])
+    fields = {
+        "operation_key", "plan_sha256", "accepted_authority_sha256",
+        "accepted_patch_set_sha256", "build_pair_sha256",
+        "correctness_result_sha256",
+        "incremental_comparison_result_sha256", "frozen_production",
+        "model_sha256", "workload_sha256", "runtime_config_sha256",
+        "protocol_frame_sha256", "metric", "metric_direction",
+        "incremental_exact_route_effect_fraction",
+        "incremental_graphs_off_effect_fraction",
+        "incremental_graphs_on_effect_fraction",
+        "cumulative_graphs_off_effect_fraction",
+        "cumulative_graphs_on_effect_fraction",
+        "incremental_graphs_off_receipt_sha256",
+        "incremental_graphs_on_receipt_sha256",
+        "production_graphs_off_receipt_sha256",
+        "production_graphs_on_receipt_sha256",
+        "incremental_graphs_off_frame_sha256",
+        "incremental_graphs_on_frame_sha256",
+        "production_graphs_off_frame_sha256",
+        "production_graphs_on_frame_sha256",
+        "cumulative_classification", "promotion_eligible",
+        "promotion_reason", "composition_terminal_sha256", "result_sha256"}
+    keys = fields | {"schema", "authority", "promotion_authority"}
+    if (not isinstance(receipt, dict) or set(receipt) != keys
+            or receipt.get("schema") != _DISCOVERY_V27_CUMULATIVE_SCHEMA
+            or receipt.get("authority") !=
+               "frozen_production_promotion_gate"
+            or receipt.get("promotion_authority") is not True
+            or any(not _discovery_sha256(receipt.get(key)) for key in (
+                "operation_key", "plan_sha256", "accepted_authority_sha256",
+                "accepted_patch_set_sha256", "build_pair_sha256",
+                "correctness_result_sha256",
+                "incremental_comparison_result_sha256", "model_sha256",
+                "workload_sha256", "runtime_config_sha256",
+                "protocol_frame_sha256",
+                "incremental_graphs_off_receipt_sha256",
+                "incremental_graphs_on_receipt_sha256",
+                "production_graphs_off_receipt_sha256",
+                "production_graphs_on_receipt_sha256",
+                "incremental_graphs_off_frame_sha256",
+                "incremental_graphs_on_frame_sha256",
+                "production_graphs_off_frame_sha256",
+                "production_graphs_on_frame_sha256",
+                "composition_terminal_sha256", "result_sha256"))
+            or receipt.get("result_sha256") != _discovery_content_hash({
+                key: item for key, item in receipt.items()
+                if key != "result_sha256"})):
+        return unavailable
+    static = contract.get("frozen_production_comparator")
+    frozen = receipt.get("frozen_production")
+    frozen_keys = {
+        "schema", "production_commit", "build_identity",
+        "build_identity_sha256", "runtime_snapshot_sha256",
+        "authority_sha256"}
+    if (not isinstance(static, dict)
+            or not isinstance(frozen, dict) or set(frozen) != frozen_keys
+            or frozen.get("schema") !=
+               "epyc.autokernel.frozen_production_authority.v1"
+            or frozen.get("production_commit") !=
+               _DISCOVERY_V27_PRODUCTION_COMMIT
+            or frozen.get("production_commit") != static.get("commit")
+            or frozen.get("build_identity") != static.get("build_identity")
+            or frozen.get("build_identity_sha256") !=
+               _discovery_content_hash(frozen.get("build_identity"))
+            or frozen.get("runtime_snapshot_sha256") !=
+               static.get("runtime_snapshot_sha256")
+            or frozen.get("authority_sha256") != _discovery_content_hash({
+                key: item for key, item in frozen.items()
+                if key != "authority_sha256"})):
+        return unavailable
+    core_sha256 = _discovery_v27_terminal_core_sha256(terminal)
+    if (core_sha256 is None
+            or receipt.get("composition_terminal_sha256") != core_sha256):
+        return unavailable
+    ref = terminal.get("cumulative_performance_ref")
+    build_pair = terminal.get("build_pair")
+    correctness = terminal.get("correctness")
+    comparison = terminal.get("comparison")
+    if (not isinstance(ref, dict)
+            or set(ref) != {"schema", "path", "sha256"}
+            or ref.get("schema") !=
+               "epyc.autokernel.cumulative_performance_ref.v1"
+            or {key: ref.get(key) for key in ("path", "sha256")} != binding
+            or terminal.get("cumulative_performance") != receipt
+            or terminal.get("cumulative_performance_result_sha256") !=
+               receipt["result_sha256"]
+            or terminal.get("promotion_eligible") !=
+               receipt.get("promotion_eligible")
+            or terminal.get("promotion_reason") != receipt.get(
+                "promotion_reason")
+            or terminal.get("operation_key") != receipt["operation_key"]
+            or terminal.get("plan_sha256") != receipt["plan_sha256"]
+            or terminal.get("correctness_result_sha256") !=
+               receipt["correctness_result_sha256"]
+            or terminal.get("comparison_result_sha256") !=
+               receipt["incremental_comparison_result_sha256"]
+            or terminal.get("disposition") == "admitted"
+            and terminal.get("admitted_authority_sha256") !=
+                receipt["accepted_authority_sha256"]
+            or terminal.get("disposition") != "admitted"
+            and terminal.get("admitted_authority_sha256") is not None
+            or not _discovery_v27_composition_build_pair(build_pair)
+            or build_pair.get("operation_key") != receipt["operation_key"]
+            or build_pair.get("plan_sha256") != receipt["plan_sha256"]
+            or build_pair.get("pair_sha256") != receipt["build_pair_sha256"]
+            or build_pair["candidate"].get("patch_set_sha256") !=
+               receipt["accepted_patch_set_sha256"]
+            or not isinstance(correctness, dict)
+            or correctness.get("result_sha256") !=
+               receipt["correctness_result_sha256"]
+            or not isinstance(comparison, dict)
+            or comparison.get("result_sha256") !=
+               receipt["incremental_comparison_result_sha256"]):
+        return unavailable
+    if (receipt.get("model_sha256") != contract.get("model_sha256")
+            or receipt.get("model_sha256") != static.get("model_sha256")
+            or receipt.get("workload_sha256") != contract.get(
+                "workload_sha256")
+            or receipt.get("workload_sha256") != static.get(
+                "workload_sha256")
+            or receipt.get("runtime_config_sha256") != contract.get(
+                "runtime_config_sha256")
+            or receipt.get("metric") != static.get("metric")
+            or receipt.get("metric_direction") != "higher_better"
+            or receipt["incremental_graphs_off_frame_sha256"] !=
+               receipt["production_graphs_off_frame_sha256"]
+            or receipt["incremental_graphs_on_frame_sha256"] !=
+               receipt["production_graphs_on_frame_sha256"]
+            or receipt["incremental_graphs_off_frame_sha256"] ==
+               receipt["incremental_graphs_on_frame_sha256"]):
+        return unavailable
+    numeric_keys = (
+        "incremental_exact_route_effect_fraction",
+        "incremental_graphs_off_effect_fraction",
+        "incremental_graphs_on_effect_fraction",
+        "cumulative_graphs_off_effect_fraction",
+        "cumulative_graphs_on_effect_fraction")
+    if any(isinstance(receipt.get(key), bool)
+           or not isinstance(receipt.get(key), (int, float))
+           or not math.isfinite(float(receipt[key])) for key in numeric_keys):
+        return unavailable
+    incremental = tuple(float(receipt[key]) for key in numeric_keys[:3])
+    cumulative_off = float(receipt[numeric_keys[3]])
+    cumulative_on = float(receipt[numeric_keys[4]])
+    incremental_class = (
+        "candidate" if all(value > 0 for value in incremental)
+        else "screened_out" if all(value <= 0 for value in incremental)
+        else "inconclusive")
+    cumulative_class = (
+        "candidate" if cumulative_off > 0 and cumulative_on > 0
+        else "screened_out" if cumulative_off <= 0 and cumulative_on <= 0
+        else "inconclusive")
+    expected_eligible = (
+        incremental_class == "candidate" and cumulative_class == "candidate")
+    expected_reason = (
+        "incremental_and_cumulative_positive" if expected_eligible
+        else f"incremental_{incremental_class}"
+        if incremental_class != "candidate"
+        else f"cumulative_{cumulative_class}")
+    if (receipt.get("cumulative_classification") != cumulative_class
+            or receipt.get("promotion_eligible") is not expected_eligible
+            or receipt.get("promotion_reason") != expected_reason):
+        return unavailable
+    expected_terminal_reason = (
+        "incremental_admitted_promotion_eligible" if expected_eligible else
+        "incremental_admitted_" + expected_reason)
+    if (terminal.get("disposition") == "admitted"
+            and (terminal.get("scientific_budget_spent") is not True
+                 or not _discovery_sha256(
+                     terminal.get("admitted_authority_sha256"))
+                 or terminal.get("infrastructure_receipt_sha256") is not None
+                 or terminal.get("attribution_receipt_sha256") is not None
+                 or terminal.get("reason_code") !=
+                    expected_terminal_reason)):
+        return unavailable
+    if (terminal.get("disposition") == "incremental_rollback"
+            and (terminal.get("scientific_budget_spent") is not True
+                 or terminal.get("admitted_authority_sha256") is not None
+                 or terminal.get("infrastructure_receipt_sha256") is not None
+                 or terminal.get("attribution_receipt_sha256") is not None
+                 or terminal.get("reason_code") !=
+                    "incremental_" + incremental_class)):
+        return unavailable
+    if (terminal.get("disposition") != "admitted"
+            or not expected_eligible):
+        return _discovery_v27_performance_unavailable(expected_reason)
+    speedup = 1.0 + cumulative_on
+    return {
+        "available": True,
+        "headline": (
+            f"{cumulative_on * 100:+.2f}% cumulative vs frozen production "
+            f"({speedup:.4f}x)"),
+        "cumulative_vs_frozen_production": {
+            "effect_fraction": cumulative_on, "speedup": speedup,
+            "graphs_off_effect_fraction": cumulative_off,
+            "production_branch": static["branch"],
+            "production_commit": static["commit"],
+            "graphs_mode": "graphs_on", "metric": receipt["metric"]},
+        "incremental_vs_prior_stack": {
+            "effect_fraction": incremental[2],
+            "graphs_off_effect_fraction": incremental[1],
+            "exact_route_effect_fraction": incremental[0]},
+        "promotion_eligible": receipt["promotion_eligible"],
+        "promotion_reason": receipt["promotion_reason"],
+        "receipt_sha256": receipt["result_sha256"],
+        "terminal_core_sha256": core_sha256,
     }
 
 
@@ -5573,6 +6341,13 @@ def _discovery_v27_state_contract(state: object,
                    key: value for key, value in state.items()
                    if key != "state_sha256"})):
         return None
+    performance = (
+        _discovery_v27_cumulative_performance(
+            state.get("cumulative_performance"),
+            state.get("cumulative_composition_terminal"), contract)
+        if "cumulative_performance" in state else
+        _discovery_v27_performance_unavailable(
+            "cumulative_authority_missing"))
     pending = state.get("pending")
     row = pending.get("row") if isinstance(pending, dict) else None
     waiting = bool(isinstance(row, dict)
@@ -5580,7 +6355,13 @@ def _discovery_v27_state_contract(state: object,
     has_checkpoint = bool(isinstance(pending, dict)
                           and "resource_wait" in pending)
     resource_wait = None
-    projected_state = state
+    projected_state = {
+        key: value for key, value in state.items()
+        if key not in {
+            "cumulative_performance", "cumulative_composition_terminal"}}
+    projected_state["state_sha256"] = _discovery_controller_state_hash({
+        key: value for key, value in projected_state.items()
+        if key != "state_sha256"})
     if has_checkpoint:
         if not waiting:
             return None
@@ -5591,28 +6372,14 @@ def _discovery_v27_state_contract(state: object,
         clean_pending = {
             key: value for key, value in pending.items()
             if key != "resource_wait"}
-        projected_state = {**state, "pending": clean_pending}
+        projected_state = {**projected_state, "pending": clean_pending}
         projected_state["state_sha256"] = _discovery_controller_state_hash({
             key: value for key, value in projected_state.items()
             if key != "state_sha256"})
     elif waiting:
-        lease = row.get("lease") if isinstance(row, dict) else None
-        # The typed adapter receipt is never optional.  Its identifying fields
-        # without the atomic controller checkpoint are a torn post-build wait,
-        # not a legacy prebuild admission pause.
-        if (isinstance(lease, dict)
-                and (lease.get("phase") == "pre_executor_reservation"
-                     or "stage_receipt_path" in lease
-                     or "stage_receipt_sha256" in lease)):
+        resource_wait = _discovery_v27_prebuild_resource_wait(row, contract)
+        if resource_wait is None:
             return None
-        resource_wait = {
-            "kind": "prebuild_resource_wait",
-            "operation_key": row.get("operation_key"),
-            "reason": (lease.get("reason")
-                       if isinstance(lease, dict) else None),
-            "completed_builds_preserved": False,
-            "evidence_policy_bound": False,
-        }
     projected = _discovery_v26_state_contract(
         projected_state, contract, now=now)
     erratum = contract.get("q5_erratum")
@@ -5632,6 +6399,7 @@ def _discovery_v27_state_contract(state: object,
     return {
         **projected,
         "resource_wait": resource_wait,
+        "performance": performance,
         "annulled_history": history,
         "annulled_scientific_attempts": 1,
         "scientific_budget": {
@@ -10821,6 +11589,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         **({"scientific_budget": v26_state["scientific_budget"]}
            if isinstance(v26_state, dict)
            and "scientific_budget" in v26_state else {}),
+        **({"performance": v26_state["performance"]}
+           if isinstance(v26_state, dict)
+           and isinstance(v26_state.get("performance"), dict) else {}),
         "history": {"abandoned_count": len(abandoned),
                     "retest_count": len(retest),
                     **({"annulled_count": len(annulled_history)}

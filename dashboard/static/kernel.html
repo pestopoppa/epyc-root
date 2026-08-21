@@ -971,6 +971,19 @@ function renderLive(d){
     hero+='<div class="muted" style="margin:8px 0"><b>Historical telemetry visibility loss recorded</b><br>'+esc(historicalVisibility.detail||"producer persisted a visibility incident marker")+'</div>';
   }
   hero+='<div class="live-title">'+esc(phase.label||d.status_message||"State unavailable")+'</div>';
+  const performance=a.performance||{};
+  hero+='<div style="margin:8px 0"><b>Cumulative candidate:</b> '+
+    esc(performance.headline||"Cumulative performance vs frozen production unavailable")+'</div>';
+  if(performance.available){
+    const incremental=performance.incremental_vs_prior_stack||{};
+    hero+='<div class="muted" style="margin-bottom:8px"><b>Latest lever vs prior stack:</b> '+
+      (typeof incremental.effect_fraction==="number"?esc(effectPct({effect_fraction:incremental.effect_fraction})):"unavailable")+
+      ' · <b>Producer promotion eligibility:</b> '+(performance.promotion_eligible?'eligible':'nonpromotable')+
+      ' · '+esc(performance.promotion_reason||"producer reason unavailable")+'</div>';
+  }else{
+    hero+='<div class="muted" style="margin-bottom:8px"><b>Producer promotion eligibility:</b> nonpromotable · '+
+      esc(performance.promotion_reason||"producer authority unavailable")+'</div>';
+  }
   hero+='<div class="live-facts">';
   hero+='<span><b>Stage elapsed:</b> '+esc(elapsedText(phase.elapsed_s))+'</span>';
   hero+='<span><b>'+(experimentalRuntime?'Runtime candidate':'Hypothesis')+':</b> '+esc(experimentalRuntime?(runtime.candidate_id||"—"):(a.hypothesis_id||"—"))+'</span>';

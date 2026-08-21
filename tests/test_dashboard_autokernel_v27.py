@@ -14,107 +14,64 @@ from tests.test_dashboard_autokernel_v26 import V26Fixture, _seal
 
 
 def _q5_erratum() -> dict:
-    value = {key: "1" * 64 for key in server._DISCOVERY_V27_ERRATUM_KEYS}
-    value.update({
-        "schema": "epyc.autokernel.attribution_expectation_erratum.v1",
-        "predecessor_campaign_id": "ak-discovery-03fc1b1230487a35",
-        "operation_key":
-            "fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837",
-        "hypothesis_id": "akh-v2-q5-onewave-preauthored",
-        "candidate_semantic_sha256":
-            "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
-        "candidate_patch_sha256":
-            "f4cc49cd11cdfd93a2d5d2e00e653f503b6a16ce675bfb12c034fbbfae3e7a77",
-        "cross_campaign_candidate_sha256":
-            "d5671a1dc197e5d0d53f34f9c4d25f640e0e410d6917b3099459bc40064581b2",
-        "attribution_refusal_file_sha256":
-            "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86",
-        "classification": "attribution_route_falsified",
-        "candidate_source_commit": "9" * 40,
-        "reason": "candidate LDS expectation was invalid",
-        "invalidated_predecessor_projection": {
-            "turn": 1,
-            "result_file_sha256":
-                "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86",
-            "removed_effects": [
-                "scientific_attempt", "attempted_candidate_identity",
-                "portfolio_skip", "cross_campaign_do_not_repeat"],
-            "history_retained": True,
-        },
-        "stale_candidate_lds_bytes": {
-            "route.0": 512, "route.1": 512, "route.2": 512,
-            "route.3": 256,
-        },
-        "corrected_candidate_lds_bytes": {
-            "route.0": 0, "route.1": 0, "route.2": 0, "route.3": 0,
-        },
-        "compiler_metadata_proof": {
-            "schema": "epyc.autokernel.amdgpu_group_segment_proof.v2",
-            "llvm_objcopy_sha256": "a" * 64,
-            "llvm_objcopy_version": "AMD LLVM 18",
-            "section_extraction_command": [
-                "/opt/rocm/llvm/bin/llvm-objcopy",
-                "--dump-section=.hip_fatbin=<section-output>",
-                "<hip-library>",
-            ],
-            "clang_offload_bundler_sha256": "b" * 64,
-            "clang_offload_bundler_version": "AMD clang bundler 18",
-            "llvm_readobj_sha256": "c" * 64,
-            "llvm_readobj_version": "AMD LLVM 18",
-            "metadata_command": [
-                "/opt/rocm/llvm/bin/llvm-readobj", "--notes",
-                "<gfx90a-code-object>",
-            ],
-            "symbol_command": [
-                "/opt/rocm/llvm/bin/llvm-readelf", "-sW",
-                "<gfx90a-code-object>",
-            ],
-            "bundle_parser": {
-                "format": "clang_offload_bundle_header_little_endian_v1",
-                "container_count": 135,
-                "selected_bundle_index": 35,
-                "bundle_index_base": 0,
-                "selected_target_index": 1,
-                "target_index_base": 0,
-                "selected_target": "hipv4-amdgcn-amd-amdhsa--gfx90a",
-                "payload_offset_within_container": 4096,
-                "candidate": {
-                    "section_sha256": "d" * 64,
-                    "section_size": 100,
-                    "container_offset": 10,
-                    "code_object_size": 50,
-                },
-                "anchor": {
-                    "section_sha256": "e" * 64,
-                    "section_size": 101,
-                    "container_offset": 10,
-                    "code_object_size": 51,
-                },
-            },
-            "candidate_code_object_sha256":
-                "53c63348f3e1797c6c27a82e887bb0b20649636c725fb04d85af3e2038838bd6",
-            "anchor_code_object_sha256":
-                "ba878a186026165135705597b1c4966c06c7af6a46a5dd99c3194dc76e7d8ab0",
-            "selected_mangled_name_set": ["sym_a", "sym_b"],
-            "rows": [
-                {"mangled_name": "sym_a",
-                 "candidate_group_segment_fixed_size": 0,
-                 "anchor_group_segment_fixed_size": 1024},
-                {"mangled_name": "sym_b",
-                 "candidate_group_segment_fixed_size": 0,
-                 "anchor_group_segment_fixed_size": 512},
-            ],
-        },
-        "preserved_evidence": ["source_manifest", "governed_correctness"],
-        "scientific_budget_spent": False,
-        "do_not_repeat": False,
-        "replay_authorized": True,
-        "replacement_disposition": "attribution_expectation_invalid",
-        "resolution": "unresolved_retry_eligible",
-    })
-    value["erratum_sha256"] = server._discovery_controller_state_hash({
-        key: item for key, item in value.items() if key != "erratum_sha256"})
-    return value
+    return json.loads((
+        Path(__file__).parent / "fixtures" / "dashboard_autokernel_v27" /
+        "q5_lds0_attribution_erratum_v1.json").read_text(encoding="utf-8"))
+
+
+def _carry_forward(erratum: dict) -> dict:
+    digest = lambda label: hashlib.sha256(label.encode()).hexdigest()
+    value = {
+        "schema": "epyc.autokernel.discovery_carry_forward.v2",
+        **server._DISCOVERY_V27_PREDECESSOR,
+        "portfolio_outcomes": copy.deepcopy(
+            server._DISCOVERY_V27_CARRY_OUTCOMES),
+        "candidate_semantic_sha256": sorted({
+            *(digest(f"semantic-{index}") for index in range(12)),
+            erratum["candidate_semantic_sha256"]}),
+        "candidate_patch_sha256": sorted({
+            *(digest(f"patch-{index}") for index in range(7)),
+            erratum["candidate_patch_sha256"]}),
+        "cross_campaign_candidate_sha256": sorted({
+            *(digest(f"cross-{index}") for index in range(7)),
+            erratum["cross_campaign_candidate_sha256"]}),
+        "attribution_expectation_erratum": copy.deepcopy(erratum),
+    }
+    return _seal(value, "carry_forward_sha256")
+
+
+def _build_identity(commit: str, prefix: str) -> dict:
+    return {
+        "source_commit": commit,
+        "source_sha256": prefix * 64,
+        "binary_sha256": chr(ord(prefix) + 1) * 64,
+        "hip_library_sha256": chr(ord(prefix) + 2) * 64,
+        "config_sha256": chr(ord(prefix) + 3) * 64,
+        "linkage_sha256": chr(ord(prefix) + 4) * 64,
+    }
+
+
+def _frozen_comparator(model_sha256: str, workload_sha256: str) -> dict:
+    value = {
+        "schema": "epyc.autokernel.frozen_production_comparator.v1",
+        "branch": "production-consolidated-v9",
+        "commit": server._DISCOVERY_V27_PRODUCTION_COMMIT,
+        "build_identity": _build_identity(
+            server._DISCOVERY_V27_PRODUCTION_COMMIT, "1"),
+        "build_receipt_sha256": "6" * 64,
+        "linkage_receipt_sha256": "7" * 64,
+        "runtime_receipt_sha256": "8" * 64,
+        "runtime_snapshot_sha256": "c" * 64,
+        "measurement_receipt_sha256": "9" * 64,
+        "model_sha256": model_sha256,
+        "workload_sha256": workload_sha256,
+        "frame_sha256": "a" * 64,
+        "graphs_mode": "graphs_on",
+        "metric": "tokens_per_second",
+        "direction": "higher_is_better",
+        "measurement_protocol_sha256": "b" * 64,
+    }
+    return _seal(value, "receipt_sha256")
 
 
 class V27Fixture(V26Fixture):
@@ -122,17 +79,47 @@ class V27Fixture(V26Fixture):
         super().__init__(root)
         self.erratum = _q5_erratum()
         erratum_path = self.inputs / "q5-lds0-attribution-erratum-v1.json"
-        raw = server._canonical_json_bytes(self.erratum) + b"\n"
+        raw = ((Path(__file__).parent / "fixtures" /
+                "dashboard_autokernel_v27" /
+                "q5_lds0_attribution_erratum_v1.json").read_bytes())
         erratum_path.write_bytes(raw)
         erratum_input = {
             "path": str(erratum_path),
             "sha256": hashlib.sha256(raw).hexdigest(),
         }
         self.input_rows["q5_lds0_attribution_erratum"] = erratum_input
+        self.carry = _carry_forward(self.erratum)
+        carry_path = self.inputs / "carry-forward-v2.json"
+        carry_raw = (json.dumps(self.carry, sort_keys=True, indent=2) +
+                     "\n").encode()
+        carry_path.write_bytes(carry_raw)
+        self.input_rows["carry_forward"] = {
+            "path": str(carry_path),
+            "sha256": hashlib.sha256(carry_raw).hexdigest(),
+        }
+        self.comparator = _frozen_comparator(
+            self.input_rows["model"]["sha256"],
+            self.input_rows["workload"]["sha256"])
+        comparator_path = self.inputs / "frozen-production-comparator.json"
+        comparator_raw = (json.dumps(
+            self.comparator, sort_keys=True, indent=2) + "\n").encode()
+        comparator_path.write_bytes(comparator_raw)
+        self.input_rows["frozen_production_comparator"] = {
+            "path": str(comparator_path),
+            "sha256": hashlib.sha256(comparator_raw).hexdigest(),
+        }
         self.config["schema"] = "epyc.autokernel.discovery_deployment.v6"
-        self.config["immutable_inputs"][
-            "q5_lds0_attribution_erratum"] = erratum_input
+        self.config["production"] = {
+            "path": "/mnt/raid0/llm/llama.cpp",
+            "branch": "production-consolidated-v9",
+            "head": server._DISCOVERY_V27_PRODUCTION_COMMIT,
+        }
+        self.config["instrument"]["production_ancestor"] = (
+            server._DISCOVERY_V27_PRODUCTION_COMMIT)
+        self.config["immutable_inputs"] = self.input_rows
         self.graph["schema"] = "epyc.autokernel.static_discovery_graph.v9"
+        self.graph["carry_forward_sha256"] = self.carry[
+            "carry_forward_sha256"]
         self.graph["attribution_expectation_erratum"] = {
             "schema":
                 "epyc.autokernel.attribution_expectation_erratum_source.v1",
@@ -145,7 +132,166 @@ class V27Fixture(V26Fixture):
             "candidate_semantic_sha256":
                 self.erratum["candidate_semantic_sha256"],
         }
+        self.graph["frozen_production_comparator"] = {
+            "schema":
+                "epyc.autokernel.frozen_production_comparator_source.v1",
+            "file_sha256": self.input_rows[
+                "frozen_production_comparator"]["sha256"],
+            "receipt_sha256": self.comparator["receipt_sha256"],
+        }
         self.write()
+
+    def checkpoint(self) -> tuple[dict, dict]:
+        state, authority = super().checkpoint()
+        state["carry_forward_sha256"] = self.carry["carry_forward_sha256"]
+        return _seal(state, "state_sha256"), authority
+
+    def cumulative_state(
+            self, *, cumulative: float = .05, incremental: float = .01,
+            disposition: str = "admitted",
+            frame_mismatch: bool = False) -> tuple[dict, dict, Path]:
+        state, _ = self.checkpoint()
+        operation_key = "d" * 64
+        plan_sha256 = "e" * 64
+        anchor_identity = _build_identity("e" * 40, "1")
+        candidate_identity = _build_identity("f" * 40, "a")
+        def build_binding(identity: dict, patch: str) -> dict:
+            return {
+                "patch_set_sha256": patch * 64,
+                "source_materialization_receipt_sha256": "4" * 64,
+                "build_identity": identity,
+                "build_identity_sha256":
+                    server._discovery_content_hash(identity),
+            }
+        anchor = build_binding(anchor_identity, "7")
+        candidate = build_binding(candidate_identity, "8")
+        build_pair = _seal({
+            "schema": "epyc.autokernel.cumulative_build_pair.v1",
+            "operation_key": operation_key, "plan_sha256": plan_sha256,
+            "anchor": anchor, "candidate": candidate,
+        }, "pair_sha256")
+        incremental_values = (incremental, incremental, incremental)
+        cumulative_values = (cumulative, cumulative)
+        incremental_class = (
+            "candidate" if all(value > 0 for value in incremental_values)
+            else "screened_out"
+            if all(value <= 0 for value in incremental_values)
+            else "inconclusive")
+        cumulative_class = (
+            "candidate" if all(value > 0 for value in cumulative_values)
+            else "screened_out"
+            if all(value <= 0 for value in cumulative_values)
+            else "inconclusive")
+        eligible = (
+            incremental_class == "candidate"
+            and cumulative_class == "candidate")
+        reason = (
+            "incremental_and_cumulative_positive" if eligible
+            else f"incremental_{incremental_class}"
+            if incremental_class != "candidate"
+            else f"cumulative_{cumulative_class}")
+        correctness = {"result_sha256": "1" * 64}
+        comparison = {"result_sha256": "2" * 64}
+        terminal = {
+            "schema": "epyc.autokernel.cumulative_composition_terminal.v3",
+            "operation_key": operation_key, "plan_sha256": plan_sha256,
+            "plan": {"operation_key": operation_key,
+                     "plan_sha256": plan_sha256},
+            "lever_sha256": "3" * 64,
+            "cross_campaign_candidate_sha256": "4" * 64,
+            "isolated_result_sha256s": ["5" * 64, "6" * 64],
+            "disposition": disposition, "scientific_budget_spent": True,
+            "build_pair": build_pair, "correctness": correctness,
+            "comparison": comparison, "cumulative_performance": None,
+            "cumulative_performance_ref": None,
+            "correctness_result_sha256": correctness["result_sha256"],
+            "comparison_result_sha256": comparison["result_sha256"],
+            "cumulative_performance_result_sha256": None,
+            "promotion_eligible": eligible, "promotion_reason": reason,
+            "admitted_authority_sha256": (
+                "9" * 64 if disposition == "admitted" else None),
+            "reason_code": (
+                "incremental_admitted_promotion_eligible"
+                if disposition == "admitted" and eligible else
+                "incremental_admitted_" + reason
+                if disposition == "admitted" else
+                "incremental_" + incremental_class),
+            "infrastructure_receipt_sha256": None,
+            "attribution_receipt_sha256": None,
+            "terminal_sha256": None,
+        }
+        core_sha256 = server._discovery_content_hash({
+            key: value for key, value in terminal.items()
+            if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
+        frozen_body = {
+            "schema": "epyc.autokernel.frozen_production_authority.v1",
+            "production_commit": server._DISCOVERY_V27_PRODUCTION_COMMIT,
+            "build_identity": copy.deepcopy(
+                self.comparator["build_identity"]),
+            "build_identity_sha256": server._discovery_content_hash(
+                self.comparator["build_identity"]),
+            "runtime_snapshot_sha256":
+                self.comparator["runtime_snapshot_sha256"],
+        }
+        frozen = {
+            **frozen_body,
+            "authority_sha256": server._discovery_content_hash(frozen_body)}
+        off_frame = "a" * 64
+        on_frame = "b" * 64
+        performance = _seal({
+            "schema": server._DISCOVERY_V27_CUMULATIVE_SCHEMA,
+            "authority": "frozen_production_promotion_gate",
+            "promotion_authority": True,
+            "operation_key": operation_key, "plan_sha256": plan_sha256,
+            "accepted_authority_sha256": "9" * 64,
+            "accepted_patch_set_sha256": candidate["patch_set_sha256"],
+            "build_pair_sha256": build_pair["pair_sha256"],
+            "correctness_result_sha256": correctness["result_sha256"],
+            "incremental_comparison_result_sha256":
+                comparison["result_sha256"],
+            "frozen_production": frozen,
+            "model_sha256": self.comparator["model_sha256"],
+            "workload_sha256": self.comparator["workload_sha256"],
+            "runtime_config_sha256":
+                self.input_rows["runtime_config"]["sha256"],
+            "protocol_frame_sha256": "c" * 64,
+            "metric": "tokens_per_second", "metric_direction": "higher_better",
+            "incremental_exact_route_effect_fraction": incremental,
+            "incremental_graphs_off_effect_fraction": incremental,
+            "incremental_graphs_on_effect_fraction": incremental,
+            "cumulative_graphs_off_effect_fraction": cumulative,
+            "cumulative_graphs_on_effect_fraction": cumulative,
+            "incremental_graphs_off_receipt_sha256": "d" * 64,
+            "incremental_graphs_on_receipt_sha256": "e" * 64,
+            "production_graphs_off_receipt_sha256": "f" * 64,
+            "production_graphs_on_receipt_sha256": "0" * 64,
+            "incremental_graphs_off_frame_sha256": off_frame,
+            "incremental_graphs_on_frame_sha256": on_frame,
+            "production_graphs_off_frame_sha256": (
+                "0" * 64 if frame_mismatch else off_frame),
+            "production_graphs_on_frame_sha256": on_frame,
+            "cumulative_classification": cumulative_class,
+            "promotion_eligible": eligible, "promotion_reason": reason,
+            "composition_terminal_sha256": core_sha256,
+        }, "result_sha256")
+        path = self.bundle / "evidence" / "cumulative-performance.json"
+        raw = (json.dumps(performance, sort_keys=True, indent=2) + "\n").encode()
+        path.write_bytes(raw)
+        binding = {"path": str(path),
+                   "sha256": hashlib.sha256(raw).hexdigest()}
+        terminal["cumulative_performance"] = copy.deepcopy(performance)
+        terminal["cumulative_performance_ref"] = {
+            "schema": "epyc.autokernel.cumulative_performance_ref.v1",
+            **binding}
+        terminal["cumulative_performance_result_sha256"] = performance[
+            "result_sha256"]
+        terminal["terminal_sha256"] = server._discovery_content_hash({
+            key: value for key, value in terminal.items()
+            if key != "terminal_sha256"})
+        state["cumulative_performance"] = binding
+        state["cumulative_composition_terminal"] = terminal
+        return _seal(state, "state_sha256"), performance, path
+
 
     def postbuild_wait_state(self) -> dict:
         state, authority = self.checkpoint()
@@ -174,6 +320,18 @@ class V27Fixture(V26Fixture):
         candidate_build = self.bundle / "build" / "candidate"
         anchor_build.mkdir(mode=0o700)
         candidate_build.mkdir(mode=0o700)
+        common_loader = self.bundle / "build" / "common-loader"
+        anchor_loader = self.bundle / "build" / "anchor-loader"
+        candidate_loader = self.bundle / "build" / "candidate-loader"
+        for path in (common_loader, anchor_loader, candidate_loader):
+            path.mkdir(mode=0o700)
+        file_paths = {
+            key: self.bundle / "build" / f"{key}.bin"
+            for key in server._DISCOVERY_POSTBUILD_PATH_FIELDS - {
+                "anchor_build", "candidate_build", "common_loader_dir",
+                "anchor_loader_dir", "candidate_loader_dir"}}
+        for key, path in file_paths.items():
+            path.write_bytes(f"sealed-{key}\n".encode())
         identity = {
             "source_commit": "9" * 40,
             "source_sha256": "1" * 64,
@@ -183,12 +341,15 @@ class V27Fixture(V26Fixture):
             "linkage_sha256": "5" * 64,
         }
         anchor_identity = {**identity, "binary_sha256": "6" * 64}
-        path_fields = {
-            key: None for key in server._DISCOVERY_POSTBUILD_PATH_FIELDS}
-        path_fields.update(anchor_build=str(anchor_build),
-                           candidate_build=str(candidate_build))
+        path_fields = {key: str(path) for key, path in file_paths.items()}
+        path_fields.update(
+            anchor_build=str(anchor_build), candidate_build=str(candidate_build),
+            common_loader_dir=str(common_loader),
+            anchor_loader_dir=str(anchor_loader),
+            candidate_loader_dir=str(candidate_loader))
         scalar_fields = {
-            key: None for key in server._DISCOVERY_POSTBUILD_SCALAR_FIELDS}
+            key: hashlib.sha256(key.encode()).hexdigest()
+            for key in server._DISCOVERY_POSTBUILD_SCALAR_FIELDS}
         scalar_fields.update(
             operation_key=operation_key, build_key="7" * 64,
             materialization_sha256="8" * 64)
@@ -208,11 +369,60 @@ class V27Fixture(V26Fixture):
         (operation_root / "postbuild-checkpoint.json").write_text(
             json.dumps(postbuild, sort_keys=True, indent=2) + "\n",
             encoding="utf-8")
+        def bound(role: str, path: Path) -> dict:
+            return {"role": role, "path": str(path),
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+
+        correctness_binary = file_paths["candidate_correctness_binary"]
+        measurement_binary = file_paths["measurement_binary"]
+        exact = lambda signature: {
+            "signature": signature, "kernel_pattern": "kernel_.*",
+            "calls": 1, "grid": 64, "workgroup": 64,
+            "lds_bytes": 0, "blocks_per_call": 1}
         policy = {
             "schema": "epyc.autokernel.gpu_source_execution_policy.v2",
             "manifest_sha256": "6" * 64,
+            "model_sha256": self.input_rows["model"]["sha256"],
+            "workload_sha256": self.input_rows["workload"]["sha256"],
+            "runtime_config_sha256":
+                self.input_rows["runtime_config"]["sha256"],
             "candidate_build_identity": identity,
             "anchor_build_identity": anchor_identity,
+            "correctness_argv": [str(correctness_binary), "test"],
+            "correctness_parser_id": "ak.t0.backend_ops_console/v1",
+            "correctness_backend": "ROCm0", "correctness_op": "MUL_MAT",
+            "expected_correctness_cases": 1,
+            "correctness_invocations": [],
+            "candidate_rocprof_argv": [str(measurement_binary), "-ngl", "99"],
+            "anchor_rocprof_argv": [str(measurement_binary), "-ngl", "99"],
+            "profiler_trace_schema_id": "rocprof-v3-kernel-trace-csv-v1",
+            "expected_candidate_profiler_dispatch_rows": 1,
+            "expected_anchor_profiler_dispatch_rows": 1,
+            "profiler_transport_policy": "require-zero-exit-v1",
+            "attribution_arm_order_seed_sha256": "c" * 64,
+            "attribution_arm_order": ["candidate", "anchor"],
+            "correctness_inputs": [bound("executable", correctness_binary)],
+            "candidate_rocprof_inputs": [
+                bound("executable", measurement_binary)],
+            "anchor_rocprof_inputs": [bound("executable", measurement_binary)],
+            "required_correctness_argv_paths": [str(correctness_binary)],
+            "required_candidate_rocprof_argv_paths": [str(measurement_binary)],
+            "required_anchor_rocprof_argv_paths": [str(measurement_binary)],
+            "execution_cwd": str(self.bundle),
+            "correctness_environment": [["LD_LIBRARY_PATH", str(common_loader)]],
+            "candidate_rocprof_environment": [
+                ["LD_LIBRARY_PATH", str(candidate_loader)]],
+            "anchor_rocprof_environment": [
+                ["LD_LIBRARY_PATH", str(anchor_loader)]],
+            "shared_runtime": None,
+            "dispatch": {
+                "candidate_exact": [exact("candidate.reward")],
+                "anchor_exact": [exact("anchor.reward")],
+                "candidate_structural_exact": [],
+                "anchor_structural_exact": [],
+                "candidate_forbidden": [], "anchor_forbidden": [],
+                "invariants": [],
+            },
         }
         (operation_root / "evidence-policy.json").write_text(
             json.dumps(policy, sort_keys=True, indent=2) + "\n",
@@ -409,8 +619,14 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             pending.update(authorization={}, infrastructure_retry_epoch=0)
             pending["row"].update(
                 status="waiting_resource", operation_key="a" * 64,
-                lease={"admitted": False, "reason": "device_busy",
-                       "operation_key": "a" * 64})
+                lease={"admitted": False, "phase": "prebuild_probe",
+                       "reason": "device_busy", "operation_key": "a" * 64,
+                       "promotion_claim": False, "mode": "cold_serialized",
+                       "device_id": "mi210_0",
+                       "inference_window_lock": "/lock",
+                       "model_sha256": fixture.input_rows["model"]["sha256"],
+                       "load_admission": {"decision": "busy"},
+                       "detail": "device claim unavailable"})
             state = _seal(state, "state_sha256")
             projected = server._discovery_v27_state_contract(state, contract)
             self.assertEqual(projected["resource_wait"], {
@@ -420,6 +636,256 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 "completed_builds_preserved": False,
                 "evidence_policy_bound": False,
             })
+
+    def test_torn_legacy_wait_cannot_hide_postbuild_artifacts(self) -> None:
+        artifacts = ("postbuild-checkpoint.json", "evidence-policy.json",
+                     "resource-waits")
+        for artifact in artifacts:
+            with self.subTest(artifact=artifact), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, _ = fixture.checkpoint()
+                pending = state["pending"]
+                pending.pop("phase")
+                pending.pop("context")
+                pending.pop("context_sha256")
+                pending.update(authorization={}, infrastructure_retry_epoch=0)
+                operation_key = "a" * 64
+                pending["row"].update(
+                    status="waiting_resource", operation_key=operation_key,
+                    lease={
+                        "admitted": False, "phase": "prebuild_probe",
+                        "reason": "device_busy", "operation_key": operation_key,
+                        "promotion_claim": False, "mode": "cold_serialized",
+                        "device_id": "mi210_0", "inference_window_lock": "/lock",
+                        "model_sha256": fixture.input_rows["model"]["sha256"],
+                        "load_admission": {"decision": "busy"}, "detail": "busy"})
+                target = fixture.bundle / "operations" / operation_key / artifact
+                if artifact == "resource-waits":
+                    target.mkdir(parents=True)
+                else:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("{}\n", encoding="utf-8")
+                self.assertIsNone(server._discovery_v27_state_contract(
+                    _seal(state, "state_sha256"), contract))
+
+    def test_full_build_and_policy_grammar_refuses_mutations(self) -> None:
+        mutations = (
+            ("missing-build", lambda build, policy: build.pop("anchor_build")),
+            ("typed-build", lambda build, policy: build.update(build_key=None)),
+            ("extra-policy", lambda build, policy: policy.update(extra=True)),
+            ("missing-policy", lambda build, policy: policy.pop("dispatch")),
+            ("typed-policy", lambda build, policy:
+                policy.update(expected_correctness_cases=True)),
+        )
+        for name, mutate in mutations:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state = fixture.postbuild_wait_state()
+                operation_key = state["pending"]["row"]["operation_key"]
+                root = fixture.bundle / "operations" / operation_key
+                postbuild_path = root / "postbuild-checkpoint.json"
+                postbuild = json.loads(postbuild_path.read_text())
+                policy_path = root / "evidence-policy.json"
+                policy = json.loads(policy_path.read_text())
+                mutate(postbuild["build"], policy)
+                postbuild = _seal(postbuild, "receipt_sha256")
+                postbuild_path.write_text(
+                    json.dumps(postbuild, sort_keys=True, indent=2) + "\n")
+                policy_path.write_text(
+                    json.dumps(policy, sort_keys=True, indent=2) + "\n")
+                self.assertIsNone(server._discovery_v27_state_contract(
+                    state, contract))
+
+    def test_carry_forward_missing_extra_type_and_coherent_mutation_refuse(self) -> None:
+        mutations = (
+            ("missing", lambda value: value.pop("portfolio_outcomes")),
+            ("extra", lambda value: value.update(extra=True)),
+            ("type", lambda value: value.update(candidate_patch_sha256={})),
+            ("predecessor", lambda value: value.update(
+                predecessor_state_file_sha256="0" * 64)),
+        )
+        for name, mutate in mutations:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                carry = copy.deepcopy(fixture.carry)
+                mutate(carry)
+                carry = _seal(carry, "carry_forward_sha256")
+                path = Path(fixture.input_rows["carry_forward"]["path"])
+                raw = (json.dumps(carry, sort_keys=True, indent=2) + "\n").encode()
+                path.write_bytes(raw)
+                fixture.input_rows["carry_forward"]["sha256"] = (
+                    hashlib.sha256(raw).hexdigest())
+                fixture.graph["carry_forward_sha256"] = carry[
+                    "carry_forward_sha256"]
+                fixture.write()
+                self.assertIsNone(server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle))
+
+    def test_cumulative_headline_is_producer_authority_and_redacted(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            projected = server._discovery_v27_state_contract(state, contract)
+            performance = projected["performance"]
+            self.assertIs(performance["available"], True)
+            self.assertEqual(
+                performance["cumulative_vs_frozen_production"][
+                    "production_commit"],
+                server._DISCOVERY_V27_PRODUCTION_COMMIT)
+            self.assertAlmostEqual(
+                performance["cumulative_vs_frozen_production"][
+                    "effect_fraction"], .05)
+            self.assertAlmostEqual(
+                performance["incremental_vs_prior_stack"]["effect_fraction"],
+                .01)
+            self.assertIs(performance["promotion_eligible"], True)
+            rendered = json.dumps(performance)
+            self.assertNotIn(str(path), rendered)
+            self.assertNotIn(str(fixture.bundle), rendered)
+            self.assertEqual(performance["receipt_sha256"],
+                             receipt["result_sha256"])
+            (fixture.state / "state.json").write_bytes(
+                server._canonical_json_bytes(state) + b"\n")
+            fixture.write_journal([(
+                "discovery_preauthored_checkpointed", state["state_sha256"])])
+            with mock.patch.object(
+                    server, "AUTOKERNEL_DEPLOYMENTS_ROOT", Path(directory)), \
+                    _frozen(fixture), \
+                    mock.patch.object(
+                        server, "_discovery_lock_held", return_value=False):
+                payload, _ = server._discovery_live_read()
+            self.assertEqual(payload["activity"]["performance"], performance)
+
+    def test_cumulative_authority_fails_closed_for_bad_or_nonpromotable_states(
+            self) -> None:
+        cases = (
+            ("mixed", dict(frame_mismatch=True),
+             "producer_authority_unavailable"),
+            ("nonpositive", dict(cumulative=-.02, incremental=.03,
+                                 disposition="admitted"),
+             "cumulative_screened_out"),
+            ("incremental", dict(cumulative=.03, incremental=-.01,
+                                 disposition="incremental_rollback"),
+             "incremental_screened_out"),
+        )
+        for name, kwargs, reason in cases:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, _, _ = fixture.cumulative_state(**kwargs)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["promotion_eligible"], False)
+                self.assertEqual(performance["promotion_reason"], reason)
+                self.assertIs(performance["available"], False)
+
+    def test_cumulative_comparator_tamper_and_missing_authority_are_unavailable(
+            self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            missing, _ = fixture.checkpoint()
+            self.assertEqual(server._discovery_v27_state_contract(
+                missing, contract)["performance"]["promotion_reason"],
+                "cumulative_authority_missing")
+            state, receipt, path = fixture.cumulative_state()
+            receipt["frozen_production"]["build_identity"][
+                "binary_sha256"] = "0" * 64
+            receipt = _seal(receipt, "receipt_sha256")
+            raw = (json.dumps(receipt, sort_keys=True, indent=2) + "\n").encode()
+            path.write_bytes(raw)
+            state["cumulative_performance"]["sha256"] = hashlib.sha256(
+                raw).hexdigest()
+            state = _seal(state, "state_sha256")
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertIs(performance["promotion_eligible"], False)
+            self.assertEqual(performance["promotion_reason"],
+                             "producer_authority_unavailable")
+
+    def test_terminal_core_rejects_wrong_and_full_envelope_hashes(self) -> None:
+        for name in ("wrong-core", "full-envelope"):
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                terminal = state["cumulative_composition_terminal"]
+                receipt["composition_terminal_sha256"] = (
+                    "0" * 64 if name == "wrong-core"
+                    else terminal["terminal_sha256"])
+                receipt = _seal(receipt, "result_sha256")
+                raw = (json.dumps(
+                    receipt, sort_keys=True, indent=2) + "\n").encode()
+                path.write_bytes(raw)
+                binding = {
+                    "path": str(path),
+                    "sha256": hashlib.sha256(raw).hexdigest()}
+                terminal["cumulative_performance"] = receipt
+                terminal["cumulative_performance_ref"] = {
+                    "schema":
+                        "epyc.autokernel.cumulative_performance_ref.v1",
+                    **binding}
+                terminal["cumulative_performance_result_sha256"] = receipt[
+                    "result_sha256"]
+                terminal["terminal_sha256"] = server._discovery_content_hash({
+                    key: value for key, value in terminal.items()
+                    if key != "terminal_sha256"})
+                state["cumulative_performance"] = binding
+                state["cumulative_composition_terminal"] = terminal
+                state = _seal(state, "state_sha256")
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertIs(performance["promotion_eligible"], False)
+
+    def test_frozen_comparator_missing_extra_and_type_mutations_refuse(self) -> None:
+        mutations = (
+            ("missing", lambda value: value.pop("runtime_receipt_sha256")),
+            ("extra", lambda value: value.update(extra=True)),
+            ("type", lambda value: value.update(graphs_mode=1)),
+        )
+        for name, mutate in mutations:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                comparator = copy.deepcopy(fixture.comparator)
+                mutate(comparator)
+                comparator = _seal(comparator, "receipt_sha256")
+                path = Path(fixture.input_rows[
+                    "frozen_production_comparator"]["path"])
+                raw = (json.dumps(
+                    comparator, sort_keys=True, indent=2) + "\n").encode()
+                path.write_bytes(raw)
+                fixture.input_rows[
+                    "frozen_production_comparator"]["sha256"] = (
+                        hashlib.sha256(raw).hexdigest())
+                fixture.graph["frozen_production_comparator"].update(
+                    file_sha256=hashlib.sha256(raw).hexdigest(),
+                    receipt_sha256=comparator["receipt_sha256"])
+                fixture.write()
+                self.assertIsNone(server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle))
 
     def test_coherent_erratum_and_graph_mutations_refuse(self) -> None:
         mutations = (
