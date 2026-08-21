@@ -229,6 +229,75 @@ def _reseal_plan(plan: dict) -> None:
         **body, "operation_key": plan["operation_key"]})
 
 
+def _reseal_plan_authorities(
+        plan: dict, *, anchor_levers: list[dict],
+        candidate_levers: list[dict]) -> None:
+    anchor_template = plan["anchor_authority"]
+    candidate_template = plan["candidate_authority"]
+    anchor = _composition_authority(
+        accepted=anchor_levers,
+        campaign_id=anchor_template["campaign_id"],
+        production_base_commit=anchor_template["production_base_commit"],
+        instrument_commit=anchor_template["instrument_commit"])
+    candidate = _composition_authority(
+        accepted=candidate_levers,
+        campaign_id=candidate_template["campaign_id"],
+        production_base_commit=candidate_template["production_base_commit"],
+        instrument_commit=candidate_template["instrument_commit"])
+    newest = candidate_levers[-1]
+    plan.update({
+        "anchor_authority": anchor,
+        "candidate_authority": candidate,
+        "anchor_patch_set_sha256": anchor["ordered_patch_set_sha256"],
+        "candidate_patch_set_sha256": candidate[
+            "ordered_patch_set_sha256"],
+        "ordered_component_lever_sha256s": [
+            row["lever_sha256"] for row in candidate_levers],
+        "ordered_source_manifest_sha256s": [
+            row["manifest_sha256"] for row in candidate_levers],
+        "new_lever_sha256": newest["lever_sha256"],
+        "isolated_result_sha256s": [
+            row["result_sha256"] for row in newest["replications"]],
+    })
+    plan["dnr"].update({
+        "campaign_id": anchor["campaign_id"],
+        "anchor_patch_set_sha256": anchor["ordered_patch_set_sha256"],
+        "candidate_patch_set_sha256": candidate[
+            "ordered_patch_set_sha256"],
+        "proposed_cross_campaign_candidate_sha256": newest[
+            "cross_campaign_candidate_sha256"],
+        "checked_cross_campaign_candidate_sha256s": sorted({
+            row["cross_campaign_candidate_sha256"]
+            for row in anchor_levers}),
+    })
+    plan["dnr"] = _seal(plan["dnr"], "receipt_sha256")
+    _reseal_plan(plan)
+
+
+def _rebind_plan_evidence(terminal: dict, receipt: dict) -> None:
+    plan = terminal["plan"]
+    newest = plan["candidate_authority"]["accepted"][-1]
+    terminal.update({
+        "lever_sha256": newest["lever_sha256"],
+        "cross_campaign_candidate_sha256": newest[
+            "cross_campaign_candidate_sha256"],
+        "isolated_result_sha256s": [
+            row["result_sha256"] for row in newest["replications"]],
+        "admitted_authority_sha256": plan["candidate_authority"][
+            "authority_sha256"],
+    })
+    terminal["build_pair"]["anchor"]["patch_set_sha256"] = plan[
+        "anchor_patch_set_sha256"]
+    terminal["build_pair"]["candidate"]["patch_set_sha256"] = plan[
+        "candidate_patch_set_sha256"]
+    receipt.update({
+        "accepted_authority_sha256": plan["candidate_authority"][
+            "authority_sha256"],
+        "accepted_patch_set_sha256": plan["candidate_patch_set_sha256"],
+    })
+    _rebind_terminal_nested(terminal, receipt)
+
+
 def _rebind_terminal_nested(terminal: dict, receipt: dict) -> None:
     plan = terminal["plan"]
     pair = terminal["build_pair"]
@@ -1003,6 +1072,192 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                     malformed = copy.deepcopy(value)
                     malformed[key] = True
                     self.assertFalse(validate(malformed))
+
+    def test_source_manifest_matches_producer_semantic_corpus(self) -> None:
+        plan = _composition_plan()
+        original = plan["candidate_authority"]["accepted"][-1]["manifest"]
+
+        def manifest_for(
+                patch: bytes, *, files: list[str] | None = None,
+                symbols: dict[str, list[str]] | None = None) -> dict:
+            value = copy.deepcopy(original)
+            value["patch_sha256"] = hashlib.sha256(patch).hexdigest()
+            value["patch_base64"] = base64.b64encode(patch).decode("ascii")
+            if files is not None:
+                value["declared_files"] = files
+            if symbols is not None:
+                value["declared_symbols"] = symbols
+            return value
+
+        valid = base64.b64decode(original["patch_base64"], validate=True)
+        cases = (
+            ("valid", manifest_for(valid), True),
+            ("not-diff", manifest_for(b"not a unified diff\n"), False),
+            ("missing-newline", manifest_for(valid.rstrip(b"\n")), False),
+            ("bad-count", manifest_for(
+                valid.replace(b"@@ -1 +1 @@", b"@@ -1,2 +1,2 @@")), False),
+            ("wrong-path", manifest_for(
+                valid, files=["src/other.cpp"],
+                symbols={"src/other.cpp": ["<file-scope>"]}), False),
+            ("wrong-scope", manifest_for(
+                valid, symbols={"src/test.cpp": ["other"]}), False),
+            ("named-scope", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@ int test()\n-int x;\n+int y;\n",
+                symbols={"src/test.cpp": ["test"]}), True),
+            ("named-scope-mismatch", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@ int test()\n-int x;\n+int y;\n",
+                symbols={"src/test.cpp": ["other"]}), False),
+            ("phase-probe", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n"
+                b"+int benchmark_phase;\n"), False),
+            ("capture-replay", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+hipGraphLaunch(x);\n"), False),
+            ("content-specialization", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+int input_hash;\n"), False),
+            ("symlink-mode", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"new file mode 120000\n--- /dev/null\n"
+                b"+++ b/src/test.cpp\n@@ -0,0 +1 @@\n+target\n"), False),
+            ("rename", manifest_for(
+                b"diff --git a/src/test.cpp b/src/other.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/other.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+int y;\n"), False),
+        )
+        for name, manifest, expected in cases:
+            with self.subTest(name=name):
+                self.assertIs(
+                    server._discovery_v27_source_manifest(manifest)
+                    is not None, expected)
+
+    def test_coherently_resealed_non_diff_manifest_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            plan = terminal["plan"]
+            lever = copy.deepcopy(
+                plan["candidate_authority"]["accepted"][-1])
+            patch = b"not a unified diff\n"
+            lever["manifest"]["patch_sha256"] = hashlib.sha256(
+                patch).hexdigest()
+            lever["manifest"]["patch_base64"] = base64.b64encode(
+                patch).decode("ascii")
+            lever["manifest_sha256"] = server._discovery_content_hash(
+                lever["manifest"])
+            lever = _seal(lever, "lever_sha256")
+            _reseal_plan_authorities(
+                plan, anchor_levers=[], candidate_levers=[lever])
+            _rebind_plan_evidence(terminal, receipt)
+            state = _reseal_cumulative_state(state, receipt, path)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
+
+    def test_coherently_resealed_conflicting_composition_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            plan = terminal["plan"]
+            existing = copy.deepcopy(
+                plan["candidate_authority"]["accepted"][-1])
+            proposed = copy.deepcopy(existing)
+            proposed["hypothesis_id"] = "akh-dashboard-v27-conflict"
+            proposed["cross_campaign_candidate_sha256"] = _digest(
+                "cross-campaign-conflict")
+            proposed["manifest"].update({
+                "proposal_id": "akp-dashboard-v27-conflict",
+                "candidate_id": "akc-dashboard-v27-conflict",
+                "mechanism_id": "dashboard-v27-conflict",
+            })
+            proposed["manifest_sha256"] = server._discovery_content_hash(
+                proposed["manifest"])
+            for index, row in enumerate(proposed["replications"]):
+                row["result_sha256"] = _digest(
+                    f"conflict-isolated-result-{index}")
+            proposed = _seal(proposed, "lever_sha256")
+            _reseal_plan_authorities(
+                plan, anchor_levers=[existing],
+                candidate_levers=[existing, proposed])
+            _rebind_plan_evidence(terminal, receipt)
+            state = _reseal_cumulative_state(state, receipt, path)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
+
+    def test_coherently_resealed_old_coordinate_overlap_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            plan = terminal["plan"]
+            template = plan["candidate_authority"]["accepted"][-1]
+
+            def lever_for(label: str, symbol: str) -> dict:
+                lever = copy.deepcopy(template)
+                patch = (
+                    "diff --git a/src/test.cpp b/src/test.cpp\n"
+                    "--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                    f"@@ -1 +1 @@ int {symbol}()\n"
+                    "-int x;\n+int y;\n").encode()
+                lever["hypothesis_id"] = f"akh-dashboard-v27-{label}"
+                lever["cross_campaign_candidate_sha256"] = _digest(
+                    f"cross-{label}")
+                lever["manifest"].update({
+                    "proposal_id": f"akp-dashboard-v27-{label}",
+                    "candidate_id": f"akc-dashboard-v27-{label}",
+                    "mechanism_id": f"dashboard-v27-{label}",
+                    "declared_symbols": {"src/test.cpp": [symbol]},
+                    "patch_sha256": hashlib.sha256(patch).hexdigest(),
+                    "patch_base64": base64.b64encode(patch).decode("ascii"),
+                })
+                lever["manifest_sha256"] = server._discovery_content_hash(
+                    lever["manifest"])
+                for index, row in enumerate(lever["replications"]):
+                    row["result_sha256"] = _digest(
+                        f"{label}-isolated-result-{index}")
+                return _seal(lever, "lever_sha256")
+
+            existing = lever_for("existing", "first")
+            proposed = lever_for("proposed", "second")
+            self.assertTrue(server._discovery_v27_replicated_lever(existing))
+            self.assertTrue(server._discovery_v27_replicated_lever(proposed))
+            _reseal_plan_authorities(
+                plan, anchor_levers=[existing],
+                candidate_levers=[existing, proposed])
+            _rebind_plan_evidence(terminal, receipt)
+            state = _reseal_cumulative_state(state, receipt, path)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
 
     def test_coherently_resealed_incremental_authority_refuses(self) -> None:
         def wrong_classification(comparison: dict) -> None:

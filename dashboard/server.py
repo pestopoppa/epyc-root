@@ -68,7 +68,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from fractions import Fraction
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import parse_qs, urlparse
 
 # Make ``from dashboard import ...`` work whether launched as ``-m dashboard.server``
@@ -5934,7 +5934,228 @@ def _discovery_v27_isolated_replication(value: object) -> bool:
         and float(value["effect_fraction"]) > 0)
 
 
-def _discovery_v27_source_manifest(value: object) -> str | None:
+_DISCOVERY_V27_PATCH_HUNK = re.compile(
+    r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(?P<context>.*)$")
+_DISCOVERY_V27_PATCH_SYMBOL = re.compile(
+    r"(?P<name>[A-Za-z_~][A-Za-z0-9_:~<>]*)\s*\([^()]*\)\s*"
+    r"(?:const\s*)?(?:\{|$)")
+_DISCOVERY_V27_PATCH_TRUNCATED_SYMBOL = re.compile(
+    r"(?P<name>[A-Za-z_~][A-Za-z0-9_:~<>]*)\s*\(\s*$")
+_DISCOVERY_V27_PATCH_PLAIN_SYMBOL = re.compile(
+    r"^[A-Za-z_][A-Za-z0-9_:~<>]*$")
+_DISCOVERY_V27_PATCH_CONTROLS = frozenset({
+    "if", "for", "while", "switch", "catch"})
+_DISCOVERY_V27_PATCH_PHASE_PROBE = re.compile(
+    r"\b(?:hip|cuda)StreamIsCapturing\s*\("
+    r"|\btorch\.cuda\.is_current_stream_capturing\s*\("
+    r"|\b(?:correctness|warmup|timing|benchmark)_phase\b", re.IGNORECASE)
+_DISCOVERY_V27_PATCH_PHASE_COUNTER = re.compile(
+    r"\b(?:static\s+)?(?:std::atomic\s*<\s*(?:u?int\w*|size_t)\s*>|"
+    r"(?:u?int\w*|size_t|long))\s+"
+    r"((?=[A-Za-z_]\w*\b)(?=\w*(?:call|invocation|iteration|warmup|phase|round))"
+    r"\w+)\b", re.IGNORECASE)
+_DISCOVERY_V27_PATCH_CONTROL_FLOW = re.compile(
+    r"\b(?:if|while|switch)\s*\(|\?.*:")
+_DISCOVERY_V27_PATCH_CAPTURE_REPLAY = re.compile(
+    r"(?:@\s*)?torch\.compile\b|\btorch\.cuda\.(?:CUDAGraph|graph)\b"
+    r"|\b(?:cuda|hip)Graph(?:Create|Instantiate|Launch|ExecUpdate|Add\w*)\s*\("
+    r"|\b(?:cuda|hip)StreamBeginCapture\s*\(", re.IGNORECASE)
+_DISCOVERY_V27_PATCH_CONTENT_SPECIALIZATION = re.compile(
+    r"\b(?:tensor|input|content)[_-]?(?:hash|checksum|fingerprint)\b"
+    r"|\b(?:hash|checksum|fingerprint)[_-]?(?:tensor|input|content)\b"
+    r"|\b(?:cache|memo)\s*\[[^\]\n]*(?:checksum|fingerprint|"
+    r"\.sum\s*\(\s*\)\s*\.item|memcmp\s*\(|sha256|xxhash)", re.IGNORECASE)
+
+
+def _discovery_v27_patch_path(value: object) -> str | None:
+    if not isinstance(value, str) or not value or "\\" in value or "\x00" in value:
+        return None
+    path = PurePosixPath(value)
+    if (path.is_absolute() or value != path.as_posix()
+            or any(part in {"", ".", ".."} for part in path.parts)
+            or value.startswith("-")):
+        return None
+    return path.as_posix()
+
+
+def _discovery_v27_patch_symbol(context: str, body: list[str]) -> str:
+    normalized = context.strip()
+    if (_DISCOVERY_V27_PATCH_PLAIN_SYMBOL.fullmatch(normalized)
+            and normalized not in _DISCOVERY_V27_PATCH_CONTROLS):
+        header_symbol = normalized
+    else:
+        matches = list(_DISCOVERY_V27_PATCH_SYMBOL.finditer(normalized))
+        match = (matches[-1] if matches else
+                 _DISCOVERY_V27_PATCH_TRUNCATED_SYMBOL.search(normalized))
+        header_symbol = (
+            match.group("name") if match is not None
+            and match.group("name") not in _DISCOVERY_V27_PATCH_CONTROLS
+            else "<file-scope>")
+    body_symbols: list[str] = []
+    for line in body:
+        if not line.startswith(" "):
+            break
+        normalized = line[1:].strip()
+        match = _DISCOVERY_V27_PATCH_TRUNCATED_SYMBOL.search(normalized)
+        if match is None or match.group("name") in _DISCOVERY_V27_PATCH_CONTROLS:
+            continue
+        prefix = normalized[:match.start("name")].strip()
+        if (not prefix or prefix in _DISCOVERY_V27_PATCH_CONTROLS
+                or any(char in prefix for char in "=;{}")):
+            continue
+        symbol = match.group("name")
+        if symbol not in body_symbols:
+            body_symbols.append(symbol)
+    if len(body_symbols) == 1:
+        return body_symbols[0]
+    if header_symbol in body_symbols:
+        return header_symbol
+    return "<file-scope>" if body_symbols else header_symbol
+
+
+def _discovery_v27_patch_reward_safe(
+        added: list[tuple[str, int, str]]) -> bool:
+    phase_variables: dict[str, tuple[str, int]] = {}
+    for path, line, text in added:
+        code = text.split("//", 1)[0]
+        if (_DISCOVERY_V27_PATCH_PHASE_PROBE.search(code)
+                or _DISCOVERY_V27_PATCH_CAPTURE_REPLAY.search(code)
+                or _DISCOVERY_V27_PATCH_CONTENT_SPECIALIZATION.search(code)):
+            return False
+        counter = _DISCOVERY_V27_PATCH_PHASE_COUNTER.search(code)
+        if counter is not None:
+            phase_variables[counter.group(1)] = (path, line)
+    for _path, _line, text in added:
+        code = text.split("//", 1)[0]
+        if not _DISCOVERY_V27_PATCH_CONTROL_FLOW.search(code):
+            continue
+        if any(re.search(rf"\b{re.escape(variable)}\b", code)
+               for variable in phase_variables):
+            return False
+    return True
+
+
+def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
+    try:
+        text = patch.decode("utf-8", "strict")
+    except UnicodeDecodeError:
+        return None
+    if not text.endswith("\n") or "\x00" in text:
+        return None
+    lines = text.splitlines()
+    paths: set[str] = set()
+    symbols: dict[str, set[str]] = {}
+    deleted: dict[str, set[int]] = {}
+    inserted: dict[str, set[int]] = {}
+    added: list[tuple[str, int, str]] = []
+    current_path: str | None = None
+    current_marker_path: str | None = None
+    saw_hunk = False
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("diff --git a/"):
+            match = re.fullmatch(r"diff --git a/(.+) b/(.+)", line)
+            if match is None or match.group(1) != match.group(2):
+                return None
+            current_path = _discovery_v27_patch_path(match.group(2))
+            if current_path is None:
+                return None
+            paths.add(current_path)
+            symbols.setdefault(current_path, set())
+            deleted.setdefault(current_path, set())
+            inserted.setdefault(current_path, set())
+            current_marker_path = None
+            i += 1
+            continue
+        if line.startswith(("rename from ", "rename to ",
+                            "copy from ", "copy to ", "Binary files ")) \
+                or line == "GIT binary patch":
+            return None
+        mode = re.fullmatch(
+            r"(?:old|new|deleted file|new file) mode (\d+)", line)
+        if mode is not None and mode.group(1) not in {"100644", "100755"}:
+            return None
+        if line.startswith("--- "):
+            if current_path is None:
+                return None
+            marker = line[4:].split("\t", 1)[0]
+            if marker != "/dev/null":
+                old_path = marker[2:] if marker.startswith("a/") else marker
+                if _discovery_v27_patch_path(old_path) != current_path:
+                    return None
+            i += 1
+            continue
+        if line.startswith("+++ "):
+            if current_path is None:
+                return None
+            marker = line[4:].split("\t", 1)[0]
+            if marker != "/dev/null":
+                new_path = marker[2:] if marker.startswith("b/") else marker
+                if _discovery_v27_patch_path(new_path) != current_path:
+                    return None
+            current_marker_path = current_path
+            i += 1
+            continue
+        hunk = _DISCOVERY_V27_PATCH_HUNK.match(line)
+        if hunk is not None:
+            if current_path is None or current_marker_path != current_path:
+                return None
+            old_line = int(hunk.group(1))
+            old_count = int(hunk.group(2) or "1")
+            new_line = int(hunk.group(3))
+            new_count = int(hunk.group(4) or "1")
+            seen_old = seen_new = 0
+            body: list[str] = []
+            i += 1
+            while i < len(lines) and (
+                    seen_old < old_count or seen_new < new_count):
+                row = lines[i]
+                if row.startswith("\\"):
+                    body.append(row)
+                    i += 1
+                    continue
+                if row.startswith("+"):
+                    inserted[current_path].add(old_line)
+                    added.append((current_path, new_line, row[1:]))
+                    seen_new += 1
+                    new_line += 1
+                elif row.startswith("-"):
+                    deleted[current_path].add(old_line)
+                    seen_old += 1
+                    old_line += 1
+                elif row.startswith(" ") or row == "":
+                    seen_old += 1
+                    seen_new += 1
+                    old_line += 1
+                    new_line += 1
+                else:
+                    return None
+                body.append(row)
+                i += 1
+            if seen_old != old_count or seen_new != new_count:
+                return None
+            symbols[current_path].add(_discovery_v27_patch_symbol(
+                hunk.group("context").strip(), body))
+            saw_hunk = True
+            continue
+        i += 1
+    if (not saw_hunk or not paths
+            or any(not symbols.get(path) for path in paths)
+            or not _discovery_v27_patch_reward_safe(added)):
+        return None
+    return {
+        "text": text,
+        "paths": tuple(sorted(paths)),
+        "symbols": {
+            path: tuple(sorted(symbols[path])) for path in sorted(paths)},
+        "footprint": {
+            path: (frozenset(deleted[path]), frozenset(inserted[path]))
+            for path in sorted(paths)},
+    }
+
+
+def _discovery_v27_source_manifest(value: object) -> dict | None:
     keys = {
         "schema", "campaign_id", "proposal_id", "candidate_id",
         "source_tree", "production_base_commit", "instrument_commit",
@@ -5977,16 +6198,26 @@ def _discovery_v27_source_manifest(value: object) -> str | None:
         rows = symbols.get(path)
         if (not isinstance(rows, list) or not rows
                 or rows != sorted(set(rows))
-                or any(not isinstance(symbol, str) or not symbol
-                       for symbol in rows)):
+                or any(symbol != "<file-scope>" and (
+                    not isinstance(symbol, str)
+                    or _DISCOVERY_V27_PATCH_PLAIN_SYMBOL.match(symbol) is None)
+                    for symbol in rows)):
             return None
     try:
         patch = base64.b64decode(value.get("patch_base64"), validate=True)
     except (TypeError, ValueError):
         return None
-    if hashlib.sha256(patch).hexdigest() != value["patch_sha256"]:
+    projection = _discovery_v27_patch_projection(patch)
+    if (hashlib.sha256(patch).hexdigest() != value["patch_sha256"]
+            or projection is None
+            or projection["paths"] != tuple(files)
+            or any(set(projection["symbols"][path]) - set(symbols[path])
+                   for path in files)):
         return None
-    return _discovery_content_hash(value)
+    return {
+        **projection,
+        "manifest_sha256": _discovery_content_hash(value),
+    }
 
 
 def _discovery_v27_replicated_lever(value: object) -> bool:
@@ -6007,10 +6238,10 @@ def _discovery_v27_replicated_lever(value: object) -> bool:
             or not _discovery_sha256(value.get("manifest_sha256"))
             or not _discovery_sha256(value.get("lever_sha256"))):
         return False
-    manifest_sha256 = _discovery_v27_source_manifest(value.get("manifest"))
+    manifest = _discovery_v27_source_manifest(value.get("manifest"))
     rows = value.get("replications")
-    if (manifest_sha256 is None
-            or value["manifest_sha256"] != manifest_sha256
+    if (manifest is None
+            or value["manifest_sha256"] != manifest["manifest_sha256"]
             or not isinstance(rows, list) or len(rows) < 2
             or not all(_discovery_v27_isolated_replication(row)
                        for row in rows)
@@ -6020,6 +6251,45 @@ def _discovery_v27_replicated_lever(value: object) -> bool:
         return False
     return value["lever_sha256"] == _discovery_content_hash({
         key: item for key, item in value.items() if key != "lever_sha256"})
+
+
+def _discovery_v27_levers_compatible(accepted: list[dict]) -> bool:
+    projections = [
+        _discovery_v27_source_manifest(row.get("manifest"))
+        for row in accepted]
+    if any(projection is None for projection in projections):
+        return False
+    for index, proposed in enumerate(accepted):
+        proposed_projection = projections[index]
+        for old_index in range(index):
+            existing = accepted[old_index]
+            existing_projection = projections[old_index]
+            if (existing["cross_campaign_candidate_sha256"] ==
+                    proposed["cross_campaign_candidate_sha256"]
+                    or existing["manifest_sha256"] ==
+                       proposed["manifest_sha256"]):
+                return False
+            shared = set(existing["manifest"]["declared_files"]) & set(
+                proposed["manifest"]["declared_files"])
+            for path in shared:
+                old_symbols = set(
+                    existing["manifest"]["declared_symbols"][path])
+                new_symbols = set(
+                    proposed["manifest"]["declared_symbols"][path])
+                if ("<file-scope>" in old_symbols
+                        or "<file-scope>" in new_symbols
+                        or old_symbols & new_symbols):
+                    return False
+                old_deleted, old_inserted = existing_projection[
+                    "footprint"][path]
+                new_deleted, new_inserted = proposed_projection[
+                    "footprint"][path]
+                if (old_deleted & new_deleted
+                        or old_deleted & new_inserted
+                        or old_inserted & new_deleted
+                        or old_inserted & new_inserted):
+                    return False
+    return True
 
 
 def _discovery_v27_composition_authority(value: object) -> bool:
@@ -6050,7 +6320,8 @@ def _discovery_v27_composition_authority(value: object) -> bool:
             or len({row["cross_campaign_candidate_sha256"]
                     for row in accepted}) != len(accepted)
             or len({row["manifest_sha256"] for row in accepted}) !=
-               len(accepted)):
+               len(accepted)
+            or not _discovery_v27_levers_compatible(accepted)):
         return False
     patch_set = _discovery_content_hash({
         "schema": "epyc.autokernel.ordered_patch_set.v1",
