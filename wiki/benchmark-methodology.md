@@ -2588,3 +2588,44 @@ result, and mutation-test any new guard.
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md) — both SWE protocols and their provenance caveats
 - `epyc-inference-research` commits `baf36757` (`effective_request` provenance + mutation-verified test) and `a94e0e01` (duplicate `evidence` key) — direct commit reads
 - [Speculative Decoding](speculative-decoding.md) — the same session's per-artifact draft-depth finding
+
+## Compiled Update — 2026-08-21: the vacuous-pass campaign closed — and the guard needed five repairs of its own
+
+**EVL-50 completed same-day** (handoff: `handoffs/completed/vacuous-test-suite-remediation.md`;
+conventions now canonical in `docs/guides/agent-workflows/test-suite-conventions.md`). Final state:
+0 blocking files across all three repos (139 + 274 + 791 checked); the orchestrator security-audit
+suite executed for the first time ever (moved inside `testpaths`, 6/6 pass); probes renamed out of
+both pytest globs rather than bridged (a `test_all()` bridge on a benchmark probe would let a bare
+`pytest` launch a llama-server run).
+
+**The meta-lesson outranks the campaign: a guard must model the collector it reasons about, or it
+becomes the defect class it polices.** `check_test_collectability.py` needed **five** false-positive
+repairs after shipping, two while it was live and refusing legitimate commits: module-level-only
+scanning (missed class-based suites, 237 misreported), a double-counted nested worktree, arg-shape
+deciding collectability (pytest collects ANY `test_*` callable — an unresolvable fixture is a loud
+ERROR, the opposite of a vacuous pass), `Test*`-name-only class descent (unittest.TestCase collects
+by BASE CLASS — `test_promote_lane.py`, 22 real tests, reported as running nothing), and
+absolute-path skip matching (any checkout under a `tmp`-containing path was invisible). All five
+UNDER-counted what pytest collects — the unsafe direction for a gate. Every detection is now
+mutation-verified (9/9) by a 13-test suite that is itself both collectable and self-running.
+
+**Two entangled defects can share one symptom; only removing one separates them.** The toon check's
+`heuristic_deeply_nested` failure read as an env gap because a missing `toon_format` makes
+`should_use_toon()` return False for *everything* — masking that the expectation (`True` for an
+array nested three levels down) was impossible by construction: the gate scans top-level values
+only, per its documented contract and its sole production caller. Installing the lib isolated the
+real defect (50/51, one survivor). Fix was the expectation, NOT a recursive heuristic — that would
+have changed production encoding behaviour to make a checker green.
+
+**An exemption list is only honest if each entry is a written decision.** `DELIBERATE_SELF_RUNNERS`
+survived VT-4 review: merge-gate confirmed (its test rewrites a real trust-boundary file to simulate
+drift — collectable would mutate shared state on every repo-wide run), unblock-artifact DELETED
+(proven shared-state-clean, bridged, pytest+self-run both green), commit-hygiene KEPT with a firm
+four-hazard rationale (parallel-run probe race being the sharpest).
+
+### Source References
+
+- [`handoffs/completed/vacuous-test-suite-remediation.md`](../handoffs/completed/vacuous-test-suite-remediation.md) — full task record, the gate's blind-spot table, completion evidence
+- [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md) — the living rules (shapes, naming, stanzas, exemption process)
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — fan-out execution and integration record
+- epyc-root `d2a43b79`, orchestrator `6a4820de`/`7e74eba8`, research `b1056a4f` — direct commit reads
