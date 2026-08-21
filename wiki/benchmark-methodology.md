@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-19 (judge-guided selection: recovery rate and its pool-mean denominator, best-of-N safety is a verifier property not an n property, the lever is continuous ordering not bin count, and a "verbatim" check that read a stale mirror; a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
+**Last compiled**: 2026-08-21 (a THIRD vacuous-pass shape: a gate that RUNS and PASSES can still be passed by weakening the computation under test - five dive-verified sources, incl. one genuinely well-engineered gate whose adaptive tolerance scales the wrong way; anti-hack tiers test whether the kernel RAN, never at what WIDTH it computed; previously 2026-08-19: judge-guided selection: recovery rate and its pool-mean denominator, best-of-N safety is a verifier property not an n property, the lever is continuous ordering not bin count, and a "verbatim" check that read a stale mirror; a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
 **Sources**: 127+ documents
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
@@ -2629,3 +2629,75 @@ four-hazard rationale (parallel-run probe race being the sharpest).
 - [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md) — the living rules (shapes, naming, stanzas, exemption process)
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — fan-out execution and integration record
 - epyc-root `d2a43b79`, orchestrator `6a4820de`/`7e74eba8`, research `b1056a4f` — direct commit reads
+
+## Compiled Update — 2026-08-21: a gate that runs and passes can still be passed by weakening the computation under test
+
+**This is a THIRD vacuous-pass shape, and it is additive to the two already canonical here.** The
+[vacuous-pass campaign](#compiled-update--2026-08-21-the-vacuous-pass-campaign-closed--and-the-guard-needed-five-repairs-of-its-own)
+closed on tests that **do not run** — Shape A (fixture suite with no `__main__`) and Shape B (self-runner
+with no collectable test). Nine primary-source dives of the agentic-GPU-kernel literature surfaced a
+different failure with the same consequence: the test **runs**, the gate **passes**, and the thing that
+passed is not the computation anyone asked for. Call it **Shape C — the gate is satisfied by weakening the
+computation under test.**
+
+**Five independent sources, all dive-verified, and the strongest one is a gate that was genuinely well
+engineered.** The naive reading is "these papers were careless"; that reading is wrong and would mislead.
+
+- A published kernel-optimization agent's **entire** correctness gate is one line —
+  `torch.allclose(out, ref, atol=1e-2, rtol=1e-3)` — and its own appendix concedes that the decisive
+  4.11x→11.49x jump on its flagship task came from epilogue fusion **plus a TF32→BF16 tensor-core switch**,
+  with "the precision switch supplies most of the magnitude". A TF32→BF16 downgrade passes `atol=1e-2` *by
+  construction*. The gate cannot ask whether the semantics were relaxed, and the paper does not ask either.
+- A second project's gate is `assert_close(atol=rtol=1e-2)` instantiated on a **bfloat16** suite, so an
+  fp32→bf16 downgrade is not even *expressible*; separately, its `allclose` accepts tolerance arguments and
+  then silently drops them, so the tolerance cannot be tightened from the call site at all.
+- A third ships a **genuinely engineered** gate — combinatorial all-cases-must-pass over hostile
+  shape/stride grids, an adaptive tolerance, a three-tier anti-hack architecture — and *still* plausibly
+  admits the downgrade on large-K GEMM, because its `atol = 1e-4 × D_reduce` grows **linearly** with
+  reduction depth and reaches ~0.53 at its own BLAS shape, dominating `rtol·|ref|` by ~3 orders of
+  magnitude. Engineering the gate is not sufficient if the tolerance model scales the wrong way.
+- A fourth ships an anti-cache defence its own author labels "Level 1": the input perturbation is applied
+  **once, before** the timed loop, and for every dtype other than fp32/fp64 it is an element-order
+  **reversal** — an involution, therefore an **identity** for order-insensitive kernels (reductions, norms,
+  histograms). Its code comment asserts the transform "must change the output of any honest kernel"; for
+  that branch the assertion is false.
+- A fifth ships, in its released RL environment and **undisclosed in its paper**, a `CALL_LIBRARY` action
+  ("replace the selected operator with library functions") alongside `SOTA_TRITON_API`. An agent that
+  satisfies a library-relative speedup reward by *calling the library* has not written a kernel, and a
+  relative-speedup metric cannot tell the two apart.
+
+**The generalisable rule, and it is the same one the collectability guard already encodes, extended one
+step: a gate that can be passed by weakening the computation under test is not a gate.** The collectability
+lesson was *a guard must model the collector it reasons about*. Shape C's lesson is the sibling: **a
+correctness gate must model the computation it certifies.** Recording the reference dtype and asserting
+that observed error scales as `sqrt(D_reduce) × eps(input_dtype)` against a float64 reference is a
+different question from asking whether error falls under a bound — the first can detect a precision
+downgrade, the second cannot.
+
+**Two consequences worth carrying.** First, **anti-hack tiers are orthogonal to precision and do not cover
+it**: every mechanism above tests whether the kernel *ran* (AST scans, no-op hot-swap replay, profiler
+signatures), never *at what width it computed*. A project can hold a complete anti-reward-hacking stack and
+still be wide open to Shape C. Second, **when you cannot tighten the gate, make the artifact auditable** —
+one of these projects responds to exactly this hazard not with a tighter number but with a per-operator
+directory of inspectable kernels ("zip that folder and send it to your favourite performance engineer"),
+many inputs per operator, and a recursion trap that catches a generated kernel silently falling back to the
+reference. That is a defensible answer to an un-tightenable tolerance and it generalises past kernels.
+
+**Enforcement follows the doctrine already established here, and deliberately does not invent a new one.**
+The collectability lint is *authoring-time* rather than a `pytest_collection_modifyitems` floor, because a
+floor runs inside pytest where a mis-fire breaks every invocation for every session and cannot express
+"self-runner ON PURPOSE". The precision-equivalence check belongs in the same tier: an **eval-contract /
+authoring-time** assertion beside the collectability check, not a runtime floor.
+
+### Source References
+
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1222#record` (one-line allclose;
+  TF32→BF16 flagship), `intake-1224#record` (bf16 suite; dropped tolerance arguments),
+  `intake-1227#record` (adaptive `atol = 1e-4 × D_reduce`; orthogonal anti-hack tiers; the auditable-artifact
+  and recursion-trap patterns are `intake-1224#record`), `intake-1219#record` ("Level 1" anti-cache;
+  order-reversal involution), `intake-1236#record` (`CALL_LIBRARY` / `SOTA_TRITON_API`)
+- [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
+  — the two existing shapes, the enforcement chain, and the authoring-time-not-collection-floor rationale
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+  `RVP-C2-9` (amended 2026-08-21: scope widened from checker-path pinning to output-precision equivalence);
+  `RVP-C6-14`/`RVP-C6-15` carry the execution-proof and library-substitution cases

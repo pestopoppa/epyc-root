@@ -1,166 +1,114 @@
 {
-  "session_id": "b41f8ce0-2d77-4a19-9f3e-51c8ab0d6e22",
-  "started_at": "2026-08-20T22:05:00Z",
-  "last_checkpoint": "2026-08-21T09:30:00Z",
+  "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
+  "started_at": "2026-08-21T09:45:00Z",
+  "last_checkpoint": "2026-08-21T10:05:00Z",
   "phase": 5,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake (1 submitted URL)",
+  "stage": "stage1-complete-awaiting-operator-dive-selection",
+  "session_kind": "research-intake (4 submitted URLs, Hawkeye-focused batch)",
   "previous_session": {
-    "session_id": "e7d21a56-3f9c-4b18-8a72-6c05e9f31d84",
-    "stage": "stage4-complete-pending-operator-ratification",
-    "mandate": "Ingest 14 operator-submitted sources: 7 URLs (anti-slop, Anthropic multiagent, omp-best-of, almendili/skills, Google dev",
-    "note": "Closed as Stage-4-complete-pending-operator-ratification. Unrelated mandate; NOT resumed. ID sequence continued from next_intake_id 1212. Its open gate (operator ratification of 3 trust-boundary edits) is untouched and still open.",
-    "archived_copy": "scratchpad/.research-session.PREV-14sources.json"
+    "session_id": "b41f8ce0-2d77-4a19-9f3e-51c8ab0d6e22",
+    "stage": "stage4-complete (verified from commit 3c0b3235, NOT the mid-flight state I first read)",
+    "mandate": "Qwen chat templates (intake-1212..1217)",
+    "note": "UNRELATED mandate (Qwen chat templates, intake-1212..1217); NOT resumed. CORRECTED 2026-08-21 after the session committed: when this session started, its state file read stage2-complete with an OPEN close-out gate and a stale next_intake_id of 1215 (1215-1217 had already been minted by its Stage-2b pass, so the ID sequence was re-derived from the index file rather than trusting that counter). It subsequently completed Stage 4 and committed 3c0b3235, whose final state is stage4-complete, open_gates [], next_intake_id 1218 - exactly where this session began, so the handover is clean and the ID sequence never collided. That commit ALSO contains .research-session.json, so this session's wholesale rewrite of that file supersedes a COMMITTED version (git diff shows 154 deletions). That is the established one-session-at-a-time convention for this file and their record is durable in git, but it means a Stage-4 commit of .research-session.json legitimately removes their content - do not mistake that for a sweep, and do not \"restore\" it.",
+    "archived_copy": "DURABLE: commit 3c0b3235 in epyc-root carries that session's final .research-session.json (`git show 3c0b3235:.research-session.json`). A copy was also taken to this session's scratchpad at scratchpad/.research-session.PREV-qwen-templates.json, but that path is EPHEMERAL and session-local - do not rely on it."
   },
-  "mandate": "Ingest https://huggingface.co/peculiar-ragdoll/Qwen-Sharp-Chat-Templates (single operator-submitted URL).",
-  "submitted_url_count": 1,
-  "max_existing_intake_id": 1217,
-  "next_intake_id": 1218,
+  "mandate": "Ingest 4 operator-submitted URLs: openreview.net/pdf?id=e3pxJbBRBk, alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1, github.com/Zanatticus/Hawkeye/, arxiv.org/html/2603.12440v1",
+  "submitted_url_count": 4,
+  "max_existing_intake_id_at_start": 1217,
+  "next_intake_id": 1223,
   "expansion_cap": 10,
-  "expansion_count": 2,
+  "expansion_count": 3,
   "processed_urls": [
-    "https://huggingface.co/peculiar-ragdoll/Qwen-Sharp-Chat-Templates",
-    "https://huggingface.co/froggeric/Qwen-Fixed-Chat-Templates",
-    "https://arxiv.org/abs/2401.05618",
-    "https://arxiv.org/abs/2412.18547",
-    "https://github.com/google/minja",
-    "https://arxiv.org/abs/2604.06132"
+    "https://openreview.net/pdf?id=e3pxJbBRBk",
+    "https://www.alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1",
+    "https://github.com/Zanatticus/Hawkeye/",
+    "https://arxiv.org/html/2603.12440v1",
+    "https://arxiv.org/abs/2601.15727",
+    "https://arxiv.org/abs/2508.20258",
+    "https://arxiv.org/abs/2606.26453"
   ],
   "entries_processed": {
-    "submitted": "intake-1212 (1)",
-    "expansion": "intake-1213 (Tier 1, reference chasing), intake-1214 (Tier 2, targeted search) - 2 of 10 cap used",
-    "duplicates_not_minted": "spiritbuun/buun-llama-cpp re-encountered via froggeric's credits section; recorded on the EXISTING intake-194 per Phase-1 step 2b, no new entry"
+    "submitted": "intake-1218 (Hawkeye paper), intake-1219 (Hawkeye companion repo)",
+    "expansion": "intake-1220 (kernel-gen survey, Tier 1), intake-1221 (SwizzlePerf, Tier 1), intake-1222 (KernelPro micro-profiling, Tier 1) - 3 of 10 cap used",
+    "url_collapse": "URLs 1 and 2 are THE SAME WORK (OpenReview e3pxJbBRBk = DL4C 2026 oral = alphaXiv slug 2608.hawkeye-...). Filed as ONE entry, intake-1218, with both submitted URLs recorded as alternate locators in its notes so a future dedup sweep hits either.",
+    "duplicates_not_minted": "URL 4 (arxiv.org/html/2603.12440v1) normalizes to arxiv_id 2603.12440, an EXACT collision with the EXISTING intake-669 (KernelFoundry). Per Phase-1 step 2b no new id was minted; the re-encounter plus a title-collision warning was recorded on intake-669's notes in place."
   },
   "provenance_pins": {
-    "intake-1212": "README.md 22260 B sha256 dc6dd5e2e9af7344a0f7275d9ece010b1b5de9c75b5c15eafe66a4923dca3ea4, retrieved 2026-08-20",
-    "intake-1213": "README.md 26052 B sha256 08875a413b792202447b0ca03048db607826ef65c37494513355b516a5df0d85, retrieved 2026-08-20",
-    "intake-1214": "arXiv abs page read 2026-08-20; recorded against v3 (2024-10-19), not v1"
+    "intake-1218": "NO PRIMARY ARTIFACT READ. openreview.net returned HTTP 403 bot-challenge on the PDF, the forum page and BOTH API hosts; browser-UA curl and r.jina.ai proxy also blocked. alphaXiv PDF route returned navigation chrome only. Content from alphaXiv /abs + /overview + the DL4C 2026 papers listing, cross-checked across two independent sub-agent fetches. Retrieved 2026-08-21.",
+    "intake-1219": "Full shallow clone at HEAD a226e955d56c04be044d46f6fd876191cfce5bf4 (main, authored 2026-08-11T20:29:51Z), 3723 blobs, tree API truncated=false. All absence claims grep-verified over the whole tree. Retrieved 2026-08-21T09:49-09:52Z.",
+    "intake-1220": "arXiv v3 (2026-06-06); v1 was 2026-01-22. HTML route only, no PDF. Retrieved 2026-08-21.",
+    "intake-1221": "arXiv v1 (2025-08-27), the ONLY version. HTML full-text. Retrieved 2026-08-21T09:56-09:59Z. MI210 hardware facts are FIRST-PARTY from rocminfo on this host at 2026-08-21T10:00Z, not from the paper.",
+    "intake-1222": "arXiv v2 (2026-08-08); v1 was 2026-06-24; versions NOT diffed. HTML + locally zlib-decompressed PDF for verbatim section text. Retrieved 2026-08-21."
   },
+  "integrity_probes_run": [
+    "Reference-list authenticity: one sub-agent reported the intake-1218 bibliography unreadable and returned an empty list; another returned 12 arXiv ids from the alphaXiv route. Probed 5 of the 12 against our own index - 2602.24286/CUDA Agent, 2507.14111/CUDA-L1, 2509.14279/Robust Agentic CUDA, 2502.10517/KernelBench, 2507.23194/GEAK - all 5 resolved to exactly the titles the sub-agent labelled them with. 5/5 correct id-to-title mapping is strong evidence the list was extracted, not invented. Remaining 7 unverified.",
+    "id-mismatch guard on all 3 expansion candidates: each agent was required to confirm the arXiv id resolves to the believed title BEFORE ingesting, and to ingest the ACTUAL paper on mismatch. All 3 resolved correctly; no substitutions occurred.",
+    "Append safety: pre-append backup taken; post-append diff confirmed the pre-existing 94,726 lines byte-identical, so the parallel session's 1,094 uncommitted insertions were not clobbered.",
+    "Commit separation: the parallel session committed 3c0b3235 mid-session. Verified its commit contains 0 of my entries and all 6 of its own, and my uncommitted diff contains only intake-1218..1222 plus the intake-669 note. No sweep in either direction."
+  ],
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 1,
-      "verbatim": "I believe the research intake I gave you is an easy low-hanging fruit to improve all our current and future qwen models",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Operator hypothesis stated during Stage 1. Recorded verbatim, answered in the Stage-1 report with the partial correction (the deployment cost IS near-zero and family-wide; the IMPROVEMENT is unmeasured - every number in the submitted source lives in PNG alt-text - and the value splits unevenly between the upstream structural fixes and the terseness prompt). Carries to Stage 3 as context; becomes a plan item only if a dive substantiates it."
+      "stage": 2,
+      "verbatim": "\"Also: rocprofv3, the paper's instrument, isn't installed here.\" - can't we install it as part of this session?",
+      "disposition": "planned",
+      "plan_ref": "D-1",
+      "note": "Operator QUESTION, answered with evidence rather than assumption: rocprofv3 IS obtainable for ROCm 6.2 (rocprofiler-sdk6.2.0_0.4.0-66~22.04, version-matched to our 6.2.0-66), downloaded to scratchpad, extracted and run --help successfully, and it supports exactly the flags Hawkeye's runner uses. So the correct answer to the question is YES. I recommended doing it and asked for an explicit go, which was NOT separately given - the later 'proceed with all recommendations' referred to the ranked DIVE table, not to this. It therefore remains an OPEN operator decision and is carried into the plan as decision item D-1. NOTE the intake-1219 dive subsequently WEAKENED the need: Hawkeye's counter-free profile path parses a CSV schema byte-identical to ROCm 6.2 rocprof v1's, so that specific consumer does NOT require rocprofv3 after all."
     },
     {
       "seq": 2,
-      "stage": 1,
-      "verbatim": "Correct me if I'm wrong",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Explicit invitation to contradict. Discharged in the Stage-1 report: four corrections offered (evidence is zero in the fetched artifact; the benefit plate is measured thinking-ON while we serve thinking-OFF; the value is in the upstream base not the submitted derivative; a stack-wide template swap voids existing per-arm calibrations)."
+      "stage": 2,
+      "verbatim": "proceed with all recommendations.",
+      "disposition": "planned",
+      "plan_ref": "DISCHARGED-STAGE2",
+      "note": "Operator selected ALL FOUR ranked dive candidates (intake-1218, 1219, 1221, 1222). All four were dived 2026-08-21 against primary source and persisted dive-verified with claim_anchors, claim_corrections and dive_corrections. Fully discharged; the resulting actionables are individually filed in this plan."
     },
     {
       "seq": 3,
       "stage": 2,
-      "verbatim": "Proceed with all three",
+      "verbatim": "\"Expansion backlog beyond the cap ... IntelliPerf ... the QiMeng line ... GPU Kernel Scientist ... BackendBench ... ParEval ... the memory/skill-library family ... and KernelGenBench.\" - deep dive these also",
       "disposition": "planned",
-      "plan_ref": "STAGE2-ALL3",
-      "note": "Operator selected every ranked dive candidate: intake-1212, intake-1213, intake-1214. All three dived 2026-08-21 against primary source."
+      "plan_ref": "DISCHARGED-STAGE2b",
+      "note": "Operator selected the ENTIRE expansion backlog. Run as an uncapped Stage-2b combined ingest-and-dive across five parallel batches: 14 entries persisted (intake-1223..1236), all dive-verified, all resolving and ID-verifying their own identifiers first. Fully discharged; resulting actionables filed individually."
     },
     {
       "seq": 4,
-      "stage": 2,
-      "verbatim": "proceed with recommendations",
+      "stage": 3,
+      "verbatim": "proceed",
       "disposition": "planned",
-      "plan_ref": "STAGE2B-3",
-      "note": "Operator accepted the close-out recommendations: ingest-and-dive TALE, google/minja, Claw-Eval; decline the Dagger/Nail MLX builds; handle buun-llama-cpp as a targeted re-check on existing intake-194 rather than a new entry. All executed 2026-08-21."
-    },
-    {
-      "seq": 5,
-      "stage": 4,
-      "verbatim": "Wait.... are there no handoff changess targeting the chat template of the other qwen models in our stack?",
-      "disposition": "planned",
-      "plan_ref": "CT-6 / fleet sweep",
-      "note": "CORRECT CHALLENGE, and it caught a real error. The approved plan scoped every template task to Qwen3.8 because that was the only model verified. Swept the embedded template of all four production GGUFs in response. Two results: every DEFECT is Qwen3.8-only, and the incumbents (3.6-27B, 3.6-35B-A3B, 3.5-122B) have the opposite problem - they DISCARD history thinking, which reverses the Stage-2 retention finding that had been generalised from one model generation. intake-1213 claim_corrections[2] corrected from overturned to narrowed; stub gained the fleet table plus CT-5 and CT-6."
-    },
-    {
-      "seq": 6,
-      "stage": 4,
-      "verbatim": "the original intake I gave you at the start of the session is pretty much use-out-of-thw-box, no?",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Answered in the Stage-4 report: installation IS out-of-the-box and that is verified (one flag or one gguf-new-metadata rewrite; Sharp's thinking-on path byte-identical to upstream). The qualifier is that under our enable_thinking=false posture the VERIFIED benefit (retention -> prefix cache) is inert, and the ACTIVE ingredient (the terseness prompt) is the unmeasured one. Recorded as context; CT-1 and CT-5 already carry the work."
+      "plan_ref": "THIS-PLAN",
+      "note": "Authorises entering Stage 3 and building the action plan. Not approval of the plan itself - that is ExitPlanMode."
     }
   ],
-  "open_gates": [],
-  "lane_note": "Session started in the SHARED CLONE with no lane worktree (operator-spawned). Stage-1 writes are research/intake_index.yaml + .research-session.json only. No commit made; handoffs/ carries only two pre-existing modifications from before this session (dflash2-block-drafter-experimental-build.md, vidya-belief-substrate-program.md), neither intake-caused.",
-  "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1210 entries",
-  "stage2_dives": {
-    "selected_by_operator": "all 3 (intake-1212, 1213, 1214)",
-    "completed": 3,
-    "verification_promoted": {
-      "dive-verified": [
-        "intake-1212",
-        "intake-1214"
-      ],
-      "dive-overturned": [
-        "intake-1213"
-      ]
-    },
-    "verdict_changes": {
-      "intake-1212": "worth_investigating -> adopt_component (mechanism verified; benefit still unevidenced)"
-    },
-    "index_writes": "claim_corrections + claim_anchors + depends_on + dive_corrections on all three; validator exit 0 at 1210 entries",
-    "instruments": [
-      "tokenizer.chat_template extracted from /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf via a hand-written GGUF header parser (no gguf module available); 9,993 B sha256 12827f24b742ea4e...",
-      "stock Qwen/Qwen3.8-27B chat_template.jinja fetched 2026-08-21; 8,952 B sha256 c3cf9e34abf4f9e3...",
-      "froggeric chat_template.jinja 26,681 B sha256 6e1439c913ad7df4...; Sharp chat_template.jinja 28,174 B sha256 8753210e4e253128...",
-      "Jinja2 3.1.6 (orchestrator venv) used for render-equivalence, raise-reachability, retention and timing tests. NO inference run, no server started."
-    ],
-    "headline_findings": [
-      "Sharp thinking-ON render minus terseness == upstream v22.3 render EXACTLY, at 3 kwarg settings (claim confirmed to the byte)",
-      "froggeric's enable_thinking=false fatal-exception claim OVERTURNED on both stock and our Unsloth artifact; the real trigger is reasoning_effort='none'",
-      "80%/AST-flattening claim REFUTED in direction: froggeric is 3.0x larger, deeper, 3.3x slower to compile, 2.0x slower to render; llama.cpp parses once at load",
-      "xhigh default CONFIRMED verbatim on both artifacts",
-      "empty-<think>-block defect CONFIRMED with a rendered artifact on OUR OWN served template",
-      "NEW, in neither source: stock RAISES on reasoning_effort='high'; our Unsloth variant silently coerces high->xhigh",
-      "CCoT all four figures confirmed; the 27.69% math penalty is GPT-3.5-only, GPT-4 shows no significant decrease"
-    ]
+  "open_gates": [
+    "Stage-2b COMPLETE (all 5 batches in, 14 entries persisted). Next: Stage-3 plan gate - requires EnterPlanMode and operator approval before any handoff/wiki/index-row write.",
+    "OWNED ITEM: precision-equivalence-gate - see owned_items; must reach a plan item or an explicit decline."
+  ],
+  "lane_note": "Session started in the SHARED CLONE with NO lane worktree (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit made by this session. handoffs/ carries only two pre-existing modifications (dflash2-block-drafter-experimental-build.md, vidya-belief-substrate-program.md), neither intake-caused. A PARALLEL SESSION was writing the same index file concurrently throughout Stage 1 - see integrity_probes_run.",
+  "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1218 entries (baseline before append was exit 0 at 1213)",
+  "peer_coordination": {
+    "note": "Cross-session messages from workspace-c0 (operator-wrapup-20260821) during Stage 2. Recorded HERE and deliberately NOT in steering_ledger: the ledger is for OPERATOR comments and carries a Stage-3 gate (no plan may be presented until every ledger row is a filed item or an explicit decline). Peer input is context, and a peer cannot supply the approval that gate exists to enforce.",
+    "ownership_questions_answered": "Confirmed NOT-MINE for orchestration/model_registry.yaml (research repo, mtime 2026-08-20 21:36:46, ~12h before this session began) and for the staged scripts/kernel_rnd/autokernel/controller/test_discovery_deployment_live_adversarial.py. This session's entire write footprint is research/intake_index.yaml + .research-session.json, both in epyc-root.",
+    "stage4_procedure_adopted": "Per peer: fetch FIRST, then `git diff -- research/intake_index.yaml` to confirm only intake-1218..1222 plus the one in-place intake-669 edit are mine, stage HUNK-SELECTIVELY, and commit the INDEX with NO pathspec. Shared clone, no lane, so none of the lane protections apply - say so in the wrap-up.",
+    "session_file_diff_is_lifecycle_not_accident": "`git diff -- .research-session.json` shows ~154 deletions against HEAD because commit 3c0b3235 (qwen-chat-template-intake) committed ITS session file and this session then replaced it wholesale. That is the single-session-state-file convention, NOT a sweep. Verified clean handover: their final committed state is stage4-complete / open_gates [] / next_intake_id 1218, exactly where this session began. The peer persisted this fact to progress/2026-08/2026-08-21-operator.md so whoever reconciles epyc-root reads the diff correctly. Do NOT 'restore' the deleted content.",
+    "stage3_writeup_target_suggested_not_approved": "Peer suggested wiki/benchmark-methodology.md as the home for this session's correctness-gate finding, and docs/guides/agent-workflows/test-suite-conventions.md as the enforcement pattern to pair with. Treated as a DESTINATION SUGGESTION ONLY - it is not plan approval and nothing was written. Both were read read-only to keep any eventual writeup additive.",
+    "read_only_recon_result": "The existing wiki section 'Compiled Update - 2026-08-21' covers the vacuous-pass campaign on TEST SUITES: tests that DO NOT RUN (Shape A fixture-suite-with-no-__main__, Shape B self-runner-with-no-collectable-test). Its meta-lesson is 'a guard must model the collector it reasons about, or it becomes the defect class it polices' - the collectability gate needed FIVE false-positive repairs, all UNDER-counting what pytest collects. The enforcement chain is: (1) pre-commit lint on changed files, blocking for Shape B and advisory for Shape A; (2) pytest.ini filterwarnings error on PytestReturnNotNoneWarning; (3) per-clone install_git_hooks.sh, which is the known gap - a fresh worktree is unprotected until it runs. Deliberately a LINT AT AUTHORING TIME rather than a pytest_collection_modifyitems floor, because a floor runs inside pytest where a mis-fire breaks every invocation and cannot express 'self-runner ON PURPOSE'. THIS SESSION'S FINDING IS ADDITIVE, NOT OVERLAPPING: it is a THIRD shape - a gate that DOES run and DOES pass, but can be passed by WEAKENING THE COMPUTATION UNDER TEST. Evidence from three independent dived sources: intake-1222's entire correctness gate is one torch.allclose(atol=1e-2, rtol=1e-3) line and its flagship 12.1x came mostly from a TF32->BF16 downgrade that gate admits by construction; intake-1219 ships a self-labelled 'Level 1' anti-cache defence whose perturbation is applied ONCE BEFORE the timed loop and, for all non-fp32/fp64 dtypes, is an order-reversal that is an IDENTITY for order-insensitive kernels; and intake-668 + intake-1220 independently argue KernelBench coverage manufactures an 'illusion of solvedness'. The proposed pairing follows the existing doctrine exactly - an authoring-time / eval-contract precision-equivalence check beside the collectability check, NOT a runtime floor."
   },
-  "stage2b": {
-    "selected_by_operator": "the three recommended ingest-and-dive items",
-    "entries_minted": 3,
-    "id_range": "intake-1215..intake-1217",
-    "verification": {
-      "dive-verified": [
-        "intake-1215",
-        "intake-1217"
+  "owned_items": [
+    {
+      "id": "precision-equivalence-gate",
+      "accepted": "2026-08-21, from workspace-c0 (operator-wrapup-20260821) as an ACTIVE, not conditional, owner.",
+      "finding": "A correctness gate that RUNS and PASSES can still be passed by WEAKENING THE COMPUTATION UNDER TEST. This is a THIRD shape, adjacent to but distinct from the two vacuous-pass shapes already canonical in docs/guides/agent-workflows/test-suite-conventions.md, which both concern tests that DO NOT RUN.",
+      "evidence_now_five_independent_sources_all_dive_verified": [
+        "intake-1222 (KernelPro): the ENTIRE correctness gate is one line - torch.allclose(out, ref, atol=1e-2, rtol=1e-3) - and Appendix G.1 states the decisive 4.11x->11.49x jump on its flagship task came from epilogue fusion PLUS a TF32->BF16 tensor-core switch, with the authors conceding 'the precision switch supplies most of the magnitude'. A TF32->BF16 downgrade passes atol=1e-2 BY CONSTRUCTION.",
+        "intake-1219 (Hawkeye repo): a self-labelled 'ANTI-CACHE (Level 1)' defence whose input perturbation is applied ONCE BEFORE the timed loop and, for every dtype other than fp32/fp64, is an element-order REVERSAL - an involution that is an IDENTITY for order-insensitive kernels, making the check vacuous for those leaves.",
+        "intake-1224 (BackendBench): gate is assert_close at atol=rtol=1e-2 on a bfloat16 suite, so an fp32->bf16 downgrade is not even EXPRESSIBLE; and eval.allclose accepts tolerance args but DROPS THEM, so the tolerance cannot be tightened from the call site.",
+        "intake-1227 (KernelGenBench): a genuinely ENGINEERED gate (combinatorial all-cases-must-pass, adaptive tolerance, three-tier anti-hack) that STILL plausibly admits the downgrade on large-K GEMM, because atol = 1e-4 x D_reduce grows LINEARLY with reduction depth and at its own BLAS shape reaches ~0.53, dominating rtol*|ref| by ~3 orders of magnitude. Its anti-hack tiers are ORTHOGONAL - they test whether the kernel RAN, never at what WIDTH it computed.",
+        "intake-1236 (QiMeng-Kernel): the released RL environment ships CALL_LIBRARY ('replace the selected operator with library functions') and SOTA_TRITON_API action tags, NEITHER disclosed in the paper - an agent that can satisfy a Torch-Eager-relative speedup reward by calling the vendor library instead of generating a kernel."
       ],
-      "dive-overturned": [
-        "intake-1216"
-      ]
-    },
-    "declines_recorded_in": "intake-1212.dive_corrections (Dagger/Nail MLX builds, with reason); buun-llama-cpp handled as a re-encounter note on intake-194",
-    "headline_findings": [
-      "TALE: 67% token reduction at -2.72% (GSM8K +3.11% accuracy at 75.7% fewer tokens) via a PER-QUESTION numeric budget - the form intake-276 predicted would beat stylistic prompts, now evidenced",
-      "TALE caveat found only in full text: MathBench-College shows -8%/-4%, far worse than the headline; and the per-question estimator costs an extra model call, untested on our CPU decode",
-      "minja OVERTURNED as our engine: frozen v9 (0db32c06e) runs a FIRST-PARTY common/jinja/ engine from ggml-org PR#18462; the only 'minja' strings in the tree are a stale comment, a test and a doc",
-      "Template is compiled ONCE at model load (server-context.cpp:1454); per-request path renders a pre-compiled program (server-common.cpp:1092) - so intake-1213 claim 3 is structurally impossible, not merely unmeasured",
-      "Render IS AST-shaped (recursive execute(ctx) per node) - a real mechanism that runs AGAINST froggeric, whose template is 3.0x larger and deeper",
-      "common/jinja implements INPUT MARKING against special-token injection; a third-party chat template is executable code in the prompt-construction position and sits on top of that property",
-      "Claw-Eval is an AUTONOMOUS-AGENT trajectory benchmark (300 tasks, Completion/Safety/Robustness) - so intake-1212's only quantified plate does not measure the knowledge-work/coding claim it is offered for",
-      "Claw-Eval's own headline: outcome-only grading misses 44% of safety violations and 13% of robustness failures across 14 models - independently useful for eval-tower-verification.md"
-    ]
-  },
-  "stage4": {
-    "completed": [
-      "new stub qwen-chat-template-evaluation.md + RTG-54 row",
-      "5 handoffs amended (qwen38-27b-replace-qwen36, per-request-reasoning-budget, reasoning-compression, eval-tower-verification, prompt-construction-determinism)",
-      "fleet sweep of all 4 production GGUF templates (operator-prompted, beyond the approved plan)",
-      "intake-1213 claim_corrections[2] reversed after the sweep",
-      "handoffs_created/handoffs_updated filled on intake-1212..1217"
-    ],
-    "tasks_added": 16,
-    "checkbox_flips": 2,
-    "validators": {
-      "validate_intake.sh": "exit 0, 1213 entries",
-      "index_state.py --check": "exit 0, 0 problems"
-    },
-    "not_committed": true,
-    "lane_note": "No lane worktree (shared clone). Nothing staged, nothing committed. Pre-existing unrelated modifications present in the tree from before this session: .devc/, .devcontainer/, CLAUDE.md, scripts/vidya/adapters/README.md, coordination/session-bus/, handoffs/active/dflash2-block-drafter-experimental-build.md, handoffs/active/vidya-belief-substrate-program.md - none touched by this session."
-  }
+      "proposed_disposition": "Stage-3 plan item: a durable writeup in wiki/benchmark-methodology.md as an ADDITIVE third shape alongside the existing 'Compiled Update - 2026-08-21' vacuous-pass section, paired with the enforcement doctrine in test-suite-conventions.md - i.e. an AUTHORING-TIME / eval-contract precision-equivalence check beside the collectability check, NOT a runtime floor, per that doc's explicit reasoning that a floor inside pytest breaks every invocation on a mis-fire. Plus a filed '- [ ]' task in rocm-verify-profile-backend.md (C6) if implementation work survives the writeup - the drafted form is: record the reference dtype in the eval contract and FAIL a candidate that lowers compute precision unless the task declares it permissible.",
+      "ownership_terms_accepted": "(1) Owned END-TO-END through the Stage-3 plan gate to either a landed writeup plus any surviving filed task, or an EXPLICIT WRITTEN DECLINE recorded durably - never a silent drop. (2) If the plan gate DECLINES it, or this session closes before it is filed anywhere durable, HAND IT BACK - SendMessage to workspace-c0 if live, otherwise a clearly-marked line in the wrap-up progress shard reading 'precision-gate item UNOWNED, revert to operator'. (3) Recorded here because chat messages do not survive sessions.",
+      "boundary_note": "NOT yet written to the wiki, and deliberately so: this skill's Stage-3 is a plan-mode gate and nothing lands outside research/intake_index.yaml until the operator approves a plan. A peer naming a good destination is NOT that approval. Accepting OWNERSHIP is not the same as bypassing the gate."
+    }
+  ]
 }

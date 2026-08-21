@@ -723,6 +723,30 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   telemetry were observed but no durable receipt was retained. Keep this evidence item open until the
   producer identity is committed and replayed by the claim-aware runner.
 
+  **AMENDED 2026-08-21 (research-intake Stage-4) — the scope widens from CHECKER-PATH pinning to
+  OUTPUT-PRECISION equivalence, on five independent dive-verified sources.** C2-9 currently pins the
+  path the *checker* runs through. It does not yet assert that the CANDIDATE computed at the width the
+  reference did — and a gate that runs and passes can still be passed by **weakening the computation
+  under test**. This is a distinct shape from the two vacuous-pass shapes in
+  `docs/guides/agent-workflows/test-suite-conventions.md`, both of which concern tests that do not run.
+  Evidence, all read at primary source: `intake-1222#record` — the paper's ENTIRE gate is one
+  `torch.allclose(out, ref, atol=1e-2, rtol=1e-3)` line, and its own Appendix G.1 concedes the flagship
+  4.11x→11.49x leap came mostly from a TF32→BF16 tensor-core switch, which that tolerance admits by
+  construction. `intake-1224#record` — gate is `assert_close(atol=rtol=1e-2)` on a **bfloat16** suite,
+  so an fp32→bf16 downgrade is not even expressible, and its `allclose` accepts tolerance arguments
+  then silently drops them. `intake-1227#record` — a genuinely engineered gate that still plausibly
+  admits the downgrade on large-K GEMM, because `atol = 1e-4 x D_reduce` grows LINEARLY with reduction
+  depth and reaches ~0.53 at that benchmark's own BLAS shape, dominating `rtol*|ref|` by ~3 orders of
+  magnitude. `intake-1219#record` — its anti-cache defence is self-labelled "Level 1": the perturbation
+  is applied ONCE BEFORE the timed loop and, for every dtype other than fp32/fp64, is an element-order
+  REVERSAL, which is an involution and therefore an IDENTITY for order-insensitive kernels.
+  `intake-1236#record` — a released RL environment ships `CALL_LIBRARY` ("replace the selected operator
+  with library functions") and `SOTA_TRITON_API` action tags, neither disclosed in its paper.
+  THE CONCRETE ADDITION: record the reference dtype in the eval contract, and assert the observed error
+  scales as `sqrt(D_reduce) * eps(input_dtype)` against a **float64** reference — not merely that it
+  falls under a linear-in-`D_reduce` bound. Note the anti-hack tiers in C6 are ORTHOGONAL to this and
+  do NOT cover it: they test whether the kernel RAN, never at what WIDTH it computed.
+
   - [x] **RVP-C2-9a — Build the checker-isolation reducer and claim-aware runner.** ✅ 2026-08-11 —
     missing receipts or accelerated checker paths fail closed.
 
@@ -1000,3 +1024,136 @@ retained here as regression requirements in the 2026-08-16 AutoKernel graph:
       that makes it worth copying rather than re-deriving — a join-only first version still read 1.41×
       fast, which is why the fence exists, and a *real* submitted kernel had hit a mild unintentional
       form at 1.42×. Single-stream submissions take no new code path.
+
+## Research Intake Update — 2026-08-21 (Hawkeye / agentic-kernel cohort; intake-1218..1236)
+
+_Via `/research-intake` Stage-4, operator-approved plan. Nine dives, 18 dive-verified entries. Two
+corrections to earlier framing are carried in deliberately: **C4 is CLOSED** (✅ 2026-08-11) and is not
+reopened by any row here — these are C4-series extensions, per the established idiom; and **C5's primary
+is unchanged** (GEAK-eval intake-674 + AgentKernelArena intake-679, the only gfx90a-PROVEN suites we
+hold) — only the SECONDARY slot is re-scored._
+
+### C6 — reward integrity: three imports and a hardening pass
+
+- [ ] **RVP-C6-14 — Implement GHOST REPLAY as a positive proof the kernel executed.** Run the candidate
+  normally and capture outputs; then hot-swap the kernel entry point for a **no-op in memory** and replay.
+  **Identical outputs logically prove the kernel was never invoked** — raise a cheating flag. Imported from
+  `intake-1227#record` L2. Two properties make this the best C6 import available: it is a POSITIVE proof of
+  execution rather than an absence check, and it is **hardware-agnostic and profiler-free**, so it runs on
+  gfx90a unchanged and adds **no C4 coupling** (contrast that source's own L3 tier, which its authors state
+  "operates exclusively on NVIDIA hardware"). Pair with its L1 AST blacklist scan. **Acceptance: mutation-test
+  it** — a kernel that secretly calls the reference must be FLAGGED *and* the flag must be COUNTED by the
+  reporter, per the eight-ways-a-check-passes-for-the-wrong-reason rule.
+- [ ] **RVP-C6-15 — Add a LIBRARY-SUBSTITUTION exploit case to the C6 hostile suite.** Detect a candidate
+  satisfying the speedup reward by dispatching to rocBLAS/hipBLASLt/torch instead of executing generated
+  code — an AST/dispatch-trace check, not a timing check. Live published precedent, not a hypothetical:
+  `intake-1236#record` ships `CALL_LIBRARY` and `SOTA_TRITON_API` action tags in its released RL environment,
+  neither disclosed in the paper, whose stated action space is Tiling/Fusion/Reordering/Pipeline. A
+  "generated kernel" that wins by calling the vendor library is not a generated kernel, and a
+  baseline-relative speedup metric cannot distinguish the two.
+- [ ] **RVP-C6-16 — Vendor Hawkeye's measurement layer as the C6/C2/C3 base.** `workloads/_driver.cpp`
+  (262 lines) + `_tensorset.h` (176) + `_eval_correctness.py` (782) from `intake-1219#record`, Apache-2.0
+  (declared in `pyproject.toml` only — the GitHub API's `license: null` is misleading), pinned at
+  `a226e955d56c04be044d46f6fd876191cfce5bf4`. It is genuinely liftable: `_eval_correctness.py` imports
+  NOTHING from that repo, and the driver depends only on its own header plus two ~30-line JSON schemas —
+  **record those two schemas as OUR contract**. It is vendor-generic, not merely arch-neutral (it compiles
+  under nvcc via hip*→cuda* aliases) and contains zero gfx950 tokens. Brings for free: per-iteration
+  two-clock timing, a CV<=0.05 stability gate with auto-redo, fp64 comparison math, per-output tolerances,
+  and a custom-metric hook. **Do NOT import** its `spec.json`, arch registry or workload leaf layout.
+- [ ] **RVP-C6-17 — Close the four measured holes in that layer — THIS is the differentiator, not the
+  skeleton.** The lifted anti-hack property is "Level 1" by its own author's label and is bypassable four
+  ways, each verified in source at the pinned SHA: (a) the perturbation is applied IN PLACE and ONCE, before
+  the loop, so within-loop replay is caught only by a single downstream call — re-perturb **per timed
+  iteration** with a run-seeded, non-agent-readable transform; (b) for every dtype other than fp32/fp64 the
+  transform is an element-order REVERSAL, an involution and therefore a NO-OP for order-insensitive kernels
+  (reductions, norms, histograms) — replace it; (c) `g_agent_dir` hands agent code the directory still
+  holding the PRISTINE inputs, and on the documented standalone path the oracle's golden `ref_*.bin` land in
+  that same directory — never do either; (d) immutability is POSIX `chmod 0444` owned by the agent's own uid
+  plus a completion-write filter a shell bypasses, with **no checksum anywhere in the tree** — enforce with a
+  post-run SHA-256 of the compiled sources recorded in the result record.
+- [ ] **RVP-C6-18 — Add an implausible-speedup cap, sized from the roofline ceiling.** Null (never rank,
+  never feed a corpus) any speedup above a per-workload plausibility cap, mirroring `intake-1219#record`'s
+  `spec.correctness.max_speedup`. **Set ours from the workload's roofline ceiling, NOT from the largest hack
+  we happen to have seen** — that source's 1000x default sits just under its own observed 1349x exploit, so
+  a 900x fake still ranks.
+
+### C4 — extensions to a CLOSED component (taxonomy remains closed; these are additive)
+
+- [ ] **RVP-C4-5 — Implement `profile()` on ROCm 6.2 `rocprof` **v1** `--stats`, not rocprofv3.** The
+  counter-free kernel-trace path in `intake-1219#record` parses exactly five CSV columns —
+  Name/Calls/TotalDurationNs/AverageNs/Percentage — and those are **byte-identical** to what our own
+  side-loaded ROCm 6.2 `rocprof` v1 `--stats` emits (`rocm-profilers-6.2/opt/rocm-6.2.0/libexec/rocprofiler/dform.py:45`).
+  So the port is an argv change plus a glob change from `*kernel_stats*.csv` to `*.stats.csv`, with **zero
+  parser work**. rocprofv2 is the WRONG target (different CSV, no stats view). No counter set to port, so
+  this inherits none of the porting tax recorded against intake-662/intake-669. NOTE: `rocprofv3` was
+  provisioned into the side-loaded tree on 2026-08-21 and is now available, but this row deliberately does
+  NOT depend on it.
+- [ ] **RVP-C4-6 — Cross-check our counter taxonomy against AMD's own gfx90a set.** `intake-1223#record`
+  (IntelliPerf, MIT, first-party AMD, pinned `6dc899dd`) ships `external/guided-tuning/configs/MI2/input.json`
+  — a hand-curated **gfx90a/MI200 counter partition, 74 counters split across 6 legal rocprofv3 passes** —
+  plus the matching MI200 derived-metric algebra in `metric.py` (LDS bank-conflict rate, L1 coalescing,
+  atomic latency). Transcribe OFFLINE into a local reference table and diff against what our deterministic
+  paired-`rocprofv2` reporter collects. **Flag `TCP_GATE_EN1_sum`, `TCP_GATE_EN2_sum` and the
+  `SQ_ACCUM_PREV_HIRES` aliasing as at-risk** — availability on ROCm 6.2/gfx90a is UNVERIFIED, no execution
+  was performed. Framing note: this is an independent VENDOR CROSS-CHECK on a taxonomy the C4 row already
+  calls closed, **not** a rescue of an open problem.
+- [ ] **RVP-C4-7 — Confirm the nine Hawkeye cdna4 counters collect on gfx90a.** `SQ_WAVES`,
+  `SQ_INSTS_VMEM`, `SQ_INSTS_VALU`, `SQ_INSTS_VALU_MFMA_BF16`, `TCC_HIT_sum`, `SQ_INSTS_LDS`, `TCC_REQ_sum`,
+  `SQ_LDS_BANK_CONFLICT`, `FETCH_SIZE` — from `intake-1218#record`, where counter agreement is load-bearing
+  rather than decorative (a unit test passes only at **>=99% of the expert's counter value**, not merely on a
+  numerical match). All nine are classic CDNA SQ/TCC counters and gfx90a has MFMA BF16, so this leg likely
+  needs no re-derivation — record the absent subset if any.
+- [ ] **RVP-C4-8 — Adopt a two-slot hardware-context schema for the C4 prompt feed.** From
+  `intake-1221#record` Fig 3: an arch-constants field plus a SEPARATE block-scheduling-policy field. Fill it
+  honestly for gfx90a — **104 CUs / 8 MB UNIFIED L2 / 1 die / NO XCDs / linear dispatch** (first-party, from
+  `rocminfo` on this host). Stating the absence of XCDs is itself hardware-awareness: it suppresses a
+  proposal that is **provably the identity map** here. Keep the feed CURATED, per that source's own 3-arm
+  ablation in which a 10k-token unfiltered architecture dump performed no better than no hardware context at
+  all — and per `intake-1222#record`, where a raw ~50-counter dump measured WORSE than no profiling.
+- [ ] **RVP-C4-9 — Instrument every deterministic C4 rule with per-rule hit-rate telemetry.** Log
+  (rule_id, fired?, downstream speedup) on every eval-backend run; report the fold (tasks-covered / fires /
+  hit-rate at >1.5x / avg speedup) and prune rules at or below the base rate. Pattern from
+  `intake-1222#record` Table 9 — the METHOD ports and costs no extra GPU time; its NVIDIA numbers do not, and
+  are confounded anyway because proactive orchestration fires many tools per turn.
+
+### C5 — secondary substrate re-score and corpus seeding
+
+- [ ] **RVP-C5-3 — Re-score the C5 SECONDARY from MultiKernelBench to KernelGenBench.** The row currently
+  reads "MultiKernelBench 667 = secondary (multi-vendor abstraction only)". `intake-1227#record`
+  (arXiv:2607.27231, `github.com/flagos-ai/KernelGenBench`, **Apache-2.0**) is a strictly better instance of
+  that slot and names 667's deficiency verbatim: it "lacks a unified verification pipeline and consistent
+  execution baselines". Decisive for us: 667 EXCLUDES gfx90a upstream and gates on ROCm >= 7.1, so it cannot
+  run here at all, whereas KernelGenBench was built for five non-NVIDIA backends and therefore already
+  externalises everything a sixth needs — per-platform requirements, prompt-template directories selected by
+  runtime hardware detection, tolerances, and anti-hack config. Adding ROCm is POPULATING AN EXISTING
+  EXTENSION POINT. Deliverable: clone at a pinned SHA, confirm those extension points, write
+  `requirements_rocm.txt` against pytorch-triton-rocm matched to ROCm 6.2, run one ATen op on gfx90a.
+  **BOUND THE CLAIM: it is Triton-only end to end**, so a port measures Triton-on-CDNA2 and says nothing
+  about llama.cpp HIP authoring; and it has NO AMD backend today (verified negative — zero AMD/ROCm/HIP/gfx
+  strings in 24 pages; its six vendor requirements files contain no rocm entry). **PRIMARY UNCHANGED.**
+- [ ] **RVP-C5-4 — Seed `c5_seed_corpus.json` from the KernelGenBench vLLM subset.** 50 real inference
+  kernels — paged_attention_v1/v2, reshape_and_cache, rms_norm variants, rotary_embedding, scaled_fp8_quant,
+  moe_align_block_size, topk_softmax, selective_scan_fwd and the rest. Far closer to our serving workload
+  than KernelBench primitives, and it matches the attention / MoE-dispatch / dequant seeding C5 already calls
+  for. Their measured profile makes it the right difficulty tier: hardest to get CORRECT (68% best accuracy)
+  but the highest speedup headroom of their three sources, because the vLLM baselines are not heavily
+  hand-tuned.
+- [ ] **RVP-C5-5 — Harvest the BackendBench anti-gaming patterns into the C5 evaluation contract.** From
+  `intake-1224#record` (BSD-3-Clause): a per-op **inspectable kernel directory** as a shippable audit artifact
+  ("zip that folder and send it to your favourite performance engineer"); an **infinite-recursion trap** that
+  detects a generated kernel silently falling back to the reference; many inputs per op (~13 correctness /
+  ~110 perf) against input-distribution gaming; and live same-device baseline timing rather than stored
+  numbers. **Record the counter-example deliberately**: that project's own gate is
+  `assert_close(atol=1e-2, rtol=1e-2)` on a bf16 suite AND its `allclose` drops the caller's tolerances
+  entirely — looser than bf16 epsilon, so it cannot catch an internal precision downgrade. Its stated
+  mitigation is PROCESS (auditable artifacts) rather than a tighter number, which is a defensible position
+  worth copying on its own terms: when you cannot tighten the gate, make the artifact auditable.
+
+### Tooling note — rocprofv3 provisioned 2026-08-21
+
+`rocprofv3` is now in the side-loaded tree (`rocprofiler-sdk6.2.0_0.4.0-66~22.04`, version-matched to
+ROCm 6.2.0-66, added to `PKGS` in `epyc-inference-research scripts/benchmark/provision_rocm_profilers.sh`
+and to its verify loop). `--verify` reports 5 present / 0 missing; `rocprofv2` and `rocprof` v1 are
+unaffected — the package is additive. **`rocprof-compute` remains UNSATISFIED BY NAME**: we ship `omniperf`,
+and the ROCm 6.3+ rename is what `intake-1223`'s harness checks for with `shutil.which()` at module import
+before `sys.exit(1)`. That name, not rocprofv3, is what still gates the IntelliPerf/guided-tuning tool family.

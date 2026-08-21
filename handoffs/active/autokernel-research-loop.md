@@ -5082,3 +5082,126 @@ has five source rows in `scripts/vidya/adapters/README.md`; this ladder was run 
 and emits no `evaluation_event`, so it correctly produces zero claim rows. If AK-QL-3 re-runs it
 under the governed path, it flows through the existing `autokernel_evaluation_event.py` adapter and
 still needs no new row — which is the wiring working as designed, not a gap.
+
+## 23. Cross-run memory, and two corrections to our own G17 record (2026-08-21)
+
+_Via `/research-intake` Stage-4, operator-approved. Sources: intake-1221 (SwizzlePerf), intake-1228..1231
+(the external-memory family: KernelBlaster, KernelSkill, EvoKernel, KernelEvolve), intake-1222 (KernelPro).
+All dive-verified against primary source._
+
+### 23.1 Findings (each carries what would falsify it)
+
+**F1 — G17 and SwizzlePerf never tested the same transformation, so our record mis-states a conflict that
+does not exist.** Ours is the classic Triton `GROUP_SIZE_M` grouped-ordering swizzle: a 2-D row-block
+grouping over an (M-tile x N-tile) grid parameterised by GROUP SIZE, from
+`autokernel_wgm_proxy.cpp:38-46`. Theirs is a 1-D de-interleave parameterised by DIE COUNT,
+`pid = (pid % num_xcds) * b_per_xcd + (pid // num_xcds)`, which **at num_xcds=1 is the IDENTITY MAP** — so
+on a single-die gfx90a their formula is not merely inapplicable, it is the null permutation and cannot be
+tested here at all. Same broad family, different sub-family, different parameter. G17 is an INDEPENDENT
+NEGATIVE on an adjacent lever. _Falsifier: a reading of Fig 5b showing a group-size parameter._
+
+**F2 — The architectural reconciliation is right about the paper and WRONG as a general statement.**
+"Launch-order swizzling is a no-op on gfx90a" contradicts our own record: launch-order remapping against a
+unified L2 is die-count-INDEPENDENT, we measured it at **+9.823%** (95% CI 9.754-9.977%, 240 samples/cell)
+on the symmetric proxy, and `mi210-mfma-compute-bound-paths.md:97-99` already says the L2-locality half
+"does apply, and it must be swept, not set". The correct three-layer statement is: their FORMULA is the
+identity here; the LEVER FAMILY is live here; our negative is explained by neither. _Falsifier: a proxy
+re-run at num_xcds=1 showing ~0%._
+
+**F3 — G17's best explanation is grid geometry plus stream-K ownership, not XCD absence.** The +9.823%
+proxy used a SYMMETRIC 64x64 tile grid where row-grouping has real headroom. The real MMQ surface is a
+batched pp=32 / tg=8 / pl=128 / n_kv=5120 decode whose tile grid is strongly M-heavy; with few N tiles the
+DEFAULT linear order already captures full activation reuse in a short window, so grouping M by 8-32 can
+only ENLARGE the concurrently-resident weight footprint — predicting hit rate DOWN at flat read volume,
+which is exactly the measured -7.455 pts at +0.201% reads. Reinforcing: the CDNA MMQ path is PERSISTENT
+STREAM-K and already owns tile assignment (the r1 pilot was a literal no-op because the remap sat outside
+that path), and Q4_K decode weights are streamed with WGM0 hit rate already at 67.304%.
+
+**F4 — Cross-run memory: the literature does NOT establish that it pays, and does not license concluding
+it does not pay here either.** Across four papers: three real cross-run memories, two ablations, **zero
+significance tests, zero variance reports, zero replications, and zero usable code releases**. The
+largest and best-resourced system (intake-1231, 39 authors, four revisions, three vendors, real production
+deployment) ran **NO ABLATION AT ALL** — which is itself weak evidence that the mechanism's value is
+ASSUMED across this literature. And intake-1229 must be removed from the ledger entirely: its "long-term
+memory" is hand-curated by the authors and never written to by the agent, so its spectacular ablation
+measures CURATED SUPERVISION (the Hawkeye question), not accumulation.
+
+**F5 — The regime hypothesis, and it cuts against the money-saving negative.** Effect size scales
+INVERSELY with base-model competence on the target: competent model on CUDA -> +6%, p=0.181, NOT
+significant (intake-1222); frontier models at 11% base correctness on a data-scarce non-CUDA backend ->
+3% to 76% accuracy (intake-1230). Both are probably true; they measure the same mechanism in opposite
+regimes. gfx90a IS a data-scarce backend — `cdna2-abandoned-by-vendor-and-quant-schools` is the
+supply-side form of the same Data Wall. So the CUDA-derived null is the LEAST transferable evidence we
+hold and the NPU result the most, which inverts the naive ranking by hardware similarity. _This is an
+ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it._
+
+### 23.2 Tasks
+
+- [ ] **AK-PM-1 — Correct the G17 3c disposition note (§19.6).** Name the transformation actually tested
+      (`GROUP_SIZE_M` tile grouping, `autokernel_wgm_proxy.cpp:38-46`); record that SwizzlePerf's
+      `pid = (pid % num_xcds)*b_per_xcd + (pid // num_xcds)` is the IDENTITY at num_xcds=1 and was never
+      tested here; attribute the negative to M-heavy grid shape plus persistent stream-K tile ownership
+      rather than to XCD absence. Retire the "strong internal contradiction" framing. Cite
+      `intake-1221#record`. Decision (retain WGM0) UNCHANGED.
+- [ ] **AK-PM-2 — Re-scope the G17 effect size wherever it is cited.** "Regressed 1.286-4.050%" is an
+      END-TO-END llama-batched-bench figure in which MMQ is one kernel family among several. The same
+      campaign's per-dispatch counter capture at identical dispatch counts (`dispatch_count_equal: true`,
+      4,013 MMQ dispatches) gives WGM8-vs-WGM0 device-duration deltas of **all_mmq +0.234%, q4_k_12
+      +0.581%, q6_k_14 -0.987%** — the MMQ-attributable device regression is SUB-1%, an order of magnitude
+      below the quoted band. Receipt: `inf36-mmq-wgm-gfx90a-20260811-r2/counter-receipt.json`. The
+      CLOSED_NO_GO decision stands; only the precision of the phrasing needs care.
+- [ ] **AK-PM-3 — Add HARD_CONSTRAINT `l2-hit-rate-is-not-an-objective-on-gfx90a` to the §19.2 ledger.**
+      In the same r2 arm, **Q6_K LOST 5.559 TCC hit-rate points while device duration IMPROVED 0.987%**,
+      while Q4_K lost 7.903 points and slowed 0.581% — counter and time decoupled **in sign**, within one
+      run, on one arm. That is a first-party refutation of L2 hit rate as a standalone optimisation
+      objective here, and a sharper argument against SwizzlePerf's central design choice than the
+      architectural one. Any C4 loop optimising a mechanism counter must carry a WALL-CLOCK VETO GATE.
+      Per §19.3 this entry needs a source receipt (the counter-receipt path above), a binding to the
+      production commit it was verified against, and a `reopen_when` predicate — propose:
+      *reopen when a shape is measured whose TCC hit-rate delta and device-duration delta agree in sign
+      across >=2 quant types.*
+- [ ] **AK-PM-4 — Decide whether cross-run memory is worth building, by CHECKING SKILLBANK FIRST.**
+      `handoffs/completed/skillbank-distillation.md` records an experience-distillation memory that is
+      **"VALIDATED — code complete, distillation tested, feature-flagged OFF, ready for production A/B"**,
+      with **"Activation blocked by: Initial distillation run + A/B validation"** since 2026-03-01, and it
+      ships §18 Production Activation Runbook and §19 A/B Test Protocol. It is orchestration-scoped, not
+      kernel-scoped, so it is not a drop-in — but it is a built-and-validated cross-run memory awaiting
+      **precisely the A/B that none of intake-1228..1231 ever ran**. Determine whether that A/B can still be
+      run and what it costs. **This is the cheapest available in-house answer to F4/F5 and it BLOCKS
+      AK-PM-5/6/7** — do not spend on a new build before resolving it.
+- [ ] **AK-PM-5 — Add a POSITIVE-side record type to the planner-memory registry (§19.2).** The registry
+      today carries only suppressions across its six classes (`HARD_CONSTRAINT`, `MATCHED_NEGATIVE`,
+      `CONDITIONAL_NEGATIVE`, `CONFOUNDED_RESULT`, `SUPERSEDED_FACT`, `LOW_VALUE`); there is no way to
+      record that a transformation WORKED and under what profile state. Adopt the
+      `<state, <optimization, score>>` shape from `intake-1228#record` with `state` keyed on **rocprof**
+      counters, not NCU, and a receipt bound to the production commit exactly as §19.3 already requires.
+      **Content authored ONLY from our own MI210 runs** — importing published CUDA strategy content is a
+      fabricated warrant and collides head-on with the measured `mfma-decode-kernels-are-worth-zero`
+      constraint, where the top-ranked CUDA advice returns exactly 0 at our batch-1 arithmetic intensity.
+      Schema-only change; no GPU-hours. BLOCKED ON AK-PM-4.
+- [ ] **AK-PM-6 — Attach a scalar value and a stage tag to registry retrieval.** Train-free incremental
+      mean `Q(s,m) <- Q(s,m) + alpha*(r - Q(s,m))` over `(stage, entry)`, from `intake-1230#record`, with
+      exactly two stages: *feasibility* (does it compile and verify) and *latency* (is it faster). That
+      source's evidence is that the same memory item has different value in each. A scalar table, no model
+      weights, no GPU-hours. Depends on AK-PM-5; BLOCKED ON AK-PM-4.
+- [ ] **AK-PM-7 — Decide whether registry entries need an explicit PORTABILITY class.** `intake-1231#record`
+      partitions its knowledge base three ways — `constraints/` (correctness invariants), `guidance/`
+      (platform-AGNOSTIC optimization knowledge), `hardware/` (vendor-quarantined) — the only design in that
+      family treating "what survives a hardware move" as SCHEMA rather than an afterthought. Our §19.2 types
+      encode ENFORCEMENT (reject / regenerate) but not PORTABILITY. Read it, then either add a portability
+      field or record the decision not to. **Reading-and-design only, no build**: that paper ships no
+      ablation and no code, so nothing may be adopted on its authority alone. BLOCKED ON AK-PM-4.
+- [ ] **AK-PM-8 — Gate any memory extension on an ablation this literature never ran.** Hold PROFILING
+      CONSTANT while toggling memory — the `no_mem_agent` design from `intake-1228#record` is the one
+      methodologically sound thing in that family, because it isolates memory from profiling rather than
+      confounding them — with seeds, repeats and a significance test. **Pre-register the effect size we
+      would need to keep the feature BEFORE running it.** Prior: +6% at p=0.181, not significant, on CUDA
+      with a competent model. Building an unmeasured memory would put us exactly where intake-1231 is.
+
+**Not filed, recorded so it is not re-derived:** importing a curated NVIDIA skill library or seeding a
+gfx90a store from published CUDA strategies — declined on measured grounds, not preference (NCU-keyed
+predicates have no gfx90a counterpart, the tensor-core skill family collides with
+`mfma-decode-kernels-are-worth-zero`, and intake-1229's repo carries NO LICENSE). Cloning or porting any of
+the four memory systems — no viable artifact exists: two released nothing, one released a WIP branch whose
+last commit is "tmp: save work", and the one with code is CUDA/Nsight-bound with a memory that does not
+learn.

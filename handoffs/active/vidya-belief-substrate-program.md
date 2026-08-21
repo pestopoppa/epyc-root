@@ -889,3 +889,19 @@ Retained as the ratification record. Nothing here blocks P1.
 Standard checkbox discipline (`- [x] … ✅ YYYY-MM-DD`; mid-flight discoveries get their own task
 lines). Maintain the master-index and research-evaluation-index rows; on completion, extract
 findings to docs, move to `completed/`, delete the master-index row.
+
+- [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed
+      2026-08-21 by the `/research-intake` Stage-4 pass that ingested it (`intake-1225`, dive-verified,
+      MIT, HPDC'24, credibility 6/6 — the highest of that cohort). ParEval is a candidate C5 secondary
+      layer whose serial+omp arms are runnable on the EPYC 9655 today with nothing but `g++ -fopenmp`, and
+      it PRODUCES MEASUREMENTS: `pass@k`, `build@k`, `speedup_n@k`, `efficiency_n@k`, plus a locally
+      measured `best_sequential_runtime` baseline. Per the standing rule, the write side is cheap and
+      permanent while the read side cannot be retrofitted — `benchmarks/results` is the standing proof at
+      4,562 files with no usable claim tuple. The adapter must **PROJECT** a driver record
+      `{problem, parallelism_model, k, pass@k, speedup_n@k, efficiency_n@k, best_sequential_runtime,
+      hardware}` into a `ClaimTuple` and let `claim_tuple.grade()` decide; it must **NOT write a new
+      grading rule** — the carrier is shared, each source class has exactly one ladder, and the registry
+      refuses a second (`docs/design/vidya-pilot-spec.md` §4.7). Note the measurement caveat that must ride
+      with any tuple: ParEval wraps its timed region in `__attribute__((optimize("O0")))` at a fixed
+      problem size, so its absolute numbers are NOT comparable to our llama-bench protocol and must never
+      be graded against it. Source-table row added in `scripts/vidya/adapters/README.md`.

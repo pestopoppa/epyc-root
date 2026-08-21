@@ -933,3 +933,100 @@ k138/k145/k175 are included at loose quality. Not 193, and certainly not the ful
 **Recommendation: B**, after C5-3 has shown the correctness oracle works end-to-end on gfx90a. A is a
 legitimate stopping point if GPU time is scarce — the correctness half is where the C3/C5 provider gap
 actually was.
+
+## Research Intake Update — 2026-08-21 (Hawkeye / agentic-kernel cohort; intake-1218..1236)
+
+_Via `/research-intake` Stage-4, operator-approved plan. Nine dives, 18 dive-verified entries. Two
+corrections to earlier framing carried in deliberately, because both were repeated in briefs during this
+session before primary source overturned them: **C4 is CLOSED** (✅ 2026-08-11, taxonomy closed, risk MED)
+and nothing here reopens it; and **"GPU Kernel Scientist is gfx90a prior art" is FALSE** — it targets
+MI300/CDNA3 and never mentions MI210, MI250, CDNA2 or gfx90a. The related "one of only two systems
+targeting HIP for AMD" framing is an index-internal assertion, NOT-FOUND-IN-SOURCE, and should be struck
+wherever it appears._
+
+- [ ] **C5-6 — Add a ZERO-PROFILER null arm to the controller-authoring A/B on gfx90a.** The cheapest arm
+      in the matrix: it needs a compiler, a correctness oracle and a wall-clock timer, all of which we have,
+      and it has **no C4 dependency**, so it unblocks immediately. The point is to MEASURE what our profiler
+      feed is worth instead of assuming it. Two independent sources now say the feed is a **MULTIPLIER, NOT
+      A PREREQUISITE**: `intake-1226#record` ran an AMD HIP authoring loop with NO profiler of any kind —
+      "the lack of any tools for profiling the kernels (apart from end-to-end running time...)" — and still
+      cleared the PyTorch fp16 library baseline by ~1.9x (~450us vs ~850us), losing to the human winner at
+      105us; and `intake-1222#record` found a raw ~50-counter dump measured WORSE than no profiling at all
+      (its honest null comparison is +19% at p=0.0078, not the +125% headline, which is measured against
+      that degraded arm). A third line agrees by construction: all five QiMeng papers (intake-1232..1236)
+      are profiler-free and none cites profiling-guided-optimization literature at all.
+- [ ] **C5-7 — Adopt COUNTER-GATED acceptance for agentic gfx90a kernels.** Pair every cell or kernel with
+      a bottleneck counter and an expected DIRECTION, and refuse a speedup claim whose counter did not fire.
+      From `intake-1218#record`, where this is load-bearing rather than decorative: a unit test passes only
+      at **>=99% of the expert's counter value**, and the harness always reports the counter alongside TFLOPS
+      "so a runtime improvement is verified to have come from exercising the targeted feature". This is the
+      strongest structural defence against the faster-because-it-did-less-work hack anywhere in the
+      intake-660..680 cluster. Pair it with a correctness gate STRICTER than that source's own
+      99%-of-elements at atol=rtol=0.01 single-shape check.
+- [ ] **C5-8 — Register two new controller archetypes on the adapter roster.** (a) **Hawkeye**
+      (`intake-1218#record`) as the CURATED-STATIC-SUPERVISION archetype — no population, no archive, no RL,
+      no meta-prompt evolution; a single-candidate edit/compile/profile/refine loop at a 100-productive-turn
+      budget, notable for spending 24-50k tokens per TFLOPS of result versus 120k-2216k for its own
+      baselines. (b) **SwizzlePerf's controller shape** (`intake-1221#record`) — a persistent history buffer
+      appending (code diff + bottleneck report) per iteration, with a structured output signature of
+      chain-of-thought -> JSON critique of prior iterations -> rationale -> final code. Both are
+      architecture-neutral; (b) maps onto the existing planner-memory registry.
+- [ ] **C5-9 — Trial MANUAL-CORPUS hardware-factor extraction as a third, profiler-free supervision
+      source.** Point an LLM extractor at the public AMD CDNA2 ISA reference and MI200/MI210 tuning guides
+      to populate a four-slot factor schema (memory hierarchy / instructions / vector+scalar registers /
+      CU-SIMD-LDS-matrix-core), then A/B the resulting hint block against our existing static constraint KB
+      on the hash-pinned k228 attention and k175 MoE cases. From `intake-1234#record`, and it is the ONLY
+      hardware-grounding step in that entire five-paper line whose ACQUISITION IS AUTOMATED rather than
+      hand-authored — pointing it at AMD manuals is the same operation the paper performs on the XuanTie
+      manual. Complements, does not replace: CudaForge (intake-662) still owns the counter-SELECTION method,
+      IntelliPerf (intake-1223) hands us the counter LIST. Bonus axis: the same mechanism would transfer to
+      our EPYC 9655 CPU-kernel work via Zen5 optimization manuals, which no other cluster entry offers.
+      **Clean-room only** — that framework is unreleased AND unlicensed.
+  - [ ] **C5-9a — Falsify the load-bearing unknown behind C5-9 BEFORE investing in it.** Is cross-ISA
+        transfer carried by the EXTRACTED FACTORS, or by the LLM's PRETRAINING FAMILIARITY with the target
+        ISA? Every ISA that source tested (RVV, NEON, CuTe/PTX) is well represented in pretraining corpora;
+        **gfx90a GCN assembly is not**, and the paper runs no ablation isolating the two. Run the hint block
+        with and without the extracted factors on the same pinned cases, and compare the delta on gfx90a
+        against the same delta on a pretraining-rich ISA. Cheap, and it gates C5-9.
+- [ ] **C5-10 — Trial the LLM-TL sketch scaffold on the HIP arm.** From `intake-1235#record`: a two-stage
+      sketch-then-parameterize scaffold whose Stage-1 DSL (Copy / Compute / Allocate / Reshape / for over a
+      global->shared->register hierarchy) is **vendor-neutral and maps directly onto gfx90a** with LDS as
+      shared and VGPRs as register — and whose prompts are published VERBATIM in that paper's appendix, so
+      this half is liftable at zero cost. The paper's evidence for the split is that "none of the existing
+      LLMs is capable of generating entirely correct TL code in a single stage", with two named reproduced
+      failure modes. Measure against free-form HIP generation on **compile rate and correctness, not speed**.
+      Stage 2 does NOT transfer — it emits CuTe, whose atom taxonomy is a 1:1 encapsulation of PTX.
+- [ ] **C5-11 — Fix the ablation protocol before running any controller A/B.** Paired one-sided Wilcoxon
+      signed-rank on a FIXED, ENUMERATED gfx90a task subset; three arms (no-feedback / raw-rocprof-dump /
+      semanticized C4 report); report effective n after tie exclusion. Two disciplines imported from
+      `intake-1222#record` and `intake-1227#record`: **(a) the honest control is NO-FEEDBACK, not a degraded
+      feedback arm** — that paper's +125% is measured against a ~50-counter dump it separately proves is
+      worse than nothing, while the no-feedback comparison is +19% at p=0.0078; and **(b) DO NOT report
+      best-of-N-seeds as a headline** — it inflates every arm. Add the matched-subset rule: never compare
+      mean speedup across arms with different pass sets, because weak configurations post higher means by
+      failing the hard tasks and never paying their penalty.
+- [ ] **C5-12 — Adopt two token-cost levers, and one falsifiable prediction to test cheaply.** (a) TWO-TIER
+      MODEL SPLIT — a cheap model for parent selection and experiment design, a strong model only for kernel
+      writing (`intake-1226#record`), mapped onto our registered Claude+Codex roster; `intake-1227#record`
+      prices why it matters, at 5.11M tokens per SUCCESSFUL operator for kernel-specialised agents versus
+      1.45-3.30M for vanilla frameworks. (b) A **FINDINGS DOCUMENT** — a one-time LLM-authored gfx90a quirks
+      digest distilled from rocWMMA docs, the HIP reference and the AMD Matrix Instruction Calculator,
+      carried in every prompt; this is the gfx90a analogue of the static constraint-KB already named as a C4
+      fallback. Also import the 3-of-5 experiment-selection rule (most-innovative + highest-max-perf +
+      highest-min-perf, without replacement) as a zero-cost diversity mechanism. PREDICTION TO TEST: a
+      traceback-only reflection arm will UNDERPERFORM independent resampling at equal token budget —
+      `intake-1227#record` measured 88% cross-turn code similarity for reflection versus 36% for independent
+      sampling, and reflection lost outright on its vLLM subset.
+- [ ] **C5-13 — Record the DECLINE of a gfx90a taxonomy column, with its cost census as the
+      justification.** A dive proposed authoring one; a later, better-evidenced dive of the same project's
+      source measured what it actually costs and the decline wins. Census at `a226e955`: the cdna4 column is
+      40 unit-test files (4,241 lines) PLUS a 68-file / 12,771-line abstractions library = **108 files,
+      ~17,012 lines**, and the AMD column is the LARGEST of the four architectures — porting to a new VENDOR
+      costs MORE, not less. Worse, the repo's own EASIEST cross-arch move (ampere->hopper: same vendor,
+      adjacent generation, features added not removed) retained only **6.9% of abstraction lines and 11.4% of
+      unit-test lines**, and is the port that silently corrupted agent context (its `AUDIT_FINDINGS.md` A-1,
+      HIGH: Blackwell-only ISA left in A100/H100 guides). gfx950->gfx90a REMOVES features, so 7-11% is an
+      OPTIMISTIC upper bound. One cell (`02_quantized_precision`) has no gfx90a meaning at all — gfx90a has
+      no FP8 — and would need re-specification, which is a taxonomy decision rather than a coding task.
+      **The STRUCTURE ports for free; the CONTENT does not.** Revisit only if a gfx90a kernel-authoring
+      campaign is separately funded.
