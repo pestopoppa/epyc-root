@@ -310,3 +310,17 @@ t_d/t_r/t_f and no numeric values for them appear anywhere, only Figure 5. Filed
 them ourselves; the square-wave sweep produces them as a by-product) and **`RVP-PWR-6`** (adopt the
 runtime-vs-power decomposition — a joules-per-token win that is entirely a tokens-per-second win is a
 different engineering fact from one that lowers draw, and we currently do not separate them at all).
+
+### AK-PM-4 SkillBank check RUN (read-only) — the A/B is data-ready and traffic-blocked
+
+Both decision packages operator-ratified as option (a) and bound into their rows (`9de434d7`); the
+skipped-gate rule is now in the skill + memory (`6faa32bc`). First ratified execution step, AK-PM-4:
+**(1)** trajectory prerequisite over-satisfied — 19,146 memories in the 25-day window (need ≥500), 64,019
+total; **(2)** runbook §18 paths are STALE — `/mnt/raid0/llm/tmp/episodic.db` is a 0-byte decoy, live store
+is `orchestration/repl_memory/sessions/`; **(3)** the initial distillation NEVER ran — `skills.db` is
+schema-only, 0 rows, since 2026-07-27; **(4) NEW UPSTREAM BLOCKER: the episodic store went quiet
+2026-08-11T01:31** (v9 freeze day) — zero writes in 10 days, so the A/B treatment arm has no live traffic
+until writes resume. Cause not diagnosable from this container; needs the stack-owning session to confirm
+`ORCHESTRATOR_MEMRL` at its next reload boundary. Bus routing attempted; this session is non-roster, so the
+finding rides in the AK-PM-4 checkpoint for a roster session to carry. AK-PM-11 (kernel-side ablation) is
+NOT blocked by this.

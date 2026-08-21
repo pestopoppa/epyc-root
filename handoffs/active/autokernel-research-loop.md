@@ -5219,6 +5219,33 @@ ANALOGY, not a measurement, and AK-PM-4 exists to test it rather than assume it.
       **precisely the A/B that none of intake-1228..1231 ever ran**. Determine whether that A/B can still be
       run and what it costs. **This is the cheapest available in-house answer to F4/F5 and it BLOCKS
       AK-PM-5/6/7** — do not spend on a new build before resolving it.
+      **CHECK RUN 2026-08-21 (read-only, this is the checkpoint — the row stays open because the A/B has
+      not run).** Findings, all verified against the live store rather than the runbook's paths:
+      **(1) The A/B CAN still be run and the data side is over-satisfied**: prerequisite is >=500
+      trajectories in 25 days; the live store holds **19,146 in the last 25 days** (64,019 total). But the
+      runbook's §18 paths are STALE — `/mnt/raid0/llm/tmp/episodic.db` is a **0-byte decoy** (the real
+      store migrated ~2026-07-23; 462 MB backup and 512 MB migrate-work DBs still sit at the old
+      location); the live dir is `orchestration/repl_memory/sessions/` per the code default and
+      `reset_episodic_memory.sh`. Fix the runbook paths before anyone follows them.
+      **(2) The initial distillation NEVER RAN**: `sessions/skills.db` exists (2026-07-27) but is
+      **schema-only, 0 skills, 0 retrievals**. So SkillBank's blocker is unchanged since 2026-03-01 —
+      five months of "ready for A/B" with the first step never taken, which is itself a data point on how
+      memory builds idle without a forcing function.
+      **(3) THE REAL BLOCKER IS NEW AND UPSTREAM: the episodic store went QUIET on 2026-08-11T01:31** —
+      zero writes in the 10 days since (daily counts run 1,112/433/1,171/1,350/85/94 through Aug 11, then
+      nothing). The quiet date coincides with the v9 final-freeze day. Cause not diagnosable from this
+      container (host stack not visible); candidates: `ORCHESTRATOR_MEMRL` dropped from the stack env on a
+      restart, or the API/autopilot simply not serving since. **Consequence: the CONTROL data exists but
+      the TREATMENT arm needs live traffic, so the A/B is blocked until writes resume** — and this belongs
+      to the session that owns the orchestrator stack, not to this one (reload ownership).
+      **NEXT ACTIONS, in order**: (a) route a bus finding to the stack-owning session: episodic writes
+      stopped 2026-08-11, please confirm MEMRL in the live env at the next reload boundary; (b) once
+      writes resume, run the distillation dry-run (`--teacher mock --dry-run`), then the real run
+      (`--teacher local` = free on Qwen3-235B, or `--teacher claude` = API cost); (c) execute §19 as
+      written — 48-72 h per arm, >=200 tasks/arm, go/no-go = success +2% with escalation flat.
+      **Cost estimate for the whole A/B: one distillation run plus 4-6 days of alternating live traffic,
+      zero new code.** AK-PM-5/6/7 stay blocked on this; AK-PM-11's kernel-side ablation is independent
+      and is NOT blocked by it.
 - [ ] **AK-PM-5 — Add a POSITIVE-side record type to the planner-memory registry (§19.2).** The registry
       today carries only suppressions across its six classes (`HARD_CONSTRAINT`, `MATCHED_NEGATIVE`,
       `CONDITIONAL_NEGATIVE`, `CONFOUNDED_RESULT`, `SUPERSEDED_FACT`, `LOW_VALUE`); there is no way to
