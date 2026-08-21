@@ -243,3 +243,39 @@ SC46 in `vidya-belief-substrate-program.md`, CT-8 in the CT stub.
 **Shared-index race observed live**: three `MM` entries (a peer session staging its wrap-up-doc
 update) at commit time — this wrap-up committed through a private index per the newly-documented
 pattern.
+
+## Stage-2b wave 2 — three batches closed after the plan (commit `9cb94047`)
+
+Persisted **intake-1238..1250**, all dive-verified against primary source: Yang et al. SC24 power
+telemetry, GrepSeek, GPU Forecasters, TritonRL, GPA (CGO'21), the PyTorch KernelAgent/KernelFalcon
+blog pair, CodegenBench, FlashInfer-Bench, AutoKernel, ParEval-Repo, daVinci-kernel, KLineage,
+Kernel-Smith. Index at **1,246 entries**, validator green; `index_state --check` 0 problems.
+
+**Five things that corrected something we already believed.** (1) **L1+L2 is not a sufficient C6
+gate** — omission of a required operator component passes both, so the third tier must be a semantic
+judge (train-free), and the planned NVIDIA-only L3 is dropped rather than deferred. Precision
+downgrade is defended by nothing we hold, and `intake-1227`'s dtype-keyed tolerance actively rewards
+it. (2) **"illusion of solvedness" was mis-attributed** — neither PyTorch post contains the phrase;
+it is KernelGenBench's own gloss, so we may not count a third independent voice on KernelBench
+weakness. (3) **The memory-family evidence moved against building** — nine systems, one significance
+test in the whole literature, non-significant; the best-constructed ablation returns a *negative* at
+the loose threshold with a sign that flips between model sizes on n=1 cells. Our §19.3 receipt rule
+is *ahead* of this literature: not one of the nine has a re-verification contract. (4) **The
+`intake-1222` energy claim is overturned by direct measurement here** — ROCm 6.2 does expose a
+monotonic microjoule accumulator (15.30 uJ/tick across 23 deltas, cross-checked against
+`--showpower`); scoped honestly as evidence about the instrument, not about any run. (5) **The
+"AutoKernel G15 without a source" premise is struck** — it is a homonym of our own program.
+
+Filed **RVP-C6-19..25, RVP-C4-10..14, RVP-PWR-1..4, C5-14..17, AK-PM-9..17, KB-GS-1..4, SC47**, plus
+three index corrections (intake-1227 attribution, the survey's FlashInfer figure, intake-1087
+promoted to dive-verified with its cross-run-memory negative). **C5 slots unchanged.**
+
+**Shared clone, no lane — stated per the working-tree rule.** Ten peer files were staged in the
+shared index, so the commit was built through a private `GIT_INDEX_FILE`.
+`vidya-belief-substrate-program.md` and `scripts/vidya/adapters/README.md` carry *uncommitted peer
+hunks* (SC44/SC46, the DFlash2 and CT-1 adapter rows), so both were committed as
+**HEAD + my-lines-only blobs**, asserted exact. **OPEN HAZARD for the peer session:** those two files
+plus `master-handoff-index.md` still hold the peer's pre-existing *staged* blobs in the shared index,
+which predate `9cb94047`. I deliberately did **not** reset them — that is their staging to own — but a
+plain `git commit` from that stale index would drop my SC47 and the FlashInfer adapter row from the
+tip. Both survive in `9cb94047`; re-add from the working tree before committing.
