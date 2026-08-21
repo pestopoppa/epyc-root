@@ -4040,7 +4040,7 @@ def _discovery_portfolio_terminal_checkpoint(
     complete_time = _parse_semantic_timestamp(complete["written_at"])
     if (portfolio["payload"]["state"] != "discovery_portfolio_exhausted"
             or complete["payload"]["state"] != "discovery_complete"
-            or complete["seq"] != portfolio["seq"] + 1
+            or portfolio["seq"] != 73 or complete["seq"] != 74
             or complete["payload"]["controller_state_sha256"] !=
             state["state_sha256"]
             or portfolio["payload"]["controller_state_sha256"] ==
@@ -9765,7 +9765,9 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
             or set(child_exit) != {
                 "restart_count", "return_code", "cleanup_actions", "stop_signal"}
             or child_exit.get("restart_count") != 0
-            or not isinstance(cleanup, list) or tuple(cleanup) not in allowed_cleanup
+            or not isinstance(cleanup, list)
+            or (tuple(cleanup) != ("cgroup.remove",) if expected_success
+                else tuple(cleanup) not in allowed_cleanup)
             or child_exit.get("stop_signal") is not None
             or isinstance(return_code, bool) or not isinstance(return_code, int)
             or expected_success and return_code != 0

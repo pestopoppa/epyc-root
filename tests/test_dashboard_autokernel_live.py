@@ -15,7 +15,7 @@ from unittest import mock
 from dashboard import server
 
 
-class AutoKernelLiveDashboardTest(unittest.TestCase):
+class TestAutoKernelLiveDashboard(unittest.TestCase):
     def setUp(self) -> None:
         self._old_root = server.AUTOKERNEL_DEPLOYMENTS_ROOT
         self._old_supervisors_root = server.AUTOKERNEL_SUPERVISORS_ROOT
@@ -467,6 +467,15 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
             mutate(candidate)
             mutations[name] = (original_state, b"\n".join(
                 server._canonical_json_bytes(row) for row in candidate) + b"\n")
+        shifted = json.loads(json.dumps(rows))
+        for row, seq in zip(shifted[-2:], (72, 73)):
+            row["seq"] = seq
+            row["event_id"] = (f"akj-{seq:012d}-" +
+                               server._discovery_content_hash(
+                                   row["payload"])[:12])
+        mutations["coherent_shifted_sequence"] = (
+            original_state, b"\n".join(
+                server._canonical_json_bytes(row) for row in shifted) + b"\n")
 
         for name, (state_raw, journal_raw) in mutations.items():
             with self.subTest(name=name):
@@ -505,6 +514,8 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
                     {"restart_count": 1})),
                 ("cleanup_missing", lambda value: value[2]["payload"].update(
                     {"cleanup_actions": []})),
+                ("success_cleanup_signal", lambda value: value[2]["payload"].update(
+                    {"cleanup_actions": ["pidfd:SIGTERM", "cgroup.remove"]})),
                 ("child_host_mismatch", lambda value: value[1]["payload"]
                     ["child"].update({"host": "other-host"})),
                 ("future_stop", lambda value: value[-1].update(
