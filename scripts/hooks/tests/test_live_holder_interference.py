@@ -74,7 +74,7 @@ def synthetic_region():
         fh.close()
 
 
-def test_drop_caches() -> list[str]:
+def _drop_caches_failures() -> list[str]:
     """Data-driven: allow mentions, block real writes.
 
     Allow cases run against the live host. Block cases run under a SYNTHETIC held region
@@ -113,7 +113,7 @@ def test_drop_caches() -> list[str]:
     return failures
 
 
-def test_running_script() -> list[str]:
+def _running_script_failures() -> list[str]:
     failures: list[str] = []
     tmpdir = Path(tempfile.mkdtemp())
     script = tmpdir / "runner.sh"
@@ -145,16 +145,38 @@ def test_running_script() -> list[str]:
     return failures
 
 
+# Collected by pytest. The two helpers above RETURN a failure list; a pytest test
+# that returns instead of asserting is reported PASSED (only a
+# PytestReturnNotNoneWarning), so before 2026-08-20 this suite went green with a
+# non-empty failure list -- on the guard protecting live inference regions. These
+# wrappers assert, so the failure list is what decides the result.
+def test_drop_caches_rules() -> None:
+    failures = _drop_caches_failures()
+    assert not failures, "; ".join(failures)
+
+
+def test_running_script_rules() -> None:
+    failures = _running_script_failures()
+    assert not failures, "; ".join(failures)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--all", action="store_true", help="also run the running-script rules")
+    # WAS `--all`, opt-IN, so the default direct run silently exercised only half
+    # the suite. Inverted 2026-08-20: both run by default and the slow one must be
+    # opted OUT of, because a subset that reports like a whole is the same defect
+    # class as a test that returns instead of asserting.
+    ap.add_argument("--fast", action="store_true",
+                    help="skip the running-script rules (they sleep); NOT the default")
     args = ap.parse_args()
 
     print("== drop_caches under a live region claim ==")
-    failures = test_drop_caches()
-    if args.all:
+    failures = _drop_caches_failures()
+    if not args.fast:
         print("\n== editing a currently-executing script ==")
-        failures += test_running_script()
+        failures += _running_script_failures()
+    else:
+        print("\n== editing a currently-executing script == SKIPPED (--fast)")
 
     print(f"\n{'FAILED: ' + '; '.join(failures) if failures else 'all checks passed'}")
     return 1 if failures else 0
