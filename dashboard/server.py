@@ -4726,6 +4726,10 @@ def _discovery_product_contract(
         "model_sha256": inputs["model"]["sha256"],
         "workload_sha256": inputs["workload"]["sha256"],
         "runtime_config_sha256": inputs["runtime_config"]["sha256"],
+        "deployment_workload_file_sha256":
+            inputs["workload"]["sha256"],
+        "deployment_runtime_file_sha256":
+            inputs["runtime_config"]["sha256"],
         "planner_context_sha256": _discovery_content_hash({
             "planner_context_sha256": planner["context_sha256"],
             "admission_policy_sha256": admission["policy_sha256"],
@@ -5771,18 +5775,74 @@ _DISCOVERY_V27_COMPARATOR_KEYS = {
     "runtime_receipt_sha256", "runtime_snapshot_sha256",
     "measurement_receipt_sha256",
     "model_sha256", "workload_sha256", "runtime_config_sha256",
+    "observed_workload_sha256", "observed_runtime_config_sha256",
     "frame_sha256", "graphs_mode", "metric", "direction",
     "measurement_protocol_sha256",
     "receipt_sha256"}
+
+_DISCOVERY_V27_MEASURED_WORKLOAD = {
+    "backend": "llama_gpu", "recipe": "tg128-ngl99",
+    "n_prompt": 0, "n_gen": 128,
+}
+_DISCOVERY_V27_MEASURED_RUNTIME = {
+    "n_threads": 8, "n_batch": 512, "n_ubatch": 512,
+    "use_mmap": True, "no_op_offload": 0,
+    "split_mode": "layer", "no_kv_offload": False,
+    "poll": 50, "n_prompt": 0, "n_gen": 128,
+    "flash_attn": 1,
+}
+
+
+def _discovery_v27_measurement_binding(
+        *, model_sha256: str, build_identity: object, graphs_mode: str,
+        arm: str, factor_name: str) -> tuple[str, str] | None:
+    """Recompute measured protocol/frame identities in their own namespace."""
+    if (not _discovery_sha256(model_sha256)
+            or not _discovery_v27_build_identity(build_identity)
+            or graphs_mode not in {"off", "on"}
+            or arm not in {"anchor", "candidate"}
+            or factor_name not in {"source_patch", "cumulative_production"}):
+        return None
+    protocol = {
+        **_DISCOVERY_V27_MEASURED_WORKLOAD,
+        "model_sha256": model_sha256,
+        "metric": "decode_tokens_per_s",
+        "metric_direction": "higher_better",
+        "cpu_list": "184-191", "device": "AMD Instinct MI210",
+        "architecture": "gfx90a",
+        "runtime_config_sha256": _discovery_content_hash(
+            _DISCOVERY_V27_MEASURED_RUNTIME),
+        "graphs_mode": graphs_mode,
+        "candidate_invocations": 9, "candidate_processes": 1,
+    }
+    protocol_sha256 = _discovery_content_hash(protocol)
+    frame_sha256 = _discovery_content_hash({
+        "schema": "epyc.autokernel.measurement_arm_frame.v1",
+        "arm": arm, "protocol": protocol,
+        "source_commit": build_identity["source_commit"],
+        "build_identity": build_identity,
+        "factor_name": factor_name,
+    })
+    if protocol_sha256 is None or frame_sha256 is None:
+        return None
+    return protocol_sha256, frame_sha256
 
 
 def _discovery_v27_frozen_comparator(
         value: object, *, model_sha256: str, workload_sha256: str,
         runtime_config_sha256: str) -> bool:
+    expected = (
+        _discovery_v27_measurement_binding(
+            model_sha256=model_sha256,
+            build_identity=value.get("build_identity"), graphs_mode="on",
+            arm="anchor", factor_name="cumulative_production")
+        if isinstance(value, dict) else None)
     return bool(
-        isinstance(value, dict) and set(value) == _DISCOVERY_V27_COMPARATOR_KEYS
+        expected is not None
+        and isinstance(value, dict)
+        and set(value) == _DISCOVERY_V27_COMPARATOR_KEYS
         and value.get("schema") ==
-            "epyc.autokernel.frozen_production_comparator.v1"
+            "epyc.autokernel.frozen_production_comparator.v2"
         and value.get("branch") == "production-consolidated-v9"
         and value.get("commit") == _DISCOVERY_V27_PRODUCTION_COMMIT
         and _discovery_v27_build_identity(value.get("build_identity"))
@@ -5793,11 +5853,19 @@ def _discovery_v27_frozen_comparator(
             "runtime_receipt_sha256", "runtime_snapshot_sha256",
             "measurement_receipt_sha256",
             "model_sha256", "workload_sha256", "runtime_config_sha256",
+            "observed_workload_sha256",
+            "observed_runtime_config_sha256",
             "frame_sha256",
             "measurement_protocol_sha256"))
         and value.get("model_sha256") == model_sha256
         and value.get("workload_sha256") == workload_sha256
         and value.get("runtime_config_sha256") == runtime_config_sha256
+        and value.get("observed_workload_sha256") ==
+            _discovery_content_hash(_DISCOVERY_V27_MEASURED_WORKLOAD)
+        and value.get("observed_runtime_config_sha256") ==
+            _discovery_content_hash(_DISCOVERY_V27_MEASURED_RUNTIME)
+        and value.get("measurement_protocol_sha256") == expected[0]
+        and value.get("frame_sha256") == expected[1]
         and value.get("graphs_mode") == "graphs_on"
         and value.get("metric") == "tokens_per_second"
         and value.get("direction") == "higher_is_better"
@@ -5971,11 +6039,15 @@ def _discovery_v27_cumulative_performance(
     frozen_keys = {
         "schema", "production_commit", "build_identity",
         "build_identity_sha256", "runtime_snapshot_sha256",
-        "authority_sha256"}
+        "comparator_receipt_sha256", "graphs_mode", "frame_sha256",
+        "measurement_protocol_sha256", "measurement_receipt_sha256",
+        "model_sha256", "workload_sha256", "runtime_config_sha256",
+        "observed_workload_sha256", "observed_runtime_config_sha256",
+        "metric", "direction", "authority_sha256"}
     if (not isinstance(static, dict)
             or not isinstance(frozen, dict) or set(frozen) != frozen_keys
             or frozen.get("schema") !=
-               "epyc.autokernel.frozen_production_authority.v1"
+               "epyc.autokernel.frozen_production_authority.v2"
             or frozen.get("production_commit") !=
                _DISCOVERY_V27_PRODUCTION_COMMIT
             or frozen.get("production_commit") != static.get("commit")
@@ -5984,6 +6056,25 @@ def _discovery_v27_cumulative_performance(
                _discovery_content_hash(frozen.get("build_identity"))
             or frozen.get("runtime_snapshot_sha256") !=
                static.get("runtime_snapshot_sha256")
+            or frozen.get("comparator_receipt_sha256") !=
+               static.get("receipt_sha256")
+            or frozen.get("graphs_mode") != static.get("graphs_mode")
+            or frozen.get("frame_sha256") != static.get("frame_sha256")
+            or frozen.get("measurement_protocol_sha256") !=
+               static.get("measurement_protocol_sha256")
+            or frozen.get("measurement_receipt_sha256") !=
+               static.get("measurement_receipt_sha256")
+            or frozen.get("model_sha256") != static.get("model_sha256")
+            or frozen.get("workload_sha256") !=
+               static.get("workload_sha256")
+            or frozen.get("runtime_config_sha256") !=
+               static.get("runtime_config_sha256")
+            or frozen.get("observed_workload_sha256") !=
+               static.get("observed_workload_sha256")
+            or frozen.get("observed_runtime_config_sha256") !=
+               static.get("observed_runtime_config_sha256")
+            or frozen.get("metric") != static.get("metric")
+            or frozen.get("direction") != static.get("direction")
             or frozen.get("authority_sha256") != _discovery_content_hash({
                 key: item for key, item in frozen.items()
                 if key != "authority_sha256"})):
@@ -6032,23 +6123,53 @@ def _discovery_v27_cumulative_performance(
             or comparison.get("result_sha256") !=
                receipt["incremental_comparison_result_sha256"]):
         return unavailable
+    off_binding = _discovery_v27_measurement_binding(
+        model_sha256=contract.get("model_sha256"),
+        build_identity=build_pair["candidate"]["build_identity"],
+        graphs_mode="off", arm="candidate", factor_name="source_patch")
+    on_binding = _discovery_v27_measurement_binding(
+        model_sha256=contract.get("model_sha256"),
+        build_identity=build_pair["candidate"]["build_identity"],
+        graphs_mode="on", arm="candidate", factor_name="source_patch")
+    production_binding = _discovery_v27_measurement_binding(
+        model_sha256=contract.get("model_sha256"),
+        build_identity=static.get("build_identity"),
+        graphs_mode="on", arm="anchor",
+        factor_name="cumulative_production")
     if (receipt.get("model_sha256") != contract.get("model_sha256")
             or receipt.get("model_sha256") != static.get("model_sha256")
             or receipt.get("workload_sha256") != contract.get(
-                "workload_sha256")
+                "deployment_workload_file_sha256")
             or receipt.get("workload_sha256") != static.get(
                 "workload_sha256")
             or receipt.get("runtime_config_sha256") != contract.get(
-                "runtime_config_sha256")
+                "deployment_runtime_file_sha256")
             or receipt.get("runtime_config_sha256") != static.get(
                 "runtime_config_sha256")
-            or receipt.get("metric") != static.get("metric")
+            or frozen.get("observed_workload_sha256") !=
+               _discovery_content_hash(_DISCOVERY_V27_MEASURED_WORKLOAD)
+            or frozen.get("observed_runtime_config_sha256") !=
+               _discovery_content_hash(_DISCOVERY_V27_MEASURED_RUNTIME)
+            or receipt.get("metric") != "decode_tokens_per_s"
             or receipt.get("metric_direction") != "higher_better"
+            or static.get("metric") != "tokens_per_second"
             or static.get("direction") != "higher_is_better"
             or receipt.get("production_graphs_mode") != "on"
             or static.get("graphs_mode") != "graphs_on"
+            or off_binding is None or on_binding is None
+            or production_binding is None
+            or receipt.get("protocol_frame_sha256") !=
+               on_binding[0]
+            or receipt.get("protocol_frame_sha256") !=
+               production_binding[0]
             or receipt.get("protocol_frame_sha256") !=
                static.get("measurement_protocol_sha256")
+            or receipt.get("incremental_graphs_off_frame_sha256") !=
+               off_binding[1]
+            or receipt.get("incremental_graphs_on_frame_sha256") !=
+               on_binding[1]
+            or receipt.get("production_graphs_on_frame_sha256") !=
+               production_binding[1]
             or receipt.get("production_graphs_on_frame_sha256") !=
                static.get("frame_sha256")
             or len({

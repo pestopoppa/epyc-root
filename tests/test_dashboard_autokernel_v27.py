@@ -54,12 +54,18 @@ def _build_identity(commit: str, prefix: str) -> dict:
 def _frozen_comparator(
         model_sha256: str, workload_sha256: str,
         runtime_config_sha256: str) -> dict:
+    build_identity = _build_identity(
+        server._DISCOVERY_V27_PRODUCTION_COMMIT, "1")
+    measured = server._discovery_v27_measurement_binding(
+        model_sha256=model_sha256,
+        build_identity=build_identity, graphs_mode="on", arm="anchor",
+        factor_name="cumulative_production")
+    assert measured is not None
     value = {
-        "schema": "epyc.autokernel.frozen_production_comparator.v1",
+        "schema": "epyc.autokernel.frozen_production_comparator.v2",
         "branch": "production-consolidated-v9",
         "commit": server._DISCOVERY_V27_PRODUCTION_COMMIT,
-        "build_identity": _build_identity(
-            server._DISCOVERY_V27_PRODUCTION_COMMIT, "1"),
+        "build_identity": build_identity,
         "build_receipt_sha256": "6" * 64,
         "linkage_receipt_sha256": "7" * 64,
         "runtime_receipt_sha256": "8" * 64,
@@ -68,11 +74,15 @@ def _frozen_comparator(
         "model_sha256": model_sha256,
         "workload_sha256": workload_sha256,
         "runtime_config_sha256": runtime_config_sha256,
-        "frame_sha256": "a" * 64,
+        "observed_workload_sha256": server._discovery_content_hash(
+            server._DISCOVERY_V27_MEASURED_WORKLOAD),
+        "observed_runtime_config_sha256": server._discovery_content_hash(
+            server._DISCOVERY_V27_MEASURED_RUNTIME),
+        "frame_sha256": measured[1],
         "graphs_mode": "graphs_on",
         "metric": "tokens_per_second",
         "direction": "higher_is_better",
-        "measurement_protocol_sha256": "b" * 64,
+        "measurement_protocol_sha256": measured[0],
     }
     return _seal(value, "receipt_sha256")
 
@@ -238,7 +248,7 @@ class V27Fixture(V26Fixture):
             key: value for key, value in terminal.items()
             if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
         frozen_body = {
-            "schema": "epyc.autokernel.frozen_production_authority.v1",
+            "schema": "epyc.autokernel.frozen_production_authority.v2",
             "production_commit": server._DISCOVERY_V27_PRODUCTION_COMMIT,
             "build_identity": copy.deepcopy(
                 self.comparator["build_identity"]),
@@ -246,14 +256,41 @@ class V27Fixture(V26Fixture):
                 self.comparator["build_identity"]),
             "runtime_snapshot_sha256":
                 self.comparator["runtime_snapshot_sha256"],
+            "comparator_receipt_sha256":
+                self.comparator["receipt_sha256"],
+            "graphs_mode": self.comparator["graphs_mode"],
+            "frame_sha256": self.comparator["frame_sha256"],
+            "measurement_protocol_sha256":
+                self.comparator["measurement_protocol_sha256"],
+            "measurement_receipt_sha256":
+                self.comparator["measurement_receipt_sha256"],
+            "model_sha256": self.comparator["model_sha256"],
+            "workload_sha256": self.comparator["workload_sha256"],
+            "runtime_config_sha256":
+                self.comparator["runtime_config_sha256"],
+            "observed_workload_sha256":
+                self.comparator["observed_workload_sha256"],
+            "observed_runtime_config_sha256":
+                self.comparator["observed_runtime_config_sha256"],
+            "metric": self.comparator["metric"],
+            "direction": self.comparator["direction"],
         }
         frozen = {
             **frozen_body,
             "authority_sha256": server._discovery_content_hash(frozen_body)}
+        off_binding = server._discovery_v27_measurement_binding(
+            model_sha256=self.comparator["model_sha256"],
+            build_identity=candidate_identity, graphs_mode="off",
+            arm="candidate", factor_name="source_patch")
+        on_binding = server._discovery_v27_measurement_binding(
+            model_sha256=self.comparator["model_sha256"],
+            build_identity=candidate_identity, graphs_mode="on",
+            arm="candidate", factor_name="source_patch")
+        assert off_binding is not None and on_binding is not None
         off_frame = (
             self.comparator["frame_sha256"]
-            if candidate_off_frame_substitution else "c" * 64)
-        on_frame = "e" * 64
+            if candidate_off_frame_substitution else off_binding[1])
+        on_frame = on_binding[1]
         production_frame = (
             on_frame if candidate_frame_substitution else "0" * 64
             if frame_mismatch else self.comparator["frame_sha256"])
@@ -277,7 +314,8 @@ class V27Fixture(V26Fixture):
             "protocol_frame_sha256": (
                 "0" * 64 if protocol_mismatch else
                 self.comparator["measurement_protocol_sha256"]),
-            "metric": "tokens_per_second", "metric_direction": "higher_better",
+            "metric": "decode_tokens_per_s",
+            "metric_direction": "higher_better",
             "incremental_exact_route_effect_fraction": incremental,
             "incremental_graphs_off_effect_fraction": incremental,
             "incremental_graphs_on_effect_fraction": incremental,
@@ -534,6 +572,147 @@ def _frozen(fixture: V27Fixture) -> ExitStack:
 
 
 class DashboardAutokernelV27Tests(unittest.TestCase):
+    def test_deployment_and_measured_hash_namespaces_are_distinct(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            self.assertEqual(
+                contract["deployment_workload_file_sha256"],
+                fixture.input_rows["workload"]["sha256"])
+            self.assertEqual(
+                contract["deployment_runtime_file_sha256"],
+                fixture.input_rows["runtime_config"]["sha256"])
+            self.assertNotEqual(
+                contract["deployment_workload_file_sha256"],
+                server._discovery_content_hash(
+                    server._DISCOVERY_V27_MEASURED_WORKLOAD))
+            self.assertNotEqual(
+                contract["deployment_runtime_file_sha256"],
+                server._discovery_content_hash(
+                    server._DISCOVERY_V27_MEASURED_RUNTIME))
+
+    def test_coherently_resealed_static_observed_runtime_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            comparator = copy.deepcopy(fixture.comparator)
+            runtime = copy.deepcopy(server._DISCOVERY_V27_MEASURED_RUNTIME)
+            runtime["n_threads"] = 9
+            protocol = {
+                **server._DISCOVERY_V27_MEASURED_WORKLOAD,
+                "model_sha256": fixture.input_rows["model"]["sha256"],
+                "metric": "decode_tokens_per_s",
+                "metric_direction": "higher_better",
+                "cpu_list": "184-191", "device": "AMD Instinct MI210",
+                "architecture": "gfx90a",
+                "runtime_config_sha256":
+                    server._discovery_content_hash(runtime),
+                "graphs_mode": "on", "candidate_invocations": 9,
+                "candidate_processes": 1,
+            }
+            comparator["measurement_protocol_sha256"] = (
+                server._discovery_content_hash(protocol))
+            comparator["observed_runtime_config_sha256"] = (
+                server._discovery_content_hash(runtime))
+            comparator["frame_sha256"] = server._discovery_content_hash({
+                "schema": "epyc.autokernel.measurement_arm_frame.v1",
+                "arm": "anchor", "protocol": protocol,
+                "source_commit": comparator["build_identity"][
+                    "source_commit"],
+                "build_identity": comparator["build_identity"],
+                "factor_name": "cumulative_production",
+            })
+            comparator = _seal(comparator, "receipt_sha256")
+            self.assertFalse(server._discovery_v27_frozen_comparator(
+                comparator,
+                model_sha256=fixture.input_rows["model"]["sha256"],
+                workload_sha256=fixture.input_rows["workload"]["sha256"],
+                runtime_config_sha256=
+                    fixture.input_rows["runtime_config"]["sha256"]))
+
+    def test_coherently_resealed_dynamic_observed_runtime_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            candidate_identity = terminal["build_pair"]["candidate"][
+                "build_identity"]
+            runtime = copy.deepcopy(server._DISCOVERY_V27_MEASURED_RUNTIME)
+            runtime["n_threads"] = 9
+
+            def protocol(graphs_mode: str) -> dict:
+                return {
+                    **server._DISCOVERY_V27_MEASURED_WORKLOAD,
+                    "model_sha256": fixture.input_rows["model"]["sha256"],
+                    "metric": "decode_tokens_per_s",
+                    "metric_direction": "higher_better",
+                    "cpu_list": "184-191",
+                    "device": "AMD Instinct MI210",
+                    "architecture": "gfx90a",
+                    "runtime_config_sha256":
+                        server._discovery_content_hash(runtime),
+                    "graphs_mode": graphs_mode,
+                    "candidate_invocations": 9,
+                    "candidate_processes": 1,
+                }
+
+            def frame(graphs_mode: str, *, arm: str, identity: dict,
+                      factor: str) -> str:
+                measured = protocol(graphs_mode)
+                return server._discovery_content_hash({
+                    "schema": "epyc.autokernel.measurement_arm_frame.v1",
+                    "arm": arm, "protocol": measured,
+                    "source_commit": identity["source_commit"],
+                    "build_identity": identity, "factor_name": factor,
+                })
+
+            receipt["protocol_frame_sha256"] = (
+                server._discovery_content_hash(protocol("on")))
+            receipt["incremental_graphs_off_frame_sha256"] = frame(
+                "off", arm="candidate", identity=candidate_identity,
+                factor="source_patch")
+            receipt["incremental_graphs_on_frame_sha256"] = frame(
+                "on", arm="candidate", identity=candidate_identity,
+                factor="source_patch")
+            receipt["production_graphs_on_frame_sha256"] = frame(
+                "on", arm="anchor", identity=fixture.comparator[
+                    "build_identity"], factor="cumulative_production")
+            receipt["frozen_production"][
+                "observed_runtime_config_sha256"] = (
+                    server._discovery_content_hash(runtime))
+            receipt["frozen_production"]["authority_sha256"] = (
+                server._discovery_content_hash({
+                    key: value
+                    for key, value in receipt["frozen_production"].items()
+                    if key != "authority_sha256"}))
+            receipt = _seal(receipt, "result_sha256")
+            raw = (json.dumps(receipt, sort_keys=True, indent=2) + "\n").encode()
+            path.write_bytes(raw)
+            binding = {
+                "path": str(path), "sha256": hashlib.sha256(raw).hexdigest()}
+            terminal["cumulative_performance"] = receipt
+            terminal["cumulative_performance_ref"] = {
+                "schema": "epyc.autokernel.cumulative_performance_ref.v1",
+                **binding}
+            terminal["cumulative_performance_result_sha256"] = receipt[
+                "result_sha256"]
+            terminal["terminal_sha256"] = server._discovery_content_hash({
+                key: value for key, value in terminal.items()
+                if key != "terminal_sha256"})
+            state["cumulative_performance"] = binding
+            state["cumulative_composition_terminal"] = terminal
+            state = _seal(state, "state_sha256")
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
+
     def test_final_v27_product_pins_are_deliberately_fail_closed(self) -> None:
         self.assertIsNone(server._DISCOVERY_V27_PRODUCER_COMMIT)
         self.assertIsNone(server._DISCOVERY_V27_EXECUTION_MODULE_SHA256)
