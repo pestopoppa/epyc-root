@@ -1330,7 +1330,14 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       schema. Two decision-grade outcomes: the flag errors/does not exist on 6.2 → the C4-template question
       closes NEGATIVE until a ROCm upgrade is on the table; or it emits records → inspect whether any
       stall-reason field is populated under host-trap (docs say it will be absent). **Record what the
-      hardware actually emits rather than concluding absence from documentation.**
+      hardware actually emits rather than concluding absence from documentation. **PREPARED 2026-08-21,
+      NOT RUN:** `epyc-inference-research/scripts/benchmark/run_rocprofv3_pc_sampling_probe.py` plus its
+      self-contained gfx90a HIP kernel and CPU parser/contract tests. Default mode is plan-only. Live mode
+      requires `--execute --i-have-exclusive-gpu-window`, an exclusive governed `mi210_0` claim, a clean exact
+      source commit, in-window 250 ms device sampling, and a hard 1,800 s total ceiling. Exact CLI refusal,
+      emitted host-trap rows without stall fields, emitted empty stall fields, and unexpectedly populated
+      stall data are distinct outcomes; empty/malformed/ambiguous captures remain inconclusive. The task stays
+      open until a GPU window exists and the prepared probe produces a sealed receipt.
 - [ ] **RVP-C4-11 — Require every C4 prescription to carry an ESTIMATED speedup, and log estimate-vs-achieved
       error.** GPA publishes estimated beside achieved for all 26 optimization rows, **mean error 4.1%**
       (worst rows 42% and 26%, both latency-hiding — do not quote the mean as the accuracy of any single

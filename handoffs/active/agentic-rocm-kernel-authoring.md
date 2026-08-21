@@ -1036,7 +1036,7 @@ wherever it appears._
 _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `intake-1249#record`
 (KLineage), `intake-1250#record` (Kernel-Smith), `intake-1240#record` (GPU Forecasters)._
 
-- [ ] **C5-14 — Add AutoKernel to the controller roster as the ONLY surveyed kernel controller that needs
+- [x] **C5-14 ✅ 2026-08-21 — Add AutoKernel to the controller roster as the ONLY surveyed kernel controller that needs
       no vendor profiler.** `intake-1246#record` (MIT, `github.com/RightNow-AI/autokernel` @ `78435821`,
       1,531 stars): Phase A uses **`torch.profiler` with shape recording only** — zero `ncu`/`nsys` in paper
       or code. Our environment has rocprof v1/v2/v3 and omniperf and specifically **NO ncu/nsys**, which has
@@ -1050,7 +1050,13 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       accumulation (no TF32 on gfx90a), tier 5 (TMA/cp.async do not exist on CDNA2), or the CUDA C++ backend.
       Use FlashInfer-Bench's tolerance policy (RVP-C6-23), **not** AutoKernel's 1e-2/2e-2 blanket, which is
       loose enough to admit an accumulator downgrade on the fp16/bf16 arms — the more so because its own
-      playbook tier 3 sanctions changing accumulator precision as an optimization.
+      playbook tier 3 sanctions changing accumulator precision as an optimization. **CLOSED WITH AN EXACT
+      TRANSFER BOUNDARY:** harvest only `torch.profiler` shape attribution, Amdahl target ranking with
+      move-on criteria, fixed-evaluation/mutable-single-file discipline, and the cheap-first five-stage gate.
+      Refuse tier 5, TF32, the static hardware database, CUDA backend details, and blanket tolerances. The
+      controller must still re-observe attribution on gfx90a; API availability is not measurement evidence.
+      Durable contract:
+      `epyc-inference-research/docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-15 — Adopt the KLineage BACKWARD-LINEAGE induction mechanism as a design candidate, and test it
       on one gfx90a expert kernel.** `intake-1249#record` inverts the family's direction: instead of
       generate-measure-keep-what-was-fast, it walks an EXPERT kernel BACKWARD through validation-gated
@@ -1066,7 +1072,7 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       Also lift the nine-field **SkillCard** schema (intent, anchor, carrier, pre, effect, evidence, risk,
       scope, ver) as a STARTING POINT, noting explicitly that we ADD what they lack: a commit binding and a
       re-verification predicate (AK-PM-10).
-- [ ] **C5-16 — Supply architecture documentation IN CONTEXT rather than relying on model priors, and cite
+- [x] **C5-16 ✅ 2026-08-21 — Supply architecture documentation IN CONTEXT rather than relying on model priors, and cite
       the first external measurement of what scarcity costs.** `intake-1244#record` (CodegenBench) holds the
       architecture constant-across-tasks and varies only the chip: `Pass@1` falls from **0.74** on the
       well-documented architecture to **0.48** on the thinly-documented one, and to **0.00** for one model.
@@ -1076,6 +1082,13 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       excerpts, MI200 tuning-guide facts, wavefront-64 and LDS-bank specifics, MFMA shapes) into the
       authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
       HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
+      **GUIDANCE LANDED:** every gfx90a round now has a documented six-part context contract: exact
+      MI210/gfx90a/ROCm-6.2 identity; pinned AMD CDNA2 ISA; MI200 tuning guidance; sourced LDS/VGPR/MFMA and
+      direct-global-to-LDS facts; explicit absence of TF32/TMA/`cp.async`/mbarrier/CDNA3 stochastic sampling;
+      and the exact production route, shapes, dtypes, accumulator requirement, and comparator frame. Facts and
+      local measurements remain separately source-bound; silence never permits substitution from a neighboring
+      CDNA generation. Durable contract:
+      `epyc-inference-research/docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
       build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should
       not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without

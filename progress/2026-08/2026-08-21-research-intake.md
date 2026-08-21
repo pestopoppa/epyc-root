@@ -411,3 +411,17 @@ patch-identical twin-commit divergence (ccee7873 local / b3291d43 origin, same p
 a superset-safe `-s ours` merge, same as the first. Peer's live Stage-2b work (+4,102 uncommitted
 index lines, CT-5c progress edits) left strictly untouched. GPU-arm follow-ons remain with the codex
 agent per the dispatch; this session is quiescent pending compute or new operator input.
+
+### Relayed AutoKernel documentation lane completed (CPU-only)
+
+AK-PM-13, C5-14, and C5-16 are closed from primary sources. The three upstream merge identities and
+their non-uniform review evidence are recorded in the owning handoffs. Reading the full primary tables
+also corrected two subset ranges: SGLang spans **-0.35%..+1.75%** end-to-end across all 24 printed rows,
+and LMDeploy spans **+1.85%..+3.00%** across all six rows. The attenuation result survives and is more
+useful when stated conservatively: isolated gains shrink by tens-to-hundreds of times, may change sign by
+workload, and never substitute for cumulative end-to-end measurement against frozen production.
+
+RVP-C4-10 remains open, but its runnable package is prepared in `epyc-inference-research`: a plan-only by
+default rocprofv3 host-trap runner, self-contained exact-gfx90a HIP kernel, and CPU-only parser/contract
+tests. Live execution is explicitly gated on a governed exclusive GPU window and capped at 1,800 seconds.
+No GPU or inference was used while authoring or validating the package.
