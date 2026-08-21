@@ -6,6 +6,7 @@ import json
 import os
 import tempfile
 import unittest
+from contextlib import ExitStack
 from pathlib import Path
 from unittest import mock
 
@@ -17,6 +18,29 @@ def _seal(value: dict, key: str) -> dict:
     value[key] = server._discovery_controller_state_hash({
         name: item for name, item in value.items() if name != key})
     return value
+
+
+def _frozen(fixture: "V26Fixture") -> ExitStack:
+    stack = ExitStack()
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_EXECUTION_MODULE_SHA256",
+        {role: row["sha256"] for role, row in fixture.modules.items()}))
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_PRODUCER_COMMIT", "a" * 40))
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256",
+        fixture.config["config_sha256"]))
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_DEPLOYMENT_FILE_SHA256",
+        hashlib.sha256(fixture.config_path.read_bytes()).hexdigest()))
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_GRAPH_SHA256",
+        fixture.graph["graph_sha256"]))
+    stack.enter_context(mock.patch.object(
+        server, "_DISCOVERY_V26_GRAPH_FILE_SHA256",
+        hashlib.sha256(
+            (fixture.state / "deployment-graph.json").read_bytes()).hexdigest()))
+    return stack
 
 
 class V26Fixture:
@@ -108,7 +132,8 @@ class V26Fixture:
             for role, logical_path in
             server._SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26.items()}
         reward = [{"route_id": f"q5.reward.{index}", "calls": count,
-                   "grid": grid, "workgroup": 128, "lds_bytes": 1024}
+                   "grid": grid, "workgroup": 128, "lds_bytes": 1024,
+                   "kernel_name": f"q5_kernel_{index}"}
                   for index, (count, grid) in enumerate(
                       ((6063, 57344), (4644, 8192), (3096, 311296)))]
         tail = {"route_id": "q5.structural.tail", "calls": 129,
@@ -117,7 +142,11 @@ class V26Fixture:
             "source_files": ["ggml/src/ggml-cuda/mmvq.cu"],
             "source_symbols": ["calc_nwarps"],
             "change_classes": ["dispatcher"],
-            "dispatch_signatures": reward, "excluded_signatures": [tail],
+            "dispatch_signatures": [{
+                key: row[key] for key in (
+                    "route_id", "calls", "grid", "workgroup", "lds_bytes")}
+                for row in reward],
+            "excluded_signatures": [tail],
         }}
         dispatch = {"akh-v2-q5-onewave-preauthored": reward}
         self.graph = {
@@ -222,6 +251,9 @@ class V26Fixture:
             "candidate": {"hypothesis_id": authority["hypothesis_id"],
                           "source_manifest_sha256": "6" * 64},
             "preauthored_continuation": authority,
+            "context": {},
+            "context_sha256": server._discovery_controller_state_hash({}),
+            "confirmation": False, "parent_authorization": None,
         }
         state = _seal({
             "schema": "epyc.autokernel.discovery_controller.v7",
@@ -235,6 +267,27 @@ class V26Fixture:
         }, "state_sha256")
         return state, authority
 
+    def write_journal(self, states: list[tuple[str, str]],
+                      *, start_at: str = "2026-08-21T12:00:00Z") -> Path:
+        journal = self.state / "journal"
+        journal.mkdir(mode=0o700, exist_ok=True)
+        rows = []
+        for seq, (name, digest) in enumerate(states, 1):
+            payload = {"state": name, "controller_state_sha256": digest}
+            rows.append({
+                "journal_schema": "epyc.autokernel.journal_entry.v1",
+                "event_id": (
+                    f"akj-{seq:012d}-"
+                    f"{server._discovery_content_hash(payload)[:12]}"),
+                "seq": seq, "kind": "STOP_STATE", "campaign_id": None,
+                "record_id": None, "written_at": start_at,
+                "payload": payload,
+            })
+        path = journal / "events.jsonl"
+        path.write_bytes(b"".join(
+            server._canonical_json_bytes(row) + b"\n" for row in rows))
+        return path
+
 
 class DashboardAutokernelV26Tests(unittest.TestCase):
     def test_frozen_v26_product_authority_is_exact(self) -> None:
@@ -243,7 +296,16 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             "915f4ce5d38713b59545035d17e4a730214b5db1")
         self.assertEqual(
             server._DISCOVERY_V26_GRAPH_SHA256,
-            "72985628302b06bb1dd4fe8c7afd23595a724cf549e63b8296e779763118545b")
+            "20dec69b26c84dbdf7f97b92e39349437df9c28a10300fed210752070e0a2e4c")
+        self.assertEqual(
+            server._DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256,
+            "03fc1b1230487a35f8aefd843a546da9324361ee462d945bc076ef89263d2b89")
+        self.assertEqual(
+            server._DISCOVERY_V26_DEPLOYMENT_FILE_SHA256,
+            "53a5f35f42baba05bc0a3c72741737f7d30583d8a3435078ee9edae59661bb5f")
+        self.assertEqual(
+            server._DISCOVERY_V26_GRAPH_FILE_SHA256,
+            "ef35a550a96bdc8b9cd089097c216078a1b5b8fa842df746d975592fd6ad6075")
         self.assertEqual(
             set(server._DISCOVERY_V26_EXECUTION_MODULE_SHA256),
             set(server._SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26))
@@ -255,15 +317,7 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
     def test_exact_v26_graph_state_and_safe_projection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             fixture = V26Fixture(Path(directory))
-            hashes = {role: row["sha256"]
-                      for role, row in fixture.modules.items()}
-            with mock.patch.object(
-                    server, "_DISCOVERY_V26_EXECUTION_MODULE_SHA256", hashes), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_PRODUCER_COMMIT", "a" * 40), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_GRAPH_SHA256",
-                        fixture.graph["graph_sha256"]):
+            with _frozen(fixture):
                 contract = server._discovery_v26_contract(
                     fixture.config_path, fixture.config, fixture.bundle)
             self.assertIsNotNone(contract)
@@ -312,28 +366,11 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             state, _ = fixture.checkpoint()
             (fixture.state / "state.json").write_bytes(
                 server._canonical_json_bytes(state) + b"\n")
-            journal = fixture.state / "journal"
-            journal.mkdir(mode=0o700)
-            (journal / "events.jsonl").write_text(json.dumps({
-                "journal_schema": "epyc.autokernel.journal_entry.v1",
-                "seq": 1, "kind": "STOP_STATE",
-                "written_at": "2026-08-21T12:00:00Z",
-                "payload": {
-                    "state": "discovery_preauthored_checkpointed",
-                    "controller_state_sha256": state["state_sha256"],
-                },
-            }, sort_keys=True) + "\n", encoding="utf-8")
-            hashes = {role: row["sha256"]
-                      for role, row in fixture.modules.items()}
+            fixture.write_journal([(
+                "discovery_preauthored_checkpointed", state["state_sha256"])])
             with mock.patch.object(
                     server, "AUTOKERNEL_DEPLOYMENTS_ROOT", root), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_EXECUTION_MODULE_SHA256", hashes), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_PRODUCER_COMMIT", "a" * 40), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_GRAPH_SHA256",
-                        fixture.graph["graph_sha256"]), \
+                    _frozen(fixture), \
                     mock.patch.object(
                         server, "_discovery_lock_held", return_value=True):
                 payload, _ = server._discovery_live_read()
@@ -364,17 +401,197 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
                 encoding="utf-8")
             with mock.patch.object(
                     server, "AUTOKERNEL_DEPLOYMENTS_ROOT", root), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_EXECUTION_MODULE_SHA256", hashes), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_PRODUCER_COMMIT", "a" * 40), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_GRAPH_SHA256",
-                        fixture.graph["graph_sha256"]), \
+                    _frozen(fixture), \
                     mock.patch.object(
                         server, "_discovery_lock_held", return_value=True):
                 refused, _ = server._discovery_live_read()
             self.assertIs(refused["available"], False)
+
+    def test_v26_journal_requires_exact_canonical_contiguous_envelopes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V26Fixture(Path(directory))
+            path = fixture.write_journal([
+                ("discovery_planner_transient", "1" * 64),
+                ("discovery_planning_started", "2" * 64),
+            ])
+            checkpoint = server._discovery_v26_checkpoint(
+                path, now=1_787_313_601.0)
+            self.assertEqual(checkpoint["seq"], 2)
+            self.assertEqual(checkpoint["controller_state_sha256"], "2" * 64)
+            valid_rows = [json.loads(line) for line in path.read_text().splitlines()]
+
+            def write_rows(rows: list[dict], *, canonical: bool = True,
+                           newline: bool = True) -> None:
+                encoded = b"\n".join(
+                    server._canonical_json_bytes(row) if canonical else
+                    json.dumps(row, indent=2).encode()
+                    for row in rows)
+                path.write_bytes(encoded + (b"\n" if newline else b""))
+
+            mutations = {}
+            missing = copy.deepcopy(valid_rows)
+            missing[0].pop("record_id")
+            mutations["missing envelope key"] = (missing, True, True)
+            extra = copy.deepcopy(valid_rows)
+            extra[0]["unexpected"] = True
+            mutations["extra envelope key"] = (extra, True, True)
+            gap = copy.deepcopy(valid_rows)
+            gap[1]["seq"] = 3
+            mutations["sequence gap"] = (gap, True, True)
+            forged = copy.deepcopy(valid_rows)
+            forged[1]["event_id"] = "akj-000000000002-deadbeefdead"
+            mutations["event identity"] = (forged, True, True)
+            payload_extra = copy.deepcopy(valid_rows)
+            payload_extra[1]["payload"]["unexpected"] = True
+            payload_extra[1]["event_id"] = (
+                "akj-000000000002-" +
+                server._discovery_controller_state_hash(
+                    payload_extra[1]["payload"])[:12])
+            mutations["payload grammar"] = (payload_extra, True, True)
+            mutations["noncanonical bytes"] = (
+                copy.deepcopy(valid_rows), False, True)
+            mutations["torn tail"] = (copy.deepcopy(valid_rows), True, False)
+            future = copy.deepcopy(valid_rows)
+            future[1]["written_at"] = "2099-01-01T00:00:00Z"
+            mutations["future timestamp"] = (future, True, True)
+            for label, (rows, canonical, newline) in mutations.items():
+                with self.subTest(label=label):
+                    write_rows(rows, canonical=canonical, newline=newline)
+                    self.assertIsNone(server._discovery_v26_checkpoint(
+                        path, now=1_787_313_601.0))
+
+    def test_planner_transients_do_not_advance_scientific_cursor(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V26Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v26_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, _ = fixture.checkpoint()
+            state.pop("pending")
+            transient = {
+                "turn": 1, "status": "planner_transient",
+                "reason": "provider unavailable",
+                "refusal_type": "planner_provider_transient",
+                "scientific_budget_spent": False,
+                "context_sha256": "1" * 64,
+                "planner_operation_key": "2" * 64,
+            }
+            state.update(iterations=[transient], next=1,
+                         planner_provider_attempt=1)
+            state = _seal(state, "state_sha256")
+            projected = server._discovery_v26_state_contract(state, contract)
+            self.assertEqual(projected["scientific_attempts"], 0)
+
+            second = copy.deepcopy(transient)
+            second["planner_operation_key"] = "3" * 64
+            repeated = copy.deepcopy(state)
+            repeated["iterations"] = [transient, second, {
+                "turn": 1, "status": "planner_refused",
+                "scientific_budget_spent": False}]
+            repeated["next"] = 2
+            repeated["planner_provider_attempt"] = 2
+            repeated = _seal(repeated, "state_sha256")
+            self.assertIsNotNone(server._discovery_v26_state_contract(
+                repeated, contract))
+
+            mutations = {
+                "future turn": lambda value: value["iterations"][0].update(turn=2),
+                "provider count": lambda value: value.update(
+                    planner_provider_attempt=0),
+                "cursor advanced": lambda value: value.update(next=2),
+                "telemetry spoof": lambda value: value["iterations"][0].update(
+                    telemetry_event="planner_refused"),
+                "wrong refusal": lambda value: value["iterations"][0].update(
+                    refusal_type="planner_output_refusal"),
+            }
+            for label, mutate in mutations.items():
+                with self.subTest(label=label):
+                    changed = copy.deepcopy(state)
+                    mutate(changed)
+                    changed = _seal(changed, "state_sha256")
+                    self.assertIsNone(server._discovery_v26_state_contract(
+                        changed, contract))
+            duplicate = copy.deepcopy(state)
+            duplicate["iterations"] = [transient, copy.deepcopy(transient)]
+            duplicate["planner_provider_attempt"] = 2
+            duplicate = _seal(duplicate, "state_sha256")
+            self.assertIsNone(server._discovery_v26_state_contract(
+                duplicate, contract))
+
+    def test_preauthored_pending_lifecycle_variants_remain_visible(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V26Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v26_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            initial, _ = fixture.checkpoint()
+            variants = {"preauthored_ready": initial}
+
+            waiting = copy.deepcopy(initial)
+            pending = waiting["pending"]
+            pending.pop("phase"); pending.pop("context"); pending.pop("context_sha256")
+            pending.update(authorization={}, infrastructure_retry_epoch=0)
+            pending["row"].update(
+                status="waiting_resource", lease={}, operation_key="a" * 64)
+            variants["waiting_resource"] = _seal(waiting, "state_sha256")
+
+            ambiguity = copy.deepcopy(waiting)
+            pending = ambiguity["pending"]
+            pending["infrastructure_retry_epoch"] = 1
+            pending["prior_operation_key"] = "b" * 64
+            pending["row"].pop("status"); pending["row"].pop("lease")
+            pending["row"].update(
+                source_manifest_sha256="6" * 64,
+                candidate_semantic_sha256="7" * 64)
+            ambiguity["infrastructure_ambiguities"] = [{
+                "schema": "epyc.autokernel.screen_infrastructure_ambiguity.v1",
+                "operation_key": "b" * 64,
+                "source_manifest_sha256": "6" * 64,
+                "candidate_semantic_sha256": "7" * 64,
+                "stage_receipt_path": "/private/receipt.json",
+                "stage_receipt_sha256": "c" * 64,
+                "reason_sha256": "d" * 64, "retry_epoch": 0,
+            }]
+            variants["ambiguity_retry"] = _seal(ambiguity, "state_sha256")
+
+            s2 = copy.deepcopy(initial)
+            pending = s2["pending"]
+            pending.pop("phase"); pending.pop("context"); pending.pop("context_sha256")
+            pending["confirmation"] = True
+            pending["parent_authorization"] = {}
+            pending["row"]["status"] = "replication_pending"
+            variants["replication_s2"] = _seal(s2, "state_sha256")
+
+            for label, state in variants.items():
+                with self.subTest(label=label):
+                    projected = server._discovery_v26_state_contract(
+                        state, contract)
+                    self.assertIs(projected["provenance"]["actor_bypass"], True)
+                    activity = server._discovery_activity(
+                        lock_held=True,
+                        campaign_id="ak-discovery-" + "a" * 16,
+                        state=state, events=[], checkpoint={
+                            "state": "discovery_" + label, "seq": 1,
+                            "written_at": "2026-08-21T12:00:00Z"},
+                        terminal_observation=None, operation_observation=None,
+                        correctness_observation=None,
+                        postbuild_observation=None, claim_observation=None,
+                        refusal_observation=None,
+                        refusal_history_observations=[],
+                        now=1_787_313_601.0,
+                        v26_contract=contract, v26_state=projected)
+                    stages = {row["id"]: row for row in activity["pipeline"]}
+                    self.assertEqual(stages["planner"]["state"], "complete")
+                    self.assertEqual(stages["critic"]["state"], "complete")
+                    self.assertIs(activity["preauthored"]["actor_bypass"], True)
+                    self.assertIn(
+                        "actor bypassed", stages["planner"].get("detail", ""))
+
+            malformed = copy.deepcopy(variants["ambiguity_retry"])
+            malformed["pending"]["infrastructure_retry_epoch"] = 2
+            malformed = _seal(malformed, "state_sha256")
+            self.assertIsNone(server._discovery_v26_state_contract(
+                malformed, contract))
 
     def test_coherently_rehashed_graph_mutations_fail_closed(self) -> None:
         mutations = {
@@ -412,15 +629,7 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
     def test_state_counter_and_imported_join_mutations_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             fixture = V26Fixture(Path(directory))
-            hashes = {role: row["sha256"]
-                      for role, row in fixture.modules.items()}
-            with mock.patch.object(
-                    server, "_DISCOVERY_V26_EXECUTION_MODULE_SHA256", hashes), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_PRODUCER_COMMIT", "a" * 40), \
-                    mock.patch.object(
-                        server, "_DISCOVERY_V26_GRAPH_SHA256",
-                        fixture.graph["graph_sha256"]):
+            with _frozen(fixture):
                 contract = server._discovery_v26_contract(
                     fixture.config_path, fixture.config, fixture.bundle)
             state, _ = fixture.checkpoint()

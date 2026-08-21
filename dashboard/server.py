@@ -4008,6 +4008,14 @@ def _discovery_sha256(value: object) -> bool:
             and re.fullmatch(r"[0-9a-f]{64}", value) is not None)
 
 
+def _discovery_content_hash(value: object) -> str | None:
+    """Match producer schemas.content_hash (UTF-8 canonical JSON)."""
+    try:
+        return hashlib.sha256(_canonical_json_bytes(value)).hexdigest()
+    except (TypeError, ValueError):
+        return None
+
+
 def _discovery_v26_input(value: object, bundle: Path,
                          *, max_bytes: int) -> tuple[dict, bytes] | None:
     if (not isinstance(value, dict) or set(value) != {"path", "sha256"}
@@ -4035,13 +4043,14 @@ def _discovery_v26_contract(config_path: Path, config: object,
             or config.get("schema") !=
             "epyc.autokernel.discovery_deployment.v5"
             or not _discovery_sha256(config.get("config_sha256"))
-            or config["config_sha256"] != _discovery_controller_state_hash({
+            or config["config_sha256"] != _discovery_content_hash({
                 key: value for key, value in config.items()
                 if key != "config_sha256"})):
         return None
     source = _owned_public_snapshot(config_path, max_bytes=512 * 1024)
     if source is None or _strict_json_bytes(source[0]) != config:
         return None
+    config_file_sha256 = hashlib.sha256(source[0]).hexdigest()
     exact_nested = {
         "production": {"path", "branch", "head"},
         "instrument": {"repo_path", "branch", "commit", "production_ancestor"},
@@ -4087,7 +4096,7 @@ def _discovery_v26_contract(config_path: Path, config: object,
             or planner.get("schema") !=
             "epyc.autokernel.discovery_planner_context.v4"
             or not _discovery_sha256(planner.get("context_sha256"))
-            or planner["context_sha256"] != _discovery_controller_state_hash({
+            or planner["context_sha256"] != _discovery_content_hash({
                 key: value for key, value in planner.items()
                 if key != "context_sha256"})
             or planner.get("model_sha256") != inputs["model"]["sha256"]
@@ -4107,7 +4116,7 @@ def _discovery_v26_contract(config_path: Path, config: object,
             or carrier.get("schema") !=
                "epyc.autokernel.preauthored_source_continuation.v1"
             or carrier.get("carrier_sha256") !=
-               _discovery_controller_state_hash({
+               _discovery_content_hash({
                    key: value for key, value in carrier.items()
                    if key != "carrier_sha256"})
             or planner.get("preauthored_continuation_sha256") !=
@@ -4120,8 +4129,11 @@ def _discovery_v26_contract(config_path: Path, config: object,
         str(Path(config["controller"]["state_root"]) / "deployment-graph.json"),
         bundle)
     graph = None
+    graph_file_sha256 = None
     if graph_path is not None and graph_path.exists():
         graph_row = _owned_public_snapshot(graph_path, max_bytes=4 * 1024 * 1024)
+        graph_file_sha256 = (hashlib.sha256(graph_row[0]).hexdigest()
+                             if graph_row is not None else None)
         graph = (_strict_json_bytes(graph_row[0])
                  if graph_row is not None else None)
     if graph is not None:
@@ -4134,15 +4146,15 @@ def _discovery_v26_contract(config_path: Path, config: object,
                 or graph.get("inference_executed") is not False
                 or graph.get("config_sha256") != config["config_sha256"]
                 or graph.get("graph_sha256") !=
-                   _discovery_controller_state_hash({
+                   _discovery_content_hash({
                        key: value for key, value in graph.items()
                        if key != "graph_sha256"})
                 or graph.get("template_registry_sha256") !=
                    planner.get("template_registry_sha256")
                 or graph.get("template_surfaces_sha256") !=
-                   _discovery_controller_state_hash(graph.get("template_surfaces"))
+                   _discovery_content_hash(graph.get("template_surfaces"))
                 or graph.get("portfolio_dispatch_authority_sha256") !=
-                   _discovery_controller_state_hash(
+                   _discovery_content_hash(
                        graph.get("portfolio_dispatch_authority"))):
             return None
         modules = graph.get("execution_modules")
@@ -4209,7 +4221,15 @@ def _discovery_v26_contract(config_path: Path, config: object,
                                       "change_classes", "dispatch_signatures",
                                       "excluded_signatures"}
                 or not isinstance(q5_routes, list)
-                or q5_surface.get("dispatch_signatures") != q5_routes
+                or not all(isinstance(row, dict)
+                           and set(row) == {
+                               "route_id", "calls", "grid", "workgroup",
+                               "lds_bytes", "kernel_name"}
+                           for row in q5_routes)
+                or q5_surface.get("dispatch_signatures") != [{
+                    key: row[key] for key in (
+                        "route_id", "calls", "grid", "workgroup", "lds_bytes")}
+                    for row in q5_routes]
                 or not isinstance(q5_surface.get("excluded_signatures"), list)
                 or len(q5_surface["excluded_signatures"]) != 1):
             return None
@@ -4228,6 +4248,10 @@ def _discovery_v26_contract(config_path: Path, config: object,
         and all(graph["execution_modules"][role]["sha256"] == digest
                 for role, digest in module_hashes.items())
         and graph.get("graph_sha256") == _DISCOVERY_V26_GRAPH_SHA256
+        and graph_file_sha256 == _DISCOVERY_V26_GRAPH_FILE_SHA256
+        and config.get("config_sha256") ==
+            _DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256
+        and config_file_sha256 == _DISCOVERY_V26_DEPLOYMENT_FILE_SHA256
         and isinstance(_DISCOVERY_V26_PRODUCER_COMMIT, str)
         and re.fullmatch(r"[0-9a-f]{40}",
                          _DISCOVERY_V26_PRODUCER_COMMIT) is not None)
@@ -4263,6 +4287,194 @@ def _discovery_v26_contract(config_path: Path, config: object,
     }
 
 
+def _discovery_v26_checkpoint(path: Path, *, now: float) -> dict | None:
+    """Read v26's fresh single-shard controller journal fail closed."""
+    snapshot = _owned_public_snapshot(path, max_bytes=4 * 1024 * 1024)
+    if snapshot is None or not snapshot[0] or not snapshot[0].endswith(b"\n"):
+        return None
+    lines = snapshot[0][:-1].split(b"\n")
+    if not lines or any(not line for line in lines):
+        return None
+    envelope_keys = {
+        "journal_schema", "event_id", "seq", "kind", "campaign_id",
+        "record_id", "written_at", "payload",
+    }
+    previous_time = -1.0
+    history: list[dict] = []
+    for expected_seq, raw in enumerate(lines, 1):
+        row = _strict_json_bytes(raw)
+        if (row is None or set(row) != envelope_keys
+                or raw != _canonical_json_bytes(row)
+                or row.get("journal_schema") !=
+                   "epyc.autokernel.journal_entry.v1"
+                or row.get("kind") != "STOP_STATE"
+                or row.get("campaign_id") is not None
+                or row.get("record_id") is not None
+                or row.get("seq") != expected_seq
+                or isinstance(row.get("seq"), bool)):
+            return None
+        payload = row.get("payload")
+        if (not isinstance(payload, dict)
+                or set(payload) != {"state", "controller_state_sha256"}
+                or not isinstance(payload.get("state"), str)
+                or re.fullmatch(r"discovery_[a-z0-9_]{1,96}",
+                                payload["state"]) is None
+                or not _discovery_sha256(
+                    payload.get("controller_state_sha256"))):
+            return None
+        expected_id = (
+            f"akj-{expected_seq:012d}-"
+            f"{_discovery_content_hash(payload)[:12]}")
+        written_at = _parse_semantic_timestamp(row.get("written_at"))
+        if (row.get("event_id") != expected_id or written_at is None
+                or written_at < previous_time or written_at > now + 5.0):
+            return None
+        previous_time = written_at
+        history.append({
+            "seq": expected_seq, "state": payload["state"],
+            "written_at": row["written_at"],
+            "controller_state_sha256":
+                payload["controller_state_sha256"],
+        })
+    return {**history[-1], "history": history[-300:]}
+
+
+_DISCOVERY_V26_TRANSIENT_REQUIRED = {
+    "turn", "status", "reason", "refusal_type",
+    "scientific_budget_spent", "context_sha256",
+    "planner_operation_key",
+}
+_DISCOVERY_V26_TRANSIENT_PORTFOLIO = {
+    "hypothesis_id", "statement", "falsifier", "regime",
+    "portfolio_hypothesis_id", "portfolio_binding",
+    "portfolio_record_sha256", "portfolio_decision_policy",
+}
+_DISCOVERY_V26_TRANSIENT_OPTIONAL = {
+    "planner_checkpoint_reused", "telemetry_recovery",
+    "visibility_degraded", "telemetry_failures",
+} | _DISCOVERY_V26_TRANSIENT_PORTFOLIO
+
+
+def _discovery_v26_planner_transient(row: object, *, turn: int) -> bool:
+    if (not isinstance(row, dict)
+            or not _DISCOVERY_V26_TRANSIENT_REQUIRED.issubset(row)
+            or set(row) - (_DISCOVERY_V26_TRANSIENT_REQUIRED
+                           | _DISCOVERY_V26_TRANSIENT_OPTIONAL)
+            or row.get("turn") != turn
+            or row.get("status") != "planner_transient"
+            or row.get("refusal_type") != "planner_provider_transient"
+            or row.get("scientific_budget_spent") is not False
+            or not isinstance(row.get("reason"), str)
+            or not 1 <= len(row["reason"]) <= 4096
+            or not _discovery_sha256(row.get("context_sha256"))
+            or not _discovery_sha256(row.get("planner_operation_key"))):
+        return False
+    portfolio_fields = set(row) & _DISCOVERY_V26_TRANSIENT_PORTFOLIO
+    if portfolio_fields and portfolio_fields != _DISCOVERY_V26_TRANSIENT_PORTFOLIO:
+        return False
+    if portfolio_fields:
+        binding = row.get("portfolio_binding")
+        if (not isinstance(binding, dict)
+                or row.get("hypothesis_id") !=
+                   row.get("portfolio_hypothesis_id")
+                or binding.get("hypothesis_id") != row.get("hypothesis_id")
+                or binding.get("statement") != row.get("statement")
+                or binding.get("falsifier") != row.get("falsifier")
+                or binding.get("regime") != row.get("regime")
+                or binding.get("record_sha256") !=
+                   row.get("portfolio_record_sha256")
+                or binding.get("decision_policy") !=
+                   row.get("portfolio_decision_policy")
+                or not _discovery_sha256(
+                    row.get("portfolio_record_sha256"))):
+            return False
+    recovery_present = "telemetry_recovery" in row
+    if (recovery_present != (row.get("planner_checkpoint_reused") is True)
+            or recovery_present and row["telemetry_recovery"] != {
+                "schema": "epyc.autokernel.planner_telemetry_recovery.v1",
+                "disposition": "resume_checkpoint_and_rederive_refusal"}):
+        return False
+    failures = row.get("telemetry_failures")
+    if "visibility_degraded" in row or failures is not None:
+        if (row.get("visibility_degraded") is not True
+                or not isinstance(failures, list) or not failures):
+            return False
+        for failure in failures:
+            if (not isinstance(failure, dict)
+                    or set(failure) != {
+                        "event", "operation_key", "error_type", "error_sha256"}
+                    or failure.get("event") not in {
+                        "planner_started", "planner_failed"}
+                    or failure.get("operation_key") !=
+                       row["planner_operation_key"]
+                    or not isinstance(failure.get("error_type"), str)
+                    or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,127}",
+                                    failure["error_type"]) is None
+                    or not _discovery_sha256(failure.get("error_sha256"))):
+                return False
+    return True
+
+
+def _discovery_v26_preauthored_pending(
+        pending: dict, state: dict) -> bool:
+    row = pending.get("row")
+    base = {"row", "candidate", "preauthored_continuation"}
+    if not isinstance(row, dict):
+        return False
+    if pending.get("phase") == "preauthored_ready":
+        expected = base | {
+            "phase", "context", "context_sha256", "confirmation",
+            "parent_authorization"}
+        return (set(pending) == expected
+                and isinstance(pending.get("context"), dict)
+                and pending.get("context_sha256") ==
+                    _discovery_controller_state_hash(pending["context"])
+                and pending.get("confirmation") is False
+                and pending.get("parent_authorization") is None)
+    if row.get("status") == "replication_pending":
+        expected = base | {"confirmation", "parent_authorization"}
+        return (set(pending) == expected
+                and pending.get("confirmation") is True
+                and isinstance(pending.get("parent_authorization"), dict))
+    common = base | {
+        "authorization", "confirmation", "parent_authorization",
+        "infrastructure_retry_epoch"}
+    retry_epoch = pending.get("infrastructure_retry_epoch")
+    if (not isinstance(pending.get("authorization"), dict)
+            or not isinstance(pending.get("confirmation"), bool)
+            or (pending.get("parent_authorization") is not None
+                and not isinstance(pending.get("parent_authorization"), dict))
+            or isinstance(retry_epoch, bool)
+            or not isinstance(retry_epoch, int) or retry_epoch < 0):
+        return False
+    if row.get("status") == "waiting_resource":
+        return (set(pending) == common
+                and isinstance(row.get("lease"), dict)
+                and _discovery_sha256(row.get("operation_key")))
+    if set(pending) != common | {"prior_operation_key"}:
+        return False
+    prior = pending.get("prior_operation_key")
+    ambiguities = state.get("infrastructure_ambiguities")
+    event = (ambiguities[-1]
+             if isinstance(ambiguities, list) and ambiguities else None)
+    return (retry_epoch > 0 and _discovery_sha256(prior)
+            and isinstance(event, dict)
+            and set(event) == {
+                "schema", "operation_key", "source_manifest_sha256",
+                "candidate_semantic_sha256", "stage_receipt_path",
+                "stage_receipt_sha256", "reason_sha256", "retry_epoch"}
+            and event.get("schema") ==
+                "epyc.autokernel.screen_infrastructure_ambiguity.v1"
+            and event.get("operation_key") == prior
+            and event.get("source_manifest_sha256") ==
+                row.get("source_manifest_sha256")
+            and event.get("candidate_semantic_sha256") ==
+                row.get("candidate_semantic_sha256")
+            and event.get("retry_epoch") == retry_epoch - 1
+            and all(_discovery_sha256(event.get(key)) for key in (
+                "stage_receipt_sha256", "reason_sha256")))
+
+
 def _discovery_v26_state_contract(state: object,
                                   contract: dict) -> dict | None:
     if (not isinstance(state, dict)
@@ -4276,7 +4488,6 @@ def _discovery_v26_state_contract(state: object,
             or not isinstance(state.get("iterations"), list)
             or isinstance(state.get("next"), bool)
             or not isinstance(state.get("next"), int)
-            or state["next"] != len(state["iterations"]) + 1
             or isinstance(state.get("scientific_attempts"), bool)
             or not isinstance(state.get("scientific_attempts"), int)):
         return None
@@ -4292,9 +4503,24 @@ def _discovery_v26_state_contract(state: object,
     if any(state.get(key) != value
            for key, value in sealed_state_links.items()):
         return None
-    turns = [row.get("turn") if isinstance(row, dict) else None
-             for row in state["iterations"]]
-    if turns != list(range(1, state["next"])):
+    cursor = 1
+    transient_count = 0
+    transient_operations: set[str] = set()
+    for row in state["iterations"]:
+        if (isinstance(row, dict)
+                and row.get("status") == "planner_transient"):
+            if (not _discovery_v26_planner_transient(row, turn=cursor)
+                    or row["planner_operation_key"] in transient_operations):
+                return None
+            transient_operations.add(row["planner_operation_key"])
+            transient_count += 1
+            continue
+        if not isinstance(row, dict) or row.get("turn") != cursor:
+            return None
+        cursor += 1
+    if (state["next"] != cursor
+            or state.get("planner_provider_attempt", 0) != transient_count
+            or isinstance(state.get("planner_provider_attempt", 0), bool)):
         return None
     scientific = sum(
         1 for row in state["iterations"] if isinstance(row, dict)
@@ -4353,7 +4579,7 @@ def _discovery_v26_state_contract(state: object,
                    authority["source_manifest_sha256"]):
             return None
         if (state.get("pending") is holder
-                and holder.get("phase") != "preauthored_ready"):
+                and not _discovery_v26_preauthored_pending(holder, state)):
             return None
         provenance = {
             "imported": True, "actor_bypass": True,
@@ -8174,6 +8400,9 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     turn = state.get("next") if isinstance(state, dict) else None
     lease = None
     pending_phase = pending.get("phase") if isinstance(pending, dict) else None
+    preauthored_pending = bool(
+        isinstance(pending, dict) and isinstance(v26_state, dict)
+        and isinstance(v26_state.get("provenance"), dict))
     pending_authorized = bool(
         isinstance(pending, dict) and isinstance(pending.get("authorization"), dict))
     if isinstance(inflight, dict):
@@ -8196,16 +8425,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         if hypothesis is None and isinstance(row, dict):
             hypothesis = row.get("hypothesis_id")
         pipeline["planner_validation"]["state"] = "complete"
-        if (pending_phase == "preauthored_ready"
-                and isinstance(v26_state, dict)
-                and isinstance(v26_state.get("provenance"), dict)):
+        if preauthored_pending:
             pipeline["planner"]["state"] = "complete"
             pipeline["planner"]["detail"] = (
                 "actor bypassed by exact reviewed continuation")
             pipeline["critic"]["state"] = "complete"
             pipeline["critic"]["detail"] = (
                 "actor bypassed by controller-owned imported provenance")
-            pipeline["authorization"]["state"] = "running"
+            if pending_authorized:
+                lease = row.get("lease") if isinstance(row, dict) else None
+                pipeline["authorization"]["state"] = "complete"
+                pipeline["resource_admission"]["state"] = "waiting"
+            else:
+                pipeline["authorization"]["state"] = "running"
         elif pending_phase == "critic_pending":
             # planner_checkpointed proves local plan/manifest validation, not
             # critic acceptance or authorization. Preserve a running actor fact.
@@ -8695,13 +8927,18 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       "controller restart from typed terminal")
         recoverability = "resume_controller_checkpoint"
     elif isinstance(pending, dict):
-        if (pending_phase == "preauthored_ready"
-                and isinstance(v26_state, dict)
-                and isinstance(v26_state.get("provenance"), dict)):
+        if pending_phase == "preauthored_ready" and preauthored_pending:
             status = "running" if lock_held else "stopped"
             stage = "authorization"
             label = "Reviewed continuation checkpointed; actors bypassed"
             waiting_on = "governance authorization"
+            recoverability = ("not_required" if lock_held
+                              else "resume_controller_checkpoint")
+        elif preauthored_pending and not pending_authorized:
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Reviewed continuation replication; actors bypassed"
+            waiting_on = "fresh governance authorization"
             recoverability = ("not_required" if lock_held
                               else "resume_controller_checkpoint")
         elif pending_phase == "critic_pending":
@@ -10048,8 +10285,14 @@ _DISCOVERY_V26_EXECUTION_MODULE_SHA256 = {
 }
 _DISCOVERY_V26_PRODUCER_COMMIT = \
     "915f4ce5d38713b59545035d17e4a730214b5db1"
+_DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256 = \
+    "03fc1b1230487a35f8aefd843a546da9324361ee462d945bc076ef89263d2b89"
+_DISCOVERY_V26_DEPLOYMENT_FILE_SHA256 = \
+    "53a5f35f42baba05bc0a3c72741737f7d30583d8a3435078ee9edae59661bb5f"
 _DISCOVERY_V26_GRAPH_SHA256 = \
-    "72985628302b06bb1dd4fe8c7afd23595a724cf549e63b8296e779763118545b"
+    "20dec69b26c84dbdf7f97b92e39349437df9c28a10300fed210752070e0a2e4c"
+_DISCOVERY_V26_GRAPH_FILE_SHA256 = \
+    "ef35a550a96bdc8b9cd089097c216078a1b5b8fa842df746d975592fd6ad6075"
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
@@ -10920,7 +11163,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                     f"telemetry visibility incident"
                     f"{'s' if len(state_visibility_failures) != 1 else ''}"),
             }
-        checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+        checkpoint = (
+            _discovery_v26_checkpoint(
+                state_root / "journal" / "events.jsonl", now=time.time())
+            if v26_contract is not None else
+            _discovery_checkpoint(state_root / "journal" / "events.jsonl"))
         if (v26_state is not None
                 and (checkpoint is None
                      or checkpoint.get("controller_state_sha256") !=
