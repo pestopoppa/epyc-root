@@ -5360,7 +5360,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       `-0.35%..+1.75%` (the filed `+0.28%..+0.87%` was a subset), and LMDeploy spans
       `+1.85%..+3.00%` (not `+2.03%..+3.00%`). DLBlas has no end-to-end datum. Durable findings and the
       conservative wall-share rule are in
-      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`'s
       `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector

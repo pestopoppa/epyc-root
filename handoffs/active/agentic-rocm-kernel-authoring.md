@@ -1056,7 +1056,7 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       Refuse tier 5, TF32, the static hardware database, CUDA backend details, and blanket tolerances. The
       controller must still re-observe attribution on gfx90a; API availability is not measurement evidence.
       Durable contract:
-      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`'s
       `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-15 — Adopt the KLineage BACKWARD-LINEAGE induction mechanism as a design candidate, and test it
       on one gfx90a expert kernel.** `intake-1249#record` inverts the family's direction: instead of
@@ -1089,7 +1089,7 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       and the exact production route, shapes, dtypes, accumulator requirement, and comparator frame. Facts and
       local measurements remain separately source-bound; silence never permits substitution from a neighboring
       CDNA generation. Durable contract:
-      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`'s
       `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
       build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should

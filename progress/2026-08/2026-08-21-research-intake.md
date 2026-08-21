@@ -422,12 +422,14 @@ useful when stated exactly. With `A = (1 - 1/s) / E`, SGLang's positive latency-
 **45.19x..718.90x**, while LMDeploy's throughput-gain rows imply **8.82x..14.31x**; the metrics are not
 pooled, and SGLang's regression row has no positive factor. These rows never substitute for cumulative
 end-to-end measurement against frozen production. Durable source:
-`epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`.
+`epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`.
 
 RVP-C4-10 remains open, but its runnable package is prepared in `epyc-inference-research`: a plan-only by
 default rocprofv3 host-trap runner, self-contained exact-gfx90a HIP kernel, and CPU-only parser/contract
-tests. Live execution is explicitly gated on a governed exclusive GPU window and capped at 1,800 seconds.
-Its device sampling is telemetry only and makes no HIP-residency claim because KFD+VRAM closure is not
-bound. Exact-invocation/typed-diagnostic classification, strict CSV grammar, and a canonical receipt
-self-hash are enforced at `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`. No GPU or
-inference was used while authoring or validating the package.
+tests. Live execution is explicitly gated on a governed exclusive GPU window and one 1,800-second wall
+deadline from before source preflight through teardown and final receipt sealing. Emitted-record conclusions
+require process-bound KFD plus nonzero-VRAM overlap; missing/aggregate/out-of-window evidence is inconclusive,
+while exact CLI refusal needs no kernel witness. Exact-invocation/typed-diagnostic classification, strict CSV
+grammar, and a canonical receipt self-hash are enforced at
+`epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`. No GPU or inference was used while
+authoring or validating the package.

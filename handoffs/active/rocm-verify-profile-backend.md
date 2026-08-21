@@ -1331,12 +1331,15 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       closes NEGATIVE until a ROCm upgrade is on the table; or it emits records → inspect whether any
       stall-reason field is populated under host-trap (docs say it will be absent). **Record what the
       hardware actually emits rather than concluding absence from documentation.** **PREPARED 2026-08-21,
-      NOT RUN:** `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      NOT RUN:** `epyc-inference-research@b8903d37fe8ce62a2c43985837a393385d0e6ba3`'s
       `scripts/benchmark/run_rocprofv3_pc_sampling_probe.py` plus its
       self-contained gfx90a HIP kernel and CPU parser/contract tests. Default mode is plan-only. Live mode
       requires `--execute --i-have-exclusive-gpu-window`, an exclusive governed `mi210_0` claim, a clean exact
-      source commit, in-window 250 ms device telemetry, and a hard 1,800 s total ceiling. The telemetry does
-      **not** bind both KFD and VRAM and therefore carries no HIP-residency claim. Exact CLI refusal is accepted
+      source commit, and one hard 1,800 s wall deadline covering source preflight through claim teardown,
+      inventory, hashing, and receipt sealing. Every emitted-record classification requires an in-window
+      profiler-child/descendant KFD PID plus nonzero VRAM; aggregate VRAM, zero VRAM, and out-of-window samples
+      are inconclusive. Exact CLI refusal occurs before kernel execution and does not require this witness. It
+      is accepted
       only from the exact prepared invocation and a typed diagnostic naming the rejected PC-sampling option;
       unrelated option failures remain infrastructure failures. Emitted host-trap rows without stall fields,
       emitted empty stall fields, and unexpectedly populated stall data are distinct outcomes. The parser
