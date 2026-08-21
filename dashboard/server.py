@@ -6566,9 +6566,6 @@ def _discovery_v27_terminal_core_sha256(value: object) -> str | None:
             or set(value) != _DISCOVERY_V27_COMPOSITION_TERMINAL_KEYS
             or value.get("schema") !=
                "epyc.autokernel.cumulative_composition_terminal.v3"
-            or value.get("terminal_sha256") != _discovery_content_hash({
-                key: item for key, item in value.items()
-                if key != "terminal_sha256"})
             or any(not _discovery_sha256(value.get(key)) for key in (
                 "operation_key", "plan_sha256", "lever_sha256",
                 "cross_campaign_candidate_sha256"))
@@ -6596,9 +6593,10 @@ def _discovery_v27_terminal_core_sha256(value: object) -> str | None:
                        value.get("infrastructure_receipt_sha256"),
                        value.get("attribution_receipt_sha256")))):
         return None
-    return _discovery_content_hash({
+    core_sha256 = _discovery_content_hash({
         key: item for key, item in value.items()
         if key not in _DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
+    return core_sha256 if value.get("terminal_sha256") == core_sha256 else None
 
 
 def _discovery_v27_cumulative_performance(

@@ -329,10 +329,10 @@ def _rebind_terminal_nested(terminal: dict, receipt: dict) -> None:
 def _reseal_cumulative_state(
         state: dict, receipt: dict, path: Path) -> dict:
     terminal = state["cumulative_composition_terminal"]
-    receipt["composition_terminal_sha256"] = (
-        server._discovery_content_hash({
-            key: value for key, value in terminal.items()
-            if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED}))
+    core_sha256 = server._discovery_content_hash({
+        key: value for key, value in terminal.items()
+        if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
+    receipt["composition_terminal_sha256"] = core_sha256
     receipt = _seal(receipt, "result_sha256")
     raw = (json.dumps(receipt, sort_keys=True, indent=2) + "\n").encode()
     path.write_bytes(raw)
@@ -344,9 +344,7 @@ def _reseal_cumulative_state(
     }
     terminal["cumulative_performance_result_sha256"] = receipt[
         "result_sha256"]
-    terminal["terminal_sha256"] = server._discovery_content_hash({
-        key: value for key, value in terminal.items()
-        if key != "terminal_sha256"})
+    terminal["terminal_sha256"] = core_sha256
     state["cumulative_performance"] = binding
     state["cumulative_composition_terminal"] = terminal
     return _seal(state, "state_sha256")
@@ -655,9 +653,7 @@ class V27Fixture(V26Fixture):
             **binding}
         terminal["cumulative_performance_result_sha256"] = performance[
             "result_sha256"]
-        terminal["terminal_sha256"] = server._discovery_content_hash({
-            key: value for key, value in terminal.items()
-            if key != "terminal_sha256"})
+        terminal["terminal_sha256"] = core_sha256
         state["cumulative_performance"] = binding
         state["cumulative_composition_terminal"] = terminal
         return _seal(state, "state_sha256"), performance, path
@@ -1013,7 +1009,7 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 "result_sha256"]
             terminal["terminal_sha256"] = server._discovery_content_hash({
                 key: value for key, value in terminal.items()
-                if key != "terminal_sha256"})
+                if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
             state["cumulative_performance"] = binding
             state["cumulative_composition_terminal"] = terminal
             state = _seal(state, "state_sha256")
@@ -2052,37 +2048,66 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self.assertEqual(performance["promotion_reason"],
                              "producer_authority_unavailable")
 
-    def test_terminal_core_rejects_wrong_and_full_envelope_hashes(self) -> None:
-        for name in ("wrong-core", "full-envelope"):
+    def test_producer_shaped_terminal_core_hash_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, _ = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            producer_core = server._discovery_content_hash({
+                key: value for key, value in terminal.items()
+                if key not in server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED})
+            consumer_only_envelope = server._discovery_content_hash({
+                key: value for key, value in terminal.items()
+                if key != "terminal_sha256"})
+            self.assertEqual(terminal["terminal_sha256"], producer_core)
+            self.assertEqual(
+                receipt["composition_terminal_sha256"], producer_core)
+            self.assertNotEqual(producer_core, consumer_only_envelope)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], True)
+
+    def test_consumer_only_full_envelope_terminal_hash_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, _, _ = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            terminal["terminal_sha256"] = server._discovery_content_hash({
+                key: value for key, value in terminal.items()
+                if key != "terminal_sha256"})
+            state["cumulative_composition_terminal"] = terminal
+            state = _seal(state, "state_sha256")
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertIs(performance["promotion_eligible"], False)
+
+    def test_terminal_core_ref_and_full_envelope_tampers_refuse(self) -> None:
+        mutations = (
+            ("core", lambda terminal:
+             terminal.update(promotion_reason="tampered")),
+            ("ref", lambda terminal:
+             terminal["cumulative_performance_ref"].update(sha256="0" * 64)),
+            ("full-envelope", lambda terminal:
+             terminal["cumulative_performance"].update(
+                 promotion_reason="tampered")),
+        )
+        for name, mutate in mutations:
             with self.subTest(name=name), \
                     tempfile.TemporaryDirectory() as directory:
                 fixture = V27Fixture(Path(directory))
                 with _frozen(fixture):
                     contract = server._discovery_v27_contract(
                         fixture.config_path, fixture.config, fixture.bundle)
-                state, receipt, path = fixture.cumulative_state()
+                state, _, _ = fixture.cumulative_state()
                 terminal = state["cumulative_composition_terminal"]
-                receipt["composition_terminal_sha256"] = (
-                    "0" * 64 if name == "wrong-core"
-                    else terminal["terminal_sha256"])
-                receipt = _seal(receipt, "result_sha256")
-                raw = (json.dumps(
-                    receipt, sort_keys=True, indent=2) + "\n").encode()
-                path.write_bytes(raw)
-                binding = {
-                    "path": str(path),
-                    "sha256": hashlib.sha256(raw).hexdigest()}
-                terminal["cumulative_performance"] = receipt
-                terminal["cumulative_performance_ref"] = {
-                    "schema":
-                        "epyc.autokernel.cumulative_performance_ref.v1",
-                    **binding}
-                terminal["cumulative_performance_result_sha256"] = receipt[
-                    "result_sha256"]
-                terminal["terminal_sha256"] = server._discovery_content_hash({
-                    key: value for key, value in terminal.items()
-                    if key != "terminal_sha256"})
-                state["cumulative_performance"] = binding
+                mutate(terminal)
                 state["cumulative_composition_terminal"] = terminal
                 state = _seal(state, "state_sha256")
                 performance = server._discovery_v27_state_contract(
