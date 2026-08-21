@@ -41,7 +41,7 @@
 | EVL-30 | integration test coverage | [integration-test-coverage.md](integration-test-coverage.md) | Keep as the integration-test standing-constraint holder; no dispatchable task by design | — |
 | EVL-31 | mathsmith hc formalizer eval | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | If no GGUF exists, convert from HF weights (convert_hf_to_gguf.py + llama-quantize, Q4_K_M and Q8_0) | — |
 | EVL-32 | meta harness optimization | [meta-harness-optimization.md](meta-harness-optimization.md) | Retire this compatibility pointer once its 14 active citations are redirected to the owning harness handoffs | — |
-| EVL-33 | per request reasoning budget | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server | — |
+| EVL-33 | per request reasoning budget | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Step 3: budget=0 think-scaffold fix (needs server); PRB-T4 TALE-EP eval (designed 2026-08-21, server-free) queued same window | — |
 | EVL-34 | rao redel substrate spike | [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation | — |
 | EVL-35 | re4 protocol redesign | [re4-protocol-redesign.md](re4-protocol-redesign.md) | RE-4.2 — non-saturation probe (operator quiet-window, current v9 topology re-attested, autopilot stopped): frontdoor-only, two-phase, R=409… | — |
 | EVL-36 | repl session memory maturity | [repl-session-memory-maturity.md](repl-session-memory-maturity.md) | D-a5 — If DataFrame persistence is ever wanted, use a typed columnar codec, not the | — |

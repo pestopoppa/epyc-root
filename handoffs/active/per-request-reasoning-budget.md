@@ -15,7 +15,7 @@
 
 Works correctly on pure MoE models (Qwen3-Coder-30B — returns content, no reasoning).
 
-Current workaround (2026-04-15): Removed `--jinja` flag from architect_general entirely. Without `--jinja`, llama-server uses generic ChatML template with no thinking scaffolding. Previous `--reasoning off` workaround was insufficient — the jinja template itself primed the model into think mode. This is even coarser — no reasoning capability at all, no per-request control.
+Current workaround (2026-04-15): Removed `--jinja` flag from architect_general entirely. Without `--jinja`, llama-server uses generic ChatML template with no thinking scaffolding. Previous `--reasoning off` workaround was insufficient — the jinja template itself primed the model into think mode. This is even coarser — no reasoning capability at all, no per-request control. **Stale premise (PRB-T1, 2026-08-21): this workaround was reversed on 2026-06-26 (commit `f4a8a3ca`) and `architect_general` has launched WITH `--jinja` ever since. The paragraph above is retained as history, not current state.**
 
 ## Why This Matters
 
@@ -235,7 +235,7 @@ Confidence values are not comparable or scalarized. Enable at most one advisory 
 
 ## Research Intake Update — 2026-08-21 (chat-template dive, intake-1212…1217)
 
-- [ ] **PRB-T1** — Re-examine the standing `--jinja` removal workaround. It was adopted because the
+- [x] **PRB-T1** — Re-examine the standing `--jinja` removal workaround. It was adopted because the
       jinja template "primed the model into think mode", surrendering per-request reasoning control
       entirely. A 2026-08-21 dive rendered both the stock `Qwen/Qwen3.8-27B` template and the
       Unsloth template embedded in our production GGUF: **both handle `enable_thinking=false`
@@ -244,7 +244,10 @@ Confidence values are not comparable or scalarized. Enable at most one advisory 
       outside `{xhigh, medium, low}` — and an `xhigh` default that injects a 209-character
       instruction when no kwargs are passed. Determine whether the behaviour that motivated
       removing `--jinja` was actually one of those, and whether the workaround is still needed.
-- [ ] **PRB-T2** — **TALE-EP (intake-1215) needs no server support at all.** This handoff's
+      ✅ 2026-08-21 — **OBSOLETE: already reversed 2026-06-26 by commit `f4a8a3ca`**; compiled priors
+      emit `jinja: true` for architect_general and the J12 gate passed 2026-07-06 (0 think-leaks, n=15).
+      Neither Qwen3.8 template defect motivated it — both post-date the workaround by four months.
+- [x] **PRB-T2** — **TALE-EP (intake-1215) needs no server support at all.** This handoff's
       objective is per-request reasoning control and it has been blocked since 2026-04-17 on server
       support for `thinking.budget_tokens`. TALE puts a per-question numeric token budget in the
       *prompt*, estimated zero-shot by the model itself — reported at 67% token reduction for
@@ -252,8 +255,152 @@ Confidence values are not comparable or scalarized. Enable at most one advisory 
       the unblock path. Caveats to carry: MathBench-College shows −8% / −4%, far worse than the
       headline; and the estimator costs an extra model call, cheap on closed APIs and not obviously
       cheap on our bandwidth-bound CPU decode.
-- [ ] **PRB-T3** — Confirm whether a top-level `reasoning_effort` field survives to the template on
+      ✅ 2026-08-21 — **evaluation DESIGNED (below); run is PRB-T4.** Key find: the harness already
+      exists (`eval_tale_budget.py`, 2026-04-09) and has never been run; it does not charge the
+      estimator call, and neither intake-1215 anchor suite (GSM8K, MathBench) is in our question pool.
+- [x] **PRB-T3** — Confirm whether a top-level `reasoning_effort` field survives to the template on
       our llama-server path or is consumed by the server before render. Untested in the dive (needs
       a running server). The same silent-no-op shape is already recorded from a different vendor and
       stack in intake-946, where a top-level `enable_thinking` field was ignored and only
       `chat_template_kwargs` took effect.
+      ✅ 2026-08-21 — **DECISIVE: a top-level `reasoning_effort` is DROPPED** — 0 occurrences tree-wide
+      in frozen v9, and the jinja global set is a closed literal; `chat_template_kwargs` is the ONLY
+      body→template route. Same silent-no-op shape as intake-946. Static analysis; see below.
+
+### PRB-T1 findings — the `--jinja` workaround is OBSOLETE (reversed 2026-06-26)
+
+**Verdict: obsolete and already reversed. No action needed to restore `--jinja`; it is on today.**
+
+Lifecycle of the workaround:
+
+| Event | Commit | Date | Evidence |
+|---|---|---|---|
+| Adopted (drop `--jinja` for architect_general) | `0879ed56` | 2026-04-15 | `git log -1 0879ed56`: "fix: drop --jinja for architect_general to prevent Qwen3.5 hybrid think-loops" |
+| Reversed (re-include in `--jinja`) | `f4a8a3ca` | 2026-06-26 | `git log -S'architect_general no longer excluded from --jinja' -- src/registry/stack_priors.py` returns exactly this commit: "Determinism: honor declared temps + fixed seed + unify sampler; route architect to chat-completions" |
+| Gate satisfied | — | 2026-07-06 | `orchestration/reports/j12_think_loop_probe_20260706T143621Z/summary.json` |
+
+Current state, three layers, all agreeing that `--jinja` is ON for `architect_general`:
+
+1. **Prior** — `src/registry/stack_priors.py:2280-2283` sets `"jinja": bool((mode == "default") or (mode == "worker_pool" and worker_type == "explore"))`. `architect_general` is `mode == "default"`, so the prior is unconditionally `True`. The comment at `:2272-2279` records the reasoning: the 2026-04-15 exclusion "made the registry's `enable_thinking=false` inert (kwarg only applies on the `/v1/chat/completions`+jinja path)".
+2. **Compiled** — `orchestration/derived/stack_priors.yaml:357` → `jinja: true`, inside the `architect_general` record (block opens `:300`; confirmed by content, not position — `slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general` at `:354`). Compiled at `2026-08-11T01:36:33Z` (`:51`). Of the 12 compiled flag blocks only `vision_escalation` (`:1889`) and `worker_vision` (`:2975`) carry `jinja: false`.
+3. **Launcher** — `scripts/server/orchestrator_stack.py:1345` `_build_role_command` loads `flags = _runtime_flags(runtime)` from `_stack_prior_launch(role_name)` (`:235`, reads `STACK_PRIORS_PATH`), then at `:1402`: `if flags.get("jinja", role_name != "architect_general") is True: cmd.append("--jinja")`. The architect_general exclusion survives **only as the dict default**; the compiled priors supply an explicit `True`, so the default is unreachable for this role.
+
+**The gate named in the code actually ran and passed.** `stack_priors.py:2278` says the re-inclusion was "Gated on the J12 think-loop suppression probe before trusting". That probe exists (`scripts/benchmark/j12_think_loop_probe.py`) and its one recorded run — `orchestration/reports/j12_think_loop_probe_20260706T143621Z/summary.json` — reports for `architect_general`: `n: 15`, `think_leaks: 0`, `repetition_loops: 0`, `known_wait_reference_loops: 0`, `empty: 0`, `error_answers: 0`, `expect_matches: 14` (one miss, `plan_02`). `frontdoor` 15/15 clean. The gate is satisfied, not outstanding.
+
+**Was the original motivation one of the 2026-08-21 template defects? No.** The workaround targeted Qwen3.5-122B-A10B hybrid `<think>` loops on a model that no longer sits on this role (it vacated to `architect_critic` :8074 — `stack_templates/default.yaml:156-160`). The `reasoning_effort` `raise_exception` and the 209-char xhigh default are properties of the **Qwen3.8** template only (sha12 `12827f24b742`), which post-dates the 2026-04-15 workaround by four months. The three older fleet templates (sha12 `55d4931433fe`, `8452ca85cb1e`) do not carry them at all. So the two are unrelated findings that happen to touch the same flag.
+
+**Reconciliation with the model swap — three planes disagree, and that divergence is itself the finding:**
+
+| Plane | Says architect_general is | Citation |
+|---|---|---|
+| Stack template | `Qwen3.8-27B-Q8_0` | `stack_templates/default.yaml:139` (commit `1cff5162`, 2026-08-20) |
+| Compiled priors | `qwen3.6-27b-mtp-q8_0` / `Qwen3.6-27B-MTP-Q8_0` | `orchestration/derived/stack_priors.yaml:304-305` |
+| MASTER registry | `model_role: qwen36_27b_mtp_q8_local` | `orchestration/model_registry.yaml:1501` |
+
+Literal-string `Qwen3.8` count: **0** in `orchestration/model_registry.yaml` and **0** in `orchestration/derived/stack_priors.yaml`. (A bare `grep "Qwen3.8" orchestration/model_registry.yaml` returns 4 hits, but all four are the regex `.` matching `Qwen3-8B-DFlash-b16` at `:506-511` — not the model. The dispatching session's "zero occurrences" is correct.) **Only the stack template names Qwen3.8.** The compiled priors were generated 2026-08-11, nine days before the 2026-08-20 template change, so they have not been recompiled since the swap. UNVERIFIED whether that is intentional staging or drift — flagged here, not resolved (recompiling the registry is not this subagent's write).
+
+Consequence for this handoff: because `--jinja` is on, the GGUF's embedded template renders on every `/v1/chat/completions` request. Once the priors are recompiled the template that renders will be the Qwen3.8 one carrying the `reasoning_effort` raise. The MASTER registry pins `chat_template_kwargs.enable_thinking: false` for this role (`orchestration/model_registry.yaml:1499-1500`) and the raise sits inside the `enable_thinking` gate, so it stays unreachable at production posture — but the margin is one config flip wide.
+
+**Residual defect (not fixed — code edits are outside this subagent's write scope).** `scripts/server/orchestrator_stack.py:1397-1402` still carries the reversed policy as both a comment ("SKIP for architect_general — Qwen3.5 hybrids enter infinite `<think>` loops") and a live fallback default. It is inert while the priors compile, but if `_stack_prior_launch` ever returns `{}` for this role (role absent from compiled priors — a real possibility given the plane divergence above), `flags.get("jinja", role_name != "architect_general")` silently resolves to `False` and architect_general launches **without** `--jinja`, re-inerting `enable_thinking=false`. Recommend deleting the role-specific default and the stale comment; prepared for the owning session, not applied here.
+
+### PRB-T3 findings — a top-level `reasoning_effort` is DROPPED
+
+**Static analysis of the frozen production tree `/mnt/raid0/llm/llama.cpp` @ `0db32c06e` (`git rev-parse --short HEAD`). Read-only; nothing built, modified, or committed.**
+
+**Answer: a top-level body field `reasoning_effort` is neither server-consumed nor template-visible. It is silently discarded** — the same shape intake-946 records for a top-level `enable_thinking`.
+
+1. **No code can read it.** `grep -rn "reasoning_effort" --include='*.cpp' --include='*.h' --include='*.hpp' .` over the whole frozen tree returns **0 matches**. Per-file `grep -c` over all 13 of `tools/server/*.cpp` plus `common/chat.cpp` returns 0 for every file. The identifier does not exist in the kernel.
+
+2. **The jinja global set is a closed literal.** `common/chat.cpp:883-895`, in `common_chat_template_direct_apply_impl`, builds the render variables explicitly:
+
+   ```cpp
+   nlohmann::ordered_json inp = nlohmann::ordered_json{
+       {"messages", messages_override.has_value() ? *messages_override : inputs.messages},
+       {"bos_token", tmpl.bos_token()},
+       {"eos_token", tmpl.eos_token()},
+       {"enable_thinking", inputs.enable_thinking},
+   };
+   ```
+
+   The only further additions are `tools` (`:896-898`, conditional), every key of `inputs.extra_context` (`:900-905`), every key of `additional_context` (`:905-910`), and `add_generation_prompt` (`:911-913`). `jinja::global_from_json(ctx, inp, inputs.mark_input)` (`:920`) then installs exactly that object as the template's globals. **There is no request-body spill anywhere in this function** — an arbitrary top-level field can reach the template only by first becoming an `extra_context` key.
+
+3. **`extra_context` is date helpers plus `chat_template_kwargs`, and nothing else.** `common/chat.cpp:2714-2717`:
+
+   ```cpp
+   params.extra_context = common_chat_extra_context();
+   for (auto el : inputs.chat_template_kwargs) {
+       params.extra_context[el.first] = json::parse(el.second);
+   }
+   ```
+
+   and `common_chat_extra_context()` (`common/chat.cpp:2543-2551`) returns an object containing only `datetime` and `date_string`.
+
+4. **`chat_template_kwargs` passthrough — CONFIRMED, and it is a two-layer merge.** `tools/server/server-common.cpp:1073-1077`, inside `oaicompat_chat_params_parse`:
+
+   ```cpp
+   auto chat_template_kwargs_object = json_value(body, "chat_template_kwargs", json::object());
+   inputs.chat_template_kwargs = opt.chat_template_kwargs;
+   for (const auto & item : chat_template_kwargs_object.items()) {
+       inputs.chat_template_kwargs[item.key()] = item.value().dump();
+   }
+   ```
+
+   Server-launch defaults seed the map and the per-request object overrides key-by-key. `opt.chat_template_kwargs` comes from `params_base.default_template_kwargs` at model load (`tools/server/server-context.cpp:1479`), which `--chat-template-kwargs` and `--think` populate (`common/arg.cpp:3285`, `:3433-3436`). **`chat_template_kwargs` is therefore the ONLY route from a request body to a template variable** — which is exactly why the registry's `enable_thinking: false` is expressed as a kwarg and why dropping `--jinja` made it inert (PRB-T1).
+
+5. **Which top-level reasoning fields ARE read** (the contrast makes the omission exact): `reasoning_format` (`server-common.cpp:1061-1062`), `reasoning_budget_tokens`, `reasoning_budget_message`, `reasoning_control` (`:1120-1131`), and the Anthropic-shape `thinking.budget_tokens` → `thinking_budget_tokens` mapping (`tools/server/server-chat.cpp:577-585`). `reasoning_effort` appears in none of them. Note `enable_thinking` gets a *special* second read out of the kwarg map at `server-common.cpp:1080-1087`, including a type guard that raises on a quoted string — there is no equivalent for `reasoning_effort`.
+
+6. **No unknown-field rejection anywhere on the path.** The body is read key-by-key through `json_value(body, ...)`; `grep -n "unknown\|unrecognized\|unsupported param" tools/server/server-common.cpp tools/server/server-task.cpp` returns nothing. `server-chat.cpp:570` even shows the Anthropic bridge forwarding only an explicit whitelist (`temperature`, `top_p`, `top_k`, `stream`, `chat_template_kwargs`). An unrecognised top-level key produces **no error and no warning**: a silent no-op.
+
+**Consequence.** The Qwen3.8 template's `reasoning_effort` `raise_exception` can only fire if `reasoning_effort` is passed *inside* `chat_template_kwargs`. A top-level `"reasoning_effort": "none"` cannot reach it — and cannot reach anything else either. Any orchestrator code that sets a top-level `reasoning_effort` against our llama-server is a no-op today.
+
+**Status: static analysis of frozen v9 only.** Live-render confirmation still wants a `POST /apply-template` when a server is next up (route registered `tools/server/server.cpp:262`, handler `tools/server/server-context.cpp:4981`): render the same body twice, once with `reasoning_effort` top-level and once with it under `chat_template_kwargs`, and diff the returned prompt. The static path is decisive on its own; the live check is belt-and-braces and would also demonstrate the raise.
+
+### PRB-T2 findings — TALE-EP evaluation design (design only; the run is PRB-T4)
+
+**The harness already exists and has never been run.** `epyc-inference-research/scripts/benchmark/eval_tale_budget.py` (409 lines, commit `f5b67614`, 2026-04-09) implements the arms below and already prints a per-suite breakdown (`:300-321`) and a β distribution (`:322-328`). `data/tale_budget/` does not exist on disk → zero recorded runs. What follows is therefore the *delta* needed to make it decision-grade, not a new script.
+
+**Target.** `architect_general` :8083 — the thinking-capable Qwen role whose template carries the 2026-08-21 defects. Model is `Qwen3.8-27B-Q8_0` per `stack_templates/default.yaml:139`, GPU/MI210; if the priors are not recompiled by run time it will actually launch Qwen3.6-27B (`derived/stack_priors.yaml:304`). **Record which GGUF actually served — do not assume from the template.** Add one CPU-decode replicate on `frontdoor` :8080 (Qwen3.6-35B-A3B, `derived/stack_priors.yaml:784`), because intake-1215's overhead caveat is specifically about bandwidth-bound CPU decode and a GPU-only result cannot answer it.
+
+**Posture.** Production posture — `chat_template_kwargs.enable_thinking: false` (`model_registry.yaml:1499-1500`), `--reasoning off`, `--jinja` on. That is what we serve, so that is what the decision is about. TALE-EP is a *prompt*-level budget and needs no thinking channel to work.
+
+**Arms** (harness `--conditions`, all three):
+1. `baseline` — question verbatim, no brevity constraint.
+2. `static` — fixed per-suite limit (`STATIC_LIMITS`, `:41-49`). **Not optional**: it is the control that says whether any gain is TALE's *estimation* or merely brevity.
+3. `tale` — two calls: zero-shot self-estimate (`TALE_PREPASS_PROMPT`, `:51-56`, `max_tokens=32`) → `"Answer in under {beta} words.\n\n" + question` (`:58`), β clamped to [10,500] (`:185`).
+
+**Suites — per-suite reporting is mandatory.** From `benchmarks/prompts/question_pool.jsonl` (79,479 questions, 38 suites, verified by direct count):
+
+| Class | Suite | Pool n | Take per arm |
+|---|---|---|---|
+| Math (where the CCoT hazard lives) | `math` | 1,819 | 150 |
+| Math (hard) | `olympiadbench` | 674 | 100 |
+| Knowledge | `mmlu_pro` | 12,032 | 150 |
+| Coding | `livecodebench` | 2,360 | 100 |
+
+n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requests per host.
+
+**Anchor mismatch — state it before the run, not after.** intake-1215's one favourable headline is **GSM8K (+3.11% accuracy at 75.7% fewer tokens)** and its worst caveat is **MathBench-College (−8% / −4%)**; the average is **67% token reduction for −2.72% accuracy**. **Neither anchor suite exists in our pool** — there is no `gsm8k` and no `mathbench` among the 38. `math` and `olympiadbench` are substitutes, not replications. This run therefore **cannot confirm or refute either published number**; it can only measure our own stack. (The harness's `STATIC_LIMITS["gsm8k"]` key at `:43` is dead for the same reason.) Do not report a result as agreeing or disagreeing with intake-1215.
+
+**Two harness gaps to close first** (both small, both in `eval_tale_budget.py`):
+- **The estimator call is never charged.** `estimate_tale_budget` at `:179` does `text, _, _ = generate_response(...)`, discarding tokens and elapsed, and `TrialResult` (`:60-71`) has no field for them. Without this, the extra-call overhead measurement is impossible and TALE's savings are overstated by construction. Add `estimator_tokens` / `estimator_s` and report savings **net** of them.
+- **Words vs tokens.** The docstring cites TALE's "use less than {beta} **tokens**" (`:13-14`) but the implemented prompt says "**words**" (`:51-56`, `:58`). A word budget is not the published intervention. Pick one, and say which in the write-up.
+- Also: `generate_response` hardcodes `temperature=0.0` (`:117`). Pin to the role's declared production temperature + seed 42 per measurement policy, since accuracy here is sampling-sensitive.
+
+**Metrics**, per suite × arm: accuracy, mean completion tokens, mean latency, OAA (`eval_metrics.compute_batch_oaa`, α=0.5), β distribution; TALE only: estimator tokens/latency and **net** token change = (estimator + answer) − baseline answer. Scoring already delegates per-question to `debug_scorer.score_answer` with the pool's declared `scoring_method` (`:157-167`), so it is not a hardcoded substring match.
+
+**Decision rule** (fixed in advance):
+- **ADOPT** if, on ≥3 of the 4 suites, net token reduction ≥ 30% **and** accuracy delta ≥ −1.0pp, **and** no single suite is worse than −3.0pp, **and** `tale` beats `static` on net tokens at equal-or-better accuracy.
+- **ADOPT `static` INSTEAD** if `static` matches or beats `tale` on net tokens at equal accuracy — then TALE's estimator call is pure overhead and the cheap arm wins.
+- **DECLINE** if any suite loses > 3.0pp, or net reduction < 15% once the estimator call is charged.
+- **INCONCLUSIVE** otherwise → re-run at n=400/suite before deciding.
+- Report a bootstrap CI per suite; at n=100–150 a single-question flip is noise, not a regression (`feedback_per_suite_gate_resolution_artifact`).
+
+**Cost / gating.** ~2,000 requests per host, exclusive inference window, autopilot stopped first (no-concurrent-inference).
+
+- [ ] **PRB-T4** — **Run the PRB-T2 TALE-EP evaluation.** Gated on an exclusive inference window (no
+      server is up as of 2026-08-21 and that is intentional). Pre-run: close the three
+      `eval_tale_budget.py` gaps above (charge the estimator call, resolve words-vs-tokens, pin
+      temperature+seed); confirm which GGUF actually serves :8083. Then run the 4 suites × 3 arms on
+      `architect_general`, plus the `frontdoor` CPU-decode overhead replicate, and apply the fixed
+      decision rule. On completion the run produces measurements → file the belief-kernel adapter
+      wiring task at the same boundary (source row in `scripts/vidya/adapters/README.md`).

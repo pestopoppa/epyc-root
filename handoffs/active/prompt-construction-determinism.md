@@ -92,6 +92,7 @@ D3 still wants a quiesce/clean window → co-schedule with Queue-2 + N13 post-re
 
 - Sampler: `src/backends/llama_server.py` (`_apply_deterministic_sampling`, 3 call sites); request sampling DTO: `src/inference/model_server.py`; OpenAI request surface: `src/api/models/openai.py`, `src/api/routes/openai_compat.py`; primitives propagation/cache key: `src/llm_primitives/{primitives.py,inference.py}`, `src/inference/llm_cache.py`.
 - Routing gate: `src/registry/stack_priors.py:~1158` (jinja); `src/chat_completions_roles.py` (derivation gate jinja∧enable_thinking==False); `orchestration/derived/stack_priors.yaml` (recompile via `python3 -m src.registry.stack_priors`).
+- **Constraint (2026-08-21) — a chat template is executable code in the prompt-construction position**: any chat-template substitution (third-party or vendor-refreshed) must be checked against the in-tree **input-marking** path of the frozen `common/jinja/` engine before it is routed through the gate above — see the *Research Intake Update — 2026-08-21 (intake-1216)* section below and [`qwen-chat-template-evaluation.md`](qwen-chat-template-evaluation.md) task **CT-3**.
 - Gates: `scripts/registry/stack_change_pipeline.py check` (uses `.venv/bin/python3`); `src/registry/registry_validator.py`.
 - Lifecycle: `scripts/server/orchestrator_stack.py {reload,status}` (architect_general, orchestrator).
 
@@ -101,7 +102,7 @@ On closing a task: check the box here, update master row **N14** + the routing-i
 
 ## Research Intake Update — 2026-08-21 (intake-1216, chat-template engine)
 
-- [ ] **PCD-T1** — Record a constraint on any chat-template substitution: a chat template is
+- [x] **PCD-T1** — Record a constraint on any chat-template substitution: a chat template is
       **executable code in the prompt-construction position**. Frozen `production-consolidated-v9`
       (`0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/
       value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the
@@ -111,3 +112,7 @@ On closing a task: check the box here, update master row **N14** + the routing-i
       tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision
       to run a third-party template must be checked against that path. Neither community template
       repository mentions it.
+      ✅ 2026-08-21 (constraint recorded + cross-referenced at the operative section) — one-line
+      cross-reference added under *Key file locations → Routing gate*, the operative surface a
+      template swap passes through, pointing here and at `qwen-chat-template-evaluation.md` CT-3
+      (verified present at that file:91). Full text not duplicated.

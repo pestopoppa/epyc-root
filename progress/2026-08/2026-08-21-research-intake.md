@@ -106,3 +106,56 @@ the weakest form of the intervention; TALE (now filed) is the numeric-budget for
   session ran zero inference by design.
 - **PRB-T3 (top-level `reasoning_effort` on our llama-server path)** — blocked on a running server;
   it is a server behaviour, not a template property, and cannot be settled by rendering.
+
+---
+
+## Second pass (same day) — task implementation via 5-agent opus/xhigh fan-out
+
+Operator directed: audit the session's handoff changes, then implement. Audit re-verified all six
+task-claims at HEAD; workflow `wf_7114b22d-c95` ran 5 agents (one handoff file each, 562k tokens,
+11 min, 0 errors). All agent diffs audited against pre-dispatch snapshots: 12 checkbox flips, 2 new
+gated tasks, zero out-of-scope writes.
+
+### Closed (12): Q38-T1/T2/T3 · PRB-T1/T2/T3 · CT-2/CT-3 · ETV-T1 · RC-T1/T2 · PCD-T1
+
+### The two verdict-inverting findings
+
+1. **The Qwen3.8 swap is not live anywhere that matters.** The launcher takes `-m` from
+   `orchestration/derived/stack_priors.yaml` (`orchestrator_stack.py:134,:252-262,:1062-1071`) —
+   not from `stack_templates/default.yaml`. The derived file (compiled 2026-08-11, nine days before
+   the swap) still says Qwen3.6-27B at `draft_max: 4`; the master registry was **never** swapped
+   (`git log -S 'Qwen3.8'` → empty; the handoff's ticked "registry swap DONE 2026-08-20" cites a
+   commit that resolves nowhere). A stack start today launches Qwen3.6 at draft depth 4. Parity
+   validation compares **ports only** (`stack_templates.py:303`), so the divergence passes silently.
+2. **CT-3 inverted:** both community templates scan ten `<|think_*|>` pseudo-tokens **out of user
+   message content** (frog.jinja:38-66) to overwrite reasoning state — a prompt-injection surface
+   input marking structurally cannot mitigate (it constrains tokenization, not template control
+   flow). Stock and our GGUF templates are clean of the pattern. Any pilot must strip the two
+   marker-scan blocks.
+
+### Other verdicts
+
+- PRB-T1: the `--jinja` removal workaround was **reversed 2026-06-26** (f4a8a3ca; J12 probe 0
+  leaks/loops n=15) — the handoff's 2026-04-15 premise was stale. Residual: a live fallback in
+  `orchestrator_stack.py:1402` still encodes the reversed policy (fires only on the no-priors path).
+- PRB-T3 decisive: `reasoning_effort` has **zero occurrences** in frozen v9 — nothing can read it.
+- ETV-T1: scorer contract is trajectory-blind by construction (`debug_scorer.py:86-91` strips
+  `<think>` at :107-108, `_score_code_execution` collapses per-test detail to a bool at :448 while
+  the research-repo twin already returns the rich dict); two of Claw-Eval's three channels already
+  exist on the write side. Verdict: pilot — ETV-T2 filed (report-only divergence counter).
+- CT-2: every measured row was captured under the embedded template (`--chat-template-file` has zero
+  orchestrator occurrences); E-7's re-calibration trigger lacks the template axis — amendment
+  applied to `reasoning-effort-levels.md`.
+
+### Owner-side applies this pass
+
+EVL-33 `Next action` refresh (PRB-T4 queued, 125 chars); E-7 template-axis amendment;
+`index_state.py` regen + `--check` → 0 problems.
+
+### Blocked / prepared (operator)
+
+- `orchestrator_stack.py:1397-1402` fallback fix — **classifier-blocked twice** (production
+  lifecycle script); exact edit prepared in the PRB handoff. Not worked around.
+- Master-registry edits (Qwen3.8 role key + template-provenance block) — registry is frozen;
+  exact YAML prepared in the Q38 handoff, ratification bundle presented to operator.
+- CT-1 (A/B) and PRB-T4 (TALE-EP run) — inference window; CT-5 — operator decision, package drafted.
