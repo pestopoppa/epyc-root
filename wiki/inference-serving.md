@@ -1349,3 +1349,33 @@ check the process, not the repo.
 - `scripts/server/orchestrator_stack.py:2337-2344,2479` — backend resolution and `verify_ggml_linkage`
 - `scripts/session/verify_speech_kernels.sh` — the two-check design and INC-20260731 rationale
 - `progress/2026-08/2026-08-12.md` — the two false findings and their retraction
+
+## Compiled Update — 2026-08-21: a registry swap is not served until the DERIVED layer recompiles
+
+The Qwen3.6→Qwen3.8 rollout produced a three-layer lesson that extends the standing
+"pipeline-green ≠ starts ≠ live==config" rule with a fourth inequality: **master-swapped ≠
+lean-compiled ≠ derived-compiled ≠ served.** The master registry was swapped and validated on
+2026-08-20 (`b376dadd`), and the lean runtime view auto-recompiles at `orchestrator_stack.py start`
+— but the DERIVED artifacts (descriptors, stack_priors) had been compiled 2026-08-11, nine days
+pre-swap, and the launcher reads them AS-IS with no recompile at start (`orchestrator_stack.py:252-262`).
+A stack start in that state would have served the OLD model at the OLD draft depth while every
+config a reader would check said otherwise. The ratification that closed it
+(`ratify_qwen38_registry_swap_20260821.sh`, executed; orchestrator `7483d7fb`) recompiled the chain
+and verified the derived layer names `Qwen3.8-27B-Q8_0` @ `draft_max 8`.
+
+Two adjacent facts worth keeping with it:
+- **A `NOT_SELECTABLE` challenger compiles into the lean but not the launch layer** — decision
+  context carries through (`challenger_under_evaluation` at lean line ~2511), launch requirements
+  do not speculate. That asymmetry is correct and deliberate; a recompile that strips the
+  challenger from the lean, or promotes it into launch, is a defect.
+- **`guard_all_surfaces` carries pre-existing quarter-port drift** (frontdoor/worker/ingest
+  `serving.ports` vs launch manifest, unchanged since 2026-03, 13 errors) — filed as Q38-T4 in
+  [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md). It blocks a
+  fully-green check without blocking swap surfaces, i.e. a red guard is not necessarily YOUR red.
+
+### Source References
+
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — the swap, ratification v2 rationale, Q38-T4
+- `scripts/operator/ratify_qwen38_registry_swap_20260821.sh` — the phased recompile + its header's corrected audit trail
+- epyc-inference-research `b376dadd` (master swap), orchestrator `7483d7fb` (executed ratification) — direct commit reads
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination record
