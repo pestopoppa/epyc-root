@@ -404,3 +404,10 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
       `architect_general`, plus the `frontdoor` CPU-decode overhead replicate, and apply the fixed
       decision rule. On completion the run produces measurements → file the belief-kernel adapter
       wiring task at the same boundary (source row in `scripts/vidya/adapters/README.md`).
+
+**PRB-T3 LIVE CONFIRMATION ✅ 2026-08-21 (closing the static-analysis caveat).** Real llama-server
+(frozen v9, CPU, Qwen3.6-35B-A3B, test port :8990), `POST /apply-template`: a top-level
+`reasoning_effort: low` renders **byte-identical to a no-kwargs request** (59 B both) — the server
+consumes/drops it before the template — while `chat_template_kwargs: {reasoning_effort: low}`
+renders the steering instruction (225 B). The static tree-wide zero-occurrence finding and the live
+behaviour now agree: the only working channel is `chat_template_kwargs`.

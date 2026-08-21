@@ -86,6 +86,13 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 - [ ] **DFlash2 selection decision** — BLOCKED on three named gates before it may displace MTP: np2/4/8
   scaling, exact greedy parity at temp 0, and the block-verify dispatch proof. Owned by the autokernel
   session under INF-62; this row exists so the registry side has a visible decision point.
+- [ ] **Q38-T4 — quarter-port surface drift (pre-existing, surfaced 2026-08-21 by the ratification's
+      post-check).** `guard_all_surfaces` fails on frontdoor / ingest_long_context / toolrunner /
+      worker_* because their `serving.ports` declare quarter-instance ports (8080/8180/8082/8182/…)
+      that `orchestration/launch_manifest.yaml` carries only as comments. Unchanged since 2026-03;
+      failed identically before this ratification's writes. Either represent quarter mode in the
+      launch manifest or file exact `(role, gap)` `accepted_gaps.yaml` declarations (expiry
+      required). Blocks a fully-green `check`; does NOT block the swap surfaces, which verify clean.
 - [ ] **Stack-change checklist / `stack_change_pipeline.py` regenerate** — NOT run. Nothing is serving
   (`:8083` unbound), so config and runtime agree only by both being absent. `live == config` is
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its

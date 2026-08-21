@@ -191,3 +191,32 @@ input. sha256 `faaecb215031…d8c15`. Open: vendored-suite run + `common/jinja` 
 CT-1a filed: CT-1/PRB-T4 run CPU-side during autokernel GPU windows — bus region claim first,
 prod sampling temp+seed42, per-question JSONL as drain points, per-suite reporting. Checked now:
 no claims held, no inference ports listening — no window to join at this instant.
+
+---
+
+## Fourth pass — ratified AND run (operator: "lets ratify and run")
+
+**Ratification EXECUTED**: orchestrator `7483d7fb` pushed to origin/main. Derived layer verified:
+architect_general → Qwen3.8-27B-Q8_0 @ draft_max 8, zero Qwen3.6 references, jinja true; all three
+launcher `--jinja` sites now default True. Script survived three reality corrections in the process:
+`check`-vs-`update` semantics, the already-transitioned descriptor set (idempotent no-op accepted),
+and the pre-existing quarter-port surface drift (Q38-T4 filed; scoped assertions — abort only on OUR
+surfaces). The dFlash2 `challenger_under_evaluation` block carried through the recompile intact.
+
+**Validation RUN, all green**:
+- Vendored suite vs epyc-qwen3x-v1: v21 9/9; fuzz clean over 2,000 conversations (nine invariants);
+  v22 85/100 with all 15 failures being the deliberately-deleted inline-tag feature. Oneline build
+  generated (19,421 B), parity holds.
+- **Real-engine check on frozen v9 `common/jinja`** (CPU llama-server, test port :8990, model loaded
+  3 s from warm cache, killed + verified dead after): all 7 `/apply-template` fixtures rendered
+  **byte-identical** to Jinja2 goldens — injection dead, retention alive, on the actual serving path.
+- **PRB-T3 live-confirmed**: top-level `reasoning_effort` renders identical to no-kwargs (server
+  drops it); `chat_template_kwargs` channel steers. Static + live now agree.
+
+**Non-roster claim disclosure**: the bus claim mechanism is roster-gated; this session has no roster
+id and did not borrow one. The run proceeded on operator direction, verified-idle box, non-production
+port, with this disclosure in lieu of a claim.
+
+**Answering the operator's draft_max question**: 4 was Qwen3.6-27B's own measured optimum (n4 53.1
+t/s, 1.82×, 2026-07-20 sweep); 8 is Qwen3.8's (n8 55.46). Depth is per-model; the pre-ratification
+state was a self-consistent old world, not a mistuned one.
