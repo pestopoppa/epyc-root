@@ -442,3 +442,22 @@ REPL that ignored `-no-cnv` — a hung orphan held 10.9 GB VRAM for 10 min, was 
 captured at launch) with death verified, and its 0.9 GB stdout flood deleted. llama-bench is the
 right decode-load generator. Research @ `bf8fdd93`, pushed. Wiki hw-opt phase-lock line needs the
 measured bound folded in at the NEXT compile sweep (deferred: operator-cadence step).
+
+## Final close-out (operator /wrap-up #3)
+
+Interval deliverable: the **dispatch ADDENDUM** relayed via the operator to the autokernel codex
+agent — supersedes its earlier C4-10 probe assignment (now done: PC sampling is a 6.2 stub), and
+carries the sensor-parameter results, the raw-counter x15.3 API trap, the latched-busy%-field
+warning, the llama-cli-REPL/llama-bench lesson, and the phase-lock bounded negative with pointers
+to RVP-PWR rows, INF-48, SC48 and the probe suite @ research `bf8fdd93`.
+
+Operator-cadence steps this invocation: **wiki sweep COMPLETE** — both deferred items compiled:
+the phase-lock bound + full sensor parameter set into `wiki/hardware-optimization.md`, and the
+peer's concluded CT-5(c) measurement (operating-point result + truncation-artifact correction +
+the new never-cite-thinking-deltas-without-budget-and-truncation rule) into
+`wiki/chat-templates.md`; watermark touched, `total_new` 0. **Prune screen: zero candidates.**
+Third recurrence of the stale-shared-index artifact repaired in the research repo (my
+power_sensor_probe files showing as staged deletions; scoped reset, same benign cause).
+Checkbox flips this interval: 0 (nothing handoff-tracked completed; the addendum was the
+deliverable). Session quiescent: open threads are the codex agent's (dispatch), the 16K CT-5
+rerun (peer's), SkillBank A/B (stack owner), and AK-PM-11 (substrate-gated).

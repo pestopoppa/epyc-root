@@ -3218,3 +3218,35 @@ win that is entirely a tokens-per-second win implies different next moves than o
   measurement)
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
   `RVP-PWR-1..6` (PWR-3 ✅ ingested+verified; PWR-2 carries the runnable FFT protocol)
+
+## Compiled Update — 2026-08-21 (late): the phase-lock hazard measured on REAL decode — bounded negative, and the full sensor parameter set
+
+The morning's power-telemetry update warned that llama.cpp decode could phase-lock the averaged
+power field into a stable-but-wrong reading. **Measured the same evening on real decode: the hazard
+does NOT materialize in steady state.** Two llama-bench tg-only runs (production b10125 binary) at
+**122.4 tok/s** (gemma-4-e2b Q8) and **30.5 tok/s** (Qwen3.8-27B Q8): averaged field vs
+energy-counter ground truth in the settled window = **−0.86% and −0.84%** — **invariant across a 4×
+cadence change, which is the decisive test: a phase effect must move with cadence.** Mechanism
+visible in the spectrum: the token cadence is nearly absent from dE/dt (0.4 dB / −1.1 dB over
+floor) because steady decode is back-to-back compute, near-DC at the token scale — there is almost
+no modulation to alias. **Scope: steady, settled decode only.** The hazards stand where the
+square-wave characterisation put them, now with the numbers the source paper never published
+(two-run persistence): averaged-field **t_d ≈ 190 ms, t_r(10→90) ≈ 4.2 s, t_f(90→10) ≈ 3.5 s** —
+so **a phase must exceed ~8 s before the averaged field has any attributable interior**, and any
+per-kernel or bursty-load measurement must use dE/dt from the energy counter (1 ms cadence
+confirmed on-die; sampler sustains 107 µs/call via the rsmi C API). Two standing traps for every
+consumer: `rsmi_dev_energy_count_get` returns the **raw counter** (energy_µJ = counter × 15.3; the
+CLI pre-multiplies, the API does not — a naive dE/dt under-reads 15.3× plausibly), and the
+`GPU use (%)` field can **latch at 100% on an idle GPU** (idle-detection must use KFD client count
+plus energy-derived power, never busy%). Related closure: PC sampling on ROCm 6.2 is a **stub**
+(API exported, returns "defined but not implemented" on the live gfx90a agent) — no stall-reason
+input class exists at any layer on this box.
+
+### Source References
+
+- [`repos/epyc-inference-research/scripts/benchmark/power_sensor_probe/`](../repos/epyc-inference-research/scripts/benchmark/power_sensor_probe/) —
+  probes, traces, `phaselock_{fast,slow}.json`, `pcs_capability_probe.c` (@ `bf8fdd93`)
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+  RVP-PWR-1/2/3/5 ✅ with results inline; RVP-C4-10 ✅ (PC-sampling stub); PWR-4/PWR-6 open (protocol
+  adoption, runtime-vs-power decomposition)
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC48 write-side wiring for the probe suite

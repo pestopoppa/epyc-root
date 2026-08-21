@@ -367,3 +367,35 @@ path. No community template repository mentions it.
   dive-overturned; digests and per-claim anchors recorded there)
 - `/mnt/raid0/llm/llama.cpp` @ `0db32c06e` — `tools/server/server-context.cpp:1454`,
   `tools/server/server-common.cpp:1092`, `common/jinja/README.md`
+
+## Compiled Update — 2026-08-21 (evening): CT-5(c) measured — at a 4K budget thinking does not pay, and the deficit is a truncation artifact, not a capability fact
+
+The (c) arm ran to completion on the MI210 (60 paired gpqa_diamond_cot, Qwen3.8-27B, v9 HIP
+residency proven by three instruments, 0 errors). Two-part result, then a same-day correction that
+changes what it may be cited for:
+
+1. **The R2d think-loop tail did NOT reproduce** on Qwen3.8 — non-termination 19/60 (thinking OFF)
+   vs 21/60 (ON): mode-independent, driven by the 4,096 cap plus the suite's own CoT prompt.
+2. **Thinking-ON failed to pay at this operating point**: 63.3% vs 70.0% accuracy, paired flips 7:3
+   against (n.s., McNemar p≈0.34), +23% tokens-per-solved. Posture (a) stands; (c) declined for
+   deployment.
+3. **THE CORRECTION (operator-prompted): the 6.7pp deficit is ENTIRELY a truncation/budget
+   artifact.** Completed-subset accuracy is 95.1% vs 94.9% (paired both-completed flips 1:0);
+   every truncated thinking row is an automatic zero (0/21 ever emitted an answer line; truncated
+   rows' median think 11,078 chars vs 3,187 completed). Public Qwen thinking numbers run ~32K
+   budgets where truncation ≈ 0. **So CT-5(c) answered the OPERATING-POINT question (at 4K total,
+   thinking does not pay) — NOT the capability question.** Prior anti-reasoning findings here
+   (+33pp no-think, R2d tails) were broken-serving artifacts on other models; reasoning has never
+   been measured on this stack with working serving AND adequate budget. A symmetric-16K rerun was
+   launched the same day; until it reports, cite this measurement only with the operating-point
+   scope attached.
+
+**Standing citation rule this creates: never cite a thinking-vs-no-thinking accuracy delta without
+its token budget and per-arm truncation rates.** A capped budget converts runaway thinking into
+automatic zeros and manufactures an anti-reasoning result that vanishes on the completed subset —
+the survivorship-bias shape, inverted.
+
+### Source References
+
+- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-5 ✅ full result + correction + operator ruling; 16K rerun tracking
+- `artifacts/chat-templates/ct5c-gpu-20260821/` — per-question JSONL, paired ids, server log
