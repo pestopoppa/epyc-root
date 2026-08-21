@@ -429,3 +429,16 @@ dE/dt under-reads 15.3× and looks plausible; and an async load backlog exactly 
 frequency until sync-per-op. Suite + results: research `scripts/benchmark/power_sensor_probe/` @
 `df40658a`. SC48 belief-kernel wiring filed at first measurement. Remaining, deliberately unclaimed:
 the token-cadence phase-lock measurement needs a REAL decode workload at the next serving boundary.
+
+### Token-cadence phase-lock on REAL decode (operator-directed): BOUNDED NEGATIVE
+
+Two llama-bench tg-only runs (122.4 and 30.5 tok/s). Averaged field vs energy-counter truth in the
+settled window: **−0.86% / −0.84% — invariant across a 4× cadence change**, the designed decisive
+test, so the small bias is calibration, not phase. Token cadence near-invisible in the power
+spectrum: steady decode is ~DC at the token scale, so the aliasing hazard has almost nothing to bite.
+All-clear scoped to steady settled decode; transitions and bursty loads keep their measured hazards.
+intake-1238's warning is BOUNDED, not refuted. One incident handled: the b10125 llama-cli is a chat
+REPL that ignored `-no-cnv` — a hung orphan held 10.9 GB VRAM for 10 min, was killed (mine, PID
+captured at launch) with death verified, and its 0.9 GB stdout flood deleted. llama-bench is the
+right decode-load generator. Research @ `bf8fdd93`, pushed. Wiki hw-opt phase-lock line needs the
+measured bound folded in at the NEXT compile sweep (deferred: operator-cadence step).

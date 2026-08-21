@@ -1421,7 +1421,20 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       under-reads by exactly 15.3x and looks plausible.** Load-generator lesson: sync every op, or the async
       backlog stretches the realized period (measured: exactly halved frequency). Remaining, deliberately
       not claimed: the token-cadence phase-lock measurement on a REAL decode workload — that needs a served
-      model and belongs at the next serving boundary.
+      model and belongs at the next serving boundary. **DONE 2026-08-21 (late), operator-directed, and the
+      answer is a BOUNDED NEGATIVE** (research `power_sensor_probe/` @ `bf8fdd93`): two llama-bench tg-only
+      decode runs at **122.4 tok/s** (gemma-4-e2b Q8) and **30.5 tok/s** (Qwen3.8-27B Q8) — averaged field
+      vs energy-counter ground truth in the settled steady window: **−0.86% and −0.84%**. The discrepancy is
+      **invariant across a 4x cadence change, which is the decisive test — a phase effect must move with
+      cadence** — and the token cadence is essentially invisible in the dE/dt spectrum (0.4 dB / −1.1 dB):
+      steady decode is back-to-back compute, near-DC at the token scale, so the modulation that could
+      phase-lock barely exists. **SCOPE OF THE ALL-CLEAR: steady, settled decode only.** The measured
+      hazards stand exactly where the square waves put them — transitions (~190 ms delay, ~4 s rise) and
+      duty-cycled/bursty loads (request gaps, prefill/decode alternation, speculative bursts), where dE/dt
+      remains the only instrument. The `intake-1238` directional warning is thereby BOUNDED, not refuted.
+      Ops lesson for anyone generating decode load: the b10125 llama-cli is a chat REPL that ignores
+      `-no-cnv` and floods stdout (one hung orphan produced 0.9 GB of redraw; killed + death verified);
+      **llama-bench is the decode-load generator.**
 - [x] **RVP-PWR-3 — Ingest and verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — DONE
       2026-08-21, ingested as `intake-1251#record`.** It was indeed higher-value than anything else in that
       batch, because MI250X IS gfx90a. **All four preliminary figures CONFIRMED VERBATIM** against the
