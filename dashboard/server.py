@@ -3931,6 +3931,133 @@ def _discovery_checkpoint(path: Path) -> dict | None:
     return latest
 
 
+_DISCOVERY_TERMINAL_STATE_KEYS = {
+    "admission_corpus_sha256", "admission_corpus_version",
+    "attempted_candidate_identities", "authority",
+    "candidate_semantic_registry_schema", "complete",
+    "deployment_identity_sha256", "experiment_template_registry_sha256",
+    "hypothesis_portfolio_sha256", "iterations", "next",
+    "planner_context_sha256", "portfolio_authoring_failures",
+    "portfolio_skips", "portfolio_terminals", "roster", "schema",
+    "scientific_attempts", "state_sha256", "terminal_reason", "updated_at",
+}
+
+
+def _discovery_controller_state_hash(value: object) -> str | None:
+    """Match discovery_controller._sha (ASCII-escaped canonical JSON)."""
+    try:
+        raw = json.dumps(
+            value, sort_keys=True, separators=(",", ":"),
+            ensure_ascii=True, allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _discovery_portfolio_terminal_checkpoint(
+        path: Path, state: object, *, now: float) -> dict | None:
+    """Bind v25's final state to its consecutive portfolio/complete journal rows.
+
+    A bare ``complete=true`` is mutable state, while the journal alone does not
+    prove which final state it describes.  The producer deliberately emits the
+    portfolio-exhausted state and then a final complete state.  Accept that
+    terminal only when the canonical state self-hash, the final journal digest,
+    both consecutive event identities, and their timestamps all agree.
+    """
+    state_snapshot = _owned_public_snapshot(
+        path.parent.parent / "state.json", max_bytes=2 * 1024 * 1024)
+    state_from_disk = (_strict_json_bytes(state_snapshot[0])
+                       if state_snapshot is not None else None)
+    if (not isinstance(state, dict) or state_from_disk != state
+            or set(state) !=
+            _DISCOVERY_TERMINAL_STATE_KEYS
+            or state.get("schema") != "epyc.autokernel.discovery_controller.v5"
+            or state.get("authority") !=
+            "nonpromotable_candidate_only_discovery"
+            or state.get("complete") is not True
+            or state.get("terminal_reason") != "portfolio_exhausted"
+            or not isinstance(state.get("state_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", state["state_sha256"]) is None
+            or state["state_sha256"] != _discovery_controller_state_hash({
+                key: value for key, value in state.items()
+                if key != "state_sha256"})
+            or not isinstance(state.get("next"), int)
+            or isinstance(state.get("next"), bool) or state["next"] <= 1
+            or not isinstance(state.get("scientific_attempts"), int)
+            or isinstance(state.get("scientific_attempts"), bool)
+            or state["scientific_attempts"] < 0
+            or not isinstance(state.get("iterations"), list)
+            or len(state["iterations"]) != state["next"] - 1
+            or state["scientific_attempts"] > len(state["iterations"])):
+        return None
+    turns = [row.get("turn") if isinstance(row, dict) else None
+             for row in state["iterations"]]
+    if turns != list(range(1, state["next"])):
+        return None
+    state_time = _parse_semantic_timestamp(state.get("updated_at"))
+    if state_time is None or state_time > now + 5.0:
+        return None
+    snapshot = _owned_public_snapshot(path, max_bytes=2 * 1024 * 1024)
+    if snapshot is None:
+        return None
+    raw = snapshot[0]
+    try:
+        lines = raw.decode("ascii").splitlines()
+    except UnicodeDecodeError:
+        return None
+    if len(lines) < 2 or not raw.endswith(b"\n"):
+        return None
+    rows = []
+    for line in lines[-2:]:
+        row = _strict_json_bytes(line.encode("ascii"))
+        payload = row.get("payload") if isinstance(row, dict) else None
+        if (row is None or set(row) != {
+                "campaign_id", "event_id", "journal_schema", "kind",
+                "payload", "record_id", "seq", "written_at"}
+                or line.encode("ascii") != _canonical_json_bytes(row)
+                or row.get("journal_schema") !=
+                "epyc.autokernel.journal_entry.v1"
+                or row.get("kind") != "STOP_STATE"
+                or row.get("campaign_id") is not None
+                or row.get("record_id") is not None
+                or not isinstance(row.get("seq"), int)
+                or isinstance(row.get("seq"), bool) or row["seq"] <= 0
+                or not isinstance(row.get("written_at"), str)
+                or _parse_semantic_timestamp(row["written_at"]) is None
+                or not isinstance(payload, dict)
+                or set(payload) != {"state", "controller_state_sha256"}
+                or not isinstance(payload.get("state"), str)
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    payload.get("controller_state_sha256"))) is None):
+            return None
+        expected_id = (f"akj-{row['seq']:012d}-" +
+                       _discovery_content_hash(payload)[:12])
+        if row.get("event_id") != expected_id:
+            return None
+        rows.append(row)
+    portfolio, complete = rows
+    portfolio_time = _parse_semantic_timestamp(portfolio["written_at"])
+    complete_time = _parse_semantic_timestamp(complete["written_at"])
+    if (portfolio["payload"]["state"] != "discovery_portfolio_exhausted"
+            or complete["payload"]["state"] != "discovery_complete"
+            or complete["seq"] != portfolio["seq"] + 1
+            or complete["payload"]["controller_state_sha256"] !=
+            state["state_sha256"]
+            or portfolio["payload"]["controller_state_sha256"] ==
+            state["state_sha256"]
+            or portfolio_time is None or complete_time is None
+            or not portfolio_time <= state_time <= complete_time
+            or complete_time - portfolio_time > 5.0
+            or complete_time > now + 5.0):
+        return None
+    return {
+        "state": "portfolio_exhausted", "occurred_at": complete["written_at"],
+        "stamp": complete_time, "state_sha256": state["state_sha256"],
+        "portfolio_at": portfolio["written_at"],
+        "portfolio_seq": portfolio["seq"], "complete_seq": complete["seq"],
+    }
+
+
 def _discovery_safe_error(value: object) -> dict | None:
     if not isinstance(value, dict):
         return None
@@ -7445,6 +7572,7 @@ def _discovery_inflight_successor_binding(
 def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                         state: dict | None,
                         events: list[dict], checkpoint: dict | None,
+                        terminal_observation: dict | None = None,
                         operation_observation: dict | None,
                         correctness_observation: dict | None,
                         postbuild_observation: dict | None,
@@ -7551,6 +7679,12 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     latest_iteration_status = (latest_iteration.get("status")
                                if isinstance(latest_iteration, dict) else None)
     complete = bool(state and state.get("complete") is True)
+    terminal_checkpointed = bool(
+        complete and isinstance(terminal_observation, dict)
+        and terminal_observation.get("state") == "portfolio_exhausted")
+    terminal_supervisor_verified = bool(
+        terminal_checkpointed
+        and terminal_observation.get("supervisor_verified") is True)
     failure = _discovery_safe_error(
         inflight.get("exception") if isinstance(inflight, dict) else None)
     planning_failure = _discovery_safe_error(
@@ -7782,7 +7916,51 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 pipeline[skipped_stage]["state"] = "skipped"
                 pipeline[skipped_stage]["detail"] = reason
         transitions.extend(postbuild_observation.get("transitions", []))
-    if planner_terminal_failure:
+    if terminal_checkpointed:
+        stage = "decision"
+        pipeline[stage]["state"] = "complete"
+        pipeline[stage]["completed_at"] = terminal_observation["occurred_at"]
+        pipeline["next_hypothesis"]["state"] = "complete"
+        pipeline["next_hypothesis"]["completed_at"] = (
+            terminal_observation["occurred_at"])
+        if terminal_supervisor_verified:
+            status = "complete"
+            label = "Portfolio exhausted · campaign complete"
+            waiting_on = "no further hypothesis"
+            recoverability = "not_required"
+        elif lock_held:
+            status = "running"
+            label = "Portfolio exhausted · finalizing campaign"
+            waiting_on = "normal supervisor shutdown"
+            recoverability = "not_required"
+        else:
+            status = "failed"
+            label = "Campaign terminal supervisor proof refused"
+            waiting_on = "repair terminal supervisor evidence"
+            recoverability = "terminal_integrity_requires_repair"
+            pipeline[stage]["state"] = "failed"
+            failure_view = {
+                "detected": True, "stage": stage,
+                "detail": ("Controller state and journal reached portfolio exhaustion, "
+                           "but the exact normal supervisor rc0 terminal was not verified."),
+                "recovery": ("Repair the terminal evidence; do not restart or replay the "
+                             "completed campaign."),
+            }
+    elif complete:
+        status = "failed"
+        stage = "decision"
+        label = "Campaign completion evidence refused"
+        waiting_on = "repair state/journal terminal evidence"
+        recoverability = "terminal_integrity_requires_repair"
+        pipeline[stage]["state"] = "failed"
+        failure_view = {
+            "detected": True, "stage": stage,
+            "detail": ("The controller claims completion, but its exact state/hash and "
+                       "portfolio-exhausted journal join did not validate."),
+            "recovery": ("Repair the terminal evidence; do not restart or replay the "
+                         "claimed completed campaign."),
+        }
+    elif planner_terminal_failure:
         # The planner actor can return successfully and still be rejected by
         # the controller-owned telemetry/output validator.  v16 persisted this
         # exact STOP_STATE plus a bounded typed error in planning.failure.  It
@@ -8093,12 +8271,6 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         waiting_on = ("next eligible portfolio hypothesis" if lock_held else
                       "controller restart from typed terminal")
         recoverability = "resume_controller_checkpoint"
-    elif complete:
-        status = "complete"
-        stage = "decision"
-        label = "Campaign complete"
-        waiting_on = "operator review"
-        pipeline[stage]["state"] = "complete"
     elif isinstance(pending, dict):
         if pending_phase == "critic_pending":
             stage = "critic"
@@ -8359,6 +8531,15 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 "label": "screen decision durable; advancing automatically",
                 "detail": "next portfolio binding will be selected by the controller",
             })
+    if terminal_checkpointed:
+        transitions.append({
+            "ts": terminal_observation["portfolio_at"], "stage": "decision",
+            "phase": "decision", "state": "complete",
+            "event": "discovery_portfolio_exhausted",
+            "label": (f"STOP_STATE seq "
+                      f"{terminal_observation['portfolio_seq']}"),
+            "detail": "eligible portfolio exhausted",
+        })
     if isinstance(operation_observation, dict):
         observed_stage = operation_observation["stage"]
         operation_detail = (
@@ -8428,7 +8609,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             or not isinstance(turn, int) or isinstance(turn, bool)
             or observation["turn"] < turn)
     ]
-    if ((active_new_turn or planner_terminal_failure)
+    if ((active_new_turn or planner_terminal_failure or terminal_checkpointed)
             and historical_refusal_observations):
         checkpoint_states = {
             "authoring_refused": "discovery_authoring_refused",
@@ -8553,7 +8734,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         refusal_type = "planner_output_refusal"
     if isinstance(refusal_observation, dict):
         refusal_type = refusal_observation.get("disposition")
-    historical_refusal_only = active_new_turn or planner_terminal_failure
+    historical_refusal_only = (
+        active_new_turn or planner_terminal_failure or terminal_checkpointed)
     headline_refusal_observation = (
         None if historical_refusal_only else refusal_observation)
     if historical_refusal_only:
@@ -8621,6 +8803,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     first_incomplete = (latest_result.get("first_incomplete_stage") or
                         (postbuild_observation.get("first_incomplete_stage")
                          if isinstance(postbuild_observation, dict) else stage))
+    if terminal_supervisor_verified:
+        first_incomplete = None
     iteration_exact_effect = (latest_iteration.get(
         "exact_attribution_effect_fraction")
         if isinstance(latest_iteration, dict) else None)
@@ -8832,12 +9016,13 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                                   else "latest durable controller boundary" if checkpoint
                                   else "no durable controller checkpoint")},
         "resume": {"required": status in {"failed", "stopped"},
-                   "possible": recoverability in {
+                   "possible": (not terminal_checkpointed
+                   and recoverability in {
                        "same_candidate_retry", "not_required",
                        "resume_first_incomplete_stage",
                        "resume_controller_checkpoint",
                        "resume_planner_provider_retry",
-                       "resume_critic_provider_retry"},
+                       "resume_critic_provider_retry"}),
                    "recoverability": ("ambiguous" if recoverability.startswith("ambiguous")
                                       else recoverability),
                    "disposition": recoverability,
@@ -9489,13 +9674,15 @@ def _supervisor_tmux(value: object, supervisor: object) -> bool:
 
 
 def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
-                       session_name: str, runtime_root: Path) -> list[dict] | None:
-    """Validate canonical ledger rows and the producer's max-restart-0 FSM."""
+                       session_name: str, runtime_root: Path,
+                       expected_success: bool = False) -> list[dict] | None:
+    """Validate canonical ledger rows and one exact max-restart-0 FSM."""
     try:
         lines = raw.decode("ascii").splitlines()
     except UnicodeDecodeError:
         return None
-    if len(lines) != 5 or not raw.endswith(b"\n"):
+    expected_length = 4 if expected_success else 5
+    if len(lines) != expected_length or not raw.endswith(b"\n"):
         return None
     rows: list[dict] = []
     previous = None
@@ -9527,15 +9714,18 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
         rows.append(row)
         previous = digest
         previous_time = written
-    if [row["event"] for row in rows] != [
-            "supervisor_started", "child_started", "child_exited",
-            "restarts_exhausted", "supervisor_stopped"]:
+    expected_events = ([
+        "supervisor_started", "child_started", "child_exited",
+        "supervisor_stopped"] if expected_success else [
+        "supervisor_started", "child_started", "child_exited",
+        "restarts_exhausted", "supervisor_stopped"])
+    if [row["event"] for row in rows] != expected_events:
         return None
     started = rows[0]["payload"]
     child_start = rows[1]["payload"]
     child_exit = rows[2]["payload"]
-    exhausted = rows[3]["payload"]
-    stopped = rows[4]["payload"]
+    exhausted = None if expected_success else rows[3]["payload"]
+    stopped = rows[-1]["payload"]
     return_code = child_exit.get("return_code")
     supervisor = started.get("supervisor")
     tmux = started.get("tmux")
@@ -9560,6 +9750,9 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
                 "restart_count", "child", "stdout", "stderr", "cgroup"}
             or child_start.get("restart_count") != 0
             or not _supervisor_process(child_start.get("child"), child=True)
+            or any(child_start["child"].get(key) != supervisor.get(key)
+                   for key in ("boot_id", "host", "host_id_source",
+                               "host_id_sha256"))
             or child_start.get("stdout") != str(runtime_root / "controller.stdout.log")
             or child_start.get("stderr") != str(runtime_root / "controller.stderr.log")
             or not isinstance(cgroup, dict)
@@ -9575,12 +9768,15 @@ def _supervisor_ledger(raw: bytes, *, spec_sha256: str,
             or not isinstance(cleanup, list) or tuple(cleanup) not in allowed_cleanup
             or child_exit.get("stop_signal") is not None
             or isinstance(return_code, bool) or not isinstance(return_code, int)
-            or return_code == 0
-            or set(exhausted) != {
-                "restart_count", "max_restarts", "last_return_code"}
-            or exhausted.get("restart_count") != 0
-            or exhausted.get("last_return_code") != return_code
-            or exhausted.get("max_restarts") != 0
+            or expected_success and return_code != 0
+            or not expected_success and return_code == 0
+            or not expected_success and (
+                not isinstance(exhausted, dict)
+                or set(exhausted) != {
+                    "restart_count", "max_restarts", "last_return_code"}
+                or exhausted.get("restart_count") != 0
+                or exhausted.get("last_return_code") != return_code
+                or exhausted.get("max_restarts") != 0)
             or set(stopped) != {
                 "exit_code", "restart_count", "stop_signal", "supervisor"}
             or stopped.get("restart_count") != 0
@@ -9929,6 +10125,145 @@ def _supervisor_terminal_observation(bundle: Path, config_path: Path,
             os.close(root_fd)
 
 
+def _supervisor_normal_terminal_observation(
+        bundle: Path, config_path: Path, config: dict) -> dict | None:
+    """Validate the sealed supervisor's exact normal rc0 terminal.
+
+    Unlike the pre-controller failure adapter, this path exports no stderr and
+    accepts only the four-event success FSM.  Both process identities must be
+    gone and the exact controller cgroup must have been removed.
+    """
+    name = bundle.name
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,159}", name) is None:
+        return None
+    root = AUTOKERNEL_SUPERVISORS_ROOT
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    root_fd = runtime_fd = None
+    try:
+        root_info = root.lstat()
+        if (not stat.S_ISDIR(root_info.st_mode)
+                or root_info.st_uid != os.geteuid()
+                or stat.S_IMODE(root_info.st_mode) != 0o700):
+            return None
+        root_fd = os.open(root, flags)
+        pinned_root = os.fstat(root_fd)
+        if ((pinned_root.st_dev, pinned_root.st_ino)
+                != (root_info.st_dev, root_info.st_ino)):
+            return None
+        runtime_fd = os.open(name, flags, dir_fd=root_fd)
+        runtime_info = os.fstat(runtime_fd)
+        path_info = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
+        if (not stat.S_ISDIR(runtime_info.st_mode)
+                or runtime_info.st_uid != os.geteuid()
+                or stat.S_IMODE(runtime_info.st_mode) != 0o700
+                or not stat.S_ISDIR(path_info.st_mode)
+                or (runtime_info.st_dev, runtime_info.st_ino)
+                != (path_info.st_dev, path_info.st_ino)):
+            return None
+        snapshots = {
+            filename: _owned_regular_snapshot_at(
+                runtime_fd, filename, max_bytes=limit)
+            for filename, limit in (
+                ("identity.json", 16 * 1024),
+                ("death-ledger.jsonl", 128 * 1024),
+                ("deployment-config.json", 256 * 1024),
+                ("launch-spec.json", 2 * 1024 * 1024),
+            )
+        }
+        if any(value is None for value in snapshots.values()):
+            return None
+        source_snapshot = _owned_public_snapshot(config_path, max_bytes=256 * 1024)
+        if source_snapshot is None:
+            return None
+        identity_raw = snapshots["identity.json"][0]
+        identity = _strict_json_bytes(identity_raw)
+        spec_result = _supervisor_launch_spec(
+            snapshots["launch-spec.json"][0], runtime_root=root / name,
+            runtime_info=runtime_info, config_path=config_path, config=config,
+            config_source=source_snapshot,
+            config_copy=snapshots["deployment-config.json"])
+        if spec_result is None:
+            return None
+        _launch_spec, spec_sha256 = spec_result
+        session_name = "ak-" + spec_sha256[:24]
+        ledger = _supervisor_ledger(
+            snapshots["death-ledger.jsonl"][0], spec_sha256=spec_sha256,
+            session_name=session_name, runtime_root=root / name,
+            expected_success=True)
+        expected_identity_keys = {
+            "child", "exit_code", "restart_count", "schema", "session_name",
+            "spec_sha256", "state", "supervisor", "tmux", "tmux_socket_name",
+            "updated_at"}
+        if (identity is None or set(identity) != expected_identity_keys
+                or identity_raw != _canonical_json_bytes(identity) + b"\n"
+                or identity.get("schema") != _SUPERVISOR_IDENTITY_SCHEMA
+                or identity.get("spec_sha256") != spec_sha256
+                or identity.get("session_name") != session_name
+                or identity.get("tmux_socket_name") !=
+                "epyc-autokernel-supervisors"
+                or identity.get("state") != "stopped"
+                or identity.get("child") is not None
+                or identity.get("restart_count") != 0
+                or identity.get("exit_code") != 0
+                or not _supervisor_process(
+                    identity.get("supervisor"), child=False)
+                or not _supervisor_tmux(
+                    identity.get("tmux"), identity.get("supervisor"))
+                or not isinstance(identity.get("updated_at"), str)
+                or _parse_semantic_timestamp(identity["updated_at"]) is None
+                or ledger is None):
+            return None
+        first_payload = ledger[0]["payload"]
+        child_payload = ledger[1]["payload"]
+        final_payload = ledger[-1]["payload"]
+        identity_time = _parse_semantic_timestamp(identity["updated_at"])
+        final_time = _parse_semantic_timestamp(ledger[-1]["written_at"])
+        if (identity.get("supervisor") != first_payload["supervisor"]
+                or identity.get("tmux") != first_payload["tmux"]
+                or final_payload.get("supervisor") != identity["supervisor"]
+                or final_payload.get("exit_code") != 0
+                or identity_time is None or final_time is None
+                or identity_time < final_time or identity_time - final_time > 5.0
+                or identity_time > time.time() + 5.0):
+            return None
+        child = child_payload["child"]
+        for process in (identity["supervisor"], child):
+            observed = _discovery_proc_stat(process["pid"])
+            if observed is not None and observed[2] == process["start_ticks"]:
+                return None
+        cgroup_path = Path(child_payload["cgroup"]["path"])
+        if cgroup_path.exists() or cgroup_path.is_symlink():
+            return None
+        runtime_after = os.fstat(runtime_fd)
+        path_after = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
+        root_after = root.lstat()
+        if ((runtime_info.st_dev, runtime_info.st_ino,
+             runtime_info.st_mtime_ns, runtime_info.st_ctime_ns)
+                != (runtime_after.st_dev, runtime_after.st_ino,
+                    runtime_after.st_mtime_ns, runtime_after.st_ctime_ns)
+                or (runtime_after.st_dev, runtime_after.st_ino)
+                != (path_after.st_dev, path_after.st_ino)
+                or (pinned_root.st_dev, pinned_root.st_ino,
+                    pinned_root.st_mtime_ns, pinned_root.st_ctime_ns)
+                != (root_after.st_dev, root_after.st_ino,
+                    root_after.st_mtime_ns, root_after.st_ctime_ns)):
+            return None
+        return {
+            "state": "stopped", "exit_code": 0, "restart_count": 0,
+            "occurred_at": identity["updated_at"], "stamp": identity_time,
+            "ledger_tail_sha256": ledger[-1]["record_sha256"],
+        }
+    except (OSError, TypeError, ValueError):
+        return None
+    finally:
+        if runtime_fd is not None:
+            os.close(runtime_fd)
+        if root_fd is not None:
+            os.close(root_fd)
+
+
 def _supervisor_failure_activity(observation: dict) -> dict:
     """Project a typed pre-controller terminal into the live activity schema."""
     stage = observation["phase"]
@@ -10157,6 +10492,23 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     latest_ts = max(event_times) if event_times else None
     checkpoint = selected["checkpoint"]
     now = time.time()
+    campaign_terminal = _discovery_portfolio_terminal_checkpoint(
+        state_root / "journal" / "events.jsonl", state, now=now)
+    if campaign_terminal is not None and not lock_held:
+        normal_supervisor = _supervisor_normal_terminal_observation(
+            bundle, bundle / "config" / "deployment.json", config)
+        if normal_supervisor is not None:
+            supervisor_at = normal_supervisor["stamp"]
+            if (isinstance(supervisor_at, (int, float))
+                    and not isinstance(supervisor_at, bool)
+                    and 0 <= supervisor_at - campaign_terminal["stamp"] <= 5.0):
+                campaign_terminal = {
+                    **campaign_terminal,
+                    "supervisor_verified": True,
+                    "supervisor_at": normal_supervisor["occurred_at"],
+                    "supervisor_ledger_tail_sha256":
+                        normal_supervisor["ledger_tail_sha256"],
+                }
     config_sha256 = config.get("config_sha256")
     campaign_id = (f"ak-discovery-{config_sha256[:16]}"
                    if isinstance(config_sha256, str)
@@ -10200,7 +10552,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         activity = _discovery_activity(
             lock_held=lock_held, campaign_id=campaign_id,
             state=state, events=lifecycle_events,
-            checkpoint=checkpoint, operation_observation=build_observation,
+            checkpoint=checkpoint, terminal_observation=campaign_terminal,
+            operation_observation=build_observation,
             correctness_observation=correctness_observation,
             postbuild_observation=postbuild_observation,
             claim_observation=claim_observation,

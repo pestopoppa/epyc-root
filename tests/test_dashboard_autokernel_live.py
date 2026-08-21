@@ -245,6 +245,106 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         identity["updated_at"] = identity_at
         identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
 
+    def _make_supervisor_success(self, runtime: Path) -> None:
+        rows = [json.loads(line) for line in
+                (runtime / "death-ledger.jsonl").read_text().splitlines()]
+        rows = [row for row in rows
+                if row["event"] != "restarts_exhausted"]
+        exited = next(row for row in rows
+                      if row["event"] == "child_exited")
+        exited["payload"]["return_code"] = 0
+        stopped = next(row for row in rows
+                       if row["event"] == "supervisor_stopped")
+        stopped["payload"]["exit_code"] = 0
+        self._rewrite_supervisor_ledger(runtime, rows)
+        identity_path = runtime / "identity.json"
+        identity = json.loads(identity_path.read_text())
+        identity["exit_code"] = 0
+        identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
+
+    def _write_portfolio_terminal(self, *,
+                                  portfolio_at: str =
+                                  "2026-08-21T00:35:10.400000Z",
+                                  state_at: str =
+                                  "2026-08-21T00:35:10.450000Z",
+                                  complete_at: str =
+                                  "2026-08-21T00:35:10.500000Z") -> tuple[dict, Path]:
+        receipt_path = self.state / "stage-outcomes/source-apply-turn14.json"
+        receipt_path.parent.mkdir(exist_ok=True)
+        receipt = {
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v1",
+            "state": "failed", "failure_stage": "source_apply",
+            "build_key": "f" * 64, "promotion_claim": False,
+        }
+        receipt_raw = (json.dumps(
+            receipt, sort_keys=True, separators=(",", ":")) + "\n").encode()
+        receipt_path.write_bytes(receipt_raw)
+        refused_epoch = datetime.fromisoformat(
+            "2026-08-21T00:35:10.300000+00:00").timestamp()
+        os.utime(receipt_path, (refused_epoch, refused_epoch))
+        iterations = [{
+            "turn": turn,
+            "hypothesis_id": f"akh-v25-fixture-{turn}",
+            "status": "scientific_terminal",
+            "scientific_budget_spent": turn <= 5,
+        } for turn in range(1, 14)]
+        iterations.append({
+            "turn": 14, "hypothesis_id": "akh-v25-last-refusal",
+            "status": "authoring_refused", "stage": "source_apply",
+            "stage_receipt_path": str(receipt_path),
+            "stage_receipt_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+            "scientific_budget_spent": False,
+            "reason": "bounded source candidate refused",
+        })
+        state = {
+            "admission_corpus_sha256": "1" * 64,
+            "admission_corpus_version": "v1",
+            "attempted_candidate_identities": [],
+            "authority": "nonpromotable_candidate_only_discovery",
+            "candidate_semantic_registry_schema": "v1",
+            "complete": True,
+            "deployment_identity_sha256": "2" * 64,
+            "experiment_template_registry_sha256": "3" * 64,
+            "hypothesis_portfolio_sha256": "4" * 64,
+            "iterations": iterations,
+            "next": 15,
+            "planner_context_sha256": "5" * 64,
+            "portfolio_authoring_failures": {},
+            "portfolio_skips": {},
+            "portfolio_terminals": {},
+            "roster": [],
+            "schema": "epyc.autokernel.discovery_controller.v5",
+            "scientific_attempts": 5,
+            "terminal_reason": "portfolio_exhausted",
+            "updated_at": state_at,
+        }
+        state["state_sha256"] = server._discovery_controller_state_hash(state)
+        (self.state / "state.json").write_bytes(
+            server._canonical_json_bytes(state) + b"\n")
+        journal_path = self.state / "journal/events.jsonl"
+        journal_path.parent.mkdir()
+        rows = []
+        checkpoints = (
+            (72, "discovery_authoring_refused",
+             "2026-08-21T00:35:10.300000Z", "6" * 64),
+            (73, "discovery_portfolio_exhausted", portfolio_at, "7" * 64),
+            (74, "discovery_complete", complete_at, state["state_sha256"]),
+        )
+        for seq, checkpoint, written_at, digest in checkpoints:
+            payload = {"state": checkpoint,
+                       "controller_state_sha256": digest}
+            row = {
+                "campaign_id": None,
+                "event_id": (f"akj-{seq:012d}-" +
+                             server._discovery_content_hash(payload)[:12]),
+                "journal_schema": "epyc.autokernel.journal_entry.v1",
+                "kind": "STOP_STATE", "payload": payload,
+                "record_id": None, "seq": seq, "written_at": written_at,
+            }
+            rows.append(server._canonical_json_bytes(row))
+        journal_path.write_bytes(b"\n".join(rows) + b"\n")
+        return state, journal_path
+
     def _v2_event(self, *, event: str = "planner_started",
                   result: dict | None = None) -> dict:
         row = {
@@ -264,6 +364,220 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         if result is not None:
             row["result"] = result
         return row
+
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-21T01:00:00+00:00").timestamp())
+    def test_v25_exact_portfolio_terminal_outranks_last_refusal(
+            self, _time: mock.Mock) -> None:
+        self._write_portfolio_terminal()
+        runtime = self._write_supervisor_graph_mismatch(
+            self.bundle, self.bundle / "config/deployment.json")
+        self._make_supervisor_success(runtime)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["deployment"], "campaign-a")
+        self.assertFalse(payload["active"])
+        self.assertEqual(payload["activity"]["status"], "complete")
+        self.assertEqual(payload["activity"]["phase"]["id"], "decision")
+        self.assertEqual(payload["activity"]["phase"]["label"],
+                         "Portfolio exhausted · campaign complete")
+        self.assertEqual(payload["activity"]["waiting_on"],
+                         "no further hypothesis")
+        self.assertFalse(payload["activity"]["resume"]["required"])
+        self.assertFalse(payload["activity"]["resume"]["possible"])
+        self.assertFalse(payload["activity"]["refusal"]["detected"])
+        self.assertFalse(payload["activity"]["failure"]["detected"])
+        self.assertIsNone(
+            payload["activity"]["stage_contract"]["first_incomplete_stage"])
+        self.assertEqual(payload["activity"]["checkpoint"]["state"],
+                         "discovery_complete")
+        prior = payload["activity"]["prior_terminal"]
+        self.assertEqual(prior["turn"], 14)
+        self.assertEqual(prior["status"], "authoring_refused")
+        self.assertEqual(prior["event"], "discovery_authoring_refused")
+        self.assertEqual(payload["activity"]["gpu"], {
+            **payload["activity"]["gpu"],
+            "expected_now": False, "claim_held": False,
+        })
+        transitions = payload["activity"]["transitions"]
+        self.assertEqual(sum(row["event"] == "discovery_portfolio_exhausted"
+                             for row in transitions), 1)
+        self.assertIn("COMPLETE", payload["status_message"])
+        encoded = json.dumps(payload)
+        for unsafe in ("unsafe actor output", "SECRET PROMPT",
+                       '"pid"', '"start_ticks"', "controller.stderr.log"):
+            self.assertNotIn(unsafe, encoded)
+
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-22T02:00:00+00:00").timestamp())
+    def test_v25_sealed_terminal_does_not_expire_after_a_day(
+            self, _time: mock.Mock) -> None:
+        self._write_portfolio_terminal()
+        runtime = self._write_supervisor_graph_mismatch(
+            self.bundle, self.bundle / "config/deployment.json")
+        self._make_supervisor_success(runtime)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["activity"]["status"], "complete")
+        self.assertFalse(payload["activity"]["resume"]["required"])
+
+    def test_v25_terminal_state_journal_join_fails_closed(self) -> None:
+        state, journal_path = self._write_portfolio_terminal()
+        original_state = (self.state / "state.json").read_bytes()
+        original_journal = journal_path.read_bytes()
+        now = datetime.fromisoformat("2026-08-21T01:00:00+00:00").timestamp()
+
+        mutations = {}
+        tampered_state = dict(state)
+        tampered_state["scientific_attempts"] = 6
+        mutations["state_self_hash"] = (
+            server._canonical_json_bytes(tampered_state) + b"\n",
+            original_journal)
+        extra_state = dict(state)
+        extra_state["unexpected"] = True
+        extra_state["state_sha256"] = server._discovery_controller_state_hash({
+            key: value for key, value in extra_state.items()
+            if key != "state_sha256"})
+        mutations["state_extra_key"] = (
+            server._canonical_json_bytes(extra_state) + b"\n",
+            original_journal)
+        mutations["state_duplicate_key"] = (
+            original_state.rstrip()[:-1] + b',"complete":true}\n',
+            original_journal)
+        mutations["state_nonfinite"] = (
+            original_state.replace(b'"roster":[]', b'"roster":[NaN]'),
+            original_journal)
+        rows = [json.loads(line) for line in original_journal.splitlines()]
+        for name, mutate in (
+                ("event_id", lambda value: value[-1].update(
+                    {"event_id": "akj-000000000074-deadbeefdead"})),
+                ("sequence_gap", lambda value: value[-1].update({"seq": 75})),
+                ("wrong_final_digest", lambda value: value[-1]["payload"].update(
+                    {"controller_state_sha256": "8" * 64})),
+                ("stale_order", lambda value: value[-1].update(
+                    {"written_at": "2026-08-21T00:35:10.350000Z"})),
+                ("future", lambda value: value[-1].update(
+                    {"written_at": "2026-08-21T02:00:00.000000Z"})),
+                ("unexpected_row_key", lambda value: value[-1].update(
+                    {"unsafe": "raw terminal"})),
+        ):
+            candidate = json.loads(json.dumps(rows))
+            mutate(candidate)
+            mutations[name] = (original_state, b"\n".join(
+                server._canonical_json_bytes(row) for row in candidate) + b"\n")
+
+        for name, (state_raw, journal_raw) in mutations.items():
+            with self.subTest(name=name):
+                (self.state / "state.json").write_bytes(state_raw)
+                journal_path.write_bytes(journal_raw)
+                parsed = json.loads(state_raw)
+                self.assertIsNone(server._discovery_portfolio_terminal_checkpoint(
+                    journal_path, parsed, now=now))
+
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-21T01:00:00+00:00").timestamp())
+    def test_v25_terminal_requires_normal_supervisor_success_fsm(
+            self, _time: mock.Mock) -> None:
+        self._write_portfolio_terminal()
+        runtime = self._write_supervisor_graph_mismatch(
+            self.bundle, self.bundle / "config/deployment.json")
+        self._make_supervisor_success(runtime)
+        config = json.loads((self.bundle / "config/deployment.json").read_text())
+        identity_path = runtime / "identity.json"
+        ledger_path = runtime / "death-ledger.jsonl"
+        original_identity = identity_path.read_bytes()
+        original_ledger = ledger_path.read_bytes()
+        self.assertIsNotNone(server._supervisor_normal_terminal_observation(
+            self.bundle, self.bundle / "config/deployment.json", config))
+
+        cases = {}
+        identity = json.loads(original_identity)
+        identity["exit_code"] = 1
+        cases["identity_exit"] = (
+            server._canonical_json_bytes(identity) + b"\n", original_ledger)
+        rows = [json.loads(line) for line in original_ledger.splitlines()]
+        for name, mutate in (
+                ("child_nonzero", lambda value: value[2]["payload"].update(
+                    {"return_code": 1})),
+                ("restart_count", lambda value: value[-1]["payload"].update(
+                    {"restart_count": 1})),
+                ("cleanup_missing", lambda value: value[2]["payload"].update(
+                    {"cleanup_actions": []})),
+                ("child_host_mismatch", lambda value: value[1]["payload"]
+                    ["child"].update({"host": "other-host"})),
+                ("future_stop", lambda value: value[-1].update(
+                    {"written_at": "2026-08-21T02:00:00Z"})),
+        ):
+            candidate = json.loads(json.dumps(rows))
+            mutate(candidate)
+            previous = None
+            encoded = []
+            for sequence, row in enumerate(candidate, 1):
+                row["sequence"] = sequence
+                row["previous_sha256"] = previous
+                row.pop("record_sha256", None)
+                digest = hashlib.sha256(
+                    server._canonical_json_bytes(row)).hexdigest()
+                row["record_sha256"] = digest
+                previous = digest
+                encoded.append(server._canonical_json_bytes(row))
+            cases[name] = (original_identity, b"\n".join(encoded) + b"\n")
+
+        for name, (identity_raw, ledger_raw) in cases.items():
+            with self.subTest(name=name):
+                identity_path.write_bytes(identity_raw)
+                ledger_path.write_bytes(ledger_raw)
+                self.assertIsNone(server._supervisor_normal_terminal_observation(
+                    self.bundle, self.bundle / "config/deployment.json", config))
+        identity_path.write_bytes(original_identity)
+        ledger_path.write_bytes(original_ledger)
+
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-21T01:00:00+00:00").timestamp())
+    def test_v25_terminal_without_supervisor_proof_never_requests_replay(
+            self, _time: mock.Mock) -> None:
+        self._write_portfolio_terminal()
+        runtime = self._write_supervisor_graph_mismatch(
+            self.bundle, self.bundle / "config/deployment.json")
+        self._make_supervisor_success(runtime)
+        identity_path = runtime / "identity.json"
+        identity = json.loads(identity_path.read_text())
+        identity["exit_code"] = 1
+        identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
+
+        payload = server.discovery_live_payload()
+
+        activity = payload["activity"]
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"], "decision")
+        self.assertEqual(activity["resume"]["disposition"],
+                         "terminal_integrity_requires_repair")
+        self.assertFalse(activity["resume"]["possible"])
+        self.assertIn("do not restart or replay", activity["failure"]["recovery"])
+        self.assertFalse(activity["refusal"]["detected"])
+        self.assertEqual(activity["prior_terminal"]["turn"], 14)
+        self.assertFalse(activity["gpu"]["expected_now"])
+
+    @mock.patch("dashboard.server.time.time", return_value=datetime.fromisoformat(
+        "2026-08-21T00:35:11+00:00").timestamp())
+    def test_v25_terminal_with_live_lock_reports_only_finalizing(
+            self, _time: mock.Mock) -> None:
+        self._write_portfolio_terminal()
+        with (self.state / "controller.run.lock").open("r") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = server.discovery_live_payload()
+
+        activity = payload["activity"]
+        self.assertEqual(activity["status"], "running")
+        self.assertEqual(activity["phase"]["label"],
+                         "Portfolio exhausted · finalizing campaign")
+        self.assertEqual(activity["waiting_on"], "normal supervisor shutdown")
+        self.assertFalse(activity["resume"]["required"])
+        self.assertFalse(activity["refusal"]["detected"])
+        self.assertEqual(activity["prior_terminal"]["turn"], 14)
+        self.assertFalse(activity["gpu"]["expected_now"])
 
     def test_active_precheckpoint_planner_is_visible(self) -> None:
         with (self.state / "controller.run.lock").open("r") as handle:
