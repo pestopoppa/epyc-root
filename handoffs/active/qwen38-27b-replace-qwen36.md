@@ -106,6 +106,10 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 
 ## Research Intake — 2026-08-21 (chat-template dive, intake-1212…1217)
 
+> **Ratification package ready (2026-08-21):** `scripts/operator/ratify_qwen38_registry_swap_20260821.sh`
+> (epyc-root) applies the master-registry swap + provenance block + derived recompile with hard
+> verification, plus the PRB-T1 `--jinja` fallback fix. `--dry-run` validated end-to-end; operator-run only.
+
 Three findings landed here by a chat-template intake round, all verified by rendering the template
 **embedded in our own** `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` (extracted by a GGUF header
 read, without loading the 29 GB model) alongside the stock `Qwen/Qwen3.8-27B` template.
