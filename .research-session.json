@@ -3,7 +3,7 @@
   "started_at": "2026-08-21T09:45:00Z",
   "last_checkpoint": "2026-08-21T10:05:00Z",
   "phase": 5,
-  "stage": "stage1-complete-awaiting-operator-dive-selection",
+  "stage": "stage4-complete",
   "session_kind": "research-intake (4 submitted URLs, Hawkeye-focused batch)",
   "previous_session": {
     "session_id": "b41f8ce0-2d77-4a19-9f3e-51c8ab0d6e22",
@@ -81,10 +81,11 @@
     }
   ],
   "open_gates": [
-    "Stage-2b COMPLETE (all 5 batches in, 14 entries persisted). Next: Stage-3 plan gate - requires EnterPlanMode and operator approval before any handoff/wiki/index-row write.",
-    "OWNED ITEM: precision-equivalence-gate - see owned_items; must reach a plan item or an explicit decline."
+    "NONE from this session's mandate. Stage 4 committed and verified: validator exit 0 at 1232 entries, index_state --check 0 problems, 31 tasks filed, 0 checkboxes ticked.",
+    "OPERATOR DECISION OUTSTANDING (surfaced, not blocking): the ParEval CPU (serial+omp on EPYC 9655) and HIP-arm (gfx90a) trial tasks were flagged tier-1 at Stage-2b close but did NOT appear in the approved plan text, so they are neither filed nor declined. SC45 (belief-kernel wiring) IS filed and is a prerequisite for either, so the state is coherent -- but the trials themselves need a decision.",
+    "NOT SELECTED, recorded so it is not re-derived: ~20 sources surfaced DURING Stage-2b (QiMeng-Xpiler 2505.02146 highest value -- the only AMD/HIP-touching artifact in that line; then IntelliKit/Omniprobe, AutoKernel 2603.21331, TritonRL 2510.17891). All recorded in their bearing entries' dive_surfaced_sources."
   ],
-  "lane_note": "Session started in the SHARED CLONE with NO lane worktree (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit made by this session. handoffs/ carries only two pre-existing modifications (dflash2-block-drafter-experimental-build.md, vidya-belief-substrate-program.md), neither intake-caused. A PARALLEL SESSION was writing the same index file concurrently throughout Stage 1 - see integrity_probes_run.",
+  "lane_note": "Session started in the SHARED CLONE with NO lane worktree (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. CORRECTED 2026-08-21: Stage 4 DID commit -- epyc-root 8c363690 (staged hunk-selectively; peer SC44/DFlash2/qwen38/dflash2 hunks deliberately left unstaged and verified absent post-hoc) and research-repo 2190e424 (rocprofv3 provisioning, pushed via serialized_push.py under the push lock). The 'no commit' statement above was true only through Stage 2. handoffs/ carries only two pre-existing modifications (dflash2-block-drafter-experimental-build.md, vidya-belief-substrate-program.md), neither intake-caused. A PARALLEL SESSION was writing the same index file concurrently throughout Stage 1 - see integrity_probes_run.",
   "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1218 entries (baseline before append was exit 0 at 1213)",
   "peer_coordination": {
     "note": "Cross-session messages from workspace-c0 (operator-wrapup-20260821) during Stage 2. Recorded HERE and deliberately NOT in steering_ledger: the ledger is for OPERATOR comments and carries a Stage-3 gate (no plan may be presented until every ledger row is a filed item or an explicit decline). Peer input is context, and a peer cannot supply the approval that gate exists to enforce.",
@@ -108,7 +109,8 @@
       ],
       "proposed_disposition": "Stage-3 plan item: a durable writeup in wiki/benchmark-methodology.md as an ADDITIVE third shape alongside the existing 'Compiled Update - 2026-08-21' vacuous-pass section, paired with the enforcement doctrine in test-suite-conventions.md - i.e. an AUTHORING-TIME / eval-contract precision-equivalence check beside the collectability check, NOT a runtime floor, per that doc's explicit reasoning that a floor inside pytest breaks every invocation on a mis-fire. Plus a filed '- [ ]' task in rocm-verify-profile-backend.md (C6) if implementation work survives the writeup - the drafted form is: record the reference dtype in the eval contract and FAIL a candidate that lowers compute precision unless the task declares it permissible.",
       "ownership_terms_accepted": "(1) Owned END-TO-END through the Stage-3 plan gate to either a landed writeup plus any surviving filed task, or an EXPLICIT WRITTEN DECLINE recorded durably - never a silent drop. (2) If the plan gate DECLINES it, or this session closes before it is filed anywhere durable, HAND IT BACK - SendMessage to workspace-c0 if live, otherwise a clearly-marked line in the wrap-up progress shard reading 'precision-gate item UNOWNED, revert to operator'. (3) Recorded here because chat messages do not survive sessions.",
-      "boundary_note": "NOT yet written to the wiki, and deliberately so: this skill's Stage-3 is a plan-mode gate and nothing lands outside research/intake_index.yaml until the operator approves a plan. A peer naming a good destination is NOT that approval. Accepting OWNERSHIP is not the same as bypassing the gate."
+      "boundary_note": "NOT yet written to the wiki, and deliberately so: this skill's Stage-3 is a plan-mode gate and nothing lands outside research/intake_index.yaml until the operator approves a plan. A peer naming a good destination is NOT that approval. Accepting OWNERSHIP is not the same as bypassing the gate.",
+      "discharged": "DISCHARGED 2026-08-21. Landed as a Shape C compiled update in wiki/benchmark-methodology.md (additive to the two vacuous-pass shapes, which concern tests that DO NOT RUN) plus an AMENDMENT to the already-open RVP-C2-9 rather than a duplicate task. Verified independently by workspace-c0 and recorded in epyc-root 90c638cb with the hand-back clause marked never-triggered."
     }
   ]
 }
