@@ -159,3 +159,35 @@ EVL-33 `Next action` refresh (PRB-T4 queued, 125 chars); E-7 template-axis amend
 - Master-registry edits (Qwen3.8 role key + template-provenance block) — registry is frozen;
   exact YAML prepared in the Q38 handoff, ratification bundle presented to operator.
 - CT-1 (A/B) and PRB-T4 (TALE-EP run) — inference window; CT-5 — operator decision, package drafted.
+
+---
+
+## Third pass — the operator's script run falsified my own headline finding
+
+The operator ran the v1 ratification script; the pipeline's `lean_registry: stale` error exposed
+that `orchestration/model_registry.yaml` in the ORCHESTRATOR repo is **auto-generated** (its own
+head banner says so — every audit read the file from the middle). Chasing that: **the true master
+(epyc-inference-research) WAS swapped on 2026-08-20 by `b376dadd`** — a local, unpushed commit; the
+"resolves in no repo" check had been defeated by that repo's `safe.directory` config. My published
+"master registry was never swapped" finding was wrong-level; the operational conclusion stands
+(launcher reads derived priors as-is, `orchestrator_stack.py:252-262`; a start still serves
+Qwen3.6@4) but the gap is the **compile chain**, not the swap. Corrections written into the Q38
+handoff status + a dated correction block; ratify script rewritten as v2 (phase 0 reverts v1's
+lean edits with an inverse-edit byte-proof; phase 1 provenance → true master; phase 2 `update
+--allow-descriptor-model-removal` with an only-removal assertion + derived verification + check
+green; phase 3 unchanged). Second same-day instance of auditing a compiled artifact as its source.
+
+## CT-7 delivered: epyc-qwen3x-v1 built and probe-verified
+
+Operator redirected CT-3 posture: build our own, don't track community. Built
+`artifacts/chat-templates/epyc-qwen3x-v1/` from froggeric v22.3 (Apache-2.0): the 46-line inline-tag
+scan **deleted** (the injection surface), the tag sanitizer **kept**, terseness excluded (it is an
+A/B arm, not a default). Probes: user-content `<|think_off|>` flips froggeric, does NOT flip
+epyc-v1; retention holds both shapes; kwargs channel intact; byte-parity with base on tag-free
+input. sha256 `faaecb215031…d8c15`. Open: vendored-suite run + `common/jinja` render check.
+
+## Idle-window protocol (operator-directed)
+
+CT-1a filed: CT-1/PRB-T4 run CPU-side during autokernel GPU windows — bus region claim first,
+prod sampling temp+seed42, per-question JSONL as drain points, per-suite reporting. Checked now:
+no claims held, no inference ports listening — no window to join at this instant.
