@@ -1305,7 +1305,7 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       test on a harness, precisely our doctrine. Also adopt `intake-1246#record`'s **bitwise-determinism**
       stage (same input, three runs, bitwise identical) — arch-independent, near-free, and it closes the
       reward-hacking class that relies on non-determinism, though it says nothing about precision.
-- [ ] **RVP-C6-25 — Record the KernelFalcon test-harness admission as a SIXTH Shape-C instance in
+- [x] **RVP-C6-25 ✅ 2026-08-21 (compiled into wiki/benchmark-methodology.md, evening update) — Record the KernelFalcon test-harness admission as a SIXTH Shape-C instance in
       `wiki/benchmark-methodology.md`.** It is the cleanest one in the set: the authors name the weakness of
       their own gate in the same post as the 100%-correctness headline — _"we trust the LLM-generated test
       harness itself—we don't statically analyze it for cheating"_ — and the follow-up post then wins only

@@ -3171,3 +3171,50 @@ pair, then project AK-WM-2a and run AK-WM-2b observe-only.
 - [Ratified Annex K](../measurement/protocols/kernel-research.md) and
   [ratification receipt](../artifacts/operator/receipts/autokernel-discovery-first-20260813.receipt.json)
   — human-amended authority and the exact apply-time evidence/state-diff record.
+
+## Compiled Update — 2026-08-21 (gfx90a power telemetry: the averaged field is filtered, the energy counter is the instrument)
+
+Two dive-verified sources plus a same-day host verification give this box its first power-instrument
+characterisation. **The vendor-reported power field on our architecture is a firmware moving average
+over an UNDOCUMENTED window** — the vendor's own metric table names it (`power_average`, microwatts,
+"GPU power moving average" — Appendix Table III of `intake-1251`), it takes *"a few seconds to fully
+capture the transition from idle to TDP"* on MI250X (= gfx90a), and **aliasing begins below roughly
+4 ms** (population median with 95% CIs across 512 GPUs). The mechanism class is vendor-neutral: the
+SC24 external-meter study (`intake-1238`, cred 6/6) measured NVIDIA sampling only 25% of runtime on
+A100/H100 and — the line that matters here — showed the error is **not a constant offset**: its sign
+and magnitude depend on the phase relation between workload period and sampling window. llama.cpp
+decode is highly periodic at the token cadence, so a token period near a sampling-window harmonic can
+**phase-lock into a stable, repeatable, completely wrong power number**. A number that reproduces
+across runs is not thereby correct.
+
+**The mitigation exists on this host and was verified directly (2026-08-21):** the cumulative
+microjoule energy counter (`energy_count`, 1 ms cadence, `rsmi_dev_energy_count_get`) bypasses the
+filtering. Host probe: 308.0917 J over 5.072 s idle, monotonic, LSB a constant **15.30 uJ/tick**
+across 23 deltas (a number the paper does not state), 60.75 W derived vs 60.0 W from the independent
+`--showpower` field. This OVERTURNED `intake-1222`'s claim that ROCm 6.2 has no NVML-accumulator
+equivalent — we hold the *better* instrument, not the missing one. Three bounds on that: idle-window
+agreement is evidence about the instrument, not any run (filtering cannot bias a flat signal); the
+rocm-smi CLI's ~200 ms spawn cost is a THIRD asynchronous stage on top of sensor and driver cadence —
+**a read is not a measurement**, so fine-grained work must use the rsmi C API; and MI250X is dual-die
+OAM where the MI210 is single-die, so timing characteristics are expected-to-hold-and-confirm while
+absolute joules are not ours.
+
+**Standing protocol for any energy claim** (`RVP-PWR-2/4/5/6`): derive power as dE/dt from the
+counter, never read the averaged field for anything bursty; detect aliasing by FFT of a
+commanded-period square wave (clean = harmonics at expected frequencies; aliased = peak shift plus a
+raised noise floor — no external instrument needed, the ground truth is the period you commanded);
+attribute only inside a measured confidence window (the paper defines `W_conf` but publishes no
+numeric delay/rise/fall values — they must be measured on our part); and **decompose every energy
+saving into runtime-driven vs power-driven** — the paper's own application result (mixed precision:
+79% node-energy reduction on rocHPL-MxP) is almost entirely time-to-solution, and a joules-per-token
+win that is entirely a tokens-per-second win implies different next moves than one that lowers draw.
+
+### Source References
+
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1251#record` (McDaniel et
+  al., MI250X/MI300A characterisation; figure/table pass), `intake-1238#record` (Yang et al. SC24,
+  external-meter ground truth; the 35%/65% figure is an error REDUCTION from a protocol bundle, not a
+  bias magnitude), `intake-1222` (corrected in place: energy-accumulator claim OVERTURNED by host
+  measurement)
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+  `RVP-PWR-1..6` (PWR-3 ✅ ingested+verified; PWR-2 carries the runnable FFT protocol)

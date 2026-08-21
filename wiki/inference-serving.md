@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-20 (Qwen3.8-27B's DFlash2 sibling now has a full experimental gfx90a build and a matched np1 win over optimized MTP; concurrency and parity gates still prohibit production adoption)
+**Last compiled**: 2026-08-21 evening (Q38-T4 mode-artifact closure: run stack-change guards under the exported PRODUCTION fleet mode, never a default shell; Q38 registry swap complete end-to-end; CT-1 A/B launched with write-side wiring filed first; previously 2026-08-20: DFlash2 sibling full experimental gfx90a build)
 **Sources**: 77 documents
 
 ## Compiled Update — 2026-08-21: the registry has FOUR planes, and a swap is not live until the third one recompiles
@@ -1413,3 +1413,27 @@ Two adjacent facts worth keeping with it:
 - `scripts/operator/ratify_qwen38_registry_swap_20260821.sh` — the phased recompile + its header's corrected audit trail
 - epyc-inference-research `b376dadd` (master swap), orchestrator `7483d7fb` (executed ratification) — direct commit reads
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination record
+
+## Compiled Update — 2026-08-21 (evening): a stack-change guard must be checked under the PRODUCTION fleet mode
+
+Q38-T4 closed with neither proposed fix being right: the 13 registry-vs-stack "drift" errors were a
+**check-time mode artifact**. The guard builds its launch view against the *realized* fleet mode and
+defaults to `full` in a clean shell (`stack_change_guard.py:1183-1191`), which filters the half
+instances out of its view while the master unconditionally projects them into `serving.ports`. Under
+the production mode (`ORCHESTRATOR_STACK_NUMA_MODE=both`) all 13 errors vanish with **zero data
+edits**, and after a mode-correct `update` the campaign's first fully green stack-change check landed
+(`guard: ok`, `guard_strict: ok`, acceptance passed). Master, topology, template and manifest were
+correct all along. **Rule: run every stack-change check under the exported production fleet mode —
+a guard evaluated in a default shell is checking a fleet that does not exist** (the same
+near-miss class as the 08-21 numa_ports/stack-template lesson). The ratify script now exports the
+mode. Same day: the Qwen3.8-27B registry swap completed end-to-end (master registry `b376dadd`,
+compile chain via `ratify_qwen38_registry_swap_20260821.sh` v2, derived `stack_priors.yaml` verified
+serving Q38 @ draft_max 8), and the CT-1 chat-template A/B launched with its belief-kernel write-side
+hook filed before the first result (SC46). Remaining on operator sequence: Q38-T5 stack start +
+`live == config` checklist.
+
+### Source References
+
+- [`handoffs/active/qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T4 ✅ closure with the mode-artifact diagnosis
+- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-1 A/B launch + SC46 wiring
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md), [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)

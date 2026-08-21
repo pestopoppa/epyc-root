@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-21 (a THIRD vacuous-pass shape: a gate that RUNS and PASSES can still be passed by weakening the computation under test - five dive-verified sources, incl. one genuinely well-engineered gate whose adaptive tolerance scales the wrong way; anti-hack tiers test whether the kernel RAN, never at what WIDTH it computed; previously 2026-08-19: judge-guided selection: recovery rate and its pool-mean denominator, best-of-N safety is a verifier property not an n property, the lever is continuous ordering not bin count, and a "verbatim" check that read a stale mirror; a gate written to admit real logprob confidence rejected the only value the stack emits, and an environment rebuild disabled every venv-backed gate; previously 2026-08-18: banked cells change the scope of a re-run and a look-alike aborted run dir sits beside the real one; two attestation caveats and one screening park were falsified by checking the live thing; two cache-stats fields measured the wrong quantity; 19/40 empty SWE rows were a harness grammar mismatch, not model failure)
+**Last compiled**: 2026-08-21 evening (Shape C now EMPIRICAL on the MI210: a sound value oracle accepted 2 of 3 omission mutants, one with error BIT-IDENTICAL to the honest kernel - the omission class splits into input-conditional identities needing a semantic judge vs value-visible members a sound oracle catches; plus the first-party KernelFalcon sixth instance, the correctness-conditioned-speedup survivorship rule, and the dtype-keyed-tolerance attack surface; previously same-day morning: the third vacuous-pass shape from five dive-verified sources)
 **Sources**: 127+ documents
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
@@ -2701,3 +2701,66 @@ authoring-time** assertion beside the collectability check, not a runtime floor.
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
   `RVP-C2-9` (amended 2026-08-21: scope widened from checker-path pinning to output-precision equivalence);
   `RVP-C6-14`/`RVP-C6-15` carry the execution-proof and library-substitution cases
+
+## Compiled Update — 2026-08-21 (evening): the third shape is now EMPIRICAL on our own hardware, and the omission class splits in two
+
+The morning's compile recorded Shape C — a gate that runs and passes, satisfied by weakening the
+computation under test — from five dive-verified *sources*. By evening it is a **measured result on the
+MI210** (gfx90a, 16:03Z, `RVP-C6-20`): three hand-authored Triton kernels implementing TritonRL's
+rule-3 OMISSION class were run through L1 (AST blacklist, itself mutation-tested against 8
+planted-dirty samples before its verdict counted), L2 (ghost replay via a `JITFunction.run` no-op
+swap), and a **sound** value oracle (rtol=atol=1e-3, NaN/Inf rejected outright, max-observed-error
+recorded). Every honest positive control passed every tier. **The full stack accepted 2 of 3 mutants.**
+
+**The number that carries the lesson:** the LayerNorm-without-affine mutant passed the value oracle at
+standard inputs with max error **4.768e-07 — bit-identical to the honest kernel's error**. Under
+default module initialization (γ=1, β=0, the KernelBench-style input regime) the omitted computation
+is an *exact identity*: no tolerance, however tight, can catch it, because there is nothing to catch —
+at those inputs the mutant IS correct. The softmax-without-max-subtraction mutant passed at 5.588e-09
+for the same reason (mathematically identical at moderate magnitudes).
+
+**The omission class SPLITS, and the split assigns the defences:**
+
+| Sub-class | Example | Caught by | Not caught by |
+|---|---|---|---|
+| Input-conditional identity | LayerNorm w/o affine (default init); softmax w/o max-sub | **semantic judge** (reads source); adversarial input curricula (non-default parameters → 4.47 error; overflow-scale magnitudes → NaN rejection) | ANY value oracle at standard inputs, at any tolerance |
+| Value-visible omission | matmul-then-transpose w/o the transpose | a sound value oracle at random inputs (err 94.6) — **pre-registered prediction, confirmed** | the same oracle at *symmetric* inputs (err 1.068e-04 — the verdict is input-structure-dependent) |
+
+Consequences, now ratified into the C6 design: the tier stack is **L1 + L2 + semantic judge** with the
+planned L3 (profiler signature) dropped as both NVIDIA-bound and redundant — an execution-path check
+duplicating what L2 already proves, while neither touches the identity sub-class. The judge gates
+nothing until it rejects all three mutants (its minimal validation set), and the differential-oracle
+audit is its standing health check — a gap collapsing toward zero reads as the judge going vacuous,
+not the corpus going clean.
+
+**A sixth Shape-C instance, unusually clean because it is first-party:** the PyTorch KernelFalcon post
+reports 100% correctness on all 250 KernelBench tasks and states in the same post, *"we trust the
+LLM-generated test harness itself—we don't statically analyze it for cheating."* The system that
+produced the saturating score names its own gate's weakness beside the headline; the follow-up post
+then beats plain `torch.compile` on only 65 of 100 tasks, and a third-party production-baseline
+evaluation of the same system measures **0.777x** — same system, different denominator, win becomes
+slowdown. Cite the admission next to robust-kbench as a first-party datapoint on the weak-oracle axis,
+never as an independent third argument (the "illusion of solvedness" phrase is KernelGenBench's own
+gloss; neither PyTorch post contains it).
+
+**Two portable rules from the same wave.** (1) *Correctness-conditioned speedup rates are structurally
+survivorship-biased and must never rank arms* — two independent 2026 benchmarks exhibit it
+(CodegenBench: `Fast_1@1 = 1.00` at `Pass@1 = 0.06`, self-diagnosed; KernelGenBench's accuracy-speedup
+divergence): `fast_p`-style metrics condition on the correct subset, so they inflate exactly where
+correctness is worst. (2) *A dtype-keyed tolerance is an attack surface when the candidate chooses its
+own dtype* — an adaptive bar of FP32 1e-5 / BF16 0.016 pays a ~160x looser tolerance as a reward for
+downgrading. Pin required dtype and accumulate-precision per operator STRUCTURALLY, before tolerance
+is chosen (`RVP-C6-22`).
+
+### Source References
+
+- [`repos/epyc-inference-research/scripts/kernel_rnd/c6_mutants/`](../repos/epyc-inference-research/scripts/kernel_rnd/c6_mutants/) —
+  the falsification harness and `results_20260821.jsonl` (research `1d14092d`); the L1 scanner's own
+  mutation tests are `test_static.py`
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+  `RVP-C6-19` (ratified tier stack + judge prerequisite), `RVP-C6-20` (✅ result), `RVP-C6-21`
+  (differential oracle), `RVP-C6-22` (precision pinning)
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1241#record` (TritonRL rubric
+  + the 30pp differential), `intake-1243#record` (KernelFalcon admission + attribution correction),
+  `intake-1244#record` (Fast_1@1 survivorship), `intake-1245#record` (matched-ratio rule; NaN/Inf
+  rejection; max-observed-error)
