@@ -403,6 +403,15 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
             self.assertEqual(payload["activity"]["phase"]["id"], "authorization")
             self.assertEqual(payload["state"]["scientific_attempts"], 0)
             self.assertIs(payload["activity"]["preauthored"]["actor_bypass"], True)
+            self.assertEqual(
+                payload["telemetry_integrity"]["state"], "not_applicable")
+            self.assertIs(payload["telemetry_integrity"]["verified"], True)
+            self.assertIn(
+                "preauthored continuation bypasses planner and critic actors",
+                payload["telemetry_integrity"]["detail"])
+            self.assertIn(
+                "controller state/journal",
+                payload["telemetry_integrity"]["detail"])
             self.assertEqual(payload["discovery_product_contract"], {
                 "deployment_schema":
                     "epyc.autokernel.discovery_deployment.v5",
@@ -431,6 +440,53 @@ class DashboardAutokernelV26Tests(unittest.TestCase):
                         server, "_discovery_lock_held", return_value=True):
                 refused, _ = server._discovery_live_read()
             self.assertIs(refused["available"], False)
+
+    def test_v26_actor_bypass_telemetry_absence_is_narrowly_verified(self) -> None:
+        legacy = {
+            "state": "legacy", "verified": False,
+            "detail": "legacy v1 telemetry has no cross-stream event identity",
+            "conflict_count": 0, "duplicate_identity_count": 0,
+            "order_divergence": False, "missing_planner_count": 0,
+            "missing_autokernel_count": 0,
+            "timestamp_divergence_count": 0, "dropped_event_count": 0,
+        }
+        trusted = {
+            "provenance": {"imported": True, "actor_bypass": True}}
+        projected = server._discovery_v26_actor_bypass_telemetry_integrity(
+            legacy, trusted, all_events=[], planner_events=[],
+            all_error=None, planner_error=None, snapshot_status="stable")
+        self.assertEqual(projected["state"], "not_applicable")
+        self.assertIs(projected["verified"], True)
+        self.assertEqual(projected["conflict_count"], 0)
+
+        mutations = (
+            ({}, [], [], None, None, "stable"),
+            ({"provenance": {"imported": True, "actor_bypass": False}},
+             [], [], None, None, "stable"),
+            (trusted, [{"event": "unexpected"}], [], None, None, "stable"),
+            (trusted, [], [{"event": "unexpected"}], None, None, "stable"),
+            (trusted, [], [], "invalid AutoKernel stream", None, "stable"),
+            (trusted, [], [], None, "invalid planner stream", "stable"),
+            (trusted, [], [], None, None, "unstable"),
+        )
+        for state, all_rows, planner_rows, all_error, planner_error, status in mutations:
+            with self.subTest(state=state, all_rows=all_rows,
+                              planner_rows=planner_rows, all_error=all_error,
+                              planner_error=planner_error, status=status):
+                self.assertEqual(
+                    server._discovery_v26_actor_bypass_telemetry_integrity(
+                        legacy, state, all_events=all_rows,
+                        planner_events=planner_rows, all_error=all_error,
+                        planner_error=planner_error, snapshot_status=status),
+                    legacy)
+
+        degraded = {**legacy, "state": "degraded",
+                    "detail": "actor stream missing"}
+        self.assertEqual(
+            server._discovery_v26_actor_bypass_telemetry_integrity(
+                degraded, trusted, all_events=[], planner_events=[],
+                all_error=None, planner_error=None, snapshot_status="stable"),
+            degraded)
 
     def test_v26_journal_requires_exact_canonical_contiguous_envelopes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

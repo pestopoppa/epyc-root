@@ -3800,6 +3800,40 @@ def _discovery_reconcile_events(all_rows: list[dict],
     return merged[-200:], visible_all[-200:], visible_planner[-200:], integrity
 
 
+def _discovery_v26_actor_bypass_telemetry_integrity(
+        integrity: dict, v26_state: dict | None, *,
+        all_events: list[dict], planner_events: list[dict],
+        all_error: str | None, planner_error: str | None,
+        snapshot_status: str) -> dict:
+    """Classify exact preauthored actor absence without calling it legacy.
+
+    The v26 Q5 continuation deliberately bypasses both planner and critic.  Its
+    current authority is the strict controller-state/journal join plus governed
+    build/screen receipts, so an empty actor telemetry directory is expected on
+    this one path.  Any row, parse error, unstable snapshot, or loss of the
+    imported authority leaves the ordinary telemetry verdict untouched.
+    """
+    provenance = (v26_state.get("provenance")
+                  if isinstance(v26_state, dict) else None)
+    if (not isinstance(integrity, dict)
+            or integrity.get("state") != "legacy"
+            or not isinstance(provenance, dict)
+            or provenance.get("imported") is not True
+            or provenance.get("actor_bypass") is not True
+            or all_events or planner_events or all_error or planner_error
+            or snapshot_status != "stable"):
+        return integrity
+    return {
+        **integrity,
+        "state": "not_applicable",
+        "verified": True,
+        "detail": (
+            "verified expected absence: this preauthored continuation bypasses "
+            "planner and critic actors; current progress is bound by the "
+            "controller state/journal and governed stage receipts"),
+    }
+
+
 def _discovery_state_visibility_degraded(state: dict | None) -> list[dict]:
     """Project producer-persisted telemetry failures without raw error text."""
     values = state.get("visibility_degraded") if isinstance(state, dict) else None
@@ -11615,6 +11649,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
          lifecycle_events, visible_all_events, visible_planner_events,
          telemetry_integrity, telemetry_snapshot_status
          ) = _discovery_event_streams(operations_root / "live")
+        telemetry_integrity = _discovery_v26_actor_bypass_telemetry_integrity(
+            telemetry_integrity, v26_state,
+            all_events=all_events, planner_events=planner_events,
+            all_error=all_error, planner_error=planner_error,
+            snapshot_status=telemetry_snapshot_status)
         state_visibility_failures = _discovery_state_visibility_degraded(state)
         if state_visibility_failures:
             telemetry_integrity = dict(telemetry_integrity)
