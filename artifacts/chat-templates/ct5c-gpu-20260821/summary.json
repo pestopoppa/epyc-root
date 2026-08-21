@@ -1,0 +1,24 @@
+{
+ "T0": {
+  "n": 60,
+  "correct": 42,
+  "acc": 0.7,
+  "mean_tokens": 2350.8,
+  "nonterm": 19,
+  "errors": 0,
+  "mean_think_chars": 0.0,
+  "tokens_per_solved": 3358.3
+ },
+ "T1": {
+  "n": 60,
+  "correct": 38,
+  "acc": 0.6333,
+  "mean_tokens": 2618.8,
+  "nonterm": 21,
+  "errors": 0,
+  "mean_think_chars": 6031.0,
+  "tokens_per_solved": 4134.9
+ },
+ "flips_T0only": 7,
+ "flips_T1only": 3
+}

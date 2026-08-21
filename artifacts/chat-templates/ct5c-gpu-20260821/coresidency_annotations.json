@@ -1,0 +1,14 @@
+{
+ "window_utc": "2026-08-21T16:03:16Z/16:03:30Z",
+ "cause": "research-intake-filing-plan RVP-C6-20 Triton correctness burst (<1GB VRAM, ~14s), co-residency granted by run owner",
+ "method": "completion times reconstructed from the 15:51:45 checkpoint anchor + cumulative latency_s; window widened +/-5s",
+ "contaminated_rows": [
+  {
+   "id": "gpqa_diamond_cot_0b2ba477d600",
+   "arm": "T1",
+   "latency_s": 22.1,
+   "est_span": "16:03:01-16:03:23"
+  }
+ ],
+ "decision_impact": "NONE - decision metrics (accuracy, non-termination, token counts) are latency-independent; only latency_s on these rows is suspect"
+}

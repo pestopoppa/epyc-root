@@ -339,7 +339,31 @@ anything.
       `enable_thinking=false` and stripping the marker — input marking cannot see it, because it
       constrains tokenization, not template control flow. Rendered proof in the analysis above)
 - [ ] **CT-4** — If anything is adopted, pin the exact revision + sha256, not a branch.
-- [ ] **CT-5 — OPERATOR RULED 2026-08-21: hold (a) as posture, (c) authorised as a measurement
+- [x] **CT-5 ✅ 2026-08-21 — MEASURED AND CLOSED AT (a).** The (c) measurement ran to completion
+      (60 paired gpqa_diamond_cot, Qwen3.8-27B on MI210, v9 HIP residency proven by three
+      instruments, 0 errors; artifacts: `artifacts/chat-templates/ct5c-gpu-20260821/`). TWO-PART
+      RESULT: (1) **the R2d think-loop tail did NOT reproduce** — non-termination 19/60 (T0,
+      thinking OFF) vs 21/60 (T1, ON): mode-independent, driven by the 4096 cap + the suite's own
+      CoT prompt, not a thinking pathology; Qwen3.8's native channel is better-behaved than
+      A1/A4's. (2) **Thinking-ON failed to pay regardless**: acc 63.3% vs 70.0%, paired flips 7:3
+      AGAINST thinking (n.s., McNemar p≈0.34), tokens-per-solved +23% (4,135 vs 3,358), mean think
+      6,031 chars consuming the budget. No measured upside, real measured cost → **(a) stands as
+      posture; (c) declined for deployment.** Caveats recorded honestly: ~⅓ of BOTH arms truncated
+      at the 4096 cap (identical caps keep the comparison fair but compress the detectable delta);
+      a higher-cap rerun could in principle move this and is DECLINED by default — nothing queues
+      it. Retention remains inert under (a) by construction. **SAME-DAY CORRECTION (operator-prompted: "why do we keep finding reasoning makes quality
+      worse?"): the 6.7pp deficit is ENTIRELY a truncation/budget artifact.** Decomposition:
+      completed-subset accuracy 95.1% (T0) vs 94.9% (T1); both-completed paired n=35 → 34 vs 33,
+      flips 1:0; truncated rows ≈ automatic zeros (0/21 T1-truncated ever emitted an answer line;
+      truncated-T1 median think 11,078 chars vs 3,187 completed — runaway think eats the 4,096 cap).
+      Public Qwen thinking numbers run ~32K budgets where truncation ≈ 0. So this measurement
+      answered the OPERATING-POINT question (at 4K total, thinking does not pay) — NOT the
+      capability question. Historical context folded in: prior anti-reasoning findings (+33pp
+      no-think, R2d tails) were broken-serving artifacts on other models; reasoning has never been
+      measured here with working serving AND adequate budget — until the 16K rerun launched this
+      hour (same 60 pairs, symmetric 16,384 caps, `/workspace/tmp/ct5c-16k/`). Posture (a) stands
+      meanwhile. ORIGINAL RULING + task follow: OPERATOR
+      RULED 2026-08-21: hold (a) as posture, (c) authorised as a measurement
       ("once you negotiate a quiet GPU window… you can test it out"). Measurement LAUNCHED same hour
       (GPU idle, window free): `/workspace/tmp/ct5c-gpu/ct5c_runner.py` — Qwen3.8-27B on MI210
       (v9 HIP, draft-mtp n8, embedded template), 60 pinned gpqa_diamond_cot (seed 42), paired
