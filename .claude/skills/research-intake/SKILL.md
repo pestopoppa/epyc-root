@@ -122,9 +122,36 @@ For each URL:
    The 2026-07-25 audit found 19 entries mis-filed this way; one had hidden a live production defect
    for months because "the paper mentions this repo" was treated as "we have read this repo".
 
-4. **Fetch content**: arXiv → `https://ar5iv.org/abs/{id}` (fall back to the given URL); GitHub → repo
-   page + raw README (`main`, then `master`); other → fetch directly. Compute a SHA-256 of each raw
-   artifact before extraction.
+4. **Fetch content**: arXiv → **`https://arxiv.org/html/{id}v{N}` FIRST**, then `https://ar5iv.org/abs/{id}`,
+   then the given URL; GitHub → repo page + raw README (`main`, then `master`); other → fetch directly.
+   Compute a SHA-256 of each raw artifact before extraction.
+
+   **ALWAYS PREFER THE arXiv HTML RENDERING OVER THE PDF — it is the same URL with `/pdf/` → `/html/`.**
+   The PDF is the *worst* of the three routes and should never be the first attempt:
+
+   - **PDFs hit the fetch size limit and silently degrade the dive.** A large PDF comes back truncated or
+     as a summariser paraphrase rather than source text, and a paraphrase cannot support a `claim_anchors`
+     quote. On 2026-08-21 `arXiv:2604.06056` was recorded in `intake-1238` with four figures marked
+     MEDIUM-confidence and explicitly *unciteable* solely because its PDF exceeded the limit. Two HTML
+     passes later, all four were confirmed verbatim with section anchors and **nothing in the PDF turned
+     out to be needed** — the one thing it was wanted for (numeric confidence-window parameters) does not
+     appear anywhere in the document, in any format. **The PDF gate cost a whole extra round trip and a
+     wrongly-hedged entry.**
+   - **The HTML is LaTeXML-rendered from the source**, so it carries section numbers, equation numbers,
+     table contents and figure captions as *text*. That is exactly what `claim_anchors` needs: a `locator`
+     you can cite (`Section V-A3`, `Appendix Table III`, `Figure 10(d) caption`) and a `quote` you can hash.
+     A PDF-to-markdown conversion loses table structure and usually loses captions entirely.
+   - **Version-pin it.** `/html/{id}` redirects to the latest; `/html/{id}v2` is stable and is what
+     `source_revision` should record. This composes with the dive-the-current-version rule — check the
+     version on the abs page first, then fetch that version's HTML.
+   - **Ask for figure captions and appendix tables explicitly in a second pass.** They are in the HTML but
+     a general "summarise this paper" prompt will skip them, and in the 2604.06056 dive the *second*,
+     figure-and-table-targeted pass yielded four additional load-bearing claims — the aliasing detection
+     signature, the vendor metric table naming its own filtering, the cross-device confidence intervals,
+     and the three-stage sensor asynchrony model — none of which the first two content passes surfaced.
+   - **Not every paper has an HTML rendering** (older papers, and submissions whose LaTeX fails to
+     convert). Fall through to ar5iv, then the abs page, then the PDF. Record which route was used in
+     `source_revision`, because it bounds what a later reader may trust.
 
 5. **Extract**: title, authors, 3–5 key claims, named techniques, reported results, referenced arXiv IDs.
 

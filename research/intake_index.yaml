@@ -102390,6 +102390,32 @@
     reference, and its own accuracy is VENDOR-ASSERTED rather than independently measured here: "validated
     to within 5% on Frontier (EX235a) and within 1% on Portage (EX255a) based on testing during product
     development". This is the single most important limit on how far the paper may be pushed.'
+  - 'THE ALIASING KNEE IS DEMONSTRATED, NOT JUST ASSERTED, AND IT HANDS US A DETECTION TEST. Figure 10
+    contrasts two square waves measured through the derived energy-counter power on MI250X: "(a) Time
+    Domain: No Aliasing (10 Hz / 100ms period)" versus "(b) Time Domain: Aliased (250 Hz / 4ms period)",
+    with their Fourier spectra beneath. THE FAILURE SIGNATURE IS NAMED: the aliased case shows "a peak
+    shift from the ground-truth period, and an increased floor of noise across all other frequencies",
+    while the clean case gives "clear harmonics at expected frequencies". That is a REUSABLE POSITIVE
+    TEST - FFT the derived power trace of a known-period workload and check for peak shift plus a raised
+    noise floor - and it needs NO external instrument, because the ground truth is the period YOU
+    commanded.'
+  - 'THE THREE-STAGE ASYNCHRONY MODEL (Figure 1), which is the concept that explains our own CLI problem.
+    Sensor PRODUCTION, driver/sysfs REFRESH PUBLICATION and application READS are three ASYNCHRONOUS
+    stages: "A sensor update denotes publication of the most recent sensor value by the system layer.
+    Application reads observe either that refreshed value or a cached value, but do not trigger a new
+    measurement. The resulting lag is dt = t_read - t_measured." CONSEQUENCE FOR US: A READ IS NOT A
+    MEASUREMENT, and our ~200 ms rocm-smi CLI spawn cost is a THIRD stage stacked on top of the 1 ms sensor
+    cadence and the driver cadence - not a substitute for either. Reading faster does not sample faster.'
+  - 'EXACT FIELD NAMES AND UNITS, AND THEY DIFFER BY PART (Appendix Tables III and IV). On Frontier/MI250X
+    the metrics are `energy_count` (Microjoules, "Accumulated GPU energy") and `power_average`
+    (MICROWATTS, described verbatim as "GPU power moving average"). On Portage/MI300A the energy field is
+    the same but the power field is `current_socket_power` (Microwatts, "GPU power" - NOT described as an
+    average). The vendor''s own metric table therefore CONFIRMS THE FILTERING IN THE FIELD NAME on our
+    architecture: the only power field MI250X exposes is explicitly a moving average.'
+  - 'DEVICE-TO-DEVICE SPREAD IS REPORTED FOR THE ALIASING RESULT, which is more than most sources in this
+    wave manage: Figure 6 shows the "Median impact of aliasing on power state transition detection, shown
+    with 95% confidence intervals calculated across 512 MI250X GPUs and 480 MI300A APUs." The 4 ms cutoff
+    is therefore a POPULATION MEDIAN WITH A STATED INTERVAL, not a single-device anecdote.'
   techniques:
   - Controlled square-wave workloads of known duty cycle to characterise an undocumented sensor from the
     outside
@@ -102486,6 +102512,36 @@
     locator: Section V-B1
     source_revision: arXiv:2604.06056v2 HTML, retrieved 2026-08-21
     quote_sha256: e4ee3469f26d233e1bab07ea45401035daf1156f5b74524cac907306123312fc
+    hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
+  - claim_index: 8
+    quote: 'A higher-frequency workload slightly exceeding the instrumentation''s sampling capability, exhibiting a peak shift from the ground-truth period, and an increased floor of noise across all other frequencies.'
+    locator: 'Figure 10(d) caption - the ALIASING DETECTION SIGNATURE, reusable with no external instrument'
+    source_revision: 'arXiv:2604.06056v2 HTML, figure/table pass retrieved 2026-08-21'
+    quote_sha256: 4726991a6f0430e377dbd82b82676817300ae176e039d2a456a0567025f747e4
+    hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
+  - claim_index: 9
+    quote: 'Application reads observe either that refreshed value or a cached value, but do not trigger a new measurement.'
+    locator: 'Figure 1 caption - a read is not a measurement; this is why our ~200 ms CLI spawn cost is a third stage, not a sampling rate'
+    source_revision: 'arXiv:2604.06056v2 HTML, figure/table pass retrieved 2026-08-21'
+    quote_sha256: a24ad88b721305c38f1a14d34064f6b498d797016e745d08406c55314c48a918
+    hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
+  - claim_index: 10
+    quote: 'power_average | Microwatts | GPU power moving average'
+    locator: 'Appendix Table III, rocm-smi metrics on Frontier/MI250X nodes - the vendor metric table names the filtering itself'
+    source_revision: 'arXiv:2604.06056v2 HTML, figure/table pass retrieved 2026-08-21'
+    quote_sha256: 390fffed4da5397123c26415ec501dbd6e75c424fe2203f027c2ecaff08e80e7
+    hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
+  - claim_index: 11
+    quote: 'Median impact of aliasing on power state transition detection, shown with 95% confidence intervals calculated across 512 MI250X GPUs and 480 MI300A APUs.'
+    locator: 'Figure 6 caption - population median with a stated interval, not a single-device anecdote'
+    source_revision: 'arXiv:2604.06056v2 HTML, figure/table pass retrieved 2026-08-21'
+    quote_sha256: bb1f36c25ca102a2cc4cf2627a7a1f1adc0db7da1b2b5993d9f41bf8ab9cca6b
+    hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
+  - claim_index: 1
+    quote: 'Although the workload transitions are effectively step changes at the hardware level, the average power reported by rocm-smi (green line) does not capture the full transition from idle to TDP, even in the one second step-wave.'
+    locator: 'Section V-A2, referencing Figure 5(a), MI250X'
+    source_revision: 'arXiv:2604.06056v2 HTML, figure/table pass retrieved 2026-08-21'
+    quote_sha256: 34399986039ba483709515bff107a48e855b687790c2aaac891eb5cb989ccf20
     hash_basis: sha256 of the quote string exactly as recorded in this entry (ASCII-normalised)
   claim_corrections:
   - claim_index: 0

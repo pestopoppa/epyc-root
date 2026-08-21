@@ -1340,6 +1340,20 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       PERIODIC at the token cadence, this is close to a worst case: a token period near a harmonic of the
       sampling window can **PHASE-LOCK and produce a stable, repeatable, and completely wrong power number.**
       A number that reproduces across runs is not thereby correct.
+      **CONCRETE PROTOCOL, LIFTED FROM `intake-1251#record` Figure 10 — this replaces "sweep some periods"
+      with a runnable design.** Their two bracketing cases on MI250X are **10 Hz / 100 ms period (clean)**
+      and **250 Hz / 4 ms period (aliased)**; run both plus a sweep between them. **THE DETECTION TEST IS AN
+      FFT, NOT AN EYEBALL, AND IT NEEDS NO EXTERNAL INSTRUMENT** — because the ground truth is the period
+      *you commanded*. Clean case: _"clear harmonics at expected frequencies"_. Aliased case: _"a peak shift
+      from the ground-truth period, and an increased floor of noise across all other frequencies"_. Those two
+      signatures are the pass/fail criterion. Sample the **cumulative energy counter** (`energy_count`,
+      microjoules) via the **rsmi C API**, not the CLI: per their Figure 1 the sensor, the driver publication
+      and the application read are three *asynchronous* stages, so **a read is not a measurement** and our
+      ~200 ms CLI spawn cost is a third stage on top of the 1 ms sensor cadence rather than a sampling rate.
+      Run it against `power_average` in parallel — Appendix Table III names that field _"GPU power moving
+      average"_ in microwatts, so the vendor's own metric table confirms the filtering our probe is trying to
+      bound. Report the knee **as a median with an interval**, matching their Figure 6 treatment across
+      512 GPUs; on one MI210 the interval is across repeats, not devices, and must be labelled as such.
 - [x] **RVP-PWR-3 — Ingest and verify `arXiv:2604.06056` (McDaniel et al., ORNL/HPE/AMD) — DONE
       2026-08-21, ingested as `intake-1251#record`.** It was indeed higher-value than anything else in that
       batch, because MI250X IS gfx90a. **All four preliminary figures CONFIRMED VERBATIM** against the
@@ -1350,7 +1364,11 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       citeable.** Scope note on how it was read: two targeted passes over `arxiv.org/html/2604.06056v2` (the
       CURRENT version), not the PDF — which remains unread, and whose only unique content is Figure 5, where
       the confidence-window parameters are shown visually and **never stated numerically anywhere in the
-      paper**. **THREE THINGS THAT MUST TRAVEL WITH ANY CITATION:** (1) these authors used **NO external
+      paper**. **UPDATE — THE PDF QUESTION IS NOW PROVABLY CLOSED, NOT MERELY DEFERRED.** A third pass
+      targeting figure captions and appendix tables confirmed explicitly that numeric `t_d` / `t_r` / `t_f`
+      values appear **nowhere in the document — not in figure axes, captions, tables or alt-text.** There is
+      no version of this paper, in any format, that contains them. **Do not request the PDF; there is
+      nothing in it we do not have.** **THREE THINGS THAT MUST TRAVEL WITH ANY CITATION:** (1) these authors used **NO external
       physical meter** — Cray PM is their highest reference and its accuracy is vendor-asserted from
       product-development testing, so unlike `intake-1238` this may never be cited as external validation of
       an ABSOLUTE watt figure (the relative lag/aliasing findings rest on the square-wave probe and are
