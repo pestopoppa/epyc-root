@@ -364,3 +364,35 @@ softmax-no-maxsub at 5.6e-09; matmul-no-transpose caught (94.6) exactly as pre-r
 symmetric inputs. All honest controls pass all tiers; all mutants pass ghost replay. `RVP-C6-20` flipped
 ✅; the judge arm belongs to C6-19's ratified prerequisite clause. Results:
 `scripts/kernel_rnd/c6_mutants/results_20260821.jsonl` (research repo).
+
+---
+
+## Sixth pass — CT-5(c) verdict, its same-day correction, and Q38-T4 root cause
+
+**CT-5(c) completed** (60 paired gpqa_diamond_cot, Qwen3.8-27B MI210, v9 HIP residency proven by
+three instruments, 0 errors; artifacts `artifacts/chat-templates/ct5c-gpu-20260821/`): headline
+T0 70.0% vs T1 63.3%, flips 7:3 against thinking, +23% tokens/solved, non-termination 19 vs 21/60
+(the R2d think-loop tail did NOT reproduce — truncation is mode-independent).
+
+**Operator challenged the headline ("why do we keep finding reasoning makes quality worse?") and
+the challenge was right.** Truncation decomposition: completed-subset accuracy **95.1% vs 94.9%**,
+both-completed paired n=35 → 34 vs 33 (flips 1:0), truncated rows ≈ automatic zeros (0/21
+T1-truncated emitted an answer line; truncated-T1 median think 11,078 chars vs 3,187 completed).
+The 6.7pp deficit is ENTIRELY a 4,096-cap budget artifact; public thinking benchmarks run ~32K
+budgets. Prior anti-reasoning findings here were broken-serving artifacts on other models —
+reasoning had never been measured with working serving AND adequate budget. A 16K symmetric-cap
+rerun on the same 60 pairs launched 16:2xZ (`/workspace/tmp/ct5c-16k/`). Posture (a) stands
+meanwhile; CT-5 carries the correction inline.
+
+**Q38-T4 closed with a root cause that invalidated both proposed fixes**: the 13 "quarter-port"
+guard errors were a check-time fleet-mode artifact (launch view defaults to `full` in a clean
+shell, filtering the half instances every data file correctly declares). Under
+`ORCHESTRATOR_STACK_NUMA_MODE=both`: 13→0 with zero data edits; after a mode-correct regen the
+stack-change check is **fully green** for the first time (orchestrator `0d145f4f`). The earlier
+half-instance retirement over-read was reverted verbatim before any recompile — production
+artifacts never saw it (operator caught it; memory updated with the near-miss).
+
+**Peer co-residency**: granted research-intake-filing-plan a ~14s Triton correctness burst on the
+GPU mid-run (doctrine: co-residency is scheduling data); exactly 1 latency row overlapped and is
+tagged in `coresidency_annotations.json`. Their RVP-C6-20 falsification succeeded on the granted
+window.

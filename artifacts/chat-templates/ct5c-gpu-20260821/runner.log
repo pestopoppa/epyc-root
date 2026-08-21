@@ -1,0 +1,19 @@
+[14:25:57] pinned 60 gpqa_diamond_cot questions
+[14:25:57] === CT-5(c) GPU measurement start ===
+[14:25:57] GPU server pid 3499606 launching
+[14:26:07] GPU server healthy
+[14:26:34] VRAM DURING first completed request: GPU[0]		: GPU Memory Allocated (VRAM%): 55
+[residency-proof] HIP residency FULLY ESTABLISHED per Inference-and-Benchmarks rule, three independent instruments:
+  1. /proc/3499606/maps: libggml{,-base,-cpu,-hip}.so.0.16.0 ALL from /mnt/raid0/llm/llama.cpp/build-hip/bin/ (live maps > ldd; excludes the three-ggml-generations hazard)
+  2. VRAM 55% sampled DURING first completed request (rocm-smi)
+  3. KFD proc count = 1 (this server)
+[14:43:27] 10/60 questions (both arms)
+[15:02:23] 20/60 questions (both arms)
+[15:16:55] 30/60 questions (both arms)
+[15:31:20] 40/60 questions (both arms)
+[15:51:45] 50/60 questions (both arms)
+[16:10:02] 60/60 questions (both arms)
+[16:10:02] all questions complete
+[16:10:03] server pid 3499606 dead, verified
+[16:10:03] SUMMARY: {"T0": {"n": 60, "correct": 42, "acc": 0.7, "mean_tokens": 2350.8, "nonterm": 19, "errors": 0, "mean_think_chars": 0.0, "tokens_per_solved": 3358.3}, "T1": {"n": 60, "correct": 38, "acc": 0.6333, "mean_tokens": 2618.8, "nonterm": 21, "errors": 0, "mean_think_chars": 6031.0, "tokens_per_solved": 4134.9}, "flips_T0only": 7, "flips_T1only": 3}
+[16:10:03] === CT-5(c) done ===
