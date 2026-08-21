@@ -78,6 +78,26 @@ git commit -m "..."                      # NO pathspec: commits the index, not t
 
 `git add -A` is forbidden in every shared tree, always.
 
+**Even a clean `git add <mine> && git commit` RACES a peer's live staging — use a private
+index when another session is staging concurrently.** The pathspec warning above covers sweeping
+a peer's *worktree*; this is the sibling hazard on the *index*: between your `add` and your
+`commit`, a parallel session can stage files into the shared index, and your commit publishes
+them under your name. Measured 2026-08-21, three incidents in one afternoon across two sessions —
+two commits in a row swept a peer's staged files (the second *during the repair of the first*),
+and a third session's ordinary commit would have swept eight files had it not switched patterns.
+When any session may be staging, commit through a private index; it cannot race by construction:
+
+```bash
+TMPIDX=$(mktemp)
+GIT_INDEX_FILE=$TMPIDX git read-tree HEAD          # private index = HEAD exactly
+GIT_INDEX_FILE=$TMPIDX git add -- <your files>
+TREE=$(GIT_INDEX_FILE=$TMPIDX git write-tree); rm -f $TMPIDX
+git update-ref refs/heads/<branch> "$(git commit-tree $TREE -p HEAD -m "...")"
+```
+
+The shared index is never touched, so the peer's staging survives intact — verify afterwards with
+`git diff --cached --name-only`, which should still show exactly their set.
+
 **`git stash` is unsafe in the shared clone while daemons are writing.** It captures untracked
 files too, and the runtime plane (`logs/`, `coordination/session-bus/`, `share/`) gains files
 between the stash and the pop — so the pop fails on "already exists, no checkout", restores the
