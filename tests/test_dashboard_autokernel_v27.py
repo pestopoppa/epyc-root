@@ -158,6 +158,9 @@ class V27Fixture(V26Fixture):
             candidate_frame_substitution: bool = False,
             candidate_off_frame_substitution: bool = False,
             production_graphs_mode: str = "on",
+            runtime_config_mismatch: bool = False,
+            measurement_receipt_alias: bool = False,
+            promotion_eligible_override: bool | None = None,
     ) -> tuple[dict, dict, Path]:
         state, _ = self.checkpoint()
         operation_key = "d" * 64
@@ -194,6 +197,12 @@ class V27Fixture(V26Fixture):
             else f"incremental_{incremental_class}"
             if incremental_class != "candidate"
             else f"cumulative_{cumulative_class}")
+        claimed_eligible = (
+            eligible if promotion_eligible_override is None
+            else promotion_eligible_override)
+        claimed_reason = (
+            reason if promotion_eligible_override is None
+            else "cumulative_screened_out")
         correctness = {"result_sha256": "1" * 64}
         comparison = {"result_sha256": "2" * 64}
         terminal = {
@@ -211,13 +220,14 @@ class V27Fixture(V26Fixture):
             "correctness_result_sha256": correctness["result_sha256"],
             "comparison_result_sha256": comparison["result_sha256"],
             "cumulative_performance_result_sha256": None,
-            "promotion_eligible": eligible, "promotion_reason": reason,
+            "promotion_eligible": claimed_eligible,
+            "promotion_reason": claimed_reason,
             "admitted_authority_sha256": (
                 "9" * 64 if disposition == "admitted" else None),
             "reason_code": (
                 "incremental_admitted_promotion_eligible"
-                if disposition == "admitted" and eligible else
-                "incremental_admitted_" + reason
+                if disposition == "admitted" and claimed_eligible else
+                "incremental_admitted_" + claimed_reason
                 if disposition == "admitted" else
                 "incremental_" + incremental_class),
             "infrastructure_receipt_sha256": None,
@@ -262,7 +272,8 @@ class V27Fixture(V26Fixture):
             "model_sha256": self.comparator["model_sha256"],
             "workload_sha256": self.comparator["workload_sha256"],
             "runtime_config_sha256":
-                self.comparator["runtime_config_sha256"],
+                ("f" * 64 if runtime_config_mismatch else
+                 self.comparator["runtime_config_sha256"]),
             "protocol_frame_sha256": (
                 "0" * 64 if protocol_mismatch else
                 self.comparator["measurement_protocol_sha256"]),
@@ -273,13 +284,15 @@ class V27Fixture(V26Fixture):
             "cumulative_graphs_on_effect_fraction": cumulative,
             "incremental_graphs_off_receipt_sha256": "d" * 64,
             "incremental_graphs_on_receipt_sha256": "e" * 64,
-            "production_graphs_on_receipt_sha256": "0" * 64,
+            "production_graphs_on_receipt_sha256": (
+                "d" * 64 if measurement_receipt_alias else "0" * 64),
             "incremental_graphs_off_frame_sha256": off_frame,
             "incremental_graphs_on_frame_sha256": on_frame,
             "production_graphs_on_frame_sha256": production_frame,
             "production_graphs_mode": production_graphs_mode,
             "cumulative_classification": cumulative_class,
-            "promotion_eligible": eligible, "promotion_reason": reason,
+            "promotion_eligible": claimed_eligible,
+            "promotion_reason": claimed_reason,
             "composition_terminal_sha256": core_sha256,
         }, "result_sha256")
         path = self.bundle / "evidence" / "cumulative-performance.json"
@@ -798,7 +811,7 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 payload, _ = server._discovery_live_read()
             self.assertEqual(payload["activity"]["performance"], performance)
 
-    def test_cumulative_authority_fails_closed_for_bad_or_nonpromotable_states(
+    def test_cumulative_authority_fails_closed_for_bad_states(
             self) -> None:
         cases = (
             ("mixed", dict(frame_mismatch=True),
@@ -812,12 +825,15 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
              "producer_authority_unavailable"),
             ("graphs-mode", dict(production_graphs_mode="off"),
              "producer_authority_unavailable"),
-            ("nonpositive", dict(cumulative=-.02, incremental=.03,
-                                 disposition="admitted"),
-             "cumulative_screened_out"),
-            ("incremental", dict(cumulative=.03, incremental=-.01,
-                                 disposition="incremental_rollback"),
-             "incremental_screened_out"),
+            ("runtime-config", dict(runtime_config_mismatch=True),
+             "producer_authority_unavailable"),
+            ("receipt-alias", dict(measurement_receipt_alias=True),
+             "producer_authority_unavailable"),
+            ("producer-verdict", dict(promotion_eligible_override=False),
+             "producer_authority_unavailable"),
+            ("impossible-cumulative", dict(
+                cumulative=-1.0, incremental=.03, disposition="admitted"),
+             "producer_authority_unavailable"),
         )
         for name, kwargs, reason in cases:
             with self.subTest(name=name), \
@@ -832,6 +848,42 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 self.assertIs(performance["promotion_eligible"], False)
                 self.assertEqual(performance["promotion_reason"], reason)
                 self.assertIs(performance["available"], False)
+
+    def test_terminal_decision_core_excludes_exactly_four_fields(self) -> None:
+        self.assertEqual(server._DISCOVERY_V27_TERMINAL_CORE_EXCLUDED, {
+            "cumulative_performance", "cumulative_performance_ref",
+            "cumulative_performance_result_sha256", "terminal_sha256"})
+
+    def test_valid_nonpromotable_measurements_remain_headline_visible(
+            self) -> None:
+        cases = (
+            ("cumulative-screened-out",
+             dict(cumulative=-.02, incremental=.03, disposition="admitted"),
+             "-2.00% cumulative vs frozen production (0.9800x)",
+             "cumulative_screened_out"),
+            ("incremental-rollback",
+             dict(cumulative=.03, incremental=-.01,
+                  disposition="incremental_rollback"),
+             "+3.00% cumulative vs frozen production (1.0300x)",
+             "incremental_screened_out"),
+        )
+        for name, kwargs, headline, reason in cases:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, _, _ = fixture.cumulative_state(**kwargs)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], True)
+                self.assertIs(performance["promotion_eligible"], False)
+                self.assertEqual(performance["promotion_reason"], reason)
+                self.assertEqual(performance["headline"], headline)
+                self.assertIsNotNone(
+                    performance["cumulative_vs_frozen_production"])
+                self.assertIsNotNone(performance["incremental_vs_prior_stack"])
 
     def test_cumulative_comparator_tamper_and_missing_authority_are_unavailable(
             self) -> None:

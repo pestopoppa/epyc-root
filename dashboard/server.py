@@ -6071,6 +6071,8 @@ def _discovery_v27_cumulative_performance(
         return unavailable
     incremental = tuple(float(receipt[key]) for key in numeric_keys[:3])
     cumulative_on = float(receipt[numeric_keys[3]])
+    if any(value <= -1.0 for value in (*incremental, cumulative_on)):
+        return unavailable
     incremental_class = (
         "candidate" if all(value > 0 for value in incremental)
         else "screened_out" if all(value <= 0 for value in incremental)
@@ -6107,9 +6109,9 @@ def _discovery_v27_cumulative_performance(
                  or terminal.get("reason_code") !=
                     "incremental_" + incremental_class)):
         return unavailable
-    if (terminal.get("disposition") != "admitted"
-            or not expected_eligible):
-        return _discovery_v27_performance_unavailable(expected_reason)
+    if terminal.get("disposition") not in {
+            "admitted", "incremental_rollback"}:
+        return unavailable
     speedup = 1.0 + cumulative_on
     return {
         "available": True,
