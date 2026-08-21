@@ -1237,6 +1237,21 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       contain no blacklisted symbol. Confirm the CURRENT gate accepts them, then confirm the new semantic
       tier rejects them. This is the mutation test our verification doctrine requires — and the mutation must
       be both **visible AND counted**.
+      **CHECKPOINT 2026-08-21 — harness BUILT and the static arm RUN** (research repo
+      `scripts/kernel_rnd/c6_mutants/` @ `ef7fec18`): three genuine Triton mutants authored with honest
+      positive controls, PyTorch references, and standard + adversarial input arms. **The L1 scanner was
+      mutation-tested BEFORE its verdict counted** — 8 planted-dirty samples it must flag, the references
+      as a scope negative-control (they must FAIL), an empty-scope refusal; 6/6 static tests pass.
+      **L1 result: all six candidates PASS with zero findings** — the first half of the falsification
+      holds. One refinement to the row's claim, recorded before any GPU run: the matmul-transpose mutant
+      is PREDICTED value-visible to a sound oracle at random inputs — the corpus is built to measure where
+      the omission class SPLITS into input-conditional identities (LayerNorm-under-default-init, softmax)
+      versus value-visible members, which is sharper than "all three pass". GPU arms (L2 ghost replay via
+      `JITFunction.run` no-op swap; value oracle with NaN/Inf rejection + max-observed-error per
+      `intake-1245`) are written and REFUSE to run without an acknowledged negotiated idle window on the
+      shared MI210 (operator instruction 2026-08-21); window requested from the peer session holding the
+      GPU (llama-server pid 3499606, Qwen3.8-27B). Row stays OPEN pending the GPU arms and, later, the
+      C6-19 judge arm.
 - [ ] **RVP-C6-21 — Run the DIFFERENTIAL ORACLE AUDIT on our own C6 corpus.** Score the identical generation
       set **twice**, with and without the functionality/semantic tier, and report the gap as a number.
       TritonRL measures **+30pp** for a hacking-prone model (AutoTriton 57%→87% on KernelBench L1; 1%→94% on
