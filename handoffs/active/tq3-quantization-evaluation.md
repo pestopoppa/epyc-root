@@ -2,7 +2,7 @@
 
 **Status**: monitoring / stop-list active for current sub-2-bit candidate reruns (do NOT merge TQ3_1S — see rationale below)
 **Created**: 2026-04-01 (via research intake)
-**Updated**: 2026-07-20 (July steering supersedes the old broad speed-probe loop; PR #21089 monitoring remains)
+**Updated**: 2026-08-21 (July steering supersedes the old broad speed-probe loop; PR #21089 monitoring CLOSED — the PR was closed unmerged upstream 2026-06-02)
 **Categories**: quantization, hardware_optimization
 
 > **⚠ STEERING (2026-07-19) — deprioritize the sub-2-bit breadth probes.** Bonsai-8B/27B `Q1_0`,
@@ -16,7 +16,7 @@
 
 ## Status as of 2026-04-21
 
-Backburner monitoring. PR #21038 remains merged and auto-enabled in production v3 (confirmed 2026-04-17). PR #21089 (TBQ3_0/TBQ4_0 CPU KV cache kernels) still open — no movement since last review. ChunkKV proposal unchanged. TQ3_1S rejection stands (immaturity + wrong target; see rationale below). Next revisit: when PR #21089 receives maintainer review or lands.
+Backburner monitoring. PR #21038 remains merged and auto-enabled in production v3 (confirmed 2026-04-17). PR #21089 (TBQ3_0/TBQ4_0 CPU KV cache kernels) **was CLOSED UNMERGED upstream on 2026-06-02** — re-verified against the GitHub API 2026-08-21: `state closed`, `merged false`, `merged_at null`, last update 2026-06-03. This line previously read "still open — no movement since last review", contradicting the verified 2026-07-29 finding at the checklist item below; the stale claim is corrected rather than carried forward. ChunkKV proposal unchanged. TQ3_1S rejection stands (immaturity + wrong target; see rationale below). Next revisit: only on a NEW upstream PR or a merged successor — there is nothing left to monitor on #21089.
 
 ## Why NOT to Merge TQ3_1S
 

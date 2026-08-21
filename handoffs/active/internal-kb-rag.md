@@ -621,3 +621,53 @@ summariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `inta
 figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same
 direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
 whether the delta is the TRAINING RECIPE rather than the idea._
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278)
+
+### Record corrections (Z)
+
+- [ ] **C1 — the answerai→GTE retirement rationale on file is wrong.** `CHANGELOG.md` and
+      `handoffs/completed/colbert-zero-research-integration.md` justify the Feb-2026 encoder swap with
+      "**answerai unscored**". It was scored, on the **same BEIR-15**, on the successor's own model
+      card, and had been since 2025-05-14. The controlled figures are **54.67 (GTE) vs 53.35
+      (answerai, LightOn's own re-run of the published checkpoint)** = **1.32 pp** — *inside* the ~2 pp
+      noise floor this handoff declares. Three harnesses agree within 0.44 pp, one of them run by the
+      competing vendor in collaboration with answerai's own author.
+      Correct the record, and state the **cost side the original decision never weighed**: 4.46×
+      fewer parameters and a **measured −24.3 %** index footprint (0.757×, cross-validated against the
+      stored `.npz` to 0.2 %; the saving is essentially the bare 96/128 dim ratio — the tokenizer swap
+      is a wash at 1.026). This does **not** argue for reverting; it argues that the swap rests on a
+      delta our own doctrine calls noise, which the record should say plainly.
+- [ ] **C2 — never record `54.89` as the incumbent's BEIR-15.** It does not exist on the model card
+      (`grep -c` = 0 at rev `25f6f7bb`) or anywhere in the index. The comparable figure is **54.67**,
+      over 15 named tasks, provenance: BEIR table added `78d50a16` (2025-05-14), FiQA corrected
+      `6605e431` (2025-09-10). Note that `54.75` also circulates from a different source with no stated
+      denominator — see the conflict flagged on intake-430.
+- [ ] **C7 (Z) — fix the stale `:8089` model attribution** in `src/repl_environment/code_search.py:12`,
+      which still names an encoder retired 2026-02-20.
+
+### Code gaps (Z) — all three are small and one is blocking
+
+- [ ] **K1 — the ColBERT encoder cannot load ANY BERT-family late-interaction ONNX.** Such graphs
+      declare `token_type_ids` as a required input with no initializer default, and
+      `colbert_encoder.py` feeds only `input_ids` and `attention_mask` → `InvalidArgument: Missing
+      Input` on the first call. **The fix already exists in this codebase** — port the graph-input
+      introspection from `src/retrieval/cross_encoder.py:169,188-190`; do not re-invent it. ~3 lines.
+      Unblocks answerai-colbert-small-v1, ColBERTv2 and Jina-ColBERT-v2 **as a class**, not one model.
+- [ ] **K2 — honour `onnx_config.json` instead of hard-coding.** Read and respect `query_length`,
+      `document_length`, `embedding_dim`, `uses_token_type_ids`, `do_query_expansion`. **Fail loudly
+      when a hard-coded cap exceeds a model's declared length**: `_QUERY_MAX_TOKENS = 48` currently
+      overruns two candidate models' declared query length of 32. Related: prefixes are read only from
+      `config_sentence_transformers.json`, which some upstream repos do not ship — the fallback then
+      silently selects prefix tokens absent from the model's vocabulary.
+- [ ] **K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** Today `_warn_on_encoder_drift`
+      (`kb_rag.py:236-244`) compares only the `encoder_model_dir` **string** and only **logs**; a dim
+      mismatch surfaces as a numpy shape error inside `maxsim()` and is swallowed by a broad `except`.
+      **Verification that is not vacuous:** point the index at a different-dim encoder and confirm it
+      now fails *loudly*. A test that passes both before and after the change proves nothing.
+
+### Corpus figures look stale (Z, flag only — may belong to KB-WM-*)
+
+This handoff's header records 577 files / 18,010 chunks / 1,227.6 MiB; the live index measured
+2026-08-21 is **943 files / 28,110 chunks / 2,199.13 MiB**. Roughly 56 % understated. Flagging rather
+than editing, since it may already be owned by the watermark items.

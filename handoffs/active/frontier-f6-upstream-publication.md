@@ -62,3 +62,21 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 - 2026-06-28 W3 pre-attestation historical review separation: `generate_public_results.py` now recognizes protocol-tagged rows dated before the host-attestation era (`2026-06-12`) that lack attestation. The generated draft now reports `hold_for_historical_attestation_review=31` and `hold_for_protocol_backfill=343`; the review bucket is explicitly `historical attestation or remeasurement`, preventing current-host retro-certification of 2026-03-21 rows. W3 remains open because those rows need a real historical attestation artifact, a rerun under current attestation, or retirement from the public-results candidate set.
 - 2026-06-28 W3 generated review queue: `generate_public_results.py` now writes `docs/publication/public-results-review-queue.md` by default and checks it under `--check`. The queue groups the same `374` generated rows by next review action: `historical-attestation-review=31`, `protocol-tag-needed=18`, and `verification-decision-needed=325`, each with source line, section, entity, metrics, status, and action guidance. Validation: GitNexus impacts LOW for `render_page`/`collect_rows`; py_compile; ruff; focused publication pytest (`17 passed`); `python3 scripts/publication/generate_public_results.py`; and `python3 scripts/publication/generate_public_results.py --check`.
 - 2026-07-06 W3 review-decision overlay: added `docs/publication/public-results-review-decisions.json` and wired `generate_public_results.py` to apply dependency-free JSON review decisions before rendering the generated draft/review queue. The default decision retires `325` unverified historical rows from public claims without mutating the source `RESULTS.md`, while row-specific overrides can re-open selected rows for remeasurement or publication backfill. Current generated state: `374` total rows; `325` `retired_from_public_claims`; `31` `historical-attestation-review`; `18` `protocol-tag-needed`; all `374` remain `public-safe surface`. Validation: publication generator check, py_compile, focused pytest (`20 passed`), and focused ruff passed.
+
+## Candidate — llama.cpp issue #27442 (2026-08-21, Stage-2b intake-1279)
+
+- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream.**
+      Unusually strong material for a low-cost contribution: the issue is OPEN with **zero comments and
+      no maintainer reply**, and four things in it are demonstrably wrong or unsupported —
+      (a) its cache/checkpoint localization is refuted by **its own attached log** (`n_prompt_tokens_cache = 0`
+      on all fourteen requests: no cache engaged, every failure a cold full prefill, which also explains
+      why all three of the reporter's workarounds were ineffective); (b) its exonerating control cannot
+      detect wrong output at all — `llama-bench` feeds `std::rand()` tokens and never samples the model;
+      (c) the file named `_noflash` logs flash attention being **force-enabled** for quantized V cache;
+      (d) all four builds tested **predate** Metal fixes #27390 (2026-08-20T10:43Z, which rewrote exactly
+      the quantized-KV + FA path every run used) and #27450.
+      **Blocked on G1** — not because the analysis needs it, but because posting first offers a critique
+      with no data behind it. With our own greedy boundary sweep attached it is a contribution; without
+      it, it is an argument. Also worth offering: the cheapest decisive experiment nobody has run is a
+      single **temperature-0** trial on a **non-degenerate** prompt, which separates "the model wants to
+      stop after 18K tokens of repeated pangram" from a kernel defect.

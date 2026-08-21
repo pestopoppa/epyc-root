@@ -1509,3 +1509,34 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
   has **no root LICENSE** (a soft blocker on forking under our sourcing policy). The OpenMP-Offload-on-gfx90a
   question stays OPEN on its own merits — it is a ROCm toolchain capability
   (`clang -fopenmp --offload-arch=gfx90a`), which that benchmark neither demonstrates nor blocks.
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1276)
+
+- [ ] **G6 (Z first, then G) — settle the torch/Triton floor for ROCm 6.2 on gfx90a.**
+      **This is the gating unknown for the entire GDN-retrofit line** (`log-linear-gated-deltanet-readiness.md`
+      G5/B4) and it is cheap relative to what it blocks. It sharpens the still-unchecked runnable
+      first task above ("install/pin `pytorch-triton-rocm` matched to ROCm 6.2 + verify gfx90a
+      matmul", intake-760) with a concrete version question.
+      **The zero-compute half is already half-answered and should be recorded before anything is
+      installed:** our known-good isolated environment carries **Torch `2.5.1+rocm6.2` / HIP
+      `6.2.41133` / Triton `3.1.0`** (see the 2026-08-11 provisioning row above), while
+      `flash-linear-attention` states floors of **`torch>=2.7.0`, `triton>=3.3`**. **Our verified stack
+      sits below BOTH floors.** Upstream's `[rocm]` extra targets a **rocm7.2** wheel index and its AMD
+      CI is **MI300 / gfx942**; our MI210 is **gfx90a**, a generation older and untested there.
+      **Gate:** either (a) a torch + `pytorch-triton-rocm` build meeting those floors exists for ROCm
+      6.2 / gfx90a — G5 proceeds; or (b) it does not, and the question becomes whether fla runs
+      correctly *below* its stated floors, which is a separate and weaker claim. Answer (a)/(b) before
+      any retrofit work is scheduled. Dovetails with RVP-C5-3's `requirements_rocm.txt` deliverable.
+- [ ] **(Z) Record fla issue #1156 as a ROCm correctness hazard — sibling to RVP-C2-6.**
+      Third-party report (OPEN, 2026-08-20): **`ShortConvolution` BACKWARD returns silently wrong
+      gradients on ROCm at every shape tested**, reproducing on fla 0.4.2 *and* 0.5.2 and on both its
+      triton and cuda backends; above a conv-width threshold it faults with `hipErrorIllegalAddress`
+      instead. **Silent wrong gradients below the fault threshold** is the dangerous half.
+      **Offsetting, from the same issue and worth equal weight:** `chunk_gated_delta_rule` *itself* is
+      third-party **verified correct on ROCm** — agreeing with the naive reference to 7.9e-07 forward
+      and 1.8e-06 on all five gradients, with the problem "confined to the causal conv".
+      This is the same *shape* of finding as RVP-C2-6a/6b (stock gfx90a Q4_K MMQ failing an
+      independent fp64 oracle), but it is **fla/Triton, not ggml/MMQ** — do not merge the two rows.
+      Scope caveat: it is a **backward/training** hazard. If forward-only inference is clean the blast
+      radius is much smaller, and this handoff's substrate is inference — so this row is recorded for
+      the retrofit line, not as a defect in the current evaluation backend.

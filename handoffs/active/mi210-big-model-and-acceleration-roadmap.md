@@ -291,3 +291,15 @@ Source: control-plane planning session (audit `research/deep-dives/2026-07-16-ar
   - [ ] Keep cold-load break-even unfilled until an operator-approved cold-cache or post-reboot protocol exists; current hot page-cache ready time is only a control. ✅ 2026-07-19  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*
   - [x] Defer live enable/strategy activation until AXA-2 cost-model status is settled and any decision-grade GPU claim is rerun under production-named `P-GPU-1`; NumericSwarm cannot set `placement_policy.teleport_enabled`, and explicit true is rejected without `AUTOPILOT_AXA3_TELEPORT_ENABLE=1`. ✅ 2026-07-19
   - [x] Record the mid-stream quant-change policy as an operator decision and make AXA-2 fail closed by default: OP-5d tracks IQ2-acceptable tail roles versus same-quant-only teleport; `TeleportPolicy.quant_policy` now defaults to `same_quant_only`, rejects missing quant context, rejects cross-quant tails by default, and only permits cross-quant tails under `operator_approved_tail_roles` plus an explicit role allowlist. This records/enforces the gate; it does not grant cross-quant approval. ✅ 2026-07-19
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279)
+
+- [ ] **B3 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — add a ≥20K-token greedy
+      coherence gate before `GGML_CUDA_GDN_STATE_BF16` is ever enabled in production.**
+      That lever is attractive (+17.7 % aggregate @B32 on the frontdoor) and it is **default OFF → F32
+      → byte-identical to upstream**, so nothing is broken today. The problem is its *gate*: it was
+      validated on PPL drift plus a **512-token** coherence check. If upstream #27442 turns out to be
+      recurrent-state precision loss over long prefill, **that gate is structurally incapable of
+      catching it** — a 512-token check cannot see a defect whose reported onset is 16.5–19.8K tokens.
+      **Blocked on G1** because G1 is what determines whether that failure mode exists on our paths at
+      all. Until G1 reports, do not enable this lever in production.

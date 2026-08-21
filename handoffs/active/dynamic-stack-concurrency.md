@@ -144,3 +144,24 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 
 - DROP drove's ASR-facade idea: already shipped (`whisper_server.py` exposes OpenAI `/v1/audio/transcriptions`; `start_whisper` is a first-class managed service in `orchestrator_stack`).
 - KEEP: proactive WHOLE-PROCESS idle-teardown of COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) as an OPTIONAL RAM-reclaim policy (a "DS-7-profile" option), explicitly DISTINCT from the existing DS-6 quarter-eviction idle-timeout (reassigns quarters, does NOT reclaim RAM) and from earlyoom (reactive ceiling). NEVER for hot pre-warmed roles — wholesale lazy-load is an anti-pattern for our deliberately pre-warmed + mlock single-user stack. Gated on the DS-E1 evidence packet. No benchmarks (tiny project, observations).
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274 / intake-1279)
+
+- [ ] **K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`
+      and `-b` is never passed, so the effective micro-batch is the **2048 default**. Either pass
+      `-b 8192` or drop the flag — as it stands the launch config misrepresents itself, and any
+      reasoning that assumes an 8192 ubatch is wrong. Independent of everything else here; fix regardless.
+- [ ] **G4 (G) — measure our actual post-restore prompt-reuse rate.** We call
+      `/slots/{id}?action=save|restore` for full↔quarter slot migration (`llama_server.py:1242,1268`;
+      `concurrency_aware.py:126,148`). Upstream issue #25913 (open, verified on master) reports restore
+      **silently delivering zero prompt reuse on hybrid/recurrent models**, and open PR #26004 reports
+      context checkpoints not preserved across save/restore. Our frontdoor model is `qwen35moe` —
+      30 Gated DeltaNet + 10 full-attention layers — i.e. squarely a hybrid recurrent architecture.
+      **Gate:** measured reuse ≈ 0 → every migration costs a full re-prefill (minutes of CPU at long
+      context) and the feature is a **net loss as configured**, not an optimisation.
+      **Check first, zero-compute:** whether the migration path is actually exercised in the current
+      configuration, and whether `--slot-save-path` is set on the frontdoor launcher. A defect on a
+      dormant path is a much lower priority and should be recorded as such.
+      **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
+      #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
+      no wrong output. This row is about reuse rate, not correctness.

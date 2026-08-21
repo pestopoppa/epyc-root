@@ -19434,6 +19434,14 @@
   - 'BEIR NDCG@10: 57.22'
   - 'Decontaminated BEIR: 60.36'
   - 'vs GTE-ModernColBERT-v1 (54.75): +2.47pp; vs ColBERT-Zero (55.39): +1.83pp'
+  - 'DENOMINATOR CONFLICT FLAGGED 2026-08-21 by intake-1278 (do not resolve by picking one silently).
+    This entry records the GTE-ModernColBERT-v1 comparator as 54.75 with NO STATED DENOMINATOR. Read
+    firsthand at the model card (lightonai/GTE-ModernColBERT-v1 @ 25f6f7bb, BEIR table added 78d50a16
+    2025-05-14, FiQA corrected 6605e431 2025-09-10), the card itself reports 54.67 over 15 NAMED tasks -
+    a 0.08 pp two-source-of-truth that also splits the margin here (+2.47pp vs +2.55pp). Separately,
+    intake-428 records the LateOn raw set as 14 datasets while this entry''s verified anchor quotes the
+    card as "BEIR (15 datasets)" - a SECOND, independent denominator conflict inside the LateOn pair.
+    Neither is resolved; both are recorded so a future citation does not pick a number at random.'
   referenced_arxiv_ids: []
   novelty: medium
   relevance: high
@@ -104427,9 +104435,17 @@
 
     (8) A LIVE PRODUCTION RISK SURFACED THAT IS NOT AN ORNITH QUESTION: llama.cpp issue #27442 (opened
     2026-08-20, OPEN, no maintainer reply) reports qwen35moe hybrid recurrent models producing EMPTY
-    GENERATION above ~16K context via llama-server, localized to the prompt-cache / context-checkpoint
-    restore path for recurrent layers. Ornith-1.5-35B-A3B-GGUF is the primary test case. OUR FRONTDOOR IS
-    THE SAME ARCHITECTURE AT n_ctx 262144. Reproduced on Metal only so far; CPU status UNKNOWN.
+    GENERATION above ~16K context via llama-server. OUR FRONTDOOR IS THE SAME ARCHITECTURE AT n_ctx
+    262144. Reproduced on Metal only so far; CPU status UNKNOWN.
+    CORRECTED 2026-08-21 BY THE STAGE-2b DIVE, intake-1279 - two claims in the sentence above as
+    originally written were WRONG and are struck rather than softened. (a) THE CACHE LOCALIZATION IS
+    REFUTED BY THE REPORTER''S OWN ATTACHED LOG: n_prompt_tokens_cache = 0 on all fourteen requests, so
+    the prompt cache never engaged and every failure is a COLD FULL PREFILL - the named locus is not in
+    the execution path at all, which is also why all three of their cache workarounds were ineffective.
+    (b) "Ornith-1.5-35B-A3B-GGUF is the primary test case" is a MISATTRIBUTION: the only
+    machine-readable reproduction runs Qwen3.6-35B-A3B-UD-IQ2_XXS.gguf. The bearing on THIS entry is
+    therefore WEAKER than recorded, and the bearing on our own stack STRONGER. Full analysis,
+    exposure statement and the compute-gated boundary-sweep protocol: intake-1279.
 
     STAGE-2b DECLINE LEDGER (2026-08-21). Operator selected llama.cpp #27442 from this entry's
     dive-surfaced list - the live production risk, which was the only item here bearing on our own stack.
@@ -105669,6 +105685,16 @@
     effect: unaffected
     note: 'The 81-vs-58 arithmetic verified against the tensor-creation code: 4 conv tensors x 5 layers +
       3 selector tensors = 23; 58 + 23 = 81 exactly.'
+  depends_on:
+  - entry: intake-1277
+    claim_index: 2
+    why: >-
+      Scoped to ONE assertion in dive_corrections (b): that the split_equal row-permutation hazard
+      "Matches upstream issue #27117's fingerprint". That sentence has no referent if intake-1277 is
+      retracted, so the counterfactual test PASSES for it. It does NOT extend to the code hazard
+      itself, which is grounded independently in extract_layer_inputs / split_equal / process() and
+      would survive intake-1277's retraction unchanged.
+
   dive_corrections: >-
     2026-08-21 (Stage-2 dive). All five key_claims stand; FOUR DOWNSTREAM RECOMMENDATIONS IN
     reader_should_conclude ARE OVERTURNED, and one new hazard is added.
@@ -105689,9 +105715,21 @@
     (src/llama-context.cpp:1937, extract_layer_inputs). Without --kv-unified the split is split_equal
     (src/llama-kv-cache.cpp:709), which groups by sequence and takes equal counts per round, permuting
     rows relative to the input batch and cross-attributing features between sequences. Present in
-    DFlash1 on master too. Matches upstream issue #27117''s fingerprint. Across the thread every CLEAN np
-    report used --kv-unified and every COLLAPSE report did not - a 6-point flag correlation, stated as a
-    HYPOTHESIS, not a measurement. Cheap to falsify: add --kv-unified as a DF2-5 arm.
+    DFlash1 on master too. Matches upstream issue #27117''s fingerprint. Cheap to falsify: add
+    --kv-unified as a DF2-5 arm.
+    CORRECTED 2026-08-21 by intake-1277, which enumerated all 40 comments of the PR thread and read the
+    primary issue. The claim was "every CLEAN np report used --kv-unified and every COLLAPSE report did
+    not - a 6-point flag correlation". IT IS 3-POINT WITH A COUNTER-EXAMPLE: only FOUR comments state
+    the flag, and one of them - a gfx1100 HIP report with split KV, i.e. the flag OFF - is HEALTHY at c4
+    and is a row THIS ENTRY ALREADY CARRIES in reported_results. Worse, in all four the flag state is
+    PERFECTLY CONFOUNDED WITH BACKEND: both flag-on reports are CUDA, both flag-off are AMD. The thread
+    reads that as backend-specific and this entry read it as a flag correlation; they are the SAME
+    UNRESOLVED CONFOUND and neither is entitled to its conclusion. Note also that a split_equal
+    row-permutation defect is pure CPU-side index arithmetic and therefore BACKEND-AGNOSTIC BY
+    CONSTRUCTION, so a genuinely backend-specific collapse would argue AGAINST this hypothesis. The
+    hypothesis is NOT falsified - the reporter of #27117 demonstrably never ran --kv-unified, verified
+    three ways - but its supporting correlation is much weaker than stated, and the decisive control has
+    never been run by anyone, on any backend. See intake-1277.
 
     (c) THE DF2-2 MMVQ LEVER DOES NOT EXIST ON gfx90a. MMVQ_MAX_BATCH_SIZE(8) is reached only via the
     non-CDNA return at ggml/src/ggml-cuda/mmvq.cu:349. gfx90a is GGML_CUDA_CC_CDNA2 and takes the CDNA2
@@ -106409,7 +106447,16 @@
     query/key sharpening, per-head sink + cache gate additively combined with the state output]
   reported_results:
   - 'Wikitext-103 perplexity, 340M: HOLA 22.92 | HOLA+recency 25.04 | KDA 26.18 | Transformer++ 26.88 |
-    GDN (published) 27.08 | GDN (ours, anchor) 27.32 | GSA 28.17 | GLA 28.78 | DeltaNet 29.04.'
+    GDN (published) 27.08 | GDN (ours, anchor) 27.32 | GSA 28.17 | GLA 28.78 | DeltaNet 29.04.
+    QUALIFIER ADDED 2026-08-21 - THESE ROWS ARE NOT ALL THE SAME ARCHITECTURE. Verified by intake-1273
+    against the source: the borrowed DeltaNet/GDN/KDA rows transcribe exactly, but their 340M GDN is
+    hidden 1024 / 8 HEADS / head_dim 128, while HOLA''s own anchor is 4 heads x head_dim 256 - same
+    parameter count and same total k/v width, but HALF the heads at twice the width, which DOUBLES the
+    per-layer recurrent state (262,144 vs 131,072 elements). The source paper explicitly forbids this
+    use: "We caution the reader against using these evaluations to make cross-architectural
+    comparisons". The Transformer++ 26.88 row comes from a THIRD paper (intake-1275), whose setup IS
+    recipe-matched. So this single line draws on three papers and at least two GDN architectures; the
+    citable defect is the unflagged juxtaposition, not an inflated headline.'
   - 'In-context retrieval: FDA HOLA 20.1 vs GDN 11.7 | SWDE 35.9 vs 29.0 | SQuAD 33.8 vs 32.5.'
   - 'RULER S-NIAH-1 at 32k (16x training length): HOLA 0.58 | HOLA+recency 0.24 | GDN 0.14 |
     Transformer++ (RoPE) 0.00 (length-extrapolation failure). Shorter lengths: 2k 1.00, 4k 0.99, 8k 0.98.'
@@ -106424,8 +106471,15 @@
     Zero prior coverage: grep -ic 2607.02303 = 0, hippocampus = 0, HOLA = 0 (unbounded). More
     importantly it occupies a design-space point the index does not contain. We hold two "grow the
     memory" answers to fixed-state forgetting - intake-354 (Memory Caching, O(NL) segment checkpointing)
-    and intake-356 (Log-Linear Attention, O(L log L)). HOLA is a genuine THIRD branch: leave the
-    recurrent state fixed and bolt on a BOUNDED exact side-cache, so total memory stays O(1) in L. The
+    and intake-356 (Log-Linear Attention, O(L log L)). HOLA sits on a third branch - leave the recurrent
+    state fixed and bolt on a BOUNDED exact side-cache, so total memory stays O(1) in L - but it did NOT
+    OPEN that branch, and the original wording ("a genuine THIRD branch") overclaimed. CORRECTED
+    2026-08-21 from the primary source by intake-1272: LTE (arXiv 2510.20787, v1 2025-10-23) occupied it
+    8.5 months earlier, with a hard-bounded cache of exact post-RoPE KV pairs on a Gated DeltaNet
+    backbone. The RESIDUAL and defensible distinction is architectural: LTE is a 1:1 INTERLEAVE whose
+    GDN layers receive no cache at all, whereas HOLA places the cache INSIDE every GDN layer as an
+    auxiliary read on the same query. That, plus the derived admission score, is what HOLA's novelty now
+    rests on. The
     measured evidence for boundedness is strong (0.75 vs 0.72 GB at BOTH 32k and 128k - identical at 4x
     the context). Also novel relative to the KV-eviction cluster: the admission score is DERIVED, not
     learned, from a quantity the delta rule already computes.
@@ -106595,8 +106649,17 @@
       (27.08) the gain is 15.36%, so the headline is inflated 0.74pp by an anchor 0.89% worse than
       published; ROUGHLY HALF the gain is not the novel mechanism (GDN -> HOLA+recency is -8.35%,
       recency -> HOLA is -8.47%, and the matched recency control ALREADY beats Transformer++ at 25.04 vs
-      26.88); and the Transformer++ row is an uncalibrated cross-paper borrow with no in-table
-      calibration point, which is what the "below full attention" headline rests on.'
+      26.88); and the Transformer++ row is a cross-paper borrow, which is what the "below full
+      attention" headline rests on. CORRECTED 2026-08-21 by intake-1275, from the source paper: the
+      claim that the borrowed rows have NO IN-TABLE CALIBRATION POINT IS FALSE. Du et al. Table 1
+      carries a plain Gated DeltaNet row at 26.47 under the identical recipe - the same architecture as
+      HOLA''s own anchor. Calibrating against it, HOLA''s 27.32 anchor is 3.21 percent WORSE, so its
+      setup is the WEAKER one and the borrow is CONSERVATIVE rather than favourable; the headline does
+      not collapse on a setup mismatch. What DOES deflate it is different and sharper: in that same
+      table plain Gated DeltaNet ALREADY BEATS Transformer++ (26.47 vs 26.88), as do four other rows, so
+      "below full attention on WikiText perplexity" at this scale is the NORM in the source table, not
+      an achievement. A clean scalar offset is still unavailable because the LAMBADA comparison runs the
+      opposite way (HOLA 30.95 vs Du 31.69, i.e. 2.3 percent BETTER).'
   - claim_index: 4
     effect: narrowed
     note: '31.46 MB arithmetic verified exactly and cross-checked against the 0.75-0.72 GB delta. But the
@@ -106638,8 +106701,14 @@
     RECLASSIFICATION - the dive''s most decision-relevant output: HOLA does NOT belong in the
     "needs pretraining or full CPT" class with Multiscreen/MoBA/NSA, and does NOT belong with our
     deployed closed-form retrofits either. It is a THIRD class: FROZEN-BACKBONE PROBE-FIT (~10^4
-    parameters). Note the contrast with LTE, which has no frozen-checkpoint path at all - HOLA is
-    strictly more retrofittable than the method it declines to compare against.
+    parameters). Note the contrast with LTE - HOLA is strictly more retrofittable than the method it
+    declines to compare against. WORDING CORRECTED 2026-08-21 by intake-1272, which read LTE''s released
+    code: "no frozen-checkpoint path at all" is marginally too strong. The correct claim is NO
+    FROZEN-BACKBONE PATH - LTE requires full-model training, no backbone freeze exists anywhere in its
+    tree (its only freeze knob is routing_freeze_steps, which freezes the LTE router and is 0 in both
+    shipped configs), and the sole warm-start hook is an undocumented, unevaluated INIT_MODEL_PATH
+    load_state_dict(strict=False) that its own author calls a work-around. A warm start is not a frozen
+    backbone, so the asymmetry SURVIVES at three orders of magnitude.
 
     (3) THE SUBSTRATE FOR THE EXPERIMENT EXISTS. m-a-p/340M-20B-GatedDeltaNet-pure-baseline is a public
     pretrained pure-GDN checkpoint whose geometry is BIT-FOR-BIT HOLA''s 340M backbone (24 layers, 4

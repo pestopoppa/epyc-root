@@ -323,3 +323,16 @@ swapped first, because it compiles *from* that file.
   `source_registries.lean.path → orchestration/model_registry.yaml`) and a recompile would overwrite any
   hand-edit. The snippet models itself on the existing `thinking_control:` precedent at
   `model_registry.yaml:1580-1585`.
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1276)
+
+- [ ] **(Z) Record the fla #1156 exposure for our own Qwen3.x GDN family.** Upstream
+      `flash-linear-attention` issue #1156 (OPEN, 2026-08-20) reports `ShortConvolution` **backward**
+      returning silently wrong gradients on ROCm at every shape tested, and its **headline case is the
+      Qwen3.5 family** (48 of 64 layers on Gated DeltaNet; at conv width 10240 it faults with
+      `hipErrorIllegalAddress` rather than corrupting silently).
+      **Scope this correctly — it is not a serving defect.** This handoff is pure inference/serving
+      config, and the hazard is on the **training/fine-tuning** path through fla. It matters here only
+      because it names our *model family*: anyone training or fine-tuning a Qwen3.x GDN model through
+      fla on this host risks silently wrong conv gradients. The ROCm-side ownership and the
+      version-floor question live in `rocm-verify-profile-backend.md` (G6). Track #1156 to close.

@@ -236,3 +236,76 @@ Estimated effort: 2-3 weeks from gate activation.
 ## Research Intake Update — 2026-06-12 (from the intake-694 open-weights roundup)
 
 - **NVIDIA Nemotron-3-Ultra-550B-A55B** (hybrid Transformer-**Mamba2** MoE, 55B active) — **CORRECTION to intake-694's "GPU/NVFP4-gated" framing: it has CPU-runnable GGUFs** (unsloth / DevQuasar BF16 + Q4; Q4_K_M ≈ 300 GB RAM, fits our 1.1 TB host; build `-DGGML_CUDA=OFF`). This is **not** Log-Linear Gated DeltaNet and **does NOT fire this readiness gate**, but it is the first in-RAM Mamba2-hybrid MoE available as a concrete artifact to smoke-test the hybrid-SSM CPU decode / state-management path on our fork. **Pre-req:** verify it doesn't hit the Nemotron-Nano `mamba-base.cpp:173 GGML_ASSERT` (ggml-org/llama.cpp#20570) first; MTP is unsupported in GGUF. **P1 follow-up — warrants its own intake entry.** See `research/deep-dives/2026-06-12-open-weights-roundup-followups.md`.
+
+## Research Intake Update — 2026-08-21 (Stage-2b wave, intake-1271…1279)
+
+Nine sources were ingested and dived. Every row below carries a **compute class**: **Z** zero-compute
+(executable now), **G** compute-gated (names the measurement and what result opens the gate), or
+**B** blocked-on (names its upstream item). A `G` row without a named opening result is a defect.
+
+### The GDN branch map (Z — recorded, no action)
+
+Four structurally different answers to GDN's fixed-state forgetting are now indexed. They are easy to
+conflate and the distinction is load-bearing:
+
+| Branch | Lever | Entry | Standing |
+|---|---|---|---|
+| Grow the state | O(L log L) hidden states | intake-356 | gates fired, port not started |
+| Segment checkpoints | O(NL) | intake-354 | reference only |
+| Bounded exact side-cache | leave the state fixed, bolt on a bounded cache | intake-1272 (LTE), intake-1268 (HOLA) | **LTE opened the branch 8.5 months before HOLA** |
+| **Fix the update rule** | diagonal key-Gram preconditioner, state size unchanged | **intake-1273 (PGDN)** | **new fourth branch — no checkpoint, gate 1 CLOSED** |
+
+**PGDN is the only one in the cluster with a near-zero state cost** — one d_k vector per head against
+the existing d_k×d_v matrix (~0.8 %), versus the log-linear branch's measured ~557 MB vs ~37 MB
+(15× *increase*). It is also the smallest llama.cpp delta of the four. Gate 1 is nonetheless shut:
+it adds weight tensors no pretrained GDN checkpoint contains, and no PGDN checkpoint exists anywhere.
+
+**Do not cite LTE as evidence the bounded-cache branch works.** Its own Table 2 shows plain GDN
+beating it 88.9 → 83.1 on RULER S-NIAH at 1.4B, the advantage *inverts* across its single scaling
+step, nothing is measured beyond its 4096 training length, and it was withdrawn from ICLR 2026.
+
+### Tasks
+
+- [ ] **G1 (G) — #27442 boundary sweep on our CPU.** Frozen v9, frontdoor GGUF Q8_0, at 15,401 /
+      16,501 / 17,601 / 19,801 / 23,981 prompt tokens. **Greedy (`temp 0`, fixed seed)**,
+      `cache_prompt=false`, `-np 1`, no speculation. **Two prompt classes**: repeated-pangram filler
+      *and* a semantically meaningful document carrying a real instruction. Record the **first sampled
+      token id** per trial.
+      **Gate:** valid EOS as first token on the *meaningful* prompt → real exposure, escalate. Only on
+      filler → model behaviour on degenerate input, close it. Neither → not reproducible on our path.
+      **Why it is not optional:** intake-1279 established that the upstream reporter's own log refutes
+      their diagnosis (`n_prompt_tokens_cache = 0` on all 14 requests — no cache, cold full prefill),
+      that their exonerating control cannot detect wrong output at all, and that **nobody has tested
+      any backend but Metal**. Our shared hybrid/recurrent code is byte-identical to the reproducing
+      build. Exposure is a live *unknown*, not a confirmed risk — and no greedy trial exists anywhere.
+- [ ] **B1 (B, blocked on G1) — repeat the sweep on MI210 HIP.** Our HIP GDN kernel is a distinct
+      implementation still carrying a TODO for a chunked prefill kernel, so a CPU result does not
+      transfer; and running HIP first leaves nothing to compare against.
+- [ ] **G5 (G, blocked on G6 in `rocm-verify-profile-backend.md`) — HOLA frozen-backbone retrofit.**
+      Run it as a *within-checkpoint delta*: measure ppl with `use_gdn_swa` false, freeze, fit the
+      12,480 trainable scalars, measure again. **Needs neither a corpus nor a layer-count match to
+      HOLA**, so run it on **both** substrates (`m-a-p/340M-20B-GatedDeltaNet-pure-baseline` and
+      `puigde/gated-deltanet-360M-15B-slimpajama`) to control for substrate idiosyncrasy.
+      **Gate:** a measurable ppl improvement from 12,480 frozen-backbone scalars.
+      **Two prerequisites, both Z:** HOLA ships **no freeze entrypoint** (~10 lines of `requires_grad`
+      logic to write), and the m-a-p checkpoint needs a state-dict adapter — drop 24 legacy
+      `attn.D` tensors and decide `tie_word_embeddings` (the checkpoint is untied, HOLA's config
+      expects tied). `load_state_dict(strict=True)` fails until then. **Assert
+      `ShortConvolution.backward` is never invoked before trusting any ROCm number** (see fla #1156).
+- [ ] **B4 (B, blocked on G5) — hybrid-transfer A/B.** Repeat the retrofit on
+      `m-a-p/340M-20B-GatedDeltaNet-hybrid-3-1`, matched to the pure arm by construction (same corpus,
+      same budget, same library). This converts "does a pure-GDN result predict anything for our
+      30-GDN + 10-attention production hybrid?" from argument into measurement. A pure-GDN gain is an
+      **upper bound** on what our stack would see, because our 10 full-attention layers already supply
+      the exact recall HOLA's cache exists to restore.
+- [ ] **(Z) Record the m-a-p ratio-convention correction before anyone cites their band.** Their
+      "N:1" means *one attention layer every N layers* (attention fraction 1/N), **not** the literal
+      linear:full count — `hybrid-3-1` is 8 attention layers of 24. Our production 10-of-40 is
+      therefore **"4:1" in their convention**, which is *not* one of their five trained arms; it sits
+      between 3-1 and 6-1, inside their recommended band under either reading.
+
+### Verification for the above
+
+`bash scripts/validate/validate_intake.sh` → 0 and `python3 scripts/handoffs/index_state.py --check`
+→ 0 before committing. For **G1**, the run is only valid if the *meaningful-prompt* arm is present —
+a filler-only sweep reproduces the upstream defect in evidentiary quality and settles nothing.
