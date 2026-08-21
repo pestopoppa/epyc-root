@@ -233,6 +233,18 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         rows[0]["payload"]["session_name"] = session_name
         self._rewrite_supervisor_ledger(runtime, rows)
 
+    def _set_supervisor_terminal_time(self, runtime: Path, *, ledger_at: str,
+                                      identity_at: str) -> None:
+        rows = [json.loads(line) for line in
+                (runtime / "death-ledger.jsonl").read_text().splitlines()]
+        for row in rows:
+            row["written_at"] = ledger_at
+        self._rewrite_supervisor_ledger(runtime, rows)
+        identity_path = runtime / "identity.json"
+        identity = json.loads(identity_path.read_text())
+        identity["updated_at"] = identity_at
+        identity_path.write_bytes(server._canonical_json_bytes(identity) + b"\n")
+
     def _v2_event(self, *, event: str = "planner_started",
                   result: dict | None = None) -> dict:
         row = {
@@ -961,6 +973,41 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         self.assertEqual(payload["deployment_history"][0]["disposition"],
                          "historical")
 
+    def test_touched_old_launched_config_cannot_outrank_newer_producer(self) -> None:
+        old_runtime = self._write_supervisor_graph_mismatch(
+            self.bundle, self.bundle / "config/deployment.json")
+        self._set_supervisor_terminal_time(
+            old_runtime, ledger_at="2026-08-21T00:35:10.500000Z",
+            identity_at="2026-08-21T00:35:10.501000Z")
+        newer = self.bundle.parent / "campaign-newer"
+        newer_state = newer / "state"
+        newer_operations = newer / "operations"
+        (newer / "config").mkdir(parents=True)
+        newer_state.mkdir()
+        (newer_operations / "live").mkdir(parents=True)
+        (newer_state / "controller.run.lock").touch()
+        newer_config = newer / "config/deployment.json"
+        newer_config.write_text(json.dumps({
+            "config_sha256": "9" * 64,
+            "controller": {"state_root": str(newer_state),
+                           "operations_root": str(newer_operations)},
+        }))
+        newer_runtime = self._write_supervisor_graph_mismatch(
+            newer, newer_config)
+        self._set_supervisor_terminal_time(
+            newer_runtime, ledger_at="2026-08-21T00:36:10.500000Z",
+            identity_at="2026-08-21T00:36:10.501000Z")
+        touched = datetime.now(timezone.utc).timestamp() + 3600
+        old_config = self.bundle / "config/deployment.json"
+        os.utime(old_config, (touched, touched))
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["deployment"], "campaign-newer")
+        self.assertEqual(payload["launch_evidence"], "supervisor_terminal")
+        self.assertEqual(payload["deployment_history"][0]["deployment"],
+                         "campaign-a")
+
     def test_untrusted_supervisor_terminal_cannot_mask_controller_history(self) -> None:
         (self.state / "state.json").write_text(json.dumps({
             "updated_at": "2026-08-20T00:00:00Z", "next": 1,
@@ -1213,6 +1260,58 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         stderr.write_text("signature absent\n")
         self.assertIsNone(server._supervisor_terminal_observation(
             self.bundle, config_path, config))
+
+    def test_nonfinite_json_is_refused_without_breaking_live_endpoint(self) -> None:
+        config_path = self.bundle / "config/deployment.json"
+        config = json.loads(config_path.read_text())
+        runtime = self._write_supervisor_graph_mismatch(self.bundle, config_path)
+        spec_path = runtime / "launch-spec.json"
+        identity_path = runtime / "identity.json"
+        ledger_path = runtime / "death-ledger.jsonl"
+        original_spec = spec_path.read_bytes()
+        original_identity = identity_path.read_bytes()
+        original_rows = [json.loads(line) for line in
+                         ledger_path.read_text().splitlines()]
+
+        for token in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(carrier="spec", token=token):
+                spec_path.write_bytes(original_spec.replace(
+                    b'"validate_only":false',
+                    f'"validate_only":{token}'.encode("ascii")))
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+                self.assertEqual(
+                    server.discovery_live_payload()["launch_evidence"],
+                    "unlaunched")
+        spec_path.write_bytes(original_spec)
+
+        identity_path.write_bytes(original_identity.replace(
+            b'"exit_code":1', b'"exit_code":NaN'))
+        self.assertIsNone(server._supervisor_terminal_observation(
+            self.bundle, config_path, config))
+        self.assertEqual(server.discovery_live_payload()["launch_evidence"],
+                         "unlaunched")
+        identity_path.write_bytes(original_identity)
+
+        for index, row in enumerate(original_rows):
+            with self.subTest(carrier="ledger", event=row["event"]):
+                encoded = []
+                for row_index, original in enumerate(original_rows):
+                    if row_index == index:
+                        body = dict(original)
+                        body["payload"] = dict(body["payload"])
+                        body["payload"]["nonfinite"] = float("nan")
+                        encoded.append(json.dumps(
+                            body, sort_keys=True, separators=(",", ":"),
+                            allow_nan=True).encode("ascii"))
+                    else:
+                        encoded.append(server._canonical_json_bytes(original))
+                ledger_path.write_bytes(b"\n".join(encoded) + b"\n")
+                self.assertIsNone(server._supervisor_terminal_observation(
+                    self.bundle, config_path, config))
+                self.assertEqual(
+                    server.discovery_live_payload()["launch_evidence"],
+                    "unlaunched")
 
 
 if __name__ == "__main__":

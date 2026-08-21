@@ -7225,8 +7225,12 @@ def _strict_json_bytes(raw: bytes) -> dict | None:
             result[key] = value
         return result
 
+    def nonfinite(_value: str) -> object:
+        raise ValueError("non-finite JSON number")
+
     try:
-        value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs)
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs,
+                           parse_constant=nonfinite)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return None
     return value if isinstance(value, dict) else None
@@ -7272,7 +7276,7 @@ def _owned_regular_snapshot_at(directory_fd: int, name: str,
         flags |= os.O_NOFOLLOW
     try:
         fd = os.open(name, flags, dir_fd=directory_fd)
-    except OSError:
+    except (OSError, TypeError, ValueError):
         return None
     try:
         before = os.fstat(fd)
@@ -7766,7 +7770,7 @@ def _supervisor_terminal_observation(bundle: Path, config_path: Path,
             "gpu_expected": False,
             "ledger_tail_sha256": ledger[-1]["record_sha256"],
         }
-    except OSError:
+    except (OSError, TypeError, ValueError):
         return None
     finally:
         if runtime_fd is not None:
@@ -7962,8 +7966,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     unlaunched = [row for row in candidates if not row["launched"]]
     ambiguous = len(active) > 1
     def campaign_order(row: dict) -> tuple[float, float]:
-        stamp = (max(row["producer_stamp"], row["config_stamp"])
-                 if row["launched"] else row["config_stamp"])
+        # A launched bundle is ordered by producer-authored progress only.
+        # Config mtime remains a deterministic tie-break but can never advance
+        # a terminal campaign: touching a sealed config is not a new run.
+        stamp = (row["producer_stamp"] if row["launched"]
+                 else row["config_stamp"])
         return stamp, row["config_stamp"]
 
     selected = max(
@@ -7971,7 +7978,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     newest_unlaunched = (max(unlaunched, key=lambda row: row["config_stamp"])
                          if unlaunched else None)
     if (newest_unlaunched is not None
-            and campaign_order(newest_unlaunched) <= campaign_order(selected)):
+            and newest_unlaunched["config_stamp"] <= selected["config_stamp"]):
         # An older sealed bundle is superseded history, not an available "next"
         # deployment. In particular, launching v7 must make an unlaunched v6
         # disappear from this forward-looking field.
@@ -8099,8 +8106,9 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
         "campaign_kind": campaign_kind,
-        "launch_evidence": ("supervisor_terminal" if supervisor_terminal is not None
-                            else "controller"),
+        "launch_evidence": (
+            "supervisor_terminal" if supervisor_terminal is not None else
+            "controller" if selected["launched"] else "unlaunched"),
         "deployment_history": deployment_history,
         "newest_unlaunched_deployment": ({
             "available": True,
