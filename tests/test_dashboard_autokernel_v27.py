@@ -65,6 +65,7 @@ def _frozen_comparator(model_sha256: str, workload_sha256: str) -> dict:
         "measurement_receipt_sha256": "9" * 64,
         "model_sha256": model_sha256,
         "workload_sha256": workload_sha256,
+        "runtime_config_sha256": "d" * 64,
         "frame_sha256": "a" * 64,
         "graphs_mode": "graphs_on",
         "metric": "tokens_per_second",
@@ -149,7 +150,11 @@ class V27Fixture(V26Fixture):
     def cumulative_state(
             self, *, cumulative: float = .05, incremental: float = .01,
             disposition: str = "admitted",
-            frame_mismatch: bool = False) -> tuple[dict, dict, Path]:
+            frame_mismatch: bool = False,
+            protocol_mismatch: bool = False,
+            candidate_frame_substitution: bool = False,
+            production_graphs_mode: str = "on",
+    ) -> tuple[dict, dict, Path]:
         state, _ = self.checkpoint()
         operation_key = "d" * 64
         plan_sha256 = "e" * 64
@@ -171,17 +176,12 @@ class V27Fixture(V26Fixture):
             "anchor": anchor, "candidate": candidate,
         }, "pair_sha256")
         incremental_values = (incremental, incremental, incremental)
-        cumulative_values = (cumulative, cumulative)
         incremental_class = (
             "candidate" if all(value > 0 for value in incremental_values)
             else "screened_out"
             if all(value <= 0 for value in incremental_values)
             else "inconclusive")
-        cumulative_class = (
-            "candidate" if all(value > 0 for value in cumulative_values)
-            else "screened_out"
-            if all(value <= 0 for value in cumulative_values)
-            else "inconclusive")
+        cumulative_class = "candidate" if cumulative > 0 else "screened_out"
         eligible = (
             incremental_class == "candidate"
             and cumulative_class == "candidate")
@@ -236,8 +236,11 @@ class V27Fixture(V26Fixture):
         frozen = {
             **frozen_body,
             "authority_sha256": server._discovery_content_hash(frozen_body)}
-        off_frame = "a" * 64
-        on_frame = "b" * 64
+        off_frame = "c" * 64
+        on_frame = "e" * 64
+        production_frame = (
+            on_frame if candidate_frame_substitution else "0" * 64
+            if frame_mismatch else self.comparator["frame_sha256"])
         performance = _seal({
             "schema": server._DISCOVERY_V27_CUMULATIVE_SCHEMA,
             "authority": "frozen_production_promotion_gate",
@@ -253,23 +256,22 @@ class V27Fixture(V26Fixture):
             "model_sha256": self.comparator["model_sha256"],
             "workload_sha256": self.comparator["workload_sha256"],
             "runtime_config_sha256":
-                self.input_rows["runtime_config"]["sha256"],
-            "protocol_frame_sha256": "c" * 64,
+                self.comparator["runtime_config_sha256"],
+            "protocol_frame_sha256": (
+                "0" * 64 if protocol_mismatch else
+                self.comparator["measurement_protocol_sha256"]),
             "metric": "tokens_per_second", "metric_direction": "higher_better",
             "incremental_exact_route_effect_fraction": incremental,
             "incremental_graphs_off_effect_fraction": incremental,
             "incremental_graphs_on_effect_fraction": incremental,
-            "cumulative_graphs_off_effect_fraction": cumulative,
             "cumulative_graphs_on_effect_fraction": cumulative,
             "incremental_graphs_off_receipt_sha256": "d" * 64,
             "incremental_graphs_on_receipt_sha256": "e" * 64,
-            "production_graphs_off_receipt_sha256": "f" * 64,
             "production_graphs_on_receipt_sha256": "0" * 64,
             "incremental_graphs_off_frame_sha256": off_frame,
             "incremental_graphs_on_frame_sha256": on_frame,
-            "production_graphs_off_frame_sha256": (
-                "0" * 64 if frame_mismatch else off_frame),
-            "production_graphs_on_frame_sha256": on_frame,
+            "production_graphs_on_frame_sha256": production_frame,
+            "production_graphs_mode": production_graphs_mode,
             "cumulative_classification": cumulative_class,
             "promotion_eligible": eligible, "promotion_reason": reason,
             "composition_terminal_sha256": core_sha256,
@@ -676,10 +678,18 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
         mutations = (
             ("missing-build", lambda build, policy: build.pop("anchor_build")),
             ("typed-build", lambda build, policy: build.update(build_key=None)),
+            ("weak-build-commit", lambda build, policy:
+                build["candidate_identity"].update(source_commit="main")),
             ("extra-policy", lambda build, policy: policy.update(extra=True)),
             ("missing-policy", lambda build, policy: policy.pop("dispatch")),
             ("typed-policy", lambda build, policy:
                 policy.update(expected_correctness_cases=True)),
+            ("relative-policy-argv", lambda build, policy:
+                policy.update(correctness_argv=["test-backend-ops"])),
+            ("foreign-policy-model", lambda build, policy:
+                policy.update(model_sha256="0" * 64)),
+            ("boolean-policy-dispatch", lambda build, policy:
+                policy["dispatch"]["candidate_exact"][0].update(calls=True)),
         )
         for name, mutate in mutations:
             with self.subTest(name=name), \
@@ -724,9 +734,20 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 path.write_bytes(raw)
                 fixture.input_rows["carry_forward"]["sha256"] = (
                     hashlib.sha256(raw).hexdigest())
+                fixture.config["immutable_inputs"]["carry_forward"][
+                    "sha256"] = hashlib.sha256(raw).hexdigest()
                 fixture.graph["carry_forward_sha256"] = carry[
                     "carry_forward_sha256"]
                 fixture.write()
+                self.assertIsNone(server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle))
+
+    def test_arbitrary_graph_carry_digest_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            fixture.graph["carry_forward_sha256"] = "0" * 64
+            fixture.write()
+            with _frozen(fixture):
                 self.assertIsNone(server._discovery_v27_contract(
                     fixture.config_path, fixture.config, fixture.bundle))
 
@@ -750,6 +771,9 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self.assertAlmostEqual(
                 performance["incremental_vs_prior_stack"]["effect_fraction"],
                 .01)
+            self.assertEqual(
+                performance["headline"],
+                "+5.00% cumulative vs frozen production (1.0500x)")
             self.assertIs(performance["promotion_eligible"], True)
             rendered = json.dumps(performance)
             self.assertNotIn(str(path), rendered)
@@ -772,6 +796,12 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self) -> None:
         cases = (
             ("mixed", dict(frame_mismatch=True),
+             "producer_authority_unavailable"),
+            ("shared-protocol", dict(protocol_mismatch=True),
+             "producer_authority_unavailable"),
+            ("candidate-frame", dict(candidate_frame_substitution=True),
+             "producer_authority_unavailable"),
+            ("graphs-mode", dict(production_graphs_mode="off"),
              "producer_authority_unavailable"),
             ("nonpositive", dict(cumulative=-.02, incremental=.03,
                                  disposition="admitted"),
@@ -864,6 +894,10 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             ("missing", lambda value: value.pop("runtime_receipt_sha256")),
             ("extra", lambda value: value.update(extra=True)),
             ("type", lambda value: value.update(graphs_mode=1)),
+            ("graphs-off", lambda value: value.update(
+                graphs_mode="graphs_off")),
+            ("runtime-missing", lambda value: value.pop(
+                "runtime_config_sha256")),
         )
         for name, mutate in mutations:
             with self.subTest(name=name), \
@@ -880,12 +914,25 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 fixture.input_rows[
                     "frozen_production_comparator"]["sha256"] = (
                         hashlib.sha256(raw).hexdigest())
+                fixture.config["immutable_inputs"][
+                    "frozen_production_comparator"]["sha256"] = (
+                        hashlib.sha256(raw).hexdigest())
                 fixture.graph["frozen_production_comparator"].update(
                     file_sha256=hashlib.sha256(raw).hexdigest(),
                     receipt_sha256=comparator["receipt_sha256"])
                 fixture.write()
                 self.assertIsNone(server._discovery_v27_contract(
                     fixture.config_path, fixture.config, fixture.bundle))
+
+    def test_erratum_rejects_boolean_lds_under_coherent_reseal(self) -> None:
+        value = _q5_erratum()
+        key = next(iter(value["corrected_candidate_lds_bytes"]))
+        value["corrected_candidate_lds_bytes"][key] = False
+        value = _seal(value, "erratum_sha256")
+        with mock.patch.object(
+                server, "_DISCOVERY_V27_ERRATUM_SHA256",
+                value["erratum_sha256"]):
+            self.assertIs(server._discovery_v27_erratum(value), False)
 
     def test_coherent_erratum_and_graph_mutations_refuse(self) -> None:
         mutations = (

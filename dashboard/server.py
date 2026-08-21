@@ -5769,8 +5769,9 @@ _DISCOVERY_V27_COMPARATOR_KEYS = {
     "build_receipt_sha256", "linkage_receipt_sha256",
     "runtime_receipt_sha256", "runtime_snapshot_sha256",
     "measurement_receipt_sha256",
-    "model_sha256", "workload_sha256", "frame_sha256", "graphs_mode",
-    "metric", "direction", "measurement_protocol_sha256",
+    "model_sha256", "workload_sha256", "runtime_config_sha256",
+    "frame_sha256", "graphs_mode", "metric", "direction",
+    "measurement_protocol_sha256",
     "receipt_sha256"}
 
 
@@ -5789,11 +5790,12 @@ def _discovery_v27_frozen_comparator(
             "build_receipt_sha256", "linkage_receipt_sha256",
             "runtime_receipt_sha256", "runtime_snapshot_sha256",
             "measurement_receipt_sha256",
-            "model_sha256", "workload_sha256", "frame_sha256",
+            "model_sha256", "workload_sha256", "runtime_config_sha256",
+            "frame_sha256",
             "measurement_protocol_sha256"))
         and value.get("model_sha256") == model_sha256
         and value.get("workload_sha256") == workload_sha256
-        and value.get("graphs_mode") in {"graphs_off", "graphs_on"}
+        and value.get("graphs_mode") == "graphs_on"
         and value.get("metric") == "tokens_per_second"
         and value.get("direction") == "higher_is_better"
         and value.get("receipt_sha256") == _discovery_content_hash({
@@ -5927,16 +5929,14 @@ def _discovery_v27_cumulative_performance(
         "incremental_exact_route_effect_fraction",
         "incremental_graphs_off_effect_fraction",
         "incremental_graphs_on_effect_fraction",
-        "cumulative_graphs_off_effect_fraction",
         "cumulative_graphs_on_effect_fraction",
         "incremental_graphs_off_receipt_sha256",
         "incremental_graphs_on_receipt_sha256",
-        "production_graphs_off_receipt_sha256",
         "production_graphs_on_receipt_sha256",
         "incremental_graphs_off_frame_sha256",
         "incremental_graphs_on_frame_sha256",
-        "production_graphs_off_frame_sha256",
         "production_graphs_on_frame_sha256",
+        "production_graphs_mode",
         "cumulative_classification", "promotion_eligible",
         "promotion_reason", "composition_terminal_sha256", "result_sha256"}
     keys = fields | {"schema", "authority", "promotion_authority"}
@@ -5954,11 +5954,9 @@ def _discovery_v27_cumulative_performance(
                 "protocol_frame_sha256",
                 "incremental_graphs_off_receipt_sha256",
                 "incremental_graphs_on_receipt_sha256",
-                "production_graphs_off_receipt_sha256",
                 "production_graphs_on_receipt_sha256",
                 "incremental_graphs_off_frame_sha256",
                 "incremental_graphs_on_frame_sha256",
-                "production_graphs_off_frame_sha256",
                 "production_graphs_on_frame_sha256",
                 "composition_terminal_sha256", "result_sha256"))
             or receipt.get("result_sha256") != _discovery_content_hash({
@@ -6037,38 +6035,42 @@ def _discovery_v27_cumulative_performance(
                 "workload_sha256")
             or receipt.get("workload_sha256") != static.get(
                 "workload_sha256")
-            or receipt.get("runtime_config_sha256") != contract.get(
+            or receipt.get("runtime_config_sha256") != static.get(
                 "runtime_config_sha256")
             or receipt.get("metric") != static.get("metric")
             or receipt.get("metric_direction") != "higher_better"
-            or receipt["incremental_graphs_off_frame_sha256"] !=
-               receipt["production_graphs_off_frame_sha256"]
-            or receipt["incremental_graphs_on_frame_sha256"] !=
-               receipt["production_graphs_on_frame_sha256"]
+            or static.get("direction") != "higher_is_better"
+            or receipt.get("production_graphs_mode") != "on"
+            or static.get("graphs_mode") != "graphs_on"
+            or receipt.get("protocol_frame_sha256") !=
+               static.get("measurement_protocol_sha256")
+            or receipt.get("production_graphs_on_frame_sha256") !=
+               static.get("frame_sha256")
             or receipt["incremental_graphs_off_frame_sha256"] ==
-               receipt["incremental_graphs_on_frame_sha256"]):
+               receipt["incremental_graphs_on_frame_sha256"]
+            or receipt["incremental_graphs_on_frame_sha256"] ==
+               receipt["production_graphs_on_frame_sha256"]
+            or len({
+                receipt["incremental_graphs_off_receipt_sha256"],
+                receipt["incremental_graphs_on_receipt_sha256"],
+                receipt["production_graphs_on_receipt_sha256"]}) != 3):
         return unavailable
     numeric_keys = (
         "incremental_exact_route_effect_fraction",
         "incremental_graphs_off_effect_fraction",
         "incremental_graphs_on_effect_fraction",
-        "cumulative_graphs_off_effect_fraction",
         "cumulative_graphs_on_effect_fraction")
     if any(isinstance(receipt.get(key), bool)
            or not isinstance(receipt.get(key), (int, float))
            or not math.isfinite(float(receipt[key])) for key in numeric_keys):
         return unavailable
     incremental = tuple(float(receipt[key]) for key in numeric_keys[:3])
-    cumulative_off = float(receipt[numeric_keys[3]])
-    cumulative_on = float(receipt[numeric_keys[4]])
+    cumulative_on = float(receipt[numeric_keys[3]])
     incremental_class = (
         "candidate" if all(value > 0 for value in incremental)
         else "screened_out" if all(value <= 0 for value in incremental)
         else "inconclusive")
-    cumulative_class = (
-        "candidate" if cumulative_off > 0 and cumulative_on > 0
-        else "screened_out" if cumulative_off <= 0 and cumulative_on <= 0
-        else "inconclusive")
+    cumulative_class = "candidate" if cumulative_on > 0 else "screened_out"
     expected_eligible = (
         incremental_class == "candidate" and cumulative_class == "candidate")
     expected_reason = (
@@ -6111,7 +6113,6 @@ def _discovery_v27_cumulative_performance(
             f"({speedup:.4f}x)"),
         "cumulative_vs_frozen_production": {
             "effect_fraction": cumulative_on, "speedup": speedup,
-            "graphs_off_effect_fraction": cumulative_off,
             "production_branch": static["branch"],
             "production_commit": static["commit"],
             "graphs_mode": "graphs_on", "metric": receipt["metric"]},
@@ -12162,7 +12163,7 @@ _DISCOVERY_V26_GRAPH_FILE_SHA256 = \
     "ef35a550a96bdc8b9cd089097c216078a1b5b8fa842df746d975592fd6ad6075"
 # The v27 consumer understands the successor schemas, but a generated bundle
 # must not become live until the combined producer and exact final-root files
-# have completed their independent freeze/audit.  Tests patch all five pins as
+# have completed their independent freeze/audit.  Tests patch all six pins as
 # one authority; production deliberately remains fail closed meanwhile.
 _DISCOVERY_V27_EXECUTION_MODULE_SHA256 = None
 _DISCOVERY_V27_PRODUCER_COMMIT = None
