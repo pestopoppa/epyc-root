@@ -3954,6 +3954,418 @@ def _discovery_controller_state_hash(value: object) -> str | None:
     return hashlib.sha256(raw).hexdigest()
 
 
+_DISCOVERY_V26_DEPLOYMENT_KEYS = {
+    "schema", "config_sha256", "production", "instrument", "controller",
+    "actors", "gpu", "immutable_inputs", "planner_context", "source_plan",
+}
+_DISCOVERY_V26_PLANNER_KEYS = {
+    "schema", "context_sha256", "model_sha256", "workload_sha256",
+    "runtime_config_sha256", "profile_receipts", "hotspots",
+    "source_constraints", "initial_strategies",
+    "hypothesis_portfolio_sha256", "eligible_hypotheses", "do_not_repeat",
+    "incumbents", "ineligible_hypotheses",
+    "hypothesis_evidence_manifest_sha256", "hypothesis_evidence",
+    "reviewed_source_package_sha256", "template_registry_sha256",
+    "template_symbol_authority", "template_surfaces_sha256",
+    "template_surfaces", "portfolio_dispatch_authority",
+    "preauthored_continuation_sha256",
+    "preauthored_source_backed_diff_sha256",
+    "preauthored_historical_evidence_sha256",
+}
+_DISCOVERY_V26_GRAPH_KEYS = {
+    "schema", "authority", "promotion_claim", "inference_executed",
+    "config_sha256", "registry_ids", "template_registry_sha256",
+    "template_surfaces", "template_surfaces_sha256",
+    "portfolio_dispatch_authority",
+    "portfolio_dispatch_authority_sha256", "hypothesis_portfolio",
+    "carry_forward_sha256", "preauthored_continuation",
+    "reviewed_source_package", "profile_trace_authority",
+    "profiler_runtime_authority", "admission_policy_sha256",
+    "load_admission_profile_id", "actor_wrappers", "actor_runtimes",
+    "actor_cells", "actor_argv_authority", "critic_auth_source",
+    "execution_modules", "environment_profiles", "source_authority",
+    "instrument_review", "batched_runner", "instrument_target_equality",
+    "production_runtime_snapshot_sha256", "mutable_roots", "device_id",
+    "device_reservation", "claim_journal", "graph_sha256",
+}
+_DISCOVERY_V26_PREAUTHORED_GRAPH_KEYS = {
+    "schema", "carrier_sha256", "file_sha256", "hypothesis_id",
+    "template_id", "patch_sha256", "source_backed_diff_sha256",
+    "historical_evidence_sha256", "historical_correctness_authority",
+    "modern_governed_correctness_required",
+}
+_DISCOVERY_V26_PREAUTHORED_CHECKPOINT_KEYS = {
+    "schema", "hypothesis_id", "authoring_turn", "carrier_sha256",
+    "source_backed_diff_sha256", "source_manifest_sha256",
+    "candidate_semantic_sha256", "cross_campaign_candidate_sha256",
+    "origin", "author", "historical_commit",
+    "modern_governed_correctness_required", "receipt_sha256",
+}
+
+
+def _discovery_sha256(value: object) -> bool:
+    return (isinstance(value, str)
+            and re.fullmatch(r"[0-9a-f]{64}", value) is not None)
+
+
+def _discovery_v26_input(value: object, bundle: Path,
+                         *, max_bytes: int) -> tuple[dict, bytes] | None:
+    if (not isinstance(value, dict) or set(value) != {"path", "sha256"}
+            or not _discovery_sha256(value.get("sha256"))):
+        return None
+    path = _safe_bundle_path(value.get("path"), bundle)
+    if path is None:
+        return None
+    snapshot = _owned_public_snapshot(path, max_bytes=max_bytes)
+    if snapshot is None or hashlib.sha256(snapshot[0]).hexdigest() != value["sha256"]:
+        return None
+    return value, snapshot[0]
+
+
+def _discovery_v26_contract(config_path: Path, config: object,
+                            bundle: Path) -> dict | None:
+    """Validate v26's sealed config/planner/graph without importing producer code.
+
+    The returned ``ready`` bit is true only when the graph matches the frozen
+    producer commit, whole-graph digest, and all 30 role-bound module digests;
+    callers must not select a live v26 campaign on self-declared hashes alone.
+    """
+    if (not isinstance(config, dict)
+            or set(config) != _DISCOVERY_V26_DEPLOYMENT_KEYS
+            or config.get("schema") !=
+            "epyc.autokernel.discovery_deployment.v5"
+            or not _discovery_sha256(config.get("config_sha256"))
+            or config["config_sha256"] != _discovery_controller_state_hash({
+                key: value for key, value in config.items()
+                if key != "config_sha256"})):
+        return None
+    source = _owned_public_snapshot(config_path, max_bytes=512 * 1024)
+    if source is None or _strict_json_bytes(source[0]) != config:
+        return None
+    exact_nested = {
+        "production": {"path", "branch", "head"},
+        "instrument": {"repo_path", "branch", "commit", "production_ancestor"},
+        "controller": {"state_root", "evidence_root", "operations_root",
+                       "build_root", "max_iterations", "nomination_threshold"},
+        "actors": {"wrapper_path", "wrapper_sha256", "critic_path",
+                   "critic_sha256", "environment_profile_id"},
+        "gpu": {"device_id", "claim_timeout_s", "inference_window_lock",
+                "inference_window_lease_id"},
+        "source_plan": {"source_builder_id", "evidence_plan_id",
+                        "runner_args_id", "experiment_template_registry_id",
+                        "experiment_template_registry_sha256",
+                        "production_snapshot_id"},
+    }
+    if any(not isinstance(config.get(key), dict)
+           or set(config[key]) != keys for key, keys in exact_nested.items()):
+        return None
+    inputs = config.get("immutable_inputs")
+    input_keys = {"model", "workload", "runtime_config", "admission_policy",
+                  "hypothesis_portfolio", "hypothesis_evidence_manifest",
+                  "hypothesis_portfolio_contract", "preauthored_continuation"}
+    if not isinstance(inputs, dict) or set(inputs) != input_keys:
+        return None
+    if any(not isinstance(value, dict)
+           or set(value) != {"path", "sha256"}
+           or not isinstance(value.get("path"), str)
+           or not Path(value["path"]).is_absolute()
+           or ".." in Path(value["path"]).parts
+           or not _discovery_sha256(value.get("sha256"))
+           for value in inputs.values()):
+        return None
+    carrier_row = _discovery_v26_input(
+        inputs["preauthored_continuation"], bundle,
+        max_bytes=2 * 1024 * 1024)
+    if carrier_row is None:
+        return None
+    planner_binding = _discovery_v26_input(
+        config.get("planner_context"), bundle, max_bytes=512 * 1024)
+    if planner_binding is None:
+        return None
+    planner = _strict_json_bytes(planner_binding[1])
+    if (planner is None or set(planner) != _DISCOVERY_V26_PLANNER_KEYS
+            or planner.get("schema") !=
+            "epyc.autokernel.discovery_planner_context.v4"
+            or not _discovery_sha256(planner.get("context_sha256"))
+            or planner["context_sha256"] != _discovery_controller_state_hash({
+                key: value for key, value in planner.items()
+                if key != "context_sha256"})
+            or planner.get("model_sha256") != inputs["model"]["sha256"]
+            or planner.get("workload_sha256") != inputs["workload"]["sha256"]
+            or planner.get("runtime_config_sha256") !=
+               inputs["runtime_config"]["sha256"]
+            or planner.get("template_registry_sha256") !=
+               config["source_plan"]["experiment_template_registry_sha256"]):
+        return None
+    carrier_raw = carrier_row[1]
+    carrier = _strict_json_bytes(carrier_raw)
+    carrier_keys = {"schema", "hypothesis_id", "source",
+                    "historical_candidate", "patch", "compatibility_bridge",
+                    "experiment_intent", "historical_receipts",
+                    "correctness_policy", "carrier_sha256"}
+    if (carrier is None or set(carrier) != carrier_keys
+            or carrier.get("schema") !=
+               "epyc.autokernel.preauthored_source_continuation.v1"
+            or carrier.get("carrier_sha256") !=
+               _discovery_controller_state_hash({
+                   key: value for key, value in carrier.items()
+                   if key != "carrier_sha256"})
+            or planner.get("preauthored_continuation_sha256") !=
+               carrier.get("carrier_sha256")
+            or not isinstance(carrier.get("patch"), dict)
+            or planner.get("preauthored_source_backed_diff_sha256") !=
+               carrier["patch"].get("source_backed_sha256")):
+        return None
+    graph_path = _safe_bundle_path(
+        str(Path(config["controller"]["state_root"]) / "deployment-graph.json"),
+        bundle)
+    graph = None
+    if graph_path is not None and graph_path.exists():
+        graph_row = _owned_public_snapshot(graph_path, max_bytes=4 * 1024 * 1024)
+        graph = (_strict_json_bytes(graph_row[0])
+                 if graph_row is not None else None)
+    if graph is not None:
+        if (set(graph) != _DISCOVERY_V26_GRAPH_KEYS
+                or graph.get("schema") !=
+                   "epyc.autokernel.static_discovery_graph.v7"
+                or graph.get("authority") !=
+                   "nonpromotable_candidate_only_discovery"
+                or graph.get("promotion_claim") is not False
+                or graph.get("inference_executed") is not False
+                or graph.get("config_sha256") != config["config_sha256"]
+                or graph.get("graph_sha256") !=
+                   _discovery_controller_state_hash({
+                       key: value for key, value in graph.items()
+                       if key != "graph_sha256"})
+                or graph.get("template_registry_sha256") !=
+                   planner.get("template_registry_sha256")
+                or graph.get("template_surfaces_sha256") !=
+                   _discovery_controller_state_hash(graph.get("template_surfaces"))
+                or graph.get("portfolio_dispatch_authority_sha256") !=
+                   _discovery_controller_state_hash(
+                       graph.get("portfolio_dispatch_authority"))):
+            return None
+        modules = graph.get("execution_modules")
+        if (not isinstance(modules, dict)
+                or set(modules) != set(
+                    _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26)):
+            return None
+        for role, logical_path in (
+                _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26.items()):
+            binding = modules.get(role)
+            if (not isinstance(binding, dict)
+                    or set(binding) != {"logical_path", "sha256"}
+                    or binding.get("logical_path") != logical_path
+                    or not _discovery_sha256(binding.get("sha256"))):
+                return None
+        preauthored = graph.get("preauthored_continuation")
+        portfolio = graph.get("hypothesis_portfolio")
+        if (not isinstance(portfolio, dict)
+                or set(portfolio) != {
+                    "semantic_sha256", "file_sha256",
+                    "evidence_manifest_sha256", "contract_sha256"}
+                or portfolio.get("semantic_sha256") !=
+                   planner.get("hypothesis_portfolio_sha256")
+                or portfolio.get("file_sha256") !=
+                   inputs["hypothesis_portfolio"]["sha256"]
+                or portfolio.get("evidence_manifest_sha256") !=
+                   planner.get("hypothesis_evidence_manifest_sha256")
+                or portfolio.get("contract_sha256") !=
+                   inputs["hypothesis_portfolio_contract"]["sha256"]
+                or not _discovery_sha256(graph.get("carry_forward_sha256"))):
+            return None
+        if (not isinstance(preauthored, dict)
+                or set(preauthored) !=
+                   _DISCOVERY_V26_PREAUTHORED_GRAPH_KEYS
+                or preauthored.get("schema") != carrier.get("schema")
+                or preauthored.get("carrier_sha256") !=
+                   carrier.get("carrier_sha256")
+                or preauthored.get("file_sha256") !=
+                   inputs["preauthored_continuation"]["sha256"]
+                or preauthored.get("hypothesis_id") !=
+                   carrier.get("hypothesis_id")
+                or not isinstance(carrier.get("experiment_intent"), dict)
+                or preauthored.get("template_id") !=
+                   carrier["experiment_intent"].get("template_id")
+                or preauthored.get("patch_sha256") !=
+                   carrier["patch"].get("sha256")
+                or preauthored.get("source_backed_diff_sha256") !=
+                   planner.get("preauthored_source_backed_diff_sha256")
+                or preauthored.get("historical_evidence_sha256") !=
+                   planner.get("preauthored_historical_evidence_sha256")
+                or preauthored.get("historical_correctness_authority") !=
+                   "provenance_only"
+                or preauthored.get("modern_governed_correctness_required")
+                   is not True):
+            return None
+        surfaces = graph.get("template_surfaces")
+        dispatch = graph.get("portfolio_dispatch_authority")
+        q5_surface = (surfaces.get(preauthored["template_id"])
+                      if isinstance(surfaces, dict) else None)
+        q5_routes = (dispatch.get(preauthored["hypothesis_id"])
+                     if isinstance(dispatch, dict) else None)
+        if (not isinstance(q5_surface, dict)
+                or set(q5_surface) != {"source_files", "source_symbols",
+                                      "change_classes", "dispatch_signatures",
+                                      "excluded_signatures"}
+                or not isinstance(q5_routes, list)
+                or q5_surface.get("dispatch_signatures") != q5_routes
+                or not isinstance(q5_surface.get("excluded_signatures"), list)
+                or len(q5_surface["excluded_signatures"]) != 1):
+            return None
+        structural = q5_surface["excluded_signatures"][0]
+        if (not isinstance(structural, dict)
+                or set(structural) != {"route_id", "calls", "grid",
+                                      "workgroup", "lds_bytes"}
+                or any(structural == row for row in q5_routes)):
+            return None
+    module_hashes = (_DISCOVERY_V26_EXECUTION_MODULE_SHA256
+                     if isinstance(_DISCOVERY_V26_EXECUTION_MODULE_SHA256, dict)
+                     else None)
+    hashes_frozen = bool(
+        graph is not None and module_hashes is not None
+        and set(module_hashes) == set(_SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26)
+        and all(graph["execution_modules"][role]["sha256"] == digest
+                for role, digest in module_hashes.items())
+        and graph.get("graph_sha256") == _DISCOVERY_V26_GRAPH_SHA256
+        and isinstance(_DISCOVERY_V26_PRODUCER_COMMIT, str)
+        and re.fullmatch(r"[0-9a-f]{40}",
+                         _DISCOVERY_V26_PRODUCER_COMMIT) is not None)
+    return {
+        "ready": hashes_frozen, "schema": config["schema"],
+        "planner_schema": planner["schema"],
+        "graph_schema": graph.get("schema") if graph is not None else None,
+        "graph_sha256": graph.get("graph_sha256") if graph is not None else None,
+        "preauthored": (graph.get("preauthored_continuation")
+                        if graph is not None else None),
+        "structural_tail": ({
+            "exact_validation": True, "reward_excluded": True,
+            "route_id": graph["template_surfaces"][
+                graph["preauthored_continuation"]["template_id"]
+            ]["excluded_signatures"][0]["route_id"],
+            "calls": graph["template_surfaces"][
+                graph["preauthored_continuation"]["template_id"]
+            ]["excluded_signatures"][0]["calls"],
+        } if graph is not None else None),
+        "producer_commit": (_DISCOVERY_V26_PRODUCER_COMMIT
+                            if hashes_frozen else None),
+        "deployment_identity_sha256": config["config_sha256"],
+        "planner_context_file_sha256":
+            config["planner_context"]["sha256"],
+        "template_registry_sha256": planner["template_registry_sha256"],
+        "hypothesis_portfolio_sha256":
+            planner["hypothesis_portfolio_sha256"],
+        "carry_forward_sha256": (
+            graph.get("carry_forward_sha256") if graph is not None else None),
+        "historical_commit": (
+            carrier.get("historical_candidate", {}).get("commit")
+            if isinstance(carrier.get("historical_candidate"), dict) else None),
+    }
+
+
+def _discovery_v26_state_contract(state: object,
+                                  contract: dict) -> dict | None:
+    if (not isinstance(state, dict)
+            or state.get("schema") != "epyc.autokernel.discovery_controller.v7"
+            or state.get("authority") !=
+               "nonpromotable_candidate_only_discovery"
+            or not _discovery_sha256(state.get("state_sha256"))
+            or state["state_sha256"] != _discovery_controller_state_hash({
+                key: value for key, value in state.items()
+                if key != "state_sha256"})
+            or not isinstance(state.get("iterations"), list)
+            or isinstance(state.get("next"), bool)
+            or not isinstance(state.get("next"), int)
+            or state["next"] != len(state["iterations"]) + 1
+            or isinstance(state.get("scientific_attempts"), bool)
+            or not isinstance(state.get("scientific_attempts"), int)):
+        return None
+    sealed_state_links = {
+        "deployment_identity_sha256":
+            contract.get("deployment_identity_sha256"),
+        "experiment_template_registry_sha256":
+            contract.get("template_registry_sha256"),
+        "hypothesis_portfolio_sha256":
+            contract.get("hypothesis_portfolio_sha256"),
+        "carry_forward_sha256": contract.get("carry_forward_sha256"),
+    }
+    if any(state.get(key) != value
+           for key, value in sealed_state_links.items()):
+        return None
+    turns = [row.get("turn") if isinstance(row, dict) else None
+             for row in state["iterations"]]
+    if turns != list(range(1, state["next"])):
+        return None
+    scientific = sum(
+        1 for row in state["iterations"] if isinstance(row, dict)
+        and (row.get("scientific_budget_spent") is True
+             or _discovery_sha256(row.get("result_sha256"))
+             and isinstance(row.get("evidence"), dict)))
+    if state["scientific_attempts"] != scientific:
+        return None
+    holder = (state.get("pending") if isinstance(state.get("pending"), dict)
+              and state["pending"].get("preauthored_continuation") is not None
+              else state.get("inflight")
+              if isinstance(state.get("inflight"), dict)
+              and state["inflight"].get("preauthored_continuation") is not None
+              else None)
+    provenance = None
+    if holder is not None:
+        authority = holder.get("preauthored_continuation")
+        row = holder.get("row")
+        candidate = holder.get("candidate")
+        graph_authority = contract.get("preauthored")
+        if (not isinstance(authority, dict)
+                or set(authority) !=
+                   _DISCOVERY_V26_PREAUTHORED_CHECKPOINT_KEYS
+                or authority.get("schema") !=
+                   "epyc.autokernel.preauthored_checkpoint.v1"
+                or authority.get("receipt_sha256") !=
+                   _discovery_controller_state_hash({
+                       key: value for key, value in authority.items()
+                       if key != "receipt_sha256"})
+                or not isinstance(graph_authority, dict)
+                or authority.get("hypothesis_id") !=
+                   graph_authority.get("hypothesis_id")
+                or authority.get("carrier_sha256") !=
+                   graph_authority.get("carrier_sha256")
+                or authority.get("source_backed_diff_sha256") !=
+                   graph_authority.get("source_backed_diff_sha256")
+                or authority.get("origin") != "import"
+                or authority.get("author") !=
+                   "reviewed-eb26918-continuation"
+                or authority.get("historical_commit") !=
+                   contract.get("historical_commit")
+                or authority.get("modern_governed_correctness_required")
+                   is not True
+                or not isinstance(row, dict) or not isinstance(candidate, dict)
+                or row.get("preauthored_continuation") != authority
+                or row.get("hypothesis_id") != authority["hypothesis_id"]
+                or row.get("turn") != state["next"]
+                or row.get("authoring_turn") != authority["authoring_turn"]
+                or row.get("hypothesis_origin") != authority["origin"]
+                or row.get("hypothesis_author") != authority["author"]
+                or row.get("historical_correctness_authority") !=
+                   "provenance_only"
+                or row.get("modern_governed_correctness_required") is not True
+                or candidate.get("hypothesis_id") != authority["hypothesis_id"]
+                or candidate.get("source_manifest_sha256") !=
+                   authority["source_manifest_sha256"]):
+            return None
+        if (state.get("pending") is holder
+                and holder.get("phase") != "preauthored_ready"):
+            return None
+        provenance = {
+            "imported": True, "actor_bypass": True,
+            "origin": authority["origin"], "author": authority["author"],
+            "historical_correctness_authority": "provenance_only",
+            "modern_governed_correctness_required": True,
+            "carrier_sha256": authority["carrier_sha256"],
+            "source_manifest_sha256": authority["source_manifest_sha256"],
+        }
+    return {"scientific_attempts": scientific, "provenance": provenance}
+
+
 def _discovery_portfolio_terminal_checkpoint(
         path: Path, state: object, *, now: float) -> dict | None:
     """Bind v25's final state to its consecutive portfolio/complete journal rows.
@@ -7579,7 +7991,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                         claim_observation: dict | None,
                         refusal_observation: dict | None,
                         refusal_history_observations: list[dict],
-                        now: float) -> dict:
+                        now: float, v26_contract: dict | None = None,
+                        v26_state: dict | None = None) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -7783,7 +8196,17 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         if hypothesis is None and isinstance(row, dict):
             hypothesis = row.get("hypothesis_id")
         pipeline["planner_validation"]["state"] = "complete"
-        if pending_phase == "critic_pending":
+        if (pending_phase == "preauthored_ready"
+                and isinstance(v26_state, dict)
+                and isinstance(v26_state.get("provenance"), dict)):
+            pipeline["planner"]["state"] = "complete"
+            pipeline["planner"]["detail"] = (
+                "actor bypassed by exact reviewed continuation")
+            pipeline["critic"]["state"] = "complete"
+            pipeline["critic"]["detail"] = (
+                "actor bypassed by controller-owned imported provenance")
+            pipeline["authorization"]["state"] = "running"
+        elif pending_phase == "critic_pending":
             # planner_checkpointed proves local plan/manifest validation, not
             # critic acceptance or authorization. Preserve a running actor fact.
             if pipeline["critic"]["state"] == "not_reached":
@@ -8272,7 +8695,16 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       "controller restart from typed terminal")
         recoverability = "resume_controller_checkpoint"
     elif isinstance(pending, dict):
-        if pending_phase == "critic_pending":
+        if (pending_phase == "preauthored_ready"
+                and isinstance(v26_state, dict)
+                and isinstance(v26_state.get("provenance"), dict)):
+            status = "running" if lock_held else "stopped"
+            stage = "authorization"
+            label = "Reviewed continuation checkpointed; actors bypassed"
+            waiting_on = "governance authorization"
+            recoverability = ("not_required" if lock_held
+                              else "resume_controller_checkpoint")
+        elif pending_phase == "critic_pending":
             stage = "critic"
             if latest_event == "critic_started" and lock_held:
                 status = "running"
@@ -9046,9 +9478,21 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         # headline.  The UI may show it in the always-visible pulse without
         # claiming that an actor emitted a telemetry event.
         "prior_terminal": prior_terminal,
+        "preauthored": ({
+            **v26_state["provenance"],
+            "checkpointed": bool(
+                isinstance(checkpoint, dict) and checkpoint.get("state") ==
+                "discovery_preauthored_checkpointed"),
+            "structural_tail": v26_contract.get("structural_tail")
+            if isinstance(v26_contract, dict) else None,
+        } if isinstance(v26_state, dict)
+             and isinstance(v26_state.get("provenance"), dict) else None),
         "pipeline": list(pipeline.values()),
         "transitions": transitions[-100:],
         "completed_iterations": len(iterations),
+        "scientific_attempts": (
+            v26_state.get("scientific_attempts")
+            if isinstance(v26_state, dict) else None),
         "history": {"abandoned_count": len(abandoned),
                     "retest_count": len(retest),
                     "terminal_count": len(prior_terminals),
@@ -9535,6 +9979,77 @@ _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3 = {
     "hypothesis_portfolio":
         "scripts/kernel_rnd/autokernel/hypothesis_portfolio.py",
 }
+_SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26 = {
+    **_SUPERVISOR_GRAPH_EXECUTION_MODULES_V3,
+    "preauthored_continuation":
+        "scripts/kernel_rnd/autokernel/preauthored_continuation.py",
+}
+_DISCOVERY_V26_EXECUTION_MODULE_SHA256 = {
+    "claude_fable5_critic_actor":
+        "fb7f728e829b105a37bbde3d28c31711c0ffee370ec1560efcbc6e92eeccfd5d",
+    "codex_container_actor":
+        "0a1f4c4a64d36bde8944b2c2c41c052e59d15cb3b676df101f30ec5a0efc3c13",
+    "cpu_region_claim":
+        "cb8b474955313f7bd2855c6f59f26b53a481d74812372f4c3b38f9783efe5f19",
+    "deployment_factory":
+        "32ddb368140eff26ed67f97881565150a37c437587d74c406a20b4cb4dd7ef7e",
+    "device_claim":
+        "ed079e49946a869399b905e2149f6b0a3c76c1c19d1acbb1bfd39766e4d861d7",
+    "device_sampler":
+        "13f86ed2854d095241b609290e21318e426bd2a3e6b21ea56fb8a74e21c768f0",
+    "discovery_controller":
+        "3e0674094e4b3090f0b187cf4a38ec942504caa1fc908fe48ac88b4905f4d22f",
+    "discovery_deployment":
+        "4c34bf27d22af081ce7db4eade6ce21f1f94eb87f2e2bc61403121383dd136fd",
+    "discovery_static_registry":
+        "8a79d1b767be670d6fca673f3a1954ba5fd0bbe03936113bec8e60c76bbceae9",
+    "discovery_supervisor":
+        "357ecbaba964a70665e90635088303fdda20e9f407a962d124679a3751e888c4",
+    "discovery_supervisor_secure":
+        "7b7ba4b5c1c25e8b98210b5ac31e773832e41661019c89cdbef87e4c601bea4d",
+    "discovery_telemetry":
+        "9beba2a1c92c8b0326523b367148868fabfcf3076170a8188e31ecddfdd25841",
+    "do_not_repeat":
+        "66c32876760b2f61c1064e0e6767c3ce3b5c22ae4878ee558439e188e7e6aec3",
+    "evaluator_integrity":
+        "dfc6dbc719aab525d4ddedd53ca087b00e1e632ed8147967175676884f415f1f",
+    "gpu_discovery_beliefs":
+        "da90a530ce8617ff1cde1be95fc2925fa6bfc270d5e4ffa8d57cf001c1fb6a2b",
+    "gpu_discovery_runner":
+        "0fb0ed3e0bf3b06752ac6a5b1b726ae349b5937d99f9586550925d249af33639",
+    "gpu_load_admission":
+        "f9d3f6331d985c8e496a4dc0de9b01d51de2a0606467acfe412b496f2378d15a",
+    "gpu_residency_sampler":
+        "8eff7f6e54089725572965a56f827defa2150becb337fe55cc81d7494c5d9722",
+    "gpu_source_adapter":
+        "382e3f16cfa9b0543312859199298ecbab4abcde2ce8dc26ad33dea9c890527e",
+    "gpu_source_evidence":
+        "3595af023124e1706bcaea6e4379bbb4399dbf181d69f2ac369b13d778f87a01",
+    "gpu_source_proofs":
+        "46ccc107caba8a371eb6d7f25f45ed6a126cf63ce76b5fb6f6e168bde0725c76",
+    "hypotheses":
+        "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75",
+    "hypothesis_portfolio":
+        "bdd6e5d6e2c14e52e11a036ef020c9c999863777e60367616fb759a156a256df",
+    "inference_window":
+        "67aaee97d981970224af097283478e98d8520b1109bae07f3beaa5fa6d957f5d",
+    "instrument_integrity":
+        "bbc1013e988cdbfb86b6adf7b7267cc1e8cccefc71769fd6d3ea0033e2872bee",
+    "preauthored_continuation":
+        "90c735981f686693e0ec0d7359475a40237e75134a6804ebf3bc71ff2cbe3311",
+    "source_candidate":
+        "d38a7d38c2db0e48a512dc27a690a66cde76d53dbc0e2b66d0e4d5b98d8e99c8",
+    "split_runtime_verifier":
+        "ee6450ee111987a315262bbacdf0d43bb0259a1d1ead7a271b9c234db8b3abe0",
+    "t0_provider":
+        "b91b7a15440c2031a7b567e59a8078be8b213cc78b8f5f9f37d453701c57d897",
+    "worktree":
+        "153118cb9811eb97bb1320e237e9d6908c7c888171379c16a72b72ea09d76215",
+}
+_DISCOVERY_V26_PRODUCER_COMMIT = \
+    "915f4ce5d38713b59545035d17e4a730214b5db1"
+_DISCOVERY_V26_GRAPH_SHA256 = \
+    "72985628302b06bb1dd4fe8c7afd23595a724cf549e63b8296e779763118545b"
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
@@ -9957,11 +10472,16 @@ def _supervisor_launch_spec(
             return None
     if schema in {_SUPERVISOR_SPEC_SCHEMA_V3, _SUPERVISOR_SPEC_SCHEMA_V4}:
         graph_modules = value.get("graph_execution_modules")
+        graph_module_contract = (
+            _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26
+            if schema == _SUPERVISOR_SPEC_SCHEMA_V4
+            and config.get("schema") ==
+                "epyc.autokernel.discovery_deployment.v5"
+            else _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3)
         if (not isinstance(graph_modules, dict)
-                or set(graph_modules) != set(
-                    _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3)):
+                or set(graph_modules) != set(graph_module_contract)):
             return None
-        for role, logical_path in _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3.items():
+        for role, logical_path in graph_module_contract.items():
             binding = graph_modules[role]
             if (not isinstance(binding, dict)
                     or set(binding) != {"logical_path", "sha256"}
@@ -10346,6 +10866,12 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         if not present or config is None or error:
             continue
         bundle = config_path.parent.parent
+        v26_contract = None
+        if config.get("schema") == "epyc.autokernel.discovery_deployment.v5":
+            v26_contract = _discovery_v26_contract(
+                config_path, config, bundle)
+            if v26_contract is None:
+                continue
         controller = config.get("controller")
         if not isinstance(controller, dict):
             continue
@@ -10368,6 +10894,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             continue
         state_present, state, state_error = _read_json_object(
             state_root / "state.json", "discovery state")
+        v26_state = None
+        if v26_contract is not None and state_present:
+            v26_state = _discovery_v26_state_contract(state, v26_contract)
+            if v26_state is None:
+                continue
         (all_events, all_error, planner_events, planner_error,
          lifecycle_events, visible_all_events, visible_planner_events,
          telemetry_integrity, telemetry_snapshot_status
@@ -10390,6 +10921,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                     f"{'s' if len(state_visibility_failures) != 1 else ''}"),
             }
         checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+        if (v26_state is not None
+                and (checkpoint is None
+                     or checkpoint.get("controller_state_sha256") !=
+                        state.get("state_sha256"))):
+            # A self-hashed state file is not a producer checkpoint by itself.
+            # Require the append-only controller journal to name the exact same
+            # durable state epoch before allowing a v26 campaign to supersede
+            # historical campaigns in the live projection.
+            continue
         supervisor_terminal = None
         if (not state_present and not all_events and not all_error
                 and not planner_events and not planner_error
@@ -10409,6 +10949,14 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                         or telemetry_snapshot_status == "producer_write_in_progress"
                         or checkpoint is not None
                         or supervisor_terminal is not None)
+        if (v26_contract is not None and launched
+                and (v26_contract.get("graph_schema") !=
+                     "epyc.autokernel.static_discovery_graph.v7"
+                     or v26_contract.get("ready") is not True)):
+            # The consumer is intentionally not execution authority for a
+            # moving producer worktree.  A sealed v26 can be listed only after
+            # its exact module/commit freeze is installed above.
+            continue
         # A deployment config's mtime says only when a bundle was sealed.  It is
         # not producer progress and therefore cannot supersede a real terminal
         # campaign in the activity hero.
@@ -10442,6 +10990,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             "telemetry_integrity": telemetry_integrity,
             "telemetry_snapshot_status": telemetry_snapshot_status,
             "supervisor_terminal": supervisor_terminal,
+            "v26_contract": v26_contract, "v26_state": v26_state,
         })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
@@ -10489,6 +11038,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     telemetry_integrity = selected["telemetry_integrity"]
     telemetry_snapshot_status = selected["telemetry_snapshot_status"]
     supervisor_terminal = selected["supervisor_terminal"]
+    v26_contract = selected["v26_contract"]
+    v26_state = selected["v26_state"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
@@ -10561,7 +11112,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             claim_observation=claim_observation,
             refusal_observation=refusal_observation,
             refusal_history_observations=refusal_history_observations,
-            now=now)
+            now=now, v26_contract=v26_contract, v26_state=v26_state)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])
@@ -10587,6 +11138,10 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                 else state.get("terminal_reason")),
             "pending": state.get("pending") is not None,
             "inflight": state.get("inflight") is not None,
+            "scientific_attempts": (
+                v26_state.get("scientific_attempts")
+                if isinstance(v26_state, dict) else
+                state.get("scientific_attempts")),
             "iterations": [{key: row.get(key) for key in
                             ("turn", "hypothesis_id", "status", "effect_fraction")}
                            for row in iterations[-25:] if isinstance(row, dict)],
@@ -10637,6 +11192,14 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "telemetry_contract": AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2,
         "telemetry_contracts_accepted": sorted(AUTOKERNEL_DISCOVERY_EVENT_SCHEMAS),
         "telemetry_producer_commit": AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA,
+        "discovery_product_contract": ({
+            "deployment_schema": v26_contract["schema"],
+            "planner_schema": v26_contract["planner_schema"],
+            "graph_schema": v26_contract["graph_schema"],
+            "graph_sha256": v26_contract["graph_sha256"],
+            "producer_commit": v26_contract["producer_commit"],
+        } if isinstance(v26_contract, dict)
+             and v26_contract.get("ready") is True else None),
         "measurement_output_producer_commit":
             AUTOKERNEL_MEASUREMENT_OUTPUT_PRODUCER_SHA,
         "supervisor_schema_producer_commit":
