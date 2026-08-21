@@ -418,10 +418,16 @@ AK-PM-13, C5-14, and C5-16 are closed from primary sources. The three upstream m
 their non-uniform review evidence are recorded in the owning handoffs. Reading the full primary tables
 also corrected two subset ranges: SGLang spans **-0.35%..+1.75%** end-to-end across all 24 printed rows,
 and LMDeploy spans **+1.85%..+3.00%** across all six rows. The attenuation result survives and is more
-useful when stated conservatively: isolated gains shrink by tens-to-hundreds of times, may change sign by
-workload, and never substitute for cumulative end-to-end measurement against frozen production.
+useful when stated exactly. With `A = (1 - 1/s) / E`, SGLang's positive latency-reduction rows imply
+**45.19x..718.90x**, while LMDeploy's throughput-gain rows imply **8.82x..14.31x**; the metrics are not
+pooled, and SGLang's regression row has no positive factor. These rows never substitute for cumulative
+end-to-end measurement against frozen production. Durable source:
+`epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`.
 
 RVP-C4-10 remains open, but its runnable package is prepared in `epyc-inference-research`: a plan-only by
 default rocprofv3 host-trap runner, self-contained exact-gfx90a HIP kernel, and CPU-only parser/contract
 tests. Live execution is explicitly gated on a governed exclusive GPU window and capped at 1,800 seconds.
-No GPU or inference was used while authoring or validating the package.
+Its device sampling is telemetry only and makes no HIP-residency claim because KFD+VRAM closure is not
+bound. Exact-invocation/typed-diagnostic classification, strict CSV grammar, and a canonical receipt
+self-hash are enforced at `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`. No GPU or
+inference was used while authoring or validating the package.

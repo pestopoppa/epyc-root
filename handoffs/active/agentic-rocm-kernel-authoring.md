@@ -1056,7 +1056,8 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       Refuse tier 5, TF32, the static hardware database, CUDA backend details, and blanket tolerances. The
       controller must still re-observe attribution on gfx90a; API availability is not measurement evidence.
       Durable contract:
-      `epyc-inference-research/docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
+      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-15 — Adopt the KLineage BACKWARD-LINEAGE induction mechanism as a design candidate, and test it
       on one gfx90a expert kernel.** `intake-1249#record` inverts the family's direction: instead of
       generate-measure-keep-what-was-fast, it walks an EXPERT kernel BACKWARD through validation-gated
@@ -1073,22 +1074,23 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       scope, ver) as a STARTING POINT, noting explicitly that we ADD what they lack: a commit binding and a
       re-verification predicate (AK-PM-10).
 - [x] **C5-16 ✅ 2026-08-21 — Supply architecture documentation IN CONTEXT rather than relying on model priors, and cite
-      the first external measurement of what scarcity costs.** `intake-1244#record` (CodegenBench) holds the
-      architecture constant-across-tasks and varies only the chip: `Pass@1` falls from **0.74** on the
-      well-documented architecture to **0.48** on the thinly-documented one, and to **0.00** for one model.
-      **gfx90a/CDNA2 is our Sunway** — our corpus already carries three independent confirmations of CDNA2
-      ecosystem abandonment (AITER dropped CDNA2, HipKittens never supported it, the sol-execbench fork ships
-      zero cdna2 code). This is the citable prior for building a curated in-context CDNA2 reference (ISA
-      excerpts, MI200 tuning-guide facts, wavefront-64 and LDS-bank specifics, MFMA shapes) into the
-      authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
-      HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
+      the first external observation of the associated scarcity risk.** `intake-1244#record` (CodegenBench)
+      reports cross-suite/platform Pass@1 differences: **0.74** on BLAS-x86 versus **0.48** on LeetSunway
+      for one model, and **0.53** versus **0.00** for another. Those figures do not hold tasks or platform
+      constant. The 20-task LeetSunway/LeetKunpeng comparison is a closer paired-task observation, but
+      hardware, toolchain, documentation, and likely training exposure still co-vary. It supplies a
+      documentation-scarcity **risk prior**, not a causal result or numeric effect size. Our corpus separately
+      records thin CDNA2 support (AITER dropped CDNA2, HipKittens never supported it, and the sol-execbench
+      fork ships zero cdna2 code). The intervention remains testable: compare the same gfx90a tasks with and
+      without the curated pack before claiming benefit. Do not cite "non-x86 is uniformly worse" either.
       **GUIDANCE LANDED:** every gfx90a round now has a documented six-part context contract: exact
       MI210/gfx90a/ROCm-6.2 identity; pinned AMD CDNA2 ISA; MI200 tuning guidance; sourced LDS/VGPR/MFMA and
       direct-global-to-LDS facts; explicit absence of TF32/TMA/`cp.async`/mbarrier/CDNA3 stochastic sampling;
       and the exact production route, shapes, dtypes, accumulator requirement, and comparator frame. Facts and
       local measurements remain separately source-bound; silence never permits substitution from a neighboring
       CDNA generation. Durable contract:
-      `epyc-inference-research/docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
+      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
       build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should
       not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without

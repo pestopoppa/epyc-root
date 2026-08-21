@@ -5338,13 +5338,19 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
       work elision or a timing artifact, not a kernel optimization.
 - [x] **AK-PM-13 ✅ 2026-08-21 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.**
-      `intake-1250#record` measures SGLang **4.78x isolated → 0.28%-0.87% end-to-end** and LMDeploy
-      **1.36x isolated → 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,
-      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel → +2.12% end-to-end vs
-      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the
-      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a
-      deliverable. Zero compute — also read the three merged PRs, which contain the actual LLM-authored
-      kernel source that survived real upstream review. **COMPLETED FROM PRIMARY SOURCES:** the exact merge
+      `intake-1250#record` reports SGLang **4.78x isolated** and LMDeploy **1.36x isolated** on
+      independently verified merged production PRs (sglang#20778, lmdeploy#4345, DLBlas#102). Define the
+      metric-specific descriptive factor as `A = (1 - 1/s) / E`, where `s` is isolated speedup and `E` is
+      a reported positive end-to-end relative gain. SGLang's local runtime reduction is **79.0795%**;
+      against its positive end-to-end **latency-reduction** rows (`+0.11%..+1.75%`),
+      `A = 45.19x..718.90x`. Its `-0.35%` regression has no positive attenuation factor. LMDeploy's local
+      runtime reduction is **26.4706%**; against its end-to-end **throughput-gain** rows
+      (`+1.85%..+3.00%`), `A = 8.82x..14.31x`. Do not pool the two metrics or generalize these ranges as a
+      constant. `intake-1087#record` independently corroborates the isolated/deployed gap, but is not folded
+      into this calculation. This supports the wall-share promotion rule and cautions against reading an
+      isolated-op speedup as a deliverable. Zero compute — also read the three merged PRs, which contain the
+      actual LLM-authored kernel source that survived real upstream review. **COMPLETED FROM PRIMARY
+      SOURCES:** the exact merge
       commits are SGLang `3bc595acbcda6d05825ce0ab952a16eaa61106f5`, LMDeploy
       `967217481602f1d4f1e394560fadc829c789956a`, and DLBlas
       `67cf44611f0e898935308c07e315f92563cf9f4d`. SGLang has a human approval and review-driven page-size
@@ -5354,7 +5360,8 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       `-0.35%..+1.75%` (the filed `+0.28%..+0.87%` was a subset), and LMDeploy spans
       `+1.85%..+3.00%` (not `+2.03%..+3.00%`). DLBlas has no end-to-end datum. Durable findings and the
       conservative wall-share rule are in
-      `epyc-inference-research/docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
+      `epyc-inference-research@eee2f39c288accf24e34ef1b85bfac29052e373d`'s
+      `docs/research/autokernel-upstream-survivors-and-cdna2-context.md`.
 - [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector
       WITHOUT the paper behind it. **That premise is FALSE.** `arXiv:2603.21331` (`intake-1246#record`,
