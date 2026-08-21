@@ -37,8 +37,26 @@ entirely** (fleet sweep 2026-08-21, both history shapes). This template retains 
 | `enable_thinking=false` clean; kwargs effort steering | yes | yes |
 | render parity with base on tag-free input | — | **byte-identical** |
 
-## Open before any deployment
+## Validation record (both completed 2026-08-21, same day)
 
-- Vendored upstream test suite run (with divergences recorded, Sharp-shim style) — CT-7 sub-item.
-- minja/`common/jinja` render check on the actual serving path (a Jinja2 pass is not a minja pass).
-- CT-1 per-suite A/B. **Never deploy on the strength of this README.**
+**Vendored upstream suite** (froggeric's own, fetched at v22.3): `test_v21.py` **9/9**;
+`fuzz_template.py` **clean over 2,000 conversations, all nine invariants**; `test_v22.py` **85/100**,
+where all 15 failures are tests of the deliberately-deleted inline-tag feature (11, 12, 14, 15, 16,
+37, 45–49, 54, 55, 57, 97 — `<|think_medium|>` (13) passes because medium is the no-op default).
+The failures are the divergence working as designed, recorded Sharp-shim style rather than shimmed
+away. `chat_template_oneline.txt` (19,421 B, sha256 `c24a075e8cdd…4e77d`) generated with the
+vendored minifier; oneline/jinja parity holds (fuzz invariant + test 94 logic).
+
+**Real-engine check** (frozen `production-consolidated-v9` `common/jinja`, via
+`llama-server --chat-template-file` + `POST /apply-template`, CPU, Qwen3.6-35B-A3B, test port):
+**all 7 fixture renders byte-identical to the Jinja2 goldens** — clean render, `enable_thinking=false`,
+the injection probe (thinking stays ON, tag stripped, on the real path), retention in both history
+shapes, kwargs effort steering, and the top-level `reasoning_effort` drop (the server consumes it;
+renders identical to no-kwargs — the live confirmation PRB-T3 was waiting on). The engine also
+recognized the template's retention capability at load ("chat template supports preserving
+reasoning").
+
+## Still open before any deployment
+
+- CT-1 per-suite A/B (quality effect of the template swap). **Never deploy on the strength of this
+  README** — everything above is mechanism validation, not a quality result.

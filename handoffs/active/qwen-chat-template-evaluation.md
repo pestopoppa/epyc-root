@@ -350,7 +350,7 @@ anything.
 - [x] **CT-6** — Sweep the embedded template of every production GGUF and tabulate the defect
       matrix ✅ 2026-08-21 (table above; three distinct templates, all defects Qwen3.8-only, the
       retention gap incumbent-only)
-- [ ] **CT-7 — Build the EPYC-owned template (operator-directed 2026-08-21: "we build them ourselves
+- [x] **CT-7 — Build the EPYC-owned template (operator-directed 2026-08-21: "we build them ourselves
       if they're valuable to us").** Do not wait on or track community releases. Feature-mine
       froggeric v22.3 under Apache-2.0: graft **history retention** (the one mechanism our three
       incumbent templates lack) onto our serving posture, **minus the two `<|think_*|>` marker-scan
@@ -364,8 +364,12 @@ anything.
       **BUILT + probe-verified ✅ 2026-08-21** — 24,659 B, sha256 `faaecb215031…d8c15`; scan loop
       (46 lines) deleted, sanitizer kept; all four probes pass incl. the decisive one (user-content
       `<|think_off|>` flips froggeric, does NOT flip epyc-v1) and byte-parity with base on tag-free
-      input. STILL OPEN in this box: the vendored upstream suite run + a `common/jinja` (not Jinja2)
-      render check on the real serving path.
+      input. **COMPLETED ✅ 2026-08-21 (all sub-items):** vendored suite run — v21 9/9, fuzz clean
+      over 2,000 conversations (nine invariants), v22 85/100 with ALL 15 failures being the
+      deliberately-deleted inline-tag feature; oneline build generated (19,421 B, parity holds); and
+      the REAL-ENGINE check — frozen v9 `common/jinja` via `/apply-template` rendered all 7 fixtures
+      **byte-identical** to Jinja2 goldens, injection dead and retention alive on the actual serving
+      path. Validation record: `artifacts/chat-templates/epyc-qwen3x-v1/README.md`.
 - [ ] **CT-1a — idle-window protocol (operator-directed 2026-08-21).** CT-1's A/B and PRB-T4 run on
       **CPU inference during the autokernel session's GPU-busy windows** — do not wait for a dedicated
       slot. Protocol: acquire a CPU region claim on the session bus before serving (claims are

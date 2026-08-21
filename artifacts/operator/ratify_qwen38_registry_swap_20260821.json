@@ -1,0 +1,18 @@
+{
+  "ratification": "qwen38-compile-chain-completion-and-template-provenance-and-jinja-fallback",
+  "version": 2,
+  "date": "2026-08-21",
+  "operator_executed": true,
+  "corrected_finding": "the true master (research repo) was swapped 2026-08-20 by b376dadd (local, unpushed); the gap was the recompile chain, and the earlier never-swapped finding had audited the compiled lean view",
+  "evidence": ["epyc-root handoffs/active/qwen38-27b-replace-qwen36.md (Q38-T1..T3 + 2026-08-21 correction)",
+               "epyc-root handoffs/active/per-request-reasoning-budget.md (PRB-T1)",
+               "epyc-inference-research b376dadd; epyc-orchestrator 1cff5162"],
+  "files": {
+    "master_model_registry.yaml": "ab063e14da293241456e7f3897031a10943ef35b0eba593e5963a88f5a106986",
+    "lean_model_registry.yaml": "115f599b61e819334b0a6bb9e9501173326f28d50f36ac8ffbc606397ec2149e",
+    "model_descriptors.yaml": "1cf6a45747f880e4ecbc16157141a2db7d9c552aaadcbf03ff9101706f5de2c4",
+    "stack_priors.yaml": "0645173cd0f9759ed236333bdfaae5ce4ea3675fcacb12dd97a444ea4eb0478f",
+    "orchestrator_stack.py": "451df3fbb9629af2d3abe5dae331c825cc01d8fee7f4d3cf67ac91c319520fad"
+  },
+  "not_done_here": "no process started; live==config at next stack start; research-repo commit + push left to the operator (LFM2.5 decision pending in the same file)"
+}
