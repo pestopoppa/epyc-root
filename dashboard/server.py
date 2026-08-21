@@ -4528,7 +4528,8 @@ def _discovery_product_contract(
         if not _discovery_v27_frozen_comparator(
                 frozen_comparator,
                 model_sha256=inputs["model"]["sha256"],
-                workload_sha256=inputs["workload"]["sha256"]):
+                workload_sha256=inputs["workload"]["sha256"],
+                runtime_config_sha256=inputs["runtime_config"]["sha256"]):
             return None
         if (config["production"] != {
                 "path": "/mnt/raid0/llm/llama.cpp",
@@ -5776,7 +5777,8 @@ _DISCOVERY_V27_COMPARATOR_KEYS = {
 
 
 def _discovery_v27_frozen_comparator(
-        value: object, *, model_sha256: str, workload_sha256: str) -> bool:
+        value: object, *, model_sha256: str, workload_sha256: str,
+        runtime_config_sha256: str) -> bool:
     return bool(
         isinstance(value, dict) and set(value) == _DISCOVERY_V27_COMPARATOR_KEYS
         and value.get("schema") ==
@@ -5795,6 +5797,7 @@ def _discovery_v27_frozen_comparator(
             "measurement_protocol_sha256"))
         and value.get("model_sha256") == model_sha256
         and value.get("workload_sha256") == workload_sha256
+        and value.get("runtime_config_sha256") == runtime_config_sha256
         and value.get("graphs_mode") == "graphs_on"
         and value.get("metric") == "tokens_per_second"
         and value.get("direction") == "higher_is_better"
@@ -6035,6 +6038,8 @@ def _discovery_v27_cumulative_performance(
                 "workload_sha256")
             or receipt.get("workload_sha256") != static.get(
                 "workload_sha256")
+            or receipt.get("runtime_config_sha256") != contract.get(
+                "runtime_config_sha256")
             or receipt.get("runtime_config_sha256") != static.get(
                 "runtime_config_sha256")
             or receipt.get("metric") != static.get("metric")
@@ -6046,10 +6051,10 @@ def _discovery_v27_cumulative_performance(
                static.get("measurement_protocol_sha256")
             or receipt.get("production_graphs_on_frame_sha256") !=
                static.get("frame_sha256")
-            or receipt["incremental_graphs_off_frame_sha256"] ==
-               receipt["incremental_graphs_on_frame_sha256"]
-            or receipt["incremental_graphs_on_frame_sha256"] ==
-               receipt["production_graphs_on_frame_sha256"]
+            or len({
+                receipt["incremental_graphs_off_frame_sha256"],
+                receipt["incremental_graphs_on_frame_sha256"],
+                receipt["production_graphs_on_frame_sha256"]}) != 3
             or len({
                 receipt["incremental_graphs_off_receipt_sha256"],
                 receipt["incremental_graphs_on_receipt_sha256"],

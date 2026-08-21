@@ -51,7 +51,9 @@ def _build_identity(commit: str, prefix: str) -> dict:
     }
 
 
-def _frozen_comparator(model_sha256: str, workload_sha256: str) -> dict:
+def _frozen_comparator(
+        model_sha256: str, workload_sha256: str,
+        runtime_config_sha256: str) -> dict:
     value = {
         "schema": "epyc.autokernel.frozen_production_comparator.v1",
         "branch": "production-consolidated-v9",
@@ -65,7 +67,7 @@ def _frozen_comparator(model_sha256: str, workload_sha256: str) -> dict:
         "measurement_receipt_sha256": "9" * 64,
         "model_sha256": model_sha256,
         "workload_sha256": workload_sha256,
-        "runtime_config_sha256": "d" * 64,
+        "runtime_config_sha256": runtime_config_sha256,
         "frame_sha256": "a" * 64,
         "graphs_mode": "graphs_on",
         "metric": "tokens_per_second",
@@ -100,7 +102,8 @@ class V27Fixture(V26Fixture):
         }
         self.comparator = _frozen_comparator(
             self.input_rows["model"]["sha256"],
-            self.input_rows["workload"]["sha256"])
+            self.input_rows["workload"]["sha256"],
+            self.input_rows["runtime_config"]["sha256"])
         comparator_path = self.inputs / "frozen-production-comparator.json"
         comparator_raw = (json.dumps(
             self.comparator, sort_keys=True, indent=2) + "\n").encode()
@@ -153,6 +156,7 @@ class V27Fixture(V26Fixture):
             frame_mismatch: bool = False,
             protocol_mismatch: bool = False,
             candidate_frame_substitution: bool = False,
+            candidate_off_frame_substitution: bool = False,
             production_graphs_mode: str = "on",
     ) -> tuple[dict, dict, Path]:
         state, _ = self.checkpoint()
@@ -236,7 +240,9 @@ class V27Fixture(V26Fixture):
         frozen = {
             **frozen_body,
             "authority_sha256": server._discovery_content_hash(frozen_body)}
-        off_frame = "c" * 64
+        off_frame = (
+            self.comparator["frame_sha256"]
+            if candidate_off_frame_substitution else "c" * 64)
         on_frame = "e" * 64
         production_frame = (
             on_frame if candidate_frame_substitution else "0" * 64
@@ -801,6 +807,9 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
              "producer_authority_unavailable"),
             ("candidate-frame", dict(candidate_frame_substitution=True),
              "producer_authority_unavailable"),
+            ("candidate-off-frame",
+             dict(candidate_off_frame_substitution=True),
+             "producer_authority_unavailable"),
             ("graphs-mode", dict(production_graphs_mode="off"),
              "producer_authority_unavailable"),
             ("nonpositive", dict(cumulative=-.02, incremental=.03,
@@ -921,6 +930,30 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                     file_sha256=hashlib.sha256(raw).hexdigest(),
                     receipt_sha256=comparator["receipt_sha256"])
                 fixture.write()
+                self.assertIsNone(server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle))
+
+    def test_frozen_comparator_runtime_must_match_deployment(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            comparator = copy.deepcopy(fixture.comparator)
+            comparator["runtime_config_sha256"] = "0" * 64
+            comparator = _seal(comparator, "receipt_sha256")
+            path = Path(fixture.input_rows[
+                "frozen_production_comparator"]["path"])
+            raw = (json.dumps(
+                comparator, sort_keys=True, indent=2) + "\n").encode()
+            path.write_bytes(raw)
+            file_sha256 = hashlib.sha256(raw).hexdigest()
+            fixture.input_rows[
+                "frozen_production_comparator"]["sha256"] = file_sha256
+            fixture.config["immutable_inputs"][
+                "frozen_production_comparator"]["sha256"] = file_sha256
+            fixture.graph["frozen_production_comparator"].update(
+                file_sha256=file_sha256,
+                receipt_sha256=comparator["receipt_sha256"])
+            fixture.write()
+            with _frozen(fixture):
                 self.assertIsNone(server._discovery_v27_contract(
                     fixture.config_path, fixture.config, fixture.bundle))
 
