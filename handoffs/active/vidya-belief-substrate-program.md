@@ -929,6 +929,17 @@ findings to docs, move to `completed/`, delete the master-index row.
       adapter must **PROJECT into a `ClaimTuple` and let `claim_tuple.grade()` decide — it must NOT write a
       new grading rule.** Read `flashinfer_bench/bench/evaluators/{lowbit,default}.py` at the pinned SHA for
       the actual tolerance constants before adopting anything (also tracked as RVP-C6-23).
+- [ ] **SC48 — register the AutoKernel C6 admission receipt/capture pair prospectively.** The C6
+      evaluator now writes one self-hashed `epyc.autokernel.c6_admission_receipt.v1` and one bound
+      `epyc.vidya.autokernel_c6_admission_capture.v1` for each execution-gated admission attempt
+      (independently audited producer implementation: research `6affc332`).
+      Implement a strict adapter that consumes only a validated pair, independently rederives the raw
+      first-pass and verification latency ratio, enforces the >=1.2 re-run threshold and the explicit
+      implausible-speedup cap, and verifies all candidate/source/evaluator commit plus `reopen_when`
+      bindings. Mutation-test missing/extra fields, pair swaps, and coherently resealed ratio, commit,
+      threshold and cap substitutions. Project the native result into the existing `ClaimTuple` source
+      ladder and let `claim_tuple.grade()` decide; do not define a new grade and do not backfill any
+      pre-hook C6 result.
 - [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed
       2026-08-21 by the `/research-intake` Stage-4 pass that ingested it (`intake-1225`, dive-verified,
       MIT, HPDC'24, credibility 6/6 — the highest of that cohort). ParEval is a candidate C5 secondary
