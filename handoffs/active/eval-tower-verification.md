@@ -767,10 +767,104 @@ the reference implementation (no licence).
 
 ## Research Intake Update — 2026-08-21 (intake-1217, Claw-Eval)
 
-- [ ] **ETV-T1** — Claw-Eval (intake-1217, arXiv:2604.06132v3) reports that **trajectory-opaque
+- [x] **ETV-T1** — Claw-Eval (intake-1217, arXiv:2604.06132v3) reports that **trajectory-opaque
       grading misses 44% of safety violations and 13% of robustness failures** that trajectory-aware
       grading detects, measured across 14 frontier models. Our harness grades outcomes. Assess the
       trajectory-aware direction: three independent evidence channels (execution traces, audit logs,
       environment snapshots) feeding fine-grained rubric items, scoring decomposed into
       Completion / Safety / Robustness, and **Pass^k over repeated trials** to separate genuine
-      capability from a lucky run. Surfaced as a side effect of a chat-template intake, not sought.
+      capability from a lucky run. Surfaced as a side effect of a chat-template intake, not sought. ✅ 2026-08-21 —
+      **PILOT (narrow) + MONITOR**: the three-channel / Safety-Robustness direction has no denominator in
+      our tower yet, but the `tool_use` trajectory/outcome divergence is instrumented and already costing
+      us a gate carve-out → one zero-inference report-only task (ETV-T2).
+
+### ETV-T1 assessment — trajectory-aware grading against OUR harness (2026-08-21)
+
+Grounded in the eval-tower code, not in the paper. Every claim below names its source. `intake-1217#record`.
+
+**(1) What our scoring observes today: the final answer string, and nothing else.**
+The scorer's entire contract is `score_answer(answer, expected, scoring_method, scoring_config) -> bool`
+(`epyc-orchestrator/scripts/benchmark/debug_scorer.py:86-91`) — no trace, no tool events, no environment
+argument exists to pass one. It then *deletes* the only trajectory it is handed: `<think>…</think>` is
+regex-stripped before grading (`debug_scorer.py:107-108`). Even the execution channel is collapsed —
+`_score_code_execution` returns a bare `bool` (`debug_scorer.py:448`), so per-test pass/fail is computed and
+thrown away (contrast the research copy `epyc-inference-research/scripts/benchmark/code_exec_scorer.py:160-161`,
+which returns `{passed,total,pass_rate,detail[]}`). The tower's call sites pass only answer+expected
+(`eval_tower.py:4297-4302` → `scripts/benchmark/seeding_scoring.py:77-116`).
+**One exception exists and is unreachable**: the rubric path forwards `tool_events=resp["tools_called"]` into
+grading (`eval_tower.py:4282-4288` → `rubric_scoring.py:315-317`), but `_is_rubric_scored_question`
+(`eval_tower.py:705-711`) requires a `deep_research*` suite, and the live pool metadata in
+`epyc-inference-research/benchmarks/prompts/question_pool.jsonl` (line 1) reports 41 suites / 79,479
+questions with **zero** `deep_research` rows. We already built one trajectory-fed grader and never fed it.
+
+**(2) Channel analogues — two of three already exist on the WRITE side; the grader is what's missing.**
+- *Execution traces*: PARTIAL. `epyc-inference-research/scripts/benchmark/agentic_swe_harness.py` already
+  writes a per-turn trajectory JSONL with `capture_status` / `evidence_complete` / `trajectory_sha256`
+  (docstring L29-30; `_verify_entry` L724-740; `persist_turn` L798; summary L886-900) — Claw-Eval-grade
+  capture. But it is **build-leg only**: no `trajectories/` directory exists under `/mnt/raid0/llm` or in
+  `benchmarks/results/`, and its scoring is still outcome-only (predictions.json → SWE-bench `resolved`).
+- *Audit logs*: EXISTS. Durable per-question sidecar `question_results.<arm>.jsonl`
+  (`_EvalQuestionJsonlWriter`, `eval_tower.py:2636-2760`) persisting the full raw answer plus `tools_used`,
+  `tools_called[:5]`, `disposition`, `infra_reason`, timing (`_compact_question_result`,
+  `eval_tower.py:1301-1345`); plus `orchestration/autopilot_journal.jsonl` carrying `eval_details.rlvr_reward`.
+- *Environment snapshots*: EXISTS. Per-question `host_covariates` (`eval_tower.py:86-95`, compacted at
+  `1200-1215`: min/mean core MHz, `host_inflight`, `numa_balancing`, page-cache and mem-available), plus
+  `dataset_sha256` + `test_profile` arm stamping (`eval_tower.py:3046-3078`) and `eval_concurrency`/`eval_wall_s`.
+- **NEW BUILD** would be: (a) a grader that reads any of the above, and (b) the Completion/Safety/Robustness
+  decomposition — we run no safety suite and no robustness suite, so two of its three axes have an empty
+  denominator today.
+
+**(3) Where opaqueness plausibly costs us TODAY — one instrumented case, and two look-alikes that are not.**
+- **REAL — `tool_use` T0 sentinels** (live since the n=15 era, `orchestration/instrument_eras.yaml:29`). Our
+  own gate documents the divergence verbatim: *"models invoke the tool correctly but don't reliably echo the
+  returned secret"* (`scripts/autopilot/safety_gate.py:117-123`). Outcome-only grading turned a
+  correct-trajectory/wrong-outcome row into a per-suite regression, and we paid for it with a permanent
+  instrument concession — `TOOL_USE_CATASTROPHIC_REGRESSION` plus the advisory branch at
+  `safety_gate.py:1865-1873`. We persist `tools_called` for exactly those rows and never compare it to the verdict.
+- **NOT trajectory-opaqueness — EV-9 saturation** (L516-523, gemma-4-31B ≈ gemma-4-26B-A4B at ~90%). That is a
+  *resolution* failure; a trajectory grader would not have separated them, a harder tier will.
+- **NOT, but instructive — the 2026-08-03 dead-API-scores-0% incident.** It was fixed by promoting a
+  non-outcome channel to first class (`disposition`/`infra_reason`, `eval_tower.py:2859-2882`). Precedent that
+  non-outcome evidence pays — and that channel is already built. Likewise the cross-arm parse-fail gap
+  (`feedback_parse_failure_rate_is_a_scoring_artifact`) is a *scorer* bug whose fix is offline re-scoring from
+  the persisted answer, which the sidecar already supports.
+
+**(4) Pass^k — we have no repeat policy at all, and an estimator already exists offline.**
+`eval_tower.py` contains zero occurrences of repeat / resample / `pass@k` / majority-vote: each question is
+generated exactly once per trial. What we vary across trials is the *question draw*, not the sample —
+`rotated_core_seed` (`eval_tower.py:887-893`, rationale at `:852`) deliberately re-draws a different question
+set each rotation so AutoPilot cannot overfit a fixed seed. That is the opposite budget allocation to Pass^k,
+which holds the item fixed and varies the sample: rotation buys coverage, Pass^k buys per-item reliability.
+Repeats exist only at run level, in two places: `review_f1/scorer.py:126-135` (Mean-F1 ± population StdDev over
+≥3 runs, per-run seed at `review_f1/harness.py:171`) — that is aggregate variance, not Pass^k — and a genuine
+Pass^k already implemented in `epyc-orchestrator/scripts/analysis/reviewer_calibration_report.py:329-380`
+(`_consistency_and_passk`, `--k` default 2, consistency-gated correctness over per-candidate run groups),
+which reads the reviewer ledger, not eval-tower rows.
+**Cost to adopt in the tower**: k× inference on every graded item (T1 ~5 min → ~15 min at k=3; T2 ~30 min →
+~90 min; the EV-11c 26h serial rebaseline → ~78h), **plus** an instrument-identity change — production
+temp+seed42 makes k repeats byte-identical, so Pass^k requires deliberately varied seeds and therefore its own
+protocol id (the rule that pins T1 concurrency 3 as identity; cf. EV-PROTO, L209).
+
+**(5) Verdict — PILOT (one narrow task) / MONITOR (everything else).**
+The 44% / 13% headline does not transfer as stated: those are violations *present in an agentic trajectory*,
+whereas our pool is 79,479 single-turn rows with 44 `agentic` (0.06%), no safety suite, no robustness suite,
+and `enable_thinking: false` stack-wide — on most rows there is no trajectory to grade. We already shipped one
+trajectory-fed grading path that the pool cannot reach, and the outcome instrument itself is uncertified
+(3 CRITICAL / 16 HIGH open, L6); adding a second grading surface on top is out of order.
+**So: MONITOR the three-channel / Completion-Safety-Robustness direction until an agentic eval with a
+persisted trajectory actually runs in the tower** — the agentic_swe_harness run leg, EV-13b, or EV-5 — at
+which point revisit with the trajectory JSONL already in hand rather than designing against a paper.
+**MONITOR Pass^k** on the same trigger; when a decision turns on per-item reliability, reuse
+`_consistency_and_passk` rather than writing a second estimator.
+The single exception is already instrumented, zero-inference, and report-only, so it earns one task:
+
+- [ ] **ETV-T2 — report-only trajectory/outcome divergence counter for `tool_use` sentinels** (cheapest first
+      step; ZERO inference, no gate authority). For rows where `suite == "tool_use"`, compare the persisted
+      action trace (`tools_called` / `tools_used`, already in `question_results.<arm>.jsonl` per
+      `_compact_question_result`, `eval_tower.py:1310,1327-1328`) against `correct`, and emit the count of
+      **tool-invoked-but-scored-wrong** rows as a report-only line (EV-7 / EV-10b observe-only precedent — do
+      NOT fold it into SafetyGate, Pareto, or per-suite regression authority). Exit criterion: a number that
+      says how much of the `safety_gate.py:117-123` carve-out is trajectory/outcome divergence rather than
+      genuine failure. If that number is small, this direction is closed for our harness on present evidence;
+      if it is large, it is the first honest datapoint for re-opening the Claw-Eval direction. Runs offline
+      against existing sidecars — no new inference, no new suite.

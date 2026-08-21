@@ -40,6 +40,22 @@ Four families of techniques, ordered by implementation effort:
 ### Tier 1 — Zero-training (inference-time only)
 - **TrimR** (intake-127): Verifier prunes reasoning tokens at inference. Compatible with our existing scorer infrastructure. **Highest priority — deploy immediately.**
 - **short-m@k** (intake-129): Run k parallel generations, stop at first m completions, majority vote. 34.5% more accurate than longest chains. Maps to spec-decode verify-accept paradigm.
+- **TALE-EP** (intake-1215, arXiv:2412.18547v5): per-question **numeric** token budget, estimated
+  zero-shot by the reasoning model itself and placed in the prompt (inference-time only, no training,
+  no server support). 67% token reduction at −2.72% average accuracy (461.25 → 148.72 avg output
+  tokens; 83.75% → 81.03%), and **+3.11% accuracy on GSM8K at 75.7% fewer tokens** (318.10 → 77.26).
+  Supersedes stylistic conciseness prompting (next entry) as the preferred form of this intervention,
+  per intake-276's April 2026 prediction — now evidenced rather than predicted.
+  - **Caveat 1 — generalisation is worse than the headline**: MathBench-College generalisation shows
+    −8% (GPT-4o-mini) and −4% (GPT-4o) against vanilla CoT, far worse than the −2.72% average. The
+    67% headline is an average over a heterogeneous distribution.
+  - **Caveat 2 — the estimator is not free**: the per-question estimator costs an **extra model call**
+    per request. That is invisible on closed APIs (where the paper measured it) and is **unmeasured on
+    our bandwidth-bound CPU decode**. Measure estimator overhead against savings before adopting — do
+    not treat 67% as a net win until that is done.
+  - Evidence: `intake-1215` (`research/intake_index.yaml:94305`), dive-verified 2026-08-21 against
+    arXiv:2412.18547v5 full text; TALE-EP arms are closed-models-only (GPT-4o/-mini, Yi-lightning),
+    nothing measured on a reasoning-native Qwen3.x think channel.
 - **Conciseness prompting**: Just add "be concise" to Qwen3 worker prompts. OPSDC paper shows 37% token reduction with comparable accuracy on easy problems. Zero effort.
 - **Behavior-Conditioned Inference** (intake-897, arXiv:2509.13237): extract compact named
   procedures from successful EPYC traces, retrieve them into context, and evaluate a local A/B on
@@ -647,19 +663,25 @@ _Via `/research-intake` Stage-2 dives 2026-07-28 (7 dives: 903/904/905/906/908/9
 
 ## Research Intake Update — 2026-08-21 (chat-template dive, intake-1212…1217)
 
-- [ ] **RC-T1** — Add **TALE** (intake-1215, arXiv:2412.18547v5) to the *Tier 1 — zero-training*
+- [x] **RC-T1** — Add **TALE** (intake-1215, arXiv:2412.18547v5) to the *Tier 1 — zero-training*
       family, **above** "Conciseness prompting". It is the numeric-budget form of the same
       intervention: a per-question token budget estimated zero-shot by the reasoning model itself.
       Reported 67% token reduction at −2.72% average accuracy, and **+3.11% accuracy on GSM8K at
       75.7% fewer tokens**. This is exactly the form our own intake-276 dive predicted in April 2026
       would beat stylistic instructions — that dive listed TALE as literature to fetch and nobody
       fetched it until now.
-- [ ] **RC-T2** — Record TALE's two full-text-only caveats before anyone adopts it on the headline:
+      ✅ 2026-08-21 (Tier 1 entry added) — **TALE-EP** inserted in *Approach Taxonomy → Tier 1*
+      directly above "Conciseness prompting", with the 67%/−2.72% and GSM8K +3.11%/75.7% figures
+      sourced to `intake-1215`.
+- [x] **RC-T2** — Record TALE's two full-text-only caveats before anyone adopts it on the headline:
       MathBench-College generalisation shows −8% (GPT-4o-mini) and −4% (GPT-4o) against vanilla CoT,
       far worse than the −2.72% average; and the per-question estimator costs an **extra model
       call** per request, which is invisible on closed APIs and is not obviously free on our
       bandwidth-bound CPU decode. Measure estimator overhead against savings before treating 67% as
       a net win.
+      ✅ 2026-08-21 — both caveats recorded as Caveat 1 (MathBench-College −8%/−4%) and Caveat 2
+      (extra estimator call, unmeasured on our CPU decode) inline under the new Tier 1 TALE-EP entry,
+      so an implementer reading the taxonomy cannot reach the headline without them.
 - [x] **RC-T3** — File TALE as an intake entry ✅ 2026-08-21 (intake-1215, dive-verified)
 
 **Context from the same round, for the "Conciseness prompting" line already in Tier 1.** Its

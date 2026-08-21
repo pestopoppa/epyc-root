@@ -1,6 +1,6 @@
 # Qwen3.8-27B — replace Qwen3.6-27B in production
 
-**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **registry swap DONE 2026-08-20** (`b376dadd`, validator 0 problems). Only the `stack_change_pipeline.py` regenerate + stack-change checklist remain, and those need a stack start — nothing is serving today, so `live == config` is unverified.
+**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **stack-template swap DONE 2026-08-20** — `1cff5162` ("stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)", 2026-08-20 21:52:11Z), whose *only* changed file is `repos/epyc-orchestrator/stack_templates/default.yaml` (`git show --stat`: 1 file, +7/-2). **The MASTER registry swap is NOT done**: `orchestration/model_registry.yaml` contains **zero** occurrences of the fixed string `Qwen3.8` (`grep -F -c` → `0`, re-verified 2026-08-21), and `architect_general` / `coder_escalation` there still carry `model_role: qwen36_27b_mtp_q8_local` (`model_registry.yaml:1501`, `:1398`) — so a registry-vs-stack-template divergence stands until the registry is updated **and** the derived layer regenerated. The previously cited `b376dadd` resolves in none of the three repos (`git cat-file -t` → `fatal: Not a valid object name`). `stack_change_pipeline.py` regenerate + stack-change checklist remain, and those need a stack start — nothing is serving today, so `live == config` is unverified. Full evidence: *Research Intake — 2026-08-21 → Q38-T2*.
 **Created**: 2026-08-14
 **Priority**: P2 (model refresh; no production pain forcing it, but a same-day release refresh is cheap to stage)
 **Effort**: Low-Medium — download/smoke/MTP/throughput/architect-bench done; the registry swap is the last step (the 2026-08-14 quality-gate decline was later reversed and the coding ladder ran)
@@ -68,6 +68,15 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
     Qwen3.6's across would be a false attestation.
   - Validator: **0 problems** (this required fixing a pre-existing duplicate-key defect that had been
     failing the validator closed for the whole file — commit `a94e0e01`).
+  - **2026-08-21 CORRECTION (Q38-T2, this box's claim does not hold).** Everything in this bullet
+    describes the MASTER registry, and the master registry does not contain it. `grep -F -c 'Qwen3.8'
+    orchestration/model_registry.yaml` → `0`; `git log -S 'Qwen3.8' -- orchestration/model_registry.yaml`
+    → **empty** (no commit has ever added that string); there is no `qwen38_27b_q8_local` key anywhere in
+    `orchestration/`; and the working tree is clean for that file (`git status --short` → no output). Only
+    `stack_templates/default.yaml` was repointed (`1cff5162`). Because the launched `-m` path is read from
+    `orchestration/derived/stack_priors.yaml`, **not** from the stack template, a start today would serve
+    **Qwen3.6**, not Qwen3.8. Box left ticked as another session's record; the corrected state is in
+    *Research Intake — 2026-08-21 → Q38-T2*.
 - [x] **dFlash2 np1 folded in as decision context, selection UNCHANGED** ✅ 2026-08-20 — cross-session
   campaign measured **70.0 decode t/s** at matched np=1 vs a same-campaign MTP n-max-8 arm at 55.2
   (+26.81%), acceptance 0.628 vs 0.482. Independently verified here: `campaign-summary.json` SHA-256
@@ -101,20 +110,20 @@ Three findings landed here by a chat-template intake round, all verified by rend
 **embedded in our own** `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` (extracted by a GGUF header
 read, without loading the 29 GB model) alongside the stock `Qwen/Qwen3.8-27B` template.
 
-- [ ] **Q38-T1** — Two real defects on the template we now serve. (a) With inline-`<think>` history,
+- [x] **Q38-T1** ✅ 2026-08-21 — **Both defects are UNREACHABLE under current config**: `reasoning_effort` has 0 occurrences in `src/` and 0 in `orchestration/` (no code path sends it), and the llama-server payload is a hardcoded single `user` turn (`src/backends/llama_server.py:560`, `:1316`) so the template's assistant branch that produces the blank `<think>` is never entered. Recorded + reachability established. Two real defects on the template we now serve. (a) With inline-`<think>` history,
       stock **and** our Unsloth variant emit a blank `<think></think>` immediately before every real
       thought — five `<think>` occurrences where three are warranted. (b) `reasoning_effort` handling
       **diverges from upstream**: stock *raises* on `high`, our Unsloth variant silently *coerces*
       `high → xhigh`. An OpenAI-style client sending the ordinary value `high` therefore gets a hard
       500 against stock and silent maximum-effort reasoning here — opposite failure modes, neither
       what the caller asked for.
-- [ ] **Q38-T2** — Registry provenance: re-resolve the swap commit. This handoff's status line cites
+- [x] **Q38-T2** ✅ 2026-08-21 — Status line fixed in place: the real commit is `1cff5162` in `repos/epyc-orchestrator/stack_templates/default.yaml` (`b376dadd` resolves in none of the three repos); master registry has **0** `Qwen3.8` occurrences; and **the stack template is NOT what the launcher reads** — `-m` comes from `orchestration/derived/stack_priors.yaml` (`orchestrator_stack.py:134`, `:252-262`, `:1062-1071`), which still names Qwen3.6. Registry provenance: re-resolve the swap commit. This handoff's status line cites
       `b376dadd`, which resolves in **none** of epyc-root, epyc-orchestrator or
       epyc-inference-research. The Qwen3.8 swap that *does* resolve is `1cff5162` in
       `repos/epyc-orchestrator/stack_templates/default.yaml`, and
       `orchestration/model_registry.yaml` still contains **zero** occurrences of the fixed string
       `Qwen3.8` — `architect_general` and `coder_escalation` there still name Qwen3.6-27B.
-- [ ] **Q38-T3** — Record that we serve a **non-stock (Unsloth) template** (9,993 B, ending
+- [x] **Q38-T3** ✅ 2026-08-21 — Non-stock Unsloth template recorded below with digests (ours 9,993 B `sha256:12827f24b742…` vs stock 8,952 B `sha256:c3cf9e34abf4…`); the registry-descriptor edit is **PREPARED, NOT APPLIED** (registry is operator-frozen — snippet + insertion point handed to the dispatching session). Record that we serve a **non-stock (Unsloth) template** (9,993 B, ending
       `{#- Unsloth fixes - developer role, merged system messages, tool calling #}`) rather than the
       stock 8,952 B one, and that no registry descriptor says so.
 
@@ -122,3 +131,141 @@ read, without loading the 29 GB model) alongside the stock `Qwen/Qwen3.8-27B` te
 `chat_template_kwargs.enable_thinking: false` is **role-keyed**, so it survives the model swap. It
 also makes us immune both to the template's `xhigh` default and to the `reasoning_effort` raise,
 because the raise sits *inside* the `enable_thinking` gate and is unreachable when thinking is off.
+
+### Q38-T1 findings — reachability of the two template defects (2026-08-21)
+
+Both defects are real **in the template**. Neither is reachable **through our stack**. Evidence below is
+read-only inspection of `repos/epyc-orchestrator` plus the template extracted from our own GGUF
+(`qwen38_official.jinja`, byte-identical to `Qwen3.8-27B-Q8_0.gguf.jinja`, `cmp` → identical).
+
+**(a) `reasoning_effort` divergence — UNREACHABLE: nothing sends the field.**
+
+- `grep -rn "reasoning_effort" src/` → **0 hits**. `grep -rn "reasoning_effort" orchestration/` → **0 hits**.
+  Every occurrence in the orchestrator lives in `scripts/` and none of them reaches llama-server:
+  - `scripts/validate/reasoning_effort_certifications.py:44` validates a registry `reasoning_effort.level`
+    key — which no role declares (the 0-hit grep above), so the check is vacuous today.
+  - `scripts/analysis/reviewer_policy_arm_ab.py:184` *parses* the knob, but `_DECODE_KNOBS` (`:197`) is
+    `("temperature", "top_p", "top_k", "min_p")` and `:217` emits only those. The parsed value is never
+    read back anywhere in the file — a dead knob, not a payload field.
+  - `scripts/autopilot/planner_providers.py:303` passes `--config model_reasoning_effort="…"` to the
+    **codex CLI** (`cmd = [self._binary, "exec", "--json", …]`, `:292-300`), not to llama-server.
+- The two llama-server payload builders construct the dict literally and never add the key:
+  `src/backends/llama_server.py:559-563` (non-streaming) and `:1315-1319` (streaming).
+- **Second, independent guard.** In our template the *entire* `reasoning_effort` block is inside the
+  thinking gate: `qwen38_official.jinja:58` opens `{%- if enable_thinking is undefined or enable_thinking
+  is true %}`, and the `xhigh` default (`:59`), the silent `high → xhigh` coercion (`:60-61`) and the
+  `raise_exception` (`:63-64`) all sit within it. The handoff's standing note claimed this gating only for
+  the *raise*; verified here, **all three effects — default, coercion and raise — share the same guard**,
+  so with `enable_thinking: false` none can fire even if a caller did send the field.
+
+**(b) Blank-`<think>` duplication — UNREACHABLE: no assistant turn ever reaches the template.**
+
+- *Template precondition*, verified at `qwen38_official.jinja:113-120`: the assistant branch reads **only**
+  `message.reasoning_content` (`:115-116`) and never parses inline `<think>` out of `content`. When a
+  caller puts the thought inline, `reasoning_content` trims to `''`, so `:120` emits
+  `'…\n<think>\n' + '' + '\n</think>\n\n' + content` — a blank think block immediately before the real one.
+  **It requires a structured `messages` array carrying a `role: "assistant"` entry.**
+- *Our payload has no such entry.* `src/backends/llama_server.py:560` and `:1316` both hardcode
+  `"messages": [{"role": "user", "content": user_content}]` — one user turn, always; no assistant entry,
+  no `reasoning_content` key, and `request.extra["messages"]` is not consulted on this backend.
+- *Inbound multi-turn requests are flattened before they get there.*
+  `src/api/routes/openai_compat.py:468` takes `request.messages[:-1]` as history; `_context_parts_from_history`
+  (`:248-265`) renders each turn as the plain string `f"{role_label}: {content}"`; `:494` joins them into a
+  single `context` blob. An assistant `<think>` therefore arrives as **literal text inside the one user
+  turn** — the template's assistant branch is never entered. (Side note, not the defect under audit: raw
+  `<think>` markup can thus be echoed back into a prompt as user text.)
+- *The one place that does build assistant history targets a different model.*
+  `src/api/routes/chat_vision.py:584` (`messages.append({"role": "assistant", …})`) posts to
+  `_vl_url_for_port(vl_port)` (`:547-548`) — the vision role's port serving `Qwen3-VL-30B-A3B-Instruct`,
+  not `:8083`.
+- *The one backend that would honour caller history is dead.* `src/backends/openai.py:240-241` does read
+  `request.extra["messages"]`, but `OpenAIBackend` is never instantiated in `src/` (only its own docstring
+  example `:7-10` and the `src/backends/__init__.py:29` re-export), and local roles are constructed as
+  `LlamaServerBackend` (`src/llm_primitives/backend.py:143`, `:247`, `:334`, `:345`, `:397`).
+
+**(c) `enable_thinking: false` confirmed for both Qwen3.8-serving roles.**
+
+- `orchestration/model_registry.yaml:1396-1397` (`coder_escalation`, block opens `:1391`) and `:1499-1500`
+  (`architect_general`, block opens `:1487`) — both under the top-level `server_mode:` section (`:1351`),
+  which is exactly the section `RegistryLoader.get_role_chat_template_kwargs` reads
+  (`src/registry/registry_loader.py:513-517`; it explicitly does **not** read the `roles:` section).
+- Executed against the orchestrator venv: `chat_template_kwargs_for_role('architect_general')` →
+  `{'enable_thinking': False}`; `'coder_escalation'` → `{'enable_thinking': False}` (also `frontdoor`,
+  `architect_critic`; `worker_general` → `None`).
+- Two further belts on the launch side, from the derived layer:
+  `orchestration/derived/stack_priors.yaml:363` sets `flags.reasoning: 'off'`, emitted as `--reasoning off`
+  (`scripts/server/orchestrator_stack.py:1431-1433`); and `:357` sets `flags.jinja: true`, emitted as
+  `--jinja` (`orchestrator_stack.py:1402`), which is what keeps requests on the `/v1/chat/completions` +
+  jinja path where `chat_template_kwargs` is actually applied.
+
+> **Verdict.** Both defects are **unreachable under current config**, and each is blocked twice over
+> (no sender / no assistant turn, *plus* the `enable_thinking` gate). They become reachable only if
+> someone (i) starts sending `reasoning_effort`, or (ii) replaces the hardcoded single-user-turn payload
+> with real `messages` history — **and** turns thinking back on for these roles. Treat those two as the
+> tripwires, not the template.
+
+### Q38-T2 findings — commit provenance and which artifact actually wins at start time (2026-08-21)
+
+**Provenance.**
+
+| Claim | Verification | Result |
+|---|---|---|
+| `b376dadd` (cited in the old status line) | `git cat-file -t` in epyc-orchestrator, epyc-root, epyc-inference-research | `fatal: Not a valid object name` in all three |
+| `1cff5162` | `git log -1`, `git show --stat` | `1cff5162c7e6f6d103beb8cb12747b4e0da30bf6`, 2026-08-20 21:52:11 +0000, *"stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)"*, **1 file changed** — `stack_templates/default.yaml` (+7/-2) |
+| Master registry swapped? | `grep -F -c 'Qwen3.8' orchestration/model_registry.yaml` | **0** |
+| Ever swapped? | `git log -S 'Qwen3.8' -- orchestration/model_registry.yaml` | **empty** — no commit in history ever added that string |
+| Uncommitted swap sitting in the tree? | `git status --short -- orchestration/model_registry.yaml` | no output (clean) |
+| `qwen38_27b_q8_local` role exists? | `grep -n 'qwen38_27b' orchestration/model_registry.yaml`; `grep -ril 'qwen3\.8\|qwen38' orchestration/ --include='*.yaml'` | **no match anywhere** — `architect_general:1501` and `coder_escalation:1398` still read `model_role: qwen36_27b_mtp_q8_local` (defined `:2468`) |
+
+**Which source wins at start time: the MASTER REGISTRY, via the derived layer — not the stack template.**
+
+The launch chain is `orchestration/model_registry.yaml` → (`scripts/registry/stack_change_pipeline.py`
+regenerate) → `orchestration/derived/stack_priors.yaml` → launcher:
+
+- `src/registry/stack_priors.py:30` — `DEFAULT_REGISTRY = REPO_ROOT / "orchestration" / "model_registry.yaml"`
+  (input); `:32` — `DEFAULT_OUTPUT = REPO_ROOT / "orchestration" / "derived" / "stack_priors.yaml"` (output).
+- `scripts/server/orchestrator_stack.py:134` — `STACK_PRIORS_PATH = … / "orchestration/derived/stack_priors.yaml"`;
+  `:252-262` `_stack_prior_launch()` reads that file and returns `launch.requirements`; `:1062-1071` (and the
+  sibling builders at `:727`, `:783`, `:908`, `:922`) take `-m` from `_runtime_string(requirements, "model_path", …)`.
+- **`stack_templates/default.yaml` supplies no path.** `src/config/stack_templates.py:135-217` `load_template`
+  parses `model:` only as a *name string* into `RoleConfig.model`; the file's own serving facts are resolved
+  through `src.registry.stack_priors` (`:26-31`). And `_validate_stack_prior_parity` (`:303`, running to `validate_template` at `:385`) compares
+  **ports only** — it never compares models, so the Qwen3.8-vs-Qwen3.6 divergence passes validation silently.
+  `validate_template`'s model-existence check (`:485-500`) emits a **warning**, not an error.
+
+**Consequence, stated plainly:** `orchestration/derived/stack_priors.yaml:332-333` still reads
+`model_path: /mnt/raid0/llm/models/Qwen3.6-27B-MTP-Q8_0.gguf` and the same for `draft_model_path`
+(`grep -F -c 'Qwen3.8'` on that file → **0**; `'Qwen3.6'` → **25**), with `spec.draft_max: 4` (`:370`), and
+the file's mtime is **2026-08-11 01:36** — predating both 2026-08-20 edits. **A stack start today would
+launch Qwen3.6-27B-MTP-Q8_0 with draft depth 4**, i.e. neither the model nor the `draft_max: 8` the stack
+template declares. The `stack_change_pipeline.py` regenerate is therefore not a formality on the remaining
+checklist — it is the step that makes the swap real, and it cannot help until the **master registry** is
+swapped first, because it compiles *from* that file.
+
+### Q38-T3 findings — the served GGUF embeds a non-stock (Unsloth) template (2026-08-21)
+
+| Template | Bytes | `sha256[:12]` | Note |
+|---|---|---|---|
+| `Qwen3.8-27B-Q8_0.gguf` (ours, served) | 9,993 | `12827f24b742` | Ends `{#- Unsloth fixes - developer role, merged system messages, tool calling #}` |
+| Stock `Qwen/Qwen3.8-27B` | 8,952 | `c3cf9e34abf4` | No trailing marker |
+| `Qwen3.6-27B-MTP-Q8_0.gguf` | 8,057 | `55d4931433fe` | byte-identical to the 35B-A3B below |
+| `Qwen3.6-35B-A3B-MTP-Q8_0.gguf` | 8,057 | `55d4931433fe` | — |
+| `Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf` | 7,992 | `8452ca85cb1e` | — |
+
+- Our embedded template is **1,041 bytes larger** than stock and carries an explicit Unsloth provenance
+  marker as its final line. `cmp` confirms the separately extracted `qwen38_official.jinja` and
+  `Qwen3.8-27B-Q8_0.gguf.jinja` are byte-identical, so the two names denote one artifact.
+- **No registry descriptor records this.** `grep -c -F 'Qwen3.8' orchestration/model_descriptors.yaml` → `0`;
+  `grep -n 'chat_template' orchestration/model_descriptors.yaml` → only two `enable_thinking` references
+  (`:341`, `:676`), neither a template-provenance record. Nothing anywhere in `orchestration/` states that a
+  served GGUF's chat template diverges from its upstream.
+- **Scope discipline:** the Qwen3.6 / Qwen3.5 rows above are recorded as digests only. Whether *those*
+  diverge from their own upstreams is **UNVERIFIED** — no stock counterpart was extracted for them this round.
+- **Registry-descriptor edit: PREPARED, NOT APPLIED.** The registry is operator-frozen and a subagent may
+  prepare but not apply an index/registry row, so the exact snippet and insertion point were handed to the
+  dispatching session rather than written. It must land in the **master** `orchestration/model_registry.yaml`
+  (under the top-level `roles:` map, `:1599`), never in `orchestration/model_descriptors.yaml` — that file is
+  a compiled artifact (`descriptor_version: 3`, `status: compiled`, `compiled_at: '2026-08-11T01:36:32Z'`,
+  `source_registries.lean.path → orchestration/model_registry.yaml`) and a recompile would overwrite any
+  hand-edit. The snippet models itself on the existing `thinking_control:` precedent at
+  `model_registry.yaml:1580-1585`.

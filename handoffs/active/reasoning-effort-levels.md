@@ -353,6 +353,12 @@ has NONE at either quant**, and our bench matched that, so the loop would occur 
       with its `(model, quant, kernel/era)` stamp and add a validator that flags a role whose bound model
       no longer matches the model its effort level was certified against. Same failure mode the registry
       already had — a role launching an artifact that had no model-indexed row of its own.
+      **Amendment 2026-08-21 (via CT-2, `qwen-chat-template-evaluation.md`): the CHAT TEMPLATE is a
+      calibration-voiding axis this trigger does not cover.** `architect-model-selection-bench.md:267`
+      already ruled the prompt-template axis a per-model property, and the 2026-08-21 fleet sweep found
+      three distinct embedded templates across four production models. A template swap (or a GGUF
+      re-embed) invalidates certified levels the same way a quant change does — extend the stamp to
+      `(model, quant, kernel/era, template_sha)` when E-7's validator is next touched.
 - [ ] **E-5 — Dynamic selection (stretch).** Let the router pick effort from task difficulty rather than
       pinning it per role — a natural extension of [[project_learned_routing_controller]]. Needs a
       difficulty signal that is cheaper than just running the hard path.
