@@ -391,6 +391,21 @@ written. The plan was internally stale the day it was approved.
 **Stage 2 still makes NO handoff, stub, or domain/master-index edits** — its only file is
 `research/intake_index.yaml`.
 
+**A Stage-2b round that runs AFTER Stage 4 does not inherit the earlier plan's approval — its
+actionables need their own Stage-3 gate.** Ratified by the operator 2026-08-21 ("research-intakes
+should follow the prescribed flow"), after a session violated it: the operator said *"proceed with
+both"*, authorizing (a) two omitted plan items and (b) an **ingest-and-dive** of ~20 dive-surfaced
+sources. Ingest-and-dive is Stage-1+2 scope — index writes only. The session instead went straight
+from the returning dive ledgers to filing **~30 task rows across five handoffs plus a skill edit**,
+with no plan and no approval. The stage machine does not end at Stage 4: a post-plan wave
+**re-enters it at Stage 1/2**, and everything downstream applies again — the unverified contract,
+the write restrictions, and above all the Stage-3 review. Approval of *ingest scope* is never
+approval of *filing*; the operator is entitled to see the derived-actionables ledger and decline
+items **before** they land in handoffs, and a retroactive audit (which is what that session had to
+run instead) is a remedy, not a substitute. The tell that you are about to repeat this: dive
+results arriving after `stage: stage4-complete` and feeling "already authorized."
+
+
 ---
 
 # STAGE 3 (plan mode) — Audit and construct the action plan
