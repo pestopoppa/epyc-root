@@ -358,15 +358,21 @@ class HealthPayloadTests(unittest.TestCase):
             orig_oc = server.AUTOPILOT_OUTCOME_JSON
             orig_kn = server.KERNEL_DASHBOARD_JSON
             orig_tl = server.TIMELINE_PATH
+            orig_deployments = server.AUTOKERNEL_DEPLOYMENTS_ROOT
+            orig_supervisors = server.AUTOKERNEL_SUPERVISORS_ROOT
             try:
                 server.AUTOPILOT_OUTCOME_JSON = oc
                 server.KERNEL_DASHBOARD_JSON = kn
                 server.TIMELINE_PATH = Path(d) / "missing_timeline.json"
+                server.AUTOKERNEL_DEPLOYMENTS_ROOT = Path(d) / "deployments"
+                server.AUTOKERNEL_SUPERVISORS_ROOT = Path(d) / "supervisors"
                 return server.health_payload()
             finally:
                 server.AUTOPILOT_OUTCOME_JSON = orig_oc
                 server.KERNEL_DASHBOARD_JSON = orig_kn
                 server.TIMELINE_PATH = orig_tl
+                server.AUTOKERNEL_DEPLOYMENTS_ROOT = orig_deployments
+                server.AUTOKERNEL_SUPERVISORS_ROOT = orig_supervisors
 
     def test_an_undeclared_ten_day_outcome_silence_degrades_health(self):
         h = self._health_with({"generated_at": _iso(_NOW - timedelta(days=10)),

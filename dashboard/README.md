@@ -163,13 +163,135 @@ journal timestamp, not export time, drives freshness.
 
 Live discovery visibility is a separate producer contract:
 `operations/live/{autokernel,planner}.jsonl`, schema
-`epyc.autokernel.discovery_live_event.v1`. The actor seam writes only an
+`epyc.autokernel.discovery_live_event.v2` (consumer also accepts the exact
+historical `v1` field set), frozen at producer commit
+`76301d6647586a25f2d56de1b93f1da9ac11a3fa`. v2 binds every row to a
+64-hex operation key and content-derived `ake-<sha256>` event identity. Planner
+rows are mirrored byte-identically into both physical streams; the hub
+deduplicates matching identities, degrades health on a missing mirror, and drops
+same-identity payload, timestamp, duplicate, or sequence-order corruption.
+The hub opens and takes shared locks on both streams in the producer's
+global-then-planner order and holds them through one bounded snapshot and
+reconciliation. Directory/file descriptors are no-follow, owner-bound,
+single-link, and checked against their current path identities both before and
+after each read; size/mtime/ctime drift also invalidates the attempt. A final
+all-stream identity/content-epoch barrier runs after strict reconciliation and
+immediately before return, catching mutations to the first stream during the
+second stream's read. The hub
+therefore cannot mistake the transaction's global-first
+midpoint for a missing mirror. A writer that outlasts the bounded snapshot wait
+is shown as `producer_write_in_progress` without gating health; an unlocked,
+actually missing mirror remains degraded and health-gating.
+Append-only `visibility_degraded` state markers remain visibly auditable as
+historical incidents but do not keep current health red after exact mirror
+equality is restored. The actor seam writes only an
 allowlisted lifecycle vocabulary, provider/model identities, return codes,
 decisions and transcript hashes. Prompts, model text, commands, environment and
 credentials are structurally excluded. `/api/kernel/live` also observes the
 deployment's controller lock, so a long first planner call is visible before its
 first durable state checkpoint; that lock observation never exposes or scrapes
-the ephemeral actor container.
+the ephemeral actor container. When several sealed deployments coexist, the
+activity hero selects a held controller first, then the terminal deployment with
+the newest producer-authored progress timestamp. A newer config-file mtime never
+turns a real failed run into “idle.” The newest bundle with no controller state,
+checkpoint, or lifecycle event is exposed separately as
+`newest_unlaunched_deployment` (`launch_state: not_launched`); it is availability
+context and does not affect liveness or freshness. That field is populated only
+when the unlaunched bundle is newer in seal/progress order than the selected
+meaningful campaign; once v7 is active, an older unlaunched v6 is superseded
+history rather than an “available next” deployment.
+
+The live fold also distinguishes actor completion from controller completion. If
+the planner reports `planner_completed`, the controller lock then disappears,
+and no critic event, state, checkpoint, or operation follows, the page reports a
+terminal `planner_validation` interruption—not “idle / awaiting launch.” It says
+that the exact exception was not persisted, marks resume unsafe, and records that
+GPU screening was never reached. Explicit future
+`planner_validation_failed`/`planner_validation_refused` lifecycle events map to
+the same stage without relying on that inference.
+
+Pending-state phases retain their controller ordering. A durable
+`pending.phase: critic_pending` plus `critic_started` is rendered as active
+critic review, with planner validation complete and authorization/resource
+admission not reached. `critic_complete` advances to authorization; resource
+admission is shown only after the pending record carries a persisted
+authorization. This prevents a live critic actor from being mislabeled as an
+idle GPU wait.
+
+Post-build proof is likewise identity-bound before it reaches the page. The hub
+accepts a completed correctness execution only when the inflight operation key
+and manifest match the operation intent and evidence policy, the native backend
+summary is present, and the same operation carries its released GPU proof claim.
+This lets a terminal producer-parser failure report `correctness_validation`
+after a completed GPU run (including duration and passed/total), rather than
+falling backward to `evidence_binding` or claiming that GPU screening never ran.
+Dispatch attribution, profiling, and benchmarking remain `not_reached` unless
+their own evidence exists.
+
+The cross-strategy lifecycle is projected from the inflight operation's native,
+self-hashed receipts, never from process names or an output-directory mtime:
+`proof/correctness/receipt.json`,
+`proof/attribution-{candidate,anchor}/receipt.json`,
+`proof/attribution-pair.json`, `proof/proof-bundle.json`, and
+`runner/sN/{measurement-graphs-off,target-runtime-graphs-on}/result.json`.
+Those receipts expose correctness execution/validation, both attribution arms,
+the graphs-off measurement screen, the separate graphs-on target-runtime
+screen, decision, S1/S2, the counterbalanced attribution order, and the exact
+first incomplete resume stage. A stopped controller keeps completed receipts
+complete and names the one stage a restart will execute; it does not fall back
+to a generic failed screen. The operation-owned device-claim journal supplies
+expected/held/released state, with a held claim requiring the captured PID and
+start tick to remain live. A durable screened checkpoint is rendered as the
+automatic transition to the next portfolio hypothesis, whether the controller
+is still running or waiting for restart.
+
+Governed terminal rows are also headline state. `source_apply` and `compile`
+map to `authoring_refused`; correctness maps to `correctness_falsified`; and
+dispatch attribution maps to `attribution_route_falsified`. The dashboard
+follows the row's declared `stage_receipt_path`, verifies
+`stage_receipt_sha256` against the exact file bytes, and then projects the
+typed class, stage, disposition, and `scientific_budget_spent` value. This
+includes both per-arm attribution refusals and the cross-arm
+`proof/attribution-pair-refusal.json` invariant terminal. Planner provider
+interruptions remain `planner_transient` on the same turn and expose
+the durable `provider_attempt`; a critic interruption resumes only from
+`pending.phase=critic_pending`. Neither is displayed as a scientific refusal.
+A measurement invocation is additionally resumable at its exact arm boundary
+under the contract frozen at producer commit
+`eb689b0d3239f7af538015a7ccb098fe8169f9e6`. The hub validates the canonical
+`preflight.json` content hash and each private
+`process-{anchor,candidate}/receipt.json`
+(`epyc.autokernel.gpu_discovery_process_receipt.v1`) before it calls an arm
+complete or reusable. A process checkpoint names the completed arms, the next
+arm, graph mode, and first incomplete screen without exposing the mode-0600
+stdout/stderr bytes. A terminal sibling `process-<arm>-refusal.json`
+(`epyc.autokernel.gpu_discovery_output_refusal.v1`) is rendered as
+`measurement_output_refused`: its exact arm, timing-validation reason code,
+bounded native/rederived timing carriers, and reusable earlier arms remain
+visible, while the raw controller reason and captured process output never
+cross the dashboard API. The matching
+`portfolio_measurement_output_failures`/`portfolio_skips` state is projected as
+either a distinct-candidate retry or the bounded non-scientific skip, including
+the exact attempt count and next recovery boundary.
+A nonpositive exact-attribution result is instead measured evidence from
+`runner/sN/exact-attribution-outcome.json`: both runtime screens show as
+governed skips, the graphs-on call is explicitly unexecuted, and the loop moves
+through decision to the next hypothesis. Completed iteration rows retain both
+exact-attribution and target-runtime effects plus their S1/S2 repetition.
+
+An explicitly sealed `campaign_kind: experimental_runtime` uses an isolated
+dashboard adapter rather than the kernel-source pipeline. Its deployment
+descriptor has schema `epyc.autokernel.experimental_runtime_dashboard.v1`, a
+bundle-contained runtime root, the fixed DFlash2 sibling stage order
+`experimental_build → cpu_gpu_regression → matched_np1 → concurrency_grid →
+greedy_parity → decision`, and a bounded silence budget for every stage. Each
+completed stage is proven by a private, self-hashed
+`epyc.autokernel.experimental_runtime_stage_receipt.v1` receipt chained to the
+exact preceding receipt file hash. The first missing or invalid receipt is the
+only resumable boundary. The live API exposes compact np=1, np=8, parity, and
+decision headlines and marks the sibling excluded from the kernel-source
+champion frontier; it never feeds these results to discovery progression.
+Deployments without `campaign_kind` retain the existing kernel-source behavior.
 
 Discovery/progression is a second, additive contract:
 `scripts/benchmark/autokernel_progression.py` projects immutable CPU/GPU screen
@@ -178,9 +300,21 @@ and strict campaign receipts into
 as `_progression`; it never overwrites terminal `sections`, never mints a
 champion, and requires `promotion_claim: false`. Its top layer is the operator's
 ten-second scan (production anchor, CPU/GPU leaders, direction-correct effect,
-workload, evidence tier, current gate, next action and candidate → strict keep →
-champion → promotable counts). Strategy and unexplored hypotheses form the
-second layer; all former detailed cards remain under **Evidence & diagnostics**.
+workload and candidate → strict keep → champion → promotable counts). Candidate
+cards keep only resource, lever, verdict, effect, and phase/workload exposed;
+regime, gate/next prose, evidence paths/hashes, vectors, and spread live in
+closed per-item disclosures. Pursued and abandoned/retest rows use the same
+compact contract, and historical rows remain closed by default. The current
+phase hero, last producer transition, and short timestamped AutoKernel plus
+planner/critic tails remain visible; full streams, pipeline, checkpoint, full
+timeline, and implementation/readiness diagnostics are closed by default. Poll
+time is labelled as dashboard refresh, never producer progress, while each live
+tail shows the last producer timestamp and age. Strategy and unexplored
+hypotheses form the second layer; all former detailed cards remain under
+**Evidence & diagnostics**. The whole progression surface is itself closed by
+default behind a one-line CPU leader, GPU leader, and funnel headline. The two
+short log tails are never inside a disclosure: they are the loop's operational
+pulse, not optional evidence detail.
 When progression is populated but strict champion/headroom/release owners are
 unreported, panel and global health say `degraded`, never `ok` and no longer the
 false `absent`/“nobody is reporting” state.

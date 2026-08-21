@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** CONTROLLER-FIRST GRAPH VALIDATED / PLANNER-CONDITIONING V3 SEALED / CAMPAIGN IDLE — updated 2026-08-16
+**Status:** V20 LIVE / PLANNER MODEL CALL / GPU CORRECTLY IDLE — updated 2026-08-20 21:57 UTC
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,46 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+**Current checkpoint (2026-08-20 17:42 UTC):** v18 completed correctness, profiler attribution,
+and its graphs-off runtime screen, then failed closed because the graphs-on candidate used seed 8622
+while its anchor used 8613. Research commits `d0e59dca` and `b9d06347` bind identical hidden seeds
+across oracle-protected arms and add a full mocked-`run()` seam regression. Fresh immutable v19
+(`gpu-discovery-quant-ladder-occupancy-v19`, validated graph SHA-256
+`491098c0d11bc673018dd795f66b712e207aa3f62039ba8436ada7e858ae2040`) proved the repair twice on
+hardware: both Q5 graphs-on arms used seed 8613. The dashboard fix at root `4ae25961` now presents
+the terminal controller error without retaining it as a current refusal.
+
+The measured portfolio advanced through Q5 and Q8. Q5 S1 measured graphs-off `+1.1961%` and
+graphs-on `+2.1218%`; reversed-order S2 measured attribution `+1.39319%`, graphs-off `+4.01612%`,
+and graphs-on `-0.41518%`, making the series inconclusive. Three bounded Q5 authoring refusals for
+undeclared file scope advanced without GPU spend. Q8 candidate 1 measured S1
+`+0.318417% / +1.680022% / +2.3169997%` and S2
+`+0.281172% / +0.632369% / -0.161146%` (attribution / graphs-off / graphs-on), also inconclusive;
+candidate 2 short-circuited after negative attribution (`-0.4838353%`). Candidate 3 measured S1
+`+0.0379953% / +1.6755237% / +3.2741393%` and S2
+`+0.00216052% / +0.6663198% / +5.7210440%`, but remained inconclusive under the sealed portfolio
+policy rather than being promoted from favorable point estimates.
+
+Turn 11 then failed before GPU work: the planner copied controller-owned semantic candidate routes
+`cuda-fattn-tile-v1.gqa7_bulk_pairs` and `.gqa7_scalar_tail` into `expected_dispatch`, while the
+sealed plan authority permits only `cuda-fattn-tile-v1.anchor.0`. The exact terminal error is
+`DiscoveryControllerError: dispatch route id is not deployed authority`. Every claim was released,
+KFD was empty, and VRAM returned to baseline. That failure authorized a bounded repair, not relaunch
+from a mutable repair worktree.
+
+**Successor checkpoint (2026-08-20 21:57 UTC):** the bounded repair landed at immutable research
+`de1d93d567dcfdd0e5a74f4f9b803d664cfb460b` and keeps FA candidate geometry controller-owned.
+The fresh v20 deployment at
+`/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v20` passed two identical
+validate-only runs. Its config-file SHA-256 is
+`4ccef16404fcadd10a067445399bfc459aa8b7335425fd8245fff462a01be8e8`, semantic config SHA-256 is
+`d69373ee8e43b265937e139364d63ad17a478a2b25214db582f30d46df962b18`, and graph SHA-256 is
+`283b590df7dcd7e6157af775e5ad827a23513c036923d75ef59d59a822dc5d82`. Controller PID `469246`
+owns the run lock. The first state is Q5 turn 1 `actor_entering`; the first mirrored event is
+`planner_started` (`ake-5799555bc7524011f467d921bfdff123f07b6e010bf09e4961c867a5c5017b70`).
+V19 was neither reused nor modified. No GPU claim is held; KFD is empty and VRAM is 0% while the
+planner runs, which is the correct phase posture.
 
 **Current checkpoint (2026-08-16 19:55 UTC):** the controller-first implementation is now on
 research `main` via merge `0d701b9ae6717821f4728a62897b73773f63c874`. Its final product tip is
@@ -45,10 +85,20 @@ planner logs; it currently reports `active=false` because no campaign is running
       build → correctness → attribution → runner → classification; add a graceful stop latch and
       same-graph restart tests proving completed stages never repeat. Graph upgrades require a
       versioned carry-forward receipt rather than copying state or weakening deployment identity.
-- [ ] **AK-RUN-V3 — operationally launch the v3 bundle from a fresh state root.** The specific external
-      prerequisite is restoration of this devcontainer's Docker socket followed by exact inspection
-      of the pinned planner image. Launch only after the GPU is free and protected production and
-      instrument identities revalidate; do not migrate a stale bundle state.
+- [x] **AK-RUN-V3 — operationally launch from a fresh state root.** Fulfilled by versioned successors;
+      v19 launched from a fresh sealed deployment and did not reuse v18's poisoned receipt. ✅ 2026-08-20
+- [x] **AK-V19-SEED — bind identical seeds across timed-output-oracle arms and prove the seam live.**
+      Product commits `d0e59dca` + `b9d06347` passed the hardware-free closure and v19 proved seed
+      8613 on both graphs-on arms in both execution orders. ✅ 2026-08-20
+- [x] **AK-V19-PORTFOLIO — advance the repaired live loop through Q5 and Q8 without leaking claims.**
+      Q5 and Q8 completed the bounded screens above; inconclusive series remained nonpromotable,
+      negative attribution short-circuited throughput, and all claims/processes cleaned up. ✅ 2026-08-20
+- [x] **AK-V19-FA-AUTH — make controller-owned FA route geometry uncopyable planner context and recover
+      invalid dispatch intent as a secret-free typed refusal.** Landed at `de1d93d5`; v20 passed two
+      identical validate-only runs and launched from a fresh state root. ✅ 2026-08-20
+- [ ] **AK-V20-LIVE — monitor the fresh v20 receipt chain through its next terminal or safe boundary.**
+      Confirm planner refusal/recovery behavior, require owned GPU claim/KFD/VRAM only during GPU
+      phases, and do not infer a result from partial receipts or relaunch while PID `469246` owns the run.
 - [ ] **AK-ADM-1 — promote the six planner-memory limitations into typed pre-model enforcement.**
       Bind a versioned admissibility-policy manifest into Sol/Fable context and enforce exact kernel
       instantiation, command phase, static-tool execution, Q4_K correctness, Q8 native-path premise,
