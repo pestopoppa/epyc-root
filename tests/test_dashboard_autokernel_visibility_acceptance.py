@@ -1387,6 +1387,75 @@ process.stdout.write(JSON.stringify(out));
         self.assertIn("Critic review", pipeline)
         self.assertIn("not_reached", pipeline)
 
+    def test_pre_controller_graph_mismatch_is_visible_without_raw_stderr(self) -> None:
+        payload = {
+            "active": False,
+            "observed_at": _iso(0),
+            "deployment": "gpu-discovery-quant-ladder-occupancy-v21",
+            "deployment_history": [{
+                "deployment": "gpu-discovery-quant-ladder-occupancy-v20",
+                "disposition": "historical",
+                "last_progress_at": _iso(60),
+            }],
+            "autokernel_log": [], "planner_log": [],
+            "_freshness": {"staleness_class": "fresh"},
+            "activity": {
+                "status": "failed",
+                "phase": {"id": "deployment_graph_revalidation",
+                          "label": "Deployment graph revalidation failed",
+                          "elapsed_s": None},
+                "stall": {"state": "failed",
+                          "detail": "The durable deployment graph differed during sealed-graph revalidation."},
+                "waiting_on": "fresh sealed successor deployment",
+                "hypothesis_id": None, "turn": None,
+                "gpu": {"expected_now": False, "claim_held": False,
+                        "detail": "GPU was not expected or claimed; controller startup did not complete."},
+                "checkpoint": {"available": True,
+                               "state": "pre_controller_terminal"},
+                "resume": {"required": True, "possible": False,
+                           "detail": "Do not resume this deployment; launch a fresh sealed successor."},
+                "failure": {
+                    "detected": True,
+                    "stage": "deployment_graph_revalidation",
+                    "class": "durable_deployment_graph_mismatch",
+                    "return_code": 1,
+                    "stderr": {"sha256": "d" * 64, "size": 1940,
+                               "detail": "bounded signature"},
+                    "detail": "The durable deployment graph differed during sealed-graph revalidation.",
+                    "recovery": "Do not resume this deployment; launch a fresh sealed successor.",
+                },
+                "stage_contract": {
+                    "first_incomplete_stage": "deployment_graph_revalidation",
+                    "resume_policy": "fresh_sealed_successor_required",
+                },
+                "pipeline": [{
+                    "id": "deployment_graph_revalidation",
+                    "label": "Deployment graph revalidation",
+                    "state": "failed",
+                }],
+                "transitions": [],
+                "history": {"abandoned_count": 0, "retest_count": 0,
+                            "summary": "pre-controller terminal", "rows": []},
+            },
+        }
+
+        nodes = self._render_live(payload)
+        summary = nodes["ak-live-summary"]["innerHTML"]
+        pipeline = nodes["ak-live-pipeline"]["innerHTML"]
+        history = nodes["ak-live-history-rows"]["innerHTML"]
+
+        for token in ("gpu-discovery-quant-ladder-occupancy-v21", "failed",
+                      "deployment graph revalidation",
+                      "durable_deployment_graph_mismatch", "exit 1",
+                      "stderr sha256 dddddddddddd…", "not expected",
+                      "fresh sealed successor"):
+            self.assertIn(token.lower(), summary.lower())
+        self.assertIn("Deployment graph revalidation", pipeline)
+        self.assertIn("failed", pipeline)
+        self.assertIn("gpu-discovery-quant-ladder-occupancy-v20", history)
+        self.assertIn("historical", history)
+        self.assertNotIn("unsafe actor output", summary.lower())
+
     def test_active_critic_pending_is_visible_in_hero_and_pipeline(self) -> None:
         payload = {
             "active": True,

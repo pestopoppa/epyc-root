@@ -18,8 +18,11 @@ from dashboard import server
 class AutoKernelLiveDashboardTest(unittest.TestCase):
     def setUp(self) -> None:
         self._old_root = server.AUTOKERNEL_DEPLOYMENTS_ROOT
+        self._old_supervisors_root = server.AUTOKERNEL_SUPERVISORS_ROOT
         self.temp = tempfile.TemporaryDirectory()
         root = Path(self.temp.name) / "deployments"
+        supervisors = Path(self.temp.name) / "supervisors"
+        supervisors.mkdir(mode=0o700)
         self.bundle = root / "campaign-a"
         self.state = self.bundle / "state"
         self.operations = self.bundle / "operations"
@@ -34,10 +37,86 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
         (self.bundle / "config/deployment.json").write_text(json.dumps(config))
         (self.state / "controller.run.lock").touch()
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = root
+        server.AUTOKERNEL_SUPERVISORS_ROOT = supervisors
 
     def tearDown(self) -> None:
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = self._old_root
+        server.AUTOKERNEL_SUPERVISORS_ROOT = self._old_supervisors_root
         self.temp.cleanup()
+
+    def _write_supervisor_graph_mismatch(self, bundle: Path,
+                                         config_path: Path) -> Path:
+        runtime = server.AUTOKERNEL_SUPERVISORS_ROOT / bundle.name
+        runtime.mkdir(mode=0o700)
+        config = json.loads(config_path.read_text())
+        canonical = json.dumps(
+            config, sort_keys=True, separators=(",", ":")).encode("ascii")
+        source = config_path.stat()
+        spec_sha = "d" * 64
+        updated_at = "2026-08-21T00:35:10.589385Z"
+        identity = {
+            "child": None, "exit_code": 1, "restart_count": 0,
+            "schema": server._SUPERVISOR_IDENTITY_SCHEMA,
+            "session_name": "ak-" + "e" * 24,
+            "spec_sha256": spec_sha, "state": "stopped",
+            "supervisor": {}, "tmux": {},
+            "tmux_socket_name": "epyc-autokernel-supervisors",
+            "updated_at": updated_at,
+        }
+        launch_spec = {
+            "schema": server._SUPERVISOR_SPEC_SCHEMA, "kind": "deployment",
+            "validate_only": False, "runtime_root": str(runtime),
+            "restart_policy": {"delay_seconds": 2.0, "max_restarts": 0},
+            "deployment_config": {
+                "runtime_leaf": "deployment-config.json",
+                "source_path": str(config_path),
+                "source_identity": {
+                    "dev": source.st_dev, "ino": source.st_ino,
+                    "mode": source.st_mode & 0o7777, "nlink": source.st_nlink,
+                    "size": source.st_size, "uid": source.st_uid,
+                },
+                "canonical_size": len(canonical),
+                "canonical_sha256": hashlib.sha256(canonical).hexdigest(),
+            },
+        }
+        events = [
+            ("supervisor_started", {"spec_sha256": spec_sha}),
+            ("child_started", {"restart_count": 0}),
+            ("child_exited", {"return_code": 1}),
+            ("restarts_exhausted", {"last_return_code": 1,
+                                    "max_restarts": 0}),
+            ("supervisor_stopped", {"exit_code": 1}),
+        ]
+        previous = None
+        ledger = []
+        for sequence, (event, payload) in enumerate(events, 1):
+            row = {
+                "event": event, "payload": payload,
+                "previous_sha256": previous,
+                "schema": server._SUPERVISOR_LEDGER_SCHEMA,
+                "sequence": sequence, "written_at": updated_at,
+            }
+            digest = hashlib.sha256(json.dumps(
+                row, sort_keys=True, separators=(",", ":")
+            ).encode("ascii")).hexdigest()
+            row["record_sha256"] = digest
+            ledger.append(json.dumps(row, sort_keys=True, separators=(",", ":")))
+            previous = digest
+        files = {
+            "identity.json": json.dumps(identity),
+            "deployment-config.json": canonical.decode("ascii"),
+            "launch-spec.json": json.dumps(launch_spec),
+            "death-ledger.jsonl": "\n".join(ledger) + "\n",
+            "controller.stderr.log": (
+                "unsafe actor output: SECRET PROMPT MUST NOT ESCAPE\n"
+                "DeploymentFactoryError: durable deployment graph differs "
+                "from current sealed graph\n"),
+        }
+        for name, body in files.items():
+            path = runtime / name
+            path.write_text(body)
+            path.chmod(0o600)
+        return runtime
 
     def _v2_event(self, *, event: str = "planner_started",
                   result: dict | None = None) -> dict:
@@ -721,6 +800,81 @@ class AutoKernelLiveDashboardTest(unittest.TestCase):
 
         self.assertTrue(payload["active"])
         self.assertEqual(payload["deployment"], "campaign-a")
+
+    def test_pre_controller_supervisor_terminal_selects_newest_deployment(self) -> None:
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-20T00:00:00Z", "next": 1,
+            "complete": True, "iterations": [],
+        }))
+        v21 = self.bundle.parent / "campaign-v21"
+        v21_state = v21 / "state"
+        v21_operations = v21 / "operations"
+        (v21 / "config").mkdir(parents=True)
+        v21_state.mkdir()
+        (v21_operations / "live").mkdir(parents=True)
+        (v21_state / "controller.run.lock").touch()
+        config_path = v21 / "config/deployment.json"
+        config_path.write_text(json.dumps({
+            "config_sha256": "2" * 64,
+            "controller": {"state_root": str(v21_state),
+                           "operations_root": str(v21_operations)},
+        }))
+        self._write_supervisor_graph_mismatch(v21, config_path)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["deployment"], "campaign-v21")
+        self.assertEqual(payload["launch_evidence"], "supervisor_terminal")
+        self.assertFalse(payload["active"])
+        self.assertIsNone(payload["state"])
+        activity = payload["activity"]
+        self.assertEqual(activity["status"], "failed")
+        self.assertEqual(activity["phase"]["id"],
+                         "deployment_graph_revalidation")
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertFalse(activity["resume"]["possible"])
+        self.assertIn("fresh sealed successor", activity["failure"]["recovery"])
+        stderr = activity["failure"]["stderr"]
+        self.assertEqual(set(stderr), {"sha256", "size", "detail"})
+        self.assertRegex(stderr["sha256"], r"^[0-9a-f]{64}$")
+        encoded = json.dumps(payload)
+        self.assertNotIn("SECRET PROMPT", encoded)
+        self.assertNotIn("unsafe actor output", encoded)
+        self.assertEqual(payload["deployment_history"][0]["deployment"],
+                         "campaign-a")
+        self.assertEqual(payload["deployment_history"][0]["disposition"],
+                         "historical")
+
+    def test_untrusted_supervisor_terminal_cannot_mask_controller_history(self) -> None:
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-20T00:00:00Z", "next": 1,
+            "complete": True, "iterations": [],
+        }))
+        v21 = self.bundle.parent / "campaign-v21"
+        v21_state = v21 / "state"
+        v21_operations = v21 / "operations"
+        (v21 / "config").mkdir(parents=True)
+        v21_state.mkdir()
+        (v21_operations / "live").mkdir(parents=True)
+        (v21_state / "controller.run.lock").touch()
+        config_path = v21 / "config/deployment.json"
+        config_path.write_text(json.dumps({
+            "config_sha256": "2" * 64,
+            "controller": {"state_root": str(v21_state),
+                           "operations_root": str(v21_operations)},
+        }))
+        runtime = self._write_supervisor_graph_mismatch(v21, config_path)
+        ledger = runtime / "death-ledger.jsonl"
+        ledger.chmod(0o644)
+
+        payload = server.discovery_live_payload()
+
+        self.assertEqual(payload["deployment"], "campaign-a")
+        self.assertEqual(payload["launch_evidence"], "controller")
+        self.assertTrue(payload["newest_unlaunched_deployment"]["available"])
+        self.assertEqual(payload["newest_unlaunched_deployment"]["deployment"],
+                         "campaign-v21")
 
 
 if __name__ == "__main__":

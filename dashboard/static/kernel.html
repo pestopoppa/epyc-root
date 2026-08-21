@@ -997,7 +997,12 @@ function renderLive(d){
   hero+='</div>';
   hero+='<div class="live-foot">'+esc(gpu.detail||"")+'</div>';
   if(failure.detected){
-    hero+='<div class="fail" style="margin-top:10px"><b>'+esc(failure.detail||"controller failure")+'</b><br>'+esc(failure.recovery||"")+'</div>';
+    const safeFailureFacts=[];
+    if(failure.class) safeFailureFacts.push(esc(failure.class));
+    if(Number.isInteger(failure.return_code)) safeFailureFacts.push("exit "+esc(failure.return_code));
+    if(failure.stderr&&failure.stderr.sha256) safeFailureFacts.push("stderr sha256 "+esc(String(failure.stderr.sha256).slice(0,12))+"…");
+    hero+='<div class="fail" style="margin-top:10px"><b>'+esc(failure.detail||"controller failure")+'</b>'+
+      (safeFailureFacts.length?'<br>'+safeFailureFacts.join(' · '):'')+'<br>'+esc(failure.recovery||"")+'</div>';
   }
   if(refusal.detected){
     const outputRecovery=outputRefusal.recovery||{};
@@ -1045,6 +1050,10 @@ function renderLive(d){
   const history=a.history||{abandoned_count:0,retest_count:0,rows:[]};
   $("#ak-live-history-summary").textContent=history.summary||
     ((history.abandoned_count||0)+" abandoned · "+(history.retest_count||0)+" retest");
+  const deploymentHistory=(d.deployment_history||[]).map(row=>
+    '<div class="meta"><b>'+esc(row.deployment||"deployment")+'</b> · '+esc(row.disposition||"historical")+
+    (row.last_progress_at?' · '+esc(row.last_progress_at):'')+'</div>'
+  );
   const ordinaryHistory=(history.rows||[]).map(row=>
     '<div class="meta"><b>turn '+esc(row.turn==null?"—":row.turn)+' · '+esc(row.hypothesis_id||"—")+'</b> · '+esc(row.status||"—")+'</div>'
   );
@@ -1053,7 +1062,7 @@ function renderLive(d){
     (row.stage?' · '+esc(row.stage):'')+(typeof row.scientific_budget_spent==="boolean"?' · science '+(row.scientific_budget_spent?'spent':'unspent'):'')+
     (row.detail?'<br>'+esc(row.detail):'')+'</div>'
   );
-  $("#ak-live-history-rows").innerHTML=[...ordinaryHistory,...terminalHistory].join("")||'<div class="muted">No abandoned, retest, or prior-terminal rows in this deployment.</div>';
+  $("#ak-live-history-rows").innerHTML=[...deploymentHistory,...ordinaryHistory,...terminalHistory].join("")||'<div class="muted">No abandoned, retest, or prior-terminal rows in this deployment.</div>';
 
   const exactActor=active&&(phase.id==="planner"||phase.id==="critic");
   $("#ak-live-dot").className="live-dot"+(active?" on":"");

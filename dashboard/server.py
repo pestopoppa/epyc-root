@@ -180,6 +180,9 @@ AUTOKERNEL_CONTROL_ROOT = Path(os.environ.get(
 AUTOKERNEL_DEPLOYMENTS_ROOT = Path(os.environ.get(
     "AUTOKERNEL_DEPLOYMENTS_ROOT",
     "/mnt/raid0/llm/autokernel/deployments"))
+AUTOKERNEL_SUPERVISORS_ROOT = Path(os.environ.get(
+    "AUTOKERNEL_SUPERVISORS_ROOT",
+    "/mnt/raid0/llm/autokernel/supervisors"))
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMA = "epyc.autokernel.discovery_live_event.v1"
 AUTOKERNEL_DISCOVERY_EVENT_SCHEMA_V2 = "epyc.autokernel.discovery_live_event.v2"
 AUTOKERNEL_DISCOVERY_EVENT_PRODUCER_SHA = \
@@ -7150,6 +7153,334 @@ def _experimental_runtime_activity(
     }
 
 
+_SUPERVISOR_LEDGER_SCHEMA = "epyc.autokernel.discovery_supervisor_ledger.v2"
+_SUPERVISOR_IDENTITY_SCHEMA = "epyc.autokernel.discovery_supervisor_identity.v2"
+_SUPERVISOR_SPEC_SCHEMA = "epyc.autokernel.discovery_supervisor_spec.v2"
+_SUPERVISOR_GRAPH_MISMATCH = (
+    b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
+
+
+def _strict_json_bytes(raw: bytes) -> dict | None:
+    """Decode one bounded JSON object while refusing duplicate object keys."""
+    def pairs(values: list[tuple[str, object]]) -> dict:
+        result: dict = {}
+        for key, value in values:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _owned_regular_snapshot_at(directory_fd: int, name: str,
+                               *, max_bytes: int) -> tuple[bytes, os.stat_result] | None:
+    """Read a same-owner, single-link regular file through a pinned directory."""
+    flags = os.O_RDONLY | os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        fd = os.open(name, flags, dir_fd=directory_fd)
+    except OSError:
+        return None
+    try:
+        before = os.fstat(fd)
+        try:
+            path_before = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+        except OSError:
+            return None
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.geteuid()
+                or before.st_mode & 0o077
+                or before.st_size < 0 or before.st_size > max_bytes
+                or not stat.S_ISREG(path_before.st_mode)
+                or path_before.st_nlink != 1
+                or path_before.st_uid != os.geteuid()
+                or (before.st_dev, before.st_ino)
+                != (path_before.st_dev, path_before.st_ino)):
+            return None
+        chunks: list[bytes] = []
+        offset = 0
+        while offset < before.st_size:
+            chunk = os.pread(fd, min(65536, before.st_size - offset), offset)
+            if not chunk:
+                return None
+            chunks.append(chunk)
+            offset += len(chunk)
+        after = os.fstat(fd)
+        try:
+            path_after = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+        except OSError:
+            return None
+        epoch = lambda value: (value.st_dev, value.st_ino, value.st_mode,
+                               value.st_uid, value.st_nlink, value.st_size,
+                               value.st_mtime_ns, value.st_ctime_ns)
+        if epoch(before) != epoch(after) or epoch(after) != epoch(path_after):
+            return None
+        return b"".join(chunks), after
+    finally:
+        os.close(fd)
+
+
+def _supervisor_ledger(raw: bytes) -> list[dict] | None:
+    """Validate the terminal supervisor hash chain and its exact event grammar."""
+    try:
+        lines = raw.decode("ascii").splitlines()
+    except UnicodeDecodeError:
+        return None
+    if not lines or len(lines) > 64:
+        return None
+    rows: list[dict] = []
+    previous = None
+    for sequence, line in enumerate(lines, 1):
+        row = _strict_json_bytes(line.encode("ascii"))
+        if (row is None or set(row) != {
+                "event", "payload", "previous_sha256", "record_sha256",
+                "schema", "sequence", "written_at"}
+                or row.get("schema") != _SUPERVISOR_LEDGER_SCHEMA
+                or row.get("sequence") != sequence
+                or row.get("previous_sha256") != previous
+                or not isinstance(row.get("event"), str)
+                or not isinstance(row.get("payload"), dict)
+                or not isinstance(row.get("written_at"), str)
+                or _parse_semantic_timestamp(row["written_at"]) is None
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    row.get("record_sha256"))) is None):
+            return None
+        body = dict(row)
+        digest = body.pop("record_sha256")
+        expected = hashlib.sha256(json.dumps(
+            body, sort_keys=True, separators=(",", ":")
+        ).encode("ascii")).hexdigest()
+        if digest != expected:
+            return None
+        rows.append(row)
+        previous = digest
+    if [row["event"] for row in rows] != [
+            "supervisor_started", "child_started", "child_exited",
+            "restarts_exhausted", "supervisor_stopped"]:
+        return None
+    child_exit = rows[2]["payload"]
+    exhausted = rows[3]["payload"]
+    stopped = rows[4]["payload"]
+    return_code = child_exit.get("return_code")
+    if (isinstance(return_code, bool) or not isinstance(return_code, int)
+            or return_code == 0
+            or exhausted.get("last_return_code") != return_code
+            or exhausted.get("max_restarts") != 0
+            or stopped.get("exit_code") != return_code):
+        return None
+    return rows
+
+
+def _supervisor_terminal_observation(bundle: Path, config_path: Path,
+                                     config: dict) -> dict | None:
+    """Read a pre-controller terminal from the bundle's sealed supervisor.
+
+    The controller contract remains authoritative once it exists.  This narrow
+    fallback proves only that the corresponding sealed deployment was launched
+    and its child failed before controller state or telemetry could be written.
+    No supervisor log bytes are ever exported.
+    """
+    name = bundle.name
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,159}", name) is None:
+        return None
+    root = AUTOKERNEL_SUPERVISORS_ROOT
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    root_fd = runtime_fd = None
+    try:
+        root_info = root.lstat()
+        if (not stat.S_ISDIR(root_info.st_mode)
+                or root_info.st_uid != os.geteuid()
+                or root_info.st_mode & 0o077):
+            return None
+        root_fd = os.open(root, flags)
+        pinned_root = os.fstat(root_fd)
+        if ((pinned_root.st_dev, pinned_root.st_ino)
+                != (root_info.st_dev, root_info.st_ino)):
+            return None
+        runtime_fd = os.open(name, flags, dir_fd=root_fd)
+        runtime_info = os.fstat(runtime_fd)
+        path_info = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
+        if (not stat.S_ISDIR(runtime_info.st_mode)
+                or runtime_info.st_uid != os.geteuid()
+                or runtime_info.st_mode & 0o077
+                or not stat.S_ISDIR(path_info.st_mode)
+                or (runtime_info.st_dev, runtime_info.st_ino)
+                != (path_info.st_dev, path_info.st_ino)):
+            return None
+        snapshots = {
+            filename: _owned_regular_snapshot_at(
+                runtime_fd, filename, max_bytes=limit)
+            for filename, limit in (
+                ("identity.json", 16 * 1024),
+                ("death-ledger.jsonl", 128 * 1024),
+                ("deployment-config.json", 256 * 1024),
+                ("launch-spec.json", 2 * 1024 * 1024),
+                ("controller.stderr.log", 64 * 1024),
+            )
+        }
+        if any(value is None for value in snapshots.values()):
+            return None
+        identity = _strict_json_bytes(snapshots["identity.json"][0])
+        deployment_config = _strict_json_bytes(
+            snapshots["deployment-config.json"][0])
+        launch_spec = _strict_json_bytes(snapshots["launch-spec.json"][0])
+        ledger = _supervisor_ledger(snapshots["death-ledger.jsonl"][0])
+        stderr = snapshots["controller.stderr.log"][0]
+        expected_identity_keys = {
+            "child", "exit_code", "restart_count", "schema", "session_name",
+            "spec_sha256", "state", "supervisor", "tmux", "tmux_socket_name",
+            "updated_at"}
+        if (identity is None or set(identity) != expected_identity_keys
+                or identity.get("schema") != _SUPERVISOR_IDENTITY_SCHEMA
+                or identity.get("state") != "stopped"
+                or identity.get("child") is not None
+                or identity.get("restart_count") != 0
+                or isinstance(identity.get("exit_code"), bool)
+                or not isinstance(identity.get("exit_code"), int)
+                or identity["exit_code"] == 0
+                or re.fullmatch(r"[0-9a-f]{64}", str(
+                    identity.get("spec_sha256"))) is None
+                or not isinstance(identity.get("updated_at"), str)
+                or _parse_semantic_timestamp(identity["updated_at"]) is None
+                or deployment_config != config
+                or launch_spec is None or ledger is None):
+            return None
+        source_info = config_path.stat(follow_symlinks=False)
+        deployment_binding = launch_spec.get("deployment_config")
+        canonical_raw = snapshots["deployment-config.json"][0]
+        expected_source_identity = {
+            "dev": source_info.st_dev, "ino": source_info.st_ino,
+            "mode": stat.S_IMODE(source_info.st_mode), "nlink": source_info.st_nlink,
+            "size": source_info.st_size, "uid": source_info.st_uid,
+        }
+        if (launch_spec.get("schema") != _SUPERVISOR_SPEC_SCHEMA
+                or launch_spec.get("kind") != "deployment"
+                or launch_spec.get("validate_only") is not False
+                or launch_spec.get("runtime_root") != str(root / name)
+                or not isinstance(deployment_binding, dict)
+                or deployment_binding.get("runtime_leaf") != "deployment-config.json"
+                or deployment_binding.get("source_path") != str(config_path)
+                or deployment_binding.get("source_identity") != expected_source_identity
+                or deployment_binding.get("canonical_size") != len(canonical_raw)
+                or deployment_binding.get("canonical_sha256") !=
+                hashlib.sha256(canonical_raw).hexdigest()
+                or launch_spec.get("restart_policy") != {
+                    "delay_seconds": 2.0, "max_restarts": 0}
+                or ledger[0]["payload"].get("spec_sha256") !=
+                identity["spec_sha256"]
+                or ledger[-1]["payload"].get("exit_code") !=
+                identity["exit_code"]):
+            return None
+        # Revalidate the directory binding after every file snapshot.
+        runtime_after = os.fstat(runtime_fd)
+        path_after = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
+        if ((runtime_info.st_dev, runtime_info.st_ino,
+             runtime_info.st_mtime_ns, runtime_info.st_ctime_ns)
+                != (runtime_after.st_dev, runtime_after.st_ino,
+                    runtime_after.st_mtime_ns, runtime_after.st_ctime_ns)
+                or (runtime_after.st_dev, runtime_after.st_ino)
+                != (path_after.st_dev, path_after.st_ino)):
+            return None
+        mismatch = stderr.rstrip().endswith(_SUPERVISOR_GRAPH_MISMATCH)
+        if not mismatch:
+            return None
+        stderr_sha256 = hashlib.sha256(stderr).hexdigest()
+        return {
+            "state": "failed", "phase": "deployment_graph_revalidation",
+            "failure_class": "durable_deployment_graph_mismatch",
+            "return_code": identity["exit_code"],
+            "occurred_at": identity["updated_at"],
+            "stamp": _parse_semantic_timestamp(identity["updated_at"]),
+            "stderr": {"sha256": stderr_sha256, "size": len(stderr),
+                       "detail": "controller stderr matched the bounded deployment-graph mismatch signature"},
+            "detail": "The durable deployment graph differed during sealed-graph revalidation.",
+            "recovery": "Do not resume this deployment; launch a fresh sealed successor.",
+            "gpu_expected": False,
+            "ledger_tail_sha256": ledger[-1]["record_sha256"],
+        }
+    except OSError:
+        return None
+    finally:
+        if runtime_fd is not None:
+            os.close(runtime_fd)
+        if root_fd is not None:
+            os.close(root_fd)
+
+
+def _supervisor_failure_activity(observation: dict) -> dict:
+    """Project a typed pre-controller terminal into the live activity schema."""
+    stage = observation["phase"]
+    at = observation["occurred_at"]
+    return {
+        "status": "failed",
+        "phase": {"id": stage, "label": "Deployment graph revalidation failed",
+                  "started_at": None, "elapsed_s": None},
+        "turn": None, "hypothesis_id": None,
+        "last_progress_at": at, "progress_age_s": None,
+        "waiting_on": "fresh sealed successor deployment",
+        "stall": {"state": "failed", "threshold_s": None,
+                  "detail": observation["detail"]},
+        "gpu": {"expected_now": False, "claim_held": False,
+                "claim_released": False, "claim_id": None, "device_id": None,
+                "screen_started": False,
+                "detail": "GPU was not expected or claimed; controller startup did not complete."},
+        "stage_contract": {
+            "current_stage": stage, "first_incomplete_stage": stage,
+            "resume_policy": "fresh_sealed_successor_required",
+            "repetition": None, "replication": None, "arm_order": None,
+            "arm_order_seed_sha256": None,
+            "exact_attribution_direction": None,
+            "exact_attribution_effect_fraction": None,
+            "target_runtime_effect_fraction": None,
+            "target_runtime_executed": None, "target_runtime_reason": None,
+            "dual_decision_state": None, "measurement_process_progress": None,
+        },
+        "refusal": {"detected": False, "type": None, "class": None,
+                    "stage": None, "scientific_budget_spent": None,
+                    "receipt_sha256": None, "detail": None,
+                    "measurement_output": None},
+        "provider_retry": {"detected": False, "actor": None,
+                           "same_hypothesis": None, "planner_rerun": None,
+                           "provider_attempt": None, "detail": None},
+        "correctness": {"execution_started": False,
+                        "execution_completed": False,
+                        "validation_passed": None},
+        "checkpoint": {"available": True, "kind": "SUPERVISOR_TERMINAL",
+                       "state": "pre_controller_terminal",
+                       "detail": "validated supervisor death-ledger terminal"},
+        "resume": {"required": True, "possible": False,
+                   "recoverability": "fresh_sealed_successor_required",
+                   "disposition": "fresh_sealed_successor_required",
+                   "detail": observation["recovery"]},
+        "failure": {"detected": True, "stage": stage,
+                    "class": observation["failure_class"],
+                    "detail": observation["detail"],
+                    "recovery": observation["recovery"],
+                    "stderr": observation["stderr"],
+                    "return_code": observation["return_code"],
+                    "ledger_tail_sha256": observation["ledger_tail_sha256"]},
+        "pipeline": [{"id": stage, "label": "Deployment graph revalidation",
+                      "state": "failed", "detail": observation["detail"]}],
+        "transitions": [{"ts": at, "stage": stage, "phase": stage,
+                         "state": "failed", "event": "supervisor_child_failed",
+                         "label": "Deployment graph revalidation failed",
+                         "detail": observation["detail"]}],
+        "completed_iterations": 0,
+        "history": {"abandoned_count": 0, "retest_count": 0,
+                    "terminal_count": 0,
+                    "summary": "pre-controller terminal · no hypothesis began",
+                    "rows": [], "terminal_rows": []},
+    }
+
+
 def _discovery_live_read() -> tuple[dict, panels.Observation]:
     candidates: list[dict] = []
     try:
@@ -7208,6 +7539,12 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                     f"{'s' if len(state_visibility_failures) != 1 else ''}"),
             }
         checkpoint = _discovery_checkpoint(state_root / "journal" / "events.jsonl")
+        supervisor_terminal = None
+        if (not state_present and not all_events and not all_error
+                and not planner_events and not planner_error
+                and checkpoint is None and not lock_held):
+            supervisor_terminal = _supervisor_terminal_observation(
+                bundle, config_path, config)
         producer_times = [
             _parse_semantic_timestamp(value) for value in (
                 state.get("updated_at") if isinstance(state, dict) else None,
@@ -7219,11 +7556,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         launched = bool(lock_held or state_present or all_events or all_error
                         or planner_events or planner_error
                         or telemetry_snapshot_status == "producer_write_in_progress"
-                        or checkpoint is not None)
+                        or checkpoint is not None
+                        or supervisor_terminal is not None)
         # A deployment config's mtime says only when a bundle was sealed.  It is
         # not producer progress and therefore cannot supersede a real terminal
         # campaign in the activity hero.
         producer_stamp = max(producer_times, default=0.0)
+        if supervisor_terminal is not None:
+            producer_stamp = max(
+                producer_stamp, float(supervisor_terminal["stamp"] or 0.0))
         if launched and not producer_times:
             for producer_path in (
                     state_root / "state.json",
@@ -7249,6 +7590,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             "visible_planner_events": visible_planner_events,
             "telemetry_integrity": telemetry_integrity,
             "telemetry_snapshot_status": telemetry_snapshot_status,
+            "supervisor_terminal": supervisor_terminal,
         })
     if not candidates:
         payload = {"schema": "epyc.dashboard.autokernel_live.v1", "available": False,
@@ -7292,6 +7634,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     visible_planner_events = selected["visible_planner_events"]
     telemetry_integrity = selected["telemetry_integrity"]
     telemetry_snapshot_status = selected["telemetry_snapshot_status"]
+    supervisor_terminal = selected["supervisor_terminal"]
     event_times = [row.get("ts") for row in (*all_events, *planner_events)
                    if isinstance(row.get("ts"), str)]
     latest_ts = max(event_times) if event_times else None
@@ -7301,7 +7644,9 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     campaign_id = (f"ak-discovery-{config_sha256[:16]}"
                    if isinstance(config_sha256, str)
                    and re.fullmatch(r"[0-9a-f]{64}", config_sha256) else None)
-    if campaign_kind == "experimental_runtime":
+    if supervisor_terminal is not None:
+        activity = _supervisor_failure_activity(supervisor_terminal)
+    elif campaign_kind == "experimental_runtime":
         claim_observation = _discovery_claim_observation(
             operations_root, campaign_id,
             purpose="AutoKernel experimental runtime validation and measurement")
@@ -7374,6 +7719,19 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                             ("turn", "hypothesis_id", "status", "effect_fraction")}
                            for row in iterations[-25:] if isinstance(row, dict)],
         }
+    deployment_history = []
+    for row in sorted(
+            (item for item in launched if item is not selected),
+            key=campaign_order, reverse=True)[:20]:
+        deployment_history.append({
+            "deployment": row["bundle"].name,
+            "disposition": "historical",
+            "active": row["lock_held"],
+            "campaign_kind": row["campaign_kind"],
+            "last_progress_at": datetime.fromtimestamp(
+                row["producer_stamp"] or row["config_stamp"], timezone.utc
+            ).isoformat().replace("+00:00", "Z"),
+        })
     payload = {
         "schema": "epyc.dashboard.autokernel_live.v1",
         "available": True, "active": lock_held, "ambiguous_active": ambiguous,
@@ -7381,6 +7739,9 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "dashboard_observed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "deployment": bundle.name, "config_sha256": config.get("config_sha256"),
         "campaign_kind": campaign_kind,
+        "launch_evidence": ("supervisor_terminal" if supervisor_terminal is not None
+                            else "controller"),
+        "deployment_history": deployment_history,
         "newest_unlaunched_deployment": ({
             "available": True,
             "deployment": newest_unlaunched["bundle"].name,
@@ -7410,12 +7771,17 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
     }
     obs = panels.Observation(
         artifact_present=True, timestamp=observed_ts,
-        source="controller lock + durable discovery telemetry",
-        populated=bool(lock_held or all_events or planner_events or state_view),
+        source=("validated supervisor terminal"
+                if supervisor_terminal is not None else
+                "controller lock + durable discovery telemetry"),
+        populated=bool(lock_held or all_events or planner_events or state_view
+                       or supervisor_terminal is not None),
         detail=("multiple controller locks are held" if ambiguous else
                 f"{payload['status_message']}; telemetry visibility: "
                 f"{telemetry_integrity['detail']}"),
-        evidence=str(operations_root / "live"),
+        evidence=(str(AUTOKERNEL_SUPERVISORS_ROOT / bundle.name / "death-ledger.jsonl")
+                  if supervisor_terminal is not None else
+                  str(operations_root / "live")),
         silence_budget_s=(activity.get("stall", {}).get("threshold_s")
                           if lock_held else None),
         producer_idle=bool(state_view and state_view.get("complete") is True),
