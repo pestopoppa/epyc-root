@@ -644,3 +644,28 @@ _Via `/research-intake` Stage-2 dives 2026-07-28 (7 dives: 903/904/905/906/908/9
 
 - [ ] **Loopie artifact watch (intake-908)**: re-check `huggingface.co/IQuestLab` (Loopie-*-preview) and `github.com/IQuestLab` (loopie / vllm / megatron repos) before any port/eval planning; if released, pull config.json + vLLM diff to scope what a llama.cpp-experimental layer-loop port would need, then revisit the declined 6B-A0.6B CPU smoke test vs Ouro-2.6B-Thinking.
 - [x] Dive-verify the 7 operator-selected lineage intakes and record corrections in the index ✅ 2026-07-28
+
+## Research Intake Update — 2026-08-21 (chat-template dive, intake-1212…1217)
+
+- [ ] **RC-T1** — Add **TALE** (intake-1215, arXiv:2412.18547v5) to the *Tier 1 — zero-training*
+      family, **above** "Conciseness prompting". It is the numeric-budget form of the same
+      intervention: a per-question token budget estimated zero-shot by the reasoning model itself.
+      Reported 67% token reduction at −2.72% average accuracy, and **+3.11% accuracy on GSM8K at
+      75.7% fewer tokens**. This is exactly the form our own intake-276 dive predicted in April 2026
+      would beat stylistic instructions — that dive listed TALE as literature to fetch and nobody
+      fetched it until now.
+- [ ] **RC-T2** — Record TALE's two full-text-only caveats before anyone adopts it on the headline:
+      MathBench-College generalisation shows −8% (GPT-4o-mini) and −4% (GPT-4o) against vanilla CoT,
+      far worse than the −2.72% average; and the per-question estimator costs an **extra model
+      call** per request, which is invisible on closed APIs and is not obviously free on our
+      bandwidth-bound CPU decode. Measure estimator overhead against savings before treating 67% as
+      a net win.
+- [x] **RC-T3** — File TALE as an intake entry ✅ 2026-08-21 (intake-1215, dive-verified)
+
+**Context from the same round, for the "Conciseness prompting" line already in Tier 1.** Its
+stylistic form is now measured: intake-1214 (CCoT, arXiv:2401.05618v3) reports 48.70% length
+reduction with negligible aggregate impact — but a **27.69% math penalty for GPT-3.5**, while GPT-4
+showed no statistically significant math decrease. The damage is localised twice, to one domain and
+to the weaker model, which converges with intake-276's scale-dependent result from an independent
+study. Any evaluation of a conciseness intervention must therefore report **per-suite, never
+aggregate**.

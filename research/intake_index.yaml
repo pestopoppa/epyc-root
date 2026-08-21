@@ -6974,7 +6974,17 @@
     - intake-191
     - intake-192
     - intake-193
-  notes: 'CUDA fork of llama.cpp implementing TurboQuant. Relevant because our KV cache quantization handoff tracks TurboQuant but we lack CUDA kernels. This provides a production CUDA path. Also see ik_llama.cpp issue #1509 for a CPU+CUDA implementation with 18/18 tests passing.
+  notes: 'RE-ENCOUNTERED 2026-08-20 during the intake-1213 Stage-1 expansion, recorded here rather than
+    minted as a new entry (skill Phase 1 step 2b). froggeric/Qwen-Fixed-Chat-Templates credits its "C++
+    AST optimizations" to barubary / spiritbuun, i.e. this repository. The credit does NOT corroborate on
+    this repo''s own README, which was read the same day and describes VBR and TCQ KV-cache codecs and
+    DeepSeek-V4-Flash MoE caching with no Jinja, AST or chat-template-throughput claim anywhere. PROVISIONAL
+    - one surface read; such work would plausibly live in a commit, a PR or a source file rather than the
+    front page, so this is unverified-in-stage1 and NOT an absence finding. It bears on whether intake-1213''s
+    80%-llama.cpp-throughput claim has any independent artifact behind it.
+
+
+    CUDA fork of llama.cpp implementing TurboQuant. Relevant because our KV cache quantization handoff tracks TurboQuant but we lack CUDA kernels. This provides a production CUDA path. Also see ik_llama.cpp issue #1509 for a CPU+CUDA implementation with 18/18 tests passing.
 
     '
   handoffs_updated:
@@ -93611,3 +93621,1106 @@
     whether ROCm 7.x supports gfx90a at all - every upgrade path in this entry runs through ROCm >= 6.3 and the
     torch >= 2.10 branch through ROCm >= 7.0, and there is no evidence either way about CDNA2 support in those releases.
     Claim (c) is verified for 3.1.0, 3.5.1 and 3.6.0 only; triton-rocm 3.7.x METADATA was not read.'
+- id: intake-1212
+  arxiv_id: null
+  url: https://huggingface.co/peculiar-ragdoll/Qwen-Sharp-Chat-Templates
+  source_type: repo
+  title: Qwen-Sharp-Chat-Templates - froggeric's fixed Qwen3.5/3.6/3.8 chat template plus an always-on terseness
+    system prompt (v22.3.1)
+  authors:
+  - peculiar-ragdoll
+  - Saga Ishtardottir (per the repo's own BibTeX citation block)
+  categories:
+  - llm_prompting
+  - inference_serving
+  - local_inference
+  - context_management
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: input
+  ingested_date: '2026-08-20'
+  verdict: adopt_component
+  verification: dive-verified
+  key_claims:
+  - 'It is not a fine-tune and involves no weights, despite the base_model_relation finetune tag: it is froggeric/Qwen-Fixed-Chat-Templates
+    v22.3 with a force-appended terseness system prompt, plus this repo''s own v22.3.1 fast-mode bugfix
+    on top.'
+  - The terseness block is APPENDED after the caller's own system prompt rather than replacing it, and
+    the lead line varies by reasoning mode ("Answer directly, after thinking" when thinking is on, "Answer
+    directly and concisely" when off) while the never/always core is identical on both paths.
+  - 'All three v22.3.1 changes are scoped to thinking-off (fast) mode - gating every <think> reference,
+    splitting the terseness lead by mode, and removing a surviving "IMMEDIATELY after thinking" fragment
+    from a tool-call rule - and the thinking-ON path is claimed byte-identical to upstream v22.3 plus the
+    terseness block.'
+  - 'Reasoning effort reaches the template only through chat_template_kwargs; the top-level OpenAI reasoning_effort
+    field is consumed by the server (stated for both oMLX and llama.cpp) and never bound at render time,
+    so it silently has no effect. The stated workaround is a proxy that copies the field into chat_template_kwargs.'
+  - 'Two deployment paths for a GGUF: a durable gguf-new-metadata rewrite of the embedded template, or
+    a per-invocation llama-server --chat-template-file flag that fully replaces whatever the GGUF embeds.
+    The repo names the most common silent no-op as a fresh .jinja file sitting next to a stale chat_template
+    key inside tokenizer_config.json, since transformers >= 4.51 prefers the file and older runtimes read
+    only the embedded key.'
+  - 'Two defects are declared STILL OPEN by the repo itself: a literal <|think_off|> arriving in tool output
+    still disables reasoning if the harness packs tool results into a user message (a proper tool-role message
+    is said to be safe), and a separately-reported mid-answer <think> tag is reported unreproduced over
+    2,863 corpus messages and 14 llama.cpp generations, with MTP speculative decoding named as the leading
+    suspect.'
+  techniques:
+  - force-appended terseness system prompt that preserves the caller's own system prompt
+  - reasoning-mode-conditioned prompt lead (thinking-on vs thinking-off wording)
+  - gating every <think>-related tool-call instruction on thinking being enabled
+  - thinking retention across turns as a prefix-KV-cache preservation mechanism (inherited from upstream)
+  - per-invocation template override via llama-server --chat-template-file
+  - render-equivalence checking across template sources (check_applied.py) rather than text comparison
+  - live re-fetch of the upstream base to detect rebase drift (verify_template.py)
+  reported_results:
+  - 'THE HEADLINE FIGURES EXIST ONLY IN PNG ALT-TEXT, NOT IN THE README BODY. Verbatim alt attribute of
+    plates/claweval_sharp_plate.png: "ThinkingCap-Qwen3.6-27B on Claw-Eval: answer score +7.4, overall
+    +3.8, answer tokens -59% with the Sharp template". No table, method, sample size, seed, decoding settings,
+    or serving configuration accompanies it anywhere in the README.'
+  - 'Second plate (plates/sharp_template_plate.png) alt attribute: "Qwen3.8-27b gets more accurate and uses
+    fewer tokens with the template applied" - a direction with no magnitude.'
+  - 'The README refers to "the table''s figures" being Qwen3.6 measurements, but NO results table exists
+    in the fetched README - the only two tables are the reasoning-effort channel matrix and the test-suite
+    status table. Dangling reference, most likely a leftover from an earlier revision.'
+  - 'Vendored upstream test suite reported green against the Sharp template: test_v22.py 100/100 (100 cases),
+    test_v21.py 9/9, fuzz_template.py clean over 2,000 conversations. test_v22.py carries a documented local
+    shim that strips the appended terseness block before each assertion, because sixteen upstream tests
+    pin the exact end of the system turn - which is where Sharp appends.'
+  - 'HuggingFace API metadata read 2026-08-20: likes 160, downloads 0 (30-day), created 2026-08-10T01:35:20Z,
+    lastModified 2026-08-20T21:54:49Z. 160 likes against 0 recorded downloads is an unusual ratio for a
+    repo whose entire payload is two text files.'
+  contradicting_evidence:
+  - 'IN-HOUSE, and the sharpest one: the intake-276 deep dive (2026-04-07) found that stylistic conciseness
+    instructions are the WEAKEST form of brevity constraint tested, and that explicit numeric word limits
+    outperform them in every adjacent paper it checked. The Sharp terseness block is purely stylistic -
+    it carries no numeric budget at all.'
+  - 'intake-1214 (CCoT, arXiv:2401.05618): a concise-CoT instruction is reported to have cost GPT-3.5 a
+    27.69% performance penalty specifically on math problems while being near-neutral overall, i.e. the
+    damage from a terseness instruction is domain-localised rather than uniform - which a single Claw-Eval
+    aggregate cannot show.'
+  - The README itself concedes the effect should be SMALLER where the deliverable is mostly code or a structured
+    artifact, which is the bulk of our coder and architect traffic.
+  - No independent evaluation, replication or critique of this specific template was surfaced in a bounded
+    Stage-1 search (PROVISIONAL - a bounded search proves nothing; unverified-in-stage1).
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - architect-model-selection-bench.md
+    - prompt-construction-determinism.md
+    - eval-tower-verification.md
+    - qwen38-27b-replace-qwen36.md
+    - qwen36-production-upgrade.md
+    intake:
+    - intake-946 (its recommended_actions already carried the [unverified] lead "froggeric/Qwen-Fixed-Chat-Templates
+      is claimed to fix tool-calling and thinking-mode handling for the whole Qwen3.x family"; this submission
+      is a DERIVATIVE of exactly that repo, and intake-1213 is the base itself)
+    - intake-892 (ThinkingCap-Qwen3.6-27B - the model this repo's Claw-Eval plate is measured on; our own
+      dive established that ThinkingCap ships the STOCK Qwen template, so a Sharp-vs-baseline delta measured
+      on it is a template swap on a reasoning-compression FINETUNE, two compression mechanisms stacked)
+    - intake-276 (Brevity Constraints Reverse Performance Hierarchies - the in-house counterweight)
+    - intake-1213 (upstream base)
+    - intake-1214 (CCoT - domain-localised cost of a conciseness instruction)
+    experiments: []
+  expanded_from: null
+  handoffs_updated:
+  - qwen38-27b-replace-qwen36.md
+  handoffs_created:
+  - qwen-chat-template-evaluation.md
+  recommended_actions:
+  - '[unverified] The cheapest decisive test we can run costs one flag and no rebuild: llama-server --chat-template-file
+    against an already-loaded Qwen3.6 GGUF, A/B against the embedded template on a pinned eval set. No
+    requantization, no registry change, no kernel touch.'
+  - '[unverified] Our production posture is enable_thinking=false stack-wide, which is exactly the path
+    this repo''s v22.3.1 claims to FIX and the path upstream v22.3 leaves incoherent. If the claim holds,
+    the beneficiary is our default configuration, not the thinking-on one.'
+  - '[unverified] The top-level-reasoning_effort-is-dropped claim matches a fact we already hold from a
+    different vendor and stack (intake-946: a top-level enable_thinking field is silently ignored, only
+    chat_template_kwargs takes effect). Worth confirming the same shape on our llama-server path.'
+  - '[unverified] check_applied.py addresses a failure mode we can actually hit - a template that silently
+    did not apply. Whether we adopt the template or not, a render-equivalence check over our GGUF-embedded
+    templates is independently useful.'
+  notes: 'Stage 1, 2026-08-20, operator-submitted single URL; processed inline (below the 3-URL fan-out
+    threshold). PROVENANCE PIN: README.md fetched from the raw endpoint 2026-08-20, 22,260 bytes, sha256
+    dc6dd5e2e9af7344a0f7275d9ece010b1b5de9c75b5c15eafe66a4923dca3ea4; API metadata read the same day. This
+    source is MOVING - lastModified was under an hour before the fetch and the repo is ten days old - so
+    every claim here is pinned to that digest and not to "the repo".
+
+
+    WHY relevance is high and not medium. Three independent hooks, none of them speculative. (1) The model
+    family is exactly ours: Qwen3.5/3.6 are production, and the template covers them in one file. (2) The
+    fixes are scoped to thinking-OFF mode, which is our stack-wide serving posture, not a mode we might
+    someday enable. (3) The deployment path is a per-invocation llama-server flag, so evaluating it requires
+    no requantization, no registry mutation and no touch to the frozen v9 kernel - the cost of being wrong
+    is one benchmark slot.
+
+
+    THE LOAD-BEARING CAVEAT, recorded before anyone builds on it: this entry''s quantitative content is
+    ZERO. Every number offered by the source lives inside a PNG, and the README''s own pointer to a results
+    table resolves to nothing. What is text-verifiable is the mechanism (what the Jinja does), the deployment
+    procedure, and the self-declared open defects. Nobody may cite +7.4 / +3.8 / -59% from this entry -
+    not because the unverified contract says so in general, but because the figure is not in the fetched
+    artifact at all.
+
+
+    A SECOND CONFOUND IN THE ONE QUANTIFIED PLATE, which our own corpus supplies: the Claw-Eval plate is
+    measured on ThinkingCap-Qwen3.6-27B, and the intake-892 dive established that ThinkingCap is a reasoning-compression
+    FINETUNE shipping the stock Qwen template. So the plate stacks a token-compression finetune under a
+    token-compression prompt and reports the prompt''s delta. It also means the baseline arm is a stock-template
+    arm, which is the comparison our own architect bench would want - but it is a different base model
+    from any arm we have benched.
+
+
+    SCOPE NOTE ON THE FAST-MODE FIX: upstream''s fatal-exception-on-enable_thinking=false claim is stated
+    for Qwen 3.8 specifically (and generally for "official Qwen chat templates"); our production family
+    is 3.6. Do not carry the 3.8 crash claim onto 3.6 without checking - see intake-1213, which holds the
+    upstream claims.'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED against both artifacts. Fetched chat_template.jinja from each repo 2026-08-21 and diffed:
+      the ONLY changes Sharp makes to upstream are (a) the template_version string qwen3.8-froggeric-v22.3
+      -> v22.3.1, (b) an inserted terseness block, (c) two tool-format instruction strings re-expressed
+      with thinking-gated fragments. Four changed regions, 20 added / 4 removed lines. No weights, exactly
+      as stated.'
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED by rendering. With a caller system prompt of "You are the EPYC architect." present,
+      the rendered system turn retains it and appends the terseness block after it. The lead line varies
+      by mode exactly as described.
+  - claim_index: 2
+    effect: unaffected
+    note: 'THE CENTRAL STRUCTURAL CLAIM, AND IT IS MECHANICALLY CONFIRMED - this is the one thing in either
+      repo that was checkable to the byte and it checks out. Rendered both templates through Jinja2 3.1.6
+      on identical (messages, tools) input. With thinking ON, Sharp''s output MINUS the terseness block
+      is EXACTLY EQUAL to upstream v22.3''s output - verified at three independent kwarg settings (no kwargs,
+      enable_thinking=True, reasoning_effort=low), zero residual bytes. With thinking OFF the two differ
+      by EXACTLY the three documented v22.3.1 changes and nothing else: the <think>Brief explanation of
+      tool call</think> example removed, the two <think>-block instruction bullets removed, and "IMMEDIATELY
+      after thinking" reduced to "IMMEDIATELY". No fourth divergence, no collateral edit. A claim of byte-identity
+      is the kind that is usually loose; this one is literal.'
+  - claim_index: 3
+    effect: uncertain
+    note: NOT TESTED. Whether a top-level reasoning_effort field is stripped before the template sees it
+      is a SERVER behaviour, not a template property, and settling it needs a running llama-server - which
+      this dive did not have and did not start. The template-side half is consistent with the claim (the
+      template reads reasoning_effort only as a render variable), but that is not evidence about what the
+      server binds. Carried forward as untested.
+  - claim_index: 4
+    effect: narrowed
+    note: 'PARTIALLY CONFIRMED, and the corroboration arrived from an unexpected direction. The README''s
+      sample check_applied.py output prints "[tokenizer_config.json]  8952 bytes". The stock Qwen/Qwen3.8-27B
+      chat template fetched independently 2026-08-21 is 8,952 bytes EXACTLY (sha256 c3cf9e34abf4f9e3...).
+      That is a falsifiable incidental detail that could easily have been invented and was not, which raises
+      confidence in the tooling section specifically. NARROWED because the two-source hazard itself was
+      not reproduced end-to-end - only the figure was corroborated.'
+  - claim_index: 5
+    effect: uncertain
+    note: NOT TESTED. Both self-declared open defects require a live harness (tool-role message packing,
+      and MTP speculative decoding) to reach. Recording them as examined-and-untested rather than leaving
+      the silence ambiguous.
+  claim_anchors:
+  - claim_index: 2
+    kind: file-hash
+    locator: 'chat_template.jinja at repo root, diffed against froggeric/Qwen-Fixed-Chat-Templates chat_template.jinja;
+      the four changed regions are the template_version line (1), the terseness insert after the _msgs assignment
+      (~line 167), and the two _tool_format instruction strings (~lines 192-200)'
+    quote: '{%- set template_version = "qwen3.8-froggeric-v22.3.1" %}'
+    quote_sha256: cfa643f6ba03795c5ac4f9c2cc01136a08fb9566b2b72ffc7e671b793b19e18b
+    source_revision: 'peculiar-ragdoll/Qwen-Sharp-Chat-Templates main @ 2026-08-21, chat_template.jinja
+      28,174 B sha256 8753210e4e253128e8ae0d0bb10e3a9d86763c11c12252f8944d4cf98425cee2; upstream comparand
+      froggeric/Qwen-Fixed-Chat-Templates main @ 2026-08-21, 26,681 B sha256 6e1439c913ad7df4a966493ad70de7e7fc5a548d41bbe417c1571f766603629b'
+    verified_by: research-intake/stage2
+  depends_on:
+  - entry: intake-1213
+    claim_index: 0
+    why: 'EVIDENTIAL, not topical, and the counterfactual is unambiguous. Sharp IS upstream v22.3 plus four
+      changed regions - verified by diff, not asserted. Every property this entry attributes to Sharp other
+      than the terseness block and the three fast-mode fixes (thinking retention, tool-call handling, error
+      escalation, effort steering) is inherited wholesale. If intake-1213''s account of what the upstream
+      template does were retracted, claim 0 here would have to change with it.'
+  dive_corrections: 'STAGE-2 DIVE 2026-08-21, operator-selected. VERDICT UPGRADED worth_investigating ->
+    adopt_component, and the upgrade rests on a mechanical result rather than on the source''s own testimony.
+    Both templates were fetched and rendered through Jinja2 3.1.6 on identical input: with thinking ON,
+    Sharp''s render MINUS the terseness block is EXACTLY EQUAL to upstream v22.3''s render, at three independent
+    kwarg settings, zero residual bytes; with thinking OFF the two differ by EXACTLY the three documented
+    v22.3.1 changes and nothing else. The repo claimed byte-identity and it is literally true. That is rare
+    enough to be worth saying plainly, and it is what makes the artifact safe to reason about: the whole
+    delta against upstream is four regions, all readable in one diff.
+
+
+    WHAT THE DIVE DID NOT ESTABLISH, and it is the half that matters for adoption. Every QUANTITATIVE claim
+    remains unverifiable: the +7.4 / +3.8 / -59% figures exist only inside a PNG, the README''s pointer
+    to a results table resolves to nothing, and no independent evaluation exists. So this entry is now dive-verified
+    for MECHANISM and still carries zero evidence for BENEFIT. adopt_component means the artifact is well-made
+    and cheap to trial, NOT that it improves anything - and nobody may cite the plate figures from this
+    entry, since they are not in the fetched artifact at all.
+
+
+    ONE CORROBORATION FROM AN ODD ANGLE, recorded because it bears on trust: the README''s sample check_applied.py
+    output prints "[tokenizer_config.json]  8952 bytes", and the stock Qwen/Qwen3.8-27B template independently
+    fetched is 8,952 bytes exactly. An invented sample would not have landed on the true value.
+
+
+    DIVE-SURFACED SOURCES, OPERATOR DISPOSITION 2026-08-21 (recorded here so a declined source is neither
+    silently lost nor re-derived next session). SELECTED and ingested-and-dived in the Stage-2b round: TALE
+    arXiv:2412.18547 (intake-1215), google/minja (intake-1216), Claw-Eval arXiv:2604.06132 (intake-1217).
+    DECLINED: peculiar-ragdoll/Dagger-Qwen3.6-27B-MLX and peculiar-ragdoll/Nail-Qwen3.6-35B-A3B-MLX, the
+    two model builds that ship this repo''s v1 template baked in. Reason: both are MLX-only Apple-silicon
+    builds, so neither is loadable on EPYC or MI210, and the template they carry is v1 (froggeric-v21.3)
+    - two major versions behind the artifact under evaluation. They would establish nothing about the current
+    template that the current template does not establish directly. ALSO NOT MINTED: spiritbuun/buun-llama-cpp,
+    which is already intake-194 and was handled as a re-encounter note there rather than as a new entry;
+    the AST-attribution question it was raised to settle became moot when intake-1216 established that
+    our kernel does not run that parser at all.'
+- id: intake-1213
+  arxiv_id: null
+  url: https://huggingface.co/froggeric/Qwen-Fixed-Chat-Templates
+  source_type: repo
+  title: Qwen-Fixed-Chat-Templates - universal drop-in Jinja template fixing rendering, KV-cache invalidation,
+    token waste and agentic stalling across official Qwen 3.5/3.6/3.8 templates
+  authors:
+  - froggeric
+  categories:
+  - llm_prompting
+  - inference_serving
+  - local_inference
+  - kv_cache
+  - tool_implementation
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  ingested_date: '2026-08-20'
+  verdict: worth_investigating
+  verification: dive-overturned
+  key_claims:
+  - 'Fast mode is broken upstream: the official template is said to throw a fatal exception when enable_thinking=false
+    (stated generally, and called out specifically for official Qwen 3.8), which this template replaces
+    with a working non-reasoning mode via kwargs or an inline <|think_off|> tag.'
+  - The official template is said to hardcode xhigh reasoning effort by default, exhausting the token budget
+    on reasoning before an answer is produced; this one defaults to medium, which injects zero instruction
+    tokens.
+  - 'Past <think> blocks are preserved chronologically by default, which the repo frames as a KV-cache
+    property rather than a quality one: mutating already-rendered history destroys the prefix cache, so
+    chronological preservation is what yields the claimed 100% prefix KV cache hit rate - and the repo documents
+    that setting preserve_thinking:false voids that guarantee.'
+  - 'Deep Jinja nesting is claimed to drop llama.cpp speed by 80%, and the template''s AST was flattened
+    to cure it; the credits section attributes the C++ AST optimizations to barubary / spiritbuun.'
+  - 'Tool-error escalation is split into two tiers: strong structural signals (an "error": key, a real Traceback,
+    command not found, Exception:, fatal:, nonzero exit codes, invalid syntax) fire unconditionally at any
+    payload size, while weak signals stay size-gated - replacing an earlier content|length < 500 gate under
+    which a long traceback, the case where escalation matters most, never escalated at all.'
+  - Additional fixes claimed against the official template - crashes on serialized-JSON tool arguments from
+    standard OpenAI clients, rejection of non-standard reasoning-effort aliases (OpenAI / Claude Code /
+    Cursor), treating multiple leading system messages as separate turns instead of merging them, false
+    tool-failure warnings on code-search hits containing the word error, and no support for inline per-turn
+    <|think_*|> control tags.
+  techniques:
+  - AST flattening of a Jinja chat template for C++ (minja) parse throughput
+  - chronological history preservation as a prefix-KV-cache invariant
+  - zero-token default reasoning-effort level (medium injects no instruction text)
+  - two-tier tool-error escalation (unconditional structural signals vs size-gated weak signals)
+  - inline per-turn control tags (<|think_off|>, <|think_low|>, <|think_xhigh|>, ...)
+  - reasoning-effort alias mapping across OpenAI / Claude Code / Cursor vocabularies
+  - leading system/developer message merging
+  - property-based fuzzing of a chat template against structural invariants
+  reported_results:
+  - 'An 80% llama.cpp inference-throughput drop attributed to deep Jinja nesting, described as cured by
+    AST flattening. NO benchmark, build number, model, hardware or measurement protocol is given for either
+    the 80% or the cure.'
+  - 100% prefix KV cache hit rate claimed for multi-turn sessions at default settings.
+  - An 80%+ reduction in agentic turn-abort rate attributed to curing empty-think poisoning. No measurement
+    protocol given.
+  - 'Test suite: 101 automated verification cells (grown from 44), plus a deterministic property fuzzer
+    asserting nine structural invariants.'
+  - 'HuggingFace API metadata read 2026-08-20: likes 1335, downloads 0 (30-day), created 2026-04-23T15:28:14Z,
+    lastModified 2026-08-20T15:16:28Z. archive/ retains per-version READMEs and templates back to v8, so
+    the version history is auditable rather than asserted.'
+  contradicting_evidence:
+  - 'THE AST CREDIT DOES NOT CORROBORATE ON ITS OWN SURFACE. The C++ AST optimizations are credited to barubary
+    / spiritbuun, i.e. spiritbuun/buun-llama-cpp - which is already our intake-194. That repository''s README,
+    read 2026-08-20, describes KV-cache codecs (VBR, TCQ) and DeepSeek-V4-Flash MoE caching, and makes NO
+    Jinja, AST, or chat-template-throughput claim anywhere. PROVISIONAL AND EXPLICITLY NOT AN ABSENCE FINDING:
+    one surface (the README) was read, and template work of this kind would plausibly live in commits, a
+    PR, or a source file rather than a fork''s front page. Recorded as unverified-in-stage1 for a dive to
+    settle, per the rule that a bounded search proves nothing.'
+  - 'UNIT MISMATCH, flagged not adjudicated: a chat template renders once per request during prompt construction,
+    so a template-parsing slowdown should surface in TTFT / prompt-processing latency, not in decode throughput.
+    "80% inference throughput" is therefore either the wrong unit for the mechanism described, or the mechanism
+    is not the one described. Either way the number cannot be read as an 80% decode-rate recovery without
+    a dive.'
+  - No independent replication of the 80% throughput, 100% KV-hit or 80%+ abort-reduction figures was surfaced
+    in a bounded Stage-1 search (PROVISIONAL).
+  - 1,335 likes is adoption, not corroboration - no third party is on record having MEASURED any of the
+    three headline numbers.
+  cross_references:
+    handoffs:
+    - per-request-reasoning-budget.md
+    - prompt-construction-determinism.md
+    - reasoning-compression.md
+    - architect-model-selection-bench.md
+    - qwen38-27b-replace-qwen36.md
+    - qwen36-production-upgrade.md
+    intake:
+    - intake-946 (closes the [unverified] lead recorded there on 2026-08-03 - this IS that repo, now ingested
+      as a source in its own right rather than a pointer inside another entry's recommended_actions)
+    - intake-1212 (the derivative the operator submitted; Sharp = this template + a terseness prompt)
+    - intake-194 (spiritbuun/buun-llama-cpp - credited here for the C++ AST work; see contradicting_evidence)
+    experiments: []
+  expanded_from: intake-1212
+  handoffs_updated:
+  - per-request-reasoning-budget.md
+  - qwen38-27b-replace-qwen36.md
+  handoffs_created:
+  - qwen-chat-template-evaluation.md
+  recommended_actions:
+  - '[unverified] This is the entry that matters more than the one submitted, and the reason is in our own
+    tree: handoffs/active/per-request-reasoning-budget.md records that the workaround for uncontrollable
+    reasoning on a Qwen3.5 hybrid was to REMOVE --jinja from architect_general entirely, losing per-request
+    reasoning control to get predictable output. This repo claims the defect that forces that trade is in
+    the stock template, not in llama.cpp. If true, the handoff''s central workaround is obsolete.'
+  - '[unverified] The 80%-throughput claim is the single highest-value thing to falsify here, because it
+    is cheap to measure on our own hardware and it is the only claim that would change kernel-adjacent
+    behaviour. POST /apply-template render latency and prompt-processing time, stock template vs this one,
+    same GGUF, same build - and note that our frozen v9 needs no modification to run the comparison.'
+  - '[unverified] The prefix-cache claim is directly testable against instrumentation we already have, and
+    it interacts with a known production concern: whether our own multi-turn rendering mutates history and
+    silently voids the cache.'
+  - '[unverified] Version drift is a live hazard for adopting either repo: this template moved to v22.3 on
+    the same day it was read, and the derivative (intake-1212) has already been broken once by an upstream
+    rebase (its own re-embed scripts hardcoded a version string). Any adoption must pin a revision, not
+    a branch.'
+  notes: 'Stage-1 expansion (Tier 1, reference chasing from intake-1212), 2026-08-20. PROVENANCE PIN: README.md
+    fetched from the raw endpoint 2026-08-20, 26,052 bytes, sha256 08875a413b792202447b0ca03048db607826ef65c37494513355b516a5df0d85.
+
+
+    NOT A DUPLICATE, and worth stating why since the shape invites the error: intake-946 already carried
+    this repo''s NAME inside a recommended_actions line. Being referenced in another entry''s prose is not
+    a URL collision, and a base artifact is a distinct source from any entry that merely points at it -
+    exactly the mis-filing the 2026-07-25 audit found nineteen times. This is its first ingestion.
+
+
+    WHY THE EXPANSION OUTRANKS THE SUBMISSION. The operator submitted the derivative; the derivative''s
+    own README states that everything structural - retention, tool-calling, error escalation, the whole
+    template - is this repo''s work, and that Sharp adds a system prompt and two fast-mode fixes. Our stack
+    can consume the structural half without adopting the terseness prompt at all, and the structural half
+    is where the claims touch llama.cpp behaviour (prefix cache, parse throughput, fatal exceptions) rather
+    than model style. The two are separable and should be evaluated separately.
+
+
+    CREDIBILITY 2 rather than higher: recent (+1) and an established, long-running community template maintainer
+    with a nine-month auditable version archive (+1), but no venue, no independent corroboration of any
+    reported number, and self-reported test results. The test suite and the fuzzer are real artifacts in
+    the repo and can be run by us, which is unusual for a source at this credibility tier and is the main
+    reason a dive here is cheap.
+
+
+    SAME-DAY OPERATIONAL HOOK, found during cross-reference and worth more than anything else in this entry:
+    handoffs/active/qwen38-27b-replace-qwen36.md records that the registry swap putting Qwen3.8-27B into
+    architect_general and coder_escalation landed 2026-08-20 (b376dadd) - the same day this source was read.
+    This repo''s single most specific claim is that the OFFICIAL Qwen 3.8 template raises a fatal exception
+    when enable_thinking=false, and enable_thinking=false is our stack-wide posture on exactly those roles.
+    The claim is therefore not a general-interest template observation for us; it is a prediction about a
+    model we swapped in today, and it is falsifiable in one render with no server running. Nothing is serving
+    as of this write-up, so live==config is unverified in that handoff too - which means the cheapest moment
+    to check is before the next start, not after.'
+  claim_corrections:
+  - claim_index: 0
+    effect: overturned
+    note: 'OVERTURNED AS WORDED, AND THE CORRECTION CHANGES THE FIX - which is why this is overturned rather
+      than narrowed. enable_thinking=false does NOT raise. Tested against BOTH artifacts on 2026-08-21:
+      the stock Qwen/Qwen3.8-27B chat_template.jinja (8,952 B) and the Unsloth-patched template extracted
+      from our own production /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf (9,993 B). Both render cleanly
+      at enable_thinking=False, both correctly suppress the reasoning-instruction block, and both emit the
+      proper empty-think prefill <think>\n\n</think>. There is no exception on that path in either file.
+      WHAT IS TRUE, and it is adjacent enough to explain how the claim was formed: a fatal exception DOES
+      block the documented non-reasoning path, but its trigger is reasoning_effort, not enable_thinking.
+      reasoning_effort=''none'' - the exact value froggeric''s own README documents as the off-switch - raises
+      "Unexpected reasoning effort none" on the stock template. So the CONSEQUENCE the claim reaches for
+      is real and the MECHANISM is wrong, and the difference is load-bearing: a reader who adopts this template
+      to avoid an enable_thinking=false crash is adopting for a defect that does not exist, while a reader
+      who passes enable_thinking=false - as we do - is already immune to the crash that DOES exist, because
+      the raise sits inside the enable_thinking gate and is unreachable when thinking is off.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED VERBATIM, on both artifacts, and it is the strongest claim in the entry. The line is
+      literally {%- set resolved_reasoning_effort = reasoning_effort|default(''xhigh'') %} and the xhigh
+      branch injects a 209-character instruction. Measured by rendering: no kwargs -> 345 B with the xhigh
+      text present; reasoning_effort=medium -> 136 B with it absent. The default therefore costs both injected
+      tokens and unbounded reasoning behaviour. Examined and standing.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'CORRECTED 2026-08-21, SAME DAY, BY A WIDER TEST - AND THE CORRECTION REVERSES THE FIRST FINDING.
+      The initial pass rendered a 5-message history through stock-3.8, our Unsloth-3.8 GGUF variant, froggeric
+      and Sharp, found all four retained past thoughts in both history shapes, and concluded that retention
+      does not separate these templates. That conclusion was drawn from ONE model generation and does not
+      survive the fleet. Extracting the embedded template from every production GGUF and re-running the
+      same test: Qwen3.6-27B-MTP-Q8_0 (8,057 B, sha 55d4931433fe), Qwen3.6-35B-A3B-MTP-Q8_0 (same template,
+      byte-identical) and Qwen3.5-122B-A10B-UD-Q4_K_M (7,992 B, sha 8452ca85cb1e) ALL DISCARD history thinking
+      ENTIRELY - both the inline <think> shape and the reasoning_content shape, marker absent from the render
+      in every case. Only Qwen3.8-27B (9,993 B) retains. So the claim is TRUE against three of our four
+      production models and false only against the one swapped in on 2026-08-20. NARROWED rather than confirmed
+      because the 100%-prefix-cache figure itself remains unmeasured, and because the claim is stated about
+      "official Qwen templates" generally while what was actually tested is our four served artifacts. THE
+      METHOD LESSON IS THE POINT: the first test generalised a family conclusion from one generation, which
+      is the same error this skill warns about when it says an absence claim must name the trees searched.
+      What rescued it was the operator asking whether the other Qwen models had been checked. They had not.'
+  - claim_index: 3
+    effect: overturned
+    note: 'REFUTED IN DIRECTION BY THE ARTIFACT ITSELF. If froggeric''s template were a flattened AST, it
+      should be structurally simpler than stock. Measured 2026-08-21: froggeric is 26,681 B against stock''s
+      8,952 B (3.0x LARGER), maximum block-nesting depth 9 against 6 (DEEPER), 10 for-loops against 6, and
+      224 if-tokens against 81 (2.8x MORE branching). Timed in Jinja2 3.1.6 over 200 iterations: 37.7 ms/parse
+      against 11.5 ms (3.3x SLOWER to compile) and 0.066 ms/render against 0.033 ms (2.0x SLOWER to render).
+      Every available proxy points opposite to the claim. THREE HONEST CAVEATS, none of which rescues it:
+      (a) Jinja2 is not minja, and a C++ parser could rank them differently - but a 3x-larger, deeper template
+      being FASTER to parse would need an argument nobody has made; (b) the claim may describe an older
+      stock template than the one now published; (c) llama.cpp compiles the chat template once at model
+      load and renders per request, so even a 3x parse cost is a one-time ~40 ms at startup and a 0.066
+      ms render is invisible against prefill. That last point is the decisive one and it is structural rather
+      than empirical: there is no mechanism by which template nesting costs 80% of INFERENCE throughput
+      on a server that parses once. The unit was wrong in the Stage-1 read and the artifact does not support
+      the magnitude either.'
+  - claim_index: 4
+    effect: uncertain
+    note: NOT TESTED. Reaching the two-tier escalation logic needs tool-result fixtures carrying each strong
+      and weak signal class, which this dive did not construct. The tiering is visibly present in the template
+      source; whether it fires as described is unestablished. Recorded as examined-and-untested so a later
+      dive does not mistake silence for clearance.
+  - claim_index: 5
+    effect: narrowed
+    note: 'CONFIRMED AND STRONGER THAN THE ENTRY STATES, for the alias half. "Rejects non-standard effort
+      names" understates it: on the stock template reasoning_effort values of high, none and minimal each
+      raise a FATAL EXCEPTION, not a soft rejection - only xhigh, medium and low are accepted. Narrowed
+      because the remaining items in this composite claim (JSON tool-argument crashes, leading-system merging,
+      false error warnings on code search) were not individually tested. AND A FINDING IN NEITHER SOURCE:
+      the two artifacts DIVERGE here. Stock RAISES on reasoning_effort=high; the Unsloth template in our
+      production GGUF silently COERCES high -> xhigh (lines 60-62). An OpenAI-style client sending the ordinary
+      value "high" therefore gets a hard 500 against stock and silent maximum-effort reasoning against ours.
+      Neither behaviour is what the caller asked for, and the two failure modes are opposite in visibility.'
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: stock chat_template.jinja line 59 (identical text at line 59 of the Unsloth template extracted
+      from our production GGUF)
+    quote: '{%- set resolved_reasoning_effort = reasoning_effort|default(''xhigh'') %}'
+    quote_sha256: 4e6a4858657c779dbc93e13535d302422650e0fcfdb0613578eb56ffbd410a65
+    source_revision: 'Qwen/Qwen3.8-27B chat_template.jinja @ 2026-08-21, 8,952 B, sha256 c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041;
+      and tokenizer.chat_template extracted from /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf, 9,993 B, sha256
+      12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: stock chat_template.jinja lines 58 and 63-64 - the enable_thinking gate that the raise sits
+      INSIDE, and the raise itself, which is why enable_thinking=false is immune and reasoning_effort is
+      not
+    quote: '{{- raise_exception(''Unexpected reasoning effort '' ~ reasoning_effort ~ ''. Supported types
+      are xhigh (default), medium, and low.'') }}'
+    quote_sha256: 47959c50858428544d945873c9bc49e7ab8943e0f8d49772de1ec2ee1a6c3aa6
+    source_revision: Qwen/Qwen3.8-27B chat_template.jinja @ 2026-08-21, sha256 c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041;
+      quote present byte-identically in our GGUF-embedded Unsloth variant as well
+    verified_by: research-intake/stage2
+  depends_on: []
+  dive_corrections: 'STAGE-2 DIVE 2026-08-21, operator-selected. MARKED dive-overturned: two of the entry''s
+    three headline claims do not survive contact with primary source, and the flagship one fails in a way
+    that would have sent real work in the wrong direction. Tested against BOTH the stock Qwen/Qwen3.8-27B
+    template and the Unsloth-patched template extracted from our own production GGUF - the second artifact
+    mattering because our served template is NOT the stock one, and overturning a claim against the wrong
+    file would have been the mirror error.
+
+
+    (1) THE FATAL-EXCEPTION CLAIM IS OVERTURNED AS WORDED AND THE CORRECTION CHANGES THE FIX. enable_thinking=false
+    raises on neither artifact; both render it correctly. A fatal exception DOES block the documented non-reasoning
+    path, but its trigger is reasoning_effort - and reasoning_effort=''none'', froggeric''s OWN documented
+    off-switch, is one of the values that raises. Two consequences that point opposite ways: a reader adopting
+    this template to escape an enable_thinking=false crash is adopting for a defect that does not exist,
+    while our stack, which passes enable_thinking=false, is already immune to the crash that DOES exist,
+    because the raise sits inside the enable_thinking gate.
+
+
+    (2) THE 80% THROUGHPUT / AST-FLATTENING CLAIM IS REFUTED IN DIRECTION BY THE ARTIFACT ITSELF. froggeric''s
+    template is 3.0x LARGER than stock, DEEPER (nesting 9 vs 6), branches 2.8x more, and in Jinja2 is 3.3x
+    slower to compile and 2.0x slower to render. And the mechanism cannot carry the magnitude regardless
+    of engine: llama.cpp compiles the chat template once at model load, so even a 3x parse cost is a one-time
+    ~40 ms, and a 0.066 ms render is invisible against prefill. There is no route from template nesting
+    to 80% of inference throughput on a server that parses once.
+
+
+    (3) THE PREFIX-CACHE CLAIM WAS FIRST RECORDED AS OVERTURNED AND IS NOW CORRECTED THE OTHER WAY - see
+    claim_corrections[2]. The first pass tested only the Qwen3.8 generation, where all templates retain,
+    and wrongly generalised. A sweep of the embedded template in EVERY production GGUF shows Qwen3.6-27B,
+    Qwen3.6-35B-A3B and Qwen3.5-122B all DISCARD history thinking outright, in both history shapes. The
+    claim holds against three of our four served models. This is the one place where this entry is RIGHT
+    about our fleet and the dive was initially wrong.
+
+
+    WHAT SURVIVES, AND IT IS NOT NOTHING. The xhigh default is CONFIRMED verbatim on both artifacts and
+    costs a 209-character injected instruction plus unbounded reasoning. The alias claim is CONFIRMED AND
+    UNDERSTATED - high, none and minimal each raise a FATAL exception on stock, not a soft rejection. The
+    empty-think defect is CONFIRMED with a rendered artifact: on inline-<think> history both stock and OUR
+    OWN served template emit a blank <think></think> immediately before every real thought, five occurrences
+    where three are warranted. And one finding in NEITHER source: stock RAISES on reasoning_effort=high
+    while our Unsloth variant silently COERCES it to xhigh, so the ordinary OpenAI value "high" yields a
+    hard 500 upstream and silent maximum-effort reasoning here - opposite failure modes, neither one what
+    the caller asked for.
+
+
+    NET: the entry mis-locates its defects but is not fabricating them. The template is a real fix for real
+    problems, described with claims that do not hold as stated. Adopt on the surviving evidence if at all,
+    never on the headline.'
+- id: intake-1214
+  arxiv_id: '2401.05618'
+  url: https://arxiv.org/abs/2401.05618
+  source_type: paper
+  title: The Benefits of a Concise Chain of Thought on Problem-Solving in Large Language Models
+  authors:
+  - Matthew Renze
+  - Erhan Guven
+  categories:
+  - llm_prompting
+  - context_management
+  - cost_aware_routing
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: search
+  ingested_date: '2026-08-20'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - Concise Chain-of-Thought (CCoT) prompting is introduced and compared against standard CoT prompting
+    on a multiple-choice QA benchmark.
+  - A conciseness instruction cuts response length substantially with what the paper characterises as negligible
+    impact on problem-solving performance in aggregate.
+  - The aggregate result hides a domain-localised penalty - the cost lands on math problems and on the weaker
+    of the two models tested.
+  - Per-token cost savings follow the length reduction, which is the practical argument for the technique.
+  techniques:
+  - Concise Chain-of-Thought (CCoT) prompting
+  - response-length-vs-accuracy trade-off measurement on MCQA
+  reported_results:
+  - Response length reduced 48.70% for both GPT-3.5 and GPT-4.
+  - Average per-token cost reduction 22.67%.
+  - GPT-3.5 with CCoT incurred a 27.69% performance penalty on math problems.
+  - Aggregate impact on problem-solving performance described as negligible.
+  contradicting_evidence:
+  - 'SCOPE, not contradiction: the models are GPT-3.5 and GPT-4 on an MCQA benchmark, both closed and both
+    pre-dating reasoning-native models by two generations. Whether the domain-localised penalty transfers
+    to a Qwen3.x model with a native <think> channel is exactly what is not established here.'
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - architect-model-selection-bench.md
+    intake:
+    - intake-276 (Brevity Constraints Reverse Performance Hierarchies - its 2026-04-07 dive already named
+      CCoT as literature to queue; this entry closes that action item)
+    - intake-1212 (the terseness template whose domain-specific risk this paper quantifies)
+    experiments: []
+  expanded_from: intake-1212
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  recommended_actions:
+  - '[unverified] Ingested primarily as the CONTRADICTION ANCHOR for intake-1212, and it earns that role
+    by being specific: a conciseness instruction that is near-neutral in aggregate can still carry a large
+    domain-localised penalty. Any A/B of a terseness template that reports one aggregate number cannot detect
+    that, so our evaluation must be per-suite.'
+  - '[unverified] The intake-276 dive (2026-04-07) listed CCoT among papers to add to the intake queue and
+    it was never filed. Now filed. Its sibling TALE (arXiv:2412.18547) is still unfiled and is the stronger
+    of the two for us because it proposes a token BUDGET rather than a style instruction.'
+  notes: 'Stage-1 expansion (Tier 2, targeted search), 2026-08-20, surfaced while running the cheap contradiction
+    pass on intake-1212. Metadata read 2026-08-20 from the arXiv abstract page: v1 submitted 2024-01-11,
+    latest v3 dated 2024-10-19; published at FLLM 2024. VERSION NOTE: this entry is recorded against v3,
+    which is what a reader will now retrieve - not the v1 that most citations of this work point at.
+
+
+    CREDIBILITY 2: peer-reviewed venue (+2), older than 24 months (-1), plus one independent in-corpus corroboration
+    of the direction from intake-276 (+1). The age is not a defect for the use we are making of it - the
+    finding being borrowed is a measurement-design lesson (aggregate hides domain damage), not a number
+    to transfer.
+
+
+    DELIBERATELY relevance: medium, not high. Nothing here is directly actionable on EPYC hardware and the
+    models are closed and obsolete. Its whole value is as the specific, quantified form of a caution our
+    own intake-276 already holds in general terms.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'CONFIRMED and made specific. The benchmark is not a single MCQA set: 1,000 questions, 100 randomly
+      drawn from each of ten source benchmarks, with ARC, AGIEval, HellaSwag and MedMCQA named. Significance
+      is tested with Mann-Whitney U, reported as U-values and p-values for both length and accuracy. That
+      is a materially better-powered design than the Stage-1 read implied.'
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim - 48.70% average response-length reduction for BOTH GPT-3.5 and GPT-4, with
+      aggregate problem-solving impact characterised as negligible.
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED, and the dive supplies the half that makes it usable: the 27.69% math penalty is GPT-3.5''s
+      alone, and GPT-4 under CCoT showed NO statistically significant decrease on math. So the damage is
+      localised twice over - to one domain AND to the weaker model. That is exactly the shape our own intake-276
+      predicts (large models tolerate brevity constraints better than small ones), from an independent study
+      two years earlier, which is why this entry earns its place as the contradiction anchor rather than
+      as a curiosity.'
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED verbatim - 22.67% average per-token cost reduction.
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: abstract / results, as rendered by ar5iv
+    quote: CCoT reduced average response length by 48.70% for both GPT-3.5 and GPT-4
+    quote_sha256: 73b3626282a302247a36520ffaeab5910630819bc9b91c6e2a588d79fde0994e
+    source_revision: arXiv:2401.05618v3 (2024-10-19), read via ar5iv 2026-08-21
+    verified_by: research-intake/stage2
+    located_by: machine
+  - claim_index: 2
+    kind: page-and-quote
+    locator: results discussion, as rendered by ar5iv - the sentence that scopes the math penalty to GPT-3.5
+    quote: GPT-4 with CCoT did not result in a statistically significant decrease in performance on math
+      problems compared to CoT
+    quote_sha256: 401a4241719bb249421dfa759b2608c803b54995a7e7837ba02dec9dbddd4300
+    source_revision: arXiv:2401.05618v3 (2024-10-19), read via ar5iv 2026-08-21
+    verified_by: research-intake/stage2
+    located_by: machine
+  depends_on: []
+  dive_corrections: 'STAGE-2 DIVE 2026-08-21, operator-selected. All four reported figures CONFIRMED verbatim
+    against the paper as rendered by ar5iv (48.70% length, 22.67% per-token cost, 27.69% GPT-3.5 math penalty,
+    negligible aggregate). This is the outcome the skill calls a valid dive result that manufactures nothing:
+    the entry was filed correctly and stays filed. TWO ADDITIONS THAT CHANGE HOW IT SHOULD BE USED. (1)
+    THE PENALTY IS DOUBLY LOCALISED. GPT-4 under CCoT showed no statistically significant math decrease
+    at all; the 27.69% is GPT-3.5''s. So the finding is not "conciseness costs accuracy on math", it is
+    "conciseness costs accuracy on math FOR THE WEAKER MODEL" - which converges independently with intake-276''s
+    scale-dependent result and materially strengthens both. (2) THE DESIGN IS BETTER POWERED THAN RECORDED:
+    1,000 questions across ten source benchmarks with Mann-Whitney U testing, not the single unnamed MCQA
+    set the Stage-1 entry implied. ANCHORS ARE located_by: machine - the quotes were located by a fetch
+    against the source rather than by reading the span, which tops out at T2 and is recorded honestly rather
+    than claimed as T3.'
+- id: intake-1215
+  arxiv_id: '2412.18547'
+  url: https://arxiv.org/abs/2412.18547
+  source_type: paper
+  title: 'TALE: Token-Budget-Aware LLM Reasoning'
+  authors:
+  - Tingxu Han
+  - Zhenting Wang
+  - Chunrong Fang
+  - Shiyu Zhao
+  - Shiqing Ma
+  - Zhenyu Chen
+  categories:
+  - llm_prompting
+  - context_management
+  - cost_aware_routing
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  ingested_date: '2026-08-21'
+  verdict: new_opportunity
+  verification: dive-verified
+  key_claims:
+  - Current LLM reasoning is unnecessarily lengthy and can be compressed by placing an explicit token
+    budget in the prompt, but the CHOICE of budget determines how much compression is actually achieved.
+  - 'The budget is estimated PER QUESTION rather than fixed: by default the reasoning model itself is
+    used as its own budget estimator via a zero-shot estimation prompt, so the intervention adapts to
+    per-problem complexity.'
+  - Two variants are offered - TALE-EP (estimate-and-prompt, inference-time only, zero training) and
+    TALE-PT (post-training via SFT or DPO).
+  - The inference-time variant reaches roughly two-thirds token reduction at under three points of accuracy
+    loss, and on some datasets IMPROVES accuracy while cutting tokens.
+  techniques:
+  - per-question token-budget estimation by the reasoning model itself (zero-shot estimator)
+  - budget-in-prompt reasoning compression (TALE-EP, inference-time)
+  - budget internalisation by SFT and by DPO (TALE-PT)
+  reported_results:
+  - 'TALE-EP on GPT-4o-mini, averaged across benchmarks: 67% token reduction (461.25 -> 148.72 average
+    output tokens) at -2.72% accuracy (83.75% -> 81.03%).'
+  - 'GSM8K: accuracy 84.46% (UP 3.11%) with tokens 318.10 -> 77.26, a 75.7% reduction - accuracy improved
+    while tokens fell by three quarters.'
+  - 'GSM8K-Zero: accuracy 98.72% (down 0.78%) with a 91.0% token reduction.'
+  - 'Generalisation on MathBench-College: Yi-lightning 76.67% at 64.3% token reduction; GPT-4o-mini 70.00%
+    (-8% vs vanilla CoT) at 61.5%; GPT-4o 80.00% (-4% vs vanilla CoT) at 69.8%.'
+  - 'TALE-PT on Llama-3.1-8B-Instruct / GSM8K: SFT 78.57% (UP 1.01%) at 50% token reduction; DPO 74.11%
+    (down 3.45%) at 37.9% reduction.'
+  contradicting_evidence:
+  - 'The MathBench-College generalisation rows are the honest counterweight to the headline: -8% for GPT-4o-mini
+    and -4% for GPT-4o are far worse than the -2.72% average, so the method degrades on harder college-level
+    math exactly where a budget bites hardest. The 67% headline is an average over a heterogeneous distribution,
+    the same shape our intake-892 dive flagged for ThinkingCap.'
+  - Closed models only for TALE-EP (GPT-4o, GPT-4o-mini, Yi-lightning); the only open-weights evidence
+    is TALE-PT on Llama-3.1-8B, which requires training. Nothing here is measured on a reasoning-native
+    Qwen3.x model with a native think channel.
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - architect-model-selection-bench.md
+    - routing-intelligence.md
+    intake:
+    - intake-276 (its 2026-04-07 dive named TALE as literature to queue and quoted the dynamic-budget template;
+      this entry closes that action, sixteen months late)
+    - intake-1214 (CCoT - the stylistic form of the same intervention, and the weaker one)
+    - intake-1212 (the terseness template whose form this paper argues against)
+    experiments: []
+  expanded_from: intake-1212
+  handoffs_updated:
+  - reasoning-compression.md
+  - per-request-reasoning-budget.md
+  handoffs_created: []
+  recommended_actions:
+  - 'THIS IS THE FORM OF THE INTERVENTION OUR OWN EVIDENCE ALREADY PREFERRED, and it is now filed with
+    numbers. intake-276 concluded in April 2026 that explicit numeric budgets beat stylistic instructions
+    and listed TALE as the paper to fetch; nobody fetched it. The comparison is now concrete: a per-question
+    numeric budget delivers 67% token reduction at -2.72%, and +3.11% accuracy on GSM8K, whereas the
+    stylistic form (intake-1214) delivers 48.70% at a 27.69% math penalty for the weaker model. Same goal,
+    different mechanism, materially different results.'
+  - Directly relevant to per-request-reasoning-budget.md, which is about exactly this quantity and is
+    currently blocked on server-side budget control. TALE-EP needs NO server support at all - the budget
+    is a prompt string, so it is reachable today on our stack in a way thinking.budget_tokens is not.
+  - 'The per-question estimator is the part that needs local scrutiny before adoption: it costs an extra
+    model call per request, which on our CPU-bound decode is not free, and the paper measures it on closed
+    models with cheap short calls. Measure the estimator overhead against the savings before treating
+    the 67% as a net win.'
+  notes: 'STAGE-2b, 2026-08-21, operator-selected from the intake-1213/1212 dive-surfaced list; ingested
+    and dived in one pass. Metadata and results read from the arXiv abstract page and the ar5iv full text
+    2026-08-21. VERSION PIN: v1 submitted 2024-12-24, LATEST v5 dated 2025-06-02 - this entry is recorded
+    against v5, the version a reader retrieves today.
+
+
+    WHY relevance is HIGH where its sibling intake-1214 is medium. CCoT tells us a stylistic instruction
+    is risky; TALE tells us what to do instead, and the alternative is cheap. The mechanism transfers
+    to our stack without server work, without training, and without a template swap - which makes it the
+    only item in this whole intake round that could improve token economics without touching a frozen artifact.
+
+
+    THE COMPARISON THAT MAKES THIS ROUND COHERENT. Three sources now sit on one axis. intake-1212 proposes
+    a STYLISTIC always-on terseness prompt with zero published measurement. intake-1214 measures the stylistic
+    form and finds a domain-localised penalty. This entry measures the NUMERIC per-question form and beats
+    both. Our own intake-276 predicted that ordering in April 2026 from an independent 31-model study.
+    Four sources, two of them independent of each other and two of them ours, all pointing the same way.'
+  claim_anchors:
+  - claim_index: 3
+    kind: page-and-quote
+    locator: results / abstract-level summary of TALE-EP, as rendered by ar5iv
+    quote: TALE-EP achieves 67% reduction in token usage while maintaining accuracy with less than a 3%
+      decrease.
+    quote_sha256: 4d7657cef2d3f0ac0c9f76c25a878ad7f4599b8a0a1b5696ec3b7322d0379f69
+    source_revision: arXiv:2412.18547v5 (2025-06-02), read via ar5iv 2026-08-21
+    verified_by: research-intake/stage2b
+    located_by: machine
+  depends_on: []
+  dive_corrections: 'STAGE-2b COMBINED PASS 2026-08-21. Ingested and dived together, so it lands dive-verified
+    rather than stage1-unverified and is quotable in the Stage-3 plan. All headline figures confirmed against
+    the full text. NOTHING WAS OVERTURNED - this is a correctly-filed source and the dive says so plainly
+    rather than manufacturing a finding.
+
+
+    TWO THINGS THE DIVE ADDED THAT THE ABSTRACT DOES NOT GIVE. (1) THE GENERALISATION ROWS ARE WORSE THAN
+    THE HEADLINE: MathBench-College shows -8% for GPT-4o-mini and -4% for GPT-4o against vanilla CoT, versus
+    the -2.72% average. Anyone adopting this on the strength of "67% for under 3%" is quoting the friendly
+    end of a heterogeneous distribution. (2) THE ESTIMATOR IS NOT FREE: the per-question budget is produced
+    by an extra zero-shot call to the reasoning model itself. On closed API models with cheap short calls
+    that overhead is invisible; on our bandwidth-bound CPU decode it is a real cost that must be measured
+    against the savings before the 67% can be read as a net win. Neither point is in the abstract and both
+    change the adoption calculus.'
+- id: intake-1216
+  arxiv_id: null
+  url: https://github.com/google/minja
+  source_type: repo
+  title: minja - minimalistic C++ Jinja engine for LLM chat templates (NOT the engine our frozen v9 llama.cpp
+    runs)
+  authors:
+  - Google
+  - ochafik (upstream author of the llama.cpp integration)
+  categories:
+  - inference_serving
+  - local_inference
+  - tool_implementation
+  - llm_prompting
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: expansion
+  ingested_date: '2026-08-21'
+  verdict: superseded
+  verification: dive-overturned
+  key_claims:
+  - Header-only C++17 Jinja subset built specifically for LLM chat templates, MIT-licensed, explicitly
+    not a general-purpose templating engine.
+  - Named users are llama.cpp, Jan (via cortex.cpp), GPT4All and Docker Model Runner.
+  - Implements only the Jinja filters actually used by major model templates; no tuples, raw blocks, includes
+    or extends; no distinction between none and undefined.
+  - Design goal is stated as decent performance compared to Python, with a two-phased parsing approach,
+    but the repository publishes no benchmark and documents no template caching behaviour.
+  techniques:
+  - Jinja subset scoped to chat-template usage
+  - two-phased parsing
+  reported_results:
+  - 223 stars as read 2026-08-21. No performance benchmark, no parse-cost figure and no caching contract
+    is published.
+  contradicting_evidence:
+  - 'THE SELECTION PREMISE IS OVERTURNED BY OUR OWN TREE. This source was selected to settle whether llama.cpp
+    re-parses a chat template per request. It cannot, because minja is NOT the engine our production kernel
+    runs. Frozen production-consolidated-v9 (/mnt/raid0/llm/llama.cpp @ 0db32c06e) resolves its templates
+    through a FIRST-PARTY engine at common/jinja/ - lexer.cpp, parser.cpp, runtime.cpp, value.cpp, caps.cpp,
+    ~236 KB of source with its own README - introduced upstream in ggml-org/llama.cpp PR#18462 and inspired
+    by huggingface.js''s jinja package, not by minja.'
+  - 'The word minja survives in exactly three places in that tree and none of them is a dependency: a stale
+    TODO comment in common/chat.cpp:749 referencing an upstream PR, tests/test-chat.cpp, and docs/function-calling.md.
+    There is no vendored minja source, no include, no build target. A reader who greps for minja in our
+    tree and finds hits would conclude the opposite of the truth - which is exactly how this entry nearly
+    went in wrong.'
+  cross_references:
+    handoffs:
+    - prompt-construction-determinism.md
+    - llamacpp-v6-consolidation.md
+    intake:
+    - intake-1213 (this entry was surfaced to adjudicate its AST-flattening claim, and it does so - by
+      showing the claim targets a parser we do not run)
+    - intake-1212
+    experiments: []
+  expanded_from: intake-1213
+  handoffs_updated:
+  - prompt-construction-determinism.md
+  handoffs_created:
+  - qwen-chat-template-evaluation.md
+  recommended_actions:
+  - 'THE QUESTION IT WAS SELECTED FOR IS NOW ANSWERED, from our own frozen tree rather than from this repo:
+    the chat template is COMPILED ONCE AT MODEL LOAD, not per request. common_chat_templates_init is called
+    exactly once in the server, at tools/server/server-context.cpp:1454; the only other non-test call sites
+    in the tree are the one-shot CLI tools (mtmd-cli.cpp:127, completion.cpp:158). The per-request path
+    is oaicompat_chat_params_parse -> common_chat_templates_apply (server-common.cpp:1092), which renders
+    an ALREADY-COMPILED program. So a parse-cost optimisation cannot move steady-state inference throughput
+    at all, on any template, by construction.'
+  - 'ONE NUANCE THAT PARTLY RESCUES THE MECHANISM WITHOUT RESCUING THE CLAIM: the in-tree README states
+    that the runtime executes the compiled program by having each statement or expression recursively call
+    execute(ctx) to traverse the AST. So RENDER cost does scale with AST size and depth, per request. That
+    is a real mechanism for template shape mattering - and it runs the wrong way for intake-1213, whose
+    template is 3.0x larger and nesting-depth 9 against stock''s 6. By this mechanism froggeric''s template
+    should be SLOWER per render, which is what was measured.'
+  - 'SEPARATE AND MORE IMPORTANT THAN THE THROUGHPUT QUESTION: the in-tree engine implements INPUT MARKING
+    (jinja::string carries an is_input flag through transformations) specifically to defend against special-token
+    injection from user content, and common/chat.cpp applies workarounds to input data BEFORE it enters
+    the runtime. Any decision to run a third-party chat template must be checked against that path - a
+    template is executable code in the prompt-construction position, and this is the security property
+    it sits on top of.'
+  notes: 'STAGE-2b, 2026-08-21, operator-selected; ingested and dived in one pass. Marked dive-overturned
+    because the PREMISE FOR SELECTING IT did not survive - I recommended it on the belief that minja is
+    llama.cpp''s Jinja engine, and our own frozen tree says otherwise. Recording that plainly: the recommendation
+    was wrong, the dive caught it, and the underlying question got answered anyway from a better source
+    than the one selected.
+
+
+    verdict superseded rather than not_applicable, and the distinction is the one the rubric insists on:
+    minja is in-domain, open-source, self-hostable and still shipping to other projects. It has simply
+    been DISPLACED for our purposes by a named successor - the first-party common/jinja engine from ggml-org/llama.cpp
+    PR#18462, which is what production-consolidated-v9 actually executes. That is a displacement, not an
+    out-of-scope finding.
+
+
+    credibility_score is null by the rubric: this is a repository card with no empirical claims to score
+    - the one performance statement it makes is a design goal with no benchmark attached.
+
+
+    PROVENANCE: repository page read 2026-08-21. Local evidence read the same day against /mnt/raid0/llm/llama.cpp
+    at frozen head 0db32c06e - the v9 freeze commit named in CLAUDE.md. Read-only inspection; nothing in
+    that tree was modified, built or committed.'
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: /mnt/raid0/llm/llama.cpp/common/jinja/README.md, opening paragraph - the successor engine's
+      own statement of origin
+    quote: A Jinja template engine implementation in C++, originally inspired by [huggingface.js's jinja
+      package](https://github.com/huggingface/huggingface.js). The engine was introduced in [PR#18462](https://github.com/ggml-org/llama.cpp/pull/18462).
+    quote_sha256: 9e47afe527ed0c613a4293266e571bbaf77fbe2999b3f3df34ea942dc48d4b22
+    source_revision: /mnt/raid0/llm/llama.cpp @ 0db32c06e (production-consolidated-v9 freeze commit), read
+      2026-08-21
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: /mnt/raid0/llm/llama.cpp/tools/server/server-context.cpp:1454 - the sole server call site that
+      compiles the chat template, proving once-at-load rather than per-request
+    quote: '                chat_templates = common_chat_templates_init(model_tgt, params_base.chat_template);'
+    quote_sha256: 975a1398723f9dfd478f9a5d0fc8728f92f73dae8fd6aad18f76ac02af56a2de
+    source_revision: /mnt/raid0/llm/llama.cpp @ 0db32c06e, read 2026-08-21
+    verified_by: research-intake/stage2b
+  depends_on: []
+  dive_corrections: 'STAGE-2b COMBINED PASS 2026-08-21. Persisted dive-overturned. THE OVERTURN IS OF MY
+    OWN RECOMMENDATION, not of the source: minja was selected to adjudicate intake-1213 claim 3 on the
+    premise that it is llama.cpp''s Jinja engine, and frozen production-consolidated-v9 (0db32c06e) does
+    not use it. The engine is first-party, lives at common/jinja/, and arrived upstream in PR#18462. Recording
+    the bad recommendation rather than quietly re-scoping the entry, because the failure mode is instructive:
+    a grep for "minja" in our tree returns three hits and every one of them is stale - a comment, a test,
+    and a doc - which is precisely the shape that turns an absence into a false positive.
+
+
+    THE UNDERLYING QUESTION IS SETTLED ANYWAY, and more decisively than the selected source could have settled
+    it, because it was answered from the kernel we actually run. The chat template is compiled ONCE at
+    model load (server-context.cpp:1454, the sole server call site) and rendered per request through common_chat_templates_apply
+    (server-common.cpp:1092). No parse-per-request path exists. A template AST-flattening optimisation
+    therefore cannot move steady-state inference throughput on this server by any amount, which is the
+    structural half of why intake-1213 claim 3 is refuted.
+
+
+    THE PARTIAL RESCUE, recorded so the next reader does not over-correct: render IS AST-shaped. The in-tree
+    README states the runtime traverses the compiled program by recursive execute(ctx) per statement and
+    expression, so a larger, deeper template costs more per render. That mechanism is real; it simply runs
+    against intake-1213, whose template is 3.0x larger and deeper than stock.
+
+
+    A THIRD FINDING, NOT ASKED FOR AND MORE IMPORTANT THAN EITHER: this engine implements INPUT MARKING
+    - jinja::string carries an is_input flag through one-to-one, one-to-many and many-to-one transformations
+    - explicitly to stop user content forging special tokens, and common/chat.cpp normalises input BEFORE
+    it reaches the runtime. A chat template is executable code sitting in the prompt-construction position.
+    Swapping in a third-party template moves that code, and the security property it sits on is not something
+    either community repository mentions.'
+- id: intake-1217
+  arxiv_id: '2604.06132'
+  url: https://arxiv.org/abs/2604.06132
+  source_type: paper
+  title: 'Claw-Eval: Towards Trustworthy Evaluation of Autonomous Agents'
+  authors:
+  - Bowen Ye
+  - Rang Li
+  - Qibin Yang
+  - Yuanxin Liu
+  - Linli Yao
+  - Hanglong Lv
+  - Zhihui Xie
+  - Chenxin An
+  - Lei Li
+  - Lingpeng Kong
+  - Qi Liu
+  - Zhifang Sui
+  - Tong Yang
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  - safety
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  ingested_date: '2026-08-21'
+  verdict: worth_investigating
+  verification: dive-verified
+  key_claims:
+  - It is an AUTONOMOUS-AGENT evaluation suite for multi-step workflows in real software environments -
+    300 human-verified tasks across 9 categories in three groups (general service orchestration, multimodal
+    perception and interaction, multi-turn professional dialogue).
+  - 'Grading is trajectory-aware rather than outcome-only: each run is recorded through three independent
+    evidence channels (execution traces, audit logs, environment snapshots) yielding 2,159 fine-grained
+    rubric items.'
+  - 'The scoring protocol evaluates Completion, Safety and Robustness, reported as Average Score, Pass@k
+    and Pass^k over three trials, explicitly to separate genuine capability from lucky outcomes.'
+  - 'The paper''s own headline finding is a METHODOLOGY result: trajectory-opaque evaluation is systematically
+    unreliable, missing 44% of safety violations and 13% of robustness failures that trajectory-aware grading
+    detects.'
+  techniques:
+  - trajectory-aware grading via three independent evidence channels
+  - Pass^k over repeated trials to separate capability from luck
+  - decomposition of agent scoring into Completion / Safety / Robustness
+  reported_results:
+  - Trajectory-opaque evaluation misses 44% of safety violations and 13% of robustness failures relative
+    to this framework, measured over 14 frontier models.
+  - 300 human-verified tasks, 9 categories, 2,159 rubric items, three trials per task.
+  contradicting_evidence:
+  - 'NOT contradiction of this paper, but the finding that matters for the entry that surfaced it: this
+    is an AGENTIC TRAJECTORY benchmark - service orchestration, multimodal interaction, professional dialogue
+    - and it is NOT a knowledge-work or coding-accuracy benchmark. See notes.'
+  cross_references:
+    handoffs:
+    - eval-tower-verification.md
+    - canonical-judge-suite-revamp.md
+    - architect-model-selection-bench.md
+    intake:
+    - intake-1212 (Claw-Eval is the benchmark behind that entry's only quantified plate)
+    - intake-892 (ThinkingCap - the model that plate is measured on)
+    experiments: []
+  expanded_from: intake-1212
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created:
+  - qwen-chat-template-evaluation.md
+  recommended_actions:
+  - 'THE REASON THIS WAS WORTH INGESTING, and it lands on intake-1212 rather than here. Sharp''s single
+    quantified result is measured on Claw-Eval, and Claw-Eval measures AUTONOMOUS-AGENT TRAJECTORIES scored
+    on Completion, Safety and Robustness. Sharp''s stated purpose is "optimizing the models for knowledge
+    work and coding". The one number offered therefore does not measure the thing the repository claims
+    to improve. That is a scope mismatch between claim and evidence, and it is independent of whether the
+    number itself is real.'
+  - 'SECOND, WEAKER, FLAGGED NOT ADJUDICATED: the plate''s metric names ("answer score", "overall") do
+    not map onto this paper''s published metric set (Completion / Safety / Robustness; Average Score, Pass@k,
+    Pass^k). "overall" is plausibly Average Score; "answer score" corresponds to nothing named here. It
+    may be a sub-metric or a harness-local name. Recorded as a discrepancy to resolve, not as a defect
+    proven.'
+  - 'INDEPENDENTLY USEFUL TO US, separate from the Sharp question: the 44%-of-safety-violations-missed
+    result is a direct argument for trajectory-aware grading, which bears on eval-tower-verification.md
+    and canonical-judge-suite-revamp.md. Our own harness scores outcomes; this paper quantifies what outcome-only
+    scoring misses on agentic tasks.'
+  notes: 'STAGE-2b, 2026-08-21, operator-selected; ingested and dived in one pass. Read from the arXiv
+    abstract page 2026-08-21. VERSION PIN: v1 2026-04-07, latest v3 2026-05-07 - recorded against v3.
+
+
+    NOT A DUPLICATE despite three prior mentions. The string ClawEval and the id 2604.06132 both already
+    appeared inside OTHER entries'' prose (intake-~205 naming it alongside SkillsBench, and a KAT-Coder
+    entry warning about a 73.4 collision), but no entry carried this url. Being named in another entry''s
+    notes is not a collision - this is its first ingestion as a source, and it is exactly the case the
+    2026-07-25 audit found mis-filed nineteen times.
+
+
+    NAMING HAZARD ALREADY IN OUR CORPUS, carried forward here so it is not rediscovered: a KAT-Coder entry
+    records that the value 73.4 appears as this benchmark''s Average Score under OpenClaw AND as two unrelated
+    SWE-bench figures in the same lineage. Always carry the (benchmark, scaffold) tuple when quoting a
+    Claw-Eval number.
+
+
+    credibility 3: recent (+1), a strong multi-institution author list including established HKU/PKU NLP
+    names (+1), 14-model evaluation with an explicit methodology contribution (+1), no venue confirmed
+    and no independent replication (0). Medium tier.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: abstract, the sentence defining the suite's scope - the load-bearing one for the intake-1212
+      scope-mismatch finding
+    quote: 'We introduce Claw-Eval, an end-to-end evaluation suite addressing these gaps with 300 human-verified
+      tasks spanning 9 categories across three groups: general service orchestration, multimodal perception
+      and interaction, and multi-turn professional dialogue.'
+    quote_sha256: 5760eb9af9ecb574cf7f42edfa8b456d5dd0363eb2e889a01253a1a0e23ebfdc
+    source_revision: arXiv:2604.06132v3 (2026-05-07), abstract read 2026-08-21
+    verified_by: research-intake/stage2b
+    located_by: machine
+  depends_on: []
+  dive_corrections: 'STAGE-2b COMBINED PASS 2026-08-21. Ingested and dived together; persisted dive-verified.
+    The entry is correctly filed and nothing in it was overturned.
+
+
+    ITS VALUE IS A FINDING ABOUT ANOTHER ENTRY. intake-1212 offers exactly one quantified result and it
+    is measured on this benchmark. This benchmark evaluates AUTONOMOUS AGENTS on multi-step workflows -
+    service orchestration, multimodal interaction, professional dialogue - scored on Completion, Safety
+    and Robustness over three trials. intake-1212 sells itself as "optimizing the models for knowledge
+    work and coding". The evidence therefore does not measure the claim. This is a scope mismatch and it
+    is independent of, and additional to, the fact that the number itself lives only inside a PNG. Two
+    separate defects in one figure.
+
+
+    A SECOND, WEAKER DISCREPANCY, FLAGGED NOT ADJUDICATED: the plate reports "answer score" and "overall",
+    neither of which is a metric this paper defines. "overall" plausibly maps to Average Score; "answer
+    score" maps to nothing published here. It could be a sub-metric or a harness-local name, and calling
+    it fabricated on this evidence would be exactly the over-reach this skill warns about.
+
+
+    WORTH MORE TO US THAN THE SHARP QUESTION: the paper''s own headline is a methodology result - outcome-only
+    grading misses 44% of safety violations and 13% of robustness failures that trajectory-aware grading
+    catches, across 14 frontier models. Our harness grades outcomes. That is a direct, quantified argument
+    for the trajectory-aware direction in eval-tower-verification.md and canonical-judge-suite-revamp.md,
+    and it arrived as a side effect of chasing a chat template.'

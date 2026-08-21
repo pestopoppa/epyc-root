@@ -94,3 +94,31 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 3. ~~**Is this even worth it**~~ — RESOLVED by operator (2026-08-14): quality uplift is a given, so the
    swap is worth it on quality grounds alone. Throughput won't move materially (dense, BW-bound); the
    throughput step exists to record the serving baseline, not to gate the decision.
+
+## Research Intake — 2026-08-21 (chat-template dive, intake-1212…1217)
+
+Three findings landed here by a chat-template intake round, all verified by rendering the template
+**embedded in our own** `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` (extracted by a GGUF header
+read, without loading the 29 GB model) alongside the stock `Qwen/Qwen3.8-27B` template.
+
+- [ ] **Q38-T1** — Two real defects on the template we now serve. (a) With inline-`<think>` history,
+      stock **and** our Unsloth variant emit a blank `<think></think>` immediately before every real
+      thought — five `<think>` occurrences where three are warranted. (b) `reasoning_effort` handling
+      **diverges from upstream**: stock *raises* on `high`, our Unsloth variant silently *coerces*
+      `high → xhigh`. An OpenAI-style client sending the ordinary value `high` therefore gets a hard
+      500 against stock and silent maximum-effort reasoning here — opposite failure modes, neither
+      what the caller asked for.
+- [ ] **Q38-T2** — Registry provenance: re-resolve the swap commit. This handoff's status line cites
+      `b376dadd`, which resolves in **none** of epyc-root, epyc-orchestrator or
+      epyc-inference-research. The Qwen3.8 swap that *does* resolve is `1cff5162` in
+      `repos/epyc-orchestrator/stack_templates/default.yaml`, and
+      `orchestration/model_registry.yaml` still contains **zero** occurrences of the fixed string
+      `Qwen3.8` — `architect_general` and `coder_escalation` there still name Qwen3.6-27B.
+- [ ] **Q38-T3** — Record that we serve a **non-stock (Unsloth) template** (9,993 B, ending
+      `{#- Unsloth fixes - developer role, merged system messages, tool calling #}`) rather than the
+      stock 8,952 B one, and that no registry descriptor says so.
+
+**Not a task, recorded so it is not rediscovered:** our stack-wide
+`chat_template_kwargs.enable_thinking: false` is **role-keyed**, so it survives the model swap. It
+also makes us immune both to the template's `xhigh` default and to the `reasoning_effort` raise,
+because the raise sits *inside* the `enable_thinking` gate and is unreachable when thinking is off.

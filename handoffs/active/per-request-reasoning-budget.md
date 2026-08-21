@@ -232,3 +232,28 @@ Confidence values are not comparable or scalarized. Enable at most one advisory 
 - [ ] Step 4: verify budget>0 caps reasoning at N tokens; no regression on pure MoE
 - [ ] Thread thinking.budget_tokens through ChatRequest per role
 - [x] Design stop-signal abstraction to slot in CGR certainty-threshold / SpecExit hidden-state exit ✅ 2026-07-29 — design-only deterministic `StopSignal`/arbiter contract: hard cap remains the only executable authority; CGR and SpecExit are advisory, one-at-a-time, fail-closed producers pending source, parity, and paired quality/total-token evidence. No production sampler, server, or kernel change.
+
+## Research Intake Update — 2026-08-21 (chat-template dive, intake-1212…1217)
+
+- [ ] **PRB-T1** — Re-examine the standing `--jinja` removal workaround. It was adopted because the
+      jinja template "primed the model into think mode", surrendering per-request reasoning control
+      entirely. A 2026-08-21 dive rendered both the stock `Qwen/Qwen3.8-27B` template and the
+      Unsloth template embedded in our production GGUF: **both handle `enable_thinking=false`
+      correctly**, suppressing the reasoning-instruction block and emitting the proper empty-think
+      prefill. What the templates *do* have is a fatal `raise_exception` on any `reasoning_effort`
+      outside `{xhigh, medium, low}` — and an `xhigh` default that injects a 209-character
+      instruction when no kwargs are passed. Determine whether the behaviour that motivated
+      removing `--jinja` was actually one of those, and whether the workaround is still needed.
+- [ ] **PRB-T2** — **TALE-EP (intake-1215) needs no server support at all.** This handoff's
+      objective is per-request reasoning control and it has been blocked since 2026-04-17 on server
+      support for `thinking.budget_tokens`. TALE puts a per-question numeric token budget in the
+      *prompt*, estimated zero-shot by the model itself — reported at 67% token reduction for
+      −2.72% average accuracy, and +3.11% accuracy on GSM8K at 75.7% fewer tokens. Evaluate it as
+      the unblock path. Caveats to carry: MathBench-College shows −8% / −4%, far worse than the
+      headline; and the estimator costs an extra model call, cheap on closed APIs and not obviously
+      cheap on our bandwidth-bound CPU decode.
+- [ ] **PRB-T3** — Confirm whether a top-level `reasoning_effort` field survives to the template on
+      our llama-server path or is consumed by the server before render. Untested in the dive (needs
+      a running server). The same silent-no-op shape is already recorded from a different vendor and
+      stack in intake-946, where a top-level `enable_thinking` field was ignored and only
+      `chat_template_kwargs` took effect.

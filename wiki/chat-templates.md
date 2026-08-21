@@ -265,6 +265,65 @@ channel prefixes based on kwargs, ALWAYS use `/v1/chat/completions`.
 
 ---
 
+## The embedded template is per-MODEL, not per-family (measured 2026-08-21)
+
+The family table above answers *which turn markers* a model uses. It does **not** answer what the
+GGUF's embedded template actually does, and those diverge — including between two models of the
+same family. Extracted by GGUF header read from every production GGUF (no model loaded):
+
+| Model / role | Embedded template | `reasoning_effort` outside {xhigh,medium,low} | `xhigh` by default | Blank-`<think>` duplication | Retains history thinking |
+|---|---|---|---|---|---|
+| Qwen3.8-27B — `architect_general` | 9,993 B `12827f24b742` | **raises** on `none`; `high` silently → `xhigh` | **yes** | **yes** | yes |
+| Qwen3.6-27B — `coder_escalation` | 8,057 B `55d4931433fe` | ok | no | no | **no — discards** |
+| Qwen3.6-35B-A3B — `frontdoor` | 8,057 B (byte-identical to above) | ok | no | no | **no — discards** |
+| Qwen3.5-122B-A10B — `architect_critic` | 7,992 B `8452ca85cb1e` | ok | no | no | **no — discards** |
+
+Four models, **three distinct templates**. Consequences worth carrying:
+
+- **We do not serve stock Qwen templates.** Every one of these is an Unsloth-patched variant (the
+  Qwen3.8 one ends `{#- Unsloth fixes - developer role, merged system messages, tool calling #}`);
+  stock `Qwen/Qwen3.8-27B` is 8,952 B. No registry descriptor records this.
+- **`reasoning_effort` is a live footgun on Qwen3.8 only.** Stock *raises* on `high`; our Unsloth
+  variant silently *coerces* `high → xhigh`. An OpenAI-style client sending the ordinary value
+  `high` therefore gets a hard 500 upstream and silent maximum-effort reasoning here — opposite
+  failure modes. Both raise on `none` and `minimal`.
+- **The `xhigh` default injects tokens.** With no kwargs, Qwen3.8 renders 345 B including a
+  209-character reasoning instruction; at `medium` it renders 136 B.
+- **All of the above sit INSIDE the `enable_thinking` gate.** Our stack-wide
+  `chat_template_kwargs.enable_thinking: false` makes every one of them unreachable — which is why
+  the fleet is not currently exposed, and why that setting is load-bearing beyond loop prevention.
+- **Three of four incumbents discard history reasoning entirely**, in both history shapes
+  (`reasoning_content` field and inline `<think>` tags). Inert under `enable_thinking=false`; it
+  becomes a prefix-cache question the moment any role runs thinking-ON.
+
+## The template is compiled once at model load, not per request
+
+Verified in frozen `production-consolidated-v9` (`/mnt/raid0/llm/llama.cpp` @ `0db32c06e`):
+`common_chat_templates_init` has exactly one server call site,
+`tools/server/server-context.cpp:1454`; the per-request path is
+`oaicompat_chat_params_parse` → `common_chat_templates_apply` (`server-common.cpp:1092`), which
+renders an **already-compiled** program. So template *parse* cost is a one-time cost at startup and
+cannot affect steady-state throughput. Render cost is AST-shaped (the runtime traverses the compiled
+program by recursive `execute(ctx)` per node) but is sub-millisecond and invisible against prefill.
+
+**This is the standing refutation of "flatten the template AST to speed up inference" claims.**
+
+## The engine is `common/jinja/`, NOT minja
+
+A grep for `minja` in the production tree returns three hits and **every one is stale** — a TODO
+comment at `common/chat.cpp:749`, a test, and a doc. The actual engine is first-party, at
+`common/jinja/` (lexer / parser / runtime / value / caps), introduced upstream in
+ggml-org/llama.cpp PR#18462 and inspired by huggingface.js's jinja package.
+
+It implements **input marking** as a security property: `jinja::string` carries an `is_input` flag
+through one-to-one, one-to-many and many-to-one transformations so user content cannot forge special
+tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime
+(`common/jinja/README.md`). **A chat template is executable code in the prompt-construction
+position** — substituting a third-party template moves that code and must be checked against this
+path. No community template repository mentions it.
+
+---
+
 ## Cross-references
 
 - `feedback_qwen3x_enable_thinking_false` (memory) — Qwen reasoning loop
@@ -280,6 +339,11 @@ channel prefixes based on kwargs, ALWAYS use `/v1/chat/completions`.
 ## Open Questions
 
 - Which template invariants should be promoted into automated per-role startup attestations?
+  The 2026-08-21 sweep makes three concrete candidates: the embedded-template digest per role, a
+  `reasoning_effort` round-trip probe, and a stock-vs-served divergence check.
+- Should any role run thinking-ON with history retention, which is the only configuration where the
+  incumbents' discard behaviour costs anything? Tracked as CT-5 in
+  `handoffs/active/qwen-chat-template-evaluation.md`.
 
 ## Related Categories
 
@@ -296,3 +360,10 @@ channel prefixes based on kwargs, ALWAYS use `/v1/chat/completions`.
 - `progress/2026-05/2026-05-22.md`
 - `progress/2026-05/2026-05-23.md`
 - `handoffs/active/model-stack-single-source-update-pipeline.md`
+- `handoffs/active/qwen-chat-template-evaluation.md` (2026-08-21) — the fleet sweep, the defect
+  matrix, and the template-swap decision
+- `progress/2026-08/2026-08-21-research-intake.md` (2026-08-21)
+- `research/intake_index.yaml` — intake-1212, intake-1213, intake-1216 (dive-verified /
+  dive-overturned; digests and per-claim anchors recorded there)
+- `/mnt/raid0/llm/llama.cpp` @ `0db32c06e` — `tools/server/server-context.cpp:1454`,
+  `tools/server/server-common.cpp:1092`, `common/jinja/README.md`
