@@ -49,6 +49,14 @@
 #   (--skip-revert --skip-provenance --skip-recompile --skip-jinja-fix to taste)
 set -euo pipefail
 
+# Q38-T4 ROOT CAUSE (2026-08-21): the "quarter-port drift" was NEVER data drift. The guard
+# builds its launch view against the REALIZED fleet mode, falling back to the ambient env
+# default ("full" in a clean shell), which filters out the half instances that the master,
+# topology and stack template all correctly declare. Production runs mode "both". Evaluate
+# the pipeline in the production mode and all 13 port errors vanish; the check is FULLY
+# green as of this fix. Both files were always right — the check-time environment was wrong.
+export ORCHESTRATOR_STACK_NUMA_MODE="${ORCHESTRATOR_STACK_NUMA_MODE:-both}"
+
 ROOT="${ROOT:-/workspace}"
 ORCH="${ORCH:-$ROOT/repos/epyc-orchestrator}"
 RESEARCH="${RESEARCH:-/mnt/raid0/llm/epyc-inference-research}"
