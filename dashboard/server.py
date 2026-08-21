@@ -50,6 +50,7 @@ Run: ``python3 -m dashboard.server --port 8100``  (or ``python3 dashboard/server
 from __future__ import annotations
 
 import argparse
+import base64
 import concurrent.futures
 import fcntl
 import hashlib
@@ -1579,11 +1580,10 @@ def _arena_attempt(manifest_path: Path) -> tuple[dict | None, str | None]:
         pid, expected_ticks = activation.get("pid"), activation.get("process_start_ticks")
         if not isinstance(pid, int) or not isinstance(expected_ticks, int):
             continue
-        try:
-            observed_ticks = int((Path("/proc") / str(pid) / "stat").read_text(
-                encoding="utf-8").split()[21])
-        except (OSError, ValueError, IndexError):
+        proc_stat = _discovery_proc_stat(pid)
+        if proc_stat is None:
             continue
+        observed_ticks = proc_stat[2]
         if observed_ticks != expected_ticks:
             continue
         _, request, request_error = _read_json_object(
@@ -3965,7 +3965,7 @@ def _discovery_native_receipt_hash_valid(body: object) -> bool:
 
 def _discovery_completed_build_materialization(
         *, entry: Path, intent_path: Path, terminal: dict,
-        contract: dict) -> bool:
+        contract: dict, strict_private: bool = False) -> bool:
     """Require the exact sealed terminal -> materialization receipt chain."""
     build = terminal.get("build")
     materialization_raw = (build.get("materialization_receipt")
@@ -3980,10 +3980,17 @@ def _discovery_completed_build_materialization(
             or not isinstance(materialization_sha, str)
             or re.fullmatch(r"[0-9a-f]{64}", materialization_sha) is None):
         return False
-    try:
-        intent_sha = hashlib.sha256(intent_path.read_bytes()).hexdigest()
-    except OSError:
-        return False
+    if strict_private:
+        intent_snapshot = _discovery_private_snapshot(
+            intent_path, max_bytes=256 * 1024)
+        if intent_snapshot is None:
+            return False
+        intent_sha = hashlib.sha256(intent_snapshot[0]).hexdigest()
+    else:
+        try:
+            intent_sha = hashlib.sha256(intent_path.read_bytes()).hexdigest()
+        except OSError:
+            return False
     if terminal.get("intent_file_sha256") != intent_sha:
         return False
     materialization_path = Path(materialization_raw)
@@ -3991,13 +3998,21 @@ def _discovery_completed_build_materialization(
         resolved_entry = entry.resolve(strict=True)
         resolved = materialization_path.resolve(strict=True)
         resolved.relative_to(resolved_entry)
-        info = materialization_path.lstat()
-        if (materialization_path.is_symlink()
-                or not materialization_path.is_file()
-                or info.st_nlink != 1 or info.st_size > 4 * 1024 * 1024):
-            return False
-        raw = materialization_path.read_bytes()
-        after = materialization_path.lstat()
+        if strict_private:
+            snapshot = _discovery_private_snapshot(
+                materialization_path, max_bytes=4 * 1024 * 1024)
+            if snapshot is None:
+                return False
+            raw, info = snapshot
+            after = info
+        else:
+            info = materialization_path.lstat()
+            if (materialization_path.is_symlink()
+                    or not materialization_path.is_file()
+                    or info.st_nlink != 1 or info.st_size > 4 * 1024 * 1024):
+                return False
+            raw = materialization_path.read_bytes()
+            after = materialization_path.lstat()
     except (OSError, ValueError):
         return False
     if ((info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_nlink)
@@ -4005,10 +4020,38 @@ def _discovery_completed_build_materialization(
                 after.st_mtime_ns, after.st_nlink)
             or hashlib.sha256(raw).hexdigest() != materialization_sha):
         return False
-    try:
-        materialization = json.loads(raw.decode("utf-8", "strict"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    materialization = _strict_json_bytes(raw)
+    if (materialization is None
+            or strict_private and raw != _canonical_json_bytes(materialization) + b"\n"):
         return False
+    if strict_private:
+        expected_keys = {
+            "schema", "authority", "operation_key", "build_key", "build_contract",
+            "actor_worktree", "actor_proof", "manifest_sha256",
+            "production_base_authority", "instrument_authority",
+            "selected_gpu_base_blobs", "applied", "anchor_commit",
+            "candidate_source_commit", "candidate_source_sha256", "patch_applied",
+            "production_tree", "builds", "anchor_identity", "candidate_identity",
+            "anchor_source_tree_receipt", "anchor_source_tree_receipt_sha256",
+            "candidate_source_tree_receipt", "candidate_source_tree_receipt_sha256",
+            "source_identity_receipts", "correctness_capabilities",
+            "build_identity_files", "shared_runtime", "reward_runtime_receipt",
+            "reward_runtime_sha256", "promotion_claim", "receipt_sha256"}
+        if (set(materialization) != expected_keys
+                or materialization.get("production_base_authority") !=
+                contract.get("production_base_authority")
+                or materialization.get("instrument_authority") !=
+                contract.get("instrument_authority")
+                or materialization.get("selected_gpu_base_blobs") !=
+                contract.get("selected_gpu_base_blobs")
+                or materialization.get("patch_applied") is not True
+                or materialization.get("production_tree") is not False
+                or materialization.get("anchor_identity") != build.get("anchor_identity")
+                or materialization.get("candidate_identity") !=
+                build.get("candidate_identity")
+                or materialization.get("reward_runtime_sha256") !=
+                build.get("reward_runtime_sha256")):
+            return False
     return bool(
         isinstance(materialization, dict)
         and materialization.get("schema") ==
@@ -4025,8 +4068,1456 @@ def _discovery_completed_build_materialization(
     )
 
 
-def _discovery_build_observation(operations_root: Path, state: dict | None,
-                                 config_sha256: object) -> dict | None:
+_DISCOVERY_PROCESS_INTENT_KEYS = {
+    "schema", "argv", "epoch_token", "stdout_path",
+    "sandbox_receipt_path", "sandbox_policy_sha256", "sandbox_token",
+    "cgroup_root", "receipt_sha256",
+}
+_DISCOVERY_PROCESS_START_KEYS = {
+    "schema", "intent_receipt_sha256", "epoch_token", "argv", "pid",
+    "pgid", "process_start_ticks", "started_at", "stdout_path",
+    "sandbox_receipt_path", "receipt_sha256",
+}
+_DISCOVERY_PROCESS_TERMINAL_KEYS = {
+    "schema", "start_receipt_sha256", "disposition", "stdout_path",
+    "stdout_sha256", "stdout_identity", "receipt_sha256",
+}
+_DISCOVERY_SANDBOX_KEYS = {
+    "schema", "sandbox_id", "pid", "process_start_ticks", "euid",
+    "landlock_abi", "landlock_write_rights", "landlock_handled_rights",
+    "read_allowlist_enforced", "readable_roots", "readable_files",
+    "executable_files", "seccomp_sha256", "blocked_syscalls", "profile",
+    "network_profile", "outbound_socket_families",
+    "server_socket_operations_denied", "unix_socket_creation_denied",
+    "broker_socket_path", "broker_fd_inherited", "broker_peer",
+    "writable_root", "writable_device_paths", "cgroup_path",
+    "resource_limits", "policy_sha256", "activated_at_unix_ns",
+    "argv_sha256",
+}
+_DISCOVERY_PROCESS_STALE_S = 900.0
+_DISCOVERY_BUILD_CONTRACT_V2_KEYS = {
+    "schema", "builder_schema", "deployment_config_canonical_sha256",
+    "deployment_config_semantic_sha256", "supervised_build_authority",
+    "supervised_build_authority_sha256", "production_base_authority",
+    "instrument_authority", "patch_bundle_sha256", "patch_sha256",
+    "proposal_sha256", "selected_gpu_base_blobs", "cmake_defines",
+    "build_type", "parallelism", "required_targets", "build_environment",
+    "toolchain", "operations_root", "build_root", "build_key",
+}
+_DISCOVERY_BUILD_CMAKE_DEFINES_V2 = [
+    ["AMDGPU_TARGETS", "gfx90a"],
+    ["CMAKE_BUILD_RPATH", "$ORIGIN;/opt/rocm/lib"],
+    ["CMAKE_BUILD_RPATH_USE_ORIGIN", "ON"],
+    ["CMAKE_INSTALL_RPATH", "$ORIGIN;/opt/rocm/lib"],
+    ["GGML_CCACHE", "OFF"], ["GGML_HIP", "ON"],
+    ["GGML_NATIVE", "OFF"],
+]
+_DISCOVERY_BUILD_PARALLELISM_V2 = {
+    "cpu_list": None, "jobs": 1, "load_average_cap": None}
+_DISCOVERY_BUILD_TARGETS_V2 = ["llama-bench", "test-backend-ops"]
+_DISCOVERY_TOOLCHAIN_PROGRAMS = {"cmake", "cc", "c++", "make", "ninja", "hipcc"}
+_DISCOVERY_ROCM_PROGRAMS = {
+    "bin/hipcc", "llvm/bin/clang", "llvm/bin/clang++", "llvm/bin/ld.lld"}
+_DISCOVERY_BUILD_ENV_KEYS = {
+    "CC", "CXX", "HIP_PATH", "HOME", "LANG", "LC_ALL",
+    "LD_LIBRARY_PATH", "PATH", "ROCM_PATH"}
+_DISCOVERY_SANDBOX_LIMITS = {
+    "address_space_bytes": 2 * (1 << 40),
+    "file_size_bytes": 16 * (1 << 30), "open_files": 4096,
+    "processes": 32768, "cpu_time_s": 8 * 3600,
+}
+_DISCOVERY_SANDBOX_BLOCKED = {
+    "accept", "accept4", "bind", "bpf", "connect", "delete_module",
+    "init_module", "io_uring_enter", "io_uring_register", "io_uring_setup",
+    "kill", "listen", "mount", "pidfd_getfd", "pidfd_send_signal",
+    "pivot_root", "process_madvise", "process_vm_readv",
+    "process_vm_writev", "ptrace", "rt_sigqueueinfo", "rt_tgsigqueueinfo",
+    "sendmmsg", "sendmsg", "sendto", "setns", "socket", "tgkill",
+    "tkill", "umount2", "unshare", "userfaultfd",
+}
+_DISCOVERY_TOOL_DIGEST_CACHE: dict[
+    tuple[str, int, int, int, int, int, int, int], str] = {}
+
+
+def _discovery_owned_directory(path: Path, *, allow_group_write: bool = False) -> bool:
+    """Validate one owner-controlled directory without following its leaf."""
+    flags = os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_DIRECTORY", 0)
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        before = path.lstat()
+        fd = os.open(path, flags)
+    except OSError:
+        return False
+    try:
+        after = os.fstat(fd)
+        return bool(
+            stat.S_ISDIR(before.st_mode) and stat.S_ISDIR(after.st_mode)
+            and before.st_uid == os.geteuid() and after.st_uid == os.geteuid()
+            and not stat.S_IMODE(after.st_mode) & (0o002 if allow_group_write else 0o022)
+            and (before.st_dev, before.st_ino) == (after.st_dev, after.st_ino))
+    finally:
+        os.close(fd)
+
+
+def _discovery_proc_stat(pid: int) -> tuple[str, int, int] | None:
+    """Return state, pgid and start ticks from Linux proc stat safely."""
+    try:
+        raw = (Path("/proc") / str(pid) / "stat").read_text(encoding="ascii")
+        close = raw.rfind(")")
+        if close < 2:
+            return None
+        tail = raw[close + 2:].split()
+        # Tail begins with field 3 (state): pgid is field 5, ticks field 22.
+        return tail[0], int(tail[2]), int(tail[19])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def _discovery_tool_identity(value: object) -> bool:
+    if value is None:
+        return True
+    if (not isinstance(value, dict)
+            or set(value) != {"requested", "resolved", "sha256"}
+            or any(not isinstance(value.get(key), str) or not value.get(key)
+                   for key in ("requested", "resolved"))
+            or not Path(value["resolved"]).is_absolute()
+            or re.fullmatch(r"[0-9a-f]{64}", str(value.get("sha256"))) is None):
+        return False
+    resolved = Path(value["resolved"])
+    try:
+        if Path(value["requested"]).resolve(strict=True) != resolved:
+            return False
+        info = resolved.lstat()
+    except OSError:
+        return False
+    if (not stat.S_ISREG(info.st_mode) or info.st_nlink < 1
+            or info.st_uid != 0 or stat.S_IMODE(info.st_mode) & 0o002):
+        return False
+    key = (str(resolved), info.st_dev, info.st_ino, info.st_size,
+           info.st_mtime_ns, info.st_ctime_ns, info.st_mode, info.st_uid)
+    digest = _DISCOVERY_TOOL_DIGEST_CACHE.get(key)
+    if digest is None:
+        digest, error = _sha256_file(resolved)
+        if digest is None or error is not None:
+            return False
+        try:
+            after = resolved.lstat()
+        except OSError:
+            return False
+        after_key = (str(resolved), after.st_dev, after.st_ino, after.st_size,
+                     after.st_mtime_ns, after.st_ctime_ns, after.st_mode,
+                     after.st_uid)
+        if after_key != key:
+            return False
+        if len(_DISCOVERY_TOOL_DIGEST_CACHE) >= 32:
+            _DISCOVERY_TOOL_DIGEST_CACHE.clear()
+        _DISCOVERY_TOOL_DIGEST_CACHE[key] = digest
+    return digest == value["sha256"]
+
+
+def _discovery_v2_contract_nested(contract: dict) -> bool:
+    """Validate the frozen v6 builder's nested grammar before dereferencing."""
+    toolchain = contract.get("toolchain")
+    if (not isinstance(toolchain, dict)
+            or set(toolchain) != {"schema", "programs", "rocm_root",
+                                  "rocm_programs", "dynamic_environment",
+                                  "toolchain_sha256"}
+            or toolchain.get("schema") != "epyc.autokernel.build_toolchain.v1"):
+        return False
+    programs = toolchain.get("programs")
+    rocm_programs = toolchain.get("rocm_programs")
+    if (not isinstance(programs, dict) or set(programs) != _DISCOVERY_TOOLCHAIN_PROGRAMS
+            or not all(_discovery_tool_identity(value) for value in programs.values())
+            or any(programs.get(name) is None for name in ("cmake", "cc", "c++"))
+            or not isinstance(rocm_programs, dict)
+            or set(rocm_programs) != _DISCOVERY_ROCM_PROGRAMS
+            or not all(_discovery_tool_identity(value)
+                       for value in rocm_programs.values())
+            or toolchain.get("dynamic_environment") != {
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "TMPDIR": "<arm-build-dir>/.autokernel-tmp"}
+            or not isinstance(toolchain.get("rocm_root"), str)
+            or not Path(toolchain["rocm_root"]).is_absolute()):
+        return False
+    toolchain_body = dict(toolchain)
+    toolchain_sha = toolchain_body.pop("toolchain_sha256", None)
+    try:
+        if toolchain_sha != hashlib.sha256(
+                _canonical_json_bytes(toolchain_body)).hexdigest():
+            return False
+    except (TypeError, ValueError):
+        return False
+    environment = contract.get("build_environment")
+    return bool(
+        contract.get("build_type") == "Release"
+        and contract.get("parallelism") == _DISCOVERY_BUILD_PARALLELISM_V2
+        and contract.get("required_targets") == _DISCOVERY_BUILD_TARGETS_V2
+        and contract.get("cmake_defines") == _DISCOVERY_BUILD_CMAKE_DEFINES_V2
+        and environment == {
+            "CC": programs["cc"]["resolved"],
+            "CXX": programs["c++"]["resolved"],
+            "HIP_PATH": "/opt/rocm", "HOME": "/home/node",
+            "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+            "LD_LIBRARY_PATH":
+                "/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib",
+            "PATH": "/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin",
+            "ROCM_PATH": "/opt/rocm",
+        }
+    )
+
+
+def _discovery_v2_state_binding(candidate: dict, row: dict,
+                                contract: dict) -> bool:
+    """Re-derive the state-side hashes that authenticate a v2 build request."""
+    raw_b64 = candidate.get("manifest_raw_base64")
+    if not isinstance(raw_b64, str):
+        return False
+    try:
+        raw = base64.b64decode(raw_b64, validate=True)
+        native = _strict_json_bytes(raw)
+    except (ValueError, TypeError):
+        return False
+    if native is None or raw != _canonical_json_bytes(native):
+        return False
+    projected = dict(native)
+    if (projected.pop("schema", None) != "epyc.autokernel.source-patch.v1"
+            or projected.pop("patch_encoding", None) != "base64"
+            or projected != candidate.get("manifest")):
+        return False
+    manifest_sha = hashlib.sha256(raw).hexdigest()
+    patch_b64 = native.get("patch_base64")
+    try:
+        patch_raw = base64.b64decode(patch_b64, validate=True)
+    except (ValueError, TypeError):
+        return False
+    proposal = candidate.get("proposal")
+    try:
+        proposal_sha = hashlib.sha256(_canonical_json_bytes(proposal)).hexdigest()
+    except (TypeError, ValueError):
+        return False
+    production = contract.get("production_base_authority")
+    instrument = contract.get("instrument_authority")
+    declared = native.get("declared_files")
+    selected = contract.get("selected_gpu_base_blobs")
+    if (not isinstance(production, dict)
+            or set(production) != {"path", "branch", "commit"}
+            or production != {
+                "path": "/mnt/raid0/llm/llama.cpp",
+                "branch": "production-consolidated-v9",
+                "commit": native.get("production_base_commit")}
+            or not isinstance(instrument, dict)
+            or set(instrument) != {"schema", "instrument_branch",
+                                   "instrument_commit", "instrument_tree",
+                                   "production_base_commit", "tree_listing_sha256",
+                                   "authority_sha256"}
+            or instrument.get("schema") !=
+            "epyc.autokernel.measurement_instrument_authority.v1"
+            or instrument.get("instrument_commit") != native.get("instrument_commit")
+            or instrument.get("production_base_commit") !=
+            native.get("production_base_commit")
+            or any(re.fullmatch(r"[0-9a-f]{40}", str(instrument.get(key))) is None
+                   for key in ("instrument_commit", "instrument_tree",
+                               "production_base_commit"))
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                instrument.get("tree_listing_sha256"))) is None):
+        return False
+    instrument_body = dict(instrument)
+    authority_sha = instrument_body.pop("authority_sha256", None)
+    if authority_sha != hashlib.sha256(
+            _canonical_json_bytes(instrument_body)).hexdigest():
+        return False
+    return bool(
+        candidate.get("source_manifest_sha256") == manifest_sha
+        and candidate.get("manifest_file_sha256") == manifest_sha
+        and candidate.get("patch_bundle_sha256") == manifest_sha
+        and row.get("source_manifest_sha256") == manifest_sha
+        and contract.get("patch_bundle_sha256") == manifest_sha
+        and native.get("patch_sha256") == hashlib.sha256(patch_raw).hexdigest()
+        and contract.get("patch_sha256") == native.get("patch_sha256")
+        and proposal_sha == row.get("proposal_sha256")
+        and proposal_sha == contract.get("proposal_sha256")
+        and isinstance(declared, list) and len(declared) == len(set(declared))
+        and isinstance(selected, dict) and set(selected) == set(declared)
+        and all(re.fullmatch(r"[0-9a-f]{64}", str(value)) is not None
+                for value in selected.values()))
+
+
+def _discovery_v2_git_authority(contract: dict) -> bool:
+    """Re-derive v24 instrument and selected-source authority from Git."""
+    stable = contract.get("supervised_build_authority")
+    launch = stable.get("launch_spec") if isinstance(stable, dict) else None
+    if not isinstance(launch, dict) or not isinstance(launch.get("path"), str):
+        return False
+    config_path = Path(launch["path"]).parent / "deployment-config.json"
+    config_row = _discovery_private_snapshot(config_path, max_bytes=256 * 1024)
+    config = _strict_json_bytes(config_row[0]) if config_row is not None else None
+    if not isinstance(config, dict):
+        return False
+    production = config.get("production")
+    instrument_config = config.get("instrument")
+    authority = contract.get("instrument_authority")
+    base = contract.get("production_base_authority")
+    if (not isinstance(production, dict) or not isinstance(instrument_config, dict)
+            or not isinstance(authority, dict) or not isinstance(base, dict)
+            or production != {"path": base.get("path"), "branch": base.get("branch"),
+                              "head": base.get("commit")}
+            or instrument_config.get("branch") != authority.get("instrument_branch")
+            or instrument_config.get("commit") != authority.get("instrument_commit")
+            or instrument_config.get("production_ancestor") != base.get("commit")
+            or not isinstance(instrument_config.get("repo_path"), str)):
+        return False
+    instrument_repo = Path(instrument_config["repo_path"])
+    production_repo = Path(base["path"])
+    def git(repo: Path, *args: str) -> bytes | None:
+        try:
+            result = subprocess.run(
+                ("git", "-C", str(repo), *args), stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                check=False, timeout=10)
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        return result.stdout if result.returncode == 0 else None
+    branch = git(instrument_repo, "rev-parse",
+                 f"refs/heads/{authority['instrument_branch']}")
+    tree = git(instrument_repo, "rev-parse",
+               f"{authority['instrument_commit']}^{{tree}}")
+    listing = git(instrument_repo, "ls-tree", "-r", "-z", "--full-tree",
+                  authority["instrument_commit"])
+    try:
+        ancestor = subprocess.run(
+            ("git", "-C", str(instrument_repo), "merge-base", "--is-ancestor",
+             base["commit"], authority["instrument_commit"]),
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, check=False, timeout=10).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        ancestor = False
+    valid = bool(
+        branch is not None and branch.decode("ascii", "strict").strip() ==
+        authority["instrument_commit"]
+        and tree is not None and tree.decode("ascii", "strict").strip() ==
+        authority["instrument_tree"]
+        and listing is not None and hashlib.sha256(listing).hexdigest() ==
+        authority["tree_listing_sha256"] and ancestor)
+    if valid:
+        for path, expected in contract["selected_gpu_base_blobs"].items():
+            if not path.startswith("ggml/src/ggml-cuda/"):
+                valid = False
+                break
+            production_blob = git(production_repo, "show", f"{base['commit']}:{path}")
+            instrument_blob = git(
+                instrument_repo, "show", f"{authority['instrument_commit']}:{path}")
+            if (production_blob is None or instrument_blob != production_blob
+                    or len(production_blob) > 16 * 1024 * 1024
+                    or hashlib.sha256(production_blob).hexdigest() != expected):
+                valid = False
+                break
+    return valid
+
+
+def _discovery_private_snapshot(path: Path, *, max_bytes: int) -> tuple[bytes, os.stat_result] | None:
+    """Take a revalidated private-file snapshot through a pinned parent.
+
+    Build receipts are runtime authority, not convenient log markers.  They
+    therefore get the same nofollow, same-owner, single-link and exact-mode
+    treatment as supervisor receipts.  The parent itself must be a real,
+    owner-controlled directory with no group/world write bit.
+    """
+    flags = os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_DIRECTORY", 0)
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        directory_fd = os.open(path.parent, flags)
+    except OSError:
+        return None
+    try:
+        parent = os.fstat(directory_fd)
+        if (not stat.S_ISDIR(parent.st_mode) or parent.st_uid != os.geteuid()
+                or stat.S_IMODE(parent.st_mode) & 0o022):
+            return None
+        return _owned_regular_snapshot_at(
+            directory_fd, path.name, max_bytes=max_bytes, expected_mode=0o600)
+    finally:
+        os.close(directory_fd)
+
+
+def _discovery_private_json(path: Path, *, schema: str,
+                            keys: set[str], max_bytes: int = 256 * 1024,
+                            sealed: bool = True) -> tuple[dict, bytes, os.stat_result] | None:
+    snapshot = _discovery_private_snapshot(path, max_bytes=max_bytes)
+    if snapshot is None:
+        return None
+    raw, info = snapshot
+    value = _strict_json_bytes(raw)
+    if (value is None or set(value) != keys or value.get("schema") != schema
+            or raw != _canonical_json_bytes(value) + b"\n"
+            or sealed and not _discovery_native_receipt_hash_valid(value)):
+        return None
+    return value, raw, info
+
+
+def _discovery_process_identity_live(start: dict, sandbox: dict) -> bool:
+    """Bind a receipt identity to the same live PID and nested cgroup.
+
+    This is deliberately only the final conjunct.  A process-list observation
+    can never create build liveness without the sealed intent/start/sandbox
+    chain validated by the caller.
+    """
+    pid = start.get("pid")
+    ticks = start.get("process_start_ticks")
+    pgid = start.get("pgid")
+    if (not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0
+            or not isinstance(ticks, int) or isinstance(ticks, bool) or ticks <= 0
+            or not isinstance(pgid, int) or isinstance(pgid, bool) or pgid <= 0):
+        return False
+    try:
+        proc_stat = _discovery_proc_stat(pid)
+        if proc_stat is None:
+            return False
+        process_state, observed_pgid, observed_ticks = proc_stat
+        memberships = (Path("/proc") / str(pid) / "cgroup").read_text(
+            encoding="ascii").splitlines()
+    except (OSError, ProcessLookupError, ValueError, IndexError):
+        return False
+    cgroup = sandbox.get("cgroup_path")
+    if (observed_ticks != ticks or observed_pgid != pgid or process_state == "Z"
+            or not isinstance(cgroup, str)
+            or not cgroup.startswith("/sys/fs/cgroup/")):
+        return False
+    relative = cgroup.removeprefix("/sys/fs/cgroup")
+    cgroup_path = Path(cgroup)
+    try:
+        members = (cgroup_path / "cgroup.procs").read_text(
+            encoding="ascii").split()
+    except OSError:
+        return False
+    return (not cgroup_path.is_symlink() and cgroup_path.is_dir()
+            and f"0::{relative}" in memberships and str(pid) in members)
+
+
+def _discovery_process_receipt_identity(start: object) -> bool:
+    if not isinstance(start, dict):
+        return False
+    return all(isinstance(start.get(key), int)
+               and not isinstance(start.get(key), bool)
+               and start[key] > 0
+               for key in ("pid", "pgid", "process_start_ticks"))
+
+
+def _discovery_v2_sandbox(value: dict, *, intent: dict, start: dict,
+                          writable_root: Path) -> bool:
+    argv = start.get("argv")
+    pid = start.get("pid")
+    ticks = start.get("process_start_ticks")
+    expected_cgroup = str(Path(str(intent.get("cgroup_root")),
+                               f"autokernel-{pid}-{intent.get('sandbox_token')}"))
+    try:
+        argv_sha = hashlib.sha256(json.dumps(
+            argv, separators=(",", ":"), ensure_ascii=False,
+            allow_nan=False).encode("utf-8")).hexdigest()
+    except (TypeError, ValueError):
+        return False
+    abi = value.get("landlock_abi")
+    expected_rights = 8178 | (1 << 13 if isinstance(abi, int) and abi >= 2 else 0)
+    if isinstance(abi, int) and abi >= 3:
+        expected_rights |= 1 << 14
+    policy_document = {
+        "sandbox_id": "autokernel.execution.sandbox/landlock-seccomp-cgroup-v2",
+        "profile": "candidate_default_v1",
+        "writable_root": str(writable_root),
+        "cgroup_root": intent.get("cgroup_root"),
+        "writable_device_paths": [], "readable_roots": [],
+        "readable_files": [], "executable_files": [],
+        "broker_socket_path": None, "broker_peer_pid": None,
+        "broker_peer_start_ticks": None, "read_allowlist_enforced": False,
+        "network_profile": "deny_all",
+        "blocked_syscalls": sorted(_DISCOVERY_SANDBOX_BLOCKED),
+        "deny_unix_socket_creation": False,
+        "resource_limits": _DISCOVERY_SANDBOX_LIMITS,
+    }
+    policy_sha = hashlib.sha256(
+        _canonical_json_bytes(policy_document)).hexdigest()
+    started_epoch = (_parse_semantic_timestamp(start.get("started_at"))
+                     if isinstance(start.get("started_at"), str) else None)
+    activated_ns = value.get("activated_at_unix_ns")
+    return bool(
+        set(value) == _DISCOVERY_SANDBOX_KEYS
+        and value.get("schema") == "epyc.autokernel.sandbox_receipt.v2"
+        and value.get("sandbox_id") ==
+        "autokernel.execution.sandbox/landlock-seccomp-cgroup-v2"
+        and value.get("pid") == pid
+        and value.get("process_start_ticks") == ticks
+        and value.get("euid") == os.geteuid() and value.get("euid") != 0
+        and value.get("policy_sha256") == intent.get("sandbox_policy_sha256")
+        and value.get("policy_sha256") == policy_sha
+        and value.get("argv_sha256") == argv_sha
+        and value.get("cgroup_path") == expected_cgroup
+        and value.get("writable_root") == str(writable_root)
+        and value.get("writable_device_paths") == []
+        and value.get("profile") == "candidate_default_v1"
+        and value.get("network_profile") == "deny_all"
+        and value.get("outbound_socket_families") == []
+        and value.get("server_socket_operations_denied") ==
+        ["bind", "listen", "accept", "accept4"]
+        and value.get("unix_socket_creation_denied") is False
+        and value.get("broker_fd_inherited") is False
+        and value.get("broker_socket_path") is None
+        and value.get("broker_peer") is None
+        and value.get("read_allowlist_enforced") is False
+        and value.get("readable_roots") == []
+        and value.get("readable_files") == []
+        and value.get("executable_files") == []
+        and value.get("resource_limits") == _DISCOVERY_SANDBOX_LIMITS
+        and value.get("blocked_syscalls") == sorted(_DISCOVERY_SANDBOX_BLOCKED)
+        and value.get("seccomp_sha256") ==
+        "80658aa1b897a70b445c4449ba3e5fa21db7b31388833cabbf9fb14a5e782fb7"
+        and isinstance(activated_ns, int) and not isinstance(activated_ns, bool)
+        and started_epoch is not None
+        and abs(activated_ns / 1_000_000_000 - started_epoch) <= 5.0
+        and isinstance(abi, int) and not isinstance(abi, bool) and abi >= 1
+        and value.get("landlock_write_rights") == expected_rights
+        and value.get("landlock_handled_rights") == expected_rights
+    )
+
+
+def _discovery_v2_process_receipts(
+        *, prefix: Path, attempt_root: Path, writable_root: Path,
+        expected_argv: list[str], expected_cgroup_root: str, require_live: bool,
+        now: float) -> dict | None:
+    intent_path = prefix.with_name(prefix.name + "-process-intent.json")
+    start_path = prefix.with_name(prefix.name + "-process-start.json")
+    terminal_path = prefix.with_name(prefix.name + "-process-terminal.json")
+    sandbox_path = prefix.with_name(prefix.name + "-sandbox.json")
+    stream_path = prefix.with_name(prefix.name + ".stream")
+    intent_row = _discovery_private_json(
+        intent_path, schema="epyc.autokernel.owned_process_intent.v1",
+        keys=_DISCOVERY_PROCESS_INTENT_KEYS)
+    start_row = _discovery_private_json(
+        start_path, schema="epyc.autokernel.owned_process_start.v1",
+        keys=_DISCOVERY_PROCESS_START_KEYS)
+    if intent_row is None or start_row is None:
+        return None
+    intent, intent_raw, _ = intent_row
+    start, start_raw, _ = start_row
+    if (not _discovery_process_receipt_identity(start)
+            or intent.get("argv") != expected_argv or start.get("argv") != expected_argv
+            or intent.get("cgroup_root") != expected_cgroup_root
+            or start.get("intent_receipt_sha256") != hashlib.sha256(intent_raw).hexdigest()
+            or start.get("epoch_token") != intent.get("epoch_token")
+            or start.get("stdout_path") != str(stream_path)
+            or intent.get("stdout_path") != str(stream_path)
+            or start.get("sandbox_receipt_path") != str(sandbox_path)
+            or intent.get("sandbox_receipt_path") != str(sandbox_path)
+            or not isinstance(intent.get("epoch_token"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", intent["epoch_token"]) is None
+            or not isinstance(intent.get("sandbox_token"), str)
+            or re.fullmatch(r"[0-9a-f]{16}", intent["sandbox_token"]) is None
+            or not isinstance(intent.get("sandbox_policy_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", intent["sandbox_policy_sha256"]) is None):
+        return None
+    sandbox_row = _discovery_private_json(
+        sandbox_path, schema="epyc.autokernel.sandbox_receipt.v2",
+        keys=_DISCOVERY_SANDBOX_KEYS, sealed=False)
+    if sandbox_row is None:
+        return None
+    sandbox, _, _ = sandbox_row
+    if not _discovery_v2_sandbox(
+            sandbox, intent=intent, start=start, writable_root=writable_root):
+        return None
+    stream_row = _discovery_private_snapshot(stream_path, max_bytes=16 * 1024 * 1024)
+    if stream_row is None:
+        return None
+    stream_raw, stream_info = stream_row
+    started_at = start.get("started_at")
+    started_epoch = (_parse_semantic_timestamp(started_at)
+                     if isinstance(started_at, str) else None)
+    if (started_epoch is None or started_epoch > now + 5.0
+            or require_live and started_epoch < now - 24 * 3600
+            or stream_info.st_mtime < started_epoch - 5.0):
+        return None
+    if require_live:
+        if terminal_path.exists() or terminal_path.is_symlink():
+            return None
+        if not stream_raw or not _discovery_process_identity_live(start, sandbox):
+            return None
+        progress = [int(value) for value in re.findall(
+            rb"\[\s*([0-9]{1,3})%\]", stream_raw)]
+        progress_percent = progress[-1] if progress and progress[-1] <= 100 else None
+        return {"started_at": started_at, "pid": start["pid"],
+                "process_start_ticks": start["process_start_ticks"],
+                "progress_percent": progress_percent,
+                "hip_compile": b"Building HIP object" in stream_raw,
+                "stream_size": len(stream_raw),
+                "progress_at": datetime.fromtimestamp(
+                    stream_info.st_mtime, timezone.utc
+                ).isoformat().replace("+00:00", "Z"),
+                "stream_stale": now - stream_info.st_mtime > _DISCOVERY_PROCESS_STALE_S}
+    terminal_row = _discovery_private_json(
+        terminal_path, schema="epyc.autokernel.owned_process_terminal.v2",
+        keys=_DISCOVERY_PROCESS_TERMINAL_KEYS)
+    if terminal_row is None:
+        return None
+    terminal, _, terminal_info = terminal_row
+    disposition = terminal.get("disposition")
+    stdout_identity = terminal.get("stdout_identity")
+    expected_identity = {
+        "device": stream_info.st_dev, "inode": stream_info.st_ino,
+        "mode": stat.S_IMODE(stream_info.st_mode),
+        "nlink": stream_info.st_nlink, "uid": stream_info.st_uid,
+        "size": stream_info.st_size, "mtime_ns": stream_info.st_mtime_ns,
+        "ctime_ns": stream_info.st_ctime_ns,
+    }
+    if (terminal.get("start_receipt_sha256") != hashlib.sha256(start_raw).hexdigest()
+            or terminal.get("stdout_path") != str(stream_path)
+            or terminal.get("stdout_sha256") != hashlib.sha256(stream_raw).hexdigest()
+            or stdout_identity != expected_identity
+            or not isinstance(disposition, dict)
+            or set(disposition) != {"argv", "pid", "pgid", "exit_code",
+                                    "timed_out", "signals_sent", "verified_dead",
+                                    "duration_s", "started_at", "sandbox_receipt",
+                                    "sandbox_teardown"}
+            or disposition.get("argv") != expected_argv
+            or disposition.get("pid") != start.get("pid")
+            or disposition.get("pgid") != start.get("pgid")
+            or disposition.get("started_at") != started_at
+            or disposition.get("exit_code") != 0
+            or disposition.get("timed_out") is not False
+            or disposition.get("signals_sent") != []
+            or disposition.get("verified_dead") is not True
+            or isinstance(disposition.get("duration_s"), bool)
+            or not isinstance(disposition.get("duration_s"), (int, float))
+            or not math.isfinite(disposition["duration_s"])
+            or disposition["duration_s"] < 0
+            or terminal_info.st_mtime < started_epoch - 5.0
+            or terminal_info.st_mtime < stream_info.st_mtime - 5.0
+            or disposition.get("sandbox_receipt") != sandbox):
+        return None
+    teardown = disposition.get("sandbox_teardown")
+    if (not isinstance(teardown, dict)
+            or set(teardown) != {"cgroup_path", "verified_empty", "removed",
+                                 "descendants_killed"}
+            or teardown.get("cgroup_path") != sandbox.get("cgroup_path")
+            or teardown.get("verified_empty") is not True
+            or teardown.get("removed") is not True
+            or Path(str(sandbox.get("cgroup_path"))).exists()
+            or Path(str(sandbox.get("cgroup_path"))).is_symlink()):
+        return None
+    return {"started_at": started_at, "pid": start["pid"],
+            "process_start_ticks": start["process_start_ticks"],
+            "completed": True,
+            "completed_at": datetime.fromtimestamp(
+                terminal_info.st_mtime, timezone.utc
+            ).isoformat().replace("+00:00", "Z")}
+
+
+def _discovery_v2_lock_identity(path: Path, value: object, *,
+                                require_held: bool = True) -> bool:
+    if (not isinstance(value, dict)
+            or set(value) != {"device", "inode", "path", "uid"}
+            or value.get("path") != str(path)
+            or value.get("uid") != os.geteuid()):
+        return False
+    directory_flags = os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_DIRECTORY", 0)
+    file_flags = os.O_RDONLY | os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        directory_flags |= os.O_NOFOLLOW
+        file_flags |= os.O_NOFOLLOW
+    directory_fd = fd = None
+    try:
+        directory_fd = os.open(path.parent, directory_flags)
+        fd = os.open(path.name, file_flags, dir_fd=directory_fd)
+        info = os.fstat(fd)
+        named = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
+                or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o600
+                or (info.st_dev, info.st_ino) != (named.st_dev, named.st_ino)
+                or value.get("device") != info.st_dev
+                or value.get("inode") != info.st_ino):
+            return False
+        try:
+            fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        except BlockingIOError:
+            after = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+            return (require_held and
+                    (info.st_dev, info.st_ino) == (after.st_dev, after.st_ino))
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        after = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+        return (not require_held and
+                (info.st_dev, info.st_ino) == (after.st_dev, after.st_ino))
+    except OSError:
+        return False
+    finally:
+        if fd is not None:
+            os.close(fd)
+        if directory_fd is not None:
+            os.close(directory_fd)
+
+
+def _discovery_stable_supervised_authority(value: dict) -> dict:
+    return {
+        "schema": "epyc.autokernel.supervised_launch_authority.v2",
+        "launch_spec": value.get("launch_spec"),
+        "death_ledger": value.get("death_ledger"),
+        "spec_sha256": value.get("spec_sha256"),
+        "deployment_config_canonical_sha256":
+            value.get("deployment_config_canonical_sha256"),
+        "deployment_config_semantic_sha256":
+            value.get("deployment_config_semantic_sha256"),
+    }
+
+
+def _discovery_authority_file(value: object, *, hashed: bool,
+                              max_bytes: int) -> tuple[bytes, os.stat_result] | None:
+    keys = {"device", "inode", "mode", "nlink", "path", "uid"}
+    if hashed:
+        keys.add("sha256")
+    if (not isinstance(value, dict) or set(value) != keys
+            or not isinstance(value.get("path"), str)
+            or not Path(value["path"]).is_absolute()
+            or value.get("uid") != os.geteuid()
+            or value.get("mode") != 0o600 or value.get("nlink") != 1):
+        return None
+    row = _discovery_private_snapshot(Path(value["path"]), max_bytes=max_bytes)
+    if row is None:
+        return None
+    raw, info = row
+    if (value.get("device"), value.get("inode"), value.get("mode"),
+            value.get("nlink"), value.get("uid")) != (
+            info.st_dev, info.st_ino, stat.S_IMODE(info.st_mode),
+            info.st_nlink, info.st_uid):
+        return None
+    if hashed and value.get("sha256") != hashlib.sha256(raw).hexdigest():
+        return None
+    return raw, info
+
+
+def _discovery_authority_cgroup(authority: dict, *,
+                                require_live: bool = True) -> dict | None:
+    """Resolve the controller cgroup from its exact sealed ledger record."""
+    if (authority.get("schema") != "epyc.autokernel.supervised_build_authority.v2"
+            or not _supervisor_process(authority.get("controller"), child=True)
+            or not _supervisor_process(authority.get("supervisor"), child=False)
+            or re.fullmatch(r"[0-9a-f]{64}", str(
+                authority.get("ledger_child_started_record_sha256"))) is None):
+        return None
+    launch = _discovery_authority_file(
+        authority.get("launch_spec"), hashed=True, max_bytes=2 * 1024 * 1024)
+    ledger = _discovery_authority_file(
+        authority.get("death_ledger"), hashed=False, max_bytes=256 * 1024)
+    if launch is None or ledger is None:
+        return None
+    spec = _strict_json_bytes(launch[0])
+    spec_keys = {"schema", "kind", "runtime_root", "runtime_root_identity",
+                 "deployment_config", "validate_only", "canary", "python",
+                 "restart_policy", "termination_policy", "execution_closure",
+                 "execution_modules", "graph_execution_modules", "cgroup"}
+    runtime_root = Path(str(authority["launch_spec"]["path"])).parent
+    try:
+        runtime_info = runtime_root.lstat()
+    except OSError:
+        return None
+    if (spec is None or launch[0] != _canonical_json_bytes(spec) + b"\n"
+            or set(spec) != spec_keys
+            or spec.get("schema") != "epyc.autokernel.discovery_supervisor_spec.v4"
+            or spec.get("kind") != "deployment" or spec.get("validate_only") is not False
+            or spec.get("runtime_root") != str(runtime_root)
+            or spec.get("runtime_root_identity") != _stat_identity(
+                runtime_info, sized=False)
+            or spec.get("restart_policy") != {"max_restarts": 0,
+                                               "delay_seconds": 2.0}
+            or authority.get("spec_sha256") != hashlib.sha256(
+                _canonical_json_bytes(spec)).hexdigest()):
+        return None
+    deployment = spec.get("deployment_config")
+    if (not isinstance(deployment, dict)
+            or set(deployment) != {"source_path", "source_identity", "runtime_leaf",
+                                   "canonical_sha256", "semantic_sha256",
+                                   "canonical_size", "identity"}
+            or deployment.get("runtime_leaf") != "deployment-config.json"
+            or deployment.get("canonical_sha256") !=
+            authority.get("deployment_config_canonical_sha256")
+            or deployment.get("semantic_sha256") !=
+            authority.get("deployment_config_semantic_sha256")):
+        return None
+    config_row = _discovery_private_snapshot(
+        runtime_root / "deployment-config.json", max_bytes=256 * 1024)
+    if (config_row is None
+            or deployment.get("identity") != _stat_identity(config_row[1], sized=True)
+            or deployment.get("canonical_size") != len(config_row[0])
+            or deployment.get("canonical_sha256") !=
+            hashlib.sha256(config_row[0]).hexdigest()):
+        return None
+    config_value = _strict_json_bytes(config_row[0])
+    source_path = Path(str(deployment.get("source_path")))
+    source_row = _owned_public_snapshot(source_path, max_bytes=256 * 1024)
+    if (config_value is None or source_row is None
+            or _supervisor_launch_spec(
+                launch[0], runtime_root=runtime_root, runtime_info=runtime_info,
+                config_path=source_path, config=config_value,
+                config_source=source_row, config_copy=config_row) is None):
+        return None
+    expected_cgroup_name = "epyc-autokernel-" + hashlib.sha256(
+        str(runtime_root).encode("utf-8")).hexdigest()[:24]
+    if spec.get("cgroup") != {"base": "/sys/fs/cgroup",
+                              "name": expected_cgroup_name}:
+        return None
+    raw = ledger[0]
+    try:
+        lines = raw.decode("ascii").splitlines()
+    except UnicodeDecodeError:
+        return None
+    if len(lines) not in ({2} if require_live else {2, 5}) or not raw.endswith(b"\n"):
+        return None
+    if (len(lines) == 5 and _supervisor_ledger(
+            raw, spec_sha256=authority["spec_sha256"],
+            session_name="ak-" + authority["spec_sha256"][:24],
+            runtime_root=runtime_root) is None):
+        return None
+    previous = None
+    previous_time = None
+    found = None
+    rows = []
+    for sequence, line in enumerate(lines, 1):
+        row = _strict_json_bytes(line.encode("ascii"))
+        if (row is None or set(row) != {"event", "payload", "previous_sha256",
+                                       "record_sha256", "schema", "sequence",
+                                       "written_at"}
+                or row.get("schema") != "epyc.autokernel.discovery_supervisor_ledger.v2"
+                or row.get("sequence") != sequence
+                or row.get("previous_sha256") != previous
+                or line.encode("ascii") != _canonical_json_bytes(row)
+                or not isinstance(row.get("payload"), dict)
+                or _parse_semantic_timestamp(row.get("written_at")) is None):
+            return None
+        body = dict(row)
+        digest = body.pop("record_sha256", None)
+        if (not isinstance(digest, str)
+                or digest != hashlib.sha256(_canonical_json_bytes(body)).hexdigest()):
+            return None
+        written = _parse_semantic_timestamp(row["written_at"])
+        if previous_time is not None and written < previous_time:
+            return None
+        if digest == authority["ledger_child_started_record_sha256"]:
+            found = row
+        rows.append(row)
+        previous = digest
+        previous_time = written
+    if (len(rows) < 2 or [row["event"] for row in rows[:2]] !=
+            ["supervisor_started", "child_started"]
+            or found is not rows[1]):
+        return None
+    started = rows[0]["payload"]
+    if (set(started) != {"spec_sha256", "session_name", "supervisor", "tmux"}
+            or started.get("spec_sha256") != authority["spec_sha256"]
+            or started.get("session_name") != "ak-" + authority["spec_sha256"][:24]
+            or started.get("supervisor") != authority["supervisor"]
+            or not _supervisor_tmux(started.get("tmux"), authority["supervisor"])):
+        return None
+    payload = found["payload"]
+    cgroup = payload.get("cgroup")
+    if (set(payload) != {"restart_count", "child", "stdout", "stderr", "cgroup"}
+            or payload.get("restart_count") != 0
+            or payload.get("child") != authority["controller"]
+            or payload.get("stdout") != str(runtime_root / "controller.stdout.log")
+            or payload.get("stderr") != str(runtime_root / "controller.stderr.log")
+            or not isinstance(cgroup, dict)
+            or set(cgroup) != {"path", "dev", "ino", "uid", "mode", "nlink"}
+            or cgroup.get("uid") != os.geteuid() or cgroup.get("mode") != 0o700
+            or not isinstance(cgroup.get("path"), str)
+            or not str(cgroup["path"]).startswith("/sys/fs/cgroup/")):
+        return None
+    expected_cgroup_path = (
+        f"/sys/fs/cgroup/{expected_cgroup_name}-{authority['supervisor']['pid']}-0")
+    if cgroup["path"] != expected_cgroup_path:
+        return None
+    if require_live:
+        try:
+            info = Path(cgroup["path"]).lstat()
+        except OSError:
+            return None
+        # A live nested child cgroup increments its parent's directory link count;
+        # device/inode/owner/mode remain the stable authority identity.
+        if (not stat.S_ISDIR(info.st_mode) or Path(cgroup["path"]).is_symlink()
+                or (info.st_dev, info.st_ino, info.st_uid, stat.S_IMODE(info.st_mode))
+                != (cgroup["dev"], cgroup["ino"], cgroup["uid"], cgroup["mode"])
+                or info.st_nlink < cgroup["nlink"]):
+            return None
+    if not require_live:
+        cgroup_path = Path(cgroup["path"])
+        if cgroup_path.exists() or cgroup_path.is_symlink():
+            return None
+        for process in (authority["controller"], authority["supervisor"]):
+            observed = _discovery_proc_stat(process["pid"])
+            if observed is not None and observed[2] == process["start_ticks"]:
+                return None
+        return cgroup
+    controller = authority["controller"]
+    supervisor = authority["supervisor"]
+    try:
+        memberships = (Path("/proc") / str(controller["pid"]) / "cgroup").read_text(
+            encoding="ascii").splitlines()
+        members = (Path(cgroup["path"]) / "cgroup.procs").read_text(
+            encoding="ascii").split()
+    except OSError:
+        return None
+    relative = cgroup["path"].removeprefix("/sys/fs/cgroup")
+    host = os.uname().nodename
+    host_sha = hashlib.sha256(host.encode("utf-8")).hexdigest()
+    supervisor_proc = _discovery_proc_stat(supervisor["pid"])
+    if (f"0::{relative}" not in memberships or str(controller["pid"]) not in members
+            or supervisor_proc is None or supervisor_proc[0] == "Z"
+            or supervisor_proc[2] != supervisor["start_ticks"]
+            or any(process.get("boot_id") != controller["boot_id"]
+                   or process.get("host") != host
+                   or process.get("host_id_source") != "kernel-hostname"
+                   or process.get("host_id_sha256") != host_sha
+                   for process in (authority["controller"], authority["supervisor"]))):
+        return None
+    return cgroup
+
+
+_DISCOVERY_V2_TERMINAL_BUILD_KEYS = {
+    "anchor_build", "anchor_correctness_binary",
+    "anchor_correctness_binary_sha256",
+    "anchor_correctness_capability_receipt",
+    "anchor_correctness_capability_sha256", "anchor_identity",
+    "anchor_loader_dir", "anchor_source_tree_receipt",
+    "anchor_source_tree_sha256", "build_key", "candidate_build",
+    "candidate_correctness_binary", "candidate_correctness_binary_sha256",
+    "candidate_correctness_capability_receipt",
+    "candidate_correctness_capability_sha256", "candidate_identity",
+    "candidate_loader_dir", "candidate_source_tree_receipt",
+    "candidate_source_tree_sha256", "common_loader_dir",
+    "materialization_receipt", "materialization_sha256",
+    "measurement_binary", "reward_runtime_sha256", "teardown_receipt",
+    "teardown_sha256",
+}
+
+
+def _discovery_v2_terminal_build_exact(build: object, build_key: str) -> bool:
+    return bool(isinstance(build, dict)
+                and set(build) == _DISCOVERY_V2_TERMINAL_BUILD_KEYS
+                and build.get("build_key") == build_key)
+
+
+def _discovery_v2_terminal_complete(entry: Path, attempt: Path, *,
+                                    intent_raw: bytes, owner_raw: bytes,
+                                    contract: dict, candidate_id: str) -> bool:
+    row = _discovery_private_json(
+        entry / "terminal.json",
+        schema="epyc.autokernel.gpu_source_build_terminal.v2",
+        keys={"schema", "build_key", "intent_file_sha256", "state", "build",
+              "attempt_name", "attempt_owner_sha256", "process_closure_sha256",
+              "artifact_epoch", "promotion_claim", "receipt_sha256"},
+        max_bytes=2 * 1024 * 1024)
+    if row is None:
+        return False
+    terminal = row[0]
+    epoch = terminal.get("artifact_epoch")
+    build = terminal.get("build")
+    if (terminal.get("build_key") != entry.name
+            or terminal.get("intent_file_sha256") != hashlib.sha256(intent_raw).hexdigest()
+            or terminal.get("state") != "complete"
+            or terminal.get("attempt_name") != attempt.name
+            or terminal.get("attempt_owner_sha256") != hashlib.sha256(owner_raw).hexdigest()
+            or terminal.get("promotion_claim") is not False
+            or not _discovery_v2_terminal_build_exact(build, entry.name)
+            or not isinstance(epoch, dict)
+            or set(epoch) != {"schema", "attempt", "attempt_owner_sha256",
+                              "attempt_recovery", "prior_recoveries",
+                              "process_closure", "materialization_sha256",
+                              "artifact_receipts", "artifact_epoch_sha256"}
+            or epoch.get("schema") != "epyc.autokernel.build_artifact_epoch.v1"
+            or epoch.get("attempt") != attempt.name
+            or epoch.get("attempt_owner_sha256") != hashlib.sha256(owner_raw).hexdigest()
+            or epoch.get("attempt_recovery") is not None
+            # The v24 adapter deliberately accepts only the first immutable
+            # attempt.  Later attempts carry recovery authority whose full
+            # producer grammar is not part of this visibility contract; do not
+            # accept a merely self-hashed recovery projection.
+            or attempt.name != "attempt-000001"
+            or epoch.get("prior_recoveries") != []):
+        return False
+    epoch_body = dict(epoch)
+    epoch_sha = epoch_body.pop("artifact_epoch_sha256", None)
+    closure = epoch.get("process_closure")
+    if (not isinstance(closure, dict)
+            or set(closure) != {"schema", "entries", "proofs",
+                                "require_terminals", "closure_sha256"}
+            or closure.get("require_terminals") is not True):
+        return False
+    closure_body = dict(closure)
+    closure_sha = closure_body.pop("closure_sha256", None)
+    def closure_rows(root: Path, *, limit: int,
+                     private: bool) -> list[dict] | None:
+        if not _discovery_owned_directory(root):
+            return None
+        rows = []
+        try:
+            paths = sorted(root.iterdir(), key=lambda path: path.name)
+        except OSError:
+            return None
+        if len(paths) > 128:
+            return None
+        for path in paths:
+            snapshot = (_discovery_private_snapshot(path, max_bytes=limit)
+                        if private else
+                        _owned_public_snapshot(path, max_bytes=limit))
+            if snapshot is None:
+                return None
+            raw, info = snapshot
+            rows.append({"name": path.name,
+                         "sha256": hashlib.sha256(raw).hexdigest(),
+                         "identity": {
+                             "device": info.st_dev, "inode": info.st_ino,
+                             "mode": stat.S_IMODE(info.st_mode),
+                             "nlink": info.st_nlink, "uid": info.st_uid,
+                             "size": info.st_size, "mtime_ns": info.st_mtime_ns,
+                             "ctime_ns": info.st_ctime_ns}})
+        return rows
+    expected_logs = closure_rows(
+        attempt / "logs", limit=16 * 1024 * 1024, private=True)
+    expected_receipts = closure_rows(
+        attempt / "receipts", limit=4 * 1024 * 1024, private=False)
+    proofs = closure.get("proofs")
+    if (expected_logs is None or expected_receipts is None
+            or closure.get("entries") != expected_logs
+            or epoch.get("artifact_receipts") != expected_receipts
+            or not isinstance(proofs, list) or len(proofs) != 4):
+        return False
+    expected_proof_paths = set()
+    for name in ("akc-anchor", candidate_id):
+        for phase in ("build", "configure"):
+            base = attempt / "logs" / f"{name}.log.{phase}"
+            expected_proof_paths.add((
+                str(base.with_name(base.name + "-process-intent.json")),
+                str(base.with_name(base.name + "-process-start.json")),
+                str(base.with_name(base.name + "-process-terminal.json"))))
+    observed_proof_paths = set()
+    for proof in proofs:
+        sandbox = proof.get("sandbox") if isinstance(proof, dict) else None
+        if (not isinstance(proof, dict)
+                or set(proof) != {"intent", "start", "terminal", "state", "sandbox"}
+                or proof.get("state") != "terminal_verified_dead"
+                or not isinstance(sandbox, dict)
+                or set(sandbox) != {"receipt", "receipt_present", "pid",
+                                    "process_start_ticks", "cgroup_path",
+                                    "cgroup_state", "state", "reason"}
+                or sandbox.get("receipt_present") is not True
+                or sandbox.get("cgroup_state") != "absent"
+                or sandbox.get("state") != "activation_dead_cgroup_drained"
+                or Path(str(sandbox.get("cgroup_path"))).exists()
+                or Path(str(sandbox.get("cgroup_path"))).is_symlink()):
+            return False
+        observed_proof_paths.add(
+            (proof.get("intent"), proof.get("start"), proof.get("terminal")))
+    if observed_proof_paths != expected_proof_paths:
+        return False
+    return bool(
+        epoch_sha == hashlib.sha256(_canonical_json_bytes(epoch_body)).hexdigest()
+        and closure_sha == hashlib.sha256(
+            _canonical_json_bytes(closure_body)).hexdigest()
+        and terminal.get("process_closure_sha256") == closure_sha
+        and epoch.get("materialization_sha256") == build.get("materialization_sha256")
+        and _discovery_completed_build_materialization(
+            entry=entry, intent_path=entry / "intent.json", terminal=terminal,
+            contract=contract, strict_private=True))
+
+
+def _discovery_v2_build_observation(
+        operations_root: Path, state: dict | None,
+        config_sha256: object) -> tuple[dict | None, bool]:
+    """Project one v2 append-only build attempt, or fail closed.
+
+    The boolean says a state-bound v2 contract was found.  Callers must not
+    fall back to legacy filename heuristics for that contract if any receipt in
+    its authority chain is invalid.
+    """
+    inflight = state.get("inflight") if isinstance(state, dict) else None
+    candidate = inflight.get("candidate") if isinstance(inflight, dict) else None
+    row = inflight.get("row") if isinstance(inflight, dict) else None
+    if (not isinstance(candidate, dict) or not isinstance(row, dict)
+            or not isinstance(config_sha256, str)):
+        return None, False
+    manifest_sha = candidate.get("source_manifest_sha256")
+    proposal_sha = row.get("proposal_sha256")
+    manifest = candidate.get("manifest")
+    candidate_id = manifest.get("candidate_id") if isinstance(manifest, dict) else None
+    campaign_id = manifest.get("campaign_id") if isinstance(manifest, dict) else None
+    if (not isinstance(manifest_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", manifest_sha) is None
+            or not isinstance(proposal_sha, str)
+            or re.fullmatch(r"[0-9a-f]{64}", proposal_sha) is None
+            or not isinstance(candidate_id, str)
+            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}", candidate_id) is None
+            or not isinstance(campaign_id, str)
+            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}", campaign_id) is None):
+        return None, False
+    entries = operations_root / "build-cache" / "entries"
+    if not _discovery_owned_directory(entries):
+        return None, False
+    try:
+        children = sorted(entries.iterdir(), key=lambda path: path.name)[:129]
+    except OSError:
+        return None, False
+    if len(children) > 128:
+        return None, True
+    matches: list[tuple[Path, dict, dict, bytes]] = []
+    v2_seen = False
+    for entry in children:
+        if (entry.is_symlink() or not entry.is_dir()
+                or re.fullmatch(r"[0-9a-f]{64}", entry.name) is None):
+            continue
+        if ((entry / "attempts").exists()
+                or (entry / "transaction-owner.json").exists()):
+            v2_seen = True
+        intent_row = _discovery_private_json(
+            entry / "intent.json",
+            schema="epyc.autokernel.gpu_source_build_intent.v1",
+            keys={"schema", "authority", "build_key", "build_contract",
+                  "promotion_claim", "request_key", "receipt_sha256"})
+        if intent_row is None:
+            continue
+        intent, _, _ = intent_row
+        contract = intent.get("build_contract")
+        if (not isinstance(contract, dict)
+                or contract.get("schema") != "epyc.autokernel.gpu_source_build_key.v2"):
+            continue
+        v2_seen = True
+        if (intent.get("authority") == "nonpromotable_candidate_only_discovery"
+                and intent.get("promotion_claim") is False
+                and intent.get("build_key") == entry.name
+                and contract.get("build_key") == entry.name
+                and contract.get("patch_bundle_sha256") == manifest_sha
+                and contract.get("proposal_sha256") == proposal_sha
+                and contract.get("deployment_config_semantic_sha256") == config_sha256):
+            matches.append((entry, contract, intent, intent_row[1]))
+    if not matches:
+        return None, v2_seen
+    if len(matches) != 1:
+        return None, True
+    entry, contract, intent, intent_raw = matches[0]
+    entry_terminal_present = ((entry / "terminal.json").exists()
+                              or (entry / "terminal.json").is_symlink())
+    if (set(contract) != _DISCOVERY_BUILD_CONTRACT_V2_KEYS
+            or contract.get("builder_schema") !=
+            "epyc.autokernel.static_gpu_source_builder.v6"
+            or contract.get("operations_root") != str(operations_root)
+            or not _discovery_v2_contract_nested(contract)
+            or not _discovery_v2_state_binding(candidate, row, contract)
+            or not _discovery_v2_git_authority(contract)
+            or not isinstance(contract.get("build_root"), str)
+            or not Path(contract["build_root"]).is_absolute()
+            or not isinstance(contract.get("deployment_config_canonical_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}",
+                            contract["deployment_config_canonical_sha256"]) is None):
+        return None, True
+    contract_preimage = dict(contract)
+    contract_preimage.pop("build_key", None)
+    try:
+        expected_key = hashlib.sha256(
+            _canonical_json_bytes(contract_preimage)).hexdigest()
+    except (TypeError, ValueError):
+        return None, True
+    if expected_key != entry.name:
+        return None, True
+    stable_authority = contract.get("supervised_build_authority")
+    if (not isinstance(stable_authority, dict)
+            or set(stable_authority) != {"schema", "launch_spec", "death_ledger",
+                                         "spec_sha256",
+                                         "deployment_config_canonical_sha256",
+                                         "deployment_config_semantic_sha256"}
+            or stable_authority.get("schema") !=
+            "epyc.autokernel.supervised_launch_authority.v2"
+            or contract.get("supervised_build_authority_sha256") !=
+            hashlib.sha256(_canonical_json_bytes(stable_authority)).hexdigest()):
+        return None, True
+    request_preimage = {
+        "schema": "epyc.autokernel.gpu_source_build_request.v2",
+        "deployment_config_canonical_sha256":
+            contract["deployment_config_canonical_sha256"],
+        "deployment_config_semantic_sha256":
+            contract["deployment_config_semantic_sha256"],
+        "supervised_build_authority_sha256":
+            contract["supervised_build_authority_sha256"],
+        "production_base_authority": contract["production_base_authority"],
+        "instrument_authority": contract["instrument_authority"],
+        "patch_bundle_sha256": contract["patch_bundle_sha256"],
+        "proposal_sha256": contract["proposal_sha256"],
+        "builder_schema": contract["builder_schema"],
+    }
+    request_key = hashlib.sha256(
+        _canonical_json_bytes(request_preimage)).hexdigest()
+    if intent.get("request_key") != request_key:
+        return None, True
+    request_lock = (operations_root / "build-cache" / "locks" /
+                    f"request-{request_key}.lock")
+    build_lock = (operations_root / "build-cache" / "locks" /
+                  f"build-{entry.name}.lock")
+    transaction_row = _discovery_private_json(
+        entry / "transaction-owner.json",
+        schema="epyc.autokernel.gpu_source_build_transaction_owner.v2",
+        keys={"schema", "build_key", "holder", "intent",
+              "intent_file_sha256", "locks", "promotion_claim",
+              "supervised_build_authority", "supervised_build_authority_sha256",
+              "receipt_sha256"})
+    if transaction_row is None:
+        return None, True
+    transaction, _, _ = transaction_row
+    transaction_locks = transaction.get("locks")
+    intent_body = dict(intent)
+    intent_body.pop("receipt_sha256", None)
+    if (transaction.get("build_key") != entry.name
+            or transaction.get("intent") != intent_body
+            or transaction.get("intent_file_sha256") !=
+            hashlib.sha256(intent_raw).hexdigest()
+            or transaction.get("promotion_claim") is not False
+            or not isinstance(transaction_locks, list)
+            or len(transaction_locks) != 2
+            or not _discovery_v2_lock_identity(
+                request_lock, transaction_locks[0],
+                require_held=not entry_terminal_present)
+            or not _discovery_v2_lock_identity(
+                build_lock, transaction_locks[1],
+                require_held=not entry_terminal_present)):
+        return None, True
+    attempts = entry / "attempts"
+    if (not _discovery_owned_directory(entry)
+            or not _discovery_owned_directory(attempts)):
+        return None, True
+    try:
+        attempt_children = sorted(attempts.iterdir(), key=lambda path: path.name)
+    except OSError:
+        return None, True
+    if (len(attempt_children) != 1
+            or [path.name for path in attempt_children] !=
+            [f"attempt-{index:06d}" for index in range(1, len(attempt_children) + 1)]
+            or any(path.is_symlink() or not path.is_dir()
+                   for path in attempt_children)):
+        return None, True
+    attempt = attempt_children[-1]
+    terminal_present = entry_terminal_present
+    if ((attempt / "recovery.json").exists()
+            or (attempt / "recovery.json").is_symlink()
+            or attempt.name != "attempt-000001"):
+        return None, True
+    owner_row = _discovery_private_json(
+        attempt / "owner.json",
+        schema="epyc.autokernel.gpu_source_build_attempt.v2",
+        keys={"schema", "attempt", "attempt_name", "build_key", "cache_root",
+              "build_root", "holder", "locks", "supervised_build_authority",
+              "supervised_build_authority_sha256", "promotion_claim",
+              "receipt_sha256"})
+    if owner_row is None:
+        return None, True
+    owner, owner_raw, _ = owner_row
+    authority = owner.get("supervised_build_authority")
+    holder = owner.get("holder")
+    attempt_number = len(attempt_children)
+    expected_build_root = Path(str(contract.get("build_root"))) / entry.name / attempt.name
+    if (owner.get("attempt") != attempt_number
+            or owner.get("attempt_name") != attempt.name
+            or owner.get("build_key") != entry.name
+            or owner.get("cache_root") != str(entry)
+            or owner.get("build_root") != str(expected_build_root)
+            or owner.get("promotion_claim") is not False
+            or owner.get("locks") != transaction_locks
+            or not isinstance(authority, dict)
+            or set(authority) != {"schema", "launch_spec", "death_ledger",
+                                  "spec_sha256",
+                                  "deployment_config_canonical_sha256",
+                                  "deployment_config_semantic_sha256",
+                                  "controller", "supervisor",
+                                  "ledger_child_started_record_sha256"}
+            or owner.get("supervised_build_authority_sha256") !=
+            hashlib.sha256(_canonical_json_bytes(authority)).hexdigest()
+            or transaction.get("supervised_build_authority") != authority
+            or transaction.get("supervised_build_authority_sha256") !=
+            owner.get("supervised_build_authority_sha256")
+            or _discovery_stable_supervised_authority(authority) != stable_authority
+            or authority.get("deployment_config_semantic_sha256") != config_sha256
+            or authority.get("deployment_config_canonical_sha256") !=
+            contract.get("deployment_config_canonical_sha256")
+            or not _supervisor_process(authority.get("controller"), child=True)
+            or not _supervisor_process(authority.get("supervisor"), child=False)
+            or not isinstance(holder, dict)
+            or set(holder) != {"pid", "start_ticks", "boot_id", "host", "label"}
+            or holder.get("label") !=
+            f"autokernel-build:{entry.name}:{attempt.name}"
+            or any(holder.get(key) != authority.get("controller", {}).get(key)
+                   for key in ("pid", "start_ticks", "boot_id", "host"))):
+        return None, True
+    transaction_holder = transaction.get("holder")
+    if (not isinstance(transaction_holder, dict)
+            or set(transaction_holder) !=
+            {"pid", "start_ticks", "boot_id", "host", "label"}
+            or transaction_holder.get("label") !=
+            f"autokernel-build-transaction:{entry.name}"
+            or any(transaction_holder.get(key) != authority["controller"].get(key)
+                   for key in ("pid", "start_ticks", "boot_id", "host"))):
+        return None, True
+    controller_cgroup = _discovery_authority_cgroup(
+        authority, require_live=not terminal_present)
+    if controller_cgroup is None:
+        return None, True
+    if not terminal_present:
+        try:
+            current_boot = Path("/proc/sys/kernel/random/boot_id").read_text(
+                encoding="ascii").strip()
+            controller_proc = _discovery_proc_stat(holder["pid"])
+        except OSError:
+            return None, True
+        if controller_proc is None:
+            return None, True
+        controller_state, controller_pgid, controller_ticks = controller_proc
+        if (holder.get("boot_id") != current_boot
+                or holder.get("host") != os.uname().nodename
+                or controller_ticks != holder.get("start_ticks")
+                or controller_state == "Z"
+                or controller_pgid != authority["controller"]["pgid"]):
+            return None, True
+    logs = attempt / "logs"
+    if (not _discovery_owned_directory(attempt)
+            or not _discovery_owned_directory(logs)):
+        return None, True
+    now = time.time()
+    observations = []
+    completed_builds = []
+    prior_build_complete = True
+    allowed_logs: set[str] = set()
+    for arm, name in (("anchor", "akc-anchor"), ("candidate", candidate_id)):
+        expected_writable_root = expected_build_root / campaign_id / name
+        expected_source_root = (
+            attempt / "worktrees" /
+            f"llama.cpp-{campaign_id}-{name}-snapshot")
+        configure_names = {
+            f"{name}.log.configure-process-intent.json",
+            f"{name}.log.configure-process-start.json",
+            f"{name}.log.configure-process-terminal.json",
+            f"{name}.log.configure-sandbox.json",
+            f"{name}.log.configure.stream",
+        }
+        build_names = {
+            f"{name}.log.build-process-intent.json",
+            f"{name}.log.build-process-start.json",
+            f"{name}.log.build-sandbox.json",
+            f"{name}.log.build.stream",
+        }
+        configure_intent_path = logs / f"{name}.log.configure-process-intent.json"
+        if not configure_intent_path.exists() and not configure_intent_path.is_symlink():
+            # The next arm has not started.  Earlier receipts remain the only
+            # admissible prefix of the two-arm state machine.
+            if arm == "candidate" and prior_build_complete:
+                continue
+            break
+        allowed_logs |= configure_names | build_names | {
+            f"{name}.log.build-process-terminal.json",
+            f"{name}.log", f"{name}.log.result.json"}
+        configure_row = _discovery_private_json(
+            configure_intent_path,
+            schema="epyc.autokernel.owned_process_intent.v1",
+            keys=_DISCOVERY_PROCESS_INTENT_KEYS)
+        if configure_row is None:
+            continue
+        configure_argv = configure_row[0].get("argv")
+        if (not isinstance(configure_argv, list) or len(configure_argv) < 6
+                or configure_argv[0] !=
+                contract.get("toolchain", {}).get("programs", {}).get("cmake", {}).get("resolved")
+                or configure_argv[1] != "-S" or configure_argv[3] != "-B"):
+            continue
+        source_root = Path(str(configure_argv[2]))
+        writable_root = Path(str(configure_argv[4]))
+        if (source_root != expected_source_root
+                or writable_root != expected_writable_root
+                or str(source_root) != configure_argv[2]
+                or str(writable_root) != configure_argv[4]
+                or not terminal_present and (
+                    not _discovery_owned_directory(
+                        source_root, allow_group_write=True)
+                    or not _discovery_owned_directory(writable_root))):
+            return None, True
+        defines = [f"-DCMAKE_BUILD_TYPE={contract.get('build_type')}"] + [
+            f"-D{key}={value}" for key, value in contract.get("cmake_defines", [])]
+        if configure_argv[5:] != defines:
+            return None, True
+        if configure_row[0].get("cgroup_root") != controller_cgroup["path"]:
+            return None, True
+        if _discovery_v2_process_receipts(
+                prefix=logs / f"{name}.log.configure", attempt_root=attempt,
+                writable_root=writable_root, expected_argv=configure_argv,
+                expected_cgroup_root=controller_cgroup["path"],
+                require_live=False, now=now) is None:
+            return None, True
+        jobs = contract.get("parallelism", {}).get("jobs")
+        targets = contract.get("required_targets")
+        if (not isinstance(jobs, int) or isinstance(jobs, bool) or jobs <= 0
+                or not isinstance(targets, list)
+                or any(not isinstance(target, str) for target in targets)):
+            return None, True
+        build_argv = [configure_argv[0], "--build", str(writable_root),
+                      "-j", str(jobs)]
+        for target in targets:
+            build_argv.extend(["--target", target])
+        build_prefix = logs / f"{name}.log.build"
+        terminal_path = logs / f"{name}.log.build-process-terminal.json"
+        if terminal_path.exists() or terminal_path.is_symlink():
+            complete = _discovery_v2_process_receipts(
+                prefix=build_prefix, attempt_root=attempt,
+                writable_root=writable_root, expected_argv=build_argv,
+                expected_cgroup_root=controller_cgroup["path"],
+                require_live=False, now=now)
+            if complete is None or not prior_build_complete:
+                return None, True
+            completed_builds.append(complete)
+            prior_build_complete = True
+            continue
+        live = _discovery_v2_process_receipts(
+            prefix=build_prefix, attempt_root=attempt,
+            writable_root=writable_root, expected_argv=build_argv,
+            expected_cgroup_root=controller_cgroup["path"],
+            require_live=True, now=now)
+        if live is not None and prior_build_complete:
+            observations.append({
+                "stage": "build", "state": "running", "arm": arm,
+                "started_at": live["started_at"], "build_key": entry.name,
+                "attempt": attempt.name, "source_materialized": True,
+                "process_verified": True,
+                "progress_percent": live["progress_percent"],
+                "hip_compile": live["hip_compile"],
+                "progress_at": live["progress_at"],
+                "stream_stale": live["stream_stale"],
+            })
+            prior_build_complete = False
+        else:
+            return None, True
+    try:
+        log_names = {path.name for path in logs.iterdir()}
+    except OSError:
+        return None, True
+    if not log_names.issubset(allowed_logs):
+        return None, True
+    for name in ("akc-anchor", candidate_id):
+        if (f"{name}.log.result.json" in log_names
+                and f"{name}.log.build-process-terminal.json" not in log_names):
+            return None, True
+    if len(observations) == 1 and not terminal_present:
+        return observations[0], True
+    if (not observations and len(completed_builds) == 2 and terminal_present
+            and _discovery_v2_terminal_complete(
+                entry, attempt, intent_raw=intent_raw, owner_raw=owner_raw,
+                contract=contract, candidate_id=candidate_id)):
+        terminal_info = (entry / "terminal.json").stat()
+        return ({"stage": "evidence_binding", "state": "running",
+                 "arm": "complete", "build_key": entry.name,
+                 "attempt": attempt.name, "source_materialized": True,
+                 "started_at": datetime.fromtimestamp(
+                     terminal_info.st_mtime, timezone.utc
+                 ).isoformat().replace("+00:00", "Z")}, True)
+    return None, True
+
+
+def _discovery_legacy_build_observation(operations_root: Path, state: dict | None,
+                                        config_sha256: object) -> dict | None:
     """Identify the exact active source-build transaction from sealed inputs.
 
     This is an operator observation, not execution authority.  It only reports
@@ -4134,6 +5625,19 @@ def _discovery_build_observation(operations_root: Path, state: dict | None,
                         "started_at": arm_started_at, "build_key": entry.name,
                         "arm": arm})
     return matches[0] if len(matches) == 1 else None
+
+
+def _discovery_build_observation(operations_root: Path, state: dict | None,
+                                 config_sha256: object) -> dict | None:
+    try:
+        v2, v2_contract = _discovery_v2_build_observation(
+            operations_root, state, config_sha256)
+    except (OSError, TypeError, ValueError, KeyError, AttributeError):
+        return None
+    if v2_contract:
+        return v2
+    return _discovery_legacy_build_observation(
+        operations_root, state, config_sha256)
 
 
 def _discovery_correctness_observation(operations_root: Path,
@@ -4982,11 +6486,9 @@ def _discovery_claim_observation(
     held = row["kind"] == "claim_acquired" and receipt.get("released_at") is None
     if held:
         pid, ticks = receipt.get("holder_pid"), receipt.get("holder_start_ticks")
-        try:
-            observed = int((Path("/proc") / str(pid) / "stat").read_text(
-                encoding="utf-8").split()[21])
-        except (OSError, ValueError, IndexError):
-            observed = None
+        proc_stat = (_discovery_proc_stat(pid)
+                     if isinstance(pid, int) and not isinstance(pid, bool) else None)
+        observed = proc_stat[2] if proc_stat is not None else None
         held = isinstance(pid, int) and isinstance(ticks, int) and observed == ticks
     return {"claim_held": held, "claim_released": not held,
             "claim_id": receipt.get("claim_id"),
@@ -5665,7 +7167,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                          if isinstance(row.get("ts"), str)), default=None)
     state_at = state.get("updated_at") if isinstance(state, dict) else None
     checkpoint_at = checkpoint.get("written_at") if checkpoint else None
-    operation_at = (operation_observation.get("started_at")
+    operation_at = ((operation_observation.get("progress_at")
+                     or operation_observation.get("started_at"))
                     if isinstance(operation_observation, dict) else None)
     correctness_at = (execution_observation.get("completed_at")
                       if isinstance(execution_observation, dict) else None)
@@ -6125,13 +7628,36 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                 waiting_on = ("proof-plan binding completion" if lock_held
                               else "evidence-binding recovery audit")
             else:
-                pipeline["source_materialization"]["state"] = "running"
-                pipeline["source_materialization"]["detail"] = (
-                    "build transaction is active; materialization receipt is not sealed")
+                if operation_observation.get("source_materialized") is True:
+                    pipeline["source_materialization"]["state"] = "complete"
+                    pipeline["source_materialization"]["detail"] = (
+                        "configure closure verified for "
+                        f"{operation_observation.get('attempt')}")
+                else:
+                    pipeline["source_materialization"]["state"] = "running"
+                    pipeline["source_materialization"]["detail"] = (
+                        "build transaction is active; materialization receipt is not sealed")
                 arm = operation_observation.get("arm")
                 build_label = ("Compiling candidate arm 2 of 2" if arm == "candidate"
                                else "Compiling anchor arm 1 of 2" if arm == "anchor"
                                else "Compiling the sealed anchor and candidate")
+                progress = operation_observation.get("progress_percent")
+                if (isinstance(progress, int) and not isinstance(progress, bool)
+                        and 0 <= progress <= 100):
+                    build_label += f" · {progress}%"
+                build_detail = []
+                if operation_observation.get("process_verified") is True:
+                    build_detail.append(
+                        f"verified {operation_observation.get('attempt')}")
+                if operation_observation.get("hip_compile") is True:
+                    build_detail.append("HIP compile")
+                if isinstance(progress, int) and not isinstance(progress, bool):
+                    build_detail.append(f"{progress}% producer stream")
+                if operation_observation.get("stream_stale") is True:
+                    build_detail.append(
+                        "stream quiet; PID/cgroup identity remains live")
+                if build_detail:
+                    pipeline["build"]["detail"] = " · ".join(build_detail)
                 label = (build_label if lock_held
                          else "Controller stopped during source build")
                 waiting_on = (("candidate build completion" if arm == "candidate"
@@ -6238,8 +7764,19 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             })
     if isinstance(operation_observation, dict):
         observed_stage = operation_observation["stage"]
+        operation_detail = (
+            f"{operation_observation.get('arm') or observed_stage} "
+            f"{operation_observation['build_key'][:12]}…")
+        if isinstance(operation_observation.get("attempt"), str):
+            operation_detail += f" · {operation_observation['attempt']}"
+        if (isinstance(operation_observation.get("progress_percent"), int)
+                and not isinstance(operation_observation.get("progress_percent"), bool)):
+            operation_detail += (
+                f" · {operation_observation['progress_percent']}%")
         transitions.append({
-            "ts": operation_observation["started_at"], "stage": observed_stage,
+            "ts": (operation_observation.get("progress_at")
+                   or operation_observation["started_at"]),
+            "stage": observed_stage,
             "phase": observed_stage, "state": "running",
             "event": ("build_transaction_complete" if observed_stage == "evidence_binding"
                       else "build_transaction_observed"),
@@ -6247,8 +7784,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       else f"{operation_observation.get('arm')} arm active"
                       if operation_observation.get("arm") else
                       "sealed build transaction active"),
-            "detail": (f"{operation_observation.get('arm') or observed_stage} "
-                       f"{operation_observation['build_key'][:12]}…"),
+            "detail": operation_detail,
         })
     if isinstance(execution_observation, dict):
         transitions.append({
@@ -7159,6 +8695,7 @@ _SUPERVISOR_LEDGER_SCHEMA = "epyc.autokernel.discovery_supervisor_ledger.v2"
 _SUPERVISOR_IDENTITY_SCHEMA = "epyc.autokernel.discovery_supervisor_identity.v2"
 _SUPERVISOR_SPEC_SCHEMA = "epyc.autokernel.discovery_supervisor_spec.v2"
 _SUPERVISOR_SPEC_SCHEMA_V3 = "epyc.autokernel.discovery_supervisor_spec.v3"
+_SUPERVISOR_SPEC_SCHEMA_V4 = "epyc.autokernel.discovery_supervisor_spec.v4"
 _SUPERVISOR_GRAPH_EXECUTION_MODULES_V3 = {
     "deployment_factory":
         "scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py",
@@ -7506,7 +9043,9 @@ def _supervisor_launch_spec(
     if (value is None
             or schema == _SUPERVISOR_SPEC_SCHEMA and set(value) != v2_expected
             or schema == _SUPERVISOR_SPEC_SCHEMA_V3 and set(value) != v3_expected
-            or schema not in {_SUPERVISOR_SPEC_SCHEMA, _SUPERVISOR_SPEC_SCHEMA_V3}
+            or schema == _SUPERVISOR_SPEC_SCHEMA_V4 and set(value) != v3_expected
+            or schema not in {_SUPERVISOR_SPEC_SCHEMA, _SUPERVISOR_SPEC_SCHEMA_V3,
+                              _SUPERVISOR_SPEC_SCHEMA_V4}
             or raw != _canonical_json_bytes(value) + b"\n"
             or value.get("kind") != "deployment"
             or value.get("runtime_root") != str(runtime_root)
@@ -7538,9 +9077,15 @@ def _supervisor_launch_spec(
         copy_value = _strict_json_bytes(copy_raw)
     except ValueError:
         return None
-    if (not isinstance(deployment, dict) or set(deployment) != {
-            "source_path", "source_identity", "runtime_leaf",
-            "canonical_sha256", "canonical_size", "identity"}
+    deployment_keys = {
+        "source_path", "source_identity", "runtime_leaf",
+        "canonical_sha256", "canonical_size", "identity"}
+    if schema == _SUPERVISOR_SPEC_SCHEMA_V4:
+        deployment_keys.add("semantic_sha256")
+    semantic_sha = (hashlib.sha256(_canonical_json_bytes({
+        key: item for key, item in config.items() if key != "config_sha256"
+    })).hexdigest() if isinstance(config, dict) else None)
+    if (not isinstance(deployment, dict) or set(deployment) != deployment_keys
             or deployment.get("source_path") != str(config_path)
             or deployment.get("source_identity") !=
             _stat_identity(source_info, sized=True)
@@ -7550,7 +9095,10 @@ def _supervisor_launch_spec(
             or deployment.get("canonical_sha256") !=
             hashlib.sha256(copy_raw).hexdigest()
             or source_value != config or copy_value != config
-            or copy_raw != _canonical_json_bytes(config) + b"\n"):
+            or copy_raw != _canonical_json_bytes(config) + b"\n"
+            or schema == _SUPERVISOR_SPEC_SCHEMA_V4 and (
+                deployment.get("semantic_sha256") != config.get("config_sha256")
+                or semantic_sha != config.get("config_sha256"))):
         return None
     closure = value.get("execution_closure")
     if (not isinstance(closure, dict) or set(closure) != {
@@ -7607,7 +9155,7 @@ def _supervisor_launch_spec(
                     f"scripts/kernel_rnd/autokernel/controller/{filename}", {}
                 ).get("sha256") != binding["sha256"]):
             return None
-    if schema == _SUPERVISOR_SPEC_SCHEMA_V3:
+    if schema in {_SUPERVISOR_SPEC_SCHEMA_V3, _SUPERVISOR_SPEC_SCHEMA_V4}:
         graph_modules = value.get("graph_execution_modules")
         if (not isinstance(graph_modules, dict)
                 or set(graph_modules) != set(

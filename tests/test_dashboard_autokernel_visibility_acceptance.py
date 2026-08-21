@@ -20,6 +20,7 @@ summary and transition timeline stay above that diagnostic history.
 """
 from __future__ import annotations
 
+import base64
 from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
@@ -30,7 +31,9 @@ import re
 import shutil
 import subprocess
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 from dashboard import server
 
@@ -119,6 +122,418 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         planner = [row for row in rows if row.get("channel") == "planner"]
         (self.operations / "live/planner.jsonl").write_text(
             "".join(json.dumps(row) + "\n" for row in planner))
+
+    def _private_json(self, path: Path, body: dict, *, sealed: bool = True) -> dict:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        value = _seal(body) if sealed else dict(body)
+        path.write_bytes(server._canonical_json_bytes(value) + b"\n")
+        path.chmod(0o600)
+        return value
+
+    def _v24_live_process_fixture(self, *, seconds_ago: int = 30) -> dict:
+        """Exact v24 owned-process/sandbox receipt prefix for a HIP build."""
+        attempt = (self.operations / "build-cache/entries" / ("7" * 64) /
+                   "attempts/attempt-000001")
+        logs = attempt / "logs"
+        writable = (self.bundle / "builds" / ("7" * 64) /
+                    "attempt-000001" / "ak-discovery-aaaaaaaaaaaaaaaa" /
+                    "akc-anchor")
+        writable.mkdir(parents=True, exist_ok=True)
+        prefix = logs / "akc-anchor.log.build"
+        stream = logs / "akc-anchor.log.build.stream"
+        sandbox_path = logs / "akc-anchor.log.build-sandbox.json"
+        started_at = _iso(seconds_ago)
+        started_epoch = server._parse_semantic_timestamp(started_at)
+        cgroup_root = "/sys/fs/cgroup/epyc-autokernel-fixture-1000-0"
+        argv = ["/usr/bin/cmake", "--build", str(writable), "-j", "1",
+                "--target", "llama-bench", "--target", "test-backend-ops"]
+        policy_document = {
+            "sandbox_id": "autokernel.execution.sandbox/landlock-seccomp-cgroup-v2",
+            "profile": "candidate_default_v1", "writable_root": str(writable),
+            "cgroup_root": cgroup_root, "writable_device_paths": [],
+            "readable_roots": [], "readable_files": [], "executable_files": [],
+            "broker_socket_path": None, "broker_peer_pid": None,
+            "broker_peer_start_ticks": None, "read_allowlist_enforced": False,
+            "network_profile": "deny_all",
+            "blocked_syscalls": sorted(server._DISCOVERY_SANDBOX_BLOCKED),
+            "deny_unix_socket_creation": False,
+            "resource_limits": server._DISCOVERY_SANDBOX_LIMITS,
+        }
+        policy_sha = hashlib.sha256(
+            server._canonical_json_bytes(policy_document)).hexdigest()
+        intent = self._private_json(prefix.with_name(
+            prefix.name + "-process-intent.json"), {
+                "schema": "epyc.autokernel.owned_process_intent.v1",
+                "argv": argv, "epoch_token": "e" * 64,
+                "stdout_path": str(stream),
+                "sandbox_receipt_path": str(sandbox_path),
+                "sandbox_policy_sha256": policy_sha,
+                "sandbox_token": "1" * 16, "cgroup_root": cgroup_root,
+            })
+        intent_raw = server._canonical_json_bytes(intent) + b"\n"
+        start = self._private_json(prefix.with_name(
+            prefix.name + "-process-start.json"), {
+                "schema": "epyc.autokernel.owned_process_start.v1",
+                "intent_receipt_sha256": hashlib.sha256(intent_raw).hexdigest(),
+                "epoch_token": "e" * 64, "argv": argv, "pid": 424242,
+                "pgid": 424242, "process_start_ticks": 987654,
+                "started_at": started_at, "stdout_path": str(stream),
+                "sandbox_receipt_path": str(sandbox_path),
+            })
+        argv_sha = hashlib.sha256(json.dumps(
+            argv, separators=(",", ":")).encode()).hexdigest()
+        self._private_json(sandbox_path, {
+            "schema": "epyc.autokernel.sandbox_receipt.v2",
+            "sandbox_id": "autokernel.execution.sandbox/landlock-seccomp-cgroup-v2",
+            "pid": 424242, "process_start_ticks": 987654,
+            "euid": os.geteuid(), "landlock_abi": 6,
+            "landlock_write_rights": 32754, "landlock_handled_rights": 32754,
+            "read_allowlist_enforced": False, "readable_roots": [],
+            "readable_files": [], "executable_files": [],
+            "seccomp_sha256":
+                "80658aa1b897a70b445c4449ba3e5fa21db7b31388833cabbf9fb14a5e782fb7",
+            "blocked_syscalls": sorted(server._DISCOVERY_SANDBOX_BLOCKED),
+            "profile": "candidate_default_v1", "network_profile": "deny_all",
+            "outbound_socket_families": [],
+            "server_socket_operations_denied": ["bind", "listen", "accept", "accept4"],
+            "unix_socket_creation_denied": False, "broker_socket_path": None,
+            "broker_fd_inherited": False, "broker_peer": None,
+            "writable_root": str(writable), "writable_device_paths": [],
+            "cgroup_path": f"{cgroup_root}/autokernel-424242-{'1' * 16}",
+            "resource_limits": server._DISCOVERY_SANDBOX_LIMITS,
+            "policy_sha256": policy_sha,
+            "activated_at_unix_ns": int(started_epoch * 1_000_000_000),
+            "argv_sha256": argv_sha,
+        }, sealed=False)
+        stream.parent.mkdir(parents=True, exist_ok=True)
+        stream.write_bytes(b"[  5%] Building HIP object ggml-hip.dir/quant.cu.o\n")
+        stream.chmod(0o600)
+        return {"attempt": attempt, "prefix": prefix, "writable": writable,
+                "argv": argv, "cgroup_root": cgroup_root, "stream": stream,
+                "start": start, "sandbox": sandbox_path}
+
+    def _v24_build_observation_fixture(self) -> dict:
+        """Build the exact v2 contract/owner/attempt prefix around one live arm."""
+        def tool(requested: str) -> dict:
+            resolved = Path(requested).resolve(strict=True)
+            return {"requested": requested, "resolved": str(resolved),
+                    "sha256": hashlib.sha256(resolved.read_bytes()).hexdigest()}
+        programs = {
+            "cmake": tool("/usr/bin/cmake"), "cc": tool("/usr/bin/cc"),
+            "c++": tool("/usr/bin/c++"), "make": tool("/usr/bin/make"),
+            "ninja": None, "hipcc": tool("/opt/rocm/bin/hipcc"),
+        }
+        rocm_programs = {
+            "bin/hipcc": tool("/opt/rocm/bin/hipcc"),
+            "llvm/bin/clang": tool("/opt/rocm/llvm/bin/clang"),
+            "llvm/bin/clang++": tool("/opt/rocm/llvm/bin/clang++"),
+            "llvm/bin/ld.lld": tool("/opt/rocm/llvm/bin/ld.lld"),
+        }
+        toolchain = {
+            "schema": "epyc.autokernel.build_toolchain.v1",
+            "programs": programs, "rocm_root": "/opt/rocm",
+            "rocm_programs": rocm_programs,
+            "dynamic_environment": {"PYTHONDONTWRITEBYTECODE": "1",
+                                    "TMPDIR": "<arm-build-dir>/.autokernel-tmp"},
+        }
+        toolchain["toolchain_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(toolchain)).hexdigest()
+        proposal = {"change": {"estimated_diff_size": 1,
+                                "files_and_symbols": ["ggml/src/ggml-cuda/x.cu:x"]},
+                    "change_class": "arithmetic", "proposal_id": "akp-fixture"}
+        proposal_sha = hashlib.sha256(
+            server._canonical_json_bytes(proposal)).hexdigest()
+        patch = b"diff --git a/x b/x\n"
+        native_manifest = {
+            "schema": "epyc.autokernel.source-patch.v1",
+            "campaign_id": "ak-discovery-aaaaaaaaaaaaaaaa",
+            "candidate_id": "akc-fixture", "change_class": "arithmetic",
+            "declared_files": ["ggml/src/ggml-cuda/x.cu"],
+            "declared_symbols": {"ggml/src/ggml-cuda/x.cu": ["x"]},
+            "instrument_commit": "1" * 40, "mechanism_id": "2" * 64,
+            "patch_base64": base64.b64encode(patch).decode(),
+            "patch_encoding": "base64",
+            "patch_sha256": hashlib.sha256(patch).hexdigest(),
+            "production_base_commit": "0" * 40,
+            "proposal_id": "akp-fixture", "source_tree": "llama.cpp",
+        }
+        manifest_raw = server._canonical_json_bytes(native_manifest)
+        manifest_sha = hashlib.sha256(manifest_raw).hexdigest()
+        projected_manifest = {key: value for key, value in native_manifest.items()
+                              if key not in {"schema", "patch_encoding"}}
+        instrument = {
+            "schema": "epyc.autokernel.measurement_instrument_authority.v1",
+            "production_base_commit": "0" * 40,
+            "instrument_branch": "codex/fixture", "instrument_commit": "1" * 40,
+            "instrument_tree": "3" * 40, "tree_listing_sha256": "4" * 64,
+        }
+        instrument["authority_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(instrument)).hexdigest()
+        process = {
+            "pid": 31337, "start_ticks": 123456,
+            "boot_id": Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+            "host": os.uname().nodename, "host_id_source": "kernel-hostname",
+            "host_id_sha256": hashlib.sha256(
+                os.uname().nodename.encode()).hexdigest()}
+        controller = {**process, "pgid": 31300, "argv_sha256": "5" * 64}
+        stable = {
+            "schema": "epyc.autokernel.supervised_launch_authority.v2",
+            "launch_spec": {"device": 1, "inode": 2, "mode": 0o600,
+                            "nlink": 1, "path": "/fixture/launch-spec.json",
+                            "sha256": "6" * 64, "uid": os.geteuid()},
+            "death_ledger": {"device": 1, "inode": 3, "mode": 0o600,
+                             "nlink": 1, "path": "/fixture/death-ledger.jsonl",
+                             "uid": os.geteuid()},
+            "spec_sha256": "7" * 64,
+            "deployment_config_canonical_sha256": "8" * 64,
+            "deployment_config_semantic_sha256": "a" * 64,
+        }
+        stable_sha = hashlib.sha256(
+            server._canonical_json_bytes(stable)).hexdigest()
+        contract = {
+            "schema": "epyc.autokernel.gpu_source_build_key.v2",
+            "builder_schema": "epyc.autokernel.static_gpu_source_builder.v6",
+            "deployment_config_canonical_sha256": "8" * 64,
+            "deployment_config_semantic_sha256": "a" * 64,
+            "supervised_build_authority": stable,
+            "supervised_build_authority_sha256": stable_sha,
+            "production_base_authority": {
+                "path": "/mnt/raid0/llm/llama.cpp",
+                "branch": "production-consolidated-v9", "commit": "0" * 40},
+            "instrument_authority": instrument,
+            "patch_bundle_sha256": manifest_sha,
+            "patch_sha256": native_manifest["patch_sha256"],
+            "proposal_sha256": proposal_sha,
+            "selected_gpu_base_blobs": {"ggml/src/ggml-cuda/x.cu": "9" * 64},
+            "cmake_defines": server._DISCOVERY_BUILD_CMAKE_DEFINES_V2,
+            "build_type": "Release",
+            "parallelism": server._DISCOVERY_BUILD_PARALLELISM_V2,
+            "required_targets": server._DISCOVERY_BUILD_TARGETS_V2,
+            "build_environment": {
+                "CC": programs["cc"]["resolved"],
+                "CXX": programs["c++"]["resolved"], "HIP_PATH": "/opt/rocm",
+                "HOME": "/home/node", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+                "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib",
+                "PATH": "/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin",
+                "ROCM_PATH": "/opt/rocm"},
+            "toolchain": toolchain, "operations_root": str(self.operations),
+            "build_root": str(self.bundle / "builds"),
+        }
+        contract["build_key"] = hashlib.sha256(
+            server._canonical_json_bytes(contract)).hexdigest()
+        build_key = contract["build_key"]
+        entry = self.operations / "build-cache/entries" / build_key
+        attempt = entry / "attempts/attempt-000001"
+        logs = attempt / "logs"
+        logs.mkdir(parents=True)
+        entry.chmod(0o700); attempt.chmod(0o700)
+        locks_root = self.operations / "build-cache/locks"
+        locks_root.mkdir(parents=True)
+        request_preimage = {
+            "schema": "epyc.autokernel.gpu_source_build_request.v2",
+            **{key: contract[key] for key in (
+                "deployment_config_canonical_sha256",
+                "deployment_config_semantic_sha256",
+                "supervised_build_authority_sha256", "production_base_authority",
+                "instrument_authority", "patch_bundle_sha256", "proposal_sha256",
+                "builder_schema")}}
+        request_key = hashlib.sha256(
+            server._canonical_json_bytes(request_preimage)).hexdigest()
+        request_lock = locks_root / f"request-{request_key}.lock"
+        build_lock = locks_root / f"build-{build_key}.lock"
+        for path in (request_lock, build_lock):
+            path.touch(); path.chmod(0o600)
+        identities = [{"device": path.stat().st_dev, "inode": path.stat().st_ino,
+                       "path": str(path), "uid": os.geteuid()}
+                      for path in (request_lock, build_lock)]
+        intent_body = {
+            "schema": "epyc.autokernel.gpu_source_build_intent.v1",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "build_key": build_key, "build_contract": contract,
+            "promotion_claim": False, "request_key": request_key}
+        intent = self._private_json(entry / "intent.json", intent_body)
+        intent_raw = server._canonical_json_bytes(intent) + b"\n"
+        full_authority = {
+            **stable, "schema": "epyc.autokernel.supervised_build_authority.v2",
+            "controller": controller, "supervisor": process,
+            "ledger_child_started_record_sha256": "b" * 64}
+        full_sha = hashlib.sha256(
+            server._canonical_json_bytes(full_authority)).hexdigest()
+        holder = {key: controller[key] for key in ("pid", "start_ticks", "boot_id", "host")}
+        holder["label"] = f"autokernel-build:{build_key}:attempt-000001"
+        transaction_holder = dict(holder)
+        transaction_holder["label"] = f"autokernel-build-transaction:{build_key}"
+        self._private_json(entry / "transaction-owner.json", {
+            "schema": "epyc.autokernel.gpu_source_build_transaction_owner.v2",
+            "build_key": build_key, "holder": transaction_holder,
+            "intent": intent_body, "intent_file_sha256": hashlib.sha256(intent_raw).hexdigest(),
+            "locks": identities, "promotion_claim": False,
+            "supervised_build_authority": full_authority,
+            "supervised_build_authority_sha256": full_sha})
+        self._private_json(attempt / "owner.json", {
+            "schema": "epyc.autokernel.gpu_source_build_attempt.v2",
+            "attempt": 1, "attempt_name": "attempt-000001", "build_key": build_key,
+            "cache_root": str(entry),
+            "build_root": str(self.bundle / "builds" / build_key / "attempt-000001"),
+            "holder": holder, "locks": identities,
+            "supervised_build_authority": full_authority,
+            "supervised_build_authority_sha256": full_sha,
+            "promotion_claim": False})
+        campaign = native_manifest["campaign_id"]
+        source = attempt / "worktrees" / f"llama.cpp-{campaign}-akc-anchor-snapshot"
+        writable = self.bundle / "builds" / build_key / "attempt-000001" / campaign / "akc-anchor"
+        source.mkdir(parents=True, exist_ok=True)
+        writable.mkdir(parents=True, exist_ok=True)
+        configure_argv = [programs["cmake"]["resolved"], "-S", str(source),
+                          "-B", str(writable), "-DCMAKE_BUILD_TYPE=Release"] + [
+                              f"-D{key}={value}" for key, value in
+                              server._DISCOVERY_BUILD_CMAKE_DEFINES_V2]
+        self._private_json(logs / "akc-anchor.log.configure-process-intent.json", {
+            "schema": "epyc.autokernel.owned_process_intent.v1",
+            "argv": configure_argv, "epoch_token": "c" * 64,
+            "stdout_path": str(logs / "akc-anchor.log.configure.stream"),
+            "sandbox_receipt_path": str(logs / "akc-anchor.log.configure-sandbox.json"),
+            "sandbox_policy_sha256": "d" * 64, "sandbox_token": "e" * 16,
+            "cgroup_root": "/sys/fs/cgroup/controller-fixture"})
+        state = {"inflight": {
+            "candidate": {"manifest": projected_manifest,
+                          "manifest_raw_base64": base64.b64encode(manifest_raw).decode(),
+                          "source_manifest_sha256": manifest_sha,
+                          "manifest_file_sha256": manifest_sha,
+                          "patch_bundle_sha256": manifest_sha, "proposal": proposal},
+            "row": {"proposal_sha256": proposal_sha,
+                    "source_manifest_sha256": manifest_sha}}}
+        return {"state": state, "entry": entry, "attempt": attempt,
+                "request_lock": request_lock, "build_lock": build_lock,
+                "contract": contract, "configure_argv": configure_argv}
+
+    def _v24_terminal_fixture(self) -> dict:
+        """Seal a real-schema v24 terminal/closure/materialization epoch."""
+        fixture = self._v24_build_observation_fixture()
+        entry, attempt = fixture["entry"], fixture["attempt"]
+        contract = fixture["contract"]
+        build_key = entry.name
+        receipts = attempt / "receipts"
+        receipts.mkdir()
+        owner_raw = (attempt / "owner.json").read_bytes()
+        manifest_sha = contract["patch_bundle_sha256"]
+        anchor_identity = {"id": "anchor"}
+        candidate_identity = {"id": "candidate"}
+        reward_sha = "e" * 64
+        materialization_body = {
+            "schema": "epyc.autokernel.gpu_source_materialization.v1",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "operation_key": build_key, "build_key": build_key,
+            "build_contract": contract,
+            "actor_worktree": None, "actor_proof": None,
+            "manifest_sha256": manifest_sha,
+            "production_base_authority": contract["production_base_authority"],
+            "instrument_authority": contract["instrument_authority"],
+            "selected_gpu_base_blobs": contract["selected_gpu_base_blobs"],
+            "applied": True, "anchor_commit": "0" * 40,
+            "candidate_source_commit": "1" * 40,
+            "candidate_source_sha256": "2" * 64,
+            "patch_applied": True, "production_tree": False,
+            "builds": {}, "anchor_identity": anchor_identity,
+            "candidate_identity": candidate_identity,
+            "anchor_source_tree_receipt": "anchor-tree.json",
+            "anchor_source_tree_receipt_sha256": "3" * 64,
+            "candidate_source_tree_receipt": "candidate-tree.json",
+            "candidate_source_tree_receipt_sha256": "4" * 64,
+            "source_identity_receipts": [], "correctness_capabilities": {},
+            "build_identity_files": [], "shared_runtime": {},
+            "reward_runtime_receipt": "reward.json",
+            "reward_runtime_sha256": reward_sha,
+            "promotion_claim": False,
+        }
+        materialization = self._private_json(
+            entry / "materialization.json", materialization_body)
+        materialization_path = entry / "materialization.json"
+        materialization_sha = hashlib.sha256(
+            materialization_path.read_bytes()).hexdigest()
+        build = {key: None for key in server._DISCOVERY_V2_TERMINAL_BUILD_KEYS}
+        build.update({
+            "build_key": build_key,
+            "anchor_identity": anchor_identity,
+            "candidate_identity": candidate_identity,
+            "materialization_receipt": str(materialization_path),
+            "materialization_sha256": materialization_sha,
+            "reward_runtime_sha256": reward_sha,
+        })
+
+        def closure_rows(root: Path) -> list[dict]:
+            rows = []
+            for path in sorted(root.iterdir(), key=lambda item: item.name):
+                info = path.stat()
+                rows.append({
+                    "name": path.name,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "identity": {
+                        "device": info.st_dev, "inode": info.st_ino,
+                        "mode": info.st_mode & 0o7777, "nlink": info.st_nlink,
+                        "uid": info.st_uid, "size": info.st_size,
+                        "mtime_ns": info.st_mtime_ns, "ctime_ns": info.st_ctime_ns,
+                    },
+                })
+            return rows
+
+        proofs = []
+        candidate_id = fixture["state"]["inflight"]["candidate"]["manifest"][
+            "candidate_id"]
+        for name in ("akc-anchor", candidate_id):
+            for phase in ("build", "configure"):
+                prefix = attempt / "logs" / f"{name}.log.{phase}"
+                proofs.append({
+                    "intent": str(prefix.with_name(
+                        prefix.name + "-process-intent.json")),
+                    "start": str(prefix.with_name(
+                        prefix.name + "-process-start.json")),
+                    "terminal": str(prefix.with_name(
+                        prefix.name + "-process-terminal.json")),
+                    "state": "terminal_verified_dead",
+                    "sandbox": {
+                        "receipt": str(prefix.with_name(
+                            prefix.name + "-sandbox.json")),
+                        "receipt_present": True, "pid": 100,
+                        "process_start_ticks": 200,
+                        "cgroup_path": str(Path(self.temp.name) /
+                                           f"absent-{name}-{phase}"),
+                        "cgroup_state": "absent",
+                        "state": "activation_dead_cgroup_drained",
+                        "reason": None,
+                    },
+                })
+        closure = {
+            "schema": "epyc.autokernel.build_process_closure.v1",
+            "entries": closure_rows(attempt / "logs"), "proofs": proofs,
+            "require_terminals": True,
+        }
+        closure["closure_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(closure)).hexdigest()
+        epoch = {
+            "schema": "epyc.autokernel.build_artifact_epoch.v1",
+            "attempt": "attempt-000001",
+            "attempt_owner_sha256": hashlib.sha256(owner_raw).hexdigest(),
+            "attempt_recovery": None, "prior_recoveries": [],
+            "process_closure": closure,
+            "materialization_sha256": materialization_sha,
+            "artifact_receipts": closure_rows(receipts),
+        }
+        epoch["artifact_epoch_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(epoch)).hexdigest()
+        terminal = self._private_json(entry / "terminal.json", {
+            "schema": "epyc.autokernel.gpu_source_build_terminal.v2",
+            "build_key": build_key,
+            "intent_file_sha256": hashlib.sha256(
+                (entry / "intent.json").read_bytes()).hexdigest(),
+            "state": "complete", "build": build,
+            "attempt_name": "attempt-000001",
+            "attempt_owner_sha256": hashlib.sha256(owner_raw).hexdigest(),
+            "process_closure_sha256": closure["closure_sha256"],
+            "artifact_epoch": epoch, "promotion_claim": False,
+        })
+        return {**fixture, "terminal": terminal,
+                "materialization": materialization}
 
     def _active_payload(self) -> dict:
         with (self.state / "controller.run.lock").open("r") as handle:
@@ -515,6 +930,388 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
                          "build_transaction_observed")
         self.assertEqual(activity["transitions"][-1]["label"],
                          "candidate arm active")
+
+    def test_v24_live_build_receipts_project_verified_hip_progress(self) -> None:
+        fixture = self._v24_live_process_fixture()
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=True):
+            result = server._discovery_v2_process_receipts(
+                prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+                writable_root=fixture["writable"], expected_argv=fixture["argv"],
+                expected_cgroup_root=fixture["cgroup_root"],
+                require_live=True, now=datetime.now(timezone.utc).timestamp())
+        self.assertIsNotNone(result)
+        self.assertEqual(result["progress_percent"], 5)
+        self.assertTrue(result["hip_compile"])
+        self.assertFalse(result["stream_stale"])
+
+    def test_v24_full_v2_attempt_projects_only_with_held_bound_authority(self) -> None:
+        fixture = self._v24_build_observation_fixture()
+        def process(**kwargs):
+            if kwargs["require_live"]:
+                return {"started_at": _iso(20), "progress_percent": 5,
+                        "hip_compile": True, "progress_at": _iso(1),
+                        "stream_stale": False}
+            return {"started_at": _iso(30), "completed": True,
+                    "completed_at": _iso(21)}
+        with (fixture["request_lock"].open("r+") as request_handle,
+              fixture["build_lock"].open("r+") as build_handle):
+            fcntl.flock(request_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(build_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            with (mock.patch.object(server, "_discovery_v2_git_authority",
+                                    return_value=True),
+                  mock.patch.object(server, "_discovery_authority_cgroup",
+                                    return_value={"path":
+                                                  "/sys/fs/cgroup/controller-fixture"}),
+                  mock.patch.object(server, "_discovery_proc_stat",
+                                    return_value=("S", 31300, 123456)),
+                  mock.patch.object(server, "_discovery_v2_process_receipts",
+                                    side_effect=process)):
+                observation, claimed = server._discovery_v2_build_observation(
+                    self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertEqual(observation["stage"], "build")
+        self.assertEqual(observation["arm"], "anchor")
+        self.assertEqual(observation["attempt"], "attempt-000001")
+        self.assertTrue(observation["source_materialized"])
+        self.assertTrue(observation["process_verified"])
+
+    def test_v24_full_attempt_tamper_release_and_extra_log_fail_closed(self) -> None:
+        fixture = self._v24_build_observation_fixture()
+        intent_path = fixture["entry"] / "intent.json"
+        intent = json.loads(intent_path.read_text())
+        intent["receipt_sha256"] = "0" * 64
+        intent_path.write_bytes(server._canonical_json_bytes(intent) + b"\n")
+        intent_path.chmod(0o600)
+        # A legacy marker cannot rescue a claimed but malformed v2 transaction.
+        legacy = fixture["entry"] / "logs"
+        legacy.mkdir(exist_ok=True)
+        (legacy / "akc-anchor.log.build-sandbox.json").write_text("{}")
+        with mock.patch.object(server, "_discovery_legacy_build_observation") as legacy_read:
+            self.assertIsNone(server._discovery_build_observation(
+                self.operations, fixture["state"], "a" * 64))
+            legacy_read.assert_not_called()
+
+        shutil.rmtree(self.operations / "build-cache")
+        fixture = self._v24_build_observation_fixture()
+        with fixture["request_lock"].open("r+") as request_handle:
+            fcntl.flock(request_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            # Build lock deliberately released: names/receipts alone are not liveness.
+            with (mock.patch.object(server, "_discovery_v2_git_authority",
+                                    return_value=True),
+                  mock.patch.object(server, "_discovery_authority_cgroup",
+                                    return_value={"path":
+                                                  "/sys/fs/cgroup/controller-fixture"})):
+                observation, claimed = server._discovery_v2_build_observation(
+                    self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertIsNone(observation)
+
+    def test_v24_recovered_attempt_is_claimed_but_fails_closed(self) -> None:
+        fixture = self._v24_build_observation_fixture()
+        second = fixture["entry"] / "attempts/attempt-000002"
+        second.mkdir()
+        (fixture["attempt"] / "recovery.json").write_text("{}")
+        with mock.patch.object(server, "_discovery_v2_git_authority",
+                               return_value=True):
+            observation, claimed = server._discovery_v2_build_observation(
+                self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertIsNone(observation)
+
+    def test_v24_owner_labels_are_exact_authority_bindings(self) -> None:
+        fixture = self._v24_build_observation_fixture()
+        owner_path = fixture["attempt"] / "owner.json"
+        owner = json.loads(owner_path.read_text())
+        owner["holder"]["label"] = "coherently-rehashed-but-not-the-owner"
+        owner.pop("receipt_sha256")
+        self._private_json(owner_path, owner)
+        with (fixture["request_lock"].open("r+") as request_handle,
+              fixture["build_lock"].open("r+") as build_handle):
+            fcntl.flock(request_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(build_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            with mock.patch.object(server, "_discovery_v2_git_authority",
+                                   return_value=True):
+                observation, claimed = server._discovery_v2_build_observation(
+                    self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertIsNone(observation)
+
+    def test_v24_process_receipt_identity_requires_positive_integers(self) -> None:
+        valid = {"pid": 1, "pgid": 1, "process_start_ticks": 2}
+        self.assertTrue(server._discovery_process_receipt_identity(valid))
+        for key in valid:
+            for invalid in (True, 0, -1, "1", 1.5):
+                mutated = dict(valid)
+                mutated[key] = invalid
+                with self.subTest(key=key, invalid=invalid):
+                    self.assertFalse(
+                        server._discovery_process_receipt_identity(mutated))
+
+    def test_v24_terminal_closure_is_exact_and_tamper_fails_closed(self) -> None:
+        fixture = self._v24_terminal_fixture()
+        arguments = {
+            "entry": fixture["entry"], "attempt": fixture["attempt"],
+            "intent_raw": (fixture["entry"] / "intent.json").read_bytes(),
+            "owner_raw": (fixture["attempt"] / "owner.json").read_bytes(),
+            "contract": fixture["contract"], "candidate_id": "akc-fixture",
+        }
+        self.assertTrue(server._discovery_v2_terminal_complete(**arguments))
+
+        terminal_path = fixture["entry"] / "terminal.json"
+        terminal = json.loads(terminal_path.read_text())
+        terminal["build"]["invented"] = "self-hashed"
+        terminal.pop("receipt_sha256")
+        self._private_json(terminal_path, terminal)
+        self.assertFalse(server._discovery_v2_terminal_complete(**arguments))
+
+        shutil.rmtree(self.operations / "build-cache")
+        fixture = self._v24_terminal_fixture()
+        arguments.update({
+            "entry": fixture["entry"], "attempt": fixture["attempt"],
+            "intent_raw": (fixture["entry"] / "intent.json").read_bytes(),
+            "owner_raw": (fixture["attempt"] / "owner.json").read_bytes(),
+            "contract": fixture["contract"],
+        })
+        terminal_path = fixture["entry"] / "terminal.json"
+        terminal = json.loads(terminal_path.read_text())
+        epoch = terminal["artifact_epoch"]
+        epoch["prior_recoveries"] = [{"attempt": "attempt-000000",
+                                       "recovery_sha256": "f" * 64}]
+        epoch.pop("artifact_epoch_sha256")
+        epoch["artifact_epoch_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(epoch)).hexdigest()
+        terminal["artifact_epoch"] = epoch
+        terminal.pop("receipt_sha256")
+        self._private_json(terminal_path, terminal)
+        self.assertFalse(server._discovery_v2_terminal_complete(**arguments))
+
+    def test_v24_terminal_materialization_identity_tamper_fails_closed(self) -> None:
+        fixture = self._v24_terminal_fixture()
+        materialization_path = fixture["entry"] / "materialization.json"
+        materialization = json.loads(materialization_path.read_text())
+        materialization["anchor_identity"] = {"id": "invented"}
+        materialization.pop("receipt_sha256")
+        self._private_json(materialization_path, materialization)
+        # Re-sealing the terminal's materialization and epoch hashes must not
+        # authorize an identity that disagrees with the exact build mapping.
+        terminal_path = fixture["entry"] / "terminal.json"
+        terminal = json.loads(terminal_path.read_text())
+        materialization_sha = hashlib.sha256(
+            materialization_path.read_bytes()).hexdigest()
+        terminal["build"]["materialization_sha256"] = materialization_sha
+        terminal["artifact_epoch"]["materialization_sha256"] = materialization_sha
+        epoch = terminal["artifact_epoch"]
+        epoch.pop("artifact_epoch_sha256")
+        epoch["artifact_epoch_sha256"] = hashlib.sha256(
+            server._canonical_json_bytes(epoch)).hexdigest()
+        terminal.pop("receipt_sha256")
+        self._private_json(terminal_path, terminal)
+        self.assertFalse(server._discovery_v2_terminal_complete(
+            fixture["entry"], fixture["attempt"],
+            intent_raw=(fixture["entry"] / "intent.json").read_bytes(),
+            owner_raw=(fixture["attempt"] / "owner.json").read_bytes(),
+            contract=fixture["contract"], candidate_id="akc-fixture"))
+
+    def test_v24_terminal_requires_both_owner_locks_released(self) -> None:
+        fixture = self._v24_terminal_fixture()
+        transaction = json.loads(
+            (fixture["entry"] / "transaction-owner.json").read_text())
+        identities = transaction["locks"]
+        self.assertTrue(server._discovery_v2_lock_identity(
+            fixture["request_lock"], identities[0], require_held=False))
+        self.assertTrue(server._discovery_v2_lock_identity(
+            fixture["build_lock"], identities[1], require_held=False))
+        with fixture["build_lock"].open("r+") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.assertFalse(server._discovery_v2_lock_identity(
+                fixture["build_lock"], identities[1], require_held=False))
+
+    def test_v24_stale_stream_remains_live_when_pid_cgroup_is_verified(self) -> None:
+        fixture = self._v24_live_process_fixture(seconds_ago=1800)
+        old = datetime.now(timezone.utc).timestamp() - 1200
+        os.utime(fixture["stream"], (old, old))
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=True):
+            result = server._discovery_v2_process_receipts(
+                prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+                writable_root=fixture["writable"], expected_argv=fixture["argv"],
+                expected_cgroup_root=fixture["cgroup_root"],
+                require_live=True, now=datetime.now(timezone.utc).timestamp())
+        self.assertIsNotNone(result)
+        self.assertTrue(result["stream_stale"])
+
+    def test_v24_dead_tampered_or_unverified_build_never_projects_running(self) -> None:
+        fixture = self._v24_live_process_fixture()
+        arguments = dict(
+            prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+            writable_root=fixture["writable"], expected_argv=fixture["argv"],
+            expected_cgroup_root=fixture["cgroup_root"], require_live=True,
+            now=datetime.now(timezone.utc).timestamp())
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=False):
+            self.assertIsNone(server._discovery_v2_process_receipts(**arguments))
+        fixture["sandbox"].unlink()
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=True):
+            self.assertIsNone(server._discovery_v2_process_receipts(**arguments))
+
+        fixture = self._v24_live_process_fixture()
+        start_path = fixture["prefix"].with_name(
+            fixture["prefix"].name + "-process-start.json")
+        start = json.loads(start_path.read_text())
+        start["argv"][-1] = "tampered-target"
+        self._private_json(start_path, {
+            key: value for key, value in start.items() if key != "receipt_sha256"})
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=True):
+            self.assertIsNone(server._discovery_v2_process_receipts(
+                prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+                writable_root=fixture["writable"], expected_argv=fixture["argv"],
+                expected_cgroup_root=fixture["cgroup_root"], require_live=True,
+                now=datetime.now(timezone.utc).timestamp()))
+
+    def test_v24_terminal_presence_suppresses_live_projection(self) -> None:
+        fixture = self._v24_live_process_fixture()
+        terminal = fixture["prefix"].with_name(
+            fixture["prefix"].name + "-process-terminal.json")
+        self._private_json(terminal, {
+            "schema": "epyc.autokernel.owned_process_terminal.v2",
+            "start_receipt_sha256": "a" * 64, "disposition": {},
+            "stdout_path": str(fixture["stream"]), "stdout_sha256": "b" * 64,
+            "stdout_identity": {},
+        })
+        with mock.patch.object(server, "_discovery_process_identity_live",
+                               return_value=True):
+            self.assertIsNone(server._discovery_v2_process_receipts(
+                prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+                writable_root=fixture["writable"], expected_argv=fixture["argv"],
+                expected_cgroup_root=fixture["cgroup_root"], require_live=True,
+                now=datetime.now(timezone.utc).timestamp()))
+
+    def test_v24_completed_process_receipts_do_not_expire_after_24h(self) -> None:
+        fixture = self._v24_live_process_fixture(seconds_ago=25 * 3600)
+        sandbox = json.loads(fixture["sandbox"].read_text())
+        stream = fixture["stream"]
+        info = stream.stat()
+        terminal = fixture["prefix"].with_name(
+            fixture["prefix"].name + "-process-terminal.json")
+        self._private_json(terminal, {
+            "schema": "epyc.autokernel.owned_process_terminal.v2",
+            "start_receipt_sha256": hashlib.sha256(
+                fixture["prefix"].with_name(
+                    fixture["prefix"].name + "-process-start.json").read_bytes()
+            ).hexdigest(),
+            "disposition": {
+                "argv": fixture["argv"], "pid": 424242, "pgid": 424242,
+                "exit_code": 0, "timed_out": False, "signals_sent": [],
+                "verified_dead": True, "duration_s": 10.0,
+                "started_at": fixture["start"]["started_at"],
+                "sandbox_receipt": sandbox,
+                "sandbox_teardown": {
+                    "cgroup_path": sandbox["cgroup_path"],
+                    "verified_empty": True, "removed": True,
+                    "descendants_killed": [],
+                },
+            },
+            "stdout_path": str(stream),
+            "stdout_sha256": hashlib.sha256(stream.read_bytes()).hexdigest(),
+            "stdout_identity": {
+                "device": info.st_dev, "inode": info.st_ino,
+                "mode": info.st_mode & 0o7777, "nlink": info.st_nlink,
+                "uid": info.st_uid, "size": info.st_size,
+                "mtime_ns": info.st_mtime_ns, "ctime_ns": info.st_ctime_ns,
+            },
+        })
+        result = server._discovery_v2_process_receipts(
+            prefix=fixture["prefix"], attempt_root=fixture["attempt"],
+            writable_root=fixture["writable"], expected_argv=fixture["argv"],
+            expected_cgroup_root=fixture["cgroup_root"], require_live=False,
+            now=datetime.now(timezone.utc).timestamp())
+        self.assertIsNotNone(result)
+        self.assertTrue(result["completed"])
+
+    def test_v24_tool_digest_cache_binds_ctime_and_rehashes(self) -> None:
+        resolved = Path("/usr/bin/true")
+        first = SimpleNamespace(st_dev=1, st_ino=2, st_size=3,
+                                st_mtime_ns=4, st_ctime_ns=5,
+                                st_mode=0o100755, st_uid=0, st_nlink=1)
+        changed = SimpleNamespace(st_dev=1, st_ino=2, st_size=3,
+                                  st_mtime_ns=4, st_ctime_ns=6,
+                                  st_mode=0o100755, st_uid=0, st_nlink=1)
+        server._DISCOVERY_TOOL_DIGEST_CACHE.clear()
+        value = {"requested": str(resolved), "resolved": str(resolved),
+                 "sha256": "a" * 64}
+        with (mock.patch.object(Path, "resolve", return_value=resolved),
+              mock.patch.object(Path, "lstat",
+                                side_effect=[first, first, changed, changed]),
+              mock.patch.object(server, "_sha256_file",
+                                side_effect=[("a" * 64, None),
+                                             ("b" * 64, None)])):
+            self.assertTrue(server._discovery_tool_identity(value))
+            self.assertFalse(server._discovery_tool_identity(value))
+
+    def test_v24_verified_build_pipeline_completes_materialization_without_gpu(self) -> None:
+        observation = {
+            "stage": "build", "state": "running", "arm": "anchor",
+            "started_at": _iso(30), "progress_at": _iso(2),
+            "build_key": "7" * 64, "attempt": "attempt-000001",
+            "source_materialized": True, "process_verified": True,
+            "progress_percent": 5, "hip_compile": True, "stream_stale": False,
+        }
+        activity = server._discovery_activity(
+            lock_held=True, campaign_id="ak-discovery-aaaaaaaaaaaaaaaa",
+            state={"updated_at": _iso(3), "iterations": [], "inflight": {
+                "candidate": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "row": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "lease": {"admitted": True}}}, events=[], checkpoint=None,
+            operation_observation=observation, correctness_observation=None,
+            postbuild_observation=None, claim_observation=None,
+            refusal_observation=None, refusal_history_observations=[],
+            now=datetime.now(timezone.utc).timestamp())
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(activity["phase"]["id"], "build")
+        self.assertIn("5%", activity["phase"]["label"])
+        self.assertEqual(pipeline["source_materialization"]["state"], "complete")
+        self.assertEqual(pipeline["build"]["state"], "running")
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"], "build")
+        self.assertFalse(activity["gpu"]["expected_now"])
+        self.assertFalse(activity["gpu"]["claim_held"])
+        self.assertFalse(activity["gpu"]["screen_started"])
+        self.assertNotIn("424242", json.dumps(activity))
+
+    def test_v24_terminal_then_held_claim_advances_to_gpu_correctness(self) -> None:
+        terminal = {
+            "stage": "evidence_binding", "state": "running", "arm": "complete",
+            "started_at": _iso(20), "build_key": "7" * 64,
+            "attempt": "attempt-000001", "source_materialized": True,
+        }
+        activity = server._discovery_activity(
+            lock_held=True, campaign_id="ak-discovery-aaaaaaaaaaaaaaaa",
+            state={"updated_at": _iso(1), "iterations": [], "inflight": {
+                "candidate": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "row": {"hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+                "lease": {"admitted": True}}}, events=[], checkpoint=None,
+            operation_observation=terminal, correctness_observation=None,
+            postbuild_observation={
+                "first_incomplete_stage": "correctness", "receipts": {},
+                "process_progress": None},
+            claim_observation={
+                "claim_held": True, "claim_released": False,
+                "identity_live": True, "claim_id": "akd-fixture",
+                "device_id": "mi210_0", "acquired_at": _iso(3),
+                "released_at": None},
+            refusal_observation=None, refusal_history_observations=[],
+            now=datetime.now(timezone.utc).timestamp())
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(activity["phase"]["id"], "correctness")
+        self.assertEqual(pipeline["source_materialization"]["state"], "complete")
+        self.assertEqual(pipeline["build"]["state"], "complete")
+        self.assertEqual(pipeline["evidence_binding"]["state"], "complete")
+        self.assertEqual(pipeline["correctness"]["state"], "running")
+        self.assertTrue(activity["gpu"]["expected_now"])
+        self.assertTrue(activity["gpu"]["claim_held"])
+        self.assertTrue(activity["gpu"]["screen_started"])
 
     def test_v11_pre_screen_intent_keeps_active_anchor_build_fail_closed(self) -> None:
         """Exact v11 boundary: declared proof plan cannot invent correctness."""
