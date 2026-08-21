@@ -6051,16 +6051,21 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
     current_path: str | None = None
     current_old_marker: str | None = None
     current_marker_path: str | None = None
+    current_section_has_hunk = False
     saw_hunk = False
     i = 0
     while i < len(lines):
         line = lines[i]
         if line.startswith("diff --git a/"):
+            if (current_path is not None
+                    and (current_marker_path != current_path
+                         or not current_section_has_hunk)):
+                return None
             match = re.fullmatch(r"diff --git a/(.+) b/(.+)", line)
             if match is None or match.group(1) != match.group(2):
                 return None
             current_path = _discovery_v27_patch_path(match.group(2))
-            if current_path is None:
+            if current_path is None or current_path in paths:
                 return None
             paths.add(current_path)
             symbols.setdefault(current_path, set())
@@ -6068,6 +6073,7 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             inserted.setdefault(current_path, set())
             current_old_marker = None
             current_marker_path = None
+            current_section_has_hunk = False
             i += 1
             continue
         if line.startswith(("rename from ", "rename to ",
@@ -6076,10 +6082,28 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             return None
         mode = re.fullmatch(
             r"(?:old|new|deleted file|new file) mode (\d+)", line)
-        if mode is not None and mode.group(1) not in {"100644", "100755"}:
-            return None
+        if mode is not None:
+            if (current_path is None or current_old_marker is not None
+                    or current_marker_path is not None
+                    or current_section_has_hunk
+                    or mode.group(1) not in {"100644", "100755"}):
+                return None
+            i += 1
+            continue
+        if line.startswith("index "):
+            if (current_path is None or current_old_marker is not None
+                    or current_marker_path is not None
+                    or current_section_has_hunk
+                    or re.fullmatch(
+                        r"index [0-9a-f]+\.\.[0-9a-f]+(?: [0-7]+)?",
+                        line) is None):
+                return None
+            i += 1
+            continue
         if line.startswith("--- "):
-            if current_path is None:
+            if (current_path is None or current_old_marker is not None
+                    or current_marker_path is not None
+                    or current_section_has_hunk):
                 return None
             marker = line[4:].split("\t", 1)[0]
             if marker == "/dev/null":
@@ -6092,7 +6116,9 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             i += 1
             continue
         if line.startswith("+++ "):
-            if current_path is None or current_old_marker is None:
+            if (current_path is None or current_old_marker is None
+                    or current_marker_path is not None
+                    or current_section_has_hunk):
                 return None
             marker = line[4:].split("\t", 1)[0]
             if marker == "/dev/null":
@@ -6120,7 +6146,10 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
                    and not lines[i].startswith("diff --git a/")
                    and _DISCOVERY_V27_PATCH_HUNK.match(lines[i]) is None):
                 row = lines[i]
-                if row.startswith("\\"):
+                if row == "\\ No newline at end of file":
+                    if not body or body[-1].startswith("\\") \
+                            or not body[-1].startswith(("+", "-")):
+                        return None
                     body.append(row)
                     i += 1
                     continue
@@ -6151,9 +6180,13 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             symbols[current_path].add(_discovery_v27_patch_symbol(
                 hunk.group("context").strip(), body))
             saw_hunk = True
+            current_section_has_hunk = True
             continue
-        i += 1
+        return None
     if (not saw_hunk or not paths
+            or current_path is None
+            or current_marker_path != current_path
+            or not current_section_has_hunk
             or any(not symbols.get(path) for path in paths)
             or not _discovery_v27_patch_reward_safe(added)):
         return None

@@ -1150,12 +1150,208 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 b"diff --git a/src/test.cpp b/src/test.cpp\n"
                 b"--- /dev/null\n+++ /dev/null\n"
                 b"@@ -0,0 +1 @@\n+int y;\n"), False),
+            ("unexpected-leading", manifest_for(
+                b"commentary\n" + valid), False),
+            ("unexpected-trailing", manifest_for(
+                valid + b"commentary\n"), False),
+            ("header-only", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"), False),
+            ("missing-new-marker", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+int y;\n"), False),
+            ("missing-old-marker", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"+++ b/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+int y;\n"), False),
+            ("marker-reorder", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"+++ b/src/test.cpp\n--- a/src/test.cpp\n"
+                b"@@ -1 +1 @@\n-int x;\n+int y;\n"), False),
+            ("addition-outside-hunk", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"+int benchmark_phase;\n"), False),
+            ("duplicate-incomplete-section", manifest_for(
+                valid
+                + b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"+int benchmark_phase;\n"), False),
+            ("duplicate-complete-section", manifest_for(
+                valid + valid), False),
+            ("two-valid-sections", manifest_for(
+                valid
+                + b"diff --git a/src/other.cpp b/src/other.cpp\n"
+                b"--- a/src/other.cpp\n+++ b/src/other.cpp\n"
+                b"@@ -1 +1 @@\n-int a;\n+int b;\n",
+                files=["src/other.cpp", "src/test.cpp"],
+                symbols={
+                    "src/other.cpp": ["<file-scope>"],
+                    "src/test.cpp": ["<file-scope>"]}), True),
+            ("two-valid-hunks", manifest_for(
+                valid
+                + b"@@ -3 +3 @@\n-int a;\n+int b;\n"), True),
+            ("newline-marker", manifest_for(
+                valid[:-1] + b"\n\\ No newline at end of file\n"), True),
+            ("arbitrary-backslash", manifest_for(
+                valid[:-1] + b"\n\\ ignored material\n"), False),
         )
         for name, manifest, expected in cases:
             with self.subTest(name=name):
                 self.assertIs(
                     server._discovery_v27_source_manifest(manifest)
                     is not None, expected)
+
+        # Bounded transition mutations over every canonical row/boundary.  The
+        # expected accept set was established against producer
+        # SourcePatchManifest validation at 22e17405e: moving the two changed
+        # rows is still an accounted hunk; every other deletion, duplication,
+        # header reorder, truncation, or reward-token insertion is not.
+        rows = valid.splitlines(keepends=True)
+        mutation_cases: list[tuple[str, bytes, bool]] = []
+        for index in range(len(rows)):
+            mutation_cases.append((
+                f"delete-row-{index}", b"".join(rows[:index] + rows[index + 1:]),
+                False))
+            mutation_cases.append((
+                f"duplicate-row-{index}",
+                b"".join(rows[:index] + [rows[index]] + rows[index:]), False))
+        for index in range(len(rows) - 1):
+            swapped = rows[:]
+            swapped[index], swapped[index + 1] = (
+                swapped[index + 1], swapped[index])
+            mutation_cases.append((
+                f"swap-rows-{index}-{index + 1}", b"".join(swapped),
+                index == 4))
+        for index in range(len(rows) + 1):
+            mutation_cases.append((
+                f"insert-reward-row-{index}",
+                b"".join(rows[:index]) + b"+int benchmark_phase;\n"
+                + b"".join(rows[index:]), False))
+        for index in range(len(rows)):
+            mutation_cases.append((
+                f"truncate-at-row-{index}", b"".join(rows[:index]), False))
+        mutation_cases.extend((
+            ("old-count-two", valid.replace(
+                b"@@ -1 +1 @@", b"@@ -1,2 +1 @@"), False),
+            ("new-count-two", valid.replace(
+                b"@@ -1 +1 @@", b"@@ -1 +1,2 @@"), False),
+            ("old-start-two", valid.replace(
+                b"@@ -1 +1 @@", b"@@ -2 +1 @@"), True),
+            ("new-start-two", valid.replace(
+                b"@@ -1 +1 @@", b"@@ -1 +2 @@"), True),
+        ))
+        for name, patch, expected in mutation_cases:
+            with self.subTest(mutation=name):
+                self.assertIs(
+                    server._discovery_v27_source_manifest(
+                        manifest_for(patch)) is not None,
+                    expected)
+
+    def test_composition_authority_matches_producer_compatibility_corpus(
+            self) -> None:
+        plan = _composition_plan()
+        template = plan["candidate_authority"]["accepted"][0]
+
+        def lever_for(
+                label: str, patch: bytes, *, path: str = "src/test.cpp",
+                symbol: str) -> dict:
+            lever = copy.deepcopy(template)
+            lever["hypothesis_id"] = f"akh-{label}"
+            lever["cross_campaign_candidate_sha256"] = _digest(
+                f"cross-{label}")
+            manifest = lever["manifest"]
+            manifest["proposal_id"] = f"akp-{label}"
+            manifest["candidate_id"] = f"akc-{label}"
+            manifest["mechanism_id"] = label
+            manifest["declared_files"] = [path]
+            manifest["declared_symbols"] = {path: [symbol]}
+            manifest["patch_sha256"] = hashlib.sha256(patch).hexdigest()
+            manifest["patch_base64"] = base64.b64encode(patch).decode("ascii")
+            lever["manifest_sha256"] = server._discovery_content_hash(manifest)
+            return _seal(lever, "lever_sha256")
+
+        def patch_for(
+                path: str, symbol: str, old_start: int,
+                *, insertion: bool = False) -> bytes:
+            if insertion:
+                hunk = (
+                    f"@@ -{old_start},0 +{old_start} @@ int {symbol}()\n"
+                    f"+int {symbol}_value = 1;\n")
+            else:
+                hunk = (
+                    f"@@ -{old_start} +{old_start} @@ int {symbol}()\n"
+                    f"-int {symbol}_value = 0;\n"
+                    f"+int {symbol}_value = 1;\n")
+            return (
+                f"diff --git a/{path} b/{path}\n"
+                f"--- a/{path}\n+++ b/{path}\n{hunk}").encode()
+
+        first = lever_for(
+            "first", patch_for("src/test.cpp", "first", 1),
+            symbol="first")
+        nonoverlap = lever_for(
+            "nonoverlap", patch_for("src/test.cpp", "second", 3),
+            symbol="second")
+        same_symbol = lever_for(
+            "same-symbol", patch_for("src/test.cpp", "first", 3),
+            symbol="first")
+        overlap = lever_for(
+            "overlap", patch_for("src/test.cpp", "second", 1),
+            symbol="second")
+        insertion_overlap = lever_for(
+            "insertion-overlap",
+            patch_for("src/test.cpp", "second", 1, insertion=True),
+            symbol="second")
+        insertion_nonoverlap = lever_for(
+            "insertion-nonoverlap",
+            patch_for("src/test.cpp", "second", 3, insertion=True),
+            symbol="second")
+        deletion_overlap = lever_for(
+            "deletion-overlap",
+            b"diff --git a/src/test.cpp b/src/test.cpp\n"
+            b"--- a/src/test.cpp\n+++ /dev/null\n"
+            b"@@ -1 +0,0 @@ int second()\n-int second_value = 0;\n",
+            symbol="second")
+        other_file = lever_for(
+            "other-file", patch_for("src/other.cpp", "first", 1),
+            path="src/other.cpp", symbol="first")
+        file_scope = lever_for(
+            "file-scope",
+            b"diff --git a/src/test.cpp b/src/test.cpp\n"
+            b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+            b"@@ -3 +3 @@\n-int x;\n+int y;\n",
+            symbol="<file-scope>")
+        duplicate_candidate = copy.deepcopy(nonoverlap)
+        duplicate_candidate["cross_campaign_candidate_sha256"] = first[
+            "cross_campaign_candidate_sha256"]
+        duplicate_candidate = _seal(duplicate_candidate, "lever_sha256")
+        duplicate_manifest = copy.deepcopy(first)
+
+        authority = plan["candidate_authority"]
+        cases = (
+            ("single", [first], True),
+            ("nonoverlap", [first, nonoverlap], True),
+            ("reverse-nonoverlap", [nonoverlap, first], True),
+            ("other-file", [first, other_file], True),
+            ("same-symbol", [first, same_symbol], False),
+            ("overlap", [first, overlap], False),
+            ("insertion-overlap", [first, insertion_overlap], False),
+            ("insertion-nonoverlap", [first, insertion_nonoverlap], True),
+            ("deletion-overlap", [first, deletion_overlap], False),
+            ("file-scope", [first, file_scope], False),
+            ("duplicate-candidate", [first, duplicate_candidate], False),
+            ("duplicate-manifest", [first, duplicate_manifest], False),
+        )
+        for name, accepted, expected in cases:
+            with self.subTest(name=name):
+                value = _composition_authority(
+                    accepted=accepted,
+                    campaign_id=authority["campaign_id"],
+                    production_base_commit=authority[
+                        "production_base_commit"],
+                    instrument_commit=authority["instrument_commit"])
+                self.assertIs(
+                    server._discovery_v27_composition_authority(value),
+                    expected)
 
     def test_coherently_resealed_non_diff_manifest_refuses(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1193,6 +1389,9 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             ("surplus-capture", b"+hipGraphLaunch(x);\n"),
             ("surplus-phase", b"+int benchmark_phase;\n"),
             ("surplus-content", b"+int input_hash;\n"),
+            ("duplicate-incomplete",
+             b"diff --git a/src/test.cpp b/src/test.cpp\n"
+             b"+int benchmark_phase;\n"),
             ("both-devnull",
              b"diff --git a/src/test.cpp b/src/test.cpp\n"
              b"--- /dev/null\n+++ /dev/null\n"
