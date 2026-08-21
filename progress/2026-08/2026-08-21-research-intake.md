@@ -324,3 +324,43 @@ until writes resume. Cause not diagnosable from this container; needs the stack-
 `ORCHESTRATOR_MEMRL` at its next reload boundary. Bus routing attempted; this session is non-roster, so the
 finding rides in the AK-PM-4 checkpoint for a roster session to carry. AK-PM-11 (kernel-side ablation) is
 NOT blocked by this.
+
+## Session close-out (operator /wrap-up)
+
+**After the retroactive gate**: both decision packages operator-ratified as option (a) and bound into
+their rows (`9de434d7`) — C6 goes L1+L2+semantic-judge with L3 DROPPED and C6-20 as the judge's hard
+prerequisite; the cross-run memory is NOT built until AK-PM-11's n≥5 paired ablation returns, write-side
+receipts land now. **Process ratification** ("research-intakes should follow the prescribed flow")
+persisted into the skill (`6faa32bc`) and memory (`feedback_research_intake_gate_never_lapses`): a
+post-Stage-4 dive wave re-enters the machine at Stage 1/2; ingest approval ≠ filing approval.
+
+**RVP-C6-20 executed to its GPU boundary** (research `ef7fec18`, root `3e09377c`): three genuine Triton
+omission mutants + honest controls + references + standard/adversarial input arms; the L1 scanner
+mutation-tested non-vacuously (8 planted-dirty samples, scope negative-control, empty-scope refusal,
+6/6); **L1 arm: all six candidates PASS with zero findings** — the static half of the falsification
+holds. GPU arms (L2 ghost replay, value oracle with NaN/Inf rejection + max-observed-error) written and
+refusing to run without `--i-have-a-window`. **Window negotiation in flight**: MI210 held by a
+`ct5c_runner.py`-parented llama-server with NO region claim on the bus (reportable condition, surfaced
+to operator); `workspace-c0` confirmed not-owner; request routed to `qwen-chat-template-intake`;
+operator directed HOLD for the owner's answer.
+
+**AK-PM-4 SkillBank check** (`99ab4f13`): A/B data-ready (19,146 trajectories / 25 days vs ≥500 needed),
+runbook §18 paths stale (0-byte decoy at the tmp path), distillation never ran (skills.db schema-only),
+and the episodic store QUIET since 2026-08-11T01:31 — treatment arm blocked until the stack owner
+confirms `ORCHESTRATOR_MEMRL` at a reload boundary.
+
+**Deferred with named blockers**: C6-20 GPU arms (blocker: owner's window answer — operator-directed
+hold); SkillBank A/B (blocker: episodic writes resumed by the stack-owning session); C6-19 judge build
+(blocker: C6-20 mutants must first be runnable as its validation set).
+
+### RVP-C6-20 GPU arm COMPLETE — falsified, mid-wrap-up, inside an owner-granted window
+
+The `ct5c` owner (`qwen-chat-template-intake` session) answered during wrap-up: co-resident burst
+approved, their metrics latency-independent. Ran 16:03:13–16:03:30Z (~14 s GPU, gfx90a confirmed by the
+driver's own guard); owner notified of the exact interval for latency-row annotation. **FALSIFIED:
+L1 + L2 + a sound value oracle at standard inputs accepted 2 of 3 omission mutants** — LayerNorm-no-affine
+with max error **bit-identical to the honest kernel** (4.768e-07; exact identity under default init),
+softmax-no-maxsub at 5.6e-09; matmul-no-transpose caught (94.6) exactly as pre-registered, and passes on
+symmetric inputs. All honest controls pass all tiers; all mutants pass ghost replay. `RVP-C6-20` flipped
+✅; the judge arm belongs to C6-19's ratified prerequisite clause. Results:
+`scripts/kernel_rnd/c6_mutants/results_20260821.jsonl` (research repo).

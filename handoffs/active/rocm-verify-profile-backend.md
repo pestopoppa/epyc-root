@@ -1231,7 +1231,7 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       collapse toward zero as the judge going vacuous, not as the corpus going clean. L3 is DROPPED, not
       deferred: reopen only if the redundancy argument (an execution-path check duplicating L2) is itself
       refuted.
-- [ ] **RVP-C6-20 — Falsify "L1+L2 is enough" with three hand-authored adversarial gfx90a kernels.** A
+- [x] **RVP-C6-20 — Falsify "L1+L2 is enough" with three hand-authored adversarial gfx90a kernels.** ✅ 2026-08-21 A
       LayerNorm computing mean/variance/normalize but **SKIPPING scale and bias**; a matmul-then-transpose
       **omitting the transpose**; a softmax **omitting the max-subtraction**. All three are invoked and
       contain no blacklisted symbol. Confirm the CURRENT gate accepts them, then confirm the new semantic
@@ -1252,6 +1252,25 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       shared MI210 (operator instruction 2026-08-21); window requested from the peer session holding the
       GPU (llama-server pid 3499606, Qwen3.8-27B). Row stays OPEN pending the GPU arms and, later, the
       C6-19 judge arm.
+      **RESULT 2026-08-21 16:03Z — FALSIFIED, on the MI210 (gfx90a:sramecc+:xnack-), inside an
+      owner-granted co-resident window (~14 s GPU; CT-5c owner notified for latency-row hygiene).**
+      Full JSONL at research `scripts/kernel_rnd/c6_mutants/results_20260821.jsonl`. All honest positive
+      controls PASS every tier; all three mutants PASS L2 ghost replay (genuinely load-bearing kernels).
+      Value oracle at STANDARD inputs (rtol=atol=1e-3, NaN/Inf rejected, max-observed-error recorded):
+      **layernorm_no_affine PASSES with max error 4.768e-07 — BIT-IDENTICAL to the honest kernel's error**,
+      i.e. under default module init the omission is an exact identity and NO tolerance, however tight,
+      can catch it; **softmax_no_maxsub PASSES at 5.588e-09**; **matmul_transpose_no_t is CAUGHT
+      (9.458e+01)** — the pre-registered value-visibility prediction confirmed — and PASSES on the
+      symmetric-input arm (1.068e-04), proving the oracle's verdict is input-structure-dependent.
+      Adversarial arms catch what they were designed to: non-default affine fails the LayerNorm mutant
+      (4.471e+00); large-magnitude inputs fail the softmax mutant via the non-finite rejection.
+      **CONCLUSION: L1 + L2 + a SOUND value oracle at standard inputs accepted 2 of 3 omission mutants.
+      The sharper finding: the omission class SPLITS into input-conditional identities (uncatchable by
+      any tolerance at standard inputs) and value-visible members (a sound oracle catches). The
+      semantic-judge tier (C6-19) is therefore load-bearing for the first sub-class, and adversarial
+      input curricula (non-default parameters, overflow-scale magnitudes) are the cheap complementary
+      defence for both.** The judge-rejects-all-three arm is owned by C6-19's ratified hard-prerequisite
+      clause; this corpus is its validation set.
 - [ ] **RVP-C6-21 — Run the DIFFERENTIAL ORACLE AUDIT on our own C6 corpus.** Score the identical generation
       set **twice**, with and without the functionality/semantic tier, and report the gap as a number.
       TritonRL measures **+30pp** for a hacking-prone model (AutoTriton 57%→87% on KernelBench L1; 1%→94% on
