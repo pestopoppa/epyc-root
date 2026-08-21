@@ -4791,6 +4791,16 @@ def _discovery_authority_file(value: object, *, hashed: bool,
     return raw, info
 
 
+def _discovery_authority_ledger_live(*, require_live: bool,
+                                     row_count: int) -> bool | None:
+    """Classify only the producer's exact live/terminal ledger lengths."""
+    if row_count == 2:
+        return True
+    if row_count == 5 and not require_live:
+        return False
+    return None
+
+
 def _discovery_authority_cgroup(authority: dict, *,
                                 require_live: bool = True) -> dict | None:
     """Resolve the controller cgroup from its exact sealed ledger record."""
@@ -4866,7 +4876,9 @@ def _discovery_authority_cgroup(authority: dict, *,
         lines = raw.decode("ascii").splitlines()
     except UnicodeDecodeError:
         return None
-    if len(lines) not in ({2} if require_live else {2, 5}) or not raw.endswith(b"\n"):
+    authority_live = _discovery_authority_ledger_live(
+        require_live=require_live, row_count=len(lines))
+    if authority_live is None or not raw.endswith(b"\n"):
         return None
     if (len(lines) == 5 and _supervisor_ledger(
             raw, spec_sha256=authority["spec_sha256"],
@@ -4930,7 +4942,15 @@ def _discovery_authority_cgroup(authority: dict, *,
         f"/sys/fs/cgroup/{expected_cgroup_name}-{authority['supervisor']['pid']}-0")
     if cgroup["path"] != expected_cgroup_path:
         return None
-    if require_live:
+    # A completed build transaction does not imply that its owning discovery
+    # controller has stopped.  v25 seals and releases the build cache entry,
+    # then continues correctness and measurement under the same supervised
+    # controller.  The two-row ledger is therefore still a live authority
+    # prefix even when the caller is validating a terminal build.  Conversely,
+    # a five-row ledger is historical and must prove both identities dead and
+    # the controller cgroup removed.  Never infer this lifecycle from the
+    # build terminal alone; the exact supervisor ledger shape owns the mode.
+    if authority_live:
         try:
             info = Path(cgroup["path"]).lstat()
         except OSError:
@@ -4942,7 +4962,7 @@ def _discovery_authority_cgroup(authority: dict, *,
                 != (cgroup["dev"], cgroup["ino"], cgroup["uid"], cgroup["mode"])
                 or info.st_nlink < cgroup["nlink"]):
             return None
-    if not require_live:
+    if not authority_live:
         cgroup_path = Path(cgroup["path"])
         if cgroup_path.exists() or cgroup_path.is_symlink():
             return None
@@ -6315,30 +6335,154 @@ def _discovery_postbuild_observation(operations_root: Path,
         first_incomplete = "decision"
     correctness_execution = None
     correctness_body = receipts.get("correctness", {}).get("body", {})
+    candidate_manifest = (candidate.get("manifest")
+                          if isinstance(candidate, dict) else None)
+    expected_campaign_id = (candidate_manifest.get("campaign_id")
+                            if isinstance(candidate_manifest, dict) else None)
     passed_cases = correctness_body.get("passed_cases")
     expected_cases = correctness_body.get("expected_cases")
     correctness_open = correctness_body.get("device_claim_open")
+    correctness_borrowed = correctness_body.get(
+        "device_claim_borrowed_phase_end")
+    correctness_residency = correctness_body.get("residency_witness")
     correctness_started = (correctness_open.get("acquired_at")
                            if isinstance(correctness_open, dict) else None)
     correctness_ended = correctness_body.get("ended_at")
+    correctness_expires = (correctness_open.get("expires_at")
+                           if isinstance(correctness_open, dict) else None)
+    claim_keys = {
+        "schema", "claim_id", "campaign_id", "device_id", "purpose",
+        "holder_pid", "holder_start_ticks", "holder_boot_id", "holder_label",
+        "host", "lock_path", "acquired_at", "expires_at", "released_at",
+        "reclaimed_from", "state",
+    }
     if (isinstance(passed_cases, int) and not isinstance(passed_cases, bool)
             and isinstance(expected_cases, int)
             and not isinstance(expected_cases, bool)
             and passed_cases == expected_cases and expected_cases > 0
             and correctness_body.get("overall") == "OK"
+            and correctness_body.get("summary") ==
+            f"{passed_cases}/{expected_cases} tests passed"
+            and correctness_body.get("exit_code") == 0
+            and correctness_body.get("exact_case_ok") is True
+            and isinstance(expected_campaign_id, str)
+            and re.fullmatch(r"ak-discovery-[0-9a-f]{16}",
+                             expected_campaign_id) is not None
+            and correctness_body.get("campaign_id") == expected_campaign_id
+            and isinstance(correctness_open, dict)
+            and set(correctness_open) == claim_keys
+            and correctness_open.get("schema") ==
+            "epyc.autokernel.device_claim_receipt.v1"
+            and correctness_open.get("campaign_id") == expected_campaign_id
+            and correctness_open.get("purpose") ==
+            "AutoKernel GPU source proof and throughput"
+            and correctness_open.get("state") == "held"
+            and correctness_open.get("released_at") is None
+            and correctness_open.get("holder_label") ==
+            "autokernel-discovery-controller"
+            and correctness_open.get("host") == os.uname().nodename
+            and all(isinstance(correctness_open.get(key), int)
+                    and not isinstance(correctness_open.get(key), bool)
+                    and correctness_open[key] > 0
+                    for key in ("holder_pid", "holder_start_ticks"))
+            and re.fullmatch(
+                r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+                str(correctness_open.get("holder_boot_id"))) is not None
+            and correctness_open.get("device_id") ==
+            correctness_body.get("device_id")
+            and correctness_open.get("lock_path") ==
+            f"/mnt/raid0/llm/tmp/gpu_device.{correctness_open.get('device_id')}.lock"
+            and (correctness_open.get("reclaimed_from") is None
+                 or re.fullmatch(r"akd-[0-9a-f]{16}", str(
+                     correctness_open.get("reclaimed_from"))) is not None)
+            and re.fullmatch(r"akd-[0-9a-f]{16}", str(
+                correctness_open.get("claim_id"))) is not None
             and isinstance(correctness_started, str)
             and isinstance(correctness_ended, str)
+            and isinstance(correctness_expires, str)
             and _parse_semantic_timestamp(correctness_started) is not None
             and _parse_semantic_timestamp(correctness_ended) is not None
+            and _parse_semantic_timestamp(correctness_expires) is not None
             and _parse_semantic_timestamp(correctness_ended) >=
-            _parse_semantic_timestamp(correctness_started)):
+            _parse_semantic_timestamp(correctness_started)
+            and _parse_semantic_timestamp(correctness_expires) >
+            _parse_semantic_timestamp(correctness_started)
+            and isinstance(correctness_borrowed, dict)
+            and set(correctness_borrowed) == {
+                "schema", "campaign_id", "device_id", "mode",
+                "outer_claim_id", "phase_ended_at", "physical_release"}
+            and correctness_borrowed.get("schema") ==
+            "epyc.autokernel.borrowed_device_claim_phase.v1"
+            and correctness_borrowed.get("campaign_id") == expected_campaign_id
+            and correctness_borrowed.get("device_id") ==
+            correctness_open.get("device_id")
+            and correctness_borrowed.get("mode") ==
+            "borrowed_outer_reservation"
+            and correctness_borrowed.get("outer_claim_id") ==
+            correctness_open.get("claim_id")
+            and correctness_borrowed.get("physical_release") is False
+            and isinstance(correctness_borrowed.get("phase_ended_at"), str)
+            and _parse_semantic_timestamp(
+                correctness_borrowed["phase_ended_at"]) is not None
+            and 0 <= (_parse_semantic_timestamp(
+                correctness_borrowed["phase_ended_at"])
+                      - _parse_semantic_timestamp(correctness_ended)) <= 5.0
+            and isinstance(correctness_residency, dict)
+            and correctness_residency.get("device_claim_mode") ==
+            "borrowed_outer_reservation"
+            and correctness_residency.get("outer_claim_id") ==
+            correctness_open.get("claim_id")
+            and correctness_residency.get("overlapped") is True
+            and correctness_residency.get("claim_verified_before") is True
+            and correctness_residency.get("claim_verified_after") is True
+            and isinstance(correctness_residency.get("overlap_sample_count"), int)
+            and not isinstance(correctness_residency.get("overlap_sample_count"), bool)
+            and correctness_residency["overlap_sample_count"] > 0
+            and isinstance(correctness_residency.get("max_vram_bytes"), int)
+            and not isinstance(correctness_residency.get("max_vram_bytes"), bool)
+            and correctness_residency["max_vram_bytes"] > 0):
         correctness_execution = {
             "started_at": correctness_started,
+            "acquired_at": correctness_started,
             "completed_at": correctness_ended,
             "elapsed_s": (_parse_semantic_timestamp(correctness_ended)
                           - _parse_semantic_timestamp(correctness_started)),
             "passed": passed_cases, "total": expected_cases,
             "summary": f"{passed_cases}/{expected_cases} tests passed",
+            "campaign_id": expected_campaign_id,
+            "claim_id": correctness_open.get("claim_id"),
+            "device_id": correctness_open.get("device_id"),
+            "claim_released": False,
+        }
+    elif (not isinstance(expected_campaign_id, str)
+          and (not isinstance(state, dict)
+               or state.get("schema") !=
+               "epyc.autokernel.discovery_controller.v5")
+          and isinstance(passed_cases, int)
+          and not isinstance(passed_cases, bool)
+          and isinstance(expected_cases, int)
+          and not isinstance(expected_cases, bool)
+          and passed_cases == expected_cases and expected_cases > 0
+          and correctness_body.get("overall") == "OK"
+          and isinstance(correctness_open, dict)
+          and isinstance(correctness_started, str)
+          and isinstance(correctness_ended, str)
+          and _parse_semantic_timestamp(correctness_started) is not None
+          and _parse_semantic_timestamp(correctness_ended) is not None
+          and _parse_semantic_timestamp(correctness_ended) >=
+          _parse_semantic_timestamp(correctness_started)):
+        # Historical v11-v18 fixtures predate the v25 outer-reservation
+        # grammar.  Preserve their completed-result visibility without letting
+        # a v5 state that lost its campaign binding fall through this branch.
+        correctness_execution = {
+            "started_at": correctness_started,
+            "acquired_at": correctness_started,
+            "completed_at": correctness_ended,
+            "elapsed_s": (_parse_semantic_timestamp(correctness_ended)
+                          - _parse_semantic_timestamp(correctness_started)),
+            "passed": passed_cases, "total": expected_cases,
+            "summary": f"{passed_cases}/{expected_cases} tests passed",
+            "campaign_id": correctness_open.get("campaign_id"),
             "claim_id": correctness_open.get("claim_id"),
             "device_id": correctness_open.get("device_id"),
             "claim_released": False,
@@ -6449,53 +6593,163 @@ def _discovery_claim_observation(
         "AutoKernel GPU source proof and throughput") -> dict | None:
     """Return the latest identity-proven source-proof claim state."""
     path = operations_root / "claims" / "device.jsonl"
+    captured = _owned_public_snapshot(path, max_bytes=2 * 1024 * 1024)
+    if captured is None:
+        return None
+    raw = captured[0]
+    if not raw.endswith(b"\n"):
+        return None
+    lines = raw.splitlines()
+    if not lines or len(lines) > 512:
+        return None
+    now = time.time()
+    host = os.uname().nodename
     try:
-        size = path.stat().st_size
-        with path.open("rb") as handle:
-            handle.seek(max(0, size - 128 * 1024))
-            raw = handle.read(128 * 1024)
-    except (FileNotFoundError, OSError):
+        boot_id = Path("/proc/sys/kernel/random/boot_id").read_text(
+            encoding="ascii").strip()
+    except OSError:
         return None
     latest: dict[str, dict] = {}
-    for line in raw.decode("ascii", "replace").splitlines()[-300:]:
+    previous_created = None
+    receipt_keys = {
+        "schema", "claim_id", "campaign_id", "device_id", "purpose",
+        "holder_pid", "holder_start_ticks", "holder_boot_id", "holder_label",
+        "host", "lock_path", "acquired_at", "expires_at", "released_at",
+        "reclaimed_from", "state",
+    }
+    for encoded in lines:
         try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
-            continue
+            row = _strict_json_bytes(encoded)
+        except (TypeError, ValueError):
+            return None
         detail = row.get("detail") if isinstance(row, dict) else None
         receipt = detail.get("receipt") if isinstance(detail, dict) else None
-        if (row.get("schema") != "epyc.autokernel.device_claim_journal.v1"
+        kind = row.get("kind") if isinstance(row, dict) else None
+        created_at = row.get("created_at") if isinstance(row, dict) else None
+        created = (_parse_semantic_timestamp(created_at)
+                   if isinstance(created_at, str) else None)
+        acquired = (_parse_semantic_timestamp(receipt.get("acquired_at"))
+                    if isinstance(receipt, dict) else None)
+        expires = (_parse_semantic_timestamp(receipt.get("expires_at"))
+                   if isinstance(receipt, dict) else None)
+        released_at = (receipt.get("released_at")
+                       if isinstance(receipt, dict) else None)
+        released = (_parse_semantic_timestamp(released_at)
+                    if isinstance(released_at, str) else None)
+        if (not isinstance(row, dict)
+                or encoded != _canonical_json_bytes(row)
+                or set(row) != {"schema", "kind", "created_at", "device_id",
+                                "host", "record_id", "writer_pid", "detail"}
+                or row.get("schema") != "epyc.autokernel.device_claim_journal.v1"
                 or row.get("kind") not in {"claim_acquired", "claim_released"}
                 or not isinstance(receipt, dict)
+                or set(receipt) != receipt_keys
                 or receipt.get("schema") != "epyc.autokernel.device_claim_receipt.v1"
-                or receipt.get("purpose") != purpose
-                or not isinstance(campaign_id, str)
-                or receipt.get("campaign_id") != campaign_id
-                or not isinstance(receipt.get("claim_id"), str)):
-            continue
-        latest[receipt["claim_id"]] = {"kind": row["kind"], "receipt": receipt,
-                                        "at": row.get("created_at")}
+                or re.fullmatch(r"akj-[0-9a-f]{16}", str(
+                    row.get("record_id"))) is None
+                or re.fullmatch(r"akd-[0-9a-f]{16}", str(
+                    receipt.get("claim_id"))) is None
+                or re.fullmatch(r"[a-z0-9_]{1,64}", str(
+                    receipt.get("device_id"))) is None
+                or row.get("device_id") != receipt.get("device_id")
+                or row.get("host") != host or receipt.get("host") != host
+                or row.get("writer_pid") != receipt.get("holder_pid")
+                or any(isinstance(receipt.get(key), bool)
+                       or not isinstance(receipt.get(key), int)
+                       or receipt[key] <= 0
+                       for key in ("holder_pid", "holder_start_ticks"))
+                or receipt.get("holder_boot_id") != boot_id
+                or receipt.get("holder_label") !=
+                "autokernel-discovery-controller"
+                or receipt.get("lock_path") !=
+                f"/mnt/raid0/llm/tmp/gpu_device.{receipt.get('device_id')}.lock"
+                or receipt.get("state") != "held"
+                or (receipt.get("reclaimed_from") is not None
+                    and re.fullmatch(r"akd-[0-9a-f]{16}", str(
+                        receipt.get("reclaimed_from"))) is None)
+                or created is None or acquired is None or expires is None
+                or created > now + 5.0
+                or expires <= acquired
+                or previous_created is not None and created < previous_created):
+            return None
+        if kind == "claim_acquired":
+            if (set(detail) != {"attempts", "claim_id", "receipt", "reclaimed"}
+                    or detail.get("claim_id") != receipt["claim_id"]
+                    or isinstance(detail.get("attempts"), bool)
+                    or not isinstance(detail.get("attempts"), int)
+                    or detail["attempts"] < 1
+                    or not isinstance(detail.get("reclaimed"), bool)
+                    or abs(acquired - created) > 5.0
+                    or released_at is not None):
+                return None
+        else:
+            if (set(detail) != {"claim_id", "payload_clear_error", "receipt",
+                                "released_at", "revocation_read_error"}
+                    or detail.get("claim_id") != receipt["claim_id"]
+                    or detail.get("released_at") != released_at
+                    or released is None or released < acquired
+                    or abs(released - created) > 5.0
+                    or detail.get("payload_clear_error") is not None
+                    or detail.get("revocation_read_error") is not None):
+                return None
+        previous_created = created
+        if (receipt.get("purpose") == purpose
+                and isinstance(campaign_id, str)
+                and receipt.get("campaign_id") == campaign_id):
+            latest[receipt["claim_id"]] = {
+                "kind": kind, "receipt": receipt, "at": created_at,
+                "created": created}
     if not latest:
         return None
-    row = max(latest.values(), key=lambda value: str(value.get("at") or ""))
+    row = max(latest.values(), key=lambda value: value["created"])
     receipt = row["receipt"]
     acquired_at = receipt.get("acquired_at")
-    if (not isinstance(acquired_at, str)
-            or _parse_semantic_timestamp(acquired_at) is None):
-        return None
     held = row["kind"] == "claim_acquired" and receipt.get("released_at") is None
     if held:
         pid, ticks = receipt.get("holder_pid"), receipt.get("holder_start_ticks")
-        proc_stat = (_discovery_proc_stat(pid)
-                     if isinstance(pid, int) and not isinstance(pid, bool) else None)
-        observed = proc_stat[2] if proc_stat is not None else None
-        held = isinstance(pid, int) and isinstance(ticks, int) and observed == ticks
-    return {"claim_held": held, "claim_released": not held,
+        proc_stat = _discovery_proc_stat(pid)
+        lock_path = Path(receipt["lock_path"])
+        try:
+            lock_info = lock_path.lstat()
+        except OSError:
+            lock_info = None
+        held = bool(
+            _parse_semantic_timestamp(receipt["acquired_at"]) <= now <
+            _parse_semantic_timestamp(receipt["expires_at"])
+            and proc_stat is not None and proc_stat[0] != "Z"
+            and proc_stat[2] == ticks
+            and lock_info is not None and stat.S_ISREG(lock_info.st_mode)
+            and lock_info.st_uid == os.geteuid() and lock_info.st_nlink == 1
+            and not lock_path.is_symlink()
+            and _discovery_lock_held(lock_path))
+    return {"claim_held": held,
+            "claim_released": row["kind"] == "claim_released",
             "claim_id": receipt.get("claim_id"),
+            "campaign_id": receipt.get("campaign_id"),
             "device_id": receipt.get("device_id"),
             "acquired_at": acquired_at,
             "released_at": receipt.get("released_at"),
             "identity_live": held}
+
+
+def _discovery_claim_matches_correctness(
+        claim: object, correctness: object) -> bool:
+    """Bind a live outer claim to the current operation's sealed correctness.
+
+    Device-claim journals are campaign-wide.  Once correctness has sealed the
+    outer reservation identity, a newer same-campaign claim must not make that
+    older operation look GPU-active.  Before a correctness receipt exists the
+    caller may still use the campaign-bound claim to show correctness starting;
+    after it exists these four producer identities are mandatory.
+    """
+    if not isinstance(correctness, dict):
+        return True
+    if not isinstance(claim, dict):
+        return False
+    return all(
+        isinstance(correctness.get(key), str)
+        and claim.get(key) == correctness.get(key)
+        for key in ("campaign_id", "claim_id", "device_id", "acquired_at"))
 
 
 def _discovery_measurement_output_refusal(
@@ -8032,6 +8286,33 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         isinstance(claim_observation, dict)
         and claim_observation.get("claim_held") is True
         and claim_observation.get("identity_live") is True)
+    if source_claim_held and not _discovery_claim_matches_correctness(
+            claim_observation, receipt_correctness_observation):
+        source_claim_held = False
+    claim_required_stage = stage in {
+        "candidate_attribution", "anchor_attribution", "dispatch_proof",
+        "profile", "measurement_graphs_off_screen",
+        "target_runtime_graphs_on_screen", "benchmark",
+    }
+    gpu_claim_blocked = bool(
+        lock_held and status in {"running", "stalled", "waiting"}
+        and claim_required_stage
+        and isinstance(receipt_correctness_observation, dict)
+        and not source_claim_held)
+    if gpu_claim_blocked:
+        # Downstream receipts prove the last durable boundary, but only the
+        # exact outer claim sealed by this operation's correctness receipt can
+        # prove a current GPU stage.  A newer/expired same-campaign claim is not
+        # permission to headline the screen that belongs to the older one.
+        if pipeline[stage].get("state") == "running":
+            pipeline[stage]["state"] = "not_reached"
+            pipeline[stage].pop("started_at", None)
+        stage = "resource_admission"
+        pipeline[stage]["state"] = "waiting"
+        status = "waiting"
+        label = "Awaiting the current operation's GPU claim"
+        waiting_on = "identity-bound source-proof claim"
+        recoverability = "not_required"
     active_correctness_started = bool(
         stage == "correctness" and lock_held and source_claim_held
         and isinstance(claim_at, str))

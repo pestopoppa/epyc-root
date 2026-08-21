@@ -413,6 +413,47 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         entry, attempt = fixture["entry"], fixture["attempt"]
         contract = fixture["contract"]
         build_key = entry.name
+        logs = attempt / "logs"
+        campaign = fixture["state"]["inflight"]["candidate"]["manifest"][
+            "campaign_id"]
+        candidate_id = fixture["state"]["inflight"]["candidate"]["manifest"][
+            "candidate_id"]
+        cmake = contract["toolchain"]["programs"]["cmake"]["resolved"]
+        # A terminal transaction contains both configure/build subprocess
+        # terminals while its owning discovery controller may remain live for
+        # correctness and screening.  The full-adapter regression below mocks
+        # only the already-unit-tested subprocess receipt parser; these exact
+        # names/argv still exercise the two-arm build state machine and closure.
+        for name in ("akc-anchor", candidate_id):
+            source = (attempt / "worktrees" /
+                      f"llama.cpp-{campaign}-{name}-snapshot")
+            writable = (self.bundle / "builds" / build_key /
+                        "attempt-000001" / campaign / name)
+            configure_argv = [
+                cmake, "-S", str(source), "-B", str(writable),
+                "-DCMAKE_BUILD_TYPE=Release",
+                *[f"-D{key}={value}" for key, value in
+                  server._DISCOVERY_BUILD_CMAKE_DEFINES_V2],
+            ]
+            self._private_json(
+                logs / f"{name}.log.configure-process-intent.json", {
+                    "schema": "epyc.autokernel.owned_process_intent.v1",
+                    "argv": configure_argv, "epoch_token": "c" * 64,
+                    "stdout_path": str(logs / f"{name}.log.configure.stream"),
+                    "sandbox_receipt_path": str(
+                        logs / f"{name}.log.configure-sandbox.json"),
+                    "sandbox_policy_sha256": "d" * 64,
+                    "sandbox_token": "e" * 16,
+                    "cgroup_root": "/sys/fs/cgroup/controller-fixture",
+                })
+            self._private_json(
+                logs / f"{name}.log.build-process-terminal.json", {
+                    "schema": "epyc.autokernel.owned_process_terminal.v2",
+                    "start_receipt_sha256": "a" * 64,
+                    "disposition": {},
+                    "stdout_path": str(logs / f"{name}.log.build.stream"),
+                    "stdout_sha256": "b" * 64, "stdout_identity": {},
+                })
         receipts = attempt / "receipts"
         receipts.mkdir()
         owner_raw = (attempt / "owner.json").read_bytes()
@@ -478,8 +519,6 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
             return rows
 
         proofs = []
-        candidate_id = fixture["state"]["inflight"]["candidate"]["manifest"][
-            "candidate_id"]
         for name in ("akc-anchor", candidate_id):
             for phase in ("build", "configure"):
                 prefix = attempt / "logs" / f"{name}.log.{phase}"
@@ -1086,6 +1125,54 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self._private_json(terminal_path, terminal)
         self.assertFalse(server._discovery_v2_terminal_complete(**arguments))
 
+    def test_v25_supervisor_ledger_shape_selects_live_or_historical_authority(
+            self) -> None:
+        self.assertIs(server._discovery_authority_ledger_live(
+            require_live=True, row_count=2), True)
+        self.assertIs(server._discovery_authority_ledger_live(
+            require_live=False, row_count=2), True)
+        self.assertIs(server._discovery_authority_ledger_live(
+            require_live=False, row_count=5), False)
+        for require_live, row_count in (
+                (True, 5), (True, 0), (False, 0), (False, 1), (False, 3),
+                (False, 4), (False, 6)):
+            with self.subTest(require_live=require_live, row_count=row_count):
+                self.assertIsNone(server._discovery_authority_ledger_live(
+                    require_live=require_live, row_count=row_count))
+
+    def test_v25_terminal_build_accepts_live_two_row_owner_and_seals_postbuild(
+            self) -> None:
+        fixture = self._v24_terminal_fixture()
+        expected_authority = json.loads(
+            (fixture["attempt"] / "owner.json").read_text())[
+                "supervised_build_authority"]
+        completed = {
+            "started_at": _iso(120), "completed": True,
+            "completed_at": _iso(60),
+        }
+        with (mock.patch.object(server, "_discovery_v2_git_authority",
+                                return_value=True),
+              mock.patch.object(server, "_discovery_authority_cgroup",
+                                return_value={"path":
+                                              "/sys/fs/cgroup/controller-fixture"})
+              as authority,
+              mock.patch.object(server, "_discovery_v2_process_receipts",
+                                return_value=completed)):
+            observation, claimed = server._discovery_v2_build_observation(
+                self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertEqual(observation["stage"], "evidence_binding")
+        self.assertEqual(observation["state"], "running")
+        self.assertTrue(observation["source_materialized"])
+        authority.assert_called_once_with(
+            expected_authority, require_live=False)
+
+        (fixture["entry"] / "terminal.json").unlink()
+        observation, claimed = server._discovery_v2_build_observation(
+            self.operations, fixture["state"], "a" * 64)
+        self.assertTrue(claimed)
+        self.assertIsNone(observation)
+
     def test_v24_terminal_materialization_identity_tamper_fails_closed(self) -> None:
         fixture = self._v24_terminal_fixture()
         materialization_path = fixture["entry"] / "materialization.json"
@@ -1312,6 +1399,312 @@ class AutoKernelVisibilityContractTest(unittest.TestCase):
         self.assertTrue(activity["gpu"]["expected_now"])
         self.assertTrue(activity["gpu"]["claim_held"])
         self.assertTrue(activity["gpu"]["screen_started"])
+
+    def test_v25_terminal_correctness_and_claim_bind_active_graphs_off_screen(
+            self) -> None:
+        campaign = "ak-discovery-" + "a" * 16
+        acquired_at = _iso(90)
+        completed_at = _iso(30)
+        terminal = {
+            "stage": "evidence_binding", "state": "running",
+            "arm": "complete", "started_at": _iso(120),
+            "build_key": "7" * 64, "attempt": "attempt-000001",
+            "source_materialized": True,
+        }
+        correctness = {
+            "started_at": acquired_at, "acquired_at": acquired_at,
+            "completed_at": completed_at, "elapsed_s": 60.0,
+            "passed": 1139, "total": 1139,
+            "summary": "1139/1139 tests passed", "campaign_id": campaign,
+            "claim_id": "akd-975298e22b074ccb", "device_id": "mi210_0",
+            "claim_released": False,
+        }
+        postbuild = {
+            "completed": [
+                "correctness", "correctness_validation",
+                "candidate_attribution", "anchor_attribution",
+                "dispatch_proof", "profile",
+            ],
+            "first_incomplete_stage": "measurement_graphs_off_screen",
+            "correctness_execution": correctness,
+            "receipts": {}, "process_progress": None, "transitions": [],
+            "repetition": 1, "arm_order": ["anchor", "candidate"],
+        }
+        claim = {
+            "claim_held": True, "claim_released": False,
+            "identity_live": True, "campaign_id": campaign,
+            "claim_id": correctness["claim_id"],
+            "device_id": correctness["device_id"],
+            "acquired_at": acquired_at, "released_at": None,
+        }
+        state = {"updated_at": _iso(1), "iterations": [], "inflight": {
+            "candidate": {
+                "hypothesis_id": "akh-v2-q5-type-specific-dequant"},
+            "row": {"hypothesis_id":
+                    "akh-v2-q5-type-specific-dequant"},
+            "lease": {"admitted": True, "repetition": 1},
+        }}
+        arguments = dict(
+            lock_held=True, campaign_id=campaign, state=state, events=[],
+            checkpoint=None, operation_observation=terminal,
+            correctness_observation=None, postbuild_observation=postbuild,
+            claim_observation=claim, refusal_observation=None,
+            refusal_history_observations=[],
+            now=datetime.now(timezone.utc).timestamp())
+        activity = server._discovery_activity(**arguments)
+        pipeline = {row["id"]: row for row in activity["pipeline"]}
+        self.assertEqual(activity["phase"]["id"],
+                         "measurement_graphs_off_screen")
+        self.assertEqual(activity["stage_contract"]["first_incomplete_stage"],
+                         "measurement_graphs_off_screen")
+        self.assertTrue(activity["correctness"]["execution_completed"])
+        self.assertEqual(activity["correctness"]["summary"],
+                         "1139/1139 tests passed")
+        self.assertTrue(activity["gpu"]["expected_now"])
+        self.assertTrue(activity["gpu"]["claim_held"])
+        self.assertTrue(activity["gpu"]["screen_started"])
+        for stage in ("source_materialization", "build", "evidence_binding",
+                      "correctness", "correctness_validation",
+                      "candidate_attribution", "anchor_attribution",
+                      "dispatch_proof", "profile"):
+            self.assertEqual(pipeline[stage]["state"], "complete", stage)
+
+        for key, value in (
+                ("claim_id", "akd-0000000000000000"),
+                ("device_id", "mi210_1"),
+                ("campaign_id", "ak-discovery-" + "b" * 16),
+                ("acquired_at", _iso(89))):
+            foreign = dict(claim)
+            foreign[key] = value
+            with self.subTest(foreign_identity=key):
+                refused = server._discovery_activity(
+                    **{**arguments, "claim_observation": foreign})
+                self.assertFalse(refused["gpu"]["claim_held"])
+                self.assertFalse(refused["gpu"]["expected_now"])
+                self.assertEqual(refused["phase"]["id"],
+                                 "resource_admission")
+
+        suppressed = server._discovery_activity(
+            **{**arguments, "operation_observation": None})
+        self.assertEqual(suppressed["phase"]["id"],
+                         "source_materialization")
+        self.assertFalse(suppressed["correctness"]["execution_completed"])
+        self.assertFalse(suppressed["gpu"]["expected_now"])
+
+    def test_v25_correctness_projection_requires_exact_outer_claim_identity(
+            self) -> None:
+        operation_key = "6" * 64
+        manifest_sha = "5" * 64
+        campaign = "ak-discovery-" + "a" * 16
+        operation = self.operations / operation_key
+        operation.mkdir()
+        (operation / "intent.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_operation.v1",
+            "operation_key": operation_key,
+            "manifest_sha256": manifest_sha,
+        }))
+        (operation / "evidence-policy.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.gpu_source_execution_policy.v2",
+            "manifest_sha256": manifest_sha,
+            "attribution_arm_order": ["anchor", "candidate"],
+        }))
+        acquired_at = _iso(90)
+        ended_at = _iso(30)
+        expires_at = _iso(-3500)
+        claim_id = "akd-975298e22b074ccb"
+        claim = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "claim_id": claim_id, "campaign_id": campaign,
+            "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": os.getpid(), "holder_start_ticks": 123456,
+            "holder_boot_id": Path(
+                "/proc/sys/kernel/random/boot_id").read_text().strip(),
+            "holder_label": "autokernel-discovery-controller",
+            "host": os.uname().nodename,
+            "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+            "acquired_at": acquired_at, "expires_at": expires_at,
+            "released_at": None, "reclaimed_from": None, "state": "held",
+        }
+        base = {
+            "schema": "epyc.autokernel.targeted_correctness_receipt.v3",
+            "authority": "nonpromotable_candidate_only_discovery",
+            "promotion_claim": False, "manifest_sha256": manifest_sha,
+            "campaign_id": campaign, "status": "complete", "result": "PASS",
+            "overall": "OK", "passed_cases": 1139, "expected_cases": 1139,
+            "summary": "1139/1139 tests passed", "exit_code": 0,
+            "exact_case_ok": True, "device_id": "mi210_0",
+            "device_claim_open": claim,
+            "device_claim_borrowed_phase_end": {
+                "schema": "epyc.autokernel.borrowed_device_claim_phase.v1",
+                "campaign_id": campaign, "device_id": "mi210_0",
+                "mode": "borrowed_outer_reservation",
+                "outer_claim_id": claim_id, "phase_ended_at": ended_at,
+                "physical_release": False,
+            },
+            "residency_witness": {
+                "device_claim_mode": "borrowed_outer_reservation",
+                "outer_claim_id": claim_id, "overlapped": True,
+                "claim_verified_before": True, "claim_verified_after": True,
+                "overlap_sample_count": 2, "max_vram_bytes": 1024,
+            },
+            "ended_at": ended_at,
+        }
+        receipt_path = operation / "proof/correctness/receipt.json"
+        self._private_json(receipt_path, base)
+        state = {"inflight": {
+            "operation_key": operation_key,
+            "candidate": {
+                "source_manifest_sha256": manifest_sha,
+                "manifest": {"campaign_id": campaign}},
+            "lease": {"repetition": 1},
+        }}
+        observed = server._discovery_postbuild_observation(
+            self.operations, state)
+        self.assertEqual(observed["correctness_execution"]["summary"],
+                         "1139/1139 tests passed")
+        self.assertEqual(observed["correctness_execution"]["claim_id"],
+                         claim_id)
+
+        for mutation in ("missing_holder_boot_id", "foreign_campaign",
+                         "foreign_borrowed_claim", "no_residency_overlap"):
+            body = json.loads(receipt_path.read_text())
+            body.pop("receipt_sha256")
+            if mutation == "missing_holder_boot_id":
+                body["device_claim_open"].pop("holder_boot_id")
+            elif mutation == "foreign_campaign":
+                body["campaign_id"] = "ak-discovery-" + "b" * 16
+            elif mutation == "foreign_borrowed_claim":
+                body["device_claim_borrowed_phase_end"]["outer_claim_id"] = (
+                    "akd-0000000000000000")
+            else:
+                body["residency_witness"]["overlapped"] = False
+            self._private_json(receipt_path, body)
+            with self.subTest(mutation=mutation):
+                refused = server._discovery_postbuild_observation(
+                    self.operations, state)
+                self.assertIsNone(refused["correctness_execution"])
+            self._private_json(receipt_path, base)
+
+    def test_v25_source_claim_journal_is_exact_fresh_and_process_bound(
+            self) -> None:
+        claims = self.operations / "claims"
+        claims.mkdir()
+        path = claims / "device.jsonl"
+        campaign = "ak-discovery-" + "a" * 16
+        now = datetime.now(timezone.utc)
+        acquired = (now - timedelta(seconds=2)).isoformat()
+        expires = (now + timedelta(seconds=300)).isoformat()
+        pid = os.getpid()
+        ticks = 424242
+        receipt = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "claim_id": "akd-975298e22b074ccb", "campaign_id": campaign,
+            "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": pid, "holder_start_ticks": ticks,
+            "holder_boot_id": Path(
+                "/proc/sys/kernel/random/boot_id").read_text().strip(),
+            "holder_label": "autokernel-discovery-controller",
+            "host": os.uname().nodename,
+            "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+            "acquired_at": acquired, "expires_at": expires,
+            "released_at": None, "reclaimed_from": None, "state": "held",
+        }
+        row = {
+            "schema": "epyc.autokernel.device_claim_journal.v1",
+            "kind": "claim_acquired", "created_at": now.isoformat(),
+            "device_id": "mi210_0", "host": os.uname().nodename,
+            "record_id": "akj-0123456789abcdef", "writer_pid": pid,
+            "detail": {"attempts": 1, "claim_id": receipt["claim_id"],
+                       "receipt": receipt, "reclaimed": False},
+        }
+
+        def write(value: dict, *, canonical: bool = True) -> None:
+            raw = (server._canonical_json_bytes(value) if canonical else
+                   json.dumps(value, indent=2).encode())
+            path.write_bytes(raw + b"\n")
+
+        def observe(*, proc_ticks: int = ticks) -> dict | None:
+            with (mock.patch.object(server, "_discovery_lock_held",
+                                    return_value=True),
+                  mock.patch.object(server, "_discovery_proc_stat",
+                                    return_value=("S", pid, proc_ticks))):
+                return server._discovery_claim_observation(
+                    self.operations, campaign)
+
+        write(row)
+        valid = observe()
+        self.assertTrue(valid["claim_held"])
+        self.assertFalse(valid["claim_released"])
+
+        self.assertFalse(observe(proc_ticks=ticks + 1)["claim_held"])
+
+        expired = json.loads(json.dumps(row))
+        expired["detail"]["receipt"]["expires_at"] = (
+            now - timedelta(seconds=1)).isoformat()
+        write(expired)
+        self.assertFalse(observe()["claim_held"])
+
+        mutations = {}
+        future = json.loads(json.dumps(row))
+        future["created_at"] = (now + timedelta(seconds=60)).isoformat()
+        mutations["future_created"] = future
+        malformed = json.loads(json.dumps(row))
+        malformed["created_at"] = "not-a-time"
+        mutations["malformed_created"] = malformed
+        stale_acquired = json.loads(json.dumps(row))
+        stale_acquired["detail"]["receipt"]["acquired_at"] = (
+            now - timedelta(days=7)).isoformat()
+        mutations["stale_acquired"] = stale_acquired
+        extra = json.loads(json.dumps(row)); extra["invented"] = True
+        mutations["extra_row_key"] = extra
+        missing = json.loads(json.dumps(row)); missing.pop("record_id")
+        mutations["missing_row_key"] = missing
+        state_mismatch = json.loads(json.dumps(row))
+        state_mismatch["detail"]["receipt"]["state"] = "released"
+        mutations["state_mismatch"] = state_mismatch
+        released_mismatch = json.loads(json.dumps(row))
+        released_mismatch["detail"]["receipt"]["released_at"] = now.isoformat()
+        mutations["kind_release_mismatch"] = released_mismatch
+        wrong_boot = json.loads(json.dumps(row))
+        wrong_boot["detail"]["receipt"]["holder_boot_id"] = (
+            "00000000-0000-0000-0000-000000000000")
+        mutations["wrong_boot"] = wrong_boot
+        wrong_lock = json.loads(json.dumps(row))
+        wrong_lock["detail"]["receipt"]["lock_path"] = "/tmp/foreign.lock"
+        mutations["wrong_lock"] = wrong_lock
+        for name, mutated in mutations.items():
+            write(mutated)
+            with self.subTest(mutation=name):
+                self.assertIsNone(observe())
+
+        historical_acquired = json.loads(json.dumps(row))
+        historical_at = now - timedelta(days=8)
+        historical_acquired["created_at"] = historical_at.isoformat()
+        historical_acquired["detail"]["receipt"]["acquired_at"] = (
+            historical_at.isoformat())
+        historical_acquired["detail"]["receipt"]["expires_at"] = (
+            historical_at + timedelta(hours=1)).isoformat()
+        stale_release = json.loads(json.dumps(historical_acquired))
+        stale_release["kind"] = "claim_released"
+        stale_release["created_at"] = now.isoformat()
+        stale_release_at = (now - timedelta(days=7)).isoformat()
+        stale_release["detail"]["receipt"]["released_at"] = stale_release_at
+        stale_release["detail"] = {
+            "claim_id": receipt["claim_id"],
+            "payload_clear_error": None,
+            "receipt": stale_release["detail"]["receipt"],
+            "released_at": stale_release_at,
+            "revocation_read_error": None,
+        }
+        path.write_bytes(server._canonical_json_bytes(historical_acquired) +
+                         b"\n" + server._canonical_json_bytes(stale_release) +
+                         b"\n")
+        self.assertIsNone(observe())
+
+        write(row, canonical=False)
+        self.assertIsNone(observe())
 
     def test_v11_pre_screen_intent_keeps_active_anchor_build_fail_closed(self) -> None:
         """Exact v11 boundary: declared proof plan cannot invent correctness."""

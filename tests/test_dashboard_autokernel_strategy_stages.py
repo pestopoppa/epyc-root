@@ -256,6 +256,54 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             return server.discovery_live_payload()
 
+    def _write_source_claim(self, *, acquired_at: str,
+                            claim_id: str = "akd-1a2840d5bfe6433e",
+                            released_at: str | None = None,
+                            holder_pid: int | None = None,
+                            holder_start_ticks: int | None = None) -> dict:
+        holder_pid = holder_pid or os.getpid()
+        if holder_start_ticks is None:
+            holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
+                                     .read_text().split()[21])
+        acquired = datetime.fromisoformat(acquired_at.replace("Z", "+00:00"))
+        receipt = {
+            "schema": "epyc.autokernel.device_claim_receipt.v1",
+            "claim_id": claim_id,
+            "campaign_id": "ak-discovery-" + "a" * 16,
+            "device_id": "mi210_0",
+            "purpose": "AutoKernel GPU source proof and throughput",
+            "holder_pid": holder_pid,
+            "holder_start_ticks": holder_start_ticks,
+            "holder_boot_id": Path(
+                "/proc/sys/kernel/random/boot_id").read_text().strip(),
+            "holder_label": "autokernel-discovery-controller",
+            "host": os.uname().nodename,
+            "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+            "acquired_at": acquired_at,
+            "expires_at": (acquired + timedelta(hours=1)).isoformat(),
+            "released_at": released_at, "reclaimed_from": None,
+            "state": "held",
+        }
+        kind = "claim_released" if released_at else "claim_acquired"
+        detail = ({"claim_id": claim_id, "receipt": receipt,
+                   "released_at": released_at, "payload_clear_error": None,
+                   "revocation_read_error": None}
+                  if released_at else
+                  {"attempts": 1, "claim_id": claim_id,
+                   "receipt": receipt, "reclaimed": False})
+        row = {
+            "schema": "epyc.autokernel.device_claim_journal.v1",
+            "kind": kind, "created_at": released_at or acquired_at,
+            "device_id": "mi210_0", "host": os.uname().nodename,
+            "record_id": "akj-0123456789abcdef",
+            "writer_pid": holder_pid, "detail": detail,
+        }
+        claims = self.operations / "claims"
+        claims.mkdir(exist_ok=True)
+        (claims / "device.jsonl").write_bytes(
+            server._canonical_json_bytes(row) + b"\n")
+        return receipt
+
     def test_receipts_advance_every_exact_postbuild_stage_once(self) -> None:
         expected = [
             "correctness", "candidate_attribution", "anchor_attribution",
@@ -593,26 +641,12 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         holder_pid = os.getpid()
         holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
                                  .read_text().split()[21])
-        claims = self.operations / "claims"
-        claims.mkdir()
-        receipt = {
-            "schema": "epyc.autokernel.device_claim_receipt.v1",
-            "claim_id": "akd-1a2840d5bfe6433e",
-            "campaign_id": "ak-discovery-" + "a" * 16,
-            "device_id": "mi210_0",
-            "purpose": "AutoKernel GPU source proof and throughput",
-            "holder_pid": holder_pid,
-            "holder_start_ticks": holder_start_ticks,
-            "acquired_at": acquired_at,
-            "released_at": None,
-        }
-        (claims / "device.jsonl").write_text(json.dumps({
-            "schema": "epyc.autokernel.device_claim_journal.v1",
-            "kind": "claim_acquired", "created_at": acquired_at,
-            "detail": {"receipt": receipt},
-        }) + "\n")
+        self._write_source_claim(
+            acquired_at=acquired_at, holder_pid=holder_pid,
+            holder_start_ticks=holder_start_ticks)
 
-        activity = self._active()["activity"]
+        with mock.patch.object(server, "_discovery_lock_held", return_value=True):
+            activity = self._active()["activity"]
 
         self.assertEqual(activity["phase"]["id"], "correctness")
         self.assertEqual(activity["phase"]["started_at"], acquired_at)
@@ -634,26 +668,12 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         holder_pid = os.getpid()
         holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
                                  .read_text().split()[21])
-        claims = self.operations / "claims"
-        claims.mkdir()
-        receipt = {
-            "schema": "epyc.autokernel.device_claim_receipt.v1",
-            "claim_id": "akd-correctness-budget",
-            "campaign_id": "ak-discovery-" + "a" * 16,
-            "device_id": "mi210_0",
-            "purpose": "AutoKernel GPU source proof and throughput",
-            "holder_pid": holder_pid,
-            "holder_start_ticks": holder_start_ticks,
-            "acquired_at": acquired_at,
-            "released_at": None,
-        }
-        (claims / "device.jsonl").write_text(json.dumps({
-            "schema": "epyc.autokernel.device_claim_journal.v1",
-            "kind": "claim_acquired", "created_at": acquired_at,
-            "detail": {"receipt": receipt},
-        }) + "\n")
+        self._write_source_claim(
+            acquired_at=acquired_at, claim_id="akd-1111111111111111",
+            holder_pid=holder_pid, holder_start_ticks=holder_start_ticks)
 
-        activity = self._active()["activity"]
+        with mock.patch.object(server, "_discovery_lock_held", return_value=True):
+            activity = self._active()["activity"]
 
         self.assertEqual(activity["phase"]["id"], "correctness")
         self.assertGreater(activity["phase"]["elapsed_s"], 590)
@@ -790,21 +810,10 @@ class AutoKernelStrategyStageApiTest(unittest.TestCase):
         attribution.mkdir()
         for name in ("stdout.txt", "stderr.txt", "timestamps.csv"):
             (attribution / name).write_text("\n")
-        claims = self.operations / "claims"
-        claims.mkdir()
-        receipt = {
-            "schema": "epyc.autokernel.device_claim_receipt.v1",
-            "campaign_id": "ak-discovery-" + "a" * 16,
-            "claim_id": "akd-a27c5e21725a4e37", "device_id": "mi210_0",
-            "purpose": "AutoKernel GPU source proof and throughput",
-            "holder_pid": 2096922, "holder_start_ticks": 48012147,
-            "acquired_at": acquired_at, "released_at": released_at,
-        }
-        (claims / "device.jsonl").write_text(json.dumps({
-            "schema": "epyc.autokernel.device_claim_journal.v1",
-            "kind": "claim_released", "created_at": released_at,
-            "detail": {"receipt": receipt},
-        }) + "\n")
+        self._write_source_claim(
+            acquired_at=acquired_at, released_at=released_at,
+            claim_id="akd-a27c5e21725a4e37", holder_pid=2096922,
+            holder_start_ticks=48012147)
 
         activity = server.discovery_live_payload()["activity"]
 

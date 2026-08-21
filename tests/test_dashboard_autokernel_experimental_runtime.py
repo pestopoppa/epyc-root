@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
 import json
@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from dashboard import server
 
@@ -142,26 +143,49 @@ class ExperimentalRuntimeDashboardApiTest(unittest.TestCase):
 
     def _claim(self) -> None:
         holder_pid = os.getpid()
-        holder_start_ticks = int((Path("/proc") / str(holder_pid) / "stat")
-                                 .read_text().split()[21])
+        proc_stat = server._discovery_proc_stat(holder_pid)
+        self.assertIsNotNone(proc_stat)
+        holder_start_ticks = proc_stat[2]
         claims = self.operations_root / "claims"
         claims.mkdir()
-        acquired_at = _now()
+        acquired = datetime.now(timezone.utc)
+        acquired_at = acquired.isoformat()
+        claim_id = "akd-df1a520000000001"
         receipt = {
             "schema": "epyc.autokernel.device_claim_receipt.v1",
-            "claim_id": "akd-dflash2-runtime",
+            "claim_id": claim_id,
             "campaign_id": self.campaign_id,
             "device_id": "mi210_0",
             "purpose": "AutoKernel experimental runtime validation and measurement",
             "holder_pid": holder_pid,
             "holder_start_ticks": holder_start_ticks,
-            "acquired_at": acquired_at, "released_at": None,
+            "holder_boot_id": Path(
+                "/proc/sys/kernel/random/boot_id").read_text().strip(),
+            "holder_label": "autokernel-discovery-controller",
+            "host": os.uname().nodename,
+            "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+            "acquired_at": acquired_at,
+            "expires_at": (acquired + timedelta(hours=1)).isoformat(),
+            "released_at": None,
+            "reclaimed_from": None,
+            "state": "held",
         }
-        (claims / "device.jsonl").write_text(json.dumps({
+        row = {
             "schema": "epyc.autokernel.device_claim_journal.v1",
             "kind": "claim_acquired", "created_at": acquired_at,
-            "detail": {"receipt": receipt},
-        }) + "\n")
+            "device_id": "mi210_0",
+            "host": os.uname().nodename,
+            "record_id": "akj-df1a520000000001",
+            "writer_pid": holder_pid,
+            "detail": {
+                "attempts": 1,
+                "claim_id": claim_id,
+                "receipt": receipt,
+                "reclaimed": False,
+            },
+        }
+        (claims / "device.jsonl").write_bytes(
+            server._canonical_json_bytes(row) + b"\n")
 
     def test_six_receipts_advance_exact_runtime_stages_and_headlines(self) -> None:
         initial = self._active()
@@ -212,11 +236,18 @@ class ExperimentalRuntimeDashboardApiTest(unittest.TestCase):
         self._state("matched_np1", "gpu")
         self._claim()
 
-        active = self._active()["activity"]
+        with mock.patch.object(server, "_discovery_lock_held",
+                               return_value=True):
+            active_payload = self._active()
+        active = active_payload["activity"]
         self.assertEqual(active["phase"]["id"], "matched_np1")
         self.assertTrue(active["gpu"]["expected_now"])
         self.assertTrue(active["gpu"]["claim_held"])
         self.assertEqual(active["stall"]["threshold_s"], 7200)
+        exported = json.dumps(active_payload)
+        self.assertNotIn("holder_pid", exported)
+        self.assertNotIn("holder_start_ticks", exported)
+        self.assertNotIn("writer_pid", exported)
 
         stopped = server.discovery_live_payload()["activity"]
         self.assertEqual(stopped["status"], "stopped")
