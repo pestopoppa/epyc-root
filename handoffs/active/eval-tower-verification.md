@@ -764,3 +764,13 @@ V1's Swiss scheduler (provably inert at our pool sizes — its max budget is 3N 
 N(N−1)/2, so 3N ≥ C(N,2) for all N ≤ 7); granularity beyond G≈16–20 (SNR gains +0.002 from G=16→20,
 and intake-1162 finds finer granularity flat-to-worse for the expectation specifically); and vendoring
 the reference implementation (no licence).
+
+## Research Intake Update — 2026-08-21 (intake-1217, Claw-Eval)
+
+- [ ] **ETV-T1** — Claw-Eval (intake-1217, arXiv:2604.06132v3) reports that **trajectory-opaque
+      grading misses 44% of safety violations and 13% of robustness failures** that trajectory-aware
+      grading detects, measured across 14 frontier models. Our harness grades outcomes. Assess the
+      trajectory-aware direction: three independent evidence channels (execution traces, audit logs,
+      environment snapshots) feeding fine-grained rubric items, scoring decomposed into
+      Completion / Safety / Robustness, and **Pass^k over repeated trials** to separate genuine
+      capability from a lucky run. Surfaced as a side effect of a chat-template intake, not sought.

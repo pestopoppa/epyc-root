@@ -98,3 +98,16 @@ D3 still wants a quiesce/clean window → co-schedule with Queue-2 + N13 post-re
 ## Reporting
 
 On closing a task: check the box here, update master row **N14** + the routing-index subsystem row, append to `progress/2026-06/`. On full closure (D1–D4 done): extract findings to wiki, move this handoff to `completed/`, delete N14. Memory: [[project_prompt_determinism_plan]], [[feedback_enable_thinking_requires_chat_completions_path]], [[feedback_stack_change_three_gates]].
+
+## Research Intake Update — 2026-08-21 (intake-1216, chat-template engine)
+
+- [ ] **PCD-T1** — Record a constraint on any chat-template substitution: a chat template is
+      **executable code in the prompt-construction position**. Frozen `production-consolidated-v9`
+      (`0db32c06e`) runs a **first-party** Jinja engine at `common/jinja/` (lexer/parser/runtime/
+      value/caps, from ggml-org/llama.cpp PR#18462) — **not minja**, whose only occurrences in the
+      tree are a stale TODO comment at `common/chat.cpp:749`, a test, and a doc. That engine
+      implements **input marking**: `jinja::string` carries an `is_input` flag through one-to-one,
+      one-to-many and many-to-one transformations specifically so user content cannot forge special
+      tokens, and `common/chat.cpp` normalises input *before* it reaches the runtime. Any decision
+      to run a third-party template must be checked against that path. Neither community template
+      repository mentions it.

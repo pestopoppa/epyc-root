@@ -1,0 +1,108 @@
+# 2026-08-21 — Research intake: Qwen chat templates (intake-1212 … intake-1217)
+
+Per-agent shard (`scripts/coordination/WORKTREE_MIGRATION.md`). Operator-submitted single URL,
+run through all four intake stages plus a Stage-2b round. **No lane worktree** — operator-spawned
+ad-hoc session in the shared clone; staging was hunk-selective and every diff was inspected before
+commit, per the SessionStart contract for lane-less sessions.
+
+## Problem
+
+Operator submitted `https://huggingface.co/peculiar-ragdoll/Qwen-Sharp-Chat-Templates` with the
+hypothesis that it was *"easy low-hanging fruit to improve all our current and future qwen models"*,
+and explicitly invited contradiction.
+
+## What the dives found
+
+Six entries, all dive-verified or dive-overturned. Verification ran against primary source — the
+stock `Qwen/Qwen3.8-27B` template, the templates embedded in **our own production GGUFs**, both
+community templates, and the frozen `production-consolidated-v9` tree at `0db32c06e`. **No server
+was started and no inference was run**; the GGUF templates were extracted by a header read, so the
+29 GB model was never loaded.
+
+| Claim | Verdict |
+|---|---|
+| Sharp = upstream v22.3 + terseness + 3 fast-mode fixes | **CONFIRMED to the byte.** Thinking-ON render minus the terseness block is *exactly equal* to upstream's, at 3 kwarg settings; thinking-OFF differs by exactly the 3 documented changes |
+| froggeric: "official template raises on `enable_thinking=false`" | **OVERTURNED.** Neither stock nor our Unsloth variant raises. The real fatal trigger is `reasoning_effort` outside `{xhigh, medium, low}` — including `'none'`, froggeric's own documented off-switch |
+| froggeric: "deep Jinja nesting drops llama.cpp speed 80%, cured by AST flattening" | **REFUTED.** Template is compiled **once at model load** (`server-context.cpp:1454`, sole server call site); per-request path renders a pre-compiled program (`server-common.cpp:1092`). Also froggeric's template is 3.0× larger, deeper, 3.3× slower to compile |
+| froggeric: chronological retention → prefix cache | **First recorded as overturned; CORRECTED same day** — see below |
+| CCoT (intake-1214) | **CONFIRMED**, all four figures. The 27.69% math penalty is GPT-3.5-only; GPT-4 shows no significant decrease |
+| TALE (intake-1215) | **CONFIRMED.** 67% token reduction at −2.72%; **+3.11% accuracy on GSM8K at 75.7% fewer tokens** |
+| google/minja (intake-1216) | **OVERTURNED as our engine.** Frozen v9 runs a first-party `common/jinja/` engine (ggml-org PR#18462); the only "minja" strings in the tree are a stale comment, a test and a doc |
+| Claw-Eval (intake-1217) | **CONFIRMED.** It is an *autonomous-agent trajectory* benchmark — so Sharp's only quantified plate does not measure the knowledge-work/coding claim it is offered for |
+
+## The mistake I made, and what caught it
+
+**I generalised a family conclusion from one model generation.** Testing retention across
+stock-3.8, our Unsloth-3.8 variant, froggeric and Sharp, I found all four retained history thoughts
+and recorded intake-1213's retention claim as *overturned as a differentiator*.
+
+The operator asked whether any handoff changes targeted **the other Qwen models in the stack**.
+They did not — every template task I had written was scoped to Qwen3.8, because that was the only
+model I had checked. Sweeping the embedded template of all four production GGUFs produced two
+results pointing opposite ways:
+
+| Model / role | Template | `reasoning_effort` outside {xhigh,med,low} | `xhigh` default | Empty-`<think>` dup | Retains history thinking |
+|---|---|---|---|---|---|
+| Qwen3.8-27B — `architect_general` | 9,993 B `12827f24b742` | **RAISES** on `none`; `high` → `xhigh` | **yes** | **yes** | yes |
+| Qwen3.6-27B — `coder_escalation` | 8,057 B `55d4931433fe` | ok | no | no | **no — discards** |
+| Qwen3.6-35B-A3B — `frontdoor` | 8,057 B (byte-identical) | ok | no | no | **no — discards** |
+| Qwen3.5-122B — `architect_critic` | 7,992 B `8452ca85cb1e` | ok | no | no | **no — discards** |
+
+- **Every defect is Qwen3.8-only** — scoped to the model swapped in 2026-08-20; the incumbents are clean.
+- **The retention gap is the incumbents'**, not Qwen3.8's. Three of our four served templates throw
+  away past reasoning, which is exactly what the community templates fix. So the claim I had marked
+  overturned **holds against three of four production models**.
+
+`intake-1213` `claim_corrections[2]` was corrected from `overturned` to `narrowed`, and its
+`dive_corrections` rewritten to carry the reversal so the old conclusion is not re-derivable.
+It is currently **inert** for us regardless: we serve `enable_thinking=false` on every one of those
+roles, so there is no reasoning in history to retain. That is now `CT-5`, deliberately unbundled
+from the A/B.
+
+## Answer to the operator's hypothesis
+
+Installation genuinely *is* out-of-the-box — one `--chat-template-file` flag or one
+`gguf-new-metadata` rewrite, no requantization, no registry change, no kernel touch. That half
+holds. The correction is which half does anything: under `enable_thinking=false` the **verified**
+benefit (retention → prefix cache) is inert, and the **active** ingredient (the terseness prompt) is
+the unmeasured one — its only number lives inside a PNG, measured on an agent-trajectory benchmark,
+on a reasoning-compression finetune. Our own intake-276 already held that stylistic conciseness is
+the weakest form of the intervention; TALE (now filed) is the numeric-budget form and beats it.
+
+## Two defects found in our own tree, incidental to the intake
+
+- **`qwen38-27b-replace-qwen36.md` cites commit `b376dadd`**, which resolves in *none* of epyc-root,
+  epyc-orchestrator or epyc-inference-research. The swap that does resolve is `1cff5162` in
+  `stack_templates/default.yaml`, and `orchestration/model_registry.yaml` contains **zero**
+  occurrences of the fixed string `Qwen3.8` — its `architect_general` / `coder_escalation` still
+  name Qwen3.6-27B. Filed as **Q38-T2**.
+- **We serve a non-stock (Unsloth) template** on every Qwen role and no registry descriptor says so.
+  Filed as **Q38-T3**.
+
+## Changes
+
+| Repo | Path | Change |
+|---|---|---|
+| epyc-root | `research/intake_index.yaml` | +6 entries (1212–1217) with `claim_corrections`, `claim_anchors`, `depends_on`, `dive_corrections`; intake-194 re-encounter note; intake-1213 retention correction |
+| epyc-root | `handoffs/active/qwen-chat-template-evaluation.md` | **new stub** — 5 open + 1 done task, fleet-sweep table |
+| epyc-root | `handoffs/active/routing-and-optimization-index.md` | +1 row `RTG-54` |
+| epyc-root | `handoffs/active/qwen38-27b-replace-qwen36.md` | +3 tasks (Q38-T1..T3) |
+| epyc-root | `handoffs/active/per-request-reasoning-budget.md` | +3 tasks (PRB-T1..T3) |
+| epyc-root | `handoffs/active/reasoning-compression.md` | +2 open, +1 done (RC-T1..T3) |
+| epyc-root | `handoffs/active/eval-tower-verification.md` | +1 task (ETV-T1) |
+| epyc-root | `handoffs/active/prompt-construction-determinism.md` | +1 task (PCD-T1) |
+| epyc-root | `handoffs/active/master-handoff-index.md` | regenerated rollup block |
+| epyc-root | `.research-session.json` | session state through Stage 4, 6-row steering ledger |
+
+## Results
+
+- `bash scripts/validate/validate_intake.sh` → **exit 0**, 1213 entries
+- `python3 scripts/handoffs/index_state.py --check` → **exit 0**, 0 problems
+- **16 tasks added, 2 checkbox flips** (RC-T3, CT-6)
+
+## Deferred — with named blockers
+
+- **CT-1 (per-suite A/B)** — blocked on an inference window; nothing is serving today and this
+  session ran zero inference by design.
+- **PRB-T3 (top-level `reasoning_effort` on our llama-server path)** — blocked on a running server;
+  it is a server behaviour, not a template property, and cannot be settled by rendering.
