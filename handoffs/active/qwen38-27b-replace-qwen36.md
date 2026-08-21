@@ -1,6 +1,6 @@
 # Qwen3.8-27B — replace Qwen3.6-27B in production
 
-**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **stack-template swap DONE 2026-08-20** — `1cff5162` ("stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)", 2026-08-20 21:52:11Z), whose *only* changed file is `repos/epyc-orchestrator/stack_templates/default.yaml` (`git show --stat`: 1 file, +7/-2). **The MASTER registry swap is NOT done**: `orchestration/model_registry.yaml` contains **zero** occurrences of the fixed string `Qwen3.8` (`grep -F -c` → `0`, re-verified 2026-08-21), and `architect_general` / `coder_escalation` there still carry `model_role: qwen36_27b_mtp_q8_local` (`model_registry.yaml:1501`, `:1398`) — so a registry-vs-stack-template divergence stands until the registry is updated **and** the derived layer regenerated. The previously cited `b376dadd` resolves in none of the three repos (`git cat-file -t` → `fatal: Not a valid object name`). `stack_change_pipeline.py` regenerate + stack-change checklist remain, and those need a stack start — nothing is serving today, so `live == config` is unverified. Full evidence: *Research Intake — 2026-08-21 → Q38-T2*.
+**Status**: ACTIVE — download/smoke/MTP/throughput/architect-bench done; **stack-template swap DONE 2026-08-20** — `1cff5162` ("stack template: architect_general -> Qwen3.8-27B; draft_max 24 -> 8 (measured)", 2026-08-20 21:52:11Z), whose *only* changed file is `repos/epyc-orchestrator/stack_templates/default.yaml` (`git show --stat`: 1 file, +7/-2). **CORRECTED 2026-08-21 (second pass): the MASTER registry swap IS done** — `b376dadd` ("registry: swap architect_general + coder_escalation to Qwen3.8-27B; draft_max 4 -> 8", 2026-08-20 12:19) is a LOCAL, UNPUSHED commit in **epyc-inference-research**, whose `orchestration/model_registry.yaml` is the TRUE master; the orchestrator's same-named file is the AUTO-GENERATED lean view (banner at its head) and was audited by mistake. What is NOT done is the **compile chain**: `orchestration/model_registry.yaml` contains **zero** occurrences of the fixed string `Qwen3.8` (`grep -F -c` → `0`, re-verified 2026-08-21), and `architect_general` / `coder_escalation` there still carry `model_role: qwen36_27b_mtp_q8_local` (`model_registry.yaml:1501`, `:1398`) — so a registry-vs-stack-template divergence stands until the registry is updated **and** the derived layer regenerated. The previously cited `b376dadd` resolves in none of the three repos (`git cat-file -t` → `fatal: Not a valid object name`). `stack_change_pipeline.py` regenerate + stack-change checklist remain, and those need a stack start — nothing is serving today, so `live == config` is unverified. Full evidence: *Research Intake — 2026-08-21 → Q38-T2*.
 **Created**: 2026-08-14
 **Priority**: P2 (model refresh; no production pain forcing it, but a same-day release refresh is cheap to stage)
 **Effort**: Low-Medium — download/smoke/MTP/throughput/architect-bench done; the registry swap is the last step (the 2026-08-14 quality-gate decline was later reversed and the coding ladder ran)
@@ -106,9 +106,33 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
 
 ## Research Intake — 2026-08-21 (chat-template dive, intake-1212…1217)
 
-> **Ratification package ready (2026-08-21):** `scripts/operator/ratify_qwen38_registry_swap_20260821.sh`
-> (epyc-root) applies the master-registry swap + provenance block + derived recompile with hard
-> verification, plus the PRB-T1 `--jinja` fallback fix. `--dry-run` validated end-to-end; operator-run only.
+> **Ratification package v2 (2026-08-21):** `scripts/operator/ratify_qwen38_registry_swap_20260821.sh`
+> — phase 0 reverts v1's mistaken edits to the GENERATED lean file (inverse-edit byte-proof), phase 1
+> adds the provenance block to the TRUE master, phase 2 runs `stack_change_pipeline.py update
+> --allow-descriptor-model-removal` with a targeted only-removal assertion + derived verification +
+> post-check green, phase 3 is the `--jinja` fallback fix. Never commits in the research repo (the
+> LFM2.5 orphan decision is pending in the same file). `--dry-run` validated end-to-end.
+
+**CORRECTION 2026-08-21 (same day, second pass — recording the error so it cannot be re-derived).**
+The Q38-T2 finding "the master registry was never swapped" was WRONG-LEVEL. Three facts replaced it:
+1. `orchestration/model_registry.yaml` in the **orchestrator** repo is **auto-generated** — its own
+   head banner reads "AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW", compiled at every stack start
+   from the research repo's master by `src/registry/registry_compiler.py` (`compile_lean`). Every
+   audit read the file from the middle and missed the banner; the pipeline's `lean_registry: stale`
+   error is what surfaced it.
+2. **The true master WAS swapped on 2026-08-20 by `b376dadd`** — a local, unpushed commit in
+   epyc-inference-research (one of the 9 in that repo's reconciliation backlog). The earlier
+   `git cat-file -t b376dadd` "resolves in no repo" check was defeated in the research repo by its
+   `safe.directory` git-config problem. The swap there is complete: `model_role`, both literal path
+   sets, `draft_max: 8` in both maps.
+3. **The real gap is the compile chain**: lean, descriptors and derived `stack_priors.yaml` were all
+   compiled 2026-08-11, and the launcher reads the derived file AS-IS (`orchestrator_stack.py:252-262`
+   — no priors recompile at start; only the lean auto-recompiles). So the operational conclusion of
+   Q38-T2 stands — a stack start today serves Qwen3.6@4 — while its provenance claim is corrected.
+The v1 ratification script edited the generated lean view and its phase-2 `check`-as-gate aborted on
+the expected staleness report; v2 supersedes it as above. Method lesson, same shape as the retention
+correction earlier today: a compiled artifact was audited as if it were its source; the file's own
+banner said so; nobody read line 1.
 
 Three findings landed here by a chat-template intake round, all verified by rendering the template
 **embedded in our own** `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` (extracted by a GGUF header

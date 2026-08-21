@@ -320,7 +320,8 @@ anything.
 
 ## Tasks
 
-- [ ] **CT-1** — A/B one Qwen3.x role via `llama-server --chat-template-file` against its embedded
+- [ ] **CT-1** — A/B one Qwen3.x role via `llama-server --chat-template-file` — arms per CT-1a (the
+      built epyc-qwen3x-v1, not the community file) — against its embedded
       template on a pinned eval set. Report **per-suite, never aggregate** (intake-1214: a
       conciseness instruction near-neutral in aggregate carried a 27.69% math penalty for the
       weaker model). No requantization, no registry change, no kernel touch.
@@ -349,6 +350,30 @@ anything.
 - [x] **CT-6** — Sweep the embedded template of every production GGUF and tabulate the defect
       matrix ✅ 2026-08-21 (table above; three distinct templates, all defects Qwen3.8-only, the
       retention gap incumbent-only)
+- [ ] **CT-7 — Build the EPYC-owned template (operator-directed 2026-08-21: "we build them ourselves
+      if they're valuable to us").** Do not wait on or track community releases. Feature-mine
+      froggeric v22.3 under Apache-2.0: graft **history retention** (the one mechanism our three
+      incumbent templates lack) onto our serving posture, **minus the two `<|think_*|>` marker-scan
+      blocks by construction** (the CT-3 injection surface — a deliberate upstream feature we do not
+      want), terseness block **excluded** from v1 (it is the unmeasured ingredient; it becomes an
+      A/B *arm*, not a default). Validate: render-equivalence probes (retention holds in both history
+      shapes; a user message containing `<|think_off|>` does NOT change reasoning state;
+      `enable_thinking=false` path clean), then the vendored upstream test suite with divergences
+      recorded the way Sharp's shim documents its own. Pin sha256. Artifact home:
+      `artifacts/chat-templates/epyc-qwen3x-v1/`.
+      **BUILT + probe-verified ✅ 2026-08-21** — 24,659 B, sha256 `faaecb215031…d8c15`; scan loop
+      (46 lines) deleted, sanitizer kept; all four probes pass incl. the decisive one (user-content
+      `<|think_off|>` flips froggeric, does NOT flip epyc-v1) and byte-parity with base on tag-free
+      input. STILL OPEN in this box: the vendored upstream suite run + a `common/jinja` (not Jinja2)
+      render check on the real serving path.
+- [ ] **CT-1a — idle-window protocol (operator-directed 2026-08-21).** CT-1's A/B and PRB-T4 run on
+      **CPU inference during the autokernel session's GPU-busy windows** — do not wait for a dedicated
+      slot. Protocol: acquire a CPU region claim on the session bus before serving (claims are
+      acquired, never observed); serve the A/B model CPU-side (Qwen3.6-35B-A3B or 27B); production
+      sampling (temp+seed42 — these suites are sampling-sensitive); per-question JSONL persistence so
+      any window end is a clean drain point; per-suite reporting. Arms for CT-1: (0) embedded
+      template, (1) CT-7's epyc-qwen3x-v1, (2) optionally +terseness variant. Gated on CT-7 for the
+      arm-1 artifact.
 
 ## Notes
 
