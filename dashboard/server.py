@@ -6049,6 +6049,7 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
     inserted: dict[str, set[int]] = {}
     added: list[tuple[str, int, str]] = []
     current_path: str | None = None
+    current_old_marker: str | None = None
     current_marker_path: str | None = None
     saw_hunk = False
     i = 0
@@ -6065,6 +6066,7 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             symbols.setdefault(current_path, set())
             deleted.setdefault(current_path, set())
             inserted.setdefault(current_path, set())
+            current_old_marker = None
             current_marker_path = None
             i += 1
             continue
@@ -6080,17 +6082,23 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             if current_path is None:
                 return None
             marker = line[4:].split("\t", 1)[0]
-            if marker != "/dev/null":
+            if marker == "/dev/null":
+                current_old_marker = marker
+            else:
                 old_path = marker[2:] if marker.startswith("a/") else marker
                 if _discovery_v27_patch_path(old_path) != current_path:
                     return None
+                current_old_marker = current_path
             i += 1
             continue
         if line.startswith("+++ "):
-            if current_path is None:
+            if current_path is None or current_old_marker is None:
                 return None
             marker = line[4:].split("\t", 1)[0]
-            if marker != "/dev/null":
+            if marker == "/dev/null":
+                if current_old_marker == "/dev/null":
+                    return None
+            else:
                 new_path = marker[2:] if marker.startswith("b/") else marker
                 if _discovery_v27_patch_path(new_path) != current_path:
                     return None
@@ -6108,8 +6116,9 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
             seen_old = seen_new = 0
             body: list[str] = []
             i += 1
-            while i < len(lines) and (
-                    seen_old < old_count or seen_new < new_count):
+            while (i < len(lines)
+                   and not lines[i].startswith("diff --git a/")
+                   and _DISCOVERY_V27_PATCH_HUNK.match(lines[i]) is None):
                 row = lines[i]
                 if row.startswith("\\"):
                     body.append(row)
@@ -6124,10 +6133,14 @@ def _discovery_v27_patch_projection(patch: bytes) -> dict | None:
                     deleted[current_path].add(old_line)
                     seen_old += 1
                     old_line += 1
-                elif row.startswith(" ") or row == "":
+                elif row.startswith(" "):
                     seen_old += 1
                     seen_new += 1
                     old_line += 1
+                    new_line += 1
+                elif row == "":
+                    seen_old += 1
+                    seen_new += 1
                     new_line += 1
                 else:
                     return None

@@ -1124,14 +1124,32 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
                 b"diff --git a/src/test.cpp b/src/test.cpp\n"
                 b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
                 b"@@ -1 +1 @@\n-int x;\n+int input_hash;\n"), False),
+            ("surplus-capture", manifest_for(
+                valid + b"+hipGraphLaunch(x);\n"), False),
+            ("surplus-phase", manifest_for(
+                valid + b"+int benchmark_phase;\n"), False),
+            ("surplus-content", manifest_for(
+                valid + b"+int input_hash;\n"), False),
             ("symlink-mode", manifest_for(
                 b"diff --git a/src/test.cpp b/src/test.cpp\n"
                 b"new file mode 120000\n--- /dev/null\n"
                 b"+++ b/src/test.cpp\n@@ -0,0 +1 @@\n+target\n"), False),
+            ("valid-new-file", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"new file mode 100644\n--- /dev/null\n"
+                b"+++ b/src/test.cpp\n@@ -0,0 +1 @@\n+int y;\n"), True),
+            ("valid-deletion", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"deleted file mode 100644\n--- a/src/test.cpp\n"
+                b"+++ /dev/null\n@@ -1 +0,0 @@\n-int x;\n"), True),
             ("rename", manifest_for(
                 b"diff --git a/src/test.cpp b/src/other.cpp\n"
                 b"--- a/src/test.cpp\n+++ b/src/other.cpp\n"
                 b"@@ -1 +1 @@\n-int x;\n+int y;\n"), False),
+            ("both-devnull", manifest_for(
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- /dev/null\n+++ /dev/null\n"
+                b"@@ -0,0 +1 @@\n+int y;\n"), False),
         )
         for name, manifest, expected in cases:
             with self.subTest(name=name):
@@ -1168,6 +1186,52 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
             self.assertEqual(
                 performance["promotion_reason"],
                 "producer_authority_unavailable")
+
+    def test_coherently_resealed_surplus_and_devnull_patches_refuse(
+            self) -> None:
+        cases = (
+            ("surplus-capture", b"+hipGraphLaunch(x);\n"),
+            ("surplus-phase", b"+int benchmark_phase;\n"),
+            ("surplus-content", b"+int input_hash;\n"),
+            ("both-devnull",
+             b"diff --git a/src/test.cpp b/src/test.cpp\n"
+             b"--- /dev/null\n+++ /dev/null\n"
+             b"@@ -0,0 +1 @@\n+int y;\n"),
+        )
+        for name, material in cases:
+            with self.subTest(name=name), \
+                    tempfile.TemporaryDirectory() as directory:
+                fixture = V27Fixture(Path(directory))
+                with _frozen(fixture):
+                    contract = server._discovery_v27_contract(
+                        fixture.config_path, fixture.config, fixture.bundle)
+                state, receipt, path = fixture.cumulative_state()
+                terminal = state["cumulative_composition_terminal"]
+                plan = terminal["plan"]
+                lever = copy.deepcopy(
+                    plan["candidate_authority"]["accepted"][-1])
+                patch = (
+                    material if name == "both-devnull" else
+                    base64.b64decode(
+                        lever["manifest"]["patch_base64"], validate=True)
+                    + material)
+                lever["manifest"]["patch_sha256"] = hashlib.sha256(
+                    patch).hexdigest()
+                lever["manifest"]["patch_base64"] = base64.b64encode(
+                    patch).decode("ascii")
+                lever["manifest_sha256"] = server._discovery_content_hash(
+                    lever["manifest"])
+                lever = _seal(lever, "lever_sha256")
+                _reseal_plan_authorities(
+                    plan, anchor_levers=[], candidate_levers=[lever])
+                _rebind_plan_evidence(terminal, receipt)
+                state = _reseal_cumulative_state(state, receipt, path)
+                performance = server._discovery_v27_state_contract(
+                    state, contract)["performance"]
+                self.assertIs(performance["available"], False)
+                self.assertEqual(
+                    performance["promotion_reason"],
+                    "producer_authority_unavailable")
 
     def test_coherently_resealed_conflicting_composition_refuses(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1245,6 +1309,62 @@ class DashboardAutokernelV27Tests(unittest.TestCase):
 
             existing = lever_for("existing", "first")
             proposed = lever_for("proposed", "second")
+            self.assertTrue(server._discovery_v27_replicated_lever(existing))
+            self.assertTrue(server._discovery_v27_replicated_lever(proposed))
+            _reseal_plan_authorities(
+                plan, anchor_levers=[existing],
+                candidate_levers=[existing, proposed])
+            _rebind_plan_evidence(terminal, receipt)
+            state = _reseal_cumulative_state(state, receipt, path)
+            performance = server._discovery_v27_state_contract(
+                state, contract)["performance"]
+            self.assertIs(performance["available"], False)
+            self.assertEqual(
+                performance["promotion_reason"],
+                "producer_authority_unavailable")
+
+    def test_empty_raw_context_preserves_old_coordinate_overlap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = V27Fixture(Path(directory))
+            with _frozen(fixture):
+                contract = server._discovery_v27_contract(
+                    fixture.config_path, fixture.config, fixture.bundle)
+            state, receipt, path = fixture.cumulative_state()
+            terminal = state["cumulative_composition_terminal"]
+            plan = terminal["plan"]
+            template = plan["candidate_authority"]["accepted"][-1]
+
+            def lever_for(
+                    label: str, symbol: str, patch: bytes) -> dict:
+                lever = copy.deepcopy(template)
+                lever["hypothesis_id"] = f"akh-dashboard-v27-{label}"
+                lever["cross_campaign_candidate_sha256"] = _digest(
+                    f"cross-{label}")
+                lever["manifest"].update({
+                    "proposal_id": f"akp-dashboard-v27-{label}",
+                    "candidate_id": f"akc-dashboard-v27-{label}",
+                    "mechanism_id": f"dashboard-v27-{label}",
+                    "declared_symbols": {"src/test.cpp": [symbol]},
+                    "patch_sha256": hashlib.sha256(patch).hexdigest(),
+                    "patch_base64": base64.b64encode(patch).decode("ascii"),
+                })
+                lever["manifest_sha256"] = server._discovery_content_hash(
+                    lever["manifest"])
+                for index, row in enumerate(lever["replications"]):
+                    row["result_sha256"] = _digest(
+                        f"{label}-isolated-result-{index}")
+                return _seal(lever, "lever_sha256")
+
+            existing = lever_for(
+                "empty-context", "first",
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +1,2 @@ int first()\n\n+int y;\n")
+            proposed = lever_for(
+                "delete-anchor", "second",
+                b"diff --git a/src/test.cpp b/src/test.cpp\n"
+                b"--- a/src/test.cpp\n+++ b/src/test.cpp\n"
+                b"@@ -1 +0,0 @@ int second()\n-int x;\n")
             self.assertTrue(server._discovery_v27_replicated_lever(existing))
             self.assertTrue(server._discovery_v27_replicated_lever(proposed))
             _reseal_plan_authorities(
