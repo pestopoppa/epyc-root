@@ -5,6 +5,37 @@
 **Last compiled**: 2026-08-21 evening (Q38-T4 mode-artifact closure: run stack-change guards under the exported PRODUCTION fleet mode, never a default shell; Q38 registry swap complete end-to-end; CT-1 A/B launched with write-side wiring filed first; previously 2026-08-20: DFlash2 sibling full experimental gfx90a build)
 **Sources**: 77 documents
 
+## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
+
+Sources: `handoffs/active/qwen38-27b-replace-qwen36.md` (Q38-T6),
+`handoffs/active/qwen-chat-template-evaluation.md` (CT-DEPLOY),
+`progress/2026-08/2026-08-22-research-intake.md`.
+
+Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
+*"a mode/config surface that silently does something other than asked"*:
+
+1. **The launcher never reads `ORCHESTRATOR_STACK_NUMA_MODE`** — mode is argv-only, and the
+   cold-start fallback is hardcoded `"quarter"` (`stack_commands.py:1588`, pre-dating the
+   2026-07-30 half-fleet ratification). An unflagged cold start silently drops all three full
+   instances. Fix filed as Q38-T6; recovery: `start --only <roles> --numa-mode both`.
+2. **The additive-promotion gate deadlocks on itself**: its launch view follows the REALIZED
+   fleet mode, so from a sub-full fleet it flags the full ports it is being asked to start —
+   mirror image of the clean-shell/mode-full artifact from 2026-08-21. Recovery: the per-server
+   `reload` path (gate-free).
+3. **`reload server_<port>` matched no dispatch branch, restarted nothing, and returned 0** —
+   silent vacuous success; sub-full instances were structurally unreachable by reload and the
+   only symptom was config-vs-live drift. Fixed (orchestrator `34ff6fcc`): manifest-table
+   addressability + unknown components exit 1 + a full/half serving-flag parity test.
+4. **A first mlock failure on the third 80B copy** (`Cannot allocate memory` at 281 GB locked
+   fleet-wide) killed the launch silently behind an rc=0 reload; one retry succeeded. The
+   both-mode triple-residency of the 80B is a standing capacity edge.
+
+Standing rules these yield: **a lifecycle command that returns 0 must be verified by the live
+surface it claims to have changed** (the vacuous reload is the third rc=0-lie in this program's
+record); and **runtime attestation of declared-vs-live cmdlines** (added with the plumbing) is the
+detector that catches every one of these — the first fully-green check including attestation
+landed 2026-08-22 after the fixes.
+
 ## Compiled Update — 2026-08-21: the registry has FOUR planes, and a swap is not live until the third one recompiles
 
 Sources: `handoffs/active/qwen38-27b-replace-qwen36.md` (Q38-T2 + same-day correction),
