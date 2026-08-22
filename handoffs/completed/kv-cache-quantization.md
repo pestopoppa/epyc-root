@@ -317,7 +317,13 @@ Foundational paper establishing the asymmetric K/V quantization principle:
 - **Key cache**: Per-**channel** quantization. A few fixed channels have outlier magnitudes (structural — same channels across all tokens). Grouping along channel dimension handles this.
 - **Value cache**: Per-**token** quantization. No fixed outlier channels; per-token grouping confines error to individual tokens.
 - **Result**: 2-bit quantization, tuning-free. 2.6x memory reduction, up to 4x batch size, 2.35-3.47x throughput.
-- **Relevance**: llama.cpp's current q4_0/q8_0 KV does symmetric block quantization — KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap.
+- **Relevance**: ~~llama.cpp's current q4_0/q8_0 KV does symmetric block quantization — KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap.~~
+  **CORRECTED 2026-08-22 (KIVI Stage-2b dive, arXiv:2402.02750v2 read in full). THERE IS NO SUCH GAP — the claim is wrong on all three of its load-bearing parts.**
+  1. **Per-token V is already implemented, and is structurally unavoidable.** `llama-kv-cache.cpp:231-232` allocates K and V with dim0 = channels, dim1 = tokens, so a 32-element q4_0/q8_0 block spans 32 contiguous channels *within one token* — exactly KIVI's per-token grouping at G=32. And `v_trans = !cparams.flash_attn`, while `llama-context.cpp:3557` refuses to start with "quantized V cache requires flash_attn to be enabled". So whenever V is quantized, `v_trans` is false and V is channel-contiguous: **our quantized V can never be on KIVI's bad axis.**
+  2. **Per-channel K is outside KIVI's demonstrated scope.** KIVI's own OB 1 states that at INT4, per-token quantization of *both* caches maintains accuracy; the axis asymmetry is established **only at 2 bits**, and the paper runs no 4-bit or 8-bit axis ablation. Production runs q8_0/q8_0, q4_0/f16 and q4_0/q4_0 — never 2-bit. KIVI is silent on our entire operating regime.
+  3. **We solve the key-outlier problem a different way, and an independent source says that way works.** The orthonormal self-inverse Walsh-Hadamard rotation gated at `llama-kv-cache.cpp:319-336` mixes across head channels — the exact dimension KIVI's outliers live on — redistributing a magnitude-m outlier as m/sqrt(n). RotateKV (arXiv 2501.16383, no author overlap with KIVI) uses **per-token keys plus rotation** at 2 bits and states verbatim that it "offers superior outlier management compared to per-channel approaches". Per-channel keys are one remedy, not a requirement.
+  **The one residual difference is real, small, and cheap to test:** KIVI's quantizer is *asymmetric* (zero-point + scale) where q4_0/q8_0 are *symmetric*. That half of the original sentence was accurate — but q4_1/q5_1 are supported asymmetric KV types, so it is a flag, not a code change. A rotated distribution is near zero-mean, which predicts the asymmetric quantizer buys nothing here; falsifiable in one short A/B.
+  **THE REAL GAP KIVI EXPOSES IS AN INSTRUMENT GAP, NOT AN IMPLEMENTATION ONE.** KIVI reports *no perplexity at all* and explicitly rejects single-decode-step metrics as unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage costs CoQA 7% but collapses GSM8K by 57% (13.50 -> 5.76). Our entire first-party quality case for quantized KV is **perplexity plus needle-in-a-haystack** — precisely the instrument class that survives damage multi-step generation does not. **No GSM8K-class generation eval has ever been run against quantized KV in this repo.** That, not the axis, is what should be closed. See `handoffs/active/tq3-quantization-evaluation.md`.
 
 ### KVLinC (arXiv 2510.05373)
 
@@ -1258,7 +1264,7 @@ turbo_q3 has fastest prefill (+30% vs f16). Gen at 14.5K prefill: 3.38-4.86 t/s 
 |---------|----------|-----------|---------|-------|------|
 | **llama.cpp (current)** | Naive round-to-nearest | q4_0-q8_0 | q8≈f16, q4: +0.2 PPL | ~30% gen slowdown (GPU) | Yes |
 | **ExLlamaV2** | Hadamard smoothing + Q4 | 4-bit | **Matches f16** | Neutral (GPU) | No |
-| **KIVI** | Per-channel K / per-token V | 2-bit | ~f16 at 2 bits | 2.35-3.47x throughput | No |
+| **KIVI** | Per-channel K / per-token V **(2-BIT ONLY — its own OB 1 says per-token-for-both is fine at INT4)** | 2-bit | ~f16 at 2 bits | 2.35-3.47x throughput | **N/A — see the corrected Relevance note above; per-token V is structurally guaranteed here and per-channel K is out of KIVI's scope at our bit widths** |
 | **vLLM** | FP8 (E4M3/E5M2) | 8-bit | ~f16 | Neutral | No |
 | **lmdeploy** | INT8 per-channel | 8-bit | ~f16 | Neutral | No |
 | **KVLinC** | Hadamard + linear correction | 2-4 bit | Near f16 | 2.55x vs FlashAttn | No |

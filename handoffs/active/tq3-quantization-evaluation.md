@@ -270,3 +270,34 @@ the dispatch loss.
 - [x] Record the Q2_K/Q3_K iqk `static_assert` as a standing quant-selection constraint, verified read-only against the frozen tree ✅ 2026-08-03
 - [ ] If `Qwen3.6-35B-A3B` is benched, use `UD-IQ3_XXS` (13.2 GB, iqk-native), never the size-matched `UD-Q2_K_XL`
 - [ ] **Deferred with a named trigger** — the third-party codebook reverse-engineering probe (intake-956) stays `stage1-unverified`; its author is blocked, 2–4 weeks. Reopen only if that probe publishes a decoder, and only then to ask whether the format is reimplementable rather than portable
+
+## Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
+
+- [ ] **(G) Close the instrument gap: run a multi-step generation eval against quantized KV.**
+      **This is the real finding of the KIVI dive, and it is a gap in OUR evidence, not in our code.**
+      KIVI reports **no perplexity anywhere** and explicitly rejects single-decode-step metrics as
+      unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage
+      costs CoQA ~7% while collapsing GSM8K by ~57% (13.50 → 5.76). **Our entire first-party quality
+      case for quantized KV is perplexity plus needle-in-a-haystack** — exactly the instrument class
+      that survives damage which multi-step reasoning does not.
+      Protocol: GSM8K (or the canonical judge suite's reasoning subset) at f16 KV vs production
+      q8_0/q8_0 vs q4_0/q4_0, rotation ON, on one pure-attention model and one Qwen3.x GDN hybrid.
+      Paired questions, exact-match scored, **persisted per question** (each persisted unit is a drain
+      point). Production temp + seed 42 per bench defaults.
+      **Gate:** any config showing a reasoning delta outside noise **while perplexity and NIAH stay
+      flat** replicates KIVI's central instrument finding on our own stack — and would be the
+      strongest reason yet to revisit KV-quant defaults. A flat result closes the question and
+      retires the concern permanently.
+- [ ] **(G, cheap) A/B the asymmetric quantizer against our rotation.** `-ctk q4_0` (symmetric) vs
+      `-ctk q4_1` (asymmetric), rotation ON, same group size, one pure-attention model, plus
+      `llama-bench` decode t/s to price the extra scale word.
+      **Gate:** a quality delta outside noise means the Hadamard rotation has NOT fully normalised the
+      distribution and KIVI's asymmetry is live for us. A tie — the prediction, since a rotated
+      distribution is near zero-mean — closes it permanently for one short bench.
+- [ ] **(G) Reproduce KIVI's Figure 2 / Table 2 on OUR architecture.** Dump per-channel key
+      magnitudes from the attention layers of a production Qwen3.x GGUF at a fixed prompt, with and
+      without `LLAMA_ATTN_ROT_DISABLE=1`, and compute per-group max/RMS at G=32.
+      **Gate:** a near-flat rotated ratio establishes the redundancy conclusion **first-party** and
+      deprioritises the two rows above. Surviving outliers would make rotation placement (pre- vs
+      post-RoPE) live. **Nobody has measured whether key-channel outliers even exist under per-head
+      QK-RMSNorm, or in a GDN/attention hybrid — KIVI's four ablated models all predate QK-norm.**
