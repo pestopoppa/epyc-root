@@ -2,8 +2,8 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-06-21
-**Sources**: 32 documents (added 2026-06-21 KB-RAG K7 certification result + MRAgent retrieval-policy comparator)
+**Last compiled**: 2026-08-22
+**Sources**: 32 documents (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
 
 ## Summary
 
@@ -428,3 +428,108 @@ candidate, because opening it as one would fork an already-unfinished program
 - [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
 - [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — the replication that failed at the retriever after an embedder swap; k-ablation decay
 - [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — the prompt-router encoder filed as a `monitor_only` comparator
+
+## Compiled Update — 2026-08-22: the encoder swap's stated rationale was false, the lexical signal bought nothing, and the live index has outgrown its record
+
+**Confidence**: verified — every number below carries either a commit/rev provenance chain, a
+protocol-tagged sweep result, or a cross-validated on-disk measurement. Open work items adjacent to
+these findings (the record edits, the encoder fixes, the GrepSeek four-arm A/B) are deliberately
+NOT compiled; only the established diagnoses and measurements are.
+
+### The answerai→GTE retirement rationale was false when it was written — and the real win was cost, not quality
+
+**The Feb-2026 docs-encoder swap is justified on file by "answerai unscored", and that premise is
+false** (2026-08-21 Stage-2b source audit, intake-1278). Controlled same-BEIR-15 figures had existed
+on the successor's own model card since 2025-05-14: **GTE-ModernColBERT-v1 54.67 vs
+answerai-colbert-small-v1 53.35** (LightOn's own re-run of the published checkpoint) — a **1.32 pp
+gap, inside the ~2 pp noise floor this wiki's own KB-RAG doctrine declares**. A 2026-08-22
+correction-of-the-correction tightened the harness count: **two independent BEIR measurements exist,
+not three** — vendor 53.79 and LightOn's re-run 53.35; the apparent third (mixedbread, arXiv
+2510.14880) transcribed both ColBERT baseline rows from LightOn's model card published 36 days
+earlier (15/15 exact per-task match to the re-run column, 0/15 to the vendor-reported one). The
+1.32 pp figure is unaffected because it was always LightOn's own comparison.
+
+**The cost axis the original decision never weighed is where the swap actually pays**: answerai is
+4.46× fewer parameters, and its measured index footprint is **−24.3 %** (0.757×, cross-validated
+against the stored `.npz` to 0.2 %) — essentially the bare 96/128 dim ratio, with the tokenizer swap
+a wash at 1.026. **This does not argue for reverting**; it argues that the record should say plainly
+the swap rests on a quality delta our own doctrine calls noise.
+
+**Reconciliation with earlier sections of this page**: the internal query-level A/B compiled above
+(5/10 queries better, 4 equivalent, 0 worse) is untouched — it measured our corpus directly and
+remains the strongest pro-GTE evidence. What changes is only the BEIR-based retirement rationale in
+`CHANGELOG.md` and the completed ColBERT-Zero handoff. Two figure-hygiene rules ride along:
+**never record `54.89` as the incumbent's BEIR-15** — it does not exist on the model card (`grep -c`
+= 0 at rev `25f6f7bb`); the canonical comparable figure is **54.67** (BEIR table added `78d50a16`
+2025-05-14, FiQA corrected `6605e431` 2025-09-10). A `54.75` also circulates with no stated
+denominator (conflict flagged on intake-430).
+
+### Three verified encoder/catalog defects that falsify any "drop-in" swap framing
+
+Recorded because this page carries live swap candidates (LateOn A/B, the LFM2.5 bounded probe), and
+all three defects sit exactly on that path:
+
+- **The KB-RAG ColBERT encoder cannot load ANY BERT-family late-interaction ONNX.** Such graphs
+  declare `token_type_ids` as a required input with no initializer default, and `colbert_encoder.py`
+  feeds only `input_ids` + `attention_mask` → `InvalidArgument: Missing Input` on the first call.
+  This blocks answerai-colbert-small-v1, ColBERTv2 and Jina-ColBERT-v2 **as a class**. The fix
+  already exists in-repo: `cross_encoder.py` does graph-input introspection (~3 lines to port).
+- **Hard-coded limits override the model's own declaration.** `_QUERY_MAX_TOKENS = 48` overruns two
+  candidate models' declared query length of 32; `onnx_config.json` fields (`query_length`,
+  `document_length`, `embedding_dim`, `uses_token_type_ids`, `do_query_expansion`) are not honored;
+  and prefixes are read only from `config_sentence_transformers.json`, so repos that omit it get a
+  silent fallback that can select prefix tokens absent from the model's vocabulary.
+- **Encoder drift past the catalog is effectively unguarded.** `_warn_on_encoder_drift` compares
+  only the `encoder_model_dir` *string* and only logs; a dimension mismatch surfaces as a numpy
+  shape error inside `maxsim()` and is swallowed by a broad `except`. The non-vacuous verification,
+  when the fix lands: point the index at a different-dim encoder and confirm it fails *loudly* — a
+  test that passes both before and after the change proves nothing.
+
+### K11 lexical sweep: a clean null — ColBERT-only remains the default on measurement, not assumption
+
+The FTS5 lexical blend that landed default-off got its decision sweep (2026-07-21,
+`BULK-kbrag-autowiki-k11`, protocol `internal-kb-rag.k11-lexical-sweep.v1`, verdict
+`DONE_MARGINAL_OBS`):
+
+| Lexical weight | mean recall@10 | missed-all-evidence |
+|---|---|---|
+| 0.0 / 0.1 / 0.2 / 0.3 | 0.5048 (identical across all four) | 14 (identical across all four) |
+
+`n=70` over the **remapped** K7 certification pool against a fresh FTS5 catalog. Zero uplift at any
+weight, so **no default lexical-weight promotion; `lexical_weight=0` (ColBERT-only) stays the
+default** — the earlier "implemented default-off pending its own sweep" caveat on this page is now
+resolved by measurement. The 0.5048 aggregate is **not comparable** to the 2026-06-13 certification
+numbers (0.6167–0.6298): those ran the original pool against the certification-era index, and pool
+identity travels with the number.
+
+### The live index is ~56 % larger than its recorded figures
+
+Measured 2026-08-21: **943 files / 28,110 chunks / 2,199.13 MiB**, versus the certification-era
+record of 577 / 18,010 / 1,227.6 MiB that still headlines the handoff. The certified figures remain
+correct as facts *about the certified build*; they are no longer descriptions of the live index, and
+any per-corpus tuning derived from them (pool composition, latency expectations, recall baselines)
+should be re-anchored before reuse.
+
+### Code↔docs crossover federation landed — the gap this page's KB-RAG summary named is closed
+
+The federation query shipped 2026-07-22: the GitNexus symbol/flow graph is federated with the
+ColBERT KB index in both directions (symbol/file → related handoff/wiki chunks; doc-mention → code
+symbols). This is additive — GitNexus stays the code-intelligence layer, KB-RAG stays the markdown
+layer, and the federation is a join, not a replacement. Two operational findings from the landing:
+the orchestrator's GitNexus index was corrupt (a `lbug.wal` without `lbug.shadow` segfaulted the CLI
+on every read; re-indexing took 32.9 s for 52,993 nodes and reads clean since), and the federation
+tool degrades gracefully by skipping an unreadable repo rather than failing the query; its ONNX
+runtime discovery is env-overridable via `FEDERATION_ORT_SITE_PACKAGES` instead of a hard-coded venv
+path.
+
+### Source References
+
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the intake-1278 C1/C2 record
+  corrections with their provenance chain and the 2026-08-22 two-harness tightening; the K1/K2/K3
+  encoder-defect diagnoses; the K11 sweep result; the measured live-index figures; the 2026-07-22
+  federation landing.
+- [`colbert-zero-research-integration.md`](../handoffs/completed/colbert-zero-research-integration.md)
+  — the completed handoff carrying the "answerai unscored" retirement rationale the correction
+  targets; the record edit itself is still open work.
+- [`CHANGELOG.md`](../CHANGELOG.md) — the second surface carrying the stale swap rationale, plus the
+  original :8089 answerai deployment and GTE upgrade-candidate entries the correction reconciles.

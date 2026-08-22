@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-21 evening (Q38-T4 mode-artifact closure: run stack-change guards under the exported PRODUCTION fleet mode, never a default shell; Q38 registry swap complete end-to-end; CT-1 A/B launched with write-side wiring filed first; previously 2026-08-20: DFlash2 sibling full experimental gfx90a build)
-**Sources**: 77 documents
+**Last compiled**: 2026-08-22 (KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
+**Sources**: 78 documents
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
@@ -1468,3 +1468,96 @@ hook filed before the first result (SC46). Remaining on operator sequence: Q38-T
 - [`handoffs/active/qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T4 ✅ closure with the mode-artifact diagnosis
 - [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-1 A/B launch + SC46 wiring
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md), [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
+## Compiled Update — 2026-08-22: the KV-migration path is live, but its "VERIFIED" state proves transport, not reuse — and on the hybrid frontdoor only strict continuations reuse a restored cache
+
+Sources: `handoffs/active/dynamic-stack-concurrency.md` (Stage-2b research-intake riders
+intake-1274/intake-1279, dived 2026-08-22; earlyoom residual audit 2026-07-29; DS-7-guard row).
+The three-arm reuse measurement and the multi-turn replay these findings gate are OPEN — what is
+compiled here is the code-verified failure surface, the live-path evidence, and the corrected
+scope, not their results.
+
+- **The frontdoor slot save/restore path is LIVE, not dormant — its dormancy escape clause is
+  void.** `--slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor` is set on all three frontdoor
+  instances (8070/8080/8180, read from `/proc/<pid>/cmdline`); 75 `kv_migrate_*` artifacts sit on
+  disk; live probes recorded forward=6 / reverse=4 with `n_aborted=0`. Qualification: the newest
+  artifact is 2026-08-09 and all carry synthetic `old-sess_*` ids, so the path is proven wired,
+  enabled and executed — exercise by *production traffic* in the last two weeks is unproven.
+- **`MigrationState.VERIFIED` verifies transport, not reuse.** `concurrency_aware.py:679` advances
+  to VERIFIED with `detail="restore_confirmed"` on an HTTP 200, and `:682` then erases the source
+  slot. `n_restored` proves the file loaded, not that a single token will be reused: a zero-reuse
+  migration would advance to VERIFIED, destroy the source, and record success. The true reuse
+  instrument already exists — `n_prompt_tokens_cache` via `GET /slots`, or `timings.cache_n` on
+  the first post-restore completion ([benchmark-methodology.md](benchmark-methodology.md) already
+  names it as the correct KV-reuse counter). **Reconciliation with the 2026-07-21 ROUTE-A3 closure
+  above**: the forward=6 / reverse=4, `n_aborted=0` probe ratified the migration *transport* under
+  traffic; by this state-machine reading it did not — and structurally could not — assert any
+  reused token. The fix (gate the source erase on a reuse assertion, or rename the state) is filed
+  but not landed.
+- **Hybrid restore reuse is all-or-nothing on prompt shape: strict continuation reuses fully;
+  divergence or exact repeat reuses zero.** Upstream #25913's "restore silently delivers zero
+  prompt reuse on hybrid/recurrent models" was scope-corrected by the 2026-08-22 dive against our
+  own frozen v9 source: `server-context.cpp:3320,3322` compute
+  `pos_min_thold = max(0, pos_next - n_swa - (has_new_tokens ? 0 : 1))` and the reset block at
+  `:3374` runs only when `pos_min >= pos_min_thold`, while `llama-memory-hybrid.cpp:172-175`
+  returns the *recurrent cell's* position as `seq_pos_min` — stated outright by the PR author and
+  matched by four independent upstream measurements. The frontdoor model (`qwen35moe`, 30 Gated
+  DeltaNet + 10 full-attention layers) is squarely hybrid-recurrent, but our full↔quarter
+  migration is a turn-boundary session handover — the *continuation* shape. So "every migration
+  costs a full re-prefill" is NOT the default expectation; it is the failure mode that occurs when
+  something rewrites the restored prefix (a rendered chat-template byte change, reasoning-block
+  stripping — mitigated today by `--reasoning off` — or any injected timestamp/preamble). The open
+  gate is correspondingly cheaper: determine whether our request stream stays a byte-exact strict
+  continuation across a migration boundary, not confirm a known loss.
+- **Restore-measurement methodology hazard: leftover in-RAM checkpoints fake restore success.**
+  The fixture for any restore-reuse measurement must restart the target server (or set
+  `--cache-ram 0`) between arms — an upstream reporter lost a day to resident checkpoints making a
+  broken restore look like a 340× success, and the frontdoor runs the 8 GiB `--cache-ram` default
+  with no override.
+- **#25592 is the wider hybrid exposure, and it is absent from v9.** It fixes the *live in-memory*
+  checkpoint path for hybrid/recurrent models — exercised on **every request**, not only on
+  migrations. Our frozen tree still carries the unfixed `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO
+  verbatim (`server-context.cpp:2332-2337`), and its four independent upstream verifications
+  include Qwen3.6-35B-A3B — the exact frontdoor model. The whole adjacent checkpoint cluster
+  (#24055, #25472 merged, #25592 open, #26004) is **performance-only** — lost reuse and forced
+  full re-prefill, never wrong output. If the open multi-turn replay shows a non-trivial forced
+  re-prefill rate, #25592 is a v10 candidate ahead of #26004.
+- **The frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch,
+  n_ubatch)` and `-b` is never passed, so the effective micro-batch is the **2048 default**. The
+  launch config misrepresents itself, and any reasoning that assumed an 8192 ubatch on the
+  frontdoor is wrong. Fix (pass `-b 8192` or drop the flag) is filed, not landed — independent of
+  everything above.
+- **earlyoom residual, re-verified 2026-07-29 (auditor): the tweak is host-side operator-only, and
+  the measured risk is a futile kill, not "agents are victims".** Premise confirmed — the live
+  process (`-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
+  '^(llama-server|sd-server)$' --prefer '^llama-bench$'`) does not ignore `claude|codex`. But the
+  original prescription cannot be followed from any agent session and **both of its steps point at
+  things that do not exist**: `/etc/default/earlyoom` is absent and the container is not
+  systemd-booted — earlyoom is PPID 1, started at host boot, outside the container entirely. This
+  refines the 2026-06-05 earlyoom entry above: the durable in-container protection remains
+  launcher-side `oom_score_adj`; the ignore-regex edit is a HOST action. Measured sharpening of
+  the rationale: thresholds are ~40 GB warn / ~20 GB kill against 1133 GB total with the memory
+  held by *ignored* llama-servers, so if earlyoom ever fires, `--sort-by-rss` selects a ~0.7 GB
+  agent session against a ~20 GB deficit — destroying a main without relieving pressure.
+- **The DS-7 default template is now self-policing against generated live priors** (orchestrator
+  `464aca54`, 2026-07-06 — completes the DS-7 record in the 2026-07-05 update above):
+  `validate_template()` fails the production `default` profile if deployable role ports drift from
+  generated live stack-prior serving ports, and alias roles pass only when their generated serving
+  ports are covered by the alias target. Experimental templates stay flexible and embedding-only
+  helper roles remain outside the parity surface.
+
+### Source References
+
+- [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md) — sole compiled
+  source: Stage-2b intake-1274/1279 riders (restore semantics, VERIFIED misnomer, `-ub` inertness,
+  #25592 exposure, fixture hazard), the 2026-07-29 earlyoom audit, the DS-7-guard row.
+- [benchmark-methodology.md](benchmark-methodology.md) — already documents `timings.cache_n` /
+  `n_prompt_tokens_cache` as the true KV-reuse counter; the instrument the VERIFIED state should
+  consume (cited by the source at its line 257).
+- [earlyoom-oom-protection.md](../handoffs/completed/earlyoom-oom-protection.md) — the deployment
+  closure whose optional `--ignore` residual the 2026-07-29 audit re-verified and corrected.
+- [attention-matching-kv-compaction.md](../handoffs/active/attention-matching-kv-compaction.md) —
+  Phase-F KVCOMM gate the source keeps as a separate fork from the restore-semantics work.
+- epyc-orchestrator `464aca54` — DS-7 default-template prior-drift guard commit (tests:
+  `test_dynamic_stack.py`, `test_stack_templates_v2.py`).
+- Upstream llama.cpp #25913 / #26004 / #25592 (open) and #25472 (merged) — the hybrid
+  checkpoint/save-restore cluster; performance-only, produces no wrong output.

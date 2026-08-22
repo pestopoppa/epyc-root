@@ -433,7 +433,20 @@ anything.
       INCLUDING runtime attestation. Two launcher defects found+fixed en route (gate realized-mode
       deadlock — dodged; silent vacuous reload of sub-full instances — fixed with addressability +
       exit-1 + parity test). E-7 recalibration of both voided stamps running 2026-08-22.
-- [ ] **CT-8 — belief-kernel wiring for CT-1 measurements** (filed at first-measurement time per the
+- [x] **CT-8 ✅ 2026-08-22 — belief-kernel wiring BUILT AND WIRED** (subagent-built, conformance
+      green): producer writer `scripts/vidya/adapters/chat_template_ab_capture.py` (atomic
+      `belief_measurements.jsonl` sidecar at summarize-time; fail-loud on any guessable field —
+      40-hex kernel commit, 64-hex template sha, results-file hash attestation; shared
+      `validate_row()` so writer and reader have ONE definition of well-formed) + strict reader
+      `scripts/vidya/adapters/chat_template_ab.py` (registered `chat-template-ab-measurement`;
+      malformed line voids the whole file; moved/mutated attested artifacts grade DOWN to Anchored
+      instead of vanishing; grading 100% delegated to `claim_tuple.grade()`). Well-formed row
+      grades **Witnessed/Attested**. 16 new tests + 88 conformance-neighborhood pass. DOCTRINE:
+      completed CT-1/CT-1b/CT-5/16K runs are pre-hook and emit ZERO rows (verified live);
+      the E-7 run's sidecar is emitted at completion by the producing session (this one) with
+      explicit provenance — a same-session producer emit from complete primary records, not a
+      cross-session reconstruction. Runner call snippet: the adapter agent's report, mirrored in
+      the capture module docstring. — belief-kernel wiring for CT-1 measurements** (filed at first-measurement time per the
       standing rule). The A/B emits per-question JSONL + per-suite summary; before any result gates a
       template adoption, add the write-side hook: producer-authored claim tuples with (model,
       template_sha256, suite, n, sampling config, kernel/binary identity, paired-flip counts).

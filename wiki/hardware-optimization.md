@@ -2,40 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-16 (**batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-22 (**a dependency floor can select the defective release** — fla 0.4.2 carries the silently non-deterministic `causal_conv1d` backward AND declares no torch/triton floor at all, while the FIXED 0.5.2 declares `torch>=2.7.0`, so a resolver constrained to our verified Torch 2.5.1+rocm6.2 stack walks straight onto the broken release; hard rule: `flash-linear-attention>=0.5.2` or nothing, never an older fla — plus `rocprofv3` is now provisioned into the side-loaded profiler tree, retiring this page's two 2026-08-12 "rocprofv3 genuinely absent" readings (the IntelliPerf/guided-tuning gate is the `rocprof-compute` RENAME plus omniperf's missing deps, not rocprofv3), and the GPA C4-template question is closed NEGATIVE on gfx90a/ROCm 6.2 (measured PC-sampling stub + the NVIDIA-SASS blamer rewrite) — see bottom section; earlier 2026-08-16 note: **batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 107+ documents
-
-## Compiled Update — 2026-08-22: AutoKernel v27 has audited foundations, not launch authority
-
-**Confidence: verified for branch/audit state; no new performance measurement.** AutoKernel v27 did
-not launch during this work and its scientific ledger remains **0/10**. The provider Trusted-Access
-suppression is a typed, bounded authoring refusal in a checkpoint branch—not a machine-wide stop—and
-spends no science. Production v9 remained frozen and no GPU work ran.
-
-The reusable base is narrower than the accumulated branch stack: Q5/ResourceWait/carry, composition
-crash recovery, the earlier evaluator foundation, the integrated v27 base, and frozen-production
-comparator closure each have an exact audited commit. The later evaluator/C6 and cumulative-performance
-lines do not. Independent mutation audits showed that plausible, coherently resealed JSON could still
-forge sandbox/runtime/interposer authority on the evaluator side and route/workload/frozen-build/metric
-authority on the performance side. Consequently every v27 dashboard pin remains unset.
-
-The restart order is deterministic: close and independently audit C6 process isolation and native Ghost
-Replay; establish an externally committed pre-run/result measurement authority with strict JSON and exact
-comparator reopening; assemble one descendant; adapt the dashboard to that final producer; validate twice
-without inference; then run ten unique scientific dispositions. A valid cumulative headline must show the
-candidate relative to exact frozen production even when the result is negative and promotion is denied;
-incremental performance remains secondary.
-
-### Source References (2026-08-22 AutoKernel v27 pre-launch checkpoint)
-
-- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact branch map,
-  launch gates, provider-refusal semantics, and ten-science acceptance.
-- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — relayed C2/C4/C6
-  backlog, evaluator audit boundary, and closed ROCm-6.2 PC-sampling result.
-- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — zero-profiler
-  arm, paired ablation, hardware-context, and do-not-transfer constraints.
-- [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — full immutable commit map and
-  strict NO-GO reproductions.
 
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
 
@@ -3282,3 +3250,122 @@ input class exists at any layer on this box.
   RVP-PWR-1/2/3/5 ✅ with results inline; RVP-C4-10 ✅ (PC-sampling stub); PWR-4/PWR-6 open (protocol
   adoption, runtime-vs-power decomposition)
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC48 write-side wiring for the probe suite
+
+## Compiled Update — 2026-08-22: a dependency floor can select the defective release — the fla install gate inverts, and "rocprofv3 is absent" is retired
+
+**Confidence: verified** — the fla facts are read from the closed upstream issue and the two releases'
+own dependency declarations plus source; the profiler provisioning is verified on-host by the
+provisioning script's own `--verify` loop; the GPA structural legs are dive-verified source reads
+(`intake-1242#record`) with the one doc-based caveat marked where it occurs.
+
+### The fla non-determinism defect is closed upstream, fully scoped — and the scoping rewrites our install rule
+
+**fla issue #1156 closed 2026-08-22T09:55:42Z (`completed`, maintainer `zhiyuan1i`) after the reporter
+retracted his own headline; two of the original claims we carried are RETRACTED and must not be cited.**
+The settled record, from the issue thread and the fla source itself:
+
+| Fact | Value | Basis |
+|---|---|---|
+| Defective release | **fla 0.4.2 ONLY** (`ShortConvolution`/`causal_conv1d` backward); fixed in 0.5.2 | clean re-test: 0.4.2 error `2.0e-01` vs 0.5.2 `5.5e-08` |
+| Failure mode | run-to-run **non-determinism**: ten identical backward calls in one process, ten different answers; absmax compounds `0.40 → 252.88`; forward stays bit-identical | reporter's re-test |
+| Root cause | v0.4.2 backward loads via Triton `boundary_check` with **no `padding_option`** → out-of-bounds lanes undefined; v0.5.2 rewrote every site to explicit `mask=` + `other=0.0` | visible in source |
+| Retraction 1 | "reproduces on 0.5.2" — the run was importing 0.4.2 from site-packages | issue thread |
+| Retraction 2 | "differs across two backends" — `causal_conv1d` was absent, so the `'cuda'` backend silently fell back to `'triton'`; it never ran on two backends | issue thread |
+| Inference exposure | **zero** — forward is clean at every shape tested, including the faulting one | issue thread |
+| fla AMD coverage | **none at all**: the only AMD CI workflow is `if: false` with no runner; gfx90a/MI210 appear nowhere in the fla tracker | repo read (sharper than the earlier "AMD CI is MI300/gfx942" framing) |
+
+**The inversion is the durable lesson: being below a fixed release's dependency floor does not merely
+block you — it can select the defective release for you.** fla 0.4.2 — the broken one — declares
+`dependencies = ["torch", "transformers", "einops"]`, no torch or triton floor whatsoever. fla 0.5.2 —
+the fixed one — is the release that declares `torch>=2.7.0`. Our verified isolated gfx90a environment
+is **Torch `2.5.1+rocm6.2` / HIP `6.2.41133` / Triton `3.1.0`**, below that floor, so a resolver asked
+for "an fla compatible with our stack" installs precisely the release with the silent
+non-deterministic backward. The originally filed question — "does fla run correctly below its stated
+floors?" — is withdrawn as dangerous: below the floor the *available* release is the defective one, so
+the question resolves to "no" for the wrong reason. **Binding rule (settled): install
+`flash-linear-attention>=0.5.2` or do not install fla at all; `requirements_rocm.txt` must carry the
+hard `>=0.5.2` pin; raise the torch stack rather than lowering the fla version.** The general form: a
+permissive dependency spec is evidence of nothing — "compatible with our pins" and "free of known
+defects" are different predicates, and both must be resolved before an install.
+
+**Reconciliation with the 2026-08-12c section above (*ROCm 6.3 wheels on a 6.2 host*).** That section
+already verified on this MI210 that a `torch 2.7.1+rocm6.3` wheel runs a real bf16 GEMM on a system
+whose ROCm is 6.2 (wheel-bundled runtime, kernel-driver dependency only) — and that the ROCm 6.2 wheel
+index tops out at torch 2.5.1, so any torch ≥2.6 requirement on this host *necessarily* means a 6.3+
+wheel in its own venv per the mixed-runtime rule. Meeting the fla 0.5.2 floor is therefore the
+already-proven pattern, not a research question; what remains open (G6, not compiled) is only whether a
+matched `pytorch-triton-rocm` exists for that torch on gfx90a with a verified matmul.
+
+**Reattribution, recorded so the wrong citation does not propagate:** the `chunk_gated_delta_rule`
+`7.9e-07 / 1.8e-06` figures sometimes quoted from #1156 are the bug reporter's **own scoping aside**,
+not third-party corroboration. Genuine independent AMD corroboration for that kernel lives in **fla
+#913** (gfx1151 / ROCm 7.13, inside a Qwen3.5-27B GDN LoRA fine-tune) — and #913 *also* records the
+same kernel returning **silent NaN gradients on B200/sm_100** across fla 0.5.0/0.5.1/HEAD. Always cite
+it with its hardware scope. This remains a sibling in *shape* to the RVP-C2-6a/6b class (silent
+numerical defect on an accelerator) but in the fla/Triton stack, not ggml/MMQ — the rows stay separate.
+
+### rocprofv3 is provisioned — two "genuinely absent" readings on this page are superseded
+
+**The 2026-08-12 sections above recorded `rocprofv3` as genuinely absent** (the side-loaded tree "tops
+out at ROCProfiler 2.0" — see the LDS-solver mis-stamped-instrument note and the profiler-universe
+note). **As of 2026-08-21 that is no longer true**: `rocprofv3` (`rocprofiler-sdk6.2.0_0.4.0-66~22.04`,
+version-matched to ROCm 6.2.0-66) is in the side-loaded tree, added to `PKGS` in
+`epyc-inference-research/scripts/benchmark/provision_rocm_profilers.sh` and to its verify loop;
+`--verify` reports **5 present / 0 missing**, and the package is additive — `rocprof` v1 and
+`rocprofv2` are unaffected, so every rocprofv2-path result on this page stands unchanged. This
+provisioning is what made the late-2026-08-21 PC-sampling probe (previous section) executable at all.
+The historical readings were correct when written; the instrument set changed.
+
+**The sharpened gate that survives:** what still blocks the IntelliPerf/guided-tuning tool family
+(`intake-1223`) is **the NAME `rocprof-compute`** — the ROCm 6.3+ rename of omniperf, which that
+harness checks with `shutil.which()` at module import before `sys.exit(1)` — and we ship `omniperf`,
+which itself still does not run (missing `astunparse`/`colorlover`/`dash` deps, unchanged from the
+2026-08-12 note). That family is doubly gated by name and by deps; **rocprofv3 was never its gate**,
+just as it was never the LDS solver's.
+
+### GPA closes NEGATIVE as a C4 profiler-template on this hardware — and the reason generalizes
+
+The previous section recorded the measured leg: PC sampling on ROCm 6.2 is a **stub** (API exported,
+"defined but not implemented" against the live gfx90a agent). The dive-verified structural reading
+(`intake-1242#record`, GPA/CGO-2021) completes the closure: **counter-agnosticism does not imply
+portability — GPA trades a metric-LIST dependency for a harder INSTRUMENT dependency**, and three
+independent blockers are each fatal on this box: (1) it needs per-sample **stall reasons**, which on
+AMD come only from *stochastic* PC sampling = CDNA3+ (gfx90a is host-trap-only — this leg stays
+doc-based because at ROCm 6.2 there is nothing to configure at all, per the measured stub); (2)
+rocprofiler-sdk PC sampling requires **ROCm 6.4+** behind `--pc-sampling-beta-enabled`, and we are
+pinned at 6.2; (3) its instruction blamer decodes **NVIDIA SASS control codes via `nvdisasm`**, while
+CDNA expresses dependencies through `s_waitcnt` — a rewrite, not a port. An MI300-class purchase would
+address (1)–(2) and leave (3) untouched. The practical ranking this establishes: for C4-template
+material, prefer sources with a metric-list dependency — we hold a proven analogue in the **465
+validated gfx90a SQ/TA/TCC counters** (2026-08-03 section) — over sources with an instrument
+dependency this ISA cannot supply.
+
+### Checked for this compile and deliberately NOT recompiled
+
+The MI210 big-model/acceleration roadmap handoff was re-read in full: everything settled in it
+(IQ2 residency ladder, routing-skew near-uniform verdict, Stage-1/2 drafter economics failures, DR-0/DR-3
+quant-asymmetric K2 results, K28 no-go at 15.397%/14.649%/12.180% GDN share) is already compiled on
+this page and on [MoE optimization](moe-optimization.md) / [speculative decoding](speculative-decoding.md);
+its only post-08-21 addition (B3: a ≥20K-token greedy coherence gate before `GGML_CUDA_GDN_STATE_BF16`
+ever ships, blocked on G1) is an open, blocked item — an intention, not knowledge. Likewise from the
+RVP handoff: the RVP-C6-20 adversarial-mutant falsification and the omission-class split are compiled
+in [benchmark methodology](benchmark-methodology.md) (2026-08-21 evening section), RVP-C6-11/12/13 in
+[autonomous research](autonomous-research.md), and the power-instrument results in the two sections
+directly above — none are duplicated here. The Hawkeye-cohort C6-14..18 / C4-5..9 / C5-3..7 rows and
+the ParEval trials are open plans and compile nothing yet.
+
+### Source References
+
+- [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
+  the (Z) fla #1156 closure and reattribution, the G6 gate inversion and `>=0.5.2` pin rule, the
+  rocprofv3 provisioning note, and the GPA C4-template closure (RVP-C4-10 measured leg + intake-1242
+  structural legs).
+- [`repos/epyc-inference-research/scripts/benchmark/provision_rocm_profilers.sh`](../repos/epyc-inference-research/scripts/benchmark/provision_rocm_profilers.sh) —
+  `rocprofv3` added to `PKGS` and the verify loop; `--verify` 5 present / 0 missing on-host.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1276#record` (the Stage-2b
+  batch whose GDN-retrofit line surfaced the fla floor question), `intake-1242#record` (GPA dive: the
+  stall-reason, ROCm-6.4+, and SASS-blamer legs), `intake-1223#record` (the `rocprof-compute`
+  name-gate).
+- [`handoffs/active/mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) —
+  re-read in full for this compile; contributed the confirmation that nothing newly settled remains
+  uncompiled (its sole post-08-21 row is open and blocked on G1).

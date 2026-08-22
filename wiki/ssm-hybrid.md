@@ -2,8 +2,8 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-12 (**the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
-**Sources**: 19 documents
+**Last compiled**: 2026-08-22 (**K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
+**Sources**: 20 documents
 
 ## Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
 
@@ -361,3 +361,73 @@ The sub-quadratic / sparse-attention family this page tracks (Multiscreen, IHA/M
 - **IndexShare (arXiv 2603.12201) is the genuinely-new technique in the 5.2 point release.** It reuses the same sparse-attention indexer across every 4 sparse-attn layers, cutting per-token FLOPs ~2.9x at 1M context — an indexer-amortization lever on top of DSA. External/preprint confidence (vendor-reported, no CPU measurement). Relevant here as a sparse-attention efficiency mechanism distinct from the Delta Net recurrent family, and a future consideration once the base DSA forward pass lands. [intake-699]
 
 Sources: [`handoffs/active/llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) "Research Intake Update — 2026-06-20", [`handoffs/active/glm51-reap-cpu-evaluation.md`](../handoffs/active/glm51-reap-cpu-evaluation.md), intake-699, [deepseek-v32-dsa deep-dive](../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md).
+
+## Compiled Update — 2026-08-22: a fused chunked GDN kernel is a measured no-go on ceiling, not feasibility — and the ceiling survived the discovery that the kernel already existed upstream
+
+**Confidence: verified** for the attribution numbers, the falsified-lever ledger, the upstream-PR facts and the checkpoint/reference-code readings (all measured on frozen binaries or read from primary source). All MI210 speed numbers remain **observation-grade** per `P-GPU-1` — no production-named rerun exists, and none is proposed; **v9 is FROZEN and no v9 change is proposed by any of this.**
+
+### K28 closed as a measured no-go: GDN is only ~12–15% of MI210 prefill device time, so no op speedup clears the bar
+
+**The K28 fused-chunked-GDN-recurrence project (the `//TODO: Add chunked kernel` at `gated_delta_net.cu:191`) is COMPLETE with a no-go verdict, and no fused recurrence kernel was ever authored.** The accepted Phase-0 gate ran direct profiler attribution (schema `epyc.autokernel.rocprofv1_attribution.v1`) on the clean frozen-v9 HIP binary, Qwen3.6-35B-A3B Q8, physical gfx90a, graphs disabled:
+
+| Prompt | GDN share of summed device-kernel time | Full-model ceiling under a deliberately optimistic 4× GDN op speedup |
+|---:|---:|---:|
+| p2048 | 15.397% | 11.548% |
+| p8192 | 14.649% | 10.987% |
+| p32768 | 12.180% | 9.135% |
+
+The ceiling **declines with context** and reproduces the 2026-07-20 default-off HIP-event timing hook (15.45% / 14.64% GDN share at p2048/p8192 → 11.59% / 10.98% ceilings) instead of raising it — two independent instruments, one answer. Receipt: `/mnt/raid0/llm/autokernel/probes/k28-rocprofv1-attribution-20260811-r3/receipt.json`, SHA-256 `981306080a…74e74c5a0`; durable runner in epyc-inference-research commit `48350b24`. The default-off scaffold (branch `k28/prototype-20260720`) and the SGLang four-stage design notes are **reference material only, not latent implementation tasks**.
+
+**The headroom was real — the kernel is serial-dependency-bound, not bandwidth-bound.** The K28.1 op microbench shows effective bandwidth *falling* with length (51.17 GB/s at 64 tokens → 26.87 GB/s at 1024, ~1.7% of MI210's ≈1.6 TB/s HBM peak), the fingerprint of a per-token serial loop that cannot amortize. And the generic-ggml chunked graph — which already dispatches its matmuls to matrix cores — still **loses** to the serial kernel by 6.30–6.69% full-model prompt, proving the bottleneck is op-launch/HBM round-trips (~144 launches per 1024 tokens at C=64), not matmul throughput. Headroom at the op level was never the question; **the model-level share was, and it caps everything.**
+
+**Falsified-lever ledger (do not re-tread):** further GDN occupancy rewrite ✗ (occupancy is not the limit), compact-LDS ✗, graph-vs-fused policy switch ✗ (−6.30…−6.69%), single-stream BF16 state ✗ (neutral: −0.76/−0.79% prompt, +0.74% decode).
+
+**Reconciliation with this page's findings-05c row ("the one win is bf16 recurrent-state, +21.5% agg @B32"):** both numbers are the *same* `GGML_CUDA_GDN_STATE_BF16` mechanism in two regimes. State bandwidth only dominates at **batch**; single-stream is dependency-bound and the mechanism is neutral there. "BF16-for-speed is dead" is true single-stream only — **batched-decode state bandwidth remains the live GDN lever** across the family (35B frontdoor +17.7%, 122B architect +16.4%).
+
+### The SOTA bar is four autotuned Triton stages, not a megakernel — and kernel names drift under you
+
+**SGLang does not run one monolithic fused GDN kernel** (intake-1030#record, dive-verified against `sgl-project/sglang` main): it runs four separately-autotuned Triton stages behind one autograd wrapper — `chunk_local_cumsum` → `recompute_w_u_fwd` (WY/UT transform) → `chunk_gated_delta_rule_fwd_h` (state scan) → `chunk_fwd_o` — keeping chunk-local tensors on-chip between them. All four stage files are pure Triton with no `is_cuda` guard (necessary but not sufficient for gfx90a). A citation-hygiene lesson rode along: two intake sources name a `chunk_gated_delta_rule_fwd_kkt_solve_kernel` that **no longer exists in current source** (the stage is now `recompute_w_u_fwd_kernel`); neither was wrong when written, both are wrong now, and neither recorded the commit it was true at — **cite kernels by role and commit, and verify absence in the kernels tree, not the model tree.**
+
+### Post-closeout correction: the no-go's premise was already false when written — the measurement stands, the cost side collapsed
+
+**K28's claim that "no CDNA2/ROCm-tuned GDN kernel exists … genuinely open territory" was false ten days before it was written.** llama.cpp **PR #24561** — a chunked MFMA prefill kernel for `GATED_DELTA_NET`, scoped explicitly to CDNA/gfx90a — was opened 2026-06-13 and closed *unmerged* 2026-07-10 on **maintenance/authorship grounds, not merit**: the ggml CUDA/HIP maintainer declined it as apparently machine-generated with no volunteer maintainer while confirming *"a 5-10% E2E improvement … on my NVIDIA/AMD hardware."* A third party independently measured **+11.8% / +12.1% prefill on 2× MI210** after four fixes. Applying Amdahl to the *measured* gfx90a op speedups (1.63–2.44×) gives a realistic **~6–9% full-model prefill** for our geometry — *below* the ceiling K28 already judged insufficient, so **the no-go verdict is unchanged; only the cost side changed** (two complete implementations exist versus the "weeks of authoring" the gate was framed against). Decode is unaffected by construction — both kernels gate off below 128/512 tokens per call.
+
+Three non-obvious selection constraints, all read from frozen v9, for anyone who revisits:
+
+1. **PR #26001 would never fire on our frontdoor**: it requires `K == 1`, and `--spec-type draft-mtp` makes `K = cparams.n_rs_seq + 1 > 1` (`src/models/delta-net-base.cpp:570`). **#24561 supports keep_rs/MTP by design** — the *closed* PR is the usable one on our exact configuration.
+2. **#26001 has no AMD runtime path at all** — its dispatch gate is literally `GGML_CUDA_CC_IS_NVIDIA(cc_dev)`; the working gfx90a version exists only as an unmerged patch in a GitHub comment.
+3. **#24561's `MIN_BLOCKS_PER_SM 3` occupancy floor keeps it dark at `-np 1` on our model**: 312 blocks needed on MI210's 104 CUs vs the 256 our 32 v-heads yield at `n_seqs=1`; it fires unmodified at `-np >= 2` (compile-time macro).
+
+**A numerics caveat now attaches to any chunked adoption:** the chunked formulation is algebraically equivalent but **not floating-point equivalent** — error grows with chunk count and hence prompt length. Upstream widened its op-test NMSE gate from 1e-7 to 2e-7 and it **still fails on MI210 at T=2048** (2.97e-7 / 3.70e-7 at 128 chunks), while our own GDN correctness cases top out at 256 tokens. Today's fp32 sequential kernel is the most conservative option in the tree; adopting a chunked kernel means giving that up, and any adoption is `llama.cpp-experimental` work under the four-step promotion workflow.
+
+### Log-Linear GDN: the reference is not runnable as shipped — port from the pure-PyTorch recurrent form, which needs no lookup table
+
+Extending this page's 2026-08-12 update (gates fired, state-size claim inverted): **gate 2 is satisfied as code but an executor who clones the repo and calls `.generate()` gets nothing.** Two concrete blockers, both read from source: (1) the only wired compute path is Triton/GPU (`mode == 'chunk'`, else `raise NotImplementedError`) — the pure-PyTorch `hattention/recurrent.py` is reachable only by editing the model; (2) `hattention/base.py` hard-codes an author-cluster absolute path for the cached L×L level-lookup matrix, and the in-repo fallback is an O(L²) Python double loop (≈2.7·10⁸ iterations at L=16384).
+
+**The settled port consequence: port from `hattention/recurrent.py`, not the chunkwise kernels.** The recurrent form needs **no L×L LUT at all** — `HState.cascade_weak()` derives the level from per-level counters (`counts[level] == base**level` → carry), a ggml-friendly integer state machine; the LUT exists only to materialize the parallel/chunk-form mask. Two further checkpoint facts bound any deployment reading: the level count is a **fixed 15** (`attn.L [6, 15]`, = ceil(log2 16384)+1) with `max_position_embeddings` 16384 — a 262K-context claim needs 19 levels and therefore a **different checkpoint** — and the level set is constant in L. The port-or-wait decision itself remains the operator's, gated on a numerical oracle that does not yet exist (unchanged from 2026-08-12).
+
+### The GDN forgetting-fix design space now has four structurally distinct branches — easy to conflate, and the distinction is load-bearing
+
+Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action attached):
+
+| Branch | Lever | Entry | Standing |
+|---|---|---|---|
+| Grow the state | O(L log L) hidden states | intake-356#record | gates fired, port not started |
+| Segment checkpoints | O(NL) | intake-354#record | reference only |
+| Bounded exact side-cache | fixed state + bolt-on bounded cache | intake-1272#record (LTE), intake-1268#record (HOLA) | LTE opened the branch 8.5 months before HOLA |
+| Fix the update rule | diagonal key-Gram preconditioner, state size unchanged | intake-1273#record (PGDN) | no checkpoint anywhere; activation gate closed |
+
+**PGDN is the only branch with near-zero state cost** — one d_k vector per head against the existing d_k×d_v matrix (~0.8%), versus the log-linear branch's measured ~15× state *increase* — and the smallest llama.cpp delta of the four; but it adds weight tensors no pretrained GDN checkpoint contains, so it is inert until someone trains one. **Do not cite LTE as evidence the bounded-cache branch works**: its own Table 2 has plain GDN beating it 88.9 → 83.1 on RULER S-NIAH at 1.4B, the advantage inverts across its single scaling step, nothing is measured beyond its 4096 training length, and it was withdrawn from ICLR 2026.
+
+**A ratio-convention trap for the m-a-p hybrid-band checkpoints:** their "N:1" means *one attention layer every N layers* (attention fraction 1/N), not a literal linear:full count — `hybrid-3-1` is 8 attention layers of 24. Our production 30-GDN + 10-attention (10-of-40) is therefore **"4:1" in their convention**, which is not one of their five trained arms; it sits between 3-1 and 6-1, inside their recommended band under either reading.
+
+(The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record).)
+
+### Source References
+
+- [K28 fused chunked GDN kernel research (COMPLETED)](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the rocprofv1 attribution no-go, the serial-dependency diagnosis, the falsified-lever ledger, the SGLang four-stage finding, and the 2026-08-22 PR #24561/#26001 correction with the fp-numerics caveat.
+- [Log-Linear Gated DeltaNet readiness tracker](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the two runnability blockers, the port-from-`recurrent.py` consequence, the fixed-15-level/16K position bound, and the 2026-08-21 GDN branch map.
+- intake-1030#record in [the research index](../research/intake_index.yaml) — the SGLang `fla/` four-stage enumeration and the kernel-name-drift lesson.
+- llama.cpp PR #24561 and issue #20354 (cited from the K28 handoff) — the closed-unmerged CDNA chunked MFMA kernel with maintainer-confirmed 5-10% E2E, and the AMD register-pressure landmine that motivated the CDNA2 caution.
+- epyc-inference-research commit `48350b24` + receipt `k28-rocprofv1-attribution-20260811-r3/receipt.json` (SHA-256 `9813060…`) — the durable attribution runner and the signed no-go evidence.
+- intake-1272#record / intake-1273#record in [the research index](../research/intake_index.yaml) — the LTE caution (withdrawn, Table 2 inversion) and the PGDN fourth branch.

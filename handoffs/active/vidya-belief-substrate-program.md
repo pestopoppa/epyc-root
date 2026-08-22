@@ -905,7 +905,13 @@ Standard checkbox discipline (`- [x] … ✅ YYYY-MM-DD`; mid-flight discoveries
 lines). Maintain the master-index and research-evaluation-index rows; on completion, extract
 findings to docs, move to `completed/`, delete the master-index row.
 
-- [ ] **SC46 — wire the CT-1 chat-template A/B into the belief kernel on the write side** (filed
+- [x] **SC46 ✅ 2026-08-22 — wired.** Writer `chat_template_ab_capture.py` + strict reader
+      `chat_template_ab.py` (registered `chat-template-ab-measurement`), tuple carries the template
+      axis (`template_sha256` per arm) alongside model/quant/kernel/serving/sampling/paired-flips;
+      well-formed rows grade Witnessed/Attested via the shared ladder, zero local grading logic
+      (no-private-ladder sweep passes over both files). Pre-hook runs emit zero rows per the DF2-4
+      precedent. Details: CT-8 in `qwen-chat-template-evaluation.md`.
+      — wire the CT-1 chat-template A/B into the belief kernel on the write side** (filed
       2026-08-21 at first-measurement time; first run in flight the same hour). Producer: the CT-1
       runner (per-question JSONL + per-suite summary, scored by orchestrator `debug_scorer`).
       Tuple must carry (model, template_sha256, suite, n, sampling config, kernel/binary identity,
@@ -922,15 +928,6 @@ findings to docs, move to `completed/`, delete the master-index row.
       times lower-better; peak_over_floor higher-better) and let `claim_tuple.grade()` decide; it must
       NOT write a new grading rule. Every tuple must carry the API-scaling caveat (raw counter x 15.3)
       and the load-generator identity (1024^2 fp16 mm, sync-per-op).
-- [ ] **SC49 — register the final AutoKernel C6 admission receipt/capture pair prospectively.** The
-      current research checkpoints are not launch authority, so bind this task to the eventual
-      independently audited producer SHA rather than `91a75a05` or `8a0ffc7d`. The writer must carry
-      raw first-turn and verification anchor/candidate latencies, rederive
-      `verification_speedup >= max(beta, alpha * first_turn_speedup)` with `alpha,beta >= 1.2`, bind
-      candidate/anchor/evaluator commits, both native C6 receipts, the roofline-derived cap, producer
-      identity, and `reopen_when`. The adapter must validate the exact pair and self-hashes, rederive
-      ratios/cap/disposition, reject pair swaps and coherent substitutions, then project through the
-      existing `ClaimTuple` ladder without defining a new grade. Pre-hook runs emit zero rows.
 - [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.**
       Filed 2026-08-21 from `intake-1245#record` (FlashInfer-Bench, arXiv:2601.00227v1, Apache-2.0, repo @
       `40e6ca78`). **It is a write-side claim-tuple carrier in all but name**: an immutable
@@ -963,3 +960,27 @@ findings to docs, move to `completed/`, delete the master-index row.
       with any tuple: ParEval wraps its timed region in `__attribute__((optimize("O0")))` at a fixed
       problem size, so its absolute numbers are NOT comparable to our llama-bench protocol and must never
       be graded against it. Source-table row added in `scripts/vidya/adapters/README.md`.
+
+## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21)
+
+Four sweeps specified by the 2026-08-21 Stage-2b wave will produce measurements, so the write-side
+task is filed **now, before any of them runs** — not when results land. Source row added to
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+| Sweep | Owning handoff | Emits |
+|---|---|---|
+| **G1** #27442 greedy boundary sweep | `log-linear-gated-deltanet-readiness.md` | prompt token count, prompt class, **first sampled token id**, stop reason |
+| **G2** redesigned DF2-5 concurrency grid | `dflash2-block-drafter-experimental-build.md` | per-slot acceptance, mean accepted length, drafter arm, `--kv-unified` state |
+| **G3** MI210 quantized-KV verify probe | `speculative-decoding-mtp-refresh.md` | selected FA kernel per `draft_max` |
+| **G4** post-restore prompt-reuse rate | `dynamic-stack-concurrency.md` | reuse fraction per migration |
+
+- [ ] **SC49 — build the adapter that projects these into `ClaimTuple`s.** It must **project, not
+      grade**: the carrier is shared, each source class has exactly one ladder, and the registry
+      refuses a second. Two caveats are load-bearing and must ride in every tuple: **G1 is a
+      correctness observation, not a throughput one**, and its repeated-pangram arm is a *negative
+      control* whose result must never be projected as a model-quality claim; **G2's acceptance ratio
+      is not comparable across `--spec-draft-n-max` values**, so `n_max` and mean accepted length must
+      travel together or the tuple is uninterpretable.
+      *Rationale for filing pre-run:* wiring the write side is cheap and permanent; retrofitting the
+      read side is impossible, and a tuple invented on read claims warrant the original run never
+      captured.

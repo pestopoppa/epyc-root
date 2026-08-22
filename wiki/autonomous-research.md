@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-20 (v19 proved the cross-arm seed repair on hardware and advanced through Q5/Q8, then failed closed before GPU work when planner output named controller-owned FA candidate routes outside sealed anchor-only authority)
-**Sources**: 120+ documents
+**Last compiled**: 2026-08-22 (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Sources**: 121+ documents
 
 ## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
 
@@ -1559,3 +1559,108 @@ still wait on the post-reboot completed campaigns.
 - [`handoffs/active/agentic-rocm-kernel-authoring.md`](../handoffs/active/agentic-rocm-kernel-authoring.md) — r14 terminal refusal and immutable r15 receipt-chain gate
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — AK-AUD-14/15 and completed deterministic pair-producer task
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — exact campaign, teardown, publication, and live-checkpoint hashes
+
+## Compiled Update — 2026-08-22: deployment identity must bind logical content, not paths — and a durable supervisor is proven only by surviving its launcher's death
+
+**Confidence: verified** — every event below is a sealed, forensically preserved campaign terminal or
+a repair commit promoted to `epyc-inference-research` `origin/main` with its warning-strict suite
+counts. Campaigns v20–v24 are immutable forensic records; none was resumed. The live v25 campaign and
+the CPU-TP-GRAPH proposal are deliberately NOT compiled here (in-flight / un-landed planning).
+
+**A campaign can be killed by its own terminal: v20's controller and serial HIP build were torn down
+with the owning agent PTY, with no compiler diagnostic preceding the exit.** The structural answer —
+not a retry — was the durable-supervisor substrate: a detached tmux supervisor that executes only from
+a root-owned content-addressed closure, append-only build-attempt recovery, exact
+abandoned-worktree/ref quarantine, streaming evaluator-owned build logs and process receipts, and
+unique controller/build cgroups. The integrated warning-strict product suite passed 1,010 tests before
+the graph-identity change. v20's incomplete cache is intentionally non-resumable under its sealed
+product: durability means a *fresh successor* survives, never that a torn campaign is patched back to
+life.
+
+**The supervisor's first casualty was its own identity scheme: deployment graph v4 hashed absolute
+module paths, so byte-identical code had two identities.** Direct validation ran from the source
+worktree while the supervisor ran the same bytes from the root-owned closure; v21 therefore stopped
+before controller execution and was preserved as forensic. Graph v5, product commit
+`b62d63f8f9caecac597ebd9f1b3b7b098623dc71`, binds 29 stable `logical_path`/SHA-256 module identities,
+and launch spec v3 independently verifies every physically imported object against the root-owned
+closure — logical identity for *what the code is*, physical verification for *what actually got
+imported*, as two separate checks. Acceptance was exact: 1,014/1,014 warning-strict, and direct plus
+sealed validate-only passes produced byte-identical graphs with no claims and no GPU access.
+
+**The durable-supervisor survival proof is now empirical: fresh v22 launched with restart count zero
+and completed planner rc0 plus critic ACCEPT past both the launching command's death and an
+actor-process turnover** — exactly the failure that killed v20. v22 then exposed the next identity
+defect: the static registry compared **three distinct config identities as if they were one** — pretty
+source bytes `5b75ecedf415d963185a2dda187ac686de97cd214d8a97719e78427365701542`, canonical supervisor
+bytes `1fa57a5b897c2a5b905d60b2c2d84fa59931be3a980fdde71e101cfedd94b9d9`, and semantic deployment
+identity `8412c046a7cad1ec1d1781c9e636d1293a6fcec2345d769d0b9c3e094c1d913a`. The failure shape is the
+designed one: the admission probe was released after ~4 ms, no GPU screen, build, correctness run or
+KFD process ever began, the supervisor reaped the controller, removed the exact cgroup, and exhausted
+zero allowed restarts. The dual-identity carrier repair binds the canonical and semantic identities
+separately through supervisor authority v2, launch spec v4, builder v6, build-key v2, request v2, and
+every recovery-owner validation; an independent audit caught a six-versus-eight-field config inode
+projection mismatch before launch. Product `b12c672af1f205ae0262f6de8f8ea30e04cf779e`; serialized
+critical suites 18 supervisor + 28 factory + 53 registry, broad suite 1,017/1,017.
+
+**v23 proved the dual-identity repair and then exposed the class of defect no compile check or mocked
+test can catch: a runtime-only unresolved name on the first real build path.** v23 crossed the
+repaired build-authority boundary without a config-identity refusal (and its first Q5 authoring
+refusal spent zero scientific budget while auto-opening planner turn 2 — bounded refusals advancing
+rather than starving the portfolio, as in v19). Turn 2 then entered the real uncached build path and
+failed at `execution/worktree.py:2578`: `Path(sandbox_cgroup_root)` referenced `Path` without
+importing it. `py_compile` cannot detect an unresolved name and every prior test had mocked past that
+branch. The repair added the import and — the durable part — the previously absent **real boundary
+test**: a tiny CMake project executing through actual `run_build` beneath a real supervisor-style
+`OwnedCgroup`, proving nested ancestry, process/log/sandbox receipts and complete cleanup, with no
+hardware needed. Product `8022aa764d0bdae06064033cfddac8aa78f24af6`: 250 focused + 1,020/1,020 broad
+warning-strict, all 278 sealed Python files compiled, Ruff F821 clean. The rule generalises: **every
+authority seam needs at least one hardware-free test that executes the real seam, because a mocked
+seam certifies nothing about names resolved only inside the mocked branch.**
+
+| Campaign | Terminal event | Repair product (research `origin/main`) | Suite evidence |
+|---|---|---|---|
+| v20 | controller + serial HIP build torn down with owning agent PTY; no compiler diagnostic | durable-supervisor substrate (pre-graph-change) | 1,010 warning-strict |
+| v21 | graph v4 hashed absolute paths — worktree vs closure identities diverged pre-controller | graph v5 `b62d63f8f9caecac597ebd9f1b3b7b098623dc71` | 1,014/1,014; byte-identical direct/sealed graphs |
+| v22 | three config identities compared as one; fail-closed in ~4 ms, zero restarts | dual-identity carrier `b12c672af1f205ae0262f6de8f8ea30e04cf779e` | 18+28+53 serialized critical; 1,017/1,017 broad |
+| v23 | runtime-only `Path` unresolved at `execution/worktree.py:2578` on first real build | `8022aa764d0bdae06064033cfddac8aa78f24af6` + real `run_build`/`OwnedCgroup` boundary test | 250 focused; 1,020/1,020 broad; Ruff F821 clean |
+| v24 | real Q8 semantic regression escaped as uncaught `RuntimeError` (disposition defect) | `a0fdad399bbbf050180c1c69423479e1b8b14be6` — sealed `correctness_falsified` verdict path | 195/195 focused; 1,029/1,029 broad; independent audit |
+
+**v24 closed the lifecycle end-to-end and extended the typed-refusal doctrine from planner intent to
+scientific verdicts.** It is the first live production proof of the repaired supervisor/authority/
+recovery/`run_build` seam: anchor and candidate builds completed rc0 with sealed process terminals and
+removed nested cgroups, correctness passed 1,139/1,139, and rocprofv3 attribution sealed 59,925 rows
+per arm with a +0.3112% exact-route candidate effect. S1 graphs-off then caught a **real** candidate
+semantic regression — all nine sealed input hashes matched, each arm internally repeatable, all nine
+candidate output hashes differing from anchor, because the Q8 patch changed rounding semantics. That
+is the screen working; the defect was that this *expected scientific rejection* escaped as an uncaught
+`RuntimeError` and stopped the campaign instead of spending one scientific attempt. The repair seals a
+secret-free `correctness_falsified` result that spends exactly one attempt, skips graphs-on,
+suppresses the exact semantic patch identity, and advances the bounded portfolio without terminating
+the hypothesis early — while missing hardening, within-arm instability, or malformed semantic evidence
+instead seals an *infrastructure ambiguity* that preserves science/turn/distinct-candidate state and
+retries the same logical candidate under a fresh operation key. Semantic candidate identity excludes
+per-turn envelope IDs, so identical patch bytes cannot consume a second slot. This reconciles with the
+2026-08-20 update's repair boundary (invalid planner intent → typed refusal, not crash): the same
+principle now covers the verdict plane — **an autonomous loop must have a sealed disposition for every
+outcome its own screens are designed to produce.** An independent audit of the complete operation
+namespace (factory through public terminal: path/inode/owner/mode/parent identities, receipt namespace
+hashes, refusal of aliases/symlinks/hardlinks/inode swaps, restart without replaying a completed arm)
+passed before promotion.
+
+**The observing dashboard earned its own defect-and-repair pair, confirming it is a consumer with
+independent failure modes.** epyc-root `130d41c5688a41e4f93df3720c15a011cb1fe646` validates exact
+supervisor v2/v3 grammars, canonical hashes, the frozen 29-role module mapping and ledger FSM, rejects
+duplicate or non-finite JSON, and exports no raw supervisor stderr; successor
+`35c2663d1e4331b7df21889a439eadd68cdb0fc8` adds the strict v2 build-receipt adapter that truthfully
+rendered v24's full arc while keeping the released GPU claim false. A precedence defect then left a
+historical refusal as the headline even as producer state advanced; audited successor
+`7752ed72d6fd0388b2c886a2176503f6cffb5aaa` requires the exact campaign/hypothesis/turn/operation/time
+lineage before any successor event can outrank a refusal, preserving the refusal as digest-bounded
+history. Ordering an event stream by wall time is not enough — **precedence must be lineage-typed.**
+
+### Source References
+
+- [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — primary chronology: v20–v24 forensic terminals, all repair/product commit ids, suite counts, dashboard lineage, and the explicit v25/CPU-TP in-flight boundaries
+- [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — standing campaign handoff; the v18/v19 identities and typed-refusal repair boundary this update extends
+- epyc-inference-research `b62d63f8f9caecac597ebd9f1b3b7b098623dc71` / `b12c672af1f205ae0262f6de8f8ea30e04cf779e` / `8022aa764d0bdae06064033cfddac8aa78f24af6` / `a0fdad399bbbf050180c1c69423479e1b8b14be6` — promoted repair products cited by the source (graph v5, dual-identity carrier, `run_build` boundary test, verdict disposition)
+- epyc-root `130d41c5688a41e4f93df3720c15a011cb1fe646` / `35c2663d1e4331b7df21889a439eadd68cdb0fc8` / `7752ed72d6fd0388b2c886a2176503f6cffb5aaa` — audited dashboard commits (strict grammars, v2 build-receipt adapter, lineage-typed refusal precedence)

@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-21 evening (Shape C now EMPIRICAL on the MI210: a sound value oracle accepted 2 of 3 omission mutants, one with error BIT-IDENTICAL to the honest kernel - the omission class splits into input-conditional identities needing a semantic judge vs value-visible members a sound oracle catches; plus the first-party KernelFalcon sixth instance, the correctness-conditioned-speedup survivorship rule, and the dtype-keyed-tolerance attack surface; previously same-day morning: the third vacuous-pass shape from five dive-verified sources)
-**Sources**: 127+ documents
+**Last compiled**: 2026-08-22 (log retention bounds the evidence window: a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the empty_generation detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Sources**: 128+ documents
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
 
@@ -2764,3 +2764,57 @@ is chosen (`RVP-C6-22`).
   + the 30pp differential), `intake-1243#record` (KernelFalcon admission + attribution correction),
   `intake-1244#record` (Fast_1@1 survivorship), `intake-1245#record` (matched-ratio rule; NaN/Inf
   rejection; max-observed-error)
+
+## Compiled Update — 2026-08-22: log retention bounds the evidence window — a clean log is a negative only inside it, and a silent detector exonerates only after its blindness is ruled out
+
+**Confidence: verified** — the retention measurement and detector analysis are recorded in the
+evidence-plane handoff's 2026-08-21 addendum; the upstream-bug findings are the `dive-verified`
+`intake-1279#record` read against the reporter's own attached artifacts. The retention *fix* is filed
+but un-landed; what is compiled here is the settled diagnosis, not a repaired state.
+
+**The retained-evidence window is part of the instrument, and it is discovered only when a disclosure
+asks a retroactive question.** When upstream llama.cpp #27442 (disclosed 2026-08-20) raised a
+correctness question about production, no llama-server or orchestrator log on disk was newer than
+2026-08-11 — a nine-day gap spanning the disclosure, so the question **could not be answered from
+retained evidence** at all. Where the frontdoor log *does* cover, it is a genuinely useful negative:
+11,670 timing lines, zero instances of the failure signature, six healthy requests at ≥16K tokens
+including one at 64,019 prompt tokens — but that negative is valid **only for its window**. This
+extends the standing observation-window rule (a sample whose window does not overlap the phenomenon
+proves nothing) one level up: the window is bounded not just by when you sampled but by what the
+retention policy kept, and a rotation setting silently converts "we would have seen it" into "we
+cannot know." The fix — retention for `epyc-orchestrator/logs/llama-server-*.log` — is an open task
+in the handoff, not a landed repair.
+
+**A detector's silence is evidence only after you prove the mechanism would have tripped it.** The
+`empty_generation` detector (`llama_server.py`, `_is_empty_long_generation`) is active at its 30 s
+default and its logger channel *is* retained. The failure mode in question occurs on a **cold full
+prefill** — minutes of CPU at 17K+ tokens — which comfortably exceeds that threshold, so the detector
+is not blind to the mechanism and its silence inside the retained window is meaningful. The handoff
+records this deliberately so the same question is not re-raised later as a detector gap: **retention
+is the gap; the detector is not.** The general form belongs beside the vacuous-pass shapes already on
+this page: before citing a quiet monitor as exoneration, establish (1) it was running, (2) its output
+is retained, and (3) the failure's signature exceeds its trigger threshold — otherwise the silence is
+Shape-A quiet, not evidence.
+
+**The reporter's own exculpatory control was structurally blind, and their own log refuted their
+localization — both caught by reading primary artifacts, not the narrative.** The upstream reporter
+offered `llama-bench` as evidence the model computes correctly; `llama-bench` feeds `std::rand()`
+tokens and never samples the model, so it **cannot detect wrong output at all** — a control that
+cannot reject the hypothesis, the same defect class as this page's 2026-08-05 rule (a control should
+be allowed to reject the experiment) and the Shape-C gates that pass by construction. And the
+reporter's cache/checkpoint localization is refuted by their own attached log:
+`n_prompt_tokens_cache = 0` on all fourteen requests — the prompt cache never engaged, so every
+reproduced failure is a cold full prefill.
+
+**Our exposure is a characterized unknown, not a cleared risk — and the boundary of what is known is
+itself the finding.** The shared hybrid/recurrent code is byte-identical to the reproducing build,
+but the failing kernel is Metal's, every reproduced quant is IQ2-class against our Q8_0, and no
+backend other than Metal has been tested by anyone. Combined with the nine-day retention hole, the
+honest claim grammar is: clean within the retained window, untested outside it, mechanism-plausible
+but backend- and quant-mismatched. None of the three sentences substitutes for the other two.
+
+### Source References
+
+- [`handoffs/active/evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) — 2026-08-21 addendum: the nine-day retention gap, the window-bounded clean-log negative (11,670 lines, six ≥16K requests), and the detector-not-blind analysis
+- [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — Stage-2b record: `intake-1279#record` verdicts (cache localization refuted by the reporter's own log; `llama-bench` control blind by construction; exposure an explicit unknown)
+- [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1279#record`, the dive-verified entry for llama.cpp #27442 carrying the primary-artifact evidence
