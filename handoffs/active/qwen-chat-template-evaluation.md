@@ -433,6 +433,26 @@ anything.
       INCLUDING runtime attestation. Two launcher defects found+fixed en route (gate realized-mode
       deadlock — dodged; silent vacuous reload of sub-full instances — fixed with addressability +
       exit-1 + parity test). E-7 recalibration of both voided stamps running 2026-08-22.
+- [x] **CT-E7 ✅ 2026-08-22 — E-7 recalibration RUN and stamped** (operator-directed; live
+      production path; stamp `(model, quant, v9 0db32c06e/10125, template 1443ea9ab4bb)`, prod
+      sampling, maxtok 900; raw artifacts on disk at `/workspace/tmp/e7-recal/` — kept off GitHub
+      per the no-raw-material policy; the belief sidecars are the durable record).
+      **frontdoor** (35B, CPU): math 82.5% @281tok · mmlu_pro 37.5% @45 · gpqa_diamond 55.0% @2 ·
+      cruxeval 32.5% @394 — CT-1b's arm-2 numbers REPRODUCED on the live path (live==measured).
+      **architect_general** (Qwen3.8, GPU) first-ever stamps at this template: math 85.0% ·
+      mmlu_pro 27.5% · gpqa_diamond 47.5% · cruxeval 22.5%, zero errors. **gpqa_diamond_cot VOID
+      at maxtok 900** (48/60 truncated — the finish_reason rule catching this session's own design
+      miss; CoT suites need the 4096+ budget CT-5 established); excluded from the sidecar; 4096
+      rerun same day, sidecar supersedes: **75.0% (45/60), mean 2,183 tok, 14 truncated** —
+      +45pp from the cap fix alone, and ABOVE the embedded template's CT-5 baseline on the same
+      pinned ids at the same budget (70.0%). Superseding row grades Witnessed/Attested. All 8 valid cells emitted as producer-authored belief
+      rows grading **Witnessed/Attested, empty reasons** — the program's first decision-gating
+      measurements. Second design miss recorded: role arms ran sequentially despite CPU/GPU
+      concurrency doctrine (~30 min lost; runner-template rule filed in the shard).
+- [ ] **CT-E7b — propagate the new stamps into the MASTER registry quality rows** (frontdoor +
+      architect_general + the qwen38 role row). Deliberately NOT rushed at session end — master
+      surgery earned a near-miss today; do it fresh with the compile chain run + check green,
+      sourcing the numbers from CT-E7 and the belief sidecars.
 - [x] **CT-8 ✅ 2026-08-22 — belief-kernel wiring BUILT AND WIRED** (subagent-built, conformance
       green): producer writer `scripts/vidya/adapters/chat_template_ab_capture.py` (atomic
       `belief_measurements.jsonl` sidecar at summarize-time; fail-loud on any guessable field —

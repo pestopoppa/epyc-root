@@ -33,3 +33,33 @@ comparability) + architect_general (160 + CT-5's 60 gpqa_diamond_cot), productio
 - epyc-orchestrator `34ff6fcc`: plumbing + reload fix + regenerated artifacts (pushed)
 - epyc-inference-research `b9ba66e6`: pilot registry blocks (pushed)
 - epyc-root: this shard + handoff flips — committed at the E-7 boundary
+
+**Design miss, operator-caught:** the E-7 runner ran its two role arms SEQUENTIALLY (a bare loop)
+despite CPU+GPU concurrency being ratified doctrine and used earlier the same day — cost ~30 min
+wall-clock. Runner-template rule going forward: role arms on disjoint compute planes run in
+parallel (threads), each with its own incremental JSONL; the belief-sidecar emit joins at the end.
+
+---
+
+## Session close — E-7 stamped, belief-gated, and the CoT cell redeemed
+
+**E-7 stamps** (live production path, `(model, quant, v9, template 1443ea9ab4bb)`): frontdoor
+82.5/37.5/55.0/32.5% (math/mmlu/gpqa/crux) — CT-1b REPRODUCED live; architect_general first-ever
+stamps 85.0/27.5/47.5/22.5%, zero errors. **gpqa_diamond_cot voided at maxtok 900 by this
+session's own finish_reason rule** (48/60 truncated — the same budget trap, self-inflicted this
+time); 4096 rerun: **75.0% (45/60)**, ABOVE the embedded template's 70.0% CT-5 baseline on the
+same pinned ids. All 9 valid cells emitted as producer-authored belief rows grading
+**Witnessed/Attested, empty reasons** — the program's first decision-gating measurements, wired
+same-day through the new chat_template_ab adapter.
+
+**Also closed this pass:** CT-8/SC46 (adapter built + wired, 16 tests + conformance green); the
+full wiki sweep (14 foreign sources → 10 pages, 6 contradictions reconciled, pending 0); CT-E7b
+filed (registry quality-row propagation, deliberately fresh-session). Two design misses owned in
+the record: sequential role arms (~30 min) and the 900-cap on a CoT suite.
+
+**Session totals (2026-08-21→22):** one operator URL became — 6 dived intake entries; the
+four-plane registry discovery + swap completion + first fully-green check; an injection-free
+EPYC-owned template built, validated, measured (4 campaigns, ~1,300 scored generations), and
+DEPLOYED to production on 3 roles; 4 launcher/lifecycle defects found (2 fixed, 2 filed); the
+belief-kernel write side wired with the template axis; and every claim either measured,
+graded, or explicitly voided by its own rules.
