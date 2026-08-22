@@ -110231,8 +110231,16 @@
     verified_by: stage-2b-dive
   - claim_index: 3
     kind: line-range
-    locator: 'repro_c32768_noflash.log:2035 - the failing prefill ran METAL''s fused chunked GDN
-      kernel, which is not the kernel any of our paths use'
+    locator: 'repro_c32768_noflash.log:2035 - MISREAD, CORRECTED 2026-08-22. The quote and its
+      sha256 remain valid (the line really is in the log) but it is NOT a Metal kernel name. It is a
+      BACKEND-AGNOSTIC GRAPH-LEVEL FUSED-OP PROBE message emitted by src/llama-context.cpp
+      (descriptor llm_fused_op_gdn_ch_probe at :52-56, defaulted on at :250-251, resolved at
+      :554-555) - code present and enabled BY DEFAULT IN OUR OWN FROZEN v9. Verified firsthand: the
+      exact string appears 19 times in our own orchestrator llama-server logs across CPU servers,
+      including on a model with no GDN layers at all, because the probe logs "enabled" whenever it
+      finds no device mismatch. And NO chunked GDN kernel exists in the Metal backend - not in our v9,
+      not in upstream master @ e85caa81 - where the GDN kernel is a sequential per-token f32 loop,
+      structurally identical to our HIP kernel and our CPU op.'
     quote: 'resolve_fused_ops: fused Gated Delta Net (chunked) enabled'
     quote_sha256: 51c5057f51a93ab52379640893808fcb03bc7a9b3c90767231d6e0fad0dbbeec
     source_revision: issue 27442 attachment sha256 3695a5a1..., retrieved 2026-08-21
@@ -110325,12 +110333,24 @@
     reporter also lists PrismML b9599 as affected, which brackets our 10125 from below. So the defect,
     whatever it is, is not newer than our fork point.
 
-    TWO CORRECTIONS CUT THE OTHER WAY. The failing prefill ran METAL's fused chunked GDN kernel
-    ("resolve_fused_ops: fused Gated Delta Net (chunked) enabled"); our CPU kernel
-    (ggml_compute_forward_gated_delta_net_one_chunk, ops.cpp:10826) is a sequential per-token F32
-    recurrence - the most numerically conservative form and structurally unlike Metal's chunked matmul
-    kernel - and our HIP kernel is a separate implementation again. And every quant documented anywhere
-    is IQ2-class or lower, while our frontdoor is Q8_0.
+    ONE CORRECTION CUTS THE OTHER WAY - AND THE SECOND ONE WAS WRONG, WHICH MAKES OUR EXPOSURE LARGER
+    RATHER THAN SMALLER. What stands: every quant documented anywhere in the issue is IQ2-class or
+    lower, while our frontdoor is Q8_0. And our CPU kernel really is a sequential per-token F32
+    recurrence (ggml_compute_forward_gated_delta_net_one_chunk, ops.cpp:10826) - the most numerically
+    conservative form available.
+    WHAT WAS WRONG, corrected 2026-08-22 and re-verified firsthand: this entry claimed the failing
+    prefill ran "METAL's fused chunked GDN kernel ... structurally unlike" ours. THERE IS NO CHUNKED
+    METAL GDN KERNEL - not in our frozen v9, not in upstream master @ e85caa81, where
+    kernel_gated_delta_net_impl is a sequential per-token f32 loop. The log line is a
+    backend-agnostic graph-probe message that OUR OWN CPU SERVERS EMIT 19 TIMES OVER. So the
+    reporter's failing path and our path run the SAME sequential recurrence, and "which is not the
+    kernel any of our paths use" is exactly inverted. This REMOVES one of the two mitigations recorded
+    here: the numerics of the failing path are now known to match ours, so the case for running the G1
+    boundary sweep is STRONGER than this entry originally stated. Unaffected: the EOS-token finding,
+    the n_prompt_tokens_cache = 0 refutation, the degenerate-pangram analysis, and the overall
+    dive-overturned verdict. NAMING TRAP: the symbol ggml_compute_forward_gated_delta_net_one_chunk
+    refers to a THREAD WORK-PARTITION chunk over heads x seqs, NOT an algorithmic chunk over tokens -
+    anyone grepping "chunk" in the CPU path will misread it.
 
     THREE LOCAL CONFIGURATION FACTS, cutting both ways. (1) We run --spec-type draft-mtp so n_rs_seq >
     0 (common.cpp:1596), putting us on COMMON_CONTEXT_SEQ_RM_TYPE_RS with recurrent rollback snapshot
