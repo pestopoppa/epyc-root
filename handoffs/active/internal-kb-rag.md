@@ -631,8 +631,12 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       "**answerai unscored**". It was scored, on the **same BEIR-15**, on the successor's own model
       card, and had been since 2025-05-14. The controlled figures are **54.67 (GTE) vs 53.35
       (answerai, LightOn's own re-run of the published checkpoint)** = **1.32 pp** — *inside* the ~2 pp
-      noise floor this handoff declares. Three harnesses agree within 0.44 pp, one of them run by the
-      competing vendor in collaboration with answerai's own author.
+      noise floor this handoff declares. **CORRECTED 2026-08-22: TWO harnesses, not three.** Vendor
+      53.79 and LightOn's own re-run 53.35 are the only independent BEIR measurements of this model.
+      The apparent third (mixedbread, arXiv 2510.14880) **transcribed both ColBERT baseline rows from
+      LightOn's model card**, published 36 days earlier — 15/15 exact per-task match to LightOn's
+      re-run column, 0/15 to the vendor-reported one. The 1.32 pp gap is unaffected, because it was
+      always LightOn's own comparison.
       Correct the record, and state the **cost side the original decision never weighed**: 4.46×
       fewer parameters and a **measured −24.3 %** index footprint (0.757×, cross-validated against the
       stored `.npz` to 0.2 %; the saving is essentially the bare 96/128 dim ratio — the tokenizer swap

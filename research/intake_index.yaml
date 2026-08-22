@@ -108424,16 +108424,37 @@
   - 'REPRODUCIBILITY GAP: L_S, the "Sensitive Layer Number", appears EXACTLY ONCE in the whole PDF -
     in Algorithm 1 input list. Never defined, never valued.'
   - 'INDEPENDENT, EVIDENTIAL COUNTERWEIGHT - arXiv 2606.09864 v2, "Alignment Collapse Under KV Cache
-    Quantization": low-bit quantization can silently destroy safety alignment, with Mistral-7B losing
-    15.2 percent of its refusals at only 1.03x perplexity, and sharp model-specific phase transitions
-    invisible to standard metrics. Covers KIVI explicitly. THIS DOES NOT REFUTE QuantSpec - it refutes
-    the SUFFICIENCY of QuantSpec evidence, since perplexity is the one metric QuantSpec offers and is
-    the metric that paper shows is blind. Scope honestly: it targets 3-4-bit/FP8 TARGET KV while
-    QuantSpec verifies at INT8. ANTI-FABRICATION CATCH RECORDED: a search-engine summary asserted
-    TWICE that 2606.09864 finds acceptance rate and throughput remain in plausible ranges providing
-    little warning. The primary abs page has ZERO occurrences of speculative, draft, acceptance,
-    throughput or verify. That sentence is a search-summariser conflation with QuantSpec and MUST NOT
-    enter the index as a finding.'
+    Quantization: Diagnosis and Mitigation": low-bit KV quantization can silently destroy behavioural
+    alignment, with Mistral-7B losing 15.2 percent of its refusals at only 1.03x perplexity. Covers
+    KIVI explicitly and at length (Table 19, 14 configurations: KIVI never hurts and is a strong
+    mitigation but not a cure - Qwen at 2-bit is still 62.14 percent flip with KIVI applied). THIS
+    DOES NOT REFUTE QuantSpec - it refutes the SUFFICIENCY of its evidence, since perplexity is the
+    one metric QuantSpec offers.
+    THE ANTI-FABRICATION NOTE PREVIOUSLY RECORDED HERE WAS ITSELF A FALSE NEGATIVE AND IS RETRACTED
+    IN FULL (2026-08-22). This bullet used to assert that the sentence "acceptance rate and throughput
+    remain in plausible operating ranges providing little warning" was a search-summariser conflation
+    with QuantSpec that MUST NOT enter the index. IT IS A NEAR-VERBATIM QUOTATION OF THE PAPER''S OWN
+    TABLE 21 CAPTION (Appendix B.12, p.30), and the finding is stated again in the main body at
+    section 5.1, p.6. The error was made by searching the ABS PAGE and concluding absence in the
+    PAPER - a bounded search treated as proof of nonexistence, which is exactly the failure the skill
+    forbids. Note also that arxiv.org/html/2606.09864v2 returns 404 and ar5iv fails with a fatal
+    conversion error, so the PDF is the only readable form; that is very likely why the earlier pass
+    never got past the abstract.
+    THE MEASURED DATA (Table 21; Qwen-2.5-0.5B draft, Qwen-2.5-7B target, KV quantized on the TARGET
+    ONLY, greedy, K=5): FP16 refusal 63.2 percent at 38.8 percent acceptance and 25.3 tok/s; 8-bit
+    57.9 / 38.6 / 20.6; 4-bit REFUSAL 0.0 percent at 23.5 percent acceptance and 17.0 tok/s; 3-bit
+    REFUSAL 0.0 percent with acceptance RISEN to 43.4 percent and throughput RECOVERED to 24.2 tok/s.
+    The 3-bit row is the sharpest form of the finding - both throughput and acceptance return toward
+    FP16 while refusal is at zero. Verifier entropy is the only telemetry that moves (1.29 to 2.28).
+    SCOPE CORRECTION, and it runs the OTHER way from what this bullet used to imply: on the SAFETY
+    axis the paper LARGELY EXONERATES INT8. Its Table 14 shows 8-bit ConditionalFlip at or below 3.2
+    percent for ALL ELEVEN models tested (Qwen, the most fragile, is 0.2 percent), and real
+    torch.int8 storage flips 1 of 19 prompts (Table 23). The 15.2 percent / 1.03x figure is a 4-BIT
+    result and does not reach QuantSpec''s INT8 verify. The narrowing of QuantSpec''s evidence
+    SURVIVES but must be re-grounded on a different table: IFEval (Table 22), where Qwen-2.5-7B loses
+    about 10 points of strict-pass AT 8-BIT KV with 23.14 percent conditional flip - a genuine
+    perplexity-blind degradation at INT8, on a CAPABILITY axis rather than a safety one, and described
+    by the authors as steep but CONTINUOUS rather than a phase transition.'
   - 'INDEPENDENT, PARTIAL COUNTERWEIGHT - arXiv 2505.22179 (HIT/Tsinghua): 4-bit WEIGHT quantization
     combined with TREE-style speculative decoding is net-negative, because verification becomes
     compute-bound. QuantSpec uses SEQUENCE drafts so it partly dodges this, but it is real evidence
@@ -109176,8 +109197,16 @@
     arguable. The gating unknown is whether a torch+triton stack meeting the version floors exists for
     ROCm 6.2 on gfx90a - settle that before any training work.
   unverifiable_from_stage2:
-  - 'The parent paper''s per-model benchmark numbers - arXiv HTML table extraction yielded prose but
-    not the result tables. NOT-FOUND-IN-SOURCE from the HTML; the PDF would settle it.'
+  - 'RESOLVED 2026-08-22 - the parent paper''s per-model benchmark numbers WERE recovered. The PDF
+    carries Tables 5, 6 and 7 and they were extracted locally with pypdf; the earlier
+    NOT-FOUND-IN-SOURCE was an artifact of the arXiv HTML render, not of the paper. The decisive
+    number for this entry: Table 7''s GatedDeltaNet recall column runs 0.341 (24:1) / 0.352 (12:1) /
+    0.425 (6:1) / 0.436 (3:1) against PURE GDN at 0.356 - so THE PURE-VS-HYBRID GAP INVERTS for our
+    family. Pure GDN BEATS its own 24:1 and 12:1 hybrids and crosses over only between 1/12 and 1/6
+    attention. Our production topology (1/4) sits well past that crossover, where GDN hybrid recall
+    (0.436 at 1/3) already meets or exceeds the matched transformer baseline. This CONFIRMS and
+    sharply quantifies this entry''s "upper bound, probably loose" caveat: at our end of the curve
+    there may be little or no recall deficit left for a HOLA-style cache to recover.'
   - 'Whether a torch/triton stack satisfying torch>=2.7.0 and triton>=3.3 exists for ROCm 6.2 on
     gfx90a - not testable read-only with no torch installed; requires an install attempt.'
   - 'Whether HOLA''s sdpa cache-read path is numerically correct on gfx90a - untested anywhere; no AMD
@@ -109200,8 +109229,16 @@
     parent paper arXiv 2507.06457 as its own entry and note the 62-model family as a controlled
     comparison set; DECLINE belief-kernel wiring for now and file the adapter row when the retrofit
     first emits a ppl delta; DECLINE pulling the massive-activations line (arXiv 2608.12149) into this
-    entry - surfaced separately as a Stage-2b candidate, since massive activations in 3:1 GDN hybrids
-    are the classic quantization-failure mechanism and our stack IS a 3:1 GDN hybrid.
+    entry - surfaced separately as a Stage-2b candidate.
+    CORRECTED 2026-08-22 by the parent-study dive: the deferral reasoning here said "massive
+    activations in 3:1 GDN hybrids are the classic quantization-failure mechanism and our stack IS a
+    3:1 GDN hybrid". BOTH HALVES ARE WRONG. (a) In the m-a-p naming convention - the one arXiv
+    2608.12149 inherits by using their checkpoints - hybrid-3-1 is a 1/3-ATTENTION model, while ours
+    is 1/4. Our stack is hybrid-4-1 in that convention; citing their hybrid-3-1 findings as describing
+    our topology is off by one arm, and toward a strictly denser one. (b) The massive-activations
+    paper turned out to contain NO quantization experiment at all (see its own entry), so the
+    "classic quantization-failure mechanism" premise did not survive contact with the source. The
+    decision to surface it separately was still right; the stated reason was not.
 - id: intake-1277
   arxiv_id:
   url: https://github.com/ggml-org/llama.cpp/issues/27117
@@ -109641,10 +109678,25 @@
     MSMARCO 43.5, NQ 59.1, TRECCOVID 84.59, ArguAna 50.09, ClimateFEVER 33.07, CQADupstackRetrieval
     38.75, DBPedia 45.58, FEVER 90.96, NFCorpus 37.3, QuoraRetrieval 87.72, SCIDOCS 18.42, SciFact
     74.77, Touche2020 25.69. Arithmetic checked independently: sum 806.80 / 15 = 53.7867.'
-  - 'THREE HARNESSES AGREE WITHIN 0.44 pp. Vendor 53.79; LightOn re-ran the published checkpoint in
-    their own harness and got 53.35; mixedbread (arXiv 2510.14880v1 Table 11) got 0.534 in a third
-    harness. Against the incumbent lightonai/GTE-ModernColBERT-v1 at 54.67 (LightOn) and 0.547
-    (mixedbread), the honest apples-to-apples gap is 1.32 pp, or 1.3 pp independently.'
+  - 'TWO INDEPENDENT MEASUREMENTS, NOT THREE - CORRECTED 2026-08-22. Vendor 53.79; LightOn re-ran the
+    published checkpoint in their own harness and got 53.35, 0.44 pp BELOW the vendor figure, on the
+    same 15 tasks, published on their own model card at revision 6605e431bed9 (2025-09-10). Those are
+    the only two BEIR measurements of this model in existence.
+    THE THIRD "HARNESS" DOES NOT EXIST. This entry originally counted mixedbread (arXiv 2510.14880)
+    as a third independent harness. It is not: mixedbread TRANSCRIBED both ColBERT baseline rows from
+    LightOn''s model card, which was published 36 days before their submission. All 15 per-task scores
+    in their answerai row match LightOn''s "ColBERT-small (rerunned)" column exactly under 3-dp
+    rounding, and match the VENDOR-reported row 0 of 15 - ArguAna alone settles it (46.76 vs 50.09;
+    mixedbread printed 0.468). Their GTE row likewise matches LightOn''s card 15 of 15. Scope this
+    fairly: mixedbread DID run their own evaluations elsewhere - their LongEmbed table differs from
+    LightOn''s card on 5 of 6 tasks, and their NanoBEIR timings appear on no card - so Tables 12 and
+    13 are their own work. The defect is that Tables 11/16/17 reuse published numbers SILENTLY, in a
+    table whose other rows are their own runs, while the paper footnotes transcribed numbers
+    elsewhere. Note also that Benjamin Clavie, author of answerai-colbert-small-v1, is the second
+    author of that paper - mixedbread was never a disinterested third party.
+    CONSEQUENCES: independent corroboration is +1, not +2, so this entry''s credibility_score falls
+    from 1 to 0. The 1.32 pp gap SURVIVES UNCHANGED because it was always LightOn''s own comparison,
+    and the C1 retirement-record correction stands on its own merits.'
   - 'vs same-size and larger SINGLE-VECTOR models: snowflake-arctic-embed-s (33M) 51.99,
     bge-small-en-v1.5 (33M) 51.68, bge-base-en-v1.5 (109M) 53.25.'
   - 'Parameter count measured from the safetensors index: 33,396,864 F32 (133,610,664 B on disk),
