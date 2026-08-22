@@ -426,6 +426,13 @@ anything.
       differ (system-turn injection), so the A/B has power. Same runner, same pinned ids, ~3.2 h
       CPU. Per-suite + flip analysis + MC-scorer decomposition as locked. This is the last open
       empirical question of the 2026-08-21 intake.
+- [x] **CT-DEPLOY ✅ 2026-08-22 — the terseness pilot is LIVE IN PRODUCTION** on frontdoor (all
+      three instances, render-verified) and architect_general (+ coder_escalation via alias):
+      `server_mode.<role>.chat_template_file` plumbing landed (orchestrator `34ff6fcc`), registry
+      blocks with per-role one-line reverts (research `b9ba66e6`), stack-change check fully green
+      INCLUDING runtime attestation. Two launcher defects found+fixed en route (gate realized-mode
+      deadlock — dodged; silent vacuous reload of sub-full instances — fixed with addressability +
+      exit-1 + parity test). E-7 recalibration of both voided stamps running 2026-08-22.
 - [ ] **CT-8 — belief-kernel wiring for CT-1 measurements** (filed at first-measurement time per the
       standing rule). The A/B emits per-question JSONL + per-suite summary; before any result gates a
       template adoption, add the write-side hook: producer-authored claim tuples with (model,
