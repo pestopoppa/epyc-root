@@ -1520,23 +1520,44 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       **The zero-compute half is already half-answered and should be recorded before anything is
       installed:** our known-good isolated environment carries **Torch `2.5.1+rocm6.2` / HIP
       `6.2.41133` / Triton `3.1.0`** (see the 2026-08-11 provisioning row above), while
-      `flash-linear-attention` states floors of **`torch>=2.7.0`, `triton>=3.3`**. **Our verified stack
-      sits below BOTH floors.** Upstream's `[rocm]` extra targets a **rocm7.2** wheel index and its AMD
-      CI is **MI300 / gfx942**; our MI210 is **gfx90a**, a generation older and untested there.
-      **Gate:** either (a) a torch + `pytorch-triton-rocm` build meeting those floors exists for ROCm
-      6.2 / gfx90a — G5 proceeds; or (b) it does not, and the question becomes whether fla runs
-      correctly *below* its stated floors, which is a separate and weaker claim. Answer (a)/(b) before
-      any retrofit work is scheduled. Dovetails with RVP-C5-3's `requirements_rocm.txt` deliverable.
-- [ ] **(Z) Record fla issue #1156 as a ROCm correctness hazard — sibling to RVP-C2-6.**
-      Third-party report (OPEN, 2026-08-20): **`ShortConvolution` BACKWARD returns silently wrong
-      gradients on ROCm at every shape tested**, reproducing on fla 0.4.2 *and* 0.5.2 and on both its
-      triton and cuda backends; above a conv-width threshold it faults with `hipErrorIllegalAddress`
-      instead. **Silent wrong gradients below the fault threshold** is the dangerous half.
-      **Offsetting, from the same issue and worth equal weight:** `chunk_gated_delta_rule` *itself* is
-      third-party **verified correct on ROCm** — agreeing with the naive reference to 7.9e-07 forward
-      and 1.8e-06 on all five gradients, with the problem "confined to the causal conv".
-      This is the same *shape* of finding as RVP-C2-6a/6b (stock gfx90a Q4_K MMQ failing an
-      independent fp64 oracle), but it is **fla/Triton, not ggml/MMQ** — do not merge the two rows.
-      Scope caveat: it is a **backward/training** hazard. If forward-only inference is clean the blast
-      radius is much smaller, and this handoff's substrate is inference — so this row is recorded for
-      the retrofit line, not as a defect in the current evaluation backend.
+      `flash-linear-attention` 0.5.2 declares `rocm = ["torch>=2.7.0"]`. **Our verified stack sits
+      below that floor.**
+      **INVERTED 2026-08-22 — the floor argues the OPPOSITE of what this row first said, and the
+      original framing was dangerous.** Being below fla's floor is not merely blocking: **it selects
+      for the defective release.** fla **v0.4.2** declares `dependencies = ["torch", "transformers",
+      "einops"]` — **no torch or triton floor whatsoever** — and it is the release carrying the
+      silently non-deterministic `causal_conv1d` backward (fla #1156, since closed). fla **v0.5.2** —
+      the **fixed** release — is the one that declares `torch>=2.7.0`. So a resolver asked for an fla
+      compatible with Torch 2.5.1 walks straight onto the broken version.
+      **Gate, rewritten:** (a) a torch + `pytorch-triton-rocm` build meeting `torch>=2.7.0` exists for
+      ROCm 6.2 / gfx90a → install **fla >= 0.5.2** and G5 proceeds; or (b) it does not → **do NOT fall
+      back to an older fla.** Raise the stack or do not install fla at all. The original branch (b) —
+      "the question becomes whether fla runs correctly below its stated floors" — is withdrawn: below
+      the floor the available release is the defective one, so that question resolves to "no" for the
+      wrong reason. Dovetails with RVP-C5-3's `requirements_rocm.txt`, which must carry a hard
+      `flash-linear-attention>=0.5.2` pin.
+- [x] **(Z) fla issue #1156 — RECORDED AND CLOSED, 2026-08-22. Two claims in the original row are
+      retracted; do not cite them.**
+      The issue is **CLOSED** (`completed`, maintainer `zhiyuan1i`, 2026-08-22T09:55:42Z) after the
+      reporter retracted his own headline. Corrected facts: the `ShortConvolution` backward defect is
+      **fla 0.4.2 ONLY, fixed in 0.5.2** (his "reproduces on 0.5.2" run was importing 0.4.2 from
+      site-packages; the clean re-test measures 5.5e-08 vs 2.0e-01), and it **never ran on two
+      backends** — `causal_conv1d` was absent so the `'cuda'` backend silently fell back to `'triton'`.
+      The differing numbers were **run-to-run non-determinism**: ten identical backward calls in one
+      process returned ten different answers with absmax compounding 0.40 → 252.88 while the forward
+      stayed bit-identical. Root cause is visible in source — v0.4.2's backward loads via
+      `boundary_check` with **no `padding_option`**, leaving OOB lanes undefined; v0.5.2 rewrote every
+      site to explicit `mask=` + `other=0.0`.
+      **REATTRIBUTION — the original row gave this equal weight and it was wrong.** The
+      `chunk_gated_delta_rule` 7.9e-07 / 1.8e-06 figures are **not third-party**: they are the bug
+      reporter's own scoping aside in his own report. Genuine independent AMD corroboration for that
+      kernel exists but lives in **fla #913** (gfx1151 / ROCm 7.13, inside a Qwen3.5-27B GDN LoRA
+      fine-tune) — and #913 *also* records that kernel returning **silent NaN gradients on
+      B200/sm_100** across fla 0.5.0/0.5.1/HEAD. Always cite it with its hardware scope.
+      **Scope, now settled:** forward is clean at every shape tested including the faulting one, so
+      **inference has zero exposure**; hardware is MI355X / gfx950 / ROCm 7.2 with **gfx90a and MI210
+      appearing nowhere in the fla tracker**; and fla's only AMD CI workflow is `if: false` with no
+      runner, so fla has **no AMD hardware coverage at all** — a sharper statement than the original
+      row's "AMD CI is MI300/gfx942". Still a genuine sibling in *shape* to RVP-C2-6a/6b (a silent
+      numerical defect on an accelerator), but fla/Triton rather than ggml/MMQ — keep the rows
+      separate. The residual action is the version pin in G6 above.

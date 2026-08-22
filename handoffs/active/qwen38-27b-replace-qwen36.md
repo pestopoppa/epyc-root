@@ -125,6 +125,21 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
       `live == config` — confirm architect_general serves Qwen3.8-27B-Q8_0 at draft_max 8 on
       :8083, `verify_ggml_linkage.sh`, non-zero VRAM sampled DURING a request, KFD process count;
       (d) close the ticked-but-stale 2026-08-20 checklist item against this evidence.
+- [ ] **Q38-T6 — cold-start lineup defect (root-caused 2026-08-22 after it fired on the Q38-T5
+      start).** The launcher NEVER reads `ORCHESTRATOR_STACK_NUMA_MODE` — mode comes from argv
+      `--numa-mode` only, and the cold-start fallback is hardcoded `"quarter"`
+      (`stack_commands.py:1588`, pre-dating the 2026-07-30 half-fleet ratification), so an unflagged
+      cold start can never produce the production `both` lineup and silently drops the THREE full
+      instances (frontdoor :8070, worker_general :8072, ingest_long_context :8085). Fix: (a) change
+      the :1588 fallback to the ratified production mode (or read the env there); (b) update the
+      stale argparse help ("production is QUARTERS-ONLY… FULL_DISABLED",
+      `orchestrator_stack.py:2773-2786`) and the `_filter_by_numa_mode` docstring
+      (`stack_manifest.py:833-850`); (c) cosmetic: the API-side producer-2 liveness veto
+      (`models.py:664-676`) logs a spurious "lineup rejected" on every cold start and would poison
+      the API lineup if the API ever started before the fulls finish loading. Recovery path used
+      tonight (verified safe: `--only` clobber fixed in `f2ffd298`):
+      `start --only frontdoor worker_general ingest_long_context --numa-mode both` + scoped
+      `reload orchestrator`.
 - [x] **Stack-change checklist / `stack_change_pipeline.py` regenerate** ✅ 2026-08-21 — regenerated (mode-correct, fully green check) and the start-time gate re-ran it PASSING; checklist closed under Q38-T5's five-point evidence above. Nothing is serving
   (`:8083` unbound), so config and runtime agree only by both being absent. `live == config` is
   UNVERIFIED until someone actually starts the stack; that is a separate lifecycle action with its
@@ -339,13 +354,21 @@ swapped first, because it compiles *from* that file.
 
 ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1276)
 
-- [ ] **(Z) Record the fla #1156 exposure for our own Qwen3.x GDN family.** Upstream
-      `flash-linear-attention` issue #1156 (OPEN, 2026-08-20) reports `ShortConvolution` **backward**
-      returning silently wrong gradients on ROCm at every shape tested, and its **headline case is the
-      Qwen3.5 family** (48 of 64 layers on Gated DeltaNet; at conv width 10240 it faults with
-      `hipErrorIllegalAddress` rather than corrupting silently).
-      **Scope this correctly — it is not a serving defect.** This handoff is pure inference/serving
-      config, and the hazard is on the **training/fine-tuning** path through fla. It matters here only
-      because it names our *model family*: anyone training or fine-tuning a Qwen3.x GDN model through
-      fla on this host risks silently wrong conv gradients. The ROCm-side ownership and the
-      version-floor question live in `rocm-verify-profile-backend.md` (G6). Track #1156 to close.
+- [x] **(Z) fla #1156 exposure for our Qwen3.x GDN family — RECORDED AND CLOSED, 2026-08-22.**
+      **The row as first written (2026-08-21) asserted facts the reporter has since retracted.** fla
+      issue #1156 is **CLOSED** (`completed`, by maintainer `zhiyuan1i`, 2026-08-22T09:55:42Z) after
+      the reporter self-retracted: the `ShortConvolution` backward defect is **fla 0.4.2 ONLY and is
+      fixed in 0.5.2**. His original "reproduces on 0.5.2 too" was an import-resolution artifact — the
+      "0.5.2" run was still importing 0.4.2 from site-packages; a contamination-proof re-test measures
+      5.5e-08 against 0.4.2's 2.0e-01. "Both backends" was never possible either: `causal_conv1d` was
+      absent, so `ShortConvolution.__init__` silently reset `backend='cuda'` to `'triton'`. The
+      differing numbers were **run-to-run non-determinism**, not a second implementation.
+      **Our exposure is nil, three times over.** Forward is clean at every shape tested including the
+      faulting one, so inference is untouched; we do not run fla at all (torch, triton and fla are all
+      absent from this host, and our Qwen3.x GDN serving path is native C++/HIP in the frozen tree);
+      and the bug is fixed upstream. Hardware in the report is **MI355X / gfx950 / ROCm 7.2** — gfx90a
+      and MI210 appear **nowhere** in the fla tracker.
+      **The one thing that survives is a version constraint, and it points the opposite way to what
+      you would expect** — see the rewritten G6 in `rocm-verify-profile-backend.md`: fla 0.4.2 is the
+      broken release and declares **no** torch/triton floor, so a resolver asked for an fla compatible
+      with an older torch selects it. **Never install fla < 0.5.2 on this host.**
