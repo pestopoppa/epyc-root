@@ -395,8 +395,23 @@ _Via `/research-intake` Stage-4 (intake-916/917/932 lineage, AREX-Base as the co
       `0db32c06e3e5`: only the **VEC** FA kernel reads quantized KV natively
       (`ggml/src/ggml-cuda/fattn-vec.cuh:540-543`); MMA/TILE/WMMA set `need_f16_K/need_f16_V = true`
       and `launch_fattn` **dequantizes the entire K and V tensors to F16 into scratch**
-      (`fattn-common.cuh:1022-1080`); and VEC is selected for quantized KV only at `Q->ne[1] <= 2`
-      (`fattn.cu:472-495`). **A speculative verify batch is `q_len = gamma+1`**, so at `gamma >= 2` it
+      (`fattn-common.cuh:1022-1080`, the conversion at `:1030`/`:1064` covering `ggml_nelements(K)`,
+      i.e. the whole cache, on EVERY call); and VEC is selected for quantized KV only at
+      `Q->ne[1] <= 2`.
+      **SCOPE CORRECTED 2026-08-22 by the VeriCache Stage-2b dive — the row as first written was wrong
+      in two ways and would have sent this measurement at the wrong target.**
+      (a) **THIS IS A CUDA/HIP-BACKEND PROPERTY ONLY. Our primary CPU serving path has no cliff at
+      all**: `ggml/src/ggml-cpu/ops.cpp:8635` takes `kq_vec_dot` from the type traits and consumes K
+      **in its quantized form at any q_len**, and `:8739` dequantizes V **one DV-length row at a time**
+      into a stack temp. There is no whole-tensor conversion anywhere on the CPU path. Do not
+      generalise the cliff to the frontdoor.
+      (b) The locator originally cited here, `fattn.cu:472-495`, sits inside the
+      **NVIDIA-Turing-only** branch (`turing_mma_available` requires `GGML_CUDA_CC_IS_NVIDIA`) and
+      **never executes on gfx90a**. MI210 is CDNA2, so our operative sites are `fattn.cu:522-536`
+      (AMD MFMA) and `:543-557` (the fallback that returns VEC at `<= 2`, else TILE — which also
+      forces `need_f16`). The `<= 2` boundary is real and unchanged; the code path reaching it is not
+      the one cited. Also note `fattn.cu:340-358`: without `GGML_CUDA_FA_ALL_QUANTS` only
+      Q4_0/Q8_0/F16/BF16/F32 are FA-eligible KV types. **A speculative verify batch is `q_len = gamma+1`**, so at `gamma >= 2` it
       leaves the VEC regime and pays a full-cache dequant on every verify step.
       **Gate:** if that reading holds under one instrumented run, **quantized-KV speculative decoding
       is bandwidth-positive on our MI210 only at `draft_max = 1`** — which would reframe every
