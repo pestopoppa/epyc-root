@@ -5,6 +5,38 @@
 **Last compiled**: 2026-08-16 (**batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 107+ documents
 
+## Compiled Update — 2026-08-22: AutoKernel v27 has audited foundations, not launch authority
+
+**Confidence: verified for branch/audit state; no new performance measurement.** AutoKernel v27 did
+not launch during this work and its scientific ledger remains **0/10**. The provider Trusted-Access
+suppression is a typed, bounded authoring refusal in a checkpoint branch—not a machine-wide stop—and
+spends no science. Production v9 remained frozen and no GPU work ran.
+
+The reusable base is narrower than the accumulated branch stack: Q5/ResourceWait/carry, composition
+crash recovery, the earlier evaluator foundation, the integrated v27 base, and frozen-production
+comparator closure each have an exact audited commit. The later evaluator/C6 and cumulative-performance
+lines do not. Independent mutation audits showed that plausible, coherently resealed JSON could still
+forge sandbox/runtime/interposer authority on the evaluator side and route/workload/frozen-build/metric
+authority on the performance side. Consequently every v27 dashboard pin remains unset.
+
+The restart order is deterministic: close and independently audit C6 process isolation and native Ghost
+Replay; establish an externally committed pre-run/result measurement authority with strict JSON and exact
+comparator reopening; assemble one descendant; adapt the dashboard to that final producer; validate twice
+without inference; then run ten unique scientific dispositions. A valid cumulative headline must show the
+candidate relative to exact frozen production even when the result is negative and promotion is denied;
+incremental performance remains secondary.
+
+### Source References (2026-08-22 AutoKernel v27 pre-launch checkpoint)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — exact branch map,
+  launch gates, provider-refusal semantics, and ten-science acceptance.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — relayed C2/C4/C6
+  backlog, evaluator audit boundary, and closed ROCm-6.2 PC-sampling result.
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — zero-profiler
+  arm, paired ablation, hardware-context, and do-not-transfer constraints.
+- [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — full immutable commit map and
+  strict NO-GO reproductions.
+
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
 
 **Confidence: observation / `design_prior`** — the register figures are exact static reads of the shipped code object and are model-independent; **the throughput half is n=1 per cell with no A/A band, on ONE model (8B dense), speed-only**. This is a non-governed measurement, not an AutoKernel `evaluation_event`, and it must not be promoted by origin. Quote no number below without its caveats.

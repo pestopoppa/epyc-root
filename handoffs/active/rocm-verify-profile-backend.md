@@ -1,9 +1,17 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
-**Status**: ACTIVE HARDENING — governed IQ2/Q8/Q4_K_M decode attributed; exact k228/k175 captures remain
-**Created**: 2026-06-03 · **Updated**: 2026-08-12 (Q4_K_M decode attribution and router replay)
+**Status**: ACTIVE HARDENING — v27 C6 launch boundary remains open
+**Created**: 2026-06-03 · **Updated**: 2026-08-22 (wave-1 and v27 evaluator audit checkpoint)
 
-> **NEXT ACTION (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
+> **NEXT ACTION (2026-08-22): repair the rejected C6 evaluator carriers, then wire the verified
+> two-process oracle/Ghost boundary into the live AutoKernel producer before any launch.** Keep the
+> Hawkeye/FlashInfer rows below as the owning backlog. Exact `91a75a05` is a useful implementation
+> checkpoint, not authority: independent audit accepted its pinned upstream schemas but reproduced
+> forged sandbox, runtime, interposer, event, physical-envelope, precision, perturbation, hardlink,
+> cache-metric, and timing carriers. RVP-C4-10 is closed on this ROCm—PC sampling is unimplemented—so
+> do not rerun it. The profiling substrate remains the 465 validated SQ/TA/TCC counters.
+
+> **Historical next action (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
 > their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
 > resolved as Option B (decline for now), so C2-7/C2-8/C2-9 remain deliberately open unless the
 > operator explicitly reopens the experimental producer. The research reducers/runners remain
