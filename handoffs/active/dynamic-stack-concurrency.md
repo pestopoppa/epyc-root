@@ -157,11 +157,56 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       **silently delivering zero prompt reuse on hybrid/recurrent models**, and open PR #26004 reports
       context checkpoints not preserved across save/restore. Our frontdoor model is `qwen35moe` —
       30 Gated DeltaNet + 10 full-attention layers — i.e. squarely a hybrid recurrent architecture.
-      **Gate:** measured reuse ≈ 0 → every migration costs a full re-prefill (minutes of CPU at long
-      context) and the feature is a **net loss as configured**, not an optimisation.
-      **Check first, zero-compute:** whether the migration path is actually exercised in the current
-      configuration, and whether `--slot-save-path` is set on the frontdoor launcher. A defect on a
-      dormant path is a much lower priority and should be recorded as such.
+      **SCOPE CORRECTED AND DORMANCY CLAUSE VOIDED, 2026-08-22 (Stage-2b dive on #25913/#26004).**
+      **(a) The row's scope was too broad, in the direction that matters.** Reuse is zero only for a
+      post-restore prompt that **diverges** from the restored prefix, or is an **exact repeat** of it.
+      A prompt that **strictly extends** the restored prefix reuses **fully**. Derived from our own
+      frozen source — `server-context.cpp:3320,3322` compute
+      `pos_min_thold = max(0, pos_next - n_swa - (has_new_tokens ? 0 : 1))` and the reset block at
+      `:3374` runs only when `pos_min >= pos_min_thold`, while `llama-memory-hybrid.cpp:172-175`
+      returns the *recurrent cell's* position as `seq_pos_min` — and stated outright by the PR author.
+      Four independent upstream measurements fit that table exactly.
+      **Our full↔quarter migration is a turn-boundary session handover, i.e. the continuation shape.**
+      So "every migration costs a full re-prefill" is NOT the default expectation; it is the failure
+      mode that occurs when something rewrites the prefix. That reframes this row from *confirm a
+      known loss* to *determine whether our request stream stays a strict continuation across a
+      migration boundary* — a different and cheaper measurement.
+      **(b) The dormancy escape is VOID — the path is LIVE.** `--slot-save-path
+      /mnt/raid0/llm/cache/kv_slots/frontdoor` is set on all three frontdoor instances (8070/8080/8180,
+      read from `/proc/<pid>/cmdline`); 75 `kv_migrate_*` artifacts sit on disk; live probes recorded
+      forward=6 / reverse=4 with `n_aborted=0`. Qualification: those artifacts carry synthetic
+      `old-sess_*` ids and the newest is 2026-08-09, so exercise by *production traffic* in the last
+      two weeks is unproven — but the path is wired, enabled and demonstrably run.
+      **Gate, restated:** three arms — strict continuation, exact repeat, divergence at ~50 % depth —
+      at ~4K/16K/64K prefixes, reading `timings.cache_n` and `prompt_n` from the first completion
+      after a restore. Continuation ≈ 0 → the feature is a net loss as configured. Continuation ≈ full
+      with the other two ≈ 0 → the defect is real but our migration shape avoids it; close as
+      **exposed-but-not-hit** and keep the prefix-stability guard below as the standing control.
+      **THE FIXTURE MUST RESTART THE TARGET SERVER (or set `--cache-ram 0`) BETWEEN ARMS.** An upstream
+      reporter lost a day to leftover in-RAM checkpoints making a broken restore look like a 340×
+      success, and our frontdoor runs the 8 GiB default with no override.
+- [ ] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
+      `concurrency_aware.py:679` advances to `MigrationState.VERIFIED` with `detail="restore_confirmed"`
+      on an HTTP 200, and `:682` then **erases the source slot**. `n_restored` proves the file loaded,
+      not that a single token will be reused. A zero-reuse migration would advance to VERIFIED, destroy
+      the source, and record success. The reuse count is already available — `n_prompt_tokens_cache`
+      via `GET /slots`, or `timings.cache_n` on the first completion — and `wiki/benchmark-methodology.md:257`
+      already documents it as the true KV-reuse instrument. **Independent of the measurement above: the
+      state is mislabelled either way.** Gate the source erase on a reuse assertion, or rename it.
+- [ ] **(Z) Guard the prefix-stability assumption.** Full reuse after migration depends on the next
+      request being a **byte-exact extension** of the saved prefix. Three known breakers: a rendered
+      chat-template byte change, reasoning-block stripping between turns (mitigated today by
+      `--reasoning off`), and any injected timestamp or preamble. Add a static check that
+      post-migration request construction cannot alter bytes at or before the restored prefix boundary.
+- [ ] **(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live
+      in-memory** checkpoint path for hybrid/recurrent — it runs on **every request**, not only on
+      migrations. It is open upstream, **absent from our tree** (`server-context.cpp:2332-2337` still
+      carries the unfixed `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO verbatim), and has four independent
+      verifications **including one on Qwen3.6-35B-A3B, our exact frontdoor model**.
+      **Measurement:** multi-turn agentic replay at 16K/64K with `-lv 4`, counting `forcing full prompt
+      re-processing` occurrences and `cache_n` per turn.
+      **Gate:** a non-trivial rate of forced full re-prefill on ordinary multi-turn traffic makes
+      #25592 a v10 candidate ahead of #26004.
       **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
       #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
       no wrong output. This row is about reuse rate, not correctness.
