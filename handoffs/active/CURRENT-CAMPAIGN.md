@@ -7,6 +7,16 @@
 
 ---
 
+> **⛔ 2026-08-22 — AUTOKERNEL V27 REMAINS PRE-LAUNCH AT SCIENCE 0/10.** No provider banner stopped
+> a running campaign: no v27 campaign was launched. The frozen comparator base `cffb98d3` and ordinary
+> refusal recovery fix `caa22f42` are closed, but independent audits rejected the current evaluator
+> (`91a75a05`), C6 integration (`8a0ffc7d`), performance carrier (`5be84b4a`), and dependent dashboard
+> lines. All v27 dashboard pins remain unset. Resume from
+> [autokernel-research-loop.md](autokernel-research-loop.md) §Restart checkpoint: repair C6 isolation
+> and immutable performance authority, freeze one descendant, obtain exact-SHA audits, validate twice
+> without inference, then spend the ten-science run. Production v9 stays frozen and untouched.
+
+
 > **⛔ 2026-08-13 22:14 UTC — AUTOKERNEL MANUAL EXECUTION STOPPED; CONTROLLER-FIRST CORRECTION IS
 > THE NEXT BOUNDARY.** Discovery-first policy is ratified and the nonpromotable funnel has live CPU
 > leaders (IQK prefill `+31.247%`, decode `+7.939%`) and GPU leaders (MMQ-MFMA OFF prefill

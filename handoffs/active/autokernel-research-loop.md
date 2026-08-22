@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V20 LIVE / PLANNER MODEL CALL / GPU CORRECTLY IDLE — updated 2026-08-20 21:57 UTC
+**Status:** V27 PRE-LAUNCH / SCIENCE 0 OF 10 / FINAL TRUST GATES OPEN — updated 2026-08-22
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,50 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+## Restart checkpoint — 2026-08-22
+
+AutoKernel v27 was **not launched**. The requested terminal outcome—ten meaningful consecutive
+scientific dispositions without a crash—remains at **0/10**. No v27 dashboard pins were set and no
+GPU inference or measurement was started. A provider safety banner does not stop the controller:
+research checkpoint `a7aaa47a` classifies the exact Trusted-Access suppression as a typed
+`bounded_provider_policy_skip`, withholds the response text, preserves a digest/policy identifier,
+advances the portfolio, and spends zero science. That checkpoint is not launch authority.
+
+Audited foundations that the successor should reuse are Q5/ResourceWait/carry `36113fe1`, cumulative
+composition `fd1d8b37`, evaluator foundation `6affc332`, integrated base `83df4d1d`, and frozen-v9
+comparator closure `cffb98d3`. Research `caa22f42` also fixes the ordinary-refusal recovery crash by
+never binding cumulative-terminal fields to a non-composition row. Do not promote the accumulated
+experimental branches wholesale: every later launch candidate below still has a strict audit NO-GO.
+
+- [x] **AK-V27-RCV — keep ordinary governed refusals out of cumulative-terminal recovery.** Exact
+      regression commit `caa22f42389fd744bac6f9213fb863504849d888`; the six former
+      `KeyError: disposition` cases pass. ✅ 2026-08-22
+- [x] **AK-V27-CMP — authenticate the frozen-v9 comparator without executing production artifacts.**
+      Independent audit GO at `cffb98d3eb06aa81e8bdf990e22520444fd94adb`; 21 runtime objects and
+      the approved `readelf` identity are pinned and rechecked. ✅ 2026-08-22
+- [ ] **AK-V27-C6 — finish the live C6 trust boundary before launch.** `8a0ffc7d` is only a bounded
+      checkpoint: retain its C6-before-targeted ordering, recursive restart, Q5_0 route, >=11 S1
+      capacity, float64 precision gate, derived seed, source recheck, and roofline cap; replace the
+      rejected `91a75a05` carriers with verified sandbox activation/teardown, per-leg same-input and
+      event-stream bindings, authenticated interposer/runtime maps, hardlink-safe secrecy, exact
+      structural precision evidence, dtype-safe perturbations, timing algebra, and complete cache-metric
+      deny aliases. Then execute oracle, three candidate trials, and native Ghost Replay as distinct
+      confined processes on the live producer path.
+- [ ] **AK-V27-PERF — bind cumulative performance to immutable pre-run and result authority.** The
+      audited `5be84b4a` line remains NO-GO: owner-resealed plans can substitute routes, workload,
+      frames, frozen build identity, metric authority, nested metrics, and the terminal verdict.
+      Journal pre-run/result digests in an independently bound append-only checkpoint; reopen the exact
+      frozen comparator; require strict duplicate-key JSON; and rederive every duplicated metric and
+      workload/runtime field before a promotion decision.
+- [ ] **AK-V27-DASH — adapt and independently audit the dashboard only after the final producer schema
+      freezes.** The headline must always show the validated cumulative candidate effect versus exact
+      frozen production—including a valid nonpositive result—while keeping incremental effect secondary
+      and producer-owned promotion eligibility authoritative. Keep all v27 pins unset until then.
+- [ ] **AK-V27-10 — assemble one descendant of the audited foundations, validate twice with
+      `inference_executed=false`, obtain independent exact-SHA GO, then run ten unique S1 scientific
+      dispositions without a crash.** Typed provider-policy skips and precompute refusals advance the
+      portfolio but spend zero science and cannot satisfy this row.
 
 **Current checkpoint (2026-08-20 17:42 UTC):** v18 completed correctness, profiler attribution,
 and its graphs-off runtime screen, then failed closed because the graphs-on candidate used seed 8622

@@ -922,6 +922,15 @@ findings to docs, move to `completed/`, delete the master-index row.
       times lower-better; peak_over_floor higher-better) and let `claim_tuple.grade()` decide; it must
       NOT write a new grading rule. Every tuple must carry the API-scaling caveat (raw counter x 15.3)
       and the load-generator identity (1024^2 fp16 mm, sync-per-op).
+- [ ] **SC49 — register the final AutoKernel C6 admission receipt/capture pair prospectively.** The
+      current research checkpoints are not launch authority, so bind this task to the eventual
+      independently audited producer SHA rather than `91a75a05` or `8a0ffc7d`. The writer must carry
+      raw first-turn and verification anchor/candidate latencies, rederive
+      `verification_speedup >= max(beta, alpha * first_turn_speedup)` with `alpha,beta >= 1.2`, bind
+      candidate/anchor/evaluator commits, both native C6 receipts, the roofline-derived cap, producer
+      identity, and `reopen_when`. The adapter must validate the exact pair and self-hashes, rederive
+      ratios/cap/disposition, reject pair swaps and coherent substitutions, then project through the
+      existing `ClaimTuple` ladder without defining a new grade. Pre-hook runs emit zero rows.
 - [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.**
       Filed 2026-08-21 from `intake-1245#record` (FlashInfer-Bench, arXiv:2601.00227v1, Apache-2.0, repo @
       `40e6ca78`). **It is a write-side claim-tuple carrier in all but name**: an immutable
