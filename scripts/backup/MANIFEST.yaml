@@ -57,10 +57,10 @@ tiers:
         - orchestration/strategy_embeddings.faiss
         - orchestration/episodic.db
         - orchestration/embeddings.faiss
-        - repl_memory/**/*.db
-        - repl_memory/**/*.sqlite
+        - orchestration/repl_memory/**/*.db
+        - orchestration/repl_memory/**/*.sqlite
         - repl_memory/**/*.faiss
-      reason: "Strategy store, episodic memory, and routing memory that cannot be regenerated from pushed git alone."
+      reason: "Strategy store, episodic memory, and routing memory that cannot be regenerated from pushed git alone. 2026-08-23: live DBs live under orchestration/repl_memory/ (sessions/episodic.db etc.); patterns updated from repo-root repl_memory/ which matches nothing. FAISS remains T1-regenerable; superseded sessions/ blobs stay excluded."
       copy_mode: sqlite_or_file
 
     - id: orchestrator-operational-logs
