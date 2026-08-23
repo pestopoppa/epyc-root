@@ -362,7 +362,13 @@ control that would have admitted the previous same-role lease collision.
 - [x] Preserve the existing completed-task audit flow without duplicate `audit-request` synthesis. ✅ 2026-08-13 (`82c1c5b4`)
 - [x] Add Coordinator validation for remote reachability, path ownership, exact task identity, and
       committed progress evidence. ✅ 2026-08-13 (`82c1c5b4`)
-- [ ] Shadow-record complete, blocked, and pre-reboot boundaries without rejecting legacy behavior.
+- [x] Shadow-record complete, blocked, and pre-reboot boundaries without rejecting legacy behavior.
+      ✅ 2026-08-23 — `scripts/coordination/rtg51_rollout.py` + `coordination/session-bus/rtg51_rollout.yaml`
+      (`worker_checkpoint_receipts: off|shadow|enforce`). Shadow validates every receipt class
+      (complete, blocked, partial/pre-reboot), writes each result as a finding-shaped observation on
+      the bus, and never rejects; enforce refuses defects; `RTG51_SHADOW_MODE=1` forces the canary
+      grade. `tests/coordination/test_rtg51_rollout.py` pins shadow-records/never-rejects and
+      enforce-refuses.
 
 Phase gate: two workers can checkpoint concurrently without sweeping peer hunks; failed validation,
 commit, or push cannot produce an accepted receipt; a repeated `boundary_id` produces no duplicate.
@@ -371,8 +377,14 @@ commit, or push cannot produce an accepted receipt; a repeated `boundary_id` pro
 
 - [x] Implement and test the pure, deterministic compute-ready projection/ranking core without
       creating a live intake or dispatch path. ✅ 2026-08-13 (`7623e37c`)
-- [ ] Add compute request/window schemas, the reconstructible projection, graph-derived leverage,
-      stable ranking, and focused bus dispatch.
+- [x] Add compute request/window schemas, the reconstructible projection, graph-derived leverage,
+      stable ranking, and focused bus dispatch. ✅ 2026-08-23 — `compute-window` and
+      `compute-blocker` kinds in `session_bus.schema.json` (blocker lifecycle as append-only
+      disposition events, never in-place edits; only `inference` authors windows/dispositions),
+      `scripts/coordination/compute_ready_daemon.py` rebuilding `coordination/session-bus/compute_ready.json`
+      via the landed planner core (cross-validates each forward against its accepted receipt;
+      self-hash + deterministic-replay `check`). Daemon integration tests appended to
+      `tests/coordination/test_compute_ready.py`.
 - [ ] Encode the authority split in Coordinator and Inference role files.
 - [ ] Leave `inference-batch-loop.md`, its manifest, and its `/loop` single-writer protocol
       unchanged except for an explanatory cross-reference if useful.
@@ -388,7 +400,12 @@ lease cases are deterministic; only Inference can declare compatibility or grant
 - [x] Update concurrent-wrap tests: two same-roster executors contend, only one mutates, crash ✅ 2026-08-13 (`8ff5162c`)
       residue remains held, wrong tokens cannot release, and all worktrees share the common-git-dir
       lease.
-- [ ] Add receipt inclusion/exclusion and post-cut deferral tests.
+- [x] Add receipt inclusion/exclusion and post-cut deferral tests. ✅ 2026-08-23 —
+      `tests/coordination/test_heavy_wrap.py` pins pure `reconcile_receipts` (exact-id set,
+      cutoff mode, `post-cut-deferral` for receipts after the cut, duplicates, wrong-kind,
+      absent named ids) plus the executor-level lease tests (two same-roster executors with
+      distinct operation tokens contend and only one mutates; wrong token cannot release;
+      crash residue stays held until a named displacement; dry-run mutates nothing).
 
 Phase gate: one real Auditor canary consumes two concurrent worker receipts and promotes one complete,
 reproducible wrap packet with no lost generated contribution.
@@ -407,8 +424,14 @@ reproducible wrap packet with no lost generated contribution.
 
 ### Phase 6 — canary, enforce, and retire the old path
 
-- [ ] Add rollout modes: `worker_checkpoint_receipts: off|shadow|enforce`,
+- [x] Add rollout modes: `worker_checkpoint_receipts: off|shadow|enforce`,
       `auditor_full_wrap: off|shadow|enforce`, and `compute_window_plan: off|observe|enforce`.
+      ✅ 2026-08-23 — `coordination/session-bus/rtg51_rollout.yaml` is policy-as-data;
+      `scripts/coordination/rtg51_rollout.py` loads it (env override `RTG51_SHADOW_MODE=1` for
+      canary runs) and gates the checkpoint receipts, the heavy wrap (`off` refuses a real run,
+      `shadow` forces dry-run + finding observations, `enforce` runs the ordered transaction),
+      and the compute plan. Default is `off`: no live behavior changes merely because the plan
+      exists.
 - [ ] Canary one completed boundary, one non-compute blocker, one compute blocker, two concurrent
       workers, one Auditor wrap, and one simulated pre-reboot barrier.
 - [ ] Move to enforcement only after complete, blocked, and pre-reboot cases each pass three
