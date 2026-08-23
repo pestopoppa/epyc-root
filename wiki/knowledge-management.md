@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-20 (DFlash2's next runtime panel now has a prospective native claim-carrier pair; the completed np1 panel remains correctly unprojectable rather than being reconstructed on read)
+**Last compiled**: 2026-08-22 (publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
 **Sources**: 47+ documents
 
 ## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
@@ -1539,3 +1539,61 @@ alone would have converted a wrong ownership claim into a dangling one.
 - `agents/commands/wrap-up.md` Step 3 — the replacement selection command, stated as a screen rather than a verdict
 - [Wrap-up division of labor](../handoffs/active/wrap-up-division-of-labor-policy.md) — the wrap-up routine this governs
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record, including the three archives and what each open item routed to
+
+## Compiled Update — 2026-08-22: the publication generator scrubs by rewriting, contains protocol evidence to its own row, and demotes what it cannot re-derive to paraphrase
+
+**Confidence: verified** — every mechanism below is landed and validated (focused pytest counts,
+ruff, `--check` runs recorded per slice in the source handoff). This extends the 2026-08-16 section
+*"External publication is the same claim grammar with a fail-closed default"*: the row counts there
+(374 total; 31 historical-attestation / 18 protocol-tag / 325 retired) are unchanged — what is new
+here is mechanism, not state.
+
+**Scrubbing has two layers, and the second one is a rewrite, not a hold.** The first scrub gate
+(2026-06-21) fail-closed rows whose generated fields exposed local paths, loopback endpoints,
+internal role aliases, or operator/internal workflow terms — leaving `public-safe surface=364` with
+10 `internal role alias` blockers. The 2026-06-27 slice resolved those not by widening the hold but
+by **rewriting internal orchestration labels (`frontdoor`, `worker_general`, `toolrunner`,
+`ingest_long_context`, architect/coder aliases) to public-safe display labels *before* both row
+rendering and scrub classification**, clearing all 10 (`public-safe surface=374`) without mutating
+the source. The transferable split: an internal identifier with a faithful public equivalent is a
+*display* problem solved by deterministic rewrite; only content with no safe equivalent should
+consume a hold. Ordering matters — the rewrite runs before scrub classification, so the scrub gate
+judges what a reader would actually see.
+
+**Protocol evidence is contained to the row that owns it.** The parser limits protocol evidence to
+the current row, its section heading, and the table preamble — so **a complete protocol marker in
+one row can no longer promote adjacent rows** (neighboring-row bleed, closed 2026-06-28). This
+completes the fail-closed parsing set already compiled: an *unparseable* marker holds its row
+instead of falling through to publishable, and a *valid* marker now promotes exactly one row. Both
+defects share a shape this page keeps meeting under different names — evidence attributed wider than
+the unit that produced it (the key-too-wide family) — here appearing as spatial bleed in a parsed
+table rather than an over-wide dedup key.
+
+**A number whose raw log cannot be produced is demoted to paraphrase — not published with softer
+wording.** The W2 methodology-draft publication-prep packet (2026-07-06) applies the same
+demote-or-remeasure ladder as the 325-row retirement, but at prose level inside a draft:
+
+| Claim class in the draft | Disposition |
+|---|---|
+| April 26 collapse rows (`+17% → +1.6%`) | Publishable candidates — each names its exact raw log (`V2_q8_cold_canonical_repeat.log`, `E_q8_EP.log`) |
+| April 24 Q8 microkernel exact numbers | **Paraphrase-only** unless the raw repack logs are found or the rows are remeasured |
+| 2026-06-14 recipe dry-run witness | Flagged **pre-v6** — must be regenerated from the current single-kernel recipe before external publication |
+
+Every candidate claim also carries a stable public-safe handle (`F6-METH-C1`, `F6-METH-C2`,
+`F6-METH-S1`, `F6-METH-P1`), so review discussion can reference a claim without restating its
+number — the same decision-layer-out-of-the-source move as the review-decision JSON overlay, applied
+to prose. The instrument-era flag is the subtle one: a witness generated under a retired kernel era
+is not wrong, but publishing it as current would be — era identity travels with the witness exactly
+as pool identity travels with a recall number.
+
+### Source References
+
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) —
+  the 2026-06-27 alias-rewrite slice with its 10→0 blocker clearance, the 2026-06-28 parser
+  containment, and the 2026-07-06 W2 publication-prep packet, each with its validation record.
+- [`scripts/publication/generate_public_results.py`](../scripts/publication/generate_public_results.py)
+  — the generator as shipped: display-label rewrite, per-row protocol-evidence scoping, scrub
+  classification, and the review-decision overlay application.
+- [`docs/publication/canonical-cpu-benchmarking-methodology-draft.md`](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md)
+  — the W2 draft carrying the claim handles, the named raw logs, the paraphrase-only demotion, and
+  the pre-v6 witness flag.

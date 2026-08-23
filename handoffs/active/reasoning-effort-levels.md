@@ -359,6 +359,10 @@ has NONE at either quant**, and our bench matched that, so the loop would occur 
       three distinct embedded templates across four production models. A template swap (or a GGUF
       re-embed) invalidates certified levels the same way a quant change does — extend the stamp to
       `(model, quant, kernel/era, template_sha)` when E-7's validator is next touched.
+      **First template-stamped recalibration ran 2026-08-22** (the terse pilot voided frontdoor +
+      architect_general; both re-measured on the live path with `template 1443ea9ab4bb` in the
+      stamp, belief-graded Witnessed/Attested): CT-E7 in `qwen-chat-template-evaluation.md`. The
+      stamp extension is now PRACTICED; the validator extension remains open.
 - [ ] **E-5 — Dynamic selection (stretch).** Let the router pick effort from task difficulty rather than
       pinning it per role — a natural extension of [[project_learned_routing_controller]]. Needs a
       difficulty signal that is cheaper than just running the hard path.

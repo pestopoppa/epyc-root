@@ -2,8 +2,8 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
-**Sources**: 42 documents (3 deep-dives, 8 active handoffs, 2 completed handoffs, 25 intake entries, 3 progress logs)
+**Last compiled**: 2026-08-22 (closure fine-structure of the COMPLETED KV-quant handoff — **V-dequant, not K, is the entire CPU flash-attention prefill cost** (q4_0/f16 −1% vs q8_0/q4_0 +71%; q8_0/q8_0 is the worst prefill config measured at 3.3× slower, reconciling the 2026-08-03 memory-optimal reading as a different axis); Hadamard's isolated contribution priced at 70% gap closure (+0.055 → +0.017); TQ3 abandoned on a *fair* 32B retest after its first gate was flagged as failure-zone-unfair; QJL's SNR≈1.13 arithmetic death; spec-decode +3.3% with q8_0/q4_0; the 4-KV-head q4_0-K hazard; and PR #21089 (TurboQuant CPU KV) verified CLOSED UNMERGED upstream 2026-06-02, retiring the 2026-07-20 monitor row — see the end of the page; earlier 2026-08-12 note: a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
+**Sources**: 44 documents (3 deep-dives, 8 active handoffs, 2 completed handoffs, 25 intake entries, 3 progress logs, 2 upstream issue threads)
 
 ## Compiled Update — 2026-08-12: a "keep or port?" review that resolves to *neither*, and the first KV-quant decision package
 
@@ -296,3 +296,86 @@ architecture, not on willingness to trade quality.
 _Sources: `progress/2026-08/2026-08-03.md`; `handoffs/active/autopilot-continuous-optimization.md`;
 `handoffs/completed/kv-cache-quantization.md`; live probes of `:8070`/`:8080`/`:8083` on
 production-consolidated-v8._
+
+## Compiled Update — 2026-08-22: the KV-quant program closed because V-dequant, not K, is the CPU cost — and every exotic lost a fair rematch
+
+**Confidence: verified** — everything below is landed, measured and decided inside the COMPLETED
+[`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) handoff (closed 2026-03-28: Hadamard Phase 1
+cherry-picked to production as `b51c905` on `production-consolidated-v2`, 10 files / +141 lines, later superseded by upstream
+PR #21038 auto-rotation; TurboQuant / PolarQuant / QJL / hybrid buffer ABANDONED, each on a measured gate, not by fiat). This
+pass compiles the closure fine-structure the page never carried: the headline results (Hadamard+q4_0 quality-neutral, hybrid
+buffer memory-negative, the 2.2× ikawrakow speed confirmation) were compiled long ago and are not repeated here.
+
+### V dequantization is the ENTIRE CPU flash-attention prefill cost; K dequantization is free
+
+The page has so far motivated the asymmetric production config (`-ctk q4_0 -ctv f16` on pure-attention models) purely as a
+*quality* margin. The handoff's 2026-03-28 root-cause section establishes it is equally a **speed** decision, with a clean
+4-config isolation on Coder-32B Q4_K_M at 4K context:
+
+| config | time/chunk | vs f16/f16 | reading |
+|---|---:|---:|---|
+| f16 / f16 | 37.91 s | baseline | — |
+| **q4_0 / f16** | **37.42 s** | **−1%** | K dequant is FREE — bandwidth saving offsets cost |
+| q8_0 / f16 | 40.57 s | +7% | q8_0 K simply reads more bytes than q4_0 |
+| q8_0 / q4_0 | 64.87 s | **+71%** | **V dequant is the entire bottleneck** |
+
+Mechanism: the K path runs a fused `kq_vec_dot` (dequant+dot in one pass) while the V path runs `v_to_float` → materialized
+f32 buffer → `vec_mad_f32`; f16 V instead uses the native single-pass `ggml_vec_mad_f16`. The Phase-0 sweep shows the same
+thing at scale — Coder-32B 16K prefill: f16/f16 **111.1** t/s, q4_0/q4_0 46.6, q8_0/q4_0 48.9, **q8_0/q8_0 34.0 t/s
+(3.3× slower)** — while *decode* is unaffected in every config (~8.5–9.5 t/s across all cells; at batch-1 the KV read is
+tiny next to ~18 GB of weight reads). On the hybrid 35B-A3B (25% attention layers) KV quantization is entirely free at
+4K–65K, all configs within noise: the SSM layers amortize the dequant away.
+
+**Reconciliation with the 2026-08-03 section above**: that section is correct that `q8_0/q8_0` is the *memory*-optimal safe
+point (130 vs 162.5 KiB/token) — but on the CPU flash-attention path it is also the **worst prefill config measured**,
+because it pays V-dequant on every tile, while the "memory-regressive" `q4_0/f16` is prefill-free (−1%). The two sections
+answer different objectives (VRAM ceiling vs CPU prefill throughput); neither dominates, and a config choice must name which
+axis it is optimizing. The 2026-08-14 GPU falsification on the [Quantization](quantization.md) page (KV-quant −16.7%/−6.9%
+at 64k) is the same cast-cost mechanism showing up on the other substrate.
+
+### Hadamard's isolated contribution, quantified — and the exotics' exact causes of death
+
+**Hadamard rotation closes 70% of the bare-q4_0 quality gap.** The page carries the +0.017 endpoint but never the
+comparison that prices the rotation itself (Coder-32B, 50 chunks, n_ctx=512): q4_0/q4_0 *plain* is **+0.055** PPL vs f16;
+q4_0/q4_0 **+ Hadamard is +0.017** (3.56× K compression); q8_0/q4_0 + Hadamard is **−0.010 — quality-neutral** at 2.46×;
+throughput overhead at 4K is zero (11.58 vs 11.45 t/s, within noise).
+
+**TurboQuant was abandoned on a fair test, after the handoff itself flagged its first gate as unfair.** The original
+decision gate tested one of four ecosystem fixes (norm correction only) on Qwen2.5-7B — squarely inside TQ3's measured
+failure zone, since TQ3 quality is **model-size dependent** (Qwen3-0.6B: PPL **1216** vs f16 13.51, catastrophic; 8B: worse
+than Hadamard+q4_0; 35B+: approaches f16 — head_dim=128 only gaussianizes with enough coordinates). The handoff recorded
+"why we stopped too early", then re-ran fairly: **Coder-32B with norm correction still lost — TQ3 +5.9% PPL (1.4676) vs
+q4_0's +0.001% (1.3875)** — and only then declared ABANDONED. Norm correction itself is real (77% gap reduction on 7B, PPL
+9.017 → 2.13; beats q8_0 by 1.17% in spiritbuun's CUDA fork) but insufficient. This is the closure discipline worth copying:
+the verdict survives because the gate's own weakness was found and removed before the decision was made final.
+
+**QJL died on arithmetic, not implementation.** The custom XNOR+popcount attention kernel worked mechanically, but the
+sign-bit estimator at S=256, d=128 has **SNR ≈ 1.13** — noise ≈ signal for the small Q·K scores that dominate a PPL
+aggregate (PPL ~15–16K, unusable). Adding the paper's top-8 outlier correction lifts effective storage to ~6 bits/element,
+**at which point plain q8_0 (8 bits, trivial) wins on quality-per-complexity** — the compression advantage evaporates
+exactly when the method starts working. The paper's remaining viability path is a full-precision recency buffer for the
+most-attended recent tokens — i.e. the hybrid-precision buffer this handoff independently built and measured as
+memory-negative. PolarQuant's +0.229 PPL at 3.1 effective bits completes the set.
+
+### Residual validated facts worth keeping on the record
+
+- **Spec-decode composes with quantized KV**: speculative decoding + q8_0/q4_0 measured **19.15 t/s (+3.3% vs f16)** on
+  Coder-32B — the R9 interaction risk closed positive, not merely neutral.
+- **A standing small-GQA hazard**: q4_0 K on Qwen2.5-7B-f16 (4 KV heads, `n_embd_k_gqa=512`) produces PPL 2642 (garbage) on
+  BOTH experimental and production binaries while q8_0 K is fine; all production models (8+ KV heads) are unaffected; root
+  cause never found. Any future ≤4-KV-head model must re-run the q4_0-K gate before inheriting the production config.
+- **Ecosystem bug watch-list for anyone touching WHT/KV code**: WHT normalization must be `1/sqrt(block)` not `1/block`
+  (garbage PPL otherwise); store V non-transposed and transpose in-graph (block-quant crash otherwise); apply WHT during
+  quantization (`set_rows`), never graph-side (PPL 23.5 vs 6.2); CPU dequant targets F32 only.
+- **Reconciliation — the 2026-07-20 monitor row above is retired**: upstream PR #21089 (TBQ3_0/TBQ4_0 CPU TurboQuant KV),
+  listed above as "remain open/monitor" and as an Open Question, was **CLOSED UNMERGED upstream on 2026-06-02** (GitHub API:
+  `state closed`, `merged false`, verified 2026-07-29, re-verified 2026-08-21). No TBQ code entered the local tree. The
+  question "does #21089 merge and beat Hadamard+q4_0?" is answered: no, and there is nothing left to monitor on that PR.
+
+### Source References
+
+- [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the closed handoff: V-dequant root-cause table, Phase-0/1/3b/3c results, TQ3 model-size dependence and fair 32B retest, QJL SNR post-mortem, spec-decode validation, the 4-KV-head q4_0-K bug.
+- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the verified PR #21089 closed-unmerged state (2026-08-21 re-check) that retires this page's 2026-07-20 monitor row.
+- [llama.cpp issue #20977](https://github.com/ggml-org/llama.cpp/issues/20977) — the upstream TurboQuant feature request the revisit criteria were pinned to (cited by the handoff).
+- [ik_llama.cpp issue #1509](https://github.com/ikawrakow/ik_llama.cpp/issues/1509) — ikawrakow's independent EPYC 9975 confirmation runs (Hadamard+q4_0 better quality AND 2.2× faster than TQ3), the external anchor for the abandonment.
+- [intake-193](https://arxiv.org/abs/2406.03482) QJL — the paper whose S=512 / recency-buffer requirements the SNR post-mortem quantifies against our S=256 implementation.

@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-12 (second pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
-**Sources**: 65+ documents
+**Last compiled**: 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Sources**: 67+ documents
 
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
 
@@ -1057,3 +1057,137 @@ is DFlash1 and expects 81 tensors plus a `target_hidden_size` key the DFlash2 GG
 - [`progress/2026-08/2026-08-20.md`](../progress/2026-08/2026-08-20.md) — the depth sweep, the swap, and the DFlash2 np1 campaign
 - `epyc-inference-research` commits `b376dadd` (swap + draft_max), `bd40ca94` (DFlash2 decision context) — direct commit reads
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the earlier per-model draft-max sweep this update reconciles with
+## Compiled Update — 2026-08-22: a parity or concurrency verdict is only as strong as its control arms — and batch invariance holds on none of our three compute planes
+
+**Confidence: verified** — everything below is a source read at exact lines of frozen v9 or the
+experimental candidate, an upstream control matrix, or a peer-reviewed reference, landed 2026-08-21/22.
+The DFlash2 np2/4/8 grid, the greedy-parity run itself, and the promotion decision have **NOT** landed;
+nothing here changes the 2026-08-20 "not selectable" status above. What landed is the discovery that the
+naive versions of both remaining DFlash2 gates would have produced verdicts that mean nothing, plus the
+code-level facts that force their redesign.
+
+### A greedy-parity failure on gfx90a is not attributable to the drafter — our own patch guarantees that
+
+**Frozen v9 is deliberately non-batch-invariant at `ne11 >= 2`, by a patch we knowingly accepted for
+speed.** EPYC-local commit `a6b4b5263` (`ggml/src/ggml-cuda/mmvq.cu:341-344`, verified absent upstream)
+routes Q8_0 to batched MMQ at `ne11 >= 2` (`case GGML_TYPE_Q8_0: return log_decision(ne11 <= 1);`), and
+its own commit message calls the result **"numerically-valid (not bit-exact)"** — the price of the
++17.4% single-stream MTP win on MI210. A speculative verify batch is `ne11 = n_max+1 >= 2`; the
+non-speculative baseline is `ne11 = 1`. So a token-level divergence between `--spec-type none` and ANY
+speculative arm may be entirely attributable to a performance patch of our own, and no drafter-vs-drafter
+arm can tell the difference. Two mandatory consequences for any parity test on this hardware: capture
+`GGML_CUDA_LOG_MMVQ_ROUTE=1` on every arm (a runtime env var — `ggml-cuda.cu:1812-1814` — no rebuild
+needed) and report which kernel each verify batch actually took; and **`--spec-draft-n-max 1` is NOT a
+safe bit-exact reference** — it still produces a 2-column batch, and the local rule splits at exactly
+`ne11 >= 2`.
+
+**Reconciliation with earlier sections**: this does not contradict the K25 route-proof closure
+("`ne11=1` → MMVQ, `ne11=2..9` → MMQ", proven three ways) or the "MMQ is numerically non-bit-exact so it
+PERTURBS acceptance" finding — it is their previously-unstated consequence for parity *testing*. It also
+refines the June gemma finding that MTP output is "distribution-lossless, NOT byte-exact greedy …
+because batched verification has different FP rounding": on gfx90a the divergence source is not only
+generic FP-accumulation-order noise but includes a deliberate, *logged*, per-width kernel switch that can
+and must be instrumented per arm.
+
+**"Fall back to CPU for a bit-exact reference" is not available either.** The same `N==1` vs `N>1`
+dispatch split exists on both CPU paths — `llamafile_sgemm`'s `mnpack` register blocking and iqk's
+`funcs[ny-1]` dispatch — so batch invariance is not a property any of our three compute planes holds.
+
+### Upstream proves multi-token verify alone can break greedy parity — and that ngram arms do not
+
+**Batched speculative verification ALONE deterministically diverges from the greedy baseline at
+near-ties** (upstream #27407): it reproduces with `draft-simple` and no DFlash code involved, so a
+DFlash2 non-parity result is not automatically a DFlash2 defect and a `draft-simple` control arm is
+mandatory. **But a five-week-older, better-diagnosed thread — #25618, 15 comments, reproduced on
+Vulkan/Metal/ROCm, never cited by #27407 — reports `ngram-simple`/`ngram-mod` staying byte-identical on
+the same quantized target even with accepts**, through the same `common_sampler_sample_and_accept_n`
+path, while `draft-dspark` diverges. If a multi-token verify batch were *sufficient* to break parity,
+ngram should break too. An ngram arm (v9 supports both spec types) is therefore the discriminator:
+ngram-clean plus draft-simple-divergent would localise the defect to the **external-drafter verify
+path** rather than multi-token verify as such — and overturn #27407's headline for our stack.
+
+**A parity protocol that can actually attribute** — each element fixes a failure mode measured upstream:
+
+| protocol element | failure it prevents |
+|---|---|
+| ≥ 5 prompts, per-prompt PASS/FAIL, never an aggregate verdict | #27407's own `draft-simple` arm was byte-identical on one workload and divergent on the other; a third-party run went 0/5 → 4/5 depending on patch — a single-prompt check returns a false clean sheet at a rate near 50% |
+| fresh server process per phase | one reporter measured 1/5 divergent with a reused server vs 4/5 with fresh processes, *despite* `cache_prompt=false` |
+| `-ctk f16 -ctv f16`, or a dedicated spec-off baseline per KV quant | quantized KV alone moves greedy output even with `--spec-type none`, so a q8_0-KV arm's non-parity is unattributable without its own non-speculative baseline |
+| stripped-output hash **plus** first-differing generation-token index via same-vocab `llama-tokenize` | hash-only comparison says *that* arms diverge, never *where*, which is what attribution needs |
+| `GGML_CUDA_LOG_MMVQ_ROUTE=1` on every arm | separates our own `ne11`-routing patch from drafter defects (previous subsection) |
+
+### A concurrency sweep that varies `-np` under serial load measures nothing
+
+**Upstream #27117's own control matrix establishes that `-np` alone is inert: a `-np 16` server carrying
+only 4 concurrent requests is bit-identical to `-np 4`.** The concurrency variable is **in-flight
+requests**, so a grid that raises `-np` while issuing serially sits entirely in the healthy region and
+returns a clean sheet that means nothing. The redesigned DFlash2 concurrency gate (DF2-5) therefore:
+sweeps in-flight requests 1/2/4/8 with `-np` held at or above the request count; instruments **per-slot**
+draft acceptance and mean accepted length (aggregate throughput cannot separate a scheduling cost from a
+correctness defect); runs three arms — none / MTP / DFlash2 — at every point, because #27117 is
+DFlash-**1** and predates PR #27342 by three days, so an unattributed regression would blame DFlash-2 for
+a defect that is not its own; extends to 8 concurrent, because the reported onset is at 8 and 4 is
+healthy in every upstream report — a sweep stopping at 4 cannot see the phenomenon at all, and the
+production role runs np up to 8; and pairs every cell with and without `--kv-unified` — the single
+discriminating control nobody upstream has ever run, on any backend, for any drafter (the flag
+correlation behind the leading root-cause hypothesis is 3-point, has a counter-example, and is fully
+confounded with CUDA-vs-AMD, while a `split_equal` row-permutation defect would be backend-agnostic by
+construction; a defect found here would be present verbatim in frozen v9).
+
+**Acceptance ratios are structurally n_max-dependent, so `n_max` must be held fixed across any sweep** —
+measured upstream on the same drafter and a single slot:
+
+| `--spec-draft-n-max` | accepted/generated | per-position acceptance |
+|---|---:|---|
+| 1 | 0.708 | 0.719 |
+| 3 | 0.523 | 0.719 / 0.496 / 0.353 |
+
+Comparing acceptance across cells with different `n_max` compares the knob, not the drafter — the
+single-proposer analogue of the SR-4 composed-recipe dilution finding above: an acceptance number is
+meaningful only against the recipe AND budget it was measured under. If `n_max` varies at all, mean
+accepted length must be reported beside the ratio.
+
+**An asymmetric guard exposure, recorded not fixed**: v9's server hard-refuses `draft-dspark` above
+`--parallel 1` (citing #26741) but carries **no equivalent guard for `draft-dflash`**, whose code is
+present in v9 (24 files). Not an incident — we serve no DFlash-1 today — and if DF2-5 reproduces #27117
+on gfx90a, the symmetric guard goes to the experimental branch only, never to frozen v9.
+
+### Quantized-KV × speculation: the HIP verify path pays a full-cache dequant the CPU path never pays
+
+**On the CUDA/HIP backend, only the VEC flash-attention kernel reads quantized KV natively, and VEC is
+selected for quantized KV only at `Q->ne[1] <= 2`** (frozen v9 `0db32c06e`:
+`ggml/src/ggml-cuda/fattn-vec.cuh:540-543`). MMA/TILE/WMMA set `need_f16_K/need_f16_V = true`, and
+`launch_fattn` then dequantizes the **entire K and V tensors** to F16 scratch — `ggml_nelements(K)`,
+i.e. the whole cache — on every call (`fattn-common.cuh:1022-1080`). A speculative verify batch has
+`q_len = gamma+1`, so at `gamma >= 2` it leaves the VEC regime and pays a full-cache dequant on every
+verify step. **Scope corrections landed 2026-08-22, before the measurement was mis-aimed**: (a) this is
+a **CUDA/HIP-backend property ONLY** — the CPU serving path has no cliff at all
+(`ggml-cpu/ops.cpp:8635` consumes K in quantized form at any q_len via the type-traits `kq_vec_dot`;
+`:8739` dequantizes V one DV-length row at a time into a stack temp) — do not generalise the cliff to
+the frontdoor; (b) the first-cited locator (`fattn.cu:472-495`) sits in the **NVIDIA-Turing-only**
+branch and never executes on gfx90a — CDNA2's operative sites are `fattn.cu:522-536` (AMD MFMA) and
+`:543-557` (the fallback returning VEC at `<= 2`, else TILE, which also forces f16); note also that
+without `GGML_CUDA_FA_ALL_QUANTS`, only Q4_0/Q8_0/F16/BF16/F32 are FA-eligible KV types. **The runtime
+gate is still open**: if one instrumented run confirms this read, quantized-KV speculative decoding is
+bandwidth-positive on the MI210 only at `draft_max = 1` — that would reframe every quantized-KV spec-dec
+result we hold or plan, but it is today a conditional on a static read, not a result. It already demotes
+the one first-party spec-dec × quantized-KV datapoint (Coder-32B, risk R9: t/s only, no acceptance rate,
+no named correctness instrument) to supportive-not-probative; its re-measurement is deliberately blocked
+on the instrumented run, because re-measuring first risks reporting a full-cache dequant as a KV-quant
+result.
+
+**The premise itself is settled and may no longer absorb blame.** Verifying speculative tokens against a
+quantized KV cache is a sound, peer-reviewed design (ICML 2025) — at **INT8**, with a 4-bit draft view
+over the same physical cache — so a quantized-KV speculative failure needs a *specific mechanism* and
+cannot be attributed to "quantized verify is unsound". This does **NOT** license 4-bit verification,
+which remains unestablished. A useful harness invariant travels with it: at `gamma = 1`, acceptance
+**is** the single-token draft/target agreement rate; the peer-reviewed 4-bit-draft/8-bit-verify
+reference band is 91.88–96.58% — a third-party sanity band on different hardware, never a baseline
+(MEASUREMENT.md).
+
+### Source References
+
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the `a6b4b5263` parity confounder and route-log requirement (DF2-6 third finding), the ngram discriminator and five-point parity protocol (DF2-6b/6c), the five-point DF2-5 concurrency redesign with the upstream `-np`-inert control matrix and n_max-dependence numbers, and the `draft-dflash` guard asymmetry (DF2-7)
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the G3 quantized-KV VEC/TILE static read with its 2026-08-22 CPU-path and CDNA2-locator scope corrections, the settled INT8-verify premise, and the `gamma=1` agreement-rate invariant (intake-1274/1277 Stage-2b)
+- [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — risk R9, the Coder-32B spec+quantized-KV datapoint this update demotes to supportive-not-probative pending the instrumented G3 run
+- [`kv-cache.md`](kv-cache.md) — the KV-quantization production context (Hadamard+q4_0, `-ctk`/`-ctv` configs) that the full-cache-dequant finding scopes to the CPU plane only

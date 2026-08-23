@@ -2,8 +2,8 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-16 (**the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
-**Sources**: 38 documents (0 dedicated deep-dives, 4 handoffs, 9 active handoffs, 3 gpu-aux-baseline receipts, 24 intake entries + cross-references from 6 deep-dives)
+**Last compiled**: 2026-08-22 (**the TurboQuant KV monitor is dead upstream — PR #21089 verified CLOSED UNMERGED 2026-06-02, retiring this page's monitor bullet, actionable and open question — and the iqk dispatch whitelist is a quant-SELECTION constraint**: Q2_K/Q3_K are `static_assert`ed out of the iqk path on frozen v8, so never pick them on size grounds (UD-IQ3_XXS over size-matched UD-Q2_K_XL); ChunkKV ruled experimental-candidate-only — the existing `action=compact` endpoint is Expected-Attention, NOT ChunkKV; `eschamoe` W2 closed (CUDA-only, no ROCm); plus a flagged-not-resolved KIVI caveat that our KV-quant quality case rests on PPL/NIAH, an instrument class KIVI shows can stay flat while GSM8K collapses ~57% at 2-bit — see the end of the page; earlier 2026-08-16 note: **the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Sources**: 42 documents (0 dedicated deep-dives, 4 handoffs, 9 active handoffs, 3 gpu-aux-baseline receipts, 27 intake entries + cross-references from 6 deep-dives, 1 external paper (KIVI))
 
 ## Compiled Update — 2026-08-16: on CDNA2 the batch-1 decode knee is kernel REGISTER PRESSURE, not bits-per-weight
 
@@ -345,3 +345,72 @@ Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`ha
 - **Trellis quantization is a quality-per-bit play, not a speed play, at our operating points.** `block_iq2_kt` is 68 B per 256 weights = **2.125 bpw**, versus **IQ2_XXS at 2.0625 bpw** — i.e. trellis is *larger* than what GLM-5.2 already uses, saving zero bandwidth while adding per-weight arithmetic. Against Q4_K_M the saving is ~17.5%, but our own iqk measurements (+7.9-8.8% on Q4_K, ~0% on Q8_0) show we are not fully bandwidth-saturated at 4-bit, so added arithmetic eats into it. The nearest local precedent is TurboQuant at 573 t/s vs Hadamard+q4_0 at 1279 t/s (2.2x slower) on EPYC 9975. Sources: [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md), [kv-cache-quantization.md](../handoffs/completed/kv-cache-quantization.md), [iqk-iquant-enablement.md](../handoffs/active/iqk-iquant-enablement.md).
 
 - **Selective-precision carve-outs for large MoEs are already standard practice, not an untaken opportunity.** Two independent practitioners (intake-870 vLLM-Moet, intake-871 GLM-5.2-NVFP4-TR3) converged on holding attention, shared experts, the DSA indexer and early-layer MLPs above 4-bit while pushing routed experts low. Parsing the six GLM-5.2 UD-IQ2_M shard headers shows **Unsloth already implements all four, more aggressively than either describes**: attention KV path at Q8_0, `indexer.proj`/`k_norm` at F32 with indexer projections at Q8_0, shared experts at Q5_K/Q6_K, and layers 0-2 (`leading_dense_block_count=3`) at Q5_K/Q6_K. A corollary worth recording: the historical GLM-5.2 `indexer_top_k` corruption was a runtime parameter bug, and this tensor map rules quantization out as a repeat cause. Sources: [glm52-reviewer-capability-gates.md](../handoffs/active/glm52-reviewer-capability-gates.md), [tq3-quantization-evaluation.md](../handoffs/active/tq3-quantization-evaluation.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+
+## Compiled Update — 2026-08-22: the TurboQuant KV monitor is dead upstream, and the iqk dispatch whitelist is now a quant-SELECTION constraint
+
+**Confidence: verified** — the PR state is re-derived from the GitHub API (2026-08-21), the ChunkKV verdict is a
+source-checked feasibility ruling, and the `static_assert` constraint was read out of the frozen production tree. One
+external caveat at the end is flagged, not resolved.
+
+### PR #21089 (TBQ3_0/TBQ4_0 CPU TurboQuant KV) was CLOSED UNMERGED upstream on 2026-06-02 — the monitor row is retired
+
+Re-verified against the GitHub API 2026-08-21: `state closed`, `merged false`, `merged_at null`, last update 2026-06-03.
+No TBQ code ever entered the local tree, and no build, benchmark or runtime action was taken. **This retires three items on
+this page**: the "TurboQuant (TBQ3_0/TBQ4_0) for KV cache deferred to upstream … monitor for merge" bullet under Exotic
+Quantization, the "Evaluate upstream TBQ3_0/TBQ4_0 when PR #21089 merges" Actionable, and the matching Open Question. The
+next revisit trigger is a *new* upstream PR or a merged successor — there is nothing left to monitor on #21089.
+
+The meta-lesson doubles the 2026-08-12 finding above (the #22836 ARM-only mislabel): **a monitor row rots even inside its
+own file.** The TQ3 handoff's status paragraph still read "still open — no movement since last review" on 2026-08-21 while
+its own checklist, four screens down, had recorded the verified closure on 2026-07-29. A citation's identifier is
+self-verifying; its *state description* is a separate claim that must be re-derived from the API before it gates anything.
+
+### ChunkKV has a feasibility ruling: experimental-candidate only, and the existing compact endpoint is NOT ChunkKV
+
+The 2026-07-29 assessment settles what ChunkKV (arXiv:2502.00299) would take here: **technically implementable as an
+experimental llama.cpp candidate; never an existing-server toggle or a production patch.** The production tree's adjacent
+substrate — `src/llama-kv-compress.cpp` plus the server's `POST /slots/{id}?action=compact` idle-slot eviction — is
+**Expected-Attention** eviction (a future-attention proxy derived from raw K/V), while faithful ChunkKV requires the
+*actual observed attention scores from the final prefill queries* plus ordered contiguous-chunk top-k selection. Summing
+the existing per-token proxy into chunks would be a useful *ChunkEA* derivative but **must not be reported as reproducing
+the paper**. Also settled: server eviction leaves positions gapped and creates reusable KV capacity, not an
+allocated-buffer shrink or immediate logical-context extension. Any faithful build starts from fresh production on
+`llama.cpp-experimental` and compares Full KV / Expected Attention / ChunkKV at equal cache budgets.
+
+### The iqk dispatch whitelist is a quant-selection constraint: never pick Q2_K/Q3_K on size grounds
+
+Verified read-only against frozen `production-consolidated-v8` (`ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:73-74`):
+
+```
+static_assert(!iqk_typeA_supported(GGML_TYPE_Q2_K));
+static_assert(!iqk_typeA_supported(GGML_TYPE_Q3_K));
+```
+
+Q2_K and Q3_K are **statically asserted out of the iqk path**, so a Q2_K build forfeits iqk acceleration entirely — on
+workloads where iqk is worth +33–43% prefill. The concrete case that surfaced it: if `Qwen3.6-35B-A3B` is ever benched as
+a `worker_general` candidate, the size-matched arm to the Escha 2-bit build is `UD-Q2_K_XL` — and taking it would be a
+mistake; `UD-IQ3_XXS` (13.2 GB, on the five-type native IQ whitelist from the 2026-07-21 section above) keeps the
+acceleration for ~1 GB more. **The general rule: a candidate quant's dispatch-path membership is part of its price, not a
+detail** — this page's 2026-07-21 iqk section documented which types the whitelist *includes*; the `static_assert` pair is
+the complementary, compiler-enforced *exclusion* list. Also closed 2026-08-03: the `eschamoe` W2 format itself is unusable
+here (closed CUDA sm_80–120, no ROCm path — the same wall as ZipServ, EXL3 and the rest of the quantization×kernel
+co-design school, now recorded corpus-wide so it is not re-derived source by source).
+
+### Flagged, not resolved: our first-party KV-quant quality case rests on the instrument class KIVI shows can miss
+
+A 2026-08-22 Stage-2b dive on KIVI (arXiv:2402.02750, verified against the primary source) records that KIVI reports **no
+perplexity anywhere** and rejects single-decode-step metrics for compressed-KV study; its own data show the same 2-bit KV
+damage costing CoQA ~7% while **collapsing GSM8K by ~57%** (13.50 → 5.76) on Llama-2-7B. Our deployed
+"quality-neutral" KV-quant case (PPL +0.017, NIAH 9/9 — see KV Cache Quantization above) is built **exactly** on the
+instrument class that can stay flat through such damage. This does not overturn the deployed config — the multi-step
+reasoning eval that would test it (GSM8K-class, f16 vs q8_0/q8_0 vs q4_0/q4_0, rotation ON) is specced but **unrun**, so
+the parity claims stand *as PPL/NIAH claims* with this caveat attached until that gate runs.
+
+### Source References
+
+- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the 2026-08-21 re-verified #21089 closure and self-contradiction correction, the ChunkKV feasibility memo, the Escha/`eschamoe` ruling, and the KIVI Stage-2b instrument-gap entry.
+- [llama.cpp PR #21089](https://github.com/ggml-org/llama.cpp/pull/21089) — the closed-unmerged upstream PR itself (state re-derived via the GitHub API, not the tracking row).
+- [`iqk-iquant-enablement.md`](../handoffs/active/iqk-iquant-enablement.md) — owner of the iqk whitelist/un-stub work the Q2_K/Q3_K exclusion constraint complements.
+- [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the role-level context for the Escha-vs-UD-IQ3_XXS worker-candidate quant choice.
+- [intake-945/946/956](../handoffs/active/tq3-quantization-evaluation.md) (`EschaLabs/Qwen3.6-35B-A3B-Escha-W2`) — the Stage-2 intake cluster behind the `eschamoe` closure.
+- [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) — the verified external result behind the flagged PPL/NIAH instrument caveat.
