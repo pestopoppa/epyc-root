@@ -22,7 +22,7 @@ Do not use when:
 1. Discover `CLAUDE.md` files.
 2. Classify each path per `references/scoping.md`.
 3. Update matrix docs and JSON.
-4. Run `scripts/build_claude_md_matrix.py --check`.
+4. Run `python3 .claude/skills/claude-md-accounting/scripts/build_claude_md_matrix.py --check`.
 
 ## Governed Baseline
 

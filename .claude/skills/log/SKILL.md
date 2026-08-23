@@ -36,7 +36,7 @@ python3 scripts/coordination/worker_checkpoint.py \
   --spec-ref 'handoffs/active/owning-handoff.md#stable-task-anchor' \
   --boundary-reason task-boundary \
   --next-context related \
-  --validation-json '["python3","-m","pytest","-q","tests/focused_test.py"]' \
+  --validation-json '["/workspace/repos/epyc-orchestrator/.venv/bin/python","-m","pytest","-q","tests/focused_test.py"]' \
   --path path/to/owned-artifact
 ```
 

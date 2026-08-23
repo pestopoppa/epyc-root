@@ -280,7 +280,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 These categories have intake entries but insufficient depth for a compiled article. Raw sources are accessible via the query operation:
 
 ```
-python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 ```
 
 | Category | Intake Entries | Notes |
@@ -309,12 +309,12 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 
 **For agents**: Query the knowledge base programmatically:
 ```
-python3 .claude/skills/project-wiki/scripts/query_wiki.py "speculative decoding" --human
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/query_wiki.py "speculative decoding" --human
 ```
 
 **To update**: Run the compile operation when new research is ingested:
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --full  # list sources
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --full  # list sources
 # Then invoke: "compile the wiki"
 ```
 

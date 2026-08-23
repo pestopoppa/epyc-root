@@ -464,7 +464,7 @@ This page itself is a product of the `project-wiki` skill compile operation (`/w
 3. **Synthesize** (this page is one such synthesis).
 4. **Touch** `.last_compile` with `compile_sources.py --touch`.
 
-Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `python3 .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
+Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
 ## Key Findings

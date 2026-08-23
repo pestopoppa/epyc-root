@@ -7,15 +7,15 @@ Compares file modification times against the last compilation timestamp.
 
 Adapted for epyc-root's flat directory layout (no per-user nesting).
 
-Usage:
-    python3 compile_sources.py              # incremental (since last compile)
-    python3 compile_sources.py --full       # all sources regardless of timestamp
-    python3 compile_sources.py --touch      # update .last_compile after output
-    python3 compile_sources.py --type research  # filter by source type
-    python3 compile_sources.py --since 2026-04-01  # override since-date
-    python3 compile_sources.py --full --write-manifest
-    python3 compile_sources.py --check-manifest
-    python3 compile_sources.py --changed-since-manifest
+Usage (run with the orchestrator venv interpreter — PyYAML is required):
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py  # incremental (since last compile)
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full  # all sources regardless of timestamp
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # update .last_compile after output
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --type research  # filter by source type
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --since 2026-04-01  # override since-date
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full --write-manifest
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --check-manifest
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --changed-since-manifest
 """
 
 from __future__ import annotations

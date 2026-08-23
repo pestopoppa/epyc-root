@@ -278,10 +278,15 @@ The map is **generated** from `merged_ids`, never hand-kept — a redirect table
 than none, because it answers confidently and wrongly:
 
 ```bash
-.claude/skills/research-intake/scripts/resolve_intake_id.py intake-797     # one lookup
-.claude/skills/research-intake/scripts/resolve_intake_id.py --write-map    # regenerate
-.claude/skills/research-intake/scripts/resolve_intake_id.py --audit        # where each is still cited
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/research-intake/scripts/resolve_intake_id.py intake-797     # one lookup
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/research-intake/scripts/resolve_intake_id.py --write-map    # regenerate
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/research-intake/scripts/resolve_intake_id.py --audit        # where each is still cited
 ```
+
+> **Use the orchestrator venv interpreter, not bare `python3`.** `resolve_intake_id.py`
+> imports `yaml` unconditionally; the devcontainer's system `python3` lacks PyYAML, so a
+> bare invocation dies with `ModuleNotFoundError: No module named 'yaml'`. Same convention
+> as `scripts/validate/validate_intake.sh`.
 
 `validate_intake.py` fails if an absorbed id is missing from the map, so a merge cannot quietly
 skip publication.
