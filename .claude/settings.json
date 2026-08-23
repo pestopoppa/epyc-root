@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_filesystem_path.sh\"",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_filesystem_containment.sh\"",
             "timeout": 5
           },
           {

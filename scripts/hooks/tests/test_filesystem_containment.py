@@ -500,9 +500,24 @@ class TestClaudeWrapper(unittest.TestCase):
             {"tool_name": "Bash", "tool_input": {"command": "sudo -n true && git status"}}))
         self.assertEqual(res.returncode, 0)
 
-    def test_ignores_non_bash_tools(self):
+    def test_write_surface_routed_through_scanner(self):
+        """Unified wrapper (2026-08-23): Write|Edit now runs --check-path with
+        the SAME containment rules as Bash. The old check_filesystem_path.sh
+        hand-written allow-set is gone; this file_path is outside the roots."""
         res = self.run_wrapper(json.dumps(
             {"tool_name": "Write", "tool_input": {"file_path": "/mnt/bigdisk/x"}}))
+        self.assertEqual(res.returncode, 2)
+        self.assertIn("BLOCKED", res.stderr)
+        self.assertIn("/mnt/bigdisk/x", res.stderr)
+
+    def test_write_in_root_allowed(self):
+        res = self.run_wrapper(json.dumps(
+            {"tool_name": "Edit", "tool_input": {"file_path": "/mnt/raid0/llm/epyc-root/x"}}))
+        self.assertEqual(res.returncode, 0, res.stderr)
+
+    def test_ignores_other_tools(self):
+        res = self.run_wrapper(json.dumps(
+            {"tool_name": "Read", "tool_input": {"file_path": "/mnt/bigdisk/x"}}))
         self.assertEqual(res.returncode, 0)
 
     def test_env_ack_passes_through(self):

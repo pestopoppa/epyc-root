@@ -25,7 +25,27 @@ This scanner is the ONE shared implementation both surfaces call — the repo's
 hard-won lesson (operator_apply_copy_scan.py, RTG-52): never a fifth parser. It
 reuses ``shell_scan.segments()`` and nothing else. ``check_filesystem_containment.sh``
 wraps it for the Claude PreToolUse hook; ``.opencode/plugins/filesystem-containment.ts``
-wraps it for the opencode plugin.
+wraps it for the opencode plugin; ``codex_filesystem_containment.py`` bridges the
+codex PreToolUse hook; ``generate_opencode_permissions.py`` derives the opencode
+permission.bash deny block from ``--dump-rules`` (the ONE exported truth; the
+harness-parity tests fail on any drift).
+
+THREE CLI MODES, one rule set:
+
+  * ``--command "<cmd>"`` — scan a Bash command (CLASS A + CLASS B). The
+    PreToolUse JSON stdin shape (``tool_input.command`` / ``tool_input.file_path``)
+    is also accepted with no flags.
+  * ``--check-path <path>`` — decide one FILE path (the Write|Edit surface) with
+    the SAME containment roots + operator allowlist as CLASS B: 0 if the
+    realpath'd path is inside a root, under an allowlist prefix, or /dev/null;
+    2 otherwise (fail-closed when the allowlist cannot be read). This replaced
+    the old hand-written allow-set in ``check_filesystem_path.sh`` (which allowed
+    ``/mnt/raid0/*`` broadly; the scanner allows ``/mnt/raid0/llm/**`` —
+    equivalent in practice because /mnt/raid0 contains only llm/).
+  * ``--dump-rules`` — emit the canonical rule tables (class A verbs, package
+    tools/actions, dpkg flags, write verbs by tool, containment roots realpath'd)
+    as deterministic JSON. Generators and parity tests consume THIS, never a
+    hand-copied table.
 
 TWO REFUSAL CLASSES.
 
@@ -315,6 +335,34 @@ _RESTIC_WRITE_VERBS = frozenset("backup init".split())
 _BORG_WRITE_VERBS = frozenset("create init".split())
 _RCLONE_WRITE_VERBS = frozenset("copy sync move delete deletefile purge rcat".split())
 _GIT_WRITE_VERBS = frozenset("clone init".split())
+
+
+def rules_dump() -> dict:
+    """The canonical rule tables as a JSON-serializable, deterministically
+    ordered dict — the ONE exported truth every derived surface consumes.
+
+    Consumed by ``generate_opencode_permissions.py`` (the opencode
+    permission.bash deny block) and by the harness-parity tests. NEVER
+    hand-copy these tables into another file: a second copy is drift by
+    construction (INC-20260823-filesystem-containment-gap built the guard in
+    two surfaces with duplicated hand-written rules). Ordering: frozenset
+    tables are sorted (sets have no order); the dpkg flag tuple keeps its
+    source order.
+    """
+    return {
+        "class_a_verbs": sorted(_CLASS_A_VERBS),
+        "mkfs_prefix": "mkfs",  # class A treats any base.startswith("mkfs") as privileged
+        "pkg_tools": sorted(_PKG_TOOLS),
+        "pkg_actions": sorted(_PKG_ACTIONS),
+        "dpkg_install_flags": list(_DPKG_INSTALL_FLAGS),
+        "write_verbs": {
+            "restic": sorted(_RESTIC_WRITE_VERBS),
+            "borg": sorted(_BORG_WRITE_VERBS),
+            "rclone": sorted(_RCLONE_WRITE_VERBS),
+            "git": sorted(_GIT_WRITE_VERBS),
+        },
+        "containment_roots": list(containment_roots()),
+    }
 
 
 def class_b_targets(verb: str | None, tokens: list[str], verb_idx: int) -> list[str]:
@@ -650,42 +698,78 @@ def scan_command(command: str, cwd: str | None = None,
     return {"verdict": "allowed"}
 
 
+def check_path(path: str, cwd: str | None = None,
+               allowlist_path: Path | None = None) -> dict:
+    """Refusal dict for a file path outside the containment set, or allowed.
+
+    Serves the Write|Edit surfaces (Claude Write|Edit hook, opencode
+    write/edit plugin interception, codex file_path tool_input) with the SAME
+    rules as the command scanner: realpath'd containment roots, the operator
+    allowlist (fail-closed when unreadable), and the /dev/null carve-out.
+    ``~``/``$HOME`` expand; a quoted, variable-tainted, or remote target is
+    refused as ``unresolvable_target`` — never guessed at.
+    """
+    resolved, why = _resolve(path, cwd or os.getcwd())
+    if resolved is None:
+        return {"code": "unresolvable_target", "tool": "check_path",
+                "detail": f"path '{path}' cannot be resolved: {why}. "
+                          "The guard does not fail open on ambiguity."}
+    if resolved == "/dev/null":
+        return {"verdict": "allowed"}  # discard device — same carve-out as CLASS B
+    if _inside(resolved, containment_roots()):
+        return {"verdict": "allowed"}
+    allowlist = load_allowlist(allowlist_path or ALLOWLIST_PATH)
+    if allowlist is None:
+        return {"code": "allowlist_unavailable", "tool": "check_path",
+                "detail": f"path '{resolved}' is outside the containment root but "
+                          "the operator allowlist could not be read — refusing "
+                          "until it parses."}
+    if any(resolved == p or resolved.startswith(p + os.sep) for p in allowlist):
+        return {"verdict": "allowed"}
+    return {"code": "write_outside_containment_root", "tool": "check_path",
+            "detail": f"path '{resolved}' is outside the containment root. Allowed: "
+                      "/mnt/raid0/llm/**, /workspace/**, /tmp/opencode/**, "
+                      "~/.claude/**, ~/.codex/**, bare /tmp/**. Operators may add "
+                      "this path prefix to scripts/hooks/filesystem_allowlist.yaml "
+                      "(or set EPYC_FS_ACK for a one-off)."}
+
+
 # --------------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------------- #
 
-def _read_command(argv: list[str]) -> tuple[str | None, str | None]:
-    """(command, cwd) from argv `--command`, or the PreToolUse stdin shape."""
-    cwd = None
-    cmd = None
+def _parse_args(argv: list[str]) -> dict:
+    """(opts) from argv. Unknown flags are an error (refuse, never guess)."""
+    opts: dict = {"cwd": None, "allowlist": None}
     i = 0
     while i < len(argv):
         if argv[i] == "--command" and i + 1 < len(argv):
-            cmd = argv[i + 1]
+            opts["command"] = argv[i + 1]
+            i += 2
+        elif argv[i] == "--check-path" and i + 1 < len(argv):
+            opts["check_path"] = argv[i + 1]
             i += 2
         elif argv[i] == "--cwd" and i + 1 < len(argv):
-            cwd = argv[i + 1]
+            opts["cwd"] = argv[i + 1]
             i += 2
         elif argv[i] == "--allowlist" and i + 1 < len(argv):
-            global ALLOWLIST_PATH
-            ALLOWLIST_PATH = Path(argv[i + 1])
+            opts["allowlist"] = argv[i + 1]
             i += 2
+        elif argv[i] in ("--dump-rules",):
+            opts["dump_rules"] = True
+            i += 1
         else:
-            return None, None
-    if cmd is not None:
-        return cmd, cwd
-    data = sys.stdin.read()
-    if not data.strip():
-        return None, None
-    try:
-        payload = json.loads(data)
-        if isinstance(payload, dict) and isinstance(payload.get("tool_input"), dict):
-            cmd = payload["tool_input"].get("command")
-            if isinstance(cmd, str) and cmd.strip():
-                return cmd, cwd
-    except json.JSONDecodeError:
-        pass
-    return data, cwd
+            opts["bad_arg"] = argv[i]
+            break
+    return opts
+
+
+def _refusal_exit(verdict: dict) -> int:
+    """Emit a refusal exactly like the pre-existing protocol: human message on
+    stderr, JSON verdict on stdout, exit 2."""
+    print(verdict.get("detail", "refused"), file=sys.stderr)
+    print(json.dumps(verdict))
+    return 2
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -694,24 +778,78 @@ def main(argv: list[str] | None = None) -> int:
         print(__doc__.split("EXIT PROTOCOL")[0].split('"""')[0].strip())
         return 0
     try:
-        cmd, cwd = _read_command(argv)
-        if cmd is None or not cmd.strip():
-            print("error: no command given (--command <cmd> or PreToolUse JSON on stdin) "
-                  "— refusing to emit a verdict (empty input must never produce a clean scan)",
-                  file=sys.stderr)
+        if "--dump-rules" in argv:
+            opts = _parse_args([a for a in argv if a != "--dump-rules"])
+            if opts.get("bad_arg"):
+                print(f"error: unknown argument '{opts['bad_arg']}'", file=sys.stderr)
+                return 2
+            print(json.dumps(rules_dump(), indent=2))
+            return 0
+        opts = _parse_args(argv)
+        if opts.get("bad_arg"):
+            print(f"error: unknown argument '{opts['bad_arg']}'", file=sys.stderr)
             return 2
+        if opts.get("allowlist"):
+            global ALLOWLIST_PATH
+            ALLOWLIST_PATH = Path(opts["allowlist"])
+        cmd = opts.get("command")
+        path = opts.get("check_path")
+        cwd = opts.get("cwd")
         ack = os.environ.get(ACK_ENV, "").strip()
         if ack:
             print(json.dumps({"verdict": "allowed", "ack": ack,
                               "note": "operator ack EPYC_FS_ACK present in the hook "
-                                      "environment; command allowed and recorded"}))
+                                      "environment; call allowed and recorded"}))
             return 0
-        verdict = scan_command(cmd, cwd=cwd)
-        if verdict.get("verdict") == "allowed":
-            return 0
-        detail = verdict.get("detail", "refused")
-        print(detail, file=sys.stderr)
-        print(json.dumps(verdict))
+        if cmd is not None:
+            if not cmd.strip():
+                print("error: empty command — refusing to emit a verdict", file=sys.stderr)
+                return 2
+            verdict = scan_command(cmd, cwd=cwd)
+            if verdict.get("verdict") == "allowed":
+                return 0
+            return _refusal_exit(verdict)
+        if path is not None:
+            if not path.strip():
+                print("error: empty path — refusing to emit a verdict", file=sys.stderr)
+                return 2
+            verdict = check_path(path, cwd=cwd)
+            if verdict.get("verdict") == "allowed":
+                return 0
+            return _refusal_exit(verdict)
+        # No --command / --check-path: the PreToolUse stdin shape, or a bare
+        # command string (the historical fallback), or nothing (must refuse).
+        data = sys.stdin.read()
+        if not data.strip():
+            print("error: no command given (--command <cmd>, --check-path <path>, "
+                  "or PreToolUse JSON on stdin) — refusing to emit a verdict "
+                  "(empty input must never produce a clean scan)",
+                  file=sys.stderr)
+            return 2
+        try:
+            payload = json.loads(data)
+            if isinstance(payload, dict) and isinstance(payload.get("tool_input"), dict):
+                cmd = payload["tool_input"].get("command")
+                path = payload["tool_input"].get("file_path")
+                if isinstance(cmd, str) and cmd.strip():
+                    verdict = scan_command(cmd, cwd=cwd)
+                    if verdict.get("verdict") == "allowed":
+                        return 0
+                    return _refusal_exit(verdict)
+                if isinstance(path, str) and path.strip():
+                    verdict = check_path(path, cwd=cwd)
+                    if verdict.get("verdict") == "allowed":
+                        return 0
+                    return _refusal_exit(verdict)
+        except json.JSONDecodeError:
+            pass
+        if isinstance(data, str) and data.strip():
+            verdict = scan_command(data, cwd=cwd)
+            if verdict.get("verdict") == "allowed":
+                return 0
+            return _refusal_exit(verdict)
+        print("error: no command could be read from stdin — refusing to emit a "
+              "verdict", file=sys.stderr)
         return 2
     except AllowlistError as exc:
         print(f"error: allowlist configuration is broken: {exc} — failing closed",
