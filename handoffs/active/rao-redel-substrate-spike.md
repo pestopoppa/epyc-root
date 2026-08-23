@@ -6,7 +6,7 @@
 **Created**: 2026-05-19 (post-cluster-deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation
 **Priority**: HIGH (substrate enables all future RAO/RLM/Tree-GRPO work)
-**Depends on**: `meta-harness-optimization.md`, `repl-turn-efficiency.md`, `halo-trace-loop-spike.md`
+**Depends on**: `../completed/meta-harness-optimization.md`, `repl-turn-efficiency.md`, `halo-trace-loop-spike.md`
 **Source deep-dive**: [`/workspace/research/deep-dives/2026-05-19-rao-rlm-cluster.md`](../../research/deep-dives/2026-05-19-rao-rlm-cluster.md)
 
 ## Objective
@@ -15,7 +15,7 @@ Validate whether `ReDel` (intake-550, MIT + Commons Clause, `github.com/zhudotex
 
 If ReDel passes the pre-flight gate, lift its delegation primitives (`DelegateOne` blocking, `DelegateWait` non-blocking with `asyncio.gather`), event-stream logger, and web debugger into our orchestrator stack rather than rebuilding from scratch.
 
-If it fails, fall back to in-house design per `meta-harness-optimization.md` Tier 3.
+If it fails, fall back to in-house design per `../completed/meta-harness-optimization.md` Tier 3.
 
 ## Research Context
 
@@ -404,7 +404,7 @@ Either is cheap and unblocks the substrate decision. The 5-sub-decision episodic
 - Wang RLM reproduction: `https://arxiv.org/abs/2603.02615`
 - Orchestration-trace survey: `https://arxiv.org/abs/2605.02801`
 - Tree-GRPO: `https://arxiv.org/abs/2509.21240`
-- Related handoffs: `meta-harness-optimization.md`, `halo-trace-loop-spike.md`, `repl-turn-efficiency.md`, `tri-role-coordinator-architecture.md`, `unified-trace-memory-service.md`
+- Related handoffs: `../completed/meta-harness-optimization.md`, `halo-trace-loop-spike.md`, `repl-turn-efficiency.md`, `tri-role-coordinator-architecture.md`, `unified-trace-memory-service.md`
 
 ## Progress checklist
 

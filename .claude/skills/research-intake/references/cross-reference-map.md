@@ -45,7 +45,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### agent_architecture
 - **Chapters**: `09-claude-debugger.md`
-- **Handoffs**: `completed/orchestrator-stack-audit.md`, `completed/rlm-orchestrator-roadmap.md`, `completed/orchestrator-conversation-management.md`, `meta-harness-optimization.md`
+- **Handoffs**: `completed/orchestrator-stack-audit.md`, `completed/rlm-orchestrator-roadmap.md`, `completed/orchestrator-conversation-management.md`, `completed/meta-harness-optimization.md`
 - **Search terms**: agent architecture, tool use, REPL, code generation, orchestration, harness optimization, subagent, tool-level constraints
 
 ### context_extension
@@ -90,7 +90,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### autonomous_research
 - **Chapters**: (none)
-- **Handoffs**: `autopilot-continuous-optimization.md`, `meta-harness-optimization.md`
+- **Handoffs**: `autopilot-continuous-optimization.md`, `completed/meta-harness-optimization.md`
 - **Search terms**: autonomous research, automated experimentation, self-improving, Meta-Harness, harness search
 
 ### swarm_techniques
@@ -115,7 +115,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### tool_implementation
 - **Chapters**: (none)
-- **Handoffs**: `meta-harness-optimization.md`
+- **Handoffs**: `completed/meta-harness-optimization.md`
 - **Search terms**: CLI tool, Claude Code plugin, developer tooling, agent tooling, MCP server
 
 ### local_inference

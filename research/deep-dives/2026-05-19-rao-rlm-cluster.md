@@ -2,7 +2,7 @@
 
 **Author**: research-intake follow-up (Phase 6, deep-dive cluster #1 of 8)
 **Scope**: 7 intakes (intake-536, 541, 537, 547, 548, 549, 550) + canonical RLM (intake-153) context.
-**Status**: deep-dive (not a handoff). Findings feed `meta-harness-optimization.md`, `halo-trace-loop-spike.md`, `tri-role-coordinator-architecture.md`, `outer-coordinator-learned-head.md`, `hermes-outer-shell.md`, `repl-turn-efficiency.md`, `context-folding-progressive.md`.
+**Status**: deep-dive (not a handoff). Findings feed `handoffs/completed/meta-harness-optimization.md`, `halo-trace-loop-spike.md`, `tri-role-coordinator-architecture.md`, `outer-coordinator-learned-head.md`, `hermes-outer-shell.md`, `repl-turn-efficiency.md`, `context-folding-progressive.md`.
 
 ---
 
@@ -138,7 +138,7 @@ Tree-GRPO (intake-549) is Apache-2.0 (github.com/AMAP-ML/Tree-GRPO, 355 stars, l
 
 | Handoff | What this cluster changes | Specific edit |
 |---|---|---|
-| `meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate option + 5-sub-decision taxonomy as the labelling schema for Tier 3 prompt-template search-space cells. | Append "RAO+RLM cluster deep-dive 2026-05-19" subsection pointing here. |
+| `handoffs/completed/meta-harness-optimization.md` | Already updated (line 419) with RAO. Add ReDel evaluation as Tier 3 substrate option + 5-sub-decision taxonomy as the labelling schema for Tier 3 prompt-template search-space cells. | Append "RAO+RLM cluster deep-dive 2026-05-19" subsection pointing here. |
 | `halo-trace-loop-spike.md` | HALO-2 converter should emit 5-sub-decision labels as OpenInference span attributes (one extra ~10-LoC mapper). Lets a single labeller serve both HALO analysis AND any future RAO/Conductor-style outer-coordinator training. | Update HALO-2 task spec to mandate the 5-sub-decision attribute. |
 | `tri-role-coordinator-architecture.md` | The intake-548 taxonomy is **orthogonal** to the Trinity (T/W/V) role axis: role = WHAT the call does; sub-decision = WHERE in the orchestration lifecycle the call sits. Useful clarification, no scope change. | Add a one-line note in TR-1 deliverable that the role axis composes with the sub-decision axis. |
 | `outer-coordinator-learned-head.md` | OC-0.3 ("identify the fitness signal") is exactly the survey's "when-to-stop" gap. The deep-dive answers OC-0.3 partially: terminal task success × stopping efficiency (tokens-to-correct-stop) is the natural fitness signal because it is the one sub-decision NO published RL method covers, so the differential value is highest. | Strengthen OC-0.3 with a forward pointer to this deep-dive. |
@@ -281,7 +281,7 @@ Reassessment after the deep-dive (vs original intake-level priorities):
 - github.com/avbiswas/fast-rlm — already referenced from `handoffs/completed/01-fast-rlm-budget-controls.md`.
 
 ### EPYC handoffs (cross-referenced)
-- `/workspace/handoffs/active/meta-harness-optimization.md` (lines 419–438 — existing RAO subsection).
+- `/workspace/handoffs/completed/meta-harness-optimization.md` (lines 419–438 — existing RAO subsection).
 - `/workspace/handoffs/active/halo-trace-loop-spike.md` (HALO-2 converter touchpoint).
 - `/workspace/handoffs/active/tri-role-coordinator-architecture.md` (TR-1 taxonomy intersect).
 - `/workspace/handoffs/active/outer-coordinator-learned-head.md` (OC-0.3 fitness signal).

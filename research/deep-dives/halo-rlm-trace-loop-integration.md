@@ -345,7 +345,7 @@ Total: ~3 days of implementation if all patterns adopted; one full week with tes
 ### If user defers:
 
 1. Keep this deep-dive as the standing reference.
-2. Cross-reference from `meta-harness-optimization.md` MH-7 and MH-9 (already done in 2026-04-30 update).
+2. Cross-reference from `handoffs/completed/meta-harness-optimization.md` MH-7 and MH-9 (already done in 2026-04-30 update).
 3. Re-evaluate quarterly or whenever AR-3 autopilot signal indicates `capture_recent_traces` saturation.
 
 ---
@@ -366,7 +366,7 @@ Total: ~3 days of implementation if all patterns adopted; one full week with tes
 | Free-text final-sentinel `<final/>` | intake-517 | NO value-add for us — we have structured eval scores |
 | dev SGC + test_normal SGC reporting on AppWorld | intake-516/517/518 | Bench-only, defer |
 
-Three concrete net-new patterns. All three lift cleanly into existing scoped work (`unified-trace-memory-service.md` T1/T5, `meta-harness-optimization.md` MH-6/7/9, `eval-tower-verification.md`). None require vendoring halo-engine.
+Three concrete net-new patterns. All three lift cleanly into existing scoped work (`unified-trace-memory-service.md` T1/T5, `handoffs/completed/meta-harness-optimization.md` MH-6/7/9, `eval-tower-verification.md`). None require vendoring halo-engine.
 
 ---
 
@@ -374,7 +374,7 @@ Three concrete net-new patterns. All three lift cleanly into existing scoped wor
 
 - **Intake records**: `research/intake_index.yaml` intake-516, intake-517, intake-518, intake-153.
 - **Active handoffs**:
-  - `meta-harness-optimization.md` § Research Intake Update 2026-04-30 (HALO trio entry).
+  - `handoffs/completed/meta-harness-optimization.md` § Research Intake Update 2026-04-30 (HALO trio entry).
   - `autopilot-continuous-optimization.md` § Tier-1 traces (Phase-5 done).
   - `unified-trace-memory-service.md` (proposed, not started — direct integration target if patterns are lifted).
   - `eval-tower-verification.md` (dev/test_normal split lands here).

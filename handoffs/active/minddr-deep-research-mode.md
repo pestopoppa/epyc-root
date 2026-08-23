@@ -148,7 +148,7 @@ Phase 2 GPU training (MD-10..13) is gated on **MI210/gfx90a training viability**
 
 - `routing-intelligence.md` Phase 7 (pointer entry → this handoff)
 - `routing-and-optimization-index.md` P18 (pointer entry)
-- `meta-harness-optimization.md` Tier 3 (concrete RL recipe reference)
+- `../completed/meta-harness-optimization.md` Tier 3 (concrete RL recipe reference)
 - `eval-tower-verification.md` EV-9 (multi-dimensional rubric extension — required dependency)
 - `agent-world-env-synthesis.md` AW-6 (synthesized tasks feed Phase 2 training data)
 - `wiki/agent-architecture.md`, `wiki/routing-intelligence.md`

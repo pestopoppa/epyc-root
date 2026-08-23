@@ -3,7 +3,7 @@
 **Cluster**: Deep-dive #5 of 8 (research-intake Phase 6)
 **Intakes in scope**: intake-532 (EGGROLL), intake-563 (ES-at-Scale), intake-564 (ESSA), intake-565 (Hoy 2026)
 **Grandfathered prior**: intake-474 (Trinity, sep-CMA-ES on 10K-param routing head)
-**Active handoffs touched**: `routing-and-optimization-index.md`, `learned-routing-controller.md`, `decision-aware-routing.md`, `outer-coordinator-learned-head.md`, `meta-harness-optimization.md`, `tri-role-coordinator-architecture.md`, `routing-intelligence.md`
+**Active handoffs touched**: `routing-and-optimization-index.md`, `learned-routing-controller.md`, `decision-aware-routing.md`, `outer-coordinator-learned-head.md`, `handoffs/completed/meta-harness-optimization.md`, `tri-role-coordinator-architecture.md`, `routing-intelligence.md`
 
 ---
 
@@ -268,7 +268,7 @@ Per `feedback_no_concurrent_inference`, these are surfaced for explicit user dec
 - `handoffs/active/learned-routing-controller.md` (already updated, Phase 1 done)
 - `handoffs/active/decision-aware-routing.md`
 - `handoffs/active/outer-coordinator-learned-head.md`
-- `handoffs/active/meta-harness-optimization.md`
+- `handoffs/completed/meta-harness-optimization.md`
 - `handoffs/active/tri-role-coordinator-architecture.md`
 - `handoffs/active/routing-intelligence.md`
 

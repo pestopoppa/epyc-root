@@ -207,7 +207,7 @@ Reserved per-run directory layout:
 
 **Where this could land in EPYC**:
 - **autopilot run records**: when AR-3 trial journals graduate from "log-everything" to "pick a few representative trials per cycle for human review," a `runs/<cycle-id>/<trial-id>/` markdown bundle is a low-effort way to make those trials inspectable. Companion to (not replacement for) the JSONL journal.
-- **HALO trace bundles**: when halo-engine spike runs (per `meta-harness-optimization.md`), wrapping the report-and-input-spans pair in a per-trace markdown directory matches HALO's own emphasis on human-reviewable traces.
+- **HALO trace bundles**: when halo-engine spike runs (per `handoffs/completed/meta-harness-optimization.md`), wrapping the report-and-input-spans pair in a per-trace markdown directory matches HALO's own emphasis on human-reviewable traces.
 - **agent-world ETD synthesized tasks**: per-environment task directories with a stable schema would help the AW-5 EvalTower projection step produce reviewable artifacts.
 
 This pattern does **not** require adopting mdfs. It is a schema choice, useable under git or any plain filesystem.

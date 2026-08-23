@@ -188,7 +188,7 @@ The four-stage pipeline is unambiguously a GPU project:
 - **Stage 3 Report-RL**: DAPO with long-form generation (rollouts of thousands of tokens) + LLM-as-Judge rubric scoring per rollout. CPU-infeasible at dataset scale.
 - **Stage 4 DPO / Self-SFT**: Offline preference learning, smallest GPU requirement, but still GPU.
 
-This fits cleanly with the existing meta-harness Tier 3 deferral (`/workspace/handoffs/active/meta-harness-optimization.md`, "Tier 3: Full Outer Loop Rebuild — DEFERRED"). Tier 3 was deferred for similar operational reasons (infrastructure overhead, full outer loop not open-sourced). MindDR extends that list with a *specific recipe* we would run on DGX Spark once acquired.
+This fits cleanly with the existing meta-harness Tier 3 deferral (`/workspace/handoffs/completed/meta-harness-optimization.md`, "Tier 3: Full Outer Loop Rebuild — DEFERRED"). Tier 3 was deferred for similar operational reasons (infrastructure overhead, full outer loop not open-sourced). MindDR extends that list with a *specific recipe* we would run on DGX Spark once acquired.
 
 Relative priorities when DGX Spark arrives:
 1. AReaL-style async RL infrastructure (intake tracked, deep-dive exists at `/workspace/research/deep-dives/areal-async-rl-system.md`) — provides the runner.
@@ -422,7 +422,7 @@ Decision gate: at Phase 1 completion, review whether uplift is concentrated in r
 ### Active handoffs touched
 
 - `/workspace/handoffs/active/routing-intelligence.md` — Phase 1 "deep research mode" would extend Category A classifier and add a new routing branch
-- `/workspace/handoffs/active/meta-harness-optimization.md` — Phase 2 is the concrete "what to run on Tier 3" recipe when DGX arrives
+- `/workspace/handoffs/completed/meta-harness-optimization.md` — Phase 2 is the concrete "what to run on Tier 3" recipe when DGX arrives
 - `/workspace/handoffs/active/eval-tower-verification.md` — rubric-style multi-dimensional evaluation addition
 - `/workspace/handoffs/active/autopilot-continuous-optimization.md` — if Phase 1 ships, autopilot sentinels must include research-mode suites
 - `/workspace/handoffs/active/repl-turn-efficiency.md` — MindDR's efficiency finding (fewer tool calls + higher accuracy under role-specialization) is complementary to the S1-S6 turn-efficiency work; the three-agent pipeline is a structural mechanism, the frecency/combined-ops work is a tactical one

@@ -23,7 +23,7 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
     What they do converge on, and what this row now claims: the non-weight inputs to an agent — harness code,
     system prompt, memory, context — are automatically optimizable against execution feedback, and the useful
     configuration is model-specific.
-  action: "Review meta-harness-optimization.md handoff — the transferable pattern is automatic harness/context
+  action: "Review handoffs/completed/meta-harness-optimization.md — the transferable pattern is automatic harness/context
     optimization gated on regression testing, NOT automated task generation, which none of these papers do." 
   status: open
   created: '2026-07-08'
@@ -165,6 +165,6 @@ Compiled from deep-dive intake of agent benchmarking, evaluation, and autonomous
 4. **Multi-agent evaluation**: Consensus across multiple evaluators (MCE, AFlow) is emerging as the standard for reliable LLM-as-judge systems.
 
 ## Cross-References
-- Handoffs: meta-harness-optimization.md, eval-tower-verification.md, autopilot-continuous-optimization.md, reasoning-compression.md, mi210-speed-campaign-summary.md, routing-intelligence.md, tri-role-coordinator-architecture.md
+- Handoffs: handoffs/completed/meta-harness-optimization.md, eval-tower-verification.md, autopilot-continuous-optimization.md, reasoning-compression.md, mi210-speed-campaign-summary.md, routing-intelligence.md, tri-role-coordinator-architecture.md
 - Intake entries: intake-779 through intake-797 (batch label; 784 and 797 since merged — see `intake_merge_map.md`)
 - Prior work: SkillsBench v3 (intake-096), SkillRL (intake-092), EvoScientist (intake-108)

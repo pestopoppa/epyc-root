@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-**Bump upstream main to v2026.4.23.** We do not run a fork; we run pinned upstream + external config. The low-cost action is `git pull` (or an explicit tag checkout) and re-smoke-testing, not a rebase. The expensive action — and the real reason to treat this as a major intake — is that **four active handoffs now have concrete upstream patterns to port or mirror**: (1) tool-output-compression's known Phase 2b thrashing failure mode has a named fix upstream (compressor anti-thrashing + fallback chain); (2) context-folding-progressive's Phase 3c language/role-aware condensation has a natural template in the language-aware summarizer; (3) hermes-outer-shell Phase 2 `x_*` overrides are a candidate for re-expression as a **namespaced plugin bundle** with execution-veto hooks rather than API-side patches; (4) meta-harness-optimization's parallel-subagent design has a ready-made upstream substrate in the orchestrator-role + cross-agent file-state coordination layer.
+**Bump upstream main to v2026.4.23.** We do not run a fork; we run pinned upstream + external config. The low-cost action is `git pull` (or an explicit tag checkout) and re-smoke-testing, not a rebase. The expensive action — and the real reason to treat this as a major intake — is that **four active handoffs now have concrete upstream patterns to port or mirror**: (1) tool-output-compression's known Phase 2b thrashing failure mode has a named fix upstream (compressor anti-thrashing + fallback chain); (2) context-folding-progressive's Phase 3c language/role-aware condensation has a natural template in the language-aware summarizer; (3) hermes-outer-shell Phase 2 `x_*` overrides are a candidate for re-expression as a **namespaced plugin bundle** with execution-veto hooks rather than API-side patches; (4) the meta-harness completed ledger's parallel-subagent design has a ready-made upstream substrate in the orchestrator-role + cross-agent file-state coordination layer.
 
 **Refined verdict: `adopt_component` for the base binary (we already run it; bumping is trivial); `adopt_patterns` for the individual subsystems that overlap our active work.** The intake's `adopt_patterns` label was technically accurate ("cherry-pick individual patterns into our own code") but the underlying economics are that the cheapest thing we can do is take the whole component and then decide which of our external add-ons (orchestrator `x_*` overrides, hermes-config.yaml, skill bundle) to re-express in upstream's new plugin surface.
 
@@ -40,7 +40,7 @@
 
 **What it does.** A new `orchestrator` agent role with configurable `max_spawn_depth` (default flat, i.e., no recursive spawning). Concurrent sibling subagents share filesystem state through an explicit file-coordination layer — locks, turn-taking, visibility of partial work — rather than racing on the FS.
 
-**Maps to.** `meta-harness-optimization.md` (parallel subagent search), `repl-turn-efficiency.md` (turn-per-task accounting when subagents parallelize), and secondarily `autopilot-iteration-strategy-synthesis.md` (how autopilot sessions might fan out).
+**Maps to.** `handoffs/completed/meta-harness-optimization.md` (parallel subagent search), `repl-turn-efficiency.md` (turn-per-task accounting when subagents parallelize), and secondarily `autopilot-iteration-strategy-synthesis.md` (how autopilot sessions might fan out).
 
 **Porting cost.** Medium. We do not currently spawn parallel subagents from the orchestrator; adopting this pattern means reusing hermes-agent's orchestrator role *inside* the outer shell rather than reimplementing it. If we keep the two-layer architecture (Hermes outer, EPYC inner), parallel subagents live at the Hermes layer and make N independent `/v1/chat/completions` calls — our orchestrator already handles concurrent requests correctly per `hermes-outer-shell.md` Question 5.
 
@@ -178,7 +178,7 @@ Ordered by ROI × certainty:
 
 5. **[LOW priority — watch item] Compare `hermes-config.yaml.example` diff against our live config** to identify new required/default keys (auto-prune, execution mode, plugin settings). Update `scripts/hermes/hermes-config.yaml` accordingly. Effort: 1-2h.
 
-6. **[DEFER — revisit after item 4] Decide whether to port the orchestrator-role + FS coordination primitives into `meta-harness-optimization.md` Tier-1/2 loop.** Only makes sense if item 4 shows acceptable behavior; otherwise the parallel-subagent pattern stays at the Hermes layer and meta-harness stays single-threaded. Effort: TBD, gated on 4.
+6. **[DEFER — revisit after item 4] Decide whether to port the orchestrator-role + FS coordination primitives into `handoffs/completed/meta-harness-optimization.md` Tier-1/2 loop.** Only makes sense if item 4 shows acceptable behavior; otherwise the parallel-subagent pattern stays at the Hermes layer and meta-harness stays single-threaded. Effort: TBD, gated on 4.
 
 ## Sources
 
@@ -187,6 +187,6 @@ Ordered by ROI × certainty:
 - Compare (404 at fetch time): https://github.com/NousResearch/hermes-agent/compare/v0.9.0...v2026.4.23
 - Local checkout: `/mnt/raid0/llm/hermes-agent` @ `v2026.3.23-43-g...` (clean against upstream)
 - Local customization: `/workspace/scripts/hermes/` (config, launch, skills)
-- Related handoffs: `/workspace/handoffs/active/user-facing-harness-index.md`, `hermes-outer-shell.md`, `tool-output-compression.md`, `context-folding-progressive.md`, `meta-harness-optimization.md`, `repl-turn-efficiency.md`, `orchestrator-conversation-management.md`
+- Related handoffs: `/workspace/handoffs/active/user-facing-harness-index.md`, `hermes-outer-shell.md`, `tool-output-compression.md`, `context-folding-progressive.md`, `handoffs/completed/meta-harness-optimization.md`, `repl-turn-efficiency.md`, `orchestrator-conversation-management.md`
 - Cross-intakes: intake-117 (original Hermes), intake-172/173 (OpenGauss), intake-277 (LLM Wiki skill), intake-327 (self-evolution), intake-337 (anti-rationalization), intake-388/393 (reasoning traces), intake-450 (Venice Skills cross-runtime pattern), intake-454 (this release)
 - Top contributor attributions: @kshitijk4poor (49 PRs, transport refactor), @OutThisLife (31 PRs, TUI), @helix4u (11 PRs, voice/MCP), @austinpickett (8 PRs, dashboard), @alt-glitch (8 PRs, platform hints)

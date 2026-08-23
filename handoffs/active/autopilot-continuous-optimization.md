@@ -405,7 +405,7 @@ Key principles: one variable per experiment (clean attribution), simplicity crit
 
 - [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — Full NUMA scheduling architecture, Phases B-D complete
 - [`routing-and-optimization-index.md`](routing-and-optimization-index.md) — Umbrella view of all optimization subsystems
-- [`meta-harness-optimization.md`](meta-harness-optimization.md) — Execution trace feedback for PromptForge (3-tier plan)
+- [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) — Execution trace feedback for PromptForge (3-tier plan)
 
 ## Usage
 
@@ -1054,7 +1054,7 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
   - **Four evaluation principles (Section 6.1) testable in existing AR-3 today** — long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use. Adoption cost is rubric documentation + per-cycle reporting; value is identifying intervention-sensitivity gaps in the species framework (e.g., disabling species 0/1/2/3 individually should produce predictable Pareto-front shifts).
   - Adoption plan (CPU-feasible, do now): (1) document L3-Evolver / Digital-regime framing in this handoff's Architecture section, (2) extend AR-3 reporting to label scores by the four principles, (3) verify autopilot SafetyGate implements all four governance prescriptions with explicit reporting; identified gap: SafetyGate uses Pareto-front replacement rather than explicit rollback semantics — worth a one-pager on whether these are equivalent.
   - **Beyond-L3 framing for Species 3 (StructuralLab)**: paper Section 8.2 introduces "governing laws themselves become learnable" as an open direction. StructuralLab modifying flags + routing model lifecycle is the closest EPYC instance, but **do not over-claim** (per closure-inflation feedback memory). We have one species hooking the operating rules of the others, not a principled meta-learning loop. Honest framing only.
-  - Cross-cutting: also relevant to `agent-world-env-synthesis.md` (L2-Simulator → L3-Evolver bridge) and `meta-harness-optimization.md` (Tier 3 = another L3-Evolver / Digital instance); the three handoffs should share the four-principle evaluation rubric.
+  - Cross-cutting: also relevant to `agent-world-env-synthesis.md` (L2-Simulator → L3-Evolver bridge) and `../completed/meta-harness-optimization.md` (Tier 3 = another L3-Evolver / Digital instance); the three handoffs should share the four-principle evaluation rubric.
   - MREP (Minimal Reproducible Evaluation Package, Section E.6) is **proposed but not released**. Set watch on matrix-agent/awesome-agentic-world-modeling and arxiv:2604.22748 for shipment; if released, run autopilot through it as external sanity check.
   - Verdict: `adopt_patterns` (vocabulary + four-principle rubric + governance completeness check), NOT full framework adoption.
 
@@ -1169,7 +1169,7 @@ Two ideas from the Code-as-Agent-Harness survey land on the Pareto-archive optim
 
 > **Schema dependency (gap-fix 2026-05-25):** `behavior_signature` (BSV-1) and the `harness_metrics` fields HLE-4 consumes live in the **shared trace schema owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"**, not a private autopilot store. Reuse `event_id` links; do not duplicate payloads. Shared schema lands before BSV-1/HLE-4 writes.
 
-- [x] **HLE-4 — Harness-level objective dimensions (beyond the 4D Pareto).** The current archive optimizes quality × speed × −cost × reliability on *task outcomes*. The paper argues final-task-success is a noisy single bit that rewards shortcut configs. Add the per-component harness metrics defined in [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 (execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate) as **observe-only fields first**, then promote them to guardrails or co-objectives only after they show predictive signal. Required implementation pieces:
+- [x] **HLE-4 — Harness-level objective dimensions (beyond the 4D Pareto).** The current archive optimizes quality × speed × −cost × reliability on *task outcomes*. The paper argues final-task-success is a noisy single bit that rewards shortcut configs. Add the per-component harness metrics defined in [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) HLE-1 (execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate) as **observe-only fields first**, then promote them to guardrails or co-objectives only after they show predictive signal. Required implementation pieces:
   - ✅ Extend `EvalResult` / journal JSONL with `harness_metrics`, `oracle_adequacy`, and `metric_schema_version` (`931e43c`).
   - ✅ Compute rule-based HLE-1 metrics and register HLE-2 oracle-adequacy defaults in observe-only form (`9222a19`).
   - ✅ Analyze N trials: 2026-06-12 snapshot contained 580 metric-bearing trials (`51..779`). `execution_fidelity` and `planning_stability` separate keep/revert but are not independent enough to promote; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` fail signal/missingness gates.

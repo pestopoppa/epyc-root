@@ -6,7 +6,7 @@
 **Status**: deep-dive (written 2026-04-28)
 **Companion repo**: github.com/matrix-agent/awesome-agentic-world-modeling (105★, 2 watchers, 1 fork — bibliography aligned to the L×R grid; no released eval package)
 **Cross-refs**: intake-444 (Agent-World, primary subject of `agent-world-env-synthesis.md`), intake-413 (HCC), intake-244 (Meta-Harness), intake-411 (Qwen-Agent MCP), intake-412 (DeepPlanning), intake-148/149 (AutoResearch loop)
-**Parent handoff**: [`agent-world-env-synthesis.md`](../../handoffs/active/agent-world-env-synthesis.md) — primary integration; see also `autopilot-continuous-optimization.md`, `meta-harness-optimization.md`
+**Parent handoff**: [`agent-world-env-synthesis.md`](../../handoffs/active/agent-world-env-synthesis.md) — primary integration; see also `autopilot-continuous-optimization.md`, `handoffs/completed/meta-harness-optimization.md`
 
 ---
 
@@ -97,7 +97,7 @@ Mapping our active workstreams onto the L×R grid (an exercise the paper does no
 
 - **Autopilot species loop** (`autopilot-continuous-optimization.md`): **L3 Evolver / Digital regime**. The species loop revises its own routing/prompts/structure based on AR-3 evaluation evidence. Digital because the constraints are software contracts (Pareto archive validity, eval suite invariance, llama-server stability), not physical laws.
 - **Agent-World ETD species** (`agent-world-env-synthesis.md` Phase 1): **L2 Simulator → L3 Evolver bridge / Digital regime**. The ETD agent synthesizes a digital-laws environment (MCP tools as state, verifiers as constraint checks); when training succeeds, the policy becomes an L3 system whose model of digital environments evolves with capability gaps.
-- **Meta-harness search** (`meta-harness-optimization.md` Tier 3): **L3 Evolver / Digital regime**. The harness-search outer loop revises tool definitions, prompt templates, and routing based on aggregate trial outcomes.
+- **Meta-harness search** (`handoffs/completed/meta-harness-optimization.md` Tier 3): **L3 Evolver / Digital regime**. The harness-search outer loop revises tool definitions, prompt templates, and routing based on aggregate trial outcomes.
 - **Q-scorer + learned-routing-controller** (`routing-intelligence.md`): **L1 Predictor / Digital regime**. Predicts per-prompt difficulty and routes accordingly. Pure prediction, no rollout, no revision.
 - **AR-3 tiered eval tower**: **Evaluation surface for L1/L2/L3 systems above**. Independent of the levels.
 
@@ -258,6 +258,6 @@ The world-model-survey is **not GPU-gated by itself**, but its integration touch
 - Active handoffs:
   - `agent-world-env-synthesis.md` — primary integration point
   - `autopilot-continuous-optimization.md` — L3-Evolver / Digital instance
-  - `meta-harness-optimization.md` — Tier 3 outer loop, also L3-Evolver / Digital
+  - `handoffs/completed/meta-harness-optimization.md` — Tier 3 outer loop, also L3-Evolver / Digital
   - `routing-intelligence.md` — L1-Predictor / Digital instance
   - `gpu-acceleration-path.md` — GPU-gated activation point for Agent-World Phase 2 cross-rubric eval

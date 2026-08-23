@@ -212,7 +212,7 @@ This pairs cleanly with `feedback_model_not_role_indexing.md` — compression ar
 - **Related handoffs**:
   - `tool-output-compression.md` — orthogonal layer (operates on tool result payloads, not agent files); uses TOON for structured payloads.
   - `repl-turn-efficiency.md` — orthogonal layer (runtime prose-style rider with persistence-clause caveats; not used here).
-  - `meta-harness-optimization.md` — compression-level-as-search-axis is a candidate harness mutation action; pairs with the CONTEXT.md+ADR axis from intake-509.
+  - `meta-harness-optimization.md` (completed ledger) — compression-level-as-search-axis is a candidate harness mutation action; pairs with the CONTEXT.md+ADR axis from intake-509.
   - `agent-world-env-synthesis.md` — autopilot environment synthesis; could read this handoff's compliance suite as one of its discovered task environments.
 
 ## Reporting Instructions

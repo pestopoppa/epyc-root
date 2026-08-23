@@ -125,7 +125,7 @@ TR-1 is a hard gate — do not start TR-2 without resolving the open questions, 
 | `learned-routing-controller.md` | Supplies the model-selection axis; this handoff adds the role axis | Routing classifier output dim grows from `N_models` to `N_models + 3` (decoupled) |
 | `decision-aware-routing.md` | DAR-2/3/4 reshape Q-value learning on the model axis | Tri-role addition is independent — DAR fixes apply per-role after this lands |
 | `routing-intelligence.md` | Owns the review-trigger and escalation pipeline | TR-1.2 decides whether Verifier subsumes or parallels the existing review path |
-| `meta-harness-optimization.md` | Optimises prompt templates per role | Tri-role gives PromptForge a richer search space (one template per role × task family) |
+| `../completed/meta-harness-optimization.md` | Optimises prompt templates per role | Tri-role gives PromptForge a richer search space (one template per role × task family) |
 | Episodic memory | Currently stores `(prompt, model, outcome)` | Add `assigned_role` so retraining can condition on role |
 
 ## Cross-Cutting Concerns

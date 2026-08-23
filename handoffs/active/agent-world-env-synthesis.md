@@ -4,7 +4,7 @@
 **Created**: 2026-04-22 (split from `autopilot-continuous-optimization.md` per deep-dive integration pass)
 **Categories**: agent_architecture, autonomous_research, training_distillation
 **Priority**: MEDIUM (autopilot 5th species; concrete Tier 3 recipe for meta-harness outer loop)
-**Depends on**: `autopilot-continuous-optimization.md` (AR-3 loop), `meta-harness-optimization.md` (Tier 3)
+**Depends on**: `autopilot-continuous-optimization.md` (AR-3 loop), `../completed/meta-harness-optimization.md` (Tier 3)
 
 ## Objective
 
@@ -143,7 +143,7 @@ Per `feedback_incremental_persistence`: task suites must be persisted incrementa
 ## Cross-references
 
 - `autopilot-continuous-optimization.md` P17 (pointer entry)
-- `meta-harness-optimization.md` Tier 3 (concrete recipe pointer)
+- `../completed/meta-harness-optimization.md` Tier 3 (concrete recipe pointer)
 - `routing-and-optimization-index.md` P17
 - `wiki/autonomous-research.md` (updated 2026-04-22 with environment-synthesis dimension)
 - Intake sources: 444 (primary), 411 (MCP pattern), 412 (DeepPlanning benchmark methodology)
@@ -166,7 +166,7 @@ Before committing to Phase 2 training, run WebSearch for "Agent-World reproducti
   - Key technique: **Levels × Laws taxonomy** with three capability levels (L1 Predictor / L2 Simulator / **L3 Evolver** — autonomous self-revision when predictions fail) × four governing-law regimes (physical, digital, social, scientific). Our autopilot species loop is an L3-Evolver-on-digital-laws instance; Agent-World's ETD is an L2-Simulator-feeding-L3 pattern.
   - Reported results: none — survey/position paper, no original experiments.
   - Delta from current approach: zero implementation impact. Value is purely framing. The paper's "decision-centric evaluation principles" and "minimal reproducible evaluation package" are worth tracking if/when a companion artifact is released — could inform AR-3 evaluation gates.
-  - Cross-cutting: also relevant to `autopilot-continuous-optimization.md` (the L3 Evolver framing maps directly onto the species loop) and `meta-harness-optimization.md` (the survey's "world model that autonomously revises itself" overlaps conceptually with the Tier 3 harness-search outer loop).
+  - Cross-cutting: also relevant to `autopilot-continuous-optimization.md` (the L3 Evolver framing maps directly onto the species loop) and `../completed/meta-harness-optimization.md` (the survey's "world model that autonomously revises itself" overlaps conceptually with the Tier 3 harness-search outer loop).
   - **Deep-dive**: [`research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md`](../../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full read identifies L3 governance recipe (Section 5.4) maps line-for-line onto autopilot SafetyGate, and four evaluation principles (Section 6.1) are testable in existing AR-3 infra today. Relevance bumped to high, verdict to adopt_patterns. Concrete actions: (a) adopt L1/L2/L3 + four-regime vocabulary in this handoff and the wiki, (b) restate ETD species as L2-Simulator → L3-Evolver bridge / Digital regime, (c) when GPU lands and Phase 2 RL training runs, evaluate Agent-World-trained policy vs autopilot-evolved policy on the four principles to test cross-rubric transfer. MREP (Minimal Reproducible Evaluation Package) is proposed-not-released — set watch on matrix-agent/awesome-agentic-world-modeling and arxiv:2604.22748 for shipment.
 
 ## Research Intake Update — 2026-04-30
@@ -176,7 +176,7 @@ Before committing to Phase 2 training, run WebSearch for "Agent-World reproducti
 - **[intake-516] "HALO-Gemini-3-Flash-AppWorld — 168 Gemini-3-Flash agent traces on AppWorld test-normal in HALO span schema"** (HF dataset `inference-net/HALO-Gemini-3-Flash-AppWorld`, MIT)
   - Relevance: **medium**. AppWorld is a deterministic long-horizon multi-app tool-use simulator (email/calendar/banking/messaging/file-storage) — exactly the controllable agent-environment class this handoff envisions for L2-Simulator data and L3-Evolver evaluation. The dataset releases hierarchical span trees of a strong commercial teacher (Gemini 3 Flash) over the test-normal split, 3,438 spans / 168 episodes.
   - Two concrete uses for this handoff: (a) **environment-readiness signal** — AppWorld validated as a real benchmark by an external group with full traces published; consider AppWorld in the L2-Simulator candidate list alongside any internal env synthesis, especially for the multi-tool / multi-step / verifiable-reward axis; (b) **demonstration corpus** — Gemini-3-Flash spans are a candidate distillation seed when GPU Phase 2 lands, complementary to autopilot-generated rollouts.
-  - Cross-cutting: also referenced from `eval-tower-verification.md` (eval-side use), `meta-harness-optimization.md` (HALO trace-schema family), and `research-evaluation-index.md`. The schema-name collision with `context-labs/halo` (intake-517/518) is unresolved — both projects use the "HALO" name but appear to be separate orgs sharing a span-tree concept.
+  - Cross-cutting: also referenced from `eval-tower-verification.md` (eval-side use), `../completed/meta-harness-optimization.md` (HALO trace-schema family), and `research-evaluation-index.md`. The schema-name collision with `context-labs/halo` (intake-517/518) is unresolved — both projects use the "HALO" name but appear to be separate orgs sharing a span-tree concept.
   - Caveat: scale is small (168 traces); not enough for SFT alone, but workable as a calibration set or as Gemini-vs-EPYC-stack baseline pair.
   - Verdict: `worth_investigating`. Action: when env synthesis or eval tower work activates, evaluate AppWorld setup cost on EPYC and decide whether to ingest these traces as a comparison baseline.
 

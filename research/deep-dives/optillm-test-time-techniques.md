@@ -3,7 +3,7 @@
 **Date**: 2026-05-24
 **Source intakes**: intake-601 (OptiLLM repo), intake-602 (CoT-Decoding, arXiv:2402.10200), intake-603 (DeepConf, arXiv:2508.15260), intake-604 (Sharma inference-time-techniques theory, arXiv:2506.08060)
 **Trigger**: `/research-intake https://github.com/algorithmicsuperintelligence/optillm` + user request to delineate which follow-up actions are autopilot-controllable vs dedicated-research-session work.
-**Related handoffs**: [`per-request-reasoning-budget.md`](../../handoffs/active/per-request-reasoning-budget.md), [`routing-and-optimization-index.md`](../../handoffs/active/routing-and-optimization-index.md) (P21), [`routing-intelligence.md`](../../handoffs/active/routing-intelligence.md), [`autopilot-continuous-optimization.md`](../../handoffs/active/autopilot-continuous-optimization.md), [`meta-harness-optimization.md`](../../handoffs/active/meta-harness-optimization.md)
+**Related handoffs**: [`per-request-reasoning-budget.md`](../../handoffs/active/per-request-reasoning-budget.md), [`routing-and-optimization-index.md`](../../handoffs/active/routing-and-optimization-index.md) (P21), [`routing-intelligence.md`](../../handoffs/active/routing-intelligence.md), [`autopilot-continuous-optimization.md`](../../handoffs/active/autopilot-continuous-optimization.md), [`meta-harness-optimization.md`](../../handoffs/completed/meta-harness-optimization.md)
 
 ---
 
