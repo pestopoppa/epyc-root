@@ -107,3 +107,18 @@ All five filed residuals executed (5 parallel subagents), committed + pushed:
   via the sanctioned `--sync-spec`; 22/22 green; 38 live-file drift findings left to stack owner.
 
 Commit + push: epyc-root `4924a115d9f8c6c8a34f66a0f66a32272eefe11b`; epyc-orchestrator `7ac6870d`; epyc-inference-research `27797fef`.
+
+## Operator corrections + -c residuals closed (2026-08-23, late pass)
+
+- **Quarters correction**: the smoke's stale defaults referenced quarter shapes — quarters DO NOT
+  exist (retired 2026-07-30; topology = FULL 96t + two 48t HALVES per role). Corrected:
+  `DEFAULT_ANCHOR_IDX = 1` = ingest node0 HALF (cores 0-47,96-143); default plan now 8 probes
+  (3 admit-expected disjoint + 5 queue-expected); `vision_escalation` dropped from probe roles
+  (GPU-served, no CPU-region instance); quarter language purged from comments/messages; test
+  fixtures updated to the half anchor. 37/37 smoke tests green. Operator one-liner CLOSED.
+- **ROUTE-A1 smoke is CPU** (production CPU placement queue; anchor hold = CPU region lock).
+- **SS-BENCH-GATE-c residuals DONE** (both guarded, cheap insurance): `LlamaCppBackend`
+  (numactl default-affinity → `taskset -c <host_cores − claim>` when a bench is live, fail-closed
+  refusal otherwise) and `LlamaOCRWorker` per-request spawns (same pin, 503 on refusal). Quiet
+  paths byte-identical. 14 -c tests + 103 worker/model-server tests green.
+- Commits: epyc-orchestrator + epyc-root follow in the wrap-up below.

@@ -377,10 +377,16 @@ changed live is that the answer is now *derived* and every exclusion names its r
       refuses loudly instead of reporting its own expectation. 12 unit + 25 fixture tests green,
       ruff clean. Ledger row for ROUTE-A1-shapekeyed-step2 appended READY (build gate satisfied;
       execution = dry-run + quiet window + operator anchor hold, inference-gated).
-- [ ] **Stale smoke defaults (extracted from the box above, 2026-08-23)**: `DEFAULT_ANCHOR_IDX=0`
+- [x] **Stale smoke defaults (extracted from the box above, 2026-08-23)**: `DEFAULT_ANCHOR_IDX=0`
       (anchor idx 0 for `ingest_long_context` = FULL 0-95, not the `{q0,q1}` half) and
       `DEFAULT_PROBE_ROLES` (vision_escalation has no live instance → 0 rebench pairs). One-line
       operator decision to set a half/quarter anchor; until then the smoke refuses loudly (safe).
+      ✅ **DONE 2026-08-23 (operator correction: quarters do not exist — retired 2026-07-30)** —
+      `DEFAULT_ANCHOR_IDX = 1` (ingest node0 HALF, 48t, cores 0-47,96-143) with the default plan now
+      resolving to 8 probes (3 admit-expected disjoint node1-half candidates + 5 queue-expected);
+      `vision_escalation` dropped from `DEFAULT_PROBE_ROLES` (GPU-served :8086, no CPU-region
+      instance — documented in the constant); quarter language removed from comments and the
+      refusal message. Test fixtures updated to the half-anchor default; 37/37 smoke tests green.
 - [ ] **Contention still has no VRAM gate at admission** — `vram_fit` is exported and unused;
       rider Q3 (admission-time vs launch-time) is unratified.
 - [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is

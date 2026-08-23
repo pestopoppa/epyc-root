@@ -234,11 +234,16 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
         byte-identical (proven by tests). 69 bench-claim + 179 worker-pool/backends + 70 model-server
         tests green; ruff clean. The incident's sidecar class is now covered at BOTH layers (CLI -b,
         API -c).
-  - [ ] SS-BENCH-GATE-c residuals — `src/inference/model_server.py` `LlamaCppBackend` (legacy
+  - [x] SS-BENCH-GATE-c residuals — `src/inference/model_server.py` `LlamaCppBackend` (legacy
         per-inference llama-completion, `numactl --interleave=all`, CLI-only today) and
         `src/services/lightonocr_llama_server.py` per-request llama-mtmd-cli spawns (separate
         launcher-owned service) are the same incident class but not API-runtime-reachable; guard
-        them IF either path re-wires into the API. Filed 2026-08-23.
+        them IF either path re-wires into the API. Filed 2026-08-23. ✅ **DONE 2026-08-23** — both
+        guarded anyway (cheap insurance, same `api_enforce_placement` pattern): `LlamaCppBackend`
+        replaces the numactl default-affinity prefix with `taskset -c <host_cores − claim>` when a
+        bench is live (refuses fail-closed on unobservable/refusal); `LlamaOCRWorker` prepends the
+        same pin to the asyncio exec (503 on refusal). Quiet paths byte-identical (tests). 14 -c
+        tests + 103 worker/model-server tests green.
   - [x] Fix the pre-existing `test_runtime_flag_spec.py` failures (3, `prefix_stable_order` spec
         parity drift) discovered 2026-08-23 while running the stack suite — imports only
         `src/runtime_flag_spec` + `src/features`, untouched by the -b change; predates it.
