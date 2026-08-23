@@ -501,6 +501,19 @@ anything.
       signature on its live path, or real-traffic quality drift — none observed.
       Evidence record: `progress/2026-08/2026-08-23.md` (full bundle from the
       production-behavior sweep).
+- [ ] **CT-10 — cruxeval watch-item re-check under real coder traffic** (filed
+      2026-08-23 from CT-9; the CT-1b watch-item has NO production basis in the
+      pilot window — 8 calibration completions only, autopilot stopped). Fire
+      when coder_escalation carries real traffic: does terseness compress useful
+      working-through on code-output prediction, i.e. quality drift vs the
+      embedded-template era? Reference: CT-1b completed-only hints (57.9 vs 42.9,
+      selection-biased subsets; paired flips 3:4 ≈ parity).
+- [ ] **CT-11 — re-decide the pilot adoption after real traffic accumulates**
+      (filed 2026-08-23 from CT-9). CT-9 = HOLD all three roles + no fleet-wide
+      extension, but the decision window carried calibration traffic only.
+      Re-run the CT-9 decision when frontdoor/architect_general/coder_escalation
+      have served real user or autopilot traffic (named trigger: the first
+      non-calibration traffic signal in the inference tap).
 - [x] **CT-8 ✅ 2026-08-22 — belief-kernel wiring BUILT AND WIRED** (subagent-built, conformance
       green): producer writer `scripts/vidya/adapters/chat_template_ab_capture.py` (atomic
       `belief_measurements.jsonl` sidecar at summarize-time; fail-loud on any guessable field —
