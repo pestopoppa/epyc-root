@@ -114,6 +114,23 @@ deliberately — decide them, do not just implement them.
       does not. Four instances in one day (v9 freeze receipt, mainA's affinity-preflight surface,
       this one, and the standing `benchmarks/results` proof) says the rule is known and the trigger
       is what is missing.
+      **STATUS 2026-08-23 (EVL-47 SC19): write side wired; first tuple pending first
+      orchestrator emission.** Producer-written capture hook landed in the orchestrator
+      (`src/scheduling/contention_gate_capture.py`, call site `src/api/routes/chat.py` where the
+      echo is stamped; envelope `contention_gate_capture.v1`, ONE request-keyed JSONL row per
+      request — the locator trap pinned at the write site — opt-in via
+      `ORCHESTRATOR_CONTENTION_GATE_CAPTURE` (default OFF), never raises, `None` echo writes
+      nothing) plus `tests/unit/test_contention_gate_capture.py` (6 passed). Root adapter
+      `scripts/vidya/adapters/contention_gate.py` registers `contention-gate-measurement`,
+      projects ONE claim per request (never per decision), derives the measured verdict
+      (`admitted_immediately` / `queued_then_admitted` / `blocked`) from the producer's own
+      fields, and delegates grading to the shared ladder; honest grade `Witnessed/Anchored`
+      until a producer-pinned envelope hash exists (off-tree append-only log, no collect-time
+      digest). `tests/vidya/test_contention_gate_adapter.py` (12 passed) + `test_sealed_manifest.py`
+      (19 passed) green. Source-table row updated. **Honest state unchanged: the orchestrator
+      API is down and the capture is default-OFF, so zero `gate_decisions` have been emitted —
+      an empty capture is not a measurement, and this box stays `[ ]` until the adapter emits
+      its first tuple (first orchestrator start with the env var set).**
 
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
