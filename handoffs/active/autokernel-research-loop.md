@@ -20,6 +20,34 @@
 
 ## Restart checkpoint — 2026-08-22
 
+**Checkpoint 2026-08-23 (continuation session):** restart-order items 1 and 2 are now code-complete
+and committed — each as ONE coherent unit including the prior session's deliberately uncommitted
+edits, per operator direction.
+
+- **AK-V27-C6 native+driver**: `3fc7868c` on `codex/autokernel-v27-provider-c6-orchestration-20260822`
+  (provider worktree `autokernel-v27-integration-20260821`). The formerly uncommitted
+  `c6_mul_mat_harness.cpp` oracle/candidate modes were inspected first (compile-checked clean
+  against frozen v9 CPU ggml, input-name-consistent), then completed by the Python driver: oracle +
+  three candidate legs as distinct confined processes under one held claim, hardlink-safe 0600
+  O_EXCL witness handover with per-file digests, `_paced_candidate` arming continue strictly after
+  the ready token with monotonic event streams, and reseal-proof reopen that re-derives the
+  candidate argv deterministically. Combined mode retained and covered; aggregate-invocations path
+  split; sealed-C6 restart boundary learned the split file set. Tests: 44+17+70+93 green, zero new
+  ruff findings. **Remaining before this row closes:** live native Ghost Replay process,
+  interposer/runtime-map authentication on the C6 path, cache-metric deny aliases, then the
+  independent audit against the full adversarial matrix.
+- **AK-V27-PERF journal**: `b12de815` on `codex/autokernel-performance-carrier-closure-v3-20260822`
+  (worktree `/mnt/raid0/llm/tmp/audit-5be.w2Ka8u`). The uncommitted append-only
+  `composition-authority.jsonl` machinery is completed and wired: adapter seals `pre_run`
+  (recursively reopening the exact frozen proof bundle) before any measurement; GPU screen
+  completion seals `result` binding the three result.json files + cumulative-performance receipt;
+  `_bind_composition_screen` re-commits idempotently for recovery; loads fail closed on any
+  journal disagreement; strict duplicate-key JSON everywhere; every duplicated field re-derived
+  from journal-bound bytes before a promotion verdict. Tests: 31+14 focused, 230-test affected
+  surface green, zero new ruff findings. **Remaining before this row closes:** the independent
+  audit of the externally committed repair, then the dashboard adapts to the final producer schema
+  (restart-order item 4) with every v27 pin still unset.
+
 AutoKernel v27 was **not launched**. The requested terminal outcome—ten meaningful consecutive
 scientific dispositions without a crash—remains at **0/10**. No v27 dashboard pins were set and no
 GPU inference or measurement was started. A provider safety banner does not stop the controller:
