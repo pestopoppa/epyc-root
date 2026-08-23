@@ -86,6 +86,32 @@ else
   echo "  SKIP  no kthreadd on this host"
 fi
 
+# M-D: the MemAvailable channel cannot be read. The guard reads /proc/meminfo
+# through awk (inference_guard.sh), so an awk that fails makes the SECOND channel
+# blind while the process channel measures an honest zero. One negative and one
+# blind eye must be `failed`, not an all-clear with a footnote (OBS-3, 2026-08-23).
+# The no-match pattern keeps the RSS channel awk-free, so exactly one channel breaks.
+mkdir -p "$TMP/noawk"
+ln -sf /bin/false "$TMP/noawk/awk"
+chk "MemAvailable unreadable -> failed" \
+    "$(guard_state "PATH=$TMP/noawk:$PATH" NIGHTSHIFT_INFERENCE_PATTERN=zzz-no-such-binary-zzz)" failed
+chk "MemAvailable unreadable -> RSS channel still measured 0, guard still failed" \
+    "$(guard_var NIGHTSHIFT_INFERENCE_RSS_GB "PATH=$TMP/noawk:$PATH" NIGHTSHIFT_INFERENCE_PATTERN=zzz-no-such-binary-zzz)" 0
+chk "MemAvailable unreadable -> MEMAVAIL_GB is 'unknown', never a number" \
+    "$(guard_var NIGHTSHIFT_MEMAVAIL_GB "PATH=$TMP/noawk:$PATH" NIGHTSHIFT_INFERENCE_PATTERN=zzz-no-such-binary-zzz)" unknown
+chk "MemAvailable unreadable -> INFERENCE_ACTIVE is UNSET, not a confident 0" \
+    "$(guard_var NIGHTSHIFT_INFERENCE_ACTIVE "PATH=$TMP/noawk:$PATH" NIGHTSHIFT_INFERENCE_PATTERN=zzz-no-such-binary-zzz)" UNSET
+out="$(guard_out "PATH=$TMP/noawk:$PATH" NIGHTSHIFT_INFERENCE_PATTERN=zzz-no-such-binary-zzz)"
+case "$out" in
+  *"MEASUREMENT FAILED"*) echo "  PASS  the failure is printed in those words"; pass=$((pass+1));;
+  *) echo "  FAIL  no 'MEASUREMENT FAILED' in the output"; fail=$((fail+1));;
+esac
+case "$out" in
+  *"No heavy inference detected"*|*"All tasks eligible"*)
+    echo "  FAIL  a BROKEN guard still printed an all-clear"; fail=$((fail+1));;
+  *) echo "  PASS  a broken guard prints no all-clear"; pass=$((pass+1));;
+esac
+
 echo
 echo "== the second channel is argv-independent =="
 # A MemAvailable floor above the machine's actual free RAM must mark inference

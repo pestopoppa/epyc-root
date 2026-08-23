@@ -23,7 +23,7 @@
   - **Blast-radius correction**: not "~135 trials on a dead path". Journals (all shards read) show **only 8 `gepa_optimize` trials ever** — 181, 182, 521, 536, 785, 882, 1137, 1144 — exactly **one** ever `keep`.
   - Owner: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) (AP-19a). Operator directed 2026-07-25 that this must be filed.
 
-- [ ] **ID-2 — Decide the `gepa` dependency pin.** Installed is **0.0.26** (2026-01-24), verified in `/mnt/raid0/llm/epyc-orchestrator/.venv`; `import gepa.optimize_anything` and `import gepa.oa` both raise `ModuleNotFoundError`. PyPI latest is 0.1.4 (2026-07-15); the `optimize_anything` engine layer exists **only on main** (absent at tag v0.1.4, confirmed by upstream 404). Options: (a) hold 0.0.26, (b) bump to PyPI 0.1.4, (c) pin a main SHA for the engine layer. Re-run `tests/test_gepa_integration.py` against the choice — 0.0.26 → 0.1.x is untested here. **Sequence after ID-1**: a version bump against a proposer that always raises proves nothing.
+- [x] **ID-2 — Decide the `gepa` dependency pin.** ✅ 2026-08-23 — ungated half landed; the VERSION choice (a)/(b)/(c) stays gated behind AP-19b/AP-29c as filed. Installed is **0.0.26** (2026-01-24), verified in `/mnt/raid0/llm/epyc-orchestrator/.venv`; `import gepa.optimize_anything` and `import gepa.oa` both raise `ModuleNotFoundError`. PyPI latest is 0.1.4 (2026-07-15); the `optimize_anything` engine layer exists **only on main** (absent at tag v0.1.4, confirmed by upstream 404). Options: (a) hold 0.0.26, (b) bump to PyPI 0.1.4, (c) pin a main SHA for the engine layer. Re-run `tests/test_gepa_integration.py` against the choice — 0.0.26 → 0.1.x is untested here. **Sequence after ID-1**: a version bump against a proposer that always raises proves nothing.
   - Owner: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md).
   - **RE-DERIVED 2026-08-11 (`mainC`) — the framing "installed and unpinned" is WRONG, and the
     real defect is a different one.** `gepa` **is** pinned: `uv.lock` holds `gepa==0.0.26` with
@@ -50,6 +50,17 @@
     **Consequence beyond this row: ANY dependency edit in `epyc-orchestrator` right now will drag
     the same marker churn in.** Apply this with a matching uv version, or land the marker rewrite
     deliberately as its own reviewed change — not as a side effect of a one-line pin.
+  - **DONE 2026-08-23 (EVL-29 ID-2)**: `gepa==0.0.26` declared as a direct dependency in
+    `epyc-orchestrator/pyproject.toml` (pinned, with a used-but-undeclared comment mirroring the
+    `matplotlib`/`mcp` precedent), committed `f8bc4d2b`. Tooling outcome: ran with **uv 0.12.5** (not
+    the 0.11.26 that produced the 2026-08-11 churn) — **no marker stripping this time**; the nvidia/
+    cryptography/jeepney churn is absent. Only residual delta beyond the two expected `gepa` lines
+    is a **reordering of the `resolution-markers` header array** (identical 24-string set, verified
+    by sort-diff; uv 0.12.5 groups by python version instead of platform). No package version,
+    hash, or platform-marker changed; gepa record byte-identical (0.0.26, both hashes); `import
+    gepa` verified in the repo `.venv`. Follow-up `533cb3d6`: f8bc4d2b accidentally committed a
+    stale staged copy of `contention_matrix.yaml` (reverting the OP-21 row); restored to
+    byte-identical 6665a923 content — end state correct, noted for operator awareness.
 
 ## P1 — Standing decisions now contradicted by independent evidence
 

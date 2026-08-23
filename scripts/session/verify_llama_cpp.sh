@@ -111,6 +111,64 @@ check_server_identity() {
   echo -e "${GREEN}✓ $label: $version_line ($actual_sha256)${NC}"
 }
 
+# The sanctioned ggml linkage verifier. Same absolute spelling as
+# verify_speech_kernels.sh and orchestrator_stack.py's
+# _VERIFY_GGML_LINKAGE_SCRIPT so all three enforce the same file rather than
+# three drifting copies.
+LINKAGE="/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh"
+
+# ggml linkage (NIB2-58a): branch + sha256 prove WHICH binary is on disk; they
+# say nothing about WHICH LIBRARIES it loads. Those are different failures, and
+# only the second one is silent — on 2026-07-31 a HIP-built whisper-cli loaded
+# the production CPU-only ggml, printed `use gpu = 1`, and produced well-formed
+# output at CPU speed. This section completes the launcher-level wiring for the
+# frozen llama.cpp tree, mirroring verify_speech_kernels.sh's linkage().
+#
+# Two environments are checked per server:
+#   1. LAUNCH RECIPE — own lib dir prepended. Asserts the frozen build is
+#      self-sufficient.
+#   2. AMBIENT — this shell's LD_LIBRARY_PATH untouched. Asserts the ENVIRONMENT
+#      is not poisoned; the condition that produced the incident, invisible to
+#      check 1. A poisoned ambient path means anything launched from this shell
+#      without prepending runs another tree's ggml.
+check_linkage() {
+  local label="$1" server="$2" lib_dir
+  if [ ! -r "$LINKAGE" ]; then
+    echo -e "${RED}✗ $label: ggml linkage verifier unavailable: $LINKAGE${NC}"
+    return 1
+  fi
+  if [ ! -x "$server" ]; then
+    echo -e "${RED}✗ $label: binary missing, nothing to link-check: $server${NC}"
+    return 1
+  fi
+  lib_dir="$(cd "$(dirname "$server")" && pwd)"
+
+  local out st inspected core
+  # --- 1. launch recipe: own lib dir first
+  out=$(LD_LIBRARY_PATH="$lib_dir:${LD_LIBRARY_PATH:-}" bash "$LINKAGE" "$server" "$lib_dir" 2>&1)
+  st=$?
+  inspected=$(printf '%s\n' "$out" | grep -cE '^[[:space:]]+(OK|BAD)[[:space:]]+lib(ggml|whisper|llama|mtmd)' || true)
+  core=$(printf '%s\n' "$out" | grep -cE '^[[:space:]]+(OK|BAD)[[:space:]]+libggml-base\.so' || true)
+  if [ "$st" -ne 0 ] || [ "$inspected" -eq 0 ] || [ "$core" -eq 0 ]; then
+    echo -e "${RED}✗ $label: launch-recipe linkage FAILED (rc=$st, inspected=$inspected, libggml-base=$core)${NC}"
+    printf '%s\n' "$out" | grep -E '^[[:space:]]+BAD ' | sed 's/^/       /'
+    return 1
+  fi
+  echo -e "${GREEN}✓ $label: $inspected ggml libs resolve inside $lib_dir (launch recipe)${NC}"
+
+  # --- 2. ambient environment, untouched
+  out=$(bash "$LINKAGE" "$server" "$lib_dir" 2>&1)
+  st=$?
+  if [ "$st" -ne 0 ]; then
+    echo -e "${RED}✗ $label: AMBIENT LD_LIBRARY_PATH mis-resolves this kernel's ggml${NC}"
+    printf '%s\n' "$out" | grep -E '^[[:space:]]+BAD ' | sed 's/^/       /'
+    echo -e "${YELLOW}  Fix:  export LD_LIBRARY_PATH=\"$lib_dir:\$LD_LIBRARY_PATH\"${NC}"
+    return 1
+  fi
+  echo -e "${GREEN}✓ $label: ambient LD_LIBRARY_PATH also resolves in-tree${NC}"
+  return 0
+}
+
 check_binary_exists() {
   local cpu_server="$LLAMA_CPP_DIR/build/bin/llama-server"
   local hip_server="$LLAMA_CPP_DIR/build-hip/bin/llama-server"
@@ -166,6 +224,18 @@ main() {
 
   # Check binary exists
   if ! check_binary_exists; then
+    errors=$((errors + 1))
+  fi
+
+  # ggml linkage — the frozen llama.cpp launch flow must be proven the same way
+  # verify_speech_kernels.sh proves the speech trees'. A session that passes
+  # branch/commit/sha256 can still silently run another tree's ggml.
+  echo ""
+  echo "=== ggml linkage ==="
+  if ! check_linkage "Production CPU server" "$LLAMA_CPP_DIR/build/bin/llama-server"; then
+    errors=$((errors + 1))
+  fi
+  if ! check_linkage "Production HIP server" "$LLAMA_CPP_DIR/build-hip/bin/llama-server"; then
     errors=$((errors + 1))
   fi
 

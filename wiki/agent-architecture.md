@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-23 (evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
 
 ## Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
@@ -2725,3 +2725,15 @@ every invocation for every session, and it cannot express "self-runner ON PURPOS
   completion record with its advisory remainder.
 - [`.claude/skills/agent-file-architecture/SKILL.md`](../.claude/skills/agent-file-architecture/SKILL.md)
   — the thin-map architecture skill the 2026-07-30 restructure is now codified as.
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the fail-open 200 family, one layer deeper — in-band `[ERROR: ...]` strings
+
+**Confidence: verified** — the change is a route-level fix with 4 new tests that failed against the unfixed code and 10/10 green after, plus 121 across the openai_compat surface.
+
+The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer beneath still failed open: `LLMPrimitives.llm_call` does not raise — it returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures were reaching clients as **HTTP 200 assistant content** (streaming closed `finish_reason: "stop"`). The 2026-08-23 extension detects them at the route via the canonical `inband_error_text()` rule: non-streaming → **502 `HTTPException`**; streaming → terminal SSE **`error` event + `finish_reason: "error"`**; the REPL path checks the raw result before the auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). **The recurring lesson, now with a second layer on file: a fix that stops one failure mode at the top of a stack leaves every lower layer free to re-introduce the same class — each layer's error contract must be checked at its own boundary, and "raises" vs "returns error string" is a contract difference, not a style difference.** Provenance: the change sits uncommitted in the shared orchestrator working tree (`src/api/routes/openai_compat.py`, `tests/unit/test_openai_compat_backend_failure_status.py`).
+
+### Source References (2026-08-23 evening)
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))

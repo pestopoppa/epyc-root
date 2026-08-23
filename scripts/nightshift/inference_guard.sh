@@ -31,7 +31,10 @@
 # process called llama-server. MemAvailable from /proc/meminfo measures the asset
 # directly and cannot be defeated by a renamed binary, an argv change or a pgrep
 # that is not installed — so a run that would trample a 200GB resident model is
-# caught even when the process channel sees nothing at all.
+# caught even when the process channel sees nothing at all. If THIS channel is the
+# one that cannot be read, the guard is `failed` too: one negative and one blind
+# eye is not a clear, and the polarity rule (inference_load_check.py) is "for
+# EXCLUSION, unknown must mean busy".
 #
 # NOTE ON pgrep: this is READ-ONLY process inspection. Nothing here signals a
 # process. The host-wide ban is on `pkill`/`pgrep` NAME PATTERNS FEEDING A KILL
@@ -145,6 +148,25 @@ check_inference_load() {
     return 1
   fi
 
+  if [[ "$mem_state" != "measured" ]]; then
+    # The process channel measured an honest zero, but the SECOND channel — the
+    # one that catches a renamed or relocated inference binary the pattern misses —
+    # could not be read. One negative and one blind eye is not a clear: the
+    # polarity rule (inference_load_check.py) is "for EXCLUSION, unknown must mean
+    # busy", so this is `failed`, not an all-clear with a footnote.
+    export NIGHTSHIFT_GUARD_STATE="failed"
+    export NIGHTSHIFT_GUARD_REASON="MemAvailable channel unreadable (${mem_state}); cannot rule out an inference process only the RAM channel would catch"
+    export NIGHTSHIFT_INFERENCE_RSS_GB="$rss_gb"
+    unset NIGHTSHIFT_INFERENCE_ACTIVE 2>/dev/null || true
+    unset NIGHTSHIFT_TASK_FILTER 2>/dev/null || true
+    echo "[inference_guard] MEASUREMENT FAILED: the process channel read ${rss_gb}GB, but the"
+    echo "[inference_guard] MemAvailable second channel is DOWN (${mem_state}). A renamed or"
+    echo "[inference_guard] relocated inference binary is invisible to the pattern and only the"
+    echo "[inference_guard] RAM channel would catch it, so 'no inference' is NOT an available"
+    echo "[inference_guard] conclusion. Callers MUST refuse to launch (NIGHTSHIFT_GUARD_STATE=failed)."
+    return 1
+  fi
+
   export NIGHTSHIFT_GUARD_STATE="measured"
   export NIGHTSHIFT_GUARD_REASON=""
   export NIGHTSHIFT_INFERENCE_RSS_GB="$rss_gb"
@@ -158,10 +180,6 @@ check_inference_load() {
     echo "[inference_guard] Inference active by the MemAvailable channel: ${mem_gb}GB free"
     echo "[inference_guard]   (< ${MIN_MEMAVAIL_GB}GB). This channel is argv-independent: it"
     echo "[inference_guard]   catches a renamed or relocated inference binary the pattern misses."
-  fi
-  if [[ "$mem_state" != "measured" ]]; then
-    echo "[inference_guard] WARNING: /proc/meminfo MemAvailable unreadable — the second,"
-    echo "[inference_guard]   argv-independent channel is DOWN; only the process channel voted."
   fi
 
   if (( active == 1 )); then

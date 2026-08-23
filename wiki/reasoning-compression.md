@@ -2,7 +2,7 @@
 
 **Category**: `reasoning_compression`
 **Confidence**: verified (measured/committed/git-archaeology findings below) · observation (in-progress and pending-inference items) · external (vendor- and paper-reported numbers)
-**Last compiled**: 2026-08-23 (first compile of this page — created in the 2026-08-23 operator wiki sweep; folds the reasoning-compression / reasoning-effort-levels / per-request-reasoning-budget handoffs)
+**Last compiled**: 2026-08-23 (evening: E-7 validator EXTENDED and ENFORCED — template_sha is now a required certification field, and the ledger's `active_kernel_era` v8-vs-v9 stale-field correction with a structural roll-forward mandate; earlier same-day: first compile of this page — created in the 2026-08-23 operator wiki sweep; folds the reasoning-compression / reasoning-effort-levels / per-request-reasoning-budget handoffs)
 **Sources**: 3 handoffs (reasoning-compression, reasoning-effort-levels, per-request-reasoning-budget), cross-referencing the sibling pages that already carry the effort-ladder measurements, the np×context surfaces, and the repetition-penalty fence
 
 This page is the reasoning-**compression** home for the `reasoning`/`chain_of_thought` aliases: what is *new* about the per-request reasoning-budget path, the per-model effort-calibration invariant, and the 2026-08-21 chat-template intake round. Findings that predate this page and were already compiled elsewhere are pointed to, not restated: the effort-ladder measurements (+32pp prompt-CoT lever, native-`<think>` non-termination tail, `max_tokens` third axis) live on [Cost-Aware Routing](cost-aware-routing.md); the cross-candidate np×context throughput surfaces (A1/A3/A4) on [Hardware Optimization](hardware-optimization.md); the RP-1/RP-2 per-model repetition-penalty fence on [Quantization](quantization.md); the looped-transformer lineage and its watch triggers on [Training & Distillation](training-distillation.md).
@@ -10,6 +10,28 @@ This page is the reasoning-**compression** home for the `reasoning`/`chain_of_th
 ## Summary
 
 Reasoning traces are the dominant token cost on the architect lanes, and every lever that reduces them is a (model, quant, template) property, never a stack default. The per-request budget path is one field wide on the server, so the 2026-08-21 dive nominated **TALE-EP** — a prompt-level numeric budget that needs no server support — as the unblock, with an evaluation designed but not yet run and a fixed adoption rule. The effort ladder gained a third calibration axis (`template_sha`, amended 2026-08-21, practiced at CT-E7), and a binding constraint: effort must be steered by the prompt, never by a bare `max_tokens` cap. OPSDC's headline accuracy claim was corrected by its own authors to parity.
+
+## Compiled Update — 2026-08-23 (evening): the template axis is now ENFORCED, and the kernel-era field was stale
+
+**Confidence: verified** — the validator extension is a landed orchestrator change (`0e801e68`, 16 tests, live run exit 0); the era correction is a git-archaeology + operator-prompted read of the ledger.
+
+### E-7 validator extended and enforced — `(model, quant, kernel_era, template_sha)` is now REQUIRED
+
+The template-axis amendment (2026-08-21/22) was practiced at CT-E7 but not yet enforced; the validator was extended 2026-08-23 (orchestrator `0e801e68`): `REQUIRED_CERTIFICATION_FIELDS` is now `(model, quant, kernel_era, template_sha)`, with the bound template sha read from `roles.<role>.chat_template` falling back to `server_mode.<role>.chat_template` (`served_template_sha256_12`), compared in normalized 12-char form (full 64-hex ≡ short). 16 tests pass; the live run exits 0 (ledger empty, validator dormant but correct). **A template swap (or GGUF re-embed) now invalidates certified effort levels the same way a quant change does** — the template axis is a first-class member of the certification tuple, not a practice convention.
+
+**CORRECTION (operator-prompted):** the ledger's `active_kernel_era` had read `production-consolidated-v8`, which is STALE — production has been v9 since the 2026-08-11 freeze and every E-7/Q38 calibration since is stamped v9 `0db32c06e/10125`. The field was written 2026-08-03 (pre-v9) and the v9 promotion never rolled it forward because the ledger was empty (no certificates to invalidate). Fixed 2026-08-23 (`7fe84d9c`): `active_kernel_era: production-consolidated-v9`; a comment in the ledger now mandates rolling it forward at every kernel promotion, empty or not. The era field is the classic **dormant-ledger stale-field** shape — a promotion record that only gets written when there is something to invalidate, so an empty ledger silently freezes it at the previous era.
+
+**Era-enforcement made structural (follow-up):** the eras file rows (E5/E6/E8/E9) now carry machine-readable `kernel_name` beside binary_version/kernel_commit, and the validator cross-checks the ledger's `active_kernel_era` against the newest active `*-cpu-kernel` era's `kernel_name` — fail-closed on ledger mismatch, unreadable eras file, no active era, or missing `kernel_name`. A promotion that forgets either side now fails the stack-change pipeline with a named error (23 tests; live proof: a ledger forced back to v8 fails with "does not match the current production cpu-kernel era 'E9-cpu-kernel'").
+
+### Key Findings (2026-08-23 evening additions)
+
+- **The certification stamp is now `(model, quant, kernel_era, template_sha)` and it is enforced** — the template axis moved from practice (CT-E7) to mechanism (`0e801e68`); a template swap invalidates certified levels exactly as a quant change does.
+- **The ledger era field was a stale v8 on a dormant ledger — now v9 with a roll-forward mandate** — a promotion record that only writes when there is something to invalidate silently freezes at the previous era; the eras-file `kernel_name` cross-check makes the next such freeze a named pipeline failure.
+
+### Source References (2026-08-23 evening additions)
+
+- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) — the E-7 validator extension (`0e801e68`), the `active_kernel_era` v8→v9 correction (`7fe84d9c`), the era cross-check (`2746c652`), the template-axis amendment now enforced
+- [progress/2026-08/2026-08-23.md](../progress/2026-08/2026-08-23.md) — the E-7 validator session (extension + era correction + structural enforcement) and the CT-E7b propagation
 
 ## Compiled Update — 2026-08-23: the per-request budget path is one field wide, TALE-EP is the unblock, and effort calibration is now template-stamped
 

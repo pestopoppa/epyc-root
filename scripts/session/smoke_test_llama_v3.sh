@@ -13,7 +13,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LLAMA_DIR="/mnt/raid0/llm/llama.cpp-experimental"
-BIN_DIR="${LLAMA_DIR}/build/bin"
+BIN_DIR="${LLAMA_DIR}/build-v9-cpu/bin"
 CLI="${BIN_DIR}/llama-cli"
 SERVER="${BIN_DIR}/llama-server"
 PPL="${BIN_DIR}/llama-perplexity"
@@ -123,7 +123,7 @@ log "Binary: ${BIN_DIR}"
 
 if [[ ! -x "$CLI" ]]; then
     log "FATAL: llama-cli not found at ${CLI}"
-    log "Build first: cd ${LLAMA_DIR} && cmake --build build -j96"
+    log "Build first: cd ${LLAMA_DIR} && cmake --build build-v9-cpu -j96"
     exit 1
 fi
 
@@ -140,6 +140,28 @@ if [[ "$BRANCH" == production-consolidated-* ]]; then
     log "FATAL: Experimental smoke must run on a feature branch, got ${BRANCH}"
     exit 1
 fi
+
+# ── ggml linkage preflight (NIB2-58a) ───────────────────────────
+# A freshly built experimental binary can silently resolve the FROZEN production
+# ggml via LD_LIBRARY_PATH (INC-20260731-ggml-linkage-silent-cpu-fallback):
+# the run completes, the output is well-formed, and only the throughput is
+# quietly wrong — and every number this suite records would be garbage. Run the
+# canonical verifier under THIS script's own environment (the exact environment
+# the binaries below will inherit) and refuse to smoke-test anything it cannot
+# prove.
+LINKAGE_VERIFIER="/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh"
+for smoke_bin in "$CLI" "$SERVER"; do
+    if [[ ! -r "$LINKAGE_VERIFIER" ]]; then
+        log "FATAL: ggml linkage verifier not readable: ${LINKAGE_VERIFIER}"
+        exit 1
+    fi
+    if ! bash "$LINKAGE_VERIFIER" "$smoke_bin" "${BIN_DIR%/bin}"; then
+        log "FATAL: ggml linkage check FAILED for ${smoke_bin}"
+        log "       This binary resolves another tree's ggml — do not smoke-test or measure it."
+        exit 1
+    fi
+    log "OK: ${smoke_bin} resolves its own ggml"
+done
 
 # ── Model Load Tests ──────────────────────────────────────────
 

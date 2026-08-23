@@ -312,4 +312,15 @@ its error path the whole contract. Both are currently wrong in a way that is sil
   The three failure-path tests were verified to FAIL against pre-fix HEAD in a detached worktree; the
   two success-path tests pass in both, which is the point — a failure-only guard would pass just as
   happily if the route began erroring on everything. 292 passed across all tests touching this route.
+  **Extension 2026-08-23** (tier-1 backlog pass): the 2026-08-11 fix stopped *raised* exceptions
+  becoming 200s, but the layer beneath still failed open — `LLMPrimitives.llm_call` does not raise; it
+  returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures were reaching clients
+  as HTTP 200 assistant content (streaming closed `finish_reason: "stop"`). Now detected at the route
+  via the canonical `inband_error_text()` rule: non-streaming → 502 `HTTPException`, streaming →
+  terminal SSE `error` event + `finish_reason: "error"`; REPL path checks the raw result before the
+  auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend
+  failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). 4 new tests failed
+  against the unfixed code, 10/10 green after; 121 passed across the openai_compat surface; ruff
+  clean. Provenance of the change sits uncommitted in the working tree of the shared orchestrator
+  clone (`src/api/routes/openai_compat.py`, `tests/unit/test_openai_compat_backend_failure_status.py`).
   **HS-OD-1 deliberately untouched** per the lane brief; it remains open at its own box above.

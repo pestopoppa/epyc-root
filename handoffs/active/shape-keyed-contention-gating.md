@@ -27,7 +27,12 @@
 3. ~~Wire the dispatch-side caller to pass the selected `candidate_topology_idx`~~ ✅ **DONE 2026-05-31 (Step 2, default-off).** Remaining: enable `ORCHESTRATOR_SHAPE_AWARE_CONTENTION=1` (requires BOTH flags) only after a live smoke confirms disjoint quarters admit while q-overlaps queue.
 - [x] **BUILD: implement the ROUTE-A1 smoke execution bridge** ✅ 2026-07-21 (orchestrator: both stubs replaced; admit/queue classified via placement-queue outcome — ADMIT=clean answer, QUEUE=ContentionDenied 503 timeout, backend failures excluded; 6 mocked tests; double gate + dry-run byte-identical)
 - [x] **BRIDGE RESIDUAL 1 — echo GateDecision into /chat response metadata** (serving-path, small): `admitted`/`waited_s`/`decision`/`candidate_topology_idx` are computed in `contention_gate.admit()`/`_dispatch` but dropped, so the probe INFERS the verdict (role-granular; queue-then-admit invisible; only fail-closed timeout observable as QUEUE). Echoing them makes ROUTE-A1 a direct measurement. Do NOT land while a calibration run is live against the API. ✅ **LANDED 2026-08-13** — cherry-picked onto orchestrator `main` as `c61b8184` (6 files, +299/-0, 9 new tests; gate verdict **autonomous** via `merge_gate.py check --repo epyc-orchestrator --range main...a14-gatedecision-echo`; suite 35 passed on merged main; no calibration run live against the API — orchestrator API down). Local commit only, NOT pushed (push freeze).
-- [ ] **BRIDGE RESIDUAL 2 — bind the re-bench `sample_fn` to the codified bench recipe**: the vision co-run leaf honestly refuses the role-level eval lane (cannot pin instance regions; J5-prior protocol parity requires `bench_canonical` taskset pinning). Operator bench approval + quiet window when run. ROUTE-A1's ledger row stays BLOCKED_PRECONDITION until residual 1 (or an operator decision to accept the timeout-proxy signal) and the anchor-hold procedure are settled. (2026-07-21, from the batch-loop attempt): `scripts/autopilot/shapekeyed_step2_smoke.py` has pure planners/aggregators + a double-gated bridge, but `_drive_admit_overlap_probes` (`:718`) and the re-bench driver are `NotImplementedError` stubs — the batch entry was mislabeled runnable and is parked `BLOCKED_PRECONDITION` (build_gate=step2-smoke-bridge). Implement the drive loop over the placement queue mirroring `scripts/analysis/run_paired_ab.py::_default_arm_probe` (call_orchestrator_forced, request_priority=background, workload_class=eval_batch, force_role pinned), then append a READY ledger row for `ROUTE-A1-shapekeyed-step2` (its entry command is already corrected: env gate + `--output`).
+- [x] **BRIDGE RESIDUAL 2 — bind the re-bench `sample_fn` to the codified bench recipe**: ✅ 2026-08-23 —
+      the drive loop + ledger row half is DONE (see the flipped boxes below: `_drive_admit_overlap_probes`
+      implemented at `4dd270ed` + 2026-08-23 fail-closed anchor-hold/signal guards; probe verified
+      identical to `run_paired_ab._default_arm_probe`; ROUTE-A1 ledger row READY). The vision
+      co-run-leaf `bench_canonical` taskset-pinning parity remains an EXECUTION-time concern (operator
+      bench approval + quiet window; carried in the ledger row's next_action). The vision co-run leaf honestly refuses the role-level eval lane (cannot pin instance regions; J5-prior protocol parity requires `bench_canonical` taskset pinning). Operator bench approval + quiet window when run. ROUTE-A1's ledger row stays BLOCKED_PRECONDITION until residual 1 (or an operator decision to accept the timeout-proxy signal) and the anchor-hold procedure are settled. (2026-07-21, from the batch-loop attempt): `scripts/autopilot/shapekeyed_step2_smoke.py` has pure planners/aggregators + a double-gated bridge, but `_drive_admit_overlap_probes` (`:718`) and the re-bench driver are `NotImplementedError` stubs — the batch entry was mislabeled runnable and is parked `BLOCKED_PRECONDITION` (build_gate=step2-smoke-bridge). Implement the drive loop over the placement queue mirroring `scripts/analysis/run_paired_ab.py::_default_arm_probe` (call_orchestrator_forced, request_priority=background, workload_class=eval_batch, force_role pinned), then append a READY ledger row for `ROUTE-A1-shapekeyed-step2` (its entry command is already corrected: env gate + `--output`).
 4. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
 5. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
 
@@ -355,12 +360,33 @@ changed live is that the answer is now *derived* and every exclusion names its r
       (130 passed: gate/placement/API + the new observation-echo file) and 35 passed on merged
       `main`. No calibration run live against the API at landing (orchestrator API `:8000` down;
       only the dashboard hub serves). Both duplicate rows closed together per the duplicate rule.
-- [ ] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe.
-- [ ] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
+- [x] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe. ✅ 2026-08-23 —
+      `_default_admit_overlap_probe` (shapekeyed_step2_smoke.py:797) verified-identical to the canonical
+      `run_paired_ab.py::_default_arm_probe` (:691): same `call_orchestrator_forced` kwargs
+      (force_role pinned, `request_priority=background`, `workload_class=eval_batch`, PROBE_TIMEOUT_S,
+      PROBE_MAX_TOKENS), same response handling, same placement-queue transport (never /chat).
+- [x] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
       stub**, and its `DEFAULT_ANCHOR_IDX`/`DEFAULT_PROBE_ROLES` are stale (anchor idx 0 for
       `ingest_long_context` is the FULL 0-95, not the `{q0,q1}` half; `vision_escalation` has no
       instance) — so every candidate overlaps the anchor and the admit-vs-queue signal the smoke
-      exists to measure is structurally unobtainable, while it still "reports".
+      exists to measure is structurally unobtainable, while it still "reports". ✅ 2026-08-23 — the
+      stub was in fact implemented at `4dd270ed` (2026-07-21; the `:718` citation is stale). The
+      "still reports" half is FIXED: new `_verify_anchor_held` (fail-closed anchor-hold precondition
+      via read-only `active_region_holders()` scan, injectable seam) + `_verify_probe_signal`
+      (refuses structurally-unobtainable plans: zero probes or all-admit/all-queue) — the smoke now
+      refuses loudly instead of reporting its own expectation. 12 unit + 25 fixture tests green,
+      ruff clean. Ledger row for ROUTE-A1-shapekeyed-step2 appended READY (build gate satisfied;
+      execution = dry-run + quiet window + operator anchor hold, inference-gated).
+- [x] **Stale smoke defaults (extracted from the box above, 2026-08-23)**: `DEFAULT_ANCHOR_IDX=0`
+      (anchor idx 0 for `ingest_long_context` = FULL 0-95, not the `{q0,q1}` half) and
+      `DEFAULT_PROBE_ROLES` (vision_escalation has no live instance → 0 rebench pairs). One-line
+      operator decision to set a half/quarter anchor; until then the smoke refuses loudly (safe).
+      ✅ **DONE 2026-08-23 (operator correction: quarters do not exist — retired 2026-07-30)** —
+      `DEFAULT_ANCHOR_IDX = 1` (ingest node0 HALF, 48t, cores 0-47,96-143) with the default plan now
+      resolving to 8 probes (3 admit-expected disjoint node1-half candidates + 5 queue-expected);
+      `vision_escalation` dropped from `DEFAULT_PROBE_ROLES` (GPU-served :8086, no CPU-region
+      instance — documented in the constant); quarter language removed from comments and the
+      refusal message. Test fixtures updated to the half-anchor default; 37/37 smoke tests green.
 - [ ] **Contention still has no VRAM gate at admission** — `vram_fit` is exported and unused;
       rider Q3 (admission-time vs launch-time) is unratified.
 - [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is
@@ -387,11 +413,34 @@ are **no quarter instances in production**. The shipped row is `cpu_list 0-47,96
 holds zero 24-thread rows. The favourable geometry that entered the gate as a general role-pair
 verdict is the current production shape.
 
-- [ ] **Fix the marker polarity** — mark, refuse, or reroute to `n_way`. The gate owner's call, and
+- [x] **Fix the marker polarity** — mark, refuse, or reroute to `n_way`. ✅ 2026-08-23 — chose **REFUSE** (safest of the three): `cmd_run` now sends any selection whose geometry marker is present (the substituted overlapping fallback) to `unknown_pairs` with an `overlap_substituted` reason instead of benching/recording it as a `pairs:` row, so the gate's unknown-pair fail-closed policy applies; dry-run reports these as `REFUSED (overlap substitution)` instead of listing them as "would measure". The now-dead `pb.note` path removed. Verified against the shipped `contention_matrix.yaml:129-136` row class. 145 contention-suite tests + 205 importer tests green, ruff clean. The gate owner's call, and
       it does **not** depend on the re-bench landing: the inversion is wrong regardless of what the
       re-measured number turns out to be.
-- [ ] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
-      2026-08-12). The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
+- [x] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
+      2026-08-12). ✅ **MEASURED 2026-08-23 08:53-08:58Z** (operator grant; host quiet: load <3, no bench
+      drivers; topology hash `171f86f9188211e9`). Protocol: `contention_matrix.py bench-nway`
+      (safe-sampling, N_PREDICT=100), hand-authored manifest pinning ports, per-thread affinity
+      attested from /proc (194 pool threads per instance: 8080+8185 both `0-47,96-143` = node0 half
+      OVERLAP; 8285 `48-95,144-191` = node1 half). Artifacts:
+      `epyc-orchestrator/data/contention_matrix/op21-overlap-rebench-20260823T0855Z/`.
+      - **OVERLAP 8080+8185**: n=3 → 1.110/0.871/0.949, ratio 0.977 (cv 0.102, borderline); n=6 →
+        1.193/1.201/1.010/1.311/1.268/1.179, ratio 1.194 (cv 0.079, allow); pooled n=9 mean **1.121**,
+        cv 0.125 — **NOT decision-grade (cv > 0.05)**; verdict class allow-marginal/borderline.
+      - **DISJOINT control 8080+8285**: n=3 → 1.386/1.328/1.366, ratio **1.360**, cv 0.018 —
+        decision-grade **allow**.
+      - **Read**: the production (overlap) reality is ~1.0-1.2 co-run — mildly net-positive at best,
+        dips below 1.0 (0.871); the shipped row's 1.89 allow (samples=1, disjoint geometry) is
+        falsified for the overlap shape. Gate disposition (operator): demote the role-keyed pair row
+        to the overlap measurement (~1.1 borderline/allow-marginal) since the role-keyed gate cannot
+        distinguish geometry; the 1.360 disjoint control stays on file as the boundary reference.
+      - **Disposition APPLIED ✅ 2026-08-23** (operator-approved): `contention_matrix.yaml` pair row
+        demoted to the overlap measurement — instance_b re-pointed to 8185 (0-47,96-143 half0),
+        ratio 1.121, cv 0.1251, samples 9, verdict `borderline`, measured_at + note citing the
+        control and artifact path. `validate` + `check_contention_matrix_fresh.py` green (hash
+        unchanged); the live gate now reads 1.121/borderline (loader verified). API reloaded
+        (`orchestrator_stack.py reload orchestrator`, new uvicorn PID, :8000 healthy) — the
+        demotion is in effect.
+      The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
       the disjoint case answers the wrong question.**
       **Lane assigned 2026-08-12**: the operator granted `mainC` the CPU lane for exactly this
       (*"You can use the cpu lane — that's where the contention you're discussing lies"*), so this no
@@ -416,7 +465,7 @@ verdict is the current production shape.
       no input of this shape can produce a false `block`, they all read `allow`. Fixed at both
       `_bench_pair` and `_bench_nway`; the latter is the path this re-bench will use. Mutation-tested
       per site, 125 contention tests green.
-- [ ] **`contention_matrix.py run --roles …` TRUNCATES the matrix** — `pairs` is in
+- [x] **`contention_matrix.py run --roles …` TRUNCATES the matrix** — ✅ 2026-08-23 — scoped runs now UPDATE measured rows and carry unmeasured ones forward verbatim (`_split_pair_entries` + `_preserve_unmeasured_entries`, malformed blocks refused); full runs regenerate wholesale unchanged; scoped runs stay stamped `decision_grade=false`. Shipped 15-pair matrix round-trips. `pairs` is in
       `_EMITTER_OWNED_SECTIONS`, so `_carry_forward_sections` does not preserve unmeasured rows: 3 pairs
       in, 1 out. Against `DEFAULT_OUTPUT` that would destroy 14 of 15 measured rows and degrade the
       admission gate to fail-closed for every other pair. Never invoke it against the default output,

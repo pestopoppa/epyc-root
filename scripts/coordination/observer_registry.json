@@ -129,26 +129,20 @@
     {
       "id": "nightshift_inference_guard",
       "script": "scripts/nightshift/inference_guard.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/non-inference-backlog.md",
-      "task_marker": "OBS-3",
-      "notes": "`pgrep -f 'llama-server|llama.cpp' | xargs ... || true` summed into an RSS total. Every failure mode — pgrep missing, argv drift, a renamed binary, an xargs error — yields 0 GB, which takes the else branch and prints 'No heavy inference detected'. FAIL-OPEN: run_wrapper.sh then launches the full multi-project agent workload on top of a live 200GB+ inference run. Two states where three are needed, in the dangerous direction."
+      "contract": "exempt",
+      "reason": "FIXED, not deferred — reviewed 2026-08-23. The fail-OPEN pipeline ('pgrep | xargs … || true' summed to 0GB on every failure mode) was replaced 2026-08-12 (commit 381dddfe6) and completed here: NIGHTSHIFT_GUARD_STATE is three-valued (measured <N>GB / honest 0 / failed); pgrep-missing and pgrep rc>=2 are `failed`; all-VmRSS-reads-failed is `failed`; and the second (MemAvailable) channel being unreadable is now `failed` too — one negative and one blind eye is not a clear, and the polarity rule ('for EXCLUSION, unknown must mean busy', inference_load_check.py) is stated in-file. run_wrapper.sh (row nightshift_run_wrapper) exits 4 unless state=measured. NOT battery-adoptable: it is a sourced measurement library, not a daemon watchdog — its target (RAM-resident inference) publishes no pid/heartbeat, the harness's heartbeat-pid + proc-scan shape cannot be attached honestly, and its corrective action lives entirely in its consumer."
     },
     {
       "id": "nightshift_run_wrapper",
       "script": "scripts/nightshift/run_wrapper.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/non-inference-backlog.md",
-      "task_marker": "OBS-4",
-      "notes": "`autopilot_running() { pgrep -f 'scripts/autopilot/autopilot.py start'; }` requires `start` to sit immediately after the script path — the specimen's failure, verbatim. Any `autopilot.py --config X start` reads as 'AutoPilot not running' and the lab shadow jobs launch into a live AutoPilot."
+      "contract": "exempt",
+      "reason": "FIXED, not deferred — reviewed 2026-08-23. autopilot_running() was the specimen verbatim ('pgrep -f scripts/autopilot/autopilot.py start' — any flag between the path and 'start' read as 'AutoPilot not running' and lab shadow jobs launched into a live AutoPilot). It is now three-valued (running|stopped|unconfirmed): the authoritative channel is the singleton flock on orchestration/.autopilot.lock (held by construction — orchestrator state_ownership.py — argv-independent), corroborated by adjacency-robust dual pgrep patterns (autopilot.py <flags> start + autopilot_supervisor.py, mirroring inference_load_check.py and start_authority_daemon.py); unconfirmed SUPPRESSES the shadow launch (unknown means busy). The three 'missing cross-repo path -> skip -> return 0' branches now report AUX-DEPENDENCY-MISSING and exit 5 (partial run) instead of a clean 0. NOT battery-adoptable: it is a systemd-timer launcher, not a daemon watchdog — its only observation gates a side feed, its target publishes a flock rather than a pid heartbeat, and the harness's heartbeat-pid shape does not attach. Its guard refusal (exit 4) is regression-tested by scripts/nightshift/tests/test_inference_guard.sh."
     },
     {
       "id": "rustevo2_bench_preflight",
       "script": "scripts/benchmark/rustevo2_bench_preflight.py",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/non-inference-backlog.md",
-      "task_marker": "OBS-5",
-      "notes": "Partly right already: a pgrep returncode outside (0,1) is treated as 'could not inspect'. But an empty result is read as a positive 'no AutoPilot' and green-lights a bench against a live one, and a MISSING pgrep binary raises FileNotFoundError out of run() before reaching that handling."
+      "contract": "exempt",
+      "reason": "FIXED, not deferred — reviewed 2026-08-23. The preflight green-lit a bench against a live AutoPilot: an EMPTY pgrep result read as a positive 'no AutoPilot', and a missing pgrep binary raised FileNotFoundError out of run() before the (0,1)-returncode handling was reached. autopilot_state() is now three-valued (present|absent|unobservable), mirroring inference_load_check.py: FileNotFoundError is caught (missing binary = unobservable); an empty pattern result is NEVER trusted alone — a negative requires the singleton flock (orchestration/.autopilot.lock) to be provably free too; argv drift reads as present (the drifted daemon still holds the lock), closing the reference implementation's named residual; and unobservable FAILS the preflight in both strict and advisory modes ('for EXCLUSION, unknown must mean busy'). NOT battery-adoptable: it is a one-shot Python preflight, not a daemon watchdog — the harness drives `/bin/bash <script> observe` against a heartbeat file this script has no production relationship to."
     },
     {
       "id": "session_health_check",
@@ -161,10 +155,8 @@
     {
       "id": "session_emergency_cleanup",
       "script": "scripts/session/emergency_cleanup.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/non-inference-backlog.md",
-      "task_marker": "OBS-7",
-      "notes": "`sudo pkill -f claude` on a documented shared host — the exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills forbid, committed in-repo. The PreToolUse pattern-kill hook cannot see it: the hook inspects the typed command (`bash scripts/session/emergency_cleanup.sh`), not the script body, so the rule is assumed-enforced here rather than enforced. Interactive prompt is the only thing between it and every other session's processes."
+      "contract": "exempt",
+      "reason": "FIXED, not deferred — reviewed 2026-08-23. The committed `sudo pkill -f claude` (and its `pgrep -f claude`) is DELETED: on a shared host a 'claude' substring is a wildcard over every session's argv, including the script's own caller, and the PreToolUse pattern-kill hook inspects the typed command, not the script body, so the rule was assumed-enforced. The script now refuses to stop processes by pattern and prints the operator steps for killing only pids they verified themselves (ps -eo pid,etime,cmd | grep -i '[c]laude'; kill <verified-pid>); the unmount step reports a busy mount explicitly instead of aborting under set -e, and the delete prompt warns that a live bind mount makes rm go through to /mnt/raid0/llm/tmp/claude. Exempt as interactive operator tooling: a human-run, one-shot cleanup utility that takes no observation-based decision (it now refuses to guess) — out of the watchdog class the battery guards, and outside the daemon-supervisor lifecycle the contract enforces."
     },
     {
       "id": "fleet_watch",
