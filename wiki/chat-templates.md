@@ -509,3 +509,23 @@ thinking-vs-no-thinking deltas (budget + per-arm truncation rates, above).
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the intake dives, the fleet-sweep correction, CT-7 build/validation, CT-1/1b arms
 - [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — CT-DEPLOY end state, E-7 stamps and the voided/4096-rerun cells, CT-8 wiring, belief rows
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination-day context (EVL-50 closure, four-agent fan-out) around the CT work
+
+---
+
+## Compiled Update — 2026-08-23 (evening): CT-E7b stamps propagated to the master registry, and the CT-9 pilot-adoption decision
+
+**Confidence: verified** — the CT-E7b propagation is a landed compile-chain regeneration (research `577f215a`, orchestrator `5c41567d`, guard green); CT-9 is a production-behavior sweep over an 18-hour window with the evidence bundle on file.
+
+### CT-E7b — E-7 stamps are now in the MASTER registry quality rows; all nine cells live
+
+The master-registry propagation is DONE and the compile chain is FULLY GREEN. frontdoor's `quality_pct: 93` (May-4 judge) is VOIDED → E-7 live-path re-stamp at template `1443ea9ab4bb` (math 82.5 / mmlu_pro 37.5 / gpqa_diamond 55.0 / cruxeval 32.5, CT-1b arm-2 REPRODUCED live); architect_general + coder_escalation's swe_verified 57.5 VOIDED (Qwen3.6-27B A3 arm — model AND template both swapped) → **first-ever Qwen3.8 stamps** (85.0/27.5/47.5/22.5 + gpqa_diamond_cot 45/60 = 75.0% @4096, superseding the 900-cap void). All nine E-7 cells live in the derived layer's `quality_by_axis.local`; `guard ok / guard_strict ok / acceptance: no-inference checks passed`. Belief sidecars: `chat_template_ab_capture.v1`, all Witnessed/Attested (`ctab_e1e56fda…` / `ctab_c16c50e1…` + the cot4096 superseding row). The stamp is now ENFORCED, not just practiced: the E-7 validator was extended 2026-08-23 (orchestrator `0e801e68`) — `REQUIRED_CERTIFICATION_FIELDS` is now `(model, quant, kernel_era, template_sha)`, the bound sha read from `roles.<role>.chat_template` falling back to `server_mode.<role>.chat_template`, compared in normalized 12-char form; 16 tests pass. **A template swap (or GGUF re-embed) invalidates certified effort levels exactly as a quant change does** — the template axis is a first-class member of the certification tuple.
+
+### CT-9 — pilot adoption decision: HOLD all three roles; no fleet-wide extension
+
+The adoption decision was made on **production behavior, not new benchmarks**: the 18-hour window (2026-08-22 13:55Z → 2026-08-23 08:00Z) carried **calibration traffic only — zero real user/autopilot traffic after 15:36:49Z**. Signal: 0 server errors, 0 truncations, 0 slot-restore failures, 0 KV-migration events on the four ports; one gateway-side 504 whose server-side completion returned 200. Decision lines: **frontdoor → HOLD** (E-7 stamps reproduce CT-1b arm-2 live; revert is one line); **architect_general → HOLD** (first-ever stamps; 282 clean slot releases); **coder_escalation → HOLD** (no production signal exists); **fleet-wide → NOT EXTENDED** — the adoption precondition "serves real traffic for a while" is unmet, and extending unmeasured roles would void their CT-2 calibration slices on an unmeasured basis. What flips a role to REVERT: any error/truncation/slot-restore signature or real-traffic quality drift — none observed. Follow-ups filed: CT-10 (cruxeval watch-item re-check under real coder traffic — the CT-1b watch-item has no production basis in the window) and CT-11 (re-decide after the first non-calibration traffic signal).
+
+### Source References (2026-08-23 evening)
+
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-E7b propagation with the voided rows and superseding stamps, CT-9 decision lines and evidence record, CT-10/CT-11
+- [`reasoning-effort-levels.md`](../handoffs/active/reasoning-effort-levels.md) — the E-7 validator extension (`0e801e68`, template_sha enforced) and the `active_kernel_era` v8→v9 correction (cross-listed with [Reasoning Compression](reasoning-compression.md))
+- [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle (read-only production sweep)

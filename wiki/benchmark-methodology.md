@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-22 (log retention bounds the evidence window: a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the empty_generation detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-23 (evening tier-1/backlog pass compile: the OP-21 overlap re-bench and its decision-grade discipline (pooled n=9 cv 0.125 is NOT decision-grade; disjoint control 1.360 cv 0.018 is), the SS-BENCH-GATE-b bench-core-claim guard (launcher reads the live bench driver's ACTUAL core sets from /proc, fail-closed; default-affinity sidecars pinned rather than refused), the OBS-3/4/5/7 fail-open→three-state fixes (unreadable ≠ clear; unknown means busy), the NIB2-57a unmeasured-prior audit (shared ResolvedTps, `tps_known` provenance mask, fabricated 10.0 default dropped), and the scoring-infra loader-projection question — see bottom sections; earlier same-day: log retention bounds the evidence window: a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the empty_generation detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
@@ -2818,3 +2818,47 @@ but backend- and quant-mismatched. None of the three sentences substitutes for t
 - [`handoffs/active/evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) — 2026-08-21 addendum: the nine-day retention gap, the window-bounded clean-log negative (11,670 lines, six ≥16K requests), and the detector-not-blind analysis
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — Stage-2b record: `intake-1279#record` verdicts (cache localization refuted by the reporter's own log; `llama-bench` control blind by construction; exposure an explicit unknown)
 - [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1279#record`, the dive-verified entry for llama.cpp #27442 carrying the primary-artifact evidence
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the OP-21 re-bench's decision-grade discipline, the bench-core-claim guard, and the fail-open→three-state backlog pass
+
+**Confidence: verified** — the OP-21 numbers are a measured, operator-granted run with affinity attested from /proc; the SS-BENCH-GATE-b closure and the OBS/NIB2 fixes are code landings with test counts; the scoring-infra item is a filed question.
+
+### OP-21: the overlap re-bench, and what "decision-grade" actually required
+
+The operator-authorized re-bench of `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry (2026-08-23 08:53–08:58Z, host quiet, topology hash `171f86f9…`) is the pass's sharpest measurement-discipline example:
+
+- **OVERLAP 8080+8185**: n=3 → 0.977 (cv 0.102, borderline); n=6 → 1.194 (cv 0.079, allow); pooled n=9 mean **1.121**, cv 0.125 — **NOT decision-grade (cv > 0.05)**; verdict class allow-marginal/borderline.
+- **DISJOINT control 8080+8285**: ratio **1.360**, cv 0.018 — decision-grade **allow**.
+
+Three discipline points generalize: (1) **the cv threshold is the decision gate** — a pooled mean with cv 0.125 is not evidence even though every individual cell reads "allow"; (2) **n=3 was insufficient on the noisy geometry** (borderline flip from 0.977 → 1.194 between n=3 and n=6) — the n-count must be chosen for the observed variance, not the protocol default; (3) **the shipped 1.89 (samples=1, disjoint geometry) was falsified for the overlap shape** — a role-keyed gate that cannot distinguish geometry must carry the geometry it actually observes. Operator disposition: demote the role-keyed pair row to the overlap measurement; keep the 1.360 disjoint control on file as the boundary reference.
+
+### SS-BENCH-GATE-b — the bench-core-claim guard is closed (and a named residual opened)
+
+`scripts/server/bench_core_claim.py` (✅ 2026-08-23): the launcher reads the live bench driver's ACTUAL thread core sets from /proc — **fail-closed on malformed/unstable; unobservable = busy** — and every spawn (start/reload/aux/sidecar: 6 Popen sites + 5 wrappers) is either pinned off the claim (`host_cores − claim`, e.g. bench 0-95 → sidecar 96-191) or refused (exit 2) unless `--allow-during-bench`. Default-affinity spawns (the incident's sidecar shape) are **pinned rather than refused** so the stack stays functional during a bench. 60 new tests + 95 reload/stack tests + 489 stack suite green. **SS-BENCH-GATE-c is the named residual**: extend the same guard to the API's OWN runtime spawn layer (llama-servers spawned by the running API with default affinity, not through the CLI launcher) — the incident's sidecar was CLI-spawned so -b covers it; the API layer does not yet. Also discovered while running the suite: 3 pre-existing `test_runtime_flag_spec.py` failures (`prefix_stable_order` spec parity drift), predating the change.
+
+### OBS-3/4/5/7 — the fail-open family, fixed as three-valued (unknown must mean busy)
+
+The tier-1 backlog pass closed four of the observation-family rows, each converting a two-state collapse into a three-state check where unobservable ≠ clear:
+
+- **OBS-3** — `inference_guard.sh` failed OPEN into live inference (a missing `pgrep`/argv drift/`xargs` error all yielded 0 GB → "No heavy inference detected" → full workload launched on top of a live 200 GB+ inference). The 2026-08-23 fix: unreadable `MemAvailable` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`), never a WARNING-degraded all-clear — one negative and one blind eye is not a clear. Follow-up **OBS-3a**: add a mutation case for "MemAvailable unreadable → failed" to the existing test suite, which predates the fail-closed semantics.
+- **OBS-4** — `run_wrapper.sh:79`'s `autopilot_running()` required `start` immediately after the script path; a flag inserted into the daemon argv reads as "not running" and shadow jobs launch into a live AutoPilot. Now three-valued (running/stopped/unconfirmed): authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent), corroborated by an adjacency-robust dual pgrep; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run) instead of reporting success. Truth table tested (10 cases).
+- **OBS-5** — `rustevo2_bench_preflight.py` read an EMPTY pgrep as a positive "no AutoPilot" (and a missing `pgrep` binary raised `FileNotFoundError` before the rc handling). Now `active_autopilot()` is three-state: missing pgrep → `unobservable`; an empty result is never trusted alone (a negative requires the flock provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in strict and advisory modes. 15-case truth table tested.
+- **OBS-7** — `emergency_cleanup.sh:26` carried a committed `sudo pkill -f claude`, the exact idiom INC-20260731-broad-process-pattern-kills forbids, invisible to the PreToolUse hook (it inspects the typed command, not the script body). The `pkill` and its `pgrep` are DELETED; the section now refuses to guess and prints operator steps for killing only self-verified PIDs; umount failure reports loudly instead of aborting under `set -e`; the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt`.
+
+### NIB2-57a — the unmeasured-prior case is now loud (reader audit + provenance mask)
+
+The `or baseline_tps` fallback that let NIB2-57 persist is closed: full reader audit + shared `ResolvedTps`/`resolve_tps_prior()`/`format_tps()` in `registry_loader.py`; MCP tools, `cli --list-roles`, `render_stack_summary` label baseline-stand-ins and `unmeasured`; **`bilinear_scorer` drops the fabricated `10.0` default** for a `tps_known` provenance mask (MODEL_FEATURE_DIM 7→8); `train_graph_router` warns per-role when fleet tps is unmeasured. Measured behavior byte-identical; 71 targeted + 651 surface tests pass (one pre-existing data-driven failure: `quality_overall: null` for architect_general post-Qwen3.8-27B swap — a measurement-data decision, not code). Companion **NIB2-58b**: re-point `smoke_test_llama_v3.sh`/`prove_paged_attention.sh` binary paths from the extinct `build/bin` to `build-v9-cpu`/`build-v9-hip` (scripts currently fail fast with a clear message, which is correct behavior until then).
+
+### Scoring infra — loader projects non-live records into the live scorer's quality map (filed question)
+
+`_baseline_quality_by_role()` (`q_scorer.py:205`) iterates ALL priors records, not just `live_stack` — `qwen35_122b_q4km` and `qwen36_q8_0` (benchmark_or_candidate) appear in `cfg.baseline_quality_by_role` with source `degraded_fallback`. Whether virtual candidates should project into the live scorer at all is a loader-design question — pinned by the rewritten `test_config_has_quality_baselines` (data-driven projection-contract test, 2026-08-23), which encodes current behavior: decide and change deliberately, not by accident.
+
+### Source References (2026-08-23 evening)
+
+- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the cv-threshold discipline, the falsified 1.89, the REFUSE marker-polarity fix, the matrix-truncation fix
+- [`standardized-stack-update-pipeline-finalization.md`](../handoffs/active/standardized-stack-update-pipeline-finalization.md) — SS-BENCH-GATE-b closure (`bench_core_claim.py`), SS-BENCH-GATE-c residual, the pre-existing test_runtime_flag_spec failures
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
+- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — the loader projection question and the projection-contract test
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` → 502/SSE fail-closed route fix (cross-listed with [Inference Serving](inference-serving.md))

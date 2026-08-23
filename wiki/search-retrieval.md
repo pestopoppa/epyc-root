@@ -2,7 +2,7 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-08-22
+**Last compiled**: 2026-08-23 (evening wave-2 compile: the fallback slot re-pointed from mxbai 17M to **32M** (BEIR 0.521 vs 0.490, dim 64 — the 17M's headline ColBERTv2 win is 0.2 pp with significance testing explicitly declined), the "~49s per 50K docs" line CORRECTED (Table 13 is 487 s / 1540 s whole-pipeline over ~67,000 docs — the ~3.2× ratio survives, the absolute numbers did not, and the paper's stack is PyLate/PyTorch, not transferable to our ONNX-Runtime path), G14's pyLate-1.7.0 re-export gate with the Python-3.10–3.12 venv prerequisite, and the ColBERT-encoder ONNX class fix landing (`4e5e84c0`) — see bottom sections; previously compiled 2026-08-22: K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool)
 **Sources**: 32 documents (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
 
 ## Summary
@@ -533,3 +533,30 @@ path.
   targets; the record edit itself is still open work.
 - [`CHANGELOG.md`](../CHANGELOG.md) — the second surface carrying the stale swap rationale, plus the
   original :8089 answerai deployment and GTE upgrade-candidate entries the correction reconciles.
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the fallback slot re-pointed to mxbai 32M, a corrected CPU figure, and the encoder class fix
+
+**Confidence: verified** — the slot re-point reads the vendor tech report and both checkpoints' model cards; the Table 13 correction re-derives from arXiv:2510.14880v1 Table 13; the K1 landing is the shipped `epyc-orchestrator` `4e5e84c0`.
+
+### The fallback slot is mxbai-edge-colbert-v0-32M, not the 17M (re-pointed 2026-08-23)
+
+The web_research reranker's FALLBACK slot moved from the 17M to the **32M** sibling: BEIR **0.521 vs 0.490**, NanoBEIR **0.6520 vs 0.6405**, dim **64 vs 48** — and the 17M is the base checkpoint of the derived Reason-mxbai-32m already wired into the three-slot selector. **The 17M's headline BEIR win over ColBERTv2 is 0.2 pp (0.490 vs 0.488) with significance testing explicitly declined in the tech report itself** — the 17M was never the size that mattered here. The slot is chosen on quality and dimension, not on licence (both Apache-2.0). ~3.2× faster CPU encoding than ColBERTv2 is the vendor's own single-harness claim, with its scope limits recorded (§3 of the handoff).
+
+### The "~49 s per 50K docs" line was a misread — CORRECTED
+
+The previous line ("~49s per 50K docs … vs ColBERTv2 ~154s") was Table 13's CPU column **divided by 10**, over a corpus misstated as 50K. Corrected: **487 s** whole-pipeline NanoBEIR runtime on an **unnamed CPU** (vs ColBERTv2 **1540 s**), mean of 10 runs over ~67,000 documents + 650 queries. The ~3.2× ratio survives; the absolute numbers did not. Two further limits on Table 13: the CPU is never named and no variance/min/max is reported; and the paper's stack is **PyLate/PyTorch — it never mentions ONNX** — so these figures are a within-stack ratio and are **not transferable to our ONNX-Runtime INT8 serving path**. Reranking 20 pre-encoded pages is still sub-ms MaxSim.
+
+### G14 — the Reason-mxbai slot still lacks its `onnx_config.json` (environment-prerequisite-gated)
+
+The staged Reason-mxbai artifact ships `config_sentence_transformers.json` but **no `onnx_config.json`** — the file the NextPlaid Rust reader requires and the one `colbert_encoder._load_declared_config()` now prefers. Re-export with `pylate-onnx-export` **1.7.0 from git** (`next-plaid#subdirectory=next-plaid-onnx/python` — not the model card's `onnx/python` path, which 404s at head and at `00e26aae`, and not PyPI 0.1.0, which on this 3-Dense checkpoint emits a **truncated graph with a mislabelled `embedding_dim`**). **The real blocker is an environment prerequisite, not compute** (one CPU trace of a 32M model — seconds): 1.7.0 declares `requires-python ">=3.10,<3.13"` and this host is Python 3.13.7, so a Python 3.10–3.12 venv must exist first. Pin a PyLate ceiling too (`query_prefix_id` gained a `None` return at 1.6.0 that `export.py:264-265`'s bare `int()` would crash on). The older cp314/`fast-plaid`/`voyager` objection is stale — none of them is imported on this path.
+
+### The ColBERT encoder class fix landed (`epyc-orchestrator` `4e5e84c0`)
+
+The encoder could not load ANY BERT-family late-interaction ONNX (required `token_type_ids` input with no initializer default) — unblocks answerai-colbert-small-v1, ColBERTv2 and Jina-ColBERT-v2 **as a class**, not one model; the mxbai family never needed it (declares `uses_token_type_ids: false`; its real blocker was `do_lower_case`, also closed in the same commit). Embedding-dim drift between a live encoder and a stored index now **raises** instead of surfacing as a swallowed numpy shape error inside `maxsim()`. The H4 file-selection rule travels with it: mirror's `model_int8.onnx`, else upstream's **root** `model_int8.onnx`; never `onnx/`, never `vespa_colbert.onnx` — picking by folder name builds a silently wrong index. (Full landing details: [Knowledge Management](knowledge-management.md).)
+
+### Source References (2026-08-23 evening)
+
+- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — the 32M re-point with the 0.2-pp significance caveat, the Table 13 correction, G14 with its venv prerequisite, the H4 file-selection rule
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the K1/K2/K3 landing (`4e5e84c0`) and the H5/H6 tokenizer-identity findings (cross-listed with [Knowledge Management](knowledge-management.md))
