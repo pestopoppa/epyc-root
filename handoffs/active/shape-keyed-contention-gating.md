@@ -407,6 +407,13 @@ verdict is the current production shape.
         falsified for the overlap shape. Gate disposition (operator): demote the role-keyed pair row
         to the overlap measurement (~1.1 borderline/allow-marginal) since the role-keyed gate cannot
         distinguish geometry; the 1.360 disjoint control stays on file as the boundary reference.
+      - **Disposition APPLIED ✅ 2026-08-23** (operator-approved): `contention_matrix.yaml` pair row
+        demoted to the overlap measurement — instance_b re-pointed to 8185 (0-47,96-143 half0),
+        ratio 1.121, cv 0.1251, samples 9, verdict `borderline`, measured_at + note citing the
+        control and artifact path. `validate` + `check_contention_matrix_fresh.py` green (hash
+        unchanged); the live gate now reads 1.121/borderline (loader verified). API reloaded
+        (`orchestrator_stack.py reload orchestrator`, new uvicorn PID, :8000 healthy) — the
+        demotion is in effect.
       The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
       the disjoint case answers the wrong question.**
       **Lane assigned 2026-08-12**: the operator granted `mainC` the CPU lane for exactly this
