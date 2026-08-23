@@ -4551,6 +4551,12 @@ _STUCK_ESCALATION_INTERVAL_S = 1800.0
 # structurally cannot resolve (`tmux:agent` with no matching window) would
 # otherwise spawn a subprocess and write an advisory row every tick, forever.
 _STUCK_REFUSAL_RETRY_S = 300.0
+# A `monitor:file` identity holds no push channel, so an unanswered
+# `action_required` packet addressed to it can only be re-invoked by the daemon
+# itself. The re-invoke sweep fires when a packet has sat unanswered for at
+# least this long, and never re-invokes the same packet more than once per this
+# interval (dedupe lives in the daemon's per-agent `stuck_state.json` record).
+_MONITOR_FILE_REINVOKE_INTERVAL_S = 600.0
 _STUCK_NUDGE_MESSAGE = (
     "Bus: you have {unread} unread inbox message(s) and are idle. Run "
     "scripts/coordination/session_bus.py drain --agent {agent} now, act on what it "
@@ -4639,6 +4645,188 @@ def _unread_state(bus_root: Path, aid: str) -> tuple[int, int]:
     """(unread_count, cursor_offset), same fail-closed contract."""
     rows, offset = _unread_state_rows(bus_root, aid)
     return len(rows), offset
+
+
+# ----------------------------------------------------------------------
+# monitor:file re-invoke sweep (RTG-52 D3, 2026-08-23).
+#
+# A `monitor:file` roster identity (e.g. `auditor`, `hardware-backfill`) has no
+# push channel: nothing can nudge it, and `stuck-unreachable` advisories were
+# the whole remedy. An unanswered `action_required` packet addressed to such an
+# identity is INVISIBLE to the fleet-health plane — it sits in an inbox nobody
+# drains, and a missed invocation (the four pilot audit packets) stayed unseen
+# until manual triage. This sweep is the first option the handoff names: a
+# typed re-invoke for unanswered `action_required` packets addressed to a
+# `monitor:file` identity.
+#
+# The sweep fires when a packet has sat unanswered past
+# `_MONITOR_FILE_REINVOKE_INTERVAL_S`, and:
+#   * emits a `stuck-reinvoke` advisory carrying the packet id + the identity's
+#     `role_policy`/invocation path, with an explicit `re-invoke` marker, so a
+#     headless invocation can pick it up;
+#   * where the identity has a headless invocation path (`auditor` ->
+#     `headless_audit.py`, the P2-7 mechanism), actually invokes it — the same
+#     spawn shape `worker_runner._invoke_headless_audit` uses.
+# Guards: never more than once per interval per packet (dedupe in the daemon's
+# own `stuck_state.json` record); never a packet that has been answered (a
+# corr_id disposition anywhere, or — for audit packets — an existing verdict
+# naming the same task_ids/commit_range, which is how the pilot verdicts were
+# written: on the bus, but without a corr_id backlink); every re-invoke is
+# logged in an advisory row.
+#
+# The sweep is transport, not scheduling: it re-presents work that was already
+# addressed, so it runs at every authority like `resolve_stuck_agents` itself.
+
+
+def _packet_answered(bus_root: Path, packet: dict) -> bool:
+    """Has ANYONE answered this packet? A disposition on the bus is the answer.
+
+    Three evidence shapes, all read from the bus files:
+      1. a corr_id/corr_ids reference to the packet's own id;
+      2. a corr_id/corr_ids reference to its `relayed_src` (the original row a
+         relay copy re-addresses — one logical message, either id works);
+      3. for an audit packet (payload.audit_packet carrying task_ids +
+         commit_range): a verdict already on the bus for the SAME task_ids /
+         commit_range. The pilot verdicts were emitted exactly this way — a
+         `finding` under `auditor` with task_ids/commit_range but NO corr_id —
+         so corr_id alone would re-invoke audits that already ran.
+    """
+    packet_id = str(packet.get("id") or "")
+    relayed_src = str(packet.get("relayed_src") or "")
+    if not packet_id:
+        return False
+    packet_task_ids = set()
+    packet_range = None
+    ap = packet.get("payload") if isinstance(packet.get("payload"), dict) else {}
+    if isinstance(ap.get("audit_packet"), dict):
+        packet_task_ids = {str(t) for t in ap["audit_packet"].get("task_ids") or []}
+        packet_range = str(ap["audit_packet"].get("commit_range") or "")
+    for f in sorted((bus_root / "outbox").glob("*.jsonl")):
+        rows, _ = _read_jsonl(f)
+        for row in rows:
+            refs = []
+            if row.get("corr_id"):
+                refs.append(str(row["corr_id"]))
+            refs.extend(str(c) for c in (row.get("corr_ids") or []))
+            if packet_id in refs or (relayed_src and relayed_src in refs):
+                return True
+            if packet_task_ids and packet_range:
+                payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+                row_tids = {str(t) for t in payload.get("task_ids") or []}
+                if row_tids and row_tids & packet_task_ids \
+                        and str(payload.get("commit_range") or "") == packet_range:
+                    return True
+    return False
+
+
+def _monitor_file_reinvoke_command(aid: str) -> tuple[list[str], str] | None:
+    """(argv template, description) for a monitor:file identity's fallback, or
+    None when the identity has no headless invocation (advisory-only re-invoke).
+
+    `{bus_root}` and `{packet_path}` in the template are filled at spawn time.
+    The `auditor` identity re-invokes through the P2-7 headless audit path — the
+    SAME mechanism `worker_runner._invoke_headless_audit` uses — so a missed
+    audit packet is re-AUDITED, not merely re-flagged.
+    """
+    if aid == "auditor":
+        script = Path(__file__).resolve().parent / "headless_audit.py"
+        return ([sys.executable, str(script), "audit", "--packet", "{packet_path}",
+                 "--emit", "--bus-root", "{bus_root}"],
+                "headless_audit.py audit --packet <pkt> --emit")
+    return None
+
+
+def _invoke_headless_audit_packet(bus_root: Path, packet: dict) -> None:
+    """Actually run the auditor on a re-invoked audit packet (best-effort).
+
+    Mirrors `worker_runner._invoke_headless_audit`: detached, start_new_session,
+    output to a log file beside the packet. The packet stays on the bus either
+    way, so a failed invocation degrades to the pre-sweep behaviour (a packet
+    waiting for a reader) rather than to a lost verdict.
+    """
+    command = _monitor_file_reinvoke_command("auditor")
+    if command is None:
+        return
+    argv_template, _ = command
+    ap = packet.get("payload") if isinstance(packet.get("payload"), dict) else {}
+    packet_payload = ap.get("audit_packet") or ap
+    run_dir = bus_root / "reinvoke"
+    try:
+        run_dir.mkdir(parents=True, exist_ok=True)
+        packet_path = run_dir / f"{packet.get('id') or 'packet'}.json"
+        packet_path.write_text(json.dumps(packet_payload, indent=2, default=str) + "\n",
+                               encoding="utf-8")
+        argv = [a.format(bus_root=str(bus_root), packet_path=str(packet_path))
+                for a in argv_template]
+        log = open(run_dir / f"{packet.get('id') or 'packet'}.headless_audit.log", "ab")
+        subprocess.Popen(argv, stdout=log, stderr=log, start_new_session=True)
+    except (OSError, subprocess.SubprocessError, TypeError, ValueError):
+        return
+
+
+def _monitor_file_reinvoke_sweep(bus_root: Path, aid: str, entry: dict, rec: dict,
+                                 epoch: int, now: float, row) -> dict:
+    """Re-invoke unanswered `action_required` packets addressed to THIS
+    monitor:file identity. Returns the (possibly updated) per-agent record.
+
+    Runs inside `resolve_stuck_agents`'s monitor:file branch, so the daemon's
+    per-agent `stuck_state.json` record is the single dedupe ledger (the M4
+    file-set invariant already admits `stuck_state.json`).
+    """
+    endpoint = str(entry.get("endpoint") or "").strip()
+    if not endpoint.startswith("monitor:file"):
+        return rec
+    try:
+        rows, _ = _unread_state_rows(bus_root, aid)
+    except Exception:  # noqa: BLE001
+        # No cursor yet: NOTHING has ever drained this identity's inbox (that
+        # is the defect this sweep exists to close), so every row is a
+        # candidate. Read from zero rather than treating the absence as "no
+        # unread" — the answered-check below is the real guard against
+        # re-invoking handled work, not the cursor.
+        try:
+            rows, _ = _read_jsonl(bus_root / "inbox" / f"{aid}.jsonl", 0)
+        except Exception:  # noqa: BLE001 — fail-closed: skip, never read as zero
+            return rec
+    role_policy = str(entry.get("role_policy") or "").strip() or None
+    command = _monitor_file_reinvoke_command(aid)
+    invocation = command[1] if command else None
+    reinvoked = dict(rec.get("reinvoked") or {})
+    for packet in rows:
+        if not packet.get("action_required"):
+            continue
+        addressed = (str(packet.get("assignee") or "") == aid
+                     or str(packet.get("to") or "") == aid
+                     or aid in {str(t) for t in packet.get("needs_routing_to") or []})
+        if not addressed:
+            continue
+        age = _msg_age_s(packet, now)
+        if age is None or age < _MONITOR_FILE_REINVOKE_INTERVAL_S:
+            continue
+        packet_id = str(packet.get("id") or "")
+        if not packet_id:
+            continue
+        if _packet_answered(bus_root, packet):
+            reinvoked[packet_id] = now  # answered: never re-invoke, ever
+            continue
+        last = reinvoked.get(packet_id)
+        if last is not None and now - float(last) < _MONITOR_FILE_REINVOKE_INTERVAL_S:
+            continue
+        reinvoked[packet_id] = now
+        rec["reinvoked"] = reinvoked
+        rec["reinvoke_count"] = int(rec.get("reinvoke_count") or 0) + 1
+        row("stuck-reinvoke", aid, packet_id=packet_id,
+            relayed_src=packet.get("relayed_src") or None,
+            endpoint=endpoint, age_s=round(age), role_policy=role_policy,
+            invocation=invocation or "none (advisory-only identity)",
+            re_invoke=True,
+            detail=f"action_required packet {packet_id} addressed to monitor:file "
+                   f"identity {aid} unanswered for {round(age)}s; re-invoked per "
+                   f"_MONITOR_FILE_REINVOKE_INTERVAL_S",
+            action=f"re-invoke routed to {invocation or 'no fallback handler'}")
+        if command is not None:
+            _invoke_headless_audit_packet(bus_root, packet)
+    return rec
 
 
 def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
@@ -4794,6 +4982,16 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
                            "cannot be nudged (defect C8's shape)",
                     action="operator/coordinator-agent must reach it out of band")
                 rec["last_unreachable_ts"] = now
+            # (7) RTG-52 D3: a `monitor:file` identity cannot be nudged, so an
+            # unanswered `action_required` packet addressed to it used to be
+            # structurally invisible — a missed invocation sat unseen until
+            # manual triage. Re-invoke it instead of just re-flagging: the sweep
+            # emits a `stuck-reinvoke` advisory carrying the packet id and the
+            # identity's invocation path, and routes `auditor` packets through
+            # the same headless-audit invocation the runner uses.
+            if endpoint.startswith("monitor:file"):
+                rec = _monitor_file_reinvoke_sweep(bus_root, aid, entry, rec,
+                                                   epoch, now, row)
             new_state[aid] = rec
             continue
 
