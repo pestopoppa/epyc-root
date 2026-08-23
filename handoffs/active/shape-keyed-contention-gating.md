@@ -27,7 +27,12 @@
 3. ~~Wire the dispatch-side caller to pass the selected `candidate_topology_idx`~~ ✅ **DONE 2026-05-31 (Step 2, default-off).** Remaining: enable `ORCHESTRATOR_SHAPE_AWARE_CONTENTION=1` (requires BOTH flags) only after a live smoke confirms disjoint quarters admit while q-overlaps queue.
 - [x] **BUILD: implement the ROUTE-A1 smoke execution bridge** ✅ 2026-07-21 (orchestrator: both stubs replaced; admit/queue classified via placement-queue outcome — ADMIT=clean answer, QUEUE=ContentionDenied 503 timeout, backend failures excluded; 6 mocked tests; double gate + dry-run byte-identical)
 - [x] **BRIDGE RESIDUAL 1 — echo GateDecision into /chat response metadata** (serving-path, small): `admitted`/`waited_s`/`decision`/`candidate_topology_idx` are computed in `contention_gate.admit()`/`_dispatch` but dropped, so the probe INFERS the verdict (role-granular; queue-then-admit invisible; only fail-closed timeout observable as QUEUE). Echoing them makes ROUTE-A1 a direct measurement. Do NOT land while a calibration run is live against the API. ✅ **LANDED 2026-08-13** — cherry-picked onto orchestrator `main` as `c61b8184` (6 files, +299/-0, 9 new tests; gate verdict **autonomous** via `merge_gate.py check --repo epyc-orchestrator --range main...a14-gatedecision-echo`; suite 35 passed on merged main; no calibration run live against the API — orchestrator API down). Local commit only, NOT pushed (push freeze).
-- [ ] **BRIDGE RESIDUAL 2 — bind the re-bench `sample_fn` to the codified bench recipe**: the vision co-run leaf honestly refuses the role-level eval lane (cannot pin instance regions; J5-prior protocol parity requires `bench_canonical` taskset pinning). Operator bench approval + quiet window when run. ROUTE-A1's ledger row stays BLOCKED_PRECONDITION until residual 1 (or an operator decision to accept the timeout-proxy signal) and the anchor-hold procedure are settled. (2026-07-21, from the batch-loop attempt): `scripts/autopilot/shapekeyed_step2_smoke.py` has pure planners/aggregators + a double-gated bridge, but `_drive_admit_overlap_probes` (`:718`) and the re-bench driver are `NotImplementedError` stubs — the batch entry was mislabeled runnable and is parked `BLOCKED_PRECONDITION` (build_gate=step2-smoke-bridge). Implement the drive loop over the placement queue mirroring `scripts/analysis/run_paired_ab.py::_default_arm_probe` (call_orchestrator_forced, request_priority=background, workload_class=eval_batch, force_role pinned), then append a READY ledger row for `ROUTE-A1-shapekeyed-step2` (its entry command is already corrected: env gate + `--output`).
+- [x] **BRIDGE RESIDUAL 2 — bind the re-bench `sample_fn` to the codified bench recipe**: ✅ 2026-08-23 —
+      the drive loop + ledger row half is DONE (see the flipped boxes below: `_drive_admit_overlap_probes`
+      implemented at `4dd270ed` + 2026-08-23 fail-closed anchor-hold/signal guards; probe verified
+      identical to `run_paired_ab._default_arm_probe`; ROUTE-A1 ledger row READY). The vision
+      co-run-leaf `bench_canonical` taskset-pinning parity remains an EXECUTION-time concern (operator
+      bench approval + quiet window; carried in the ledger row's next_action). The vision co-run leaf honestly refuses the role-level eval lane (cannot pin instance regions; J5-prior protocol parity requires `bench_canonical` taskset pinning). Operator bench approval + quiet window when run. ROUTE-A1's ledger row stays BLOCKED_PRECONDITION until residual 1 (or an operator decision to accept the timeout-proxy signal) and the anchor-hold procedure are settled. (2026-07-21, from the batch-loop attempt): `scripts/autopilot/shapekeyed_step2_smoke.py` has pure planners/aggregators + a double-gated bridge, but `_drive_admit_overlap_probes` (`:718`) and the re-bench driver are `NotImplementedError` stubs — the batch entry was mislabeled runnable and is parked `BLOCKED_PRECONDITION` (build_gate=step2-smoke-bridge). Implement the drive loop over the placement queue mirroring `scripts/analysis/run_paired_ab.py::_default_arm_probe` (call_orchestrator_forced, request_priority=background, workload_class=eval_batch, force_role pinned), then append a READY ledger row for `ROUTE-A1-shapekeyed-step2` (its entry command is already corrected: env gate + `--output`).
 4. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
 5. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
 
@@ -355,12 +360,27 @@ changed live is that the answer is now *derived* and every exclusion names its r
       (130 passed: gate/placement/API + the new observation-echo file) and 35 passed on merged
       `main`. No calibration run live against the API at landing (orchestrator API `:8000` down;
       only the dashboard hub serves). Both duplicate rows closed together per the duplicate rule.
-- [ ] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe.
-- [ ] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
+- [x] **Bridge residual 2** — bind the re-bench `sample_fn` to the codified bench recipe. ✅ 2026-08-23 —
+      `_default_admit_overlap_probe` (shapekeyed_step2_smoke.py:797) verified-identical to the canonical
+      `run_paired_ab.py::_default_arm_probe` (:691): same `call_orchestrator_forced` kwargs
+      (force_role pinned, `request_priority=background`, `workload_class=eval_batch`, PROBE_TIMEOUT_S,
+      PROBE_MAX_TOKENS), same response handling, same placement-queue transport (never /chat).
+- [x] **`shapekeyed_step2_smoke.py:718` `_drive_admit_overlap_probes` is a `NotImplementedError`
       stub**, and its `DEFAULT_ANCHOR_IDX`/`DEFAULT_PROBE_ROLES` are stale (anchor idx 0 for
       `ingest_long_context` is the FULL 0-95, not the `{q0,q1}` half; `vision_escalation` has no
       instance) — so every candidate overlaps the anchor and the admit-vs-queue signal the smoke
-      exists to measure is structurally unobtainable, while it still "reports".
+      exists to measure is structurally unobtainable, while it still "reports". ✅ 2026-08-23 — the
+      stub was in fact implemented at `4dd270ed` (2026-07-21; the `:718` citation is stale). The
+      "still reports" half is FIXED: new `_verify_anchor_held` (fail-closed anchor-hold precondition
+      via read-only `active_region_holders()` scan, injectable seam) + `_verify_probe_signal`
+      (refuses structurally-unobtainable plans: zero probes or all-admit/all-queue) — the smoke now
+      refuses loudly instead of reporting its own expectation. 12 unit + 25 fixture tests green,
+      ruff clean. Ledger row for ROUTE-A1-shapekeyed-step2 appended READY (build gate satisfied;
+      execution = dry-run + quiet window + operator anchor hold, inference-gated).
+- [ ] **Stale smoke defaults (extracted from the box above, 2026-08-23)**: `DEFAULT_ANCHOR_IDX=0`
+      (anchor idx 0 for `ingest_long_context` = FULL 0-95, not the `{q0,q1}` half) and
+      `DEFAULT_PROBE_ROLES` (vision_escalation has no live instance → 0 rebench pairs). One-line
+      operator decision to set a half/quarter anchor; until then the smoke refuses loudly (safe).
 - [ ] **Contention still has no VRAM gate at admission** — `vram_fit` is exported and unused;
       rider Q3 (admission-time vs launch-time) is unratified.
 - [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is

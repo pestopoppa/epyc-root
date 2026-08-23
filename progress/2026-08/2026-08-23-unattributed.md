@@ -83,3 +83,27 @@ mutation test), NIB2-58b (experimental build-dir re-point), scoring-infra loader
 - Overlap pair CV 0.125 > 0.05: measurement directional, not decision-grade (recorded honestly).
 - Peer-owned uncommitted work left untouched: `src/graph/helpers.py`, `master-handoff-index.md`
   (staged), wiki/handoffs of other sessions.
+
+## Second pass 2026-08-23 (operator: "proceed with executing these next")
+
+All five filed residuals executed (5 parallel subagents), committed + pushed:
+
+- **RTG-35 successor (step-2 smoke bridge)** — `_drive_admit_overlap_probes` was already implemented
+  at `4dd270ed` (stale `:718` citation); added the missing fail-closed halves: `_verify_anchor_held`
+  (anchor-hold precondition via read-only `active_region_holders()` scan, injectable seam) +
+  `_verify_probe_signal` (refuses structurally-unobtainable plans — the stale NUMA_FULL default
+  anchor previously "still reported"). Probe verified identical to `run_paired_ab._default_arm_probe`.
+  12+25 tests green. **Ledger row ROUTE-A1-shapekeyed-step2 appended READY** (build gate satisfied;
+  execution = dry-run + quiet window + operator anchor hold, inference-gated).
+- **SS-BENCH-GATE-c** — the ONE API-runtime spawn site (`src/services/worker_pool.py:392
+  _start_worker`, WARM-expansion, `numactl --interleave=all`) now guarded via `api_enforce_placement`
+  (+ `ORCHESTRATOR_ALLOW_DURING_BENCH` env knob, WARNING-logged); bench-live → pins to
+  `host_cores − claim` or refuses. Quiet path byte-identical. 69+179+70 tests green.
+- **OBS-3a** — mutation M-D ("MemAvailable unreadable → failed", awk-shim) added; suite 15→21 passed,
+  guard untouched.
+- **NIB2-58b** — both launcher scripts re-pointed to `build-v9-cpu` (ground-truth: only named CPU dir
+  with full binary set); verifier roots updated; live linkage runs PASS.
+- **test_runtime_flag_spec drift** — `prefix_stable_order` (RTE-Prefix, default-off) added to the spec
+  via the sanctioned `--sync-spec`; 22/22 green; 38 live-file drift findings left to stack owner.
+
+Commit + push: epyc-root `…see below…`; epyc-orchestrator `7ac6870d`; epyc-inference-research `27797fef`.

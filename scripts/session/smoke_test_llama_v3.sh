@@ -13,7 +13,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LLAMA_DIR="/mnt/raid0/llm/llama.cpp-experimental"
-BIN_DIR="${LLAMA_DIR}/build/bin"
+BIN_DIR="${LLAMA_DIR}/build-v9-cpu/bin"
 CLI="${BIN_DIR}/llama-cli"
 SERVER="${BIN_DIR}/llama-server"
 PPL="${BIN_DIR}/llama-perplexity"
@@ -123,7 +123,7 @@ log "Binary: ${BIN_DIR}"
 
 if [[ ! -x "$CLI" ]]; then
     log "FATAL: llama-cli not found at ${CLI}"
-    log "Build first: cd ${LLAMA_DIR} && cmake --build build -j96"
+    log "Build first: cd ${LLAMA_DIR} && cmake --build build-v9-cpu -j96"
     exit 1
 fi
 
@@ -155,7 +155,7 @@ for smoke_bin in "$CLI" "$SERVER"; do
         log "FATAL: ggml linkage verifier not readable: ${LINKAGE_VERIFIER}"
         exit 1
     fi
-    if ! bash "$LINKAGE_VERIFIER" "$smoke_bin" "$LLAMA_DIR"; then
+    if ! bash "$LINKAGE_VERIFIER" "$smoke_bin" "${BIN_DIR%/bin}"; then
         log "FATAL: ggml linkage check FAILED for ${smoke_bin}"
         log "       This binary resolves another tree's ggml — do not smoke-test or measure it."
         exit 1

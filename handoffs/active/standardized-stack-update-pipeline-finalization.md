@@ -223,13 +223,31 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
         or refused (exit 2) unless `--allow-during-bench`; default-affinity spawns (the incident's
         sidecar shape) are pinned rather than refused so the stack stays functional during a bench.
         60 new tests + 95 reload/stack tests + 489 stack suite green.
-  - [ ] SS-BENCH-GATE-c — Extend the same guard to the API's OWN runtime spawn layer (llama-servers
-        spawned by the running API with default affinity, not through the CLI launcher). The
-        incident's sidecar was CLI-spawned so -b covers it; the API layer is the named residual
-        (bench_core_claim.py open question, 2026-08-23).
-  - [ ] Fix the pre-existing `test_runtime_flag_spec.py` failures (3, `prefix_stable_order` spec
+  - [x] SS-BENCH-GATE-c — Extend the same guard to the API's OWN runtime spawn layer (llama-servers
+        spawned by the running API with default affinity, not through the CLI launcher). ✅ 2026-08-23 —
+        spawn-site map produced; the ONE API-runtime spawn site is `src/services/worker_pool.py:392
+        _start_worker` (WARM-expansion/on-demand, `numactl --interleave=all` — the incident's
+        default-affinity shape). `bench_core_claim.py` gains `api_enforce_placement()` +
+        `ORCHESTRATOR_ALLOW_DURING_BENCH` env knob (evaluated at spawn time; bypasses refusals only,
+        pinning still applies; WARNING-logged); `_start_worker` now uses a bench-guarded prefix
+        (pins to `host_cores − claim` when a bench is live, refuses otherwise). Quiet path
+        byte-identical (proven by tests). 69 bench-claim + 179 worker-pool/backends + 70 model-server
+        tests green; ruff clean. The incident's sidecar class is now covered at BOTH layers (CLI -b,
+        API -c).
+  - [ ] SS-BENCH-GATE-c residuals — `src/inference/model_server.py` `LlamaCppBackend` (legacy
+        per-inference llama-completion, `numactl --interleave=all`, CLI-only today) and
+        `src/services/lightonocr_llama_server.py` per-request llama-mtmd-cli spawns (separate
+        launcher-owned service) are the same incident class but not API-runtime-reachable; guard
+        them IF either path re-wires into the API. Filed 2026-08-23.
+  - [x] Fix the pre-existing `test_runtime_flag_spec.py` failures (3, `prefix_stable_order` spec
         parity drift) discovered 2026-08-23 while running the stack suite — imports only
         `src/runtime_flag_spec` + `src/features`, untouched by the -b change; predates it.
+        ✅ 2026-08-23 — `prefix_stable_order` is the RTE-Prefix flag (default-off, `src/features.py:204`);
+        spec re-synced via the sanctioned `runtime_flags_drift.py --sync-spec` (spec header forbids
+        hand-editing names) — one `baseline` line added in sorted position; 22/22 spec tests green;
+        drift proof clean. The 38 live-file drift findings (10 undeclared_override on
+        architect_delegation/plan_review/skillbank…) are pre-existing and remain the stack-owning
+        session's triage — unchanged by this fix.
 
 
 - [x] Keep the `waived_production_blocker` mechanism empty by default and
