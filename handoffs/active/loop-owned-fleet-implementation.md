@@ -452,6 +452,12 @@ tree untouched), 36 conflicts, fanned out over 4 subagents on disjoint sets. Pol
 default; never drop a rule, guard, test or task; **retractions win over what they retract**;
 genuine contradictions preserved and reported, never silently picked.
 
+**RESOLVED 2026-08-23 — the reconciliation landed and this wrap-up completes it.** The D9-acked
+landing commit is `4ae0c049` (on both `origin/main` and local `main`), with the per-file
+three-way merge commits (`80cd4e66`, `9cff0ff7`) as ancestors. This session's wrap-up
+promotion carries the remaining lane work onto `main`; the stale master-index OP-11 row was
+removed at the operator's directive. No force-push was used at any point.
+
 Nothing is at risk while it runs. Every local commit is on origin — verified with
 `git rev-list <branch> --not --remotes=origin` across all local branches; the only
 origin-unreachable commit was `4ad13cb2`, now parked at
