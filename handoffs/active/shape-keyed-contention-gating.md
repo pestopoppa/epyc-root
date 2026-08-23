@@ -387,11 +387,27 @@ are **no quarter instances in production**. The shipped row is `cpu_list 0-47,96
 holds zero 24-thread rows. The favourable geometry that entered the gate as a general role-pair
 verdict is the current production shape.
 
-- [ ] **Fix the marker polarity** — mark, refuse, or reroute to `n_way`. The gate owner's call, and
+- [x] **Fix the marker polarity** — mark, refuse, or reroute to `n_way`. ✅ 2026-08-23 — chose **REFUSE** (safest of the three): `cmd_run` now sends any selection whose geometry marker is present (the substituted overlapping fallback) to `unknown_pairs` with an `overlap_substituted` reason instead of benching/recording it as a `pairs:` row, so the gate's unknown-pair fail-closed policy applies; dry-run reports these as `REFUSED (overlap substitution)` instead of listing them as "would measure". The now-dead `pb.note` path removed. Verified against the shipped `contention_matrix.yaml:129-136` row class. 145 contention-suite tests + 205 importer tests green, ruff clean. The gate owner's call, and
       it does **not** depend on the re-bench landing: the inversion is wrong regardless of what the
       re-measured number turns out to be.
-- [ ] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
-      2026-08-12). The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
+- [x] **Re-bench `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry** (operator-authorised
+      2026-08-12). ✅ **MEASURED 2026-08-23 08:53-08:58Z** (operator grant; host quiet: load <3, no bench
+      drivers; topology hash `171f86f9188211e9`). Protocol: `contention_matrix.py bench-nway`
+      (safe-sampling, N_PREDICT=100), hand-authored manifest pinning ports, per-thread affinity
+      attested from /proc (194 pool threads per instance: 8080+8185 both `0-47,96-143` = node0 half
+      OVERLAP; 8285 `48-95,144-191` = node1 half). Artifacts:
+      `epyc-orchestrator/data/contention_matrix/op21-overlap-rebench-20260823T0855Z/`.
+      - **OVERLAP 8080+8185**: n=3 → 1.110/0.871/0.949, ratio 0.977 (cv 0.102, borderline); n=6 →
+        1.193/1.201/1.010/1.311/1.268/1.179, ratio 1.194 (cv 0.079, allow); pooled n=9 mean **1.121**,
+        cv 0.125 — **NOT decision-grade (cv > 0.05)**; verdict class allow-marginal/borderline.
+      - **DISJOINT control 8080+8285**: n=3 → 1.386/1.328/1.366, ratio **1.360**, cv 0.018 —
+        decision-grade **allow**.
+      - **Read**: the production (overlap) reality is ~1.0-1.2 co-run — mildly net-positive at best,
+        dips below 1.0 (0.871); the shipped row's 1.89 allow (samples=1, disjoint geometry) is
+        falsified for the overlap shape. Gate disposition (operator): demote the role-keyed pair row
+        to the overlap measurement (~1.1 borderline/allow-marginal) since the role-keyed gate cannot
+        distinguish geometry; the 1.360 disjoint control stays on file as the boundary reference.
+      The disjoint number is already on file at ratio 1.89 / verdict allow — **re-measuring
       the disjoint case answers the wrong question.**
       **Lane assigned 2026-08-12**: the operator granted `mainC` the CPU lane for exactly this
       (*"You can use the cpu lane — that's where the contention you're discussing lies"*), so this no
@@ -416,7 +432,7 @@ verdict is the current production shape.
       no input of this shape can produce a false `block`, they all read `allow`. Fixed at both
       `_bench_pair` and `_bench_nway`; the latter is the path this re-bench will use. Mutation-tested
       per site, 125 contention tests green.
-- [ ] **`contention_matrix.py run --roles …` TRUNCATES the matrix** — `pairs` is in
+- [x] **`contention_matrix.py run --roles …` TRUNCATES the matrix** — ✅ 2026-08-23 — scoped runs now UPDATE measured rows and carry unmeasured ones forward verbatim (`_split_pair_entries` + `_preserve_unmeasured_entries`, malformed blocks refused); full runs regenerate wholesale unchanged; scoped runs stay stamped `decision_grade=false`. Shipped 15-pair matrix round-trips. `pairs` is in
       `_EMITTER_OWNED_SECTIONS`, so `_carry_forward_sections` does not preserve unmeasured rows: 3 pairs
       in, 1 out. Against `DEFAULT_OUTPUT` that would destroy 14 of 15 measured rows and degrade the
       admission gate to fail-closed for every other pair. Never invoke it against the default output,

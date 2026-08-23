@@ -214,9 +214,22 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
         `--allow-during-bench` is passed. `earlyoom` is excluded — it merely names `llama-bench` in
         its arguments. **Verified live on first run**: it caught the E8 quality baseline reseed
         (PID 1485364) and the v7 quality gate.
-  - [ ] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
+  - [x] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
         bench core range so a reload cannot trip the gate at all. This is the durable fix; (a) is the
-        guard rail.
+        guard rail. ✅ 2026-08-23 — `scripts/server/bench_core_claim.py`: the launcher reads the live
+        bench driver's ACTUAL thread core sets from /proc (fail-closed on malformed/unstable;
+        unobservable = busy), and every spawn (start/reload/aux/sidecar, 6 Popen sites + 5 wrappers)
+        is either pinned off the claim (`host_cores − claim`, e.g. bench 0-95 → sidecar `96-191`)
+        or refused (exit 2) unless `--allow-during-bench`; default-affinity spawns (the incident's
+        sidecar shape) are pinned rather than refused so the stack stays functional during a bench.
+        60 new tests + 95 reload/stack tests + 489 stack suite green.
+  - [ ] SS-BENCH-GATE-c — Extend the same guard to the API's OWN runtime spawn layer (llama-servers
+        spawned by the running API with default affinity, not through the CLI launcher). The
+        incident's sidecar was CLI-spawned so -b covers it; the API layer is the named residual
+        (bench_core_claim.py open question, 2026-08-23).
+  - [ ] Fix the pre-existing `test_runtime_flag_spec.py` failures (3, `prefix_stable_order` spec
+        parity drift) discovered 2026-08-23 while running the stack suite — imports only
+        `src/runtime_flag_spec` + `src/features`, untouched by the -b change; predates it.
 
 
 - [x] Keep the `waived_production_blocker` mechanism empty by default and

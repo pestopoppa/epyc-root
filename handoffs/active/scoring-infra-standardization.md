@@ -362,3 +362,7 @@ otherwise have ranked #1 by 7 medal outcomes.
 it makes no leaderboard-status claim. An earlier framing of it as "plausibly the cause of the MLE-Bench
 freeze" was speculation and is retracted — the real on-benchmark antecedents are that benchmark's own
 quarantine entries and its issue #124.
+
+## 2026-08-23 — follow-up from the NIB2-57a reader audit (tier-1 pass)
+
+- [ ] **Loader projects non-live records into the live scorer's quality map.** `_baseline_quality_by_role()` (q_scorer.py:205) iterates ALL priors records, not just `live_stack` — `qwen35_122b_q4km` and `qwen36_q8_0` (benchmark_or_candidate) appear in `cfg.baseline_quality_by_role` with source `degraded_fallback`. Whether virtual candidates should project into the live scorer at all is a loader-design question; pinned by the rewritten `test_config_has_quality_baselines` (data-driven projection-contract test, 2026-08-23), which encodes current behavior — decide and change deliberately, not by accident.
