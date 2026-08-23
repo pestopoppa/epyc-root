@@ -15,7 +15,7 @@ Everything else exists to make that rule cheap to follow.
 
 **Document layout (v2).** This core file holds the constitution: claim grammar, metric scoping,
 protocol index, noise table, governance, and retroactivity. Full normative protocol text lives in
-five annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
+six annexes in `measurement/protocols/`, which carry the SAME trust boundary and amendment rules as this
 file — they are the constitution, filed by family or instrument class, not commentary on it. Daily-use guidance for
 sessions is the digest at `agents/shared/MEASUREMENT_POLICY.md`; when in doubt, this file and its
 annexes win.
@@ -45,7 +45,8 @@ confirmed-direction errors have burned debugging time before (CLAUDE.md §Debugg
 Full normative text: **B** = `measurement/protocols/bench-cpu.md`, **Q** =
 `measurement/protocols/quality-eval.md`, **G** = `measurement/protocols/gpu-cross-device.md`,
 **K** = `measurement/protocols/kernel-research.md`,
-**S** = `measurement/protocols/speech.md`.
+**S** = `measurement/protocols/speech.md`,
+**D** = `measurement/protocols/determinism-parity.md`.
 Status: ✅ ratified, 📋 staged (operator-apply).
 
 | Protocol | Scope | Metric (direction) | Status | Annex |
@@ -75,6 +76,8 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-TTS-2 | TTS intelligibility/quality proxy with a human-independent floor | round-trip WER % (↓) | ✅ 2026-08-03 | S |
 | P-TTS-3 | TTS speed: first-audio latency, RTF, throughput | first-audio ms (↓), RTF (↓), throughput (↑) | ✅ 2026-08-03 | S |
 | P-TTS-REL-1 | qwentts_tts release decision rule | verdict — **not a claim** | ✅ 2026-08-03 | S |
+| P-PARITY-1 | Greedy-output parity between two decode configurations (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **not a claim** below n=5 prompts, and **never** an aggregate pass rate | 📋 staged 2026-08-23 | D |
+| P-NONDET-1 | Run-to-run non-determinism detector (N >= 10 identical calls in ONE process) | bit-identical / not; max abs Δ across repeats (↓) | 📋 staged 2026-08-23 | D |
 
 ## 3. Claim grammar & examples
 
@@ -251,6 +254,18 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-08-23 (v2.x)** — AMENDMENT: **Annex D**
+  (`measurement/protocols/determinism-parity.md`) created as a **sixth** annex, filed by instrument
+  class, holding `P-PARITY-1` (greedy-output parity between two decode configurations) and
+  `P-NONDET-1` (run-to-run non-determinism detector). These are the first protocols of any kind for
+  output identity; every parity check in the repo until now was ad hoc. Supersedes the layout
+  sentence (`five` → `six`) and the annex key line; §2 gains two rows, both staged. Load-bearing
+  content: n >= 5 prompts (a 1-prompt check false-clears at a measured rate near 50%), fresh process
+  per phase (1/5 vs 4/5 measured, despite `cache_prompt=false`), per-prompt reporting with the
+  first-differing-generation-token index and **never** an aggregate, an f16-KV confound control, and
+  `GGML_CUDA_LOG_MMVQ_ROUTE=1` route capture because EPYC-local `a6b4b5263` is explicitly
+  "numerically-valid (not bit-exact)" at `ne11 >= 2`. Filed by research-intake wave-2 plan row H22.
 
 - **2026-08-03 (v2.x)** — AMENDMENT: **Annex S** (`measurement/protocols/speech.md`) created
   as a **fifth** annex, filed by modality, holding the STT (`P-STT-1`, `P-STT-2`, `P-STT-3`,

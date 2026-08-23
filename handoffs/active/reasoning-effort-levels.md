@@ -359,10 +359,22 @@ has NONE at either quant**, and our bench matched that, so the loop would occur 
       three distinct embedded templates across four production models. A template swap (or a GGUF
       re-embed) invalidates certified levels the same way a quant change does — extend the stamp to
       `(model, quant, kernel/era, template_sha)` when E-7's validator is next touched.
-      **First template-stamped recalibration ran 2026-08-22** (the terse pilot voided frontdoor +
-      architect_general; both re-measured on the live path with `template 1443ea9ab4bb` in the
-      stamp, belief-graded Witnessed/Attested): CT-E7 in `qwen-chat-template-evaluation.md`. The
-      stamp extension is now PRACTICED; the validator extension remains open.
+       **First template-stamped recalibration ran 2026-08-22** (the terse pilot voided frontdoor +
+       architect_general; both re-measured on the live path with `template 1443ea9ab4bb` in the
+       stamp, belief-graded Witnessed/Attested): CT-E7 in `qwen-chat-template-evaluation.md`. The
+       stamp extension is now PRACTICED **and ENFORCED: the validator was extended 2026-08-23
+       (orchestrator `0e801e68`) — `REQUIRED_CERTIFICATION_FIELDS` now
+       `(model, quant, kernel_era, template_sha)`; the bound template sha is read from
+       `roles.<role>.chat_template` falling back to `server_mode.<role>.chat_template`
+       (`served_template_sha256_12`), compared in normalized 12-char form (full 64-hex ≡ short).
+       16 tests pass; live run exits 0 (ledger empty, validator dormant but correct). CORRECTION
+       2026-08-23 (operator-prompted): the ledger's `active_kernel_era` had read
+       `production-consolidated-v8`, which is STALE — production has been v9 since the
+       2026-08-11 freeze and every E-7/Q38 calibration since is stamped `v9 0db32c06e/10125`.
+       The field was written 2026-08-03 (pre-v9) and the v9 promotion never rolled it forward
+       because the ledger was empty (no certificates to invalidate). Fixed 2026-08-23:
+       `active_kernel_era: production-consolidated-v9`; a comment in the ledger now mandates
+       rolling it forward at every kernel promotion, empty or not.**
 - [ ] **E-5 — Dynamic selection (stretch).** Let the router pick effort from task difficulty rather than
       pinning it per role — a natural extension of [[project_learned_routing_controller]]. Needs a
       difficulty signal that is cheaper than just running the hard path.

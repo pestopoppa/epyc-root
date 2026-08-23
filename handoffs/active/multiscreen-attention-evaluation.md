@@ -392,3 +392,159 @@ intake-813 is tracked as a continuation of the Behrouz/Titans architecture line 
 5. **Direct collision with our MTP line.** PR #24975 documents that speculative/lookahead multi-token decode **never latches** and silently falls back to full causal, plus it bumps `LLAMA_SESSION_VERSION`/`LLAMA_STATE_SEQ_VERSION` and forces F32 V-cache. Draft, 0 maintainer reviews in 4 weeks.
 
 **Better comparison point for text**, if the long-output regime ever matters to us: **KARA** (arxiv:2607.01237, 2026-07) keeps the prefix intact and *adaptively compresses* the generated window instead of hard-truncating it, and is training-free — the right shape for CoT/reasoning, where distant self-reference actually matters. Worth its own intake if we revisit.
+
+## Research Intake Update — 2026-08-22 (Stage-2b, intake-1287 / intake-1281)
+
+Compute classes: **Z** zero-compute, **G** compute-gated (names the measurement, the owning handoff,
+and the result that opens the gate), **B** blocked-on.
+
+### STANDING HAZARD — CoT-SFT breaks long-range recall in hybrid linear-attention models
+
+**This is not a SALA note. It applies to any hybrid we post-train or fine-tune, and our production
+frontdoor is one: Qwen3.6-35B-A3B, 30 Gated DeltaNet + 10 full attention.**
+
+`arXiv:2606.11052`, *"Attention Amnesia in Hybrid LLMs: When CoT Fine-Tuning Breaks Long-Range Recall,
+and How to Fix It"* (Zhou, Zhu, Xu, Li, Chen, Wang, Guo; v1 2026-06-09). Abstract, verified at the
+primary source by the dive: CoT-SFT *"systematically degrades long-context recall in hybrid
+linear-attention models… For example, HypeNet-9B on NIAH-S2@256K decreases from 67.2 % to 9.4 %."* The
+proposed fix, **QK-Restore**, is **training-free**: restore only `W_Q` and `W_K` from the pre-SFT
+checkpoint. Independence is mixed but favourable — mostly external, though one author is also a SALA
+co-author and HyPE's first author, so it reads as genuine post-hoc self-critique rather than a rival's
+attack.
+
+**Why it is a hazard for us and not a curiosity.** The damage is invisible to every instrument we
+routinely run: it is a *recall* failure at *long* context produced by a *post-training* step, and our
+standing quality case is perplexity plus short-context evals. Perplexity does not move. The frontdoor
+is a 256K-context serving role. Nothing in the repo has ever measured it. `G1` below closes that, and
+needs no port, no new model and no SALA.
+
+**Scope note, so the hazard is neither over- nor under-claimed.** The 67.2 → 9.4 figure is HypeNet-9B,
+not our model, and third-party numbers gate nothing here (MEASUREMENT.md). It is a reason to
+*measure*, and the measurement is cheap. `arXiv:2606.11052` is a **hop-4 source and is not ingested**;
+it reaches us through intake-1287#record, whose diver verified the abstract at the primary source.
+Recommend it for a wave 3.
+
+### The strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones
+
+Pair the hazard above with `arXiv:2606.15378`, *"Rethinking the Role of Efficient Attention in Hybrid
+Architectures"* (Qiao, Xu, Xiao, Su, Zhou, Chen, Xu, Han, Liu). Abstract, verified: **"long-range
+retrieval is mainly carried by full attention, whereas efficient attention shapes its optimization
+trajectory"**, plus **"different hybrids eventually converge to comparable long-context performance
+under sufficient training"** and a named **"Large-Window Laziness"** effect in which larger SWA windows
+*delay the formation of retrieval heads in the full-attention layers*.
+
+Three things make this unusually strong as a counter-argument, and one weakens it:
+
+1. **Seven of its nine authors are SALA co-authors.** It is same-lab, and it is adversarial to SALA's
+   own premise — SALA has no full attention above 8,192 tokens (`sparse_config.dense_len`). A finding
+   that cuts against the authors' own product is worth more than one that flatters it.
+2. It directly contradicts the architectural move the SALA branch proposes for us: our 10 full-
+   attention layers are, on this account, *where the long-range retrieval lives*. Replacing them with
+   sparse ones spends exactly the resource the paper says does the work.
+3. Its second quote also deflates SALA's specific recipe: if hybrids converge under sufficient
+   training, the 1:3 ratio is not what produces the result — and SALA ablates that ratio nowhere.
+4. **Weakening it:** it is an abstract-level reading (the dive verified the abstract, not the body),
+   and same-lab provenance cuts both ways.
+
+**Consequence, recorded so it is not re-derived:** the "swap the dense minority for a sparse minority"
+direction is **argued against by the closest available literature, including its own proponents'
+lab** — before any throughput question is even reached. That ordering matters: `B8` in
+[lightning-attention-port.md](lightning-attention-port.md) is gated on numerical correctness, and this
+row says that even a clean correctness result does not make the architectural swap attractive.
+See also the fifth GDN branch-map row in
+[log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
+
+### Tasks
+
+- [ ] **G1 (G) — the CoT-SFT amnesia probe, on our own production model.** *Highest-value compute row
+      of the wave: no port, no new model, no SALA, no training.*
+
+      **Measurement.** RULER **S-NIAH-2** — essay haystack, single numeric magic value, question asks
+      for the value — on the production frontdoor artifact
+      `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf` (30 GDN + 10 full attention), at context
+      lengths **4K (control) / 32K / 64K / 128K**. Grid: 5 needle depths {0.1, 0.25, 0.5, 0.75, 0.9} ×
+      10 samples = **50 trials per length, 200 total**. Exact-match on the magic value. **Persist per
+      question** — each persisted unit is a drain point.
+
+      **The 4K control arm is not optional**: the gate is stated as a *comparison against short
+      context*, so without it there is nothing to compare to and the row cannot be scored.
+
+      **Harness — already on disk, no new tooling.** `epyc-inference-research`
+      `scripts/benchmark/long_context_adapters.py` ships both halves (read read-only 2026-08-23):
+      `NeedleAdapter` (`suite_name = "needle_parameterized"`) carries the Paul Graham essay corpus and
+      takes `context_lengths` and `needle_positions` as constructor arguments — the 128K arm is a
+      parameter, its default list merely stops at 65536; `RULERAdapter` carries the key/value needle
+      sentence, question framing and `exact_match` scoring but builds its haystack from synthetic
+      `wordNNNN` noise, which is an S-NIAH-**1** shape. **S-NIAH-2 is `NeedleAdapter`'s essay haystack
+      with `RULERAdapter`'s numeric needle** — a composition, not a new harness.
+
+      **Server configuration — three deviations from production argv, each mandatory and each for a
+      stated reason.**
+      1. **`-np 1 -c 262144`.** The `:8070` frontdoor runs `-np 4 -c 262144`, i.e. **65,536 tokens per
+         slot** — the 128K arm *cannot run there at all*. Verified from `/proc` 2026-08-23: PID 2052930
+         (`:8070`) is `-np 4`; PIDs 2195076 (`:8080`) and 2195842 (`:8180`) are `-np 1 -c 262144`.
+         Those two serve live traffic — **do not restart a frontdoor half to obtain this**; stand up a
+         dedicated instance on a free port, and coordinate with whichever session owns the compute
+         plane (reload ownership sits with the owning session, not with the requester).
+      2. **`--spec-type none`.** Production runs `--spec-type draft-mtp --spec-draft-n-max 4`. Whether
+         multi-token verification is byte-exact is precisely the open question DF2-6 owns; it must not
+         ride inside a recall measurement.
+      3. **`cache_prompt=false`**, greedy (`temperature 0`), **seed 42**. A needle sweep that reuses
+         prefix cache across trials measures the cache, not the model.
+      Everything else stays at production values — `--reasoning off`, the terse chat template,
+      `-ub 8192`, `--flash-attn on`, `--mlock --no-mmap`, `--device none`.
+
+      **The KV-quantization control is not optional either.** Production is `-ctk q8_0 -ctv q8_0`, and
+      "quantized KV damaged long-context recall" predicts the same sign as "CoT-SFT damaged
+      long-context recall". So: run the full grid at production `q8_0/q8_0`, then re-run **the 4K
+      control plus the shortest length at which a drop appears** at `-ctk f16 -ctv f16`. If the drop
+      survives f16 KV it is not a KV-quant artifact. This is a *control*; it is not a re-opening of the
+      KV axis, which `G2`–`G5` in
+      [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) own.
+
+      **Gate — what opens it.** A recall score **materially below the same probe at short context**,
+      made operational as: **≥ 10 percentage points below the 4K control at any of 32K / 64K / 128K,
+      with the paired 95 % bootstrap CI over needle placements excluding zero**, and surviving the
+      f16-KV control. At 50 trials per cell the binomial SE near p ≈ 0.9 is ≈ 4.2 pp, so 10 pp is
+      ≈ 2.4 SE; the published effect (67.2 → 9.4, i.e. 57.8 pp) is 5.8× the threshold, so the gate is
+      not straining to detect the phenomenon it was written for. *Report the per-length curve and the
+      per-depth breakdown, never a single aggregate* — a depth-localised failure is a different defect
+      from a uniform one and the aggregate hides both.
+
+      **If the gate opens this is a PRODUCTION DEFECT, not a research curiosity.** The frontdoor is a
+      256K-context serving role that would then be unable to recall at half that. Escalate to the
+      operator with the curve; do not file it to a research backlog.
+
+      **What the probe can and cannot attribute — state this in the write-up.** It measures the
+      *symptom* on the deployed artifact. It cannot attribute the symptom to CoT-SFT, because that
+      needs a pre-SFT checkpoint and **no Base `Qwen3.6-35B-A3B` GGUF is on disk** (checked
+      `/mnt/raid0/llm/models/` 2026-08-23: `Qwen3.6-35B-A3B-MTP-Q8_0.gguf`,
+      `Qwen_Qwen3.6-35B-A3B-Q8_0.gguf`, `qwen3.5-35b-a3b-seal-concise.gguf` — no Base). **The gate does
+      not need attribution**: a 256K role that cannot recall at 128K is a defect whatever caused it.
+      Attribution *and* the published training-free remedy (QK-Restore restores `W_Q`/`W_K` from the
+      pre-SFT checkpoint) both need the Base weights — acquiring them is the named prerequisite for any
+      **remediation** row, and is deliberately **not** a prerequisite for this probe.
+
+      **Optional fourth arm, only if 32K/64K/128K come back clean:** 256K. The published collapse is
+      at 256K, and `-c 262144` has the room on an `-np 1` instance. Named as optional so a clean
+      three-length result is not mistaken for a clean *sweep*.
+
+      **Owner:** this handoff — chosen over
+      [eval-tower-verification.md](eval-tower-verification.md) because eval-tower's subject is the
+      verification *tower* (confidence/logprob passthrough, calibration, ECE/AUC, judge validity,
+      rubrics) and its rows are `EV-N` infrastructure items, whereas this is an architecture-hazard
+      probe on a hybrid attention stack — the exact subject this handoff surveys, and it sits directly
+      under the hazard record it tests. If the probe later needs to become a standing suite rather than
+      a one-off, *that* is an eval-tower row.
+      Both compute planes were held by other sessions through this wave — **filed, not run.**
+- [ ] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
+      budget, parameter arithmetic, precedent. **The full-rank choice is what produces the entire
+      +12.5 % active-parameter objection to GDN-2, and the paper gives no justification for it.**
+      The precedent is in our own tree: Kimi Linear already factorizes its decay projection, and we
+      carry the tensors for it — `LLM_TENSOR_SSM_F_A` / `LLM_TENSOR_SSM_F_B` at
+      `src/llama-arch.h:473-474` ("kimi: forget gate projection A / B"), mapped to
+      `blk.{bid}.ssm_f_a` / `ssm_f_b` in `gguf-py/gguf/constants.py:1239-1240`. Verified read-only at
+      `0db32c06e3e5`, 2026-08-23. **Informs `B9`** in
+      [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md); validating that
+      a low-rank gate *retains the reported gain* is compute-gated and belongs to whoever runs B9(b),
+      not here. No inference, no GPU — **executable now** (intake-1281#record).

@@ -70,6 +70,18 @@ At short context (≤4K), attention is 7-12% of per-token time — KV quantizati
 
 **Hybrid buffer architecture finding**: The dual-cache design (kv_recent + kv_old) allocates BOTH at full context size, using MORE memory than a single f16 cache. The design intended kv_recent to be small (512 cells), but prefill requires full-size recent cache. This makes the hybrid buffer memory-negative for production use. The standard single-cache with quantized KV types (`-ctk q8_0 -ctv q4_0`) is the correct approach for memory savings.
 
+> **REFRAMED 2026-08-23 (wave-2 Stage-2b) — the conclusion above is a *capacity* argument applied to
+> a *bandwidth* problem, and it does not generalise the way this file has been read.** "Dual cache =
+> more bytes resident = wrong" is sound only when both copies sit in the **same** memory tier and the
+> cheap copy is **dequantized on the read path**. Ours did both, which is why it lost: the ~30%
+> gen-speed gap in the "Bottleneck analysis" paragraph below is precisely the cost of the
+> `q4_0 -> f16` cast on every decode token — a *dequantization* cost, not a *capacity* cost. A
+> dual-cache design in which the second copy lives in a cheaper tier (host DDR5 behind a GPU, or a
+> slower NUMA node) and is **never dequantized into the attention hot path** is a different design
+> and is not refuted by anything measured here. **What this file establishes is narrow and should be
+> cited narrowly: same-tier plus dequantize-on-read is memory-negative AND bandwidth-negative.** It
+> establishes nothing about tiered KV. Do not cite this paragraph to close a tiering proposal.
+
 **Optimization history (2026-03-26)**:
 1. Non-flash split attention (matmul-based): 5.2 t/s at 14.5K — correct quality, 32% slower than f16
 2. Removed K cast (fused dequant in mul_mat): no improvement (108.9 vs 107.1s — noise)
@@ -317,7 +329,13 @@ Foundational paper establishing the asymmetric K/V quantization principle:
 - **Key cache**: Per-**channel** quantization. A few fixed channels have outlier magnitudes (structural — same channels across all tokens). Grouping along channel dimension handles this.
 - **Value cache**: Per-**token** quantization. No fixed outlier channels; per-token grouping confines error to individual tokens.
 - **Result**: 2-bit quantization, tuning-free. 2.6x memory reduction, up to 4x batch size, 2.35-3.47x throughput.
-- **Relevance**: llama.cpp's current q4_0/q8_0 KV does symmetric block quantization — KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap.
+- **Relevance**: ~~llama.cpp's current q4_0/q8_0 KV does symmetric block quantization — KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap.~~
+  **CORRECTED 2026-08-22 (KIVI Stage-2b dive, arXiv:2402.02750v2 read in full). THERE IS NO SUCH GAP — the claim is wrong on all three of its load-bearing parts.**
+  1. **Per-token V is already implemented, and is structurally unavoidable.** `llama-kv-cache.cpp:231-232` allocates K and V with dim0 = channels, dim1 = tokens, so a 32-element q4_0/q8_0 block spans 32 contiguous channels *within one token* — exactly KIVI's per-token grouping at G=32. And `v_trans = !cparams.flash_attn`, while `llama-context.cpp:3557` refuses to start with "quantized V cache requires flash_attn to be enabled". So whenever V is quantized, `v_trans` is false and V is channel-contiguous: **our quantized V can never be on KIVI's bad axis.**
+  2. **Per-channel K is outside KIVI's demonstrated scope.** KIVI's own OB 1 states that at INT4, per-token quantization of *both* caches maintains accuracy; the axis asymmetry is established **only at 2 bits**, and the paper runs no 4-bit or 8-bit axis ablation. Production runs q8_0/q8_0, q4_0/f16 and q4_0/q4_0 — never 2-bit. KIVI is silent on our entire operating regime.
+  3. **We solve the key-outlier problem a different way, and an independent source says that way works.** The orthonormal self-inverse Walsh-Hadamard rotation gated at `llama-kv-cache.cpp:319-336` mixes across head channels — the exact dimension KIVI's outliers live on — redistributing a magnitude-m outlier as m/sqrt(n). RotateKV (arXiv 2501.16383, no author overlap with KIVI) uses **per-token keys plus rotation** at 2 bits and states verbatim that it "offers superior outlier management compared to per-channel approaches". Per-channel keys are one remedy, not a requirement.
+  **The one residual difference is real, small, and cheap to test:** KIVI's quantizer is *asymmetric* (zero-point + scale) where q4_0/q8_0 are *symmetric*. That half of the original sentence was accurate — but q4_1/q5_1 are supported asymmetric KV types, so it is a flag, not a code change. A rotated distribution is near zero-mean, which predicts the asymmetric quantizer buys nothing here; falsifiable in one short A/B.
+  **THE REAL GAP KIVI EXPOSES IS AN INSTRUMENT GAP, NOT AN IMPLEMENTATION ONE.** KIVI reports *no perplexity at all* and explicitly rejects single-decode-step metrics as unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage costs CoQA 7% but collapses GSM8K by 57% (13.50 -> 5.76). Our entire first-party quality case for quantized KV is **perplexity plus needle-in-a-haystack** — precisely the instrument class that survives damage multi-step generation does not. **No GSM8K-class generation eval has ever been run against quantized KV in this repo.** That, not the axis, is what should be closed. See `handoffs/active/tq3-quantization-evaluation.md`.
 
 ### KVLinC (arXiv 2510.05373)
 
@@ -1248,7 +1266,7 @@ turbo_q3 has fastest prefill (+30% vs f16). Gen at 14.5K prefill: 3.38-4.86 t/s 
 | R6 | New ggml type breaks upstream merge path | Medium | Medium | Keep PolarQuant/TurboQuant on our fork branch. Use `#ifdef GGML_POLAR_QUANT` guards. Don't block production-consolidated merges. | 2,3 |
 | R7 | Context shifting incompatible with quantized KV | Confirmed | Low | Context shifting is auto-disabled. Not used in our production flow. Document the limitation. | 0 |
 | R8 | Draft model KV quant bug (#11200) | Confirmed | Low | Use explicit `--cache-type-k-draft` / `--cache-type-v-draft` flags. Or patch the bug (small fix). | 0 |
-| R9 | Speculative decoding + quantized KV interaction | ~~Medium~~ | ~~Medium~~ | **CLEARED** (2026-03-25): Spec decode + q8_0/q4_0 KV on Coder-32B: 19.15 t/s vs 18.54 t/s f16 (+3.3%). No crash, no degradation. | 0,4 |
+| R9 | Speculative decoding + quantized KV interaction | ~~Medium~~ | ~~Medium~~ | **CLEARED** (2026-03-25) — **verdict unchanged; warrant repaired 2026-08-23.** The config on the protected axis is K=q8_0 and it stays cleared. **The clearing evidence is R11's needle-in-a-haystack result below (q8_0/q4_0 = 9/9 at 1K/4K/16K, 10/50/90% depth) together with the R4 perplexity pair — not the throughput figure.** The original warrant, "19.15 t/s vs 18.54 t/s f16 (+3.3%). No crash, no degradation.", is a **speed observation** and cannot evidence "no degradation": it logged no acceptance rate and named no correctness instrument, so it is supportive, not probative. Re-measurement with both is filed as `../active/speculative-decoding-mtp-refresh.md` **B5** (itself blocked on that file's G3, so the re-run does not measure a full-cache dequant and report it as a KV-quant result). See the 2026-08-23 granularity correction at the end of this file. | 0,4 |
 | R11 | Needle-in-haystack recall degradation | — | — | **CLEARED** (2026-03-25): q8_0/q4_0 = 9/9, q4_0/q4_0 = 8/9 (1x 503, not quality). Tested 1K/4K/16K at 10/50/90% depth. | 4 |
 | R10 | 1M context KV quantization — accumulated error over 1M tokens | Unknown | High | No published results at 1M context with any KV quantization method. Must benchmark RULER at 256K+ ourselves. Conservative approach: use q8_0 (not q4_0) at 1M. | 4 |
 
@@ -1258,7 +1276,7 @@ turbo_q3 has fastest prefill (+30% vs f16). Gen at 14.5K prefill: 3.38-4.86 t/s 
 |---------|----------|-----------|---------|-------|------|
 | **llama.cpp (current)** | Naive round-to-nearest | q4_0-q8_0 | q8≈f16, q4: +0.2 PPL | ~30% gen slowdown (GPU) | Yes |
 | **ExLlamaV2** | Hadamard smoothing + Q4 | 4-bit | **Matches f16** | Neutral (GPU) | No |
-| **KIVI** | Per-channel K / per-token V | 2-bit | ~f16 at 2 bits | 2.35-3.47x throughput | No |
+| **KIVI** | Per-channel K / per-token V **(2-BIT ONLY — its own OB 1 says per-token-for-both is fine at INT4)** | 2-bit | ~f16 at 2 bits | 2.35-3.47x throughput | **N/A — see the corrected Relevance note above; per-token V is structurally guaranteed here and per-channel K is out of KIVI's scope at our bit widths** |
 | **vLLM** | FP8 (E4M3/E5M2) | 8-bit | ~f16 | Neutral | No |
 | **lmdeploy** | INT8 per-channel | 8-bit | ~f16 | Neutral | No |
 | **KVLinC** | Hadamard + linear correction | 2-4 bit | Near f16 | 2.55x vs FlashAttn | No |
@@ -1517,3 +1535,26 @@ Memento (Microsoft, intake-289) trains models to segment reasoning into blocks, 
 **Key dependency**: llama.cpp block masking implementation. Uses special tokens (`<|block_start/end|>`, `<|summary_start/end|>`) and KV eviction after summary completion. Our ISWA hybrid buffer work is architecturally similar.
 
 See: [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.
+
+## Correction — 2026-08-23: our KV granularity is FINER than the published mitigation, and it is on the OPPOSITE axis from KIVI
+
+Two facts that keep being conflated because both are called "grouping". Recorded here so a future
+reader does not import a third-party damage number as if it were matched to our configuration.
+
+1. **Granularity: ours is group-32, the paper's *mitigation* is Group-64.** With `-fa 1`, llama.cpp
+   quantizes K and V **per token**, in 32-element blocks running along the **channel** dimension —
+   the layout is `dim0 = channels, dim1 = tokens` (`src/llama-kv-cache.cpp:231-232`), so a
+   `q4_0`/`q8_0` block spans 32 contiguous channels *within one token*. The alignment-collapse study
+   (arXiv 2606.09864) lists **Group-64 quantization** among the mitigations it recommends and
+   measures. We are already **finer than its remedy, by default, everywhere.** Consequence: **its
+   headline damage figures are a pessimistic bound for us, not a matched estimate.** Any transfer of
+   its numbers to this stack must say so — and G4 in `../active/tq3-quantization-evaluation.md`
+   exists to replace the transfer with our own number.
+2. **Axis: this is not KIVI, it is the opposite of KIVI.** KIVI's prescription is *per-channel for
+   K*. Ours is *per-token for both* — and because quantized V forces flash-attention, which sets
+   `v_trans = false`, our quantized V is **structurally incapable** of landing on KIVI's bad axis
+   (see the corrected Relevance note in the KIVI section above). Same word "group", orthogonal
+   dimension. **Do not read a Group-64 result as an upper bound on our group-32 damage without first
+   checking which axis the grouping runs along.**
+
+[intake-1291#record] [intake-1286#record]
