@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": {
+      "sudo mount*": "deny",
+      "umount*": "deny",
+      "mkfs*": "deny",
+      "fdisk*": "deny",
+      "parted*": "deny",
+      "mkswap*": "deny",
+      "modprobe*": "deny",
+      "shutdown*": "deny",
+      "reboot*": "deny",
+      "systemctl*": "deny",
+      "apt-get install*": "deny",
+      "apt install*": "deny",
+      "apt-get remove*": "deny",
+      "apt remove*": "deny",
+      "dpkg --install*": "deny",
+      "dpkg -i*": "deny",
+      "dpkg --remove*": "deny",
+      "dpkg -r*": "deny",
+      "dd of=/dev/*": "deny"
+    }
+  }
+}
