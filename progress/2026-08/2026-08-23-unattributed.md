@@ -106,4 +106,4 @@ All five filed residuals executed (5 parallel subagents), committed + pushed:
 - **test_runtime_flag_spec drift** — `prefix_stable_order` (RTE-Prefix, default-off) added to the spec
   via the sanctioned `--sync-spec`; 22/22 green; 38 live-file drift findings left to stack owner.
 
-Commit + push: epyc-root `…see below…`; epyc-orchestrator `7ac6870d`; epyc-inference-research `27797fef`.
+Commit + push: epyc-root `4924a115d9f8c6c8a34f66a0f66a32272eefe11b`; epyc-orchestrator `7ac6870d`; epyc-inference-research `27797fef`.
