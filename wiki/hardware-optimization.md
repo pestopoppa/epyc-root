@@ -1390,6 +1390,74 @@ Hypothesized mechanisms (Phase-0 perf data supports #1 and #2):
 
 Full corrected analysis: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`.
 
+### NPS4 48×4 notes — folded from `handoffs/active/orchestrator-nps4-48x4-notes.md` 2026-08-23
+
+> This section preserves the load-bearing deployment facts of the NPS4 48×4t
+> concurrent-production notes (retired 2026-08-23). Topology numbers, the
+> live NPS4 node layout, and the Q8 split tables above are already covered
+> elsewhere on this page; this fold keeps only what the notes added beyond
+> them. Reopen the concurrent-production design only for multi-tenant or
+> batch-serving demand, after proving shared-mmap page-cache dedupe under
+> `numactl --membind`, defining latency-aware routing, and defining a
+> draft-sharing plan (48 target instances cannot blindly imply 48 drafts).
+
+**Worker-model measured opportunity (post-NPS4 re-bench, 30B-A3B Q4)** — the
+Q8 tables above are frontdoor/27B class; the worker model measured:
+
+| Layout | 30B-A3B Q4 aggregate (t/s) |
+|---|---|
+| 4×48t NPS4-native (1 inst/node) | 36.17 |
+| 4×24t phys-only NPS4-native | 37.12 |
+| **48×4t NPS4-native** | **104.35** |
+| NPS2 4×48t baseline (est.) | ~45-50 |
+
+48×4t under NPS4 with strict per-node `membind` + 12 instances per NUMA node
+(each 2 phys + 2 SMT cores) ≈ **~3× current production aggregate** on the
+worker model. Per-instance throughput is 2.4 t/s (104/48) — unacceptable for
+single-user interactive latency, so the orchestrator needs **tiered routing**:
+cold/first requests → larger single-instance backend (e.g. single-node 24t)
+for latency; under load → spill to the 48×4t concurrent pool; idle → scale the
+pool down.
+
+**48-instance cpuset math (per model, all four nodes)**: instance `i ∈ [0,48)`:
+`node = i / 12`, `j = i % 12`, `phys_base = node*24 + j*2`,
+`SMT_base = 96 + node*24 + j*2`, cpuset `{phys_base}-{phys_base+1},{SMT_base}-{SMT_base+1}`,
+`--threads 4`, `numactl --membind=<node>`. Node layout:
+`node 0: phys 0-23, SMT 96-119`; `node 1: phys 24-47, SMT 120-143`;
+`node 2: phys 48-71, SMT 144-167`; `node 3: phys 72-95, SMT 168-191`.
+
+**Orchestrator deltas the notes required (all still unbuilt as of retirement)**:
+- **Instance multiplicity**: 48 tiny instances per model (vs 1-4 per role today);
+  per-role instance ceiling was historically soft-capped near 4 for latency.
+- **Ports**: 48-wide blocks per role (vs ~4-wide today).
+- **Router**: round-robin/least-loaded still works at 48 backends, but health
+  checks become 48 curls per cycle and connection-pool sizing is 48×N per client.
+- **Memory budget**: each instance holds the model in RAM. With `mmap` (not
+  `mlock`), kernel page cache can dedupe file-backed pages across instances on
+  the SAME node; with `membind` first-touch placement can differ per instance.
+  If dedup does NOT hold: 48 × 17 GB = **816 GB RAM** for worker alone; with
+  dedup: 1 × 17 GB reused. The NPS4 bench ran with `free -g` staying low
+  (dedup suggested but **not explicitly confirmed** — see open questions).
+- **Model load time**: ~48 × 10 s serial ≈ 8 min; parallel launch crashes on
+  mlock (see `feedback_sequential_model_loading.md`), and mmap page-fault
+  storms may contend — staged launch (e.g. 4 at a time, wait for healthy)
+  needed.
+- **Draft routing**: 48 × 1 GB draft models = 48 GB/role, or a shared draft
+  pool (4-8 instances) + routing layer — open design question.
+- **Health/restart**: per-instance `/health` curl (48 per cycle); respawn
+  individual crashes without disrupting others (already handled, just higher
+  rate).
+- **Contention**: concurrent 48×4t and per-NUMA expert parallelism are
+  **mutually exclusive occupancy patterns** — both want exclusive NUMA
+  ownership (see `handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md` D2).
+
+**Open design questions (unresolved at retirement)**: (1) does kernel dedupe
+mmap across same-node `mbind`'d instances (determines RAM budget — critical);
+(2) latency-aware routing policy; (3) single-node (24t) vs concurrent
+(48×4t) vs mixed per role; (4) draft per-instance vs shared pool;
+(5) staged launch to avoid mmap contention; (6) request-cancellation windows
+at 4 threads.
+
 ### Memory note on decode-path perf interpretation
 
 Going forward: when `perf report` shows a large overhead percentage inside a quantized-decode inner dot/matmul function on this hardware, treat those samples as **DRAM-wait cycles, not ALU-bound work**, unless separately verified. A cheap A/B test (wider-SIMD port) resolves the question in hours. See `feedback_cpu_decode_bw_bound.md` in auto-memory.

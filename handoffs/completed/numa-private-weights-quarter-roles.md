@@ -6,7 +6,7 @@
 **Created**: 2026-06-26
 **Owner**: unclaimed — dedicated future session (high-ROI, low-effort, NPS4-gated and we are on NPS4)
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
-**Cross-refs**: [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) (the `[1.5]` interleave prewarm this supersedes for quarter roles), [`single-instance-system-tuning.md`](../completed/single-instance-system-tuning.md) §Phase 4 (the unimplemented weight-replication estimate), [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) (mmap/mbind dedupe open question).
+**Cross-refs**: [`numa-page-cache-prewarm.md`](../completed/numa-page-cache-prewarm.md) (the `[1.5]` interleave prewarm this supersedes for quarter roles), [`single-instance-system-tuning.md`](../completed/single-instance-system-tuning.md) §Phase 4 (the unimplemented weight-replication estimate), [`wiki/hardware-optimization.md`](../wiki/hardware-optimization.md) § NPS4 48×4 notes (mmap/mbind dedupe open question).
 **Source finding**: `/mnt/raid0/llm/tmp/orchestrator_numa_finding.md` (2026-06-26).
 
 > **Measurement discipline**: every t/s in this file is an **observation** (no protocol-id / attestation), usable to motivate the work and size the prize, never to gate the production flip. The flip is gated on the Arm A vs Arm B A/B in the Validation Plan, run via the codified recipe under operator approval per `/workspace/MEASUREMENT.md`.

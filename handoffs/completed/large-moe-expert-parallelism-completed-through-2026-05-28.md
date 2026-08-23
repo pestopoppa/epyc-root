@@ -77,7 +77,7 @@ MoE infrastructure literature ingested (intake batch 458-472). Direct relevance 
 2. **CPU2 expert-GEMM investigation**: port MegaBlocks' blocked-CSR-COO + transpose-indices indexing into the AVX-512BW Q8_0 path. Indexing scheme is portable; kernel itself is not.
 3. **Variant 1/2/3 unified layout**: adopt Tutel's "one tensor layout that all parallelism strategies consume" so the orchestrator can switch EP topology per workload without weight re-layout.
 - [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) (CPU3 — NPS4 BIOS state is prerequisite)
-- [`orchestrator-nps4-48x4-notes.md`](../active/orchestrator-nps4-48x4-notes.md) (**contention** — NUMA topology is exclusive; see Decision Point D2)
+- [`wiki/hardware-optimization.md`](../wiki/hardware-optimization.md) § NPS4 48×4 notes (**contention** — NUMA topology is exclusive; see Decision Point D2)
 - [`glm51-reap-cpu-evaluation.md`](../active/glm51-reap-cpu-evaluation.md) (candidate model for Phase 0; master-index row 22)
 - [`../completed/ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) (precedent: large-MoE self-draft falsified — EP is a distinct mechanism)
 - [`../completed/reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md) (precedent: expert-level manipulation is tractable)
@@ -168,7 +168,7 @@ Baselines carried forward from prior work for orientation (not yet re-measured u
 | Config | Model | Throughput | Source |
 |---|---|---|---|
 | 1×48t NPS4 full stack + `-fa 1` | Qwen3-Coder-30B-A3B Q4_K_M | **48.81 ± 0.08 t/s** | CPU1 Phase 1.4 (master-index row 27) |
-| 48×4t NPS4 concurrent | Qwen3-Coder-30B-A3B Q4_K_M | ~104 t/s aggregate | `orchestrator-nps4-48x4-notes.md` |
+| 48×4t NPS4 concurrent | Qwen3-Coder-30B-A3B Q4_K_M | ~104 t/s aggregate | `wiki/hardware-optimization.md` § NPS4 48×4 notes |
 | 1×96t (pre-NPS4) | Qwen3-235B-A22B | ~6.1 t/s | `model_registry.yaml` (stale) |
 | 1×96t (pre-NPS4) | Qwen3-Coder-480B-A35B | ~4.08 t/s | `ssm-hybrid-acceleration.md` (stale) |
 
@@ -229,7 +229,7 @@ Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-
 
 - **D1 — Phase 0 go/no-go on the strategic reframe.** Gate: after Phase 0 baseline, if Qwen3-235B-A22B delivers ≥20 t/s single-instance on the current stack, Track A (strategic reframe) is the answer and Track B is deferred. If <20 t/s, proceed to Phase 1. 20 t/s was chosen as the threshold where a 22B-active MoE is competitive per-token with the current 30B-A3B frontdoor (48.81 t/s × 3B / 22B ≈ 6.7 t/s BW-equivalent; 20 t/s represents a ~3× headroom that would make large-MoE production-deployable without EP).
 
-- **D2 — NUMA topology contention with `orchestrator-nps4-48x4-notes.md`.** Concurrent 48×4t and per-NUMA EP are **mutually exclusive occupancy patterns** — only one can own the NUMA topology at a time. Document the decision criterion before Phase 2:
+- **D2 — NUMA topology contention with `wiki/hardware-optimization.md` § NPS4 48×4 notes.** Concurrent 48×4t and per-NUMA EP are **mutually exclusive occupancy patterns** — only one can own the NUMA topology at a time. Document the decision criterion before Phase 2:
   - Primary workload = multi-user / concurrent request throughput → 48×4t.
   - Primary workload = single-stream agent loops / batch generation → EP.
   - Hybrid (time-sliced) option deferred to Phase 3 orchestrator layer.
@@ -679,7 +679,7 @@ Populate as phases execute.
 | CPU3 (NPS4 / L3aaN) | prerequisite | EP requires NPS4 topology; future L3aaN would expose 12 effective EP nodes instead of 4 |
 | CPU4 (per-CCD barrier) | synergy | Phase 1 intra-process EP wants per-CCD barriers; CPU4 infrastructure directly applies |
 | CPU8 (per-NUMA weight replication) | convergent | CPU8 and Variant 2 EP both imply per-NUMA weight placement; share implementation substrate |
-| [`orchestrator-nps4-48x4-notes.md`](../active/orchestrator-nps4-48x4-notes.md) | **contention** | NUMA topology exclusive — see D2 |
+| [`wiki/hardware-optimization.md`](../wiki/hardware-optimization.md) § NPS4 48×4 notes | **contention** | NUMA topology exclusive — see D2 |
 | [`glm51-reap-cpu-evaluation.md`](../active/glm51-reap-cpu-evaluation.md) | feeds candidate | GLM-5.1-REAP is a Phase 0 tertiary candidate if downloaded |
 
 ---
