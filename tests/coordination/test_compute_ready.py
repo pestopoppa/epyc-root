@@ -393,3 +393,334 @@ def test_projection_hash_is_content_addressed_not_path_dependent(tmp_path):
             paths["graph_hash"], AS_OF))
     assert projections[0] == projections[1]
     assert projections[0]["projection_sha256"] == projections[1]["projection_sha256"]
+
+
+# ---------------------------------------------------------------------------
+# RTG-51 (2026-08-23): compute_ready_daemon — bus wire contracts -> planner core
+# ---------------------------------------------------------------------------
+
+
+def bus_msg(mid, kind, frm, payload, ts="2026-08-23T12:00:00Z", task_id=None):
+    row = {
+        "schema_version": "session_bus.msg.v1",
+        "id": mid,
+        "ts": ts,
+        "from": frm,
+        "to": "coordinator-agent",
+        "kind": kind,
+        "payload": payload,
+    }
+    if task_id:
+        row["task_id"] = task_id
+    return row
+
+
+def accepted_receipt(boundary="wcp-1", task="RTG-51-x", ts="2026-08-23T12:00:00Z"):
+    return bus_msg(f"msg-{ts.replace('-', '').replace(':', '').replace('Z', '')}-1-mainA",
+                   "task-checkpoint", "mainA", {
+        "boundary_id": boundary,
+        "outcome": "blocked",
+        "boundary_reason": "task-boundary",
+        "task_id": task,
+        "task_text": f"run {task}",
+        "spec_ref": "handoffs/active/x.md",
+        "agent": "mainA",
+        "branch": "lane/mainA",
+        "commit_sha": "a" * 40,
+        "pushed_ref": "refs/remotes/origin/lane/mainA",
+        "progress_path": "progress/2026-08/2026-08-23-mainA.md",
+        "handoff_paths": ["handoffs/active/x.md"],
+        "artifact_paths": [],
+        "changed_paths": ["handoffs/active/x.md", "progress/2026-08/2026-08-23-mainA.md"],
+        "checkbox_flips": [],
+        "new_tasks": [],
+        "validation": [{"command": ["pytest"], "exit_code": 0, "evidence_ref": "e"}],
+        "next_context": "related",
+        "major_checkpoint": False,
+        "completed_at": ts,
+        "completion_msg_id": None,
+        "blocker_class": "compute",
+        "blocked_on": "no window",
+        "blocking_owner_or_event": "inference",
+        "evidence_refs": ["e:1"],
+        "alternatives_exhausted": ["a"],
+        "resume_action": "rerun",
+        "compute_request": {"gpu": True},
+    }, ts=ts, task_id=task)
+
+
+def blocker_payload(submission_msg_id, receipt_msg_id, blocker="cb-1", state="submitted",
+                    reason="submission", prior=None, grade="full-idle", **extra):
+    payload = {
+        "blocker_id": blocker,
+        "state": state,
+        "reason_code": reason,
+        "prior_event_id": prior,
+        "checkpoint_event_id": None if state == "submitted" else submission_msg_id,
+        "checkpoint_ref": receipt_msg_id,
+        "checkpoint_sha256": hashlib.sha256(
+            json.dumps(accepted_receipt(), sort_keys=True).encode()).hexdigest(),
+        "task_id": "RTG-51-x",
+        "task_text": "run RTG-51-x",
+        "spec_ref": "handoffs/active/x.md",
+        "source_agent": "mainA",
+        "graph_node_id": "A",
+        "expires_at": "2026-08-23T16:00:00Z",
+        "evidence_refs": ["e:1"],
+        "minimum_window_grade": grade,
+        "compatible_window_grades": [grade],
+        "requirements": {
+            "required_devices": ["gpu0"],
+            "cpu_bandwidth_class": "idle",
+            "gpu_vram_bytes": 20,
+            "duration_seconds": 10,
+            "contention_class": "exclusive-contiguous",
+            "pausable": False,
+            "model": {"model_id": "model-small", "weight_id": "weight-1",
+                      "size_bytes": 20, "load_seconds": 2},
+        },
+        "priority_class": "background-churn",
+        "must_run": False,
+    }
+    payload.update(extra)
+    return payload
+
+
+def window_payload(grade="full-idle", **extra):
+    payload = {
+        "window_id": "W-1",
+        "grade": grade,
+        "eligible_devices": ["gpu0"],
+        "cpu_bandwidth_class": "idle",
+        "gpu_vram_available": {"bytes": 100, "observation_refs": ["vram:1", "vram:2"]},
+        "resident_model": None,
+        "load_allowed": True,
+        "starts_at": "2026-08-23T12:00:00Z",
+        "expires_at": "2026-08-23T14:00:00Z",
+        "time_budget_seconds": 100,
+        "safe_drain_at": "window expiry",
+        "observation_refs": ["sample:1", "sample:2"],
+        "eligible_model_ids": ["model-small"],
+        "max_model_bytes": 100,
+    }
+    payload.update(extra)
+    return payload
+
+
+def write_daemon_fixtures(tmp_path, checkpoints, blockers, dispositions, windows,
+                          graph_value=None):
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    paths = {
+        "checkpoints": tmp_path / "checkpoints.jsonl",
+        "blockers": tmp_path / "blockers.jsonl",
+        "dispositions": tmp_path / "dispositions.jsonl",
+        "windows": tmp_path / "windows.jsonl",
+        "graph": tmp_path / ".index-graph.json",
+    }
+    for name, rows in (("checkpoints", checkpoints), ("blockers", blockers),
+                       ("dispositions", dispositions), ("windows", windows)):
+        write_jsonl(paths[name], rows)
+    write_json(paths["graph"], graph_value or graph())
+    return paths
+
+
+def daemon_build(tmp_path, paths, as_of=AS_OF, **kwargs):
+    import sys as _sys
+    sys.path.insert(0, str(Path(__file__).parents[2]))
+    from scripts.coordination import compute_ready_daemon as da
+    return da.build(tmp_path, checkpoints_path=paths["checkpoints"],
+                    blockers_path=paths["blockers"], dispositions_path=paths["dispositions"],
+                    windows_path=paths["windows"], graph=paths["graph"], as_of=as_of,
+                    **kwargs), da
+
+
+def _blocker_chain(tmp_path, receipt, grade="full-idle"):
+    from scripts.coordination import compute_ready_daemon as da
+    submission = bus_msg("msg-20260823T120100Z-1-coordinator-agent", "compute-blocker",
+                         "coordinator-agent", blocker_payload("", receipt["id"], grade=grade),
+                         ts="2026-08-23T12:01:00Z", task_id="RTG-51-x")
+    submission["payload"]["checkpoint_sha256"] = da.receipt_hash(receipt)
+    submission["payload"]["checkpoint_ref"] = receipt["id"]
+    return submission
+
+
+def test_daemon_window_grade_mapping_validates_each_grade(tmp_path):
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parents[2]))
+    from scripts.coordination import compute_ready_daemon as da
+    receipt = accepted_receipt()
+    submission = _blocker_chain(tmp_path, receipt)
+    for grade in ("small-model-only", "load-then-keep-hot", "full-idle"):
+        payload = blocker_payload(submission["id"], receipt["id"], grade=grade)
+        payload["checkpoint_sha256"] = da.receipt_hash(receipt)
+        win = window_payload(grade=grade)
+        if grade == "load-then-keep-hot":
+            win["resident_model"] = {"model_id": "model-small", "weight_id": "weight-1"}
+        paths = write_daemon_fixtures(
+            tmp_path / grade, [receipt], [submission],
+            [bus_msg("msg-1-inf", "compute-blocker", "inference", dict(
+                payload, state="admitted", reason_code="admit",
+                prior_event_id=submission["id"], checkpoint_event_id=submission["id"],
+                evidence_refs=["admit:1"]), ts="2026-08-23T12:02:00Z", task_id="RTG-51-x")],
+            [bus_msg("msg-2-inf", "compute-window", "inference", win,
+                     ts="2026-08-23T11:59:00Z")])
+        projection, da = daemon_build(tmp_path / grade, paths)
+        assert projection["window"]["grade"] == grade
+        assert projection["candidates"][0]["blocker_id"] == "cb-1"
+        assert "not_ready" in {r["code"] for r in
+                               projection["candidates"][0]["incompatibility_reasons"]}
+    # unknown grade refuses through the planner core
+    win = bus_msg("msg-bad-w", "compute-window", "inference",
+                  window_payload(grade="mystery"), ts="2026-08-23T11:59:00Z")
+    paths = write_daemon_fixtures(tmp_path / "bad", [receipt], [submission], [], [win])
+    with pytest.raises(cr.ContractError) as exc:
+        daemon_build(tmp_path / "bad", paths)
+    assert exc.value.code == "unknown_grade"
+
+
+def test_daemon_blocker_lifecycle_transitions_are_events_not_edits(tmp_path):
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parents[2]))
+    from scripts.coordination import compute_ready_daemon as da
+    receipt = accepted_receipt()
+    submission = _blocker_chain(tmp_path, receipt)
+    base = blocker_payload(submission["id"], receipt["id"])
+    base["checkpoint_sha256"] = da.receipt_hash(receipt)
+    transitions = [
+        ("admitted", "compatible", {"evidence_refs": ["admit:1"]}),
+        ("ready", "ready", {}),
+        ("planned", "planned", {"window_id": "W-1"}),
+        ("granted", "lease", {"lease_id": "L-1", "lease_path": "leases/L-1.json"}),
+        ("running", "started", {"lease_id": "L-1", "lease_path": "leases/L-1.json",
+                                "physical_claim_refs": ["claim:1"]}),
+        ("terminal", "done", {"outcome": "success"}),
+    ]
+    events, prior = [], submission["id"]
+    for index, (state, reason, extra) in enumerate(transitions, 1):
+        payload = dict(base, state=state, reason_code=reason, prior_event_id=prior,
+                       checkpoint_event_id=submission["id"], **extra)
+        events.append(bus_msg(f"msg-20260823T12{index:02d}00Z-1-inference", "compute-blocker",
+                              "inference", payload, ts=f"2026-08-23T12:{index:02d}:00Z",
+                              task_id="RTG-51-x"))
+        prior = events[-1]["id"]
+    paths = write_daemon_fixtures(tmp_path, [receipt], [submission], events,
+                                  [bus_msg("msg-w", "compute-window", "inference",
+                                           window_payload(), ts="2026-08-23T11:59:00Z")])
+    projection, _ = daemon_build(tmp_path, paths)
+    candidate = projection["candidates"][0]
+    assert candidate["state"] == "terminal"
+    assert candidate["last_event_id"] == events[-1]["id"]
+    assert [h["state"] for h in candidate["history"]] == [
+        "submitted", "admitted", "ready", "planned", "granted", "running", "terminal"]
+    # an invalid transition (admitted -> planned skips ready) is refused by the
+    # planner core
+    bad = bus_msg("msg-bad", "compute-blocker", "inference",
+                  dict(base, state="planned", reason_code="skipped-ready",
+                       prior_event_id=events[0]["id"],
+                       checkpoint_event_id=submission["id"], window_id="W-1"),
+                  ts="2026-08-23T12:09:00Z", task_id="RTG-51-x")
+    win_row = bus_msg("msg-w", "compute-window", "inference", window_payload(),
+                      ts="2026-08-23T11:59:00Z")
+    paths2 = write_daemon_fixtures(tmp_path / "bad", [receipt], [submission],
+                                   [events[0], bad], [win_row])
+    with pytest.raises(cr.ContractError) as exc:
+        daemon_build(tmp_path / "bad", paths2)
+    assert exc.value.code == "invalid_transition"
+    # an orphan disposition (unknown blocker) is refused
+    orphan = bus_msg("msg-orphan", "compute-blocker", "inference",
+                     dict(base, state="admitted", reason_code="orphan",
+                          prior_event_id=submission["id"],
+                          checkpoint_event_id=submission["id"],
+                          blocker_id="cb-ghost", evidence_refs=["x"]),
+                     ts="2026-08-23T12:10:00Z", task_id="RTG-51-x")
+    paths3 = write_daemon_fixtures(tmp_path / "orphan", [receipt], [submission], [orphan],
+                                   [win_row])
+    with pytest.raises(cr.ContractError) as exc:
+        daemon_build(tmp_path / "orphan", paths3)
+    assert exc.value.code == "orphan_disposition"
+
+
+def test_daemon_forward_must_name_accepted_compute_receipt(tmp_path):
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parents[2]))
+    from scripts.coordination import compute_ready_daemon as da
+    receipt = accepted_receipt()
+    submission = _blocker_chain(tmp_path, receipt)
+    win = bus_msg("msg-w", "compute-window", "inference", window_payload(),
+                  ts="2026-08-23T11:59:00Z")
+    # unknown receipt ref -> not reconstructible
+    bad = dict(submission)
+    bad["payload"] = dict(submission["payload"], checkpoint_ref="msg-nobody")
+    paths = write_daemon_fixtures(tmp_path / "unknown", [receipt], [bad], [], [win])
+    with pytest.raises(da.DaemonError, match="unknown accepted receipt"):
+        daemon_build(tmp_path / "unknown", paths)
+    # receipt exists but the envelope hash disagrees -> tampered forward
+    bad2 = dict(submission)
+    bad2["payload"] = dict(submission["payload"], checkpoint_sha256="b" * 64)
+    paths = write_daemon_fixtures(tmp_path / "tampered", [receipt], [bad2], [], [win])
+    with pytest.raises(da.DaemonError, match="does not match accepted receipt"):
+        daemon_build(tmp_path / "tampered", paths)
+    # receipt exists but is not a compute blocker -> wrong class
+    noncompute = accepted_receipt()
+    noncompute["payload"] = dict(noncompute["payload"], blocker_class="dependency",
+                                 compute_request=None)
+    paths = write_daemon_fixtures(tmp_path / "noncompute", [noncompute], [submission], [], [win])
+    with pytest.raises(da.DaemonError, match="not a compute-class blocker"):
+        daemon_build(tmp_path / "noncompute", paths)
+
+
+def test_daemon_projection_rebuild_is_idempotent_and_self_hash_verified(tmp_path):
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parents[2]))
+    from scripts.coordination import compute_ready_daemon as da
+    receipt = accepted_receipt()
+    submission = _blocker_chain(tmp_path, receipt)
+    admitted = bus_msg("msg-1-inf", "compute-blocker", "inference", dict(
+        blocker_payload(submission["id"], receipt["id"], state="admitted",
+                        reason_code="admit", prior_event_id=submission["id"],
+                        checkpoint_event_id=submission["id"], evidence_refs=["admit:1"]),
+        state="admitted", reason_code="admit",
+        checkpoint_event_id=submission["id"]),
+        ts="2026-08-23T12:02:00Z", task_id="RTG-51-x")
+    win = bus_msg("msg-w", "compute-window", "inference", window_payload(),
+                  ts="2026-08-23T11:59:00Z")
+    paths = write_daemon_fixtures(tmp_path, [receipt], [submission], [admitted], [win])
+    output = tmp_path / "compute_ready.json"
+    first, _ = daemon_build(tmp_path, paths, output=output)
+    second, _ = daemon_build(tmp_path, paths, output=output)
+    assert (tmp_path / "compute_ready.json").read_bytes() == \
+        (tmp_path / "compute_ready.json").read_bytes()
+    replay = da.check(tmp_path, checkpoints_path=paths["checkpoints"],
+                      blockers_path=paths["blockers"], dispositions_path=paths["dispositions"],
+                      windows_path=paths["windows"], graph=paths["graph"], output=output)
+    assert replay["projection_sha256"] == first["projection_sha256"]
+    assert replay["projection_sha256"] == second["projection_sha256"]
+    # sources are immutable: rebuilding does not touch the ledgers
+    assert b'"kind": "task-checkpoint"' in paths["checkpoints"].read_bytes()
+    assert b'"kind": "compute-blocker"' in paths["blockers"].read_bytes()
+    assert b'"kind": "compute-window"' in paths["windows"].read_bytes()
+
+    tampered = json.loads(output.read_text(encoding="utf-8"))
+    tampered["candidates"][0]["state"] = "running"
+    write_json(output, tampered)
+    with pytest.raises(da.DaemonError, match="self-hash"):
+        da.check(tmp_path, checkpoints_path=paths["checkpoints"],
+                 blockers_path=paths["blockers"], dispositions_path=paths["dispositions"],
+                 windows_path=paths["windows"], graph=paths["graph"], output=output)
+    # a tamper that also re-seals the hash (self-consistent but divergent from
+    # the deterministic replay) is caught by the replay comparison
+    tampered2 = json.loads(output.read_text(encoding="utf-8"))
+    del tampered2["projection_sha256"]
+    tampered2["candidates"][0]["state"] = "running"
+    tampered2["projection_sha256"] = cr.object_hash(tampered2)
+    write_json(output, tampered2)
+    with pytest.raises(da.DaemonError, match="differs from the deterministic replay"):
+        da.check(tmp_path, checkpoints_path=paths["checkpoints"],
+                 blockers_path=paths["blockers"], dispositions_path=paths["dispositions"],
+                 windows_path=paths["windows"], graph=paths["graph"], output=output)
+    del tampered2["projection_sha256"]
+    write_json(output, tampered2)
+    with pytest.raises(da.DaemonError, match="self-hash"):
+        da.check(tmp_path, checkpoints_path=paths["checkpoints"],
+                 blockers_path=paths["blockers"], dispositions_path=paths["dispositions"],
+                 windows_path=paths["windows"], graph=paths["graph"], output=output)
