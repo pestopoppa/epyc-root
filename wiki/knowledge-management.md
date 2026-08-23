@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-22 (publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
+**Last compiled**: 2026-08-23 (belief-kernel adapter wired CT-8/SC46 in `24ab3090`; KB-RAG record corrections C1/C2; Stage-2b wave-2 corrections; previously 2026-08-22: publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
 **Sources**: 47+ documents
 
 ## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
@@ -1597,3 +1597,110 @@ as pool identity travels with a recall number.
 - [`docs/publication/canonical-cpu-benchmarking-methodology-draft.md`](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md)
   — the W2 draft carrying the claim handles, the named raw logs, the paraphrase-only demotion, and
   the pre-v6 witness flag.
+
+## Compiled Update — 2026-08-23: the belief kernel wires its first template-axis adapter, and the KB-RAG record corrects two of its own beliefs
+
+**Confidence: verified** — the SC46 wiring is read from commit `24ab3090` (adapter, reader, 16 tests,
+conformance green) and its handoff rows; the record corrections are read from the 2026-08-21
+Stage-2b updates in [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), the latter
+corrected again on 2026-08-22; the intake-wave findings are read from commit `9cb94047` and its
+progress record. Nothing below was re-derived on read — every figure was captured at write time by
+the cited source.
+
+### The template axis finally has a carrier: SC46/CT-8 wired end to end
+
+The CT-1 chat-template A/B was filed at first-measurement time on 2026-08-21 (source-table row,
+SC46, CT-8 — all the same hour), and the write side landed as commit `24ab3090` on 2026-08-22:
+writer `chat_template_ab_capture.py` (atomic sidecar, fail-loud, results-hash attestation, shared
+`validate_row`) plus strict reader `chat_template_ab.py` registered as `chat-template-ab-measurement`.
+The tuple carries the **template axis** — `template_sha256` per arm — alongside model/quant/kernel/
+serving/sampling/paired-flips, which is the whole point per the E-7 amendment: a claim can now name
+*which template* produced it. Grading is delegated to `claim_tuple.grade()` with zero local grading
+logic (the no-private-ladder sweep passes over both files); well-formed rows grade
+Witnessed/Attested, a malformed line voids the file, moved artifacts grade DOWN to Anchored, and
+pre-hook runs emit zero rows (the DF2-4 precedent, verified live). CT-8 and SC46 are flipped.
+
+The same compile records the continuing pre-run cohort that keeps the register honest: SC49 (G1–G4
+compute-gated sweeps filed BEFORE any of them runs, with the two load-bearing caveats riding in every
+tuple — G1 is a correctness observation, not a throughput one, and its repeated-pangram arm is a
+negative control; G2's acceptance ratio is not comparable across `--spec-draft-n-max` values), SC45
+(ParEval, wired before its first run; its `O0`-wrapped timed region must never be graded against the
+llama-bench protocol), SC48 (the MI210 power-sensor probe suite — OBSERVATIONS with no protocol id,
+per-field metric direction, and the raw-counter ×15.3 API-scaling caveat), and SC47 (FlashInfer-Bench
+`intake-1245#record`: its `Definition x Solution x Workload x Evaluation` record is a write-side
+claim-tuple carrier "in all but name", and its per-operation-class evaluator registry is **external
+corroboration that the one-ladder-per-source-class registry design is right** — recorded as such in
+the row). EVL-47 (the research-evaluation-index row for this program) still points at SC19 — the
+prospective claim-tuple wiring of the AutoKernel C6 admission receipts — as its next action.
+
+### The KB-RAG record corrected two of its own beliefs — both in the direction of honesty
+
+C1: the on-file rationale for the answerai→GTE encoder retirement said "answerai unscored". It was
+**scored** — on the same BEIR-15, since 2025-05-14 — and the controlled gap is **54.67 (GTE) vs
+53.35 (answerai, LightOn's own re-run) = 1.32 pp, inside the ~2 pp noise floor this handoff itself
+declares**. Corrected again on 2026-08-22: two harnesses, not three — the apparent third measurement
+(mixedbread, arXiv 2510.14880) transcribed LightOn's model card 15/15 per-task, 36 days later. The
+decision record also never weighed the cost side: 4.46× fewer parameters and a measured −24.3% index
+footprint (0.757×, cross-validated against the stored `.npz` to 0.2%), with the tokenizer swap a wash
+at 1.026. The correction does not argue for reverting; it argues the swap rests on a delta the
+project's own doctrine calls noise, and the record should say so plainly. C2 companion: never record
+`54.89` as the incumbent's BEIR-15 — it appears nowhere on the model card; the comparable figure is
+54.67 over 15 named tasks. The live corpus figures have also outgrown the record: the handoff header
+says 577 files / 18,010 chunks / 1,227.6 MiB, but the index measured 2026-08-21 is **943 files /
+28,110 chunks / 2,199.13 MiB — roughly 56% understated** (flagged, may belong to the watermark
+items). Three code gaps ride alongside (K1: `token_type_ids` missing-input blocks ALL BERT-family
+late-interaction ONNX, fix already exists in `cross_encoder.py`; K2: honour `onnx_config.json`
+instead of hard-coding, `_QUERY_MAX_TOKENS = 48` overruns two candidates' declared 32; K3: stamp
+`embedding_dim` + tokenizer hash into `index_meta` — verification that is not vacuous).
+
+### The intake wave that corrected what we believed (Stage-2b wave 2, commit `9cb94047`)
+
+Thirteen dive-verified entries (intake-1238..1250) landed 2026-08-21 with the index at 1,246 and
+validators green. Five of them **corrected something already believed** — the stale-premise family
+this page has compiled before (2026-07-03), now with a machine-gated instance:
+
+1. **L1+L2 is not a sufficient C6 gate.** Omission of a required operator component passes both
+   tiers, so the third tier must be a semantic judge (train-free); the planned NVIDIA-only L3 is
+   **dropped, not deferred**, and the downgrade of precision is defended by nothing the project
+   holds — `intake-1227`'s dtype-keyed tolerance actively rewards it. The RVP-C6-20 falsification run
+   (same day, GPU window co-residency) confirmed it empirically: **L1 + L2 + a sound value oracle at
+   standard inputs accepted 2 of 3 omission mutants** — LayerNorm-no-affine with max error
+   bit-identical to the honest kernel (4.768e-07), softmax-no-maxsub at 5.6e-09 — while the
+   matmul-no-transpose mutant was caught exactly as pre-registered.
+2. **"Illusion of solvedness" was mis-attributed.** Neither PyTorch blog post contains the phrase;
+   it is KernelGenBench's own gloss, so a third independent voice on KernelBench weakness may not be
+   counted.
+3. **The memory-family evidence moved against building.** Nine systems, one significance test in the
+   whole literature — non-significant; the best-constructed ablation returns a negative at the loose
+   threshold. The project's own §19.3 receipt rule is *ahead* of this literature.
+4. **The `intake-1222` energy claim was overturned by direct measurement here.** ROCm 6.2 does
+   expose a monotonic microjoule accumulator (15.30 uJ/tick across 23 deltas, cross-checked against
+   `--showpower`) — scoped honestly as evidence about the instrument, not about any run. RVP-PWR-3
+   closed via `intake-1251` (McDaniel et al., the gfx90a/CDNA2 power datasheet), with its caveats
+   traveling: no external physical meter (credibility cap 4/6), MI250X dual-die OAM vs our single-die
+   MI210, zero ML content — and the phase-lock hazard remains ours to measure (`RVP-PWR-2`).
+5. **The "AutoKernel G15 without a source" premise is struck** — it is a homonym of the project's
+   own program.
+
+And the 2026-08-20 wrap-up gates caught two governance facts worth compiling: the **checklist-sync
+gate** — three Stage-4 defects existed only as prose bullets, and the dashboard counts checkbox
+state only, so completed work was invisible until converted to `KV-0a/0b/0c` — and the
+**derived-actionables gate**, which caught two items that existed only in chat. Both are the same
+lesson the wiki's own compile discipline relies on: a record that is not in the counted shape is
+not a record at all.
+
+### Source References (2026-08-23 belief adapter + KB-RAG corrections)
+
+- [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md)
+  — SC46 wired (commit `24ab3090`), the SC45/SC47/SC48/SC49 pre-run filings, and the EVL-47 row's
+  standing SC19 next action.
+- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md)
+  — CT-8, the consumer task the SC46 adapter serves.
+- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the C1/C2/C7 record
+  corrections, the K1–K3 code gaps, and the 943-file live-index staleness flag (measured 2026-08-21).
+- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
+  — Stage-2b wave 2 (commit `9cb94047`): the five corrections, the C6-gate finding with the RVP-C6-20
+  falsification, and the RVP-PWR-3/intake-1251 close-out.
+- [`progress/2026-08/2026-08-20-research-intake.md`](../progress/2026-08/2026-08-20-research-intake.md)
+  — the checklist-sync and derived-actionables wrap-up gates that caught prose-invisible and
+  chat-only records.

@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Last compiled**: 2026-08-23 (DFlash2 experimental campaign: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
 
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
@@ -1191,3 +1191,66 @@ reference band is 91.88–96.58% — a third-party sanity band on different hard
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — the G3 quantized-KV VEC/TILE static read with its 2026-08-22 CPU-path and CDNA2-locator scope corrections, the settled INT8-verify premise, and the `gamma=1` agreement-rate invariant (intake-1274/1277 Stage-2b)
 - [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — risk R9, the Coder-32B spec+quantized-KV datapoint this update demotes to supportive-not-probative pending the instrumented G3 run
 - [`kv-cache.md`](kv-cache.md) — the KV-quantization production context (Hadamard+q4_0, `-ctk`/`-ctv` configs) that the full-cache-dequant finding scopes to the CPU plane only
+
+## Compiled Update — 2026-08-23: DFlash2 experimental campaign — np1 sealed against the predeclared comparator, grid + parity remain; MTP draft_max 4→8 is live
+
+**Confidence: verified** for the np1 campaign state (36/36 error-free, receipts hash-pinned) and
+the live serving flags; the concurrency grid and the parity run are explicitly un-run.
+
+Sources: `handoffs/active/dflash2-block-drafter-experimental-build.md`,
+`handoffs/active/qwen38-27b-replace-qwen36.md`,
+`progress/2026-08/2026-08-21-operator.md`, `progress/2026-08/2026-08-21-research-intake.md`,
+`progress/2026-08/2026-08-21.md`.
+
+### The DFlash2 np1 campaign is sealed; the grid and the parity run are the standing gates
+
+The experimental build (PR #27342 forward-port on `ak/dflash2-qwen38-20260820` @ `2046c64e`,
+frozen v9 unmodified; full Release/gfx90a HIP build; CPU + real-model GPU smoke passed) completed
+build, no-regression validation (GPU + CPU) and the matched np1 comparison: 36/36 requests
+error-free, same 12 olympiadbench prompts / 2048-token cap / seed 42 / temp 0.6 / top-p 0.95 /
+top-k 20 / no-thinking envelope for all arms; campaign summary + 59-file manifest SHA-256 pinned;
+GPU claims released, VRAM returned to the 13,094,912-byte idle baseline. The headline figures are
+compiled in the 2026-08-20 section above (70.0 t/s / α 0.62804 vs matched MTP 55.2 / α 0.48246 vs
+plain 29.4). What the 2026-08-23 state adds:
+
+- **55.46 t/s at MTP n-max 8 is the PREDECLARED single-stream comparator.** The decision rule
+  ("if dFlash2 does not beat 55.46 t/s single-stream *and* hold up at np=8, it does not displace
+  MTP") was written into the campaign before the np1 run, with the plain-vs-MTP baseline measured
+  first (2026-08-19: plain 27.78 → n8 55.46 = 2.00×; acceptance 0.842 → 0.482 across depth 2→8 —
+  the suffix decay the block drafter claims to fix, so the headroom is real but ~12%, not the
+  vendor's 2.7–4.6× vs plain). The np1 result clears the single-stream half only; a ~12%
+  acceptance gain bought with a 2.0 GB extra resident model and its KV-injection overhead is not
+  obviously worth it, and the campaign is contractually required to say so plainly if the grid
+  fails it.
+- **Remaining gates, both mandatory, both deliberately redesigned after the 2026-08-22 pass**
+  (see the compiled DF2-5 redesign above): the np2/4/8 concurrency grid and exact greedy parity at
+  temp 0 — plus the DF2-2 block-verify dispatch proof (`a6b4b5263` is MTP-verify-shaped with
+  `ne11<=1`; a DFlash2 block verify lands at `ne11≈8` and may sit on a less-tuned path — the
+  single most likely cause of a disappointing number, to be confirmed before attribution, not
+  after).
+- **The AMD-specific negative stays on the table**: upstream #25117 reports DFlash at 0.48×
+  baseline on gfx1151 (APU, Q4_K MoE target) — not our discrete MI210 dense Q8_0, but the checks
+  designed to catch the same failure mode here are exactly DF2-2 and DF2-5.
+- **Campaign boundary**: this is the replacement campaign's `experimental_runtime` sibling under
+  the AutoKernel loop — fixed resumable receipt chain (`experimental_build` → `cpu_gpu_regression`
+  → `matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`); **no DFlash2 result may
+  enter the kernel-source champion frontier**; a stopped campaign resumes at the first missing or
+  invalid receipt and never reruns a sealed cell.
+
+### MTP draft_max 4→8: per-model depth, now SERVED
+
+The Qwen3.8 swap campaign closed with the depth change live: `draft_max` 4→8 was **re-measured,
+not inherited** (4 was Qwen3.6-27B's own measured optimum; Qwen3.8's n-max sweep turns over past
+8 — n8 55.46 vs n12 51.14), the stack-template override 24 was corrected (it had been silently
+beating the registry value at stack-assembly time), and the 2026-08-21 22:00Z stack start verified
+`--spec-draft-n-max 8` live on :8083 (Q38-T5 checklist, gate passed at launch). The standing
+invariant holds its sharpest example: draft depth is certified per (model, quant) — the pre-swap
+state (registry 4, template 24) was a self-consistent old world, not a mistuned one.
+
+### Source References (2026-08-23 DFlash2 campaign + draft_max)
+
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — campaign state, predeclared comparator + decision rule, DF2-1..6, #25117 negative, receipt chain
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — the n-max sweep table, draft_max 4→8 re-measurement, Q38-T5 live verification
+- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — ratification execution, dFlash2 `challenger_under_evaluation` carried through the recompile, per-model draft_max answer
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the executed ratification (`7483d7fb`) and derived-layer verification context
+- [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — the AutoKernel lifecycle workstream the experimental_runtime contract routes through

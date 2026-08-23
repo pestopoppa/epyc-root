@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-19 (stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-23 (agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
 
 ## Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
@@ -2627,3 +2627,101 @@ sight-unseen — the round's own overturn rate is the argument for filing them a
 - [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution
+
+## Compiled Update — 2026-08-23: the agent-file metric was misdenominated, and vacuous test suites became a named, enforced convention
+
+**Confidence: verified** — the E5/E6 measurements are read from the compression handoff (recorded
+2026-08-20, `research/sources/intake-20260819/EVIDENCE-agent-file-and-moe-measurements.md`); the
+vacuous-pass remediation is read from the closed EVL-50 ledger and the 2026-08-21 conventions guide
+it produced. Both shapes below were files on disk, green, and trusted on 2026-08-20 — measured, not
+theorised.
+
+### The compression metric was measuring the wrong unit — and the "we exceed the corpus maximum" claim is withdrawn
+
+Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
+[`agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md)):
+
+- **Denominate in WORDS, not lines.** External corpus evidence (intake-1199, re-derived from the
+  authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
+  by words but only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES
+  systematically under-finds**, and the E4 savings table was already denominated in words while the
+  structural-deletion pass was measured in lines — two figures that were not comparable. The
+  mild/medium/aggressive figures must be re-expressed against a word baseline before the rollout
+  decision consumes them.
+- **The widely-repeated "we exceed the corpus maximum" does not survive scrutiny, in two ways.**
+  (a) The 10,424-word figure for `agents/shared/` includes three `ENGINEERING_STANDARDS.compressed-*`
+  variants — outputs of this handoff's own experiment, not loaded policy; the live tree is **8,787
+  words, 164 UNDER** the 8,951-word corpus maximum. (b) It compares a 7-file TREE total against a
+  SINGLE-FILE maximum — a category error; the largest single file is `OPERATING_CONSTRAINTS.md` at
+  3,949 words, comfortably inside corpus norms. **The genuinely anomalous figure is structural, not
+  volumetric: `CLAUDE.md` carries 22 H2 headings against a corpus average of 2.7 categorised L1/L2
+  headings.** The work retargets at heading proliferation, and the exceeds-the-maximum line is no
+  longer quoted. The thin-map architecture (shared policy plus lean role overlays) that the
+  2026-07-30 restructure established is now codified as the `agent-file-architecture` skill
+  (`.claude/skills/agent-file-architecture/SKILL.md`), with a role schema, migration references, and
+  a validation wrapper.
+
+### Vacuous test suites: two measured shapes, one naming rule — and the gate that enforces it
+
+The EVL-50 remediation (closed 2026-08-21, four-agent fan-out) found **two shapes of a suite that
+reports success while executing nothing**, and a file has exactly one of them depending on which
+entry point you use — which is why the rule is about *names*, not intent
+([`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)):
+
+- **Shape A — fixture suite with no `__main__`**: running the file directly defines functions, calls
+  none, exits 0. Measured 2026-08-20: `test_v7_quality_gate_runner.py` — a session read the green
+  exit as a real pass. Advisory (normal inside a pytest-collection scope), blocking only in
+  mixed-convention directories.
+- **Shape B — self-runner with no collectable test**: all logic under `__main__`, no module-level
+  `test_*` callable — `pytest` collects 0 items and reports success. Measured 2026-08-20:
+  `test_commit_hygiene.py` and the merge-gate and unblock-artifact suites beside it.
+- **A third shape closed by config**: a test that `return`s a failure list instead of asserting is
+  reported PASSED — both tests in `test_live_holder_interference.py` did exactly that, so the suite
+  guarding **live inference regions** went green with a non-empty failure list.
+  `filterwarnings = error::pytest.PytestReturnNotNoneWarning` now fails that shape at authoring
+  time.
+
+The naming rule is the contract: **anything matching `test_*.py` or `*_test.py` MUST be
+pytest-collectable**; self-runners take `check_*.py` / `probe_*.py` / `run_*.py` names, because the
+name is what the collector reads. Two sanctioned bridges keep both entry points working —
+**assert-main** (reference `scripts/coordination/tests/test_bus_supervisor.py:568`, with the
+argv-inheritance trap documented: a bridge that passes pytest's `-q --tb=short` into an argparse
+parser turns a green suite into `SystemExit(2)` at collection) and **pytest-main** — plus a
+refusing-`__main__` stanza for Shape A. Exemptions are written decisions, keyed by path with a reason
+in `DELIBERATE_SELF_RUNNERS`: `test_merge_gate.py` is the canonical exemption — collectable, every
+repo-wide pytest run would mutate a shared trust-boundary file, and an interrupted run leaves the
+fleet's merge gate **failed closed**. The enforcement chain has one measured gap: the lint runs
+pre-commit on changed files only, and **a clone is protected only after
+`install_git_hooks.sh` has run — the committed hook config alone protects nobody** (measured
+2026-08-21).
+
+### The gate's own blind spots, and why 0/0/0 is not "audit closed"
+
+The final sweep reads **0 blocking in all three repos** (was 17 / 104 / 26) — and that is honest for
+what the gate measures while misleading as a picture of health: the advisory remainder is 16 / 3 / 0
+(the three research advisories are vendored kvpress, deliberately declined), and the genuinely
+blocking files were fixed or exempted the same day. The single highest item was **VT-1: a
+security-audit suite that had never executed** — `test_audit_repository.py` had no `__main__` AND sat
+outside `testpaths`, so the default pytest never collected it; it now runs and passes 6/6. The gate
+itself carried four false-positive classes found *after* it was written — all four made it
+under-count what pytest collects (the unsafe direction): module-level-functions-only descent
+(misjudged 237 orchestrator files), nested-worktree double counting (138 files), arg-shape deciding
+collectability (every conftest-fixture suite), and descending only into `Test*`-named classes
+(`unittest.TestCase` subclasses missed). The transferable rule: **a lint must model the collector it
+reasons about** — which is also why this is a pre-commit lint and deliberately NOT a
+`pytest_collection_modifyitems` collection floor (a floor runs inside pytest, where a mis-fire breaks
+every invocation for every session, and it cannot express "self-runner ON PURPOSE").
+
+### Source References (2026-08-23 compression + test conventions)
+
+- [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md)
+  — AFC-P5.E5/E6: the words-not-lines correction and the exceeds-corpus-maximum withdrawal (measured
+  2026-08-20).
+- [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
+  — the new guide (VT-7): both shapes, the naming rule, the three sanctioned stanzas, the exemption
+  process, and the installer gap.
+- [`handoffs/completed/vacuous-test-suite-remediation.md`](../handoffs/completed/vacuous-test-suite-remediation.md)
+  — the closed EVL-50 ledger: VT-1..VT-8, the gate's four blind-spot classes, and the 0/0/0
+  completion record with its advisory remainder.
+- [`.claude/skills/agent-file-architecture/SKILL.md`](../.claude/skills/agent-file-architecture/SKILL.md)
+  — the thin-map architecture skill the 2026-07-30 restructure is now codified as.

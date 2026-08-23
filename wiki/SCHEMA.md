@@ -49,6 +49,7 @@
 |-----|-------|-------------|------------------|
 | `context_extension` | Context Extension | Long-context methods including YaRN, RoPE scaling, sliding window, and sparse attention | — |
 | `context_management` | Context Management | Context compaction, session folding, token compression, tool output filtering | — |
+| `reasoning_compression` | Reasoning Compression | Token/effort reduction for reasoning traces: per-request budget control, prompt-level numeric budgets, effort calibration per (model, quant, template) | — |
 | `ssm_hybrid` | SSM & Hybrid Architectures | State-space models (Mamba), SSM-attention hybrids, linear attention variants | — |
 
 ### Training & Distillation

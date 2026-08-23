@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-22 (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Last compiled**: 2026-08-23 (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
 
 ## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
@@ -1664,3 +1664,81 @@ history. Ordering an event stream by wall time is not enough — **precedence mu
 - [`handoffs/active/autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — standing campaign handoff; the v18/v19 identities and typed-refusal repair boundary this update extends
 - epyc-inference-research `b62d63f8f9caecac597ebd9f1b3b7b098623dc71` / `b12c672af1f205ae0262f6de8f8ea30e04cf779e` / `8022aa764d0bdae06064033cfddac8aa78f24af6` / `a0fdad399bbbf050180c1c69423479e1b8b14be6` — promoted repair products cited by the source (graph v5, dual-identity carrier, `run_build` boundary test, verdict disposition)
 - epyc-root `130d41c5688a41e4f93df3720c15a011cb1fe646` / `35c2663d1e4331b7df21889a439eadd68cdb0fc8` / `7752ed72d6fd0388b2c886a2176503f6cffb5aaa` — audited dashboard commits (strict grammars, v2 build-receipt adapter, lineage-typed refusal precedence)
+
+## Compiled Update — 2026-08-23: AutoKernel v27 stays pre-launch at science 0/10 — the trust boundary is now committed, and typed refusal reached the provider plane
+
+**Confidence: verified** for commit identities, test counts, audit postures, and the restart map —
+each read from the loop handoff's restart checkpoint, the 2026-08-22 root progress record, and the
+campaign banner. **No science claim of any kind**: the valid scientific ledger is **0/10**, no v27
+campaign was launched, no dashboard pin was set, and no GPU inference or measurement ran.
+
+### The loop is at its launch gate, not through it — and the gate moved forward this week
+
+AutoKernel v27 was **not launched**; the requested terminal outcome — ten meaningful consecutive
+scientific dispositions without a crash — remains at **0/10**. What advanced is the trust boundary,
+in two code-complete units that each landed as ONE coherent commit per operator direction (prior
+session's deliberately uncommitted edits folded in):
+
+- **AK-V27-C6** (`3fc7868c`): the native oracle/candidate split is live — oracle + three candidate
+  legs run as **distinct confined processes under one held claim**, with hardlink-safe 0600 O_EXCL
+  input handover and per-file digests, a paced ready/continue handshake, per-leg bindings, and a
+  reseal-proof reopen that re-derives candidate argv deterministically. A coherently resealed
+  receipt cannot substitute routes, outputs, or tokens.
+- **AK-V27-PERF** (`b12de815`): cumulative performance binds to an append-only
+  `composition-authority.jsonl` — `pre_run` sealed before any measurement, `result` sealed at GPU
+  screen completion, loads fail closed on any journal disagreement, and every duplicated field is
+  re-derived from journal-bound bytes before a promotion verdict.
+
+The audit posture map is explicit rather than hopeful. **GO**: foundations `36113fe1`, `fd1d8b37`,
+`6affc332`, `83df4d1d`, the frozen-v9 comparator closure `cffb98d3` (independent GO), and the
+ordinary-refusal recovery fix `caa22f42` (focused regression GO). **Strict NO-GO**: evaluator wave-1
+`91a75a05`, bounded C6 integration `8a0ffc7d`, cumulative carrier v2 `5be84b4a`, and the dependent
+dashboard consumer `23b01a5b`. Do not promote the accumulated experimental branches wholesale — the
+successor is one descendant of the audited foundations, never a merge of rejected checkpoints.
+
+### Typed refusal reached the provider plane
+
+The provider message "This content can't be shown … Trusted Access" is a single suppressed model
+response, not a machine-wide stop — and the loop now has a sealed disposition for exactly that
+outcome. Research `a7aaa47a` classifies the response before persistence as a typed
+**`bounded_provider_policy_skip`**: the body is withheld, a digest and policy identifier are bound,
+the portfolio advances, and zero science is spent. This extends the typed-refusal doctrine compiled
+on this page for the verdict plane (2026-08-22, v24's sealed `correctness_falsified`) to the
+model-provider plane: an autonomous loop must have a sealed disposition for every outcome its own
+screens and its providers are designed to produce. It is a checkpoint, not launch authority.
+
+### Discovery policy posture is unchanged, and the funnel is untouched
+
+`P-AK-SEARCH-1-A2` discovery-first policy stands exactly as ratified: screened candidates are a
+ranked, deliberately nonpromotable funnel; only competing model inference overlapping the held
+compute claim blocks a screen; ordinary host activity is recorded noise; no screen can bank, promote,
+enter an archive, or authorize release. The candidate-only leaders carried on this page since
+2026-08-16 (CPU IQK prefill +31.247% / decode +7.939%, MI210 MMQ-MFMA-OFF prefill +26.5965%,
+flash-attention-ON prefill +4.8791%) remain observations — no new screen ran, and the v27 campaign
+would consume sealed measurements, not planner prose.
+
+### The exact restart order, because the loop is defined by what it cannot skip
+
+(1) finish and independently audit the C6 repair against the full adversarial matrix (live native
+Ghost Replay process, interposer/runtime-map authentication, cache-metric deny aliases); (2) finish
+and independently audit the externally committed cumulative carrier repair; (3) build one descendant
+of the audited foundations; (4) adapt the dashboard to the final producer schema with every pin
+unset and obtain independent GO — the headline must always show the validated cumulative effect
+relative to exact frozen production, including a valid nonpositive result, with promotion eligibility
+never inferred; (5) run initialize + validate-only twice with `inference_executed=false` and
+identical identities; (6) only then launch the ten-science campaign. Typed provider-policy skips and
+precompute refusals advance scheduling but spend zero science and cannot satisfy AK-V27-10. Frozen
+production v9 was not modified, rebuilt, or executed anywhere in this window.
+
+### Source References (2026-08-23 v27 loop state)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the v27 restart
+  checkpoint: science 0/10, the `a7aaa47a` provider-policy skip, AK-V27-C6/PERF/DASH/10 rows, and
+  the audited foundations list.
+- [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — the durable branch map with
+  GO/NO-GO audit postures, the exact restart order, and the compute-hygiene record.
+- [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-22 v27 pre-launch banner:
+  no campaign launched, rejected audit lines, pins unset, resume path.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — INF-48 status
+  "v27 C6 launch boundary remains open": the rejected `91a75a05` carrier list and the two-process
+  oracle/Ghost wiring as the owning next action.

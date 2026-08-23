@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-22 (**a dependency floor can select the defective release** — fla 0.4.2 carries the silently non-deterministic `causal_conv1d` backward AND declares no torch/triton floor at all, while the FIXED 0.5.2 declares `torch>=2.7.0`, so a resolver constrained to our verified Torch 2.5.1+rocm6.2 stack walks straight onto the broken release; hard rule: `flash-linear-attention>=0.5.2` or nothing, never an older fla — plus `rocprofv3` is now provisioned into the side-loaded profiler tree, retiring this page's two 2026-08-12 "rocprofv3 genuinely absent" readings (the IntelliPerf/guided-tuning gate is the `rocprof-compute` RENAME plus omniperf's missing deps, not rocprofv3), and the GPA C4-template question is closed NEGATIVE on gfx90a/ROCm 6.2 (measured PC-sampling stub + the NVIDIA-SASS blamer rewrite) — see bottom section; earlier 2026-08-16 note: **batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-23 (**a dependency floor can select the defective release** — fla 0.4.2 carries the silently non-deterministic `causal_conv1d` backward AND declares no torch/triton floor at all, while the FIXED 0.5.2 declares `torch>=2.7.0`, so a resolver constrained to our verified Torch 2.5.1+rocm6.2 stack walks straight onto the broken release; hard rule: `flash-linear-attention>=0.5.2` or nothing, never an older fla — plus `rocprofv3` is now provisioned into the side-loaded profiler tree, retiring this page's two 2026-08-12 "rocprofv3 genuinely absent" readings (the IntelliPerf/guided-tuning gate is the `rocprof-compute` RENAME plus omniperf's missing deps, not rocprofv3), and the GPA C4-template question is closed NEGATIVE on gfx90a/ROCm 6.2 (measured PC-sampling stub + the NVIDIA-SASS blamer rewrite) — see bottom section; earlier 2026-08-16 note: **batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 107+ documents
 
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
@@ -3369,3 +3369,170 @@ the ParEval trials are open plans and compile nothing yet.
 - [`handoffs/active/mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) —
   re-read in full for this compile; contributed the confirmation that nothing newly settled remains
   uncompiled (its sole post-08-21 row is open and blocked on G1).
+
+## Compiled Update — 2026-08-23: AutoKernel v27 pre-launch gates advanced (C6 live split + cumulative authority journal)
+
+**Confidence: verified for the committed machinery, its test counts, and the audit postures; no
+measurement** — v27 ran zero GPU inference or measurement, no dashboard pin was set, and the
+ten-science ledger is still **0/10**. Every posture below is a code-identity fact, not a performance
+claim, and none of it touches frozen production.
+
+### v27 still has not launched — and a provider banner became the first refusal on the provider plane
+
+AutoKernel v27 was **not launched**; the requested outcome (ten meaningful consecutive scientific
+dispositions without a crash) remains at **0/10**. The provider message "This content can't be shown …
+Trusted Access" is a single suppressed model response, not a machine-wide stop: research checkpoint
+`a7aaa47a` classifies that exact response as a typed **`bounded_provider_policy_skip`** — the body is
+withheld, a digest and policy identifier are bound, the portfolio advances, and **zero science is
+spent**. It is a checkpoint, not launch authority — a distinction this page's earlier compiles have
+drawn for calibration prefixes and r6, and now for a model-provider refusal.
+
+### The C6 trust boundary is now a committed live split (`3fc7868c`)
+
+The formerly uncommitted native harness modes were inspected (compile-checked clean against frozen v9
+CPU ggml) and completed by the Python driver into **one coherent commit** — `3fc7868c` on
+`codex/autokernel-v27-provider-c6-orchestration-20260822` — per operator direction that each unit
+lands whole, prior session's uncommitted edits included:
+
+- Native `c6_mul_mat_harness.cpp` gains `--mode oracle|candidate` (combined default unchanged);
+  oracle emits a private `c6_native_oracle_phase.v1` sidecar (hex input witnesses + f32/f64 reference
+  outputs); candidate loads the exact handed-over inputs, writes an `R` ready token, waits for a
+  continue token (3000×10 ms), computes, writes raw f32 output.
+- The producer runs **oracle + three candidate legs as distinct confined processes under one held
+  claim**; input handover is **hardlink-safe 0600 O_EXCL witness files with per-file digests**
+  (`c6_input_binding.v1`); `_paced_candidate` arms continue strictly after the ready token with
+  monotonic event streams (`launched ≤ ready ≤ continue ≤ completed`); per-leg bindings
+  (`c6_leg_binding.v1`) and process mode/oracle output join `c6_correctness_receipt.v1` while every
+  legacy reduction is kept.
+- **Reseal-proof reopen**: recovery re-derives the candidate argv deterministically, re-hashes every
+  leg file, and re-verifies event ordering — a coherently resealed receipt cannot substitute
+  routes/outputs/tokens. Combined mode is retained and covered; the aggregate-invocations path was
+  split; the sealed-C6 restart boundary learned the split file set. Tests: 44+17+70+93 green, zero
+  new ruff findings.
+
+### Cumulative performance authority is now an append-only journal (`b12de815`)
+
+The previously uncommitted journal machinery is completed and wired end-to-end as one commit on
+`codex/autokernel-performance-carrier-closure-v3-20260822`:
+
+- `composition-authority.jsonl` (`cumulative_authority_journal_event.v1`): append-only, flock-
+  serialized, O_NOFOLLOW/0600, fsynced, **strict duplicate-key JSON**, non-finite-token rejection,
+  SHA-256 hash chain, idempotent append; `pre_run`-must-be-first, `result`-requires-exactly-one-
+  `pre_run`.
+- **`pre_run` is sealed before any measurement** (adapter `contained_args`, right after the runner
+  plan): it recursively reopens the exact frozen proof bundle and binds runner-plan file/receipt
+  digests plus derived build/correctness/route/frame/production authority.
+- **`result` is sealed at GPU screen completion**: `GpuSourceScreener` binds the three result.json
+  files + the cumulative-performance receipt immediately after `cumulative-performance.json`;
+  `_bind_composition_screen` re-commits idempotently for recovery.
+- **Loads fail closed** on any journal disagreement; every duplicated field is re-derived from
+  journal-bound bytes before a promotion verdict. Tests: 31+14 focused, 230-test affected surface
+  green, zero new ruff findings.
+
+### The audit posture map is explicit: audited GO vs strict NO-GO
+
+The durable branch map from the restart record, read with its audit postures:
+
+- **GO**: Q5 erratum/ResourceWait/carry-v2 base `36113fe1`; cumulative composition/recovery
+  `fd1d8b37`; evaluator foundation `6affc332`; integrated v27 base `83df4d1d`; frozen-v9 comparator
+  closure `cffb98d3` (independent GO — authenticates 21 runtime objects plus the approved `readelf`
+  identity, rechecks the raw inventory around topology derivation, executes no production artifact);
+  ordinary-refusal recovery crash fix `caa22f42` (focused regression GO — six former
+  `KeyError: disposition` cases pass; not a launchable aggregate).
+- **Strict NO-GO**: evaluator wave-1 `91a75a05` (independent audit reproduced forged or incomplete
+  sandbox receipts, missing per-leg same-input/event bindings, unchecked interposer and runtime
+  closures, dynamic library-substitution bypasses, fabricated known-part rooflines, loose structural
+  precision evidence, target-dtype overflow in perturbations, hardlink leakage into the candidate
+  root, cache-hit denylist aliases, incoherent timing rates); bounded C6 integration `8a0ffc7d`
+  (correctly retains stage order, restart recursion, Q5_0 dispatch, operator capacity, float64
+  precision, derived seeds, post-run source checks, roofline carrier — but still lacks live distinct
+  confined oracle/candidate processes and a live native Ghost Replay/runtime-map closure, so it
+  cannot launch); cumulative performance carrier v2 `5be84b4a` (owner-resealable pre-run/result JSON
+  could coherently substitute candidate routes, n_batch/n_gen frames, frozen-production build
+  identity, nested run metrics, metric authority, and the final promotion verdict; duplicate ledger
+  JSON keys were accepted); dashboard consumer `23b01a5b` (strict NO-GO; pins remain unset).
+
+### What remains before the ten-science campaign
+
+Exact restart order: (1) finish and independently audit the evaluator/C6 repair against the full
+adversarial matrix — live native Ghost Replay process, interposer/runtime-map authentication on the
+C6 path, cache-metric deny aliases; (2) finish and independently audit the externally committed
+cumulative carrier repair; (3) build ONE descendant of the audited foundations — never merge
+rejected checkpoint branches wholesale; (4) adapt the dashboard to the final producer schema with
+every pin unset and obtain independent GO (headline must always show the validated cumulative
+candidate effect versus exact frozen production, including a valid nonpositive result; promotion
+eligibility is never inferred); (5) run initialize + validate-only twice with
+`inference_executed=false` and identical identities; (6) only then spend the ten-science run —
+typed provider-policy skips and precompute refusals advance scheduling but remain zero-science rows
+and cannot satisfy AK-V27-10.
+
+**Frozen-v9-untouched invariant, restated because it is the section's spine**: production llama.cpp
+v9 was not modified, rebuilt, or executed; no GPU work, PC sampling, or inference was started.
+RVP-C4-10 stays closed — ROCm 6.2 PC sampling is an unimplemented stub on this host and no repeat
+probe is authorized by the closeout. Power work retains the measured energy-counter ×15.3 scaling
+trap and rejects GPU busy% as an idle/co-residency oracle. INF-48 owns the C6 launch-boundary repair
+(its 2026-08-22 next action: repair the rejected `91a75a05` carriers, then wire the verified
+two-process oracle/Ghost boundary into the live producer before any launch); INF-03 keeps r19
+immutable and relays the C5-3..16/Hawkeye authoring rows to backlog while that repair lands.
+
+### Sibling on the same card: the dFlash2 experimental build cleared its np=1 gate (DF2-1..DF2-4)
+
+The Qwen3.8-27B dFlash2 campaign — AutoKernel's `experimental_runtime` sibling, deliberately outside
+the source-champion frontier — completed its build and matched single-stream comparison. The PR
+#27342 feature slice was forward-ported from **fresh frozen-v9 ancestry** onto the isolated
+experimental branch `ak/dflash2-qwen38-20260820` at `2046c64e`; the full Release/gfx90a HIP build,
+CPU tests, and real-model GPU smoke passed, and frozen v9 was not edited. Measured at matched np=1
+(12 real prompts, 2048-token cap, seed 42, v9-era MTP arm for the comparator):
+
+| arm | decode t/s | mean acceptance |
+|---|---|---:|---:|
+| plain | 29.4 | — |
+| MTP n-max-8 | 55.2 (historical bar: **55.46**) | 0.48246 |
+| dFlash2 block-8 | **70.0** | 0.62804 |
+
+DFlash2 measured **+26.81%** over the fresh matched MTP arm, **+26.22%** over the historical
+55.46 t/s bar, and **+138.10%** over matched plain. This clears **only the single-stream half** of the
+decision rule; it is not a promotion result. Mandatory before any verdict: DF2-5 np=2/4/8 concurrency
+(PR reviewers report scaling problems at concurrency >1, and production runs np up to 8), DF2-6 exact
+greedy-token parity (the "losslessness" claim), and DF2-2 — the single most likely cause of a
+disappointing later number — confirming the `a6b4b5263` MMQ patch (MTP-verify-shaped, `ne11<=1`,
++17.4% single-stream MTP on MI210) actually fires for a dFlash2 block verify (`ne11≈8`), rather than
+inferring it from source presence. Carry the AMD-specific negative datapoint alongside: llama.cpp
+issue #25117 reports DFlash at 0.48× baseline on a gfx1151 APU MoE target — not our discrete MI210
+with a dense Q8_0 target, but exactly the failure class DF2-2/DF2-5 exist to catch. Two adjacent
+facts: v9's loader **cannot** load DFlash2 weights at all (DFlash1 loader expects 81 tensors plus a
+`target_hidden_size` key; the DFlash2 GGUF carries 58 — a format difference, measured, not a bad
+download), and the `draft_max` config conflict (registry 4 vs stack default 24; both wrong against
+the measured n-max-8 optimum, worth ~8% single-stream) belongs to whoever owns the Qwen3.8 registry
+swap.
+
+### Checked for this compile and deliberately NOT recompiled
+
+[`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) was re-read: its measured
+facts (H2D 28.89 / D2H 28.20 GB/s on the Gen4 x16 link, MI210 on NUMA node 1, the retired ~64 GB/s
+figure, the node-0 bidirectional asymmetry) are already compiled on this page in the 2026-08-03
+section; nothing post-dates that compile. The meta-harness completed ledger
+(`meta-harness-optimization-completed-through-2026-05-28.md`) is historical completion history with
+no new findings — its active-path pointer is the active handoff, already compiled here.
+
+### Source References (2026-08-23 v27 pre-launch)
+
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the v27 restart
+  checkpoint: science 0/10, the `a7aaa47a` provider-policy skip, both new commits with their
+  remaining items, and the AK-V27 row list.
+- [2026-08-22 root progress](../progress/2026-08/2026-08-22-root.md) — the durable branch map with
+  GO/NO-GO audit postures, the exact restart order, and the repository/compute hygiene record
+  (frozen v9 untouched).
+- [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-08-22 v27 pre-launch banner
+  and the standing frozen-v9 operating boundary.
+- [Agentic ROCm kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) — INF-03
+  2026-08-22 posture: immutable r19 preserved, C5-3..16/Hawkeye relayed to backlog, zero-profiler
+  arm mandatory while INF-48 repairs the C6 boundary.
+- [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — INF-48 status:
+  v27 C6 launch boundary open, `91a75a05` rejected carrier list, two-process oracle/Ghost wiring as
+  the next action, RVP-C4-10 closed.
+- [dFlash2 experimental build handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md)
+  — DF2-1..DF2-6, the matched np=1 table, the decision rule, and the #25117 negative datapoint.
+- [2026-08-20 progress](../progress/2026-08/2026-08-20.md) — the MTP depth sweep (55.46 t/s at
+  n-max 8, suffix decay 0.842→0.482), the registry/`draft_max` conflict, and the dFlash2 np1
+  cross-campaign verification (fresh MTP8 55.2 reproduces 55.46 within 0.5%).

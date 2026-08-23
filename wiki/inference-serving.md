@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-22 (KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
+**Last compiled**: 2026-08-23 (the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
 **Sources**: 78 documents
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
@@ -1561,3 +1561,78 @@ scope, not their results.
   `test_dynamic_stack.py`, `test_stack_templates_v2.py`).
 - Upstream llama.cpp #25913 / #26004 / #25592 (open) and #25472 (merged) — the hybrid
   checkpoint/save-restore cluster; performance-only, produces no wrong output.
+
+## Compiled Update — 2026-08-23: the Qwen3.8 swap is LIVE — and the DFlash2 challenger stays on its experimental-runtime contract
+
+**Confidence: verified** — Q38-T5's five-point checklist was executed against the live :8083
+process (pid 896239), and the campaign posture is read from the handoff's receipt chain.
+
+Sources: `handoffs/active/qwen38-27b-replace-qwen36.md` (Q38-T5/T6),
+`handoffs/active/dflash2-block-drafter-experimental-build.md`,
+`progress/2026-08/2026-08-21-operator.md`, `progress/2026-08/2026-08-21-research-intake.md`,
+`progress/2026-08/2026-08-21.md`.
+
+### The swap is served: Q38-T5 stack start, `live == config` verified
+
+The 2026-08-21 22:00Z start closed the swap campaign. Built-in stack-change gate PASSED at launch
+(`promotion_gate: ok`, launch roles match registry); 15 servers healthy; five-point checklist all
+green on :8083 (pid 896239): (1) serves `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf` with the
+documented Unsloth template; (2) flags `--device ROCm0 --jinja --spec-draft-n-max 8` — the measured
+optimum, live; (3) all four ggml libs from frozen v9 `build-hip` on the LIVE process maps; (4) KFD
+count 4 (designed GPU co-tenancy: architect+vision+sd+embedder); (5) real generation correct
+(17×23→391), `enable_thinking=false` live-confirmed (empty reasoning_content), VRAM 93% sampled
+DURING the request. The **master-swapped ≠ lean-compiled ≠ derived-compiled ≠ served** chain from
+the 2026-08-21 section is now closed at the last inequality: the derived plane's
+Qwen3.8-27B-Q8_0 @ draft_max 8 (ratification `7483d7fb` executed and pushed; master swap
+`b376dadd`, on origin since `bb405297`) is what :8083 actually serves.
+
+**Operator flag, one observation:** the cold-start launcher rejected the `both` lineup (no fleet to
+adopt) and fell through to priors at `--numa-mode=quarter` — HALF instances launched
+(:8080/:8180/:8082/:8182/:8185/:8285), FULL instances (:8070/:8072) did NOT. Single-stream
+frontdoor throughput therefore ran on halves; whether to restart into `both` (full+halves) is a
+lineup-policy call left to the operator, not churned at 22:00. Root cause filed as **Q38-T6**: the
+launcher NEVER reads `ORCHESTRATOR_STACK_NUMA_MODE` — mode is argv-only, and the cold-start
+fallback at `stack_commands.py:1588` is hardcoded `"quarter"` (pre-dating the 2026-07-30 half-fleet
+ratification) — so an unflagged cold start silently drops all three full instances
+(frontdoor :8070, worker_general :8072, ingest_long_context :8085). Verified-safe recovery path:
+`start --only frontdoor worker_general ingest_long_context --numa-mode both` + scoped
+`reload orchestrator` (the `--only` clobber fix `f2ffd298`).
+
+### The DFlash2 challenger: np1 sealed; grid + parity mandatory; the kernel-source frontier is closed by contract
+
+Campaign state: **build / no-regression (GPU+CPU) / matched np1 complete** — manual PR #27342
+forward-port on `ak/dflash2-qwen38-20260820` @ `2046c64e` (frozen v9 untouched; `a6b4b5263` remains
+an ancestor, but DF2-2 stays open until the DFlash2 block-verify dispatch itself is proven rather
+than inferred from source presence), full Release/gfx90a HIP build, CPU + real-model GPU smoke
+passed, 36/36 np1 requests error-free, receipts SHA-256-pinned, GPU claims released, VRAM back to
+the 13,094,912-byte idle baseline. The matched np1 numbers are compiled above (2026-08-20 section);
+what the 2026-08-23 state adds is posture: **55.46 t/s at MTP n-max 8 is the PREDECLARED
+single-stream comparator** — the decision rule was written into the campaign before np1 ran ("if
+dFlash2 does not beat 55.46 t/s single-stream *and* hold up at np=8, it does not displace MTP"), so
+the np1 result (+26.81% over the matched MTP arm) clears only the single-stream half.
+**Remaining and mandatory: the np2/4/8 concurrency grid (DF2-5) and exact greedy parity (DF2-6)** —
+DF2-5 runs three arms (none/MTP/DFlash2) at every point because the upstream concurrency report
+(#27117) is DFlash-1, predates PR #27342, and carries a `--kv-unified` confound nobody has
+controlled for; DF2-6 additionally needs the route-log proof that the block-verify workload
+(`ne11≈8`) reaches the intended optimized dispatch, not the less-tuned path `a6b4b5263`'s
+MTP-verify shape was tuned for. The registry carries the challenger as
+`challenger_under_evaluation` / `np1_only_NOT_SELECTABLE` (`bd40ca94`) — decision context, not a
+selection; `spec_type: draft-mtp` / `n_max: 8` untouched.
+
+**Campaign contract (governs any future DFlash2 number):** this is the replacement campaign's
+`experimental_runtime` sibling under the AutoKernel loop — a fixed, resumable receipt chain
+(`experimental_build` → `cpu_gpu_regression` → `matched_np1` → `concurrency_grid` → `greedy_parity`
+→ `decision`) binding candidate/build/model/protocol identities and, for GPU stages, the claim
+window; **no DFlash2 result may enter the kernel-source champion frontier**; a stopped campaign
+resumes at the first missing or invalid receipt and never reruns a sealed cell. The AMD negative
+datapoint to hold in view: upstream #25117 reports DFlash at 0.48× baseline on an AMD APU
+(gfx1151, Q4_K MoE target) — not our discrete MI210 dense Q8_0, but exactly the failure class
+DF2-2/DF2-5 are designed to catch.
+
+### Source References (2026-08-23 Qwen3.8-27B stack + DFlash2 posture)
+
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T5 ✅ five-point live evidence + operator flag; Q38-T6 root cause and recovery path
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — campaign state, predeclared comparator + decision rule, receipt chain, DF2-2/5/6 gates, #25117 negative
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — executed ratification `7483d7fb`, derived-layer verification, coordination sequence
+- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — fourth-pass ratification execution + validation, dFlash2 `challenger_under_evaluation` carried through the recompile
+- [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — AutoKernel lifecycle (v20–v25) and the CPU-TP proposal; the governed loop the experimental_runtime contract routes through

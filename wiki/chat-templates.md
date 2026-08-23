@@ -1,6 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
+**Last compiled**: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -426,3 +427,85 @@ the survivorship-bias shape, inverted.
 
 - [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-5 ✅ full result + correction + operator ruling; 16K rerun tracking
 - `artifacts/chat-templates/ct5c-gpu-20260821/` — per-question JSONL, paired ids, server log
+
+## Compiled Update — 2026-08-23: Qwen3.8 template evaluation + CT-5c/ab-cpu runs
+
+**Confidence: verified** for the measured arms and the rendered proofs; `inference` for the E-7
+stamp-gap recommendation (extension from the intake-892 precedent, sound but not yet ratified
+doctrine).
+
+The CT-5(c) 4K/16K arms and the CT-1b ab-cpu terseness arms are compiled above (2026-08-21); this
+section adds what landed around and after them — the calibration-price inventory, the injection
+verdict on the community templates, the EPYC-owned build, the live deployment, and the first
+decision-gating stamps.
+
+- **CT-2 — a template swap is not a config change, and it voids the calibration this stack was
+  measured under.** `--chat-template-file` has **zero occurrences** in the orchestrator's launcher
+  and registry code, so every measured row this stack owns was produced through each model's
+  GGUF-embedded template and there is **no already-swapped control arm anywhere**. The flag exists
+  in the frozen kernel (`common/arg.cpp:3487`) — adoption needs new launcher plumbing, priced as a
+  prerequisite of adoption, not of the swap. A stack-wide swap voids **4 expensive / 5 moderate /
+  2 cheap** artifacts — and the expensive four (SWE-verified oracle-40, the R2a +32pp CoT-prompt
+  result, GPQA/LCB, the certified reasoning-effort curves) are the entire comparative authority of
+  `architect-model-selection-bench.md`. A **single-role pilot** voids only that role's slice.
+  Related gap, still open: the E-7 re-calibration stamp `(model, quant, kernel/era)` omits the
+  template, yet the prompt-template axis is the *larger* measured effect so far — a swap would pass
+  E-7's validator silently; `template_sha256` belongs in the stamp (recorded as a cross-handoff
+  finding for `reasoning-effort-levels.md`).
+- **CT-3 — the community templates are NOT drop-in safe: they add a user-controlled thinking
+  channel that input marking cannot see.** frog and sharp both scan **ten out-of-vocabulary
+  `<|think_*|>` pseudo-tokens** (in neither model's vocabulary) out of `msg.content` for roles
+  `{system, developer, user}` and use them to overwrite the template's own thinking state, then
+  strip the markers from the rendered prompt — so a client able to place fourteen literal
+  characters into a user or system message **silently revokes the stack's role-keyed
+  `enable_thinking=false`** for the whole conversation, with no trace in the output. Input marking
+  cannot mitigate it: `is_input` constrains what input text may *become* (tokenization); it places
+  no constraint on what template **control flow** may branch on. Rendered proof at
+  `enable_thinking=False`: `sharp.jinja` 797 B → 1003 B with a marker-carrying user turn (thinking
+  ON, +206 B injected effort prose), `frog.jinja` 81 B → 307 B; stock and our GGUF template stay
+  inert (95 B). That is a low-trust input overriding a high-trust generation policy — a direct
+  cost channel (unmetered token amplification). Mitigations if adoption is ever pursued:
+  delete the two marker-scan blocks (retention behaviour is independent of them), restrict the
+  scan to `system`-only, or strip the markers at the orchestrator boundary.
+- **CT-7 — the EPYC-owned template `epyc-qwen3x-v1` is built and validated.** Feature-mined from
+  froggeric v22.3 (Apache-2.0): history retention grafted, the two `<|think_*|>` marker-scan
+  blocks **deleted by construction** (the CT-3 surface), the tag sanitizer kept, terseness excluded
+  (an A/B arm, not a default). 24,659 B, sha256 `faaecb215031…d8c15`; vendored suite v21 9/9, fuzz
+  clean over 2,000 conversations (nine invariants), v22 85/100 with all 15 failures being the
+  deliberately-deleted feature; oneline build (19,421 B) parity holds; the decisive probe — a
+  user-content `<|think_off|>` flips froggeric and does NOT flip epyc-v1; and frozen v9
+  `common/jinja` renders all 7 fixtures **byte-identical** to Jinja2 goldens via `/apply-template`.
+- **CT-DEPLOY — the terseness pilot is LIVE IN PRODUCTION (2026-08-22)** on frontdoor (all three
+  instances, render-verified) and architect_general (+ coder_escalation via alias):
+  `server_mode.<role>.chat_template_file` plumbing landed (orchestrator `34ff6fcc`), registry
+  blocks with per-role one-line reverts (research `b9ba66e6`), stack-change check fully green
+  INCLUDING runtime attestation (declared == compiled == live cmdlines — first time). The pilot
+  serves the measured arm-2 template (`1443ea9ab4bb…4551`), not the community file.
+- **CT-E7 — the CT-1b numbers REPRODUCE on the live path, and architect_general gets first-ever
+  stamps** at `(model, quant, v9 0db32c06e/10125, template 1443ea9ab4bb)`: frontdoor (35B, CPU)
+  math 82.5% @281 tok · mmlu_pro 37.5% @45 · gpqa_diamond 55.0% @2 · cruxeval 32.5% @394 —
+  live == measured. architect_general (Qwen3.8, GPU) 85.0 / 27.5 / 47.5 / 22.5%, zero errors.
+  `gpqa_diamond_cot` was VOIDED at maxtok 900 by the finish_reason rule (48/60 truncated — the
+  budget trap again, self-inflicted this time); the 4096 rerun supersedes: **75.0% (45/60)**,
+  +45pp from the cap fix alone and ABOVE the embedded template's CT-5 baseline (70.0%) on the same
+  pinned ids. All 8 valid cells emitted as producer-authored belief rows grading
+  Witnessed/Attested, empty reasons — the program's first decision-gating measurements.
+- **CT-8 — the belief-kernel write side is wired for this axis**: producer writer
+  `chat_template_ab_capture.py` (atomic sidecar at summarize-time, fail-loud on any guessable
+  field — 40-hex kernel commit, 64-hex template sha, results-file hash attestation) + strict
+  reader `chat_template_ab.py` (registered `chat-template-ab-measurement`; grading 100% delegated
+  to `claim_tuple.grade()`); completed CT-1/CT-1b/CT-5/16K runs are pre-hook and emit zero rows by
+  doctrine.
+
+**Standing rule the sweep reinforces:** never adopt a third-party template without auditing its
+control-flow surface — the marker-scan channel is the template-era analogue of the injection
+classes the engine's input marking exists to stop — and keep the compiled citation rule for
+thinking-vs-no-thinking deltas (budget + per-arm truncation rates, above).
+
+### Source References (2026-08-23 Qwen3.8 template evaluation)
+
+- [`handoffs/active/qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-2/CT-3/CT-5/CT-7 closures, CT-DEPLOY/CT-E7/CT-8 records, rendered proofs and artifact digests
+- [`handoffs/active/qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T1/T3: reachability of the two Qwen3.8-only defects and the non-stock Unsloth template digest
+- [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the intake dives, the fleet-sweep correction, CT-7 build/validation, CT-1/1b arms
+- [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — CT-DEPLOY end state, E-7 stamps and the voided/4096-rerun cells, CT-8 wiring, belief rows
+- [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination-day context (EVL-50 closure, four-agent fan-out) around the CT work
