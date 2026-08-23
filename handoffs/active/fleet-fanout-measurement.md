@@ -41,8 +41,12 @@ Related existing work (do NOT duplicate):
 
 ## Tasks
 
-- [ ] **FM-1 — Per-subagent timing collector.** Extract per-subagent start/finish timestamps from Claude
-  Code and Codex transcripts into a durable record. Spec: OrchBench Appendix D-I real-side metric
+- [x] **FM-1 — Per-subagent timing collector.** ✅ 2026-08-23 — `scripts/coordination/fanout_timing.py`
+  (collect-claude / collect-codex / merge, schema `fanout_timing.v1`), tests in
+  `tests/coordination/test_fanout_timing.py` (14 passed), corpus run in
+  `data/fanout_timing/` (2428 workflows, 4727 subagents; 52 workflows with >=2 overlapping
+  subagents holding 3847 subagents; mean depth 1.38, max 4; 54 workflows joined to queue.jsonl).
+  Extract per-subagent start/finish timestamps from Claude Code and Codex transcripts into a durable record. Spec: OrchBench Appendix D-I real-side metric
   definitions — Declared/Started/Completed Agents, Parallel Utilization (`Σ subagent active time ÷ (max
   overlapping subagents × total workflow span)`), Workflow Depth. Do NOT infer edges by keyword-matching
   between subagent outputs (OrchBench's own weak proxy for this) — our Task/SendMessage records carry
