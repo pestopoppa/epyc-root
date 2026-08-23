@@ -430,3 +430,25 @@ _Via `/research-intake` Stage-4 (intake-916/917/932 lineage, AREX-Base as the co
       the same physical cache. A quantized-KV speculative failure therefore needs a *specific
       mechanism* and may not be attributed to the premise. **This does NOT license 4-bit
       verification** — that remains unestablished.
+
+## Research Intake Update — 2026-08-23 (Stage-2b, intake-1282 — VeriCache)
+
+- [ ] **G8 (G) — measure α for KV-asymmetric self-speculation: the like-for-like number neither
+      paper provides.** Same GGUF as target and drafter (self-speculation, so the *only* difference
+      between the two views is the KV type). Target `-ctk f16 -ctv f16`; draft `-ctkd q4_0`, plus a
+      `q8_0`-draft arm. Sweep `--draft-max` over {4, 8, 16}. Report **mean accepted length** and
+      **per-token agreement**, per arm and per `--draft-max`.
+      **CAVEAT THAT MUST RIDE WITH EVERY NUMBER: the drafter is the full model, so this measures α,
+      not speedup.** The win, if any, is KV-traffic only; a tuple or a summary that omits this
+      invites a throughput reading of an acceptance measurement
+      (`vidya-belief-substrate-program.md` SC50 caveat (c)).
+      **Sanity band, never a baseline:** peer-reviewed reference values for a 4-bit-draft /
+      8-bit-verify design over one shared cache are 91.88-96.58% at gamma=1 — third-party, different
+      hardware, MEASUREMENT.md.
+      **Gate:** **opens** if q8_0-draft agreement >= ~95% at `--draft-max 8` — that confirms
+      VeriCache's premise first-party and the algorithm becomes reachable at zero implementation
+      cost. **Closes** if q4_0-draft agreement < 90%.
+      **Related decline, recorded so it is not re-derived:** *porting* VeriCache is declined — 8K LoC
+      of vLLM `AsyncScheduler` subclassing plus LMCache tiering, we do not serve on vLLM, and its
+      systems contribution is precisely the part our PCIe4 link erodes. This row is how we get its
+      algorithmic content for free. [intake-1282#record]

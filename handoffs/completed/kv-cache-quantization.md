@@ -70,6 +70,18 @@ At short context (≤4K), attention is 7-12% of per-token time — KV quantizati
 
 **Hybrid buffer architecture finding**: The dual-cache design (kv_recent + kv_old) allocates BOTH at full context size, using MORE memory than a single f16 cache. The design intended kv_recent to be small (512 cells), but prefill requires full-size recent cache. This makes the hybrid buffer memory-negative for production use. The standard single-cache with quantized KV types (`-ctk q8_0 -ctv q4_0`) is the correct approach for memory savings.
 
+> **REFRAMED 2026-08-23 (wave-2 Stage-2b) — the conclusion above is a *capacity* argument applied to
+> a *bandwidth* problem, and it does not generalise the way this file has been read.** "Dual cache =
+> more bytes resident = wrong" is sound only when both copies sit in the **same** memory tier and the
+> cheap copy is **dequantized on the read path**. Ours did both, which is why it lost: the ~30%
+> gen-speed gap in the "Bottleneck analysis" paragraph below is precisely the cost of the
+> `q4_0 -> f16` cast on every decode token — a *dequantization* cost, not a *capacity* cost. A
+> dual-cache design in which the second copy lives in a cheaper tier (host DDR5 behind a GPU, or a
+> slower NUMA node) and is **never dequantized into the attention hot path** is a different design
+> and is not refuted by anything measured here. **What this file establishes is narrow and should be
+> cited narrowly: same-tier plus dequantize-on-read is memory-negative AND bandwidth-negative.** It
+> establishes nothing about tiered KV. Do not cite this paragraph to close a tiering proposal.
+
 **Optimization history (2026-03-26)**:
 1. Non-flash split attention (matmul-based): 5.2 t/s at 14.5K — correct quality, 32% slower than f16
 2. Removed K cast (fused dequant in mul_mat): no improvement (108.9 vs 107.1s — noise)
@@ -1254,7 +1266,7 @@ turbo_q3 has fastest prefill (+30% vs f16). Gen at 14.5K prefill: 3.38-4.86 t/s 
 | R6 | New ggml type breaks upstream merge path | Medium | Medium | Keep PolarQuant/TurboQuant on our fork branch. Use `#ifdef GGML_POLAR_QUANT` guards. Don't block production-consolidated merges. | 2,3 |
 | R7 | Context shifting incompatible with quantized KV | Confirmed | Low | Context shifting is auto-disabled. Not used in our production flow. Document the limitation. | 0 |
 | R8 | Draft model KV quant bug (#11200) | Confirmed | Low | Use explicit `--cache-type-k-draft` / `--cache-type-v-draft` flags. Or patch the bug (small fix). | 0 |
-| R9 | Speculative decoding + quantized KV interaction | ~~Medium~~ | ~~Medium~~ | **CLEARED** (2026-03-25): Spec decode + q8_0/q4_0 KV on Coder-32B: 19.15 t/s vs 18.54 t/s f16 (+3.3%). No crash, no degradation. | 0,4 |
+| R9 | Speculative decoding + quantized KV interaction | ~~Medium~~ | ~~Medium~~ | **CLEARED** (2026-03-25) — **verdict unchanged; warrant repaired 2026-08-23.** The config on the protected axis is K=q8_0 and it stays cleared. **The clearing evidence is R11's needle-in-a-haystack result below (q8_0/q4_0 = 9/9 at 1K/4K/16K, 10/50/90% depth) together with the R4 perplexity pair — not the throughput figure.** The original warrant, "19.15 t/s vs 18.54 t/s f16 (+3.3%). No crash, no degradation.", is a **speed observation** and cannot evidence "no degradation": it logged no acceptance rate and named no correctness instrument, so it is supportive, not probative. Re-measurement with both is filed as `../active/speculative-decoding-mtp-refresh.md` **B5** (itself blocked on that file's G3, so the re-run does not measure a full-cache dequant and report it as a KV-quant result). See the 2026-08-23 granularity correction at the end of this file. | 0,4 |
 | R11 | Needle-in-haystack recall degradation | — | — | **CLEARED** (2026-03-25): q8_0/q4_0 = 9/9, q4_0/q4_0 = 8/9 (1x 503, not quality). Tested 1K/4K/16K at 10/50/90% depth. | 4 |
 | R10 | 1M context KV quantization — accumulated error over 1M tokens | Unknown | High | No published results at 1M context with any KV quantization method. Must benchmark RULER at 256K+ ourselves. Conservative approach: use q8_0 (not q4_0) at 1M. | 4 |
 
@@ -1523,3 +1535,26 @@ Memento (Microsoft, intake-289) trains models to segment reasoning into blocks, 
 **Key dependency**: llama.cpp block masking implementation. Uses special tokens (`<|block_start/end|>`, `<|summary_start/end|>`) and KV eviction after summary completion. Our ISWA hybrid buffer work is architecturally similar.
 
 See: [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.
+
+## Correction — 2026-08-23: our KV granularity is FINER than the published mitigation, and it is on the OPPOSITE axis from KIVI
+
+Two facts that keep being conflated because both are called "grouping". Recorded here so a future
+reader does not import a third-party damage number as if it were matched to our configuration.
+
+1. **Granularity: ours is group-32, the paper's *mitigation* is Group-64.** With `-fa 1`, llama.cpp
+   quantizes K and V **per token**, in 32-element blocks running along the **channel** dimension —
+   the layout is `dim0 = channels, dim1 = tokens` (`src/llama-kv-cache.cpp:231-232`), so a
+   `q4_0`/`q8_0` block spans 32 contiguous channels *within one token*. The alignment-collapse study
+   (arXiv 2606.09864) lists **Group-64 quantization** among the mitigations it recommends and
+   measures. We are already **finer than its remedy, by default, everywhere.** Consequence: **its
+   headline damage figures are a pessimistic bound for us, not a matched estimate.** Any transfer of
+   its numbers to this stack must say so — and G4 in `../active/tq3-quantization-evaluation.md`
+   exists to replace the transfer with our own number.
+2. **Axis: this is not KIVI, it is the opposite of KIVI.** KIVI's prescription is *per-channel for
+   K*. Ours is *per-token for both* — and because quantized V forces flash-attention, which sets
+   `v_trans = false`, our quantized V is **structurally incapable** of landing on KIVI's bad axis
+   (see the corrected Relevance note in the KIVI section above). Same word "group", orthogonal
+   dimension. **Do not read a Group-64 result as an upper bound on our group-32 damage without first
+   checking which axis the grouping runs along.**
+
+[intake-1291#record] [intake-1286#record]

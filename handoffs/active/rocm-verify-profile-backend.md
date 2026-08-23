@@ -1128,6 +1128,15 @@ hold) — only the SECONDARY slot is re-scored._
   runtime hardware detection, tolerances, and anti-hack config. Adding ROCm is POPULATING AN EXISTING
   EXTENSION POINT. Deliverable: clone at a pinned SHA, confirm those extension points, write
   `requirements_rocm.txt` against pytorch-triton-rocm matched to ROCm 6.2, run one ATen op on gfx90a.
+  **HARD VERSION FLOOR, and it belongs in the file itself rather than only in a review comment:
+  `flash-linear-attention>=0.5.2`.** This is not hygiene — omitting it *selects the defective
+  release*. fla **0.4.2** declares `dependencies = ["torch", "transformers", "einops"]` with **no
+  torch floor and no triton floor whatsoever**, and it is the release carrying the silently
+  non-deterministic `causal_conv1d` backward (fla #1156). fla **0.5.2** — the fixed one — is the
+  release that declares `torch>=2.7.0`. So a resolver asked for "an fla compatible with our
+  Torch 2.5.1" walks straight onto the broken version and reports success. Put the pin in
+  `requirements_rocm.txt` **and in every other place an fla install could be specified**; G6 below
+  owns the torch-floor question, this row owns the pin. [intake-1283#record]
   **BOUND THE CLAIM: it is Triton-only end to end**, so a port measures Triton-on-CDNA2 and says nothing
   about llama.cpp HIP authoring; and it has NO AMD backend today (verified negative — zero AMD/ROCm/HIP/gfx
   strings in 24 pages; its six vendor requirements files contain no rocm entry). **PRIMARY UNCHANGED.**
@@ -1561,3 +1570,43 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       row's "AMD CI is MI300/gfx942". Still a genuine sibling in *shape* to RVP-C2-6a/6b (a silent
       numerical defect on an accelerator), but fla/Triton rather than ggml/MMQ — keep the rows
       separate. The residual action is the version pin in G6 above.
+
+## Research Intake Update — 2026-08-23 (Stage-2b: upstream FA test coverage, Metal PRs, fla autotuner)
+
+- [ ] **Z10 (Z) — static read for the fp16-denorm bug class that #27413 fixed in Vulkan.** The bug
+      shape is a denormal quantization scale `qd` whose reciprocal `1/qd` overflows fp16.
+      **Locators corrected 2026-08-23 — the plan's `fattn-vec.cuh:620-637` does not exist; the file
+      is 611 lines at frozen v9 `0db32c06e3e5`.** The real surface is
+      `ggml/src/ggml-cuda/fattn-common.cuh:332-373` (`quantize_q8_1_to_shared`) and its **single**
+      call site in the whole tree, `ggml/src/ggml-cuda/fattn-vec.cuh:181`.
+      **One fact the read already yields, recorded so nobody re-derives it:** that call site
+      instantiates `Tds = float2`, so on our path `d` and `sum` are stored as **fp32, not fp16** —
+      the `std::is_same<Tds, half2>` branch at `:367-368` is **dead code in this tree**. `d` itself
+      is `amax / 127` (`:354`) and is guarded by `if (d != 0.0f)` at `:358`, so the exact-zero case
+      is handled; what remains to check is the **denormal-but-nonzero** case and every downstream
+      site that takes a reciprocal of a stored scale. Complete that sweep before deciding.
+      **Escalates to G10 only if the static read is inconclusive.** Zero compute; runnable now.
+- [ ] **G10 (G; the import half is Z) — import and run the 20 new backend-agnostic `FLASH_ATTN_EXT`
+      test cases** from `tests/test-backend-ops.cpp` @ `70aff2525`: 6 q8_0-KV eval cases including
+      **kv=16384**, the kv=1025 pad/sinks/ALiBi/softcap case, and 3 MLA cases. Upstream concedes its
+      own pre-existing matrix "stops at kv=1024, blind to long-context FA bugs", and this import
+      immediately caught a real Vulkan wrong-output bug there.
+      **Import is Z** — prepare the patch against `llama.cpp-experimental` branched from the
+      *current* production tip, per the four-step workflow. **Never against frozen v9.** **Running
+      is G**, on both the CPU and ROCm0 backends.
+      **Gate:** any **FAIL at kv >= 10000 on either backend** converts coverage hygiene into an
+      active correctness defect and takes priority over everything else in section C. A clean pass
+      closes the row as a **durable negative for those shapes only** — it says nothing about shapes
+      outside the imported set and must never be quoted as "FA is correct at long context".
+      **Bounded by Z10:** if Z10 finds the denorm class present, run G10 with that hypothesis named
+      rather than as an undirected sweep. [intake-1284#record]
+- [ ] **Z14 (Z) — file the unguarded AMD warp list in fla's conv-backward autotuner UPSTREAM, as a
+      separate latent-inconsistency report.** In fla's `causal_conv1d` kernels, `kernels.py:16`
+      defines `NUM_WARPS_AUTOTUNE` AMD-aware; the **forward** and **update** kernels consume it, but
+      the **backward** kernel at `:152` hardcodes `[4, 8, 16, 32]`. `IS_AMD` is
+      **architecture-blind**, so 2048 threads/block is offered on every CDNA part regardless of
+      whether it can be occupied, and `STATIC_WARPS` is defined and never used anywhere.
+      **This is NOT the cause of #1156** — that was the missing `padding_option` on `boundary_check`
+      loads, fixed in 0.5.2 — and the report must say so in its first line or it will be closed as a
+      duplicate of a retracted issue. Pin the revision inspected in the report body. Zero compute,
+      no local install, and no AMD hardware needed to file it. [intake-1283#record]

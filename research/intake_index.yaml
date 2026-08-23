@@ -21213,7 +21213,15 @@
   relevance: high
   credibility_score: 4
   contradicting_evidence:
-  - Base mxbai-edge-colbert-v0 authors (arxiv:2510.14880) self-describe the release as a proof-of-concept baseline intended as a foundation for future improvements, not a final solution — architectural ceiling inherited by the reasoning fine-tune.
+  - >-
+    Base mxbai-edge-colbert-v0 authors (arxiv:2510.14880) self-describe the release as a
+    proof-of-concept baseline intended as a foundation for future improvements, not a final solution
+    — architectural ceiling inherited by the reasoning fine-tune. FLAGGED 2026-08-22 (intake-1289):
+    the self-description is confirmed verbatim at source, but any "architectural ceiling" inference
+    drawn from that paper's BEIR comparison inherits a defect - its ColBERT baseline rows are
+    TRANSCRIBED from LightOn's model card rather than independently measured (15 of 15 per-task
+    match to LightOn's re-run column, 0 of 15 to the vendor-reported one), so that comparison is
+    partly second-hand. See intake-1278, whose credibility score was reduced for the same reason.
   - 32M scale does not benefit from lower-casing preprocessing (no clear trend vs clear gains at 17M), suggesting the 32M size sits near the expressive ceiling for this ColBERT variant.
   - Reason-ModernColBERT (parent technique) explicitly documented as scaling poorly to very large queries due to MaxSim asymmetry — limits reasoning-trace injection at query time.
   - No independent third-party replication of BRIGHT 19.00 located as of 2026-04-24 (model released 2026-04-22, two days prior).
@@ -21244,7 +21252,7 @@
   verdict_justification: 'Deep-dive 2026-04-24 UPGRADED worth_investigating → adopt_component for the S5 *fallback* slot (LateOn stays primary on BEIR strength). Conditional on three gates: (1) ONNX INT8 parity against PyLate (<1e-2 L2), (2) EPYC median latency ≤80 ms @ 48 threads for 10 snippets, (3) A/B within 1pp of LateOn on web_research queries. Operating plan: three-slot reranker selector (GTE baseline / LateOn primary / Reason-mxbai fallback) via REASON_MXBAI_MODEL_PATH env var.
 
     '
-  notes: 'Deep-dive 2026-04-24 at research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md. Refinement: novelty medium → high, verdict worth_investigating → adopt_component (conditional on gates). CPU latency estimate ~40-50 ms p50 per 10-snippet call (optimistic 20 ms, pessimistic 60-80 ms), derived by scaling the measured 180 ms GTE-150M-INT8 number by the backbone ratio (10 × 384²) / (22 × 768²) ≈ 0.113 and discounting the FLOP ratio to 25% realization under the BW-bound heuristic from feedback_cpu_decode_bw_bound. Top actions queued into colbert-reranker-web-research S5: (1) S3c — ONNX INT8 export + parity fixture via existing /workspace/venvs/export312/ venv (~1 hr, reuses LateOn venv); (2) S4c — EPYC latency benchmark via scripts/benchmark/bench_colbert_rerank.py targeting ~40-50ms p50 (~30 min); (3) S5 amendment — extend colbert_reranker.py with REASON_MXBAI_MODEL_PATH env var alongside LATEON_MODEL_PATH, document three operating points.
+  notes: 'Deep-dive 2026-04-24 at research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md. Refinement: novelty medium → high, verdict worth_investigating → adopt_component (conditional on gates). CPU latency estimate ~40-50 ms p50 per 10-snippet call (optimistic 20 ms, pessimistic 60-80 ms), derived by scaling the measured 180 ms GTE-150M-INT8 number by the backbone ratio (10 × 384²) / (22 × 768²) ≈ 0.113 and discounting the FLOP ratio to 25% realization under the BW-bound heuristic from feedback_cpu_decode_bw_bound. Top actions queued into colbert-reranker-web-research S5: (1) S3c — ONNX INT8 export + parity fixture via existing /workspace/venvs/export312/ venv (~1 hr, reuses LateOn venv); (2) S4c — EPYC latency benchmark via scripts/benchmark/bench_colbert_rerank.py targeting ~40-50ms p50 (~30 min); (3) S5 amendment — extend colbert_reranker.py with REASON_MXBAI_MODEL_PATH env var alongside LATEON_MODEL_PATH, document three operating points. CONFIRMED 2026-08-22 (intake-1289, intake-1293) - caveat (2), no ONNX INT8 variant ships: at revision 7e463581dd30 DataScience-UIBK/Reason-mxbai-colbert-v0-32m still ships NO ONNX at all (no model.onnx, no model_int8.onnx), so S3c is still owed and unchanged. What DID change is the reference: the parent mixedbread-ai/mxbai-edge-colbert-v0-32m now ships one - model_int8.onnx plus onnx_config.json since 2026-02-14 (f93964d3e660), projection-complete only from 2026-04-15 (963e23afa147), so pin any comparison at or after that revision - which finally gives a PyLate-to-ONNX export of this fine-tune a working reference export to validate parity against, which it did not have when the caveat was written. One export-path constraint: this model carries THREE Dense heads, so the pylate-onnx-export tool must be run at git head 1.7.0, not the PyPI 0.1.0, which writes the wrong filename and silently truncates the graph.
 
     '
   claim_anchors:
@@ -107818,9 +107826,19 @@
     (8) Zero CPU/ROCm path, stated rather than inferred. Hard flash-attn plus causal-conv1d pins,
     Triton kernels, a literal device = cuda if device == cpu else device in the runtime, .cuda() in
     every model card. Zero gguf/llama.cpp hits across 515 tree entries; zero AMD/HIP hits in any
-    Idiap-authored file. Locally: our frozen v9 tree DOES have a CPU-capable GATED_DELTA_NET op, but
-    convert_hf_to_gguf.py has no entry for this arch family - the primitive exists, the converter does
-    not.
+    Idiap-authored file. Locally: our frozen v9 tree DOES have a CPU-capable GATED_DELTA_NET op, and
+    there is no converter entry for the Idiap hybrid_gated_deltanet arch - the primitive exists, the
+    converter does not, FOR THAT ARCH. METHOD CORRECTED 2026-08-22 (intake-1287 and intake-1281,
+    both re-verified in-tree today): the original wording here was "convert_hf_to_gguf.py has no
+    entry for this arch family", and that probe is vacuous. At 0db32c06e3e5 convert_hf_to_gguf.py is
+    a 296-line CLI stub containing ZERO ModelBase.register calls of any kind - every architecture in
+    the tree was refactored into the conversion/ package - so a literal grep of that one file
+    returns zero registrations for EVERY architecture and cannot distinguish supported from
+    unsupported. That is a textbook PROBE-OUTSIDE-THE-TOOL vacuous negative. The conclusion still
+    holds for the Idiap arch, but the GDN FAMILY IS SUPPORTED: conversion/qwen.py:271 carries
+    ModelBase.register("Qwen3NextForCausalLM"), conversion/kimi_linear.py:15 registers
+    KimiLinearModel / KimiLinearForCausalLM, and conversion/__init__.py:207 dispatches
+    Qwen3NextForCausalLM to the qwen module.
 
     (9) Repo posture - a one-commit research drop, now dormant. A detached hard copy of
     flash-linear-attention forked at 32b1a55 (2025-07-15); the entire Idiap contribution is one commit
@@ -108560,7 +108578,17 @@
     note: 'Axis choice and G=128 verified. But Table 5 as printed CONTRADICTS the caption that
       justifies the axis choice (key-channel plus value-token is 7.041, the worst cell), and the
       buffer-rotation path never executes in any reported measurement because output is capped at 90
-      tokens with G=128. The real warrant for the per-channel-K prescription is KIVI, not this paper.'
+      tokens with G=128. The real warrant for the per-channel-K prescription is KIVI, not this paper.
+      NARROWED FURTHER 2026-08-22 by the KIVI dive (intake-1286, dive-verified): the KIVI warrant is
+      real but 2-BIT-ONLY. KIVI establishes the per-channel-key / per-token-value asymmetry only at 2
+      bits - its own Observation 1 states that at INT4, per-token quantization of BOTH caches
+      maintains accuracy, and it runs no 4-bit or 8-bit axis ablation at all. QuantSpec runs INT4
+      draft over INT8 verify, so KIVI does NOT warrant QuantSpec''s axis choice at QuantSpec''s bit
+      widths, in either direction. Two further limits on anyone citing KIVI here: its axis ablation
+      contains no GQA-at-scale, MLA, QK-normed or hybrid-SSM model, so it is a 2024-era
+      dense-transformer result; and by KIVI''s own numbers the full-precision residual window, not
+      the axis, does most of the work on hard generation tasks (Llama-2-7B GSM8K 5.76 to 12.74 at a
+      fixed axis).'
   depends_on: []
   dive_corrections: >-
     2026-08-21 STAGE-2b combined ingest and dive. Read the arXiv HTML render and the full 17-page PDF,
@@ -108576,14 +108604,33 @@
     VERIFICATION is safe - only that a 4-bit draft view over an 8-bit verify view of ONE SHARED cache
     is sound and coherent.
 
-    (2) THE DECISIVE GPU FINDING FOR OUR HARDWARE, read at frozen v9. Only the VEC flash-attention
-    kernel reads quantized KV natively (ggml/src/ggml-cuda/fattn-vec.cuh:540-543). MMA/TILE/WMMA set
-    need_f16_K/need_f16_V true and launch_fattn DEQUANTIZES THE ENTIRE K AND V TENSORS TO F16 into
-    scratch (fattn-common.cuh:1022-1080). VEC is selected for quantized KV only at Q->ne[1] <= 2
-    (fattn.cu:472-495). A speculative verify batch is q_len = gamma+1, SO AT gamma >= 2 IT LEAVES THE
-    VEC REGIME AND PAYS A FULL-CACHE DEQUANT. On our MI210 path, quantized-KV speculative decoding is
-    bandwidth-positive only at draft_max = 1. This is a static read of the selector, not a measured
-    run, and is the highest-ROI probe in the ledger.
+    (2) THE DECISIVE GPU FINDING FOR OUR HARDWARE, read at frozen v9 - CONCLUSION UNCHANGED,
+    LOCATORS AND MECHANISM CORRECTED 2026-08-22 (VeriCache dive, intake-1282; every line below
+    re-read in-tree at 0db32c06e3e5). Only the VEC flash-attention kernel reads quantized KV
+    natively (ggml/src/ggml-cuda/fattn-vec.cuh:540-541, where need_f16_K/need_f16_V are set true
+    only for GGML_TYPE_F16). MMA/TILE/WMMA set need_f16_K/need_f16_V true and launch_fattn
+    DEQUANTIZES THE ENTIRE K AND V TENSORS TO F16 on EVERY call - to_fp16(K_data, K_f16,
+    ggml_nelements(K), main_stream) at fattn-common.cuh:1030, and :1064 for V. (a) MECHANISM: that
+    F16 scratch is NOT a ggml_cuda_pool_alloc; it is carved out of the graph allocation past
+    dst->data by ggml_cuda_flash_attn_ext_get_f16_extra_data (fattn-common.cuh:53-85), so the BUFFER
+    is graph-persistent while the CONVERSION is per-call. (b) LOCATOR: the Q->ne[1] <= 2 gate at
+    fattn.cu:473-495 is the NVIDIA-TURING branch - it sits inside if (turing_mma_available(cc) ...)
+    and turing_mma_available is GGML_CUDA_CC_IS_NVIDIA(cc) && ... (common.cuh:348-350), so it NEVER
+    EXECUTES on gfx90a. MI210 is CDNA2 (common.cuh:72), amd_mfma_available is true, and the
+    operative sites are fattn.cu:522-536 (the MMA_F16 batch-size thresholds) and :543-557 (the
+    fallback: VEC for quantized K/V only at Q->ne[1] <= 2, else TILE, which also sets need_f16).
+    Same boundary, different code path: on MI210 a quantized KV cache takes VEC at q_len <= 2 and
+    MMA_F16-or-TILE at q_len >= 3, both of which dequantize the whole cache; and without
+    GGML_CUDA_FA_ALL_QUANTS only Q4_0/Q8_0/F16/BF16/F32 are FA-eligible KV types (fattn.cu:340-358)
+    - exactly our production -ctk q4_0/q8_0. A speculative verify batch is q_len = gamma+1, SO AT
+    gamma >= 2 IT LEAVES THE VEC REGIME AND PAYS A FULL-CACHE DEQUANT, and quantized-KV speculative
+    decoding on that path is bandwidth-positive only at draft_max = 1. (c) SCOPE, LOAD-BEARING: this
+    cliff is a CUDA/HIP-BACKEND property and MUST NOT be generalised to our primary CPU serving
+    path. The CPU backend takes kq_vec_dot = ggml_get_type_traits_cpu(k->type)->vec_dot
+    (ggml-cpu/ops.cpp:8635), so K is consumed in its QUANTIZED form at ANY q_len, and :8739
+    dequantizes V one DV-length row at a time into a stack temp. There is no whole-tensor conversion
+    anywhere on the CPU path, so there is no cliff there at all. All of this remains a static read
+    of the selector, not a measured run, and is the highest-ROI probe in the ledger.
 
     (3) THREE FINDINGS THAT REFRAME ADOPTION ENTIRELY. (a) Our fork ALREADY SOLVES THE OUTLIER PROBLEM
     A DIFFERENT WAY - an online Hadamard rotation gated on ggml_is_quantized(type_k)
@@ -108647,7 +108694,9 @@
     intake-1261 notes and STILL UNAPPLIED, so per Act-Don''t-Defer this is a gap to close;
     HIGHEST-ROI PROBE - does the MI210 verify pass ever land in the VEC FA kernel, given Q->ne[1] <= 2
     means only draft_max=1 avoids a full-cache dequant (zero-inference: static read of
-    fattn.cu:472-495 plus one instrumented run) to speculative-decoding-mtp-refresh.md; RE-OPEN the
+    fattn.cu:522-536 and :543-557, the gfx90a sites - :473-495 is the NVIDIA-Turing branch and never
+    executes on our hardware, corrected 2026-08-22 - plus one instrumented run) to
+    speculative-decoding-mtp-refresh.md; RE-OPEN the
     abandoned hybrid precision buffer with QuantSpec O(1) prefill-time incremental quantization, which
     addresses the exact stated cause of death, GATED on the VEC probe because it is pointless if
     verify dequantizes the whole cache anyway; TEST whether the in-tree Hadamard rotation already
@@ -108975,9 +109024,15 @@
     makes ZERO empirical claims of its own. For information, the parent paper (arXiv 2507.06457v2)
     would score: 0 base, peer-reviewed +0 (preprint), within 12 months +0 (v1 2025-07-08, 13.5
     months; v2 within), major lab / known contributor +1 (m-a-p; Ge Zhang, Wenhao Huang, Jason
-    Eshraghian), commercial bias 0, independent corroboration +1 (arXiv 2608.12149, HKU/Ngai Wong,
-    independently uses the suite as its primary testbed) = 2, Medium. That score belongs to a
-    separate entry for the paper, not to this artifact.
+    Eshraghian), commercial bias 0, independent corroboration +1 (arXiv 2608.12149 independently
+    reuses the suite as a controlled testbed, with zero author overlap) = 2, Medium. That score
+    belongs to a separate entry for the paper, not to this artifact. ATTRIBUTION CORRECTED
+    2026-08-22 (intake-1280): 2608.12149 is STARTLUX-LED, not "HKU/Ngai Wong" - Startlux is the lead
+    affiliation, with Tsinghua and UCAS; HKU is the fourth of six; and there are TWO corresponding
+    authors, Ngai Wong (HKU) and Chuan-Wei Kuo (Startlux). Nor is the m-a-p suite its "primary
+    testbed": that paper stands on THREE legs - 52 m-a-p checkpoints spanning five architectures, 12
+    large-scale open checkpoints, and its own 340M/1.3B controlled pretraining. The +1 stands; only
+    the attribution changes.
   verdict: adopt_component
   verdict_justification: >-
     We would actually pick this up and use it - it is the substrate for intake-1268's
@@ -109102,9 +109157,14 @@
   - claim_index: 3
     effect: unaffected
     note: 'Confirmed and strengthened - 1 of 72 models in arXiv 2507.06457, corpus additionally
-      identified as fineweb-edu, and independently reused by arXiv 2608.12149 (HKU/Ngai Wong) as its
-      primary testbed for massive activations in hybrid GDN models. Different group, different
-      institution - genuine independent adoption, not restatement.'
+      identified as fineweb-edu, and independently reused by arXiv 2608.12149 as one of its three
+      evidence legs (52 m-a-p checkpoints spanning five architectures, alongside 12 large-scale open
+      checkpoints and its own controlled pretraining) for massive activations in hybrid GDN models.
+      Different group, different institution, zero author overlap - genuine independent adoption,
+      not restatement. ATTRIBUTION CORRECTED 2026-08-22 (intake-1280): that paper is STARTLUX-led,
+      not "HKU/Ngai Wong" - HKU is the fourth of six affiliations, and the two corresponding authors
+      are Ngai Wong of HKU and Chuan-Wei Kuo of Startlux - and "primary testbed" overstates what is
+      a three-legged study.'
   - claim_index: 4
     effect: unaffected
     note: 'The strongest result of the dive. 2d = 512 is exactly cache_q_gamma plus cache_k_gamma; 2H
@@ -109206,7 +109266,27 @@
     attention. Our production topology (1/4) sits well past that crossover, where GDN hybrid recall
     (0.436 at 1/3) already meets or exceeds the matched transformer baseline. This CONFIRMS and
     sharply quantifies this entry''s "upper bound, probably loose" caveat: at our end of the curve
-    there may be little or no recall deficit left for a HOLA-style cache to recover.'
+    there may be little or no recall deficit left for a HOLA-style cache to recover.
+    FULL TRANSCRIPTIONS AND HASHES, added 2026-08-22 - the parent paper now has its own entry,
+    intake-1285, which carries them as claim_anchors. TABLE 7 (v2 p.15, RULER recall by ratio x
+    family; quote_sha256 74afba88d9503c4382d1a3b5d725ee611039dd0b6afb3cfe4a9af387a26614e0): 24:1
+    DeltaNet 0.417 / GatedDeltaNet 0.341 / GLA 0.293 / HGRN2 0.303 / avg 0.338; 12:1 0.352 / 0.352 /
+    0.288 / 0.368 / 0.340; 6:1 0.371 / 0.425 / 0.330 / 0.434 / 0.390; 3:1 0.426 / 0.436 / 0.332 /
+    0.395 / 0.397; Pure 0.320 / 0.356 / 0.144 / 0.203 / 0.256. TABLE 6 (v2 p.15, LM accuracy by
+    ratio, averaged across both scales): 24:1 0.476, 12:1 0.478, 6:1 0.480, 3:1 0.479, pure 0.472 -
+    spread 0.008, i.e. language-model accuracy is flat across the whole sweep and recall is the only
+    axis that moves. TABLE 5 (v2 p.13, best RULER arm per family): GatedDeltaNet-hybrid-3-1 0.440,
+    HGRN2-hybrid-6-1 0.434, DeltaNet-hybrid-3-1 0.426, Transformers 0.423, GLA-hybrid-3-1 0.365.
+    THREE SCOPE LIMITS THAT TRAVEL WITH THOSE NUMBERS: (a) there is NO 340M recall data at all -
+    "340M models show insignificant recall capability ... We omit recall benchmarks for this reason"
+    (Table 2 caption) - so every recall figure above is 1.3B-only; (b) RetNet and HGRN are absent
+    from Table 7 entirely, so its Average is over 4 families while Table 6''s is over 6 and the two
+    Average columns are not comparable; (c) Table 5 and Table 7 disagree for the same model
+    (GatedDeltaNet-hybrid-3-1 0.440 vs 0.436, GLA-hybrid-3-1 0.365 vs 0.332), and Table 5''s printed
+    Transformer average 0.423 does not reconcile with its own subtask columns, which imply 0.390 -
+    which is exactly the headroom number the HOLA line needs, so it stays unverifiable in either
+    direction. Every cell is a single run: zero seeds, zero error bars, zero repeats in either
+    version.'
   - 'Whether a torch/triton stack satisfying torch>=2.7.0 and triton>=3.3 exists for ROCm 6.2 on
     gfx90a - not testable read-only with no torch installed; requires an install attempt.'
   - 'Whether HOLA''s sdpa cache-read path is numerically correct on gfx90a - untested anywhere; no AMD
@@ -109355,14 +109435,30 @@
     DFlash2. This is a THROUGHPUT regression with no acceptance instrument, so it cannot confirm or
     refute the corruption claim - but it shows a DFlash-shaped concurrency loss on that exact hardware
     has a non-DFlash-specific component.'
-  - 'A COMPETING MECHANISM FOR THE PER-SLOT SPREAD: issue 27407 (2026-08-19, unindexed) establishes
-    that batched speculative verification ALONE perturbs target logits at near-ties deterministically
-    - draft-simple, with no DFlash code, reproduces greedy divergence from the non-speculative
-    baseline. Different batch positions across 16 slots would therefore produce divergent trajectories
-    from identical inputs. Its author states speculative acceptance is unaffected and outputs remain
-    coherent, so it does not account for a 0.053-vs-0.491 spread or a 0.0018 collapse - but it does
-    mean the "identical requests must give identical acceptance" premise is not exactly true, and a
-    temp-0 arm is needed to separate the two.'
+  - >-
+    A COMPETING MECHANISM FOR THE PER-SLOT SPREAD, ADJUDICATED AND LARGELY REJECTED (2026-08-22,
+    Stage-2b dive on issue 27407, intake-1288). Issue 27407 and its five-week-older parent 25618
+    establish that batched speculative verification perturbs target logits at near-ties,
+    deterministically, on CUDA, Vulkan, Metal and ROCm. It does NOT explain this issue's per-slot
+    spread, for four reasons. (i) WRONG PHASE - the mechanism lives in the verification decode,
+    while this corruption is established in prefill and visible at the first tick. (ii) WRONG MODEL
+    - the per-slot signal is bimodal DRAFT top-1 confidence and the mechanism perturbs TARGET logits
+    only; independently, snick525 (25618, 2026-08-22) varied only drafter quantization and got
+    byte-identical output AND identical acceptance (draft=347 / accepted=283), so the effect is
+    drafter-blind. (iii) WRONG AXIS - every result in both threads is batch SIZE at --parallel 1,
+    and batch POSITION dependence is a strictly stronger property that no source anywhere measures.
+    (iv) WRONG MAGNITUDE - 27407's own data bounds the near-tie flip rate at about 1 per 768
+    generated tokens, capping the acceptance impact near 2 pp, two to three orders of magnitude
+    short of 0.49-to-0.053. CORRECTION TO THIS ENTRY'S EARLIER WORDING: 27407 does NOT show that
+    "identical requests must give identical acceptance" is untrue - it shows that a spec run differs
+    from a non-spec run, which is a different proposition. The premise is UNTESTED, not falsified,
+    and the ~8x per-slot spread remains this issue's strongest unexplained observation. A separate
+    mechanism DOES bear on it, from 25618 and not from 27407: frizikk (2026-08-20) showed with full
+    F32 logit dumps that post-rejection recurrent rollback (llama_memory_recurrent::seq_rm, cell 138
+    to 137, rs_idx 0 to 1) is not exact-logit equivalent to a clean replay - 248,304 of 248,320
+    logits differ, max_abs 0.0118. That is a genuine per-sequence, persistent, speculation-induced
+    state divergence and a plausible amplifier once slots diverge, but it requires a
+    recurrent/hybrid target and a prior reject, so it cannot originate a prefill-established spread.
   - 'RETRACTION IN THE ADJACENT THREAD, relevant because a second-hand citation would now be wrong:
     ix-yuzhoulu withdrew an "80+ t/s down to ~18 t/s" collapse report on 2026-08-21 - "it was a
     measurement artifact on our side (stale build / GPU contention)".'
@@ -109611,9 +109707,13 @@
   - 'Whether the cause is the CPU-side index arithmetic or the HIP path. The reporter''s explicit ask
     is unanswered, and the CUDA-vs-AMD split in the PR thread is fully confounded with the
     --kv-unified flag, so the existing evidence cannot separate them.'
-  - 'Whether the per-slot spread survives at temp 0. No greedy arm exists, and issue 27407 establishes
-    that batched verification alone perturbs greedy output - so sampling-path divergence and state
-    corruption remain entangled.'
+  - 'Whether the per-slot spread survives at temp 0. No greedy arm exists. NARROWED 2026-08-22
+    (intake-1288): issue 27407 does show that batched verification alone perturbs greedy output, but
+    the perturbation is DETERMINISTIC and BOUNDED - about 1 near-tie flip per 768 generated tokens,
+    an acceptance impact near 2 pp - and it separates a spec run from a non-spec run, not slot from
+    slot within one run. A temp-0 arm therefore remains decisive at the ~8x spread scale; sampling
+    divergence and state corruption are NOT irrecoverably entangled. What is still unverified is
+    only whether the spread itself survives temp 0.'
   - 'The true per-token acceptance in the n-max 1 cell. The common-scale comparison rests on an i.i.d.
     model that is analyst-derived; the reporter published only the ratio, not mean accepted length,
     for that cell.'
@@ -109712,10 +109812,16 @@
   - 'LATENCY: NO published per-call or per-batch figure exists in either the model card or the blog
     post. The only performance-shaped statement is qualitative - "able to search through hundreds of
     thousands of documents in milliseconds, on CPU" - with no hardware, no batch size, no measurement.
-    The only MEASURED third-party figure anywhere is arXiv 2510.14880v1 Table 13, a whole-pipeline
-    NanoBEIR runtime on an UNNAMED CPU: 59 s GPU (RTX 4090) / 621 s CPU / 549 MB for 10k 300-token
-    docs, vs ColBERTv2 at 81 s / 1540 s / 732 MB. OUR INCUMBENT IS ABSENT FROM THAT TABLE - there is
-    NO published latency comparison between this model and GTE-ModernColBERT-v1 on any hardware.'
+    The only MEASURED third-party figures anywhere are the RUNTIMES in arXiv 2510.14880v1 Table 13, a
+    whole-pipeline NanoBEIR run on an UNNAMED CPU: 59 s GPU (RTX 4090) / 621 s CPU for 10k 300-token
+    docs, vs ColBERTv2 at 81 s / 1540 s. CORRECTED 2026-08-22 (intake-1289): the "549 MB" in that
+    table is NOT a measurement. The whole Mem. column is the closed form 10000 x 300 x dim x 2 bytes
+    expressed in MiB, exact on all four rows (dim 128 gives 732.42, dim 96 gives 549.32, dim 64 gives
+    366.21, dim 48 gives 274.66), so it carries zero information beyond the dim column. The runtimes
+    that ARE measured come from a PyLate path, not ONNX - the paper never mentions ONNX - so they do
+    not transfer to our ONNX-INT8 serving path except as a within-stack ratio. OUR INCUMBENT IS
+    ABSENT FROM THAT TABLE - there is NO published latency comparison between this model and
+    GTE-ModernColBERT-v1 on any hardware.'
   - 'HF downloads at retrieval 180,899 vs 372,482 for lightonai/GTE-ModernColBERT-v1; 162 likes.
     Adoption has INVERTED since mixedbread wrote in Oct 2025 that answerai was by far the most
     downloaded ColBERT model.'
@@ -109739,23 +109845,28 @@
     ready-to-use model in NextPlaid's own model table (intake-355 = our deployed engine), and
     NextPlaid's CPU quick-start uses it as the default. It bears on colbert-reranker-web-research.md
     S5's cost/latency slot and on the KB index-size cost line.
-  credibility_score: 1
+  credibility_score: 0
   credibility_justification: >-
     Start 0. Peer-reviewed venue NO (+0) - blog post plus model card only. Age: published 2024-08-13,
     24.3 months ago, so beyond 24 months gives -1. Major lab / known contributor +1 (Answer.AI, Jeremy
     Howard, Benjamin Clavie). Commercial bias -1 (Answer.AI self-reporting its own model's benchmark).
-    Independent corroboration +2 capped - LightOn re-ran the published checkpoint and got 53.35, and
-    mixedbread ran it in a third harness and got 0.534. TOTAL 1, Low tier. CAVEAT, stated because the
-    mechanical score misleads here: a Low-tier score normally means "one vendor said so". THIS number
-    has been reproduced by TWO INDEPENDENT THIRD PARTIES WITHIN 0.44 pp, one of whom (LightOn) had a
-    direct competitive interest in it being lower. The score is dragged down almost entirely by the -1
-    age and -1 commercial penalties, not by weak evidence.
+    Independent corroboration +1, NOT +2 - CORRECTED 2026-08-22. LightOn re-ran the published
+    checkpoint in their own harness and got 53.35; the apparent second reproduction (mixedbread,
+    arXiv 2510.14880v1 Table 11, 0.534) is a TRANSCRIPTION of LightOn's model card, not a third
+    harness - all 15 per-task scores match LightOn's re-run column exactly under 3-dp rounding and
+    match the vendor-reported row 0 of 15. TOTAL 0, Low tier. CAVEAT, stated because the mechanical
+    score misleads here: a Low-tier score normally means "one vendor said so", and this number HAS
+    been reproduced once by an independent third party with a direct competitive interest in it
+    being lower (LightOn, 0.44 pp below the vendor figure). The score is dragged down almost
+    entirely by the -1 age and -1 commercial penalties, not by weak evidence.
   verdict: superseded
   verdict_justification: >-
     Rubric-mandated: in-domain, open-source, self-hostable, and it LOST the comparison. Named
-    successor lightonai/GTE-ModernColBERT-v1, which beats it on all three independent harnesses (54.67
-    vs 53.79 reported / 53.35 LightOn-rerun; 0.547 vs 0.534 mixedbread), is the currently deployed
-    incumbent, and is the model LightOn built explicitly to overtake it. BUT THE SUPERSESSION IS
+    successor lightonai/GTE-ModernColBERT-v1, which beats it on both measurements that exist (54.67
+    vs the vendor-reported 53.79, and 54.67 vs 53.35 in LightOn's own harness; the mixedbread
+    0.547-vs-0.534 row is a transcription of that same card, not a third harness - corrected
+    2026-08-22), is the currently deployed incumbent, and is the model LightOn built explicitly to
+    overtake it. BUT THE SUPERSESSION IS
     NARROWER THAN OUR OWN RECORDS CLAIM: the true gap is 0.88-1.32 pp, which is INSIDE the ~2 pp noise
     floor internal-kb-rag.md:80 declares, and the cost side (4.46x fewer params, a MEASURED -24.3
     percent index footprint) was never weighed against it. This is superseded ON QUALITY and
@@ -109767,8 +109878,14 @@
     0.44 pp BELOW the vendor-reported 53.79, on the same 15 tasks. This is the strongest single piece
     of contradicting evidence and it comes from the vendor of the COMPETING model, working WITH the
     author of this one. It is also the figure that should be used for any decision.'
-  - 'INDEPENDENT: mixedbread, arXiv 2510.14880v1 Table 11 - answerai-colbert-small-v1 BEIR AVG 0.534
-    vs GTE-ModernColBERT-v1 0.547. A third harness, third party, reproducing the ~1.3 pp gap.'
+  - 'NOT AN INDEPENDENT MEASUREMENT - CORRECTED 2026-08-22. mixedbread, arXiv 2510.14880v1 Table 11
+    prints answerai-colbert-small-v1 BEIR AVG 0.534 vs GTE-ModernColBERT-v1 0.547, and this entry
+    formerly read that as a third harness reproducing the ~1.3 pp gap. It is not: both ColBERT rows
+    were transcribed from LightOn''s model card, published 36 days before their submission - 15 of
+    15 per-task scores match LightOn''s re-run column under 3-dp rounding and 0 of 15 match the
+    vendor-reported row, with ArguAna alone settling it (46.76 vs 50.09; they printed 0.468).
+    Retained only as a record of RESTATEMENT. Scoped fairly: their LongEmbed and NanoBEIR tables ARE
+    their own work.'
   - 'THE SOURCE''S OWN ADMISSION: the Answer.AI blog says this is "the release of a proof-of-concept
     model ... it is not a comprehensive evaluation", and that the model is noticeably weaker on
     ArguAna (50.09 vs bge-base 63.61), SCIDOCS (18.42), CQADupstack (38.75) and Quora (87.72) -
@@ -109782,19 +109899,34 @@
     average is 55.74. ColBERTv2.0''s 50.02 is separately sourced. The 3.77-point margin in that table
     is NOT computed on a common set. The FIRST table, the one everybody cites, IS internally
     consistent; the second is not.'
-  - 'SEVEN OF THE NINE ONNX FILES IN THE REPO ARE THE WRONG MODEL. The onnx/ family (model, fp16,
-    int8, uint8, quantized, bnb4, q4, q4f16), dated 2024-08-15 and Optimum-style, terminate at
-    last_hidden_state [batch, seq, 384] - NO ColBERT projection, NO L2 normalisation. Only the ROOT
-    model.onnx / model_int8.onnx (2026-02-14, LightOn) and vespa_colbert.onnx carry the full graph.
-    PICKING BY FOLDER NAME SILENTLY PRODUCES A WRONG INDEX.'
+  - 'THE ONNX/ FAMILY IS THE WRONG MODEL - MECHANISM CONFIRMED, OUR COUNTS CORRECTED 2026-08-22 by
+    direct parsing at upstream revision 934fa8bb (intake-1293). The repo holds ELEVEN ONNX files, TEN
+    distinct blobs: 3 at root (model.onnx, model_int8.onnx, vespa_colbert.onnx) and EIGHT under onnx/
+    (model, bnb4, fp16, int8, q4, q4f16, quantized, uint8), of which onnx/model_int8.onnx and
+    onnx/model_quantized.onnx are the SAME blob, sha256 250889c5... The earlier "seven of the nine"
+    was wrong on both numbers; "seven" survives only as a distinct-blob count of the onnx/ folder.
+    The mechanism is unchanged and is the point: the onnx/ family, dated 2024-08-15 and
+    Optimum-style, terminates at last_hidden_state [batch, seq, 384] - NO ColBERT projection, NO L2
+    normalisation - and onnx/model_int8.onnx parses as ir_version 10, 1200 nodes, 750 initializers,
+    no ReduceL2 and no Clip, against ir_version 7 for the root exports. Only the ROOT model.onnx /
+    model_int8.onnx (2026-02-14, LightOn) and vespa_colbert.onnx carry the full graph, and
+    vespa_colbert.onnx names its output "contextual", a third convention. PICKING BY FOLDER NAME
+    SILENTLY PRODUCES A WRONG INDEX. Scope: 2 of the 8 onnx/ files were parsed directly; the other 6
+    are same-day Optimum-family quantisations of one that was.'
   - 'RESTATEMENT, NOT CORROBORATION: Vespa blog, MarkTechPost (2024-08-16), aimodels.fyi, PromptLayer,
     a qdrant/fastembed issue thread - all repeat Answer.AI''s own table. Vespa contributes an
     independent DEPLOYMENT (its own vespa_colbert.onnx and a 96-bit binarisation giving 12 bytes/token)
     but no independent retrieval measurement.'
-  - 'A FACTUAL ERROR IN A CITING PAPER, worth not propagating: arXiv 2510.14880v1 says the backbone is
-    MiniLM. The Answer.AI blog explicitly DISCARDED MiniLM in favour of bclavie/mini-base, a
-    weights-average of gte-small and bge-small-en-v1.5, and config.json confirms _name_or_path
-    bclavie/mini-base. The model is MiniLM-SIZED, not MiniLM-derived.'
+  - 'AN OVERSIMPLIFICATION IN A CITING PAPER, worth not propagating - AND OUR OWN CORRECTION OF IT
+    WAS TOO STRONG, NARROWED 2026-08-22 (intake-1289). arXiv 2510.14880v1 section 1 does say the
+    backbone is MiniLM, with its reference 32 resolving to Wang et al., MiniLM: Deep self-attention
+    distillation, so the observation is confirmed at source. But bclavie/mini-base - which
+    config.json confirms as _name_or_path - is a THREE-WAY weights average of MiniLM, gte-small and
+    bge-small-en-v1.5, and the Answer.AI blog discarded MiniLM only as a STANDALONE base candidate
+    (it needed nearly three times as many ablation training steps), not from the lineage. The
+    attribution is therefore one-third true, not a fabrication. Do NOT propagate "MiniLM" as the
+    backbone, and do NOT propagate "the paper is simply wrong" either. The precise statement: the
+    backbone is bclavie/mini-base, a weights-average of MiniLM, gte-small and bge-small-en-v1.5.'
   cross_references:
     handoffs: [internal-kb-rag.md, colbert-reranker-web-research.md, searxng-search-backend.md,
       colbert-zero-research-integration.md, nextplaid-code-retrieval.md]
@@ -110197,13 +110329,33 @@
     decisive experiment available and it was never done.'
   - 'THE MELLUM2 CONTROL VARIES FOUR THINGS AT ONCE: architecture (mellum vs qwen35moe), model family,
     size (12B vs 35B) and quantization (MXFP4_MOE vs IQ2_XXS). It cannot isolate architecture.'
-  - 'A TIMING LEAD NOBODY IN THE THREAD HAS RAISED: all four builds tested predate two Metal
-    correctness fixes that landed within hours of the report - 70aff2525 (2026-08-20T10:43Z, "metal:
-    dequantize quantized KV to F16 before flash attention", PR 27390) and a30273376 (2026-08-20T18:31Z,
-    PR 27450). Their newest build 0adcc3bb5 is 2026-08-19T07:23Z. Every reporter run used a quantized
-    KV cache WITH flash attention - note that the file named _noflash logs "enabling flash_attn since
-    it is required for quantized V cache" - and PR 27390 rewrote exactly that path on exactly that
-    backend.'
+  - >-
+    A TIMING LEAD NOBODY IN THE THREAD HAS RAISED - RE-CHARACTERISED 2026-08-22 after reading both
+    PRs at source (Stage-2b dive, intake-1284). All builds tested predate two Metal changes that
+    landed within hours of the report: 70aff2525 (2026-08-20T10:43Z, "metal: dequantize quantized KV
+    to F16 before flash attention", PR 27390) and a30273376 (2026-08-20T18:31Z, PR 27450). But "two
+    Metal correctness fixes" is wrong for one and inapplicable for the other. PR 27390 IS NOT A
+    CORRECTNESS FIX - the word fix appears nowhere in its body, its nine commit messages or its
+    seven comments; it is a PERFORMANCE REWRITE of the in-kernel quantized-KV flash-attention path,
+    and the merged sequel 27438 disables the new path for small batches on perf grounds 3h17m after
+    merge. PR 27450 IS a genuine wrong-output fix but cannot reach this issue, for two independent
+    reasons: the K it clamps is args.ne00, the matmul REDUCTION dimension (model geometry, fixed per
+    op) and not the token count args.ne1, so it cannot produce a threshold at 16.5K prompt tokens;
+    and its kernel sits entirely inside GGML_METAL_HAS_TENSOR, a macro defined only when has_tensor
+    is true, which ggml-metal-device.m:753-760 forces false on any device whose name lacks
+    M5/M6/A19/A20 - the reporter runs an Apple M4, so that code was never compiled on their machine.
+    BUILD PIN CORRECTED: their newest build is not 0adcc3bb5 (2026-08-19T07:23Z) but the self-built
+    master dc72703 = dc72703fc69698b1ea68ece8d2dd8a96e6a4e1fe, 2026-08-19T15:44:15Z ("vulkan :
+    dequant q8_0 KV once in coopmat1", PR 25494), named in the issue body about 8h20m later; the
+    conclusion is unchanged, since dc72703 still predates 27390 by about 19h and 27450 by about 27h.
+    WHAT SURVIVES IS THE STRONGER HALF: every reporter run used a quantized KV cache WITH flash
+    attention - the file named _noflash logs "enabling flash_attn since it is required for quantized
+    V cache" - and their logs show kernel_flash_attn_ext_q4_0_dk256_dv256 and its _vec_ sibling,
+    exactly the in-kernel path that 27390 REPLACES at prefill batch size (ne01 >= 32), which is the
+    op producing the logits for the failing first sampled token. A post-70aff2525 retest is
+    therefore a legitimate cheap DISCRIMINATOR - a pass implicates the old in-kernel quantized-KV FA
+    path, a failure exonerates it - and NOT the application of a fix; 27450 must be excluded from
+    the ask, with the M4 / has_tensor reason stated.
   - 'NO INDEPENDENT REPRODUCTION (provisional): zero comments, zero linked PRs, and a search for 27442
     in the repo returns only the issue itself. Reporter is GitHub-since-2020, 155 public repos, 10
     followers, author_association NONE, first and only llama.cpp issue.'
@@ -110239,9 +110391,11 @@
     label bug-unconfirmed, no linked PR. Both attachments downloaded: repro_c32768_noflash.log sha256
     3695a5a1... (1.95 MB, 8,585 lines) and repro_c65536_noflash.log sha256 519a84b8... (438 bytes).
     Frozen tree read READ-ONLY at production-consolidated-v9 0db32c06e3e550065b78311a6031ef3dd2c4f27c
-    (binary 10125); file-level diffs taken against the exact upstream build the reporter ran,
-    0adcc3bb5 (b10502), through the GitHub contents API. No build, fetch, checkout, branch or
-    inference.
+    (binary 10125); file-level diffs taken against one of the upstream builds the reporter ran,
+    0adcc3bb5 (b10502), through the GitHub contents API. CORRECTED 2026-08-22 (intake-1284):
+    0adcc3bb5 is not their NEWEST build - the issue body names a later self-built master, dc72703
+    (dc72703fc69698b1ea68ece8d2dd8a96e6a4e1fe, 2026-08-19T15:44:15Z) - so the diff base is a build
+    they ran, not the tip they ran. No build, fetch, checkout, branch or inference.
   newer_version_exists: 'n/a'
   claim_anchors:
   - claim_index: 2
@@ -118470,9 +118624,17 @@
     (enable_padding(length=48) then discards the pads at colbert_encoder.py:276-278; no [MASK]
     query expansion, so no quality effect either way). The real local defect is on the DOCUMENT
     side, which this paper does not address: markdown_chunker emits 4,000-char chunks while
-    _DOC_MAX_TOKENS = 256 embeds about 1,024 chars, so 60% of chunks exceed the cap and only
-    about 43% of chunk characters are embedded — already recorded as intake-1266 dive finding 9
-    and tracked by no work item.
+    _DOC_MAX_TOKENS = 256 embeds about 1,024 chars, so a large minority of chunks reach the cap.
+    CORRECTED 2026-08-23 by the owning session from a read-only measurement of the LIVE
+    catalog (data/kb_rag/index-qd-v1, 28,155 chunks over 944 files): 11,410 chunks = 40.5%
+    sit AT OR ABOVE the 256-token cap, mean token_count 170.3. This dive recorded 60% / 43%,
+    which is the COMPLEMENT of the correct pair; intake-1278#record has it right at 39.6%
+    capped / 57.2% character coverage. The phenomenon and its priority are unchanged, only
+    the magnitude was overstated. Note also that catalog.token_count is CLIPPED at 256
+    (max is exactly 256), so the character-coverage figure cannot be derived from it at all
+    and must come from re-tokenising with truncation disabled. Already recorded as
+    intake-1266 dive finding 9 and, until 2026-08-23, tracked by no work item; now
+    internal-kb-rag.md H1.
   unverifiable_from_stage2:
     - >-
       Post-publication commentary on this specific paper: LARGELY RESOLVED as "none found" across
@@ -118564,8 +118726,9 @@
     follow-up sweep for post-publication commentary via blogs, X and Reddit, the only channels
     the addendum could not reach, plus the Podder et al. FIRE '24 paper via a non-ACM route. G —
     DOC-SIDE TRUNCATION is the single highest-ROI item this dive surfaced and it is tracked by no
-    work item: 60% of chunks exceed _DOC_MAX_TOKENS = 256 and only ~43% of chunk characters are
-    embedded; measure recall@10 on the K7 70-case pool at _DOC_MAX_TOKENS 256 vs 300 (the model's
+    work item until 2026-08-23: 40.5% of chunks (11,410 of 28,155) sit at or above
+    _DOC_MAX_TOKENS = 256, measured read-only on the live catalog; the 60% / 43% pair this
+    dive first recorded was inverted, see the claim-2 correction above; measure recall@10 on the K7 70-case pool at _DOC_MAX_TOKENS 256 vs 300 (the model's
     declared document_length) vs a chunker max_chunk_chars reduced to ~1,100, owning handoff
     internal-kb-rag.md, and the gate opens if any arm beats the 0.5690 plain-maxsim baseline by
     more than 2 pp. G — structural-query-shift evaluation, the paper's one genuinely transferable

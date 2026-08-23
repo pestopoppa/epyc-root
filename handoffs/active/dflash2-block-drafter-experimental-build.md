@@ -155,6 +155,20 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       If DF2-5 reproduces #27117 on gfx90a, add the symmetric guard **to the experimental branch**.
       **Explicitly NOT a change to frozen v9.** We do not currently serve DFlash-1, so this is
       exposure, not an incident.
+- [ ] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
+      `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
+      reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
+      protocol fixes. If parity holds across >=5 prompts once those land, this work is unnecessary
+      and should be CLOSED, not carried.** The problem it solves is that DF2-6 currently has no arm
+      that is *guaranteed* bit-exact, so a divergence cannot be localised.
+      **`--spec-draft-n-max 1` is NOT a safe substitute** and must not be used as one: it still
+      produces a **2-column** verify batch, and our local `a6b4b5263` rule splits at exactly
+      `ne11 >= 2` (`ggml/src/ggml-cuda/mmvq.cu:341-344`) — so the "reference" arm would take the same
+      MMQ route as the arms under test and prove nothing. Capture `GGML_CUDA_LOG_MMVQ_ROUTE=1` on it
+      like every other arm.
+      **Experimental branch only**, branched from the current production tip per the four-step
+      workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
+      [intake-1288#record]
 
 ## 2026-08-20 measured checkpoint
 

@@ -273,7 +273,7 @@ the dispatch loss.
 
 ## Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
 
-- [ ] **(G) Close the instrument gap: run a multi-step generation eval against quantized KV.**
+- [ ] **G3 (G) — close the instrument gap: run a multi-step generation eval against quantized KV.**
       **This is the real finding of the KIVI dive, and it is a gap in OUR evidence, not in our code.**
       KIVI reports **no perplexity anywhere** and explicitly rejects single-decode-step metrics as
       unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage
@@ -294,10 +294,156 @@ the dispatch loss.
       **Gate:** a quality delta outside noise means the Hadamard rotation has NOT fully normalised the
       distribution and KIVI's asymmetry is live for us. A tie — the prediction, since a rotated
       distribution is near zero-mean — closes it permanently for one short bench.
-- [ ] **(G) Reproduce KIVI's Figure 2 / Table 2 on OUR architecture.** Dump per-channel key
+- [ ] **G5 (G) — reproduce KIVI's Figure 2 / Table 2 on OUR architecture.** Dump per-channel key
       magnitudes from the attention layers of a production Qwen3.x GGUF at a fixed prompt, with and
       without `LLAMA_ATTN_ROT_DISABLE=1`, and compute per-group max/RMS at G=32.
       **Gate:** a near-flat rotated ratio establishes the redundancy conclusion **first-party** and
-      deprioritises the two rows above. Surviving outliers would make rotation placement (pre- vs
-      post-RoPE) live. **Nobody has measured whether key-channel outliers even exist under per-head
-      QK-RMSNorm, or in a GDN/attention hybrid — KIVI's four ablated models all predate QK-norm.**
+      deprioritises G3 and G4. Surviving outliers would make rotation placement (pre- vs
+      post-RoPE) live — that is the trigger for B1 below, and the only one. **Nobody has measured
+      whether key-channel outliers even exist under per-head QK-RMSNorm, or in a GDN/attention
+      hybrid — KIVI's four ablated models all predate QK-norm.**
+      **Scope caveat that bounds the whole result:** only **10 of 40** layers of the frontdoor are
+      full attention, so only those have a KV cache at all. A per-channel key dump covers a quarter
+      of the stack by construction; report it as such and never as a whole-model statement.
+      [intake-1286#record]
+
+## Research Intake Update — 2026-08-23 (Stage-2b: massive activations, alignment collapse)
+
+### H11 (Z, RECORDED) — the three KV mitigations our tree does not have, audited read-only against frozen v9
+
+Verified 2026-08-23 by static read of the canonical tree at
+`0db32c06e3e550065b78311a6031ef3dd2c4f27c` (read-only; nothing built, nothing run). The KV-cache
+write path carries **none** of the three mitigations the massive-activations literature assumes when
+it reports a dynamic-range hazard:
+
+- **No per-channel scaling.** `llama_kv_cache::cpy_k` (`src/llama-kv-cache.cpp:1311-1344`) and
+  `cpy_v` (`:1346-1400`) are pure `ggml_set_rows` into the cache tensor. There is no scale tensor,
+  no calibration pass and no per-channel state anywhere in the path — the *only* transform between
+  the attention output and the stored bytes is the block quantizer for `type_k` / `type_v`.
+- **No clipping.** Zero occurrences of `clip` or `clamp` in `src/llama-kv-cache.cpp`. An outlier is
+  stored at whatever the block scale can represent; nothing bounds it first.
+- **No attention-sink special-casing.** Zero occurrences of `sink` in `src/llama-kv-cache.cpp`.
+  Attention sinks *do* exist in this tree, but only as a **softmax bias in the graph**
+  (`ggml_flash_attn_ext_add_sinks`, `src/llama-graph.cpp:2497`; `ggml_soft_max_add_sinks`, `:2554`).
+  They never exempt a token from KV quantization. **Do not read "llama.cpp has sinks" as "llama.cpp
+  protects sink tokens from quantization" — different mechanisms, different files.**
+
+The one mitigation we **do** carry is the orthonormal self-inverse Walsh-Hadamard rotation, gated at
+`src/llama-kv-cache.cpp:319-336` (`attn_rot_k` / `attn_rot_v`, requiring `ggml_is_quantized(type)`
+and `n_embd_head % 64 == 0`, defeatable by `LLAMA_ATTN_ROT_DISABLE`). That is the whole of our
+outlier defence, and it is exactly the lever G5 probes.
+
+- [ ] **(Z, monitor) Watch the Zunhai Su / Startlux group for a hybrid-model KV-quant METHOD.**
+      RotateKV (IJCAI 2025), KVSink (COLM 2025) and Oscar are the closest published relatives of the
+      fixed 64-wide Walsh-Hadamard we already ship. **No hybrid-model KV-quantization method exists
+      today**: arXiv 2608.12149 is a *characterisation* precursor — it measures activation magnitude
+      across architectures and prescribes nothing for a GDN/attention hybrid. Re-check the group's
+      publication list each intake wave and **pin the revision checked**; a monitor row with no
+      pinned revision is how the log-linear gate fired six months late. [intake-1280#record]
+
+### G2 (G) — measure our actual KV outlier ratio, and produce the number the paper omits
+
+**Owner: this handoff. Both compute planes were held elsewhere during wave 2; this is filed for
+whoever holds the plane next, not run here.**
+On the **10 full-attention layers only**, capture K **after QK-norm and after RoPE** and V **at
+cache-write**, for ~200 prompts spanning real traffic. Report, **per layer and per head, K and V
+separately**: `max/median` and `max/p99.9`. Also capture the residual stream so the figures bridge
+to the paper's units. **A pooled max÷median is not the measurement** — pooling hides exactly the
+asymmetry this exists to find (`vidya-belief-substrate-program.md` SC50 caveat (d)).
+The paper reports only a bare max-absolute value and **never a median**, so no dynamic-range figure
+exists anywhere in the literature for this architecture class. We can produce the number it lacks.
+Prerequisite `Z11` (harness choice — prefer a llama.cpp `cb()` tap over the transformers/PyTorch
+hook harness, because the GGUF path is the one that quantizes).
+**Gate:** if V's `max/median` materially exceeds K's, `-ctv` is the risk surface and V-side defaults
+are reopened. **If both are unremarkable (< ~50×), close the whole massive-activations line for this
+stack as measured-and-negative**, so it is never re-opened from an abstract. [intake-1280#record]
+
+### G4 (G) — paired behavioural drift across our KV configs (IFEval, FP16-anchored CondFlip)
+
+**Owner: this handoff.** IFEval subset **N >= 250**, greedy `t=0` seed 42, **one model held
+constant**, sweeping `-ctk`/`-ctv` over `{f16/f16, q8_0/q8_0, q8_0/q4_0, q4_0/q8_0, f16/q4_0}`.
+Score **FP16-anchored paired ConditionalFlip** — the fraction of FP16-baseline passes that flip to
+failure under the quantized arm — **not** aggregate pass rate. The two are different quantities and
+are not interchangeable (SC50 caveat (b)). Report perplexity drift beside CondFlip on every arm; the
+decoupling is the whole point.
+**Instrument note:** this is the IFEval axis, not a refusal/safety suite — a safety benchmark suite
+is an explicit decline for a single-operator research stack, and CondFlip carries the transferable
+lesson (perplexity is blind to behavioural drift) onto an axis we actually serve.
+**Gate:** any config with **CondFlip > 5% while PPL drift < 2%** reproduces the decoupling and makes
+a behavioural gate **mandatory** before any future KV-default change. **All configs < 2% ⇒ our
+group-32 granularity is doing the work**, and perplexity-plus-NIAH was retrospectively adequate —
+close the line. [intake-1291#record]
+
+### B1 (B, blocked on G5) — pre-RoPE vs post-RoPE rotation placement
+
+**Upstream item: G5.** RotateKV's ablation implies post-RoPE rotation alone is insufficient **at 2
+bits**; we run 4/8, and the frozen tree stores rotated post-RoPE keys by construction. **Do not open
+until G5 shows outliers *surviving* rotation.** If G5's rotated ratio is near-flat, this is a
+**permanent decline**, not a deferral — record it as declined and stop.
+
+### B2 (B, blocked on G4) — confirm the K/V asymmetry direction, then generalise or drop it
+
+**Upstream item: G4**, specifically its `q4_0/q8_0` vs `q8_0/q4_0` pair — those two arms are the
+decisive comparison and neither is optional. If K-dominance holds on our stack, generalise it into a
+standing **"quantize V before K"** selection rule and write it into the registry's KV defaults so it
+is not re-derived per model. Third-party direction to test against, **never to adopt as a
+baseline**: K-projection quantization accounts for 76-102% of alignment damage in 8 of 9 models at
+4-bit, with a measured Qwen K:V ratio of 154x (K-only 92.2% flip vs V-only 0.6%). If our arms
+disagree with that direction, ours governs. [intake-1291#record]
+
+## Research Intake Update — 2026-08-22 (Stage-2b, intake-1280 massive activations)
+
+### Deprioritisation record — our hybrid is the LEAST massive-activation-exposed one measured
+
+`arXiv:2608.12149` (intake-1280#record) characterises massive activations across five linear-attention
+architectures, four hybridization ratios, two scales and twelve large open checkpoints — **including
+ours**. Two things follow for this handoff, and the second is the reason this is a *record* rather
+than a task.
+
+**1. The ratio convention, so nobody re-derives it wrong.** §2 defines ρ = L / L_FA, so a "ρ:1"
+configuration has one full-attention layer per ρ sequence-mixing layers; Table 4 confirms it
+(Hybrid-3:1 = 16 linear + 8 full of 24). **Production Qwen3.6-35B-A3B is 10 full-attention layers of
+40, i.e. ρ = 4** — not one of the paper's trained arms; it sits between 3:1 and 6:1. **Cite §2 and
+Table 4, never Appendix C.1**, which calls Qwen3.5 "a fixed 3:1 pattern" while stating in the same
+sentence that it has 40 layers with 10 full attention — the informal literal sense, contradicting the
+paper's own formula. The full convention record, with the corroborating read of
+`src/models/qwen35moe.cpp:25-36`, lives in
+[log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md); it is not duplicated
+here.
+
+**2. At ρ = 4 our family shows the smallest massive activations of every hybrid the paper measured.**
+
+| Checkpoint | ρ | Peak first-token magnitude |
+|---|---|---|
+| **Qwen3.5-35B-A3B, Base *and* Instruct** | **4** | **30** (all six domain panels) |
+| Kimi-Linear-48B-A3B Base / Instruct | ≈ 3.9 (27 mixers: 20 KDA + 7 MLA) | 180–240 / 300 |
+| Qwen3.5-122B-A10B / 397B-A17B | 4 | 60 / 75 (120 on CodeSearchNet) |
+| Zamba2-1.2B | — | 300 |
+| Nemotron-H 8B / 47B / 56B | ≈ 6.4 at 56B | 750–1800 |
+
+**Caveat, carried verbatim because it is the difference between a datum and a folklore number:** these
+are *"PEAK FIRST-TOKEN MAGNITUDE, read from the y-axis upper bounds of Figure 20 (these are UPPER
+BOUNDS on the plotted peak, not tabulated values — the paper tabulates no peak magnitudes)"*. And the
+paper's own Table 7 caption restricts magnitude comparisons to **within an architecture and scale**,
+so the cross-family column above is *suggestive, not measured*.
+
+**Why the Kimi Linear row is nonetheless the load-bearing one.** It is **ratio-matched** — ρ ≈ 3.9
+against our 4 — and it is 6–10× more exposed. Ratio therefore does not explain the gap. What does is
+**output gating on the full-attention layers**, which the paper independently identifies as the
+dominant attenuator (adding FA output gates "markedly attenuates" the spikes; removing all GDN output
+gates produces "only a moderate increase" — the effect tracks gate *placement*, not gate count). Our
+family ships that gating natively: `src/models/qwen35moe.cpp:349-354`. The paper also concedes the
+ratio story does not generalise — the *sparsest*-attention family it measured (Nemotron-H, ρ ≈ 6.4)
+shows the *largest* magnitudes, and "magnitude has no consistent monotonic relationship with parameter
+count". **So no ratio-based extrapolation to our stack is supported; only the direct Qwen3.5
+measurement bears on us, and it is reassuring.** One generation's caveat: the paper measures Qwen3.5,
+production is Qwen3.6-35B-A3B — same architecture, different checkpoint.
+
+**Disposition: deprioritise, do not close.** This lowers the prior; it does not settle anything,
+because the paper **contains no quantization experiment of any kind** ("quantization" appears once, in
+a related-work paragraph) and **reports no median anywhere**, so *no dynamic-range ratio can be
+computed from it* — the one number that would tell us whether our KV cache is exposed. The row that
+would close the line as measured-and-negative is the first-party outlier-ratio measurement already
+filed against this handoff (max/median and max/p99.9 for K and V separately, on the 10 full-attention
+layers). Until it runs, **do not re-open this line from an abstract** — that is what this record
+exists to prevent.

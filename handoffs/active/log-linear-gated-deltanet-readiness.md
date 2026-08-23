@@ -75,6 +75,33 @@ All must be true to activate implementation:
 - [x] Reference implementation (github.com/HanGuo97/log-linear-attention) includes inference code, not just training ✅ 2026-08-12 — `HGatedDeltaNetForCausalLM(…, GenerationMixin)` + `hattention/recurrent.py`; see the caveat below, it is not runnable as shipped
 - [x] Model architecture documented sufficiently for GGUF converter implementation ✅ 2026-08-12 — full `config.json` + 423 named tensors read out of the safetensors header + HF modeling source
 
+### Gate Criteria — portability addendum (added 2026-08-22, wave-2 Stage-2b)
+
+Two further gates. They apply to **every** candidate on the
+[GDN branch map](#the-gdn-branch-map-z--recorded-no-action), this one included, and they exist because
+the three gates above **cannot tell apart three cases the wave put side by side**. They do **not**
+retract the 2026-08-12 activation: gates 1–3 stand fired, and these two are the portability screen
+those three could not express.
+
+- [ ] **Gate 4 — a device-agnostic (non-Triton) numerical oracle exists.** Not "reference code exists"
+      (gate 2) but "reference output can be produced on a CPU, to check a ggml port against".
+      Log-linear GDN has the *code* — `hattention/recurrent.py`, pure PyTorch — but it is not wired
+      into the model, so the gate is **open for log-linear too**; closing it is the first bullet under
+      [Next actions](#next-actions-now-that-the-gates-have-fired). Gated DeltaNet-2 (intake-1281#record)
+      is the inverse: a better decode path and **no** non-Triton path at all.
+- [ ] **Gate 5 — a ggml primitive exists for every mixer type in the architecture, or a
+      numerically-correct fallback is identified for those that lack one.** MiniCPM-SALA
+      (intake-1287#record) fires all three original gates and is still not fully portable — its
+      InfLLM-V2 block-sparse selection has no ggml op, and only the *fallback* clause rescues it (the
+      vendor's own reference runs those layers dense whenever CUDA is unavailable). Log-linear GDN
+      fails this gate today: `ggml_log_linear_state_update()` and `ggml_log_linear_attention()` do not
+      exist.
+
+**Why this is not bookkeeping.** Gates 2 and 4 came apart in *opposite directions* on two candidates
+in a single wave. A gate list that scores both as "reference implementation available" cannot tell you
+which port has something to check its output against — and that is the distinction that decides
+whether a port is startable at all.
+
 ## Activation Evidence — 2026-08-12
 
 Filed in the format the [2026-05-28 Audit Reset](#2026-05-28-audit-reset--executor-start-here) asks for.
@@ -153,6 +180,19 @@ a **fixed 15** (tensor `L [6, 15]`) with `max_position_embeddings` 16384 — a 2
 and therefore a different checkpoint — and the level set is constant in L, so "at 262K context" does not qualify
 the log-linear number at all.
 
+**A second reference point on the same axis — Gated DeltaNet-2 at 1.0× state (intake-1281#record).**
+The table above has one data point on the state-size axis and it is an outlier (15×). GDN-2 is the
+other end: it replaces GDN's scalar delta gate with a channel-wise erase gate on the key axis and a
+channel-wise write gate on the value axis, and its recurrent state is **byte-identical in size** to
+GDN's and KDA's — Appendix E.1 matches all three at `H · d_k · d_v` = 16 · 128 · 128 = 262,144 floats
+per layer per batch element. It changes *how the state is edited*, not how large it is. The cost moves
+somewhere else entirely: two full-rank per-layer projections (`d_model → H·d_k` and `d_model → H_v·d_v`)
+that no pretrained GDN checkpoint contains, ≈ **+375.5 M always-active dense parameters** on our
+architecture, ≈ **+12.5 %** active parameters for **zero** state saving. **Quote the state-size axis
+and the active-parameter axis together or the comparison is meaningless** — log-linear buys context
+scaling with 15× state; GDN-2 buys update expressiveness with +12.5 % active weights; PGDN buys it
+with ~0.8 %. That is the shape of the branch, and no row of it is free.
+
 ### Next actions now that the gates have fired
 
 - [ ] Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused_recurrent'`
@@ -171,7 +211,17 @@ the log-linear number at all.
 ## Implementation Plan (triggered when gate criteria met)
 
 1. Clone reference impl, verify architecture matches paper description
-2. Implement GGUF converter for log-linear variant tensors
+2. **Add tensor entries to the existing converter package** — not "write a converter". At
+   `0db32c06e3e5` the converter is a **package**: `convert_hf_to_gguf.py` is a 296-line CLI shim with
+   **zero** `ModelBase.register` calls, and every architecture is registered under `conversion/`
+   (`conversion/qwen.py:271` `@ModelBase.register("Qwen3NextForCausalLM")`; `:623` and `:628`
+   `Qwen3_5ForCausalLM` / `Qwen3_5MoeForCausalLM` → `MODEL_ARCH.QWEN35` / `QWEN35MOE`;
+   `conversion/kimi_linear.py:15` `KimiLinearModel`). **A literal grep of `convert_hf_to_gguf.py`
+   returns zero registrations for EVERY architecture in the tree**, so that probe cannot distinguish a
+   supported arch from an unsupported one — a textbook *PROBE outside the tool* vacuous negative
+   (`feedback_vacuous_verification_empty_input`). The GDN family **is** supported; the work here is the
+   two extra tensor names (`attn.L`, `attn.l_proj.weight`) plus the level count, added to the existing
+   package. Verified read-only against the frozen tree 2026-08-23.
 3. New model variant `llm_build_log_linear_delta_net` in `src/models/`
 4. New ggml operators: `ggml_log_linear_state_update()`, `ggml_log_linear_attention()`
 5. GGUF metadata extensions: `architecture = "log_linear_gated_delta_net"`, state index tensors
@@ -190,6 +240,14 @@ Estimated effort: 2-3 weeks from gate activation.
 | HuggingFace | Models tagged log-linear or using log-linear GDN | Monthly |
 | llama.cpp upstream (ggml-org) | PRs for log-linear layer support | Monthly |
 | arxiv.org | Qwen4 or next-gen models adopting log-linear GDN | Monthly |
+| `fla-org/flash-linear-attention` → `fla.models` | `GatedDeltaNet2ForCausalLM` appearing (today `fla.layers` + `fla.ops` carry GDN-2, `fla.models` does not) — the adoption signal that would reopen the declined GDN-2 port | Weekly, **pin the checked revision** (last checked `bc3b101dcb713d`) |
+| llama.cpp upstream PR #27018 — `LLM_ARCH_MINIMAX_01` | **Already merged 2026-08-14**, four days after the v9 freeze point `0db32c06e3e5` (committed 2026-08-10T21:54:03Z), so it is post-v9 and absent from our tree — which carries `LLM_ARCH_MINIMAX_M2` but not `_01`. Lightning-attention decay slopes on hybrid recurrent memory: the closest existing template for any constant-decay-GLA linear half. Watch for follow-ups and fixes | On any v10 candidate, else monthly |
+
+**Pin the revision every time you check a row in this table.** Not a style preference: the HuggingFace
+row above is *monthly* and was not executed, which is the sole reason the log-linear gate fired six
+months after the checkpoint went public (see [How long this was
+available](#activation-evidence--2026-08-12)). A row whose last-checked state is unrecorded cannot be
+distinguished from a row that was never checked.
 
 ## Open Questions
 
@@ -245,8 +303,8 @@ Nine sources were ingested and dived. Every row below carries a **compute class*
 
 ### The GDN branch map (Z — recorded, no action)
 
-Four structurally different answers to GDN's fixed-state forgetting are now indexed. They are easy to
-conflate and the distinction is load-bearing:
+Five structurally different answers to GDN's fixed-state forgetting are now indexed — the fifth added
+2026-08-22. They are easy to conflate and the distinction is load-bearing:
 
 | Branch | Lever | Entry | Standing |
 |---|---|---|---|
@@ -254,6 +312,20 @@ conflate and the distinction is load-bearing:
 | Segment checkpoints | O(NL) | intake-354 | reference only |
 | Bounded exact side-cache | leave the state fixed, bolt on a bounded cache | intake-1272 (LTE), intake-1268 (HOLA) | **LTE opened the branch 8.5 months before HOLA** |
 | **Fix the update rule** | diagonal key-Gram preconditioner, state size unchanged | **intake-1273 (PGDN)** | **new fourth branch — no checkpoint, gate 1 CLOSED** |
+| **Offload recall to a sparse-attention minority** | 8 of 32 layers do block-sparse **exact** attention at 2 KV heads; the linear state stays lossy and simple | **intake-1287 (MiniCPM-SALA)** | **new fifth branch — Apache-2.0 9B checkpoint released; a dense-fallback port needs zero new ggml ops** |
+
+**Two things about the fifth row that a one-line summary will get wrong, and both are load-bearing.**
+(a) **SALA's linear primitive is constant-decay Simple GLA, not Gated DeltaNet.** The paper says
+"Lightning Attention" throughout; the released code calls `fla.ops.simple_gla`
+(`chunk_simple_gla` / `fused_recurrent_simple_gla`) with `g_gamma` from `_build_slope_tensor()` — the
+parameter-free ALiBi power-of-2 slope schedule, no delta rule, no data-dependent gate. Three
+independent implementers read it the same way. So SALA does **not** sit on the GDN branch and bears on
+the log-linear port only by analogy. (b) **Its memory is O(N) at 8 KiB/token, not O(1).** Its 8 sparse
+layers keep the **full** KV cache — the paper names this "sparse computation, dense storage" and does
+not solve it, it shrinks it (8 layers × 2 KV heads × 128 head_dim × 2 (K+V) × 2 B = 8,192 B/token, so
+8 GiB at 1M, plus a constant ~48 MiB fp32 recurrent state). It must therefore **not** be filed under
+"bounded exact side-cache" alongside LTE and HOLA, whose whole claim is a *bounded* cache. Both facts
+are from the released artifact rather than the prose (intake-1287#record).
 
 **PGDN is the only one in the cluster with a near-zero state cost** — one d_k vector per head against
 the existing d_k×d_v matrix (~0.8 %), versus the log-linear branch's measured ~557 MB vs ~37 MB
@@ -309,3 +381,109 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
 `bash scripts/validate/validate_intake.sh` → 0 and `python3 scripts/handoffs/index_state.py --check`
 → 0 before committing. For **G1**, the run is only valid if the *meaningful-prompt* arm is present —
 a filler-only sweep reproduces the upstream defect in evidentiary quality and settles nothing.
+
+## Research Intake Update — 2026-08-22 (Stage-2b wave, intake-1280…1294)
+
+Row ids in this section are **wave-2 plan ids** and do **not** continue the 2026-08-21 section's
+numbering — `G16` and `B9` below are unrelated to `G1` / `B1` / `G5` / `B4` above. Compute classes as
+before: **Z** zero-compute, **G** compute-gated (names the measurement, the owning handoff, and the
+result that opens the gate), **B** blocked-on (names its upstream item).
+
+### The hybridization-ratio convention: our stack is ρ = 4 (Z — recorded)
+
+`arXiv:2608.12149` (intake-1280#record) defines it in §2 Preliminaries, p.3, verbatim:
+
+> Letting L_FA = |I_FA|, we define the hybridization ratio as rho = L/L_FA; thus, a rho:1
+> configuration contains one full attention layer per rho sequence-mixing layers. Larger rho
+> corresponds to sparser full attention, whereas rho = 1 recovers a full attention model.
+
+Table 4 confirms the reading (Hybrid-3:1 = 16 linear + 8 full of 24). **Production Qwen3.6-35B-A3B is
+10 full-attention layers of 40, therefore ρ = 4** — corroborated from our own code rather than only
+from the paper: `src/models/qwen35moe.cpp:25-30` defaults `full_attn_interval = 4` and marks layer *i*
+recurrent iff `(i+1) % 4 != 0`, putting attention at layers {3, 7, …, 39}; `:33-36` switches n_layer
+40 / 48 / 60 to 35B_A3B / 122B_A10B / 397B_A17B.
+
+**Cite §2 and Table 4. Never cite Appendix C.1.** The paper contradicts itself there: Appendix C.1
+calls Qwen3.5 "a fixed 3:1 pattern" while stating *in the same sentence* that it has 40 layers with 10
+full attention. That is the informal literal "three GDN layers then one attention layer" sense, not
+the ρ its own §2 defines. Two consequences follow, and both bite: anyone citing "Qwen3.5 is one of
+their 3:1 arms" is wrong twice — Qwen3.5 is not an M-A-P arm at all (it is a separately evaluated open
+checkpoint), and by the paper's own ρ it sits at **4**, *between* the 3:1 and 6:1 arms.
+
+This **corroborates and does not replace** the m-a-p ratio-convention row already filed in the
+2026-08-21 section above: two papers, two conventions, one answer for us (ρ = 4, attention fraction
+1/4). Do not open a second row for it. The MA-exposure consequence of ρ = 4 is recorded in
+[tq3-quantization-evaluation.md](tq3-quantization-evaluation.md), which owns the KV-quantization axis.
+
+### GDN op-test coverage stops ~8–32× below the reported problem band (Z — recorded, feeds G16)
+
+Read from the frozen tree at `0db32c06e3e5` on 2026-08-23, read-only:
+
+- `tests/test-backend-ops.cpp` holds **50** `test_gated_delta_net` **eval** cases — the ones that
+  assert numerics. The largest `n_seq_tokens` among them is **256**
+  (`test_gated_delta_net(GGML_TYPE_F32, 4, 64, 256, 1)`).
+- The 512 and 1024 shapes exist **only** in `make_test_cases_perf()` (`32, 128, 512, 1` and
+  `32, 128, 1024, 1`, plus a 4-head pair). **Perf cases assert nothing.** Anyone grepping this file
+  for "1024" will conclude we have coverage there. We do not.
+- Sharper than a length count, and it is what shapes G16: every eval case that reaches 64–256 tokens
+  runs at `head_count=4, head_size=64`. **Our production geometry — H=32, d=128 — appears in the eval
+  set only at `n_seq_tokens = 1`.** Long-token coverage and production-geometry coverage are disjoint
+  sets, so neither one implies the other.
+
+Chunked-GDN numerical problems are reported in the 2048–8192-token band (intake-1290#record), i.e.
+**~8–32× above where our assertions stop**. This is the gap G16 exists to close, and it is why G16's
+first deliverable is *new eval cases*, not a benchmark.
+
+(The bare 256-token ceiling is already noted in the completed K28 correction landed by `89049772`.
+What is new here, and what determines what G16 must actually add, is the 50-case count, the
+**perf-only** status of the 512/1024 shapes, and the length/geometry disjointness.)
+
+### Tasks
+
+- [ ] **G16 (G) — numerical fidelity of a chunked GDN kernel at long prompts.** On
+      `llama.cpp-experimental` branched from the **current production tip** (never v9):
+      `test-backend-ops -o GATED_DELTA_NET -b ROCm0`, **plus new eval cases at `n_seq_tokens`
+      2048 / 4096 / 8192 at our H=32 d=128 geometry** — per the coverage gap above, today neither the
+      length nor the geometry is asserted, so importing the kernel without them tests nothing. Then a
+      greedy A/B, chunked vs recurrent, at 2K / 8K / 16K / 24K on a **semantically meaningful**
+      document, comparing first-sampled-token id and full output bytes.
+      **Gate:** NMSE under the **unrelaxed** 1e-7 at every shape **or** byte-identical greedy output at
+      every length. **A relaxed threshold is not a pass.** The third-party gfx90a validation already
+      reports 2.97e-7 / 3.70e-7 against a 2e-7 gate, and the shape that fails is the **longest** one
+      (T=2048) — exactly where reassociation error is expected to grow, since the chunked form is
+      algebraically equivalent to the per-token recurrence in exact arithmetic but not in floating
+      point (intake-1290#record). Relaxing the threshold deletes the only signal this row carries.
+      **Owner:** this handoff. **Named consumers:** `G15` and `B5` in
+      [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md);
+      neither may proceed on a chunked kernel this row has not cleared.
+      Both compute planes were held by other sessions through this wave — **filed, not run**.
+- [ ] **B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper
+      omitted.** Filed as **tracked-not-scheduled**, in two halves with different upstreams.
+      **(a) Retrofit initialization.** Broadcast each head's scalar β and α across channels to recover
+      plain GDN exactly inside an `fla.layers.GatedDeltaNet2` layer and confirm logits match at step 0
+      to fp tolerance — one layer, PyTorch, CPU-feasible. **Blocked on the ROCm 6.2 / gfx90a
+      torch+triton feasibility probe (`G6` in
+      [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md))**: there is no environment on
+      this host in which that layer can currently be instantiated, and the fla floor is `>=0.5.2` —
+      falling back to 0.4.2 is forbidden. If the equivalence holds, continued-pretraining retrofit is
+      mathematically free of a cold start, which is the only route by which GDN-2 reaches our stack
+      without a from-scratch run.
+      **(b) β ∈ [0,2] on the plain Gated DeltaNet baseline.** The control the paper never ran: it
+      tested the Grazzi negative-eigenvalue variant *on GDN-2* and found "no consistent gain at this
+      scale" (Table 5), and never ran the converse on its own baseline. **Blocked on an external
+      event**, named explicitly so this does not read as ours to schedule — a matched training run at
+      ≥ 350 M, far outside our envelope. The realistic disposition is to watch someone else run it, via
+      the `fla.models` monitoring row added above and via arXiv 2607.07953 (ETH/CSCS, the only
+      independent GDN-2 evaluation in existence — hop-4, **not ingested**, recommended for a wave 3).
+      Porting GDN-2 to ggml is a standing **decline on evidence**, not a compute block: 4/4 independent
+      losses to plain GDN, the untested baseline control above, and +12.5 % active parameters for zero
+      state saving (intake-1281#record). See also the static-analysis question `Z12` filed in
+      [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md), which could shrink
+      that +12.5 % and is zero-compute.
+
+### Verification for the above
+
+`bash scripts/validate/validate_intake.sh` → 0 and `python3 scripts/handoffs/index_state.py --check`
+→ 0 before committing. For **G16**, a run that reports only `test-backend-ops` at the shipped shapes is
+**not** this row: the new 2048/4096/8192 cases at H=32 d=128 are the row, and a pass at the shipped
+shapes alone is a vacuous verification of the exact kind the coverage gap above describes.

@@ -303,3 +303,89 @@ Source: control-plane planning session (audit `research/deep-dives/2026-07-16-ar
       catching it** — a 512-token check cannot see a defect whose reported onset is 16.5–19.8K tokens.
       **Blocked on G1** because G1 is what determines whether that failure mode exists on our paths at
       all. Until G1 reports, do not enable this lever in production.
+
+## Research Intake Update — 2026-08-22 (Stage-2b wave, intake-1281 / intake-1290)
+
+Row ids are **wave-2 plan ids** and do not continue the 2026-08-21 section above — `B5` here is
+unrelated to `B3` there. Classes: **Z** zero-compute, **G** compute-gated (names the measurement, the
+owning handoff, and the result that opens the gate), **B** blocked-on (names its upstream item).
+
+### The ggml delta for a GDN-2-class update rule is one assert (Z — documentation; do NOT open a port branch)
+
+Read read-only from the frozen tree at `0db32c06e3e5` on 2026-08-23:
+
+| What a channel-wise erase/write rule would need | State in our tree |
+|---|---|
+| Channel-wise **decay** on the key axis | **Already ships.** `ggml/include/ggml.h:2578` documents `g` as `[1, H_v, n_tokens, n_seqs]` (scalar gate) **or** `[S_v, H_v, n_tokens, n_seqs]` (KDA); `ggml/src/ggml-cpu/ops.cpp:10851` asserts exactly that disjunction, and `:10864` sets `const bool kda = (neg0 == S_v)` |
+| Channel-wise **β** (the erase gate) | **`GGML_ASSERT(src_beta->ne[0] == 1);` at `ggml/src/ggml-cpu/ops.cpp:10852` — the only structural blocker**, and its per-backend counterparts |
+| gfx90a coverage | **Free.** `ggml/src/ggml-hip/CMakeLists.txt:63` is `file(GLOB GGML_SOURCES_ROCM "../ggml-cuda/*.cu")`, so any CUDA-side GDN change compiles for HIP with no separate port step |
+
+**This documents an existing capability. It is not a proposal, and it must not be read as one.**
+Porting GDN-2 is a standing **decline on evidence** — see `B9` in
+[log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md). The value of the row
+is that the next person to ask "how big is the ggml delta for a channel-wise gate?" gets the answer
+without re-deriving it, and gets the *right* answer: one assert, not a new op family. **Do not open a
+port branch on the strength of it** (intake-1281#record).
+
+### #26001's `K == 1` gate can never fire on the production frontdoor (Z — hard selection constraint)
+
+**Mostly already recorded — point at it, do not restate it.** The full finding landed 2026-08-22 in
+commit `89049772` as *"Correction — 2026-08-22 (Stage-2b dive on llama.cpp PRs #26001 / #24561)"* in
+[k28-fused-chunked-gdn-kernel-research.md](../completed/k28-fused-chunked-gdn-kernel-research.md):
+the three selection constraints, the Amdahl re-derivation, and the numerics caveat. That handoff is
+**completed**, and `G15` below lives here — so only the operative rule belongs in the active plane:
+
+> **On this stack #24561 is the only candidate; #26001 is structurally unusable, not merely
+> unattractive.** We serve `--spec-type draft-mtp`, so `K = cparams.n_rs_seq + 1 > 1`
+> (`src/models/delta-net-base.cpp:570`, and again at `:502`), and #26001 requires `K == 1`; its
+> runtime dispatch is additionally `GGML_CUDA_CC_IS_NVIDIA(cc_dev)`, so it has no AMD runtime path at
+> all. **`keep_rs` support is a requirement, not a preference**, and any future "just take the merged
+> one" reasoning is wrong here. #24561 was closed unmerged on maintenance/authorship grounds, not on
+> merit.
+
+Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record).
+
+### Tasks
+
+- [ ] **G15 (G) — is a chunked GDN kernel actually faster on our MI210, with our model?** On
+      `llama.cpp-experimental` branched from the **current production tip** (never v9; four-step
+      workflow), port **#24561's** kernel — not #26001's, per the `K == 1` constraint above — build
+      `GGML_HIP=ON -DGPU_TARGETS=gfx90a`, then `llama-bench` at **pp2048 / pp8192 / pp32768**,
+      chunked-on vs chunked-off **on the same binary**.
+      **HIP residency must be proven, not asserted:** `verify_ggml_linkage.sh` (it lives in the
+      research repo), **non-zero VRAM sampled DURING the run**, and a KFD process count. "I invoked the
+      HIP build" is not evidence and `ldd` cannot supply it.
+      **The kernel will silently not launch at defaults.** Its occupancy floor requires
+      `chunked_blocks >= MIN_BLOCKS_PER_SM * nsm` with `MIN_BLOCKS_PER_SM` = 3; at H=32 v-heads and
+      `n_seqs = 1` that is 32 × (128/16) = **256 blocks against 3 × 104 = 312 on MI210**, so it never
+      fires. Set `GGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2` **or** run `-np >= 2`, where it fires
+      unmodified. A run that omits this measures the recurrent kernel twice and reports a tie —
+      which is exactly the failure the third-party head-to-head already hit.
+      **Gate:** **≥ 8 % full-model prefill gain at p8192, with G16 clean.** Below that, K28's no-go
+      stands on the reasoning that closed it.
+      **Be honest about the margin when reading the result.** K28's measured attribution ceiling is
+      unchanged and the realistic Amdahl gain for our geometry is **~6–9 % prefill** against the
+      11.5 % K28 already judged insufficient — the derivation is in the completed-handoff correction
+      linked above, not repeated here. What this wave changed is the **cost side only**: an
+      implemented, gfx90a-benchmarked kernel now exists instead of needing to be written. The gate
+      sits at the top of the predicted range deliberately; a 5 % result is a *pass for the physics and
+      a fail for the decision*, and should close the row rather than start a tuning campaign.
+      **Blocked-adjacent:** do not report a speedup from a kernel that `G16`
+      ([log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) has not
+      cleared numerically. Both compute planes were held by other sessions through this wave —
+      **filed, not run**.
+- [ ] **B5 (B, blocked on `G16` in
+      [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) — do not stack
+      a chunked GDN kernel on `GGML_CUDA_GDN_STATE_BF16`.** The two levers compound *two independent
+      precision reductions on one op*: the chunked form reassociates the recurrence into
+      f16/bf16-input f32-accumulate GEMMs whose residual error grows with chunk count, and the BF16
+      state lever narrows the state at every load/store. Neither has been characterised in the
+      presence of the other, and the combination is not the sum of two validated arms.
+      **A correction to the lever's own documentation, read firsthand from
+      `ggml/src/ggml-cuda/gated_delta_net.cu` at `0db32c06e3e5`:** the file comment at `:4-8` says
+      "only the HBM load/store of the **state** is narrowed". That is not what the code does. `dst` is
+      typed `state_t` (`:23`), `attn_data = dst` (`:51`), and the attention output is written through
+      `gdn_store<state_t>(attn_col * scale)` at `:121` and `:150`. **The lever therefore narrows the
+      attention OUTPUT to bf16 as well as the state.** That widens the blast radius of the existing
+      `B3` row above, whose 512-token coherence gate was already judged structurally incapable of
+      catching a long-prefill precision defect.

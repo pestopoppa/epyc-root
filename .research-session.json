@@ -3,7 +3,7 @@
   "started_at": "2026-08-21T13:50:00Z",
   "last_checkpoint": "2026-08-22T14:05:00Z",
   "phase": 5,
-  "stage": "wave2-stage2-closeout",
+  "stage": "wave2-stage3-gate",
   "session_kind": "research-intake (10 operator-submitted sources: 8 URLs + 2 pasted inline write-ups)",
   "previous_session": {
     "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
@@ -141,6 +141,13 @@
       "verbatim": "recuperate them now",
       "disposition": "planned",
       "plan_ref": "re-launched the 6 wave-2 dives that died at the concurrency cap and resumed 4 partial ones via SendMessage rather than re-forking, preserving their partial findings. All 15 dives now complete."
+    },
+    {
+      "seq": 12,
+      "stage": "3",
+      "verbatim": "proceed with next stage",
+      "disposition": "planned",
+      "plan_ref": "wave-2 Stage-3 gate: present the audited action plan for the 15 Stage-2b entries. Per skill amendment 6faa32bc this wave does NOT inherit the wave-1 approval."
     }
   ],
   "open_gates": [
@@ -259,6 +266,7 @@
     "dive_count": 15,
     "dives_complete": 15,
     "entries_to_mint": 15,
-    "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval."
+    "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval.",
+    "entries_minted": "intake-1280..1294 (commit 22650200)"
   }
 }
