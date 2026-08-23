@@ -23,8 +23,11 @@ The operator's role split is decided and is not reopened here:
   auditor SESSION: the reviewer function runs as **per-packet headless invocations**, one per
   completion (P2-7). Per-packet audit and the fleet-wide heavy wrap are therefore two different
   transactions — see *Heavy wrap* below — and only the latter takes the single-writer lease.
-- Inference alone judges live resource compatibility and grants compute. Coordinator prioritizes
-  eligible work; neither Coordinator nor Auditor manufactures hardware state.
+- Inference alone judges live resource compatibility (graded `compute-window` events) and owns
+  the physical-claim lease vocabulary; the daemon executes compute-window grants deterministically
+  against `compute_policy.yaml` (D4 as amended 2026-08-15/16; BUS_PROTOCOL rule 11 as amended
+  2026-08-16). Coordinator prioritizes eligible work; neither Coordinator nor Auditor manufactures
+  hardware state.
 
 This plan replaces the original planning stub. The audit found that its direction was sound but its
 mechanics were not executable: a worker commit was not visible across lanes, blocked work had no
@@ -68,7 +71,7 @@ structural checks pass despite those defects, so each contract below has a negat
 | Receipt acceptance, lane-integration order, `/clear`, follow-on dispatch | Coordinator | Worker reports facts; Auditor may audit |
 | Audit verdict and audit follow-up rows | Auditor | Worker retains ownership of source completion state |
 | Handoff compaction, domain-index mutation, generated index state, wiki compile | One heavy-wrap writer | Auditor subagents may inspect/propose read-only |
-| Compute window grade, compatibility, physical claim, safe drain | Inference | Coordinator ranks only Inference-eligible candidates |
+| Compute window grade, compatibility, physical claim, safe drain | Inference | Coordinator ranks only Inference-eligible candidates; the daemon grants windows per `compute_policy.yaml` (D4) |
 | Cross-lane promotion to `main` | Coordinator integration path | Auditor supplies the reviewed/published packet |
 
 Workers must not mutate domain indices, master generated blocks, wiki manifests, or `main` during a
