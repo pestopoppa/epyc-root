@@ -33,7 +33,6 @@
 | RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | NIB2-18: DS-6 QuarterScheduler revalidation gate — dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co… | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3d — the 2026-06-13 hold conditions were superseded, not satisfied; close them out | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
-| RTG-25 | orchestrator nps4 48x4 notes | [orchestrator-nps4-48x4-notes.md](orchestrator-nps4-48x4-notes.md) | Fold the NPS4 48×4 topology notes into the CPU topology reference, then retire the notes file | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — manual canonical bench (sampling quality cert) (clean window; certifies #1–3). Greedy→sampled(0.1–0.3)+seed shifts output behavior. Ce… | — |
 | RTG-28 | reasoning effort levels | [reasoning-effort-levels.md](reasoning-effort-levels.md) | TB-1 — per-model budget curve on a truncation-inducing suite | — |
 | RTG-29 | retrain routing models | [retrain-routing-models.md](retrain-routing-models.md) | Operator decision: run a --keep-enabled bracket to actually enable live routing | — |
