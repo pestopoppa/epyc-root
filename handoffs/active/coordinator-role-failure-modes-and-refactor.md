@@ -432,13 +432,18 @@ not a knowledge gap.
 
 The `Mech` column is the role's first pass at that and is a claim under review, not an input.
 
-- [ ] **A-1 — Audit the `Mech` column.** Independently classify F-01…F-32. Self-assessment over 32
+- [x] **A-1 — Audit the `Mech` column.** Independently classify F-01…F-32. Self-assessment over 32
       rows: **6 `MECH` · 5 `MECH-UC` · 20 `RECALL` · 1 withdrawn** — and two of the six `MECH` are
       mechanisms that **existed and were not used** (F-03's anchored counter, F-22's row screener), so
       the honest protected count is four. **A `MECH` claim is only true if the mechanism would have
       REFUSED the specific failure**, not if it merely covers the topic. Mutation-test the ones you
       accept — and note that F-24 is a mechanism that *was itself* the defect, so "has a mechanism" is
       not the same as "is protected".
+      ✅ 2026-08-23 — audited: 4 of 6 `MECH` survive mutation-testing (F-03, F-04, F-08, F-22 — F-22
+      now wired via AUD-2, stronger than claimed); F-15 and F-27 downgraded to RECALL (rule-only).
+      All 6 `MECH-UC` upgraded to MECH (landed + tested: fleet_watch `83f204cf`→P3-3, C51/C55/H-1/H-2,
+      bus_supervisor H-4 SHA predicate). 27 tests in `tests/coordination/test_mech_column_audit.py`;
+      analysis in `docs/reviews/rtg48-mech-column-audit-2026-08-23.md`.
 - [ ] **A-2 — Adjudicate RC-1, falsifiably.** If RC-1 is right, failures on mechanised rules should be
       near zero and failures on un-mechanised rules should be common. The tables above claim that
       pattern holds (six rules held, all mechanised; five violated, none mechanised). **Test it by
