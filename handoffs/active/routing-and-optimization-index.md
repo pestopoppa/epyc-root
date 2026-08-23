@@ -60,7 +60,7 @@
 | RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Wire compute blocker/window events and the receipt-cut heavy-wrap executor; then shadow the complete lifecycle | RTG-34, RTG-48 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
 | RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | Measure billed-token cost and QA recall for bitmap frames vs raw text on a reader we serve (OCC-1) | UFH-07, INF-41 |
-| RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-1 — per-suite A/B of one Qwen3.x role via --chat-template-file vs its embedded template | RTG-27 |
+| RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-E7b — propagate the 2026-08-22 E-7 stamps into master-registry quality rows (compile chain + check green) | — |
 
 ## Cross-domain
 
