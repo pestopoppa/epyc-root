@@ -10,7 +10,6 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | Retire this compatibility pointer and redirect its external citations to the live spec-decode handoffs | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
 | INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Preserve r19; implement the relayed zero-profiler, counter-gated, paired-ablation C5 backlog | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
