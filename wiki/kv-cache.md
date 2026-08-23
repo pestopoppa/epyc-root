@@ -2,7 +2,7 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 (evening wave-2 compile: the KIVI "no gap" correction + the REAL instrument gap, the dual-cache reframing (capacity vs bandwidth), the group-32/axis granularity correction, and the KV-quant monitoring gates G2-G5 with the massive-activations deprioritisation — see bottom sections; earlier same-day: the orchestrator prefix-cache path now has an owner and a measurement plan: KV-5 closed in the wiki, the three latent defect fixes KV-0a/b/c landed 2026-08-20 — every KV slot save was failing, roles sharing one server silently clobbered each other's slots, and `radix_cache.py` was dead code — and the KV-1/KV-2/KV-3/KV-4/KV-6 rows filed — see the end of the page; earlier 2026-08-22 note: closure fine-structure of the COMPLETED KV-quant handoff — **V-dequant, not K, is the entire CPU flash-attention prefill cost** (q4_0/f16 −1% vs q8_0/q4_0 +71%; q8_0/q8_0 is the worst prefill config measured at 3.3× slower, reconciling the 2026-08-03 memory-optimal reading as a different axis); Hadamard's isolated contribution priced at 70% gap closure (+0.055 → +0.017); TQ3 abandoned on a *fair* 32B retest after its first gate was flagged as failure-zone-unfair; QJL's SNR≈1.13 arithmetic death; spec-decode +3.3% with q8_0/q4_0; the 4-KV-head q4_0-K hazard; and PR #21089 (TurboQuant CPU KV) verified CLOSED UNMERGED upstream 2026-06-02, retiring the 2026-07-20 monitor row — see the end of the page; earlier 2026-08-12 note: a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
+**Last compiled**: 2026-08-23 (**wave-2 research intake — the KIVI "primary quality gap" recorded for months at `kv-cache-quantization.md:320` never existed**: per-token V is structurally guaranteed once V is quantized (quantized V forces flash attention, which sets `v_trans=false`, making V channel-contiguous), the per-channel-K half is a **2-bit-only** prescription by KIVI's own OB 1, and key outliers are handled instead by the in-tree Hadamard rotation — the only residual is symmetric-vs-asymmetric, which is a flag (`q4_1`/`q5_1`), not a code change; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS, finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI, so third-party KV-quant damage numbers are a pessimistic bound for us and must never be transferred unqualified; **VeriCache's algorithmic core is already expressible in frozen v9 with no code change** (`-ctkd`/`-ctvd` set the draft context's KV type independently of the target's and a model can be its own drafter) while its systems contribution depends on an interconnect we do not have; the dual-cache post-mortem is reframed as **a capacity argument applied to a bandwidth problem**; the PCIe "KV streaming is an anti-pattern" line is scoped to *per token*; R9's spec-decode verdict stands on NIAH+PPL while its throughput warrant is void; and llama.cpp slot-restore reuse loss is **conditional, not blanket** — zero only for a DIVERGENT or EXACT-REPEAT prompt, full for a strict continuation, with upstream PR #25592 (live in-memory checkpoint path) outranking #26004 (dormant disk path) for us — see the end of the page; earlier 2026-08-23 note: evening wave-2 compile: the KIVI "no gap" correction + the REAL instrument gap, the dual-cache reframing (capacity vs bandwidth), the group-32/axis granularity correction, and the KV-quant monitoring gates G2-G5 with the massive-activations deprioritisation — see bottom sections; earlier same-day: the orchestrator prefix-cache path now has an owner and a measurement plan: KV-5 closed in the wiki, the three latent defect fixes KV-0a/b/c landed 2026-08-20 — every KV slot save was failing, roles sharing one server silently clobbered each other's slots, and `radix_cache.py` was dead code — and the KV-1/KV-2/KV-3/KV-4/KV-6 rows filed — see the end of the page; earlier 2026-08-22 note: closure fine-structure of the COMPLETED KV-quant handoff — **V-dequant, not K, is the entire CPU flash-attention prefill cost** (q4_0/f16 −1% vs q8_0/q4_0 +71%; q8_0/q8_0 is the worst prefill config measured at 3.3× slower, reconciling the 2026-08-03 memory-optimal reading as a different axis); Hadamard's isolated contribution priced at 70% gap closure (+0.055 → +0.017); TQ3 abandoned on a *fair* 32B retest after its first gate was flagged as failure-zone-unfair; QJL's SNR≈1.13 arithmetic death; spec-decode +3.3% with q8_0/q4_0; the 4-KV-head q4_0-K hazard; and PR #21089 (TurboQuant CPU KV) verified CLOSED UNMERGED upstream 2026-06-02, retiring the 2026-07-20 monitor row — see the end of the page; earlier 2026-08-12 note: a fork SWA slot-reuse patch previously held for review is **DROPped as a correctness regression, not merely redundant** — it deleted upstream's per-sequence check; KV quantization gets its first decision package with an exact parity result; and lazy KV faulting is re-read as *relocating* provisioning cost rather than removing it; earlier 2026-07-20 note: adds the StreamingLLM floor/admission verdict, the TurboQuant/ChunkKV KV-quant monitor status, and the MI210 KV-split residency facts; earlier 2026-07-17 pass retained)
 **Sources**: 44 documents (3 deep-dives, 8 active handoffs, 2 completed handoffs, 25 intake entries, 3 progress logs, 2 upstream issue threads)
 
 ## Compiled Update — 2026-08-12: a "keep or port?" review that resolves to *neither*, and the first KV-quant decision package
@@ -454,3 +454,295 @@ Two facts keep being conflated because both are called "grouping": (1) **granula
 - [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — gates G2/G3/G4/G5 and B1/B2 with their named open/close criteria, H11 static read, the massive-activations deprioritisation record, the PR #21089 closed-unmerged re-verification
 - [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — G3: quantized-KV spec-decode bandwidth-positive only at `draft_max = 1` on MI210 (see [Speculative Decoding](speculative-decoding.md))
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) / [RotateKV arXiv 2501.16383](https://arxiv.org/abs/2501.16383) / [arXiv 2606.09864](https://arxiv.org/abs/2606.09864) / [arXiv 2608.12149](https://arxiv.org/abs/2608.12149) — the corrected external evidence base
+
+## Compiled Update — 2026-08-23 (wave-2 research intake): the KIVI "primary quality gap" never existed, our KV blocks are finer than the published mitigation, and slot-restore loss is conditional
+
+**Confidence: verified** — every statement below about our own tree is a read-only inspection of frozen
+`production-consolidated-v9` (`0db32c06e3e550065b78311a6031ef3dd2c4f27c`) with file:line loci, reproduced
+independently by three separate Stage-2b dives. Every third-party figure is dive-verified against its
+primary source and is labelled as third-party. Under [MEASUREMENT.md](../MEASUREMENT.md) **no external
+number here gates a stack change**; each is a hypothesis, and the tests are filed on
+[`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) and
+[`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md).
+
+### The "primary quality gap" at `kv-cache-quantization.md:320` never existed — and it was wrong in three independent ways
+
+The standing first-party claim was: *"llama.cpp's current q4_0/q8_0 KV does symmetric block quantization
+— KIVI's per-channel K / per-token V is NOT implemented. This is the primary quality gap."* A Stage-2b
+dive read KIVI (arXiv:2402.02750v2, ICML 2024) in full against the frozen tree and **retired it**
+(`intake-1286#record`, dive-verified 2026-08-22, credibility 4/HIGH).
+
+- **Per-token V is already implemented, and is structurally unavoidable once V is quantized.**
+  `src/llama-kv-cache.cpp:231-232` allocates K and V with **dim0 = channels, dim1 = tokens**, so a
+  32-element `q4_0`/`q8_0` block spans 32 contiguous *channels within one token* — precisely KIVI's
+  per-token grouping at G=32. `v_trans = !cparams.flash_attn`, and `src/llama-context.cpp:3557` refuses
+  to start with *"quantized V cache requires flash_attn to be enabled"*. **So whenever V is quantized,
+  `v_trans` is false and V is channel-contiguous: our quantized V can never land on KIVI's bad axis.**
+  The only configuration that would transpose V is the one where V is f16 and unquantized. This half of
+  the old claim was simply false.
+- **The K half is outside KIVI's demonstrated scope.** KIVI's own **OB 1** states that at INT4,
+  per-token quantization of *both* caches maintains accuracy; the axis asymmetry is established **only
+  at 2 bits**, and the paper runs **no 4-bit and no 8-bit axis ablation** — so it licenses no conclusion
+  in either direction at the bit widths we serve. Production runs q8_0/q8_0, q4_0/f16 and q4_0/q4_0,
+  never 2-bit. KIVI's own Table 3 4-bit per-token/per-token rows match or exceed FP16 CoQA on three of
+  four models (Llama-2-7B 64.82 vs 63.88; Llama-2-13B 66.73 vs 66.37; Mistral-7B 67.80 vs 67.40).
+- **We solve the key-outlier problem a different way, and an independent source says that way works.**
+  The orthonormal self-inverse Walsh-Hadamard rotation gated at `src/llama-kv-cache.cpp:319-336`
+  (`ggml_is_quantized(type)` && `n_embd_head % 64 == 0`, defeatable by `LLAMA_ATTN_ROT_DISABLE`) and
+  applied at `src/llama-graph.cpp:2713-2720` mixes across **head channels** — the exact dimension KIVI's
+  outliers live on — redistributing a magnitude-*m* outlier as *m*/√n so every 32-channel group ends up
+  with comparable dynamic range. RotateKV (arXiv:2501.16383v2, Su et al., **no author or institutional
+  overlap with KIVI**) uses **per-token keys plus rotation** at 2 bits and states verbatim that it
+  "offers superior outlier management compared to per-channel approaches", reaching <0.3 PPL degradation
+  on Llama-2-13B and <1.7% GSM8K degradation. **Per-channel keys are one remedy for channel outliers,
+  not a requirement.**
+
+**The one residual difference is real, small and cheap to test.** KIVI's quantizer is **asymmetric**
+(zero-point *z* = min X, scale *s* = (max X − min X)/(2^B − 1)) where `q4_0`/`q8_0` are **symmetric**
+(scale only). That half of the old sentence was accurate — but `q4_1` and `q5_1` are supported
+**asymmetric** KV cache types, so this is a **flag, not a code change**. A Hadamard-rotated distribution
+is near zero-mean and near-symmetric, which predicts the asymmetric quantizer buys nothing here; that
+prediction is directly falsifiable in one short A/B, filed on the TQ3 handoff.
+
+Two honest limits, neither of which reinstates the gap. First, this is a **mechanism argument plus one
+third-party paper**, so it retires a *claim* and licenses no config change. Second, RotateKV's own Table 7
+builds its 2-bit result on plain QuaRot rotation **plus** outlier-aware channel reordering **plus**
+pre-RoPE rotation, implying a plain rotation is not sufficient *at 2 bits*; our fork applies a plain
+**post-RoPE** Hadamard (the K-shift path at `src/llama-kv-cache.cpp:1874-1888` confirms the cache holds
+rotated post-RoPE keys: dequantize → rotate back → RoPE → rotate forward → requantize). At 4/8 bits this
+is very likely immaterial. Recorded as a caveat, not a defect, because we do not run 2-bit KV.
+
+One correction to how KIVI itself is cited anywhere in this lineage: **the per-token-V prescription is
+not an outlier argument.** KIVI's Figure 2 finds *no* value-channel outlier pattern; the per-token V
+choice is derived from **84.3% attention sparsity** — the output is a weighted sum over few tokens, so
+per-token grouping confines error to unimportant tokens. Anyone citing KIVI for "V is per-token because V
+has outliers" is citing it wrongly.
+
+### The granularity finding: the reading rule for every future KV-quant paper against this stack
+
+**With `-fa 1`, llama.cpp quantizes K and V per token in 32-element blocks running along the CHANNEL
+dimension.** Two consequences that keep being conflated because both mechanisms are called "grouping":
+
+1. **We are finer than the published *mitigation*, by default, everywhere.** The alignment-collapse study
+   (arXiv:2606.09864v2, `intake-1291#record`) lists **Group-64 quantization** among the mitigations it
+   recommends and measures. Our group-32 is finer than its remedy. **Its headline damage figures are
+   therefore a pessimistic bound for us, not a matched estimate** — any transfer of its numbers to this
+   stack must say so, and G4 on the TQ3 handoff exists to replace the transfer with our own number.
+2. **This is the OPPOSITE axis from KIVI, not the same one.** KIVI prescribes *per-channel for K*; ours is
+   *per-token for both*, and quantized V is structurally locked onto the per-token axis by the
+   flash-attention gate above. Same word "group", orthogonal dimension. **Do not read a Group-64 result
+   as an upper bound on our group-32 damage without first checking which axis the grouping runs along.**
+
+The behavioural half of the alignment-collapse result — the decoupling from perplexity, the K/V damage
+asymmetry, and what our KV write path does *not* protect against — is compiled on the
+[Quantization](quantization.md) page, which owns the KV-quant quality-instrument thread.
+
+### Spec-decode over quantized KV: R9's verdict stands, its warrant did not — and VeriCache's algorithm is already expressible in frozen v9
+
+**R9's warrant is repaired, not its verdict.** This page's 2026-08-22 section records "spec-decode
+composes with quantized KV: 19.15 t/s (+3.3% vs f16) on Coder-32B — the R9 interaction risk closed
+positive". The COMPLETED handoff has since corrected the *reasoning*: **that figure is a speed
+observation and cannot evidence "no degradation"** — it logged no acceptance rate and named no
+correctness instrument. The clearing evidence is **R11's needle-in-a-haystack result (q8_0/q4_0 = 9/9 at
+1K/4K/16K, 10/50/90% depth) together with the R4 perplexity pair**; the throughput number is supportive,
+never probative. R9 stays **CLEARED** because its config sits on the protected axis (K = q8_0) at the
+safe bit width, but it is right by evidence only after the substitution. Re-measurement with both an
+acceptance rate and a named correctness instrument is filed as `speculative-decoding-mtp-refresh.md`
+**B5** (itself blocked on that file's G3, so the re-run does not measure a full-cache dequant and report
+it as a KV-quant result).
+
+**VeriCache's algorithmic core needs no code from us** (arXiv:2605.17613v1, `intake-1282#record`,
+credibility 1/Low — the low tier grades *the paper's own performance claims*, not the tree reads below,
+which carry no credibility discount). VeriCache drafts on a compressed KV cache and then **verifies
+against the FULL KV cache**, so the target distribution is the real FP16 model rather than a quantized
+surrogate. Frozen v9 already ships `--spec-draft-type-k`/`-ctkd` and `--spec-draft-type-v`/`-ctvd`
+(`common/arg.cpp:3806-3830`), which set the **draft context's** KV type independently of the target's,
+and `common_speculative_are_compatible` (`common/speculative.cpp:70`) checks only vocab type / BOS / EOS
+/ token text — **so a model can be its own drafter**. `-ctkd q4_0 -ctvd q4_0` against `-ctk f16 -ctv f16`
+with `--model-draft <same GGUF>` *is* draft-on-lossy-KV / verify-on-exact-KV, with no code change.
+Nothing in either repo configures those flags **asymmetrically**: no registry entry and no launcher sets
+them at all, and the only recorded use is a 2026-07-14 experimental-tree argv that set
+`-ctkd q8_0 -ctvd q8_0` mirroring the target, which exercises none of the premise.
+
+Three bounds on that, all load-bearing:
+
+- **It gives us the ALGORITHM, not the SYSTEM.** llama.cpp's draft context prefills its own second
+  full-length cache **in the same memory tier**. There is no host-resident full-KV tier, no
+  PCIe-overlapped swap-in and no staggering scheduler — which is the entire systems contribution.
+- **The headline decomposes, and the arm matching our lever is the weak one.** VeriCache *alone* measures
+  **1.92–2.73×** on long-context decoding and 1.33–2.11× on remote prefix caching; the 4.26× is
+  **composed with an EAGLE3 drafter**, the 4.35× is a **modelled ideal** from its own Appendix-B analytic
+  model, and the **quantization-compressor arm** (KVQuant, RotateKV, ExpectedAttention, SnapKV on
+  Mistral-24B) is **1.4–1.9×**. Losslessness is scoped by footnote 1 to *greedy* decoding "except for
+  randomness caused by hardware"; the measured residual is KL < 0.01 nats, not zero; sampling is asserted
+  in footnote 2 and never evaluated. And "first" is contradicted by TriForce (arXiv:2404.11912, 2024-04)
+  and Vegas (arXiv:2602.07223, 2026-02), whose own abstract already describes the mechanism as
+  established prior work.
+- **Total memory goes UP, and our card sits at the worst end of its own hardware sweep.** VeriCache keeps
+  the full KV on CPU *in addition to* the compressed cache on GPU; GPU-resident footprint is
+  KV_full·(xc+1)/(x+1), i.e. 0.231·KV_full at its own x=25, c=0.2 — **a tier relocation, not a size
+  reduction**. Its sweep runs 1.92× at HBM-to-interconnect ratio 60 up to 3.01× at ratio 10; **our MI210
+  ratio is 35.5–56.7** (derived by the dive from MI210 HBM2e 1638 GB/s spec / ~1025 GB/s attained against
+  the first-party PCIe4 x16 measurement of **28.89 GB/s H2D, 28.20 D2H, 2026-08-03**), predicting
+  **~1.9–2.4×**, not 4×. Note the denominator spread: the [Quantization](quantization.md) page's roofline
+  work records **1433.3 GB/s** as MI210 achievable bandwidth, giving ratio 49.6 — inside the same band, so
+  the conclusion is insensitive to which attained figure is used. VeriCache's resource model also
+  **excludes GPU compute** by its own §5.1, so any CPU-side estimate built on it is optimistic by the
+  prefill term.
+
+A first-party correction rode along and matters more than the paper: **the whole-cache dequant "cliff" is
+a CUDA/HIP-backend property and must NOT be generalised to our primary CPU serving path.** The CPU
+backend takes `kq_vec_dot = ggml_get_type_traits_cpu(k->type)->vec_dot` (`ggml-cpu/ops.cpp:8635`), so K
+is consumed **in its quantized form at any q_len**, and V is dequantized **one DV-length row at a time**
+into a stack temp (`:8739`). There is no whole-tensor conversion anywhere on the CPU path. On the GPU
+path, without `GGML_CUDA_FA_ALL_QUANTS` only Q4_0/Q8_0/F16/BF16/F32 are FA-eligible KV types
+(`fattn.cu:340-358`) — exactly our production `-ctk q4_0`/`q8_0`.
+
+**Filed, not run:** measure α for KV-asymmetric self-speculation on our own models — same GGUF as target
+and drafter, target `-ctk f16 -ctv f16`, draft `-ctkd q4_0`/`q8_0`, sweeping `--draft-max` ∈ {4, 8, 16},
+reporting mean accept length and per-token agreement. Gate opens if q8_0-draft agreement ≥ ~95% at
+draft-max 8; closes if q4_0-draft agreement < 90%. The drafter is the full model, so **this measures α,
+not speedup**. Rider on `speculative-decoding-mtp-refresh.md`.
+
+### The dual-cache post-mortem was a capacity argument applied to a bandwidth problem
+
+This page's *"Hybrid buffer architecture is memory-negative"* finding — the `kv_recent` f16 + `kv_old`
+q4_0 design that allocated both at full context size — is **reframed, not overturned**
+(`kv-cache-quantization.md:71`, reframed 2026-08-23). "Dual cache = more bytes resident = wrong" is sound
+**only when both copies sit in the same memory tier and the cheap copy is dequantized on the read path.**
+Ours did both, which is why it lost: the **~30% gen-speed gap at 14.5K filled context is the cost of the
+`q4_0 → f16` cast on every decode token** (~400 MB cast per decode token at 14K positions × 512 elements
+× 28 layers × 2), a *dequantization* cost, not a *capacity* cost.
+
+**A dual-cache design in which the second copy lives in a cheaper tier — host DDR5 behind a GPU, or a
+slower NUMA node — and is never dequantized into the attention hot path is a different design and is not
+refuted by anything measured here.** Cite that post-mortem narrowly: *same-tier plus dequantize-on-read is
+memory-negative AND bandwidth-negative.* It establishes nothing about tiered KV, and must not be used to
+close a tiering proposal.
+
+### "Per-token KV streaming over PCIe is an anti-pattern" — scope it to *per token*
+
+The 2026-07-20 section above states that PCIe4 is 7–14× slower than EPYC DDR5, "so per-token KV
+*streaming* is an anti-pattern". That remains true **per token**, and is now scoped: **amortised over an
+x-token draft/verify horizon the effective bandwidth is 28.89·x GB/s**, reaching **EPYC DDR5 parity
+(~300 GB/s) at x ≈ 11** and **MI210 HBM parity (1638 GB/s spec) at x ≈ 57**. Those crossovers are
+*derived* by the VeriCache dive from the first-party 28.89 GB/s H2D measurement, not measured end-to-end.
+The transfer is only an anti-pattern when it is *not* amortised, and the horizons this literature
+actually uses (x = 20–50) straddle the DDR5 crossover. The minimum draft length needed to hide a full-KV
+reload at c = 0.25, B = 1 is x ≥ 24.8 (spec) / 15.3 (attained) at KV/M = 0.5, rising to 74.3 / 46.0 at
+KV/M = 2.0 — i.e. above the 20–50 range once KV exceeds ~0.5× model bytes.
+
+### Slot save/restore: the reuse loss is CONDITIONAL, it is detectable today, and the wrong PR is being watched
+
+Upstream issue **#25913** ("`/slots` save/restore silently loses all prompt reuse on hybrid/recurrent
+models") is real, open, unfixed on upstream master as of 2026-08-22, and **present byte-identically in
+frozen v9** — the 87-line SLOT_SAVE/SLOT_RESTORE handler block matches upstream b10045 and the 33-line
+checkpoint/reset block matches b10045 *and* upstream master `e85caa81`; no EPYC-local commit touches
+either locus, so there is neither local mitigation nor local aggravation (`intake-1292#record`,
+credibility 3/Medium, five independent reproducers on five backend/model combinations).
+
+**The issue title is too broad in the direction that matters most to us.** Reuse is zero only for a
+**DIVERGENT or EXACT-REPEAT** post-restore prompt; **a prompt that strictly extends the restored prefix
+reuses fully, with no patch.** This follows from
+`pos_min_thold = std::max(0, pos_next - n_swa - (has_new_tokens ? 0 : 1))`
+(`tools/server/server-context.cpp:3322`) given that a hybrid's `llama_memory_hybrid::seq_pos_min` returns
+the **recurrent cell's position** rather than 0 (`src/llama-memory-hybrid.cpp:172-175`): a strict
+continuation leaves `pos_min` below the threshold and skips the reset block entirely, while an exact
+repeat or a mid-prefix divergence opens it and forces `n_past = 0`. The PR author states the same thing
+in prose, and four independent measurements fit the corrected table. **Our full-to-quarter migration is a
+turn-boundary session handover — i.e. exactly the continuation shape — so "every migration costs a full
+re-prefill" is NOT the default expectation; it is the failure mode that occurs when something rewrites
+the prefix.**
+
+Mechanism, for the record: the save writes **tokens only** (`:2539-2541`); restore calls
+`slot->prompt.clear()` (`:2586`), and `server_prompt::clear()` destroys checkpoints
+(`tools/server/server-task.h:615-618`); with the checkpoint list empty `do_reset` is always true
+(`:3388`) and `pos_next`/`n_past` are forced to 0 (`:3404-3409`), logged only at `SLT_TRC` (level 4).
+Scale of the effect where it does fire, third-party: one controlled A/B on a 58,202-token prefix measured
+`prompt_n = 58,202 / cache_n = 0 / 181.9 s` on master versus `prompt_n = 516 / cache_n = 57,686 / 4.7 s`
+with the candidate patch.
+
+**"Silent" is true of the log and of the restore response, and FALSE of the next completion.**
+`slot.n_prompt_tokens_cache = n_past` (`:3434`) reaches the client as `timings.cache_n`, OpenAI
+`cached_tokens`, Anthropic `cache_read_input_tokens`, and the `/slots` payload — the instrument already
+exists and this repo already documents it. **The operative silence is ours**:
+`concurrency_aware.py:148-161` returns `True` on an HTTP 200, `:679` advances to
+`MigrationState.VERIFIED` with `detail="restore_confirmed"`, and `:682` then **erases the source KV**.
+That is a misnamed state; gating the source erase on measured reuse (compare returned `n_restored`
+against `n_saved`, then read `cache_n`) is zero-compute and independent of any benchmark. The same gap
+exists in `llama_server.py:1256-1279`, which never parses the body at all.
+
+Three operational facts to carry:
+
+- **The migration path is NOT dormant.** `--slot-save-path` is set on all three frontdoor instances
+  (`:8070` at `-np 4`, `:8080`/`:8180` at `-np 1`, all `Qwen3.6-35B-A3B-MTP-Q8_0.gguf`, `--device none`),
+  emitted unconditionally by `orchestrator_stack.py:1454-1462`; 75 `kv_migrate_*` artifacts sit on disk
+  and live probes recorded forward=6 / reverse=4 with zero aborts. Honest qualification: those artifacts
+  carry synthetic `old-sess_*` ids and the newest is 2026-08-09, so **exercise by production traffic in
+  the last two weeks is unproven** — "wired, enabled, exercised under probe", not "dormant".
+- **Any measurement must defeat the RAM cache first.** Leftover in-process checkpoints produced a
+  **340× false negative** for one reporter (a 5K restore appeared to reuse until the server was
+  restarted, then reprocessed 5,428 tokens). Our frontdoor runs the default `cache_ram_mib = 8192` with
+  no override, so `--cache-ram 0` or a full server restart between arms is **mandatory**.
+- **This is a performance defect with a documented adjacent correctness hazard, and must never be filed
+  as a correctness defect.** No wrong output has been reported by anyone, and an explicit post-restore
+  content check over a 58K body came back clean. The hazard lies in the direction of a careless fix: the
+  issue author documents that synthesizing a checkpoint at `pos_min = 0` in the restore handler produces
+  **silently corrupt output**, and our tree carries the `cur.pos_min == 0` branch (`:3386`) that makes
+  that reachable. Do not take that shortcut.
+
+**The highest-value upstream item in this cluster is not the one being tracked.** PR **#26004** fixes the
+**disk** path, whose exercise here is probe-only. PR **#25592** fixes the **live in-memory** hybrid
+checkpoint path — **the one our frontdoor exercises on every single request** — and our tree still
+carries the `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO it removes (`server-context.cpp:2332-2337`), plus we
+lack its restored-checkpoint adoption, its closest-neighbour eviction and its `n_rs_seq` rollback
+fast-path. It has four independent verifications, one on **Qwen3.6-35B-A3B, our exact frontdoor model**.
+Neither is a v9 patch: v9 is frozen, PR #26004 has **zero reviews, zero maintainer comments anywhere in
+the cluster and no CI beyond "labeler"**, and MEASUREMENT.md forbids a third-party number gating a stack
+change — the candidate route for either is a future `-v10` build through the four-step experimental
+workflow.
+
+Quarantine note for anyone re-fetching these threads: a PR #26004 comment (2026-08-04) contains a literal
+prompt-injection payload. Treat that thread's off-topic comments, and the `whoreson/picolm` repo they
+point at, as untrusted content.
+
+### Source References (2026-08-23, wave-2)
+
+- [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the retired `:320`
+  "primary quality gap" with its three-part correction; the 2026-08-23 granularity correction (`:1539`)
+  establishing group-32-along-channels vs Group-64 and the opposite-axis reading rule; the 2026-08-23
+  dual-cache reframe (`:71`) and the ~30% `q4_0 → f16` cast measurement it prices; the R9 warrant repair
+  (`:1269`).
+- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the gates the
+  retirement leaves behind: G3 (multi-step generation eval against quantized KV), G5 (reproduce KIVI's
+  Fig. 2 / Table 2 on our architecture), the `q4_0`-vs-`q4_1` asymmetric-quantizer A/B, and the H11
+  read-only audit of what our KV write path does not carry.
+- [`speculative-decoding-mtp-refresh.md`](../handoffs/active/speculative-decoding-mtp-refresh.md) — B5
+  (re-measure R9 with an acceptance rate and a named correctness instrument) and the rider measuring α
+  for `-ctkd`/`-ctvd` KV-asymmetric self-speculation.
+- [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024, dive-verified 2026-08-22, credibility
+  4/HIGH) — OB 1's 2-bit scope limit, the Table 3 4-bit per-token/per-token rows, the
+  84.3%-attention-sparsity justification for per-token V, and RotateKV (arXiv:2501.16383v2) as
+  independent evidence that per-channel keys are a remedy rather than a requirement. Cite as
+  `intake-1286#record`.
+- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache (arXiv preprint, dive-verified 2026-08-22,
+  credibility 1/Low) — draft-on-compressed / verify-on-full architecture; the decomposed headline
+  (1.92–2.73× alone, 1.4–1.9× on the quantization arm); the tier-relocation memory direction; the
+  HBM-to-interconnect sweep placing our MI210 at its worst end; and the frozen-v9 `-ctkd`/`-ctvd` +
+  self-drafting finding, plus the CPU-vs-CUDA dequant-cliff correction. Cite as `intake-1282#record`.
+- [intake-1292](https://github.com/ggml-org/llama.cpp/issues/25913) llama.cpp `/slots` save/restore
+  (issue #25913 + PR #26004, dive-verified 2026-08-22, credibility 3/Medium) — the divergent /
+  exact-repeat / strict-continuation scope derivation from `pos_min_thold`, the byte-identity audit
+  against frozen v9, the `cache_n` detectability finding and our `VERIFIED`-on-HTTP-200 gap, the
+  `--cache-ram` masking hazard, and PR #25592 as the larger live exposure. Cite as `intake-1292#record`.
+- [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization (arXiv
+  preprint, dive-verified 2026-08-22, credibility 3/Medium) — the Group-64 mitigation our group-32 is
+  finer than; behavioural detail compiled on [Quantization](quantization.md). Cite as
+  `intake-1291#record`.
+
+(append to the page-level `## Source References` list)
+
+- [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024) -- the warrant behind every "per-channel K / per-token V" citation in this corpus. Dive-verified 2026-08-22: the prescription is measured, not asserted, but OB 1 establishes it **at 2 bits only** and the paper runs no 4-bit or 8-bit axis ablation; it reports **no perplexity anywhere**; and the full-precision residual window, not the axis, does most of the accuracy recovery (Llama-2-7B GSM8K 5.76 -> 12.74 at a fixed axis). Retires the `kv-cache-quantization.md:320` "primary quality gap". Cite as `intake-1286#record`
+- [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization -- ConditionalFlip as a paired behavioural gate; K carries 76-102% of the damage at 4-bit; **Group-64 is its mitigation, which our group-32 blocks are already finer than**. Unreviewed preprint, NVIDIA-only hardware, no independent replication located. Cite as `intake-1291#record`
+- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache -- draft on the compressed KV cache, verify against the FULL KV cache; the algorithmic core is expressible in frozen v9 via `-ctkd`/`-ctvd` with the model as its own drafter, while the systems contribution needs an interconnect we do not have. Cite as `intake-1282#record`
+- [intake-1292](https://github.com/ggml-org/llama.cpp/issues/25913) llama.cpp `/slots` save/restore (issue #25913 + PR #26004) -- post-restore reuse is zero only for a DIVERGENT or EXACT-REPEAT prompt and full for a strict continuation; detectable today via `timings.cache_n`; PR #25592 (live in-memory checkpoint path) is the larger exposure for us. Cite as `intake-1292#record`

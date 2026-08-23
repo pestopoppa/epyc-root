@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (evening tier-1/backlog pass compile: the OP-21 overlap re-bench and its decision-grade discipline (pooled n=9 cv 0.125 is NOT decision-grade; disjoint control 1.360 cv 0.018 is), the SS-BENCH-GATE-b bench-core-claim guard (launcher reads the live bench driver's ACTUAL core sets from /proc, fail-closed; default-affinity sidecars pinned rather than refused), the OBS-3/4/5/7 fail-open→three-state fixes (unreadable ≠ clear; unknown means busy), the NIB2-57a unmeasured-prior audit (shared ResolvedTps, `tps_known` provenance mask, fabricated 10.0 default dropped), and the scoring-infra loader-projection question — see bottom sections; earlier same-day: log retention bounds the evidence window: a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the empty_generation detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-23 (Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
@@ -2862,3 +2862,164 @@ The `or baseline_tps` fallback that let NIB2-57 persist is closed: full reader a
 - [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
 - [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — the loader projection question and the projection-contract test
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` → 502/SSE fail-closed route fix (cross-listed with [Inference Serving](inference-serving.md))
+
+## Compiled Update — 2026-08-23: Annex D — the first protocols for output identity, and every clause traces to a measured false clear
+
+**Confidence: verified** — the protocol text and its status are the ratified annex
+(`measurement/protocols/determinism-parity.md`, 2026-08-23T08:28:26Z) and the MEASUREMENT.md §2
+registry; the failure modes each clause encodes are the `dive-verified`
+`intake-1288#record` / `intake-1283#record` / `intake-1279#record` / `intake-1284#record` entries,
+read against primary artifacts. **Every measured figure below is third-party and gates nothing**
+(MEASUREMENT.md). What is ours is the instrument.
+
+### Annex D exists — and both its protocols are STAGED, so nothing may yet be quoted under them
+
+`measurement/protocols/determinism-parity.md` is the sixth annex of the measurement constitution,
+filed by instrument class. It holds two protocols:
+
+| Protocol | Answers | Metric |
+|---|---|---|
+| `P-PARITY-1` | *Do these two decode configurations produce the same tokens?* (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **direction: not applicable, this is a verdict** |
+| `P-NONDET-1` | *Does either of them produce the same tokens as itself?* | bit-identical / not, plus `max abs Δ` across N ≥ 10 repeats (↓) |
+
+**These are the repo's first protocols of any kind for output identity. Every parity check in the
+repo until now was ad hoc** — which is why the historical parity claims scattered across
+[Speculative Decoding](speculative-decoding.md) and `kv-cache-quantization.md` are durable negatives
+of their own narrow scope and not P-PARITY-1 results. **Both protocols are registered STAGED, not
+ratified**: no measurement has been taken under either, and none may be quoted as ratified until one
+has. The scope of the 2026-08-23 ratification was the *annex*, not its protocols — a distinction
+worth preserving, because "the protocol exists" and "the protocol has ever produced a number" are
+different claims and only the first is currently true.
+
+Two framing rules travel with them and generalise past decode parity:
+
+- **Neither is a speed protocol and neither may be quoted beside a throughput figure.** A verdict
+  and a rate answer different questions; printing them adjacently invites the reader to trade one
+  for the other.
+- **`P-NONDET-1` is a precondition, not an option.** An arm that is not self-identical cannot be
+  compared to anything, and a parity failure measured against a non-deterministic arm is
+  uninterpretable. This is the output-identity analogue of the reproducibility tripwire this page
+  already requires before a Probe-B envelope sweep.
+
+The ratification script was itself run end-to-end on a throwaway repo copy plus **four mutation
+cases**, each confirming it refuses and leaves nothing behind — the same
+mutation-test-your-own-guard discipline compiled in the 2026-08-21 vacuous-pass campaign, applied to
+a governance script rather than to a scorer.
+
+### Every load-bearing clause names the failure it prevents
+
+This is the part worth generalising. Annex D was not derived from first principles; each clause was
+written **against a specific measured false clear**, and the annex records which:
+
+| Clause | The measured failure it prevents |
+|---|---|
+| **n ≥ 5 prompts, minimum, non-negotiable** | A single-prompt parity check false-clears at a rate **near 50%**: the same upstream reporter went **1/5 → 0/5 → 4/5** depending on prompt and patch, and a separate arm was byte-identical on one workload and divergent on the other. **A 1-prompt parity result is not a P-PARITY-1 result and may not be labelled as one.** |
+| **Fresh process per phase** | Measured **1/5 divergences with a reused server versus 4/5 with a fresh process per phase — *despite* `cache_prompt=false`**. The flag is not a substitute for process isolation and must not be cited as one. |
+| **Per-prompt PASS/FAIL + first-differing generation-token index; NEVER an aggregate** | A hash-only comparison says *that* arms diverge, never *where* — and an aggregate ("4/5 passed") hides the prompt-dependence that is the entire reason n=1 is unsafe. It is five results, and *which* prompt failed is the load-bearing part. The index is a **generation**-token index on the run's own vocabulary; a character offset is not comparable across arms. |
+| **Two independent comparison keys** — stripped-output MD5 (banner and prompt echo removed) *and* a normalized-identity SHA-256 over `{content, reasoning_content, token_ids}` | A text hash cannot see a divergence that renders to identical text; an unstripped hash compares the banner. Stripping is part of the instrument, not tidying. |
+| **ABBA ordering (A, B, B, A)** | Order effects and process-lifetime effects are both real here and both alias onto the factor under test. |
+| **`-ctk f16 -ctv f16` by default; any quantized-KV arm needs its own factor-disabled baseline first** | Quantized KV **alone** moves greedy output with the factor under test disabled. It compounds with whatever the parity test measures, so a quantized-KV non-parity result is unattributable without it. |
+| **`GGML_CUDA_LOG_MMVQ_ROUTE=1` route capture on every arm** | EPYC-local `a6b4b5263` (`ggml/src/ggml-cuda/mmvq.cu:341-344`) deliberately routes Q8_0 to a different kernel at `ne11 >= 2`, and its own commit message says *"numerically-valid (not bit-exact)"*. **A reference arm that takes the same kernel route as the arm under test is not a reference.** The equivalent `N==1`/`N>1` split exists on both CPU paths, so batch invariance is a property none of our three compute planes holds. |
+
+**The generalisable rule: a protocol clause with no named failure behind it is decoration, and a
+clause whose failure was measured is not negotiable at design-review time.** Annex D is the worked
+example — it is short precisely because nothing was added that could not name its own incident. The
+inverse test is equally usable on any protocol this repo writes: read each clause and ask *what
+false result does dropping this produce?* A clause that cannot answer is a candidate for deletion;
+one that answers with a measured rate is a candidate for a hard refusal rather than a
+recommendation — which is why n ≥ 5 is written as a refusal to accept the label, not as guidance.
+
+The decision rule is scoped just as tightly: PASS on all prompts means parity holds **for those
+prompts, that model, that KV type and that route** — a durable negative of exactly that width. Any
+FAIL is **not** automatically a defect in the factor under test, and a FAIL whose reference arm took
+the same kernel route is reported as **unattributable**, not as a divergence.
+
+### `P-NONDET-1` answers the prior question — and the harness *shape* is the instrument
+
+The protocol is one sentence of method: **repeat the identical call N ≥ 10 times inside ONE process
+and compare all N outputs to each other**, not to a stored expectation. Its consequence is the sharp
+part: **a configuration that is not bit-identical with itself cannot support any parity, regression
+or A/B claim** until the source is found.
+
+**A one-shape-per-fresh-process harness cannot run this protocol and is structurally blind to the
+phenomenon — it sees a clean first call and clears a broken kernel.** The measured instance
+(third-party, fla issue #1156 on MI355X / gfx950 / ROCm 7.2): ten identical backward calls in one
+process returned **ten different answers**, absolute-max compounding monotonically **0.40 → 252.88**
+across the ten, while **the forward pass stayed bit-identical throughout**. The forward-clean check
+that most harnesses actually run is precisely the check that cannot see it.
+
+The cruel detail is why that harness existed at all: a HIP illegal-address fault poisons the
+context, making every later op in the process report failure, so **one shape per process was the
+*correct* discipline for a different problem**. The hygiene that made the shape sweep valid is the
+hygiene that hid the non-determinism. Two harness properties can each be individually right and
+jointly blind — which is a reason to state a harness's process/repeat topology explicitly in the
+protocol rather than leaving it to the runner's judgement.
+
+The same report contributes a second, independent instrument defect worth adding to this page's
+vacuous-verification catalogue: its headline "reproduces on 0.4.2 **and** 0.5.2" was an
+**import-resolution artifact** — the "0.5.2" run was still importing 0.4.2 from `site-packages`. It
+is a new instance of the standing **TARGET-resolved-from-the-wrong-tree** face: the check ran, it
+was well-formed, and it resolved to the wrong artifact. **A same-node A/B across library versions
+must install each version to a separate prefix and select it by `PYTHONPATH`**, then assert the
+*resolved* path rather than the requested version. (The underlying defect was real and confined to
+0.4.2, the issue is closed self-retracted, the forward path is clean at every shape tested, and we
+run no `fla` on this host — the methodology is what reaches us, not the bug.)
+
+### `llama-bench` cannot validate output, and is now a formally excluded correctness instrument
+
+Recorded on this page 2026-08-22 as a third party's defective exculpatory control; Annex D makes it a
+standing exclusion of our own. At frozen v9 `0db32c06e3e5`,
+`tools/llama-bench/llama-bench.cpp:2106-2109` sets `tokens[i] = std::rand() % n_vocab` for the
+prefill path, and `:2131-2140` discards the model's output entirely in the decode loop
+(`token = std::rand() % n_vocab` each iteration). **It feeds random tokens, never samples the model,
+and never inspects output.** It therefore cannot detect wrong output of any kind, cannot serve as a
+`P-PARITY-1` instrument, and cannot support a correctness claim in any form — including the implicit
+form "the benchmark ran clean, so the graph is fine."
+
+The generalisation belongs beside this page's *a control should be allowed to reject the experiment*
+rule: **before offering a throughput harness's silence as correctness evidence, check what the
+harness feeds itself.** A speed instrument that synthesises its own inputs is measuring the graph,
+not the model, and its pass is unfalsifiable by construction — Shape-C quiet, not evidence.
+`P-BENCH-1` and the other llama-bench-based protocols in §2 are unaffected: they claim decode t/s and
+never claimed output identity. What is newly explicit is that they cannot be borrowed for it.
+
+### Two more from the same wave: an unreachable "fix", and a device-class win that was one device
+
+Both from upstream Metal PRs 27390/27450, and both generalise past Metal:
+
+- **A fix cannot explain a symptom on hardware where its branch was never compiled.** PR 27450 is a
+  genuine wrong-output fix (a K-direction out-of-bounds read that "silently corrupted results or
+  produced NaN"), and it was reached for as an explanation of a field report — but at the reporter's
+  own build the device gate forces `has_tensor = false` unless the device name contains
+  M5/M6/A19/A20, and the reporter's device is an Apple M4. The entire `ifdef` branch PR 27450 fixes
+  **was never compiled**, let alone executed, on that machine. Separately, the `K` it clamps is the
+  matmul **reduction** dimension (model geometry), not the token count — so the defect is
+  prompt-length *independent* and cannot produce a length-threshold symptom at all. **Two
+  independent disqualifications, both findable by reading the patch's own gate and its own index
+  variable before crediting or blaming it.**
+- **A speedup measured on one device is not a device-class result, and the half-life can be hours.**
+  PR 27390's own numbers are 1.19–1.79× across four model/shape cells on an M2 Ultra; an independent
+  benchmark of the *same command* on an M5 Max measured **0.66× — a 34% decode regression** — and the
+  new path was gated back (`ne01 >= 32`) **3 h 17 min later**. This is the cross-device form of the
+  standing per-(model, quant) certification rule: a kernel-path change certified on one member of a
+  hardware family must not be quoted for the family.
+- One bonus worth naming because it argues for spending on test cases: the long-context quantized-KV
+  attention eval cases added *by* that performance PR immediately exposed a **real wrong-output bug
+  in a different backend** (a Vulkan fp16-denorm overflow, fixed separately). **A test-case addition
+  is a measurement instrument, and it pays outside the change that motivated it.**
+
+### Source References (2026-08-23 Annex D)
+
+- [`measurement/protocols/determinism-parity.md`](../measurement/protocols/determinism-parity.md) — Annex D in full: `P-PARITY-1` instrument/preconditions/reporting/decision rule, `P-NONDET-1`, and the provenance note naming its three source cases.
+- [`MEASUREMENT.md`](../MEASUREMENT.md) — §2 registry rows (both 📋 staged 2026-08-23, annex key `D`) and the CHANGELOG amendment enumerating the load-bearing clauses.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1288#record` — llama.cpp #27407 dive: the 1/5 → 0/5 → 4/5 and reused-vs-fresh-process measurements, the `a6b4b5263` route confounder, and the per-prompt-not-aggregate requirement.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1283#record` — fla #1156 dive: the ten-repeats-in-one-process non-determinism signature (0.40 → 252.88, forward bit-identical), the one-shape-per-process blindness, and the `PYTHONPATH` import-contamination artifact.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1279#record` — the `llama-bench` `std::rand()` reads at frozen v9 (`:2106-2109`, `:2131-2140`) behind the correctness-control exclusion.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1284#record` — Metal PRs 27390/27450: the unreachable-branch disqualification, the M2-Ultra-vs-M5-Max 1.78× vs 0.66× split and its 3 h 17 min gate-back, and the cross-backend bug the new eval cases surfaced.
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-6/6b/6c, the annex's first consumer, and the arms whose design the protocol fixes.
+- [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — wave-2 session record, including the four-mutation-case dry run of the ratification script itself.
+
+- [Determinism & output-parity protocols (Annex D)](../measurement/protocols/determinism-parity.md) -- `P-PARITY-1` and `P-NONDET-1`, the repo's first protocols for output identity; n≥5 prompts, fresh process per phase, per-prompt verdict with first-differing generation-token index, f16-KV control, per-arm kernel-route capture. STAGED 2026-08-23.
+- [`intake-1288#record`](../research/intake_index.yaml) -- llama.cpp #27407 + the uncited #25618; the measured false-clear rates (1/5 → 0/5 → 4/5; 1/5 reused vs 4/5 fresh despite `cache_prompt=false`) that each Annex D clause encodes.
+- [`intake-1283#record`](../research/intake_index.yaml) -- fla #1156; the ten-identical-calls-in-one-process non-determinism detector, the one-shape-per-fresh-process blind spot, and the separate-prefix/`PYTHONPATH` rule for cross-version A/Bs.
+- [`intake-1284#record`](../research/intake_index.yaml) -- llama.cpp Metal PRs 27390/27450; an unreachable fix branch as a non-explanation, and a 1.78×-on-one-device / 0.66×-on-another perf change gated back in 3 h 17 min.

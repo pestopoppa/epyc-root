@@ -2,7 +2,7 @@
 
 **Category**: `quantization`
 **Confidence**: verified (CPU quant findings) · observation (2026-07 MI210 gfx90a roofline numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-22 (**the TurboQuant KV monitor is dead upstream — PR #21089 verified CLOSED UNMERGED 2026-06-02, retiring this page's monitor bullet, actionable and open question — and the iqk dispatch whitelist is a quant-SELECTION constraint**: Q2_K/Q3_K are `static_assert`ed out of the iqk path on frozen v8, so never pick them on size grounds (UD-IQ3_XXS over size-matched UD-Q2_K_XL); ChunkKV ruled experimental-candidate-only — the existing `action=compact` endpoint is Expected-Attention, NOT ChunkKV; `eschamoe` W2 closed (CUDA-only, no ROCm); plus a flagged-not-resolved KIVI caveat that our KV-quant quality case rests on PPL/NIAH, an instrument class KIVI shows can stay flat while GSM8K collapses ~57% at 2-bit — see the end of the page; earlier 2026-08-16 note: **the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
+**Last compiled**: 2026-08-23 (**the flagged KIVI caveat resolves in two halves — the implementation half is RETIRED, the measurement half STANDS and now has a filed gate**: KIVI's per-channel-K prescription is **2-bit-only** by its own OB 1 (no 4-bit or 8-bit axis ablation exists anywhere in the paper), our stack runs 4/8-bit, and per-token V is structurally guaranteed once V is quantized — so the long-standing "primary quality gap" was never a gap, and key outliers are handled by the Hadamard rotation instead; **the granularity reading rule**: with `-fa 1` we quantize K and V per token in 32-element blocks along CHANNELS — finer than the Group-64 *mitigation* published in the alignment-collapse study and on the OPPOSITE axis from KIVI — so every third-party KV-quant damage number is a **pessimistic bound** for us; **behavioural drift decouples from perplexity** (Mistral-7B 15.2% AdvBench flip at 4-bit while PPL moves 5.22 → 5.37, 1.03×; Qwen-2.5-7B IFEval strict-pass 69.50 → 59.89 at **8-bit** with 23.14% CondFlip), K carries **76–102%** of the 4-bit damage in 8 of 9 models, and our KV write path has **NO per-channel scaling, NO clipping and NO attention-sink special-casing** — the rotation is the only mitigation we ship, and sinks exist only as a softmax bias in the graph — see the end of the page; earlier 2026-08-22 note: **the TurboQuant KV monitor is dead upstream — PR #21089 verified CLOSED UNMERGED 2026-06-02, retiring this page's monitor bullet, actionable and open question — and the iqk dispatch whitelist is a quant-SELECTION constraint**: Q2_K/Q3_K are `static_assert`ed out of the iqk path on frozen v8, so never pick them on size grounds (UD-IQ3_XXS over size-matched UD-Q2_K_XL); ChunkKV ruled experimental-candidate-only — the existing `action=compact` endpoint is Expected-Attention, NOT ChunkKV; `eschamoe` W2 closed (CUDA-only, no ROCm); plus a flagged-not-resolved KIVI caveat that our KV-quant quality case rests on PPL/NIAH, an instrument class KIVI shows can stay flat while GSM8K collapses ~57% at 2-bit — see the end of the page; earlier 2026-08-16 note: **the batch-1 decode knee on MI210/gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — every quant whose `mul_mat_vec_q<_,1,true,false>` fits in ≤64 VGPR reaches 8 waves/SIMD and decodes ≥90.05 t/s, while IQ3_XXS (71 VGPR) and IQ2_XXS (78 VGPR) drop to 6 waves and ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; "batching closes the dequant gap" is refuted as stated; `design_prior`-grade, n=1, one model, speed only; plus a 2026-08-14 pair of GPU negatives — KV quantization at 64k single-stream is FALSIFIED as a speed lever on both arms (−16.7% / −6.9%) and weight quantization is inert on embedding encode (bge-m3 Q8_0 ≈ f16 at every sequence point) — see top sections; earlier 2026-08-12 note: a blocker row's *description* was wrong in a load-bearing way — the PR it names is an **ARM NEON ternary kernel that touches no x86 file**, so a naive dependent bench on Zen 5 would have measured a scalar fallback; plus the first KV-quant decision package and the Q4_K MMQ correctness root cause — see below; earlier 2026-07-24 note: adds the RP-1/RP-2 refutation of the 2-bit-EOS-damage hypothesis for the architect's degenerate `\boxed{}` loop, and the CPU A2 Q4 arm's live at-or-above IQ2 reasoning read; earlier 2026-07-20 note: adds the reasoning∝active / 2-bit-asymmetry literature cluster, the architect IQ2-vs-Q4 reasoning-certification gap, and the quant-asymmetric self-spec lane; earlier 2026-07-17 note: adds stale-fork Q2_0 freshness-audit gap, x86 Q8_0 repack/iqk-routing status, and the BF16-vs-F16 KV bench; ⚠️ 2026-07-06 MI210 gfx90a quant-roofline subsection flagged for human review — see Key Findings)
 **Sources**: 42 documents (0 dedicated deep-dives, 4 handoffs, 9 active handoffs, 3 gpu-aux-baseline receipts, 27 intake entries + cross-references from 6 deep-dives, 1 external paper (KIVI))
 
 ## Compiled Update — 2026-08-16: on CDNA2 the batch-1 decode knee is kernel REGISTER PRESSURE, not bits-per-weight
@@ -414,3 +414,198 @@ the parity claims stand *as PPL/NIAH claims* with this caveat attached until tha
 - [`architect-model-selection-bench.md`](../handoffs/active/architect-model-selection-bench.md) — the role-level context for the Escha-vs-UD-IQ3_XXS worker-candidate quant choice.
 - [intake-945/946/956](../handoffs/active/tq3-quantization-evaluation.md) (`EschaLabs/Qwen3.6-35B-A3B-Escha-W2`) — the Stage-2 intake cluster behind the `eschamoe` closure.
 - [KIVI arXiv:2402.02750](https://arxiv.org/abs/2402.02750) — the verified external result behind the flagged PPL/NIAH instrument caveat.
+
+## Compiled Update — 2026-08-23: KIVI's axis prescription is 2-bit-only, our KV blocks are finer than the published mitigation, and behavioural drift decouples from perplexity
+
+**Confidence: verified** — the tree facts are read-only inspections of frozen `production-consolidated-v9`
+(`0db32c06e3e550065b78311a6031ef3dd2c4f27c`) with file:line loci, audited 2026-08-23. The external results
+are dive-verified against their primary sources and labelled as third-party throughout. **No figure below
+is a first-party measurement of behavioural damage on this stack, and under
+[MEASUREMENT.md](../MEASUREMENT.md) none of them gates a config change** — the point of this pass is that
+the measurement does not exist yet, and is now filed.
+
+### The 2026-08-22 KIVI caveat resolves in two halves: the implementation half is retired, the measurement half stands
+
+The previous pass flagged, unresolved, that our KV-quant quality case rests on PPL/NIAH — an instrument
+class KIVI shows can stay flat while GSM8K collapses ~57%. The full Stage-2b dive (`intake-1286#record`,
+arXiv:2402.02750v2 read in full, credibility 4/HIGH) splits that flag cleanly.
+
+**The implementation half is retired. KIVI's axis prescription is 2-bit-only and does not reach our
+operating regime.** Its own **OB 1** states that at INT4, per-token quantization of *both* caches
+maintains accuracy; the axis asymmetry is established **only at 2 bits**; and the paper runs **no 4-bit
+and no 8-bit axis ablation**, so it licenses no conclusion in either direction at the bit widths we serve.
+Its 4-bit per-token/per-token rows match or exceed FP16 CoQA on three of four models (Llama-2-7B 64.82 vs
+63.88; Llama-2-13B 66.73 vs 66.37; Mistral-7B 67.80 vs 67.40). Production runs q8_0/q8_0, q4_0/f16 and
+q4_0/q4_0 — never 2-bit. Two further scope limits ride along: the axis ablation contains **no
+GQA-at-scale, no MLA, no QK-normed and no hybrid-SSM model** (all four ablated models predate per-head
+QK-RMSNorm), and by KIVI's own numbers the **full-precision residual window, not the axis**, does most of
+the recovery on hard generation tasks (Llama-2-7B GSM8K **5.76 → 12.74 at a fixed axis**). Citing KIVI for
+the axis while omitting the window misattributes most of the effect.
+
+Consequently the "primary quality gap" recorded for months at `kv-cache-quantization.md:320` **was never a
+gap**: per-token V is structurally guaranteed once V is quantized (quantized V forces flash attention,
+which sets `v_trans = false`, making V channel-contiguous — `src/llama-context.cpp:3557`,
+`src/llama-kv-cache.cpp:231-232`), the K half is out of KIVI's demonstrated scope, and key outliers are
+addressed instead by the in-tree orthonormal Walsh-Hadamard rotation. The only residual difference is
+**symmetric (`q4_0`/`q8_0`) vs asymmetric (KIVI)** — and `q4_1`/`q5_1` are supported asymmetric KV types,
+so that is **a flag, not a code change**. Mechanism and the independent RotateKV corroboration are
+compiled on the [KV Cache](kv-cache.md) page.
+
+**The measurement half stands, unchanged, and is now gated.** KIVI reports **no perplexity anywhere** and
+explicitly rejects single-decode-step closed-ended metrics as unsuitable for studying compressed KV. Our
+entire first-party quality case for quantized KV remains **perplexity plus needle-in-a-haystack**
+(q4_0+Hadamard PPL +0.017; q8_0/q4_0+Hadamard −0.010; NIAH 9/9 at 1K/4K/16K). **No GSM8K-class multi-step
+generation eval has ever been run against quantized KV in this repo.** That is the real gap; it is a
+*measurement* gap, not an implementation one, and it is now G3 on the TQ3 handoff.
+
+### The granularity reading rule: group-32 along CHANNELS, finer than the published mitigation and on the opposite axis from KIVI
+
+**With `-fa 1`, llama.cpp quantizes K and V per token in 32-element blocks running along the CHANNEL
+dimension** (`src/llama-kv-cache.cpp:231-232` allocates dim0 = channels, dim1 = tokens; `QK4_0 = QK8_0 =
+32`). Two consequences, and together they are the lens for reading any future KV-quant paper against this
+stack:
+
+1. **We are already finer than the alignment-collapse study's own Group-64 mitigation, by default,
+   everywhere.** That study lists **Group-64 quantization** among the remedies it recommends and measures.
+   **Its headline damage figures are therefore a pessimistic bound for us, not a matched estimate** — and
+   any transfer of its flip rates onto this stack must say so.
+2. **This is the OPPOSITE axis from KIVI.** KIVI groups *per channel for K*; we group *per token* for
+   both, and quantized V is structurally locked onto that axis. Same word "group", orthogonal dimension.
+   **Never read a Group-64 result as an upper bound on our group-32 damage without first checking which
+   axis the grouping runs along.**
+
+### Behavioural drift decouples from perplexity — and INT8 is exonerated on safety but not on instruction-following
+
+`intake-1291#record` (arXiv:2606.09864v2, **unreviewed preprint**, credibility 3/Medium; 11
+instruction-tuned models 3.8B–72B, 5 benchmarks, 1,894 prompts; **all measurements NVIDIA** — RTX 3090 /
+A100 / 8×GPU, HuggingFace-simulated quantization plus vLLM). Dive-verified 2026-08-22; **no independent
+replication was located and the replication sweep never ran**, so absence of criticism is
+unverified-in-stage2, never a negative finding.
+
+- **The headline decoupling.** Mistral-7B loses **15.2% of AdvBench refusals at 4-bit while perplexity
+  rises only 1.03×** (5.22 → 5.37). Collapse onsets span four bits across models (Qwen at 6-bit,
+  Gemma/LLaMA only at 2-bit) — **there is no universal safe bit width**, and the paper's own thesis (its
+  PCR diagnostic is a per-model property with no cross-model prior) forbids extrapolating any of it from
+  one model to another.
+- **Do NOT cite this paper against an INT8 KV cache on the safety axis.** At 8-bit simulated uniform,
+  ConditionalFlip is **≤3.2% for all eleven models** (max Mixtral 3.2%; Qwen, the most fragile, 0.2%), and
+  real `torch.int8` storage flips 1/19. The paper uses uniform INT8 as its *favourable* comparator. The
+  sole 8-bit exception is a **format** finding, not a bit-width finding: vLLM `fp8_e5m2` causes **30.3%**
+  flip and `fp8_e4m3` **7.1%** — 35× worse than uniform INT8 — because mantissa bits, not nominal width,
+  set effective resolution.
+- **The genuine perplexity-blind INT8 failure is on the capability axis, and it is one model on one
+  benchmark.** Qwen-2.5-7B IFEval strict-pass falls **69.50 → 59.89 at 8-bit KV with 23.14% CondFlip**,
+  and to 16.82 / 77.39% at 6-bit. The authors describe this axis explicitly as **"steep but continuous"**,
+  *not* a phase transition — so the phase-transition framing that fits the safety axis does not
+  generalise. (The 7-bit row carries an author-disclosed separate-container baseline caveat.)
+- **K and V are not equally risky.** K-projection quantization accounts for **76–102% of alignment damage
+  in 8 of 9 primary models at 4-bit**; Qwen-2.5-7B is **92.2% (K-only) vs 0.6% (V-only) — a 154×
+  asymmetry** — with Phi-3.5 the sole exception. Direction only: **third-party direction to test against,
+  never to adopt as a baseline.**
+- **Standard telemetry gives no warning under speculative decoding.** With target-side 4-bit KV
+  (Qwen-0.5B draft / Qwen-7B target, greedy): refusal **63.2% → 0.0%** while acceptance (23.5%) and
+  throughput (17.0 tok/s) stay in plausible ranges; at 3-bit acceptance *rises* to 43.4% and throughput
+  recovers to 24.2 tok/s at 0.0% refusal. **Verifier entropy (1.29 → 2.28) is the only telemetry that
+  moves.** This is the direct counterexample to clearing a spec-decode × quantized-KV interaction on a
+  throughput figure — see the R9 warrant repair on [KV Cache](kv-cache.md).
+- **The 10²–10³× subspace-vulnerability figure is mechanism, not measurement.** It is a theoretical
+  estimate from α ≈ 10⁻³–10⁻² offered to explain the observed decoupling; cite it as an explanation, never
+  as a measured quantity. And **PCR is not runnable on our serving stack** at all: llama.cpp exposes no
+  per-layer KV precision and no per-channel-key mode.
+
+**Two live registry roles sit on the axis this paper identifies as the damaging one**: `architect_critic`
+(q4_0/f16 on Qwen3.5-122B-A10B-MTP, **with a `draft_model`** — structurally the paper's spec-decode
+configuration) and `ingest_long_context` (q4_0/q4_0 on Qwen3-Next-80B). `frontdoor`, `worker`,
+`worker_vision` and `architect_general` are all q8_0/q8_0, i.e. both the safe bit width and the protected
+axis. The registry is **frozen**: any `-ctk`/`-ctv` change routes through the operator-gated registry
+path, never a hand edit — and nothing here licenses one, because the paper's numbers are NVIDIA,
+unreplicated, and measured against a coarser grouping than ours.
+
+### What our KV write path does NOT have — audited read-only, 2026-08-23
+
+The massive-activations and alignment-collapse literatures both assume mitigations our tree does not
+carry. Verified by static read of the canonical frozen tree; nothing built, nothing run:
+
+- **No per-channel scaling.** `llama_kv_cache::cpy_k` (`src/llama-kv-cache.cpp:1311-1344`) and `cpy_v`
+  (`:1346-1400`) are pure `ggml_set_rows` into the cache tensor. There is no scale tensor, no calibration
+  pass and no per-channel state anywhere in the path — **the only transform between the attention output
+  and the stored bytes is the block quantizer for `type_k`/`type_v`.**
+- **No clipping.** Zero occurrences of `clip` or `clamp` in `src/llama-kv-cache.cpp`. An outlier is stored
+  at whatever the block scale can represent; nothing bounds it first.
+- **No attention-sink special-casing.** Zero occurrences of `sink` in `src/llama-kv-cache.cpp`. Attention
+  sinks *do* exist in this tree — but **only as a softmax bias in the graph**
+  (`ggml_flash_attn_ext_add_sinks`, `src/llama-graph.cpp:2497`; `ggml_soft_max_add_sinks`, `:2554`). They
+  never exempt a token from KV quantization. **Do not read "llama.cpp has sinks" as "llama.cpp protects
+  sink tokens from KV quantization" — different mechanisms, different files.**
+
+**The orthonormal self-inverse Walsh-Hadamard rotation is the whole of our outlier defence** — gated at
+`src/llama-kv-cache.cpp:319-336` (`attn_rot_k`/`attn_rot_v`, requiring `ggml_is_quantized(type)` and
+`n_embd_head % 64 == 0`, defeatable by `LLAMA_ATTN_ROT_DISABLE`). Both papers are silent on it: the
+alignment-collapse study's Related Work explicitly lists SmoothQuant- and QuaRot-style rotation as
+**untested** for safety, and that is exactly the class we ship. Whether the collapse mechanism survives
+our rotation is **genuinely open in both directions**, and only a measurement on our stack can close it.
+
+### The gates this pass leaves behind — all filed, none run
+
+Both compute planes were held elsewhere during wave 2; every row below is filed on
+[`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) for whoever holds a
+plane next.
+
+- **G3 — close the instrument gap.** GSM8K-class multi-step generation at f16 KV vs production q8_0/q8_0
+  vs q4_0/q4_0, rotation ON, one pure-attention model and one Qwen3.x GDN hybrid, paired questions,
+  exact-match scored, persisted per question. **Gate:** any config showing a reasoning delta outside noise
+  *while perplexity and NIAH stay flat* replicates KIVI's instrument finding first-party; a flat result
+  retires the concern permanently.
+- **G4 — paired behavioural drift, on the axis we actually serve.** IFEval subset **N ≥ 250**, greedy
+  `t = 0` seed 42, one model held constant, sweeping `-ctk`/`-ctv` over
+  {f16/f16, q8_0/q8_0, q8_0/q4_0, q4_0/q8_0, f16/q4_0}, scored as **FP16-anchored paired
+  ConditionalFlip** — not aggregate pass rate; the two are different quantities and are not
+  interchangeable. Report perplexity drift beside CondFlip on every arm, because the decoupling is the
+  point. **Gate:** any config with **CondFlip > 5% while PPL drift < 2%** reproduces the decoupling and
+  makes a behavioural gate mandatory before any future KV-default change; **all configs < 2% ⇒ our
+  group-32 granularity is doing the work** and perplexity-plus-NIAH was retrospectively adequate. A
+  refusal/safety benchmark suite is an explicit **decline** for a single-operator research stack —
+  CondFlip on IFEval carries the transferable lesson without one.
+- **G5 — reproduce KIVI's Fig. 2 / Table 2 on our architecture.** Per-channel key magnitudes from a
+  production Qwen3.x GGUF at a fixed prompt, with and without `LLAMA_ATTN_ROT_DISABLE=1`, per-group
+  max/RMS at G=32. **Gate:** a near-flat rotated ratio establishes the redundancy conclusion *first-party*
+  and deprioritises the rest. Scope caveat that bounds the whole result: **only 10 of 40 frontdoor layers
+  are full attention**, so a per-channel key dump covers a quarter of the stack by construction and must
+  be reported as such.
+- **G2 — our actual KV outlier ratio**, per layer and per head, K and V separately (`max/median`,
+  `max/p99.9`); a pooled ratio is not the measurement. **Gate:** if both are unremarkable (< ~50×), close
+  the massive-activations line for this stack as measured-and-negative.
+- **B1 (blocked on G5)** — pre-RoPE vs post-RoPE rotation placement; a **permanent decline**, not a
+  deferral, if G5's rotated ratio is near-flat. **B2 (blocked on G4)** — confirm the K/V asymmetry
+  direction on our own arms (`q4_0/q8_0` vs `q8_0/q4_0` is the decisive pair), and only then generalise it
+  into a standing "quantize V before K" selection rule written into the registry's KV defaults. **If our
+  arms disagree with the third-party direction, ours governs.**
+- **Cheap A/B** — `-ctk q4_0` (symmetric) vs `-ctk q4_1` (asymmetric), rotation ON, same group size, plus
+  `llama-bench` decode t/s to price the extra scale word. A tie — the prediction, since a rotated
+  distribution is near zero-mean — closes KIVI's asymmetry question permanently for one short bench.
+
+### Source References (2026-08-23)
+
+- [`tq3-quantization-evaluation.md`](../handoffs/active/tq3-quantization-evaluation.md) — the H11
+  read-only audit (no per-channel scaling, no clipping, no sink special-casing) and the G2/G3/G4/G5,
+  B1/B2 gate rows with their open/close criteria.
+- [`kv-cache-quantization.md`](../handoffs/completed/kv-cache-quantization.md) — the retired `:320`
+  "primary quality gap" with its three-part correction, and the 2026-08-23 granularity correction
+  (`:1539`) establishing group-32-along-channels versus Group-64 and the opposite-axis reading rule.
+- [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024, dive-verified, credibility 4/HIGH) —
+  OB 1's 2-bit scope limit, the absent 4-bit/8-bit axis ablation, "no perplexity anywhere", the
+  residual-window attribution (GSM8K 5.76 → 12.74 at a fixed axis), and the
+  CoQA-flat-while-GSM8K-collapses instrument argument. Cite as `intake-1286#record`.
+- [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization
+  (unreviewed preprint, dive-verified, credibility 3/Medium, NVIDIA-only) — the 15.2%-flip-at-1.03×-PPL
+  decoupling, the INT8 exoneration on safety, the IFEval 8-bit CondFlip 23.14%, the K/V 154× asymmetry,
+  the spec-decode telemetry blindness, and Group-64 as its own mitigation. Cite as `intake-1291#record`.
+- [`model_registry.yaml`](../repos/epyc-orchestrator/orchestration/model_registry.yaml) — the two live
+  4-bit-K roles (`architect_critic` q4_0/f16 with a `draft_model`; `ingest_long_context` q4_0/q4_0) and
+  the q8_0/q8_0 majority. Frozen; changes route through the operator-gated registry path.
+
+(append to the page-level `## Source References` list)
+
+- [intake-1286](https://arxiv.org/abs/2402.02750) KIVI (ICML 2024) -- the warrant every "per-channel K / per-token V" citation inherits. Dive-verified 2026-08-22: measured, not asserted, but **2-bit-only** by its own OB 1, with no 4-bit or 8-bit axis ablation anywhere; reports **no perplexity at all** and rejects single-decode-step metrics; the full-precision residual window, not the axis, does most of the recovery. Retires the `kv-cache-quantization.md:320` "primary quality gap". Cite as `intake-1286#record`
+- [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization -- behavioural drift decouples from perplexity (15.2% AdvBench flip at 4-bit, PPL 1.03x); INT8 exonerated on the safety axis (CondFlip <=3.2% across 11 models) but **not** on instruction-following (Qwen-2.5-7B IFEval 69.50 -> 59.89 at 8-bit, CondFlip 23.14%); K carries 76-102% of 4-bit damage; **Group-64 is its mitigation and our group-32 blocks are finer**. Unreviewed preprint, NVIDIA-only, no independent replication located. Cite as `intake-1291#record`
+- [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache -- KV-quantization-adjacent: draft on the compressed cache, verify against the FULL cache so the target is the real FP16 model. Its quantization-compressor arm is its weakest (1.4-1.9x). Expressible in frozen v9 via `-ctkd`/`-ctvd`; detail on [KV Cache](kv-cache.md). Cite as `intake-1282#record`
