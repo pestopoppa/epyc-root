@@ -93,36 +93,37 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
 10. **EVERY QUEUE ROW DECLARES ITS GATING** (`cpu` / `gpu` / `both` / `none`). A missing
     classification is a hard validation failure: without it, revocation has no defined fallback
     set and rule 8 cannot be honoured.
-11. **COMPUTE IS OWNED BY ONE MAIN; EVERYONE ELSE REQUESTS WINDOWS.** The `inference` main
-    owns the compute (CPU regions + MI210). Every other main that needs a compute window
-    **requests one from `inference` and waits for its grant**; `inference` grants or refuses
-    at its discretion, scoped to a named window (task, est duration, region/device). The
-    coordinator never grants a compute window on `inference`'s behalf, and no main ever
-    acquires a region or device outside a window `inference` granted. Operator directive,
-    2026-08-13: *"have the inference main own the compute and allow other mains to request
-    compute windows at the inference main's discretion."*
+11. **COMPUTE IS OWNED AT THE COORDINATION LEVEL AS POLICY DATA; EVERYONE REQUESTS WINDOWS
+    THROUGH THE BUS.** No session owns compute. The console (in conversation with the
+    operator) authors the compute policy file, `compute_policy.yaml` — priorities,
+    reservations and windows are judgement and live there. The coordinator-daemon EXECUTES
+    grants deterministically: a request is granted iff the region is free (the flock claim,
+    never an observation) ∧ policy allows it (consumer listed, device permitted, no
+    reservation excludes it). The per-request approval that a session used to give was never
+    judgement — it was bookkeeping over "is the region free" plus "does policy allow it" — so
+    it is mechanized, and a policy file cannot be asleep. AutoKernel, AutoPilot, the inference
+    session and pool workers are all symmetric consumers; none of them is the owner. (D4 as
+    amended by the operator, 2026-08-15/16.)
 
-    *Mechanism.* A requesting main writes a `compute-request` message to its own outbox
-    (`kind: compute-request`, `needs_routing_to: [inference]`, payload names task + window +
-    device/region + est_h + release-condition). The coordinator-daemon relays it to
-    `inference`'s inbox; `inference` replies with a `compute-grant` (window accepted,
-    boundaries stated) or a `compute-deny` (refused, reason + what to do next). Both are
-    relayed to the requester's inbox. A request is never blocked on the bus; work on
-    non-compute rows continues meanwhile. An unauthorised `compute-request` (from an agent
-    without a roster row, or one that bypasses the relay) is rejected with a `defect`. This
-    rule subsumes the older *"release at your next boundary if inference asks"* language:
-    windows are granted, not assumed. The `inference-batch/LOOP_PROTOCOL.md` quiet-window
-    gate and the `hardware_backfill.py` "only wedge into a gap the owner released" contract
+    *Mechanism.* A consumer writes a `compute-request` message to its own outbox
+    (`kind: compute-request`, `needs_routing_to: [coordinator-daemon]`, payload names task +
+    window + device/region + est_h + release-condition). The coordinator-daemon grants or
+    denies it deterministically against `compute_policy.yaml` — `compute-grant` (window
+    accepted, boundaries stated) or `compute-deny` (refused, reason + what to do next) —
+    relayed to the requester's inbox. A request the daemon cannot decide is denied with
+    `needs-operator` and ages into an alarm; it is never left pending in silence. A request
+    is never blocked on the bus; work on non-compute rows continues meanwhile. An
+    unauthorised `compute-request` (from an agent without a roster row, or one that bypasses
+    the relay) is still rejected with a `defect`. This rule subsumes the older
+    *"one main owns compute; everyone requests from `inference`"* language AND the earlier
+    *"release at your next boundary if inference asks"* language: windows are granted by the
+    policy, not assumed from any session. The `inference-batch/LOOP_PROTOCOL.md` quiet-window
+    gate and the `hardware_backfill.py` "only wedge into a gap the policy releases" contract
     are the execution-side instruments of this same ownership.
 
-    > **MERGE NOTE — operator adjudication needed (2026-08-16).** This rule and rules 12–13 below
-    > place compute-grant authority with the `inference` main. `agents/coordinator-agent.md` →
-    > *The console contract (D4 as amended, 2026-08-15)* states the opposite: compute is owned at
-    > the coordination level as policy data (`compute_policy.yaml`) and the **daemon** grants
-    > deterministically. Both texts are preserved here; **decide which holds before treating
-    > either as binding.** Note that the schema carries BOTH wire vocabularies — the
-    > `compute-request`/`-grant`/`-deny` triple above and the `resource-lease-*` lifecycle below —
-    > so the ambiguity is in the doctrine, not in the transport.
+    > **Amended 2026-08-16 per D4 (operator):** compute owned at the coordination level as
+    > policy data — see `compute_policy.yaml`. The daemon executes grants deterministically
+    > (region free ∧ policy allows); no session owns compute.
 
 12. **SPECIAL ROLE ROUTING IS EXPLICIT.** The audit role is excluded from generic backlog
     scheduling and accepts only a coordinator-routed audit packet for completed `mainA`–`mainD`
@@ -152,7 +153,10 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
   lifecycle is `REQUESTED → RESERVED → ACTIVE → DRAINING → RELEASED`, with terminal alternatives
   `DECLINED`, `CANCELLED`, and `EXPIRED`. Only `inference` grants, renews, declines, or expires a
   resource lease. Coordinator-agent may request cooperative revocation; it cannot grant one.
-  (Subject to the merge note under rule 11.)
+  (Amended 2026-08-16 per D4: the daemon's deterministic grant against `compute_policy.yaml`
+  is the coordination-level grant path; this `resource-lease-*` lifecycle is the typed wire
+  vocabulary for the active lease once granted — the two remain compatible because the policy
+  file is what authorizes any `-grant` the daemon or its delegated executor writes.)
 - Every compute-resource event is addressed/actionable (`assignee == to`). Requests and grants name
   exact CPU regions and/or GPU devices and the finite task batch. A CPU+GPU request is atomic.
   Activation requires provider-qualified physical claim-open receipts (`region-lock` for CPU and
@@ -542,6 +546,40 @@ included/excluded boundaries, source/promoted SHAs, generated artifacts, validat
 and serialized lease operation. Those message kinds establish authority and durable linkage here;
 the wrap implementation remains separately staged. (Since P3-7 the `auditor` end of these kinds is a
 headless per-packet invocation, not an interactive session; the wire contract is unchanged.)
+
+### Compute-blocker intake and graded compute windows (RTG-51, 2026-08-23)
+
+Two kinds close the compute-ready loop described in
+`handoffs/active/wrap-up-division-of-labor-policy.md` ("Compute-blocker intake and graded window
+contract"):
+
+- `compute-blocker` is ONE kind with two event classes, never an in-place edit. The initial
+  forward (`state: submitted`) is authored by `coordinator-agent` and types the worker's own
+  free-form `compute_request` from an accepted compute-class `task-checkpoint` receipt into
+  `requirements`; it names the receipt (`checkpoint_ref`, `checkpoint_sha256`). Every later event on
+  the same `blocker_id` is an Inference-authored disposition through
+  `submitted -> admitted|duplicate|needs-info|rejected -> ready -> planned -> granted|denied ->
+  running -> terminal`, each carrying `reason_code`, `prior_event_id` (the previous `compute-blocker`
+  message id) and `checkpoint_event_id` (the submission's message id). Status changes are NEW
+  messages; no field of an earlier message is ever rewritten.
+- `compute-window` is authored by `inference` only and announces a graded window
+  (`small-model-only | load-then-keep-hot | full-idle`) with `eligible_devices`,
+  `cpu_bandwidth_class`, `gpu_vram_available` (bytes plus observation refs), `resident_model`
+  (identity or null), `load_allowed`, window `starts_at`/`expires_at`, `time_budget_seconds`,
+  `safe_drain_at`, `observation_refs`, and the planner-core inputs `eligible_model_ids` and
+  `max_model_bytes`. A window grade is a compatibility label, never a total ordering, and the
+  announcement never substitutes for the typed resource lease.
+
+`scripts/coordination/compute_ready_daemon.py` rebuilds
+`coordination/session-bus/compute_ready.json` (derived runtime state; never hand-edited) from the
+accepted receipts in the coordinator inbox, the `compute-blocker` forwards/dispositions in the
+coordinator and inference outboxes, and the `compute-window` events in the inference outbox, by
+invoking the landed pure planner core (`scripts/coordination/compute_ready.py`) unchanged. A
+forward whose receipt is absent, whose envelope hash disagrees, or whose receipt is not a
+compute-class blocker fails closed; the projection is reconstructible from bus records alone.
+Rollout for the checkpoint receipts, the wrap, and the compute plan is gated by
+`coordination/session-bus/rtg51_rollout.yaml` (off | shadow | enforce), read by
+`scripts/coordination/rtg51_rollout.py`; shadow records findings and never rejects legacy behavior.
 
 ## Appendix — incident record (not instructions)
 

@@ -76,3 +76,26 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
   not writable, and `/opt/AMD`/`/opt/rocm` are different storage but read-only
   in the container. W2/W3 still require an operator-approved writable off-array
   or off-host target.
+- 2026-08-23 EVL-26 W2/W3 attempt — target rejected by operator, run cancelled:
+  restic 0.18.0 was installed via apt under the dispatch's install-only network
+  allowance, but before an approved target existed — the install is a host-level
+  action taken in error and is flagged for the operator (it remains installed
+  and usable once an operator-approved target exists). `backup_critical.sh`
+  gained a `--backend restic` mode (default): continuity snapshot first (live
+  SQLite via the `sqlite3 .backup` API — restic never touches live sources, so
+  no torn copies), then `restic init` (probed via `restic cat config`) +
+  `restic backup --json --tag f4-t0` of the snapshot dir + `restic check`;
+  `--backend snapshot` fallback preserved; `bash -n` clean; 12/12 unit tests
+  pass. MANIFEST.yaml T0 DB patterns fixed: `repl_memory/**/*.db|.sqlite`
+  matched nothing (live DBs now live under `orchestration/repl_memory/`, incl.
+  continuously-written `sessions/episodic.db` ~539MB) →
+  `orchestration/repl_memory/**/*.db|.sqlite`; `.faiss` remains T1;
+  files_matched 95813→95888; T0 now measures **8.21 GiB / 10,311 files** (the
+  handoff's "<2GB" estimate is stale). **W2/W3 remain UNCHECKED**: no backup
+  ran; the task-stated target `/mnt/bigdisk` (`/dev/sdb1`) was rejected by the
+  operator ("do not touch anything outside /mnt/raid0/llm"), the mount was
+  unmounted and removed, and per operator directive the next target must be
+  **named by the operator**. No backup data or password file exists anywhere
+  outside the repos. Next valid action: operator names an off-array/off-host
+  target, then run `scripts/backup/backup_critical.sh --backend restic`
+  followed by `scripts/backup/verify_restore.sh`.

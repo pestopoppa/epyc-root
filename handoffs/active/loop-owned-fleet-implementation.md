@@ -452,6 +452,12 @@ tree untouched), 36 conflicts, fanned out over 4 subagents on disjoint sets. Pol
 default; never drop a rule, guard, test or task; **retractions win over what they retract**;
 genuine contradictions preserved and reported, never silently picked.
 
+**RESOLVED 2026-08-23 — the reconciliation landed and this wrap-up completes it.** The D9-acked
+landing commit is `4ae0c049` (on both `origin/main` and local `main`), with the per-file
+three-way merge commits (`80cd4e66`, `9cff0ff7`) as ancestors. This session's wrap-up
+promotion carries the remaining lane work onto `main`; the stale master-index OP-11 row was
+removed at the operator's directive. No force-push was used at any point.
+
 Nothing is at risk while it runs. Every local commit is on origin — verified with
 `git rev-list <branch> --not --remotes=origin` across all local branches; the only
 origin-unreachable commit was `4ad13cb2`, now parked at
@@ -520,28 +526,43 @@ Zero were bulk-acked. What survived as live work:
 - [ ] **The probe over-match above is itself a defect worth one line of code**: the mutation
   probe should resolve expected-touched files from the row's stated deliverable, not from every
   path-shaped token in the task text — two of four pilot audits FAIL-noised on it.
-- [ ] **`monitor:file` service identities are structurally invisible to the fleet-health plane.**
-  The P3-4 predicate watches `exec:` runners; `auditor` (`role: service`, `monitor:file`)
-  generated 23 `stuck-unreachable` advisories today, and its inbox holds 111 undrained rows —
-  the audit RESULTS flow (headless invocations write verdicts fine), but nothing drains packets
-  addressed to the identity, and a missed invocation (above) sat invisible until a manual
-  triage. Either give the daemon a re-invoke sweep for unanswered `action_required` packets
-  addressed to `monitor:file` services, or stop addressing bus rows to identities nothing
-  drains and make the direct invocation the ONLY channel. (msg-20260729T121802Z-33's C8, still
-  live after the rewrite.)
+- [x] **`monitor:file` service identities are structurally invisible to the fleet-health plane.**
+  ✅ 2026-08-23 (RTG-52 D3, `5412e86b`, D9-ack) — daemon re-invoke sweep implemented:
+  `resolve_stuck_agents`'s monitor:file branch runs `_monitor_file_reinvoke_sweep`;
+  unanswered `action_required` packets older than `_MONITOR_FILE_REINVOKE_INTERVAL_S` (600s)
+  are re-invoked — a `stuck-reinvoke` advisory carries packet id + role_policy/invocation
+  path with an explicit `re-invoke` marker, and `auditor` packets route through the SAME
+  headless-audit invocation the runner uses (`headless_audit.py audit --packet --emit`), so a
+  missed audit packet is re-audited, not merely re-flagged. Guards: once per interval per
+  packet (`stuck_state.json` per-agent dedupe), never a packet answered by corr_id
+  disposition OR by an existing verdict naming the same task_ids/commit_range (the
+  pilot-verdict shape carries no corr_id), missing-cursor identities read from zero (never
+  fail open), every re-invoke logged. 7 tests
+  (`tests/coordination/test_monitor_file_reinvoke.py`); M4 + routing-intent suites green.
+  The sweep ships in code; the live daemon must be restarted to run it (daemon boundary —
+  operator follow-up).
 - [ ] **Screener paraphrase defect: a pool dispatch screened a worker against hand-written
   `--row-text` instead of the row's verbatim text.** CJ-1c parked `unknown` on a 241-char
   paraphrase while the real 452-char row text matches its checkbox verbatim. "The task TEXT is
   the identity" — the dispatch path must pass the row text through byte-for-byte; forbid
   free-hand `--row-text` when the row resolves. (5/5 pilot rows screened `unknown`; at least
   this one is a screening artifact, not a premise problem.)
-- [ ] **Relay ledger: 296 flagged rows, never reconciled.** `relay_state.json` carries 296
+- [x] **Relay ledger: 296 flagged rows, never reconciled.** ✅ 2026-08-23 (RTG-52 D2,
+  `37b6a7e0`, D9-ack) — `relay_state.json` carries 296
   flagged entries (oldest 2026-07-27, `handler:intake_proposals`). The 2026-08-12 "reconcile
   before restart" window is long past and this triage answered the re-presented backlog, but
   the flagged list itself has never been adjudicated: nothing distinguishes "handled by a
   handler" from "dropped". One pass over the 296 with the handler ledgers, then either clear
   the list or file what it proves lost. (chunk-2 S1; two of 13 sampled messages in this very
   triage carried `NOT-IN-INBOX` markers — the drop mechanism is corroborated, not hypothetical.)
+  **Adjudicated 2026-08-23**: `scripts/coordination/relay_ledger_adjudicate.py` classified the
+  live 298-entry ledger against the bus files — 244 handled (follow-up disposition), 15
+  delivered-not-drained, 3 schema-invalid (source rows now validate — flag premise resolved),
+  36 unknown, 0 dropped (nothing proven lost; no defect row needed). `--apply-clear` on the
+  live ledger: **247 cleared, 51 stay**; original backed up to
+  `coordination/session-bus/relay_state.json.bak-2026-08-23`, `delivered` map preserved.
+  Machine report: `data/relay_ledger_adjudication_2026-08-23.json`; 10 tests incl. the
+  inbox-removal mutation (classification flips to dropped).
 - [x] **The E8 wipe now has its incident entry.** ✅ 2026-08-16 —
   `INC-20260816-git-clean-shared-clone` in `docs/reference/agent-config/INCIDENT_LOG.md`,
   folding both dated events (08-12 worktree wipe, 08-16 retirements/watermark/repos/ loss) into

@@ -1,0 +1,21 @@
+# RTG-51 rollout gates — the wrap-up division of labor, staged off -> shadow -> enforce.
+# Owning handoff: handoffs/active/wrap-up-division-of-labor-policy.md (Rollout and rollback).
+# Policy-as-data: scripts/coordination/rtg51_rollout.py reads THIS file (env override
+# RTG51_SHADOW_MODE=1 forces every gate to shadow/observe for canary runs) and never
+# hardcodes a mode.
+#
+# Semantics per gate (identical to the handoff's rollout section):
+#   off     — the new receipts/events are neither recorded nor validated; legacy
+#             behavior is untouched.
+#   shadow  — the new receipts/events ARE recorded and validated, every validation
+#             result is written as a finding-shaped observation, and legacy
+#             behavior is NEVER rejected.
+#   enforce — validation failures refuse the new path outright.
+#
+# compute_window_plan keeps the planner core's own three-value ladder
+# (off | observe | enforce) because the projection is a read-side plan, not a
+# write-side receipt.
+schema_version: rtg51_rollout.v1
+worker_checkpoint_receipts: off    # off | shadow | enforce
+auditor_full_wrap: off             # off | shadow | enforce
+compute_window_plan: off           # off | observe | enforce
