@@ -2,8 +2,32 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
+
+## Compiled Update — 2026-08-23: the research `debug_scorer` divergence closed by delegation — B7 shim + era stamp
+
+**Confidence: verified** — ticked on the owning rows 2026-08-23
+([`scorer-fork-drift-audit-2026-07-22.md`](../handoffs/active/scorer-fork-drift-audit-2026-07-22.md),
+EVL-41; [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md),
+EVL-42).
+
+The scorer-unification audit's last holdout is resolved the way the additive pass's per-consumer
+verdicts said it had to be — **not by porting, by delegation**. The research-repo `debug_scorer.py`
+was fully pre-B7 (all 10 defect classes, off the routing path), and the two candidate fates were
+"port B7" or "stamp research benchmarks scored with it as pre-B7-scorer era". The closed row records
+the third shape that won: a **B7 delegation shim plus an era stamp** — the research path now
+delegates to the canonical B7 scorer semantics instead of carrying its own divergent
+extractor, and its outputs carry the era stamp so the pre/post-B7 boundary stays attributable
+(the same "sealed-capture scores need a version, never a silent re-score" rule this page already
+carries for the orchestrator `debug_scorer`). This closes EVL-41 and advances EVL-42's consumer
+migration without inventing a new extractor.
+
+### Source References (2026-08-23 B7 delegation shim)
+
+- [`handoffs/active/scorer-fork-drift-audit-2026-07-22.md`](../handoffs/active/scorer-fork-drift-audit-2026-07-22.md) — EVL-41 row tick, B7 delegation shim + era stamp.
+- [`handoffs/active/scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — EVL-42 consumer-migration ownership.
+- [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the hygiene batch that ticked the rows.
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
 

@@ -537,7 +537,7 @@ A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the buildout record, the deploy checks and the eyeball-pass findings
 - [`handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md`](../handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md) — the data-truth defects that remain owned separately from this information-architecture work
 - [`handoffs/active/loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md) — the liveness-vs-value instrument finding this plan builds on
-- [`handoffs/active/benchmark-results-dashboard.md`](../handoffs/active/benchmark-results-dashboard.md) — the producer/renderer contract used as the working precedent for the data-plane split
+- [`handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md`](../handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md) — the producer/renderer contract used as the working precedent for the data-plane split
 
 ## Compiled Update — 2026-08-13: a licence blocker on failure-trace grading resolved by finding the maintained successor, not by waiting
 

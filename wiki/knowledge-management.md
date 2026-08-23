@@ -2,8 +2,66 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (evening wave-2 compile: internal-kb-rag's K1/K2/K3 encoder fixes LANDED in `4e5e84c0` (ColBERT ONNX class unblocked, onnx_config honoured, embedding_dim drift now raises), the answerai retirement rationale corrected (1.32 pp delta INSIDE our own noise floor, 54.89 never existed), the ONNX file-selection rule H4, the tokenizer-identity finding H6 (0.500× projection), the 40.5%-chunks doc-truncation measurement H1, and SC50's pre-run write-side hook for the three wave-2 source classes; earlier same-day: belief-kernel adapter wired CT-8/SC46 in `24ab3090`; KB-RAG record corrections C1/C2; Stage-2b wave-2 corrections; previously 2026-08-22: publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the OBS-12 interpreter-venv convention — skill-documented commands must name an interpreter that has the imports, 8 documented-interpreter fixes across 15 audited skills; the `query_wiki._safe_join` null-`techniques` guard; the disk-hygiene verified-resolved outcomes NIB2-60..63 with phase-2 candidates NIB2-64..67, and the tmp/ reclamation record 285G→2.9G; earlier evening wave-2 compile: internal-kb-rag's K1/K2/K3 encoder fixes LANDED in `4e5e84c0` (ColBERT ONNX class unblocked, onnx_config honoured, embedding_dim drift now raises), the answerai retirement rationale corrected (1.32 pp delta INSIDE our own noise floor, 54.89 never existed), the ONNX file-selection rule H4, the tokenizer-identity finding H6 (0.500× projection), the 40.5%-chunks doc-truncation measurement H1, and SC50's pre-run write-side hook for the three wave-2 source classes; earlier same-day: belief-kernel adapter wired CT-8/SC46 in `24ab3090`; KB-RAG record corrections C1/C2; Stage-2b wave-2 corrections; previously 2026-08-22: publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
 **Sources**: 47+ documents
+
+## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
+
+**Confidence: verified** — the OBS-12 sweep audited all 15 skills and landed 8 documented-interpreter
+fixes (`f21be7c2`, `4aadd382`); the disk outcomes carry verification records (`08e8bba6`,
+`3227ec5f`). Source: [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md).
+
+### The OBS-12 interpreter-venv convention
+
+Skill (and agent-file) documents that tell an agent to run a command must name an interpreter that
+actually has the imports the command needs — `python3` on this host does not have
+`PyYAML`/`requests` in the environments where the skills run. The convention that closed the sweep:
+documented invocations point at the orchestrator venv interpreter
+(`/workspace/repos/epyc-orchestrator/.venv/bin/python`), not bare `python3`. Eight fixes landed
+across the 15 audited skills: project-wiki's `lint_wiki.py`/`query_wiki.py`/`compile_sources.py`
+invocations, `wrap-up.md` steps, `resolve_intake_id`, the `log` skill's pytest line, and
+`claude-md-accounting` path rot. A same-sweep follow-on fixed the wiki tool itself:
+`query_wiki.py` crashed on 13 intake entries with null `techniques` lists — `_safe_join` now guards
+the list fields (`03345e50`). The pattern generalizes beyond this repo's skills: **any command an
+agent is told to run is a contract, and the interpreter named in the contract must be able to
+execute it — a bare `python3` with a missing import is a landmine the doc placed, not the agent.**
+
+### Disk hygiene: NIB2-60..63 verified resolved, NIB2-64..67 are the phase-2 candidates
+
+The 2026-08-18/22 disk-hygiene backlog rows all closed with verification, not just ticks
+(`08e8bba6`, restored after a peer revert in `3227ec5f`):
+
+- **NIB2-60** `tmp_pack` — VERIFIED RESOLVED (garbage = 0)
+- **NIB2-61** logs — VERIFIED RESOLVED
+- **NIB2-62** `Dockerfile.orig` — DELETED (4,854 B, unreferenced)
+- **NIB2-63** `.bak` clones — VERIFIED RESOLVED (none exist)
+
+The 2026-08-18/22 `.bak` residue on disk was kept (no gitignore rule; devcontainer edits live) and
+recorded as one-rm-each if wanted. **Phase-2 candidates filed as NIB2-64..67** (from the census that
+found /mnt/raid0/llm at 3.4T/3.7T = 97% used): NIB2-64 autokernel/worktrees 165G (144/146 stale,
+2 referenced by active handoffs), NIB2-65 model duplicates/orphans ~25G (safe set listed in the
+census), NIB2-66 stale kernel trees ~18G (preserved-20260724T135832Z, v6-iqk, v7-sanitize-audit,
+k28-prototype), NIB2-67 `cache/huggingface` 127G re-downloadable. EVL-28's archive also flagged a
+GGUF for NIB2-64. All four are operator options, not actioned.
+
+### The disk reclamation record (2026-08-23): 111G → 371G free in the approved scope
+
+Operator-approved scope was tmp/ scratch + worktrees. `tmp/` went 285G → 2.9G: 138 registered
+worktrees removed (epyc-inference-research 88, workspace 44, llama.cpp-experimental 4, llama.cpp
+4, epyc-orchestrator 2) plus ~15k stale loose files. **Method discipline: strictly per-worktree
+`git worktree remove --force`, NEVER `git worktree prune`** (the 2026-08-12 lane-destruction
+incident) — and worktree branches/commits persist in their shared repos, so nothing was deleted
+from git. Four worktrees preserved (`dashboard-v26-telemetry-integrity-20260821` in use;
+`evaluator-91a-audit.3i6ycm`, `merge-20260816`, `root-session-wrapup-20260820` dirty) plus all live
+coordination files (runtime facts, `*_started_at` markers, locks). Result: 97% → 90% used, ~260G
+reclaimed in scope. Source: [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md).
+
+### Source References (2026-08-23 hygiene sweep)
+
+- [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the OBS-12
+  sweep, the NIB2-60..63 verification record, and the EVL/pointer retirement batch.
+- [`progress/2026-08/2026-08-23-disk-reclaim.md`](../progress/2026-08/2026-08-23-disk-reclaim.md) — census, per-path changes, preserved set, deferred options.
+- [`handoffs/active/non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — the NIB2-60..67 rows with their tick/verification state.
 
 ## Compiled Update — 2026-08-20: write-side evidence begins with the next DFlash2 panel
 

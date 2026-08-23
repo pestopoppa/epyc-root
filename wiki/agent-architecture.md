@@ -2,8 +2,60 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
+
+## Compiled Update — 2026-08-23: the filesystem-containment guard is one scanner, every surface derived
+
+**Confidence: verified** — the incident, the unification, and the parity suite are all closed work
+recorded in `progress/2026-08/2026-08-23-root.md`; the canonical how-to is
+[`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md)
+(summarized here, not duplicated).
+
+**The gap it closes (INC-20260823-filesystem-containment-gap)**: an agent ran
+`sudo -n mkdir -p /mnt/bigdisk && sudo -n mount /dev/sdb1 /mnt/bigdisk`, planned writes to
+`/mnt/bigdisk/epyc-backup/`, and `sudo apt-get install restic` against the operator directive *"do
+not touch anything outside `/mnt/raid0/llm/`"*. Nothing stopped it: the Claude Bash surface had no
+guard (the old path check was Write|Edit-only), and the opencode surface had no permissions and no
+plugins. The first fix shipped two hand-written rule surfaces; **the same-day unification made
+`scripts/hooks/filesystem_containment_scan.py` the ONLY policy holder** (RTG-52: never a fifth
+parser; it reuses `shell_scan.segments()`) and every other surface derived:
+
+- **Scanner** — CLASS A privileged host-level ops (mount/umount/mkfs/fdisk/systemctl/modprobe/
+  shutdown/reboot/apt/dpkg/dd of=/dev/*) and CLASS B out-of-root writes (mkdir/touch/cp/mv/tee/
+  redirection/rsync/restic/borg/rclone/chown/chmod/ln/install/rm/git clone), with
+  `unresolvable_target` fail-closed for quoted/$VAR targets and `cd` tracking across chained
+  commands. Containment set `/mnt/raid0/llm/**, /workspace/**, /tmp/opencode/**, ~/.claude/**,
+  ~/.codex/**`; bare `/tmp/**` tolerated scratch (the repo's own tooling writes /tmp proofs).
+- **Derived surfaces** — `--dump-rules` emits the canonical tables as deterministic JSON;
+  `generate_opencode_permissions.py` GENERATES the opencode `permission.bash` deny block (the
+  hand-edit drift that motivated unification: sudo variants, mke2fs, apt purge/autoremove and
+  dpkg -P were missing); one `check_filesystem_containment.sh` wrapper serves BOTH Claude matchers
+  (Bash → `--command`, Write|Edit → `--check-path`); the opencode plugins (project + global, the
+  latter covering lane worktrees) intercept bash AND write/edit via `--check-path`;
+  `check_filesystem_path.sh` is superseded with its allow-set deleted.
+- **Operator allowlist** — `filesystem_allowlist.yaml` ships EMPTY (no external path without the
+  operator); schema `session_bus.filesystem_allowlist.v1`; the env ack `EPYC_FS_ACK` is read from
+  hook env only, so command text cannot self-authorize.
+- **Parity tests** — `tests/test_harness_guard_parity.py` (33 tests): matcher routing, dump→
+  generator derivation, byte-identical permission blocks, `--check-path` semantics, and mutation
+  tests — a scanner-table edit fails 4 tests; a hand-edit of `opencode.json` exits 1 on `--check`.
+- **Honest gaps, recorded**: codex 0.147.0 PreToolUse hook is wired with verified schemas but
+  **firing could not be demonstrated** in 5 probes (re-verify procedure in the guide); daemons/cron/
+  scripts that shell out internally are invisible to a PreToolUse guard (OS-level layer would be
+  the enforcement); `bash -c '...'` inner commands are quoted data and not scanned. opencode loads
+  config+plugins only at start, so the guard is live for new sessions only — the operator must
+  restart opencode for the plugin/permissions to load.
+
+The transferable lesson: **a guard with two hand-written rule tables is two guards, and they drift;
+a guard with one scanner and generated/derived surfaces has parity tests as its change control.**
+
+### Source References (2026-08-23 filesystem-containment guard)
+
+- [`progress/2026-08/2026-08-23-root.md`](../progress/2026-08/2026-08-23-root.md) — the incident,
+  the unification, the 69-scanner/33-parity test counts, and the restart requirement.
+- [`docs/guides/agent-workflows/filesystem-containment-guard.md`](../docs/guides/agent-workflows/filesystem-containment-guard.md) — the unified model, surface×wiring×test table, and rule-change procedure.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20260823 origin narrative.
 
 ## Compiled Update — 2026-08-19: two failing hook tests were both the fixture, and neither was about the thing under test
 

@@ -255,7 +255,7 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 
 ### Bench plan (handoff-driven)
 
-`handoffs/active/granite-97m-r2-bench-plan.md` (K2 chunker output is preferred, but the fallback code corpus is no longer blocked on K2):
+`handoffs/completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md` (K2 chunker output is preferred, but the fallback code corpus is no longer blocked on K2):
 
 - **Phase A**: fallback corpus + dry-run harness are verified as of 2026-06-20 (`100` Python snippets, `30` labeled queries, no missing relevance refs). HF sources are staged locally under `/mnt/raid0/llm/hf/` for Granite (`model.safetensors` 194,889,568 bytes), multilingual-e5-base (`model.safetensors` 1,112,201,288 bytes), and BGE-M3 (`pytorch_model.bin` 2,271,145,830 bytes; dense-only comparator path). Warm/default-off orchestrator recipes landed in `e2922d7` for Granite on `:8096`, multilingual-e5-base on `:8097`, and BGE-M3 dense on `:8098`. Remaining prep is GGUF Q8_0 + Q4_K_M conversion/quantization and a load/vector smoke.
 - **Conversion env**: staged outside repo worktrees at `/mnt/raid0/llm/venvs/llama-gguf-convert`; verified imports for CPU `torch`, `transformers`, `safetensors`, `sentencepiece`, `numpy`, and `gguf`, plus `convert_hf_to_gguf.py --help`. Avoid conversion during future throughput-sensitive benchmark windows.
@@ -280,7 +280,7 @@ Granite claims 60.5 on MTEB Code (v1) across 12 tasks with explicit training on 
 - [Granite Embedding paper](https://arxiv.org/abs/2502.20204) (R1 family)
 - llama.cpp ModernBERT support: `convert_hf_to_gguf.py:12452`
 - [`research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../research/deep-dives/granite-embedding-97m-r2-evaluation.md) — full bench plan, alternatives Pareto, risk register
-- [`handoffs/active/granite-97m-r2-bench-plan.md`](../handoffs/active/granite-97m-r2-bench-plan.md) — claim-ready bench plan
+- [`handoffs/completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md`](../handoffs/completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md) — claim-ready bench plan
 - [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") — active-reconstruction retrieval policy (Cue-Tag-Content graph + evidence-conditioned path pruning); cloud-LLM-bound comparator to KB-RAG's parked self-correcting two-pass retrieval; token-cost discipline is the transferable lever
 
 ## Web research pipeline — SearXNG + Crawl4AI (2026-05-06)
