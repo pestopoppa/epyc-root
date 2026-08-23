@@ -2,7 +2,7 @@
 
 **Status**: reference · **Created**: 2026-08-21 (VT-7) · **Origin**: measured, not theorised —
 both shapes below are files that were on disk, green, and trusted on 2026-08-20.
-**Owning handoff**: [`handoffs/active/vacuous-test-suite-remediation.md`](../../../handoffs/active/vacuous-test-suite-remediation.md)
+**Owning handoff**: [`handoffs/completed/vacuous-test-suite-remediation.md`](../../../handoffs/completed/vacuous-test-suite-remediation.md)
 **Related**: [Benchmark Methodology](../../../wiki/benchmark-methodology.md) → *a capture can lie about its own protocol*;
 [verification-failure-catalogue.md](verification-failure-catalogue.md) (face: *a check not COUNTED by the reporter*).
 

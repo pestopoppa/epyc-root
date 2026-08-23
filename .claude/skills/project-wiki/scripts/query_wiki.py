@@ -71,7 +71,9 @@ def search_intake(index_path: Path, query_terms: list[str],
                 continue
 
         # Score across searchable fields
-        def _safe_join(items: list) -> str:
+        def _safe_join(items) -> str:
+            if not items:
+                return ""
             return " ".join(str(x) for x in items if x)
 
         score = 0
