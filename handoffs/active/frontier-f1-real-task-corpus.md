@@ -1,6 +1,6 @@
 # Frontier F1 — Define the Demand Side: a Real-Task Corpus as the Eval Distribution
 
-**Status**: IN PROGRESS — W1 workload taxonomy branch-ready 2026-06-12; W2 real-task harvester, passive `task_record.v1` capture, and operator verdict metadata landed on orchestrator main through `de07475`; compact W2 harvest evidence landed in orchestrator `e59577b7` with 372 training-eligible records, so the >=100 class+outcome count is satisfied; token telemetry for future task records landed in orchestrator `b8c8ac52`; historical conversation ingestion landed in orchestrator `b4b96580`; mixed source-family summary landed in orchestrator `f76b382d`; sidechain-excluded full historical summary refresh landed in orchestrator `13269679`; live token probe landed in orchestrator `589010e8` and showed the prior active AutoPilot process was stale for token telemetry; the reusable 2026-06-21 token probe showed the same-day live-progress slice had 213 training-eligible rows, 202 token payload rows, 0 prompt text rows, and no stale AutoPilot token-telemetry process; orchestrator `039ae9fd` refreshes the live-token and mixed-source evidence on 2026-07-03 with 229 token-complete live rows and 1,475 mixed prompt-free rows, so the live-refresh class/outcome, token-coverage, source-family, and privacy subgates remain met; W3 selection manifest landed in orchestrator `bd26a7ca`; W3 reconstruction audit landed in orchestrator `787a15f9` with 46/50 prompts recovered and 39/50 expected-backed rows; W3 scoreable YAML materialization landed in orchestrator `93b7d289` and research `39a79bd`; W3 standalone EvalTower packaging landed after a concurrent-window attempt (`real_suite_v1_eval_20260621`) but that attempt failed reliability (`34/50` errors); the new guarded clean-window runner landed in orchestrator `a825a069` and is plan-only by default, requiring `--apply --confirm-clean-window` for live evaluation; active AutoPilot still blocks the live path unless `--allow-autopilot-active` marks it non-decision-grade; orchestrator `4db05deb` now emits a prompt-free `question_ledger.jsonl` from packaged real-suite runs; orchestrator `8e31fd92` and research `7172c88` repair materialization to accept existing `code_execution` scorer rows with `test_code`, removing the `debug_root_cause` quota shortage while preserving 50 scoreable rows; F1 still needs the actual clean full EvalTower per-question ledger run before decision use
+**Status**: COMPLETE — 10/10 boxes closed (2026-08-23). All waypoints ticked: W1 taxonomy (2026-06-12), W2 passive capture (2026-06-14), W2b historical backfill/source weighting (2026-07-03 refresh), W2c Letta no-dependency port (2026-07-29), W3 clean-window 50-question EvalTower ledger (2026-07-07 run `real_suite_v1_eval_20260707T013009Z`, 35/50), W4 decision wiring, F1-DGM-1/2/3 scoping (2026-07-17). Residual follow-up (AP-16 instruction-token bloat; how the ledger feeds promotion/regret views) is tracked in [tool-output-compression.md](tool-output-compression.md) — see completion banner below.
 **Current checkpoint — 2026-07-07T01:49Z**: the clean-window full `--n 50`
 rerun is packaged at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/`.
 It scored `35/50` correct, `quality_0_3=2.10`, reliability `0.94`, median
@@ -9,6 +9,19 @@ and `3` request errors (`1` no-such-group, `2` timed out). This supersedes
 the 2026-07-06 backend-failure packet as the current usable real-suite ledger.
 W2b source-weight/representativeness remains clear; follow-up is AP-16
 instruction-token bloat and how this ledger feeds promotion/regret views.
+
+## Completion — 2026-08-23
+
+Closed as COMPLETE: **10/10 checkboxes ticked, 0 open**; no new checkbox filed.
+**Discrepancy recorded**: the prior Status paragraph ended "F1 still needs the actual
+clean full EvalTower per-question ledger run before decision use" — that claim
+predates the 2026-07-07 clean-window run and is contradicted by the W3 checkbox
+(✅ 2026-07-07, 35/50 at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/`),
+so it is stale prose, not open work. The residual follow-up — AP-16
+instruction-token bloat and how this ledger feeds promotion/regret views — is already
+tracked in [tool-output-compression.md](tool-output-compression.md) (AP-16) and the
+EVL-23 index row; not duplicated here.
+
 **Created**: 2026-06-12
 **Priority**: MED — start passive capture anytime
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F1 — read it before claiming any waypoint

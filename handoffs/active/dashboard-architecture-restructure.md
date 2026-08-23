@@ -5,7 +5,7 @@
 **Priority**: LOW-MEDIUM — operator-framed as debt prevention, "doesn't block any work"; do at seams, never ahead of campaign work
 **Owner**: unclaimed
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
-**Related**: [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) (RTG-03 — data-truth defects; this handoff is information-architecture, NOT a substitute for its C1/H1/H2 fixes) · [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) (RTG-16) · [benchmark-results-dashboard.md](benchmark-results-dashboard.md) (EVL-06 — the working precedent for the contract pattern) · OP-9 (hub supervisor restart, master index)
+**Related**: [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) (RTG-03 — data-truth defects; this handoff is information-architecture, NOT a substitute for its C1/H1/H2 fixes) · [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) (RTG-16) · [benchmark-results-dashboard.md](../completed/benchmark-results-dashboard-completed-through-2026-08-23.md) (EVL-06 — the working precedent for the contract pattern) · OP-9 (hub supervisor restart, master index)
 
 ## Commission (operator, 2026-08-10, paraphrased)
 

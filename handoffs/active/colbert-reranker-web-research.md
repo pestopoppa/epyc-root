@@ -583,7 +583,7 @@ S3c/S4c/S5-amend do not require AR-3. AR-3 only gates the **A/B rollout** (S5 / 
 
 #### Deep-dive refinement (2026-04-30) — bench plan persisted
 
-Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) — gated on K2 chunker activation (currently STUB in `internal-kb-rag.md`).
+Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](../completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md) — gated on K2 chunker activation (currently STUB in `internal-kb-rag.md`).
 
 **Two corrections to the intake-update notes above**:
 
