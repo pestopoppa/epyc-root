@@ -12,6 +12,7 @@ Operational detail for *how a kind of work is done* lives here, not in agent pro
 - `docs/guides/agent-workflows/handoff-index-authoring.md` — the thin-row contract for authoring and editing handoff domain indices: an index is a dispatch surface, not a status report or an evidence ledger
 - `docs/guides/agent-workflows/orchestrator-lifecycle.md` — lifecycle and stabilization-closure guidance for orchestrator work in `epyc-orchestrator`: API-only reload, contention probes, response diagnostics as acceptance criteria
 - `docs/guides/agent-workflows/test-suite-conventions.md` — the two measured vacuous-pass shapes, the `test_*.py` = must-be-collectable naming rule, the sanctioned bridge stanzas, and why an exemption can be correct
+- `docs/guides/agent-workflows/filesystem-containment-guard.md` — the INC-20260823 mechanical guard: one shared scanner, two surfaces (Claude PreToolUse hook + opencode plugin), the CLASS A/B policy, and the operator ack/allowlist override forms
 
 ## Design Rule
 
