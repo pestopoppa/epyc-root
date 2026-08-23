@@ -194,10 +194,10 @@ Identified during the 20:00–23:00Z wiring window and **deliberately not acted 
 in flight and several of these touch the shared clone. All zero-inference. Measured figures, not
 estimates.
 
-- [x] **NIB2-60** (MED): **1.4 GB of orphaned git pack files in `/workspace/.git/objects/pack/`.** `git count-objects -v` reports `garbage: 3` — `tmp_pack_hhZMcY` (414 MB), `tmp_pack_QlMjgI`, `tmp_pack_WJ8KfU`. Remove by **explicit three-path `rm`** on those exact filenames. **Never `git gc`** on this repo: `/workspace` and `/mnt/raid0/llm/epyc-root` are one clone shared by parallel sessions, and a full repack can disrupt a live session mid-operation. ✅ 2026-08-23 — verified resolved: `git count-objects -v` garbage=0, size-garbage=0, zero `tmp_pack*` files in `.git/objects/pack/` (resolved by the 2026-08-23 reclamation or promotion repack; nothing to remove).
-- [x] **NIB2-61** (LOW): **`llama.log` and `main.log` are tracked at the repo root.** Both are runtime logs and both currently show as deleted in the working tree while their tracked entries remain, so every session sees a dirty tree it did not cause — and `w1_preflight.py` gates on a clean tree. Untrack and gitignore. ✅ 2026-08-23 — resolved by 334d04b3 (2026-08-12): untracked + gitignored; verified no tracked entries (`git ls-files` empty for both; `.gitignore` lines 159-160).
-- [x] **NIB2-62** (LOW): **`.devcontainer/Dockerfile.orig` is untracked merge residue.** Delete or, if it is a deliberate reference copy, name it so and track it. ✅ 2026-08-23 — deleted (untracked, 4854 B, gitignored via `*.orig` line 164; unreferenced — cited only as debris in rocm-verify-profile-backend.md and progress/2026-08-03.md, never as a reference copy).
-- [x] **NIB2-63** (MED): **~4.5 GB of `repos/*.bak-2026-05-22*` clones hold ZERO unique commits.** `repos/epyc-llama.bak-2026-05-22-141927`, `repos/epyc-orchestrator.bak-2026-05-22`, `repos/epyc-inference-research.bak-2026-05-22` (and the identical set under `/mnt/raid0/llm/epyc-root/repos/`, which is the same paths through the symlink — count the space once). Verified: nothing in them is absent from the live clones. **Re-verify uniqueness immediately before deleting**, not from this record — the check is cheap and the deletion is not reversible. ✅ 2026-08-23 — verified resolved: no `*bak-2026-05-22*` clones exist under repos/ or /mnt/raid0/llm; only live symlinks remain (repaired 2026-08-16).
+- [ ] **NIB2-60** (MED): **1.4 GB of orphaned git pack files in `/workspace/.git/objects/pack/`.** `git count-objects -v` reports `garbage: 3` — `tmp_pack_hhZMcY` (414 MB), `tmp_pack_QlMjgI`, `tmp_pack_WJ8KfU`. Remove by **explicit three-path `rm`** on those exact filenames. **Never `git gc`** on this repo: `/workspace` and `/mnt/raid0/llm/epyc-root` are one clone shared by parallel sessions, and a full repack can disrupt a live session mid-operation.
+- [ ] **NIB2-61** (LOW): **`llama.log` and `main.log` are tracked at the repo root.** Both are runtime logs and both currently show as deleted in the working tree while their tracked entries remain, so every session sees a dirty tree it did not cause — and `w1_preflight.py` gates on a clean tree. Untrack and gitignore.
+- [ ] **NIB2-62** (LOW): **`.devcontainer/Dockerfile.orig` is untracked merge residue.** Delete or, if it is a deliberate reference copy, name it so and track it.
+- [ ] **NIB2-63** (MED): **~4.5 GB of `repos/*.bak-2026-05-22*` clones hold ZERO unique commits.** `repos/epyc-llama.bak-2026-05-22-141927`, `repos/epyc-orchestrator.bak-2026-05-22`, `repos/epyc-inference-research.bak-2026-05-22` (and the identical set under `/mnt/raid0/llm/epyc-root/repos/`, which is the same paths through the symlink — count the space once). Verified: nothing in them is absent from the live clones. **Re-verify uniqueness immediately before deleting**, not from this record — the check is cheap and the deletion is not reversible.
 
 ---
 
@@ -281,6 +281,35 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   `ratify_v9_cpu_bench_era_advance_20260811.sh` already migrated ("no process-pattern probe — host
   rule: never pgrep by name"); backport that. Deliberately OUT of the observer-registry discovery
   scope (one-shot scripts a human runs and reads once), recorded here so the finding is not lost.
+
+---
+
+## 2026-08-23 supplement — disk reclamation phase 1 done, phase 2 candidates
+
+Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via per-worktree
+`git worktree remove` (138 worktrees, never `prune`), 111G → 371G free. Details:
+`progress/2026-08/2026-08-23-disk-reclaim.md`.
+
+- [ ] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
+  08-11→08-14 are unreferenced by active handoffs.** Two are referenced and must stay:
+  `inf37-fancy-simd-v9-20260811`, `promote-kernel-rnd-dashboard-20260812`. Registered in
+  epyc-inference-research; remove per-worktree (`git worktree remove --force`), NEVER `prune`.
+  Operator decision needed only if any session claims them — none does today.
+- [ ] **NIB2-65** (MED): **model duplicates/orphans ~25G in `/mnt/raid0/llm/models/`** — safe set
+  from the 2026-08-23 census: `bge-m3-f16.gguf`, `multilingual-e5-base-f16.gguf`,
+  `granite-embedding-97m-multilingual-r2-Q4_K_M.gguf`, `Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf`,
+  `gemma-4-26B-A4B-it-assistant-v6-f16.gguf`, empty husks (`MaziyarPanahi`, `Mungert`,
+  `prithivMLmods`, `jiaojjjjje`, `hugging-quants`), `tinyllamas-stories-260k-f32.gguf`,
+  `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf`, `Qwen3-4B-Thinking-2507-GGUF` (4G, only in
+  deprecated benchmarks). Judgment calls (research-only refs, keep unless operator says otherwise):
+  `Qwen3-ASR-1.7B-GGUF`, `gemma-4-e2b/e4b-it-Q8_0`, seal-concise set.
+- [ ] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
+  (14G, superseded), `llama.cpp-v6-iqk` (1.9G, iqk shipped in v9), `llama.cpp-v7-sanitize-audit`
+  (1.6G), `llama.cpp-k28-prototype-20260720` (0.9G). Keep `llama.cpp-dflash2-qwen38-20260820`
+  (active handoff `dflash2-block-drafter-experimental-build.md`).
+- [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
+  <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
+  caches also live under `cache/`.
 
 ---
 
