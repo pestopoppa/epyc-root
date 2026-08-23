@@ -65,7 +65,25 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 
 ## Candidate — llama.cpp issue #27442 (2026-08-21, Stage-2b intake-1279)
 
-- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream.**
+> **PART ONE POSTED 2026-08-23** — [issue #27442 comment](https://github.com/ggml-org/llama.cpp/issues/27442#issuecomment-5385082723),
+> operator-approved, under the operator's account. The row below reasoned that the analysis was
+> blocked on G1 because "posting first offers a critique with no data behind it". On execution that
+> split cleanly in two, and only the second half was ever blocked:
+> the **corrections to the reporter's own artifacts** need no measurement of ours — they are facts
+> about their logs — while **our boundary-sweep numbers** still do. Part one went out and says so
+> explicitly: *"We have not reproduced the bug — we run this architecture on CPU and ROCm, not
+> Metal — so this is analysis of your artifacts, not a second data point."*
+> Every claim was re-derived from the attachments before posting, not carried from the dive:
+> `n_prompt_tokens_cache` occurs **14×, all zero**; token `248046` = `<|im_end|>`; both `_noflash`
+> logs contain `flash_attn = enabled`; sampler at `temp = 0.300`, so the intermittency may be the
+> sampler rather than a stale state; `70aff2525` is **2026-08-20T10:43:59Z** against their newest
+> build `dc72703` at **2026-08-19T15:44:15Z**, ~19 h earlier. The post does **not** claim a fix
+> exists, and it rules #27450 *out* with the reason: it touches only the `mpp::tensor_ops` path,
+> gated on `has_tensor` = `supportsFamily:MTLGPUFamilyMetal4_GGML` (`ggml-metal-device.m:743`),
+> which an M4 does not report. Thread was OPEN with **zero** comments at post time, so this is the
+> first reply. **Part two — our own greedy sweep — remains blocked on G1.**
+
+- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the results half.**
       Unusually strong material for a low-cost contribution: the issue is OPEN with **zero comments and
       no maintainer reply**, and four things in it are demonstrably wrong or unsupported —
       (a) its cache/checkpoint localization is refuted by **its own attached log** (`n_prompt_tokens_cache = 0`

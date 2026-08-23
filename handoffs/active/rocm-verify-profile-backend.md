@@ -1600,8 +1600,19 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       outside the imported set and must never be quoted as "FA is correct at long context".
       **Bounded by Z10:** if Z10 finds the denorm class present, run G10 with that hypothesis named
       rather than as an undirected sweep. [intake-1284#record]
-- [ ] **Z14 (Z) — file the unguarded AMD warp list in fla's conv-backward autotuner UPSTREAM, as a
-      separate latent-inconsistency report.** In fla's `causal_conv1d` kernels, `kernels.py:16`
+- [x] **Z14 (Z) — DONE 2026-08-23: filed as [fla-org/flash-linear-attention#1163](https://github.com/fla-org/flash-linear-attention/issues/1163)**
+      (operator-approved; posted under the operator's account). Read and pinned at HEAD
+      `bc3b101dcb713ddc5bd8924b66754eb68b5ccf89`, with every claim re-verified against that revision
+      before posting rather than carried from the dive. **One clause of the row below was WRONG and
+      was corrected before it went out:** `STATIC_WARPS` is *not* "defined and never used anywhere" —
+      it is used in five other modules (`fused_kl_div.py`, `fused_linear_cross_entropy.py`, and three
+      `backends/triton_ascend/` files). It is unreferenced only *within* `conv/triton/kernels.py`, and
+      the report says exactly that. The report also states plainly that we have NOT run it (no `fla`
+      install on gfx90a / ROCm 6.2, below the declared `torch>=2.7.0` floor), so it is filed as a
+      code-reading report, and it names the #1156 hypothesis as **falsified** rather than merely
+      unproven. Original row text retained below for provenance.
+      <br>Original: file the unguarded AMD warp list in fla's conv-backward autotuner UPSTREAM, as a
+      separate latent-inconsistency report. In fla's `causal_conv1d` kernels, `kernels.py:16`
       defines `NUM_WARPS_AUTOTUNE` AMD-aware; the **forward** and **update** kernels consume it, but
       the **backward** kernel at `:152` hardcodes `[4, 8, 16, 32]`. `IS_AMD` is
       **architecture-blind**, so 2048 threads/block is offered on every CDNA part regardless of
