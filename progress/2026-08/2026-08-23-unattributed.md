@@ -76,6 +76,19 @@ mutation test), NIB2-58b (experimental build-dir re-point), scoring-infra loader
   `fdd33705`); stale peer-staged handoff/index versions in the shared index (aligned to worktree).
 - Wrapup lease residue (dead `research-intake` holder) force-released + journaled.
 
+## ROUTE-A1 step-2 smoke EXECUTED (2026-08-24T06:48Z, operator grant) — premise falsified
+
+Anchor ingest#1 (q0,q1) held via `region-lock run` CLI (the sanctioned mechanism — found after
+direct-port and queue-path holder attempts produced no ingest locks; the queue path dispatches
+WITHOUT acquiring region locks at all). Dry-run clean (8 probes: 3 admit / 5 queue). Execute:
+**smoke_pass=false, 3/8** — all 3 disjoint admit-expected ADMITTED correctly; **0/5 overlapping
+queue-expected queued** (all admitted). Measured why: placement machine RE-PLACES forced eval_batch
+requests onto the disjoint instance (`candidate_topology_idx=2` observed) and the gate allows with
+reason "all pairs + n-way allow" (frontdoor+ingest pair = borderline → gate-allow). The
+overlap-queue mechanism Step-2 was built to verify does not exist in the live fleet layer.
+Ledger DONE_PASS row + handoff appendix + RTG-35 row re-pointed to the operator re-specification
+decision. Artifact: `epyc-orchestrator/data/shapekeyed_step2_smoke/route-a1-20260824T0648Z`.
+
 ## Open residuals (named, not deferred)
 
 - RTG-35 → step-2 smoke bridge (`_drive_admit_overlap_probes`, shapekeyed_step2_smoke.py:718).

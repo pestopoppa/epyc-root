@@ -392,6 +392,33 @@ changed live is that the answer is now *derived* and every exclusion names its r
 - [ ] **`select_backfill_candidate` stays device-unaware** — deliberately, since resolving there is
       a live-behaviour change Part C has not authorized.
 
+## APPEND 2026-08-24 — ROUTE-A1 step-2 smoke EXECUTED (operator grant) — premise falsified for the live fleet layer
+
+Executed 2026-08-24T06:48Z: anchor `ingest_long_context#1` (q0,q1) held via the sanctioned
+`region-lock run --regions q0,q1 --role ingest_long_context -- sleep 900` CLI; host quiet (load ~2,
+no bench drivers); fleet live; topology `171f86f9188211e9`. Report:
+`epyc-orchestrator/data/shapekeyed_step2_smoke/route-a1-20260824T0648Z`.
+
+- **Instrument passed; premise failed.** Plan 8 probes (3 admit / 5 queue expected); anchor-hold
+  verified; all 8 probes classified (0 unscored). **smoke_pass = false, 3/8**: all 3 disjoint
+  admit-expected probes ADMITTED correctly; **0/5 overlapping queue-expected probes queued** —
+  every one ADMITTED.
+- **Why (measured, not argued):** (a) the placement machine RE-PLACES forced eval_batch requests
+  onto the disjoint instance — sample probe response: `contention_gate: {admitted: true, decision:
+  allow, candidate_topology_idx: 2, reason: "all pairs + n-way allow"}` for a frontdoor#1-expected
+  probe (i.e. dispatched to frontdoor#2, the node1 half, disjoint from the held anchor); (b) the
+  gate decision is allow because the frontdoor+ingest pair row is `borderline` (OP-21 demotion
+  2026-08-23) and the gate treats borderline as allow ("realistic green light").
+- **The overlap-queue mechanism Step-2 was built to verify does not exist in the live fleet
+  layer.** The region-lock anchor hold is not consulted for overlap exclusion on the eval_batch
+  path (the queue path neither acquires nor checks region locks — verified separately: forced
+  queue requests complete with zero lock acquisition), and the gate's pair-matrix verdict allows
+  the co-run. The Step-2 flag-on decision now needs a re-specification: either pin the placement
+  machine to the candidate instance (making the smoke measure the gate's verdict for THAT
+  placement) or re-state the expectation against the fleet layer's actual overlap handling
+  (re-placement + matrix-allow). Ledger: `ROUTE-A1-shapekeyed-step2-20260824T0648Z-executed`
+  (DONE_PASS — the instrument ran; the finding is the observation).
+
 ## APPEND 2026-08-12 — inverted marker polarity in the matrix generator (auditor-verified)
 
 Reported by `mainC` (bus `msg-20260812T133841Z-20-mainC`), **both code claims independently
