@@ -167,6 +167,11 @@
     </details>
   </section>
 
+  <section class="panel" id="v27-cumulative-panel">
+    <h2>Cumulative candidate vs frozen production <span class="tag">v27 receipt · producer-owned promotion</span></h2>
+    <div id="v27-cumulative"><div class="empty">connecting to cumulative performance receipt…</div></div>
+  </section>
+
   <div class="live-grid">
     <section class="panel" id="autokernel-live-panel">
       <h2 class="live-head"><span class="live-dot" id="ak-live-dot"></span>AutoKernel log tail <span class="tag">live pulse</span></h2>
@@ -1097,8 +1102,95 @@ function renderLive(d){
     (fresh.staleness_class||"missing")+" · showing "+Math.min(ak.length,6)+" / "+ak.length+" events";
   $("#planner-live-foot").textContent=cue+" · producer age "+producerAge+" · showing "+Math.min(actors.length,6)+" / "+actors.length+" actor events";
 }
+// v27 FINAL PRODUCER SCHEMA — cumulative candidate effect vs exact frozen
+// production.  The headline is the validated cumulative graphs-on effect
+// fraction + the producer's own cumulative_classification, and a VALID
+// nonpositive result renders distinctly ("not faster than frozen production,
+// promotion denied") — never as a blank or an error.  Promotion eligibility
+// and reason are rendered VERBATIM from the receipt with an explicit
+// producer-owned label; this view never computes eligibility.  The append-only
+// composition-authority journal binding is the trust indicator: a mismatch
+// marks the row NOT-TRUSTED but keeps it visible.
+function renderV27Cumulative(d){
+  const box=$("#v27-cumulative"), v=d.v27_cumulative||{};
+  if(!v.available){
+    box.innerHTML='<div class="muted">No cumulative performance receipt: '+esc(v.error||"not exported by any deployment")+
+      ' — the v27 headline appears only when a deployment seals <code>cumulative-performance.json</code>.</div>';
+    return;
+  }
+  const r=v.receipt||{}, h=v.headline||{}, journal=v.journal||{}, ledger=v.ledger||{};
+  let html='';
+  if(v.trusted!==true){
+    html+='<div class="fail" style="margin:0 0 10px;padding:8px 10px;border:1px solid #4d1f1c;border-radius:7px;background:rgba(248,81,73,.08)">'+
+      '<b>NOT-TRUSTED</b> · journal binding '+esc(journal.integrity||"unknown")+' · '+esc(journal.detail||"")+'</div>';
+  } else {
+    html+='<div class="ok" style="margin:0 0 10px;font-size:12px"><b>TRUSTED</b> · '+esc(journal.detail||"journal binding matched")+'</div>';
+  }
+  html+='<div class="hero">';
+  const fraction=r.cumulative_graphs_on_effect_fraction;
+  if(typeof fraction==="number"&&isFinite(fraction)){
+    const positive=h.positive===true;
+    html+='<div class="hero-card"><div class="hero-label">Cumulative candidate vs frozen production</div>'+
+      '<div class="hero-value '+(positive?'ok':'fail')+'">'+esc(effectPct({effect_fraction:fraction}))+'</div>'+
+      '<div class="result-headline">'+esc(h.label||"")+'</div>'+
+      '<div class="muted">classification '+esc(r.cumulative_classification||"—")+' · '+esc(r.metric||"—")+' · '+esc(r.metric_direction||"—")+'</div></div>';
+  } else {
+    html+='<div class="hero-card"><div class="hero-label">Cumulative candidate vs frozen production</div>'+
+      '<div class="hero-value muted">—</div>'+
+      '<div class="result-headline">cumulative runner has not sealed a receipt yet'+(v.receipt_error?' — '+esc(v.receipt_error):'')+'</div></div>';
+  }
+  html+='<div class="hero-card"><div class="hero-label">Promotion status <span class="tag">producer-owned</span></div>';
+  if(r.valid===true&&typeof r.promotion_eligible==="boolean"){
+    html+='<div class="hero-value '+(r.promotion_eligible?'ok':'fail')+'">'+(r.promotion_eligible?'ELIGIBLE':'NOT ELIGIBLE')+'</div>'+
+      '<div class="result-headline">'+esc(r.promotion_reason||"—")+'</div>'+
+      '<div class="muted">verbatim from the cumulative performance receipt — the dashboard does not compute promotion eligibility</div>';
+  } else if(v.receipt_error){
+    html+='<div class="hero-value muted">UNVERIFIED</div>'+
+      '<div class="result-headline">'+esc(v.receipt_error)+'</div>'+
+      '<div class="muted">promotion fields render only from a sealed, journal-bound receipt</div>';
+  } else {
+    html+='<div class="hero-value muted">AWAITING RECEIPT</div>'+
+      '<div class="result-headline">no sealed cumulative performance receipt yet</div>';
+  }
+  html+='</div>';
+  const inc=[["exact route","incremental_exact_route_effect_fraction"],
+             ["graphs off","incremental_graphs_off_effect_fraction"],
+             ["graphs on","incremental_graphs_on_effect_fraction"]];
+  html+='<div class="hero-label" style="margin-top:12px">Incremental effect <span class="muted" style="text-transform:none;letter-spacing:0">· secondary — the newest lever vs its anchor</span></div>'+
+    '<table><thead><tr><th>route</th><th>effect</th></tr></thead><tbody>';
+  inc.forEach(function(pair){
+    const value=r[pair[1]];
+    html+='<tr><td>'+esc(pair[0])+'</td><td class="num">'+
+      (typeof value==="number"&&isFinite(value)?deltaCell(value*100):'<span class="muted">—</span>')+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  const chain=(journal.events||[]).map(function(e){return e.kind+" #"+e.sequence;}).join(" → ")||"no events";
+  html+='<div class="hero-label" style="margin-top:12px">Authority journal binding <span class="muted" style="text-transform:none;letter-spacing:0">· composition-authority.jsonl</span></div>'+
+    '<div class="detail">'+esc(journal.detail||"—")+'</div>'+
+    '<div class="muted">pre_run '+(journal.pre_run?'<span class="ok">committed</span>':'<span class="fail">absent</span>')+
+    ' · result '+(journal.result?'<span class="ok">committed</span>':'<span class="fail">absent</span>')+
+    ' · integrity '+esc(journal.integrity||"—")+' · chain '+esc(chain)+'</div>';
+  if(ledger.present){
+    const mt=ledger.matching_terminal||{};
+    html+='<div class="hero-label" style="margin-top:12px">Controller ledger <span class="muted" style="text-transform:none;letter-spacing:0">· cumulative-composition.json</span></div>'+
+      '<div class="muted">terminal '+(mt.operation_key?
+        '<code>'+esc(String(mt.operation_key).slice(0,12))+'…</code> · '+esc(mt.disposition||"—")+' · '+
+        (mt.promotion_eligible?'<span class="ok">eligible</span>':'<span class="fail">not eligible</span>')+' · '+esc(mt.promotion_reason||"—"):
+        'none for this operation')+
+      (ledger.agrees===false?' · <span class="fail">LEDGER DISAGREES WITH RECEIPT</span>':
+       ledger.agrees===true?' · <span class="ok">receipt agrees</span>':'')+'</div>';
+  }
+  const frozen=r.frozen_production||{};
+  html+='<div class="hero-label" style="margin-top:12px">Exact frozen production comparator</div>'+
+    '<div class="muted">commit <code>'+esc(String(frozen.production_commit||"—").slice(0,12))+'…</code> · graphs '+esc(frozen.graphs_mode||"—")+
+    ' · metric '+esc(frozen.metric||"—")+' ('+esc(frozen.direction||"—")+')'+
+    ' · authority <code>'+esc(String(frozen.authority_sha256||"—").slice(0,12))+'…</code></div>'+
+    '<div class="live-foot">operation <code>'+esc(v.operation_key||"—")+'</code> · deployment '+esc(v.deployment||"—")+
+    ' · sealed '+esc(v.sealed_at||"—")+'</div>';
+  box.innerHTML=html;
+}
 async function loadLive(){
-  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); renderLive(await r.json()); }
+  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderLive(d); renderV27Cumulative(d); }
   catch(e){ $("#ak-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#planner-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#ak-live-log-full").textContent="live endpoint unavailable: "+e.message;

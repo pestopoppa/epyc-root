@@ -32,7 +32,7 @@ global.setInterval = () => 0;
 global.setTimeout = () => 0;
 
 const NAMES = ['render', 'renderCurrentState', 'renderSections', 'renderActivity',
-               'renderReporting'];
+               'renderReporting', 'renderV27Cumulative'];
 const probe = NAMES.map(n => `${n}: typeof ${n}==="function" ? ${n} : null`).join(', ');
 
 let ctx;

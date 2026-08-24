@@ -5641,6 +5641,621 @@ def _discovery_v27_state_contract(state: object,
     }
 
 
+# ---------------------------------------------------------------------------
+# v27 FINAL PRODUCER SCHEMA — cumulative performance vs frozen production
+#
+# The final producer carrier (research repo
+# codex/autokernel-performance-carrier-closure-v3-20260822, PERF repair
+# b12de815) seals a per-operation cumulative promotion statement:
+#
+#   operations/<operation_key>/runner-plan.json
+#       epyc.autokernel.gpu_source_runner_plan.v2        (receipt_sha256)
+#   operations/<operation_key>/proof/proof-bundle.json
+#       epyc.autokernel.gpu_source_evidence_bundle.v1    (receipt_sha256)
+#   operations/<operation_key>/runner/<sN>/<stage>/result.json
+#       epyc.autokernel.gpu_candidate_only_screen.v2     (result_sha256)
+#       stages: measurement-graphs-off, target-runtime-graphs-on,
+#       cumulative-vs-production-graphs-on
+#   operations/<operation_key>/cumulative-performance.json
+#       epyc.autokernel.cumulative_performance.v2        (result_sha256)
+#   operations/<operation_key>/composition-authority.jsonl
+#       epyc.autokernel.cumulative_authority_journal_event.v1 (pre_run, result)
+#   operations/<operation_key>/screen-result.json
+#       epyc.autokernel.gpu_source_operation_result.v2  (receipt_sha256)
+#   <state_root>/cumulative-composition.json
+#       epyc.autokernel.cumulative_composition_state.v3 (controller ledger)
+#
+# THE CUMULATIVE PERFORMANCE RECEIPT IS THE AUTHORITATIVE PROMOTION STATEMENT.
+# This projection renders promotion_eligible + promotion_reason +
+# cumulative_classification VERBATIM and never recomputes eligibility.  It
+# binds the receipt to the append-only authority journal (pre_run + result
+# events) and surfaces the binding as a trust indicator (matched / mismatched /
+# absent): a mismatch marks the row NOT-trusted but never hides it.
+#
+# Every v27 immutable pin stays UNSET by design: the final schema is
+# self-sealed (result_sha256 / receipt_sha256 native identities), so this
+# read-only binding needs no frozen producer commit to render.
+# ---------------------------------------------------------------------------
+
+_V27_RUNNER_PLAN_SCHEMA = "epyc.autokernel.gpu_source_runner_plan.v2"
+_V27_PROOF_BUNDLE_SCHEMA = "epyc.autokernel.gpu_source_evidence_bundle.v1"
+_V27_SCREEN_RESULT_SCHEMA = "epyc.autokernel.gpu_candidate_only_screen.v2"
+_V27_OPERATION_RESULT_SCHEMA = "epyc.autokernel.gpu_source_operation_result.v2"
+_V27_CUMULATIVE_PERFORMANCE_SCHEMA = \
+    "epyc.autokernel.cumulative_performance.v2"
+_V27_AUTHORITY_JOURNAL_SCHEMA = \
+    "epyc.autokernel.cumulative_authority_journal_event.v1"
+_V27_COMPOSITION_LEDGER_SCHEMA = \
+    "epyc.autokernel.cumulative_composition_state.v3"
+_V27_CUMULATIVE_DASHBOARD_SCHEMA = \
+    "epyc.dashboard.autokernel_v27_cumulative.v1"
+_V27_AUTHORITY = "nonpromotable_candidate_only_discovery"
+_V27_PROMOTION_GATE_AUTHORITY = "frozen_production_promotion_gate"
+_V27_AUTHORITY_JOURNAL_NAME = "composition-authority.jsonl"
+_V27_COMPOSITION_LEDGER_NAME = "cumulative-composition.json"
+_V27_CUMULATIVE_OPERATION_KEYS = (
+    "measurement_graphs_off_output_dir",
+    "target_runtime_graphs_on_output_dir",
+    "production_graphs_on_output_dir",
+    "cumulative_performance_path",
+)
+_V27_STAGE_LABELS = (
+    "measurement_graphs_off", "target_runtime_graphs_on",
+    "production_graphs_on",
+)
+_V27_STAGE_JOURNAL_KEYS = {
+    "measurement_graphs_off": "graphs_off",
+    "target_runtime_graphs_on": "graphs_on",
+    "production_graphs_on": "production_graphs_on",
+}
+
+
+def _v27_stable_snapshot(path: Path, *, max_bytes: int) -> bytes | None:
+    """Read one sealed producer receipt with the producer's stable-read rules.
+
+    Mirrors cumulative_composition._stable_receipt_bytes: regular file, single
+    link, same owner, no group/other write, bounded size, and identical
+    identity before/after the read.  Unlike the dashboard's
+    _owned_public_snapshot this deliberately does NOT require a private parent
+    directory: the producer's own receipts live under ordinary 0o755 runner
+    stage directories.
+    """
+    if not path.is_absolute() or ".." in path.parts:
+        return None
+    flags = os.O_RDONLY | os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        before = os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.geteuid() or before.st_mode & 0o022
+                or before.st_size > max_bytes):
+            return None
+        chunks = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        pathname = os.lstat(path)
+    except OSError:
+        return None
+    identity = lambda row: (
+        row.st_dev, row.st_ino, row.st_uid, stat.S_IFMT(row.st_mode),
+        row.st_nlink, row.st_size, row.st_mtime_ns, row.st_ctime_ns)
+    if (identity(before) != identity(after)
+            or identity(after) != identity(pathname)):
+        return None
+    return b"".join(chunks)
+
+
+def _v27_receipt_snapshot(path: Path, *, max_bytes: int) \
+        -> tuple[bytes | None, dict | None]:
+    """Stable-read one receipt; (raw bytes, lenient strict-JSON body)."""
+    raw = _v27_stable_snapshot(path, max_bytes=max_bytes)
+    if raw is None:
+        return None, None
+    return raw, _strict_json_bytes(raw)
+
+
+def _v27_sealed_body(body: dict | None, *, schema: str,
+                     native_key: str) -> bool:
+    """True when a parsed receipt carries its exact native identity hash."""
+    if body is None or body.get("schema") != schema:
+        return False
+    native = body.get(native_key)
+    return (_discovery_sha256(native)
+            and native == _discovery_controller_state_hash({
+                key: item for key, item in body.items()
+                if key != native_key}))
+
+
+def _v27_pre_run_commitment(plan_raw: bytes, plan: dict,
+                         proof_raw: bytes | None) -> dict | None:
+    """Re-derive the pre_run journal payload from sealed on-disk bytes."""
+    if proof_raw is None:
+        return None
+    pair = plan.get("composition_build_pair")
+    correctness = plan.get("composition_correctness")
+    production = plan.get("composition_production_authority")
+    if not isinstance(pair, dict) or not isinstance(correctness, dict) \
+            or not isinstance(production, dict):
+        return None
+    return {
+        "runner_plan_file_sha256": hashlib.sha256(plan_raw).hexdigest(),
+        "runner_plan_receipt_sha256": plan.get("receipt_sha256"),
+        "proof_bundle_file_sha256": hashlib.sha256(proof_raw).hexdigest(),
+        "build_pair_sha256": pair.get("pair_sha256"),
+        "correctness_result_sha256": correctness.get("result_sha256"),
+        "exact_route_receipt_sha256":
+            plan.get("composition_exact_route_receipt_sha256"),
+        "expected_route_set_sha256":
+            plan.get("composition_expected_route_set_sha256"),
+        "target_runtime_frame_sha256":
+            plan.get("composition_target_runtime_frame_sha256"),
+        "frozen_production_authority_sha256":
+            production.get("authority_sha256"),
+    }
+
+
+def _v27_result_commitment(
+        operation_root: Path, plan_raw: bytes, stage_results: dict,
+        perf_raw: bytes | None, perf_body: dict | None,
+        receipt_valid: bool) -> dict | None:
+    """Re-derive the result journal payload; None while it is not derivable."""
+    if not all(stage_results[label]["valid"]
+               for label in _V27_STAGE_LABELS):
+        return None
+    if not receipt_valid or perf_raw is None or perf_body is None:
+        return None
+    results = {}
+    for label in _V27_STAGE_LABELS:
+        row = stage_results[label]
+        results[_V27_STAGE_JOURNAL_KEYS[label]] = {
+            "path": row["path"], "file_sha256": row["file_sha256"],
+            "result_sha256": row["result_sha256"],
+        }
+    return {
+        "runner_plan_file_sha256": hashlib.sha256(plan_raw).hexdigest(),
+        "results": results,
+        "cumulative_performance": {
+            "path": str(
+                (operation_root / "cumulative-performance.json").resolve()),
+            "file_sha256": hashlib.sha256(perf_raw).hexdigest(),
+            "result_sha256": perf_body["result_sha256"],
+        },
+    }
+
+
+def _v27_authority_journal_state(
+        operation_root: Path, operation_key: str, plan_raw: bytes,
+        plan: dict, proof_raw: bytes | None, stage_results: dict,
+        perf_raw: bytes | None, perf_body: dict | None,
+        receipt_valid: bool) -> dict:
+    """Bind the append-only authority journal; never hides a mismatch."""
+    path = operation_root / _V27_AUTHORITY_JOURNAL_NAME
+    raw = _v27_stable_snapshot(path, max_bytes=16 * 1024 * 1024)
+    events: list[dict] = []
+    chain_valid = True
+    if raw is not None:
+        if not raw or not raw.endswith(b"\n"):
+            chain_valid = False
+        else:
+            previous = "0" * 64
+            for index, line in enumerate(raw[:-1].split(b"\n"), 1):
+                row = _strict_json_bytes(line)
+                if (row is None
+                        or set(row) != {
+                            "schema", "sequence", "previous_event_sha256",
+                            "kind", "operation_key", "payload", "event_sha256"}
+                        or row.get("schema") != _V27_AUTHORITY_JOURNAL_SCHEMA
+                        or row.get("sequence") != index
+                        or row.get("previous_event_sha256") != previous
+                        or row.get("kind") not in {"pre_run", "result"}
+                        or not isinstance(row.get("payload"), dict)
+                        or row.get("operation_key") != operation_key):
+                    chain_valid = False
+                    break
+                event_sha = row.get("event_sha256")
+                if (not _discovery_sha256(event_sha)
+                        or event_sha != _discovery_controller_state_hash({
+                            key: item for key, item in row.items()
+                            if key != "event_sha256"})):
+                    chain_valid = False
+                    break
+                previous = event_sha
+                events.append({
+                    "kind": row["kind"], "sequence": row["sequence"],
+                    "event_sha256": event_sha,
+                    "operation_key": row["operation_key"],
+                    "payload": row["payload"],
+                })
+    if raw is None:
+        integrity = "absent"
+        detail = (
+            "composition-authority.jsonl is absent; the cumulative receipt "
+            "cannot be bound to its append-only journal")
+    elif not chain_valid:
+        integrity = "invalid"
+        detail = (
+            "composition-authority.jsonl is malformed or its hash chain is "
+            "broken")
+    else:
+        pre_run = [row for row in events if row["kind"] == "pre_run"]
+        result = [row for row in events if row["kind"] == "result"]
+        if len(pre_run) != 1 or len(result) > 1:
+            integrity = "invalid"
+            detail = (
+                "composition-authority.jsonl lacks exactly one pre_run event")
+        else:
+            expected_pre_run = _v27_pre_run_commitment(plan_raw, plan, proof_raw)
+            expected_result = _v27_result_commitment(
+                operation_root, plan_raw, stage_results,
+                perf_raw, perf_body, receipt_valid)
+            if expected_pre_run is None:
+                integrity = "invalid"
+                detail = (
+                    "runner plan or proof bundle cannot be re-derived; the "
+                    "pre_run commitment cannot be bound")
+            elif pre_run[0]["payload"] != expected_pre_run:
+                integrity = "mismatched"
+                detail = (
+                    "pre_run journal event disagrees with the sealed runner "
+                    "plan / proof bundle bytes")
+            elif expected_result is None:
+                if result:
+                    integrity = "mismatched"
+                    detail = (
+                        "result journal event exists without derivable result "
+                        "authority")
+                else:
+                    integrity = "incomplete"
+                    detail = (
+                        "pre_run committed; the cumulative runner has not yet "
+                        "sealed its result commitment")
+            elif not result or result[0]["payload"] != expected_result:
+                integrity = "mismatched"
+                detail = (
+                    "result journal event disagrees with the sealed runner "
+                    "results / cumulative performance receipt")
+            else:
+                integrity = "matched"
+                detail = (
+                    "append-only journal commits the exact sealed runner plan, "
+                    "proof bundle, runner results, and cumulative performance "
+                    "receipt")
+    return {
+        "present": raw is not None,
+        "pre_run": any(row["kind"] == "pre_run" for row in events),
+        "result": any(row["kind"] == "result" for row in events),
+        "integrity": integrity, "detail": detail,
+        "events": [{key: row[key] for key in (
+            "kind", "sequence", "event_sha256", "operation_key")}
+            for row in events],
+    }
+
+
+def _v27_receipt_view(body: dict | None) -> dict | None:
+    """Project the cumulative performance receipt fields verbatim."""
+    if body is None or not isinstance(body, dict):
+        return None
+    frozen = body.get("frozen_production")
+    return {
+        "schema": body.get("schema"),
+        "result_sha256": body.get("result_sha256"),
+        "operation_key": body.get("operation_key"),
+        "plan_sha256": body.get("plan_sha256"),
+        "metric": body.get("metric"),
+        "metric_direction": body.get("metric_direction"),
+        "production_graphs_mode": body.get("production_graphs_mode"),
+        "cumulative_classification": body.get("cumulative_classification"),
+        "cumulative_graphs_on_effect_fraction":
+            body.get("cumulative_graphs_on_effect_fraction"),
+        "incremental_exact_route_effect_fraction":
+            body.get("incremental_exact_route_effect_fraction"),
+        "incremental_graphs_off_effect_fraction":
+            body.get("incremental_graphs_off_effect_fraction"),
+        "incremental_graphs_on_effect_fraction":
+            body.get("incremental_graphs_on_effect_fraction"),
+        "incremental_exact_route_receipt_sha256":
+            body.get("incremental_exact_route_receipt_sha256"),
+        "incremental_graphs_off_receipt_sha256":
+            body.get("incremental_graphs_off_receipt_sha256"),
+        "incremental_graphs_on_receipt_sha256":
+            body.get("incremental_graphs_on_receipt_sha256"),
+        "production_graphs_on_receipt_sha256":
+            body.get("production_graphs_on_receipt_sha256"),
+        "promotion_eligible": body.get("promotion_eligible"),
+        "promotion_reason": body.get("promotion_reason"),
+        "frozen_production": ({
+            key: frozen.get(key) for key in (
+                "production_commit", "build_identity",
+                "build_identity_sha256", "runtime_snapshot_sha256",
+                "comparator_receipt_sha256", "graphs_mode", "frame_sha256",
+                "measurement_protocol_sha256", "measurement_receipt_sha256",
+                "model_sha256", "workload_sha256", "runtime_config_sha256",
+                "observed_workload_sha256",
+                "observed_runtime_config_sha256", "metric", "direction",
+                "authority_sha256")}
+            if isinstance(frozen, dict) else None),
+    }
+
+
+def _v27_controller_ledger_state(
+        state_root: Path, operation_key: str,
+        receipt: dict | None) -> dict:
+    """Project the controller ledger and cross-check its matching terminal."""
+    path = state_root / _V27_COMPOSITION_LEDGER_NAME
+    raw = _v27_stable_snapshot(path, max_bytes=16 * 1024 * 1024)
+    if raw is None:
+        return {"present": False, "valid": None, "agrees": None}
+    ledger = _strict_json_bytes(raw)
+    if ledger is None or ledger.get("schema") != _V27_COMPOSITION_LEDGER_SCHEMA:
+        return {"present": True, "valid": False, "agrees": None}
+    terminals = ledger.get("terminals") \
+        if isinstance(ledger.get("terminals"), list) else []
+    rows = []
+    matching = None
+    for terminal in terminals:
+        if not isinstance(terminal, dict):
+            continue
+        row = {key: terminal.get(key) for key in (
+            "operation_key", "disposition", "promotion_eligible",
+            "promotion_reason", "reason_code",
+            "cumulative_performance_result_sha256", "terminal_sha256",
+            "plan_sha256", "scientific_budget_spent")}
+        rows.append(row)
+        if terminal.get("operation_key") == operation_key:
+            matching = row
+    agrees = None
+    if matching is not None and isinstance(receipt, dict) \
+            and receipt.get("valid") is True:
+        agrees = bool(
+            matching.get("promotion_eligible") ==
+                receipt.get("promotion_eligible")
+            and matching.get("promotion_reason") ==
+                receipt.get("promotion_reason")
+            and matching.get("cumulative_performance_result_sha256") ==
+                receipt.get("result_sha256"))
+    return {
+        "present": True, "valid": True,
+        "campaign_id": ledger.get("campaign_id"),
+        "terminals": rows, "matching_terminal": matching, "agrees": agrees,
+    }
+
+
+def _v27_cumulative_operation(
+        operation_root: Path, state_root: Path,
+        deployment: str) -> dict | None:
+    """Project one cumulative operation; None when it is not cumulative.
+
+    The returned row is a read-only view: every promotion field is copied
+    verbatim from the producer receipt, and trust comes only from the
+    append-only journal binding and the controller ledger agreement.
+    """
+    plan_raw, plan = _v27_receipt_snapshot(
+        operation_root / "runner-plan.json", max_bytes=4 * 1024 * 1024)
+    if plan is None:
+        return None
+    if (plan.get("schema") != _V27_RUNNER_PLAN_SCHEMA
+            or plan.get("authority") != _V27_AUTHORITY
+            or plan.get("promotion_claim") is not False
+            or not _v27_sealed_body(plan, schema=_V27_RUNNER_PLAN_SCHEMA,
+                                    native_key="receipt_sha256")):
+        return None
+    operation_key = plan.get("operation_key")
+    if (not isinstance(operation_key, str) or not _discovery_sha256(operation_key)
+            or operation_key != operation_root.name):
+        return None
+    if not all(isinstance(plan.get(key), str)
+               for key in _V27_CUMULATIVE_OPERATION_KEYS):
+        return None
+    runner_root = (operation_root / "runner").resolve()
+    stage_paths = {}
+    for label in _V27_STAGE_LABELS:
+        path = Path(plan[f"{label}_output_dir"]).resolve()
+        if not path.is_relative_to(runner_root):
+            return None
+        stage_paths[label] = path
+    performance_path = (operation_root / "cumulative-performance.json").resolve()
+    if Path(plan["cumulative_performance_path"]).resolve() != performance_path:
+        return None
+    proof_raw, proof_body = _v27_receipt_snapshot(
+        operation_root / "proof" / "proof-bundle.json",
+        max_bytes=16 * 1024 * 1024)
+    proof_valid = _v27_sealed_body(
+        proof_body, schema=_V27_PROOF_BUNDLE_SCHEMA,
+        native_key="receipt_sha256")
+    stage_results = {}
+    for label in _V27_STAGE_LABELS:
+        result_path = stage_paths[label] / "result.json"
+        raw, body = _v27_receipt_snapshot(
+            result_path, max_bytes=16 * 1024 * 1024)
+        valid = _v27_sealed_body(
+            body, schema=_V27_SCREEN_RESULT_SCHEMA, native_key="result_sha256")
+        if (body is not None
+                and (body.get("promotion_claim") is not False
+                     or body.get("non_promotable") is not True)):
+            valid = False
+        stage_results[label] = {
+            "present": raw is not None, "valid": valid,
+            "path": str(result_path),
+            "file_sha256": (hashlib.sha256(raw).hexdigest()
+                            if raw is not None else None),
+            "result_sha256": body.get("result_sha256") if valid else None,
+        }
+    perf_raw, perf_body = _v27_receipt_snapshot(
+        performance_path, max_bytes=16 * 1024 * 1024)
+    receipt = _v27_receipt_view(perf_body)
+    receipt_valid = bool(
+        receipt is not None
+        and _v27_sealed_body(perf_body, schema=_V27_CUMULATIVE_PERFORMANCE_SCHEMA,
+                             native_key="result_sha256")
+        and perf_body.get("authority") == _V27_PROMOTION_GATE_AUTHORITY
+        and perf_body.get("promotion_authority") is True
+        and perf_body.get("operation_key") == operation_key)
+    receipt_error = None
+    if perf_raw is None:
+        receipt_error = (
+            "cumulative-performance.json is absent or unreadable")
+    elif not receipt_valid:
+        receipt_error = (
+            "cumulative-performance.json is not a sealed cumulative_performance.v2 "
+            "receipt for this operation")
+    if receipt is not None:
+        receipt["valid"] = receipt_valid
+    journal = _v27_authority_journal_state(
+        operation_root, operation_key, plan_raw, plan, proof_raw,
+        stage_results, perf_raw, perf_body, receipt_valid)
+    ledger = _v27_controller_ledger_state(
+        state_root, operation_key, receipt)
+    ledger_agrees = ledger.get("agrees")
+    trusted = bool(
+        journal["integrity"] == "matched" and receipt_valid
+        and proof_valid and ledger_agrees is not False)
+
+    def _mtime(path: Path) -> float:
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    receipt_stamp = (_mtime(performance_path) if perf_raw is not None
+                     else _mtime(operation_root / "runner-plan.json"))
+    sealed_at = None
+    if perf_raw is not None:
+        sealed_at = datetime.fromtimestamp(
+            receipt_stamp, timezone.utc).isoformat().replace("+00:00", "Z")
+    headline = None
+    classification = (receipt or {}).get("cumulative_classification")
+    if isinstance(classification, str):
+        positive = classification == "candidate"
+        headline = {
+            "classification": classification,
+            "positive": positive,
+            "label": (
+                "cumulative candidate is faster than frozen production "
+                "(validated)"
+                if positive else
+                "cumulative candidate is not faster than frozen production — "
+                "promotion denied (valid nonpositive result)"
+                if classification == "screened_out" else
+                "cumulative classification unavailable"),
+        }
+    screen_raw, screen_body = _v27_receipt_snapshot(
+        operation_root / "screen-result.json", max_bytes=16 * 1024 * 1024)
+    screen_valid = _v27_sealed_body(
+        screen_body, schema=_V27_OPERATION_RESULT_SCHEMA,
+        native_key="receipt_sha256")
+    files = {
+        "runner_plan": {
+            "present": plan_raw is not None,
+            "file_sha256": (hashlib.sha256(plan_raw).hexdigest()
+                            if plan_raw is not None else None),
+        },
+        "proof_bundle": {
+            "present": proof_raw is not None,
+            "valid": proof_valid,
+            "file_sha256": (hashlib.sha256(proof_raw).hexdigest()
+                            if proof_raw is not None else None),
+        },
+        "screen_result": {
+            "present": screen_raw is not None, "valid": screen_valid,
+            "file_sha256": (hashlib.sha256(screen_raw).hexdigest()
+                            if screen_raw is not None else None),
+        },
+        "cumulative_performance": {
+            "present": perf_raw is not None, "valid": receipt_valid,
+            "file_sha256": (hashlib.sha256(perf_raw).hexdigest()
+                            if perf_raw is not None else None),
+        },
+        "stages": stage_results,
+    }
+    return {
+        "schema": _V27_CUMULATIVE_DASHBOARD_SCHEMA,
+        "available": True,
+        "deployment": deployment,
+        "operation_key": operation_key,
+        "trusted": trusted,
+        "receipt_stamp": receipt_stamp,
+        "sealed_at": sealed_at,
+        "receipt": receipt,
+        "receipt_error": receipt_error,
+        "headline": headline,
+        "journal": journal,
+        "ledger": ledger,
+        "files": files,
+    }
+
+
+def _v27_cumulative_projection(deployments_root: Path) -> dict:
+    """Scan every deployment bundle for the newest sealed cumulative receipt.
+
+    Sealed rows always outrank in-flight rows; the newest receipt (by file
+    mtime, deterministic operation-key tiebreak) is the headline.  The final
+    producer schema is self-sealed, so this projection needs no frozen v27
+    pin: the dashboard binds each receipt to its append-only authority journal
+    and reports that binding as the trust indicator.
+    """
+    absent = {
+        "schema": _V27_CUMULATIVE_DASHBOARD_SCHEMA,
+        "available": False, "trusted": False,
+    }
+    try:
+        bundles = (sorted(deployments_root.iterdir())
+                   if deployments_root.is_dir() else [])
+    except OSError as exc:
+        return {**absent, "error": f"deployment discovery failed: {exc}"}
+    rows = []
+    for bundle in bundles:
+        if bundle.is_symlink() or not bundle.is_dir():
+            continue
+        present, config, error = _read_json_object(
+            bundle / "config" / "deployment.json", "discovery deployment")
+        if not present or config is None or error:
+            continue
+        controller = config.get("controller")
+        if not isinstance(controller, dict):
+            continue
+        operations_root = _safe_bundle_path(
+            controller.get("operations_root"), bundle)
+        state_root = _safe_bundle_path(controller.get("state_root"), bundle)
+        if operations_root is None or state_root is None:
+            continue
+        try:
+            operation_dirs = sorted(
+                (path for path in operations_root.iterdir()
+                 if path.is_dir() and not path.is_symlink()
+                 and re.fullmatch(r"[0-9a-f]{64}", path.name)),
+                key=lambda path: path.stat().st_mtime, reverse=True)[:50]
+        except OSError:
+            continue
+        for operation_root in operation_dirs:
+            plan_path = operation_root / "runner-plan.json"
+            if plan_path.is_symlink() or not plan_path.is_file():
+                continue
+            row = _v27_cumulative_operation(
+                operation_root, state_root, bundle.name)
+            if row is None:
+                continue
+            rows.append(row)
+    if not rows:
+        return {**absent,
+                "error": "no cumulative performance operation found across "
+                         "deployments"}
+    return max(rows, key=lambda row: (
+        1 if row["receipt"] is not None else 0,
+        row["receipt_stamp"], row["operation_key"]))
+
+
 def _discovery_portfolio_terminal_checkpoint(
         path: Path, state: object, *, now: float) -> dict | None:
     """Bind v25's final state to its consecutive portfolio/complete journal rows.
@@ -12589,6 +13204,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             AUTOKERNEL_SUPERVISOR_SCHEMA_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
+        "v27_cumulative": _v27_cumulative_projection(AUTOKERNEL_DEPLOYMENTS_ROOT),
     }
     obs = panels.Observation(
         artifact_present=True, timestamp=observed_ts,
