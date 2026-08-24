@@ -419,7 +419,33 @@ no bench drivers); fleet live; topology `171f86f9188211e9`. Report:
   (re-placement + matrix-allow). Ledger: `ROUTE-A1-shapekeyed-step2-20260824T0648Z-executed`
   (DONE_PASS — the instrument ran; the finding is the observation).
 
-## APPEND 2026-08-12 — inverted marker polarity in the matrix generator (auditor-verified)
+## APPEND 2026-08-24 (cont.) — OP-21 decision-grade attempt + seam exercise (c) + standing smoke restated (b)
+
+- **OP-21 decision-grade attempt (operator-approved, quiet-ish window)**: bench-nway n=12 for the
+  overlap pair (8080+8185) → ratio 1.198, cv 0.1044 (still CV_HIGH). **Pooled n=21 across all three
+  runs: mean 1.165, cv 0.118, range 0.871-1.475.** Conclusion: the protocol's 0.05 CV gate is
+  **physically unreachable** for this pair class under live-fleet variance (MTP+SSM co-run
+  scheduling noise) — the matrix row (1.121 borderline) stands within noise; no change warranted.
+  A decision-grade number would require a protocol variance allowance for this pair class
+  (measurement-constitution question).
+- **(c) seam exercise — directional, INCONCLUSIVE (host became contended mid-window, operator
+  flag)**: with q0,q1 held (ingest anchor) AND q2,q3 held (frontdoor busy), all three forced
+  eval_batch probes (frontdoor, worker_general, ingest_long_context) returned **504 (queue-budget
+  timeout)** — consistent with the seam queueing every placement (every candidate overlaps SOME
+  held region), which is the designed fail-closed behavior; but the 504s cannot be cleanly
+  attributed under concurrent host load. **Re-run the focused probe pair in a clean window before
+  treating the seam as verified.** Mechanism status: both flags are ON in the live API
+  (launcher setdefault since 2026-07-06); `seam_admit` is wired and live-reachable; the smoke's
+  3/8 was caused by the placement machine only ever proposing disjoint instances.
+- **(b) standing smoke restated (DONE, 53 tests green)**: `--expectation {replacement|seam}`
+  (default `replacement`): the standing model now expects re-placement + admit for every candidate
+  and judges the **observed placement** — `admit_overlap` (echoed `candidate_topology_idx`
+  overlapping the anchor) is ALWAYS a failure marked `CO-PLACEMENT` (the never-co-place
+  invariant); `queued_unexpected` is a distinct failure (fires if the seam arms while the standing
+  expectation is replacement). `seam` mode preserves the original overlap→queue model with
+  byte-identical report keys (replays the 08-24 observation as 3/8 exactly). 14 new unit tests.
+
+
 
 Reported by `mainC` (bus `msg-20260812T133841Z-20-mainC`), **both code claims independently
 re-verified by the `auditor` at HEAD** before filing — the file was read, not the report trusted:
