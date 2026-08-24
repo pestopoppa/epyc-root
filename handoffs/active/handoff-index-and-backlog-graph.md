@@ -71,6 +71,40 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     so no false positive on a healthy service.
     **The parent row stays OPEN and unticked — the cron decision is untouched and still the
     operator's.**
+  - [x] **Wrong-checkout launch incident (2026-08-21 → 2026-08-24) closed.** ✅ 2026-08-24 — the
+    :8100 hub had been launched 2026-08-21 from the scratch worktree
+    `dashboard-v26-telemetry-integrity-20260821` (`hub_supervisor.sh` started with EPYC_ROOT pointed
+    at the worktree), so `REPO`/`HANDOFF_DIR` resolved from `__file__` to that frozen `handoffs/`
+    copy — the board showed 2026-08-21 data while its badge read **fresh** (a live scan of its own
+    frozen checkout certifies itself), and the C42 stale-source check could not see it because it
+    compared against `${EPYC_ROOT}/dashboard`, the same frozen checkout. Restored: killed the
+    worktree-launched supervisor + hub, relaunched canonically from `/mnt/raid0/llm/epyc-root`;
+    board live again (170 active / 6 blocked / 181 completed / 103 archived). The `handoff_graph`
+    panel's "index_state.py has never run" absence was collateral of the same root cause. Record:
+    `progress/2026-08/2026-08-24.md`.
+  - [ ] **Cwd-guard hardening was attempted and REVERTED — do not reintroduce without a different
+    probe.** A `readlink -f /proc/<pid>/cwd` vs `$EPYC_ROOT` check added 2026-08-24 false-positived
+    in this containerized environment (a hub launched with `cd ${EPYC_ROOT}` resolved to a different
+    inode than the path — namespace artifact), producing a ~15 s restart loop. Reverted; the script
+    is byte-identical to pre-attempt. The wrong-checkout class therefore remains visible only via
+    the manual `/api/health` + board-mtime comparison. Options if it recurs: compare the hub's
+    serving evidence (`handoffs/` mtime deltas) instead of /proc.
+  - [ ] **Timeline artifact lags lane-worktree commits.** The git hooks
+    (`install_timeline_hook.sh`) regenerate `data/handoff_timeline.json` in the checkout where the
+    commit/merge happens; lane-worktree commits and the detached promotion merge never touch the
+    real repo's hooks, so the real-repo artifact goes stale (observed: last regen 2026-08-23 15:26
+    despite handoff commits 2026-08-24 06:48/10:34; manually regenerated, last_sha = HEAD).
+    Fix direction: make the hook resolve the canonical (primary) worktree via
+    `git rev-parse --git-common-dir` + `git worktree list` and regenerate there, then re-run
+    `install_timeline_hook.sh` in every checkout. Watch item until fixed: regenerate manually via
+    `scripts/handoffs/build_handoff_timeline.py`.
+  - [ ] **Benchmark artifact inventory regeneration cadence is unowned.** `data/benchmark_artifact_inventory.json`
+    froze at 2026-07-29 (file mtime Aug 12) — the `:8100/benchmarks` page showed 26-day-old data
+    with no alarm stronger than "aging". Regenerated 2026-08-24 via
+    `scripts/dashboard/build_benchmark_artifact_inventory.py` (157 matched / 6 models, 1545
+    unmatched). Decide: schedule it (nightshift/cron), wire it into a post-commit hook like the
+    timeline, or document it as manual-run-on-demand; the panel's freshness envelope exists, so the
+    failure mode is visible once someone looks, not silent.
 
 ## Not filed, deliberately
 

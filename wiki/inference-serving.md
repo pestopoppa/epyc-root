@@ -2,8 +2,28 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
+**Last compiled**: 2026-08-24 (inference-serving carries the ROUTE-A1 overlap-queue falsification + SS-BENCH-GATE-c spawn guards); previously 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
 **Sources**: 78 documents
+
+## Compiled Update — 2026-08-24: the overlap-queue premise was falsified by ROUTE-A1 — the live fleet layer has no queue for overlapping placements
+
+Sources: `handoffs/active/shape-keyed-contention-gating.md`,
+`progress/2026-08/2026-08-23-unattributed.md` (ROUTE-A1 section).
+
+- **The Step-2 overlap-queue mechanism does not exist in the live fleet layer.** The operator-granted
+  ROUTE-A1 step-2 smoke (2026-08-24T06:48Z, quiet host, anchor held via `region-lock run`) ran 8
+  probes: 3/3 disjoint admit-expected ADMITTED correctly, **0/5 overlapping queue-expected queued**
+  (all admitted). Measured cause: the placement machine RE-PLACES forced eval_batch requests onto the
+  disjoint instance (`candidate_topology_idx=2` observed) and the gate allows with reason "all pairs
+  + n-way allow" (frontdoor+ingest pair = borderline → gate-allow). The queuing Step 2 was built to
+  verify does not exist. Ledger DONE_PASS; RTG-35 re-pointed to the operator re-specification
+  decision. [progress/2026-08/2026-08-23-unattributed.md, shape-keyed-contention-gating.md]
+- **The same grant's bridge work hardened the spawn layer.** `_verify_anchor_held` (read-only
+  `active_region_holders()` scan) + `_verify_probe_signal` (refuses structurally-unobtainable plans)
+  landed behind the smoke; SS-BENCH-GATE-c guarded the ONE API-runtime spawn site
+  (`worker_pool._start_worker` via `api_enforce_placement`, bench-live → pins to `host_cores −
+  claim` or refuses) plus `LlamaCppBackend`/`LlamaOCRWorker` per-request spawns (503 on refusal).
+  Quiet paths byte-identical. [progress/2026-08/2026-08-23-unattributed.md]
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
