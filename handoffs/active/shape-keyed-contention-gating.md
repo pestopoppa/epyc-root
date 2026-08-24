@@ -428,7 +428,7 @@ no bench drivers); fleet live; topology `171f86f9188211e9`. Report:
   scheduling noise) — the matrix row (1.121 borderline) stands within noise; no change warranted.
   A decision-grade number would require a protocol variance allowance for this pair class
   (measurement-constitution question).
-- **(c) seam exercise — directional, INCONCLUSIVE (host became contended mid-window, operator
+- **(c) seam exercise — DIRECTIONAL, INCONCLUSIVE (host became contended mid-window, operator
   flag)**: with q0,q1 held (ingest anchor) AND q2,q3 held (frontdoor busy), all three forced
   eval_batch probes (frontdoor, worker_general, ingest_long_context) returned **504 (queue-budget
   timeout)** — consistent with the seam queueing every placement (every candidate overlaps SOME
@@ -437,6 +437,19 @@ no bench drivers); fleet live; topology `171f86f9188211e9`. Report:
   treating the seam as verified.** Mechanism status: both flags are ON in the live API
   (launcher setdefault since 2026-07-06); `seam_admit` is wired and live-reachable; the smoke's
   3/8 was caused by the placement machine only ever proposing disjoint instances.
+- **(c) seam exercise — VERIFIED ✅ 2026-08-24 clean-window re-run (operator grant)**. Control:
+  no holds → forced frontdoor probe admits in 1.4s (`decision=allow idx=0`). With q0,q1 (ingest
+  anchor) + q2,q3 (frontdoor busy) held: all three forced probes (frontdoor, worker_general,
+  ingest_long_context) return **504 at exactly the 45s queue budget** (min(90×500, 300000)) with
+  explicit gate attribution: `error_detail="[ERROR: placement timeout role=frontdoor
+  reason=placement_topology_overlap_timeout holders=[0, 2] after 45.0s]"`. The seam's fail-closed
+  overlap exclusion is LIVE and correct: when re-placement is impossible (every proposed candidate
+  overlaps a held region), the gate refuses with `placement_topology_overlap_timeout` instead of
+  co-placing. **The never-co-place invariant holds at the gate level.** Together with the 08-24
+  smoke (3/8: re-placement when disjoint instances exist), the complete behavior is now measured:
+  the fleet layer avoids overlap by re-placement when possible, and refuses (queues to timeout)
+  when not. Minor cosmetic note: the ingest probe's error_detail echoed `role=worker_general`
+  (stale variable in the error message) — harmless, worth a one-line fix.
 - **(b) standing smoke restated (DONE, 53 tests green)**: `--expectation {replacement|seam}`
   (default `replacement`): the standing model now expects re-placement + admit for every candidate
   and judges the **observed placement** — `admit_overlap` (echoed `candidate_topology_idx`
