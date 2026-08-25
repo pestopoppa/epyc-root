@@ -374,6 +374,19 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       ([log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) has not
       cleared numerically. Both compute planes were held by other sessions through this wave —
       **filed, not run**.
+      **MEASURED 2026-08-24 — CLOSED as a search screen; candidate retained for the aggregate.**
+      Full-model prefill A/B, gate model Qwen3.6-27B-MTP-Q8_0, same floor-2 binary
+      (`-DCMAKE_HIP_FLAGS=-DGGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2`; the knob is COMPILE-TIME),
+      chunked-on vs `GGML_CUDA_DISABLE_DELTANET_CHUNKED=1`: **pp2048 ≈ +8.9 %, pp8192 ≈ +7.1 %,
+      pp32768 ≈ +7.0 %** (pooled; first-run p8192 +5.94 %) — **below the ≥8 % gate, decision FAIL;
+      physics PASS**. Chunked dispatch proven firing (16,128 trace lines, H=32 blocks=256 ≥ 208),
+      residency 30.8 GB sampled in-window, `verify_ggml_linkage.sh` PASS, G16 clean (NMSE < 1e-7 at
+      every shape). `-np ≥ 2` serving shape: op-level 1.483×/1.608× at n_tok 512/1024 — the frontdoor
+      is `-np 2`. **Operator ruling 2026-08-24: below-gate does not discard — the kernel compounds
+      with the aggregate candidate**; the cumulative composition machinery measures the whole stack
+      directly, so the ported kernel (branch `ak/g15-chunked-gdn-20260823` @ 7abbd9afb, local) is
+      recorded as a measured candidate lever for the v27 aggregate composition evaluation. No tuning
+      campaign (per the filing). Artifacts: `/mnt/raid0/llm/tmp/ak-g15-g16-20260823/`.
 - [ ] **B5 (B, blocked on `G16` in
       [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) — do not stack
       a chunked GDN kernel on `GGML_CUDA_GDN_STATE_BF16`.** The two levers compound *two independent

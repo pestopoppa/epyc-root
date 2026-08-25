@@ -457,6 +457,14 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md);
       neither may proceed on a chunked kernel this row has not cleared.
       Both compute planes were held by other sessions through this wave — **filed, not run**.
+      **MEASURED 2026-08-24 — PASS.** 57/57 eval cases on ROCm0 vs CPU reference, unrelaxed 1e-7:
+      H=32/d=128 recurrent 0.0 (1/64/256 tokens), chunked 8e-10 (keep_rs K=4/512), 4e-10 (K=12/520),
+      **8.80e-8 / 9.04e-8 / 9.30e-8 at n_seq_tokens 2048/4096/8192** — below 1e-7 at every shape
+      including the longest; PR H=48 geometry ≤ 9.07e-8. Chunked dispatch proven at every H=32
+      ≥512-token case (blocks=256 ≥ floor 208). New H=32/d=128 eval cases (64/256/2048/4096/8192 +
+      keep_rs) added on branch `ak/g15-chunked-gdn-20260823` @ 7abbd9afb and retained as permanent
+      regression coverage. G15/B5 may proceed on the kernel's numerics; B5's stacking constraint
+      stands (do not stack chunked on `GGML_CUDA_GDN_STATE_BF16`).
 - [ ] **B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper
       omitted.** Filed as **tracked-not-scheduled**, in two halves with different upstreams.
       **(a) Retrofit initialization.** Broadcast each head's scalar β and α across channels to recover

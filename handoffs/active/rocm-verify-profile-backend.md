@@ -1553,6 +1553,19 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       the floor the available release is the defective one, so that question resolves to "no" for the
       wrong reason. Dovetails with RVP-C5-3's `requirements_rocm.txt`, which must carry a hard
       `flash-linear-attention>=0.5.2` pin.
+      **ANSWERED 2026-08-24 — verdict (b): the floor is NOT met on ROCm 6.2, and never will be.**
+      The official pytorch index has **no `torch>=2.7.0` wheel for rocm6.2 at all** (stable or
+      nightly — the ROCm 6.2 torch line ended at 2.5.1; 2.6+ jumped to the rocm6.3 index).
+      `pytorch-triton-rocm >= 3.3` wheels exist but pair with the newer torch line. Minimal
+      satisfying pair (uv dry-run verified): **rocm6.3 + torch 2.7.1 + pytorch-triton-rocm 3.3.1**;
+      upstream-aligned: rocm7.2 + torch 2.13.0 + triton 3.5.1. Per the gate: **do NOT install fla**
+      below the floor; the `flash-linear-attention>=0.5.2` pin stays hard. **Operator ruling
+      2026-08-24: the ROCm raise is SCHEDULED into the next production promotion upgrade — required
+      to promote DFlash2 spec decode to production (demonstrated ~70 tok/s on Qwen3.8-27B)**; the
+      raise touches the shared `/opt/rocm` bind mount (four GPU servers, three frozen kernel trees)
+      and executes at the promotion boundary, not now. Caveat carried: fla has no AMD CI at all
+      (`if: false`), so a raised stack only buys existence of the pair — gfx90a Triton-compile
+      compatibility (triton 3.3+) needs a follow-up compile probe at promotion time.
 - [x] **(Z) fla issue #1156 — RECORDED AND CLOSED, 2026-08-22. Two claims in the original row are
       retracted; do not cite them.**
       The issue is **CLOSED** (`completed`, maintainer `zhiyuan1i`, 2026-08-22T09:55:42Z) after the
@@ -1608,6 +1621,19 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       outside the imported set and must never be quoted as "FA is correct at long context".
       **Bounded by Z10:** if Z10 finds the denorm class present, run G10 with that hypothesis named
       rather than as an undirected sweep. [intake-1284#record]
+      **MEASURED 2026-08-24 — Z10 CLOSED (class absent) and the G10 run is complete.** Z10 static
+      read: the denorm→1/qd fp16 overflow class is ABSENT on the Q-quantization path (`d = amax/127`
+      fp32, `Tds = float2` at the single call site — no fp16 reciprocal exists; dot is fp32 with
+      `block_q8_0::d` widened denorm-preservingly). G10 eval on HIP/gfx90a (import branch
+      `ak/g10-fa-long-context-q8kv-cases-20260823`, repaired @ c84538cfd): **20/21 imported cases
+      OK** (kv=16384 q8_0-KV; kv=1025 pad/sinks/ALiBi/softcap; all long-context lengths 128..20000
+      on both paths — no underflow class on the quantized-KV FA path), 1 not-supported (MLA
+      kv=113), **1 marginal FAIL**: hsk=256/nr23=[16,1]/kv=20000/nb=512 f16-KV, ERR 5.24e-4 vs
+      5e-4, deterministic on both configs — f16-KV path, not quantization; filed for follow-up.
+      The "64 pre-existing FA FAILs" resolution: **absent on the production v9 binary (2868/2868
+      OK)** — they are the ROCWMMA-off FA-fallback defect (`ggml_cuda_should_use_wmma_fattn` hard
+      false without `GGML_HIP_ROCWMMA_FATTN`; block-size class at nb=32/75, all KV types), not a
+      quantization defect. Artifacts: `/mnt/raid0/llm/tmp/g10-scratch/`.
 - [x] **Z14 (Z) — DONE 2026-08-23: filed as [fla-org/flash-linear-attention#1163](https://github.com/fla-org/flash-linear-attention/issues/1163)**
       (operator-approved; posted under the operator's account). Read and pinned at HEAD
       `bc3b101dcb713ddc5bd8924b66754eb68b5ccf89`, with every claim re-verified against that revision
