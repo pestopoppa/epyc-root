@@ -413,6 +413,7 @@ Validation:
   Root `0c276023`; 14 passed.
 - [x] Close remaining root L5.self_optimizing_loop gap (13-item queue) ✅ 2026-08-25 — root detector refined to credit the vidya belief-substrate loop; queue 13 → 6 (all remaining items are frozen epyc-llama L5 surfaces); see the 2026-08-25 closeout below.
 - [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
+- [ ] Add the root candidate gate to a periodic path (nightshift health or CI) so a red gate is observed within days, not weeks — the 2026-08-03 PII allowlist/fixture drift kept `candidate_eval_gate.sh` red ~22 days unobserved (derived 2026-08-25 from the EVL-38 closeout; owner: mainA)
 - [x] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs ✅ 2026-07-22 (scoped serving-layer index, see below)
 
 ### 2026-08-25 root self-optimizing-loop closeout (EVL-38)
