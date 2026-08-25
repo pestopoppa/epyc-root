@@ -2,8 +2,8 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-08-18 (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
-**Sources**: 19+ documents
+**Last compiled**: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+gaps — fail-closed extractor accounting, pinned engine versions, per-document latencies; the
 
 ## Compiled Update — 2026-08-18: the demo ran on the compliant artifact after all — two receipt corrections from the ported lane record
 
@@ -261,6 +261,95 @@ The row read *"Clone opendataloader-bench, **add our pipeline as custom engine**
 - [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) §Benchmark Suite Integration — the clone, the three corrections, and the name-collision filing
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the premise-by-premise verification and the compound-row finding
 - [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md) face 9 (*right key, wrong universe*) — the class the path collision belongs to
+
+## Compiled Update — 2026-08-25: the ODL-013 durability gaps are closed in the harness, the demo record is corrected in place, and the table-gap instrument is now a real one
+
+**Confidence: verified** — the harness changes are the shipped research `run_three_way_bench.py` +
+13 new tests (69 passed / 1 skipped) and the in-place supersession note on the 2026-08-13 lane
+record; the disk-state statements were verified with a `find` across `/mnt/raid0/llm` and
+`/workspace`.
+
+### The three ODL-013 durability gaps are closed — for future runs
+
+The 2026-08-13 compile above recorded three harness-accounting gaps that kept ODL-013 observational:
+summary-only timing, an unpinned ODL engine version, and non-fail-closed failure accounting. All
+three are now closed in the harness itself (PIP-05, 2026-08-25):
+
+- **Fail-closed extraction.** Non-zero `pdftotext` return codes raise (was: silent partial stdout);
+  missing ODL markdown candidates raise (was: an empty `<stem>.md` that scored as a valid
+  prediction); empty liteparse/phase predictions raise, and failed documents leave **no prediction
+  file** — `failed_stems` is recorded and the run exits 2.
+- **Engine pins.** `ENGINE_PINS = {"opendataloader": "opendataloader-pdf==2.5.0", "liteparse":
+  "liteparse==2.12.0"}` — the versions used for the 2026-08-13 run — resolved via
+  `importlib.metadata` and fail-closed (exit 2) on mismatch or unresolvable; pin and resolved
+  version are recorded in `summary.json`.
+- **Per-document latencies.** Raw `per_doc_latency_ms` (stem → ms) is persisted, so median and p90
+  are independently reproducible from the artifact, and the report gains a p90 column. The score
+  phase exits 3 on missing/empty predictions or a missing `evaluation.json`.
+
+The result does not retroactively upgrade ODL-013 — the 2026-08-13 run was made under the old
+harness, so its observation-only standing is unchanged. What changed is that the *next* run's
+artifact can carry the full Reporting Contract without follow-up reconstruction.
+
+### The Unlimited-OCR 18-page demo record is corrected in place — and its artifact is now gone
+
+The record-correction row (`Correct the P2 observation record before using it`) closed 2026-08-25:
+`progress/2026-08/2026-08-13-mainD.md` now carries a supersession blockquote that (1) downgrades
+"root cause" to **demonstrated prompt/profile mismatch** — the bare-passthrough chat template is
+verified, but llama.cpp's own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent
+behaviour, so "coordinate output regardless of prompt" is not established; (2) corrects the timing
+narrative — the stored `inference_window.json` reports only `held_s=1.002881998`, a pre-`aca459d9`
+~1s post-health snapshot, never full-interval proof; and (3) records that **the run directory
+`/mnt/raid0/llm/tmp/odl-p2-unlimited-ocr-demo-20260813T221821Z/` no longer exists** (tmp cleanup;
+no `inference_window.json` remains anywhere on disk), so the receipt cannot even be re-examined and
+the `held_s` value survives only in prose. The 2026-08-18 compile's documentary-gap framing is thus
+superseded in one direction: the gap is no longer merely documentary, the primary artifact is
+physically gone. The canonical-profile A/B (handoff row, `document parsing.` prompt, `n_predict=4096`,
+`n_ctx=16384`, DRY, grounding-strip) remains gated on the operator's all-inference-stop order being
+lifted. Separately noted: the requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB,
+`output.weight` q8_0, other 154 tensors byte-copied) remains the repointed default under
+`/mnt/raid0/llm/models/Unlimited-OCR-GGUF/`; only the immutable SHA-256 + tensor-audit record is
+still owed.
+
+### The table-gap question finally has a competent instrument — still inference-gated
+
+The `document-parser-table-bench` handoff (2026-07-20, from the intake-864/865 reassessment) is the
+first competent instrument for "do we have a table-extraction gap": the full OmniDocBench is local
+at `/mnt/raid0/llm/datasets/omnidocbench/` — **1,651 pages / 665 table regions (on 458 pages)** with
+a per-page `language` attribute (755 EN / 765 ZH / 116 mixed / 13 trad) against the prior demo's
+18 pages / 10 tables / 64%-Chinese skew. Three broken instruments are documented there and stand as
+the corrected record: the 2026-07-17/18 PaddleOCR-VL runs were **off-label** (PaddleOCR-VL-1.6 is a
+three-stage pipeline — PP-DocLayoutV3 layout → cropped-region VLM recognition under six official
+element prompts → assembler — never a full-page→markdown model), so **`table TEDS = 0.0` and the
+`0.058333` post-processing figure are void and must not be re-cited**; the demo subset was
+unrepresentative; and the production 8-PDF corpus cannot measure tables (half of it is figure
+exports). Phase A (environment) is landed: `paddlepaddle 3.2.2` + `paddleocr 3.7.0` in a dedicated
+1.4 GB venv (with the recorded `libGL.so.1` → `opencv-contrib-python-headless` swap), and the CLI is
+verified — **`--vl_rec_backend llama-cpp-server` is an explicitly supported backend** and the
+`paddleocr --help` listing gap is an argparse registration artifact, not a missing subcommand.
+Phase B (binary gate: does the documented pipeline actually emit HTML `<table>` markup?) and Phase C
+(full n=665, English-only split) are inference and remain operator-approved-run-gated. The
+architecture pre-check also retired MinerU2.5-Pro and GLM-OCR as `odl_bench` model swaps before any
+download: **neither is a single-pass whole-page parser** (MinerU is two-stage with the same weights
+prompt-selected; GLM-OCR requires an external PaddlePaddle layout detector llama.cpp will never
+run); the guardrail against downloading them as model swaps was reinstated 2026-08-11.
+
+### Source References (2026-08-25 PIP-05 + table-bench)
+
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — the hardened-harness row (fail-closed extractors, engine pins, per-doc latencies, score-phase
+  exit 3), the record-correction row closed, and the canonical A/B row still open behind the
+  operator's stop order.
+- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
+  the session record: harness hardening details and validation (69 passed/1 skipped), the
+  supersession-note edit, and the verified disappearance of the demo run dir.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the superseded
+  lane record itself, now carrying the 2026-08-25 correction blockquote.
+- [`document-parser-table-bench.md`](../handoffs/active/document-parser-table-bench.md) — the three
+  broken instruments, the full OmniDocBench acquisition (1,651/665), the Phase A landing and the
+  `llama-cpp-server` backend verification, and the MinerU2.5-Pro/GLM-OCR architecture pre-check.
+- [`opendataloader-pipeline-integration-completed-through-2026-08-13.md`](../handoffs/completed/opendataloader-pipeline-integration-completed-through-2026-08-13.md)
+  — the ledger's path repoints and the standing void-note on the July PaddleOCR numbers.
 
 ## Summary
 

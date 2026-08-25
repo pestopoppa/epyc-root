@@ -2,8 +2,85 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Last compiled**: 2026-08-25 (the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
+
+## Compiled Update — 2026-08-25: the root repo's last L5 criterion is closed by the vidya loop — and the F1/F4/F6 frontier program states moved
+
+**Confidence: verified** for the readiness closeout (regenerated artifacts, test counts and the
+HEAD-reproduced gate failure read at compile time), the F1 completion record, and the F6 post;
+**verified as a blocked state** for F4 — the record is a cancellation with a named external blocker,
+not a result.
+
+### The L5.self_optimizing_loop criterion closed — by a loop whose units are claims, not kernels
+
+`epyc-root` cleared its last repo-readiness L5 criterion on 2026-08-25: the deterministic scorer now
+credits the **vidya belief substrate** (`scripts/vidya/fold.py`, `citation_gate.py`,
+`correction_queue.py`, `r1_search.py`, `live_eval.py`) — the ledger → graded fold → citation gate →
+correction queue → re-fold feedback loop, plus the R1 exhaustive counterexample search and PR2
+live-ledger evaluation. Two governance facts matter for the autonomy story on this page:
+
+- **The guardrail survived the closeout, test-pinned.** The passive pickup artifact is still explicitly
+  *rejected* as self-optimization evidence (the 2026-07-03 precedent is unchanged), so the L5 pass
+  means "a self-optimizing loop exists", not "the loop's output is certified" — the same
+  existence-vs-quality boundary the readiness scorer has always carried.
+- **The queue drop 13 → 6 is two causes, separated in the record**: one root item closed by the
+  detector change; six `epyc-llama` L4 items left on *repo state* (the frozen tree gained real
+  health/analysis/docs/security surfaces since 2026-07-06). All six remaining items are frozen-llama
+  L5 surfaces.
+
+The vidya loop is the first L5 instance whose optimization target is evidence claims rather than
+kernels/prompts — and it satisfies this page's standing posture that an autonomous loop's load-bearing
+part is the transitions it cannot make: its citation gate blocks project documents from citing
+refuted/conflicted claims, and its correction queue writes `correction_reviewed` frames back into the
+ledger for the next fold.
+
+### F1 COMPLETE: the real-task corpus closed 10/10 — with a stale-prose correction on record
+
+The frontier-F1 real-task program is **COMPLETE (2026-08-23, 10/10 boxes, 0 open)**: W1 task
+taxonomy, W2 passive capture (prompt-free `task_record.v1` payloads with hash refs), W2b historical
+backfill (1,246 prompt-free rows: 372 live + 874 historical), W3 clean-window 50-question EvalTower
+ledger (2026-07-07, 35/50, quality 2.10, reliability 0.94, 3 request errors), and W4 decision wiring
+(per-class real-task regret reporting alongside the routed metrics). The completion record also
+corrects its own stale Status prose — a claim that "F1 still needs the clean ledger run" predated the
+W3 checkbox that had already satisfied it. Residual follow-up (AP-16 instruction-token bloat; how the
+ledger feeds promotion/regret views) is tracked in `tool-output-compression.md`, not reopened here.
+
+### F6: the first upstream publication landed — split cleanly into a half that needed our data and a half that did not
+
+The llama.cpp #27442 analysis went out in two halves, and only the second was ever blocked. **Part one
+was posted 2026-08-23** (operator-approved, under the operator's account): the corrections to the
+reporter's own artifacts need no measurement of ours — `n_prompt_tokens_cache` occurs 14×, all zero;
+both `_noflash` logs carry `flash_attn = enabled`; the sampler ran at `temp = 0.300`; and every build
+tested predates the Metal fixes that rewrote the path. The post says explicitly: *"We have not
+reproduced the bug — we run this architecture on CPU and ROCm, not Metal — so this is analysis of your
+artifacts, not a second data point."* **Part two — our own greedy boundary sweep — remains blocked on
+G1**, because a boundary-sweep number still needs our data behind it. The split is the durable
+autonomy lesson: "posting first offers a critique with no data behind it" was half-right — analysis of
+another party's artifacts and a claim backed by our own measurement are different authority classes,
+and only the second needs the G1 gate.
+
+### F4: the first real backup attempt was cancelled by target rejection — tooling is one named target from a first snapshot
+
+The 2026-08-23 EVL-26 attempt built the missing half of the continuity tooling and then stopped at the
+operator boundary: restic 0.18.0 is installed (apt, flagged to the operator as a host-level action
+taken in error), `backup_critical.sh --backend restic` is the new default (continuity snapshot first —
+live SQLite via the `sqlite3 .backup` API — then `restic init`/`backup`/`check`), and the T0 manifest
+was corrected (`orchestration/repl_memory/**/*.db|.sqlite`; T0 now measures **8.21 GiB / 10,311
+files** — the handoff's "<2GB" estimate is stale). The task-stated target `/mnt/bigdisk` was rejected
+by the operator ("do not touch anything outside /mnt/raid0/llm"), the mount was removed, and the next
+target must be **named by the operator**. W2/W3 remain UNCHECKED — no backup ran, no restore has ever
+been verified, and the standing rule stands: *a backup that has never been restored is a hypothesis*.
+For the autonomy framing: the loop's own preflight correctly refused a same-array/overlayfs target all
+along; the blocker is external and named, and every non-external dependency is now done.
+
+### Source References (2026-08-25)
+
+- [`handoffs/active/repo-readiness-scorer.md`](../handoffs/active/repo-readiness-scorer.md) — the 2026-08-25 L5 closeout (vidya evidence paths, 13→6 queue with cause separation, guardrail pin, PII-gate surfacing).
+- [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record and regenerated 2026-08-25 readiness artifacts.
+- [`handoffs/active/frontier-f1-real-task-corpus.md`](../handoffs/active/frontier-f1-real-task-corpus.md) — the 2026-08-23 completion banner (10/10, stale-prose correction, AP-16 residual pointer) and the W3 ledger row.
+- [`handoffs/active/frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) — the 2026-08-23 part-one post record (re-derived artifact facts, operator approval, explicit no-reproduction statement) and the G1-blocked part-two row.
+- [`handoffs/active/frontier-f4-continuity-backup.md`](../handoffs/active/frontier-f4-continuity-backup.md) — the 2026-08-23 EVL-26 checkpoint (restic backend, corrected T0 manifest and size, operator target rejection, W2/W3 unchecked).
 
 ## Compiled Update — 2026-08-20: v19 proved recovery and then found the next authority boundary
 

@@ -2,8 +2,94 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
-**Sources**: 32 documents (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
+**Last compiled**: 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+(measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
+
+## Compiled Update — 2026-08-25: the encoder never applies its trained prefixes, and a zero-index agent questions whether the index earns its keep
+
+**Confidence: verified** for the first-party prefix measurement (run on the reference model, no
+ONNX); **external** for the GrepSeek figures (marked MEDIUM verbatim-confidence in the intake
+record) and **verified** for the Firecrawl record corrections (source-read from pinned upstream
+revisions).
+
+### PREFIX-1 — the encoder never applies the trained `[Q]`/`[D]` prefix tokens, and it cannot even express the distinction
+
+`colbert_encoder.encode(text, max_tokens)` has **no query/document parameter at all**, so it cannot
+express the query-vs-document distinction even in principle — it feeds raw tokenized text straight
+to the graph. Both LateOn and the deployed GTE declare `query_prefix "[Q] "` /
+`document_prefix "[D] "` with dedicated **trained** token ids (50368/50369) that pylate inserts at
+index 1. Measured on the reference model:
+
+| perturbation | max abs ΔMaxSim | top-1 agreement |
+|---|---|---|
+| INT8 quantization | 6.60e-03 | 100% |
+| **missing `[Q]`/`[D]` prefix** | **1.63e-01** | **62.5%** |
+
+Dropping the prefix is **25× more perturbing than quantization** and changes top-1 on **37.5%** of
+queries. Both the index build and the query path go through the same prefix-less path, so they are
+mutually *consistent* — just off-distribution from training. **Do NOT fix one side only**: adding
+`[Q]` to queries alone would mismatch the stored index and make retrieval strictly worse. Correct
+adoption requires **re-embedding the entire KB corpus**, which is why this is operator decision
+**OP-24**, not a code fix. **PREFIX-2** rides with it: the published BEIR deltas on this page (GTE
+54.67, ColBERT-Zero 55.43, LateOn 57.22) were measured with the models used as designed — *with*
+the prefixes — while production runs them without, so a swap chosen on those deltas would chase a
+gain measured under conditions our deployment does not reproduce. The relative A/B is not biased
+(the defect hits both arms), but the absolute gain is unproven here; resolve PREFIX-1 before
+treating any BEIR delta as a production forecast.
+
+### GrepSeek (intake-1239): the zero-index challenge to the ColBERT index, filed as a four-arm A/B on our own corpus
+
+A trained shell-command search agent (GrepSeek, UMass CIIR, arXiv:2605.29307v1) beats the best
+dense-retrieval baseline on micro-average F1 at **p<0.05**, winning 4 of 7 benchmarks, with **no
+pre-computed index of any kind** — and loses significantly on single-hop popularity QA. Two facts
+make it land harder here than the headline: their corpus is ~21M documents / ~14 GB, roughly
+**three orders of magnitude larger than our markdown KB** — and grep's advantage grows as an
+index's amortisation argument weakens, so on a corpus our size the index barely pays for itself;
+and the paper's most interesting number is **"0 A100-hours of indexing"** — our ColBERT index has a
+**staleness** failure mode an index built yesterday answers about a handoff row deleted today,
+which is an operational argument independent of F1. The honest counterweight is recorded with it:
+brittleness to spelling/diacritics, file-order results with no relevance ranking, and overloaded
+keywords map onto precisely our KB's weakest axis (a corpus where "duty cycle" already means two
+unrelated things). Filed as **KB-GS-1..4**: a four-arm A/B (ColBERT as deployed / untrained
+prompt-only `rg` / hybrid / GitNexus-only) with a 40–60-question set stratified into four buckets
+(single-hop, multi-hop, synonym/semantic, code-structural) built **before** any arm runs, primary
+metric recall@evidence against human-verified spans; a **staleness arm** (re-run after a 200-commit
+window without rebuilding the index); and, if the sharded engine is adopted, the semantics-preserving
+sharded-parallel execution (7.6× at 32 shards, byte-exact — where 91% of end-to-end latency is LLM
+generation, not grep). Caveat carried: everything beyond two anchored abstract quotes came from a
+summariser-rendered fetch (MEDIUM verbatim-confidence); a predecessor (arXiv:2605.05242) stakes the
+same direct-corpus-interaction claim, so the delta may be the training recipe rather than the idea.
+
+### Firecrawl verdict-label correction: `not_applicable` → `superseded` — out-competed, not out-of-scope
+
+The intake-364/365 verdict label is corrected (2026-07-25): Firecrawl is **AGPL-3.0 open-source and
+fully self-hostable** (`SELF_HOST.md` + `docker-compose.yaml` stand up `/v1/scrape`, `/v1/crawl`,
+`/v1/map` locally), so it was out-competed by Crawl4AI, not out-of-scope — and EPYC policy treats
+`not_applicable` as the verdict requiring the most justification, which is how a well-reasoned
+rejection gets re-litigated. Two factual objections were corrected against the pinned upstream
+revision (`7bd7f66d`): self-hosted `/search` *can* use a JSON-capable SearXNG endpoint
+(`SEARXNG_ENDPOINT`/`SEARXNG_ENGINES`/`SEARXNG_CATEGORIES`) and `/extract` accepts
+`OPENAI_BASE_URL`/`OLLAMA_BASE_URL`/`MODEL_NAME`. The decisive objection was strengthened, not
+weakened: the self-hosted compose defines seven services (including the optional FoundationDB
+pair) with explicit limits already reserving 6 CPUs / 12 GB, and the engine ladder tops out at
+Playwright. For CA-6 (Camofox escalation, still deferred), the recorded design is a **ranked
+engine-waterfall** (numeric per-engine quality scores + a per-request ordered fallback list with
+the terminal reason and each attempted backend logged) rather than extending the substring
+blocklist in `_is_blocked_page()`.
+
+### Source References (2026-08-25)
+
+- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) —
+  PREFIX-1/PREFIX-2 with the reference-model perturbation table, the OP-24 operator decision, and
+  the PREFIX-2 transfer caveat on every BEIR delta on this page.
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the 2026-08-21 GrepSeek intake
+  (intake-1239) with KB-GS-1..4, the MEDIUM verbatim-confidence caveat, and the predecessor
+  arXiv:2605.05242 note.
+- [`searxng-search-backend.md`](../handoffs/active/searxng-search-backend.md) — the 2026-07-25/29
+  Firecrawl verdict-label correction, the corrected self-host objections, and the CA-6
+  engine-waterfall decision.
+- [intake-1239](https://arxiv.org/abs/2605.29307v1) `#record` — GrepSeek (UMass CIIR): zero-index
+  shell-search agent vs dense retrieval; p<0.05 micro-F1, 4/7 benchmarks, staleness argument.
 
 ## Summary
 

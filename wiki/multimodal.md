@@ -5,8 +5,8 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-08-12 (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
-**Sources**: 42+ documents (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
+**Last compiled**: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+`0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
 
 ## Compiled Update — 2026-08-12: the TTS wiring task was already done ten days earlier, and the box was the only thing missing
 
@@ -43,6 +43,66 @@ The actual TTS adapter decision and any M-3 role swap remain open behind E8.
 - [Multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md) — M-1 observation, M-2 feasibility closure, and remaining M-2/M-3 gates.
 - [Post-v8 master handoff index](../handoffs/active/master-handoff-index.md) — campaign sequencing and no-lineup-change boundary.
 - [Progress 2026-07-26](../progress/2026-07/2026-07-26.md) — exact paired counts and pinned-interface evidence.
+
+## Compiled Update — 2026-08-25: document-specialist VLM arms — instruments fixed, evidence corrected, both runs still operator-gated
+
+**Confidence: verified** for the code/harness/disk facts (shipped tests, on-disk artifacts,
+in-place record corrections); **no new model run** was made or is claimed.
+
+### PaddleOCR-VL: the 0.0 / 0.058 TEDS figures in the 2026-07-17 finding above are VOID, and the real pipeline is the gate
+
+The 2026-07-17 finding's "prompt-only HTML-table recovery stayed negative (TEDS=0.0 … rescore only
+lifted table TEDS to 0.058333)" figures are retracted by the document-parser-table-bench
+reassessment: PaddleOCR-VL-1.6 is a **three-stage pipeline** (PP-DocLayoutV3 layout analysis →
+0.9B VLM recognizing *cropped regions* under the six official element prompts (`OCR:`, `Table
+Recognition:`, `Formula Recognition:`, `Chart Recognition:`, `Spotting:`, `Seal Recognition:`) →
+markdown/table assembler), with **no page-level markdown prompt on the card** — whole-page feeding
+is off-label and the numbers describe the harness, not the model. The instrument is now competent:
+full OmniDocBench (1,651 pages / 665 table regions, English-only view scoreable) is local, and
+Phase A is landed — `paddleocr==3.7.0` + `paddlepaddle==3.2.2` in a dedicated venv, with
+**`--vl_rec_backend llama-cpp-server` verified as an explicitly supported backend** (the
+`paddleocr --help` omission is an argparse registration gap, not a missing subcommand). Phase B
+(binary gate: does the documented pipeline emit HTML `<table>` markup?) and Phase C (n=665,
+English-only split) require per-run operator approval; `llama-server` remains the compute engine,
+and the "Python pipeline = disqualifier" framing is superseded by the operator's 2026-07-20
+direction that the orchestrator *should* avoid inference when unnecessary — layout decides what
+needs the VLM. Do not re-cite the voided figures.
+
+### Unlimited-OCR: a second instance of the harness-vs-model pattern, corrected to prompt/profile mismatch
+
+Unlimited-OCR (3B-A0.5B, Baidu, intake-864) ran a mechanically real 18-page OmniDocBench demo on
+2026-08-13 (18/18 pages, 0 errors; median **5,857 ms/page**; median decode **392 t/s**; text-block
+edit distance 0.3624, table TEDS 0.0117, reading-order 0.2165) — but all 18 pages emitted
+**coordinate-tagged layout dumps, not markdown**, which is a sufficient explanation for the
+near-zero TEDS. The record correction (2026-08-25) downgrades the claim to **demonstrated
+prompt/profile mismatch**: the GGUF's bare-passthrough chat template is verified, but llama.cpp's
+own `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent behaviour (`Free OCR.` emits
+EOS immediately while the HF-reference `document parsing.` grounds), so "coordinate output
+regardless of prompt" is not established. Same shape as the PaddleOCR-VL retraction: an off-label
+invocation profile producing numbers that describe the harness. The default artifact is now the
+requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB, `output.weight` q8_0, 154 tensors
+byte-copied — no double-quant loss), and the canonical-profile A/B (`document parsing.`,
+`n_predict=4096`, `n_ctx=16384`, DRY, grounding-strip per `test-deepseek-ocr.py`) is gated on the
+operator's all-inference-stop order being lifted. Full record, including the mutex-receipt
+correction and the now-confirmed disappearance of the run artifact:
+[Document Processing](document-processing.md).
+
+### Source References (2026-08-25 document-specialist arms)
+
+- [`document-parser-table-bench.md`](../handoffs/active/document-parser-table-bench.md) — the
+  three-stage architecture and six official prompts, the void note on the 0.0/0.058333 figures,
+  the full OmniDocBench instrument, the Phase A environment landing and the `llama-cpp-server`
+  backend verification, and the Phase B/C operator gates.
+- [`opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md)
+  — the Unlimited-OCR observation row with the corrected causal claim, the requantized
+  `DEFAULT_MODEL` repoint, and the canonical A/B contract.
+- [`progress/2026-08/2026-08-13-mainD.md`](../progress/2026-08/2026-08-13-mainD.md) — the demo run
+  record (measurements, the output-format finding, the `held_s` defect) with its 2026-08-25
+  supersession blockquote.
+- [`progress/2026-08/2026-08-25-mainA-pip05.md`](../progress/2026-08/2026-08-25-mainA-pip05.md) —
+  the record-correction execution and the verified loss of the demo run directory.
+- [Document Processing](document-processing.md) — the compiled full record of both arms, the
+  harness hardening, and the dataset-path resolution.
 
 ## Summary
 

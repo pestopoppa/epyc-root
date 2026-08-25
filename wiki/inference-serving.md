@@ -2,8 +2,52 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-24 (inference-serving carries the ROUTE-A1 overlap-queue falsification + SS-BENCH-GATE-c spawn guards); previously 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
-**Sources**: 78 documents
+**Last compiled**: 2026-08-25 (extends the 2026-08-24 ROUTE-A1 compile with the seam's never-co-place verification — re-place when possible, refuse when not — and closes the 2026-08-11 NUMA P0-1 IN-PROGRESS item: derived-priors full-instance drop resolved, PROMOTION_GATE_TARGETS 196/0, full suite 16 failed / 12526 passed, no source edits) (inference-serving carries the ROUTE-A1 overlap-queue falsification + SS-BENCH-GATE-c spawn guards); previously 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
+**Sources**: 79 documents
+
+## Compiled Update — 2026-08-25: the overlap story is complete — re-place when possible, refuse when not — and the NUMA derived-priors regression from 2026-08-11 is closed
+
+**Confidence: verified** — the seam probe ran in an operator-granted clean window (2026-08-24); test
+counts are executed-suite results; the P0-1 closure is the owning handoff's recorded state.
+
+### The seam where re-placement cannot help now refuses instead of co-placing (ROUTE-A1 thread, 2026-08-24 clean-window re-run)
+
+The 06:48Z smoke established the first half of the overlap story: forced eval_batch requests are
+RE-PLACED onto a disjoint instance whenever one exists (3/3 disjoint admits, 0/5 queue-expected —
+the overlap-queue mechanism does not exist in the fleet layer). The 11:46Z clean-window re-run
+established the second half. Control: no holds → forced frontdoor probe admits in **1.4s**
+(`decision=allow idx=0`). With q0,q1 (ingest anchor) + q2,q3 (frontdoor busy) held, all three forced
+probes (frontdoor, worker_general, ingest_long_context) return **504 at exactly the 45s queue
+budget** (`error_detail="[ERROR: placement timeout role=frontdoor reason=placement_topology_overlap_timeout holders=[0, 2] after 45.0s]"`).
+
+**The never-co-place invariant holds at the gate level**: the fleet layer avoids overlap by
+re-placement when possible and refuses (queues to timeout) when every candidate overlaps a held
+region. The standing smoke was restated to judge the observed placement — `--expectation
+{replacement|seam}` (default `replacement`; `CO-PLACEMENT` is always a failure), 53 tests green.
+Cosmetic residue only: the ingest probe's error_detail echoed `role=worker_general` (stale variable
+in the message), worth a one-line fix. The Step-2 flag-on decision remains an operator
+re-specification (pin the placement machine vs re-state the expectation).
+
+### NUMA P0-1 CLOSED 2026-08-24 — the derived-priors full-instance drop is resolved
+
+The 2026-08-11 compiled IN-PROGRESS item (the region-lock regression recurring one layer downstream:
+`derived/stack_priors.yaml` dropped the `NUMA_FULL` instances for frontdoor 8070 / worker_general
+8072 / ingest_long_context 8085) is **closed**: `derived/stack_priors.yaml` now records
+8070/8080/8180 with `cpu_shape_class: full`; `PROMOTION_GATE_TARGETS` is **196 passed / 0 failed**;
+the full `tests/unit` suite is **16 failed / 12526 passed / 69 skipped / 6 xfailed** after three
+fixture-side fixes (gate-fixture `waited_s`/`blocking_roles` fields in `test_dispatch_cross_role_placement.py`
+and `test_inference_mixin.py`; the SS-BENCH-GATE-c placement `ps` subprocess counted in
+`test_model_server_coverage.py`). The 16 remaining failures are all the E8-era frozen-kernel guard
+(documented operator decision, untouched by design) plus same-class derived-priors expectations —
+**none are the new-topology breakage this row exists to fix. No source code was modified.** The
+2026-08-11 standing falsifiable prediction held: the gate tests went green with zero test edits.
+
+### Source References (2026-08-25)
+
+- [shape-keyed-contention-gating.md](../handoffs/active/shape-keyed-contention-gating.md) — the seam verification (45s budget vs 1.4s control), the OP-21 second-pass pooling note, and the standing-smoke restatement.
+- [numa-topology-cutover-resume-20260730.md](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-1 CLOSED 2026-08-24 (derived priors record `cpu_shape_class: full`; suite counts; E8-era residual classification).
+- [progress 2026-08-25-unattributed.md](../progress/2026-08/2026-08-25-unattributed.md) — the N25/P0-1 closure record (three fixture-side fixes, 19 → 16 failed, no source changes).
+- [progress 2026-08-23-unattributed.md](../progress/2026-08/2026-08-23-unattributed.md) — the ROUTE-A1 smoke + bridge record this section extends.
 
 ## Compiled Update — 2026-08-24: the overlap-queue premise was falsified by ROUTE-A1 — the live fleet layer has no queue for overlapping placements
 

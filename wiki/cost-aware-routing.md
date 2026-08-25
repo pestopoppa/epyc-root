@@ -3,7 +3,7 @@
 **Category**: `cost_aware_routing`
 **Confidence**: verified
 **Last compiled**: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
-**Sources**: 45+ documents (added 2026-08-16 intake-1140 HarnessOpt-Bench + the Qwen3.8-27B swap/candidate-surface pair; added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
+**Sources**: 47+ documents (added 2026-08-25: optical-context-compression.md OCC-2 record + qwen-chat-template-evaluation.md CT-2/CT-5/CT-E7 + progress 2026-08-23 + progress 2026-08-25-mainA-rtg53; prior additions unchanged) (added 2026-08-16 intake-1140 HarnessOpt-Bench + the Qwen3.8-27B swap/candidate-surface pair; added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
 
 ## Summary
 
@@ -396,6 +396,94 @@ lever measured at +32.0pp (52.0%→84.0%, McNemar p=8.6e-04) in the 2026-07-24 l
 swap judged on a letter-only harness would have understated this arm by roughly that margin. Effort
 levels stay certified per (model, quant); the harness/prompt shape is not a property of the
 benchmark, it is a cost-and-quality decision the router makes.
+
+## 2026-08-25 Update — Provider image-billing asymmetry: a time-pinned external cost shape (OCC-2)
+
+**Confidence: external, time-pinned.** This is a provider-pricing reference, not a measurement claim
+under MEASUREMENT.md. Every cell was re-verified against primary provider docs on 2026-08-25, and the
+table can silently go stale — it already has (below).
+
+The OCC-2 record ([optical-context-compression.md](../handoffs/active/optical-context-compression.md))
+was created independent of the bitmap-frame-compression question (OCC-1): the asymmetry is a
+cost-aware-routing input in its own right. Per provider, as of 2026-08-25:
+
+- **Google Gemini 3.x** bills a **fixed per-image budget at any pixel size**, keyed only by
+  `media_resolution` (LOW 280 / MEDIUM 560 / HIGH 1120 / ULTRA_HIGH 2240 tokens per image; default
+  HIGH). The one flat-rate reader: **larger frames are free characters** — pack text up to the
+  model's pixel/request limits.
+- **OpenAI (gpt-4.1 / gpt-5.x vision)** bills **area-proportionally** (32×32 px patches × a per-model
+  multiplier 1.2×–2.46×; gpt-5.6 default bills raw patch count with no cap). Larger frames never
+  help: cost scales with area.
+- **Anthropic (Claude 4.7+, high-res tier)** bills patch-based visual tokens (⌈w/28⌉×⌈h/28⌉) under a
+  hard per-image cap (high-res 2576 px / 4784 tokens). Bigger frame = more tokens, never free.
+- **Kimi (kimi-k2.6 / k3)** bills **dynamically, resolution-proportional**, docs recommend ≤4K; the
+  previously-cited 1792 px downscale is **not** in current Kimi API docs — unverified as of 2026-08-25.
+
+**The staleness caveat is demonstrated, not hypothetical**: the Anthropic cell's tile formulation in
+the upstream note (768 px tiles @ 1600 tokens, 100-tile cap) is gone from current docs. Every cell
+carries its as-of date and source; re-verify against the cited source before any decision consumes
+these numbers.
+
+**Consumer, and the boundary on it**: this is a per-provider cost-shape prior for the live
+cost-aware-routing surface in [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md)
+§DAR-4b — the inference-time preference vector `ω_cost` and cost-scaling `τ` at the retriever
+selection score — **if and only if** a hosted vision reader (Gemini/OpenAI/Anthropic/Kimi) ever
+enters the routing pool. Nothing consumes it today. For local readers (OCC-1's actual subject) image
+billing is irrelevant: their cost is tokens-decoded, not billed input.
+
+### Source References (2026-08-25 OCC-2)
+
+- [optical-context-compression.md](../handoffs/active/optical-context-compression.md) — the OCC-2 Record (billing-shape table, per-provider verification status, staleness caveat, consumer pointer).
+- [progress 2026-08-25-mainA-rtg53.md](../progress/2026-08/2026-08-25-mainA-rtg53.md) — per-claim verification against primary sources and the DAR-4b consumer selection (scaffold-autopilot-cost-lever rejected as consumer).
+- [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md) §DAR-4b — the ω/τ cost surface the table would feed.
+
+## 2026-08-25 Update — The effort ladder's certification stamp is now (model, quant, kernel_era, template_sha); the native-`<think>` verdict amends to "tied at fair budget"
+
+**Confidence: verified** for the validator code/tests (`0e801e68`, `2746c652`) and for the CT-5c
+paired-run decomposition (60 pinned gpqa_diamond_cot pairs, v9 HIP, symmetric caps); "every
+historical anti-reasoning datum is infrastructure" is the owning handoff's synthesis, recorded as
+such, not a new measurement.
+
+- **The chat template is now a calibration-voiding axis in the E-7 stamp** (extends the
+  "certified per (model, quant), never inherited" invariant compiled 2026-07-24). CT-2 priced the
+  void: every measured row this stack owns was captured under each model's **GGUF-embedded** template
+  (`--chat-template-file` has zero occurrences in the orchestrator launcher and registry code), so a
+  template swap moves every row off its measured condition simultaneously — and a template change is
+  the prompt-side analogue of the intake-892 "weights change ⇒ different model" precedent. E-7 was
+  amended 2026-08-23 (orchestrator `0e801e68`): `REQUIRED_CERTIFICATION_FIELDS` is now
+  `(model, quant, kernel_era, template_sha)`, the bound sha read from `roles.<role>.chat_template`
+  (fallback `server_mode.<role>.chat_template`), 16 tests. The first template-stamped recalibration
+  ran 2026-08-22 (CT-E7): frontdoor + architect_general re-measured on the live path with template
+  `1443ea9ab4bb` in the stamp; the CT-E7b master-registry propagation voided frontdoor
+  `quality_pct 93` and the architect/coder `swe_verified 57.5` rows as a direct consequence (those
+  rows were stamped to a model the roles no longer run).
+- **The kernel-era side of the stamp was caught stale and made structural.** The E-7 ledger's
+  `active_kernel_era` read `production-consolidated-v8` — a field written 2026-08-03, before the
+  2026-08-11 v9 freeze; the v9 promotion never rolled it because the ledger was empty. Corrected to
+  v9, and enforcement is now mechanical: `instrument_eras.yaml` cpu-kernel rows carry machine-readable
+  `kernel_name` and the validator (orchestrator `2746c652`) fails the stack-change pipeline whenever
+  the ledger era ≠ current era — a promotion that forgets either side fails by name (live proof: a
+  forced-back v8 ledger fails with "does not match the current production cpu-kernel era
+  'E9-cpu-kernel'").
+- **The native-`<think>` verdict amends: at fair budget it is TIED, not worse.** CT-5c (2026-08-21,
+  Qwen3.8-27B on MI210, symmetric 16,384 caps): thinking-off 85.0% vs thinking-on 86.7%, paired flips
+  2:3 **in favour of thinking** (n.s.); cost +21% tokens-per-solved (4,809 vs 3,972). The same pairs
+  at a 4,096 cap read 70.0 vs 63.3 — and the entire 6.7pp deficit decomposes to **truncation**:
+  completed-subset accuracy 95.1 vs 94.9, truncated-on runs nearly never emit an answer line
+  (truncated-T1 median think 11,078 chars vs 3,187 for completed). The 2026-07-24 ladder's "native
+  `<think>` loses" (−16pp to −36pp) is now accounted for as infrastructure (loops, termination,
+  templates, caps) on the models where it was measured; the accuracy lever remains the prompt
+  (+32pp CoT), and posture stays thinking-off on **economics alone**: +21% tokens for n.s. quality.
+  One caveat for anyone reusing the E-6 force-close recipe: the `--reasoning-budget N` /
+  `--reasoning-budget-message` lever the E-6 row cites does **not exist in the frozen v9 build** —
+  the tail is bounded by `max_tokens` there.
+
+### Source References (2026-08-25 effort-ladder extension)
+
+- [reasoning-effort-levels.md](../handoffs/active/reasoning-effort-levels.md) — E-7 amendment (template_sha in the stamp), the CT-2 cross-handoff finding, the 2026-08-23 ledger-era correction and validator enforcement.
+- [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
+- [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — CT-E7b master-registry propagation, era-enforcement follow-up (instrument_eras `kernel_name`, `2746c652`, `7fe84d9c`).
+- [qwen38-27b-replace-qwen36.md](../handoffs/active/qwen38-27b-replace-qwen36.md) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
 
 ## Related Categories
 

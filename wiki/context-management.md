@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
-**Sources**: 30+ documents
+**Last compiled**: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
 
 ## Compiled Update — 2026-08-13: prefix-stable rendering landed default-off; its current A/B is not faithful
 
@@ -38,6 +38,173 @@ The verbatim-trajectory-log program was gated on an audit question: *which `peek
 - [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the resolved audit half, the latent flag hazard, and the named schema prerequisite
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the module-chain verification
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the surrounding audit lane and its dead-code taxonomy (see [Autonomous Research](autonomous-research.md))
+
+## Compiled Update — 2026-08-25: the OCC-2 provider image-billing claims are verified against primary sources — and the staleness caveat is now demonstrated, not hypothetical
+
+**Confidence: verified as verification results** — each claim was checked against the provider's
+own current documentation on 2026-08-25 (Google Cloud docs mirror because ai.google.dev is
+unreachable from this host; OpenAI platform vision docs; Anthropic vision docs; Kimi API docs). The
+billing facts themselves remain `external` and dated — this is a point-in-time verification of a
+moving target.
+
+The per-provider billing asymmetry compiled 2026-08-18 above was audited claim-by-claim (RTG-53 /
+OCC-2, documentation-only):
+
+| Provider claim | Status |
+|---|---|
+| Gemini 3.x fixed per-image budget at any pixel size | **VERIFIED** — bills by `media_resolution` level only (ULTRA_HIGH 2240 / HIGH 1120 / MEDIUM 560 / LOW 280 / default 1120 tokens), independent of pixel dims; pre-Gemini-3 is Pan-and-Scan 258 tokens/image. Page marked Preview/Pre-GA, updated 2026-08-24. |
+| OpenAI patch billing area-proportional | **VERIFIED** — 32×32 px patches, tokens = patch count × model multiplier, per-model patch budgets (1,536 / 2,500 / 10,000) cap cost by downscaling; gpt-5.6 `original`/default is raw patch count, no cap. |
+| Anthropic high-res larger frames under a visual-token cap | **VERIFIED with material drift** — current docs: ⌈w/28⌉×⌈h/28⌉ visual tokens, area-proportional under hard caps (high-res tier 2576px/4784 tokens; standard 1568px/1568). The old 768px-tile @1600-token formulation is **gone** from current docs — the staleness caveat is now demonstrated. |
+| Kimi downscales past 1792px | **PARTIAL** — billing shape verified (dynamic, resolution-proportional); the exact 1792px figure is not in current Kimi API docs and is likely from the open-source Kimi-VL model card, not an API billing source. |
+
+No claim was contradicted. The one material drift (Anthropic's tile model replacement) is exactly
+the failure mode the 2026-08-18 section warned about ("pinned to provider pricing, so it can go
+stale silently"). The consumer surface for any future routing use is
+[`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-4b (the `ω_cost`
+preference vector + cost-scaling τ at the retriever selection score) — not a GPU-residency cost
+lever.
+
+### Source References (2026-08-25 OCC-2)
+
+- [`progress/2026-08/2026-08-25-mainA-rtg53.md`](../progress/2026-08/2026-08-25-mainA-rtg53.md) —
+  the four-claim verification table with primary-source citations, the Anthropic drift finding, and
+  the DAR-4b consumer pointer.
+- [`optical-context-compression.md`](../handoffs/active/optical-context-compression.md) — the OCC-2
+  owning handoff section this record was drafted for (text prepared; main thread applies).
+- [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — DAR-4b, the live
+  cost-aware-routing surface the billing facts feed.
+
+## Compiled Update — 2026-08-25: edit-format rules, the trajectory-artifact shape, and the query_memory↔spill-pointer key mismatch
+
+**Confidence: verified** for the first-party code/audit facts (hashline source reads, the
+`_spill_if_truncated` location and key shape, the shipped tests); **external** for the aider/Cursor
+benchmark figures, which are carried with their scope limits and decision-relevant magnitudes.
+
+### BEP-6 — the hashline granularity gap is overturned, and two leniency details are worth keeping
+
+The Stage-1 premise that hashline is line-granularity optimistic concurrency (vs our
+file-granularity `current_shas`) is **overturned** (2026-08-18): current hashline validates **one
+4-hex xxHash32 of the whole normalized file** (`packages/hashline/src/format.ts:112-121`) and
+addresses lines by plain number; per-line hashes were removed in May 2026
+(`30793c165`/`7c6457652`). That is the same property `current_shas` already gives us. Two leniency
+details to remember if the path is ever revisited: the hash normalizes away trailing whitespace (a
+stale file differing only in trailing whitespace is **accepted**), and a 16-bit tag misses a stale
+edit ~1 in 65,536. **No change to our apply path is proposed.**
+
+### BEP-7 — if an edit-format change is ever proposed, two external rules bind it
+
+(a) **Pairing rule** (intake-1154, aider): a format change without a matching *tolerant applier* is
+a different intervention — disabling flexible patching produced a **9× increase in editing errors**
+on aider's own benchmark. (b) **Line-number tension** (intake-1153, Cursor): line-number emission
+is named as a tokenizer-level failure mode — a digit run tokenized as one token forces a
+single-forward-pass commit — which is why Cursor adopted search/replace blocks. The decision-relevant
+magnitude: against `str_replace`, hashline's measured mean is **+2.97 pp** (14/19 models, sign
+p=0.064) — inside the benchmark's own 3.75 pp median test-retest spread — while the +19.4 pp
+headline is against `apply_patch`, a baseline the source itself calls broken. Resolve by
+measurement, not authority.
+
+### The query_memory↔spill-pointer mapping has a key-shape mismatch to resolve before implementing
+
+The 2026-07-29 compile above recorded that ACM's archive-query API "maps directly onto the existing
+`_spill_if_truncated()` pointer machinery". The 2026-07-29 auditor scoping finds **one mismatch
+that blocks the thin-read framing**: the existing spill has **no integer key and no index — the
+filesystem path IS the key** (a triple `(task_id, label, turn)` encoded as
+`/mnt/raid0/llm/tmp/{safe_task_id}_{label}_t{turn}.txt`, model-facing pointer
+`[... N chars truncated; full {label}: peek(99999, file_path="…")]`), while ACM's model — and the
+row's wording — is "verbatim JSON archived by **integer key**". Three options were scoped: (a) a
+per-task manifest mapping `int → spill path` written at spill time (recommended: smallest change,
+keeps the path as truth, invalidates no pointer already emitted); (b) renaming spills to a
+monotonic integer per task (breaks existing pointers in transcripts); or (c) `query_memory(task_id,
+label, turn)` — no integer key at all, matching what exists. Left unimplemented deliberately: this
+is a new agent-facing read API, not a fix, and it wants that decision made first. Reference
+correction that travels with it: `_spill_if_truncated` lives at `src/graph/file_artifacts.py:47-73`;
+`helpers.py` only re-exports it (`:39-42`) and calls it (`:727`, `:730`) — `helpers.py:320-355` is
+unrelated `<<<TOOL_OUTPUT>>>` block-matching code.
+
+### The trajectory-log schema question has two external reference shapes
+
+The event-schema design input named on this page (2026-08-12/13: the verbatim trajectory log's
+schema is owned by the consuming A/B) has two concrete references worth lifting before authoring:
+
+- **markdownfs `/runs/<run-id>/` bundle** (intake-520, Pattern A): `prompt.md` / `command.md` /
+  `stdout.md` / `stderr.md` / `result.md` / `metadata.md` (agent_id, start/end, exit code,
+  workspace, source commit) / `artifacts/` — human-reviewable, diff-able, grep-able and committable
+  as one tree, explicitly contrasted with JSONL journals that are machine-friendly but
+  human-illegible at scale. It is a schema choice, usable under git without adopting anything.
+- **pi-agent-core two-stage pipeline** (intake-473, already compiled 2026-04-28) plus its
+  **`afterToolCall` hook** (new to this page): field-replace semantics (`content` — what the LLM
+  sees — replaced without touching `details` — what the UI sees — or vice versa, no deep merge) and
+  **throw-isolation** (a throw inside one `afterToolCall` becomes an error result for that tool
+  call only; the batch continues — CHANGELOG #3084 was a deliberate fix of the abort-whole-batch
+  bug). That is the named composition surface where output compression, redaction, audit metadata
+  and compaction stack without knowing about each other — the concrete hook shape for the "the Orch
+  owns tool-output compaction" contract on this page.
+
+### Source References (2026-08-25 edit-format + memory-surface)
+
+- [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6
+  (hashline granularity overturn, the two leniency details) and BEP-7 (aider pairing rule, Cursor
+  line-number tension, the +2.97 pp / 3.75 pp magnitudes).
+- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the 2026-07-29
+  auditor scoping of the query_memory key mismatch with options (a)/(b)/(c), the
+  `_spill_if_truncated` reference correction, and the 2026-04-26 intake-473 note carrying
+  `afterToolCall` field-replace/throw-isolation.
+- [`research/deep-dives/markdownfs-rust-mcp-vfs.md`](../research/deep-dives/markdownfs-rust-mcp-vfs.md)
+  — the `/runs/<run-id>/` markdown artifact schema (Pattern A) and the FS-truth + derived-vector-index
+  corroboration (Pattern B) of the KB-RAG shape.
+- [`research/deep-dives/pi-agent-core-stateful-ts-runtime.md`](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md)
+  — `afterToolCall` semantics and throw-isolation (agent-loop.ts:617-642, :503-515), steering vs
+  follow-up naming, and the `one-at-a-time`/`all` queue modes.
+- [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../research/deep-dives/veniceai-skills-cross-runtime-authoring.md)
+  — the OpenAPI→SKILL.md drift-detector pattern generalizing to the `x_*` override API → hermes
+  skills, applicable if tool-semantics skills (peek/grep combined ops, compressed output) are ever
+  authored.
+
+## Compiled Update — 2026-08-25: memory-operation envelopes and a serving-evidence retention hole
+
+**Confidence: verified** for the landed code and the audit facts; **external** for the third-party
+evaluation figures.
+
+### UTM-V1..V6 — verifiable memory operations are scoped behind an append-only envelope, shadow-first
+
+The 2026-08-07 intake cluster (intake-1008/1015/1017/1018/1022/1023) scopes the next memory-store
+layer: typed `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` proposals over the
+existing raw-event authority, every operation carrying operation/session/actor ids, immutable
+source-event references, before/after value hashes, version and supersession links, an
+applicability boundary, proposer/verifier versions and a
+`proposed|validated|committed|rejected|rolled_back` state — with `UPDATE` creating a new version,
+soft `DELETE` a tombstone that preserves history, and physical privacy erasure a separate explicit
+state never claimed from a tombstone (UTM-V1). The write side is a **local scoped proposer, not an
+authoritative writer**, recording actor versus subject so one model's inference cannot silently
+become another actor's fact, run in shadow on recorded traces first (UTM-V2). UTM-V6 folds it into
+a full evaluation matrix with a **mandatory no-memory control arm** — the direct consequence of the
+128K finding compiled 2026-07-29 (six of fifteen published memory methods score below no-memory).
+None of this is wired to runtime; it is scoped design plus the landing order.
+
+### Serving evidence: a nine-day retention hole made a correctness question unanswerable — the covered window was clean
+
+The llama-server log-retention audit (2026-08-21, intake-1279) is the observation-window discipline
+applied to long-context serving: a correctness question about production (upstream #27442,
+disclosed 2026-08-20) **could not be answered from retained evidence** — no llama-server or
+orchestrator log on disk is newer than 2026-08-11. Where the frontdoor log *does* cover, it is
+clean: 11,670 timing lines, zero instances of the failure signature, six healthy requests at ≥16K
+including one at **64,019 prompt tokens** — a genuine negative, but only for its window. The
+`empty_generation` detector is **active** at its 30 s default and its channel is retained; because
+the failure occurs on a cold full prefill (minutes of CPU at 17K+ tokens), the threshold is
+comfortably exceeded — so the detector's silence is meaningful and the gap is retention, not
+instrumentation. The fix (retention for `epyc-orchestrator/logs/llama-server-*.log`) is filed on
+the instrument-repair handoff.
+
+### Source References (2026-08-25 memory + evidence)
+
+- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — the
+  UTM-V1..V6 scoping (2026-08-07) with the append-only envelope, actor-vs-subject proposer, and the
+  no-memory control arm in the UTM-V6 matrix.
+- [`evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) —
+  the 2026-08-21 intake-1279 log-retention finding, the covered-window negative, and the
+  `empty_generation` detector's active status.
+- [`intake-1279#record`](../research/intake_index.yaml) — the retention-gap record with the
+  detector-mechanism analysis.
 
 ## Summary
 

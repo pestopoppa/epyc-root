@@ -2,8 +2,89 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-08-16 (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
-**Sources**: 80+ documents
+**Last compiled**: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 84+ documents
+
+## Compiled Update — 2026-08-25: the role-keyed gate's geometry blind spot is now measured, demoted, and guarded — and X-MAS runs shadow, not enforce
+
+**Confidence: verified** — OP-21 figures are from the 2026-08-23 operator-granted re-bench
+(manifest-pinned ports, per-thread affinity attested from /proc, topology hash `171f86f9188211e9`),
+with the pooled overlap figure explicitly NOT decision-grade (cv 0.125) and cited as such; config
+reads, test counts and the seam probe are from the recorded sessions.
+
+### The same role pair, two geometries — the overlap one is the one production runs, and it is now the one in the matrix
+
+- **OP-21 overlap re-bench (2026-08-23): frontdoor + ingest_long_context at the production shape.**
+  Overlap 8080+8185 (both node0 half `0-47,96-143`): pooled n=9 mean **1.121**, cv 0.125 — NOT
+  decision-grade, verdict class borderline (per-sample range 0.871–1.311). Disjoint control 8080+8285
+  (node1 half): **1.360**, cv 0.018 — decision-grade **allow**. The shipped role-keyed 1.89 allow
+  (samples=1, disjoint geometry) is **falsified for the overlap shape**: production co-run reality is
+  ~1.0–1.2, occasionally below 1.0.
+- **Disposition applied (operator-approved, 2026-08-23):** the role-keyed pair row was demoted to the
+  overlap measurement (`instance_b` 8185, ratio 1.121, cv 0.1251, samples 9, verdict `borderline`,
+  note citing the disjoint control + artifact path); `validate` + freshness check green, gate loader
+  reads 1.121/borderline, API reloaded. A second pooled pass (n=21, cv 0.118) concluded decision-grade
+  is **physically unreachable for this pair class** under live-fleet variance (MTP+SSM co-run
+  scheduling noise) — a protocol variance allowance is a measurement-constitution question, not a
+  bench question.
+- **Marker polarity fixed by REFUSE (same day).** `_select_live_pair_instances` returned a substituted
+  *disjoint* placement as `(a, b, None)` with no marker while the faithful overlapping fallback carried
+  `overlap_measured` — the marker fired on the honest measurement and was absent on the substituted
+  one, so a favourable disjoint number could enter the matrix indistinguishable from a faithful
+  overlap measurement. Now any selection carrying the substitution marker goes to `unknown_pairs`
+  with `overlap_substituted` (fail-closed by the unknown-pair policy); dry-run prints
+  `REFUSED (overlap substitution)`. Companion fixes: `run --roles` no longer truncates the matrix
+  (unmeasured rows carried forward verbatim, scoped runs stay `decision_grade=false`), and the
+  contention artifact now emits host-health provenance (host_kernel / uptime / health / blockers).
+- **Standing lesson, unchanged in form, now measured in force:** a role-keyed gate cannot tell the
+  0.37-block overlap from the 1.716-allow disjoint geometry of the same pair; the matrix row now names
+  its geometry, and `admit_set` (the shape-keyed seam) remains the resolution.
+
+### ROUTE-A1 seam: the never-co-place invariant holds at the gate
+
+- 2026-08-24 clean-window re-run (operator grant): control (no holds) → forced frontdoor probe admits
+  in **1.4s** (`decision=allow idx=0`); with q0,q1 (ingest anchor) + q2,q3 (frontdoor busy) held, all
+  three forced probes (frontdoor, worker_general, ingest_long_context) return **504 at exactly the 45s
+  queue budget** with explicit gate attribution:
+  `error_detail="[ERROR: placement timeout role=frontdoor reason=placement_topology_overlap_timeout holders=[0, 2] after 45.0s]"`.
+  The seam's fail-closed overlap exclusion is **live and correct**: the fleet layer avoids overlap by
+  re-placement when a disjoint instance exists, and refuses (queues to timeout) when none exists. The
+  standing smoke was restated with `--expectation {replacement|seam}` (default `replacement`,
+  judging the observed placement; `CO-PLACEMENT` always a failure), 53 tests green.
+- **SC19 write-side capture wired (EVL-47, 2026-08-23):** `contention_gate_capture.py` appends ONE
+  request-keyed envelope per request (`contention_gate_capture.v1`: request_id, full `gate_decisions`
+  list, admitted, waited_s, candidate_topology_idx), opt-in default OFF, never raises; strict vidya
+  adapter registered. The 2026-08-13 compiled status ("observable, but no evidence exists yet")
+  advances to **capture wired, awaiting the first record** — the first tuple is still pending
+  (orchestrator API down at wiring, capture default OFF).
+
+### X-MAS current runtime is SHADOW, not enforce — correction to the 2026-07-04 compiled text
+
+The 2026-07-04/05 compile on this page records "X-MAS is now ENFORCING in production". The
+[handoff's current-runtime correction](../handoffs/active/x-mas-text-routing.md) (verified
+2026-07-29) states the current `classifier_config.yaml` has **`xmas_routing.mode: shadow`**: the
+enforce was rolled back 2026-07-16 (worker-alias recalibration; a fresh function-axis
+speed/quality revalidation is required before re-enable), the newest X-MAS A/B artifact is
+2026-07-03, and no post-enable enforcement telemetry exists to monitor. The read-only Fable5 report
+is additionally blocked by a runtime-facts circular import, so it cannot certify the live path until
+repaired. The 2026-07-04 cutover text remains historically accurate; **the live routing layer is
+shadow today**, and the enforce-monitoring checkbox stays open until a verified enforce interval has
+live records.
+
+### NIB2-57a: routing consumers stop reading fabricated throughput
+
+`bilinear_scorer` dropped its fabricated `10.0` tps default (tps_known mask, `MODEL_FEATURE_DIM`
+7→8); a shared `ResolvedTps`/`resolve_tps_prior()` now backs the MCP tools, `--list-roles` and the
+stack summary; `train_graph_router` warns on unmeasured fleet tps. Measured behavior byte-identical
+otherwise — the fix removes a route-scoring input that asserted unmeasured throughput as fact.
+
+### Source References (2026-08-25)
+
+- [shape-keyed-contention-gating.md](../handoffs/active/shape-keyed-contention-gating.md) — OP-21 re-bench + demotion, marker-polarity REFUSE, matrix-truncation + host-health fixes, the seam verification with its 45s/1.4s control, and the restated standing smoke.
+- [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — RTG-35 execution + disposition + reload, EVL-47 SC19 wiring, NIB2-57a surface audit.
+- [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md) — the current-runtime correction (shadow mode, no enforce telemetry, Fable5 circular import).
+- [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md) — the shadow-only rollback record (worker aliases recalibrated to 38.46 t/s; enforce disabled pending fresh table validation).
+- [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md) — RTG-35/RTG-38 re-pointed rows.
 
 ## Compiled Update — 2026-08-16: the harness a request runs through is a routing dimension — and the number everyone quotes says the opposite of what it looks like
 

@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-08-08
-**Sources**: 35+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, and the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Sources**: 36+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, and the RAO/ReDel substrate spike)
 
 ## Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
 
@@ -31,7 +31,88 @@ verification, and independent answer-time distillation. Evaluation must include 
 raw append-log retrieval, Context-Folding, shadow mutation proposals, and gist extraction under
 restart, cross-session, conflict, staleness, poisoning, deletion, rollback, and raw-source recovery.
 
-### Source References
+## Compiled Update — 2026-08-25: the episodic store gains a decision-labelling axis (landed, unpopulated) and a rollout-accounting design (scoped, not landed)
+
+**Confidence: verified** for the schema/landing facts (test counts, column/index/backfill
+state read from the RAO/ReDel spike and the 2026-08-03 episodic-store audit) and for the
+"scoped, not implemented" status of the rollout accounting (2026-07-29). The cluster-level
+depth evidence (`max_depth` direction-of-effect, the escalation-prediction surface) is
+compiled on [Agent Architecture](agent-architecture.md) and [Routing Intelligence](routing-intelligence.md)
+(N17) and is pointed to, not restated.
+
+### The 5-sub-decision labelling axis: the schema landed, no producer ever wrote it
+
+The orchestration-trace survey (intake-548) identified the **stopping-decision gap** — no
+published RL method trains the *stopping* decision — and proposed the five-class taxonomy
+`{when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop}` as a
+labelling axis over stored events. That axis was wired into the episodic store on 2026-05-19 as
+step-3 pre-work of the RAO/ReDel substrate spike (`rao-redel-subdecision-taxonomy` branch,
+commit `8bf985c`, never pushed): an `OrchestrationSubDecision` enum with
+`DEFAULT_SUBDECISION = None` — deliberately the **opposite polarity** to `assigned_role`'s
+worker-default — so unknown input normalises to None and never coerces; a `sub_decision`
+column plus index on `MemoryEntry` with idempotent `ALTER TABLE` migration; a
+substring-heuristic backfill script (`backfill_sub_decision.py`, dry-run-safe); and 29 tests
+(9 taxonomy / 3 migration / 6 writer-round-trip / 7 classification-heuristic / 4 backfill),
+all passing alongside the pre-existing episodic-store suites (79 total).
+
+**The load-bearing follow-up is that nothing ever populates it.** The 2026-08-03 episodic-store
+audit (compiled on [Agent Architecture](agent-architecture.md)) found `sub_decision` with a
+column, an index, a dataclass field, a `store()` parameter, an INSERT binding, a passing test,
+and a **written-but-never-run backfill script — and zero producers**. The earlier rationalisation
+that "NULL *means* not a sub-decision" was **retracted** in that audit: like `assigned_role`
+(0/59,337 rows), a column that is 100% NULL across the store is a capability that does not
+exist. The writer wire-in was always deferred to the ReDel step-3 phase A (behind
+`RLM_USE_REDEL=1`), which never ran. **Rule carried from the audit: the store's decision axes
+are dead until a producer writes them; count rows, not columns.**
+
+### Rollout-tree accounting: the SkyRL design is scoped, requires review, and is NOT the sub_decision label
+
+SkyRL's `examples/train/rlm` (intake-868, Apache-2.0, dive-verified 2026-07-21) contributes a
+training formulation whose parent/child **rollout-tree bookkeeping** — `parent_rid` / `depth` /
+`child_index` with reward propagation — is reusable as an *accounting model* for nested
+sub-agents without adopting any RL. Scoped 2026-07-29 onto the episodic store as an **additive
+SQLite migration, deliberately making no code change**:
+
+- **Minimal data contract:** nullable `rollout_id` (one root-to-leaf execution), immediate
+  `parent_memory_id` (the direct parent — never a model/task id), non-negative `depth`,
+  non-negative `child_index`; roots carry NULL parent and depth 0; existing rows stay NULL on
+  all four fields.
+- **Reward semantics:** retain each event's observed `q_value`; any parent/child credit
+  aggregation is computed read-only or in a separately named derived report — never written
+  back over parent or child rewards.
+- **Compatibility surface:** extend `MemoryEntry`, the `store()`/`store_immediate()` keyword-only
+  inputs, and every projection used by `retrieve_by_similarity`, `get_by_id`,
+  `get_all_memories`; idempotent DDL; index only `(rollout_id, depth, child_index)` after a
+  query-plan justification.
+- **Required independent review before implementation** (graph index classifies
+  `EpisodicStore` HIGH blast radius: 77 upstream, 27 direct): verify DDL, writer/read
+  projections, FAISS/SQLite consistency and concurrent migration; add
+  fresh/migrated/legacy/round-trip tests.
+
+Do not conflate the two axes: `sub_decision` labels *what kind of decision an event was*;
+the rollout fields link *which tree the event belongs to*. The 2026-07-29 scoping note is
+explicit that the existing label is not rollout accounting.
+
+### The depth evidence that motivates both axes — carried by pointer
+
+The direction-of-effect caveat is the reason a decision axis exists at all: RLM depth-1 *lost*
+on Kimi K2 OOLONG (86.6 → 60.0) but *rescued* a total failure on DeepSeek OOLONG (0.0 → 42.1),
+so depth must be gated on predicted base-attempt failure rather than pinned (compiled as
+Routing Intelligence N17, whose training data — the "will frontdoor fail?" surface, 10,528 pos /
+56,457 neg, status Ready — is exactly what the store's labels were meant to feed). The missing
+local instrument — OOLONG, absent from every suite — is recorded as the blocker for a
+first-party depth-0-vs-depth-1 A/B on the spike. All three belong to the routing/eval planes;
+this page's ownership is the store schema they depend on.
+
+### Source References (2026-08-25)
+
+- [`rao-redel-substrate-spike.md`](../handoffs/active/rao-redel-substrate-spike.md) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
+- [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547's model-dependent depth direction, and the RAO/ReDel substrate framing.
+- [`meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — the RLM-pattern coverage baseline (≈80%, R1–R6) that the taxonomy work extends and the Tier-3 in-house fallback the spike arbitrates.
+- [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547` for the depth direction-of-effect.
+- [Agent Architecture](agent-architecture.md) — the RAO + RLM substrate cluster and the 2026-08-03 episodic-store audit that retracted the "NULL is correct" framing and counted the zero producers.
+
+## Source References
 
 - [Unified Trace / Memory Service](../handoffs/active/unified-trace-memory-service.md) — UTM-V1…V6 shadow schema, verifier, distiller, credit, and lifecycle matrix
 - [Context-Folding](../handoffs/active/context-folding-progressive.md) — CF-AM-1 matched parallel-gist versus folding/raw-evidence comparison
@@ -237,6 +318,9 @@ The connection between memory and the autopilot is especially significant. Befor
 - [intake-715](https://arxiv.org/abs/2605.22721) DecentMem ("Self-Evolving Multi-Agent Systems via Decentralized Memory") -- decentralized per-agent dual-pool memory (exploitation + exploration) with online LLM-judge reweighting + claimed O(log T) regret bound; only the dual-pool structure transfers to the autopilot strategy_store, the per-stage judge-reweighting conflicts with AP-27 + the P17.BT-4 KILL; no released code, cloud-favorable small backbones on frameworks we don't run (adopt_patterns)
 - [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- exact episodic FAISS health (`526,729/526,729`, `100.0%` overlap, `0` missing/stale IDs) and current AutoPilot live state after the Fable restart
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
+- [rao-redel-substrate-spike.md](../handoffs/active/rao-redel-substrate-spike.md) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
+- [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547 model-dependent depth caveat, ReDel substrate viability
+
 
 ## Updates — 2026-04-28
 

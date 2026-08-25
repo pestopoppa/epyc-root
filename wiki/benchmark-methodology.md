@@ -2,8 +2,70 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-25 (TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
+
+## Compiled Update — 2026-08-25: the agent-security eval fixture is in-tree (TU-DTAP-1), and the L5 closeout surfaced a gate that had been red for 22 days
+
+**Confidence: verified** — the DTAP import is a code artifact with pin SHAs and 66 passing tests read
+at compile time; the EVL-38 numbers are the regenerated 2026-08-25 readiness artifacts; nothing here
+rests on self-report.
+
+### TU-DTAP-1 (EVL-46): the reviewed Apache-2.0 DTAP subset is now a disposable local runner
+
+The agent-security eval fixture this page has tracked since 2026-08-08 is now **in-tree**, not pending:
+an 18-case subset of DecodingTrust-Agent (finance + crm; all 5 injection families; 3 threat classes) was
+imported at `epyc-orchestrator/scripts/autopilot/evals/dtap/` from the pinned upstream commit
+`e0323a521ba4ef88f8e14c1eccf68d0a3d19a458` (tree `fd5a107aedb8971c346fc0e85d4789bf510e3f5f`, Apache-2.0;
+LICENSE/README SHA-256s match intake-1021) — 73 new files, zero upstream dependencies. The subset choice
+is principled: finance + crm carry the smallest fully-deterministic state-judge surface, and crm is
+required because skill injection exists only there (0 of 6,682 upstream configs use LLM checks; the
+transcribed judge logic is byte-identical 18/18 with per-file upstream SHA-256).
+
+The decision-grade-comparison rule the 2026-08-08 entry prescribed is now mechanized:
+
+- **Typed failure outcomes** — the exact 8-set `model|parser|tool|endpoint|harness|judge|infrastructure|overflow`, so a cross-arm gap decomposes instead of mixing model behavior with endpoint/harness/infra failures.
+- **Fixed per-arm `ArmConfig` + injection-render-policy-v1**, repeated seeds + Wilson CIs, and a stdlib-only harness whose traces are **immutable SHA-256-chained** with tamper/reorder/drop detection and deterministic judge re-run.
+- **Target-disjoint fixed attack payloads — the harness contains no attack optimization.** The matched-target DTAP-RED framing travels with the import: matched-target results are an attack-search *upper bound*, never a general robustness score.
+- **66/66 pytest, zero inference** (py_compile/ruff clean, ~0.5 s). The sample matrix already discriminates: `fake_security_alert-007` compliant-attack success 0/5 (CI 0.00–0.43) vs compromised 5/5 (CI 0.57–1.00) on dry-run seeds 0–4.
+- **Boundaries honored**: no upstream setup script was run on the host; every selected `setup.sh` was inspected (all localhost-only).
+
+**TU-DTAP-2 (open, inference-gated)**: run the imported subset against a live local model under an
+inference grant, with simulated-service environment effects (the finance/gmail/slack/salesforce/paypal
+shims already exist) so indirect-injection arms exercise environment state, not only tool calls —
+harness, prompts, temperature, retries, and seeds held fixed across arms.
+
+### EVL-38: the L5 self-optimizing-loop criterion closed — and a gate that failed for 22 days surfaced
+
+The root repo's last L5 readiness criterion, `L5.self_optimizing_loop`, closed 2026-08-25: the
+deterministic scorer now credits the vidya belief-substrate loop
+(`scripts/vidya/fold.py` → `citation_gate.py` → `correction_queue.py` → re-fold, plus `r1_search.py`
+counterexample search and `live_eval.py` PR2 live-ledger evaluation). Two methodology points generalize:
+
+- **The guardrail held.** The passive AutoPilot pickup artifact remains **rejected** as
+  self-optimization evidence — the 2026-07-03 precedent is now a pinned test
+  (`test_root_vidya_loop_surface_counts_as_self_optimizing_loop` positive control plus the untouched
+  negative pin), and the queue dropped 13 → 6 (all remaining items are frozen `epyc-llama` L5 surfaces;
+  six llama L4 items left the queue on *repo state* — the frozen tree gained real surfaces — which the
+  record separates from the detector-driven change). The criterion's pass is **existence-of-loop-surface**
+  evidence, consistent with the scorer's standing "a pass means an artifact exists, not that quality is
+  certified" boundary.
+- **The batch surfaced a gate that had been failing since ~2026-08-03 without anyone noticing.**
+  `scripts/validate/candidate_eval_gate.sh` exits 1 on `pii_fixture_eval` 39/40 because commit
+  `8eeaf6c3` (2026-08-03) added `AKIAIOSFODNN7EXAMPLE` to `KNOWN_PLACEHOLDERS` in
+  `scripts/hooks/pii_precommit.sh` — an allowlist edit that postdates the 2026-07-29 fixture. Twenty-two
+  days of a red no-inference readiness gate with no detector: the fixture and the allowlist drifted
+  apart, and nothing in the periodic path re-runs the gate. The attribution discipline is worth
+  preserving as written: EVL-38 verified the failure reproduces on HEAD *before* reporting it, so a
+  change is never blamed for a pre-existing red gate. Repair belongs to the PII-hook owning session
+  (security surface); the failure was deliberately not fixed inside the readiness task.
+
+### Source References (2026-08-25)
+
+- [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) — TU-DTAP-1 completion row (pin SHAs, 18-case composition, typed-outcome set, target-disjoint rule, DTAP-RED upper-bound framing) and the TU-DTAP-2 follow-up.
+- [`progress/2026-08/2026-08-25-mainA-evl46.md`](../progress/2026-08/2026-08-25-mainA-evl46.md) — session record: 66/66 tests, the dry-run CI matrix (0/5 vs 5/5 with non-overlapping CIs), boundaries honored.
+- [`handoffs/active/repo-readiness-scorer.md`](../handoffs/active/repo-readiness-scorer.md) — the 2026-08-25 L5 closeout section (vidya evidence paths, 13→6 queue, guardrail test, PII-gate surfacing with `8eeaf6c3` attribution).
+- [`progress/2026-08/2026-08-25-mainA-evl38.md`](../progress/2026-08/2026-08-25-mainA-evl38.md) — validation record: 15 passed, pre-existing-only Ruff findings, candidate-gate failure reproduced on HEAD.
 
 ## Compiled Update — 2026-08-23: the research `debug_scorer` divergence closed by delegation — B7 shim + era stamp
 
