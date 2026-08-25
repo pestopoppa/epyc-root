@@ -57,8 +57,9 @@ counterexample search and `live_eval.py` PR2 live-ledger evaluation). Two method
   days of a red no-inference readiness gate with no detector: the fixture and the allowlist drifted
   apart, and nothing in the periodic path re-runs the gate. The attribution discipline is worth
   preserving as written: EVL-38 verified the failure reproduces on HEAD *before* reporting it, so a
-  change is never blamed for a pre-existing red gate. Repair belongs to the PII-hook owning session
-  (security surface); the failure was deliberately not fixed inside the readiness task.
+  change is never blamed for a pre-existing red gate. Repair landed 2026-08-25 (mainA, operator-directed)
+  as a fixture-evolution event: the fixture now pins the placeholder policy (`expected_match=false` for the
+  allowlisted literal) plus lookalike and mixed-line boundary cases — `pii_fixture_eval` 42/42 and the gate green.
 
 ### Source References (2026-08-25)
 

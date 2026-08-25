@@ -60,7 +60,7 @@ Safety here has a second face beyond trust boundaries around external text: the 
 - When should the warn-mode injection validator become blocking? It needs false-positive data from real intake diffs first.
 - Should a warrant requirement (an accepted edit must cite the failure it fixes) ever become a gate, given that the only measured evidence says equivalent guidance suppresses breakthrough modifications? SG-W2's telemetry and the EV-14f known-null corpus are the two instruments that would answer it; both are filed and unbuilt.
 - Is `src/diversity_gate.py` wired or deleted (SG-W3)? Leaving a second module named like the live acceptance gate in the tree is a recurring misreading hazard, not a cosmetic one.
-- Who reconciles the PII-hook fixture/allowlist drift? `candidate_eval_gate.sh` has been red since ~2026-08-03 (`AKIAIOSFODNN7EXAMPLE` allowlisted in `pii_precommit.sh` `8eeaf6c3` after the 2026-07-29 fixture) — surfaced 2026-08-25, owner needed on the PII-hook session.
+- ~~Who reconciles the PII-hook fixture/allowlist drift?~~ **RESOLVED 2026-08-25 (mainA, operator-directed)** — the fixture is now a fixture-evolution event: case 1 pins the placeholder policy (`expected_match=false`), and two boundary cases were added (one-char-off lookalike must block; placeholder + real key on one line must block). `pii_fixture_eval` 42/42; `candidate_eval_gate.sh` green for the first time since ~2026-08-03.
 
 - Should the security-review skill gain a wrapper command or CI gate, or remain manual until a concrete enforcement workflow exists?
 - Which local reviewer model is best for OWASP-LLM analysis of the EPYC stack without self-blindness?

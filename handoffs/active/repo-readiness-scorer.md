@@ -442,12 +442,7 @@ Validation:
   positive control `test_root_vidya_loop_surface_counts_as_self_optimizing_loop`
   and the untouched negative pin that passive pickup ≠ optimization); Ruff
   findings are all pre-existing; `git diff --check` clean.
-- Pre-existing defect surfaced (NOT fixed here, security surface): the root
-  candidate gate `scripts/validate/candidate_eval_gate.sh` has exited 1 since
-  ~2026-08-03 — `pii_fixture_eval` 39/40, because commit `8eeaf6c3` added
-  `AKIAIOSFODNN7EXAMPLE` to `KNOWN_PLACEHOLDERS` in
-  `scripts/hooks/pii_precommit.sh` after the 2026-07-29 fixture. Needs the
-  PII-hook owning session.
+- Pre-existing defect surfaced (NOT caused by the closeout) **and RESOLVED 2026-08-25 (mainA, operator-directed)**: the root candidate gate `scripts/validate/candidate_eval_gate.sh` had exited 1 since ~2026-08-03 — `pii_fixture_eval` 39/40, because commit `8eeaf6c3` (2026-08-03) allowlisted `AKIAIOSFODNN7EXAMPLE` in `KNOWN_PLACEHOLDERS` in `scripts/hooks/pii_precommit.sh` after the 2026-07-29 fixture. Resolution = fixture-evolution event: fixture case 1 now pins the placeholder policy (`expected_match=false`, allowlist cited) and two boundary cases were added (one-char-off lookalike blocks; placeholder + real-key on one line blocks). `pii_fixture_eval` 42/42; `candidate_eval_gate.sh` exit 0 — the gate is green for the first time since 08-03.
 
 ### epyc-llama GitNexus index — diagnostic (2026-07-22 non-inference sweep)
 - [x] epyc-llama GitNexus index (413): a bare re-index thrashes — the killers are DENSE sub-512KB files (`src/llama-arch.cpp`, `iqk_gemm_floats.cpp`@48KB, `llama-vocab.cpp`, `unicode-data.cpp`, `tools/mtmd/`), NOT the >512KB GPU TUs (gitnexus auto-skips those, so narrowing the ignore to big files can't win). RECOMMENDATION: one scoped serving-layer index (`src/`+`common/`+`tools/`, exclude ALL of `ggml/` + the dense offenders) at a quiet low-contention window via `scripts/gitnexus-analyze.sh`; if it still thrashes, leave epyc-llama unindexed and score readiness by git shortlog/tests/CHANGELOG — it's a frozen tree, low value. A partial `.gitnexusignore` (28 patterns) is staged uncommitted in `/mnt/raid0/llm/llama.cpp/.gitnexusignore`. ✅ 2026-07-22
