@@ -411,9 +411,43 @@ Validation:
 - [x] Repair file-level readiness-evidence regression. ✅ 2026-07-28 — recursive detector
   surfaces now expand to concrete non-ignored files; empty directories no longer pass as evidence.
   Root `0c276023`; 14 passed.
-- [ ] Close remaining root L5.self_optimizing_loop gap (13-item queue)
+- [x] Close remaining root L5.self_optimizing_loop gap (13-item queue) ✅ 2026-08-25 — root detector refined to credit the vidya belief-substrate loop; queue 13 → 6 (all remaining items are frozen epyc-llama L5 surfaces); see the 2026-08-25 closeout below.
 - [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis)
 - [x] Repair stale epyc-llama GitNexus index (narrow .gitnexusignore) before editing llama readiness docs ✅ 2026-07-22 (scoped serving-layer index, see below)
+
+### 2026-08-25 root self-optimizing-loop closeout (EVL-38)
+
+- Refined the root L5 detector so the vidya belief-substrate loop surfaces
+  satisfy `L5.self_optimizing_loop`: the scorer now credits
+  `scripts/vidya/fold.py`, `scripts/vidya/citation_gate.py`,
+  `scripts/vidya/correction_queue.py`, `scripts/vidya/r1_search.py`, and
+  `scripts/vidya/live_eval.py` — the ledger → graded fold → citation gate →
+  correction queue → re-fold feedback loop plus the R1 counterexample-search
+  and PR2 live-ledger evaluation loops. The passive pickup artifact remains
+  rejected as optimization evidence; the guardrail test is unchanged.
+- Regenerated the full four-repo artifact set for 2026-08-25:
+  `data/repo_readiness/repo_readiness_2026-08-25.json`,
+  `data/repo_readiness/repo_readiness_remediation_queue_2026-08-25.json`,
+  `data/repo_readiness/repo_readiness_autopilot_pickup_2026-08-25.json`,
+  `progress/2026-08/repo-readiness-2026-08-25.md`, and
+  `progress/2026-08/repo-readiness-remediation-2026-08-25.md`.
+- `epyc-root` `L5.self_optimizing_loop` is now `passed: true` with five
+  concrete vidya evidence paths; the queue drops 13 → 6 items, all of them
+  frozen `epyc-llama` L5 surfaces (the 6 L4 llama items listed under "Bring
+  epyc-llama Standardized/L3 -> L4" now pass on repo state — the llama tree
+  gained real surfaces since 2026-07-06, not via this change).
+- Validation: GitNexus impact `build_criteria` LOW (3 callers, all in-file);
+  `py_compile` clean; `uv run --with pytest pytest -q
+  tests/validate/test_repo_readiness_scorer.py` → 15 passed (incl. the new
+  positive control `test_root_vidya_loop_surface_counts_as_self_optimizing_loop`
+  and the untouched negative pin that passive pickup ≠ optimization); Ruff
+  findings are all pre-existing; `git diff --check` clean.
+- Pre-existing defect surfaced (NOT fixed here, security surface): the root
+  candidate gate `scripts/validate/candidate_eval_gate.sh` has exited 1 since
+  ~2026-08-03 — `pii_fixture_eval` 39/40, because commit `8eeaf6c3` added
+  `AKIAIOSFODNN7EXAMPLE` to `KNOWN_PLACEHOLDERS` in
+  `scripts/hooks/pii_precommit.sh` after the 2026-07-29 fixture. Needs the
+  PII-hook owning session.
 
 ### epyc-llama GitNexus index — diagnostic (2026-07-22 non-inference sweep)
 - [x] epyc-llama GitNexus index (413): a bare re-index thrashes — the killers are DENSE sub-512KB files (`src/llama-arch.cpp`, `iqk_gemm_floats.cpp`@48KB, `llama-vocab.cpp`, `unicode-data.cpp`, `tools/mtmd/`), NOT the >512KB GPU TUs (gitnexus auto-skips those, so narrowing the ignore to big files can't win). RECOMMENDATION: one scoped serving-layer index (`src/`+`common/`+`tools/`, exclude ALL of `ggml/` + the dense offenders) at a quiet low-contention window via `scripts/gitnexus-analyze.sh`; if it still thrashes, leave epyc-llama unindexed and score readiness by git shortlog/tests/CHANGELOG — it's a frozen tree, low value. A partial `.gitnexusignore` (28 patterns) is staged uncommitted in `/mnt/raid0/llm/llama.cpp/.gitnexusignore`. ✅ 2026-07-22

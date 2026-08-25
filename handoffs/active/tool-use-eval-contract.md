@@ -367,7 +367,7 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
 
 ## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021)
 
-- [ ] **TU-DTAP-1 — Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.**
+- [x] **TU-DTAP-1 — Import a reviewed, bounded Apache-2.0 DTAP subset into a disposable local runner.** ✅ 2026-08-25 (EVL-46): 18-case subset (finance + crm, all 5 injection families, 3 threat classes) imported at `/workspace/repos/epyc-orchestrator/scripts/autopilot/evals/dtap/` from pinned commit `e0323a521ba4ef88f8e14c1eccf68d0a3d19a458` (tree `fd5a107aedb8971c346fc0e85d4789bf510e3f5f`, Apache-2.0; LICENSE/README SHA-256s match intake-1021). Transcribed configs + judges with per-file upstream SHA-256 (judge logic verified byte-identical 18/18); 33 reviewed arm fixtures; zero-upstream-dependency harness with immutable SHA-256-chained trace replay, typed outcomes (`model|parser|tool|endpoint|harness|judge|infrastructure|overflow`), fixed per-arm ArmConfig + injection-render-policy-v1, repeated seeds + Wilson CIs, and target-disjoint fixed attack payloads (no attack optimization in the harness). Validation: py_compile clean, ruff clean, 66/66 pytest (zero inference). Live OpenAI-compatible endpoint mode exists; simulated-service environment effects and any model runs remain for a follow-up step (see `progress/2026-08/2026-08-25-mainA-evl46.md`).
   Select paired benign/direct/indirect cases across prompt, tool, skill, environment, and compositional
   injection. Preserve each task's config and deterministic final-state judge, but inspect every setup
   script before use and never run it on the host. Hold model, prompt, tools, endpoint, temperature,

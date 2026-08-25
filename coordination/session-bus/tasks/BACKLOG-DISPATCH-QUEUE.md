@@ -1125,7 +1125,7 @@ re-grep before assigning.
 - L161 | none | M | N | benchmark-backed routing-policy evidence | Three-way routing: ODL local, ODL hybrid, LightOnOCR | pdf_router.py, document_preprocessor.py
 - L163 | cpu | L | N | external 200-PDF corpus (local ceiling 51) | Compare our pipeline vs ODL/docling/marker on 200 PDFs | pdf_fastpath_probe.py
 - L164 | none | S | Y | L163 comparison run | Publish 200-PDF comparison results in progress log | progress/
-- L405 | none | S | Y | Git LFS dataset download pending | Clone opendataloader-bench repo with 200 LFS PDFs | /mnt/raid0/llm/opendataloader-bench/
+- L405 | none | S | Y | Git LFS dataset download pending | Clone opendataloader-bench repo with 200 PDFs (done 2026-08-12 at /mnt/raid0/llm/opendataloader-bench-upstream; the bare path now = omnidocbench) | /mnt/raid0/llm/opendataloader-bench-upstream/
 - L410 | gpu | L | N | L405 clone; dataset absent | Baseline pdftotext+LightOnOCR pipeline on 200 PDFs | odl_bench/, pdf_router.py
 - L464 | none | S | N | conditional: cost becomes bottleneck | Cite W-RAC as prior art in Phase 2 design | handoff
 - L512 | cpu | M | N | Phase 3 benchmark integration | Add intrinsic chunk-quality scores alongside NID/TEDS/MHS | odl_bench/

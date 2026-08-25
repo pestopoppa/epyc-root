@@ -246,9 +246,11 @@ This also retires the old PaddleOCR table numbers as quality evidence: they came
 
 ### A dataset name collision that had been answering "yes" to the wrong question for 26 days
 
-**`/mnt/raid0/llm/opendataloader-bench` is a clone of a different project**: `git remote -v` gives `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with its own CLA file. So anyone testing *"is opendataloader-bench cloned?"* by checking that path got an emphatic **yes, backed by 211 real PDFs** — the right key in the wrong universe. Every prose reference to that bare path in the pipeline handoff (including the `pdf_validation.py` and `demo_data/` descriptions) therefore describes **OmniDocBench**, not the ODL benchmark.
+**`/mnt/raid0/llm/opendataloader-bench` was a clone of a different project**: `git remote -v` gives `github.com/opendatalab/OmniDocBench` @ `147cd5a`, Apache-2.0, 211 PDFs, with its own CLA file. So anyone testing *"is opendataloader-bench cloned?"* by checking that path got an emphatic **yes, backed by 211 real PDFs** — the right key in the wrong universe. Every prose reference to that bare path in the pipeline handoff (including the `pdf_validation.py` and `demo_data/` descriptions) therefore describes **OmniDocBench**, not the ODL benchmark.
 
-**Standing rule for this pair: cite the two datasets by their full distinct paths, never by the bare name**, until the OmniDocBench clone is renamed or the prose is re-pointed.
+**RESOLVED 2026-08-25 (PIP-05)**: the OmniDocBench clone was renamed to `/mnt/raid0/llm/omnidocbench`, so the colliding bare path no longer exists and a bare-name check now fails loudly instead of silently resolving to the wrong project. `/mnt/raid0/llm/opendataloader-bench-upstream` remains the OpenDataLoader 200-PDF benchmark clone; the 2026-07-21 corpus copy still lives at `/mnt/raid0/llm/omnidocbench/{pdfs,ground-truth}/`.
+
+**Standing rule for this pair: cite the two datasets by their full distinct paths, never by the bare name.**
 
 ### A compound checkbox takes the checkbox of its easiest clause
 

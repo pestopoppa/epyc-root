@@ -97,7 +97,7 @@ On completion of each phase: flip the checkbox with `✅ YYYY-MM-DD`, cite the a
 | Model weights | `/mnt/raid0/llm/models/PaddleOCR-VL-1.6-GGUF/` |
 | PaddleOCR venv | `/mnt/raid0/llm/venvs/paddleocr` |
 | Producer/scorer | `epyc-inference-research/scripts/benchmark/odl_bench/` |
-| Eval suite + leaderboard | `/mnt/raid0/llm/opendataloader-bench/` |
+| Eval suite + leaderboard | `/mnt/raid0/llm/omnidocbench/` |
 | Prior (void) artifacts | `/mnt/raid0/llm/tmp/odl-paddleocr-vl-*` |
 
 ## Research context
@@ -107,7 +107,7 @@ On completion of each phase: flip the checkbox with `✅ YYYY-MM-DD`, cite the a
 | intake-864 | Unlimited OCR Works (Baidu, arxiv:2606.23050) | high | worth_investigating |
 | intake-865 | DeepSeek-OCR: Contexts Optical Compression (arxiv:2510.18234) | medium | worth_investigating |
 
-Official OmniDocBench **v1.6_full** leaderboard (shipped in `/mnt/raid0/llm/opendataloader-bench/README.md`), for priors only:
+Official OmniDocBench **v1.6_full** leaderboard (shipped in `/mnt/raid0/llm/omnidocbench/README.md`), for priors only:
 
 | Model | Size | Overall ↑ | TableTEDS ↑ |
 |---|---|---|---|

@@ -421,7 +421,10 @@ def build_criteria() -> list[Criterion]:
                    "handoffs/active/master-handoff-index.md"))
     add(5, "Product & Experimentation", "self_optimizing_loop", "Has Pareto/evolutionary optimization loops.",
         exists_any("scripts/autopilot/**", "orchestration/autopilot_journal.jsonl",
-                   "orchestration/pareto_archive.json"))
+                   "orchestration/pareto_archive.json",
+                   "scripts/vidya/fold.py", "scripts/vidya/citation_gate.py",
+                   "scripts/vidya/correction_queue.py", "scripts/vidya/r1_search.py",
+                   "scripts/vidya/live_eval.py"))
 
     return c
 

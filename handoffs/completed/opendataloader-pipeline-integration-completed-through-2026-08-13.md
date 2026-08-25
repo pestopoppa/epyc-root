@@ -23,7 +23,7 @@
 - The 8-PDF valid born-digital probe had 7/8 successes per non-hybrid backend. ODL's median heuristic quality was `0.987`, but latency was roughly `645–703 ms` versus `21 ms` pdftotext and `16 ms` LiteParse. The fixture produced zero ODL headings/tables/figures and zero LiteParse bbox/page-image counts, so it cannot choose a structural parser or routing policy.
 - The July PaddleOCR full-page prompts were off-label. The official architecture is a layout pipeline plus cropped-element recognition and assembly, so the recorded `table.TEDS=0.0`/`0.058` values were voided and must not be cited as model quality.
 - The local OmniDocBench page dataset contains 1,651 pages and 665 table regions, but lacks the immutable source-PDF mapping needed to replay PDF extractors. Earlier ODL `table.TEDS=0.783813` rested on a tiny 18-page/10-table subset and is not decision-gating.
-- OpenDataLoader's 200-PDF benchmark is `/mnt/raid0/llm/opendataloader-bench-upstream`; `/mnt/raid0/llm/opendataloader-bench` is a different OmniDocBench clone. Bare-name/path-presence checks are invalid.
+- OpenDataLoader's 200-PDF benchmark is `/mnt/raid0/llm/opendataloader-bench-upstream`; `/mnt/raid0/llm/omnidocbench` (renamed 2026-08-25 from `/mnt/raid0/llm/opendataloader-bench`) is a different OmniDocBench clone. Bare-name/path-presence checks are invalid.
 
 ## Metric-contract corrections
 

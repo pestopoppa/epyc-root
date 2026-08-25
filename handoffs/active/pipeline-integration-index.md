@@ -14,7 +14,7 @@
 | PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size — a separate download from the GGUF | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs | — |
 | PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce… | — |
-| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | Correct the Unlimited-OCR evidence record and prepare its canonical-profile rerun without starting inference | — |
+| PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | CPU subset DONE 2026-08-25; next: canonical-profile A/B rerun (gated on inference-stop order) | — |
 
 ## Cross-domain
 

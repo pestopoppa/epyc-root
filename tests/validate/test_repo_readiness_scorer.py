@@ -298,3 +298,31 @@ def test_root_candidate_gate_counts_as_eval_gate_but_passive_pickup_is_not_optim
     assert "scripts/validate/candidate_eval_gate.sh" in criteria["L5.auto_eval_gates"]["evidence"]
     assert criteria["L5.self_optimizing_loop"]["passed"] is False
     assert criteria["L5.self_optimizing_loop"]["evidence"] == []
+
+
+def test_root_vidya_loop_surface_counts_as_self_optimizing_loop(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "root"
+    for name in (
+        "fold.py",
+        "citation_gate.py",
+        "correction_queue.py",
+        "r1_search.py",
+        "live_eval.py",
+    ):
+        _write(repo / "scripts" / "vidya" / name, "#!/usr/bin/env python3\n")
+
+    report = scorer.score_repositories({"epyc-root": repo})
+    criteria = {
+        item["id"]: item
+        for item in report["repos"]["epyc-root"]["criteria"]
+    }
+
+    assert criteria["L5.self_optimizing_loop"]["passed"] is True
+    assert criteria["L5.self_optimizing_loop"]["evidence"] == [
+        "scripts/vidya/citation_gate.py",
+        "scripts/vidya/correction_queue.py",
+        "scripts/vidya/fold.py",
+        "scripts/vidya/live_eval.py",
+        "scripts/vidya/r1_search.py",
+    ]
