@@ -1804,3 +1804,27 @@ The 2026-08-22 Stage-2b wave specified compute-gated measurements across three d
 
 - [`docs/guides/agent-workflows/html-artifacts-runbook.md`](../docs/guides/agent-workflows/html-artifacts-runbook.md) — the runbook: placement table, companion-file and STATUS-note conventions, registration gate, update discipline, explicit out-of-scope list
 - [`docs/reference/html-artifacts-index.md`](../docs/reference/html-artifacts-index.md) — the discovery catalog the runbook keeps in register (same change)
+
+## Compiled Update — 2026-08-25: handoff-index hygiene automation — semantic duplicates, Deps edges, canonical-checkout hooks
+
+**Confidence: verified** — detector recall 1.00 on the 10 resolvable C2 pairs (precision 0.86 at
+threshold 0.38 over 148 hand-classified pairs); `backlog_row_check.py` mid-text owner detection
+27/1528 with zero new false positives (71 tests); hooks verified from a lane worktree.
+
+Three backlog-graph gaps closed: **(1)** a semantic cross-file duplicate-TASK detector
+(`scripts/handoffs/duplicate_task_scan.py`, pure-stdlib) re-discovered all 10 resolvable pairs
+from the hand-found C2 list (4 more were closed history) and found new clusters beyond it — the
+DR-3 7-pair cluster, reviewer-typed-artifacts ≡ security-review-skill, glm51-reap ≡ glm52 gates,
+deepseek-v4-flash ≡ v9-kernel cutover — with the C2 list re-homed into the owning handoff;
+**(2)** the `Deps` column went from near-empty to 25 hand-verified edges (8 added this session,
+direction-checked verbatim against source text; bulk heuristic import stays rejected — phrase
+direction cannot disambiguate "X gates Y" vs "gated by X"); **(3)** the timeline and benchmark
+inventory artifacts now regenerate in the CANONICAL checkout from any worktree commit (the hook
+resolves the primary via `git worktree list`; inventory regen is delta-guarded, ~0.55 s, no-op on
+the common path), ending the lane-worktree staleness class. The narrow-owner-anchor rule
+(`Owner:` mid-sentence, immediate colon) preserves the measured 26/1528 baseline exactly.
+
+### Source References (2026-08-25)
+
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record

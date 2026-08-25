@@ -3648,3 +3648,25 @@ Two tooling fixes shipped in the same pass: the marker-polarity fix chose **REFU
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — the one-assert GDN-2 delta, #26001's K==1 constraint (re-verified against frozen v9), G15 with the MIN_BLOCKS_PER_SM trap and the ≥8% gate, B5 stacking warning, B3's 512-token gate insufficiency
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction (closed-unmerged-but-exists, occupancy floor, fp-numerics caveat, ~6–9% realistic prefill)
 - [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the REFUSE marker-polarity decision, the matrix-truncation fix
+
+## Compiled Update — 2026-08-25: NUMA cutover gate P0-1 closed — the 30-breaking-test premise had drifted
+
+**Confidence: verified** — PROMOTION_GATE_TARGETS 196 passed / 0 failed; full unit suite
+16 failed / 12,526 passed / 69 skipped / 6 xfailed, all on the current main.
+
+The N25 cutover row P0-1 ("fix the 30 net-new breaking tests across 14 files, stack start gated
+on them") is CLOSED without new test work: the 2026-08-11 re-derivation already showed the list
+had drifted to 9 failures in 7 files (gate green, retire-target gone, 7 of 9 = the P0-0 priors
+drop, one fixed at `5f08875a`). What remained was three fixture-side repairs landed 2026-08-24
+(gate fixtures missing `waited_s`/`blocking_roles` after the committed gate rework; the
+SS-BENCH-GATE-c placement `ps` subprocess now counted in the launch assertion). The residual 16
+failures are the E8-era frozen-kernel guard (v9 tree vs v8 pin at
+`run_e8_quality_baseline_reseed.py:1313`) — working as designed, re-pinning is human-amendment-only,
+tracked as an operator decision. The `NUMA_FULL`/`NUMA_HALF_A`/`NUMA_HALF_B` topology supersedes
+`NUMA_NODE0`/`NUMA_NODE1` in `scripts/server/stack_numa.py`; the T1 fix itself remains uncommitted
+with reload gated on the inference-owning session.
+
+### Source References (2026-08-25)
+
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-1 row tick with the fixture-fix evidence and the E8-guard residual
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the D1/T1 diagnosis and the 30-failure citation origin

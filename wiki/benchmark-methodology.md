@@ -1835,7 +1835,7 @@ Sources: [`research/deep-dives/2026-06-12-agents-last-exam.md`](../research/deep
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. The measurement trust boundary is human-amendment-only; every item here is an operator-review proposal, not an applied change.
 
-- **Judge-selected best-of-N inflates judge-measured scores while true quality stays flat, and cross-family ensembling is only a partial defense.** arXiv:2607.05904 measures a judge-vs-truth gap widening from **0.20 at k=1 to 0.588 at k=16** on LiveCodeBench while the selected candidate's unit-test pass rate moves only 0.27 → 0.29. Hacked errors transfer across judge families (Qwen/Llama/Gemma) and a three-family minimum-vote ensemble still accepts ~55% of hacked wrong answers — which directly qualifies the cross-family verification rule recorded as our strongest defense. The effective mitigation is **de-anchoring**: requiring the judge to commit to its own answer before or without seeing the candidate drops false-positive rate from 0.906 to 0.012, whereas a plain "verify/recompute" instruction is measured to do nothing (FPR 0.719). Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-decision-plane.md](../handoffs/active/reviewer-decision-plane.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+- **Judge-selected best-of-N inflates judge-measured scores while true quality stays flat, and cross-family ensembling is only a partial defense.** arXiv:2607.05904 measures a judge-vs-truth gap widening from **0.20 at k=1 to 0.588 at k=16** on LiveCodeBench while the selected candidate's unit-test pass rate moves only 0.27 → 0.29. Hacked errors transfer across judge families (Qwen/Llama/Gemma) and a three-family minimum-vote ensemble still accepts ~55% of hacked wrong answers — which directly qualifies the cross-family verification rule recorded as our strongest defense. The effective mitigation is **de-anchoring**: requiring the judge to commit to its own answer before or without seeing the candidate drops false-positive rate from 0.906 to 0.012, whereas a plain "verify/recompute" instruction is measured to do nothing (FPR 0.719). Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-decision-plane.md](../handoffs/completed/reviewer-decision-plane.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
 
 - **Rubric-based LLM judges are reproducibly hackable — but verifiable rewards are not a safe harbor either.** arXiv:2606.04923 (Tsinghua KEG) builds a controlled environment injecting a known bias into an otherwise unbiased judge and shows policies discover and exploit it, with discovery latency governed by bias-task entanglement and exploitation capped by whether the model can cheaply emit the pattern (format bias ~66% elicitation vs 95-100% for lexical/tone/self-praise). It also finds **in-domain capability degrades while aggregate general benchmarks stay flat**, so an aggregate suite is an unreliable tripwire for scorer gaming. Honest scope: it does not run a head-to-head against verifiable rewards, and our own corpus records deterministic verifiers being gamed 32.8% of the time — so neither reward class is a default. Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md), [reviewer-calibration-accounting.md](../handoffs/active/reviewer-calibration-accounting.md).
 
@@ -3047,3 +3047,27 @@ Both from upstream Metal PRs 27390/27450, and both generalise past Metal:
 - [`intake-1288#record`](../research/intake_index.yaml) -- llama.cpp #27407 + the uncited #25618; the measured false-clear rates (1/5 → 0/5 → 4/5; 1/5 reused vs 4/5 fresh despite `cache_prompt=false`) that each Annex D clause encodes.
 - [`intake-1283#record`](../research/intake_index.yaml) -- fla #1156; the ten-identical-calls-in-one-process non-determinism detector, the one-shape-per-fresh-process blind spot, and the separate-prefix/`PYTHONPATH` rule for cross-version A/Bs.
 - [`intake-1284#record`](../research/intake_index.yaml) -- llama.cpp Metal PRs 27390/27450; an unreachable fix branch as a non-explanation, and a 1.78×-on-one-device / 0.66×-on-another perf change gated back in 3 h 17 min.
+
+## Compiled Update — 2026-08-25: reviewer-plane trace coverage 100% + the H-LB overhead baseline
+
+**Confidence: verified (mechanics) / observation-grade (latency, pending P-AB-1/P-SPEED-OBJ)** —
+50-question shadow replay on a dedicated production-v9 llama-server (Qwen3.5-122B-A10B UD-Q4_K_M
++ MTP draft), reports in `repos/epyc-orchestrator/data/trace/review_replay_report_{shadow,off,delta}.json`.
+
+The TM-8 coverage gate passed outright: **100.0% of 50 review invocations produced trace rows**
+(187 rows, 100% phase-tagged, 100% `executor_model_id` after threading the executor through the
+`apply_verifier_precedence`/`apply_warn_only`/`mark_reject_admissibility`/`escalate` sub-emissions —
+first run was 80.2% — and 50/50 PLAN_REMINDER events), with **zero enforcement side-effects** in
+shadow mode. RD-12's accounting landed the H-LB baseline scaffold: **137 decisions, mean 8,017 ms /
+median 8,014 ms / p95 8,959 ms per decision, 16,692 tokens in / 3,826 out**, parse-failure
+fallback counted distinctly (1) and model-call failures separately (0). The overhead delta vs the
+reviewer-off loop is ≈ 8.0 s per decision — the paired task-rate A/B is LB-4's job; the enforce-mode
+gate is LB-6 (operator). A distinct-parse-failure fallback that is counted (never dropped, never
+double-counted) is the generalizable rule here: a fallback masquerading as a verdict is a scoring
+defect in any suite.
+
+### Source References (2026-08-25)
+
+- [`reviewer-decision-plane.md`](../handoffs/completed/reviewer-decision-plane.md) — RD-12 row tick, replay numbers, H-LB handoff
+- [`reviewer-trace-materialization.md`](../handoffs/completed/reviewer-trace-materialization.md) — TM-8 gate tick, coverage instrumentation (`src/trace/coverage.py`), replay harness
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record with the run details

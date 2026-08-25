@@ -4,7 +4,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, tool_implementation
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related**: [`reviewer-trace-materialization.md`](reviewer-trace-materialization.md) (H1; events carry these artifacts), [`reviewer-decision-plane.md`](reviewer-decision-plane.md) (H3; emits them), [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) (Verifier semantics)
+**Related**: [`reviewer-trace-materialization.md`](../completed/reviewer-trace-materialization.md) (H1; events carry these artifacts), [`reviewer-decision-plane.md`](../completed/reviewer-decision-plane.md) (H3; emits them), [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) (Verifier semantics)
 **Repo**: `epyc-orchestrator`
 
 ## Objective

@@ -101,6 +101,27 @@ _PROHIBITION = re.compile(r"^\**\s*(never|do not|don't|do NOT)\b", re.I)
 # boxes, every one genuinely operator-owned.
 _OWNER_PREFIX = re.compile(r"^\**\s*(operator|owner|human)\b[^:\n]{0,60}:", re.I)
 
+# MID-TEXT OWNER DECLARATIONS (widened 2026-08-24, RTG-46). The measured false
+# negative: `numa-topology-cutover-resume-20260730.md:189` screened DISPATCHABLE
+# while its continuation line read "fleet. **Owner: the stack owner (`inference`),
+# NOT this lane.**" — `_OWNER_PREFIX` only ever looked at the body's FIRST
+# characters, so a declaration on the row's own continuation lines was invisible.
+#
+# Widened NARROWLY, and the narrowing is measured, not assumed:
+#   * sentence-position anchor (". " / "; ") — the declaration must open a
+#     sentence, which is what separates it from prose that merely names the word
+#     ("flagged to its owner: …", "Operator's stated prior:", "Owner if opened:",
+#     "Operator constraint:" all carry the keyword without opening a sentence);
+#   * IMMEDIATE colon — the doc's literal prescription (line-anchored on any line)
+#     was rejected because it failed its own repro AND added 4 false positives on
+#     the live corpus: `lightning-attention-port.md:132` / `log-linear-…:443`
+#     ("**Owner:** this handoff" — the owner IS the reader's lane), a quote
+#     attribution "operator, 2026-08-12:", and a possessive "Operator's stated
+#     prior:". Measured on the live corpus: exactly ONE row newly flags
+#     (the repro), 0 false positives, 26/26 previously-flagged rows unchanged.
+_OWNER_MIDTEXT = re.compile(
+    r"(?:\.\s+|;\s+)\s*(?:operator|owner|human)\b\s*:", re.I)
+
 # Deliberately two narrow shapes only, both naming a REFERENCE rather than a mood:
 # "<REF>'s resolution/decision/ruling" and "gated on <REF>". Measured: 7 of 1,258,
 # and all seven read verbatim as gated ("Gated on AR-3 Package D completion",
@@ -369,6 +390,26 @@ def blocking_children(path: Path, lineno: int) -> list[tuple[int, str, str]]:
     return sorted(out, key=lambda c: c[1] == "x")
 
 
+def _owner_midtext_hit(path: Path, lineno: int) -> bool:
+    """Does a continuation line of the row carry a mid-text Owner: declaration?
+
+    `_OWNER_PREFIX` anchors at the START of the body; this catches the same
+    declaration written on a continuation line of the same row (the measured
+    `numa-topology-cutover-resume-20260730.md:189` false negative). The walk is
+    deliberately the row-body one: from the row's line until the next checkbox,
+    heading, or blank line. Measured on the live corpus: exactly one row newly
+    flags, zero false positives.
+    """
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    for j in range(lineno, len(lines)):
+        line = lines[j]
+        if not line.strip() or line.startswith("#") or _BOX.match(line):
+            return False
+        if _OWNER_MIDTEXT.search(line):
+            return True
+    return False
+
+
 def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
     """(lineno, state, body) for the boxes indented BENEATH the row at `lineno`.
 
@@ -518,13 +559,13 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
                        f"({disclaimer.group(0).strip()!r} in § {head}). Rows here often direct work "
                        f"at ANOTHER owner — verify it is yours before claiming. Not a refusal: such "
                        f"sections mix owner-directed rows with ones that really are yours.")
-    if _OWNER_PREFIX.match(body):
-        return 2, [f"the ROW DECLARES ITS OWNER in its own first words, and it is not you: "
+    if _OWNER_PREFIX.match(body) or _owner_midtext_hit(path, lineno):
+        return 2, [f"the ROW DECLARES ITS OWNER and it is not you: "
                    f"{body[:70]!r}",
                    "DISPATCHABLE means WELL-FORMED, not YOURS-TO-DO. A row prefixed OPERATOR:/"
-                   "owner:/human: is asking for a decision or an action outside an agent's "
-                   "authority — taking it produces work nobody asked for, or a decision nobody "
-                   "authorised"]
+                   "owner:/human: (or declaring one mid-text) is asking for a decision or an action "
+                   "outside an agent's authority — taking it produces work nobody asked for, or a "
+                   "decision nobody authorised"]
     gate = _CONDITIONAL_GATE.search(body)
     if gate:
         return 2, [f"the ROW GATES ITSELF on a condition nobody has evaluated: "

@@ -4,7 +4,7 @@
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology
 **Index**: [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md)
-**Related**: [`reviewer-decision-plane.md`](reviewer-decision-plane.md) (RD-12 supplies the baseline), [`autopilot-control-plane-integration.md`](autopilot-control-plane-integration.md) (tunes these knobs)
+**Related**: [`reviewer-decision-plane.md`](../completed/reviewer-decision-plane.md) (RD-12 supplies the baseline), [`autopilot-control-plane-integration.md`](autopilot-control-plane-integration.md) (tunes these knobs)
 **Repo**: `epyc-orchestrator`
 
 ## Objective
