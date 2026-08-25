@@ -413,7 +413,7 @@ as knowledge that never got compiled.
 
 1. Run the source manifest scanner:
    ```
-   python3 .claude/skills/project-wiki/scripts/compile_sources.py
+   /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py
    ```
 2. If `total_new` is 0, skip to the next step — the wiki is up to date.
 3. If there are new sources, follow the **Compile** operation in the `project-wiki` skill (SKILL.md Operation 3):
@@ -421,7 +421,7 @@ as knowledge that never got compiled.
    - Create or update `wiki/<category-key>.md` pages with synthesized findings and source citations
    - After compilation, update the timestamp:
      ```
-     python3 .claude/skills/project-wiki/scripts/compile_sources.py --touch
+     /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --touch
      ```
 4. Keep compilation incremental — only process sources newer than `.last_compile`.
 

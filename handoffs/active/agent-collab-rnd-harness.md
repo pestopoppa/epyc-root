@@ -15,7 +15,7 @@ Evaluate adopting the HF **agent-collabs** collaboration model (persistent share
 | intake-798 | The Gemma Challenge and the Case for Agent Collabs | high | adopt_patterns |
 
 Related existing work (do NOT duplicate — this stub is about the *collaboration mechanism*, those are the current mechanisms):
-- [`meta-harness-optimization.md`](meta-harness-optimization.md) — single-daemon harness optimization (the autopilot-harness target).
+- [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) — single-daemon harness optimization (the autopilot-harness target).
 - [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) — live autopilot loop.
 - [`kernel-reconciliation-audit.md`](../completed/kernel-reconciliation-audit.md) / [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md) — current experimental-kernel (v7-candidate) workflow.
 - [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) — the other swarm handoff (dataset generation, different objective).
@@ -36,7 +36,7 @@ Related existing work (do NOT duplicate — this stub is about the *collaboratio
 
 
 ## Research-intake integration — 2026-07-22 (R&D-harness patterns from orx / HyRA / OpenHyra)
-_Via /research-intake Stage-2 (intake-882/883 orx, intake-884 HyRA, intake-885 OpenHyra). NOTE: the HyRA/OpenHyra R&D-harness descriptor + scoring items were routed here rather than to meta-harness-optimization.md, which forbids new task checkboxes (compatibility pointer)._
+_Via /research-intake Stage-2 (intake-882/883 orx, intake-884 HyRA, intake-885 OpenHyra). NOTE: the HyRA/OpenHyra R&D-harness descriptor + scoring items were routed here rather than to the meta-harness completed ledger, which forbids new task checkboxes (the active compatibility pointer was retired 2026-08-23)._
 - [x] Compare OpenHyra's all-outcomes Experience Bank + LLM Context-Agent cross-round memory (`eb.py`, `context_agent.py`) against StructuralLab / agent-collab archive design ✅ 2026-07-22
 - [x] Adopt a uniform per-task descriptor {seed/baseline solution, run script -> solution.json, fixed objective scorer, always-valid fallback} for the R&D harness (HyRA cross-domain contract) ✅ 2026-07-22
 - [x] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md)) ✅ 2026-07-22 (research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor)

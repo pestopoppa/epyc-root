@@ -1,0 +1,30 @@
+{
+  "schema": "epyc.measurement.annex_creation.v1",
+  "decision": "CREATE-ANNEX-D",
+  "ratified_at": "2026-08-23T08:28:26Z",
+  "status": "ratified",
+  "annex_letter": "D",
+  "annex_path": "measurement/protocols/determinism-parity.md",
+  "annex_sha256": "418e0eb85e63e05657a7dd1462f2d012f4c80a05faea9fc0f626a06f193d6754",
+  "protocols_registered": [
+    {
+      "id": "P-PARITY-1",
+      "status": "staged",
+      "emits": "per-prompt PASS/FAIL + first-differing generation-token index"
+    },
+    {
+      "id": "P-NONDET-1",
+      "status": "staged",
+      "emits": "bit-identical / not; max abs delta across repeats"
+    }
+  ],
+  "scope": "The ANNEX is created under operator authority. Both protocols are registered STAGED, not ratified: no measurement has been taken under either, and neither may be quoted as ratified until one has.",
+  "measurement_md_edits": [
+    "layout five->six",
+    "annex key +D",
+    "section-2 +P-PARITY-1 +P-NONDET-1",
+    "CHANGELOG 2026-08-23 entry"
+  ],
+  "provenance": "research-intake wave-2 plan row H22; methods generalised from llama.cpp #27407 and #25618 and the fla #1156 non-determinism case; first consumer DF2-6",
+  "applied_by": "scripts/operator/ratify_measurement_annex_d_20260823.sh"
+}

@@ -4,7 +4,7 @@
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (production routing is now enforcing the guarded function-axis table; monitor live telemetry and keep rollback path obvious)
-**Depends on**: `routing-intelligence.md`, `routing-and-optimization-index.md`, `meta-harness-optimization.md`, `hermes-outer-shell.md`
+**Depends on**: `routing-intelligence.md`, `routing-and-optimization-index.md`, `../completed/meta-harness-optimization.md`, `hermes-outer-shell.md`
 **History**: [x-mas-text-routing-history-through-2026-06-19.md](../archived/x-mas-text-routing-history-through-2026-06-19.md) preserves the completed scaffold/sweep/A-B chronology compacted out of this active handoff.
 **Source deep-dive**: [`/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`](../../research/deep-dives/2026-05-19-latent-mas-cluster.md)
 
@@ -72,4 +72,4 @@ uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/r
 - Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`
 - X-MAS paper: `https://arxiv.org/abs/2505.16997`
 - X-MAS repo: `https://github.com/MASWorks/X-MAS` (no license — methodology only)
-- Related handoffs: `routing-intelligence.md`, `routing-and-optimization-index.md`, `learned-routing-controller.md`, `hermes-outer-shell.md`, `meta-harness-optimization.md`
+- Related handoffs: `routing-intelligence.md`, `routing-and-optimization-index.md`, `learned-routing-controller.md`, `hermes-outer-shell.md`, `../completed/meta-harness-optimization.md`

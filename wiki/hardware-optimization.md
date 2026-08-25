@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-23 (**a dependency floor can select the defective release** — fla 0.4.2 carries the silently non-deterministic `causal_conv1d` backward AND declares no torch/triton floor at all, while the FIXED 0.5.2 declares `torch>=2.7.0`, so a resolver constrained to our verified Torch 2.5.1+rocm6.2 stack walks straight onto the broken release; hard rule: `flash-linear-attention>=0.5.2` or nothing, never an older fla — plus `rocprofv3` is now provisioned into the side-loaded profiler tree, retiring this page's two 2026-08-12 "rocprofv3 genuinely absent" readings (the IntelliPerf/guided-tuning gate is the `rocprof-compute` RENAME plus omniperf's missing deps, not rocprofv3), and the GPA C4-template question is closed NEGATIVE on gfx90a/ROCm 6.2 (measured PC-sampling stub + the NVIDIA-SASS blamer rewrite) — see bottom section; earlier 2026-08-16 note: **batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the RTG-25 NPS4 48×4 concurrent-production notes retired and FOLDED into this page — topology numbers and Q8 split tables already covered, the fold keeps only the notes' additions: the 30B-A3B Q4 48×4t worker-model opportunity (104.35 t/s aggregate ≈ 3× current production, ~2.4 t/s per instance → tiered routing required), the 48-instance cpuset math, the unbuilt orchestrator deltas, and the six unresolved open design questions incl. the mmap-dedupe RAM-budget question; the retired handoff lives at completed/; earlier same-day: fla #1156 self-retracted and CLOSED (0.4.2-only, forward clean, no serving exposure) with the G6 version-floor INVERTED — below the floor the resolver selects the defective release; Z10 fp16-denorm static read with corrected locators; G10's 20 FLASH_ATTN_EXT cases imported; Z14 filed upstream as fla #1163; GDN-2's ggml delta is ONE assert; #26001's `K == 1` gate can never fire on the frontdoor; G15's chunked-GDN bench protocol with the MIN_BLOCKS_PER_SM occupancy trap; and the OP-21 overlap re-bench — see bottom sections; earlier same-day: **a dependency floor can select the defective release** — fla 0.4.2 carries the silently non-deterministic `causal_conv1d` backward AND declares no torch/triton floor at all, while the FIXED 0.5.2 declares `torch>=2.7.0`, so a resolver constrained to our verified Torch 2.5.1+rocm6.2 stack walks straight onto the broken release; hard rule: `flash-linear-attention>=0.5.2` or nothing, never an older fla — plus `rocprofv3` is now provisioned into the side-loaded profiler tree, retiring this page's two 2026-08-12 "rocprofv3 genuinely absent" readings (the IntelliPerf/guided-tuning gate is the `rocprof-compute` RENAME plus omniperf's missing deps, not rocprofv3), and the GPA C4-template question is closed NEGATIVE on gfx90a/ROCm 6.2 (measured PC-sampling stub + the NVIDIA-SASS blamer rewrite) — see bottom section; earlier 2026-08-16 note: **batch-1 decode on gfx90a partitions on kernel REGISTER PRESSURE, not bits-per-weight** — ≤64 VGPR ⇒ 8 waves/SIMD ⇒ ≥90.05 t/s, >64 VGPR ⇒ 6 waves ⇒ ≤82.89 t/s despite being 27–46% smaller; IQ4_XS sits on the boundary and is the fastest rung measured; prefill is flat so the cliff is GEMV-specific; batching narrows but does not close it, which **partly refutes** the standing "batched serving self-compensates the dequant penalty" claim (true for K-quants, false for the 6-wave IQ formats); the top-of-page "IQ2_XXS MMVQ is not occupancy-limited" reading is **SUPERSEDED** — it measured the synthetic template, not the production `mm_ids` one; plus the 2026-08-14 GPU-lane batch: KV placement is worth 33.24 → ~99.8 t/s on the same model, op-offload prefill is a 2.30× config win with the shipped default already optimal, the KV-quant "alive at long context" hypothesis is FALSIFIED on both arms at 64k, and two instrument traps that make kernels look faster than they are — see the top sections; earlier 2026-08-12 note: kernel-lever pass — **a synthetic WGM optimum inverts on the real MMQ kernel** (proxy said WGM16 +9.823%, reality says WGM0 wins and every nonzero mapping regresses); G15/K28/G18 ceilings all measured far below the premises that funded them; the GPU async-prefetch prior is `NOT_REPRODUCED` twice, the second time with **20/20 positive blocks** still under the 2% floor; `llama-bench -fa` defaults to **AUTO, not 0**; no split depth is admissible as a ranking proxy; and a Q4_K MMQ correctness defect is root-caused to mixed quantized/float activation populations, 18/43 → 172/172 — see top section below. Earlier same-day note: adds sustained AK-BH-1 vendor-baseline replication; INF-03 claim correction, current-v9 controls, and prior findings retained; concurrent-lane compile 2026-08-11: production-consolidated-v9 final freeze with region-locked certification numbers, AutoKernel's non-inference hardening checkpoint, the CPU-decode GEMV lever re-anchored from a shelved SIMD plan to barrier-count fusion, the env-flag inventory's new trace-interpretation column, and the RVP-T0 static-probe results — see top section below; earlier 2026-08-10 note: the gfx90a kernel-agent freshness sweep — **retires** the "GEAK-v2/HIP/AgentKernelArena are a coverage regression vs v1" claim as unpublished-not-removed coverage, re-targets the program from the Q8 rung to the fp16 rung with a banded K1–K12 ceiling incl. two explicit do-not-build levers, records the HipKittens fragment-layout identity with our frozen v8 tile, closes the profiler-tooling blocker with 465 gfx90a counters enumerated on-card, and files the ROCm 7+ unroll regression as an upgrade precondition; earlier 2026-08-09 note: adds the measured PCIe H2D/D2H at 28.89/28.20 GB/s, retiring a ~64 GB/s figure that was wrong twice over — Gen5 on a Gen4 link, and bidirectional-aggregate applied to one direction; plus the quant-deficit reframing — fp16 already attains 62.6% of bandwidth roofline on our own MI210 and vLLM-ROCm 69.2%, so the memory system is not the limiter and the entire collapse is down the quant ladder; the MI210 compute roofline computed for the first time at 181.0 TFLOPS / ridge 110.5 FLOP/byte, marked derived; MfmaUtil≈0% at batch-1 explained as physics; and the vLLM gap decomposed as a scheduler property, not a kernel one; earlier 2026-07-31 note: adds the gfx90a ARGSORT kernel defect on the third-party qwentts.cpp fork — a green test suite that silently skipped the failing shapes, and the HIP-graph-capture abort on that fork that was downstream of it, not a separate bug; earlier 2026-07-30 note: **retracts** the 2026-07-24 "C3 quarters are aggregate-optimal for every model" and "dense-27B half-beats-full is resolved" findings — both were derived from a defective grid measured through a straddling cpuset; earlier 2026-07-29 note: corrects the MI210's NUMA attachment to node 1 and records that E5 remains scout-only — W1-W4 have not run; earlier 2026-07-24 note: adds the E5 NUMA×batch W0 scout — 69/69 cells, C3 quarters aggregate-optimal for every model, the model-dependent C1b whole-machine-provisioning result, and the resolved dense-27B half-vs-full shape — plus the cross-architecture GPU np×context throughput surface for all three architect candidates; earlier 2026-07-20 note: adds the CPU-prefill barrier-fusion profiling arc, the banked-v7 lever audit, and the K28/E5 GPU-prefill ceilings; earlier 2026-07-19 note: adds P-GPU-1 ratification boundary, OP-2 CPU quiet-window completion, and the post-promotion GPU certification rule; prior GPU campaign numbers remain observations unless explicitly certified)
 **Sources**: 107+ documents
 
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
@@ -1389,6 +1389,74 @@ Hypothesized mechanisms (Phase-0 perf data supports #1 and #2):
 **Single-session crossover**: 1×48t isolated on 35B-A3B Q8 = 27.3 t/s. Split 32×6t aggregate 92.75 / 32 = 2.9 t/s per session. Single-session wins up to ~3 concurrent users; split wins at ≥4 concurrent.
 
 Full corrected analysis: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`.
+
+### NPS4 48×4 notes — folded from `handoffs/completed/orchestrator-nps4-48x4-notes-completed-through-2026-08-23.md` 2026-08-23 (RTG-25 retirement)
+
+> This section preserves the load-bearing deployment facts of the NPS4 48×4t
+> concurrent-production notes (retired 2026-08-23). Topology numbers, the
+> live NPS4 node layout, and the Q8 split tables above are already covered
+> elsewhere on this page; this fold keeps only what the notes added beyond
+> them. Reopen the concurrent-production design only for multi-tenant or
+> batch-serving demand, after proving shared-mmap page-cache dedupe under
+> `numactl --membind`, defining latency-aware routing, and defining a
+> draft-sharing plan (48 target instances cannot blindly imply 48 drafts).
+
+**Worker-model measured opportunity (post-NPS4 re-bench, 30B-A3B Q4)** — the
+Q8 tables above are frontdoor/27B class; the worker model measured:
+
+| Layout | 30B-A3B Q4 aggregate (t/s) |
+|---|---|
+| 4×48t NPS4-native (1 inst/node) | 36.17 |
+| 4×24t phys-only NPS4-native | 37.12 |
+| **48×4t NPS4-native** | **104.35** |
+| NPS2 4×48t baseline (est.) | ~45-50 |
+
+48×4t under NPS4 with strict per-node `membind` + 12 instances per NUMA node
+(each 2 phys + 2 SMT cores) ≈ **~3× current production aggregate** on the
+worker model. Per-instance throughput is 2.4 t/s (104/48) — unacceptable for
+single-user interactive latency, so the orchestrator needs **tiered routing**:
+cold/first requests → larger single-instance backend (e.g. single-node 24t)
+for latency; under load → spill to the 48×4t concurrent pool; idle → scale the
+pool down.
+
+**48-instance cpuset math (per model, all four nodes)**: instance `i ∈ [0,48)`:
+`node = i / 12`, `j = i % 12`, `phys_base = node*24 + j*2`,
+`SMT_base = 96 + node*24 + j*2`, cpuset `{phys_base}-{phys_base+1},{SMT_base}-{SMT_base+1}`,
+`--threads 4`, `numactl --membind=<node>`. Node layout:
+`node 0: phys 0-23, SMT 96-119`; `node 1: phys 24-47, SMT 120-143`;
+`node 2: phys 48-71, SMT 144-167`; `node 3: phys 72-95, SMT 168-191`.
+
+**Orchestrator deltas the notes required (all still unbuilt as of retirement)**:
+- **Instance multiplicity**: 48 tiny instances per model (vs 1-4 per role today);
+  per-role instance ceiling was historically soft-capped near 4 for latency.
+- **Ports**: 48-wide blocks per role (vs ~4-wide today).
+- **Router**: round-robin/least-loaded still works at 48 backends, but health
+  checks become 48 curls per cycle and connection-pool sizing is 48×N per client.
+- **Memory budget**: each instance holds the model in RAM. With `mmap` (not
+  `mlock`), kernel page cache can dedupe file-backed pages across instances on
+  the SAME node; with `membind` first-touch placement can differ per instance.
+  If dedup does NOT hold: 48 × 17 GB = **816 GB RAM** for worker alone; with
+  dedup: 1 × 17 GB reused. The NPS4 bench ran with `free -g` staying low
+  (dedup suggested but **not explicitly confirmed** — see open questions).
+- **Model load time**: ~48 × 10 s serial ≈ 8 min; parallel launch crashes on
+  mlock (see `feedback_sequential_model_loading.md`), and mmap page-fault
+  storms may contend — staged launch (e.g. 4 at a time, wait for healthy)
+  needed.
+- **Draft routing**: 48 × 1 GB draft models = 48 GB/role, or a shared draft
+  pool (4-8 instances) + routing layer — open design question.
+- **Health/restart**: per-instance `/health` curl (48 per cycle); respawn
+  individual crashes without disrupting others (already handled, just higher
+  rate).
+- **Contention**: concurrent 48×4t and per-NUMA expert parallelism are
+  **mutually exclusive occupancy patterns** — both want exclusive NUMA
+  ownership (see `handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md` D2).
+
+**Open design questions (unresolved at retirement)**: (1) does kernel dedupe
+mmap across same-node `mbind`'d instances (determines RAM budget — critical);
+(2) latency-aware routing policy; (3) single-node (24t) vs concurrent
+(48×4t) vs mixed per role; (4) draft per-instance vs shared pool;
+(5) staged launch to avoid mmap contention; (6) request-cancellation windows
+at 4 threads.
 
 ### Memory note on decode-path perf interpretation
 
@@ -3536,3 +3604,69 @@ no new findings — its active-path pointer is the active handoff, already compi
 - [2026-08-20 progress](../progress/2026-08/2026-08-20.md) — the MTP depth sweep (55.46 t/s at
   n-max 8, suffix decay 0.842→0.482), the registry/`draft_max` conflict, and the dFlash2 np1
   cross-campaign verification (fresh MTP8 55.2 reproduces 55.46 within 0.5%).
+
+---
+
+## Compiled Update — 2026-08-23 (evening): fla #1156 retracted-and-closed, the G6 inversion, GDN-2's one-assert delta, and the OP-21 overlap re-bench
+
+**Confidence: verified** — #1156's closure and reattribution are read from the upstream thread with the reporter's own retraction; the GDN-2 and #26001 facts are static reads of frozen v9 (`0db32c06e3e5`); the OP-21 re-bench is a measured run (2026-08-23 08:53–08:58Z, operator-granted) with attested affinity from /proc.
+
+### fla #1156: RECORDED AND CLOSED — two claims retracted, do not cite them
+
+The fla `causal_conv1d` backward issue is **CLOSED** (maintainer, 2026-08-22) after the reporter retracted his own headline. Corrected facts: the `ShortConvolution` backward defect is **fla 0.4.2 ONLY, fixed in 0.5.2** (his "reproduces on 0.5.2" run was importing 0.4.2 from site-packages; clean re-test measures 5.5e-08 vs 2.0e-01); it never ran on two backends (`causal_conv1d` absent → silent fallback from `'cuda'` to `'triton'`); the differing numbers were run-to-run non-determinism (ten identical backward calls → absmax compounding 0.40 → 252.88, forward bit-identical), root-caused to v0.4.2's `boundary_check` loads with no `padding_option` (fixed in 0.5.2 via explicit `mask=` + `other=0.0`). **REATTRIBUTION:** the `chunk_gated_delta_rule` 7.9e-07/1.8e-06 figures are the reporter's own scoping aside, not third-party; genuine independent AMD corroboration lives in **fla #913** (gfx1151/ROCm 7.13, Qwen3.5-27B GDN LoRA) — which also records silent NaN gradients on B200/sm_100 across 0.5.0/0.5.1/HEAD. Scope settled: **forward is clean at every tested shape — inference has zero exposure**; gfx90a/MI210 appear nowhere in the fla tracker; fla's only AMD CI workflow is `if: false` — **no AMD hardware coverage at all**. Residual action: the version pin.
+
+### G6 INVERTED — the version floor argues the OPPOSITE of what it first said
+
+The row originally framed "our verified Torch 2.5.1+rocm6.2 sits below fla's `torch>=2.7.0` floor" as merely blocking. The 2026-08-22 inversion is stronger and dangerous: **being below the floor SELECTS for the defective release** — fla v0.4.2 (the broken one) declares no torch/triton floor whatsoever, while the fixed 0.5.2 declares `torch>=2.7.0`. A resolver asked for an fla compatible with Torch 2.5.1 walks straight onto the broken version and reports success. **Gate rewritten:** (a) a torch + `pytorch-triton-rocm` build meeting `torch>=2.7.0` exists for ROCm 6.2/gfx90a → install fla >= 0.5.2; or (b) it does not → **do NOT fall back to an older fla** — raise the stack or do not install fla at all. The original branch (b) is withdrawn: below the floor, the available release IS the defective one. Hard pin `flash-linear-attention>=0.5.2` belongs in `requirements_rocm.txt` and every other install site (intake-1283#record).
+
+### Z10 / G10 / Z14 — the 2026-08-23 FA coverage cluster
+
+- **Z10 (Z)** — static read for the fp16-denorm bug class #27413 fixed in Vulkan. **Locators corrected:** the plan's `fattn-vec.cuh:620-637` does not exist (file is 611 lines at frozen v9); the real surface is `fattn-common.cuh:332-373` (`quantize_q8_1_to_shared`) and its single call site `fattn-vec.cuh:181`. One fact already yielded: that site instantiates `Tds = float2`, so `d` and `sum` are **fp32 on our path** — the `std::is_same<Tds, half2>` branch is dead code in this tree; the exact-zero case is guarded (`if (d != 0.0f)` at `:358`); what remains is the denormal-but-nonzero case and every downstream reciprocal of a stored scale. Escalates to G10 only if the read is inconclusive.
+- **G10 (G; import half Z)** — import and run the 20 new backend-agnostic `FLASH_ATTN_EXT` cases from `tests/test-backend-ops.cpp` @ `70aff2525`: 6 q8_0-KV eval cases including **kv=16384**, the kv=1025 pad/sinks/ALiBi/softcap case, and 3 MLA cases. Upstream concedes its own matrix "stops at kv=1024, blind to long-context FA bugs"; the import immediately caught a real Vulkan wrong-output bug there. **Gate: any FAIL at kv >= 10000 on CPU or ROCm0 converts coverage hygiene into an active correctness defect** and takes priority over everything else in section C. A clean pass is a durable negative for those shapes only — never "FA is correct at long context".
+- **Z14 (Z) — DONE 2026-08-23:** filed as [fla-org/flash-linear-attention#1163](https://github.com/fla-org/flash-linear-attention/issues/1163) (operator-approved, under the operator's account, pinned at HEAD `bc3b101d`). One clause was WRONG and corrected before posting: `STATIC_WARPS` is used in five other modules — it is unreferenced only *within* `conv/triton/kernels.py`, and the report says exactly that. The backward kernel hardcodes `[4, 8, 16, 32]` warps with `IS_AMD` architecture-blind. Filed as a code-reading report (no fla install on gfx90a — below the declared floor), and it names the #1156 hypothesis **falsified** rather than unproven.
+
+### GDN-2's ggml delta is one assert; #26001's gate can never fire on the frontdoor
+
+- **The ggml delta for a channel-wise erase/write rule is one assert** (Z, documentation — do NOT open a port branch): channel-wise decay on the key axis **already ships** (`ggml/include/ggml.h:2578` documents `g` as scalar-gate `[1, H_v, n_tokens, n_seqs]` or KDA `[S_v, H_v, ...]`; `ggml/src/ggml-cpu/ops.cpp:10851` asserts exactly that disjunction and `:10864` sets `kda = (neg0 == S_v)`); the channel-wise β (erase gate) is **`GGML_ASSERT(src_beta->ne[0] == 1);` at `:10852` — the only structural blocker**; gfx90a coverage is free (the HIP build globs `../ggml-cuda/*.cu`). Porting GDN-2 remains a standing **decline on evidence** (B9 in the log-linear tracker); the value is that the answer is now on file: one assert, not a new op family.
+- **#26001's `K == 1` gate can never fire on the production frontdoor** (Z): we serve `--spec-type draft-mtp`, so `K = cparams.n_rs_seq + 1 > 1` (`src/models/delta-net-base.cpp:570`, again at `:502`); #26001 requires `K == 1` and its runtime dispatch is `GGML_CUDA_CC_IS_NVIDIA(cc_dev)` — **no AMD runtime path at all**. #24561 is the only candidate on this stack; it was closed unmerged on maintenance/authorship grounds, not merit (its maintainer review: "I can confirm I saw a 5-10% E2E improvement… on my NVIDIA/AMD hardware"). `keep_rs` support is a requirement, not a preference — any "just take the merged one" reasoning is wrong here.
+- **G15 (G, filed not run)** — is a chunked GDN kernel actually faster on our MI210? Port #24561 (not #26001), bench pp2048/8192/32768 chunked-on vs chunked-off on the **same binary**, HIP residency proven (not asserted). **The kernel will silently not launch at defaults**: `MIN_BLOCKS_PER_SM` = 3 needs 312 blocks on MI210's 104 CUs; our H=32, `n_seqs=1` geometry yields 256 — set `GGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2` or run `-np >= 2`, or the run measures the recurrent kernel twice and reports a tie (exactly the failure the third-party head-to-head hit). **Gate: ≥ 8% full-model prefill gain at p8192 with G16 clean** — deliberately at the top of the realistic ~6–9% Amdahl range; a 5% result is a pass for the physics and a fail for the decision. Do not report a speedup from a kernel G16 has not cleared numerically.
+- **B5 — do not stack a chunked GDN kernel on `GGML_CUDA_GDN_STATE_BF16`**: two independent precision reductions on one op (chunked reassociation error grows with chunk count; the BF16 lever narrows state at every load/store). **Correction to the lever's own docs, read firsthand from `gated_delta_net.cu`:** the file comment says "only the HBM load/store of the state is narrowed" — false: `dst` is typed `state_t` and the attention **output** is written through `gdn_store<state_t>` (`:121`, `:150`), so the lever narrows attention output to bf16 as well. That widens the blast radius of B3 in the MI210 roadmap (whose 512-token coherence gate is structurally incapable of catching a long-prefill precision defect whose reported onset is 16.5–19.8K tokens).
+
+### OP-21 — the overlap-geometry re-bench, measured 2026-08-23 (operator-granted)
+
+The operator-authorized re-bench of `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry ran 2026-08-23 08:53–08:58Z (host quiet, topology hash `171f86f9…`, protocol `contention_matrix.py bench-nway` safe-sampling, per-thread affinity attested from /proc):
+
+- **OVERLAP 8080+8185** (both `0-47,96-143` = node0 half): n=3 → 1.110/0.871/0.949, ratio 0.977 (cv 0.102, borderline); n=6 → 1.193/1.201/1.010/1.311/1.268/1.179, ratio 1.194 (cv 0.079, allow); pooled n=9 mean **1.121**, cv 0.125 — **NOT decision-grade (cv > 0.05)**; verdict class allow-marginal/borderline.
+- **DISJOINT control 8080+8285**: n=3 → 1.386/1.328/1.366, ratio **1.360**, cv 0.018 — decision-grade **allow**.
+- **Read:** production (overlap) reality is ~1.0–1.2 co-run — mildly net-positive at best, dips below 1.0; the shipped row's **1.89 allow (samples=1, disjoint geometry) is falsified for the overlap shape**. Operator disposition: demote the role-keyed pair row to the overlap measurement (~1.1 borderline) since the role-keyed gate cannot distinguish geometry; the 1.360 disjoint control stays on file as the boundary reference.
+
+Two tooling fixes shipped in the same pass: the marker-polarity fix chose **REFUSE** (substituted overlapping placements go to `unknown_pairs` with `overlap_substituted` — never recorded as a disjoint pair; dry-run prints `REFUSED (overlap substitution)`), and `contention_matrix.py run --roles` no longer TRUNCATES the matrix (scoped runs update measured rows and carry unmeasured ones forward verbatim, staying `decision_grade=false`). (The measurement-discipline reading of the re-bench — cv threshold, n-count, decision-grade — is compiled in [Benchmark Methodology](benchmark-methodology.md).)
+
+### Source References (2026-08-23 evening)
+
+- [`rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) — G6 inversion, #1156 closed/reattributed, Z10 static read, G10 import gate, Z14 #1163 filing, the hard `flash-linear-attention>=0.5.2` pin
+- [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — the one-assert GDN-2 delta, #26001's K==1 constraint (re-verified against frozen v9), G15 with the MIN_BLOCKS_PER_SM trap and the ≥8% gate, B5 stacking warning, B3's 512-token gate insufficiency
+- [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction (closed-unmerged-but-exists, occupancy floor, fp-numerics caveat, ~6–9% realistic prefill)
+- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the REFUSE marker-polarity decision, the matrix-truncation fix
+
+## Compiled Update — 2026-08-25: NUMA cutover gate P0-1 closed — the 30-breaking-test premise had drifted
+
+**Confidence: verified** — PROMOTION_GATE_TARGETS 196 passed / 0 failed; full unit suite
+16 failed / 12,526 passed / 69 skipped / 6 xfailed, all on the current main.
+
+The N25 cutover row P0-1 ("fix the 30 net-new breaking tests across 14 files, stack start gated
+on them") is CLOSED without new test work: the 2026-08-11 re-derivation already showed the list
+had drifted to 9 failures in 7 files (gate green, retire-target gone, 7 of 9 = the P0-0 priors
+drop, one fixed at `5f08875a`). What remained was three fixture-side repairs landed 2026-08-24
+(gate fixtures missing `waited_s`/`blocking_roles` after the committed gate rework; the
+SS-BENCH-GATE-c placement `ps` subprocess now counted in the launch assertion). The residual 16
+failures are the E8-era frozen-kernel guard (v9 tree vs v8 pin at
+`run_e8_quality_baseline_reseed.py:1313`) — working as designed, re-pinning is human-amendment-only,
+tracked as an operator decision. The `NUMA_FULL`/`NUMA_HALF_A`/`NUMA_HALF_B` topology supersedes
+`NUMA_NODE0`/`NUMA_NODE1` in `scripts/server/stack_numa.py`; the T1 fix itself remains uncommitted
+with reload gated on the inference-owning session.
+
+### Source References (2026-08-25)
+
+- [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — P0-1 row tick with the fixture-fix evidence and the E8-guard residual
+- [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the D1/T1 diagnosis and the 30-failure citation origin

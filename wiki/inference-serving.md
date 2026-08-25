@@ -2,8 +2,59 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 (the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
+**Last compiled**: 2026-08-24 (inference-serving carries the ROUTE-A1 overlap-queue falsification + SS-BENCH-GATE-c spawn guards); previously 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
 **Sources**: 78 documents
+
+## Compiled Update — 2026-08-24: the overlap-queue premise was falsified by ROUTE-A1 — the live fleet layer has no queue for overlapping placements
+
+Sources: `handoffs/active/shape-keyed-contention-gating.md`,
+`progress/2026-08/2026-08-23-unattributed.md` (ROUTE-A1 section).
+
+- **The Step-2 overlap-queue mechanism does not exist in the live fleet layer.** The operator-granted
+  ROUTE-A1 step-2 smoke (2026-08-24T06:48Z, quiet host, anchor held via `region-lock run`) ran 8
+  probes: 3/3 disjoint admit-expected ADMITTED correctly, **0/5 overlapping queue-expected queued**
+  (all admitted). Measured cause: the placement machine RE-PLACES forced eval_batch requests onto the
+  disjoint instance (`candidate_topology_idx=2` observed) and the gate allows with reason "all pairs
+  + n-way allow" (frontdoor+ingest pair = borderline → gate-allow). The queuing Step 2 was built to
+  verify does not exist. Ledger DONE_PASS; RTG-35 re-pointed to the operator re-specification
+  decision. [progress/2026-08/2026-08-23-unattributed.md, shape-keyed-contention-gating.md]
+- **The same grant's bridge work hardened the spawn layer.** `_verify_anchor_held` (read-only
+  `active_region_holders()` scan) + `_verify_probe_signal` (refuses structurally-unobtainable plans)
+  landed behind the smoke; SS-BENCH-GATE-c guarded the ONE API-runtime spawn site
+  (`worker_pool._start_worker` via `api_enforce_placement`, bench-live → pins to `host_cores −
+  claim` or refuses) plus `LlamaCppBackend`/`LlamaOCRWorker` per-request spawns (503 on refusal).
+  Quiet paths byte-identical. [progress/2026-08/2026-08-23-unattributed.md]
+
+## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
+
+Sources: `handoffs/active/qwen38-27b-replace-qwen36.md` (Q38-T6),
+`handoffs/active/qwen-chat-template-evaluation.md` (CT-DEPLOY),
+`progress/2026-08/2026-08-22-research-intake.md`.
+
+Deploying one launcher flag surfaced four independent lifecycle defects, every one a variant of
+*"a mode/config surface that silently does something other than asked"*:
+
+1. **The launcher never reads `ORCHESTRATOR_STACK_NUMA_MODE`** — mode is argv-only, and the
+   cold-start fallback is hardcoded `"quarter"` (`stack_commands.py:1588`, pre-dating the
+   2026-07-30 half-fleet ratification). An unflagged cold start silently drops all three full
+   instances. Fix filed as Q38-T6; recovery: `start --only <roles> --numa-mode both`.
+2. **The additive-promotion gate deadlocks on itself**: its launch view follows the REALIZED
+   fleet mode, so from a sub-full fleet it flags the full ports it is being asked to start —
+   mirror image of the clean-shell/mode-full artifact from 2026-08-21. Recovery: the per-server
+   `reload` path (gate-free).
+3. **`reload server_<port>` matched no dispatch branch, restarted nothing, and returned 0** —
+   silent vacuous success; sub-full instances were structurally unreachable by reload and the
+   only symptom was config-vs-live drift. Fixed (orchestrator `34ff6fcc`): manifest-table
+   addressability + unknown components exit 1 + a full/half serving-flag parity test.
+4. **A first mlock failure on the third 80B copy** (`Cannot allocate memory` at 281 GB locked
+   fleet-wide) killed the launch silently behind an rc=0 reload; one retry succeeded. The
+   both-mode triple-residency of the 80B is a standing capacity edge.
+
+Standing rules these yield: **a lifecycle command that returns 0 must be verified by the live
+surface it claims to have changed** (the vacuous reload is the third rc=0-lie in this program's
+record); and **runtime attestation of declared-vs-live cmdlines** (added with the plumbing) is the
+detector that catches every one of these — the first fully-green check including attestation
+landed 2026-08-22 after the fixes.
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
@@ -1636,3 +1687,37 @@ DF2-2/DF2-5 are designed to catch.
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — executed ratification `7483d7fb`, derived-layer verification, coordination sequence
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — fourth-pass ratification execution + validation, dFlash2 `challenger_under_evaluation` carried through the recompile
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — AutoKernel lifecycle (v20–v25) and the CPU-TP proposal; the governed loop the experimental_runtime contract routes through
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the cold-start lineup fix, the slot save/restore path read live, and the CT-9 pilot decision
+
+**Confidence: verified** — Q38-T6 is a landed fix with 290 tests; the H20/H21 findings are live-process reads from `/proc` with timestamps and a zero-compute code trace of `/v1/chat/completions`; the migration-state fix landed in `epyc-orchestrator` `98061c6b` with 75 disk artifacts inspected.
+
+### Q38-T6 closed: the cold-start lineup defect is FIXED (orchestrator `96498c3d`)
+
+The launcher NEVER read `ORCHESTRATOR_STACK_NUMA_MODE` — mode came from argv `--numa-mode` only, and the cold-start fallback was hardcoded `"quarter"` (`stack_commands.py:1588`, pre-dating the 2026-07-30 half-fleet ratification), so an unflagged cold start silently dropped the THREE full instances (frontdoor :8070, worker_general :8072, ingest_long_context :8085). Fixed three ways: (a) `cmd_start` fallback is now realized-fleet inference first, else the env var, else ratified `"both"`; (b) stale argparse help ("QUARTERS-ONLY…FULL_DISABLED") and the `_filter_by_numa_mode` docstring rewritten for the half-fleet reality (quarters retired 2026-07-30; `quarter` token = halves 2×48t; `both` is ratified production); (c) API-side producer-2 liveness veto corrected — a TOTAL cold start (nothing listening anywhere) is not the env=full poison signature; the veto now requires ≥1 live port anywhere, so a cold start accepts the lineup instead of logging a spurious "lineup rejected" and falling through to stale priors. Recovery path re-verified intact: explicit `--numa-mode both` still wins. 290 targeted tests pass.
+
+### The slot save/restore path: ARMED, not dormant — and the post-migration request is a STRICT EXTENSION
+
+The dormancy escape clause on the KV-migration row is **VOID**: `--slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor` is set on all three frontdoor instances (8070/8080/8180, read from `/proc/<pid>/cmdline`), 75 `kv_migrate_*` artifacts sit on disk, live probes recorded forward=6 / reverse=4 with `n_aborted=0` (synthetic `old-sess_*` ids; newest artifact 2026-08-09 — exercise by production traffic in the last two weeks is unproven, but the path is wired, enabled and demonstrably run). Two live-process samples one day apart (2026-08-22T~14:43Z and 2026-08-23T07:52:51Z): same PID 2052930 on :8070, elapsed 18h35m, argv unchanged — `--slot-save-path`, `-ctk q8_0 -ctv q8_0`, `--reasoning off`, `--spec-type draft-mtp --spec-draft-n-max 4`, `-ub 8192` with **no `-b`** (independently confirming K4). The flag is emitted **unconditionally** for every role built by `orchestrator_stack.py:1471-1480`; `ORCHESTRATOR_REVERSE_MIGRATION` defaults to `"1"`. **Methodological lesson recorded to the minute:** two dive blocks appeared to contradict each other on whether :8070 had a listener — block 1 read `/proc` before the 13:17:35Z restart and was already stale when block 2 ran. Every `/proc`/`ss`/`ps` result quoted in a handoff must carry its timestamp, and a second sample if load-bearing.
+
+**H21 (Z, answered in-session — a finding, not a task):** traced through `/v1/chat/completions` (`openai_compat.py`), `_context_parts_from_history` renders each history message as exactly one `"{Role}: {content}"` line — append-only, no summarisation/truncation/reordering/windowing — joined with `"\n\n"`, and `_combined_prompt_with_context` returns `f"{context}\n\nUser: {prompt}"`. So **turn N+1 begins with turn N's prompt byte for byte: a STRICT EXTENSION** — full prompt reuse across a migration boundary. Two bounded exceptions: **(a)** `context_compression` rewrites history above 8 messages but is OFF (default and fallback both `False`, string absent from the repo, absent from the live environment) — but it is a **one-flag divergence**: enabling it silently destroys strict-extension for every conversation past 8 messages; **(b)** `request.tools` — the native-tools block is appended *after* history, so the shared prefix ends at the previous turn's history and the tail re-prefills: **bounded and independent of conversation length, not a full re-prefill** — but a tools-carrying session never reuses its own last turn (this is arm E3 of G4). Scope: OpenAI-compat chat route only; says nothing about vision, completions, or non-OpenAI ingress. `--reasoning off` on the live process removes the thinking-block divergence separately.
+
+**The misnamed `VERIFIED` migration state is fixed** (`98061c6b`): `_slot_save` now *returns* `n_saved` and `_slot_restore` returns `n_restored` instead of discarding the count into a log string; the forward path aborts on `n_restored != n_saved` **before** `advance(MigrationState.VERIFIED)` and before erasing the source slot; the reverse path carries the identical guard; `llama_server.py:1268/1284/1302` was fixed in the same commit (previously did not parse the body at all). The triggering input is on disk: of 75 slot files, exactly 9 are 752-byte header-only saves (next smallest 66,148,192 B — strictly bimodal), 4 of the 9 `old-sess_*`. Residual, deliberately not re-opened: the state now means *"the KV came back complete"* — strictly stronger than HTTP 200, still weaker than *"a token was reused"*; the reuse instrument (`timings.cache_n`) is what G4 reads. **#25592 is the LARGER exposure** and a v10 candidate: it fixes the live in-memory checkpoint path that runs on **every request** (not only migrations), is open upstream, absent from our tree (`server-context.cpp:2332-2337` still carries the unfixed `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO), and has four independent verifications including one on Qwen3.6-35B-A3B, our exact frontdoor model. Measurement: multi-turn agentic replay at 16K/64K counting forced full re-processing; a non-trivial rate makes #25592 a v10 candidate ahead of #26004. Do not conflate with the adjacent checkpoint cluster (#24055, #25472, #25592, #26004) — that cluster is entirely *performance* (lost reuse), no wrong output.
+
+### The in-band error fail-open under the 2026-08-11 fix is now closed
+
+The 2026-08-11 fix stopped *raised* exceptions becoming 200s, but the layer beneath still failed open: `LLMPrimitives.llm_call` does not raise — it returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures reached clients as HTTP 200 assistant content (streaming closed `finish_reason: "stop"`). Now detected at the route via the canonical `inband_error_text()` rule: non-streaming → 502 `HTTPException`; streaming → terminal SSE `error` event + `finish_reason: "error"`; REPL path checks the raw result before the auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). 4 new tests failed against the unfixed code, 10/10 green after; 121 passed across the openai_compat surface.
+
+### CT-9 — the pilot-adoption decision: HOLD all three roles, no fleet-wide extension, nothing reverted
+
+Decision basis = production behavior over ~18 h (2026-08-22 13:55Z → 2026-08-23 08:00Z), NOT new benchmarks. **The window carried CALIBRATION traffic only — zero real user/autopilot traffic after 15:36:49Z** (autopilot stopped since 08-09; the 186 API completions and 4,943 server-side slot lines are E-7 recalibration runs). Operational signal: 0 server errors, 0 truncations, 0 slot-restore failures, 0 KV-migration events on :8070/:8080/:8180/:8083; one gateway-side 504 whose server-side completion returned 200; halves :8080/:8180 received zero requests ever. Decision lines: **frontdoor → HOLD** (E-7 stamps 82.5/37.5/55.0/32.5 reproduce CT-1b arm-2 live; revert is one line); **architect_general → HOLD** (first-ever stamps 85.0/27.5/47.5/22.5, cot 75.0 @4096; 282 clean slot releases, 0 errors); **coder_escalation → HOLD** (alias on :8083; no production signal exists — the cruxeval watch-item has NO basis in this window); **fleet-wide → NOT EXTENDED** (the adoption precondition "serves real traffic for a while" is unmet; extending unmeasured roles would void their CT-2 calibration slices on an unmeasured basis). What would flip a role to REVERT: any error/truncation/slot-restore signature or real-traffic quality drift — none observed. Follow-ups filed: **CT-10** (cruxeval watch-item re-check under real coder traffic) and **CT-11** (re-decide after the first non-calibration traffic signal). The KV-migration bug `98061c6b` is independent of the pilot (all 9 header-only slot files predate it by 3–4 weeks).
+
+### Source References (2026-08-23 evening)
+
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/qwen38-27b-replace-qwen36.md) — Q38-T6 closure (`96498c3d`): fallback chain, help/docstring corrections, liveness-veto fix, recovery path
+- [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md) — K4 (`-ub 8192` inert), the G4 scope correction + H20/H21 live reads (with timestamps), the `98061c6b` migration-state fix, the #25592 v10-candidate row, the strict-extension trace
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
+- [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
+- [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle and the tier-1 backlog-pass context

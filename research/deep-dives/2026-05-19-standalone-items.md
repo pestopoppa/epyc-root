@@ -215,7 +215,7 @@ history + Qdrant RAG. A **Training-Free GRPO-style experience library** would ad
 - Prefix-injected into every prompt (cheap; no retrieval latency)
 - CRUD-updated periodically by a meta-pass over recent traces
 
-**Meta-harness optimization angle.** Per `handoffs/active/meta-harness-optimization.md`,
+**Meta-harness optimization angle.** Per `handoffs/completed/meta-harness-optimization.md`,
 we're already tuning harness behavior. Training-Free GRPO is *exactly* a meta-harness
 that learns inference-time prompt augmentations from rollout traces. The harness
 already collects per-question traces; adding the summarize/extract step is incremental.
@@ -275,7 +275,7 @@ Three threads tie these standalone items back to the May 2026 batch:
 ## Open Questions for User
 
 1. **Training-Free GRPO spike priority.** Insert into hermes-agent track (queued after
-   eval-tower-verification) or into meta-harness-optimization track? Both are viable;
+   eval-tower-verification) or into the meta-harness completed ledger track? Both are viable;
    hermes-agent is the more natural home but meta-harness is the more measurable
    benchmark.
 2. **DreamServer manifest format adoption.** Defer to next orchestrator_stack.py
@@ -294,7 +294,7 @@ Three threads tie these standalone items back to the May 2026 batch:
 - Training-Free GRPO: https://ar5iv.labs.arxiv.org/abs/2510.08191
 - EPYC stack governance: `/workspace/CLAUDE.md` (Repository Map, managed services)
 - Hermes context: `handoffs/active/user-facing-harness-index.md`,
-  `handoffs/active/meta-harness-optimization.md`
+  `handoffs/completed/meta-harness-optimization.md`
 - Service-add pattern (existing): `feedback_stack_managed_services` (MEMORY.md)
 - Worker baseline for cost translation: `project_worker_general_swap_2026_05_08`
   (gemma4-26B-A4B Q4_K_M MTP, 76.5 t/s solo)

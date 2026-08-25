@@ -77,11 +77,98 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       `--spec-type draft-dflash` + `incoai/Qwen3.8-27B-DFlash2-GGUF:Q8_0`
       (already downloaded: `/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf`, 2,056,414,752 bytes, Apache-2.0).
       Report decode t/s **and** acceptance against the table above.
-- [ ] **DF2-5 — Concurrency.** Re-run at np=2/4/8 against the MTP grid (47.6 / 75.4 / 108.7 / 157.3 t/s).
-      PR reviewers report **scaling problems at concurrency >1 and setups where dFlash2 loses to MTP**; our
-      production role runs np up to 8, so this is on-target, not a footnote.
+- [ ] **DF2-5 — Concurrency.** *(compute-gated; design REVISED 2026-08-21 by intake-1277 — the earlier
+      wording would have returned a clean sheet that means nothing.)* Re-run against the MTP grid
+      (47.6 / 75.4 / 108.7 / 157.3 t/s) with five design changes, each of which fixes a specific way
+      the naive version fails:
+      1. **Sweep IN-FLIGHT REQUESTS 1/2/4/8, not `-np`.** Upstream #27117 establishes with its own
+         control matrix that `-np` alone is inert — a `-np 16` server carrying only 4 concurrent
+         requests is *bit-identical* to `-np 4`. A grid that varies `-np` while issuing serially sits
+         entirely in the healthy region. Hold `-np` at or above the request count.
+      2. **Instrument per-slot `draft acceptance` and `mean accepted length`**, not aggregate
+         throughput. Throughput cannot separate a scheduling cost from a correctness defect — which is
+         exactly why the whole upstream PR #27342 concurrency argument is still unresolved.
+      3. **Three arms at every point: none / MTP / DFlash2.** Without the no-drafter arm a regression
+         cannot be attributed to speculation; without the MTP arm it cannot be attributed to DFlash.
+         **#27117 is DFlash-1 and predates PR #27342 by three days**, so an unattributed result would
+         blame DFlash-2 for a defect that is not its own.
+      4. **Hold `--spec-draft-n-max` FIXED across the sweep.** `accepted/generated` is structurally
+         n_max-dependent: measured upstream at 0.708 (n-max 1) vs 0.523 (n-max 3) on the same drafter
+         and a single slot, with per-position acceptance 0.719 / 0.496 / 0.353. If n_max is varied at
+         all, report mean accepted length beside the ratio.
+      5. **Run every cell twice, with and without `--kv-unified`.** *(the highest-value item here)*
+      **Gate:** the paired `--kv-unified` arm is the single discriminating control that **nobody
+      upstream has ever run, on any backend, for any drafter** — the #27117 reporter demonstrably never
+      used it (verified three ways). A negative retires the leading root-cause hypothesis for free; a
+      positive localises a real defect that is present verbatim in frozen v9. Note that the flag
+      correlation cited for that hypothesis is 3-point with a counter-example and fully confounded
+      with CUDA-vs-AMD (see intake-1264 as corrected), and that a `split_equal` row-permutation defect
+      is backend-agnostic *by construction*.
+      Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
+      sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
 - [ ] **DF2-6 — Greedy-parity check.** dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
       at temp 0, same method as `deepseek-v4-flash-0731-dspark.md`.
+      *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
+      establishes that **batched speculative verification ALONE** deterministically diverges from the
+      greedy baseline at near-ties, reproducing with `draft-simple` and no DFlash code involved. A
+      DF2-6 non-parity result is therefore **not automatically a DFlash2 defect**, and without the
+      control this task cannot distinguish the two.
+      **THIRD FINDING, 2026-08-22 — the two-arm control is STILL insufficient, because of a patch of
+      our own.** Frozen v9 carries EPYC-local commit `a6b4b5263` (`ggml/src/ggml-cuda/mmvq.cu:341-344`,
+      verified absent upstream) that **deliberately** routes Q8_0 to a different kernel at `ne11>=2`:
+      `// MMVQ->MMQ campaign ... so MTP verify blocks (4-col batch) use batched mul_mat_q instead of
+      per-column mul_mat_vec_q` → `case GGML_TYPE_Q8_0: return log_decision(ne11 <= 1);`. Its own
+      commit message says it is **"numerically-valid (not bit-exact)"**, taken for +17.4 % single-stream
+      MTP on MI210. A verify batch is `ne11 = n_max+1 >= 2`; the non-speculative baseline is `ne11 = 1`.
+      **So on gfx90a a DF2-6 parity failure may be entirely attributable to a performance patch we
+      knowingly accepted, and none of the currently-filed arms can tell the difference.**
+      Two consequences, both mandatory: capture **`GGML_CUDA_LOG_MMVQ_ROUTE=1`** on every arm (it is a
+      runtime env var — `ggml-cuda.cu:1812-1814` — so it needs no rebuild) and report which kernel each
+      verify batch actually took; and note that **`--spec-draft-n-max 1` is NOT a safe bit-exact
+      reference** here, because it still produces a 2-column batch and our local rule splits at exactly
+      `ne11 >= 2`. The same `N==1` vs `N>1` split exists on both CPU paths too (`llamafile_sgemm`'s
+      `mnpack` register blocking; iqk's `funcs[ny-1]` dispatch), so batch invariance is not a property
+      any of our three compute planes holds.
+- [ ] **DF2-6b — add an `ngram` arm.** *(2026-08-22.)* Upstream #25618 — a five-week-older, far
+      better-diagnosed thread that #27407 never cites, with 15 comments and reproductions on Vulkan,
+      Metal and ROCm — reports `ngram-simple` and `ngram-mod` staying **byte-identical on the same
+      quantized target even with accepts**, through the same `common_sampler_sample_and_accept_n` path,
+      while `draft-dspark` diverges. Nobody in 15 comments revisited it. If a multi-token verify batch
+      alone were sufficient, ngram should break too.
+      **Gate:** ngram byte-identical while `draft-simple` diverges, on our identical target and prompts,
+      would localise the defect to the **external-drafter verify path** rather than to multi-token
+      verify as such — and would overturn #27407's headline for our stack. v9 supports both spec types.
+- [ ] **DF2-6c — protocol fixes that decide whether DF2-6 means anything.** *(2026-08-22.)*
+      (i) **Run at least 5 prompts, not 1.** #27407's own `draft-simple` arm was byte-identical on one
+      workload and divergent on the other; a third-party run went 0/5 → 4/5 depending on patch. A
+      single-prompt parity check returns a false clean sheet at a rate near 50 %.
+      (ii) **Fresh process per phase.** One reporter measured 1/5 with a reused server versus 4/5 with
+      fresh processes *despite* `cache_prompt=false`.
+      (iii) **Run at `-ctk f16 -ctv f16`.** Quantized KV alone moves greedy output even with
+      `--spec-type none`, so a q8_0-KV arm needs its own non-speculative baseline first or non-parity
+      is unattributable.
+      (iv) Compare by stripped-output hash **plus** first-differing *generation-token* index via
+      same-vocab `llama-tokenize`, and report per-prompt PASS/FAIL — never an aggregate verdict.
+- [ ] **DF2-7 — `draft-dflash` multi-slot guard (EXPERIMENTAL BRANCH ONLY).** *(blocked on DF2-5.)*
+      Frozen v9's server already hard-refuses `draft-dspark` above `--parallel 1`, citing #26741;
+      there is **no equivalent guard for `draft-dflash`**, whose code is present in v9 (24 files).
+      If DF2-5 reproduces #27117 on gfx90a, add the symmetric guard **to the experimental branch**.
+      **Explicitly NOT a change to frozen v9.** We do not currently serve DFlash-1, so this is
+      exposure, not an incident.
+- [ ] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
+      `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
+      reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
+      protocol fixes. If parity holds across >=5 prompts once those land, this work is unnecessary
+      and should be CLOSED, not carried.** The problem it solves is that DF2-6 currently has no arm
+      that is *guaranteed* bit-exact, so a divergence cannot be localised.
+      **`--spec-draft-n-max 1` is NOT a safe substitute** and must not be used as one: it still
+      produces a **2-column** verify batch, and our local `a6b4b5263` rule splits at exactly
+      `ne11 >= 2` (`ggml/src/ggml-cuda/mmvq.cu:341-344`) — so the "reference" arm would take the same
+      MMQ route as the arms under test and prove nothing. Capture `GGML_CUDA_LOG_MMVQ_ROUTE=1` on it
+      like every other arm.
+      **Experimental branch only**, branched from the current production tip per the four-step
+      workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
+      [intake-1288#record]
 
 ## 2026-08-20 measured checkpoint
 

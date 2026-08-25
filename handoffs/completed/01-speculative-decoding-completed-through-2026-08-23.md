@@ -1,9 +1,21 @@
 # Speculative Decoding — Compatibility Handoff
 
-**Status**: RETAINED COMPATIBILITY POINTER — no standalone implementation queue.
+> **COMPLETED 2026-08-23 — compatibility pointer retired.** This file was a
+> retained compatibility pointer (created 2026-07-11) keeping a legacy
+> active-handoff path alive for older progress logs, research-intake routing,
+> and the multi-handoff completion goal. It never carried its own implementation
+> queue. Its live home is the active speculative-decoding handoff
+> [`speculative-decoding-mtp-refresh.md`](../active/speculative-decoding-mtp-refresh.md)
+> (with the Qwen/native MTP port checkpoint at
+> [`qwen-mtp-llamacpp-port.md`](../active/qwen-mtp-llamacpp-port.md) and the
+> historical MTP-1 ledger at `../completed/mtp-speculative-decoding.md`). The
+> `01-` prefix predates the current naming convention; the file was retired and
+> redirected to the live handoffs on 2026-08-23. Do not add work here.
+
+**Status**: COMPLETED — compatibility pointer retired 2026-08-23.
 **Created**: 2026-07-11
 **Categories**: speculative_decoding, local_inference, hardware_optimization
-**Current active work**: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md)
+**Current active work**: [speculative-decoding-mtp-refresh.md](../active/speculative-decoding-mtp-refresh.md)
 
 ## Purpose
 
@@ -11,9 +23,9 @@ This file keeps the legacy active-handoff path referenced by older progress logs
 
 ## Current Routing
 
-- Active MTP/NEXTN refresh and remaining operator-gated benches: [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md)
-- Qwen/native MTP port checkpoint: [qwen-mtp-llamacpp-port.md](qwen-mtp-llamacpp-port.md)
-- Historical MTP-1 hybrid result: [../completed/mtp-speculative-decoding.md](../completed/mtp-speculative-decoding.md)
+- Active MTP/NEXTN refresh and remaining operator-gated benches: [speculative-decoding-mtp-refresh.md](../active/speculative-decoding-mtp-refresh.md)
+- Qwen/native MTP port checkpoint: [qwen-mtp-llamacpp-port.md](../active/qwen-mtp-llamacpp-port.md)
+- Historical MTP-1 hybrid result: [mtp-speculative-decoding.md](mtp-speculative-decoding.md)
 - Production chapter: `/mnt/raid0/llm/epyc-inference-research/docs/chapters/01-speculative-decoding.md`
 
 ## Current Verdict
@@ -29,4 +41,4 @@ Remaining speculative-decoding work is not safe to run autonomously: T4, T5, Hy3
 
 ## Reporting Instructions
 
-Do not add new speculative-decoding tasks here. Update [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) for active MTP work, the completed historical handoffs for retrospective evidence, and the inference-research chapter for user-facing conceptual documentation.
+Do not add new speculative-decoding tasks here. Update [speculative-decoding-mtp-refresh.md](../active/speculative-decoding-mtp-refresh.md) for active MTP work, the completed historical handoffs for retrospective evidence, and the inference-research chapter for user-facing conceptual documentation.

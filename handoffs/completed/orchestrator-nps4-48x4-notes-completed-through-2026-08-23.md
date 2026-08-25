@@ -1,10 +1,22 @@
 # Orchestrator Rework Notes — NPS4 48×4t Concurrent Production Deployment
 
-**Status**: REFRESHED 2026-05-28 — notes-only topology reference; not an implementation queue
+> **COMPLETED 2026-08-23 — folded into the CPU topology reference and retired.**
+> The load-bearing NPS4 48×4 facts from these notes (worker-model 104.35 t/s
+> aggregate table, 48-instance cpuset math, port/router/memory/load/draft/
+> health deployment requirements, tiered-routing need, EP-contention
+> exclusivity, open design questions) were folded into
+> [`wiki/hardware-optimization.md`](../wiki/hardware-optimization.md) §
+> "NPS4 48×4 notes — folded from handoffs/active/orchestrator-nps4-48x4-notes.md
+> 2026-08-23" on 2026-08-23. Topology numbers and the live NPS4 node layout
+> were already covered there and are not restated. Citations were redirected
+> to that fold location on 2026-08-23. This file is retained as the historical
+> notes record; do not reopen it as an implementation queue.
+
+**Status**: COMPLETED 2026-08-23 — folded into `wiki/hardware-optimization.md`; notes-only topology reference; not an implementation queue
 **Created**: 2026-04-24 post-NPS4-reboot session
 **Updated**: 2026-05-28 (executor gate clarified; large-MoE topology contention cross-linked)
 **Owner**: follow-up after CPU1 Phase 1.3 evaluation completes
-**Parent**: [`inference-research-index.md`](inference-research-index.md)
+**Parent**: [`inference-research-index.md`](../active/inference-research-index.md)
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 

@@ -3,7 +3,7 @@
 Cluster authored: 2026-05-19 by deep-dive #2 of 8 (Phase 6).
 Scope: intake-544 (RMAS), intake-555 (LatentMAS), intake-556 (Thought Communication), intake-557 (X-MAS), intake-558 (Dead Weights, Live Signals).
 Index: `/workspace/research/intake_index.yaml`
-Cross-refs: handoffs/active/hermes-outer-shell.md, meta-harness-optimization.md, tri-role-coordinator-architecture.md, dynamic-stack-concurrency.md, tool-output-compression.md, repl-turn-efficiency.md.
+Cross-refs: handoffs/active/hermes-outer-shell.md, handoffs/completed/meta-harness-optimization.md, tri-role-coordinator-architecture.md, dynamic-stack-concurrency.md, tool-output-compression.md, repl-turn-efficiency.md.
 
 ---
 
@@ -284,7 +284,7 @@ The cluster-level picture meaningfully changes the per-intake priorities, mostly
 
 **Connection to existing handoffs:**
 - `handoffs/active/hermes-outer-shell.md` — Spike 1 directly applies; X-MAS routing can be Hermes's sub-task dispatcher.
-- `handoffs/active/meta-harness-optimization.md` — X-MAS function definitions (Plan/QA/Revise/Aggregate/Evaluate) align with meta-harness role primitives; cross-pollinate.
+- `handoffs/completed/meta-harness-optimization.md` — X-MAS function definitions (Plan/QA/Revise/Aggregate/Evaluate) align with meta-harness role primitives; cross-pollinate.
 - `handoffs/active/tri-role-coordinator-architecture.md` — three-role coordinator is a special case of X-MAS topology; the (domain × function) lookup could inform role assignment.
 - `handoffs/active/dynamic-stack-concurrency.md` — X-MAS heterogeneity-helps result reinforces dynamic-stack rationale.
 - `handoffs/active/tool-output-compression.md` — orthogonal to latent-MAS; text compression is independent from latent transmission.
@@ -298,7 +298,7 @@ The cluster-level picture meaningfully changes the per-intake priorities, mostly
 
 2. **Is the X-MAS license absence (no LICENSE file in the GitHub repo) a blocker for code reuse, or is methodology-only replication sufficient?** Per `feedback_license_not_a_blocker.md` this is informational, but I want to confirm we treat their 5-domain × 5-function methodology as research input rather than vendored code.
 
-3. **Should Spike 1 (X-MAS replication on our stack) be folded into the existing meta-harness-optimization handoff or stood up as its own handoff?** The (domain × function × model) lookup table is closely related to meta-harness role primitives but the empirical work is distinct.
+3. **Should Spike 1 (X-MAS replication on our stack) be folded into the existing meta-harness completed ledger or stood up as its own handoff?** The (domain × function × model) lookup table is closely related to meta-harness role primitives but the empirical work is distinct.
 
 4. **What is the priority of latent-MAS vs the CPU-optimization remediation Phase 2.6 (dense generalization of NUMA_MIRROR per `project_numa_mirror_scoped.md`) and Phase 1.3 v2 per-CCD warm-up (per `project_cpu1_phase12_phase13v2_scaffolding.md`)?** The latent path is high-ceiling but high-risk; the remaining CPU work is incremental but compounds with all production workloads.
 
@@ -321,7 +321,7 @@ The cluster-level picture meaningfully changes the per-intake priorities, mostly
 **Related EPYC artifacts:**
 - `/workspace/research/intake_index.yaml` entries intake-544, 555, 556, 557, 558 (read 2026-05-19).
 - `/workspace/handoffs/active/hermes-outer-shell.md` (already updated per intake-544 entry).
-- `/workspace/handoffs/active/meta-harness-optimization.md`
+- `/workspace/handoffs/completed/meta-harness-optimization.md`
 - `/workspace/handoffs/active/tri-role-coordinator-architecture.md`
 - `/workspace/handoffs/active/dynamic-stack-concurrency.md`
 - `/workspace/handoffs/active/tool-output-compression.md`

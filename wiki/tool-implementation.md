@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-08-13 (a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
+**Last compiled**: 2026-08-24 (the hub wrong-checkout incident: a dashboard process launched from a frozen worktree checkout certifies its own staleness, the watchdog cannot see it, and /proc cwd comparison is an unreliable probe here); previously 2026-08-23 (evening tier-1 pass: the two-valued-health-check family gets its enforcement pass — OBS-3/4/5/7 all converted to three-state checks where unobservable ≠ clear: an unreadable MemAvailable now fails the inference guard instead of degrading to all-clear, `autopilot_running()` is three-valued via the singleton flock with only a confirmed `stopped` licensing a shadow launch, the bench preflight's `unobservable` FAILS in strict and advisory modes, and the committed `sudo pkill -f claude` in emergency_cleanup.sh is DELETED; earlier 2026-08-13 note: a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
 **Sources**: 40 documents (2026-07-06 focused pass: AutoPilot dashboard regions-lock coherence and local planner provider hardening; 2026-07-05 full pass: project dashboard hub :8100 + recency/Blocked-routing fixes, AutoPilot dashboard live-tps repair, loops-and-dashboards audit, repo-readiness portfolio-L5 milestone + passive pickup launcher wiring, and 2026-07-04 tool-sentinel activation telemetry; prior 2026-07-03 corpus-augmented prompt lookup revalidation and AutoPilot planner-turn tool-use hint rendering, 2026-06-22 DCP context-assembler and stack-change guard cross-refs, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns)
 
 ## Summary
@@ -112,6 +112,34 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 - **Magika (intake-398, ICSE 2025, Apache 2.0) is a 1 MB byte-embedding MLP that outperforms libmagic on text-format discrimination, but is not_applicable to EPYC's pipeline.** Contrary to reviews describing it as a CNN, the model is a shallow MLP: three fixed 512-byte windows (beginning, middle, end) are embedded at the byte level into 128-dim vectors, reshaped, passed through two 256-d Dense+GELU layers, global max-pooled for size invariance, and classified over 200+ content types with per-class thresholds calibrated for 99% precision. Training set grew from 24 M to ~100 M samples (GitHub + VirusTotal). The threshold mechanism causes abstention (falls back to `txt`/`unknown`) when confidence is below per-class calibration point — this is how the paper reports 99% F1 without claiming that accuracy on all inputs. Cold-start on the EPYC host measured 225 ms (onnxruntime init dominates); amortized per-file latency is 2.8 ms (better than the paper's 5.77 ms, consistent with the hardware). libmagic is 5-8x faster per file and has <1 ms cold-start, but struggles with text-format discrimination (Python vs Ruby vs JS). **Not applicable to EPYC**: the orchestrator's document-ingestion corpus is a five-format, already-labeled set (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type header, or file extension. No pipeline stage (`pdf_router.py`, `document_preprocessor.py`, `fetch.py`, `research.py`) requires generic filetype detection. A trivial extension-plus-4-byte-magic check has essentially zero false-positive rate on this corpus. Live measurement confirmed the JSON/JSONL confusion documented in external reviews: Magika classified a `.json` file as `jsonl` (JSONL is line-delimited JSON, a distinct format). Integration cost would be ~80 MB of transitive dependencies (onnxruntime) and 225 ms cold-start with no accuracy gain. Reconsider only if the pipeline begins ingesting truly arbitrary binary corpora (malware, forensic dumps, archives with unknown extensions). [confidence: verified — magika-filetype-detection.md deep dive, 2026-04-17]
 
+## Compiled Update — 2026-08-24: a healthy-looking dashboard can serve a frozen checkout — and the watchdog cannot see it
+
+Sources: `handoffs/active/handoff-index-and-backlog-graph.md`, `progress/2026-08/2026-08-24.md`.
+
+- **A dashboard process launched from the wrong checkout certifies its own staleness.** The :8100
+  hub was launched 2026-08-21 from a scratch worktree (`dashboard-v26-telemetry-integrity-20260821`)
+  whose `handoffs/` copy froze on 2026-08-21; the board showed that data for three days while its
+  freshness badge read **fresh**, because the board panel is a live scan of its own checkout — a
+  frozen checkout scans as current. The C42 stale-source watchdog cannot see this either: it
+  compares the hub against `${EPYC_ROOT}/dashboard`, which is the same frozen checkout. Detected by
+  `progress/2026-08/2026-08-24.md`'s board-vs-repo comparison (counts, `activity_today`, per-day
+  window max date); fixed by relaunching the supervisor from the canonical repo. The `handoff_graph`
+  panel's "index_state.py has never run in this checkout" absence was collateral of the same cause.
+  [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
+- **`/proc/<pid>/cwd` comparison is not a reliable wrong-checkout detector in this containerized
+  environment.** A guard comparing `readlink -f /proc/<pid>/cwd` to `$EPYC_ROOT` false-positived on a
+  hub launched with `cd ${EPYC_ROOT}` (resolved to a different inode than the path — namespace
+  artifact), producing a ~15 s restart loop; reverted byte-identical. The wrong-checkout class
+  therefore remains visible only via manual `/api/health` + board-mtime comparison until a different
+  probe (e.g. serving-evidence mtime deltas) is built. [handoff-index-and-backlog-graph.md]
+- **Two derived artifacts can silently lag the repo: the timeline artifact and the benchmark
+  artifact inventory.** The timeline hooks regenerate in the checkout where the commit/merge
+  happens, so lane-worktree commits and the detached promotion merge never touch the real repo's
+  artifact (observed 26 h of lag; manual regen restores). The benchmark inventory
+  (`data/benchmark_artifact_inventory.json`) froze 2026-07-29→2026-08-24 with no alarm stronger
+  than "aging" — regenerated (157 matched / 6 models, 1545 unmatched); its regeneration cadence is
+  unowned. [handoff-index-and-backlog-graph.md, progress/2026-08/2026-08-24.md]
+
 ## 2026-06-13 Update — Review And Governance Tools
 
 - **Security-review is now a first-class skill scaffold.** The v1 skill uses STRIDE, OWASP Web/API Top 10, OWASP LLM Top 10 2025, and supply-chain checks, but only emits findings after exploit-path validation. This is the same anti-false-positive discipline as the eval tower: attacker capability, reachability, trust boundary, vulnerable sink, mitigation analysis, concrete impact, fix, and file/line evidence all have to pass. CI and slash-command wrappers remain deferred. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
@@ -200,7 +228,7 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 - [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- 61 integration tests with real REPL + mock LLM pattern, GraphRunContext factory, risk-weighted coverage classification
 - [Progress 2026-04-14](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L (sessions 2-20), 100%-feasibility audit methodology, seeding control-plane characterization
 - [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-372 Crawl4AI (self-hosted web crawler, Apache-2.0, Docker deployment, MCP integration path), intake-364/365 Firecrawl (deferred: cloud-first SaaS)
-- [pi-agent-core deep-dive](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md) -- 2026-04-26 (intake-473). `beforeToolCall` / `afterToolCall` hook surface with field-replace semantics and throw-isolation: composable middleware for tool-output post-processing without each layer knowing about the others. Maps to `tool-output-compression.md` Phase 3d (compression as middleware) and `meta-harness-optimization.md` (code-mutation safety gates). Per-tool `executionMode` override + batch-falls-back-to-sequential rule for mixing exclusive-access tools with concurrent ones. Terminate-unanimous-batch rule for clean early-exit semantics. Verdict: adopt_patterns.
+- [pi-agent-core deep-dive](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md) -- 2026-04-26 (intake-473). `beforeToolCall` / `afterToolCall` hook surface with field-replace semantics and throw-isolation: composable middleware for tool-output post-processing without each layer knowing about the others. Maps to `tool-output-compression.md` Phase 3d (compression as middleware) and `handoffs/completed/meta-harness-optimization.md` (code-mutation safety gates). Per-tool `executionMode` override + batch-falls-back-to-sequential rule for mixing exclusive-access tools with concurrent ones. Terminate-unanimous-batch rule for clean early-exit semantics. Verdict: adopt_patterns.
 - [Magika deep dive](/workspace/research/deep-dives/magika-filetype-detection.md) -- intake-398; Google AI content-type detector (ICSE 2025, Apache 2.0); byte-embedding MLP architecture; 225 ms cold-start, 2.8 ms/file on EPYC; not_applicable — no pipeline stage requires generic filetype detection on EPYC's five-format corpus
 - [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter Subagent server tool -- provider-hosted nested-model delegation: configure-time worker pinning, stateless scoped task isolation, per-request execution cap, free-text returns (no schema). adopt_patterns; SaaS = external. Maps to the orchestrator's existing `chat_delegation.py` server-side delegate; remaining delta = cost-aware capable→cheaper-worker mode
 - `src/api/routes/chat_delegation.py` (epyc-orchestrator) -- existing server-side delegate primitive: configure-time role pinning (`_valid_delegate_roles`/`_normalize_delegate_role`), per-request loop caps (`max_delegate_turns`, specialist time budget), re-entrance guard (`_get_delegation_depth`, `reentrant_depth`). [confidence: verified — code-read]
@@ -385,7 +413,7 @@ Requires **all four** of: (1) internal pull from `internal-kb-rag.md` for guided
 - [`research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md`](../research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md) — full audit + adoption thesis vs four user statements
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-625 — entry with deep_dive cross-link, refined verdict_justification, contradicting_evidence
 - [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) Research Intake Deep-Dive — 2026-05-27 section — gated lift-not-fork shopping list for Patterns A+B
-- [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) Research Intake Update — 2026-05-27 — explicit do-not-lift record for the 9-agent decomposition
+- [`handoffs/completed/meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) Research Intake Update — 2026-05-27 — explicit do-not-lift record for the 9-agent decomposition
 
 ## Wrap-up and index-hygiene guardrails (2026-05-27)
 
@@ -537,7 +565,7 @@ A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **
 - [`progress/2026-08/2026-08-10.md`](../progress/2026-08/2026-08-10.md) — the buildout record, the deploy checks and the eyeball-pass findings
 - [`handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md`](../handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md) — the data-truth defects that remain owned separately from this information-architecture work
 - [`handoffs/active/loops-and-dashboards-audit-2026-07-05.md`](../handoffs/active/loops-and-dashboards-audit-2026-07-05.md) — the liveness-vs-value instrument finding this plan builds on
-- [`handoffs/active/benchmark-results-dashboard.md`](../handoffs/active/benchmark-results-dashboard.md) — the producer/renderer contract used as the working precedent for the data-plane split
+- [`handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md`](../handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md) — the producer/renderer contract used as the working precedent for the data-plane split
 
 ## Compiled Update — 2026-08-13: a licence blocker on failure-trace grading resolved by finding the maintained successor, not by waiting
 
@@ -676,3 +704,22 @@ real refusal as absent because the guarded file happened to be clean, so nothing
 - `scripts/hooks/drop_caches_write_scan.py` and `scripts/hooks/tests/live_holder_interference_cases.json` — the latent case, and the suite made deterministic with a synthetic lock
 - [Loop-owned fleet implementation](../handoffs/active/loop-owned-fleet-implementation.md) — D9, the loop-plane gate these guards enforce
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the two-valued-health-check family gets its enforcement pass (OBS-3/4/5/7)
+
+**Confidence: verified** — all four closures are landed changes with truth-table tests (10-, 15-, and suite-level counts below).
+
+The 2026-08-12 note recorded three supervisors resolving a two-valued check's "cannot tell" into a confident restart/kill/green. The tier-1 backlog pass closed four more instances of the same family, each by converting a two-state collapse into a **three-state check where unobservable ≠ clear** (the polarity rule `inference_load_check.py` already states: *for EXCLUSION, unknown must mean busy*):
+
+- **OBS-3** — `nightshift/inference_guard.sh` failed OPEN into a live inference run: `pgrep -f 'llama-server|llama.cpp' | xargs … || true` summed into an RSS total, so a missing `pgrep`, argv drift, renamed binary, or `xargs` error ALL yielded 0 GB → the `else` branch printed "No heavy inference detected" and `run_wrapper.sh` launched the full workload on top of a live 200 GB+ inference. Fix: unreadable `MemAvailable` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`) — one negative and one blind eye is not a clear; run_wrapper's existing exit-4 refusal covers it. Follow-up **OBS-3a**: add a mutation case for "MemAvailable unreadable → failed" to the test suite, which predates the fail-closed semantics.
+- **OBS-4** — `run_wrapper.sh:79`'s `autopilot_running()` required `start` immediately after the script path; any flag inserted into the daemon argv read as "AutoPilot not running" and lab shadow jobs launched into a live AutoPilot. Now three-valued (running/stopped/unconfirmed): the authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent, held by the daemon by construction), corroborated by an adjacency-robust dual pgrep; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run). Truth table tested (10 cases).
+- **OBS-5** — `rustevo2_bench_preflight.py` treated an EMPTY pgrep as a positive "no AutoPilot" (and a missing `pgrep` binary raised `FileNotFoundError` before the rc handling). Now `autopilot_state()`: missing pgrep → `unobservable`; an empty result is never trusted alone (a negative requires the flock provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in strict and advisory modes. 15-case truth table tested.
+- **OBS-7** — `emergency_cleanup.sh:26` carried a committed `sudo pkill -f claude`, the exact idiom INC-20260731-broad-process-pattern-kills forbids — and the PreToolUse pattern-kill hook cannot see it (it inspects the typed command, not the script body). The `pkill` and its `pgrep` are DELETED; the section now refuses to guess and prints operator steps for killing only PIDs the operator verified themselves; umount failure reports loudly instead of aborting under `set -e`; the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt`.
+
+The family rule, now with four more instances on file: **a guard whose failure mode is "proceed" is not a guard** — every process-safety probe on a shared host needs a third state for "I could not tell", and that state must take the dangerous branch.
+
+### Source References (2026-08-23 evening)
+
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics and truth-table counts, OBS-3a follow-up, NIB2-57a reader audit and NIB2-58a build-path wiring (cross-listed with [Benchmark Methodology](benchmark-methodology.md))

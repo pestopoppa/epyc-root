@@ -2,8 +2,32 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-22 (log retention bounds the evidence window: a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the empty_generation detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
+
+## Compiled Update — 2026-08-23: the research `debug_scorer` divergence closed by delegation — B7 shim + era stamp
+
+**Confidence: verified** — ticked on the owning rows 2026-08-23
+([`scorer-fork-drift-audit-2026-07-22.md`](../handoffs/active/scorer-fork-drift-audit-2026-07-22.md),
+EVL-41; [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md),
+EVL-42).
+
+The scorer-unification audit's last holdout is resolved the way the additive pass's per-consumer
+verdicts said it had to be — **not by porting, by delegation**. The research-repo `debug_scorer.py`
+was fully pre-B7 (all 10 defect classes, off the routing path), and the two candidate fates were
+"port B7" or "stamp research benchmarks scored with it as pre-B7-scorer era". The closed row records
+the third shape that won: a **B7 delegation shim plus an era stamp** — the research path now
+delegates to the canonical B7 scorer semantics instead of carrying its own divergent
+extractor, and its outputs carry the era stamp so the pre/post-B7 boundary stays attributable
+(the same "sealed-capture scores need a version, never a silent re-score" rule this page already
+carries for the orchestrator `debug_scorer`). This closes EVL-41 and advances EVL-42's consumer
+migration without inventing a new extractor.
+
+### Source References (2026-08-23 B7 delegation shim)
+
+- [`handoffs/active/scorer-fork-drift-audit-2026-07-22.md`](../handoffs/active/scorer-fork-drift-audit-2026-07-22.md) — EVL-41 row tick, B7 delegation shim + era stamp.
+- [`handoffs/active/scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — EVL-42 consumer-migration ownership.
+- [`progress/2026-08/2026-08-23-noninf.md`](../progress/2026-08/2026-08-23-noninf.md) — the hygiene batch that ticked the rows.
 
 ## Compiled Update — 2026-08-19: judge-guided selection — the audit metric, the denominator, and why "verified" needs a version
 
@@ -1302,7 +1326,7 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 - **E1 dense-control P-BENCH-3 sweep completed as useful-but-not-pristine evidence.** The `qwen36_27b_q8` sweep at `-np 1,2,4,8,16` with `GGML_IQK=1` completed `43/43` cells with `0` errors. Tasks/hour scaled `20.11 → 124.62`, aggregate predicted t/s `1.07 → 6.81`, and p95 latency rose `240.9s → 674.0s`. The MI210 server remained live, so the run used `--skip-clean-check --allow-host-health-warning` and is classified as **useful dense-control evidence, not pristine host-exclusive decision evidence**. The corrected run (with `GGML_IQK=1`) replaced an aborted attempt that missed the IQK env. Sources: [batched-decode-measurement.md](../handoffs/active/batched-decode-measurement.md), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **The method discipline used for harness mutations is now explicit in the checkpoint record.** MH-9's bounded `new_file` support was accepted only after narrow Ruff and pytest verification on the touched files, and the live preflight still remained a separate P1.5 gate that exited `wait_for_boundary` rather than being conflated with code correctness. That is a useful distinction for benchmark methodology: a green code mutation does not imply runtime readiness, and the test bundle should say exactly which layer it proves. Sources: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
+- **The method discipline used for harness mutations is now explicit in the checkpoint record.** MH-9's bounded `new_file` support was accepted only after narrow Ruff and pytest verification on the touched files, and the live preflight still remained a separate P1.5 gate that exited `wait_for_boundary` rather than being conflated with code correctness. That is a useful distinction for benchmark methodology: a green code mutation does not imply runtime readiness, and the test bundle should say exactly which layer it proves. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [orchestration-robustness-audit-2026-07-11.md](../handoffs/active/orchestration-robustness-audit-2026-07-11.md), [progress 2026-07-11.md](../progress/2026-07/2026-07-11.md).
 
 ### New (2026-07-05, tool-use lane live under Gate-3 discipline + tier-segregated coverage instrument + real-suite clean-window runner + W8 sparse-baseline repair + RI-10 scored-canary protocol)
 
@@ -1327,8 +1351,8 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 - **Sequential-verdict authority went live on 2026-07-02 — the keystone evidence gate flipped from "volume-blocked" to "enabled" only after both history axes cleared and a deliberate restart boundary was used.** For months the anytime-valid e-process (`AUTOPILOT_SEQ_VERDICT`) was code-complete but withheld because trusted per-question vectors and sequential shadow rows had not accrued (mid-June: `68/120` and `16/30`). By the post-reboot restart it read `trusted_vectors=193/120` and `seq_shadow_rows=116/30`, W6 audit was clear (`40/30`, `gaming_alarm=false`), and strict phase-health was current-code clean, so baseline authority (consent+state) and sequential authority were both switched on under `--max-trials 2000`. The durable rule: a benchmark-authority claim cites a passing strict readiness report plus a deliberate cutover, never the mere presence of a default-off flag; authority is disabled again on any era reset or strict-readiness regression. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md).
 - **Promotion evals now carry a fail-closed replay + confidence-interval contract (W8), so a candidate cannot be promoted on stale or unreplayable evidence.** Forced fresh-promotion deep evals replay the pending candidate's exact numeric params or structural flags and fail closed if the candidate is unreplayable (`33c16b47`); a Phase-2.4 CI non-regression guard requires effective paired-question evidence (`r_eff`) and a one-sided delta lower bound that excludes regression before finalization, recording the CI object into promotion state (`b62bc205`); and the P-QUAL-PROMO draw contract uses trial-seeded fresh T2 draws, `n` bounded to 200–500, excludes qids seen in the last 60 days, excludes broken/artifact suites via the item-analytics suite-health table, and fails closed below 200 fresh healthy scoreable questions (`2aa3b40c`). Current reports still show `combined_E_below_required`, `fresh_promotion_eval_required`, and `seq_confirmation_required` — so W8 live promotion-eval evidence remains the last open gate. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md).
-- **"Evolve the harness, don't train the model" is an external empirical validation of the fixed-model meta-harness loop — with a code-over-prompt mechanism preference and a per-model transfer caveat.** intake-753 (Joel Niklaus, HF Space) lifted a frozen DeepSeek-V4-Pro from 0% all-pass / 63.4 pooled to 80.1 held-out pooled on Harvey's Legal Agent Benchmark with zero weight changes, purely by evolving prompts/tools/validators. Five of the top six accepted harnesses were deterministic **code** mechanisms, not prompt edits (validating our Tier-2 code-mutation search over pure PromptForge prompt-editing); promotion used a 3-trial noise-margin rule (≥1 point clears the incumbent, mirroring our resolution-aware/`mad_noise` gate); and code fixes transferred across model families (V4-Flash +14.4 pts) while prompt playbooks did NOT (Nemotron-3 Ultra +0.4 pts), so a harness must be tuned per served model. Per MEASUREMENT.md these are single-benchmark, LLM-judge, non-peer-reviewed observations that shape the proposer contract — never gate promote/revert without local re-measurement. Sources: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md), [intake-753](../research/intake_index.yaml).
-- **J9/HLE observe-only meta-metric validation stays a recorded negative result under the new authority regime.** Over 580 metric-bearing trials, `execution_fidelity` and `planning_stability` separate keep/revert but only mirror existing task-quality/safety signals; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` remain dashboard-only. No HLE metric is Pareto-promotion-eligible before the N2 ledger/sequential-verdict redesign — the methodology rule that a new harness metric must separate accepted-vs-rejected, predict future regressions, and stay under the missingness cap before becoming an objective. Sources: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md).
+- **"Evolve the harness, don't train the model" is an external empirical validation of the fixed-model meta-harness loop — with a code-over-prompt mechanism preference and a per-model transfer caveat.** intake-753 (Joel Niklaus, HF Space) lifted a frozen DeepSeek-V4-Pro from 0% all-pass / 63.4 pooled to 80.1 held-out pooled on Harvey's Legal Agent Benchmark with zero weight changes, purely by evolving prompts/tools/validators. Five of the top six accepted harnesses were deterministic **code** mechanisms, not prompt edits (validating our Tier-2 code-mutation search over pure PromptForge prompt-editing); promotion used a 3-trial noise-margin rule (≥1 point clears the incumbent, mirroring our resolution-aware/`mad_noise` gate); and code fixes transferred across model families (V4-Flash +14.4 pts) while prompt playbooks did NOT (Nemotron-3 Ultra +0.4 pts), so a harness must be tuned per served model. Per MEASUREMENT.md these are single-benchmark, LLM-judge, non-peer-reviewed observations that shape the proposer contract — never gate promote/revert without local re-measurement. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [intake-753](../research/intake_index.yaml).
+- **J9/HLE observe-only meta-metric validation stays a recorded negative result under the new authority regime.** Over 580 metric-bearing trials, `execution_fidelity` and `planning_stability` separate keep/revert but only mirror existing task-quality/safety signals; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` remain dashboard-only. No HLE metric is Pareto-promotion-eligible before the N2 ledger/sequential-verdict redesign — the methodology rule that a new harness metric must separate accepted-vs-rejected, predict future regressions, and stay under the missingness cap before becoming an objective. Sources: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md).
 - **The v6+iqk kernel promotion cleared its eval-parity gate with matched-question paired evidence, not aggregate throughput.** P-QUAL-PROMO required N≥200 matched full-port rows: IQK-on vs IQK-off on `worker_general` (port 8072), AA-Omniscience deterministic F1, `206` common questions, accuracy unchanged (`0.111650` == `0.111650`), avg F1 `+0.008365`, hallucination rate `-0.010929`, Omniscience Index `+0.005464`, and throughput `38.46` vs `27.78` t/s (`1.385×`). The discipline: a speed win is only creditable when the same questions are scored on both arms, the paired accuracy delta excludes regression, and both arms carry runtime attestations (IQK-off/on attest JSONs). A clean post-reboot bench and any operator production-policy decision remain separate formal gates outside the autonomous bar. Sources: [v6-iqk-promotion.md](../handoffs/completed/v6-iqk-promotion.md).
 - **GPU first-touch benchmarks are explicitly framed as contended-host observations, and roofline % is the primary lens.** The 2026-07-02 MI210 (gfx90a, CDNA2, 64 GB HBM2e) bring-up ran against a live 28-process CPU stack at ~106 load; every number is a first-pass OBSERVATION, not a canonical decision-gating figure. GPU-resident decode was insulated from the CPU contention (decode variance ±0.01 t/s), which narrows the `feedback_no_concurrent_inference` rule to CPU-DRAM contention rather than all co-located inference — while model-load and prefill still touched the contended host and carry noise. Effective bandwidth as a fraction of the ~1.64 TB/s roofline (32–47%) was the headline metric, and gemma4-31B + NEXTN MTP gave 1.44× decode (30.01→43.25 t/s) at 59.7% draft acceptance. Sources: [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md).
 - **Matched-precision head-to-head isolates a quantized-dequant artifact from general kernel immaturity — the durable cross-engine benchmarking method.** llama.cpp-HIP hit only 33% (Q4_K) and 47% (Q8_0) of the MI210 roofline, which looked like CDNA2 kernel immaturity until a byte-identical-weights fp16 comparison (Goedel-Qwen3-8B converted to f16 GGUF for llama.cpp, same HF weights loaded by vLLM) reached 62% roofline — proving the gap is specifically the quantized MMQ-dequant path, not general kernel maturity. The comparison was deliberately matched-precision (fp16 both sides) and matched-model, with vLLM ~11% faster per-stream (69 vs 62 t/s) and decisively ahead only on batched serving (1129 vs 909 tok/s, and llama.cpp was not tested batched, so that row is not like-for-like). Method lessons: convert to identical weights before comparing engines, hold precision constant, and label non-like-for-like rows. Sources: [progress 2026-07-02 MI210](../progress/2026-07/2026-07-02-mi210.md), [intake-759](../research/intake_index.yaml).
@@ -1352,7 +1376,7 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **A production-query eval suite is being built as a substitute for synthetic benchmarks, but its first packaging attempt failed on a contaminated window — not adopted yet.** F1 captures real session tasks (`task_record.v1` embedded in progress events; W1 taxonomy of 7 measured workload classes landed; 372 training-eligible records by 2026-06-20, weighted-dominance gate `true` at 0.585). W3 curated a 50-row YAML real-suite across 7 classes (46/50 prompts recovered, 39/50 expected-backed), but the first standalone EvalTower packaging run was during a concurrent/contested window and scored 11/50 correct with 34/50 errors (connection-refused dominated, ~0.66 quality on 0-3). A clean-window rerun is still required before any decision use; W4 (wire into decisions) is blocked on it. This reinforces the standing rule that contested-window runs are diagnostics, not evidence. Sources: [frontier-f1-real-task-corpus.md](../handoffs/active/frontier-f1-real-task-corpus.md), [progress 2026-06-21](../progress/2026-06/2026-06-21.md).
 - **Public benchmark publication is gated on protocol/attestation backfill, with unverified historical rows now retired from public claims.** The public-results generator, protocol-backfill parser, public-scrub gate, internal-alias scrub, generated review queue, and review-decision overlay now classify all 374 generated rows as public-safe while routing 325 unverified historical rows to `retired_from_public_claims`. The remaining active publication blockers are 31 pre-attestation historical rows that need a real historical attestation artifact, current rerun, or retirement, plus 18 evidence-linked rows that need protocol tags. The methodology-post draft documents the April-26 canonical collapse (`+17%` -> `+1.6%`) as the main exact-number candidate, but the April 24 Q8 microkernel exact rows are paraphrase-only unless raw repack logs are found or remeasured. Sources: [frontier-f6-upstream-publication.md](../handoffs/active/frontier-f6-upstream-publication.md), [docs/publication/public-results-draft.md](../docs/publication/public-results-draft.md), [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md).
 - **Clean-window evidence discipline held across two more A/B-style decisions, both of which recorded `hold`.** DCP-6's first live A/B (n=3/arm) cut tokens but regressed p50 latency (20.2s→32.6s) with quality unscored → `decision.status=hold`. X-MAS's constrained-policy quiet-window A/B (100 rows) improved latency (ratio 0.714) but regressed score (-0.250 vs required +0.050) → still blocked. Bulk-inference J7/DCP-6 offline replay likewise recorded `decision=hold` (latency 32.6s vs 20.2s, zero quality scoring). The pattern: a single-axis win (tokens or latency) is not a pass when the gate requires a quality-scored, regression-excluding verdict. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
-- **J9 HLE observe-only meta-metrics did not earn Pareto promotion.** Over 580 metric-bearing trials, `execution_fidelity` and `planning_stability` separate keep/revert but only mirror existing quality/safety signals; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` stay dashboard-only. No promotion eligibility until the N2 ledger/sequential-verdict redesign — a negative meta-optimization result recorded as such. Source: [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md).
+- **J9 HLE observe-only meta-metrics did not earn Pareto promotion.** Over 580 metric-bearing trials, `execution_fidelity` and `planning_stability` separate keep/revert but only mirror existing quality/safety signals; `feedback_interpretation`, `memory_coherence`, and `recovery_rate` stay dashboard-only. No promotion eligibility until the N2 ledger/sequential-verdict redesign — a negative meta-optimization result recorded as such. Source: [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md).
 
 - **Tool-use experiments must prove the trial actually exercised tools before using the result as optimization signal (2026-06-05).** The active tool-use eval contract separates "model with tools available" from "model actually used the tool path." For AutoPilot/Pareto learning, the measurement contract needs per-trial evidence of tool invocation, helpfulness, and no-tool baseline comparison; otherwise a nominal tool-enabled trial can look like a tool result while measuring only ordinary text behavior. Sources: [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md), [progress 2026-06-03](../progress/2026-06/2026-06-03.md), [progress 2026-06-04](../progress/2026-06/2026-06-04.md).
 - **Model-card numbers are priors; local benchmark verdicts require the EPYC suite.** The Gemma 4 correction is a reusable benchmark rule: do not infer replacement viability from a newly released model card, and verify metric labels before comparing across modalities. The next action is a local suite run against the current frontdoor/vision baselines, not a prose verdict. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
@@ -1372,7 +1396,7 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **Real-path canaries are mandatory for model-facing harnesses.** The BEP-2 falsification harness passed stub dry-runs while still failing the real `/chat` + REPL path in multiple ways: mock/real payload flags, REPL mode forcing, forbidden `open()` instructions, task-root isolation, and per-turn extraction behavior. The corrected methodology is: no-inference real-path canary with deterministic mocked LLM output, then one live single-task smoke, then full A/B. Stub validation alone only proves row/schema shape. [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **Root-cause claims require primitive evidence before narrative.** The BEP-2 retrospective logged several wrong but coherent diagnoses before per-turn trace evidence was inspected. The durable benchmark rule is to enumerate all observability artifacts first (`repl_tap`, structured tap, orchestrator log, scratch git diff, verifier output), cap blind fixes at one, and downgrade hypotheses to "suspected" until the primitive trace supports them. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **Seeding watchdogs now separate slow-model behavior from infrastructure stalls.** Slot polling labels no-token-progress hangs as `slot_stalled_no_progress`, idle-orphaned pending requests as `slot_idle_orphan`, and long empty llama outputs as `empty_generation`. This turns the previous "adaptive timeout vs genuine stall" ambiguity into explicit, env-tunable failure classes that should be treated as infrastructure evidence, not model quality signal. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
-- **New harness metrics must prove signal before becoming objectives.** The HLE implementation intentionally writes execution-fidelity, feedback-interpretation, planning-stability, memory-coherence, recovery-rate, and oracle-adequacy fields in observe-only mode. The methodology rule is that no intermediate harness metric becomes a Pareto objective until it separates accepted-vs-rejected configs, predicts future regressions, and stays below the missingness cap. This prevents replacing one noisy final-task scalar with several unvalidated noisy intermediate scalars. [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
+- **New harness metrics must prove signal before becoming objectives.** The HLE implementation intentionally writes execution-fidelity, feedback-interpretation, planning-stability, memory-coherence, recovery-rate, and oracle-adequacy fields in observe-only mode. The methodology rule is that no intermediate harness metric becomes a Pareto objective until it separates accepted-vs-rejected configs, predicts future regressions, and stays below the missingness cap. This prevents replacing one noisy final-task scalar with several unvalidated noisy intermediate scalars. [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
 - Claude-as-Judge scoring achieves semantic understanding of correct answers in unexpected formats, providing consistent 0-3 graded evaluation. Algorithmic pattern matching underscored by 51 percentage points on the same output in early experiments. [06-benchmarking-framework.md]
 - Benchmark hardening eliminated the 89-93% ceiling effect. Expected post-hardening ranges: 30-50% for draft models (0.5-1.5B), 50-70% for general models (4-8B), 60-80% for specialized thinking models (8B+), 70-85% for large models (14B+). No model hits 90%+. [06-benchmarking-framework.md]
 - Speculative decoding preserves quality (same model) while delivering 10x speed. MoE expert reduction trades quality for speed in a predictable curve: MoE4 at 85% quality/33.6 t/s, MoE3 at 78%/37.7 t/s vs baseline 89%/2.89 t/s. [06-benchmarking-framework.md]
@@ -1544,7 +1568,7 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [Evidence Plane — Instrument Repair](/workspace/handoffs/active/evidence-plane-instrument-repair.md) -- W5 ledger-derived core candidate and era activation guard, W6 rotating audit block, live-eval fan-out cap on full-only fleet
 - [Strand-Rust-Coder RustEvo2 Verification](/workspace/handoffs/active/strand-rust-coder-rustevo2-verification.md) -- intake-614/615/616; external vendor-claim verification-gate methodology, RustEvo2 (arXiv 2503.16922) harness pinning, leaderboard-calibrated decision matrix, contamination/sampling-parity checks before crediting a #1 claim
 - [Evidence Plane — Ledger + Sequential Verdicts](/workspace/handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md) -- the 2026-07-02 sequential-verdict authority cutover (readiness-gated, deliberate restart boundary), W8 promotion-eval replay + confidence-interval + P-QUAL-PROMO draw contract, W6 audit gaming-alarm clearance semantics
-- [Meta-Harness Optimization](/workspace/handoffs/active/meta-harness-optimization.md) -- J9/HLE observe-only meta-metric negative result (diagnostic-only, no Pareto promotion), the metric-must-prove-signal-before-becoming-an-objective rule, and the intake-753 evolve-the-harness research update
+- [Meta-Harness Optimization](/workspace/handoffs/completed/meta-harness-optimization.md) -- J9/HLE observe-only meta-metric negative result (diagnostic-only, no Pareto promotion), the metric-must-prove-signal-before-becoming-an-objective rule, and the intake-753 evolve-the-harness research update
 - [intake-753 Don't Train the Model, Evolve the Harness](/workspace/research/intake_index.yaml) -- Joel Niklaus HF Space; external empirical validation of the fixed-model meta-harness loop (frozen DeepSeek-V4-Pro 0%→80.1% held-out), code-over-prompt mechanism preference, 3-trial noise-margin promotion, per-model transfer caveat; observations only (single benchmark, LLM-judge, non-peer-reviewed)
 - [v6+iqk Promotion Cutover](/workspace/handoffs/completed/v6-iqk-promotion.md) -- P-QUAL-PROMO matched full-port IQK-on/off eval-parity package (N=206 common AA-Omniscience rows, deterministic F1, no paired accuracy regression, +38.5% t/s, dual runtime attestations); clean post-reboot bench held as a separate formal gate
 - [Progress 2026-07-02 MI210](/workspace/progress/2026-07/2026-07-02-mi210.md) -- MI210/gfx90a GPU first-touch benchmarks framed as contended-host observations, HBM roofline-% as primary lens, matched-precision fp16 GGUF-vs-HF cross-engine method isolating the quantized MMQ-dequant artifact, GPU-resident decode insulated from CPU contention
@@ -1811,7 +1835,7 @@ Sources: [`research/deep-dives/2026-06-12-agents-last-exam.md`](../research/deep
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review. The measurement trust boundary is human-amendment-only; every item here is an operator-review proposal, not an applied change.
 
-- **Judge-selected best-of-N inflates judge-measured scores while true quality stays flat, and cross-family ensembling is only a partial defense.** arXiv:2607.05904 measures a judge-vs-truth gap widening from **0.20 at k=1 to 0.588 at k=16** on LiveCodeBench while the selected candidate's unit-test pass rate moves only 0.27 → 0.29. Hacked errors transfer across judge families (Qwen/Llama/Gemma) and a three-family minimum-vote ensemble still accepts ~55% of hacked wrong answers — which directly qualifies the cross-family verification rule recorded as our strongest defense. The effective mitigation is **de-anchoring**: requiring the judge to commit to its own answer before or without seeing the candidate drops false-positive rate from 0.906 to 0.012, whereas a plain "verify/recompute" instruction is measured to do nothing (FPR 0.719). Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-decision-plane.md](../handoffs/active/reviewer-decision-plane.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+- **Judge-selected best-of-N inflates judge-measured scores while true quality stays flat, and cross-family ensembling is only a partial defense.** arXiv:2607.05904 measures a judge-vs-truth gap widening from **0.20 at k=1 to 0.588 at k=16** on LiveCodeBench while the selected candidate's unit-test pass rate moves only 0.27 → 0.29. Hacked errors transfer across judge families (Qwen/Llama/Gemma) and a three-family minimum-vote ensemble still accepts ~55% of hacked wrong answers — which directly qualifies the cross-family verification rule recorded as our strongest defense. The effective mitigation is **de-anchoring**: requiring the judge to commit to its own answer before or without seeing the candidate drops false-positive rate from 0.906 to 0.012, whereas a plain "verify/recompute" instruction is measured to do nothing (FPR 0.719). Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-decision-plane.md](../handoffs/completed/reviewer-decision-plane.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
 
 - **Rubric-based LLM judges are reproducibly hackable — but verifiable rewards are not a safe harbor either.** arXiv:2606.04923 (Tsinghua KEG) builds a controlled environment injecting a known bias into an otherwise unbiased judge and shows policies discover and exploit it, with discovery latency governed by bias-task entanglement and exploitation capped by whether the model can cheaply emit the pattern (format bias ~66% elicitation vs 95-100% for lexical/tone/self-praise). It also finds **in-domain capability degrades while aggregate general benchmarks stay flat**, so an aggregate suite is an unreliable tripwire for scorer gaming. Honest scope: it does not run a head-to-head against verifiable rewards, and our own corpus records deterministic verifiers being gamed 32.8% of the time — so neither reward class is a default. Sources: [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md), [reviewer-model-ablations.md](../handoffs/active/reviewer-model-ablations.md), [reviewer-calibration-accounting.md](../handoffs/active/reviewer-calibration-accounting.md).
 
@@ -2818,3 +2842,232 @@ but backend- and quant-mismatched. None of the three sentences substitutes for t
 - [`handoffs/active/evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) — 2026-08-21 addendum: the nine-day retention gap, the window-bounded clean-log negative (11,670 lines, six ≥16K requests), and the detector-not-blind analysis
 - [`progress/2026-08/2026-08-21.md`](../progress/2026-08/2026-08-21.md) — Stage-2b record: `intake-1279#record` verdicts (cache localization refuted by the reporter's own log; `llama-bench` control blind by construction; exposure an explicit unknown)
 - [`research/intake_index.yaml`](../research/intake_index.yaml) — `intake-1279#record`, the dive-verified entry for llama.cpp #27442 carrying the primary-artifact evidence
+
+---
+
+## Compiled Update — 2026-08-23 (evening): the OP-21 re-bench's decision-grade discipline, the bench-core-claim guard, and the fail-open→three-state backlog pass
+
+**Confidence: verified** — the OP-21 numbers are a measured, operator-granted run with affinity attested from /proc; the SS-BENCH-GATE-b closure and the OBS/NIB2 fixes are code landings with test counts; the scoring-infra item is a filed question.
+
+### OP-21: the overlap re-bench, and what "decision-grade" actually required
+
+The operator-authorized re-bench of `frontdoor` + `ingest_long_context` in the OVERLAPPING geometry (2026-08-23 08:53–08:58Z, host quiet, topology hash `171f86f9…`) is the pass's sharpest measurement-discipline example:
+
+- **OVERLAP 8080+8185**: n=3 → 0.977 (cv 0.102, borderline); n=6 → 1.194 (cv 0.079, allow); pooled n=9 mean **1.121**, cv 0.125 — **NOT decision-grade (cv > 0.05)**; verdict class allow-marginal/borderline.
+- **DISJOINT control 8080+8285**: ratio **1.360**, cv 0.018 — decision-grade **allow**.
+
+Three discipline points generalize: (1) **the cv threshold is the decision gate** — a pooled mean with cv 0.125 is not evidence even though every individual cell reads "allow"; (2) **n=3 was insufficient on the noisy geometry** (borderline flip from 0.977 → 1.194 between n=3 and n=6) — the n-count must be chosen for the observed variance, not the protocol default; (3) **the shipped 1.89 (samples=1, disjoint geometry) was falsified for the overlap shape** — a role-keyed gate that cannot distinguish geometry must carry the geometry it actually observes. Operator disposition: demote the role-keyed pair row to the overlap measurement; keep the 1.360 disjoint control on file as the boundary reference.
+
+### SS-BENCH-GATE-b — the bench-core-claim guard is closed (and a named residual opened)
+
+`scripts/server/bench_core_claim.py` (✅ 2026-08-23): the launcher reads the live bench driver's ACTUAL thread core sets from /proc — **fail-closed on malformed/unstable; unobservable = busy** — and every spawn (start/reload/aux/sidecar: 6 Popen sites + 5 wrappers) is either pinned off the claim (`host_cores − claim`, e.g. bench 0-95 → sidecar 96-191) or refused (exit 2) unless `--allow-during-bench`. Default-affinity spawns (the incident's sidecar shape) are **pinned rather than refused** so the stack stays functional during a bench. 60 new tests + 95 reload/stack tests + 489 stack suite green. **SS-BENCH-GATE-c is the named residual**: extend the same guard to the API's OWN runtime spawn layer (llama-servers spawned by the running API with default affinity, not through the CLI launcher) — the incident's sidecar was CLI-spawned so -b covers it; the API layer does not yet. Also discovered while running the suite: 3 pre-existing `test_runtime_flag_spec.py` failures (`prefix_stable_order` spec parity drift), predating the change.
+
+### OBS-3/4/5/7 — the fail-open family, fixed as three-valued (unknown must mean busy)
+
+The tier-1 backlog pass closed four of the observation-family rows, each converting a two-state collapse into a three-state check where unobservable ≠ clear:
+
+- **OBS-3** — `inference_guard.sh` failed OPEN into live inference (a missing `pgrep`/argv drift/`xargs` error all yielded 0 GB → "No heavy inference detected" → full workload launched on top of a live 200 GB+ inference). The 2026-08-23 fix: unreadable `MemAvailable` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`), never a WARNING-degraded all-clear — one negative and one blind eye is not a clear. Follow-up **OBS-3a**: add a mutation case for "MemAvailable unreadable → failed" to the existing test suite, which predates the fail-closed semantics.
+- **OBS-4** — `run_wrapper.sh:79`'s `autopilot_running()` required `start` immediately after the script path; a flag inserted into the daemon argv reads as "not running" and shadow jobs launch into a live AutoPilot. Now three-valued (running/stopped/unconfirmed): authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent), corroborated by an adjacency-robust dual pgrep; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run) instead of reporting success. Truth table tested (10 cases).
+- **OBS-5** — `rustevo2_bench_preflight.py` read an EMPTY pgrep as a positive "no AutoPilot" (and a missing `pgrep` binary raised `FileNotFoundError` before the rc handling). Now `active_autopilot()` is three-state: missing pgrep → `unobservable`; an empty result is never trusted alone (a negative requires the flock provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in strict and advisory modes. 15-case truth table tested.
+- **OBS-7** — `emergency_cleanup.sh:26` carried a committed `sudo pkill -f claude`, the exact idiom INC-20260731-broad-process-pattern-kills forbids, invisible to the PreToolUse hook (it inspects the typed command, not the script body). The `pkill` and its `pgrep` are DELETED; the section now refuses to guess and prints operator steps for killing only self-verified PIDs; umount failure reports loudly instead of aborting under `set -e`; the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt`.
+
+### NIB2-57a — the unmeasured-prior case is now loud (reader audit + provenance mask)
+
+The `or baseline_tps` fallback that let NIB2-57 persist is closed: full reader audit + shared `ResolvedTps`/`resolve_tps_prior()`/`format_tps()` in `registry_loader.py`; MCP tools, `cli --list-roles`, `render_stack_summary` label baseline-stand-ins and `unmeasured`; **`bilinear_scorer` drops the fabricated `10.0` default** for a `tps_known` provenance mask (MODEL_FEATURE_DIM 7→8); `train_graph_router` warns per-role when fleet tps is unmeasured. Measured behavior byte-identical; 71 targeted + 651 surface tests pass (one pre-existing data-driven failure: `quality_overall: null` for architect_general post-Qwen3.8-27B swap — a measurement-data decision, not code). Companion **NIB2-58b**: re-point `smoke_test_llama_v3.sh`/`prove_paged_attention.sh` binary paths from the extinct `build/bin` to `build-v9-cpu`/`build-v9-hip` (scripts currently fail fast with a clear message, which is correct behavior until then).
+
+### Scoring infra — loader projects non-live records into the live scorer's quality map (filed question)
+
+`_baseline_quality_by_role()` (`q_scorer.py:205`) iterates ALL priors records, not just `live_stack` — `qwen35_122b_q4km` and `qwen36_q8_0` (benchmark_or_candidate) appear in `cfg.baseline_quality_by_role` with source `degraded_fallback`. Whether virtual candidates should project into the live scorer at all is a loader-design question — pinned by the rewritten `test_config_has_quality_baselines` (data-driven projection-contract test, 2026-08-23), which encodes current behavior: decide and change deliberately, not by accident.
+
+### Source References (2026-08-23 evening)
+
+- [`shape-keyed-contention-gating.md`](../handoffs/active/shape-keyed-contention-gating.md) — the OP-21 overlap re-bench receipt (`op21-overlap-rebench-20260823T0855Z`), the cv-threshold discipline, the falsified 1.89, the REFUSE marker-polarity fix, the matrix-truncation fix
+- [`standardized-stack-update-pipeline-finalization.md`](../handoffs/active/standardized-stack-update-pipeline-finalization.md) — SS-BENCH-GATE-b closure (`bench_core_claim.py`), SS-BENCH-GATE-c residual, the pre-existing test_runtime_flag_spec failures
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics, OBS-3a/NIB2-58b follow-ups, NIB2-57a reader audit, NIB2-58a verify_ggml_linkage wiring (16 build classes)
+- [`scoring-infra-standardization.md`](../handoffs/active/scoring-infra-standardization.md) — the loader projection question and the projection-contract test
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` → 502/SSE fail-closed route fix (cross-listed with [Inference Serving](inference-serving.md))
+
+## Compiled Update — 2026-08-23: Annex D — the first protocols for output identity, and every clause traces to a measured false clear
+
+**Confidence: verified** — the protocol text and its status are the ratified annex
+(`measurement/protocols/determinism-parity.md`, 2026-08-23T08:28:26Z) and the MEASUREMENT.md §2
+registry; the failure modes each clause encodes are the `dive-verified`
+`intake-1288#record` / `intake-1283#record` / `intake-1279#record` / `intake-1284#record` entries,
+read against primary artifacts. **Every measured figure below is third-party and gates nothing**
+(MEASUREMENT.md). What is ours is the instrument.
+
+### Annex D exists — and both its protocols are STAGED, so nothing may yet be quoted under them
+
+`measurement/protocols/determinism-parity.md` is the sixth annex of the measurement constitution,
+filed by instrument class. It holds two protocols:
+
+| Protocol | Answers | Metric |
+|---|---|---|
+| `P-PARITY-1` | *Do these two decode configurations produce the same tokens?* (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **direction: not applicable, this is a verdict** |
+| `P-NONDET-1` | *Does either of them produce the same tokens as itself?* | bit-identical / not, plus `max abs Δ` across N ≥ 10 repeats (↓) |
+
+**These are the repo's first protocols of any kind for output identity. Every parity check in the
+repo until now was ad hoc** — which is why the historical parity claims scattered across
+[Speculative Decoding](speculative-decoding.md) and `kv-cache-quantization.md` are durable negatives
+of their own narrow scope and not P-PARITY-1 results. **Both protocols are registered STAGED, not
+ratified**: no measurement has been taken under either, and none may be quoted as ratified until one
+has. The scope of the 2026-08-23 ratification was the *annex*, not its protocols — a distinction
+worth preserving, because "the protocol exists" and "the protocol has ever produced a number" are
+different claims and only the first is currently true.
+
+Two framing rules travel with them and generalise past decode parity:
+
+- **Neither is a speed protocol and neither may be quoted beside a throughput figure.** A verdict
+  and a rate answer different questions; printing them adjacently invites the reader to trade one
+  for the other.
+- **`P-NONDET-1` is a precondition, not an option.** An arm that is not self-identical cannot be
+  compared to anything, and a parity failure measured against a non-deterministic arm is
+  uninterpretable. This is the output-identity analogue of the reproducibility tripwire this page
+  already requires before a Probe-B envelope sweep.
+
+The ratification script was itself run end-to-end on a throwaway repo copy plus **four mutation
+cases**, each confirming it refuses and leaves nothing behind — the same
+mutation-test-your-own-guard discipline compiled in the 2026-08-21 vacuous-pass campaign, applied to
+a governance script rather than to a scorer.
+
+### Every load-bearing clause names the failure it prevents
+
+This is the part worth generalising. Annex D was not derived from first principles; each clause was
+written **against a specific measured false clear**, and the annex records which:
+
+| Clause | The measured failure it prevents |
+|---|---|
+| **n ≥ 5 prompts, minimum, non-negotiable** | A single-prompt parity check false-clears at a rate **near 50%**: the same upstream reporter went **1/5 → 0/5 → 4/5** depending on prompt and patch, and a separate arm was byte-identical on one workload and divergent on the other. **A 1-prompt parity result is not a P-PARITY-1 result and may not be labelled as one.** |
+| **Fresh process per phase** | Measured **1/5 divergences with a reused server versus 4/5 with a fresh process per phase — *despite* `cache_prompt=false`**. The flag is not a substitute for process isolation and must not be cited as one. |
+| **Per-prompt PASS/FAIL + first-differing generation-token index; NEVER an aggregate** | A hash-only comparison says *that* arms diverge, never *where* — and an aggregate ("4/5 passed") hides the prompt-dependence that is the entire reason n=1 is unsafe. It is five results, and *which* prompt failed is the load-bearing part. The index is a **generation**-token index on the run's own vocabulary; a character offset is not comparable across arms. |
+| **Two independent comparison keys** — stripped-output MD5 (banner and prompt echo removed) *and* a normalized-identity SHA-256 over `{content, reasoning_content, token_ids}` | A text hash cannot see a divergence that renders to identical text; an unstripped hash compares the banner. Stripping is part of the instrument, not tidying. |
+| **ABBA ordering (A, B, B, A)** | Order effects and process-lifetime effects are both real here and both alias onto the factor under test. |
+| **`-ctk f16 -ctv f16` by default; any quantized-KV arm needs its own factor-disabled baseline first** | Quantized KV **alone** moves greedy output with the factor under test disabled. It compounds with whatever the parity test measures, so a quantized-KV non-parity result is unattributable without it. |
+| **`GGML_CUDA_LOG_MMVQ_ROUTE=1` route capture on every arm** | EPYC-local `a6b4b5263` (`ggml/src/ggml-cuda/mmvq.cu:341-344`) deliberately routes Q8_0 to a different kernel at `ne11 >= 2`, and its own commit message says *"numerically-valid (not bit-exact)"*. **A reference arm that takes the same kernel route as the arm under test is not a reference.** The equivalent `N==1`/`N>1` split exists on both CPU paths, so batch invariance is a property none of our three compute planes holds. |
+
+**The generalisable rule: a protocol clause with no named failure behind it is decoration, and a
+clause whose failure was measured is not negotiable at design-review time.** Annex D is the worked
+example — it is short precisely because nothing was added that could not name its own incident. The
+inverse test is equally usable on any protocol this repo writes: read each clause and ask *what
+false result does dropping this produce?* A clause that cannot answer is a candidate for deletion;
+one that answers with a measured rate is a candidate for a hard refusal rather than a
+recommendation — which is why n ≥ 5 is written as a refusal to accept the label, not as guidance.
+
+The decision rule is scoped just as tightly: PASS on all prompts means parity holds **for those
+prompts, that model, that KV type and that route** — a durable negative of exactly that width. Any
+FAIL is **not** automatically a defect in the factor under test, and a FAIL whose reference arm took
+the same kernel route is reported as **unattributable**, not as a divergence.
+
+### `P-NONDET-1` answers the prior question — and the harness *shape* is the instrument
+
+The protocol is one sentence of method: **repeat the identical call N ≥ 10 times inside ONE process
+and compare all N outputs to each other**, not to a stored expectation. Its consequence is the sharp
+part: **a configuration that is not bit-identical with itself cannot support any parity, regression
+or A/B claim** until the source is found.
+
+**A one-shape-per-fresh-process harness cannot run this protocol and is structurally blind to the
+phenomenon — it sees a clean first call and clears a broken kernel.** The measured instance
+(third-party, fla issue #1156 on MI355X / gfx950 / ROCm 7.2): ten identical backward calls in one
+process returned **ten different answers**, absolute-max compounding monotonically **0.40 → 252.88**
+across the ten, while **the forward pass stayed bit-identical throughout**. The forward-clean check
+that most harnesses actually run is precisely the check that cannot see it.
+
+The cruel detail is why that harness existed at all: a HIP illegal-address fault poisons the
+context, making every later op in the process report failure, so **one shape per process was the
+*correct* discipline for a different problem**. The hygiene that made the shape sweep valid is the
+hygiene that hid the non-determinism. Two harness properties can each be individually right and
+jointly blind — which is a reason to state a harness's process/repeat topology explicitly in the
+protocol rather than leaving it to the runner's judgement.
+
+The same report contributes a second, independent instrument defect worth adding to this page's
+vacuous-verification catalogue: its headline "reproduces on 0.4.2 **and** 0.5.2" was an
+**import-resolution artifact** — the "0.5.2" run was still importing 0.4.2 from `site-packages`. It
+is a new instance of the standing **TARGET-resolved-from-the-wrong-tree** face: the check ran, it
+was well-formed, and it resolved to the wrong artifact. **A same-node A/B across library versions
+must install each version to a separate prefix and select it by `PYTHONPATH`**, then assert the
+*resolved* path rather than the requested version. (The underlying defect was real and confined to
+0.4.2, the issue is closed self-retracted, the forward path is clean at every shape tested, and we
+run no `fla` on this host — the methodology is what reaches us, not the bug.)
+
+### `llama-bench` cannot validate output, and is now a formally excluded correctness instrument
+
+Recorded on this page 2026-08-22 as a third party's defective exculpatory control; Annex D makes it a
+standing exclusion of our own. At frozen v9 `0db32c06e3e5`,
+`tools/llama-bench/llama-bench.cpp:2106-2109` sets `tokens[i] = std::rand() % n_vocab` for the
+prefill path, and `:2131-2140` discards the model's output entirely in the decode loop
+(`token = std::rand() % n_vocab` each iteration). **It feeds random tokens, never samples the model,
+and never inspects output.** It therefore cannot detect wrong output of any kind, cannot serve as a
+`P-PARITY-1` instrument, and cannot support a correctness claim in any form — including the implicit
+form "the benchmark ran clean, so the graph is fine."
+
+The generalisation belongs beside this page's *a control should be allowed to reject the experiment*
+rule: **before offering a throughput harness's silence as correctness evidence, check what the
+harness feeds itself.** A speed instrument that synthesises its own inputs is measuring the graph,
+not the model, and its pass is unfalsifiable by construction — Shape-C quiet, not evidence.
+`P-BENCH-1` and the other llama-bench-based protocols in §2 are unaffected: they claim decode t/s and
+never claimed output identity. What is newly explicit is that they cannot be borrowed for it.
+
+### Two more from the same wave: an unreachable "fix", and a device-class win that was one device
+
+Both from upstream Metal PRs 27390/27450, and both generalise past Metal:
+
+- **A fix cannot explain a symptom on hardware where its branch was never compiled.** PR 27450 is a
+  genuine wrong-output fix (a K-direction out-of-bounds read that "silently corrupted results or
+  produced NaN"), and it was reached for as an explanation of a field report — but at the reporter's
+  own build the device gate forces `has_tensor = false` unless the device name contains
+  M5/M6/A19/A20, and the reporter's device is an Apple M4. The entire `ifdef` branch PR 27450 fixes
+  **was never compiled**, let alone executed, on that machine. Separately, the `K` it clamps is the
+  matmul **reduction** dimension (model geometry), not the token count — so the defect is
+  prompt-length *independent* and cannot produce a length-threshold symptom at all. **Two
+  independent disqualifications, both findable by reading the patch's own gate and its own index
+  variable before crediting or blaming it.**
+- **A speedup measured on one device is not a device-class result, and the half-life can be hours.**
+  PR 27390's own numbers are 1.19–1.79× across four model/shape cells on an M2 Ultra; an independent
+  benchmark of the *same command* on an M5 Max measured **0.66× — a 34% decode regression** — and the
+  new path was gated back (`ne01 >= 32`) **3 h 17 min later**. This is the cross-device form of the
+  standing per-(model, quant) certification rule: a kernel-path change certified on one member of a
+  hardware family must not be quoted for the family.
+- One bonus worth naming because it argues for spending on test cases: the long-context quantized-KV
+  attention eval cases added *by* that performance PR immediately exposed a **real wrong-output bug
+  in a different backend** (a Vulkan fp16-denorm overflow, fixed separately). **A test-case addition
+  is a measurement instrument, and it pays outside the change that motivated it.**
+
+### Source References (2026-08-23 Annex D)
+
+- [`measurement/protocols/determinism-parity.md`](../measurement/protocols/determinism-parity.md) — Annex D in full: `P-PARITY-1` instrument/preconditions/reporting/decision rule, `P-NONDET-1`, and the provenance note naming its three source cases.
+- [`MEASUREMENT.md`](../MEASUREMENT.md) — §2 registry rows (both 📋 staged 2026-08-23, annex key `D`) and the CHANGELOG amendment enumerating the load-bearing clauses.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1288#record` — llama.cpp #27407 dive: the 1/5 → 0/5 → 4/5 and reused-vs-fresh-process measurements, the `a6b4b5263` route confounder, and the per-prompt-not-aggregate requirement.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1283#record` — fla #1156 dive: the ten-repeats-in-one-process non-determinism signature (0.40 → 252.88, forward bit-identical), the one-shape-per-process blindness, and the `PYTHONPATH` import-contamination artifact.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1279#record` — the `llama-bench` `std::rand()` reads at frozen v9 (`:2106-2109`, `:2131-2140`) behind the correctness-control exclusion.
+- [`research/intake_index.yaml`](../research/intake_index.yaml) `intake-1284#record` — Metal PRs 27390/27450: the unreachable-branch disqualification, the M2-Ultra-vs-M5-Max 1.78× vs 0.66× split and its 3 h 17 min gate-back, and the cross-backend bug the new eval cases surfaced.
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-6/6b/6c, the annex's first consumer, and the arms whose design the protocol fixes.
+- [`progress/2026-08/2026-08-23-research-intake.md`](../progress/2026-08/2026-08-23-research-intake.md) — wave-2 session record, including the four-mutation-case dry run of the ratification script itself.
+
+- [Determinism & output-parity protocols (Annex D)](../measurement/protocols/determinism-parity.md) -- `P-PARITY-1` and `P-NONDET-1`, the repo's first protocols for output identity; n≥5 prompts, fresh process per phase, per-prompt verdict with first-differing generation-token index, f16-KV control, per-arm kernel-route capture. STAGED 2026-08-23.
+- [`intake-1288#record`](../research/intake_index.yaml) -- llama.cpp #27407 + the uncited #25618; the measured false-clear rates (1/5 → 0/5 → 4/5; 1/5 reused vs 4/5 fresh despite `cache_prompt=false`) that each Annex D clause encodes.
+- [`intake-1283#record`](../research/intake_index.yaml) -- fla #1156; the ten-identical-calls-in-one-process non-determinism detector, the one-shape-per-fresh-process blind spot, and the separate-prefix/`PYTHONPATH` rule for cross-version A/Bs.
+- [`intake-1284#record`](../research/intake_index.yaml) -- llama.cpp Metal PRs 27390/27450; an unreachable fix branch as a non-explanation, and a 1.78×-on-one-device / 0.66×-on-another perf change gated back in 3 h 17 min.
+
+## Compiled Update — 2026-08-25: reviewer-plane trace coverage 100% + the H-LB overhead baseline
+
+**Confidence: verified (mechanics) / observation-grade (latency, pending P-AB-1/P-SPEED-OBJ)** —
+50-question shadow replay on a dedicated production-v9 llama-server (Qwen3.5-122B-A10B UD-Q4_K_M
++ MTP draft), reports in `repos/epyc-orchestrator/data/trace/review_replay_report_{shadow,off,delta}.json`.
+
+The TM-8 coverage gate passed outright: **100.0% of 50 review invocations produced trace rows**
+(187 rows, 100% phase-tagged, 100% `executor_model_id` after threading the executor through the
+`apply_verifier_precedence`/`apply_warn_only`/`mark_reject_admissibility`/`escalate` sub-emissions —
+first run was 80.2% — and 50/50 PLAN_REMINDER events), with **zero enforcement side-effects** in
+shadow mode. RD-12's accounting landed the H-LB baseline scaffold: **137 decisions, mean 8,017 ms /
+median 8,014 ms / p95 8,959 ms per decision, 16,692 tokens in / 3,826 out**, parse-failure
+fallback counted distinctly (1) and model-call failures separately (0). The overhead delta vs the
+reviewer-off loop is ≈ 8.0 s per decision — the paired task-rate A/B is LB-4's job; the enforce-mode
+gate is LB-6 (operator). A distinct-parse-failure fallback that is counted (never dropped, never
+double-counted) is the generalizable rule here: a fallback masquerading as a verdict is a scoring
+defect in any suite.
+
+### Source References (2026-08-25)
+
+- [`reviewer-decision-plane.md`](../handoffs/completed/reviewer-decision-plane.md) — RD-12 row tick, replay numbers, H-LB handoff
+- [`reviewer-trace-materialization.md`](../handoffs/completed/reviewer-trace-materialization.md) — TM-8 gate tick, coverage instrumentation (`src/trace/coverage.py`), replay harness
+- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record with the run details

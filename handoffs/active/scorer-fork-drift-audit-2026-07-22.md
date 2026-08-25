@@ -303,4 +303,4 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
     campaigns are live on these scripts right now (`mainA` on `e5-stage-b-campaign`, `inference` on
     `e8-deterministic-replay-readiness`), and changing what the default path scores mid-campaign
     would alter measurement semantics under running work. Filed on the bus with options.
-- [ ] Research-repo `debug_scorer.py` is fully pre-B7 (10/10 defect classes, off routing path) — port B7 or stamp research benchmarks scored with it as pre-B7-scorer era
+- [x] Research-repo `debug_scorer.py` is fully pre-B7 (10/10 defect classes, off routing path) — port B7 or stamp research benchmarks scored with it as pre-B7-scorer era ✅ 2026-08-23 — B7 delegation shim + era stamp

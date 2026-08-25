@@ -34,22 +34,38 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   Residual, deliberately not chased here: the `master-handoff-index.md` rollup block that
   `index_state.py` also writes is still tracked and still shared, so it remains a (much smaller)
   concurrent-edit surface — one block, not a 250 KB pair.
-- [ ] **Cross-file duplicate-TASK detector (semantic, not exact-text).** Proposed by mainB, seconded
-  by the auditor 2026-08-12, owned by nobody since. Exact-text scanning is proven insufficient:
-  `stale-open-audit-2026-07-18.md:257` returned 0 duplicates while the (now-superseded)
-  `BACKLOG-DISPATCH-QUEUE.md:1686-1699` lists **14 real pairs found by hand** — index rows summarize
-  the same task in different words. Validate any detector against those 14 known pairs: one that
-  does not rediscover them is not working. Re-home the C2 pair list out of the superseded dispatch
-  queue before that file is pruned. (Filed from bus triage 2026-08-16, msg-20260812T111252Z-20.)
-- [ ] **`backlog_row_check.py`: mid-text owner declaration is a measured false negative.** Reproduced
+- [x] **Cross-file duplicate-TASK detector (semantic, not exact-text).** ✅ 2026-08-24 —
+  `scripts/handoffs/duplicate_task_scan.py` (pure-stdlib, checkbox-row vs index-row comparison,
+  max(seq, dice, containment) on stopword-filtered tokens, two-channel candidate generation).
+  Validation against the C2 known pairs: **10/10 resolvable pairs re-detected (recall 1.00)** at
+  threshold 0.38; hand-classified precision 0.86 (55/64 pairs ≥0.60 are the same unit of work filed
+  twice). New finds beyond C2: DR-3 cluster (7 pairs: gpu-drafter-control-redesign ≡
+  mi210-big-model-acceleration-roadmap), reviewer-typed-artifacts ≡ security-review-skill,
+  glm51-reap ≡ glm52 gates, deepseek-v4-flash ≡ v9-kernel (V9-7 cutover), autopilot P1 ≡
+  shape-keyed (marker polarity). The C2 pair list is re-homed below; the superseded dispatch queue
+  can be pruned. (Filed from bus triage 2026-08-16, msg-20260812T111252Z-20.)
+- [x] **`backlog_row_check.py`: mid-text owner declaration is a measured false negative.** ✅ 2026-08-24.
+  Reproduced
   live 2026-08-16: `numa-topology-cutover-resume-20260730.md:189` screens DISPATCHABLE while its own
   line 190 reads "**Owner: the stack owner (`inference`), NOT this lane.**" — `_OWNER_PREFIX` is
   `.match()`-anchored to the body's first characters and `_OWNER_DISCLAIM` searches only the heading.
   The narrowness is deliberate (21/1258 precision, documented at `:96-101`), so widen narrowly:
   match a bolded `Owner:` lead-in at the start of ANY line of the row body, keep the
   colon-within-60-chars constraint, and re-measure against the live corpus without regressing the
-  21/1258. (Filed from bus triage 2026-08-16, msg-20260813T181621Z-52.)
-- [ ] **Populate `Deps` as real dependencies are established.** 577 `ref` edges are derived from
+  21/1258. ✅ 2026-08-24 — fixed in `scripts/coordination/backlog_row_check.py`
+  (`_OWNER_MIDTEXT` sentence-position anchor + immediate-colon, continuation-line scan). Result:
+  **26/1528 → 27/1528 owner-flagged; the +1 is exactly the repro
+  (`numa-topology-cutover-resume-20260730.md:189`), zero regressions, zero new false positives**,
+  all 71 tests in `tests/test_backlog_row_check.py` pass. Wider distances re-imported
+  "`Owner if opened:`" / "`Operator constraint:`" / "`Operator's stated prior:`" (measured false
+  positives), so the anchor is deliberately narrow. (Filed from bus triage 2026-08-16,
+  msg-20260813T181621Z-52.)
+- [x] **Populate `Deps` as real dependencies are established.** ✅ 2026-08-24 — 8 hand-verified edges
+  applied (verbatim-source-justified; direction-checked, pointers rejected): REV-05→UFH-01,
+  REV-01→INF-56, REV-04→REV-06, INF-33→INF-48, REV-02→INF-17, EVL-14→EVL-13, REV-07→REV-02,
+  RTG-39→EVL-45. Rejected as ambiguous/pointer-only: EVL-11→INF-24, RTG-02→EVL-04, INF-42→INF-52,
+  EVL-29→INF-54, RTG-22→RTG-02, RTG-38→RTG-36/EVL-44, UFH-04→EVL-44, RTG-09→RTG-30. Graph now
+  carries 25 dep edges; heuristic bulk-import remains rejected (direction ambiguity). 577 `ref` edges are derived from
   markdown links; only 1 `dep` edge is hand-authored. A heuristic sweep found 253 candidates and was
   rejected — the phrasing cannot disambiguate direction ("X gates Y" vs "gated by X"), so importing
   them would draw authoritative arrows pointing the wrong way. Fill them in as work reveals them.
@@ -71,6 +87,81 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     so no false positive on a healthy service.
     **The parent row stays OPEN and unticked — the cron decision is untouched and still the
     operator's.**
+  - [x] **Wrong-checkout launch incident (2026-08-21 → 2026-08-24) closed.** ✅ 2026-08-24 — the
+    :8100 hub had been launched 2026-08-21 from the scratch worktree
+    `dashboard-v26-telemetry-integrity-20260821` (`hub_supervisor.sh` started with EPYC_ROOT pointed
+    at the worktree), so `REPO`/`HANDOFF_DIR` resolved from `__file__` to that frozen `handoffs/`
+    copy — the board showed 2026-08-21 data while its badge read **fresh** (a live scan of its own
+    frozen checkout certifies itself), and the C42 stale-source check could not see it because it
+    compared against `${EPYC_ROOT}/dashboard`, the same frozen checkout. Restored: killed the
+    worktree-launched supervisor + hub, relaunched canonically from `/mnt/raid0/llm/epyc-root`;
+    board live again (170 active / 6 blocked / 181 completed / 103 archived). The `handoff_graph`
+    panel's "index_state.py has never run" absence was collateral of the same root cause. Record:
+    `progress/2026-08/2026-08-24.md`.
+  - [ ] **Cwd-guard hardening was attempted and REVERTED — do not reintroduce without a different
+    probe.** A `readlink -f /proc/<pid>/cwd` vs `$EPYC_ROOT` check added 2026-08-24 false-positived
+    in this containerized environment (a hub launched with `cd ${EPYC_ROOT}` resolved to a different
+    inode than the path — namespace artifact), producing a ~15 s restart loop. Reverted; the script
+    is byte-identical to pre-attempt. The wrong-checkout class therefore remains visible only via
+    the manual `/api/health` + board-mtime comparison. Options if it recurs: compare the hub's
+    serving evidence (`handoffs/` mtime deltas) instead of /proc.
+  - **OPERATOR DECISION PACKAGE (2026-08-24, prepared — decision is yours):** the parent row above
+    (nothing restarts `hub_supervisor.sh` if it dies) still needs the cron ruling. Options:
+    **(a) cron `once` form (recommended)** — add `*/2 * * * * /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh once`
+    to the host crontab. `acquire_lock` is flock-based and self-exits when the daemon already runs,
+    so daemon + cron coexist safely; ~1 s/2 min CPU; the C42 stale-source check and wrong-checkout
+    restart also run in `once` mode, covering the whole supervision surface if the daemon dies.
+    Cost: one `crontab -e` line. **(b) Leave as-is** — zero host change; failure mode = the one
+    observed twice (dead supervisor → stale hub unnoticed). **(c) systemd unit** — more robust, but
+    the script's own docstring rules it out as host-config territory. **Recommendation: (a).** On
+    approval: add the crontab line, verify `hub_supervisor.sh once` exits 0 against the healthy hub,
+    tick the parent row.
+  - [x] **Timeline artifact lags lane-worktree commits.** ✅ 2026-08-24 — `install_timeline_hook.sh`
+    regen body now resolves the PRIMARY worktree (`git worktree list --porcelain` first entry;
+    verified lanes resolve to `/mnt/raid0/llm/epyc-root`, same inode as `/workspace`) instead of
+    regenerating in the checkout where the hook fired; re-installed in the shared `.git/hooks`
+    (one install covers every worktree of the repo, verified via `rev-parse --git-path hooks` from
+    lane mainA). Forced-regeneration test with cwd inside lane mainA landed the artifact in the
+    primary's `data/handoff_timeline.json`; zero lane-worktree contents touched. The git hooks
+    (`install_timeline_hook.sh`) regenerate `data/handoff_timeline.json` in the checkout where the
+    commit/merge happens; lane-worktree commits and the detached promotion merge never touch the
+    real repo's hooks, so the real-repo artifact goes stale (observed: last regen 2026-08-23 15:26
+    despite handoff commits 2026-08-24 06:48/10:34; manually regenerated, last_sha = HEAD).
+    Fix direction: make the hook resolve the canonical (primary) worktree via
+    `git rev-parse --git-common-dir` + `git worktree list` and regenerate there, then re-run
+    `install_timeline_hook.sh` in every checkout. Watch item until fixed: regenerate manually via
+    `scripts/handoffs/build_handoff_timeline.py`.
+  - [x] **Benchmark artifact inventory regeneration cadence is unowned.** ✅ 2026-08-24 — wired into
+    the same three git hooks as a second detached, **delta-guarded** block: regenerates
+    `data/benchmark_artifact_inventory.json` in the primary only when a research artifact is newer
+    than the artifact itself (~0.55 s build, pure-stdlib, no-op on the common path); verified
+    current→no-op, fresh probe→regenerates, idempotent re-install. The freshness envelope exists,
+    so a silent freeze is now impossible. `data/benchmark_artifact_inventory.json`
+    froze at 2026-07-29 (file mtime Aug 12) — the `:8100/benchmarks` page showed 26-day-old data
+    with no alarm stronger than "aging". Regenerated 2026-08-24 via
+    `scripts/dashboard/build_benchmark_artifact_inventory.py` (157 matched / 6 models, 1545
+    unmatched). Decide: schedule it (nightshift/cron), wire it into a post-commit hook like the
+    timeline, or document it as manual-run-on-demand; the panel's freshness envelope exists, so the
+    failure mode is visible once someone looks, not silent.
+
+## Known duplicate pairs (C2-derived, re-homed 2026-08-24)
+
+Source: `BACKLOG-DISPATCH-QUEUE.md:1686-1699` (superseded file — may now be pruned). Resolved to
+current rows by TASK TEXT; the old queue's `file:line` anchors were ~60% rotted. Re-detected by
+`scripts/handoffs/duplicate_task_scan.py --validate` (recall 1.00 on resolvable pairs, 2026-08-24):
+
+| Duplicate pair | Score | Status |
+|---|---|---|
+| RE-2 ≡ EV-12 execution-free patch verifier | 1.000 | both live — coder_escalation pre-gate filed twice |
+| ID-7 ≡ scoring-infra ordered_subsequence | 0.875 | both live |
+| ID-29 ≡ gemma DFlash bench | 0.884 | both live |
+| ID-3 ≡ AP-21 gepa_ratio pin | 0.662 | both live |
+| ID-15 ≡ DavidAU header gate | 0.625 | both live |
+| ODL full-set re-baseline | 0.523 | both live (document-parser-table-bench vs opendataloader) |
+| iqk T2/T3 ≡ tq3 gates | 0.641 / 0.848 | both live (trellis gate filed in both) |
+| RE-3 ≡ EV-13 review-F1 suite | 0.600 | both live |
+| ID-8 ≡ EV-9 FrontierCS floor probe | 0.391 | both live (hardest reworded pair) |
+| 4 further C2 pairs | — | members closed/retired — not rediscoverable, closed history |
 
 ## Not filed, deliberately
 

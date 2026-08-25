@@ -25,9 +25,9 @@ No new handoff is needed. No chapter or measurement-constitution edit is propose
 | `autopilot-continuous-optimization.md` | Active, indexed by `routing-and-optimization-index.md`; not a pointer or frozen handoff | Own the archived-proposal diagnostic and MDL/KnowledgeDistiller commitment guard. The file is concurrently dirty, so Stage 4 must re-read its tail and append without rewriting concurrent work. |
 | `autokernel-research-loop.md` | Active single owner in the master and inference-acceleration indices; production kernels are frozen, but this research handoff is not | Own the proposal representation contract. Existing hypothesis/falsifier, scope-denominator, novelty, and information-gain controls are already implemented and must not be duplicated. The header's `implementation not started` phrase is stale relative to the live implementation and will be corrected. The file is concurrently dirty, so Stage 4 must anchor edits to the current AK4 section. |
 | `agent-world-env-synthesis.md` | Active planning stub with AW-1…AW-5 landed; indexed by `routing-and-optimization-index.md` | Own active boundary-acquisition task synthesis. This extends AW-6 rather than creating another environment handoff. |
-| `reviewer-typed-artifacts.md` | Active H2 leaf under `reviewer-control-plane-index.md` | Own immutable machine-review envelopes. This is the live replacement for the preliminary `meta-harness-optimization.md` route. |
+| `reviewer-typed-artifacts.md` | Active H2 leaf under `reviewer-control-plane-index.md` | Own immutable machine-review envelopes. This is the live replacement for the preliminary `handoffs/completed/meta-harness-optimization.md` route. |
 | `reviewer-model-ablations.md` | Active H5 leaf under `reviewer-control-plane-index.md`; inference-gated | Own the contemplative prompt ablation as a matched reviewer-prompt arm. |
-| `meta-harness-optimization.md` | Compatibility pointer; explicitly forbids new implementation work | Decline all edits here and route to H2/H5 or AutoPilot. |
+| `handoffs/completed/meta-harness-optimization.md` | Completed ledger; the active compatibility pointer was retired 2026-08-23 | Decline all edits here and route to H2/H5 or AutoPilot. |
 | `evidence-plane-instrument-repair.md` | Active but scoped to the existing Phase-0 repair/tail-monitoring lane | Decline a scope-broadening edit; the required validation grammar is embedded in the two loop tasks and reviewer protocol instead. |
 
 All five live owners already have domain-index placement. The work is observe-only or schema hardening and
@@ -172,7 +172,7 @@ Cross-reference corrections in the same targeted edit:
 - intake-998: add `agent-world-env-synthesis.md`.
 - intake-1003: add `reviewer-model-ablations.md`; do not route implementation to the Meta-Harness pointer.
 - intake-1004: add `reviewer-typed-artifacts.md`; do not route implementation to the Meta-Harness pointer.
-- intake-991: remove `meta-harness-optimization.md` from the proposed-owner interpretation while preserving
+- intake-991: remove `handoffs/completed/meta-harness-optimization.md` from the proposed-owner interpretation while preserving
   the historical intake prose in `dive_corrections`.
 
 ## Explicit declines and non-actions
@@ -187,7 +187,7 @@ Cross-reference corrections in the same targeted edit:
 - Do not treat the IJCAI two-page summary, Dinh, the contemplative paper, or Pith's machine review as
   corroboration of the submitted weakness mechanism.
 - Do not add an AutoKernel contemplative task or relax any human-amendment/frozen-kernel boundary.
-- Do not edit `meta-harness-optimization.md`, `evidence-plane-instrument-repair.md`, chapters, wiki,
+- Do not edit `handoffs/completed/meta-harness-optimization.md`, `evidence-plane-instrument-repair.md`, chapters, wiki,
   MEASUREMENT.md, or implementation code in this intake Stage 4.
 - Do not create a new handoff or add master/domain-index rows; every work package has a live indexed owner.
 

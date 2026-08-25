@@ -387,3 +387,68 @@ _Via `/research-intake` Stage-4 (intake-916/917/932 lineage, AREX-Base as the co
 
 - [x] **Record two durable artifact facts for KAT-Coder-V2.5-Dev.** ✅ 2026-07-29 — (a) its **tokenizer is byte-identical** to the deployed frontdoor — `sha256 5f9e4d49…cb42` on `tokenizer.json`, with matching `vocab.json` / `merges.txt` — so the **exact-tokenizer precondition for speculative decoding is SATISFIED** and needs no re-derivation. (b) its **MTP head is REMOVED**: `mtp_num_hidden_layers` 1→0 and **zero** `nextn`/`mtp` tensors across **31,333** revision-pinned weight-map entries. This is a regression versus the live frontdoor GGUF, which carries `blk.40.nextn.*`; any frontdoor-lane candidate manifest must therefore mark native MTP `absent` and cannot be compared as a like-for-like speculative-decoding replacement. A quality benchmark alone cannot detect that loss.
 - [x] **Adopt the reusable preflight rule: verifying a fine-tune's architecture from `config.json` is UNSOUND.** ✅ 2026-07-29 — **AREX-Base retains `"mtp_num_hidden_layers": 1` while shipping ZERO mtp weights**: a config-level check reports "preserved" and is **wrong**. Before any architecture-dependent capability claim or candidate comparison, require a manifest record of (1) source/revision, (2) `model.safetensors.index.json` tensor-name/count evidence (or GGUF header tensor count plus relevant metadata key), and (3) explicit present/absent conclusion for every claimed MTP/draft head, vision tower, tied embedding, or other component. `config.json` may describe the expected shape only; it cannot satisfy the preflight or justify an architecture-equivalence claim. File this alongside the existing tensor-count-not-file-size rule — same failure family.
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274 / intake-1277)
+
+- [ ] **G3 (Z then G) — does the MI210 verify pass ever land in the VEC flash-attention kernel?**
+      **The zero-compute half is a static read and should be done first**, at frozen v9
+      `0db32c06e3e5`: only the **VEC** FA kernel reads quantized KV natively
+      (`ggml/src/ggml-cuda/fattn-vec.cuh:540-543`); MMA/TILE/WMMA set `need_f16_K/need_f16_V = true`
+      and `launch_fattn` **dequantizes the entire K and V tensors to F16 into scratch**
+      (`fattn-common.cuh:1022-1080`, the conversion at `:1030`/`:1064` covering `ggml_nelements(K)`,
+      i.e. the whole cache, on EVERY call); and VEC is selected for quantized KV only at
+      `Q->ne[1] <= 2`.
+      **SCOPE CORRECTED 2026-08-22 by the VeriCache Stage-2b dive — the row as first written was wrong
+      in two ways and would have sent this measurement at the wrong target.**
+      (a) **THIS IS A CUDA/HIP-BACKEND PROPERTY ONLY. Our primary CPU serving path has no cliff at
+      all**: `ggml/src/ggml-cpu/ops.cpp:8635` takes `kq_vec_dot` from the type traits and consumes K
+      **in its quantized form at any q_len**, and `:8739` dequantizes V **one DV-length row at a time**
+      into a stack temp. There is no whole-tensor conversion anywhere on the CPU path. Do not
+      generalise the cliff to the frontdoor.
+      (b) The locator originally cited here, `fattn.cu:472-495`, sits inside the
+      **NVIDIA-Turing-only** branch (`turing_mma_available` requires `GGML_CUDA_CC_IS_NVIDIA`) and
+      **never executes on gfx90a**. MI210 is CDNA2, so our operative sites are `fattn.cu:522-536`
+      (AMD MFMA) and `:543-557` (the fallback that returns VEC at `<= 2`, else TILE — which also
+      forces `need_f16`). The `<= 2` boundary is real and unchanged; the code path reaching it is not
+      the one cited. Also note `fattn.cu:340-358`: without `GGML_CUDA_FA_ALL_QUANTS` only
+      Q4_0/Q8_0/F16/BF16/F32 are FA-eligible KV types. **A speculative verify batch is `q_len = gamma+1`**, so at `gamma >= 2` it
+      leaves the VEC regime and pays a full-cache dequant on every verify step.
+      **Gate:** if that reading holds under one instrumented run, **quantized-KV speculative decoding
+      is bandwidth-positive on our MI210 only at `draft_max = 1`** — which would reframe every
+      quantized-KV spec-dec result we hold or plan.
+- [ ] **B5 (B, blocked on G3) — re-measure the spec-dec × quantized-KV risk row properly.** The
+      existing first-party datapoint (spec decode + q8_0/q4_0 KV on Coder-32B, `kv-cache-quantization.md`
+      risk R9) logged **t/s only** — no acceptance rate and no named correctness instrument — so it is
+      supportive, not probative. Re-run it with both. **Blocked on G3** because re-measuring first
+      risks measuring a full-cache dequant and reporting it as a KV-quant result.
+- [ ] **(Z) Record the harness invariant:** acceptance at `gamma = 1` **is** the single-token
+      draft/target agreement rate. Peer-reviewed reference values for a 4-bit-draft / 8-bit-verify
+      design over one shared cache: 91.88–96.58 % (intake-1274). Useful as a sanity band, never as a
+      baseline — it is a third-party number on different hardware (MEASUREMENT.md).
+- [ ] **(Z) Premise settled, close the question:** verifying speculative tokens against a **quantized**
+      KV cache is a sound, peer-reviewed design (ICML 2025), at **INT8**, with a 4-bit draft view over
+      the same physical cache. A quantized-KV speculative failure therefore needs a *specific
+      mechanism* and may not be attributed to the premise. **This does NOT license 4-bit
+      verification** — that remains unestablished.
+
+## Research Intake Update — 2026-08-23 (Stage-2b, intake-1282 — VeriCache)
+
+- [ ] **G8 (G) — measure α for KV-asymmetric self-speculation: the like-for-like number neither
+      paper provides.** Same GGUF as target and drafter (self-speculation, so the *only* difference
+      between the two views is the KV type). Target `-ctk f16 -ctv f16`; draft `-ctkd q4_0`, plus a
+      `q8_0`-draft arm. Sweep `--draft-max` over {4, 8, 16}. Report **mean accepted length** and
+      **per-token agreement**, per arm and per `--draft-max`.
+      **CAVEAT THAT MUST RIDE WITH EVERY NUMBER: the drafter is the full model, so this measures α,
+      not speedup.** The win, if any, is KV-traffic only; a tuple or a summary that omits this
+      invites a throughput reading of an acceptance measurement
+      (`vidya-belief-substrate-program.md` SC50 caveat (c)).
+      **Sanity band, never a baseline:** peer-reviewed reference values for a 4-bit-draft /
+      8-bit-verify design over one shared cache are 91.88-96.58% at gamma=1 — third-party, different
+      hardware, MEASUREMENT.md.
+      **Gate:** **opens** if q8_0-draft agreement >= ~95% at `--draft-max 8` — that confirms
+      VeriCache's premise first-party and the algorithm becomes reachable at zero implementation
+      cost. **Closes** if q4_0-draft agreement < 90%.
+      **Related decline, recorded so it is not re-derived:** *porting* VeriCache is declined — 8K LoC
+      of vLLM `AsyncScheduler` subclassing plus LMCache tiering, we do not serve on vLLM, and its
+      systems contribution is precisely the part our PCIe4 link erodes. This row is how we get its
+      algorithmic content for free. [intake-1282#record]

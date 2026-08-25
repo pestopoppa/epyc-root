@@ -51,7 +51,7 @@ Repo structure (verified): `src/server/{index.ts, llama.ts, harness.ts, stt.ts, 
 
 ## Decision gates & next steps
 
-- **Gate — integrate anything?** → **No.** No code lift (TS / Metal / hardware-specific), no new technique (loop == intake-473), no number we can use (no LLM t/s; Metal not x86). Keep verdict `adopt_patterns`, relevance `low`. Do **not** create a handoff task; do **not** update `meta-harness-optimization.md` or `multimodal-pipeline.md` (nothing concrete transfers).
+- **Gate — integrate anything?** → **No.** No code lift (TS / Metal / hardware-specific), no new technique (loop == intake-473), no number we can use (no LLM t/s; Metal not x86). Keep verdict `adopt_patterns`, relevance `low`. Do **not** create a handoff task; do **not** update `handoffs/completed/meta-harness-optimization.md` or `multimodal-pipeline.md` (nothing concrete transfers).
 - **Next step** = intake-notes addendum only (below). No follow-up compute, no eval, no handoff.
 - **Reopen criteria (narrow):** if pibot ever publishes actual gemma4/Qwen3.6 **decode t/s + TTFT at concurrency** on Metal, capture it as an external cross-check row for the inference compendium. The repo *has* the harness (`benchmark-llm-concurrency.mjs`) to produce those numbers but has not.
 
@@ -71,7 +71,7 @@ Repo structure (verified): `src/server/{index.ts, llama.ts, harness.ts, stt.ts, 
 
 - **intake-473** — `@earendil-works/pi-agent-core` (was `@mariozechner/*`) runtime; full primitive catalogue in `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`. pibot is its deployed application, not a new source of primitives.
 - `handoffs/active/multimodal-pipeline.md` — our vision/TTS/ASR pipeline; strictly ahead of pibot's image/photo path. (No update warranted.)
-- `handoffs/active/meta-harness-optimization.md` — our harness-optimization loop; pibot offers nothing for the proposer/trace/mutation work. (No update warranted.)
+- `handoffs/completed/meta-harness-optimization.md` — our harness-optimization loop; pibot offers nothing for the proposer/trace/mutation work. (No update warranted.)
 - `handoffs/active/tool-use-eval-contract.md` — our REPL `CALL(...)` tool-use contract; more rigorous than pibot's loop for eval purposes.
 - Memory: `feedback_qwen3x_enable_thinking_false` — independently corroborated by pibot's `--chat-template-kwargs '{"enable_thinking":false}'`.
 - Memory: `project_worker_general_swap_2026_05_08` (gemma4-26B-A4B is our worker), routing notes for Qwen3.6-35B-A3B — pibot runs the same two GGUFs.

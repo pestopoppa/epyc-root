@@ -91,14 +91,16 @@ warning, validation failure, lease action, revocation, or reprovisioning.
   (`coordination/session-bus/recipes/*.yaml`, D4b) once; the **daemon** then grants and steps
   deterministically — region-free ∧ policy-allows — whether or not you are awake. A new lease
   arrangement is a new recipe FILE, never code and never a per-request approval.
-  > **MERGE NOTE — DIRECT CONTRADICTION, operator adjudication needed (2026-08-16).** The other
-  > merge side states the opposite allocation of the same authority: *"grant and revoke **task**
-  > leases … **Inference Main alone grants compute-resource leases**"* (and, in
-  > `agents/inference-main.md`, that the role may "grant a bounded resource lease"). This side's
-  > D4-as-amended (2026-08-15) moves grant AUTHORITY off the inference role to coordination-level
-  > policy data executed by the daemon. Both texts are preserved; nothing in either side changes
-  > the physical-claim, residency-evidence, or drain-at-boundary requirements. **Resolve which of
-  > the two grants compute leases before either is treated as binding.**
+  > **RESOLVED 2026-08-16 — D4 ratified; the daemon grants windows, `inference` keeps
+  > physical claims.** The 2026-08-16 contradiction between this side (D4 as amended,
+  > 2026-08-15) and the merge side ("Inference Main alone grants compute-resource leases")
+  > is adjudicated: **compute WINDOWS are granted by the coordinator-daemon deterministically
+  > against `compute_policy.yaml`** (region free ∧ policy allows), per BUS_PROTOCOL rule 11
+  > as amended. The `resource-lease-*` vocabulary survives unchanged for PHYSICAL CLAIMS
+  > (region-lock / device claim open-close receipts) — `inference` remains the sole grantor
+  > and expirer of those, and the sole emitter of graded `compute-window` events (RTG-51
+  > contract). Nothing about the physical-claim, residency-evidence, or drain-at-boundary
+  > requirements changed.
 - **You do not own the clock.** No cadence, tick, sweep or timer is yours; the daemon and its
   supervisors own scheduling. A console closed for twelve hours MUST cost the fleet nothing.
 - **Receipts, not dials.** You never produce a hardware or utilisation reading. Any figure in
@@ -159,8 +161,9 @@ warning, validation failure, lease action, revocation, or reprovisioning.
 - **`inference` owns advisory compute scheduling.** When persistent CPU/GPU idle evidence arrives,
   prioritize a valid inference-gated item and route it to `inference`. It may execute the item or
   take the resource decision; coordinator-agent never treats observation as a physical claim and
-  never reloads around the resource owner. (Whether *granting the lease* is the role's or the
-  daemon's is the contradiction flagged under *The console contract* above.)
+  never reloads around the resource owner. (Grant AUTHORITY for compute windows is the daemon's per
+  `compute_policy.yaml` — D4, rule 11 as amended 2026-08-16; `inference` retains the physical-claim
+  lease vocabulary and the graded-window compatibility judgment per the *console contract* above.)
 
 ### Committing and writing
 

@@ -25,13 +25,19 @@ Do not use when:
 Reads `wiki.yaml` at repo root for paths, thresholds, and enabled lint passes.
 Falls back to sensible defaults if `wiki.yaml` is not present.
 
+> **Use the orchestrator venv interpreter, not bare `python3`.** The wiki scripts need
+> `PyYAML`, which the devcontainer's system `python3` does not have — a bare `python3`
+> invocation exits `ERROR: PyYAML not installed` (lint/query) or silently ignores the
+> `wiki.yaml` configuration (compile). Same convention as `.claude/skills/kb-search/SKILL.md`
+> and `scripts/validate/validate_intake.sh`.
+
 ## Operations
 
 ### Operation 1 — Lint
 
 Audit the knowledge base for hygiene issues. Run via:
 ```
-python3 .claude/skills/project-wiki/scripts/lint_wiki.py
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/lint_wiki.py
 ```
 
 Or invoke this skill with: "lint the knowledge base" / "check KB health"
@@ -114,7 +120,7 @@ Invoke with: "what do we know about {topic}?"
 
 Pre-filter large files to reduce context:
 ```
-python3 .claude/skills/project-wiki/scripts/query_wiki.py "{query}"
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/query_wiki.py "{query}"
 ```
 
 Returns JSON with matching intake entries, handoffs, and deep-dives.
@@ -130,17 +136,17 @@ Invoke with: "compile the wiki" / "update the wiki" / "synthesize knowledge"
 Run the manifest scanner to identify compilable sources:
 
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py
 ```
 
 For a full recompilation (ignore last compile timestamp):
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --full
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --full
 ```
 
 For a reviewable source-manifest baseline:
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --full --write-manifest
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --full --write-manifest
 ```
 
 The persisted source manifest carries a `writer_evidence_policy` block. Treat
@@ -157,12 +163,12 @@ this policy. `--check-manifest` reports policy drift along with source drift.
 
 Before recompiling from an existing baseline, check source drift:
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --check-manifest
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --check-manifest
 ```
 
 To feed an incremental refresh / re-embed adapter, emit only added or changed sources:
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --changed-since-manifest
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --changed-since-manifest
 ```
 
 Review the `total_new` count. If 0, no compilation needed — inform the user and stop.
@@ -238,7 +244,7 @@ manifest's `writer_evidence_policy` still passes `--check-manifest`.
 
 After successful compilation:
 ```
-python3 .claude/skills/project-wiki/scripts/compile_sources.py --touch
+/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --touch
 ```
 
 #### Compilation Principles

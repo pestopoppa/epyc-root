@@ -1,0 +1,26 @@
+# Operator filesystem allowlist — schema: session_bus.filesystem_allowlist.v1
+# ===========================================================================
+# Read by scripts/hooks/filesystem_containment_scan.py (CLASS B only).
+#
+# Entries grant CLASS B (out-of-root WRITE) approval for a realpath PREFIX.
+# They NEVER open CLASS A (privileged host-level operations) — those always
+# need the env ack EPYC_FS_ACK="operator: <who> <date>: <reason>" on the
+# Bash tool call. If this file is missing or does not parse, the guard FAILS
+# CLOSED: every out-of-root write is refused with code allowlist_unavailable.
+#
+# How the operator names a backup target once, forever (INC-20260823):
+#   1. Append an entry below with the EXACT realpath prefix:
+#        - path: /mnt/bigdisk/epyc-backup
+#          reason: operator-approved backup target (2026-08-23 directive)
+#          added_by: <operator>
+#          added_on: 2026-08-23
+#   2. Commit this file (it is tracked; the record is the approval).
+#   3. Every future `restic backup --repo /mnt/bigdisk/epyc-backup/repo ...`
+#      passes mechanically. Nothing else needs to change.
+#
+# The guard refuses anything NOT listed here, and an entry is a PREFIX: a
+# path entry also covers everything beneath it. The shipped file is empty
+# deliberately — an actual external path is an operator decision, not a
+# default.
+schema: session_bus.filesystem_allowlist.v1
+entries: []

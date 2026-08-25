@@ -377,7 +377,7 @@ Until corroborated, treat "beats proprietary" as **plausible but not confirmed**
 
 ### 11.1 Active handoffs
 - `handoffs/active/autopilot-continuous-optimization.md` — AR-3 prompt/structural mutation loop. Agent-World is the environment-synthesis extension.
-- `handoffs/active/meta-harness-optimization.md` — Tier 3 deferred rebuild; Agent-World re-opens the path.
+- `handoffs/completed/meta-harness-optimization.md` — Tier 3 deferred rebuild; Agent-World re-opens the path.
 - `handoffs/active/bulk-inference-campaign.md` — Packages A–H. Environment synthesis could become Package I (arena bootstrap campaign).
 - `handoffs/active/learned-routing-controller.md` — MLP routing classifier; EnvSynth species could feed diversified training data.
 

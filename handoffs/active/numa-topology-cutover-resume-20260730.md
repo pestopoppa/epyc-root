@@ -232,7 +232,7 @@ One of those two is worth understanding before you "fix" it:
       `test_fleet_layer_build::test_case1_real_worker_fleet_realizes_full_plus_quarters`,
       `test_kv_compress_adaptive::test_production_ports_use_live_role_names`,
       `test_stack_templates_v2::TestDefaultYamlRoundTrip::test_default_yaml_loads_and_validates`.
-- [ ] **P0-1. Fix the 30 net-new breaking tests across 14 files**, including the
+- [x] **P0-1. Fix the 30 net-new breaking tests across 14 files**, including the
       two in `PROMOTION_GATE_TARGETS` (both in
       `tests/unit/test_build_server_command_helpers.py`). Retire
       `test_worker_general_numa_policy_is_full_instance_only` rather than
@@ -259,6 +259,15 @@ One of those two is worth understanding before you "fix" it:
         measurement era, which is human-amendment-only.
 
       So what remains of P0-1 is **gated on P0-0**, not on test authoring.
+      ✅ **CLOSED 2026-08-24** — P0-0's derived-priors drop is resolved
+      (`derived/stack_priors.yaml` records 8070/8080/8180 with `cpu_shape_class: full`);
+      `PROMOTION_GATE_TARGETS` **196 passed / 0 failed**; full `tests/unit` suite is
+      **16 failed / 12526 passed / 69 skipped / 6 xfailed** after three fixture-side fixes today
+      (gate-fixture fields `waited_s`/`blocking_roles` in `test_dispatch_cross_role_placement.py`
+      and `test_inference_mixin.py`; SS-BENCH-GATE-c placement `ps` subprocess counted in
+      `test_model_server_coverage.py`). The 16 remaining failures are all the E8-era guard above
+      (operator decision, untouched by design) plus the same-class derived-priors expectations —
+      none are the new-topology breakage this row exists to fix. No source code was modified.
 - [x] **P0-2. Remove the now-XPASSing `xfail(strict=True)` marker** on
       `tests/unit/test_orchestrator_stack_threads.py::test_straddling_cpusets_declare_a_numa_policy`.
       Keep the test; it is the replacement assertion for the one retired in P0-1.

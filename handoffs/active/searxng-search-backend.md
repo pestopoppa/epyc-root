@@ -312,7 +312,7 @@ AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution
 
 #### Deep-dive refinement (2026-04-30) — bench owned by granite-97m-r2-bench-plan
 
-Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md). For SearXNG SX-5/6 specifically: the dense first-stage choice (granite-97m-r2 vs BGE-M3 vs multilingual-e5-base) will come out of that bench. Defer SX-5 dense-stage decisions until Phase B completes. Note that the bench's eval corpus is currently planned as code-snippets-plus-handoffs, NOT mixed-language web snippets — if SearXNG-specific quality matters, add a SearXNG-output slice to the bench's eval-corpus engineering (Phase A-4).
+Bench handoff at [`granite-97m-r2-bench-plan.md`](../completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md). For SearXNG SX-5/6 specifically: the dense first-stage choice (granite-97m-r2 vs BGE-M3 vs multilingual-e5-base) will come out of that bench. Defer SX-5 dense-stage decisions until Phase B completes. Note that the bench's eval corpus is currently planned as code-snippets-plus-handoffs, NOT mixed-language web snippets — if SearXNG-specific quality matters, add a SearXNG-output slice to the bench's eval-corpus engineering (Phase A-4).
 
 **Phase-C correction (2026-07-29):** Phase B selected Granite conditionally:
 0.9222 NDCG@10 versus BGE-M3's 0.9150 at 4.36× lower wall-clock (1.614s versus

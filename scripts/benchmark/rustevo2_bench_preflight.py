@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -25,6 +26,16 @@ EVAL_SCRIPT = RUSTEVO_ROOT / "Evaluate" / "eval_models_rq1.py"
 LLAMA_SERVER = Path("/mnt/raid0/llm/llama.cpp/build/bin/llama-server")
 IK_LLAMA_SERVER = Path("/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-server")
 GEMMA_DRAFT = Path("/mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-Q8_0.gguf")
+# The AutoPilot daemon holds an exclusive flock on this file by construction
+# (epyc-orchestrator state_ownership.py), so it is the authoritative,
+# argv-independent identity channel — a renamed binary or a drifted argv still
+# holds the lock. Mirrors inference_load_check.py's AUTOPILOT_LOCK.
+AUTOPILOT_LOCK = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/.autopilot.lock")
+# Adjacency-robust: `start` may follow any number of flags after the script path
+# (the specimen's failure was a flag inserted between `.py` and `start`), and the
+# supervisor is a liveness signal in its own right — mirror the canonical
+# launcher's dual pattern (start_authority_daemon.py).
+AUTOPILOT_PATTERN = r"scripts/autopilot/autopilot\.py( .*)? start|autopilot_supervisor\.py"
 REQUIRED_RUST = [
     "1.71.0",
     "1.72.0",
@@ -96,12 +107,80 @@ def require_path(path: Path, label: str, executable: bool = False) -> list[str]:
     return []
 
 
-def active_autopilot() -> list[str]:
-    proc = run(["pgrep", "-af", "scripts/autopilot/autopilot.py|autopilot.py start"])
-    if proc.returncode not in (0, 1):
-        return [f"could not inspect AutoPilot processes: {proc.stderr.strip()}"]
-    lines = [line for line in proc.stdout.splitlines() if "pgrep" not in line]
-    return lines
+def _autopilot_lock_held() -> bool | None:
+    """True iff AutoPilot's singleton flock is held; False if provably free;
+    None when the lock cannot be tested.
+
+    Read-only, mirroring inference_load_check.py's _autopilot_lock_held(): the
+    lock is tested and immediately released, nothing is written.
+    """
+    if not AUTOPILOT_LOCK.exists():
+        return False
+    try:
+        import fcntl
+
+        fd = os.open(str(AUTOPILOT_LOCK), os.O_RDONLY)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(fd, fcntl.LOCK_UN)
+            return False
+        except (BlockingIOError, OSError):
+            return True
+        finally:
+            os.close(fd)
+    except Exception:  # noqa: BLE001 — any failure means we cannot confirm a negative
+        return None
+
+
+def autopilot_state() -> dict:
+    """Three-state AutoPilot identity: present | absent | unobservable.
+
+    OBS-5 (2026-08-12). The old check was two-state: an EMPTY pgrep result read
+    as a confident 'no AutoPilot' and green-lit the bench against a live one, and
+    a missing pgrep binary raised FileNotFoundError out of run() before the
+    (0,1)-returncode handling was reached. Now, per inference_load_check.py's
+    polarity rule ("for EXCLUSION, unknown must mean busy"):
+
+      * present      — the flock is held, or a process matches either pattern.
+      * absent       — pgrep RAN clean AND the flock is provably free. Both
+                       channels must have spoken; an empty pattern result is
+                       never trusted alone.
+      * unobservable — pgrep missing/errored, or the flock untestable. Callers
+                       must FAIL CLOSED on this state.
+
+    The flock channel also closes the residual the reference implementation
+    names in its registry row: argv drift now reads as `present` (the drifted
+    daemon still holds the lock), never as a positive 'none'.
+    """
+    pgrep_ok = False
+    lines: list[str] = []
+    try:
+        proc = run(["pgrep", "-af", AUTOPILOT_PATTERN])
+    except FileNotFoundError:
+        pgrep_ok = False
+    else:
+        if proc.returncode in (0, 1):
+            pgrep_ok = True
+            lines = [
+                line for line in proc.stdout.splitlines()
+                if "pgrep" not in line and "rustevo2_bench_preflight" not in line
+            ]
+    lock_held = _autopilot_lock_held()
+
+    if lock_held is True:
+        lock_detail = "flock held"
+    elif lock_held is False:
+        lock_detail = "flock provably free"
+    else:
+        lock_detail = "flock untestable"
+    pgrep_detail = f"pgrep ran clean, {len(lines)} match(es)" if pgrep_ok else "pgrep unavailable or errored"
+    detail = f"{pgrep_detail}; {lock_detail}"
+
+    if lock_held is True or (pgrep_ok and lines):
+        return {"state": "present", "lines": lines, "detail": detail}
+    if pgrep_ok and lock_held is False:
+        return {"state": "absent", "lines": [], "detail": detail}
+    return {"state": "unobservable", "lines": [], "detail": detail}
 
 
 def verify_rust_toolchains() -> list[str]:
@@ -243,9 +322,18 @@ def main() -> int:
     failures.extend(verify_python_harness())
     failures.extend(verify_rust_toolchains())
 
-    autopilot_lines = active_autopilot()
-    if autopilot_lines:
-        message = "AutoPilot appears active; do not launch RustEvo2 yet:\n" + "\n".join(autopilot_lines)
+    autopilot = autopilot_state()
+    if autopilot["state"] == "unobservable":
+        # FAIL CLOSED in BOTH modes — this is not a severity question. The
+        # polarity rule (inference_load_check.py: "for EXCLUSION, unknown must
+        # mean busy"): a bench must not launch when the host cannot be confirmed
+        # AutoPilot-free. Only `absent` (both channels spoke) is a go.
+        failures.append(
+            "AutoPilot state UNOBSERVABLE — cannot confirm the host is AutoPilot-free; "
+            "blocking the bench. (" + autopilot["detail"] + ")"
+        )
+    elif autopilot["state"] == "present":
+        message = "AutoPilot appears active; do not launch RustEvo2 yet:\n" + "\n".join(autopilot["lines"])
         if args.strict_host_quiet:
             failures.append(message)
         else:

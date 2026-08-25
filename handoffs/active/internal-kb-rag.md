@@ -157,7 +157,7 @@ ColBERT encoder (shared)                           │
 
 #### Deep-dive refinement (2026-04-30; corrected 2026-07-29) — bench plan persisted
 
-Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md).
+Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](../completed/granite-97m-r2-bench-plan-completed-through-2026-08-23.md).
 
 **Critical infra finding**: there is **no production multilingual retrieval today** — only English-only BGE-large-en-v1.5 routing pool on `:8090–:8095` (`/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/parallel_embedder.py`). Granite-97m-r2 (or any multilingual embedder) would be **net-new infrastructure**, not a swap-in.
 
@@ -621,3 +621,247 @@ summariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `inta
 figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same
 direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
 whether the delta is the TRAINING RECIPE rather than the idea._
+
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278)
+
+### Record corrections (Z)
+
+- [ ] **C1 — the answerai→GTE retirement rationale on file is wrong.** `CHANGELOG.md` and
+      `handoffs/completed/colbert-zero-research-integration.md` justify the Feb-2026 encoder swap with
+      "**answerai unscored**". It was scored, on the **same BEIR-15**, on the successor's own model
+      card, and had been since 2025-05-14. The controlled figures are **54.67 (GTE) vs 53.35
+      (answerai, LightOn's own re-run of the published checkpoint)** = **1.32 pp** — *inside* the ~2 pp
+      noise floor this handoff declares. **CORRECTED 2026-08-22: TWO harnesses, not three.** Vendor
+      53.79 and LightOn's own re-run 53.35 are the only independent BEIR measurements of this model.
+      The apparent third (mixedbread, arXiv 2510.14880) **transcribed both ColBERT baseline rows from
+      LightOn's model card**, published 36 days earlier — 15/15 exact per-task match to LightOn's
+      re-run column, 0/15 to the vendor-reported one. The 1.32 pp gap is unaffected, because it was
+      always LightOn's own comparison.
+      Correct the record, and state the **cost side the original decision never weighed**: 4.46×
+      fewer parameters and a **measured −24.3 %** index footprint (0.757×, cross-validated against the
+      stored `.npz` to 0.2 %; the saving is essentially the bare 96/128 dim ratio — the tokenizer swap
+      is a wash at 1.026). This does **not** argue for reverting; it argues that the swap rests on a
+      delta our own doctrine calls noise, which the record should say plainly.
+- [ ] **C2 — never record `54.89` as the incumbent's BEIR-15.** It does not exist on the model card
+      (`grep -c` = 0 at rev `25f6f7bb`) or anywhere in the index. The comparable figure is **54.67**,
+      over 15 named tasks, provenance: BEIR table added `78d50a16` (2025-05-14), FiQA corrected
+      `6605e431` (2025-09-10). Note that `54.75` also circulates from a different source with no stated
+      denominator — see the conflict flagged on intake-430.
+- [ ] **C7 (Z) — fix the stale `:8089` model attribution** in `src/repl_environment/code_search.py:12`,
+      which still names an encoder retired 2026-02-20.
+
+### Code gaps (Z) — all three are small and one is blocking
+
+- [x] **K1 — the ColBERT encoder cannot load ANY BERT-family late-interaction ONNX.** ✅ **LANDED
+      2026-08-23**, `epyc-orchestrator` `4e5e84c0`. Such graphs declare `token_type_ids` as a
+      required input with no initializer default, and `colbert_encoder.py` fed only `input_ids` and
+      `attention_mask` → `InvalidArgument: Missing Input` on the first call. `ensure_loaded()` now
+      captures `_input_names` from `session.get_inputs()` at load time and `encode()` feeds exactly
+      the inputs the graph declares, with all-zero `token_type_ids` for single-segment input. An
+      input it **cannot** satisfy raises instead of degrading to an empty index. Line hints
+      re-resolved under the anchor-rot rule: the load-time capture pattern is
+      `src/retrieval/cross_encoder.py:148` (previously uncited) and the conditional feed is
+      `:183-191` (this row cited `169,188-190`). The same commit raised the swallowed failure from
+      `logger.debug` to `logger.warning` with the exception type — `colbert_encoder.py:411-417`,
+      formerly `:286` — so the exact `InvalidArgument` this row describes is now visible at default
+      log level instead of presenting as an ordinary miss. Unblocks answerai-colbert-small-v1,
+      ColBERTv2 and Jina-ColBERT-v2 **as a class**, not one model; the swap itself is **B6** below,
+      and the mxbai family never needed it (see **H5**). Verified by the required mutation test — a
+      graph whose third input is unsatisfiable must fail *loudly*, not merely a happy path that runs
+      — plus 206 unit tests across retrieval / prefix_cache / cross_encoder, and checked against the
+      deployed `gte-moderncolbert-v1-onnx` for no behaviour change. `4e5e84c0` touches only
+      `colbert_encoder.py` and `kb_rag.py`, so those mutation checks are recorded in the commit
+      message and are not yet regression-guarded in `tests/`.
+- [ ] **K2 — honour `onnx_config.json` instead of hard-coding.** **PARTIALLY LANDED 2026-08-23**,
+      `epyc-orchestrator` `4e5e84c0` — deliberately **not ticked**, because this row's scope is wider
+      than what shipped.
+      **Shipped**: `_load_declared_config()` (`colbert_encoder.py:172`) reads `onnx_config.json`
+      **and** `config_sentence_transformers.json` and merges them with the format-mandated
+      `onnx_config.json` winning, so a freshly `pylate-onnx-export`ed checkpoint — which writes only
+      `onnx_config.json` — is no longer a checkpoint we have no file for, and the "prefixes are read
+      only from `config_sentence_transformers.json`" defect is closed. Also shipped, as the K8
+      sub-item: `do_lower_case` is honoured (`colbert_encoder.py:307`, applied at `:379` to the
+      **text only**, never to the prefix, which is a literal added token). Neither tokenizer carries
+      a `Lowercase` normalizer and mxbai applies lower-casing *outside* the tokenizer, so before this
+      change loading mxbai-32m fed cased text to a lower-case-trained model with no error anywhere.
+      **Remaining scope, narrowed**: the declared `query_length`, `document_length`, `embedding_dim`,
+      `uses_token_type_ids` and `do_query_expansion` are now readable but are **not yet acted on**,
+      and the fail-loud check is not implemented — `_QUERY_MAX_TOKENS = 48` (`kb_rag.py:66`) and
+      `_MAX_QUERY_TOKENS = 48` (`src/tools/web/colbert_reranker.py:66`) remain hard-coded on both
+      call sites.
+      **H3 — the three-slot `query_length` spread, verified from each model directory on disk
+      2026-08-23**: LateOn **32** (`lateon-onnx-int8/onnx_config.json`), GTE-ModernColBERT-v1 **48**
+      (`gte-moderncolbert-v1-onnx/onnx_config.json`), Reason-mxbai-32m **256**. An 8× spread across
+      slots, so a declared query length is a per-checkpoint training parameter and not an
+      architectural constant. Both call sites hard-code 48, so **LateOn is overrun by 16 tokens**
+      while Reason-mxbai is under-used by 208. Provenance caveat: the 256 comes from
+      `reason-mxbai-colbert-v0-32m-onnx-int8/config_sentence_transformers.json` — that directory
+      ships **no `onnx_config.json` at all**, which is exactly what **G14** in
+      `colbert-reranker-web-research.md` exists to fix. Where a local shipped value disagrees with the
+      upstream card — the GTE checkpoint's local `48` against upstream's `32` — **the local shipped
+      value is authoritative**, because it is the file the loader actually reads. Recorded as evidence
+      folded into this row; **no new row**.
+      Carry forward as a known no-op: PyLate sets `pad_token_id` to the MASK id (103), so a K2
+      completion that blindly honours a declared pad id would change behaviour. Harmless today, since
+      our loader pads with the tokenizer's own `[PAD]` and slices by `attention_mask`.
+- [ ] **K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** **HALF LANDED 2026-08-23**,
+      `epyc-orchestrator` `4e5e84c0` — deliberately **not ticked**, because only the `embedding_dim`
+      half shipped.
+      **Shipped (the K9 escalation from hygiene to blocker)**: `_stamp_meta()` writes `embedding_dim`
+      (`kb_rag.py:244`) and `_check_embedding_dim()` (`:203`), called from `_warn_on_encoder_drift()`
+      (`:282-294`, formerly `:236-244`), now **raises** when the live encoder's width differs from the
+      stored one; unknown width means cannot-check and never matches. Before this, a 128→64 swap left
+      every other stamped key plausible and surfaced as a numpy shape error inside `maxsim()`,
+      swallowed by `encode()`'s broad `except` (`colbert_encoder.py:411-417`) and reported as an
+      ordinary miss. Mutation-tested with controls: a 128-index against a 64-encoder raises, while
+      matching / unstamped / unknown widths do not.
+      **Remaining scope**: the **tokenizer sha256 is still not stamped**. `index_meta` carries
+      `prefix_convention`, `query_prefix`, `document_prefix`, `encoder_model_dir`,
+      `encoder_model_file`, `doc_max_tokens`, `query_max_tokens`, `embedding_dim` and `stamped_at` —
+      nothing that would catch a same-dim, same-directory tokenizer swap. That is not hypothetical:
+      mxbai-32m and the deployed GTE share a byte-identical 50,280-token vocabulary while their
+      `tokenizer.json` files differ (see **H6**), so a swap in that direction is invisible to every
+      key now stamped. The same non-vacuous verification bar applies — a test that passes both before
+      and after the change proves nothing.
+
+### Corpus figures look stale (Z, flag only — may belong to KB-WM-*)
+
+This handoff's header records 577 files / 18,010 chunks / 1,227.6 MiB; the live index measured
+2026-08-21 is **943 files / 28,110 chunks / 2,199.13 MiB**. Roughly 56 % understated. Flagging rather
+than editing, since it may already be owned by the watermark items.
+
+## Research Intake Update — 2026-08-23 (wave 2 Stage-2b: `intake-1289#record`, `intake-1293#record`, `intake-1294#record`)
+
+Three dives land on this handoff: the mxbai-edge-colbert tech report, the LightOn ONNX mirror of
+answerai-colbert-small-v1 plus the `pylate-onnx-export` tool that emits it, and the ConstBERT /
+verbose-query reproduction. The **code** half of the wave shipped in `epyc-orchestrator` `4e5e84c0`
+and is recorded on the K1/K2/K3 rows above. What follows is the record half, the two work items the
+wave left uncovered, and the compute queue. Class key: **Z** zero-compute · **G** compute-gated ·
+**B** blocked-on.
+
+### Records (Z) — written down so they are not re-derived
+
+**H4 — the ONNX file-selection rule for any BERT-family late-interaction checkpoint.** Take the
+LightOn mirror's `model_int8.onnx`; failing that, upstream's **root** `model_int8.onnx`. **Never
+anything under `onnx/`**, and **never `vespa_colbert.onnx`**. Upstream
+`answerdotai/answerai-colbert-small-v1` @ `934fa8bb` holds **11 ONNX files / 10 distinct blobs** —
+3 at root (`model.onnx`, `model_int8.onnx`, `vespa_colbert.onnx`) and 8 under `onnx/`, where
+`onnx/model_int8.onnx` and `onnx/model_quantized.onnx` are the same blob. The `onnx/` family
+terminates at `last_hidden_state [batch, seq, 384]`: no ColBERT projection, no L2 normalisation, and
+`onnx/` is ir_version 10 against the root's 7. `vespa_colbert.onnx` names its output `contextual` —
+a third naming convention; only the root exports and the mirror's end at `output`. **Picking by
+folder name builds a silently wrong index and raises no error.** The mirror has no `onnx/`
+subdirectory, so it eliminates the footgun by construction, and its
+`config_sentence_transformers.json` and `onnx_config.json` are byte-identical to each other, which
+upstream's are not.
+
+**H5 — K1 was never a gate on the mxbai family.** Both mxbai configs declare
+`uses_token_type_ids: false`, and the 33.2 MB `model_int8.onnx` contains zero `token_type` strings,
+so the missing-third-input failure K1 describes cannot occur for that family. K1 was correct and has
+now landed (`4e5e84c0`); what it unblocks is **answerai-colbert-small-v1 / ColBERTv2 /
+Jina-ColBERT-v2**, whose graphs *do* declare `token_type_ids` as required with no initializer
+default. The mxbai family's real blocker was a different one — `do_lower_case`, unhandled and
+silent — also closed in `4e5e84c0` as the K2 sub-item above.
+
+**H6 — tokenizer identity, and what it does to the index-footprint projection.**
+`mxbai-edge-colbert-v0-32m` and the deployed GTE-ModernColBERT-v1 share a **byte-identical
+50,280-token vocabulary**. Verified locally 2026-08-23: the deployed
+`gte-moderncolbert-v1-onnx/tokenizer.json` is sha256
+`23abe2a8f5640f8836c24cead7b76e77613b846824d7540151c6d90d7c2f4869` with 50,280 vocab entries, and
+`mixedbread-ai/mxbai-edge-colbert-v0-32m@bb13a29ec9b1/tokenizer.json` is sha256
+`594291000b476c98ed600cbb1914ff128c79642a9433aac86213c7a5562d7c1a`; the two files differ **only** in
+a pre-baked truncation/padding block and their `model.vocab` maps are equal with zero differing
+entries. Because the vocabularies are identical there is **no tokenizer correction factor**: the
+index-footprint ratio is the bare dim ratio **64/128 = 0.500×**, so the 2,199 MiB index measured
+2026-08-21 projects to **~1,100 MiB** — roughly double the 0.757× / −534 MiB measured for answerai at
+dim 96. This is a **projection, not a measurement.** Two conditions on any adoption note:
+
+- Pin the ONNX revision at **≥ `963e23afa147`** (2026-04-15). The 2026-02-14 ColGREP export
+  (`f93964d3e660`) **omitted the Dense projection layers** and emitted the wrong output dimension, so
+  any copy pulled inside that 60-day window is silently broken.
+- The one open variable left in the 0.500× projection is the lower-casing effect on token counts
+  (`do_lower_case: true` on mxbai, `false` on the incumbent). That is a pure-tokenizer measurement —
+  no model, no ONNX session — filed as **Z13** in the wave plan.
+
+### New work items
+
+- [ ] **H1 (Z to quantify; remedy is G13) — doc-side truncation is tracked by no work item, and it is
+      the largest retrieval defect on this page.** `markdown_chunker.py:25` sets
+      `DEFAULT_MAX_CHARS = 4000` (and `config/kb_rag_config.yaml:31` `max_chunk_chars: 4000`) while
+      `kb_rag.py:67` sets `_DOC_MAX_TOKENS = 256`, roughly a 1,024-character budget — so a full-size
+      chunk has ~75 % of its content silently dropped at embed time. **Measured first-party against
+      the live catalog 2026-08-23** (`data/kb_rag/index-qd-v1/catalog.sqlite`, opened read-only):
+      28,155 chunks over 944 files, mean `token_count` 170.3, and **11,410 chunks = 40.5 % sit at or
+      above the 256-token cap**, i.e. are truncated. That corroborates the 39.6 %-of-chunks /
+      57.2 %-character-coverage pair in `intake-1278#record` and **refutes the inverted 60 % / 43 %
+      pair** repeated in `intake-1294#record`; the defect is identical either way, only the polarity
+      of the figures differed. Note the catalog's `token_count` is `emb.shape[0]`, i.e.
+      **post-truncation**, so it saturates at 256 and can report *that* a chunk was truncated but
+      never *by how much* — any character-coverage figure must be re-derived by tokenizing with
+      truncation disabled. Quantifying is zero-compute; the remedy arms need a full corpus re-embed
+      and are **G13**.
+- [ ] **H2 (Z) — no query-length instrumentation exists anywhere in the retrieval path.** We cannot
+      today answer whether a live agent query has *ever* exceeded 48 tokens; every statement about the
+      caps is inferred from a 90-case curated pool and never observed from traffic. Log the encoded
+      query token count at the one call site that has it — `kb_rag.py:762`,
+      `q_emb = colbert_encoder.encode(text, _QUERY_MAX_TOKENS, role=query_role)` (this was `:713`
+      before `4e5e84c0` shifted the file by 49 lines) — and report **p50 / p95 / max / over-cap
+      rate**. **The instrument must not be vacuous:** `encode()` calls
+      `enable_truncation(max_length=max_tokens)` and `enable_padding(length=max_tokens)`
+      (`colbert_encoder.py:373-374`), so a count taken from `encoded.ids` is *always* exactly
+      `max_tokens` and the over-cap rate would read 0 % forever. Take the count from a
+      truncation-disabled tokenization, or the metric measures the cap rather than the query. This is
+      the only path by which the caps question becomes empirical instead of inferred, and it is what
+      makes **B7** answerable at all.
+
+### Compute-gated (G) — filed, not run; both compute planes were held by other sessions this wave
+
+- [ ] **G11 — ONNX INT8-vs-fp32 parity fixture.** 200 real KB chunk texts, both roles, `model.onnx`
+      vs `model_int8.onnx`; report per-token cosine distribution, max abs Δ, and **MaxSim top-1
+      agreement** — the decision-relevant metric. Fold in the **mirror-vs-upstream-root** arm: same
+      texts, same ORT process / EP / thread config, compared by cosine and max abs Δ and **never by
+      byte hash** — the two graphs differ by 252 shape-plumbing nodes and a renamed projection module
+      while their weight blobs are bit-identical, so a hash comparison returns a false negative by
+      construction. **Owning handoff**: this one (`internal-kb-rag.md`). **Gate — what result opens
+      it**: top-1 agreement ≥ the incumbent's **100 %** and max abs Δ within the same order as the
+      **6.60e-03** already accepted (`colbert-reranker-web-research.md:506`). Replaces the vendor
+      ">0.99 cosine" folklore with our own number — **do not treat the vendor figure as the
+      baseline** (`MEASUREMENT.md`: no third-party number gates this stack). Belief-kernel caveat to
+      carry in every tuple this produces: an INT8-vs-fp32 cosine is a **fidelity** claim about one
+      graph pair, never a retrieval-quality claim.
+- [ ] **G12 — structural query-shift evaluation.** Add a verbose/narrative arm (~20 cases, 60–150
+      words) to the K7 pool and score the incumbent. Our current pool is **90 short well-formed
+      queries** of 9–18 words (`scripts/kb_rag/k7_cert_cases.json` 70 + `k7_seed_cases.json` 20),
+      median ~23 tokens, max 33, with **0 of 90 reaching the 48-token cap** — exactly the distribution
+      the ConstBERT reproduction criticises BEIR for. **Owning handoff**: this one
+      (`internal-kb-rag.md`). **Gate — what result opens it**: a verbose arm scoring **>2 pp below
+      the short arm** would be the **first local evidence of query-length sensitivity**, which today
+      exists nowhere in the repo. Opens **B7**.
+- [ ] **G13 — doc-truncation recall sweep.** recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`
+      **256** vs **300** (the incumbent's declared `document_length`, verified in
+      `gte-moderncolbert-v1-onnx/onnx_config.json`) vs a chunker `max_chunk_chars` reduced to
+      **~1,100**. Batch it with the **punctuation-skiplist arm** — the model ships a 32-entry
+      `skiplist_words` list that we apply nowhere (`grep -rn skiplist src/retrieval/` returns
+      nothing) — because both arms need a full corpus re-embed and should share one. **Owning
+      handoff**: this one (`internal-kb-rag.md`). **Gate — what result opens it**: any arm beating the
+      **0.5690** plain-`maxsim` recall@10 baseline by **>2 pp**, the declared noise floor. Directly
+      remediates **H1**.
+
+### Blocked-on (B)
+
+- [ ] **B6 — switch the KB encoder to answerai-colbert-small-v1.** **Blocked on G11** and on the open
+      **quality/cost decision** recorded at C1/C2 above: 54.67 vs 53.35 = 1.32 pp, *inside* the ~2 pp
+      noise floor this handoff declares, against 4.46× fewer parameters and a measured −24.3 % index
+      footprint. Named here so it is not re-derived as new. **Two of its original four blockers have
+      cleared**: the K1 port and the prefix-guard hardening both landed in `4e5e84c0`, and the K2
+      widening is half-landed (`onnx_config.json` is read; declared caps are not yet enforced), which
+      is enough to *load* such a graph but not enough to fail loudly on a mis-declared one. Do not
+      attempt the swap before G11 returns a number, and note this is a **decision**, not a task: it
+      trades 1.32 pp of BEIR against −24.3 % footprint on a corpus whose own noise floor is 2 pp.
+- [ ] **B7 — raise `query_maxlen` above the checkpoint default and measure.** **Blocked on G12.**
+      Pointless without a verbose-query arm: our current pool never reaches even 33 tokens, so raising
+      the cap today would measure padding rather than retrieval. Record the architectural disanalogy
+      that most limits the reproduction paper's transfer to us — GTE-ModernColBERT-v1 is
+      ModernBERT/RoPE with `max_position_embeddings: 8192`, so it is *architecturally* free to encode
+      long queries, unlike the 512-position BERT-family checkpoints the paper studies. **H2** supplies
+      the traffic distribution that says whether the question is live at all.

@@ -449,10 +449,71 @@ anything.
       rows grading **Witnessed/Attested, empty reasons** — the program's first decision-gating
       measurements. Second design miss recorded: role arms ran sequentially despite CPU/GPU
       concurrency doctrine (~30 min lost; runner-template rule filed in the shard).
-- [ ] **CT-E7b — propagate the new stamps into the MASTER registry quality rows** (frontdoor +
-      architect_general + the qwen38 role row). Deliberately NOT rushed at session end — master
-      surgery earned a near-miss today; do it fresh with the compile chain run + check green,
+- [x] **CT-E7b ✅ 2026-08-23 — E-7 stamps PROPAGATED into the master registry quality
+      rows; compile chain regenerated and FULLY GREEN.** Master (research) `577f215a`:
+      frontdoor `quality_pct: 93` (May-4 judge) VOIDED → E-7 live-path re-stamp at
+      template `1443ea9ab4bb` (math 82.5/mmlu_pro 37.5/gpqa_diamond 55.0/cruxeval 32.5,
+      CT-1b arm-2 REPRODUCED live); architect_general + coder_escalation swe_verified 57.5
+      VOIDED (Qwen3.6-27B A3 arm; model swapped + template swapped) → first-ever Qwen3.8
+      stamps (85.0/27.5/47.5/22.5 + gpqa_diamond_cot 45/60 = 75.0% @4096, superseding the
+      900-cap void). All nine E-7 cells now live in the derived layer's
+      `quality_by_axis.local`; orchestrator `5c41567d` regenerated lean + descriptors +
+      derived + summary; `guard ok / guard_strict ok / acceptance: no-inference checks
+      passed`. Belief sidecars: `chat_template_ab_capture.v1`, all Witnessed/Attested,
+      rows `ctab_e1e56fda…` / `ctab_c16c50e1…` (frontdoor / architect_general) + the
+      cot4096 superseding row. Also fixed two evidence citations that resolved nowhere
+      from the research repo (epyc-root artifacts now cited by absolute path). — propagate the new stamps into the MASTER registry quality rows** (frontdoor +
+      architect_general + the qwen38 role row). Deliberately NOT rushed at session end —
+      master surgery earned a near-miss today; do it fresh with the compile chain run + check green,
       sourcing the numbers from CT-E7 and the belief sidecars.
+- [x] **CT-9 ✅ 2026-08-23 — PILOT ADOPTION DECISION (post-observation, one line per role):
+      HOLD all three pilot roles; no fleet-wide extension; nothing reverted.** Decision
+      basis = production behavior over the ~18 h window (2026-08-22 13:55Z →
+      2026-08-23 08:00Z), NOT new benchmarks. Evidence (read-only sweep of
+      orchestrator.log, llama-server logs, /health, API dashboards; full bundle in the
+      CT-9 evidence record below): **the window carried CALIBRATION traffic only — zero
+      real user/autopilot traffic after 15:36:49Z** (autopilot intentionally stopped
+      since 2026-08-09; inference_tap last section 2026-08-10; the 186 API completions
+      and 4,943 server-side slot lines are the E-7 recalibration runs). Operational
+      signal across the window: **0 server errors, 0 truncations, 0 slot-restore
+      failures, 0 KV-migration events** on :8070/:8080/:8180/:8083; one gateway-side
+      504 whose server-side completion returned 200 (slow CPU completion, not a
+      template failure); halves :8080/:8180 received **zero requests ever** (startup
+      mlock warning only, memory-pressure, not template-related). The 2026-08-23 KV
+      migration bug (`98061c6b`) is **independent** of the pilot — all 9 header-only
+      slot files predate it by 3–4 weeks. DECISION LINES:
+      - **frontdoor → HOLD.** Zero error/truncation signal in-window; E-7 stamps
+        (82.5/37.5/55.0/32.5) reproduce CT-1b arm-2 on the live path. No drift to act
+        on; the revert is one line (`chat_template_file`) if a signal appears.
+      - **architect_general → HOLD.** First-ever stamps at this template
+        (85.0/27.5/47.5/22.5, cot 75.0 @4096); 282 clean slot releases, 0 errors.
+        Revert one line.
+      - **coder_escalation (alias on :8083) → HOLD.** Same server, same evidence as
+        architect_general; **no production signal exists** — the cruxeval watch-item
+        (CT-1b) has NO basis in this window (8 calibration completions only, no
+        scoring pipeline ran). Watch-item stays open pending real coder traffic.
+      - **fleet-wide → NOT EXTENDED.** The adoption precondition "serves real traffic
+        for a while" is NOT met (window = calibration only). Extending worker_* /
+        ingest / critic would void their CT-2 calibration slices on an UNMEASURED
+        basis — the exact thing CT-2 priced. Re-decide after real traffic
+        accumulates, or on operator direction.
+      **What would flip a role to REVERT:** any error/truncation/slot-restore
+      signature on its live path, or real-traffic quality drift — none observed.
+      Evidence record: `progress/2026-08/2026-08-23.md` (full bundle from the
+      production-behavior sweep).
+- [ ] **CT-10 — cruxeval watch-item re-check under real coder traffic** (filed
+      2026-08-23 from CT-9; the CT-1b watch-item has NO production basis in the
+      pilot window — 8 calibration completions only, autopilot stopped). Fire
+      when coder_escalation carries real traffic: does terseness compress useful
+      working-through on code-output prediction, i.e. quality drift vs the
+      embedded-template era? Reference: CT-1b completed-only hints (57.9 vs 42.9,
+      selection-biased subsets; paired flips 3:4 ≈ parity).
+- [ ] **CT-11 — re-decide the pilot adoption after real traffic accumulates**
+      (filed 2026-08-23 from CT-9). CT-9 = HOLD all three roles + no fleet-wide
+      extension, but the decision window carried calibration traffic only.
+      Re-run the CT-9 decision when frontdoor/architect_general/coder_escalation
+      have served real user or autopilot traffic (named trigger: the first
+      non-calibration traffic signal in the inference tap).
 - [x] **CT-8 ✅ 2026-08-22 — belief-kernel wiring BUILT AND WIRED** (subagent-built, conformance
       green): producer writer `scripts/vidya/adapters/chat_template_ab_capture.py` (atomic
       `belief_measurements.jsonl` sidecar at summarize-time; fail-loud on any guessable field —

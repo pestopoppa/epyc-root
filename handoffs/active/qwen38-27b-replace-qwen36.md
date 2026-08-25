@@ -125,12 +125,25 @@ Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.ou
       `live == config` — confirm architect_general serves Qwen3.8-27B-Q8_0 at draft_max 8 on
       :8083, `verify_ggml_linkage.sh`, non-zero VRAM sampled DURING a request, KFD process count;
       (d) close the ticked-but-stale 2026-08-20 checklist item against this evidence.
-- [ ] **Q38-T6 — cold-start lineup defect (root-caused 2026-08-22 after it fired on the Q38-T5
+- [x] **Q38-T6 ✅ 2026-08-23 — cold-start lineup defect FIXED (orchestrator `96498c3d`).**
+      (a) `stack_commands.py` cmd_start fallback: hardcoded `"quarter"` → realized-fleet
+      inference first, else `ORCHESTRATOR_STACK_NUMA_MODE` env, else ratified `"both"`
+      — an unflagged cold start now produces the production lineup (fulls included);
+      (b) stale argparse help `orchestrator_stack.py` (was "QUARTERS-ONLY…FULL_DISABLED…
+      defaults to 'quarter'") + `_filter_by_numa_mode` docstring (`stack_manifest.py`)
+      rewritten for the half-fleet reality (quarters retired 2026-07-30; `quarter` token
+      now means halves 2x48t; `both` is ratified production); (c) API-side producer-2
+      liveness veto (`src/config/models.py`): a TOTAL cold start (nothing listening
+      anywhere) is not the env=full poison signature — the veto now requires ≥1 live
+      port anywhere, so a cold start accepts the lineup instead of logging a spurious
+      "lineup rejected" and falling through to stale priors. Recovery path re-verified
+      intact: explicit `--numa-mode both` still wins. 290 targeted tests pass (incl.
+      new cold-start + veto tests); py_compile + ruff clean. Original task follows.** cold-start lineup defect (root-caused 2026-08-22 after it fired on the Q38-T5
       start).** The launcher NEVER reads `ORCHESTRATOR_STACK_NUMA_MODE` — mode comes from argv
       `--numa-mode` only, and the cold-start fallback is hardcoded `"quarter"`
-      (`stack_commands.py:1588`, pre-dating the 2026-07-30 half-fleet ratification), so an unflagged
-      cold start can never produce the production `both` lineup and silently drops the THREE full
-      instances (frontdoor :8070, worker_general :8072, ingest_long_context :8085). Fix: (a) change
+      (`stack_commands.py:1588`, pre-dating the 2026-07-30 half-fleet ratification), so an
+      unflagged cold start can never produce the production `both` lineup and silently drops the
+      THREE full instances (frontdoor :8070, worker_general :8072, ingest_long_context :8085). Fix: (a) change
       the :1588 fallback to the ratified production mode (or read the env there); (b) update the
       stale argparse help ("production is QUARTERS-ONLY… FULL_DISABLED",
       `orchestrator_stack.py:2773-2786`) and the `_filter_by_numa_mode` docstring

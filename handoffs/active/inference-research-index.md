@@ -10,7 +10,6 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-01 | 01 speculative decoding | [01-speculative-decoding.md](01-speculative-decoding.md) | Retire this compatibility pointer and redirect its external citations to the live spec-decode handoffs | — |
 | INF-02 | agent collab rnd harness | [agent-collab-rnd-harness.md](agent-collab-rnd-harness.md) | (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (--backend local, custo… | — |
 | INF-03 | agentic rocm kernel authoring | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) | Preserve r19; implement the relayed zero-profiler, counter-gated, paired-ablation C5 backlog | INF-48, EVL-47 |
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
@@ -39,7 +38,7 @@
 | INF-30 | lightning attention port | [lightning-attention-port.md](lightning-attention-port.md) | LQ-2 broader quality eval: if keeping a math/reasoning role, run a focused AIME/MATH/GPQA-style bundle with reasoning_budget=0, exact promp… | — |
 | INF-31 | llama cpp dsa contribution | [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) | D4 — root-cause the HIP bf16 LIGHTNING_INDEXER numerical failure (flaky, ERR≈1.0, | — |
 | INF-32 | llamacpp v6 consolidation | [llamacpp-v6-consolidation.md](llamacpp-v6-consolidation.md) | SWA slot-reuse fixes (d1c72d7fc / 603702769) — verify vs upstream SWA before drop. | — |
-| INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | — |
+| INF-33 | log linear gated deltanet readiness | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) | INF-48 |
 | INF-34 | mi210 big model and acceleration roadmap | [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) | DR-3 broader K2 admission runner/package: implement the dry-run-first K2 | — |
 | INF-37 | mi210 q8 dequant gemv roofline | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) | Resolve approval; clean-replay Q4_K branchless decode and durable IQ2 model paths | INF-48, EVL-47 |
 | INF-40 | moe spec cpu spec dec integration | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | Current live-MTP MoE verifier B-sweep: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bi… | — |

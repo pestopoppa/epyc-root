@@ -306,7 +306,7 @@ Eval script + raw outputs preserved at `/mnt/raid0/llm/UTILS/colgrep_ab_eval.py`
 | Handoff | Relationship |
 |---------|-------------|
 | [tool-output-compression.md](../active/tool-output-compression.md) | Complementary: definition compression + turn reduction |
-| [meta-harness-optimization.md](../active/meta-harness-optimization.md) | AP-16 instruction budget tracking applies to combined-op descriptions |
+| [meta-harness-optimization.md](meta-harness-optimization.md) | AP-16 instruction budget tracking applies to combined-op descriptions |
 | [routing-and-optimization-index.md](../active/routing-and-optimization-index.md) | WS-2 Omega re-measurement validates turn efficiency gains |
 | [colbert-reranker-web-research.md](../active/colbert-reranker-web-research.md) | ColGREP blocked; frecency is alternative temporal signal |
 | [research-evaluation-index.md](../active/research-evaluation-index.md) | Tracked under P6 |

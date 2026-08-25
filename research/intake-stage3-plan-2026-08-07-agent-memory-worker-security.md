@@ -34,7 +34,7 @@ No new handoff is needed. No frozen production-kernel, model-stack, registry, ch
 | `unified-trace-memory-service.md` | Active; trace ingest remains read-only, while its separate default-inert `MemoryActionStore` already owns append-only patterns, versions, tombstones, raw event references, and memory A/B rationale | Own the VerMem/Mem0/Memory-R1 shadow schema and state machine in the agent-facing memory layer; `src/trace/` stays read-only. |
 | `context-folding-progressive.md` | Active only for validation/design probes; current compaction behavior is already landed | Own one matched parallel-gist design probe, not a second production memory stack. |
 | `episodic-memory-integrity.md` | Active but narrowly owns FAISS correctness/reseeding and an existing memory on/off A/B | No new schema task. Consume its store-health gates as prerequisites and leave its scope unchanged. |
-| `meta-harness-optimization.md` | Frozen compatibility pointer | No edit; route Continual work to AutoPilot and tool-use owners. |
+| `handoffs/completed/meta-harness-optimization.md` | Completed ledger; active compatibility pointer retired 2026-08-23 | No edit; route Continual work to AutoPilot and tool-use owners. |
 
 Every selected active owner is already indexed. Stage 4 adds task lines only; it does not add master/domain-index rows.
 

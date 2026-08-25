@@ -479,3 +479,52 @@ live in `kernels/ops/attention/`, a different tree. Verify absence in the kernel
 
 **Scope of this dive**: the FORWARD pass as used in serving. The backward pass, and the fold and
 spec-decode variants, were not read.
+
+## Correction — 2026-08-22 (Stage-2b dive on llama.cpp PRs #26001 / #24561)
+
+**The no-go's MEASUREMENT stands. Its PREMISE about the state of the art did not, and was already
+false when written.**
+
+This handoff states *"No CDNA2/ROCm-tuned GDN kernel exists. HIP just runs the hipified CUDA
+kernel"* and calls the area *"genuinely open territory"*. **PR #24561** — *"CUDA/HIP: chunked MFMA
+prefill kernel for GATED_DELTA_NET (CDNA)"*, scoped explicitly to gfx90a/MI250X — was opened
+2026-06-13 and closed unmerged 2026-07-10, **ten days before that line was written**, and Appendix
+4's upstream-PR table omits it. It was closed on **maintenance and authorship grounds, not on
+merit**: the ggml CUDA/HIP maintainer declined it as apparently machine-generated with no volunteer
+maintainer, while stating in the same review *"FWIW I can confirm that I saw a 5-10% E2E improvement
+from this kernel when I tested it on my NVIDIA/AMD hardware."*
+
+**What is unchanged.** The measured attribution that funded the no-go — GDN at 15.397 % / 14.649 % /
+12.180 % of summed device-kernel time at p2048/p8192/p32768, capping a 4× op speedup at
+11.548 / 10.987 / 9.135 % full-model — is untouched. Applying Amdahl to the third-party *measured*
+gfx90a op speedups (1.63×–2.44×) gives a realistic **~6–9 % prefill** for our geometry, i.e. *below*
+the ceiling this handoff already judged insufficient. **Decode is unaffected by construction** — both
+kernels are gated off below 128/512 tokens per call.
+
+**What changed is the cost side, and only that.** This handoff's gate was framed as a decision
+*before committing weeks to author a kernel*. Two complete implementations now exist, one of them
+gfx90a-benchmarked, and a third party independently measured **+11.8 % / +12.1 % prefill on 2× MI210**
+after four fixes. Same ceiling, roughly two orders of magnitude less engineering.
+
+**Three selection constraints for anyone who revisits this** (all read from frozen v9, all
+non-obvious):
+1. **PR #26001 would never fire on our frontdoor.** It requires `K == 1`; we run `--spec-type
+   draft-mtp`, so `K = cparams.n_rs_seq + 1 > 1` (`src/models/delta-net-base.cpp:570`). Its author
+   declined K>1 as *"substantial work"*. **#24561 supports keep_rs/MTP by design** — on our exact
+   configuration the *closed* PR is the usable one and the *open* one is not.
+2. **#26001 has no AMD runtime path at all.** Its gate is literally `GGML_CUDA_CC_IS_NVIDIA(cc_dev)`;
+   its HIP support is compile-time only and never dispatched. The working gfx90a version exists only
+   as an unmerged patch in a GitHub comment, and the AMD/HIP maintainer filed CHANGES_REQUESTED after
+   it.
+3. **#24561's default occupancy floor would keep it dark on our model at `-np 1`.**
+   `MIN_BLOCKS_PER_SM 3` needs 312 blocks on MI210's 104 CUs; our 32 v-head frontdoor yields 256 at
+   `n_seqs=1`. It is a compile-time macro, and it fires unmodified at `-np >= 2`.
+
+**A numerics caveat that did not exist when this handoff closed.** The chunked formulation is
+algebraically equivalent in exact arithmetic but **not** in floating point — f16/bf16 GEMM operands
+with f32 accumulation, and error that grows with chunk count and therefore with prompt length.
+Upstream had to widen its op-test NMSE gate from 1e-7 to 2e-7, and it **still fails on MI210 at the
+longest shape** (2.97e-7 / 3.70e-7 at T=2048 = 128 chunks). Our own GDN correctness cases top out at
+**256 tokens**. Today's fp32 sequential kernel is the most conservative option we have, and adopting
+a chunked one means giving that up. Any adoption is `llama.cpp-experimental` work under the four-step
+promotion workflow; **v9 is FROZEN and no v9 change is proposed.**

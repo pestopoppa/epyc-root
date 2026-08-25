@@ -137,7 +137,7 @@ Legend for `species`: PF=prompt_forge, SL=structural_lab, NS=numeric_swarm, R=ro
 |---|---|---|---|
 | agent-file-compression | PF | Serve compressed agent-file variants (mild→medium) per role; score obedience/quality vs uncompressed. | agent-file-prose-compression |
 | reasoning-brevity-trimr | PF | Add conciseness/TrimR brevity to worker prompts; ~37% token cut at comparable accuracy on easy problems — gate on accuracy delta. | reasoning-compression |
-| meta-harness-contrastive | PF | Feed contrastive (k_success=2,k_failure=2) traces to the PromptForge proposer; HLE fidelity stays diagnostic-only. | meta-harness-optimization |
+| meta-harness-contrastive | PF | Feed contrastive (k_success=2,k_failure=2) traces to the PromptForge proposer; HLE fidelity stays diagnostic-only. | meta-harness-optimization (ledger) |
 | repl-verbosity-prompts | PF | A/B REPL verbosity/suggestion prompts to cut turns/tokens at zero accuracy loss (gated on S4 Omega A/B). | repl-turn-efficiency |
 | context-folding-alpha | NS | Tune compaction dual-objective alpha toward 0.0 (retrieval-weighted); +5pp precision offline — validate live. | context-folding-progressive |
 | kbrag-retrieval-weights | NS | Tune kb-rag recency_w∈[0.1,0.3], rerank_w, FTS5 lexical weight; optimize recall@10 (recency_w0.3_s90 = 0-miss baseline). | internal-kb-rag |

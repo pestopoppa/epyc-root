@@ -8,6 +8,12 @@
 # Usage:
 #   scripts/nightshift/run_wrapper.sh [extra nightshift args...]
 #
+# Exit codes:
+#   0  full success
+#   1  worktree could not be created
+#   4  the inference guard could not MEASURE the host — refused to run (AUD-7)
+#   5  ran, but scheduled auxiliary work was skipped (AUX-DEPENDENCY-MISSING)
+#
 # Environment:
 #   NIGHTSHIFT_MAX_PROJECTS  — max projects per run (default: 3)
 #   NIGHTSHIFT_MAX_TASKS     — max tasks per project (default: 2)
@@ -30,6 +36,18 @@ mkdir -p "$LOG_DIR"
 
 LOGFILE="$LOG_DIR/$(date +%Y-%m-%d_%H%M%S).log"
 
+# OBS-4: scheduled auxiliary work that cannot run because a cross-repo path is
+# missing must NOT be a silent success. The nightshift tasks themselves still run
+# (they are this repo's work), but the run is PARTIAL: the flag makes the wrapper
+# exit 5 instead of a clean 0, and every skip is reported with a greppable token.
+AUX_DEPENDENCY_MISSING=0
+warn_aux_missing() {
+  AUX_DEPENDENCY_MISSING=1
+  echo "[wrapper] !!! AUX-DEPENDENCY-MISSING !!! $*"
+  echo "[wrapper]   This scheduled auxiliary work was NOT done — the run must not be"
+  echo "[wrapper]   recorded as a clean success."
+}
+
 refresh_attestation_if_stale() {
   if [[ "${NIGHTSHIFT_ATTESTATION_REFRESH:-1}" == "0" ]]; then
     echo "[wrapper] Attestation refresh disabled (NIGHTSHIFT_ATTESTATION_REFRESH=0)"
@@ -43,6 +61,7 @@ refresh_attestation_if_stale() {
 
   if [[ ! -f "$script" ]]; then
     echo "[wrapper] Attestation refresh skipped: missing $script"
+    warn_aux_missing "attestation refresh could not run (missing $script)"
     return 0
   fi
 
@@ -75,8 +94,52 @@ refresh_attestation_if_stale() {
   return 0
 }
 
+# Three-valued AutoPilot identity: echoes running|stopped|unconfirmed, exits
+# 0/1/3. Mirrors inference_load_check.py's autopilot_state().
+#
+# The AUTHORITATIVE channel is the singleton flock on orchestration/.autopilot.lock
+# — the daemon holds it by construction (orchestrator state_ownership.py: "the
+# AutoPilot daemon is, by construction, the process holding the exclusive flock"),
+# and a held lock is argv-independent: it survives any launcher path, flag order
+# or renamed binary. The pgrep patterns (main loop + its supervisor) corroborate;
+# the `start`-adjacency that broke the specimen is tolerated by `( .*)?`.
+# A verdict that cannot be confirmed is `unconfirmed`, and the polarity rule
+# (inference_load_check.py: "for EXCLUSION, unknown must mean busy") says the
+# caller must treat it as running — shadow jobs must not launch into a live
+# AutoPilot.
 autopilot_running() {
-  pgrep -f 'scripts/autopilot/autopilot.py start' >/dev/null 2>&1
+  local lock="${AUTOPILOT_LOCK:-${ORCHESTRATOR_ROOT:-/mnt/raid0/llm/epyc-orchestrator}/orchestration/.autopilot.lock}"
+  local pgrep_ran=0 lock_spoke=0 has_matches=0 lock_held=0 rc=0 matches=""
+
+  # Flock channel. File absent is a REAL negative: the daemon's cmd_start creates
+  # the lock, so it cannot hold a lock on a nonexistent file. An untestable lock
+  # counts as held — the conservative direction for an exclusion decision.
+  if [[ -f "$lock" ]]; then
+    if ( flock -n 9 ) 9>"$lock" 2>/dev/null; then
+      lock_spoke=1; lock_held=0    # flock acquired -> nobody holds it
+    else
+      lock_spoke=1; lock_held=1    # flock denied -> held
+    fi
+  fi
+
+  # Process channel. rc 0 = matches, rc 1 = no matches (real negative), rc >= 2 =
+  # pgrep errored. `|| rc=$?` is required under `set -e`; a blanket `|| true`
+  # would launder rc 2 into a confident zero (AUD-7).
+  if command -v pgrep >/dev/null 2>&1; then
+    matches="$(pgrep -f 'scripts/autopilot/autopilot\.py( .*)? start|autopilot_supervisor\.py' 2>/dev/null)" || rc=$?
+    if (( rc <= 1 )); then
+      pgrep_ran=1
+      [[ -n "${matches//[[:space:]]/}" ]] && has_matches=1
+    fi
+  fi
+
+  if (( lock_held )) || (( pgrep_ran && has_matches )); then
+    echo "running"; return 0
+  fi
+  if (( pgrep_ran && lock_spoke )); then
+    echo "stopped"; return 1
+  fi
+  echo "unconfirmed"; return 3
 }
 
 run_lab_active_safe() {
@@ -89,6 +152,7 @@ run_lab_active_safe() {
   local runner="$orch_root/scripts/lab/run_shadow_jobs.py"
   if [[ ! -f "$runner" ]]; then
     echo "[wrapper] Lab active-safe skipped: missing $runner"
+    warn_aux_missing "lab active-safe jobs could not run (missing $runner)"
     return 0
   fi
 
@@ -123,8 +187,20 @@ run_lab_shadow_if_quiet() {
     return 0
   fi
 
-  if autopilot_running; then
+  # OBS-4: autopilot_running is three-valued. `unconfirmed` MUST suppress the
+  # shadow launch — the polarity rule (inference_load_check.py: "for EXCLUSION,
+  # unknown must mean busy"). Only a confirmed `stopped` (flock provably free AND
+  # pgrep ran clean with no match) licenses launching shadow jobs.
+  local ap_state ap_rc=0
+  ap_state="$(autopilot_running)" || ap_rc=$?
+  if [[ "$ap_state" == "running" ]]; then
     echo "[wrapper] Lab shadow skipped: AutoPilot is active"
+    return 0
+  fi
+  if [[ "$ap_state" == "unconfirmed" || -z "$ap_state" ]]; then
+    echo "[wrapper] Lab shadow skipped: AutoPilot state UNCONFIRMED (rc=$ap_rc)"
+    echo "[wrapper]   Cannot rule out a live AutoPilot, so shadow jobs are suppressed."
+    echo "[wrapper]   Only a confirmed 'stopped' (flock free AND no process match) allows them."
     return 0
   fi
 
@@ -132,6 +208,7 @@ run_lab_shadow_if_quiet() {
   local runner="$orch_root/scripts/lab/run_shadow_jobs.py"
   if [[ ! -f "$runner" ]]; then
     echo "[wrapper] Lab shadow skipped: missing $runner"
+    warn_aux_missing "lab shadow jobs could not run (missing $runner)"
     return 0
   fi
 
@@ -253,6 +330,11 @@ run_lab_shadow_if_quiet() {
   fi
 
   echo "=== Nightshift Run Complete: $(date -Iseconds) ==="
+  if (( AUX_DEPENDENCY_MISSING )); then
+    echo "=== PARTIAL RUN: auxiliary work was skipped (see AUX-DEPENDENCY-MISSING above) ==="
+    echo "=== The nightshift tasks above ran; the run is NOT a clean success. ==="
+    exit 5
+  fi
 # AUD-7: the braces run in a SUBSHELL because of the pipe, so an `exit` inside them
 # is the subshell's status, not this script's. Capture it — otherwise the guard's
 # refusal above would exit 4 into a pipeline whose visible status is tee's 0, and

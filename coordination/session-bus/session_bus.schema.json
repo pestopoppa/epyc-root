@@ -75,9 +75,11 @@
             "task-propose",
             "compute-request",
             "compute-grant",
-            "compute-deny"
+            "compute-deny",
+            "compute-blocker",
+            "compute-window"
           ],
-          "description": "R11 (2026-08-13): the compute-window dialogue. A main that needs a compute window writes `compute-request` (payload: task, requested window, device/region, est_h, release-condition) routed to `inference`; `inference` answers `compute-grant` (accepted window + boundaries) or `compute-deny` (reason + what to do next). Before these kinds existed the dialogue ran as `kind=status` + `payload.request_kind=compute-request|compute-grant|compute-deny`, which satisfied intent but violated the letter of BUS_PROTOCOL rule 11."
+          "description": "R11 (2026-08-13): the compute-window dialogue. A main that needs a compute window writes `compute-request` (payload: task, requested window, device/region, est_h, release-condition) routed to `inference`; `inference` answers `compute-grant` (accepted window + boundaries) or `compute-deny` (reason + what to do next). Before these kinds existed the dialogue ran as `kind=status` + `payload.request_kind=compute-request|compute-grant|compute-deny`, which satisfied intent but violated the letter of BUS_PROTOCOL rule 11. RTG-51 (2026-08-23) adds the typed intake kinds: `compute-blocker` (the coordinator's typed forwarding of an accepted compute-class task-checkpoint receipt, plus Inference's append-only disposition events over that blocker) and `compute-window` (Inference's graded window announcement). The compute-ready projection is reconstructed from these kinds plus the accepted receipts by scripts/coordination/compute_ready_daemon.py; only `inference` authors dispositions and windows."
         },
         "corr_id": {
           "type": "string"
@@ -459,6 +461,176 @@
               "completed_at": {"type": "string", "minLength": 1}
             }
           }}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "compute-blocker"}}, "required": ["kind"]},
+          "then": {
+            "required": ["task_id", "payload"],
+            "allOf": [
+              {"if": {"properties": {"payload": {"properties": {"state": {"const": "submitted"}}}},
+                "required": ["payload"]},
+                "then": {"properties": {"from": {"const": "coordinator-agent"}},
+                  "description": "authority: only the coordinator forwards an accepted receipt as a typed compute-blocker (RTG-51)"}},
+              {"if": {"properties": {"payload": {"properties": {"state": {"enum": [
+                "admitted", "duplicate", "needs-info", "rejected", "ready", "planned",
+                "granted", "denied", "running", "terminal"]}}}}, "required": ["payload"]},
+                "then": {"properties": {"from": {"const": "inference"}},
+                  "description": "authority: only inference moves a blocker through its lifecycle (RTG-51)"}}
+            ],
+            "properties": {"payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "RTG-51 (2026-08-23). ONE kind, two event classes, never an in-place edit: the coordinator's typed forward of an accepted compute-class task-checkpoint receipt (`state: submitted`) and, on the same blocker_id, Inference's append-only lifecycle dispositions (`submitted -> admitted|duplicate|needs-info|rejected -> ready -> planned -> granted|denied -> running -> terminal`). The source of truth for the candidate is the accepted receipt named by `checkpoint_ref`; the worker's own free-form compute_request from the receipt is typed here by the coordinator into `requirements`. Each disposition carries the stable `blocker_id`, `reason_code`, and `prior_event_id` (the previous compute-blocker message id; the receipt message id for the first disposition, and `null` on the submission itself, whose own message id becomes `checkpoint_event_id` for every later disposition).",
+              "required": [
+                "blocker_id", "state", "reason_code", "prior_event_id",
+                "checkpoint_event_id", "checkpoint_ref", "checkpoint_sha256",
+                "task_id", "task_text", "spec_ref", "source_agent", "graph_node_id",
+                "expires_at", "evidence_refs", "minimum_window_grade",
+                "compatible_window_grades", "requirements"
+              ],
+              "properties": {
+                "blocker_id": {"type": "string", "minLength": 1,
+                  "description": "stable blocker identity, common to the submission and every disposition"},
+                "state": {"enum": ["submitted", "admitted", "duplicate", "needs-info",
+                  "rejected", "ready", "planned", "granted", "denied", "running",
+                  "terminal"]},
+                "reason_code": {"type": "string", "minLength": 1,
+                  "description": "typed disposition reason; \"submission\" on the initial forward"},
+                "prior_event_id": {"type": ["string", "null"],
+                  "description": "previous compute-blocker message id in the chain; null on the submission"},
+                "checkpoint_event_id": {"type": ["string", "null"],
+                  "description": "the task-checkpoint message id that names the source receipt; null on the submission, whose own message id fills this role for later dispositions"},
+                "checkpoint_ref": {"type": "string", "minLength": 1,
+                  "description": "the accepted task-checkpoint receipt message id"},
+                "checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$",
+                  "description": "SHA-256 of the accepted receipt envelope; the projection cross-validates it against the receipts ledger"},
+                "task_id": {"type": "string", "minLength": 1},
+                "task_text": {"type": "string", "minLength": 1},
+                "spec_ref": {"type": "string", "minLength": 1},
+                "source_agent": {"type": "string", "minLength": 1},
+                "graph_node_id": {"type": "string", "minLength": 1,
+                  "description": "the pinned .index-graph.json node for this handoff; downstream-leverage is derived from it by the planner, never carried as a claim"},
+                "expires_at": {"type": "string", "minLength": 1},
+                "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "minimum_window_grade": {"enum": ["small-model-only",
+                  "load-then-keep-hot", "full-idle"],
+                  "description": "the least permissive grade that satisfies this blocker; a label, not an ordering"},
+                "compatible_window_grades": {"type": "array", "minItems": 1,
+                  "uniqueItems": true, "items": {"enum": ["small-model-only",
+                  "load-then-keep-hot", "full-idle"]}},
+                "requirements": {"type": "object", "additionalProperties": false,
+                  "required": ["required_devices", "cpu_bandwidth_class",
+                    "gpu_vram_bytes", "duration_seconds", "contention_class",
+                    "pausable", "model"],
+                  "properties": {
+                    "required_devices": {"type": "array", "minItems": 1,
+                      "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                    "cpu_bandwidth_class": {"type": "string", "minLength": 1},
+                    "gpu_vram_bytes": {"type": "integer", "minimum": 0},
+                    "duration_seconds": {"type": "integer", "minimum": 1},
+                    "contention_class": {"enum": ["exclusive-contiguous", "resumable"]},
+                    "pausable": {"type": "boolean"},
+                    "model": {"type": "object", "additionalProperties": false,
+                      "required": ["model_id", "weight_id", "size_bytes", "load_seconds"],
+                      "properties": {
+                        "model_id": {"type": "string", "minLength": 1},
+                        "weight_id": {"type": "string", "minLength": 1},
+                        "size_bytes": {"type": "integer", "minimum": 0},
+                        "load_seconds": {"type": "integer", "minimum": 0}
+                      }}
+                  }},
+                "priority_class": {"enum": ["production-live", "operator-directed",
+                  "background-churn"], "description": "planner ranking input; mirrors the queue-row class"},
+                "must_run": {"type": "boolean",
+                  "description": "operator must-run override; planner ranking input"},
+                "duplicate_of": {"type": "string", "minLength": 1},
+                "window_id": {"type": "string", "minLength": 1},
+                "lease_id": {"type": "string", "minLength": 1},
+                "lease_path": {"type": "string", "minLength": 1},
+                "physical_claim_refs": {"type": "array", "minItems": 1,
+                  "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                "outcome": {"type": "string", "minLength": 1}
+              },
+              "allOf": [
+                {"if": {"properties": {"state": {"const": "submitted"}},
+                  "required": ["state"]},
+                  "then": {"properties": {"prior_event_id": {"const": null},
+                    "checkpoint_event_id": {"const": null}}}},
+                {"if": {"properties": {"state": {"enum": ["admitted", "duplicate",
+                  "needs-info", "rejected", "ready", "planned", "granted", "denied",
+                  "running", "terminal"]}}, "required": ["state"]},
+                  "then": {"properties": {"prior_event_id": {"type": "string",
+                    "minLength": 1}, "checkpoint_event_id": {"type": "string",
+                    "minLength": 1}}}},
+                {"if": {"properties": {"state": {"const": "duplicate"}},
+                  "required": ["state"]},
+                  "then": {"required": ["duplicate_of"]}},
+                {"if": {"properties": {"state": {"const": "planned"}},
+                  "required": ["state"]},
+                  "then": {"required": ["window_id"]}},
+                {"if": {"properties": {"state": {"enum": ["granted", "running"]}},
+                  "required": ["state"]},
+                  "then": {"required": ["lease_id", "lease_path"]}},
+                {"if": {"properties": {"state": {"const": "running"}},
+                  "required": ["state"]},
+                  "then": {"required": ["physical_claim_refs"]}},
+                {"if": {"properties": {"state": {"const": "terminal"}},
+                  "required": ["state"]},
+                  "then": {"required": ["outcome"]}}
+              ]
+            }}
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "compute-window"}}, "required": ["kind"]},
+          "then": {
+            "required": ["payload"],
+            "properties": {
+              "from": {"const": "inference",
+                "description": "authority: only inference announces a compute window (RTG-51)"},
+              "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "RTG-51 (2026-08-23): Inference's graded window announcement. A window grade is a compatibility label, never a total ordering; explicit budgets decide fit. The announcement is advisory and never substitutes for the typed resource lease. `gpu_vram_available` carries the observed bytes AND its observation refs; `resident_model` is the identity or null. `eligible_model_ids` and `max_model_bytes` are planner-core inputs (the landed compute_ready.window.v1 schema requires them); the daemon maps this payload onto that schema without reimplementing its logic.",
+              "required": [
+                "window_id", "grade", "eligible_devices", "cpu_bandwidth_class",
+                "gpu_vram_available", "resident_model", "load_allowed", "starts_at",
+                "expires_at", "time_budget_seconds", "safe_drain_at", "observation_refs",
+                "eligible_model_ids", "max_model_bytes"
+              ],
+              "properties": {
+                "grade": {"enum": ["small-model-only", "load-then-keep-hot", "full-idle"]},
+                "eligible_devices": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "cpu_bandwidth_class": {"type": "string", "minLength": 1},
+                "gpu_vram_available": {"type": "object", "additionalProperties": false,
+                  "required": ["bytes", "observation_refs"],
+                  "properties": {
+                    "bytes": {"type": "integer", "minimum": 0},
+                    "observation_refs": {"type": "array", "minItems": 1,
+                      "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+                  }},
+                "resident_model": {"type": ["object", "null"],
+                  "additionalProperties": false,
+                  "required": ["model_id", "weight_id"],
+                  "properties": {
+                    "model_id": {"type": "string", "minLength": 1},
+                    "weight_id": {"type": "string", "minLength": 1}
+                  }},
+                "load_allowed": {"type": "boolean"},
+                "starts_at": {"type": "string", "minLength": 1},
+                "expires_at": {"type": "string", "minLength": 1},
+                "time_budget_seconds": {"type": "integer", "minimum": 1},
+                "safe_drain_at": {"type": "string", "minLength": 1},
+                "observation_refs": {"type": "array", "minItems": 1, "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}},
+                "eligible_model_ids": {"type": "array", "minItems": 1,
+                  "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                "max_model_bytes": {"type": "integer", "minimum": 0}
+              }
+            }}
+          }
         },
         {
           "if": {

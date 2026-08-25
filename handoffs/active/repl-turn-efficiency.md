@@ -64,7 +64,7 @@ Do not implement a daemon unless at least one of these conditions is met during 
 - `/mnt/raid0/llm/epyc-orchestrator/src/repl_environment/combined_ops.py`
 - `/mnt/raid0/llm/epyc-orchestrator/src/repl_environment/context.py`
 - [tool-output-compression.md](tool-output-compression.md)
-- [meta-harness-optimization.md](meta-harness-optimization.md)
+- [meta-harness-optimization.md](../completed/meta-harness-optimization.md)
 - [routing-and-optimization-index.md](routing-and-optimization-index.md)
 - [research-evaluation-index.md](research-evaluation-index.md)
 - [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)

@@ -214,9 +214,45 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
         `--allow-during-bench` is passed. `earlyoom` is excluded — it merely names `llama-bench` in
         its arguments. **Verified live on first run**: it caught the E8 quality baseline reseed
         (PID 1485364) and the v7 quality gate.
-  - [ ] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
+  - [x] SS-BENCH-GATE-b — Pin the orchestrator fleet (including transient sidecars) off the CPU
         bench core range so a reload cannot trip the gate at all. This is the durable fix; (a) is the
-        guard rail.
+        guard rail. ✅ 2026-08-23 — `scripts/server/bench_core_claim.py`: the launcher reads the live
+        bench driver's ACTUAL thread core sets from /proc (fail-closed on malformed/unstable;
+        unobservable = busy), and every spawn (start/reload/aux/sidecar, 6 Popen sites + 5 wrappers)
+        is either pinned off the claim (`host_cores − claim`, e.g. bench 0-95 → sidecar `96-191`)
+        or refused (exit 2) unless `--allow-during-bench`; default-affinity spawns (the incident's
+        sidecar shape) are pinned rather than refused so the stack stays functional during a bench.
+        60 new tests + 95 reload/stack tests + 489 stack suite green.
+  - [x] SS-BENCH-GATE-c — Extend the same guard to the API's OWN runtime spawn layer (llama-servers
+        spawned by the running API with default affinity, not through the CLI launcher). ✅ 2026-08-23 —
+        spawn-site map produced; the ONE API-runtime spawn site is `src/services/worker_pool.py:392
+        _start_worker` (WARM-expansion/on-demand, `numactl --interleave=all` — the incident's
+        default-affinity shape). `bench_core_claim.py` gains `api_enforce_placement()` +
+        `ORCHESTRATOR_ALLOW_DURING_BENCH` env knob (evaluated at spawn time; bypasses refusals only,
+        pinning still applies; WARNING-logged); `_start_worker` now uses a bench-guarded prefix
+        (pins to `host_cores − claim` when a bench is live, refuses otherwise). Quiet path
+        byte-identical (proven by tests). 69 bench-claim + 179 worker-pool/backends + 70 model-server
+        tests green; ruff clean. The incident's sidecar class is now covered at BOTH layers (CLI -b,
+        API -c).
+  - [x] SS-BENCH-GATE-c residuals — `src/inference/model_server.py` `LlamaCppBackend` (legacy
+        per-inference llama-completion, `numactl --interleave=all`, CLI-only today) and
+        `src/services/lightonocr_llama_server.py` per-request llama-mtmd-cli spawns (separate
+        launcher-owned service) are the same incident class but not API-runtime-reachable; guard
+        them IF either path re-wires into the API. Filed 2026-08-23. ✅ **DONE 2026-08-23** — both
+        guarded anyway (cheap insurance, same `api_enforce_placement` pattern): `LlamaCppBackend`
+        replaces the numactl default-affinity prefix with `taskset -c <host_cores − claim>` when a
+        bench is live (refuses fail-closed on unobservable/refusal); `LlamaOCRWorker` prepends the
+        same pin to the asyncio exec (503 on refusal). Quiet paths byte-identical (tests). 14 -c
+        tests + 103 worker/model-server tests green.
+  - [x] Fix the pre-existing `test_runtime_flag_spec.py` failures (3, `prefix_stable_order` spec
+        parity drift) discovered 2026-08-23 while running the stack suite — imports only
+        `src/runtime_flag_spec` + `src/features`, untouched by the -b change; predates it.
+        ✅ 2026-08-23 — `prefix_stable_order` is the RTE-Prefix flag (default-off, `src/features.py:204`);
+        spec re-synced via the sanctioned `runtime_flags_drift.py --sync-spec` (spec header forbids
+        hand-editing names) — one `baseline` line added in sorted position; 22/22 spec tests green;
+        drift proof clean. The 38 live-file drift findings (10 undeclared_override on
+        architect_delegation/plan_review/skillbank…) are pre-existing and remain the stack-owning
+        session's triage — unchanged by this fix.
 
 
 - [x] Keep the `waived_production_blocker` mechanism empty by default and

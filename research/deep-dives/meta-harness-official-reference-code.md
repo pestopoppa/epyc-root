@@ -108,7 +108,7 @@ One portable insight: **environment bootstrapping**. Before the agent loop start
 
 ## Mapping to EPYC Active Work
 
-### meta-harness-optimization.md — overlap + gaps
+### handoffs/completed/meta-harness-optimization.md — overlap + gaps
 
 The code confirms our Tier-1/Tier-2 design. One paper-underspecified detail the code reveals:
 
@@ -137,7 +137,7 @@ Novelty: **low** (confirmed — no new numbers, no new algorithm). Relevance: **
 
 ## Concrete Next Actions
 
-Target: `meta-harness-optimization.md` Tier-2b (upgraded search + telemetry) and Tier-3 (outer-loop rebuild).
+Target: `handoffs/completed/meta-harness-optimization.md` Tier-2b (upgraded search + telemetry) and Tier-3 (outer-loop rebuild).
 
 1. **MH-6 (Tier-2b): Adopt the SKILL.md proposer-prior template for PromptForge code-mutation system prompt.** Rewrite the current ad-hoc system prompt in `prompt_forge.py::_build_code_mutation_prompt()` against the terminal_bench_2 SKILL.md structure: explicit read order, "one mechanism per candidate" (already enforced — make the constraint visible to the proposer too), "no task-specific hints / never mention suite names" anti-overfitting clause, mandatory `expected_cost_delta` + `expected_quality_delta` prediction fields. ~100 LoC + prompt rewrite. Falsifiable against AR-3 acceptance-rate + per-mutation cost variance.
 2. **MH-7 (Tier-2b): Trace feedback upgrade — paired success+failure.** Extend `eval_tower.capture_recent_traces()` to `capture_contrastive_traces(k_success, k_failure)` and feed both sets to PromptForge. Mirrors the meta-harness SKILL's "Read failed AND successful trajectories" instruction. ~40 LoC. Expected gain: closes the "recent-activity-is-not-contrast" gap in B3.
@@ -151,5 +151,5 @@ Target: `meta-harness-optimization.md` Tier-2b (upgraded search + telemetry) and
 - Sibling artifact repo: https://github.com/stanford-iris-lab/meta-harness-tbench2-artifact
 - Paper: https://arxiv.org/abs/2603.28052 (intake-244)
 - Fetched files: `README.md`, `ONBOARDING.md`, `reference_examples/text_classification/` directory listing, `reference_examples/terminal_bench_2/` directory listing, `terminal_bench_2/claude_wrapper.py`, `terminal_bench_2/meta_harness.py`, `terminal_bench_2/.claude/skills/meta-harness-terminal-bench-2/SKILL.md`, `terminal_bench_2/agents/baseline_kira.py` (top 50 lines + summary)
-- Related EPYC handoffs: `meta-harness-optimization.md`, `autopilot-continuous-optimization.md`, `repl-turn-efficiency.md`, `agent-world-env-synthesis.md`, `minddr-deep-research-mode.md`, `user-facing-harness-index.md`
+- Related EPYC handoffs: `handoffs/completed/meta-harness-optimization.md`, `autopilot-continuous-optimization.md`, `repl-turn-efficiency.md`, `agent-world-env-synthesis.md`, `minddr-deep-research-mode.md`, `user-facing-harness-index.md`
 - Related intakes: intake-244 (paper), intake-327 (GEPA), intake-345 (GEPA Full Program Adapter), intake-450 (Venice Skills SKILL.md rubric), intake-454 (hermes-agent orchestrator subagents)

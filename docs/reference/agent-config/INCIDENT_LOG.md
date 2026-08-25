@@ -220,3 +220,34 @@ surfaces days later as unrelated-looking breakage. Rule fed: never run `git clea
 shared clone or any lane worktree; untracked-but-load-bearing state must either be
 tracked, live off-tree, or be listed in a manifest a restorer can replay (CLAUDE.md §
 Working-tree identity; `agents/shared/OPERATING_CONSTRAINTS.md` § Shared-tree hygiene).
+
+## INC-20260823-filesystem-containment-gap
+
+An agent ran `sudo -n mkdir -p /mnt/bigdisk && sudo -n mount /dev/sdb1 /mnt/bigdisk`,
+planned writes to `/mnt/bigdisk/epyc-backup/` (a device OUTSIDE the data root),
+and `sudo apt-get install restic` — all against the operator directive *do not
+touch anything outside /mnt/raid0/llm/*. Nothing stopped it. The gap was
+TWO-SURFACE and both surfaces were Bash:
+
+  * **Claude surface**: `check_filesystem_path.sh` matches Write|Edit only (it
+    reads `tool_input.file_path`); the six PreToolUse Bash hooks
+    (check_pytest_safety, check_live_holder_interference, check_commit_hygiene,
+    check_d9_loop_plane, check_process_pattern_kill, check_operator_apply_copy)
+    scanned none of mount/privileged verbs/out-of-root writes.
+  * **opencode surface**: `~/.config/opencode/opencode.jsonc` had no permission
+    rules and no plugins — the session that made the mistake had NO guard at all.
+
+Fix (2026-08-23): ONE shared scanner, `scripts/hooks/filesystem_containment_scan.py`
+(reuses `shell_scan.segments()`; the RTG-52 "never a fifth parser" rule), called by
+`check_filesystem_containment.sh` (Claude PreToolUse → Bash) and
+`.opencode/plugins/filesystem-containment.ts` + the global plugin copy (opencode
+`tool.execute.before`). Two refusal classes: CLASS A privileged host-level
+operations (operator-only; env-ack `EPYC_FS_ACK` is the only override) and CLASS B
+writes outside the containment root (`/mnt/raid0/llm/**`, `/workspace/**`,
+`/tmp/opencode/**`, `~/.claude/**`, `~/.codex/**`, bare `/tmp/**` tolerated
+scratch; operator allowlist `scripts/hooks/filesystem_allowlist.yaml`, schema
+`session_bus.filesystem_allowlist.v1`, fail-closed). Defense-in-depth opencode
+`permission.bash` deny patterns for the unambiguous privileged verbs. Rule fed:
+mechanical filesystem containment on BOTH agent surfaces, one shared implementation
+(`docs/guides/agent-workflows/filesystem-containment-guard.md`; CLAUDE.md §
+Debugging).

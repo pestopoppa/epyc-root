@@ -114,6 +114,23 @@ deliberately — decide them, do not just implement them.
       does not. Four instances in one day (v9 freeze receipt, mainA's affinity-preflight surface,
       this one, and the standing `benchmarks/results` proof) says the rule is known and the trigger
       is what is missing.
+      **STATUS 2026-08-23 (EVL-47 SC19): write side wired; first tuple pending first
+      orchestrator emission.** Producer-written capture hook landed in the orchestrator
+      (`src/scheduling/contention_gate_capture.py`, call site `src/api/routes/chat.py` where the
+      echo is stamped; envelope `contention_gate_capture.v1`, ONE request-keyed JSONL row per
+      request — the locator trap pinned at the write site — opt-in via
+      `ORCHESTRATOR_CONTENTION_GATE_CAPTURE` (default OFF), never raises, `None` echo writes
+      nothing) plus `tests/unit/test_contention_gate_capture.py` (6 passed). Root adapter
+      `scripts/vidya/adapters/contention_gate.py` registers `contention-gate-measurement`,
+      projects ONE claim per request (never per decision), derives the measured verdict
+      (`admitted_immediately` / `queued_then_admitted` / `blocked`) from the producer's own
+      fields, and delegates grading to the shared ladder; honest grade `Witnessed/Anchored`
+      until a producer-pinned envelope hash exists (off-tree append-only log, no collect-time
+      digest). `tests/vidya/test_contention_gate_adapter.py` (12 passed) + `test_sealed_manifest.py`
+      (19 passed) green. Source-table row updated. **Honest state unchanged: the orchestrator
+      API is down and the capture is default-OFF, so zero `gate_decisions` have been emitted —
+      an empty capture is not a measurement, and this box stays `[ ]` until the adapter emits
+      its first tuple (first orchestrator start with the env var set).**
 
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
@@ -984,3 +1001,31 @@ task is filed **now, before any of them runs** — not when results land. Source
       *Rationale for filing pre-run:* wiring the write side is cheap and permanent; retrofitting the
       read side is impossible, and a tuple invented on read claims warrant the original run never
       captured.
+
+## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22)
+
+The 2026-08-22 Stage-2b wave (15 dives, `intake-1280`…`1294`) specified a further set of
+compute-gated measurements across **three distinct source classes**. Filed **before any of them
+runs**, same rule and same reason as SC49. Source row added to
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+| Class | Sweeps | Owning handoff | Emits |
+|---|---|---|---|
+| **KV-quantization eval** | G2 outlier ratio · G3 GSM8K-class reasoning · G4 IFEval CondFlip · G5 rotated incoherence ratio | `tq3-quantization-evaluation.md` | per-layer/per-head max÷median for K and V separately; paired exact-match deltas; FP16-anchored CondFlip; per-group max/RMS at G=32 |
+| **Draft-acceptance sweep** | G8 KV-asymmetric self-speculation α · G9 DF2-6 ngram arm | `speculative-decoding-mtp-refresh.md`, `dflash2-block-drafter-experimental-build.md` | mean accepted length and per-token agreement per `--draft-max`; per-prompt PASS/FAIL and first-differing-token index |
+| **Retrieval fidelity fixture** | G11 INT8-vs-fp32 and mirror-vs-upstream parity · G12 verbose-query arm · G13 doc-truncation recall | `internal-kb-rag.md` | per-token cosine distribution, max abs Δ, MaxSim top-1 agreement; recall@10 per arm |
+
+- [ ] **SC50 — build the adapters that project these into `ClaimTuple`s.** **Project, not grade** —
+      the carrier is shared, each source class has exactly one ladder, and the registry refuses a
+      second (`docs/design/vidya-pilot-spec.md` §4.7). Four caveats are load-bearing and must ride
+      in the tuple, because each is a way the number gets read as something it is not:
+      **(a)** a **fidelity** cosine (G11) is a claim about ONE graph pair, never a retrieval-quality
+      claim — the two must not share a ladder rung;
+      **(b)** G4's CondFlip is **paired and FP16-anchored**; an aggregate pass rate is a different
+      quantity and is not interchangeable with it;
+      **(c)** G8 measures **α, not speedup** — the drafter is the full model, so the win is
+      KV-traffic only, and a tuple that omits this invites a throughput reading;
+      **(d)** G2's dynamic range is meaningful only **per layer and per head, K and V separately** —
+      a pooled max÷median hides exactly the asymmetry the sweep exists to find.
+      *Why pre-run, again:* `benchmarks/results` is the standing proof — 4,562 files, no write-side
+      hook, 0 of 200 sampled carrying a usable tuple, so none of it can gate a decision.

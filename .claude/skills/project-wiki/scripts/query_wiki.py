@@ -4,10 +4,10 @@
 Pre-filters intake_index.yaml and scans handoffs/deep-dives to reduce
 context for LLM synthesis. Returns JSON with matching entries.
 
-Usage:
-    python3 query_wiki.py "speculative decoding"
-    python3 query_wiki.py "knowledge base" --category knowledge_management
-    python3 query_wiki.py "KV cache" --max-results 10
+Usage (run with the orchestrator venv interpreter — PyYAML is required):
+    /workspace/repos/epyc-orchestrator/.venv/bin/python query_wiki.py "speculative decoding"
+    /workspace/repos/epyc-orchestrator/.venv/bin/python query_wiki.py "knowledge base" --category knowledge_management
+    /workspace/repos/epyc-orchestrator/.venv/bin/python query_wiki.py "KV cache" --max-results 10
 """
 
 from __future__ import annotations
@@ -71,7 +71,9 @@ def search_intake(index_path: Path, query_terms: list[str],
                 continue
 
         # Score across searchable fields
-        def _safe_join(items: list) -> str:
+        def _safe_join(items) -> str:
+            if not items:
+                return ""
             return " ".join(str(x) for x in items if x)
 
         score = 0

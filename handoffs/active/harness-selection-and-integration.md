@@ -3,7 +3,7 @@
 **Status**: active — strategy/selection index (harness UNCHOSEN; no implementation committed)
 **Created**: 2026-07-16 (operator question: keep the Orch orthogonal to its harness, or bake it in?)
 **Categories**: agent_architecture, inference_serving, tool_implementation, context_management
-**Related (down)**: [`hermes-outer-shell.md`](hermes-outer-shell.md) (Hermes candidate eval), [`user-facing-harness-index.md`](user-facing-harness-index.md) (Hermes/agent-UX dispatch), [`tool-output-compression.md`](tool-output-compression.md) (context-collision surface), [`meta-harness-optimization.md`](meta-harness-optimization.md) (RLM harness self-improvement lineage)
+**Related (down)**: [`hermes-outer-shell.md`](hermes-outer-shell.md) (Hermes candidate eval), [`user-facing-harness-index.md`](user-facing-harness-index.md) (Hermes/agent-UX dispatch), [`tool-output-compression.md`](tool-output-compression.md) (context-collision surface), [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) (RLM harness self-improvement lineage)
 **Related (precedent)**: [`../completed/orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) (backend-side session/compaction boundary), [`../archived/claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md) (archived ACP-as-Path-B precedent)
 
 ## Objective
@@ -61,7 +61,7 @@ HS-2 ACP ROI evaluation ──────────────────�
 
 1. **Context-collision surface** — a candidate harness's OWN conversation compaction / prompt-cache mgmt / sub-agent spawning can double-up or fight orchestrator-side Phase-2 compression + context-folding. Owned by [`tool-output-compression.md`](tool-output-compression.md) (see its Phase-4 cross-refs) and the Hermes Cons/Key-Questions in `hermes-outer-shell.md` (L37-42, L84-90). This is the concrete instance of "(B) needs cooperation."
 2. **Backend-moat orthogonality + MEASUREMENT trust boundary** — layer (A) (eval tower, scoring, era registry, safety gates) stays server-side and human-amendment-only; a harness must never absorb it.
-3. **RLM harness self-improvement lineage** — the "specialized harness beats a general one" idea (intake-517 HALO) cross-links to [`meta-harness-optimization.md`](meta-harness-optimization.md) (frozen pointer; do not route work there).
+3. **RLM harness self-improvement lineage** — the "specialized harness beats a general one" idea (intake-517 HALO) cross-links to [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) (completed ledger; do not route work there).
 
 ## Key Files / Surfaces
 
@@ -312,4 +312,15 @@ its error path the whole contract. Both are currently wrong in a way that is sil
   The three failure-path tests were verified to FAIL against pre-fix HEAD in a detached worktree; the
   two success-path tests pass in both, which is the point — a failure-only guard would pass just as
   happily if the route began erroring on everything. 292 passed across all tests touching this route.
+  **Extension 2026-08-23** (tier-1 backlog pass): the 2026-08-11 fix stopped *raised* exceptions
+  becoming 200s, but the layer beneath still failed open — `LLMPrimitives.llm_call` does not raise; it
+  returns `[ERROR: ...]` strings at start-of-answer, and those in-band failures were reaching clients
+  as HTTP 200 assistant content (streaming closed `finish_reason: "stop"`). Now detected at the route
+  via the canonical `inband_error_text()` rule: non-streaming → 502 `HTTPException`, streaming →
+  terminal SSE `error` event + `finish_reason: "error"`; REPL path checks the raw result before the
+  auto-wrap into `FINAL(...)`. A model answer *beginning* with `[ERROR:` is classified as a backend
+  failure (codebase-wide convention); mid-answer occurrences stay 200 (guarded). 4 new tests failed
+  against the unfixed code, 10/10 green after; 121 passed across the openai_compat surface; ruff
+  clean. Provenance of the change sits uncommitted in the working tree of the shared orchestrator
+  clone (`src/api/routes/openai_compat.py`, `tests/unit/test_openai_compat_backend_failure_status.py`).
   **HS-OD-1 deliberately untouched** per the lane brief; it remains open at its own box above.

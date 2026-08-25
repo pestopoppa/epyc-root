@@ -66,7 +66,7 @@ Two coupled, CPU-relevant levers borrowed from Repo Prompt's edit pipeline:
 - **delegation-context-preassembly** (sibling) — a pre-assembled bundle feeds a clean batch edit.
 - **autopilot-continuous-optimization** — BEP-3 knob; BEP-2 latency/reliability objective.
 - **NUMA concurrency** (`project_concurrent_split_throughput`) — BEP-4 substrate.
-- **meta-harness-optimization** — Tier-2 structured-mutation precedent → BEP-5 generalization base.
+- **meta-harness (completed ledger)** — Tier-2 structured-mutation precedent → BEP-5 generalization base.
 - Honors `feedback_no_concurrent_inference`, `feedback_speed_verify_via_llama_bench`.
 
 ## Key file locations (targets)

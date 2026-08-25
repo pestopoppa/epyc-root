@@ -183,9 +183,9 @@ All three are zero-inference. They surfaced during the vision/speech campaign bu
 handoff, which is exactly how items of this shape get lost.
 
 - [x] **NIB2-57** (**HIGH**): **Four throughput priors were 32–40% low and the router was deciding on them** ✅ 2026-07-31 (epyc-inference-research `5dfc339e`). frontdoor / coder_escalation / worker_summarize `24.3 → 40.22`; worker_general `38.46 → 56.86`. Root cause is a **silent fallback**: all four had `baseline_tps == optimized_tps`, and the router reads `optimized_tps` with an `or baseline_tps` default — so an *unmeasured* prior is indistinguishable from a *measured* one at the read site. `baseline_tps` is now `null` for the 35B roles: not measured, and not fabricated.
-- [ ] **NIB2-57a**: **Make the unmeasured-prior case loud rather than silent.** The `or baseline_tps` fallback is the mechanism that let NIB2-57 persist; a prior that has never been measured should fail closed or warn, not quietly stand in for a measured one. Audit every other reader of `optimized_tps` for the same pattern.
+- [x] **NIB2-57a**: **Make the unmeasured-prior case loud rather than silent.** ✅ 2026-08-23 — full reader audit (map in the session report) + shared `ResolvedTps`/`resolve_tps_prior()`/`format_tps()` helper in `src/registry/registry_loader.py`; MCP tools, `cli --list-roles`, `render_stack_summary` now label baseline-stand-ins and `unmeasured`; `bilinear_scorer` drops the fabricated `10.0` default for a `tps_known` provenance mask; `train_graph_router` warns per-role when fleet tps is unmeasured. Measured behavior byte-identical; 71 targeted + 651 surface tests pass (one pre-existing data-driven failure in `test_q_scorer.py::TestMultiDimensionalCost` — `quality_overall: null` for architect_general post-Qwen3.8-27B swap; measurement-data decision, not code). The `or baseline_tps` fallback is the mechanism that let NIB2-57 persist; a prior that has never been measured should fail closed or warn, not quietly stand in for a measured one. Audit every other reader of `optimized_tps` for the same pattern.
 - [x] **NIB2-58** (**HIGH**): **`LD_LIBRARY_PATH` landmine — a fresh HIP build silently loads the FROZEN production ggml** ✅ guard landed 2026-07-31 (epyc-inference-research `7f310022`). `/etc/environment:5` and `devcontainer.json:57` put the production `build/bin` **early** in `LD_LIBRARY_PATH`, so a fresh HIP whisper build resolved the production **CPU-only** ggml, found no GPU, and ran full-CPU **while printing `use gpu = 1`**. Guard at `scripts/utils/verify_ggml_linkage.sh` reproduces it — 3 of 5 libraries came from the wrong tree.
-- [ ] **NIB2-58a**: **Wire `verify_ggml_linkage.sh` into every ggml build path on this host**, not just the whisper one. The guard currently exists but must be *invoked*; **every future ggml build on this host is exposed** until it is. A landed fix whose entry point is never called is the classic derived-actionable failure shape.
+- [x] **NIB2-58a**: **Wire `verify_ggml_linkage.sh` into every ggml build path on this host**, not just the whisper one. ✅ 2026-08-23 — build-path map (16 classes) + new `scripts/utils/verify_build_linkage.sh <build_dir>` helper (static carve-out: verifier exit 2 accepted only when `ldd` proves static); wired into `run_autokernel_historical_replay.py`, `kernel_eval.sh --build`, `legacy/build_llama.sh`, `smoke_test_llama_v3.sh`, `prove_paged_attention.sh`, `expert_routing_skew_profile.sh`, `bench_kv_hadamard.sh`, and — for the FROZEN production launch flow — `check_linkage()` in `scripts/session/verify_llama_cpp.sh` (CPU + HIP, launch-recipe + ambient). Autokernel build flows + orchestrator aux launches + `verify_speech_kernels.sh` were already wired (verified, not re-wired). Frozen kernel trees untouched (0 edits). Live verifier runs: whisper PASS, tts PASS, llama CPU 6/6 + HIP 6/6 PASS. The guard currently exists but must be *invoked*; **every future ggml build on this host is exposed** until it is. A landed fix whose entry point is never called is the classic derived-actionable failure shape.
 - [ ] **NIB2-59** (**MED**, governance): **Resolve the measurement trust-boundary contradiction.** `agents/shared/MEASUREMENT_POLICY.md:79` says changes are human-PR-reviewed amendments, while `MEASUREMENT.md:117-119`'s boundary membership **omits the digest**. As written, nobody — human or agent — can tell whether an agent is permitted to edit the digest. **Needs an operator ruling**, not an agent decision, because the trust boundary is human-amendment-only and self-amending it would beg the question.
 
 ## 2026-07-31 supplement 2 — repo hygiene surfaced by the orchestration-wiring window
@@ -194,10 +194,10 @@ Identified during the 20:00–23:00Z wiring window and **deliberately not acted 
 in flight and several of these touch the shared clone. All zero-inference. Measured figures, not
 estimates.
 
-- [ ] **NIB2-60** (MED): **1.4 GB of orphaned git pack files in `/workspace/.git/objects/pack/`.** `git count-objects -v` reports `garbage: 3` — `tmp_pack_hhZMcY` (414 MB), `tmp_pack_QlMjgI`, `tmp_pack_WJ8KfU`. Remove by **explicit three-path `rm`** on those exact filenames. **Never `git gc`** on this repo: `/workspace` and `/mnt/raid0/llm/epyc-root` are one clone shared by parallel sessions, and a full repack can disrupt a live session mid-operation.
-- [ ] **NIB2-61** (LOW): **`llama.log` and `main.log` are tracked at the repo root.** Both are runtime logs and both currently show as deleted in the working tree while their tracked entries remain, so every session sees a dirty tree it did not cause — and `w1_preflight.py` gates on a clean tree. Untrack and gitignore.
-- [ ] **NIB2-62** (LOW): **`.devcontainer/Dockerfile.orig` is untracked merge residue.** Delete or, if it is a deliberate reference copy, name it so and track it.
-- [ ] **NIB2-63** (MED): **~4.5 GB of `repos/*.bak-2026-05-22*` clones hold ZERO unique commits.** `repos/epyc-llama.bak-2026-05-22-141927`, `repos/epyc-orchestrator.bak-2026-05-22`, `repos/epyc-inference-research.bak-2026-05-22` (and the identical set under `/mnt/raid0/llm/epyc-root/repos/`, which is the same paths through the symlink — count the space once). Verified: nothing in them is absent from the live clones. **Re-verify uniqueness immediately before deleting**, not from this record — the check is cheap and the deletion is not reversible.
+- [x] **NIB2-60** (MED): **1.4 GB of orphaned git pack files in `/workspace/.git/objects/pack/`.** `git count-objects -v` reports `garbage: 3` — `tmp_pack_hhZMcY` (414 MB), `tmp_pack_QlMjgI`, `tmp_pack_WJ8KfU`. Remove by **explicit three-path `rm`** on those exact filenames. **Never `git gc`** on this repo: `/workspace` and `/mnt/raid0/llm/epyc-root` are one clone shared by parallel sessions, and a full repack can disrupt a live session mid-operation. ✅ 2026-08-23 — verified resolved: `git count-objects -v` garbage=0, size-garbage=0, zero `tmp_pack*` files in `.git/objects/pack/` (resolved by the 2026-08-23 reclamation or promotion repack; nothing to remove).
+- [x] **NIB2-61** (LOW): **`llama.log` and `main.log` are tracked at the repo root.** Both are runtime logs and both currently show as deleted in the working tree while their tracked entries remain, so every session sees a dirty tree it did not cause — and `w1_preflight.py` gates on a clean tree. Untrack and gitignore. ✅ 2026-08-23 — resolved by 334d04b3 (2026-08-12): untracked + gitignored; verified no tracked entries (`git ls-files` empty for both; `.gitignore` lines 159-160).
+- [x] **NIB2-62** (LOW): **`.devcontainer/Dockerfile.orig` is untracked merge residue.** Delete or, if it is a deliberate reference copy, name it so and track it. ✅ 2026-08-23 — deleted (untracked, 4854 B, gitignored via `*.orig` line 164; unreferenced — cited only as debris in rocm-verify-profile-backend.md and progress/2026-08-03.md, never as a reference copy).
+- [x] **NIB2-63** (MED): **~4.5 GB of `repos/*.bak-2026-05-22*` clones hold ZERO unique commits.** `repos/epyc-llama.bak-2026-05-22-141927`, `repos/epyc-orchestrator.bak-2026-05-22`, `repos/epyc-inference-research.bak-2026-05-22` (and the identical set under `/mnt/raid0/llm/epyc-root/repos/`, which is the same paths through the symlink — count the space once). Verified: nothing in them is absent from the live clones. **Re-verify uniqueness immediately before deleting**, not from this record — the check is cheap and the deletion is not reversible. ✅ 2026-08-23 — verified resolved: no `*bak-2026-05-22*` clones exist under repos/ or /mnt/raid0/llm; only live symlinks remain (repaired 2026-08-16).
 
 ---
 
@@ -217,21 +217,21 @@ discovers these files structurally, and goes RED if a line here is checked off o
 migration landing. Reference adoption: `scripts/coordination/backfill_supervisor.sh`. Contract:
 [`scripts/coordination/observer_guard.sh`](../../scripts/coordination/observer_guard.sh).
 
-- [ ] **OBS-3** (HIGH): **`scripts/nightshift/inference_guard.sh` fails OPEN into a live inference
-  run.** `pgrep -f 'llama-server|llama.cpp' | xargs … || true` is summed into an RSS total, so a
+- [x] **OBS-3** (HIGH): **`scripts/nightshift/inference_guard.sh` fails OPEN into a live inference
+  run.** ✅ 2026-08-23 — AUD-7's three-state fix (`381dddfe6`) closed the pgrep/xargs collapse but left a partial-blindness hole: an unreadable MemAvailable degraded to a WARNING while the guard proceeded to all-clear. `check_inference_load()` now returns `failed` (rc 1, loud `MEASUREMENT FAILED`) when the memory channel cannot be read — one negative and one blind eye is not a clear; run_wrapper's existing exit-4 refusal covers it. `pgrep -f 'llama-server|llama.cpp' | xargs … || true` is summed into an RSS total, so a
   missing `pgrep`, an argv drift, a renamed binary and an `xargs` error ALL yield 0 GB — which takes
   the `else` branch, prints *"No heavy inference detected"*, and lets `run_wrapper.sh` launch the
   full multi-project agent workload on top of a live 200 GB+ inference. The dangerous direction of
   the same two-state collapse. Give it an `unknown` state and treat unknown as busy (the polarity
   rule `inference_load_check.py` already states: *"for EXCLUSION, unknown must mean busy"*).
-- [ ] **OBS-4** (MED): **`scripts/nightshift/run_wrapper.sh:79` reproduces the specimen verbatim.**
-  `autopilot_running() { pgrep -f 'scripts/autopilot/autopilot.py start'; }` requires `start` to sit
+- [x] **OBS-4** (MED): **`scripts/nightshift/run_wrapper.sh:79` reproduces the specimen verbatim.**
+  ✅ 2026-08-23 — `autopilot_running()` is now three-valued (running/stopped/unconfirmed, rc 0/1/3): authoritative channel is the singleton flock on `orchestration/.autopilot.lock` (argv-independent, held by the daemon by construction), corroborated by an adjacency-robust dual pgrep pattern; pgrep rc≥2 / missing pgrep / untestable lock → `unconfirmed`, which SUPPRESSES the shadow launch — only a confirmed `stopped` licenses it. The three `skip … return 0` branches on missing cross-repo paths now emit `AUX-DEPENDENCY-MISSING` and exit 5 (partial run) instead of reporting success. Truth table tested (10 cases). `autopilot_running() { pgrep -f 'scripts/autopilot/autopilot.py start'; }` requires `start` to sit
   immediately after the script path — exactly the adjacency that broke when a flag was inserted into
   the daemon's command line. Any `autopilot.py --config X start` reads as "AutoPilot not running"
   and the lab shadow jobs launch into a live AutoPilot. Also note three `skip … return 0` branches
   keyed on hardcoded cross-repo paths: the run reports success having done none of that work.
-- [ ] **OBS-5** (MED): **`scripts/benchmark/rustevo2_bench_preflight.py` green-lights a bench against
-  a live AutoPilot.** Half-right already — a `pgrep` returncode outside `(0,1)` is treated as "could
+- [x] **OBS-5** (MED): **`scripts/benchmark/rustevo2_bench_preflight.py` green-lights a bench against
+  a live AutoPilot.** ✅ 2026-08-23 — `active_autopilot()` replaced by three-state `autopilot_state()`: missing `pgrep` → `unobservable`; an empty pgrep result is never trusted alone (a negative requires the flock to be provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in both strict and advisory modes. 15-case truth table tested. Half-right already — a `pgrep` returncode outside `(0,1)` is treated as "could
   not inspect" — but an EMPTY result is read as a positive "no AutoPilot", and a missing `pgrep`
   binary raises `FileNotFoundError` out of `run()` before that handling is ever reached.
 - [ ] **OBS-6** (LOW): **`scripts/session/health_check.sh` reports unreadable as failing.** `pgrep -f
@@ -240,8 +240,8 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   permanently recommends starting a second one; and several probes use `|| echo "unknown"` then
   COMPARE `"unknown"` against the expected value and report **FAIL** — an unreadable `/sys` node in
   a container is scored as a misconfiguration. Report-only, but it gates session start.
-- [ ] **OBS-7** (MED): **`scripts/session/emergency_cleanup.sh:26` is a committed
-  `sudo pkill -f claude`.** The exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills
+- [x] **OBS-7** (MED): **`scripts/session/emergency_cleanup.sh:26` is a committed
+  `sudo pkill -f claude`.** ✅ 2026-08-23 — the `sudo pkill -f claude` and its `pgrep -f claude` are DELETED; the section now refuses to guess and prints the operator steps for killing only PIDs they verified themselves. Follow-on safety: umount failure reports loudly instead of aborting under `set -e`, and the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt` with the review as the reason. The exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills
   forbid, on a documented shared host, behind nothing but an interactive prompt. The PreToolUse
   pattern-kill hook cannot see it — the hook inspects the *typed* command
   (`bash scripts/session/emergency_cleanup.sh`), not the script body — so the rule is
@@ -250,6 +250,8 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
 
 - [x] **OBS-11** (MED): **A devcontainer rebuild silently disabled every venv-backed gate.** ✅ 2026-08-19 — `~/.local/share/uv/python/` was recreated empty on 2026-08-18 14:36, so `repos/epyc-orchestrator/.venv/bin/python` (a symlink to a uv-managed CPython 3.11) became dangling while its 367 site-packages stayed intact. `scripts/validate/validate_intake.sh` and `kb-search` then failed per-session with no owner, and the repair path was itself blocked: the rebuild left `~/.cache/uv/{archive-v0,interpreter-v4}` root-owned, so `uv python install` died on `Permission denied` before it could fix anything. Repaired (chown + `uv python install 3.11` → 3.11.16; `validate_intake.sh` green, 1162 entries). `health_check.sh` gains a **Tooling Interpreters** section that resolves the orchestrator + research venv interpreters **and** checks uv-cache writability, each failing with its exact repair command; both mutation-tested against synthetic breakage. Blast radius derived structurally (every `pyvenv.cfg` under `/workspace` + `/mnt/raid0/llm`, testing whether its `home` resolves), not from the observed symptom: only this venv.
 - [ ] **OBS-12** (LOW): **`.claude/skills/kb-search/SKILL.md` documented an interpreter that cannot work — audit the other skills for the same shape.** Fixed for kb-search on 2026-08-19 (it told every session to run bare `python3`, which has no `numpy` and dies in `colbert_encoder.py`, independent of OBS-11); the hooks and batch scripts already used the venv. **A second instance is already confirmed**: `.claude/skills/project-wiki/scripts/lint_wiki.py` exits with `ERROR: PyYAML not installed` under bare `python3` and runs clean under the orchestrator venv — found incidentally while linting, not by any check. The open work is the sweep: nothing ties a skill's documented command to an interpreter that actually has the imports, so the remaining instances stay invisible until a session hits one.
+- [x] **OBS-3a** (LOW, follow-up 2026-08-23): add a mutation case to `scripts/nightshift/tests/test_inference_guard.sh` for "MemAvailable unreadable → `failed`" (awk-shim pattern as used in the OBS-3 fix scratch harness) — the existing suite predates the mem-channel fail-closed semantics. ✅ 2026-08-23 — mutation M-D added (PATH-shimmed `/bin/false` awk): asserts state=failed, RSS channel still measured 0 while failed, MEMAVAIL_GB=unknown, ACTIVE unset, "MEASUREMENT FAILED" wording, and no all-clear printed. Suite 15 → 21 passed; guard untouched.
+- [x] **NIB2-58b** (LOW, follow-up 2026-08-23): re-point `smoke_test_llama_v3.sh` / `prove_paged_attention.sh` binary paths from the extinct `build/bin` to the named experimental build dirs (`build-v9-cpu` / `build-v9-hip`) — operator-flagged convention change; the scripts currently fail fast with a clear message, which is correct behavior until then. ✅ 2026-08-23 — ground truth: `build-v9-cpu` is the only named CPU dir with the full binary set (llama-server/cli/bench/completion); both scripts re-pointed to it (CPU-oriented), verifier expected-roots updated; fail-fast preserved; live `verify_ggml_linkage.sh` runs on all four binaries PASS (exit 0).
 - [ ] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
   host.** `netstat` is not installed and `2>/dev/null` swallows the "command not found", so the kill
   loop silently iterates zero times and the availability check prints `[✓] Ports 8000 and 8080
@@ -279,6 +281,35 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   `ratify_v9_cpu_bench_era_advance_20260811.sh` already migrated ("no process-pattern probe — host
   rule: never pgrep by name"); backport that. Deliberately OUT of the observer-registry discovery
   scope (one-shot scripts a human runs and reads once), recorded here so the finding is not lost.
+
+---
+
+## 2026-08-23 supplement — disk reclamation phase 1 done, phase 2 candidates
+
+Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via per-worktree
+`git worktree remove` (138 worktrees, never `prune`), 111G → 371G free. Details:
+`progress/2026-08/2026-08-23-disk-reclaim.md`.
+
+- [ ] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
+  08-11→08-14 are unreferenced by active handoffs.** Two are referenced and must stay:
+  `inf37-fancy-simd-v9-20260811`, `promote-kernel-rnd-dashboard-20260812`. Registered in
+  epyc-inference-research; remove per-worktree (`git worktree remove --force`), NEVER `prune`.
+  Operator decision needed only if any session claims them — none does today.
+- [ ] **NIB2-65** (MED): **model duplicates/orphans ~25G in `/mnt/raid0/llm/models/`** — safe set
+  from the 2026-08-23 census: `bge-m3-f16.gguf`, `multilingual-e5-base-f16.gguf`,
+  `granite-embedding-97m-multilingual-r2-Q4_K_M.gguf`, `Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf`,
+  `gemma-4-26B-A4B-it-assistant-v6-f16.gguf`, empty husks (`MaziyarPanahi`, `Mungert`,
+  `prithivMLmods`, `jiaojjjjje`, `hugging-quants`), `tinyllamas-stories-260k-f32.gguf`,
+  `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf`, `Qwen3-4B-Thinking-2507-GGUF` (4G, only in
+  deprecated benchmarks). Judgment calls (research-only refs, keep unless operator says otherwise):
+  `Qwen3-ASR-1.7B-GGUF`, `gemma-4-e2b/e4b-it-Q8_0`, seal-concise set.
+- [ ] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
+  (14G, superseded), `llama.cpp-v6-iqk` (1.9G, iqk shipped in v9), `llama.cpp-v7-sanitize-audit`
+  (1.6G), `llama.cpp-k28-prototype-20260720` (0.9G). Keep `llama.cpp-dflash2-qwen38-20260820`
+  (active handoff `dflash2-block-drafter-experimental-build.md`).
+- [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
+  <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
+  caches also live under `cache/`.
 
 ---
 

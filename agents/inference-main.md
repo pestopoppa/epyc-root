@@ -20,13 +20,17 @@ drain-at-boundary safety.
 
 ## Outputs
 
-- Record whether this role will execute the task, decline it, or grant a bounded resource lease.
+- Record whether this role will execute the task or decline it; request compute windows through
+  the bus like every other consumer (D4 as amended 2026-08-15/16 — the daemon grants them
+  deterministically against `compute_policy.yaml`; no session grants a window).
+- Emit the typed graded `compute-window` event (grade, eligible devices, VRAM, budget, safe
+  drain) as the compatibility judgment for admitted compute-ready candidates (RTG-51 contract).
 - Delegated GPU grants stay disabled until `resource_claims.gpu` names and enables a general
   physical-claim provider. A provider-qualified open and close receipt is mandatory after that.
   The Inference Main can still execute its own GPU work under the existing inference rules.
-- Grant, renew, decline, drain, and release resource leases through typed bus records so the state
-  is reconstructible. Coordinator-agent prioritizes and routes work; it does not silently take
-  resource ownership or reload around the Inference Main.
+- Grant, renew, decline, drain, and release physical-claim resource leases through typed bus
+  records so the state is reconstructible. Coordinator-agent prioritizes and routes work; it does
+  not silently take resource ownership or reload around the Inference Main.
 
 ## Workflow
 
@@ -36,8 +40,9 @@ drain-at-boundary safety.
    evidence of idleness. Sampling discipline (sample DURING, name the persistence count):
    `agents/shared/OPERATING_CONSTRAINTS.md` → *Observation Windows*.
 3. When `fleet_watch` reports a persistent CPU or GPU idle episode, coordinator-agent routes a
-   compute-ready item to this role or asks it to grant a lease. Inference Main resolves the
-   physical-resource choice and records the outcome.
+   compute-ready item to this role. Inference Main resolves the physical-resource choice, emits
+   the graded window, and records the outcome; the daemon grants the window per
+   `compute_policy.yaml`.
 4. If no admissible inference work exists, report the precise missing prerequisite and keep
    non-inference preparation moving. Idle compute is a reportable condition, not a reason to
    invent a measurement or bypass a gate.
@@ -56,9 +61,11 @@ or reprovisioning.
 
 ## Guardrails
 
-- Decide whether to execute an inference-gated task directly or grant a time-bounded resource
-  lease to another main. A resource lease is distinct from a task assignment and never replaces a
-  physical claim (`region-lock` for CPU and the configured device claim for GPU).
+- Decide whether to execute an inference-gated task directly or request a compute window for
+  another main through the bus. A window grant is the daemon's per `compute_policy.yaml` (D4,
+  rule 11 as amended 2026-08-16); a physical-claim resource lease is distinct from a task
+  assignment and from the window grant, and never replaces a physical claim (`region-lock` for
+  CPU and the configured device claim for GPU).
 - Own reload timing for a running inference session — this is the owner-side half of the reload
   rule; the requester-side half is `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and
   Benchmarks* (reload ownership). Reclaim is always quiesce-and-drain, never a forced interruption

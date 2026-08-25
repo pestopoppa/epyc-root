@@ -62,3 +62,39 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 - 2026-06-28 W3 pre-attestation historical review separation: `generate_public_results.py` now recognizes protocol-tagged rows dated before the host-attestation era (`2026-06-12`) that lack attestation. The generated draft now reports `hold_for_historical_attestation_review=31` and `hold_for_protocol_backfill=343`; the review bucket is explicitly `historical attestation or remeasurement`, preventing current-host retro-certification of 2026-03-21 rows. W3 remains open because those rows need a real historical attestation artifact, a rerun under current attestation, or retirement from the public-results candidate set.
 - 2026-06-28 W3 generated review queue: `generate_public_results.py` now writes `docs/publication/public-results-review-queue.md` by default and checks it under `--check`. The queue groups the same `374` generated rows by next review action: `historical-attestation-review=31`, `protocol-tag-needed=18`, and `verification-decision-needed=325`, each with source line, section, entity, metrics, status, and action guidance. Validation: GitNexus impacts LOW for `render_page`/`collect_rows`; py_compile; ruff; focused publication pytest (`17 passed`); `python3 scripts/publication/generate_public_results.py`; and `python3 scripts/publication/generate_public_results.py --check`.
 - 2026-07-06 W3 review-decision overlay: added `docs/publication/public-results-review-decisions.json` and wired `generate_public_results.py` to apply dependency-free JSON review decisions before rendering the generated draft/review queue. The default decision retires `325` unverified historical rows from public claims without mutating the source `RESULTS.md`, while row-specific overrides can re-open selected rows for remeasurement or publication backfill. Current generated state: `374` total rows; `325` `retired_from_public_claims`; `31` `historical-attestation-review`; `18` `protocol-tag-needed`; all `374` remain `public-safe surface`. Validation: publication generator check, py_compile, focused pytest (`20 passed`), and focused ruff passed.
+
+## Candidate — llama.cpp issue #27442 (2026-08-21, Stage-2b intake-1279)
+
+> **PART ONE POSTED 2026-08-23** — [issue #27442 comment](https://github.com/ggml-org/llama.cpp/issues/27442#issuecomment-5385082723),
+> operator-approved, under the operator's account. The row below reasoned that the analysis was
+> blocked on G1 because "posting first offers a critique with no data behind it". On execution that
+> split cleanly in two, and only the second half was ever blocked:
+> the **corrections to the reporter's own artifacts** need no measurement of ours — they are facts
+> about their logs — while **our boundary-sweep numbers** still do. Part one went out and says so
+> explicitly: *"We have not reproduced the bug — we run this architecture on CPU and ROCm, not
+> Metal — so this is analysis of your artifacts, not a second data point."*
+> Every claim was re-derived from the attachments before posting, not carried from the dive:
+> `n_prompt_tokens_cache` occurs **14×, all zero**; token `248046` = `<|im_end|>`; both `_noflash`
+> logs contain `flash_attn = enabled`; sampler at `temp = 0.300`, so the intermittency may be the
+> sampler rather than a stale state; `70aff2525` is **2026-08-20T10:43:59Z** against their newest
+> build `dc72703` at **2026-08-19T15:44:15Z**, ~19 h earlier. The post does **not** claim a fix
+> exists, and it rules #27450 *out* with the reason: it touches only the `mpp::tensor_ops` path,
+> gated on `has_tensor` = `supportsFamily:MTLGPUFamilyMetal4_GGML` (`ggml-metal-device.m:743`),
+> which an M4 does not report. Thread was OPEN with **zero** comments at post time, so this is the
+> first reply. **Part two — our own greedy sweep — remains blocked on G1.**
+
+- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the results half.**
+      Unusually strong material for a low-cost contribution: the issue is OPEN with **zero comments and
+      no maintainer reply**, and four things in it are demonstrably wrong or unsupported —
+      (a) its cache/checkpoint localization is refuted by **its own attached log** (`n_prompt_tokens_cache = 0`
+      on all fourteen requests: no cache engaged, every failure a cold full prefill, which also explains
+      why all three of the reporter's workarounds were ineffective); (b) its exonerating control cannot
+      detect wrong output at all — `llama-bench` feeds `std::rand()` tokens and never samples the model;
+      (c) the file named `_noflash` logs flash attention being **force-enabled** for quantized V cache;
+      (d) all four builds tested **predate** Metal fixes #27390 (2026-08-20T10:43Z, which rewrote exactly
+      the quantized-KV + FA path every run used) and #27450.
+      **Blocked on G1** — not because the analysis needs it, but because posting first offers a critique
+      with no data behind it. With our own greedy boundary sweep attached it is a contribution; without
+      it, it is an argument. Also worth offering: the cheapest decisive experiment nobody has run is a
+      single **temperature-0** trial on a **non-degenerate** prompt, which separates "the model wants to
+      stop after 18K tokens of repeated pangram" from a kernel defect.
