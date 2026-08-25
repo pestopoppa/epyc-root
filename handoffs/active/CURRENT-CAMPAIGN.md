@@ -7,14 +7,21 @@
 
 ---
 
-> **⛔ 2026-08-22 — AUTOKERNEL V27 REMAINS PRE-LAUNCH AT SCIENCE 0/10.** No provider banner stopped
-> a running campaign: no v27 campaign was launched. The frozen comparator base `cffb98d3` and ordinary
-> refusal recovery fix `caa22f42` are closed, but independent audits rejected the current evaluator
-> (`91a75a05`), C6 integration (`8a0ffc7d`), performance carrier (`5be84b4a`), and dependent dashboard
-> lines. All v27 dashboard pins remain unset. Resume from
-> [autokernel-research-loop.md](autokernel-research-loop.md) §Restart checkpoint: repair C6 isolation
-> and immutable performance authority, freeze one descendant, obtain exact-SHA audits, validate twice
-> without inference, then spend the ten-science run. Production v9 stays frozen and untouched.
+> **🟢 2026-08-25 — AUTOKERNEL V27 CAMPAIGN LIVE; SCIENCE 0/10.** The ten-science campaign
+> **LAUNCHED** under supervisor session `ak-53087cbd7a1928c71d5831cb` (PID 2254279, controller child
+> 2254297 in tmux, socket `epyc-autokernel-supervisors`) at
+> `/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v27` (descendant
+> `codex/autokernel-v27-descendant-20260823` @ `cfa8a0d8`; graph
+> `43f992dadf5148e802937365ff7c74232bfbc76477d8957bcd69be7019602963`, config-file `14ba0607…`,
+> semantic `eac81e0d…`; validate-only ×2 IDENTICAL, `inference_executed=false`). First operation
+> `e4411178…` is in source materialization (intent + source-manifest written). Science is 0/10;
+> AK-V27-10 stays open until ten unique scientific dispositions without a crash — typed
+> provider-policy skips / precompute refusals advance the portfolio but spend zero science. Monitor
+> `state/state.json` (`scientific_attempts`, `inflight`, `iterations`, `complete`), `operations/`
+> receipts, `operations/claims/device.jsonl`, and `state/death-ledger.jsonl`. Full arc:
+> [`progress/2026-08/2026-08-25-v27-campaign-launch.md`](../../progress/2026-08/2026-08-25-v27-campaign-launch.md)
+> and [autokernel-research-loop.md](autokernel-research-loop.md) §Restart checkpoint → *Launch
+> checkpoint — 2026-08-25*. **Do not write into the deployment, kill any PID, or relaunch.**
 
 
 > **⛔ 2026-08-13 22:14 UTC — AUTOKERNEL MANUAL EXECUTION STOPPED; CONTROLLER-FIRST CORRECTION IS

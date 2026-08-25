@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V27 PRE-LAUNCH / SCIENCE 0 OF 10 / FINAL TRUST GATES OPEN — updated 2026-08-22
+**Status:** V27 CAMPAIGN LIVE / SCIENCE 0 OF 10 — updated 2026-08-25
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -19,6 +19,24 @@
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
 
 ## Restart checkpoint — 2026-08-22
+
+**Launch checkpoint — 2026-08-25 (wrap-up):** the v27 ten-science campaign is **LAUNCHED and LIVE**
+under supervisor session `ak-53087cbd7a1928c71d5831cb` (spec `53087cbd7a1928c71d5831cb2b5fc8f92695d4e07b7c857e048b09ad39d28aa6`,
+supervisor PID 2254279 started 2026-08-25T15:48:29Z, controller child PID 2254297 in tmux on
+socket `epyc-autokernel-supervisors`) at
+`/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v27` — descendant
+`codex/autokernel-v27-descendant-20260823` @ `cfa8a0d8`. Validated identity: graph SHA-256
+`43f992dadf5148e802937365ff7c74232bfbc76477d8957bcd69be7019602963` (validate-only ×2 IDENTICAL,
+`inference_executed=false`), config-file SHA-256 `14ba06073c2b5d8ccc3c74417ba1649254f7f43178df16e928202dab5c23fe5d`,
+semantic config SHA-256 `eac81e0d4755fd61aecf7688c6fddcc5b44f109500dd628e453a3ba2fb38f6df`. First
+operation `e4411178e4045faa66c1942456446d3dd2a0a42514fb716d1e573f47b0f3087d` has written
+intent + source-manifest (source materialization phase; mechanism `q5_0_one_wave_per_output_block`,
+change-class `dispatcher`, candidate `akc-discovery-1`). Science is **0/10** at launch
+(`state.json: scientific_attempts=0`). **AK-V27-10's checkbox stays open** until ten unique
+scientific dispositions complete without a crash: typed provider-policy skips and precompute
+refusals advance the portfolio but spend zero science and cannot satisfy the row. Full arc,
+monitoring contract, and what-remains list:
+[`progress/2026-08/2026-08-25-v27-campaign-launch.md`](../../progress/2026-08/2026-08-25-v27-campaign-launch.md).
 
 **Checkpoint 2026-08-23 (continuation session):** restart-order items 1 and 2 are now code-complete
 and committed — each as ONE coherent unit including the prior session's deliberately uncommitted
