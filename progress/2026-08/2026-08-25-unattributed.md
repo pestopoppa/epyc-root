@@ -65,3 +65,13 @@ REV-08 TM-8, RTG-46 hygiene), fan out subagents, CPU inference allowed but never
   inventory diff) — confirm intended before any commit touches those paths.
 - Operator: hub_supervisor cron ruling (package in `handoff-index-and-backlog-graph.md` §Open).
 - Operator: E8-era frozen-kernel guard re-pin (documented in N25 P0-1; human-amendment-only).
+
+## Wrap-up (operator-invoked, 2026-08-25)
+
+- **Index pruning (operator cadence)**: archived `reviewer-decision-plane.md` (REV-04, RD-1..12 all closed) and `reviewer-trace-materialization.md` (REV-08, TM-1..9 all closed) to `handoffs/completed/` with banners; rows deleted from the reviewer index; 4 prose links repointed to `../completed/`. Wiki lint also re-checked (remaining errors pre-existing).
+- **Wiki compilation sweep (operator cadence)**: 5 new sources (this session's docs) compiled into `wiki/hardware-optimization.md` (NUMA P0-1 gate close), `wiki/benchmark-methodology.md` (TM-8 coverage + H-LB baseline), `wiki/knowledge-management.md` (backlog-graph hygiene); `--touch` applied. README freshness: all pass.
+- **Commits (shared-clone, private-index — no peer staged state swept; hunk-selective per the no-lane rule)**:
+  - epyc-root `a9b02275` → pushed to origin/main under the serialized push lock (wrap-up commit above).
+  - epyc-orchestrator `6919b885` → pushed to origin/main under the push lock (reviewer-plane + NUMA fixture fixes).
+  - Both repos verified 0 commits ahead of origin/main.
+- **Checklist-sync gate**: 8 checkbox flips this session (P0-1, RD-12, TM-8, RTG-46 ×5); derived-actionables gate: 0 new tasks required (all session findings filed as box flips; hub-cron package + E8-guard remain operator decisions, already queued).
