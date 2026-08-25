@@ -75,3 +75,26 @@ REV-08 TM-8, RTG-46 hygiene), fan out subagents, CPU inference allowed but never
   - epyc-orchestrator `6919b885` → pushed to origin/main under the push lock (reviewer-plane + NUMA fixture fixes).
   - Both repos verified 0 commits ahead of origin/main.
 - **Checklist-sync gate**: 8 checkbox flips this session (P0-1, RD-12, TM-8, RTG-46 ×5); derived-actionables gate: 0 new tasks required (all session findings filed as box flips; hub-cron package + E8-guard remain operator decisions, already queued).
+
+## Staged-rollback resolution (operator-directed ownership, 2026-08-25)
+
+**Investigation**: the shared clone's index+worktree carried an orphaned ~08-21-era rollback of
+committed work — staged by the (now-inactive) 08-23/24 opencode session, spanning 115 staged
+entries + 52 worktree-reverted/deleted paths in epyc-root and 21 staged entries in
+epyc-orchestrator. The index tree matched no recent commit (hand-staged revert, not a checkout).
+The only live session (autokernel, tmux agent:1) works via its lane; its shared-clone paths
+(`artifacts/operator/op12-op15-ratification-package-20260823/`) were verified clean vs HEAD and
+left untouched.
+
+**Resolution** (per operator directive):
+- `git reset` (mixed) in both repos — index = HEAD; peer staged set (FM-1 deletions, 08-24
+  handoff-content deletions, R100 renames of two completed handoffs back to active, measurement
+  Annex-D ratification deletion, relay ledger, progress files, scripts/tests) all unstaged.
+- `git restore --source HEAD` for 50 rollback paths in root + 1 in orchestrator — worktree =
+  committed truth. Excluded: daemon-owned `coordination/session-bus/{alarm_state,relay_state}.json`
+  (bus_supervisor writes them) and all untracked runtime/backup files.
+- Fixed the one pre-existing dead index row this exposed (RTG-25, committed `52e0feb3`).
+- Verified: `index_state.py --check` 0 problems; wiki lint 0 dangling links (the two
+  `2026-08-22-root.md` errors were rollback-caused, now resolved); FM-1 corpus files, replay
+  evidence, and all flagged paths restored to HEAD content; both repos 0 commits ahead of
+  origin/main; orchestrator fully clean.
