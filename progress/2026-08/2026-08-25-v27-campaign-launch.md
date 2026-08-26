@@ -157,3 +157,23 @@ every 60 s with flock overlap protection + heartbeat at
 (no pgrep/pkill), journals every change to `$DEP/monitor.log` and keeps `.monitor-snapshot.json`.
 Future sessions: check `monitor.log` for the delta stream, `watcher-heartbeat.log` for liveness
 (stale >2 min = watcher died), `state/state.json` for the live posture.
+
+## Recovery chain (2026-08-26) — four environmental stops, all fixed, campaign live
+
+1. **Planner 401** (codex token expired; 284 planner_transient rows, unbounded retry loop). Operator
+   re-logged-in; the login's write window left auth.json mid-state → actor refused it → controller
+   terminal failure. Operator materialized a clean 0600 auth.json. Resume then refused by the
+   controller's terminal-planning-failure seal (by design) → FRESH campaign (0 science at risk).
+2. Fresh campaign (ak-088dcb66) reached 7 iterations — all typed refusals/revises (0 science):
+   q5-preauthored screen_refused **"C6 Ghost Replay driver must be a stable regular non-symlink
+   file"** (REAL deployment gap: the closure ships only kernel_rnd/autokernel/**; the ghost replay
+   files live in kernel_rnd/c6_mutants/), q4k screen refused (vec-dot protected surface —
+   legitimate), rope screen refused (C6 unsupported operator — typed), 2 planner output refusals.
+3. Fix `e691434a` on the descendant: vendor c6_mutants/run_falsification.py +
+   results_20260821.jsonl into the execution closure. Config identity UNCHANGED (eac81e0d) →
+   controller-level resume valid.
+4. Supervisor runtime-root identity drift (dir stat) blocked a same-root relaunch (by design) →
+   fresh runtime root + carried controller state (the established pattern). Stale tmux session
+   from the crashed campaign blocked the launch → killed by exact session name.
+5. **Campaign LIVE** (session ak-db6b1d57): carried 7 iterations, next=8, in-flight operation
+   ae0aea2b8d building; science 0/10. Watcher journaling continuously.
