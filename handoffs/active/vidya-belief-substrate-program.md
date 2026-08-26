@@ -238,15 +238,26 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       to the session that owns the inference, at its own boundary. Until then
       `adapters/autopilot_journal.py` correctly reports 0 measured rows. Confirm non-zero after the
       next autopilot cycle
+      **STATUS 2026-08-26: still unmeasured — the journal ends at trial 1505 (2026-08-09T19:29Z,
+      "(killed)") and 0 of 1,390 rows carry a `measurement_tuple`; `autopilot_state.json` says
+      `paused: true`. SHARPENED TRIGGER: confirm non-zero rows in the first autopilot cycle after
+      the next restart — the restart is operator-gated (reload owner = the inference-owning
+      session at its own boundary), not a calendar event**
 - [ ] **SC32 — Wire future architect MMLU-Pro hardened controls prospectively.** The 2026-08-12
       A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
       an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
       adapter before any successor run; the completed panel remains pre-hook and emits zero.
-      **STATUS 2026-08-26: the 2026-08-12 A1/A3/A4 v9 panel remains pre-hook and emits zero; a
-      successor control is named, not hypothetical — `reboot-gated-inventory-and-staging.md` carries
-      the missing A4 arm as "dispatchable today". SHARPENED TRIGGER: add producer-written rows plus
-      the strict adapter before that A4-arm control runs; the completed panel is never reconstructed
-      on read**
+      **STATUS 2026-08-26 morning: the 2026-08-12 A1/A3/A4 v9 panel remains pre-hook and emits
+      zero; a successor control is named, not hypothetical — `reboot-gated-inventory-and-staging.md`
+      carries the missing A4 arm as "dispatchable today".
+      EVENING: write side WIRED prospectively — `v7_quality_gate_runner.py` emits
+      producer-authored `belief_measurements` at result-finalize when invoked with
+      `--belief-category` (BASELINE anchor arm / CANDIDATE controls), forwarded by
+      `mmlu_pro_hardened_control.py` through `architect_bench_gpu_arm.sh`; reps read from the
+      run's own scored `n`, attestation sha256 over the manifest at collect time; 24/24 tests.
+      The A4 `gpqa_diamond_cot` successor IS EXECUTING TODAY (`gpqa-cj1-2026-08-25/`, EVL-08 cut
+      n=198→50) — WITHOUT the flag, so it is pre-hook and emits zero rows, always. NEW TRIGGER:
+      any successor control run WITH `--belief-category` → first tuple → close**
 - [x] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** ✅ 2026-08-12 —
       successor r4 (`rvp-c6-executable-r4-20260812T191027Z`) emitted **53** producer-authored
       `belief_measurements`: three detector aggregates plus 50 exact case×ranked-unit elapsed-time
@@ -297,8 +308,19 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       SHARPENED TRIGGER: before any successor screen (AutoKernel V27 pre-launch; freeze-gated),
       implement the producer rows + strict reader with the full binding set (source/build/binary/
       linkage/model/device/claim, scored invocation basis, sole-factor identity, KFD/VRAM residency,
-      nonpromotable/no-bank/no-readiness/no-release authority); s2 emits zero rows, always**
-- [ ] **SC44 — Integrate the completed AutoKernel experimental-runtime DFlash2 prospective hook before DF2-5.**
+      nonpromotable/no-bank/no-readiness/no-release authority); s2 emits zero rows, always
+      **EVENING 2026-08-26: write side WIRED and the first screen is post-hook.** The research
+      producer (`scripts/benchmark/autokernel_gpu_discovery_beliefs.py`, v4) seals
+      `belief_measurements` + `baseline_sha256`/`result_sha256` into every complete
+      bank/result before its atomic write, and the V27 deployment's pinned execution closure
+      carries exactly those bytes (producer sha256 matches research main). Root strict reader
+      `autokernel_gpu_screening.py` re-derives every binding (producer id/path/sha, source
+      commits, binary/linkage/model/device, the admitted sole-factor transitions, scored
+      invocation basis 3/5/9, per-arm KFD/VRAM residency, self-hashes, authority boundary);
+      24/24 tests; E2E: real V27-shaped output projects Witnessed/Attested. The V27 screen is
+      RUNNING NOW (llama-bench in flight) — NEW TRIGGER: screen completes → adapter projects
+      the first tuples → close**
+- [x] **SC44 — Integrate the completed AutoKernel experimental-runtime DFlash2 prospective hook before DF2-5.**
       The DF2-4 matched np1 campaign finalized three exact arms (plain, MTP8, DFlash2 block8) with
       12 scored prompts each, higher-is-better decode throughput, draft-acceptance numerators and
       denominators, exact candidate/binary/target/draft-model/protocol identities, and released MI210
@@ -318,7 +340,12 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       (the register's "merge pending before DF2-5" still holds), and DF2-5 np2/4/8 has not run.
       SHARPENED TRIGGER: merge research first, then root, then run DF2-5 — the row's own termination
       condition is the two merges, and the first DF2-5 campaign is the empirical follow-up; DF2-4
-      remains immutable pre-hook evidence**
+      remains immutable pre-hook evidence
+      **CLOSED 2026-08-26 — both commits integrated.** Research `71b81a8e` merged into research main
+      (`b76d577b`, no conflicts, +5 files; 10/10 tests) and root `e0376ea1` into root main
+      (`26a8bcab`, +2 files; 604 passed, 1 known env failure). DF2-4 stays immutable pre-hook
+      evidence; the first DF2-5 campaign is the empirical follow-up and is tracked as SC49-G2,
+      not by this row ✅ 2026-08-26**
 - [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
       prospectively before its next run.** *(Filed as "SC37" on lane/mainD 2026-08-13 by `mainD`,
       the author of the run, at the run; renumbered on forward-port because SC37 was independently
@@ -338,7 +365,13 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       the all-inference-stop order plus a new inference grant (also: the PIP-05 evidence correction
       to the demo record landed 2026-08-25). SHARPENED TRIGGER: wire the write hook (measurement
       class, run-level locator, one witness per run) before that canonical A/B executes; the demo
-      stays immutable pre-hook evidence**
+      stays immutable pre-hook evidence
+      **EVENING 2026-08-26: blocker CORRECTED — the all-inference-stop is not in force.** The
+      serving stack (5 llama-servers + `lightonocr_llama_server.py` :9001, up since 08-21 — a
+      production OCR serving path, not the A/B) is live, and lease-based campaigns ran 08-25/26
+      (inf11/inf40/inf42-g1). The canonical-profile matched A/B is therefore SCHEDULE-gated (a
+      lease window), not operator-gated. NEW TRIGGER: run the canonical A/B with `odl_bench`
+      under a lease window → first tuple → close**
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
@@ -433,6 +466,18 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       K35, DFlash, qualification, and final-freeze write paths. Project into the existing
       `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Only then price/build the
       adapter
+      **STATUS 2026-08-26 morning: no successor run had emitted since filing — the v9 freeze held
+      (no promotions) and the only K35 receipt (`iq3-dspark-quick-20260811T063729Z`) predated the
+      hook; three empty `dspark-sidecar-match-20260825T*` dirs showed the producer exercised
+      without producing artifacts.
+      EVENING 2026-08-26: successor fired and the write side is now wired.** A K35-paired run
+      (`dspark-sidecar-match-20260826T140422Z`) started today — attempt 1 aborted 13:57Z (path
+      typo), attempt 2 in flight — and the runner (`k35_stack_context_matrix_runner.py`, research)
+      now emits `belief_measurements` (one row per quant-specific paired receipt, house envelope,
+      protocol `epyc.k35_stack_context_matrix.summary.v1`, attestation = sha256 over the summary
+      at write time) plus a full-document `summary_sha256`; 33/33 tests. The IN-FLIGHT run predates
+      the hook and emits zero rows, always. NEW TRIGGER: first COMPLETED post-hook K35 paired run
+      closes this row**
 - [ ] SC12-ARTIFACT **Model artifact acquisition/integrity receipts need a prospective write-side
       ClaimTuple hook.** The standardized DeepSeek-V4 DFlash acquisition established the source
       repository and pinned revision, expected/observed byte count, publisher/local SHA-256,
@@ -442,10 +487,18 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       category, metric direction and durable attestation locator+digest. Project it into the
       existing `ClaimTuple`; `claim_tuple.grade()` remains the only grading rule. Do not retrofit
       this completed acquisition on read
+      **STATUS 2026-08-26 morning: the DFlash2 27B GGUF for the np1 campaign
+      (`models/Qwen3.8-27B-DFlash2-Q8_0.gguf`, ~2026-08-20) was acquired with no native receipt.
+      EVENING: seven acquisitions since 08-11, none with a native receipt — the last,
+      LFM2.5-2.6B-Q4_K_M (08-21), is the exact "next acquisition" the row names, missed again.
+      The run-level record spec now lives with the acquisition runbook; the next acquisition
+      emits it, or the miss becomes a tracked pattern, not an accident**
 - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note
       `data/benchmark_artifact_inventory.json` is EMPTY (0 rows), which is its own finding
+      **SHARPENED TRIGGER (2026-08-26): re-open this the day SC6-LIVE reports its first non-zero
+      cycle — both rows ride the same restart, and SC6-LIVE is the only watchdog**
 - [x] SC6-HAZARD Before any bulk ingest is ever reconsidered: support is counted by **source
       locator** ✅ 2026-08-26 — **premise answered; hazard preserved as vocabulary.** The bulk-ingest
       question was settled by SC6-PRICE (rejected on evidence, 0/200 full tuple), so the guard has
@@ -475,7 +528,19 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       EV-14a has not run (eval-tower-verification.md, both EV-14a and its EV-14c prerequisite open).
       SHARPENED TRIGGER: EV-14c lands (baseline last-write-wins fix), then EV-14a runs
       `core_v2_calibrate.py --repeats` — wire the write side before that first band, and keep the
-      scope limit (band = instrument resolution, never config quality) inside the adapter**
+      scope limit (band = instrument resolution, never config quality) inside the adapter
+      **EVENING 2026-08-26: EV-14c LANDED + write side built; EV-14a staged.** `safety_gate.py`
+      now keeps per-tier baseline REVISIONS (bumped by every identity-changing `update_tier()`
+      write, persisted through load/save), logs an explicit BASELINE MOVED line naming
+      prior→new + invalidated pins, and `update_baseline()` REFUSES a promotion whose
+      compare-to-write span saw the reference move (11 new orchestrator tests + 262 passing).
+      Write side: `eval_tower_band.py` emits ONE self-hashed `.band.json` per suite (refuses a
+      degraded repeat, K mismatch, <2 scored repeats, or a moved reference) and projects one
+      ClaimTuple with the *INSTRUMENT RESOLUTION ONLY* scope limit enforced verbatim (17/17
+      tests). EV-14a remains inference-gated and the host is mid-deployment — staged:
+      `python3 scripts/autopilot/core_v2_calibrate.py --n 300 --repeats 3 --seed 4242
+      --trial-id-base 900000` (+ `pin_tier` before repeat 0, `pin_moved` after,
+      `build_band_artifact`). NEW TRIGGER: first real band → first tuple → close**
 
 - [ ] SC38 **Wire worker-pool completion reports on the write side — filed 2026-08-16 by the
       loop-owned-fleet session, WHILE `scripts/coordination/worker_runner.py` is still being
@@ -726,6 +791,11 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       BASELINE/OPTIMUM transition with `gate.evaluate`; append resolution/evidence links so AutoKernel
       sees the same negative, and use `impact_of_retracting` to reopen downstream promotions. Do not
       activate until the pre-promotion journal ordering supplies a durable current-trial attestation
+      **STATUS 2026-08-26: not activated — no promotion has occurred since filing (v9 freeze) and the
+      pre-promotion journal ordering still lacks the durable current-trial attestation (confirmed
+      absent in the orchestrator today). SHARPENED TRIGGER: build the attestation into the journal
+      ordering first, then activate the gate at the first promotion event after the freeze lift
+      (AutoKernel V27 is candidate-only — instrument/target-equality receipts, no promotion)**
 - [x] SC15 **Drain the queue.** 129 corrections, 81 cited by project documents, top ones cited 5–7
   - **✅ 2026-08-12 — QUEUE FULLY DRAINED by `mainC`. 129 → 0 unadjudicated; blocked claims 571 → 0;
     the `review` bucket is empty.** 233+ `correction_reviewed` frames across 13 batches, each with
@@ -1086,7 +1156,14 @@ findings to docs, move to `completed/`, delete the master-index row.
       `RVP-C5-7` HIP arm). SHARPENED TRIGGER: wire the driver-record projection
       (`{problem, parallelism_model, k, pass@k, speedup_n@k, efficiency_n@k, best_sequential_runtime,
       hardware}`) before RVP-C5-6 executes — C5-6 needs no inference grant, so this trigger is
-      scheduler-gated, not operator-gated; the `O0`-wrapped timing caveat rides in every tuple**
+      scheduler-gated, not operator-gated; the `O0`-wrapped timing caveat rides in every tuple
+      **EVENING 2026-08-26: adapter WIRED before any run — `pareval.py` (17/17 tests), checkout
+      cloned + pinned at `/mnt/raid0/llm/pareval` `9e2a9afafa2c`; one ClaimTuple per
+      (problem, parallelism_model, k, n) cell, serial=BASELINE/parallel=CANDIDATE enforced, O0
+      caveat enforced verbatim in every claim, attestation honest (Attested only in a pinned git
+      tree). C5-6 runbook staged (serial+omp, 96-thread sweep, CPU-only); the ONE remaining
+      prerequisite is LLM-generated outputs for the 60+60 prompt subset (the repo's generate
+      scripts need a base_url shim). NEW TRIGGER: RVP-C5-6 executes → first tuple → close**
 
 ## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21)
 
@@ -1116,7 +1193,9 @@ task is filed **now, before any of them runs** — not when results land. Source
       `speculative-decoding-mtp-refresh`; G4 open in `dynamic-stack-concurrency`). SHARPENED
       TRIGGER: the adapter's build is gated on the first G-sweep execution — build it before that
       first run per the filed spec, with the two load-bearing caveats (G1 negative control never a
-      model-quality claim; G2 `n_max` + mean accepted length travel together) in every tuple**
+      model-quality claim; G2 `n_max` + mean accepted length travel together) in every tuple
+      **EVENING 2026-08-26: unchanged — no sweep has run (verified). G1 is CPU-runnable and the
+      lease regime is granting compute, so the trigger is schedule-gated, not operator-gated**
 
 ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22)
 
@@ -1150,7 +1229,8 @@ runs**, same rule and same reason as SC49. Source row added to
       adapters before the first sweep in each class executes, each carrying its class caveat
       (fidelity cosine = one graph pair; CondFlip paired+FP16-anchored; α = acceptance not speedup;
       dynamic range per-layer/per-head K and V separately) — the first run in any class is the
-      trigger, and it is compute-gated**
+      trigger, and it is compute-gated
+      **EVENING 2026-08-26: unchanged — no sweep has run (verified)**
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

@@ -538,12 +538,14 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
   `(suite_seed, op, case_idx, tensor_idx)` and record `suite_seed` on the evaluation event
   (`autokernel-research-loop.md` §7.4). Without this, a T0 failure is an anecdote: the RNG is
   `std::random_device`-seeded per thread (`:54,:62`) and there is no flag to pin it. **Do this first.**
-- [ ] **RVP-C2-2 — Property layer (the only axis independent of the sibling).** Reference-free
-  structural checks computed in host `double` **directly from raw tensor data — never by building a
-  second ggml graph**, which would re-enter the shared implementation and re-create the problem.
-  Seed set: `SOLVE_TRI` residual bound, `ARGSORT` / `TOP_K` permutation validity (bit-exact — a
-  permutation check has no tolerance), `SOFT_MAX` sum-to-one. **Ship it with a seeded-defect gate**
-  (RVP-C6-6) or it inherits the same unquantified-sensitivity weakness it was built to fix.
+- [x] **RVP-C2-2 — Property layer (the only axis independent of the sibling).** ✅ 2026-08-26 —
+  the producer SHIPPED: the instrument branch `codex/autokernel-gqa7-correctness-instrument-20260818`
+  @ `5bbcc5498` (08-18) emits **AK_PROP_V2** from `test-backend-ops` (the earlier V1 schema is
+  superseded; research parses both) with `--suite-seed`/`--autokernel-property-self-test`, and the
+  AutoKernel V27 deployment seals it (`instrument-review.json`, receipt `7c1dfca1`) — the target is
+  in build/run today. The reference-free `double`-hosted residual contract stands; the seeded-defect
+  gate (RVP-C6-6) and the first live `backend_op_units` measurement event remain the empirical
+  follow-up (SC18 in the vidya program tracks the first tuple).
   - [x] **Live property acceptance within the value-transform pass.** ✅ 2026-08-11 — the 779-case
     pass covered `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`. The `SOFT_MAX` invariant was
     corrected before acceptance to include the operation's implicit attention sink mass rather than

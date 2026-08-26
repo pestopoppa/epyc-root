@@ -656,11 +656,14 @@ documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_r
       `quality_rebaseline_hold`) are one-sided suppressions that skip the comparison rather than
       equalizing it. Decide alongside EV-14b. This is a stronger form of `intake-1141`'s √K argument
       (repo-only; that argument is NOT in the paper).
-- [ ] **EV-14c — Fix the baseline last-write-wins collapse (defect, not enhancement).**
-      `safety_gate.py:1146-1155` `update_tier()` writes the baseline with `dict.update`, so a
-      re-score of the same suite silently overwrites the prior baseline with no record that one
-      existed. This is the collapse point that actually gates decisions and it will corrupt EV-14a the
-      moment repeat scoring exists. **Fix before EV-14a runs.**
+- [x] **EV-14c — Fix the baseline last-write-wins collapse (defect, not enhancement).** ✅
+      2026-08-26 — `safety_gate.py` now keeps per-tier baseline REVISIONS bumped by every
+      identity-changing `update_tier()` write (persisted through load/save/state), logs an explicit
+      `BASELINE MOVED T<n> (prior -> new)` WARNING naming the measurement pins it invalidates, and
+      `update_baseline()` REFUSES a promotion whose compare-to-write span saw the reference move
+      (compare-to-ghost is now impossible). 11 new tests
+      (`tests/unit/test_safety_gate_ev14c_reference_pin.py`) + 262 orchestrator suite tests pass.
+      EV-14a can now measure a band against a pinned reference that cannot silently move.
 - [ ] **EV-14d — Assert expected case count before scoring.** A short draw currently scores a subset
       and reports it as a complete result: the sampler logs a shortfall into provenance and returns
       short, then `n_questions` is defined as `len(results)`. Three narrow paths already fail closed
