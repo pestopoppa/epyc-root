@@ -177,3 +177,17 @@ Future sessions: check `monitor.log` for the delta stream, `watcher-heartbeat.lo
    from the crashed campaign blocked the launch → killed by exact session name.
 5. **Campaign LIVE** (session ak-db6b1d57): carried 7 iterations, next=8, in-flight operation
    ae0aea2b8d building; science 0/10. Watcher journaling continuously.
+
+## Recovery chain continued (2026-08-26) — five more environmental stops, all diagnosed
+
+4. **Leftover git worktrees** from crashed campaigns blocked the deterministic `git worktree add`
+   (exit 255) → operation parked. Removed the orphaned worktrees + branch; controller reopen
+   re-attempted; Q5 candidate build ran (~45 min, HIP).
+5. **Foreign KFD process** (PID 3944483) appeared mid-candidate-leg → residency sampler fail-closed
+   (`foreign KFD process overlaps governed source proof`) → crash. Transient external contention;
+   GPU empty afterward.
+6. **Wedged build-without-receipts** after the contention crash → reconcile ambiguous (the sealed
+   build existed but the op had no stage receipts) → removed the wedged build-cache entry.
+7. Recovery mv misfire produced a fresh state (equivalent: 0 science) → **fresh campaign live**
+   (session ak-…, authoring re-run). All blockers now fixed: codex auth ✓, ghost replay closure ✓,
+   worktrees ✓, GPU contention window passed ✓.
