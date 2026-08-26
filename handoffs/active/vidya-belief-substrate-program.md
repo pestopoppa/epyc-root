@@ -81,7 +81,7 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
-- [ ] **SC19 — wire `ChatResponse.contention_gate` (A14) on the write side, BEFORE the branch
+- [x] **SC19 — wire `ChatResponse.contention_gate` (A14) on the write side, BEFORE the branch
       lands.** Filed 2026-08-12 by `mainB`, the author of the change, at the change — the property
       that makes a write-side hook trustworthy at all. The surface echoes the contention
       `GateDecision` per request (`admitted`, `waited_s`, `decision`, `candidate_topology_idx`, plus
@@ -142,7 +142,17 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       SHARPENED TRIGGER: this row closes at the first orchestrator start with
       `ORCHESTRATOR_CONTENTION_GATE_CAPTURE=1` and the adapter's first emitted tuple — an empty
       capture is not a measurement, and the API-up-again state means the capture flag is now the
-      only missing element**
+      only missing element
+      **CLOSED 2026-08-26 — first tuples emitted and ingested.** Orchestrator restarted with
+      `ORCHESTRATOR_CONTENTION_GATE_CAPTURE=/mnt/raid0/llm/bus-runtime/contention_gate_capture.jsonl`
+      (the env var's VALUE is the capture path — a first attempt with `=1` wrote to a file named
+      `1`, evidence moved to the canonical path); two real chat requests (one mock — no gate
+      decision, correctly skipped — then two real-mode) produced two request-keyed envelopes
+      (`admitted_immediately`, `waited_s=0.0`, `reason="no active decodes"`). The strict adapter
+      projected both, frames ingested into the ledger (frontier 12,502), fold reports
+      `clm_cg_api-*` at **Witnessed/Anchored** — the kernel's first live contention-gate
+      measurements. Capture is now default-on for the serving process; the row closes ✅
+      2026-08-26**
 
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
