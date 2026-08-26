@@ -1181,11 +1181,12 @@ by source, and never-supported dependents are carved out, not failed):
 
 | # | Requirement (§4) | Status |
 |---|---|---|
-| 1 | Anchor the claims that get cited (P2d) | UNMET — 30/1,290 entries Anchored-traceable on gen-2; machine-anchor admissibility decision (options A/B/C) still open |
-| 2 | Cross-entry claim identity (R4b) | UNMET — 45 pairs awaiting operator same/different pass |
+| 1 | Anchor the claims that get cited (P2d) | MET at B semantics — machine-anchor admissibility RATIFIED 2026-08-26 (operator): option B, the implemented §4.2 amendment; machine-located spans grade `MachineLocated` (quote-pinned, unreviewed), never `Anchored` without a human reading. Decision recorded in `vidya-p5c-evaluation-and-decision.md`; coverage backlog (cited entries unanchored) is write-time growth, tracked not gated |
+| 2 | Cross-entry claim identity (R4b) | IN PASS — 43 candidate pairs (gen-2b corpus, score ≥ 0.35, 19 linked) awaiting the operator's same/different pass; tooling shipped (`scripts/vidya/ratify_aliases.sh`: generate → interactive pass → dry-run → emit → verify). 0 pairs ratified so far |
 | 3 | Query log + obligation disposition (R5b) | MET |
 | 4 | Re-run the eval against the live-ledger corpus | EXECUTED — 161/161 + 155/155 above; harness defects fixed and re-run on the unchanged ledger |
 
-**Next executable step:** the remaining two requirements are operator passes (machine-anchor
-admissibility A/B/C; the 45 alias pairs), not code. When both land, re-run the two draws and
-record the promotion verdict — the evidence base above is already certifiable.
+**Next executable step:** requirement 1 is ratified (B). The remaining operator pass is
+requirement 2 — run `bash scripts/vidya/ratify_aliases.sh` (43 pairs, ~30-60 min). When the
+alias pairs land, re-run the two draws and record the promotion verdict — the evidence base
+above is already certifiable.

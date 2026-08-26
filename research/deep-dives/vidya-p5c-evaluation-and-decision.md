@@ -147,6 +147,19 @@ what an existing anchor means, and because the pilot's whole thesis is that a di
 acting on is worth recording. C is the right answer if the carrier change is judged too expensive
 for shadow mode.
 
+### Requirement 1 — ratified 2026-08-26: B (the implemented §4.2 amendment)
+
+The operator ratified **B** on 2026-08-26. The decision was already half-made in code: the
+2026-08-10 spec §4.2 amendment caps machine-located anchors at the distinct `MachineLocated`
+level (`_t_level`, `scripts/vidya/adapters/research_intake.py` — quote-pinned machine spans never
+reach `Anchored` without a human reading), and the gen-2b ledger carries 424 MachineLocated
+claims. Ratification confirms that reading of the axis: machine-located means *checkable, not
+vouched-for*, and policies choose whether to admit the rung. Requirement 1 is therefore **MET at
+B semantics** — the mechanism is settled; the coverage backlog (662 cited entries / ~2,994 claims
+unanchored at 2026-08-10) grows only at write time, when dives record `claim_anchors`, and is
+tracked, not gated. Option A (re-grade machine spans to T2) was declined on the doc's own
+fabrication-shape risk; C was declined as leaving the axis effectively dead.
+
 ## 4c. PR2 — the live-ledger evaluation, run 2026-08-10
 
 `scripts/vidya/live_eval.py`, `vidya eval-live`. Two draws over the 9,599-frame ledger, six
