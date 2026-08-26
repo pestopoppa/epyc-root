@@ -3110,13 +3110,13 @@
   - Single mechanism (concise instruction conditioning + reverse KL) achieves both compression and accuracy gains
   - Requires no ground-truth answers, no token budgets, no difficulty estimators
   - Automatically compresses easy problems while preserving full reasoning for hard ones
-  - 57-59% token reduction on MATH-500 while improving accuracy by 9-16 points
+  - 57-59% token compression on MATH-500 with +0.0 to +3.3pp accuracy delta (authors' revised Table 2); the original +9-16 points accuracy figure was retracted by the authors
   techniques:
   - OPSDC (On-Policy Self-Distillation for Reasoning Compression)
   - Reverse KL divergence on student rollouts
   - Concise instruction conditioning
   reported_results:
-  - 'Qwen3-8B/14B MATH-500: 57-59% token reduction, +9-16 accuracy points'
+  - 'Qwen3-8B/14B MATH-500: 57-59% token reduction, +0.0/+3.3 accuracy points (authors'' revised Table 2; the v1 ''+9-16 points'' figure was retracted)'
   - 'Qwen3-14B AIME 2024: +10 accuracy points, 41% token compression'
   novelty: high
   relevance: high
@@ -3149,8 +3149,11 @@
     verified_by: vidya/machine_anchor
   claim_corrections:
   - claim_index: 4
-    effect: overturned
-    note: 'SUPERSEDED UPSTREAM. Verbatim from the v1 abstract of arXiv:2603.05433, which the authors revised away. Current Table 2: Qwen3-8B MATH-500 95.7 -> 95.7 (+0.0, 56.9% reduction) and Qwen3-14B 93.0 -> 96.3 (+3.3, 56.3%). The v1 ''+9-16 points'' was the BASE model being mis-scored by a boxed-only grader, per the authors'' own Appendix D. Verified against full text of v1 and v7 on 2026-08-10.'
+    effect: unaffected
+    note: '2026-08-10 correction: authors retracted the v1 ''+9-16 points'' accuracy figure (boxed-only
+      grader mis-scored the base model, per the authors'' own Appendix D). Revised Table 2: Qwen3-8B
+      MATH-500 95.7 -> 95.7 (+0.0, 56.9% reduction); Qwen3-14B 93.0 -> 96.3 (+3.3, 56.3%). Claim text
+      amended 2026-08-26 to the corrected position; correction folded in (SC12-ENTRY).'
 - id: intake-111
   arxiv_id: null
   url: https://github.com/inclusionAI/AReaL

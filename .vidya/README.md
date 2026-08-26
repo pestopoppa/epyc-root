@@ -28,3 +28,6 @@ them. Confusing the two would misdiagnose exactly the attack the checkpoint exis
   dedup-keyed ingest, so re-runs append nothing). Checkpoint `checkpoint-00012479.txt` is the
   current attestation. Non-intake producers (sealed manifests, AutoKernel receipts, …) project
   into the fold from their source sidecars and are checkpointed when their rows are ingested.
+  The SC12-ENTRY amendment (intake-110 claim 04, 2026-08-26) re-emitted the checkpoint at the
+  same tree size with a different root — the pre-amendment root is preserved in git (commit
+  `a8e131af`).

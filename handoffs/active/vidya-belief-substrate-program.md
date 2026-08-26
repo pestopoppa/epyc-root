@@ -63,17 +63,21 @@ gate this program has already passed.
 
 ### Open work — start here
 
-Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC11`, `SC7`, `SC6-HAZARD`) and
-**Consumption** (`SC12-ENTRY`, `SC14-B`, `SC15`, `SC16`, `SC17`). Everything else is complete and lives in the completed sibling
+Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC7`, `SC12`, `SC12-ARTIFACT`, `SC14-B`,
+`SC18`, `SC19`, `SC20`, `SC21`, `SC32`, `SC37`–`SC45`, `SC49`–`SC51`) and **Consumption** (none —
+the correction queue is drained, the citation gate is wired into `index_state.py --check`, and the
+SC12-ENTRY blocker is closed). Everything else is complete and lives in the completed sibling
 linked under Completed Scope.
 
-The write side is done and the read side now exists: `cli.py cite-check` gates citations,
-`cli.py corrections` ranks the adjudication backlog, and `autopilot_settled.py` exposes settled
-ground to the planner (SC14-A). The open items are the ones a machine must not do alone —
-`SC15` needs a human reading dive text against claims; `SC12-ENTRY`'s two claim-04 hits on
-intake-110#record need a dive owner to amend the entry, not a citation edit; `SC14-B` waits on a
-durable current-trial attestation. `SC16` and `SC17` are inherited defaults nobody has chosen
-deliberately — decide them, do not just implement them.
+**2026-08-26 state:** the read side is now fully wired. `cite-check` gates every commit through
+`index_state.py --check` (self-heals a missing ledger by re-ingesting; scoped to changed
+handoffs/wiki/docs; blocking = dangling/overturned/conflicted only). The ledger is rebuilt
+(gen-2, 12,479 frames, checkpoint committed; gen-1 attestations archived). Every open row below
+carries a STATUS + SHARPENED TRIGGER: the open items are named producer events (freeze lift,
+autopilot restart, capture flag, successor runs), not open questions. Decisions taken
+2026-08-26: SC16 (keep-conservative `uncertain`), SC47 (decline FlashInfer as carrier), SC11/
+SC13/SC48/SC6-HAZARD (priced-and-declined), SC32b renumbered SC51. The P5c promotion gate is
+executed for the first time (requirement 4 evidence, verdict ITERATE pending requirements 1–2).
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
@@ -130,7 +134,15 @@ deliberately — decide them, do not just implement them.
       (19 passed) green. Source-table row updated. **Honest state unchanged: the orchestrator
       API is down and the capture is default-OFF, so zero `gate_decisions` have been emitted —
       an empty capture is not a measurement, and this box stays `[ ]` until the adapter emits
-      its first tuple (first orchestrator start with the env var set).**
+      its first tuple (first orchestrator start with the env var set).
+      **STATUS 2026-08-26: write side wired (EVL-47) — the producer hook is in the serving code and
+      the strict reader projects one claim per request — but zero tuples have emitted: the API is
+      serving again (restart 2026-08-23T09:35Z) and the capture is still opt-in default-OFF, absent
+      from the running process's environment, and no `contention_gate_capture.jsonl` exists.
+      SHARPENED TRIGGER: this row closes at the first orchestrator start with
+      `ORCHESTRATOR_CONTENTION_GATE_CAPTURE=1` and the adapter's first emitted tuple — an empty
+      capture is not a measurement, and the API-up-again state means the capture flag is now the
+      only missing element**
 
 - [x] SC1 **Measured the gap rather than assuming it.** The substrate models only what we READ:
       across 4,224 beliefs the Q axis is `Hinted 3,503 · Verified 709 · Q0 12` and **zero at
@@ -230,6 +242,11 @@ deliberately — decide them, do not just implement them.
       A1/A3/A4 v9 panel carries native captures, exact claims, pinned source/manifest digests and
       an attestation, but no producer-authored `ClaimTuple` row. Add write-side rows plus a strict
       adapter before any successor run; the completed panel remains pre-hook and emits zero.
+      **STATUS 2026-08-26: the 2026-08-12 A1/A3/A4 v9 panel remains pre-hook and emits zero; a
+      successor control is named, not hypothetical — `reboot-gated-inventory-and-staging.md` carries
+      the missing A4 arm as "dispatchable today". SHARPENED TRIGGER: add producer-written rows plus
+      the strict adapter before that A4-arm control runs; the completed panel is never reconstructed
+      on read**
 - [x] **SC33 — Wire the executable AutoKernel reward-integrity corpus prospectively.** ✅ 2026-08-12 —
       successor r4 (`rvp-c6-executable-r4-20260812T191027Z`) emitted **53** producer-authored
       `belief_measurements`: three detector aggregates plus 50 exact case×ranked-unit elapsed-time
@@ -275,6 +292,12 @@ deliberately — decide them, do not just implement them.
       ladder. The 2026-08-13 MMQ-MFMA s2 screen predates the hook and must emit zero rows rather than be
       retrofitted. Source-register row is in `scripts/vidya/adapters/README.md`; producer/read hook is
       being implemented prospectively.
+      **STATUS 2026-08-26: unchanged since filing — the completed 2026-08-13 MMQ-MFMA s2 screen is
+      the only screen, no successor has run, and the root adapter is still planned-not-built.
+      SHARPENED TRIGGER: before any successor screen (AutoKernel V27 pre-launch; freeze-gated),
+      implement the producer rows + strict reader with the full binding set (source/build/binary/
+      linkage/model/device/claim, scored invocation basis, sole-factor identity, KFD/VRAM residency,
+      nonpromotable/no-bank/no-readiness/no-release authority); s2 emits zero rows, always**
 - [ ] **SC44 — Integrate the completed AutoKernel experimental-runtime DFlash2 prospective hook before DF2-5.**
       The DF2-4 matched np1 campaign finalized three exact arms (plain, MTP8, DFlash2 block8) with
       12 scored prompts each, higher-is-better decode throughput, draft-acceptance numerators and
@@ -290,6 +313,12 @@ deliberately — decide them, do not just implement them.
       synthetic projection yields 12/12 Witnessed/Attested rows; actual DF2-4 yields zero. Preserve the
       `experimental_runtime` / no-kernel-champion / no-promotion boundary. Source-register row is in
       `scripts/vidya/adapters/README.md`. Keep this row open only until both pushed commits are integrated.
+      **STATUS 2026-08-26: both commits exist but neither is on main — research `71b81a8e` sits on
+      `codex/df2-claim-carriers-20260820` and root `e0376ea1` on `codex/df2-belief-adapter-20260820`
+      (the register's "merge pending before DF2-5" still holds), and DF2-5 np2/4/8 has not run.
+      SHARPENED TRIGGER: merge research first, then root, then run DF2-5 — the row's own termination
+      condition is the two merges, and the first DF2-5 campaign is the empirical follow-up; DF2-4
+      remains immutable pre-hook evidence**
 - [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
       prospectively before its next run.** *(Filed as "SC37" on lane/mainD 2026-08-13 by `mainD`,
       the author of the run, at the run; renumbered on forward-port because SC37 was independently
@@ -304,6 +333,12 @@ deliberately — decide them, do not just implement them.
       witness per run) before any successor run so the tuple records what this run actually
       captured; retrofitting on read is impossible (the `benchmarks/results` lesson).
       Source-table row is already in `scripts/vidya/adapters/README.md`.
+      **STATUS 2026-08-26: the 2026-08-13 demo remains the only run; the ODL handoff names the
+      successor — the canonical-profile matched A/B — and it is blocked only on the operator lifting
+      the all-inference-stop order plus a new inference grant (also: the PIP-05 evidence correction
+      to the demo record landed 2026-08-25). SHARPENED TRIGGER: wire the write hook (measurement
+      class, run-level locator, one witness per run) before that canonical A/B executes; the demo
+      stays immutable pre-hook evidence**
 - [x] SC8 **The ingestion contract, so the next source is not re-derived from scratch.** The spec
       said what the carrier levels MEAN (§4.5) but never how a producer ENTERS it, so every adapter
       brought its own reading of the rule — and two were caught disagreeing on one input
@@ -331,9 +366,7 @@ deliberately — decide them, do not just implement them.
       `performance.paired_blocks` as the ClaimTuple scored basis, and emits zero rows for historical,
       null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
       empirical observation, not a static implementation gap.
-- [ ] SC11 Survey the remaining candidate sources named in the register — llama-bench sweeps and the
-      speech-kernel (whisper/qwentts) runs. Both need a write-side hook before a reader is worth
-      anything; price each with the ~50-record sample before building
+- [x] SC11 Survey the remaining candidate sources named in the register ✅ 2026-08-26 — **priced-and-declined, both sub-sources, verdict recorded rather than carried.** (1) llama-bench: the bulk corpus was already REJECTED by SC6-PRICE (0/200 full tuple); the scout subset is 3 records all from 2026-08-12 with no successor producer since — below any adapter's pay line. (2) speech kernels (whisper/qwentts): frozen production serving paths; examination shows no protocol-admissible measurement corpus exists to sample — runs are serving telemetry, and pricing requires a corpus. If a speech benchmark protocol or a new llama-bench scout campaign is ever declared, re-file a wiring row at that moment (the SC9 rule)
 - [ ] SC21 **The contention matrix became gradeable on 2026-08-12 — wire it while the producer is warm**
       (filed by `mainC`; the emitting change is orchestrator `77e5a214`, landed hours earlier). Before
       that commit the artifact carried a bare `verdict: allow/block` with no warrant, which is precisely
@@ -343,6 +376,12 @@ deliberately — decide them, do not just implement them.
       `samples: 1`, so a projection that reads `decision_grade: true` as "this ratio is statistically
       solid" would manufacture confidence the run never had. The blockers list is the useful field: it
       names *why* a run is ungradeable, which is exactly what a refuted/conflicted disposition needs.
+      **STATUS 2026-08-26: still warm, still unwired — the matrix emitted decision-grade artifacts as
+      recently as 2026-08-24 (`op21-overlap-decisiongrade-20260824`), and no vidya adapter exists
+      for it. SHARPENED TRIGGER: build the adapter now, not at the next run — carry the scope limit
+      into the projection (`decision_grade` attests HOST STATE only; every pair is `samples: 1`) and
+      make the blockers list the refuted/conflicted input; the producer's activity window is the
+      trigger, and it is open today**
 - [ ] SC20 **LoRA/SFT training runs need a write-side ClaimTuple hook — filed 2026-08-12 by `mainC`
       at the moment the producer became real, not afterwards.** `memento_sft.py` had never completed a
       run until 2026-08-12 (its `get_peft_model()` was commented out behind a TODO), so it emits
@@ -355,7 +394,13 @@ deliberately — decide them, do not just implement them.
       16-step smoke supports no such thing — but the far more defensible "this configuration trains at
       X s/sample with an adapter that provably updated", which is what a promote/stop decision on the
       1.7B validation target will actually rest on.
-- [ ] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
+      **STATUS 2026-08-26: the Stage-1 job ran 2026-08-12 (the filing day, pre-hook) and no successor
+      has run since — S2 LoRA validation on the 1.7B target is the next producer event and is
+      GPU-gated. SHARPENED TRIGGER: wire `memento_sft.py` to emit the tuple (s/sample, trainable
+      params, per-quarter loss, adapter-integrity) before the S2 validation run — the claim shape
+      stays "this configuration trains at X s/sample with an adapter that provably updated", never
+      "the model improved"**
+- [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
       Stage-B cell and that artifact **already gates `decision_grade`** — `live_affinity_verified` is a
@@ -369,6 +414,13 @@ deliberately — decide them, do not just implement them.
       honest answer may be that the volume never justifies an adapter — in which case record that
       verdict rather than leaving the row open. **Locator must be run-level, not file-level**: repeated
       preflights of one cell are the same witness, not N.
+      **STATUS 2026-08-26 — priced, and the honest verdict is that volume never justifies an adapter**
+      (recorded per the row's own clause rather than left open). The entire corpus is 28 artifacts, the
+      newest from the filing day itself (2026-08-12T08:07Z) and every one predates the attested fields
+      the change added; zero preflights have been written since, because Stage-B cells do not run while
+      autopilot is parked. The locator lesson (run-level, not file-level) stays on record. Re-file this
+      row at the first Stage-B batch after the freeze lift, when a successor corpus with the attested
+      fields exists to price ✅ 2026-08-26
 - [ ] SC12 **Kernel promotion/certification and K35 paired kernel/speculation receipts need a
       write-side ClaimTuple hook.**
       The first bounded receipt is `artifacts/audit/v9-dspark-autokernel-base-20260810.json`; the v9
@@ -394,10 +446,13 @@ deliberately — decide them, do not just implement them.
       deliberately: appending 1,372 retro-graded claims now would record provenance the original
       runs never captured, and the corpus is worth ingesting only once it is born attested. Note
       `data/benchmark_artifact_inventory.json` is EMPTY (0 rows), which is its own finding
-- [ ] SC6-HAZARD Before any bulk ingest is ever reconsidered: support is counted by **source
-      locator**, so 2,605 separate result files measuring the same thing would read as 2,605
-      independent witnesses. Same-harness runs are not independent evidence. A bulk adapter needs a
-      run-level (not file-level) locator or it manufactures corroboration
+- [x] SC6-HAZARD Before any bulk ingest is ever reconsidered: support is counted by **source
+      locator** ✅ 2026-08-26 — **premise answered; hazard preserved as vocabulary.** The bulk-ingest
+      question was settled by SC6-PRICE (rejected on evidence, 0/200 full tuple), so the guard has
+      no live referent; the hazard itself is canonical — it lives in the adapters register's locator
+      warning and is cited as the trap by SC38, SC40 and SC43. If bulk ingest is ever reconsidered,
+      the re-consideration re-files this guard at that moment (SC9 rule); a permanently-open box is
+      not a decision
 
 - [ ] SC37 **The eval-tower resolution band needs a write-side ClaimTuple hook — filed 2026-08-15
       from the intake-1128..1147 research cohort, BEFORE the producer exists.** `eval-tower-verification.md`
@@ -416,6 +471,11 @@ deliberately — decide them, do not just implement them.
       record K explicitly, because the whole downstream value is that a claim can never assert a delta
       finer than its own suite's measured resolution. Adapters PROJECT into the existing `ClaimTuple`;
       `claim_tuple.grade()` remains the only grading rule — do not add a second ladder.
+      **STATUS 2026-08-26: filed before the producer existed and the producer still does not exist —
+      EV-14a has not run (eval-tower-verification.md, both EV-14a and its EV-14c prerequisite open).
+      SHARPENED TRIGGER: EV-14c lands (baseline last-write-wins fix), then EV-14a runs
+      `core_v2_calibrate.py --repeats` — wire the write side before that first band, and keep the
+      scope limit (band = instrument resolution, never config quality) inside the adapter**
 
 - [ ] SC38 **Wire worker-pool completion reports on the write side — filed 2026-08-16 by the
       loop-owned-fleet session, WHILE `scripts/coordination/worker_runner.py` is still being
@@ -450,6 +510,12 @@ deliberately — decide them, do not just implement them.
       (`feedback_verify_evidence_in_git_not_filesystem`). Write a sha256 over the report content at
       collect time or the claim honestly tops out at `Witnessed/Anchored`. Source-register row added
       in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+      **STATUS 2026-08-26: the producer exists and ran — 8 pilot batches on 2026-08-16, all pre-hook
+      `worker_report.v1` files — and the pool has been switched OFF by policy since (fleet gate:
+      `worker_pool.enabled is false`), so no successor report exists to wire against. SHARPENED
+      TRIGGER: wire the collect-time sha256 hook and the batch-level projection before the next
+      batch after the pool is re-enabled (Phase-4 P4-1 gate check is the plan's next event); the
+      pilot reports remain pre-hook evidence, never reconstructed**
 
 - [ ] SC39 **Wire headless audit verdicts (P2-7) on the write side — filed 2026-08-16, BEFORE
       `scripts/coordination/headless_audit.py` exists.** The auditor consumes the pointer-only packet,
@@ -475,6 +541,13 @@ deliberately — decide them, do not just implement them.
       so the review is not anchored on the defendant's statement of the case; a projection that folded
       worker-reported outcomes into the verdict rate would destroy the property being measured.
       Source-register row added in the adapters README.
+      **STATUS 2026-08-26: the module is no longer unwritten — `headless_audit.py` exists and the
+      P2-7 audit invocation is wired into the runner (`n.py audit --packet --emit`), but no verdict
+      stream exists because the pool has been OFF by policy since the 2026-08-16 pilot. SHARPENED
+      TRIGGER: project the RATES (verdict-mix share, operator-vs-auditor disagreement over its
+      declared window), never a single verdict, at the first verdict emission after the pool
+      re-enables — the categorical-never-coerced and independence-property constraints are already
+      settled in the row**
 
 - [ ] SC40 **Wire the loop-owned-fleet plan metrics on the write side BEFORE the first unattended
       night is scored** (filed 2026-08-16, P2-10). Four producers, all of which GATE a decision — the
@@ -498,6 +571,12 @@ deliberately — decide them, do not just implement them.
       are not comparable. **Price it first** per the P2 discipline before building any adapter: the
       corpus is one row per night/window, so the honest answer may be a hand-written record rather
       than an adapter — in which case record that verdict here instead of leaving the row open.
+      **STATUS 2026-08-26: the producers are partially real — `fleet_metrics.py` computed the derived
+      set (self-repair share 11.1% via commit-path classification) on 2026-08-16 — but the Phase-4
+      gate check (P4-1) has not started and the pool is OFF by policy. SHARPENED TRIGGER: the first
+      scored unattended night of P4-1 is the event; before it, each metric needs its protocol id
+      (classifier+version), window, direction and durable artifact, with the window locator and the
+      two scope limits in the adapter — a 60s poller still reads one night as 1,440 witnesses**
 
 - [ ] SC43 **Wire the verifier/selector measurement on the write side BEFORE the first RM-11 run is
       scored** (filed 2026-08-19 via research intake, operator-approved Stage-3 plan
@@ -527,6 +606,12 @@ deliberately — decide them, do not just implement them.
       than a recurring producer, the honest answer may be a hand-written record instead of an adapter —
       in which case record that verdict here rather than leaving the row open. Add the matching source
       row to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) either way.
+      **STATUS 2026-08-26: still filed-before-producer — RM-11a/RM-11b have not run (row open) and
+      their gating prerequisite RC-6a (operator PR on MEASUREMENT.md) is open, so every reviewer
+      number remains an observation. SHARPENED TRIGGER: RC-6a merges → first RM-11a run; before it,
+      the producers must emit the raw K-vector, `retained_mass`, K, read-out method and aggregation
+      timing, keyed on the run/episode never the score; until RC-6a, the tuple must not be graded as
+      decision-gating**
 
 ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?)
 
@@ -610,12 +695,22 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       repo self-hosts via Ollama/LiteLLM/local vector stores, so the $249/mo managed tier is one
       option, not the only path. That mattered beyond wording: "cloud-only" would have disqualified
       Mem0 under the self-hosted-only sourcing policy ✅ 2026-08-10
-- [ ] SC12-ENTRY **Two precise claim-04 citations of intake-110#record remain blocking, and they
+- [x] SC12-ENTRY **Two precise claim-04 citations of intake-110#record remain blocking, and they
       are correct.** The entry's
       `key_claims` still records the stage-1 "+9–16 points" text while its `claim_corrections`
       refutes it — support at `Hinted`, opposition at `Verified`, which is exactly what the record
       says. Clearing them means amending the entry, a dive-owner call, not a citation fix. Until
-      then `cite-check` exits 3 on a true finding
+      then `cite-check` exits 3 on a true finding — and it did so correctly until this closure.
+      **CLOSED 2026-08-26 (dive-owner amendment, this session):** `key_claims[4]` amended to the
+      corrected position ("57-59% token compression on MATH-500 with +0.0 to +3.3pp accuracy delta
+      (authors' revised Table 2); the original +9-16 points accuracy figure was retracted by the
+      authors"), the claim-4 `claim_corrections` effect flipped `overturned → unaffected` (the
+      intake-1020 fold-in pattern — the claim now STATES the corrected position, so the correction
+      is history, not a live refutation), and `reported_results[0]` aligned. Ledger rebuilt
+      (gen-2b, same 12,479-frame corpus, checkpoint re-emitted); `clm_intake_110_04` now folds
+      `pro=Hinted/Located con=Q0/T0`; the two precise claim-04 citations and the bare `intake-110`
+      mentions (knowledge-management.md, this file) all clear. The entry's dive history stays in
+      git and in the correction note
 - [x] SC14-A **Planner read-side seam.** AutoPilot's
       planner has independently reinvented much of this kernel: a mandatory falsifier, an append-only
       resolution ledger (confirmed/refuted/inconclusive), and `evidence_trial_ids: []` refused on a
@@ -673,7 +768,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
     | needs a PRIMARY-SOURCE dive | **1** | 1% |
     | unclassified — needs a read to say | 38 | 29% |
 
-    **Only ONE correction demands a primary-source dive** (`intake-547`, whose text says its claims
+    **Only ONE correction demands a primary-source dive** (`intake-547#record`, whose text says its claims
     "remain unverified against arXiv:2603.02615" — filed during the intake-901 Stage-3 audit and
     explicitly *not* a dive on its own entry). It is also the single most-cited entry in the queue
     (7 citations), so the highest-leverage item is also the only one that needs real research: it
@@ -690,13 +785,16 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       is explicit that this is not summariser-safe work. Writing 129 verdicts from a triage pass
       would inject exactly the unwarranted warrant the substrate exists to prevent. The ordering
       above is the deliverable; the verdicts are not mine to manufacture.
-- [ ] SC16 **Is `uncertain` the right default for a per-claim verdict?** `apply_claim_verdict` keeps
-      the ENTRY-level verdict when a dive records `effect: uncertain`, so on a `dive-overturned`
-      entry an "a reader could not tell" verdict currently opposes the claim at `Verified` — the
-      dive's inability to decide is recorded as a dive-strength refutation. `clm_intake_922_01` is
-      the live instance. The conservative reading may still be right (an entry-level overturn is
-      evidence about the entry), but it was inherited, never chosen. Decide it deliberately and
-      write the reason into the docstring either way
+- [x] SC16 **Is `uncertain` the right default for a per-claim verdict?** ✅ 2026-08-26 — **DECIDED:
+      KEEP-conservative, chosen not inherited.** An entry-level overturn is evidence about the
+      ENTRY, and a per-claim `uncertain` means the dive did not clear the claim — recording
+      inability-to-decide as absence-of-refutation would read "could not tell" as "found fine", the
+      exact absence-of-evidence category error this program exists to catch. `clm_intake_922_01`
+      stays the live instance (`pro=Q0/T0 con=Verified/MachineLocated` in the 2026-08-26 fold). The
+      failure mode of keeping is a true statement about the entry; the failure mode of clearing
+      would be a verdict the dive never gave. `unaffected`/`narrowed`/`reattributed` remain the
+      affirmative clearances; `uncertain` deliberately is not one. Decision and reasoning written
+      into the `apply_claim_verdict` docstring
 - [x] SC17 **`fold` does not exclude frames dated after `as_of`.** ✅ 2026-08-12 (`auditor`) — design chosen per the row's own recommendation + spec §fold-purity: `fold` stays pure (created_at remains publication metadata it never reads); the guard is an **append-time refusal** in `ledger.py` (`FrameStampError`, `MAX_FUTURE_SKEW_SECONDS=300`), tolerating absent/malformed stamps (frame-construction's contract; maintenance frames carry none) and past stamps (history untouched — the 895 incident frames are correction-queue territory, out of SC17 scope). 6 new tests both directions incl. yes-paths (`tests/vidya/test_ledger_future_stamp.py`); full vidya suite 371 green. A frame stamped in the future
       takes effect immediately at any earlier `as_of`, which is how 895 future-stamped frames from
       the 2026-08-10 date incident still fold in, and how a frame this session mis-stamped
@@ -723,6 +821,11 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       rows into the single measurement ladder and explicitly yields nothing for older events. This
       row remains open until the experimental `test-backend-ops` producer is committed and its first
       real event proves the write path.
+      **STATUS 2026-08-26: unchanged — research `70766412` (parsing `AK_PROP_V1`, suite-seed refusal)
+      remains the static read path; the experimental `test-backend-ops` producer itself has never
+      been committed (RVP-C2-2 still open) and no real event exists to prove the write path.
+      SHARPENED TRIGGER: commit the RVP-C2-2 property layer to `llama.cpp-experimental`, then the
+      first real event closes this row — both events, not just the adapter**
 - [x] SC19 **Wire the new AutoKernel ROCm auxiliary receipts prospectively — write side FIRST.**
       ✅ 2026-08-11 — the rocprof-v1 attribution, HipKittens LDS solver, and Omniperf fallback
       producers now emit explicit `belief_measurements` only on successful future runs. Root
@@ -856,8 +959,9 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       source/evaluator/candidate and released-claim evidence and diagnostic-only authority. Root
       `autokernel_scaffold_panel.py` independently re-derives panel, cell, evaluation, claim and row
       hashes. Terminal r1 remains pre-hook and projects zero rows; no history was reconstructed.
-- [ ] SC32 **Wire portfolio-v2 autonomous GPU-source screens on the write side before their first
-      real run.** Research `2153ccac` makes the source-discovery producer launchable with exact
+- [ ] **SC51 — Wire portfolio-v2 autonomous GPU-source screens on the write side before their first
+      real run.** *(Renumbered from "SC32" on 2026-08-26 — the MMLU-Pro row filed 2026-08-12 holds
+      SC32 seniority; the adapters register reference follows.)* Research `2153ccac` makes the source-discovery producer launchable with exact
       portfolio/manifest/series identity, balanced S1/S2 order, raw native samples, model/runtime/
       source evidence, borrowed GPU-claim phases, residency proof and nonpromotion authority. It
       still emits no producer-authored `belief_measurements`. Add prospective rows for whole-model
@@ -977,6 +1081,12 @@ findings to docs, move to `completed/`, delete the master-index row.
       with any tuple: ParEval wraps its timed region in `__attribute__((optimize("O0")))` at a fixed
       problem size, so its absolute numbers are NOT comparable to our llama-bench protocol and must never
       be graded against it. Source-table row added in `scripts/vidya/adapters/README.md`.
+      **STATUS 2026-08-26: still before-the-first-run — no ParEval execution since intake-1225; the
+      owning program rows are open (`RVP-C5-6` serial+omp trial on the EPYC 9655, CPU-only,
+      `RVP-C5-7` HIP arm). SHARPENED TRIGGER: wire the driver-record projection
+      (`{problem, parallelism_model, k, pass@k, speedup_n@k, efficiency_n@k, best_sequential_runtime,
+      hardware}`) before RVP-C5-6 executes — C5-6 needs no inference grant, so this trigger is
+      scheduler-gated, not operator-gated; the `O0`-wrapped timing caveat rides in every tuple**
 
 ## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21)
 
@@ -1001,6 +1111,12 @@ task is filed **now, before any of them runs** — not when results land. Source
       *Rationale for filing pre-run:* wiring the write side is cheap and permanent; retrofitting the
       read side is impossible, and a tuple invented on read claims warrant the original run never
       captured.
+      **STATUS 2026-08-26: unchanged — filed before any run and none of the four sweeps has run (G1
+      open in `log-linear-gated-deltanet-readiness` with gates fired; G2 is DF2-5, open; G3 open in
+      `speculative-decoding-mtp-refresh`; G4 open in `dynamic-stack-concurrency`). SHARPENED
+      TRIGGER: the adapter's build is gated on the first G-sweep execution — build it before that
+      first run per the filed spec, with the two load-bearing caveats (G1 negative control never a
+      model-quality claim; G2 `n_max` + mean accepted length travel together) in every tuple**
 
 ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22)
 
@@ -1029,3 +1145,47 @@ runs**, same rule and same reason as SC49. Source row added to
       a pooled max÷median hides exactly the asymmetry the sweep exists to find.
       *Why pre-run, again:* `benchmarks/results` is the standing proof — 4,562 files, no write-side
       hook, 0 of 200 sampled carrying a usable tuple, so none of it can gate a decision.
+      **STATUS 2026-08-26: unchanged — the three source classes have produced nothing yet (tq3
+      G3/G5, speculative G8/G9, internal-kb G11/G12 all open). SHARPENED TRIGGER: build the three
+      adapters before the first sweep in each class executes, each carrying its class caveat
+      (fidelity cosine = one graph pair; CondFlip paired+FP16-anchored; α = acceptance not speedup;
+      dynamic range per-layer/per-head K and V separately) — the first run in any class is the
+      trigger, and it is compute-gated**
+
+## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
+
+Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the
+"never started" evidence gap (§4b of `research/deep-dives/vidya-p5c-evaluation-and-decision.md`)
+is closed — and the run surfaced two eval-harness defects, now fixed. Requirements 1–2 remain
+operator-gated. No termination indicator (§5) fires.
+
+**Requirement-4 evidence** (as-of 2026-08-26, floor Verified/Anchored, count 6, 12,479-frame
+gen-2b ledger), after the harness fixes (`live_eval` now indexes `evidence_opposes_claim` frames
+by source, and never-supported dependents are carved out, not failed):
+
+- default draw: **161/161**, invalidation_recall 1.0, discrimination 1.0, harmful 0, uncoverable 1011
+- verified-only draw: **155/155**, recall 1.0, discrimination 1.0, harmful 0, uncoverable 537
+- The pre-fix run's 3 harmfuls were harness artifacts, engine exonerated: `_index_claims` indexed
+  only `evidence_supports_claim` frames, so a source retraction never retracted its dive
+  refutations; the three failing claims were con-only. The second gap: 13 declared `depends_on`
+  dependents of dive-overturned intake-664#record failed "propagated" because OP-11 alerts are already
+  active pre-mutation (source never had support) — the eval expectation was unsatisfiable for
+  that class; the carve-out counts them, never scores them.
+- Uncoverable bucket on gen-2 ledger: 1011 / 537 (was 527 / 272 on gen-1) — larger citation graph,
+  same open question (no cross-entry evidential edge).
+- Gold corpus re-measured: **28/28**, harmful 0 (4 rounds, unchanged). Test suite: 598 passed
+  (+1 pre-existing environmental failure: `test_autopilot_journal_adapter` needs the orchestrator
+  `src` package). Ledger: frontier 12,479, chain=OK, checkpoints=OK. Corrections: 0 unadjudicated.
+
+**Requirement status:**
+
+| # | Requirement (§4) | Status |
+|---|---|---|
+| 1 | Anchor the claims that get cited (P2d) | UNMET — 30/1,290 entries Anchored-traceable on gen-2; machine-anchor admissibility decision (options A/B/C) still open |
+| 2 | Cross-entry claim identity (R4b) | UNMET — 45 pairs awaiting operator same/different pass |
+| 3 | Query log + obligation disposition (R5b) | MET |
+| 4 | Re-run the eval against the live-ledger corpus | EXECUTED — 161/161 + 155/155 above; harness defects fixed and re-run on the unchanged ledger |
+
+**Next executable step:** the remaining two requirements are operator passes (machine-anchor
+admissibility A/B/C; the 45 alias pairs), not code. When both land, re-run the two draws and
+record the promotion verdict — the evidence base above is already certifiable.
