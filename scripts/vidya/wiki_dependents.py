@@ -47,7 +47,13 @@ RECORD_REF = -1
 # The `#NN` suffix is the PRECISE citation form (`intake-896#03` = claim 3 of that entry). It is
 # optional and rare today, and `citation_gate` exists partly to make it worth writing: an entry-level
 # citation inherits every defect of every claim in the entry, so precision is what buys a clean gate.
-_CITE = re.compile(r"\bintake-(\d+)(?:#(\d+|record))?\b")
+#
+# Entry ids are 1-4 digits (max today: intake-1294), and the `{1,4}` bound is what stops a
+# 5+-digit id from being read as a citation. The trigger was a source DIRECTORY named for its
+# evidence batch -- `research/sources/intake-20260819/EVIDENCE-*.md` -- which `\d+` reported as a
+# dangling citation to an entry that cannot exist. An 8-digit id is a path component, never an
+# entry, and a `dangling` verdict on one is the scanner minting a defect out of a directory.
+_CITE = re.compile(r"\bintake-(\d{1,4})(?:#(\d+|record))?\b")
 # `intake-710/711` is one citation naming two entries. Reading only the first silently halves the
 # graph, which would understate staleness -- the direction that hides problems.
 #
@@ -58,7 +64,10 @@ _CITE = re.compile(r"\bintake-(\d+)(?:#(\d+|record))?\b")
 # head of an arXiv identifier, never an entry number.
 # The `\b` before the lookahead stops the engine backtracking into a PARTIAL number: without it,
 # `/2602.11149` fails on `2602` and then happily matches `260`, inventing a different bogus entry.
-_RUN = re.compile(r"\bintake-(\d+)((?:/\d+\b(?!\.\d))+)")
+#
+# Run members are entry ids and carry the same 1-4 digit bound as `_CITE`: `intake-20260819/20260820`
+# is a directory naming an evidence batch, not two entries.
+_RUN = re.compile(r"\bintake-(\d{1,4})((?:/\d{1,4}\b(?!\.\d))+)")
 
 
 def source_id(num: str) -> str:

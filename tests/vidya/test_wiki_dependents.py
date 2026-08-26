@@ -54,6 +54,33 @@ def test_run_form_does_not_swallow_a_trailing_arxiv_id():
     assert wd.cited_ids("intake-141 (arxiv:2602.22402)") == {"141"}
 
 
+def test_eight_digit_ids_are_directory_names_not_citations():
+    """`research/sources/intake-20260819/...` is a source DIRECTORY, not a citation.
+
+    Regression, found 2026-08-26 by `citation_gate` reporting a dangling `intake-20260819` in
+    wiki/agent-architecture.md and a handoff. Entry ids are 1-4 digits (max today: intake-1294);
+    an 8-digit id is an evidence-batch directory name, and a dangling verdict on one is the
+    scanner minting a defect out of a path. Same bound on run members, so a directory pair
+    (`intake-20260819/20260820`) cannot mint two.
+    """
+    assert wd.cited_ids("research/sources/intake-20260819/EVIDENCE-x.md") == set()
+    assert wd.cited_ids("research/sources/intake-20260819/"
+                        "EVIDENCE-agent-file-and-moe-measurements.md") == set()
+    assert wd.cited_ids("measured 2026-08-20 (intake-20260819)") == set()
+    assert wd.cited_ids("intake-20260819#record") == set()
+    assert wd.cited_ids("intake-20260819/20260820") == set()
+
+
+def test_legit_citation_forms_survive_the_four_digit_bound():
+    """The `{1,4}` bound must not touch any form the corpus actually uses."""
+    assert wd.cited_ids("see intake-1279") == {"1279"}
+    assert sorted(wd.cited_refs("per intake-110#04")) == [("110", 4)]
+    assert wd.cited_ids("struck from intake-896#record") == {"896"}
+    assert wd.cited_ids("intake-1031..1067") == {"1031"}
+    assert wd.cited_ids("(intake-374/378/2602.11149 synthesis)") == {"374", "378"}
+    assert wd.cited_ids("intake-172/173/174") == {"172", "173", "174"}
+
+
 def test_precise_claim_citations_are_read_as_such():
     assert sorted(wd.cited_refs("per intake-896#03 and intake-110")) == [("110", None), ("896", 3)]
     assert wd.cited_ids("per intake-896#03") == {"896"}

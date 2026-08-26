@@ -72,6 +72,14 @@ SIDECAR = ACTIVE / ".index-state.json"
 GRAPH = ACTIVE / ".index-graph.json"
 MASTER = ACTIVE / "master-handoff-index.md"
 
+#: Paths the SC12 citation-gate phase of `--check` scans. Mirrors citation_gate.DEFAULT_PATHS:
+#: `research/` holds the intake index itself and `progress/` is a historical record, so gating
+#: either would report the corpus citing itself rather than anyone relying on it.
+SCANNED_PREFIXES = ("handoffs/", "wiki/", "docs/")
+VIDYA_LEDGER = REPO_ROOT / ".vidya" / "ledger.jsonl"
+CITE_TIMEOUT = 120   # cite-check over a commit's changed paths: ~0.5s per file today
+INGEST_TIMEOUT = 180  # ledger rebuild reads the whole intake index (~5s measured)
+
 BEGIN = "<!-- BEGIN GENERATED index_state -->"
 END = "<!-- END GENERATED index_state -->"
 
@@ -139,6 +147,12 @@ def handoff_files() -> list[Path]:
     return sorted(handoff_paths().values())
 
 
+def _git_env() -> dict:
+    """Subprocess env without the hook-injected git vars — see `last_advanced`."""
+    return {k: v for k, v in os.environ.items()
+            if k not in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE")}
+
+
 def last_advanced(path: Path) -> str | None:
     """Date of the most recent commit that changed a checkbox line in `path`.
 
@@ -153,8 +167,7 @@ def last_advanced(path: Path) -> str | None:
     Rediscovery from cwd restores the worktree view. (Observed 2026-08-13:
     foreground runs produced real dates, hook runs produced "—" for every row.)
     """
-    env = {k: v for k, v in os.environ.items()
-           if k not in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE")}
+    env = _git_env()
     for needle in ("- [x]", "- [ ]"):
         try:
             out = subprocess.run(
@@ -536,6 +549,71 @@ def check(state: dict) -> list[str]:
     return errs
 
 
+def citation_check() -> list[str]:
+    """SC12 gate over the changed handoffs/wiki/docs since HEAD (the `--check` citation phase).
+
+    Fast path: `git diff --name-only HEAD` shows nothing under the scanned paths, so there is
+    nothing new to gate and the phase passes without invoking vidya at all. Otherwise the phase
+    runs cite-check over exactly the changed paths (positional), at the current UTC time — a
+    one-file commit does not re-audit the whole tree. If the ledger is missing it is rebuilt
+    first (`ingest intake`), since cite-check has nothing to fold without it.
+
+    Exit mapping: 0 passes; 3 means blocking citations (`dangling`/`overturned`/`conflicted`)
+    and fails the commit with the gate's own listing plus the fix options; any other exit fails
+    with the captured output. `review`/`unknown`/`weak` never block — warnings by design
+    (see citation_gate.BLOCKING).
+
+    Returns the error lines for the caller's report; a pass returns [] after printing its own
+    notice.
+    """
+    env = _git_env()
+    try:
+        diff = subprocess.run(["git", "diff", "--name-only", "HEAD"], cwd=REPO_ROOT,
+                              capture_output=True, text=True, timeout=30, env=env)
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return [f"cite-check: `git diff --name-only HEAD` failed ({exc}) — run "
+                "scripts/vidya/cli.py cite-check --as-of <now> manually before committing"]
+    if diff.returncode != 0:
+        return [f"cite-check: `git diff --name-only HEAD` failed (exit {diff.returncode}): "
+                + (diff.stdout or diff.stderr).rstrip()]
+    changed = [line for line in diff.stdout.splitlines() if line.startswith(SCANNED_PREFIXES)]
+    if not changed:
+        print("cite-check: no scanned paths changed, skipping")
+        return []
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    cli = [sys.executable, str(REPO_ROOT / "scripts" / "vidya" / "cli.py")]
+    if not VIDYA_LEDGER.exists():
+        print("cite-check: ledger missing, rebuilding with ingest intake")
+        try:
+            heal = subprocess.run(cli + ["ingest", "intake", "--as-of", now], cwd=REPO_ROOT,
+                                  capture_output=True, text=True, timeout=INGEST_TIMEOUT, env=env)
+        except (subprocess.TimeoutExpired, OSError) as exc:
+            return [f"cite-check: ledger rebuild failed ({exc}) — run "
+                    "scripts/vidya/cli.py ingest intake --as-of <now> manually"]
+        if heal.returncode != 0:
+            return ["cite-check: ledger rebuild failed:\n" + (heal.stdout or heal.stderr).rstrip()]
+
+    try:
+        out = subprocess.run(cli + ["cite-check", "--as-of", now] + changed, cwd=REPO_ROOT,
+                             capture_output=True, text=True, timeout=CITE_TIMEOUT, env=env)
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return [f"cite-check: citation gate failed ({exc}) — run "
+                "scripts/vidya/cli.py cite-check --as-of <now> manually"]
+    if out.returncode == 0:
+        print("cite-check: clean — " + "  ".join(l for l in out.stdout.splitlines() if l))
+        return []
+    if out.returncode == 3:
+        return [
+            "cite-check: BLOCKING intake citations in the changed documents:\n"
+            + (out.stdout or out.stderr).rstrip()
+            + "\nFix: convert provenance references to intake-NNN#record, narrow entry-level "
+            + "citations to intake-NNN#NN, or fix the prose. `review`/`unknown`/`weak` never block.",
+        ]
+    return [f"cite-check: citation gate failed (exit {out.returncode}):\n"
+            + (out.stdout or out.stderr).rstrip()]
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true",
@@ -560,6 +638,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         errs = check(state)
+        errs += citation_check()
         for e in errs:
             print(e)
         print(f"\n{len(errs)} problem(s)")
