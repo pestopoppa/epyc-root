@@ -79,6 +79,16 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-PARITY-1 | Greedy-output parity between two decode configurations (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **not a claim** below n=5 prompts, and **never** an aggregate pass rate | 📋 staged 2026-08-23 | D |
 | P-NONDET-1 | Run-to-run non-determinism detector (N >= 10 identical calls in ONE process) | bit-identical / not; max abs Δ across repeats (↓) | 📋 staged 2026-08-23 | D |
 
+> ### P-REV-1 — Reviewer decision calibration (instrument card)
+> The instrument for **reviewer-role promotion** — it gates keep/revert/deploy/promote of a *reviewer configuration*, never a model-quality (T0–T3) axis (Layer A; the plane invokes the tower, the tower never depends on the plane).
+> - **Instrument** = (**decision corpus id + content hash**, **gold-label source + version** — objective oracle set and/or eval-tower tier scorer, `gold_instrument_version`, ≥2 oracles or human arbitration for gate-worthy rows), **reviewer model + quant + grammar-flag** (GBNF on/off is part of the instrument), **grading model**, **rubric version**, **shadow/live mode**, **n decisions**. Changing **any** field = a **new instrument version** (append an era row per `instrument_eras.yaml`, `scope: reviewer_plane`; never rescale prior FA/FR in place).
+> - **Reps**: paired arms per **P-AB-1** (same decisions/prompts/grammar/stop/verifier budget both arms), **N ≥ 100/arm** for a reviewer-promotion decision; failures classified by reason (backend outage / timeout / empty / genuine) with infra-failure rate reported alongside the effect; flag-state attestation across all workers in the run header. **A single-corpus, single-run number is an observation** (never a decision), same rule as every other protocol here.
+> - **Consistency**: `pass^k` for review decisions (test-retest ≥2 runs; CR can inflate to ~81% at near-random accuracy under bias — report accuracy next to CR). `pass@k` is for candidate *generation*, not review.
+> - **Directions** (state explicitly; ambiguous-direction errors have burned debugging time): **FA (false-accept) rate — lower-better**; **FR (false-reject) rate — lower-better**; **request-evidence yield — higher-better**; **Consistency Rate (CR) — higher-better**. The **FA/FR ratio** is a first-class reported column (overcorrection dominates: FR≫FA, 10:1–440:1 — intake-836), not a derived footnote.
+> - **External judge-of-judge**: any externally-graded sample cites the **pinned API model-id + date** as part of the instrument version (e.g. `judge=<model-id>@YYYY-MM-DD`); a different judge model-id or date = a new instrument version. Bounded/budget-capped per the H5 Ref arm.
+> - **Broken-grader guardrail**: read transcripts before trusting a surprising FA/FR flip (CORE-Bench 42→95% was grader repair, not model change — intake-846).
+> - **Out of scope for P-REV-1**: latency/throughput/token-cost claims stay under **P-AB-1** (paired task-rate A/B) and **P-SPEED-OBJ** (task_rate axis). P-REV-1 governs *decision quality only*; the budget gate is `reviewer-latency-and-sampling-budget.md` LB-6.
+
 ## 3. Claim grammar & examples
 
 - ✅ `frontdoor decode 40.22 tok/s per-stream, spec-dec on (draft-mtp n_max 4), arm A2 [P-BENCH-PLACEMENT-1, n=3, 2026-07-30, attest epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/prodopt_results.txt]`
@@ -114,6 +124,10 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 - Per-protocol grammar extensions (e.g. `P-PAIRED` verdict rows, `P-SHED-1` f/stress fields)
   are defined in each protocol's annex entry.
 
+> - Reviewer-calibration claim grammar: `reviewer FA x%, FR y%, yield z%, CR c% (n=N/arm, corpus rev-<id>@<hash8>, gold=<source>/v<ver>, reviewer=<model>/<quant>/gbnf=<on|off>, grader=<model>, rubric=v<r>, mode=<shadow|live>) [P-REV-1/<instrument-ver>, YYYY-MM-DD, attest <id>]`. FA/FR are lower-better, yield/CR higher-better; the FA/FR ratio is reported.
+> - ✅ Worked example (illustrative — NOT a measurement): `reviewer FA 1.8%, FR 12.4% (ratio 0.15), yield 63%, CR 88% (n=120/arm, corpus rev-nm1@9f3a2c71, gold=gate_runner+evaltower-T1/v2, reviewer=GLM-5.2/UD-IQ2_M/gbnf=on, grader=Qwen3-Coder-30B, rubric=v3, mode=shadow) [P-REV-1/iv-1, 2026-08-xx, attest r7c1]`.
+> - ❌ `reviewer catches 95% of bugs` (no instrument, no n, no protocol — and conflates "detects THAT" 95–100% with "detects WHY" 52–75%; intake-836).
+
 ## 4. Standing noise & resolution table (update on instrument change)
 
 | Quantity | Value | Source |
@@ -124,6 +138,8 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | Host-throttle signature | multi-day uptime −60%+; drop_caches+rewarm restores | `feedback_host_throttle_check` |
 | Practical BW anchor | 460 GB/s aggregate; 4.79 GB/s/thread | roofline findings.md |
 | Tool-use sentinel resolution | 0.2 (n=5); advisory band −0.2..−2.9; hard-fail ≤ −3.0 | safety_gate.py `TOOL_USE_CATASTROPHIC_REGRESSION` |
+| Reviewer FA/FR resolution | `1/n_arm` per rate; report FA/FR ratio + CR with accuracy | P-REV-1 instrument card |
+| Reviewer CR inflation caveat | CR ≈ 81% reachable at near-random accuracy | intake-837 |
 
 ## 5. Governance
 
@@ -254,6 +270,8 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-08-26 (v2.x)** — AMENDMENT: **P-REV-1** reviewer decision calibration instrument card added to the §2 protocol registry (after P-SPEED-OBJ), claim grammar added to §3, two noise-table rows added to §4; operator PR pending — no reviewer FA/FR/yield/CR number is decision-grade until it lands.
 
 - **2026-08-23 (v2.x)** — AMENDMENT: **Annex D**
   (`measurement/protocols/determinism-parity.md`) created as a **sixth** annex, filed by instrument
