@@ -4,7 +4,7 @@
 **Categories**: speculative_decoding, hardware_optimization, local_inference, kernel_experimental
 **Parent index**: [`inference-research-index.md`](inference-research-index.md)
 **Related**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) (this is its Qwen3.8 rider),
-[`deepseek-v4-flash-0731-dspark.md`](deepseek-v4-flash-0731-dspark.md) (working DFlash-family sidecar workflow on v9),
+[`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md) (historical DFlash-family sidecar workflow on v9),
 [`autokernel-research-loop.md`](autokernel-research-loop.md); completed:
 [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) (DFlash NO-GO on **CPU** — sequential
 DeltaNet verification, not a DFlash defect; does not apply to this GPU path)
@@ -107,7 +107,8 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
       sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
 - [ ] **DF2-6 — Greedy-parity check.** dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
-      at temp 0, same method as `deepseek-v4-flash-0731-dspark.md`.
+      at temp 0, reusing the method preserved in
+      [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md).
       *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
       establishes that **batched speculative verification ALONE** deterministically diverges from the
       greedy baseline at near-ties, reproducing with `draft-simple` and no DFlash code involved. A
