@@ -572,7 +572,7 @@ A checkbox counter using an unanchored `- [ ]` regex matched mid-line and was **
 **Confidence: external** for the tool's own reported metrics (vendor/author-reported, not measured on
 our stack); **verified** for the licence and repository-state facts, which were read directly.
 
-A research-intake dive on MAST (intake-1110, arXiv:2503.13657, the multi-agent failure taxonomy paper)
+A research-intake dive on MAST (intake-1110#02, arXiv:2503.13657, the multi-agent failure taxonomy paper)
 found its reference implementation unusable under EPYC's open-source-only sourcing policy: the
 `multi-agent-systems-failure-taxonomy/MAST` repository carries no LICENSE file at all — all rights
 reserved by default. A follow-up dive on the same authors' successor project, AdaMAST (intake-1127,
@@ -597,7 +597,7 @@ Measurement](../handoffs/active/fleet-fanout-measurement.md) stub's FM-2 task fo
 
 ### Source References
 
-- `research/intake_index.yaml` intake-1110 (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
+- `research/intake_index.yaml` intake-1110#record (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
 - [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — FM-2, the planned pilot run
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
@@ -639,7 +639,7 @@ aider's own benchmark. Format and applier are one design, not two.
 
 ### Source References
 
-- `research/intake_index.yaml` intake-1148, intake-1150 (oh-my-pi / hashline and its benchmark — dive records, including the abandonment timeline at commits `30793c165`/`7c6457652`)
+- `research/intake_index.yaml` intake-1148#record, intake-1150#record (oh-my-pi / hashline and its benchmark — dive records, including the abandonment timeline at commits `30793c165`/`7c6457652`)
 - `research/intake_index.yaml` intake-1153 (Cursor, *Editing Files at 1000 Tokens per Second*) and intake-1154 (aider, *Unified diffs make GPT-4 Turbo 3X less lazy*) — the two independent line-number arguments and the 9× pairing measurement
 - `research/intake_index.yaml` intake-1151 (Diff-XYZ, JetBrains) — the independent academic cross-format comparison; note it is single-turn and disclaims production prediction
 - [Batched edit / parallel apply](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6 (the granularity finding) and BEP-7 (the two external rules)

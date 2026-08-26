@@ -225,7 +225,7 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
 
 - [x] **UTM-M10 — Correct the ReasoningBank standing in every place this repo restates it ✅ 2026-07-29.** Root `683f70de` had introduced the stale wording in intake-930; this correction fixes it: intake-936 places ReasoningBank **LAST of 13** memory methods on **Cross-Episode Knowledge (Easy split)**; the earlier "second behind ACE" reading was **wrong**. It **is** best-among-memory-methods on **In-Episode Execution at 16K / 32K / 128K** — but even there a **long-context baseline beats all fifteen** methods. SkillOS-base also wins the WebShop-like domain, so no family-wide gradient-free ranking remains. Keep the store-shape adoption (UTM-M1), drop the "best overall" framing wherever it appeared.
 
-## 2026-08-07 — verifiable memory operations, default-inert shadow path (intake-1008/1015/1017/1018/1022/1023)
+## 2026-08-07 — verifiable memory operations, default-inert shadow path (intake-1008#record, intake-1015#record, intake-1017#record, intake-1018#record, intake-1022#record, intake-1023#record)
 
 - [ ] **UTM-V1 — Complete the append-only memory-operation envelope and state-transition engine.** Add
   typed `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` proposals over the existing

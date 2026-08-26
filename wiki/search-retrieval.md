@@ -525,7 +525,7 @@ NOT compiled; only the established diagnoses and measurements are.
 ### The answerai→GTE retirement rationale was false when it was written — and the real win was cost, not quality
 
 **The Feb-2026 docs-encoder swap is justified on file by "answerai unscored", and that premise is
-false** (2026-08-21 Stage-2b source audit, intake-1278). Controlled same-BEIR-15 figures had existed
+false** (2026-08-21 Stage-2b source audit, intake-1278#record). Controlled same-BEIR-15 figures had existed
 on the successor's own model card since 2025-05-14: **GTE-ModernColBERT-v1 54.67 vs
 answerai-colbert-small-v1 53.35** (LightOn's own re-run of the published checkpoint) — a **1.32 pp
 gap, inside the ~2 pp noise floor this wiki's own KB-RAG doctrine declares**. A 2026-08-22
@@ -610,7 +610,7 @@ path.
 
 ### Source References
 
-- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the intake-1278 C1/C2 record
+- [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — the intake-1278#record C1/C2
   corrections with their provenance chain and the 2026-08-22 two-harness tightening; the K1/K2/K3
   encoder-defect diagnoses; the K11 sweep result; the measured live-index figures; the 2026-07-22
   federation landing.
@@ -830,7 +830,7 @@ the absolute count, as the stable figure.)
 post-truncation and clips at exactly 256.** Confirmed on the live catalog (`max` = 256, `min` = 4).
 It can report *that* a chunk was truncated and never *by how much*, so **character coverage cannot be
 derived from it at all** and must be re-tokenised with truncation disabled. This also settles an
-inverted pair in the record: the 60% / 43% figures the intake-1294 dive first recorded are the
+inverted pair in the record: the 60% / 43% figures the intake-1294#record dive first recorded are the
 complement of the correct ones; `intake-1278#record`'s 39.6% capped / 57.2% character coverage has
 the right polarity. The phenomenon and its priority are unchanged — only the magnitude was
 overstated.
@@ -992,7 +992,7 @@ blocker was `do_lower_case`, unhandled and silent, also closed in `4e5e84c0`.
   bail, the exporter's four-file output, the PyPI 0.1.0 defects and the Python ceiling, and the
   static INT8 graph parity. Credibility scores 1/Low on the two *vendor claims*; the artifact facts
   above were measured in-dive and carry no such discount.
-- [intake-1294](https://arxiv.org/abs/2604.09982) `#record` — "Reproduction Beyond Benchmarks:
+- [intake-1294#record](https://arxiv.org/abs/2604.09982) — "Reproduction Beyond Benchmarks:
   ConstBERT and ColBERT-v2 Across Backends and Query Distributions" (SIGIR '26 Reproducibility
   Track). The `query_maxlen = 32` truncation artefact behind the claimed MaxSim ceiling, the
   bit-identical results file, the 622-query tokenization, the median-121-vs-182 error, the
@@ -1007,5 +1007,5 @@ blocker was `do_lower_case`, unhandled and silent, also closed in `4e5e84c0`.
 
 - [intake-1289](https://arxiv.org/abs/2510.14880) Fantastic (small) Retrievers and How to Train Them: mxbai-edge-colbert-v0 Tech Report -- projection-dim sweep (96→0.5991 … 16→0.5126, 128 not swept, re-training ablation only), single-harness NanoBEIR Table 13 with its analytic `Mem.` column and unnamed CPU, LongEmbed ~40 pp gap over BERT-family baselines, and the finding that its BEIR answerai/GTE rows are transcribed from LightOn's model card rather than run. Basis for re-pointing the S5 fallback slot from the 17M to the 32M.
 - [intake-1293](https://huggingface.co/lightonai/answerai-colbert-small-v1-onnx) answerai-colbert-small-v1-onnx mirror + `pylate-onnx-export` -- the ONNX export-and-contract layer. `onnx_config.json` is the format's mandatory config (the NextPlaid Rust reader bails without it) while `config_sentence_transformers.json` was the only file our loader read; the two-entry `added_tokens` diff behind the silent prefix-corruption case; the root-vs-`onnx/`-vs-`vespa_colbert.onnx` file-selection footgun (11 files / 10 distinct blobs upstream); static INT8 graph parity that is NOT numerical equality.
-- [intake-1294](https://arxiv.org/abs/2604.09982) Reproduction Beyond Benchmarks: ConstBERT and ColBERT-v2 Across Backends and Query Distributions -- SIGIR '26 Reproducibility Track. Its "MaxSim architectural ceiling at 20 words" is a `query_maxlen = 32` truncation artefact (authors' own results file bit-identical to 17 significant figures across the 40/60/80/100/121-word conditions; 622/622 ToT queries identical past 40 words; median query retains 12.5% of its tokens). Sound and reusable: MS-MARCO reproduction, ConstBERT/PLAID centroid-coverage root cause, BEIR asymmetry.
+- [intake-1294#record](https://arxiv.org/abs/2604.09982) Reproduction Beyond Benchmarks: ConstBERT and ColBERT-v2 Across Backends and Query Distributions -- SIGIR '26 Reproducibility Track. Its "MaxSim architectural ceiling at 20 words" is a `query_maxlen = 32` truncation artefact (authors' own results file bit-identical to 17 significant figures across the 40/60/80/100/121-word conditions; 622/622 ToT queries identical past 40 words; median query retains 12.5% of its tokens). Sound and reusable: MS-MARCO reproduction, ConstBERT/PLAID centroid-coverage root cause, BEIR asymmetry.
 - [`epyc-orchestrator` `4e5e84c0`](/mnt/raid0/llm/epyc-orchestrator) ColBERT encoder fix (2026-08-23) -- encode-round-trip prefix guard replacing the base-vocab `token_to_id` predicate, graph-declared ONNX inputs, `onnx_config.json` preference, `do_lower_case`, debug→warning on encode failure, and the `embedding_dim` index stamp that now refuses a mismatched encoder.

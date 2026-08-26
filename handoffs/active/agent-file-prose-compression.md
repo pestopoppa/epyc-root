@@ -29,7 +29,7 @@ Exactly two things remain:
   in post-restructure savings (mild 1.6% / medium 20% / aggressive 39% of words) — the
   structural-deletion pass already captured most of the original win.
 - [ ] **AFC-P5.E5 — denominate the compression target in WORDS, not lines, and re-derive the
-  savings table.** External corpus evidence (intake-1199, re-derived from the authors' Zenodo
+  savings table.** External corpus evidence (intake-1199#record, re-derived from the authors' Zenodo
   replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile by words but
   only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES systematically
   under-finds**, and E4's savings table above is already denominated in words, so the two are

@@ -184,7 +184,7 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
 
 - [ ] **Port per-operator context budgets to the delegation path.** Our delegation/tool-output context
   is assembled against a single budget; OpenMLE-Evo budgets **per operator**, which is the mechanism
-  behind the prompt-tail reduction intake-940's dive rated as one of only two citable claims from that
+  behind the prompt-tail reduction the intake-940#record dive rated as one of only two citable claims from that
   source. Shipped constants, read from `OpenMLE-Evo/tts_search/configs/search/airaevo.yaml`
   ([intake-1024](../../research/intake_index.yaml), dive-verified 2026-08-09): global
   `max_related_cards 3`; improve `ancestor_k 3` / `sibling_k 3`; crossover `2` / `2`; debug

@@ -622,7 +622,7 @@ figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes
 direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
 whether the delta is the TRAINING RECIPE rather than the idea._
 
-## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278)
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278#record)
 
 ### Record corrections (Z)
 

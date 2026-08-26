@@ -391,7 +391,7 @@ path. No community template repository mentions it.
 - `handoffs/active/qwen-chat-template-evaluation.md` (2026-08-21) — the fleet sweep, the defect
   matrix, and the template-swap decision
 - `progress/2026-08/2026-08-21-research-intake.md` (2026-08-21)
-- `research/intake_index.yaml` — intake-1212, intake-1213, intake-1216 (dive-verified /
+- `research/intake_index.yaml` — intake-1212, intake-1213#record, intake-1216#record (dive-verified /
   dive-overturned; digests and per-claim anchors recorded there)
 - `/mnt/raid0/llm/llama.cpp` @ `0db32c06e` — `tools/server/server-context.cpp:1454`,
   `tools/server/server-common.cpp:1092`, `common/jinja/README.md`

@@ -617,7 +617,7 @@ Nothing is checked off without a commit hash or a receipt path.
       `scripts/coordination/tmux_adapter.py:1376-1441` already parses both and discards the timing. If
       (b) resolves YES, R-17's dissolution rests on a premise the world has since falsified — the
       operator's call, not this file's. Do not flip R-17's box.
-- [ ] **R-24 — Cross-walk MAST's 14 failure modes against the F-series.** intake-1110 (arXiv:2503.13657v3,
+- [ ] **R-24 — Cross-walk MAST's 14 failure modes against the F-series.** intake-1110#00 (arXiv:2503.13657v3,
       NeurIPS 2025 D&B, dive-overturned) supplies an external vocabulary for modes this ledger found
       independently. Transfers: disobey-task-spec, step-repetition, loss-of-history, unaware-of-
       termination, action-reasoning mismatch, premature termination, no/incomplete verification,

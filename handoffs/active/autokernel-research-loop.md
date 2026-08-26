@@ -5093,7 +5093,7 @@ so they carry derived actionables the plan predates._
   refinement responds to explicit local error signals, while plan-level decisions (tiling, memory
   layout, kernel boundaries) are "not recoverable from the feedback available in current iterative
   pipelines". This strengthens an existing position rather than opening work. ✅ 2026-08-10 —
-  `research/intake_index.yaml` intake-1095 binds the claim to KernelBenchX v2 §5 Insight 2 and maps its
+  `research/intake_index.yaml` intake-1095#01 binds the claim to KernelBenchX v2 §5 Insight 2 and maps its
   A-5 action explicitly to AutoKernel C4; it is external design evidence, not a local performance claim.
 
 **Declined, recorded so they are not re-derived:** compilation-flag pinning across candidate and anchor

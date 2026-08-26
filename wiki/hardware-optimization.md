@@ -3426,7 +3426,7 @@ the ParEval trials are open plans and compile nothing yet.
 
 - [`handoffs/active/rocm-verify-profile-backend.md`](../handoffs/active/rocm-verify-profile-backend.md) —
   the (Z) fla #1156 closure and reattribution, the G6 gate inversion and `>=0.5.2` pin rule, the
-  rocprofv3 provisioning note, and the GPA C4-template closure (RVP-C4-10 measured leg + intake-1242
+  rocprofv3 provisioning note, and the GPA C4-template closure (RVP-C4-10 measured leg + intake-1242#record
   structural legs).
 - [`repos/epyc-inference-research/scripts/benchmark/provision_rocm_profilers.sh`](../repos/epyc-inference-research/scripts/benchmark/provision_rocm_profilers.sh) —
   `rocprofv3` added to `PKGS` and the verify loop; `--verify` 5 present / 0 missing on-host.

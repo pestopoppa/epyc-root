@@ -1265,7 +1265,7 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       the omission class SPLITS into input-conditional identities (LayerNorm-under-default-init, softmax)
       versus value-visible members, which is sharper than "all three pass". GPU arms (L2 ghost replay via
       `JITFunction.run` no-op swap; value oracle with NaN/Inf rejection + max-observed-error per
-      `intake-1245`) are written and REFUSE to run without an acknowledged negotiated idle window on the
+      `intake-1245#04`) are written and REFUSE to run without an acknowledged negotiated idle window on the
       shared MI210 (operator instruction 2026-08-21); window requested from the peer session holding the
       GPU (llama-server pid 3499606, Qwen3.8-27B). Row stays OPEN pending the GPU arms and, later, the
       C6-19 judge arm.
@@ -1506,7 +1506,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 ### Recorded so it is not re-derived
 
 - **FlashInfer-Bench introduces NO new metric.** `fast_p` is adopted verbatim from KernelBench
-  (`intake-664`). Everything of value is in the **first conjunct** of `1(correct AND speedup > p)` — the
+  (`intake-664#record`). Everything of value is in the **first conjunct** of `1(correct AND speedup > p)` — the
   correctness predicate, not the metric. Do not group it with SOL-ExecBench, whose Speed-of-Light score IS new.
 - **The binding constraint on an agent authoring kernels is COMPILATION, not numerics.**
   `intake-1245#record` reports **30 of 32** agent failures as compile errors, 2 as runtime/numerical. Our

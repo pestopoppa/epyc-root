@@ -299,7 +299,7 @@ Three externally-sourced suite designs, all sharing the property this handoff ex
 judge anywhere in the scoring path.** Designs only — none of the underlying datasets is proposed for
 import.
 
-- [ ] **CJ-7a — inverse-mutation fixtures as a judge-free edit-application suite** (intake-1150). Take
+- [ ] **CJ-7a — inverse-mutation fixtures as a judge-free edit-application suite** (intake-1150#record). Take
       a real source file, apply a mechanical mutation whose inverse is known (operator swap, boolean
       flip, off-by-one, removed guard clause), auto-describe it in plain English, expect the inverse
       edit. Scoring is exact-match after formatting — **no LLM judge, no network, deterministic**.

@@ -648,16 +648,16 @@ Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgr
 ## Research Intake Update — 2026-08-09: Meta-Evolutionary Search Layer (rec-005)
 
 **Source**: OpenRSI / OpenMLE-Evo ([intake-1024](../../research/intake_index.yaml), dive-verified 2026-08-09);
-parent paper intake-940 (dive-verified 2026-08-03).
+parent paper intake-940#record (dive-verified 2026-08-03).
 
 **Framing**: OpenMLE-Evo is a *test-time evolutionary search layer* over executable, objectively-scored
 candidates. Autopilot is already such a layer, so this is a mechanism comparison against a sibling
-design, not a new system. **Take the search/memory layer; discard OpenMLE-Gym** — intake-940
+design, not a new system. **Take the search/memory layer; discard OpenMLE-Gym** — intake-940#record
 established Gym's contract is `evaluate(y_true, y_pred) -> float` scoring a prediction file, which
 cannot express a throughput objective. Our T0/T1/T2 eval tower plus the AP-27 RLVR contract already
 occupy that layer and occupy it better for our objective space.
 
-**EVIDENCE CEILING — binds every item below.** intake-940's dive found **no selector-only ablation
+**EVIDENCE CEILING — binds every item below.** intake-940#record's dive found **no selector-only ablation
 anywhere** in the source paper, and only two of its claims survive scrutiny. Everything here is a
 design pattern to test, never a validated win. Each must clear the guard stack the rec-004 section
 above already mandates: paired curated-baseline comparison, per-suite negative-delta rejection, the
@@ -685,7 +685,7 @@ consideration, not a computed term.
   normalized score, gain-over-strongest-parent (positive-only) and method-family novelty
   `1/sqrt(1+N_f)`, always on, so concentration is prevented rather than corrected. Complementary to
   P17, not a replacement. **Use the SHIPPED weights `score 1.0 / delta 0.4 / novelty 0.25`** — present
-  in two places in `airaevo.yaml` — and NOT the paper's prose `1.0/0.6/0.3`; intake-940's dive proved
+  in two places in `airaevo.yaml` — and NOT the paper's prose `1.0/0.6/0.3`; intake-940#record's dive proved
   paper and code disagree and that the case study used an unreleased configuration. Islands are
   inactive in every shipped profile (`num_islands 1`, `migration_prob 0.0`,
   `initial_temp = final_temp = 1.0`), so **do not port island machinery**.
@@ -739,7 +739,7 @@ consideration, not a computed term.
   **NOT IMPLEMENTED, deliberately** — the row says *schema only*, and the three absent facets each
   need an owner decision (which taxonomy for `method_family`, which resources count). This closes
   the derivation; the field additions are a separate, smaller task with those answers in hand.
-- [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940's dive narrowed this from an
+- [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940#record's dive narrowed this from an
   exclusion filter to a *rendering* rule: a deterministic error signature per card plus a board-level
   repeated-error counter, rendered as one compact typed line rather than raw prior-attempt text.
   Failures still enter context — they enter it small. Pairs with AP-ME-4; feeds AP-ME-1's budgets.
@@ -842,11 +842,11 @@ Qwen3.5-122B-A10B on `architect_general` enters degenerate `<think>` block loops
 ## Research Intake Update — 2026-04-14
 
 ### New Related Research
-- **[intake-363] "LLM-as-a-Verifier"** (github.com/llm-as-a-verifier)
+- **[intake-363#00] "LLM-as-a-Verifier"** (github.com/llm-as-a-verifier)
   - Relevance: General-purpose verification framework using logprob-based scoring with criteria decomposition — directly relevant to AP-27 eval tower formalization as an alternative to LLM-as-a-Judge
   - Key technique: R(t,τ) = (1/CK) Σ p_θ(v_g|t,c,τ)·φ(v_g) — multi-criteria, repeated verification, granularity scaling
   - Reported results: Terminal-Bench 2: 86.4% (from 81.8%), SWE-Bench Verified: 77.8% (from 76.1%)
-  - Delta from current approach: AP-27 specifies "state matching, not LLM-as-judge" for verification functions. LLM-as-a-Verifier offers a middle ground — uses LLM logprobs but for structured verification rather than open-ended judgment. Gemini API dependency is a blocker for local deployment.
+  - Delta from current approach: AP-27 specifies "state matching, not LLM-as-judge" for verification functions. LLM-as-a-Verifier offers a middle ground — uses LLM logprobs but for structured verification rather than open-ended judgment. The recorded Gemini-only blocker is OVERTURNED by the 2026-08-19 dive: the pinned commit builds a client for any OpenAI-compatible server returning token-level logprobs (vLLM, SGLang, llama.cpp), and llama.cpp empirically serves the required logprob shape — local deployment is not blocked.
 - **[intake-371] "ThinkPRM: Process Reward Models That Think"** (arxiv:2504.16828)
   - Relevance: Generative PRM that verifies solution steps via verification chain-of-thought — applicable to eval tower step-level attribution
   - Key technique: Fine-tunes long-CoT models as verbalized step-wise reward models; achieves PRM800K parity with only 1% of labels
@@ -863,7 +863,7 @@ Qwen3.5-122B-A10B on `architect_general` enters degenerate `<think>` block loops
   - Reported results: Qwen3-Coder-Flash 51.6%→62.0%, Qwen3-Coder-Max 67.0%→74.6% on SWE-Bench Verified
   - Delta from current approach: SWE-RM shows TTS performance doesn't guarantee RL effectiveness — our eval tower must separately validate classification accuracy and calibration, not just pass rates.
 
-**Synthesis**: The 5 verification research entries above (intake-363/367/368/370/371) are consolidated into a standalone handoff: [eval-tower-verification.md](eval-tower-verification.md). That handoff provides the implementation plan (EV-1–EV-7) for ECE/AUC metrics, ThinkPRM deployment, cross-family verification, and Scoring Verifiers benchmark integration that these papers motivate. AP-27 now points to that handoff as its implementation plan.
+**Synthesis**: The 5 verification research entries above (intake-363#record, intake-367, intake-368, intake-370, intake-371) are consolidated into a standalone handoff: [eval-tower-verification.md](eval-tower-verification.md). That handoff provides the implementation plan (EV-1–EV-7) for ECE/AUC metrics, ThinkPRM deployment, cross-family verification, and Scoring Verifiers benchmark integration that these papers motivate. AP-27 now points to that handoff as its implementation plan.
 
 ### Future AR-3 Signal: Branching Density (2026-04-15 deep-dive)
 

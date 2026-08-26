@@ -1566,7 +1566,7 @@ hook filed before the first result (SC46). Remaining on operator sequence: Q38-T
 ## Compiled Update — 2026-08-22: the KV-migration path is live, but its "VERIFIED" state proves transport, not reuse — and on the hybrid frontdoor only strict continuations reuse a restored cache
 
 Sources: `handoffs/active/dynamic-stack-concurrency.md` (Stage-2b research-intake riders
-intake-1274/intake-1279, dived 2026-08-22; earlyoom residual audit 2026-07-29; DS-7-guard row).
+intake-1274, intake-1279#record, dived 2026-08-22; earlyoom residual audit 2026-07-29; DS-7-guard row).
 The three-arm reuse measurement and the multi-turn replay these findings gate are OPEN — what is
 compiled here is the code-verified failure surface, the live-path evidence, and the corrected
 scope, not their results.
@@ -1643,7 +1643,7 @@ scope, not their results.
 ### Source References
 
 - [dynamic-stack-concurrency.md](../handoffs/active/dynamic-stack-concurrency.md) — sole compiled
-  source: Stage-2b intake-1274/1279 riders (restore semantics, VERIFIED misnomer, `-ub` inertness,
+  source: Stage-2b intake-1274 and intake-1279#record riders (restore semantics, VERIFIED misnomer, `-ub` inertness,
   #25592 exposure, fixture hazard), the 2026-07-29 earlyoom audit, the DS-7-guard row.
 - [benchmark-methodology.md](benchmark-methodology.md) — already documents `timings.cache_n` /
   `n_prompt_tokens_cache` as the true KV-reuse counter; the instrument the VERIFIED state should

@@ -184,7 +184,7 @@ remains separately gated by the OP-11 producer identity.
 
 ## Research Intake Update — 2026-07-08: KernelBench (rec-007)
 
-**Source**: KernelBench (**intake-664**, arXiv:2502.10517)
+**Source**: KernelBench (**intake-664#record**, arXiv:2502.10517)
 
 > **⚠ CORRECTION 2026-08-10 — this attribution is wrong, and was already corrected elsewhere.**
 > The identical line in [`mi210-speed-campaign-summary.md`](../completed/mi210-speed-campaign-summary.md)

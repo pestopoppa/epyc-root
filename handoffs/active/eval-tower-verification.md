@@ -25,7 +25,7 @@ SWE-RM (intake-368) proved this empirically: two verifiers with **identical accu
 
 | Intake | Title | Key Finding for Eval Tower |
 |--------|-------|---------------------------|
-| intake-363 | LLM-as-a-Verifier | Logprob-based multi-criteria verification: R(t,τ) = (1/CK) Σ p_θ(v_g\|t,c,τ)·φ(v_g). llama.cpp has full vocab access (no k=20 truncation). Cross-family verification critical. |
+| intake-363#00 | LLM-as-a-Verifier | Logprob-based multi-criteria verification: R(t,τ) = (1/CK) Σ p_θ(v_g\|t,c,τ)·φ(v_g). llama.cpp has full vocab access (no k=20 truncation). Cross-family verification critical. |
 | intake-367 | Scoring Verifiers (COLM 2025) | 4-metric eval protocol (Top-1, Bottom-1, Spearman ρ, MAE). Reasoning models dominate by 5-9pp for verification. Don't show solution to test generator (10-15pp self-evaluation bias). |
 | intake-368 | SWE-RM | TTS ≠ RL effectiveness. Must track ECE + AUC. 2:1 positive-to-negative ratio optimal. MoE 30B/3B active. Hybrid rewards (deterministic + model-based) beat either alone. |
 | intake-370 | Aletheia RLVR | Scale-dependent training recipes: 1.5B needs on-policy GRPO, skip thinking traces. 14B needs thinking traces + negative samples. Training is GPU-only. |
@@ -64,7 +64,7 @@ Store `logprob_confidence` per question — the model's own confidence in its an
 ### Logprob Truncation: Non-Issue
 
 - [x] ✅ 2026-08-19 — **Re-verified against the frozen v9 tree AND empirically, correcting two defects in
-      what this section previously asserted.** [intake-363]
+      what this section previously asserted.** [intake-363#00]
 
 **Corrections to the prior text.** (1) It cited `get_token_probabilities()` at
 `tools/server/server-common.cpp` **L1755**; the actual location in `production-consolidated-v9`
@@ -536,7 +536,7 @@ Three new entries converge on one finding: **our judge-scored numbers currently 
   - Best-of-N result is the shape of our exposure: judge-selected gap 0.20 at k=1 widening to **0.588 at k=16** on LiveCodeBench while true unit-test pass moves only 0.27 → 0.29.
   - Delta from current approach: we report judge scores without a paired judge-independent anchor, so a widening judge-vs-truth gap is currently invisible.
 - **[intake-874] "Reproducing, Analyzing, and Detecting Reward Hacking in Rubric-Based RL"** (arxiv:2606.04923; Tsinghua KEG) — credibility 4.
-  - Relevance: kills the claim that rubric judges are *robust* to hacking (does NOT establish they are worse than verifiable rewards — see the entry's honest scope note; our own intake-660/664 show programmatic verifiers gamed 32.8% of the time, so neither class is a safe default).
+  - Relevance: kills the claim that rubric judges are *robust* to hacking (does NOT establish they are worse than verifiable rewards — see the entry's honest scope note; our own intake-660, intake-664#record show programmatic verifiers gamed 32.8% of the time, so neither class is a safe default).
   - Transferable now, no training needed: the **semantic-relevant vs semantic-irrelevant bias taxonomy** (lexical/format vs tone/self-praise) as an organizing axis for RM-5; the **exploitability ceiling** (a bias only bites if the generator can cheaply emit the pattern — format bias ~66% elicitation vs 95-100% for the others); and the finding that **in-domain capability drops while aggregate general benchmarks stay flat**, so an aggregate suite is an unreliable tripwire.
 - **[intake-876] "Agreement Metrics for LLM-as-Judge Evaluation"** (arxiv:2606.00093; Rao & Callison-Burch) — see also the note appended to `reviewer-calibration-accounting.md`.
   - Relevance: a full-text search of the 865-entry index returned **zero** hits for kappa / Krippendorff / inter-annotator / inter-rater before this run. Neither MEASUREMENT.md nor MEASUREMENT_POLICY.md mentions agreement statistics at all.
@@ -701,10 +701,10 @@ journaled trials. It is **not** precedent for a measured noise band.
 
 ## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument)
 
-Source round: intake-362/363/804 re-encountered and dived; intake-875 reconciled; new entries
+Source round: intake-362#record / intake-363#record / intake-804#record re-encountered and dived; intake-875 reconciled; new entries
 intake-1161…1171. The re-ingest overturned the rationale that kept this source unused since
 2026-04-14 — see the corrected "Logprob Truncation" section above, and the `dive_corrections` on
-intake-363.
+intake-363#record.
 
 **Why this is EV-15 and not EV-5.** EV-5 deploys ThinkPRM for **step-level process** verification
 inside T2. EV-15 is a **trajectory-level selection** read-out — a scoring instrument, not a tier

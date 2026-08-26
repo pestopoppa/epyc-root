@@ -28,7 +28,7 @@ in establishing whether the mapping is coherent at all, not in importing an exte
   the first ~7K tokens, independent of retrieval quality — relevant because per-thread context budget
   and instance placement interact: a decomposition that is placement-aware may also need to be
   context-budget-aware per placed thread.
-- `intake-1125` (arxiv:2602.07359, dive-verified) found optimal *tool-call* width falls as the step
+- `intake-1125#02` (arxiv:2602.07359, dive-verified) found optimal *tool-call* width falls as the step
   budget rises, and a descending schedule beat any constant width — a shape that may or may not transfer
   to instance-level placement; untested here.
 - The REPL is the mechanism that currently keeps per-thread context down regardless of placement

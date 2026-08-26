@@ -23,10 +23,10 @@ This stub owns the measurement side: turn the assertion into a number, using dat
 | Intake ID | Title | Relevance | Verdict |
 |-----------|-------|-----------|---------|
 | intake-1106 | Kimi K2.5: Visual Agentic Intelligence (arxiv:2602.02276) | high | worth_investigating — names "serial collapse", supplies no instrumentation |
-| intake-1111 | OrchBench (arxiv:2607.25656) | high | dive-overturned — requires per-node durations as INPUT, but Appendix D-I's real-side metric definitions (declared/started/completed agents, parallel utilization, workflow depth) are a ready spec |
+| intake-1111#record | OrchBench (arxiv:2607.25656) | high | dive-overturned — requires per-node durations as INPUT, but Appendix D-I's real-side metric definitions (declared/started/completed agents, parallel utilization, workflow depth) are a ready spec |
 | intake-1109 | Single-Agent vs MAS at Equal Token Budgets (arxiv:2604.02460) | high | dive-verified — Appendix B four-bucket breadth-vs-synthesis diagnostic |
 | intake-1127 | AdaMAST (arxiv:2607.16387) | high | dive-verified, adopt_component — Apache-2.0 trace grader, no success/failure oracle required |
-| intake-1110 | MAST (arxiv:2503.13657) | medium | dive-overturned — 14-mode taxonomy, FC1/FC3 transfer to our topology, FC2 largely does not |
+| intake-1110#00 | MAST (arxiv:2503.13657) | medium | dive-overturned — 14-mode taxonomy, FC1/FC3 transfer to our topology, FC2 largely does not |
 
 Related existing work (do NOT duplicate):
 - [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) — owns the C36 substrate this collector builds on: per-backend transcript mechanics (Codex `thread_source`, Claude subagents in-process via `claude agents --json`), and the standing rule that **CPU delta is an invalid proxy** for subagent activity.
@@ -79,5 +79,5 @@ Related existing work (do NOT duplicate):
 ## Notes
 
 Corpus counts above supersede any earlier figure of "4,087 Claude transcripts" circulating from the
-research-intake round that produced this stub (`intake-1110` dive_corrections) — that figure was
+research-intake round that produced this stub (`intake-1110#record` dive_corrections) — that figure was
 overstated ~2.2×.

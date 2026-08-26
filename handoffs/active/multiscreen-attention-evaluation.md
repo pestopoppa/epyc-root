@@ -393,7 +393,7 @@ intake-813 is tracked as a continuation of the Behrouz/Titans architecture line 
 
 **Better comparison point for text**, if the long-output regime ever matters to us: **KARA** (arxiv:2607.01237, 2026-07) keeps the prefix intact and *adaptively compresses* the generated window instead of hard-truncating it, and is training-free — the right shape for CoT/reasoning, where distant self-reference actually matters. Worth its own intake if we revisit.
 
-## Research Intake Update — 2026-08-22 (Stage-2b, intake-1287 / intake-1281)
+## Research Intake Update — 2026-08-22 (Stage-2b, intake-1287#record / intake-1281#record)
 
 Compute classes: **Z** zero-compute, **G** compute-gated (names the measurement, the owning handoff,
 and the result that opens the gate), **B** blocked-on.

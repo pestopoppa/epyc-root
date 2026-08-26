@@ -92,7 +92,7 @@ D3 still wants a quiesce/clean window → co-schedule with Queue-2 + N13 post-re
 
 - Sampler: `src/backends/llama_server.py` (`_apply_deterministic_sampling`, 3 call sites); request sampling DTO: `src/inference/model_server.py`; OpenAI request surface: `src/api/models/openai.py`, `src/api/routes/openai_compat.py`; primitives propagation/cache key: `src/llm_primitives/{primitives.py,inference.py}`, `src/inference/llm_cache.py`.
 - Routing gate: `src/registry/stack_priors.py:~1158` (jinja); `src/chat_completions_roles.py` (derivation gate jinja∧enable_thinking==False); `orchestration/derived/stack_priors.yaml` (recompile via `python3 -m src.registry.stack_priors`).
-- **Constraint (2026-08-21) — a chat template is executable code in the prompt-construction position**: any chat-template substitution (third-party or vendor-refreshed) must be checked against the in-tree **input-marking** path of the frozen `common/jinja/` engine before it is routed through the gate above — see the *Research Intake Update — 2026-08-21 (intake-1216)* section below and [`qwen-chat-template-evaluation.md`](qwen-chat-template-evaluation.md) task **CT-3**.
+- **Constraint (2026-08-21) — a chat template is executable code in the prompt-construction position**: any chat-template substitution (third-party or vendor-refreshed) must be checked against the in-tree **input-marking** path of the frozen `common/jinja/` engine before it is routed through the gate above — see the *Research Intake Update — 2026-08-21 (intake-1216#record)* section below and [`qwen-chat-template-evaluation.md`](qwen-chat-template-evaluation.md) task **CT-3**.
 - Gates: `scripts/registry/stack_change_pipeline.py check` (uses `.venv/bin/python3`); `src/registry/registry_validator.py`.
 - Lifecycle: `scripts/server/orchestrator_stack.py {reload,status}` (architect_general, orchestrator).
 
@@ -100,7 +100,7 @@ D3 still wants a quiesce/clean window → co-schedule with Queue-2 + N13 post-re
 
 On closing a task: check the box here, update master row **N14** + the routing-index subsystem row, append to `progress/2026-06/`. On full closure (D1–D4 done): extract findings to wiki, move this handoff to `completed/`, delete N14. Memory: [[project_prompt_determinism_plan]], [[feedback_enable_thinking_requires_chat_completions_path]], [[feedback_stack_change_three_gates]].
 
-## Research Intake Update — 2026-08-21 (intake-1216, chat-template engine)
+## Research Intake Update — 2026-08-21 (intake-1216#record, chat-template engine)
 
 - [x] **PCD-T1** — Record a constraint on any chat-template substitution: a chat template is
       **executable code in the prompt-construction position**. Frozen `production-consolidated-v9`
