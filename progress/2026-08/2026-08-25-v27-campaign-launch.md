@@ -118,3 +118,32 @@ directive).
   (state/identity/ledger reads only) and is running (supervisor PID 2254279, controller PID 2254297
   verified alive at wrap-up).
 - No repository file modified by this session; the wrap-up deliverables are drafts in the lane.
+
+## Campaign crash + fix + relaunch (2026-08-25)
+
+- First launch (supervisor `ak-53087cbd…`) ran 7 iterations (critic_revise / screen_refused /
+  critic_reject — zero science, `scientific_attempts=0`) then CRASHED at the 8th question
+  selection: unhandled `DiscoveryControllerError: preauthored hypothesis already exists with
+  different provenance` (controller exit 1; `--max-restarts 0` stopped the supervisor; death
+  ledger sequence 3–5).
+- Root cause: the Q5 preauthored continuation opened at turn 1 with the first-authored
+  candidate's manifest; re-authoring the SAME sealed carrier at turn 8 produced a re-derived
+  candidate manifest, and the provenance guard compared the full hypothesis incl. the per-turn
+  manifest. The carrier provenance fields (carrier_sha256, historical_commit,
+  source_backed_diff_sha256, origin/author, statement/falsifier) were identical.
+- Fix `5b807bf9` on the descendant: `_ensure_question` compares only the provenance-critical
+  fields — same-carrier re-authoring reopens idempotently; any carrier-field difference still
+  refuses fail-closed. Regression test (re-authored manifest reopens, substituted carrier
+  refuses) + pre-split call-count fixture fix in test_q5_preauthored_continuation. 372 affected
+  tests green.
+- The deployment identity seal correctly REFUSED cross-code resume (`sealed deployment identity
+  changed`) — the crashed state (0 science) is preserved at
+  `state-crashed-ak53087cbd/`; a FRESH campaign relaunched:
+  - supervisor session `ak-b7736cde36f9927bf28b27d6`, controller child 3119591, execution
+    closure `f570554b06…` (fixed code), deployment
+    gpu-discovery-quant-ladder-occupancy-v27.
+  - Re-initialized + validate-only ×2 IDENTICAL: graph_sha256
+    `9732f78fe5efb57ea7932bc8cdab58ff2d89fe1a0b4920f3156268c4436aa8fd`, inference_executed=false.
+- Lesson recorded: a campaign crash that requires a code change forfeits the resume (by design —
+  the identity seal is the anti-substitution guarantee); the cost is re-running non-science
+  refusals, never science (0/10 preserved).
