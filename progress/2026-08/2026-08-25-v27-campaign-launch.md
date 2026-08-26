@@ -147,3 +147,13 @@ directive).
 - Lesson recorded: a campaign crash that requires a code change forfeits the resume (by design —
   the identity seal is the anti-substitution guarantee); the cost is re-running non-science
   refusals, never science (0/10 preserved).
+
+## Autonomous monitoring (2026-08-26)
+
+Operator: "monitor actively; make a cron job if need be." No crontab binary on host → detached
+watchdog loop (setsid nohup, PID recorded) running `/mnt/raid0/llm/autokernel/monitor-v27-campaign.sh`
+every 60 s with flock overlap protection + heartbeat at
+`$DEP/watcher-heartbeat.log`. The monitor reads ONLY the deployment state/supervisor-ledger
+(no pgrep/pkill), journals every change to `$DEP/monitor.log` and keeps `.monitor-snapshot.json`.
+Future sessions: check `monitor.log` for the delta stream, `watcher-heartbeat.log` for liveness
+(stale >2 min = watcher died), `state/state.json` for the live posture.
