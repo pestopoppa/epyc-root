@@ -199,17 +199,30 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
     before = fold(frames, as_of=as_of)
     grade_floor = parse_grade(floor)
 
+    # Alias resolution (2026-08-26): the fold unions aliased claim identities and keys every
+    # belief by the CANONICAL id; the impact report flags canonical ids. A mutated claim that is
+    # aliased to another claim therefore has no belief entry and no flag under its raw id -- the
+    # 1106_00/1105_00 family: the operator judged the pair `same` (linked restatement), the
+    # retraction of src_1106 breaks the canonical's support path (impact reports it under
+    # 1105_00), and the raw-id lookup scored the engine harmful for honoring the alias. Resolving
+    # every lookup through the alias map makes the two views agree; the impact semantics already
+    # flag the alias case honestly (a broken path is impact even when the belief survives).
+    alias_map = getattr(before, "alias_map", {}) or {}
+
+    def canon(cid: str) -> str:
+        return alias_map.get(cid, cid)
+
     rows: list[dict] = []
     points: list[int] = []
 
     for cid in family["mutated_claims"]:
-        belief = before.beliefs.get(cid)
+        belief = before.beliefs.get(canon(cid))
         if family["expect_never_believed"]:
             # An unverified entry's claim must not clear a decision-gating floor, retraction or no.
             supported = bool(belief and belief.verdict(grade_floor) == "Supported")
             correct, harmful, expected = not supported, supported, "never_believed"
         else:
-            correct = cid in flagged
+            correct = canon(cid) in flagged
             harmful = not correct
             expected = "retracted"
         points.append(1 if correct else (-1 if harmful else 0))
@@ -220,7 +233,7 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
     # inferring them.
     pre_alerted: list[str] = []
     for cid in family.get("dependent_claims", []):
-        belief = before.beliefs.get(cid)
+        belief = before.beliefs.get(canon(cid))
         if belief and family["family_id"] in belief.dependency_alerts:
             # OP-11 carve-out: this dependent was ALREADY alerted before the mutation, because the
             # depended-on source never had support (dive-overturned, or con-only). "MUST move" is
@@ -228,14 +241,15 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
             # to lose. Counted, never scored: the same discipline as the uncoverable bucket.
             pre_alerted.append(cid)
             continue
-        correct = cid in flagged
+        correct = canon(cid) in flagged
         points.append(1 if correct else -1)
         rows.append({"claim_id": cid, "expected": "propagated", "correct": correct})
 
     # Discrimination control: claims of entries with no evidential relationship at all. Drawn from
     # the fold rather than the index so a claim that exists only in the ledger is still eligible.
-    excluded = (set(family["mutated_claims"]) | set(family["citing_claims"])
-                | set(family.get("dependent_claims", [])))
+    excluded = ({canon(c) for c in family["mutated_claims"]}
+                | {canon(c) for c in family["citing_claims"]}
+                | {canon(c) for c in family.get("dependent_claims", [])})
     controls = [c for c in sorted(before.beliefs) if c not in excluded][:20]
     for cid in controls:
         correct = cid not in flagged

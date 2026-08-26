@@ -191,3 +191,37 @@ def test_dependents_on_a_supported_source_still_must_move():
     assert [r["claim_id"] for r in prop] == [dependent]
     assert prop[0]["correct"] is True, "a supported source's retraction must propagate"
     assert res["harmful_outcomes"] == 0
+
+
+def test_aliased_claim_scores_correct_under_canonical_flagging():
+    """A claim aliased to another entry's claim must score through the canonical id.
+
+    Regression for the 2026-08-26 alias-bearing draw (intake-1106 family): the operator judged
+    clm_intake_1106_00 == clm_intake_1105_00 (same proposition, linked restatement), so the fold
+    unions the pair and keys the belief under the canonical id (1105_00). The retraction of the
+    mutated source breaks the canonical's support path, and impact reports it under the canonical
+    id -- the raw-id lookup scored the engine harmful for honoring the alias. Every lookup must
+    resolve through the alias map.
+    """
+    frames = _entry_frames("intake-005", 1, VERIFIED)   # the aliased (survivor) source
+    frames += _entry_frames("intake-006", 1, VERIFIED)   # the mutated source
+    alias_frame = make_frame(
+        frame_type="epyc.vidya/frame/claim_alias/v1",
+        assertion={"claim_ids": ["clm_intake_005_00", "clm_intake_006_00"],
+                   "independent": False},
+        provenance={"method": "test", "about": "clm_intake_005_00"},
+        actor="test", authority_scope="test", created_at=AS_OF,
+    )
+    frames.append(alias_frame)
+    index = [
+        {"id": "intake-005", "verification": "dive-verified",
+         "cross_references": {"intake_entries": ["intake-006"]}},
+        {"id": "intake-006", "verification": "dive-verified"},
+    ]
+    res = run_live(frames, index, as_of=AS_OF, count=1)
+    fam = res["families"][0]
+    assert fam["family"] == "intake-006", fam["family"]
+    assert "clm_intake_006_00" in {r["claim_id"] for r in fam["rows"]}
+    assert all(r["correct"] for r in fam["rows"]), fam["rows"]
+    assert fam["invalidation_recall"] == 1.0
+    assert res["harmful_outcomes"] == 0

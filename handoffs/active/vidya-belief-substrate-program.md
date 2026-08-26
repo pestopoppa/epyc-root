@@ -1182,11 +1182,13 @@ by source, and never-supported dependents are carved out, not failed):
 | # | Requirement (§4) | Status |
 |---|---|---|
 | 1 | Anchor the claims that get cited (P2d) | MET at B semantics — machine-anchor admissibility RATIFIED 2026-08-26 (operator): option B, the implemented §4.2 amendment; machine-located spans grade `MachineLocated` (quote-pinned, unreviewed), never `Anchored` without a human reading. Decision recorded in `vidya-p5c-evaluation-and-decision.md`; coverage backlog (cited entries unanchored) is write-time growth, tracked not gated |
-| 2 | Cross-entry claim identity (R4b) | IN PASS — 43 candidate pairs (gen-2b corpus, score ≥ 0.35, 19 linked) awaiting the operator's same/different pass; tooling shipped (`scripts/vidya/ratify_aliases.sh`: generate → interactive pass → dry-run → emit → verify). 0 pairs ratified so far |
+| 2 | Cross-entry claim identity (R4b) | MET — operator passed all 43 pairs (`node`, 2026-08-26): 18 same / 25 different; 17 `claim_alias` frames emitted (one transitive group 144_03=254_04=411_04); worksheet `.vidya/aliases-worksheet.yaml` pinned by frame digests |
 | 3 | Query log + obligation disposition (R5b) | MET |
 | 4 | Re-run the eval against the live-ledger corpus | EXECUTED — 161/161 + 155/155 above; harness defects fixed and re-run on the unchanged ledger |
 
-**Next executable step:** requirement 1 is ratified (B). The remaining operator pass is
-requirement 2 — run `bash scripts/vidya/ratify_aliases.sh` (43 pairs, ~30-60 min). When the
-alias pairs land, re-run the two draws and record the promotion verdict — the evidence base
-above is already certifiable.
+**VERDICT 2026-08-26: PROMOTE.** All four requirements met (the alias-bearing draws needed
+one final harness fix — alias resolution in `score_live_family`, regression-tested — and then
+came back clean: 161/161 and 155/155, harmful 0). Decision recorded in
+`vidya-p5c-evaluation-and-decision.md` §6 with the full evidence block; shadow status ends.
+The standing open rows below (freeze-gated producer triggers) are tracked work, not gate
+conditions.
