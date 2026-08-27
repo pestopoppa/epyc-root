@@ -1048,6 +1048,19 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       effect and exact-family attribution, then implement a strict adapter that independently
       re-derives the paired samples and every identity before calling the existing measurement
       ladder. Do not back-fill any pre-hook receipt.
+- [ ] **SC52 — wire the INF-42 G1 S-NIAH-2 exact-match probe on the write side before any successor
+      run.** Add a producer-written, self-hashed belief-measurement vector to
+      `g1_amnesia_probe.py` at per-question persistence/finalization, then a strict adapter that
+      projects only post-hook rows into the existing measurement `ClaimTuple` ladder. Emit separate
+      per-length/per-depth accuracy claims and paired 4K→long-context drop/CI claims; bind the full
+      model/kernel/server/request/CPU-placement/KV-control identity, count only scored questions as
+      reps, state metric direction explicitly, and use one run-level source locator/support key so
+      question files cannot manufacture corroboration. Producer categories are q8 `BASELINE` and
+      f16 diagnostic-control `CANDIDATE`; the adapter must not infer them. Refuse malformed, partial,
+      mixed-placement, unhashed, and pre-hook records; do not back-fill the 2026-08-25/27 in-flight
+      corpus. Test unique real-corpus identity, scored-vs-attempted reps, q8↔f16/4K control binding,
+      direction, tamper refusal, pre-hook refusal, and absence of private grading logic. The adapter
+      PROJECTS; `claim_tuple.grade()` decides.
 
 ## Dependency notes
 
