@@ -126,3 +126,29 @@ champion is *for*.
    rebuilt and re-measured; its original numbers are never inherited. The earlier caution in this
    file applies ONLY to the 43 config screening rows, which carry no source diff and therefore
    re-enter as build-recipe settings to be re-tested (CH-6), not as banked results.
+
+## CH-1 implementation notes (groundwork done 2026-08-27)
+
+Read of `champion.py` before writing any code:
+
+- **A champion record already exists in empty form.** `_empty_champion(anchor, status=…,
+  blocking=…, detail=…)` builds `{member_candidates: [], combined_candidate_id: None,
+  last_t0/t1/t2: None, branch: ak/champion/<tree>-<anchor12>, …}` and validates it via
+  `schemas.validate_champion`. `record_no_champion()` uses it with
+  `status="no_champion", blocking=["NO_GREEN_COMPOSITION"]`.
+- **The seed is a DIFFERENT state from `no_champion`.** `no_champion` means "we have nothing";
+  Champion₀ means "the aggregate exists and currently equals production". The seed therefore wants
+  zero members with an EMPTY blocking list — it is not blocked, it is simply empty.
+- **The schema's always-green rule does not obstruct this**: the `blocking_conditions must not be
+  empty while status is not 'pass'` check applies to the nested tier events (`last_t0/t1/t2`), and a
+  seed has none.
+- **BLOCKER, and it is correct-by-design**: `AnchorIdentity` refuses construction with
+  `anchor.artifacts must be non-empty, unique, canonically sorted`. Each `AnchorArtifact` needs
+  `backend`, `tool`, `binary_sha256`, `linkage_sha256`. So Champion₀ cannot be conjured — it must
+  cite the REAL frozen-v9 binary and linkage digests, per backend (CPU and HIP). Those are exactly
+  what `scripts/session/verify_llama_cpp.sh` already enforces, so the seeding routine should source
+  them from the same place rather than inventing a second truth.
+- Consequence for CH-1's shape: a `seed_champion(book, anchor)` entry point, plus a small helper
+  that derives the production `AnchorIdentity` (including per-backend artifact digests) from the
+  verified frozen tree. The build-recipe carrier (config arms) is a separate field the champion
+  record does not model yet — that part is genuinely new.
