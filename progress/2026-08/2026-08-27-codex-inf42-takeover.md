@@ -28,3 +28,10 @@
   timing fields are not pooled across the 48-thread and 96-thread phases.
 - Filed Vidya source SC52 immediately. The current corpus predates its producer hook and remains
   native experiment evidence only; it must never be reconstructed into `ClaimTuple` rows on read.
+- Restored steerability to the original OpenCode session without stopping its detached campaigns.
+  Four exact captured children of PID `1908397` were confirmed to be monitor/sleep shells and were
+  terminated with `SIGTERM`; all eight shell/sleep PIDs were verified dead. The subagents responded
+  by issuing shorter waits, so the identity-confirmed `agent:2` pane's displayed two-Escape
+  interrupt confirmation was used. The parent turn now shows `interrupted`, has no child processes,
+  and presents the queued operator message in an idle composer. No Enter/key submission was sent
+  because the composer contains operator-authored input.

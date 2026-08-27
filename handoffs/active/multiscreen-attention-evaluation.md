@@ -462,7 +462,9 @@ See also the fifth GDN branch-map row in
       - [x] **Recover the live G1 execution without discarding persisted recall evidence.** ✅
         2026-08-27 — checkpointed 161 scored trials, captured logs/scripts/session provenance,
         quiesced the malformed half-instance launch, and resumed the first missing trial under a
-        held full-machine claim.
+        held full-machine claim. Terminated only the stuck session's captured wait/monitor children,
+        then used OpenCode's displayed two-Escape interrupt confirmation to return its parent turn
+        to an idle, operator-steerable composer; detached experiment daemons were untouched.
 
       **Live execution checkpoint — 2026-08-27 07:46Z.** The initial launcher copied the 48-thread
       `:8080`/`:8180` serving-half argv but omitted that shape's CPU affinity, memory policy and
