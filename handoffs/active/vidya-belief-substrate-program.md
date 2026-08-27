@@ -464,8 +464,17 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       deterministically. The 1.7B validation (the S2 gate proper) is IN FLIGHT: the HF repo is
       GATED (no token on the host; the HF download is dead) and the ModelScope mirror download
       is running into hf-home (~5 MB/s, weights expected complete 2026-08-27 ~21:30Z); the same
-      smoke config launches on completion. Row residual = the 1.7B run's tuple + format
-      compliance (GGUF convert + masked-prompt structure test) in the S2 table.**
+      smoke config launches on completion.
+      **2026-08-27 21:40Z: 1.7B TUPLE INGESTED.** The smoke completed (16 steps / 126 samples,
+      29.9 s/sample CPU, loss quarters 1.68→1.25, integrity 168/168 lora_B nonzero, all
+      finite) and its row is in the ledger (Witnessed/Attested). KNOWN DEFECT, producer-fixed:
+      the first two smokes (0.6B + 1.7B) collided on the stage-only `measurement_id`
+      (`memento_sft_stage1_seconds_per_sample`), merging two measurements into one fold
+      belief — the hook now mints run-unique ids (model + stage + UTC timestamp); the two
+      already-ingested tuples remain merged under the old id (both Attested, so the fold
+      verdict is unchanged either way). Row residual = format compliance (GGUF convert +
+      masked-prompt structure test) + MATH-500 delta in the S2 table; no more training
+      runs until those are measured.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
