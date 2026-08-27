@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-23 (evening hygiene sweep: the OBS-12 interpreter-venv convention — skill-documented commands must name an interpreter that has the imports, 8 documented-interpreter fixes across 15 audited skills; the `query_wiki._safe_join` null-`techniques` guard; the disk-hygiene verified-resolved outcomes NIB2-60..63 with phase-2 candidates NIB2-64..67, and the tmp/ reclamation record 285G→2.9G; earlier evening wave-2 compile: internal-kb-rag's K1/K2/K3 encoder fixes LANDED in `4e5e84c0` (ColBERT ONNX class unblocked, onnx_config honoured, embedding_dim drift now raises), the answerai retirement rationale corrected (1.32 pp delta INSIDE our own noise floor, 54.89 never existed), the ONNX file-selection rule H4, the tokenizer-identity finding H6 (0.500× projection), the 40.5%-chunks doc-truncation measurement H1, and SC50's pre-run write-side hook for the three wave-2 source classes; earlier same-day: belief-kernel adapter wired CT-8/SC46 in `24ab3090`; KB-RAG record corrections C1/C2; Stage-2b wave-2 corrections; previously 2026-08-22: publication-generator mechanism deltas: alias rewrite at display time, per-row protocol-evidence containment, paraphrase demotion for unre-derivable numbers)
-**Sources**: 47+ documents
+**Last compiled**: 2026-08-27 (incremental: SC52 prospective write-side contract for INF-42 G1; earlier compiled findings remain below)
+**Sources**: 50+ documents
 
 ## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
 
@@ -1828,3 +1828,30 @@ the common path), ending the lane-worktree staleness class. The narrow-owner-anc
 
 - [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) — five boxes ticked; C2 pair table; Deps evidence; hub-cron operator decision package
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record
+
+## Compiled Update — 2026-08-27: SC52 preserves the line between native evidence and invented warrant
+
+**Confidence: verified contract and producer boundary.** The current G1 corpus is valid native
+experiment evidence, but it predates the producer hook and therefore projects no Vidya rows.
+
+The INF-42 amnesia probe exposed the exact failure mode behind the belief substrate's write-side
+rule. Per-question JSONs can preserve scores and make a run safely resumable, yet that is not enough
+to reconstruct a trustworthy `ClaimTuple` later: the original record did not bind the complete
+model/kernel/server/request/CPU-placement/KV-control identity or declare which paired reduction the
+claim would use. SC52 therefore applies prospectively. A successor G1 run must emit a producer-
+written, self-hashed belief-measurement vector at per-question persistence/finalization, and a
+strict adapter may project only those post-hook rows through the existing measurement ladder.
+
+SC52 keeps three quantities separate: per-length/per-depth exact-match accuracy; paired 4K→long-
+context drop with confidence interval; and timing, which is not the G1 quality claim. Only scored
+questions count as repetitions, metric direction is explicit, and one run-level source locator and
+support key bind the grid. This matters in the recovered run because its first 161 records came from
+a malformed 48-thread launch while later records use a corrected 96-thread launch. Recall remains
+usable and timing remains stratified, but **neither phase may be retroactively back-filled into
+Vidya**. The first fully post-hook run is the first eligible belief source.
+
+### Source References (2026-08-27)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
+- [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
+- [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
