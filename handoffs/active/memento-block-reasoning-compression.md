@@ -29,8 +29,8 @@ Record results in this table before promoting S3:
 
 | Model | Adapter | Format compliance | Compression ratio | MATH-500 delta | Decode stable with S1 masking? | Decision |
 |---|---|---:|---:|---:|---|---|
-| Qwen3-0.6B | TBD | TBD | TBD | TBD | TBD | smoke / continue / stop |
-| Qwen3-1.7B | TBD | TBD | TBD | TBD | TBD | promote / stop |
+| Qwen3-0.6B | memento-s1-lora (rank 16, 8.26M trainable) | TBD — inference check pending (GGUF convert + masked-prompt structure test) | TBD | TBD | TBD | **smoke → continue** ✅ 2026-08-27 — 16 steps / 126 samples trained (loss quarters 1.485→1.337, adapter integrity 168/168 lora_B nonzero, all finite; 18.8 s/sample CPU). Belief row ingested: `clm_memento_sft_stage1_seconds_per_sample` Witnessed/Attested (SC20). Format-compliance numbers still needed before the 1.7B gate closes |
+| Qwen3-1.7B | TBD — Stage-1 smoke running 2026-08-27 (download via ModelScope in flight) | TBD | TBD | TBD | TBD | promote / stop |
 
 Decision forks:
 

@@ -461,8 +461,11 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       projected the row; frames ingested; fold `Witnessed/Attested`. NOTE: the first run's
       refusal was a CHECK BUG (endswith vs substring on lora_B.default.weight), and its
       artifacts were deleted before re-emission — the re-run recovered the measurement
-      deterministically. The 1.7B validation (the S2 gate proper) remains pending a HF-format
-      model acquisition; row residual = the 1.7B run's tuple.**
+      deterministically. The 1.7B validation (the S2 gate proper) is IN FLIGHT: the HF repo is
+      GATED (no token on the host; the HF download is dead) and the ModelScope mirror download
+      is running into hf-home (~5 MB/s, weights expected complete 2026-08-27 ~21:30Z); the same
+      smoke config launches on completion. Row residual = the 1.7B run's tuple + format
+      compliance (GGUF convert + masked-prompt structure test) in the S2 table.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
