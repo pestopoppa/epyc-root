@@ -1205,7 +1205,16 @@ task is filed **now, before any of them runs** — not when results land. Source
       first run per the filed spec, with the two load-bearing caveats (G1 negative control never a
       model-quality claim; G2 `n_max` + mean accepted length travel together) in every tuple
       **EVENING 2026-08-26: unchanged — no sweep has run (verified). G1 is CPU-runnable and the
-      lease regime is granting compute, so the trigger is schedule-gated, not operator-gated**
+      lease regime is granting compute, so the trigger is schedule-gated, not operator-gated
+      **CLOSED-ISH 2026-08-27 — G1 EXECUTED and its tuples are live.** The sweep ran 10/10 trials
+      (frozen v9 llama-completion, frontdoor Q8_0, 5 lengths × pangram/meaningful, greedy
+      seed 27442, cold prefill): first token uniformly `248068` (`<think>`), never EOS — the
+      #27442 exposure is NOT reproducible on our path (gate verdict, G1 row ticked in
+      `log-linear-gated-deltanet-readiness.md`). `research_sweeps.py` projected all 10 claims,
+      frames ingested (ledger frontier 12,532), fold `Witnessed/Anchored`; runner
+      (`g1_27442_boundary_sweep.sh`) fixed en route (tokenize stdin round-trip, proportional
+      prompt-step, console-notice hygiene) and committed. G2/G3/G4 remain pending their own
+      first runs — this row's residual is them, not G1**
 
 ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22)
 
