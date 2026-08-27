@@ -401,4 +401,18 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 
 - [x] **Former no-consumer blocker reassessed ✅ 2026-07-18**: the 2026-07-03 live MTP acceptance report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Registry integration remains blocked until current sweep evidence exists.
 - [x] **REOPEN-ASSESS zero-inference decision ✅ 2026-07-18**: reopen to a current live-MTP MoE verifier B-sweep, not to registry integration.
-- [ ] **Current live-MTP MoE verifier B-sweep**: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bit-exact guard before any registry integration. *(2026-08-27: **RUNNING under canonical region lock** — waiter acquired q0-q3 11:40Z (tag `inf40-moespec-bsweep`), sweep driver `inf40_sweep.py` (frontdoor grid B∈{0,128,192} first; then worker, architect; gate-skip control arms; bit-exact guard) executing from `/mnt/raid0/llm/epyc-inference-research/data/moe-spec-bsweep-2026-08-25/`. Build `inf40-moespec` worktree HEAD `c7c37a0d9` (MoE-Spec `6b2cbf539` on v9 `0db32c06e`), binary v10126. The 2026-08-25 partial non-canonical run (frontdoor B0/B128, no region lock) is invalidated: `moe-spec-bsweep-2026-08-25-noncanonical-invalidated/`. Sweep self-paces on the session-lease load gate (load5 ≤ 20).)*
+- [x] **Current live-MTP MoE verifier B-sweep**: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bit-exact guard before any registry integration. ✅ 2026-08-27 — **GATE MET (architect +10.7% at B=n_expert/2)**, decision-grade record at `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` (findings.md + summary.json + summary_receipt.json). Canonical run (region lock q0-q3, binary v10126 `c7c37a0d9` = MoE-Spec `6b2cbf539` on v9 `0db32c06e`, MTP posture, greedy, 3 reps/cell):
+  | role | B | t/s mean±std | Δ vs B=0 | α | α Δ |
+  |---|---|---|---|---|---|
+  | architect (122B Q4_K_M, n_expert=256) | 0 | 10.84±0.39 | ref | 0.487 | — |
+  | | 128 | 12.00±0.41 | **+10.7%** | 0.463 | −2.4pp |
+  | | 192 | 11.53±0.22 | +6.4% | 0.462 | −2.5pp |
+  | frontdoor (35B-A3B Q8, 256) | 0 | 36.19±2.19 | ref | 0.577 | — |
+  | | 128 | 32.05±2.98 | −11.4% | 0.517 | −6.0pp |
+  | | 192 | 33.09±0.55 | −8.6% | 0.533 | −4.4pp |
+  | worker (gemma4-26B Q4, 128) | 0 | 57.25±4.09 | ref | 0.570 | — |
+  | | 64 | 55.77±19.16 | −2.6% | 0.548 | −2.2pp |
+  | | 96 | 51.24±13.58 | −10.5% | 0.461 | −10.9pp |
+  | | 128 (gate-skip) | 58.54±4.75 | +2.3% (noise) | 0.570 | 0 |
+
+  **Verdict + caveats**: Phase-1 shape reproduces (heaviest DRAM-bound role wins; lighter roles negative). (1) n=3/cell — architect Δ≈2.9σ; operator declined the 5-rep confirm. (2) α −2.4pp on the winner; budgeted arms' outputs differ from B=0 by construction — mechanism-fire control passed (worker B=n_expert bit-exact to B=0, 3/3). (3) Cross-run MTP non-determinism: same-seed B=0 reps differ across runs on every role → strict bit-exact guard enforceable only via the gate-skip control. **Registry implication (PROPOSED, NOT applied — E8-reseed/OP-19 gate)**: `architect_critic` (122B Q4_K_M, :8074 — the measured "architect" role since the 2026-07-31 swap; architect_general is now GPU 27B) → `moe_spec_budget: 128`; frontdoor/worker stay 0; launcher must env-pass `LLAMA_ARG_MOE_SPEC_BUDGET=128`; patch text: `data/moe-spec-bsweep-2026-08-25/registry_patch_proposal.yaml`.
