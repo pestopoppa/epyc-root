@@ -1,0 +1,60 @@
+{
+  "measurement_id": "memento_sft_stage1_seconds_per_sample",
+  "metric": "sft_seconds_per_sample",
+  "value": 18.8,
+  "unit": "s/sample",
+  "metric_direction": "lower_better",
+  "category": "BASELINE",
+  "protocol_id": "epyc.memento_sft.lora_training.v1",
+  "reps": 126,
+  "reps_basis": "scored:126 training samples (126 attempted minus 0 non-finite skips)",
+  "claim": "Memento S2 stage 1 configuration trains at 18.8 s/sample with an adapter that provably updated (lora_B off zero-init, all tensors finite)",
+  "extra": {
+    "date": "2026-08-27T20:07:13.295797+00:00",
+    "stage": 1,
+    "model": "Qwen/Qwen3-0.6B",
+    "trainable_params": 8257536,
+    "lora": {
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj"
+      ],
+      "train_embeddings": false
+    },
+    "loss_quarters": {
+      "q1": 1.4849206516819615,
+      "q2": 1.263404005958188,
+      "q3": 1.296870687315541,
+      "q4": 1.3372880201185904
+    },
+    "loss_first": 1.3939365148544312,
+    "loss_last": 1.4002991914749146,
+    "adapter_integrity": {
+      "trainable_tensor_count": 336,
+      "all_tensors_finite": true,
+      "lora_B_total": 168,
+      "lora_B_nonzero": 168
+    },
+    "training": {
+      "max_seq_len": 4096,
+      "optimizer_steps": 16,
+      "elapsed_s": 2369.3,
+      "records_dropped_prompt_only": 0,
+      "samples_skipped_nonfinite": 0
+    },
+    "producer_id": "scripts.benchmark.memento_sft/train_stage",
+    "producer_sha256": "104cbf930c135ef9a6f833bd73cc8092838fc4ed9e964fcddcb9826aa3bf0987",
+    "attestation_path": "/mnt/raid0/llm/epyc-inference-research/output/memento/memento-s1-lora/stage1_metrics.json",
+    "attestation_sha256": "49e75316de762c1e5407222ab8cda313db645ee62a2d9e31d86087fd34811d94",
+    "attestation_locator": "stage1_metrics.json",
+    "scope": "CONFIGURATION TRAINING COST ONLY \u2014 this row claims that this configuration trains at the recorded s/sample with an adapter that provably updated; it NEVER claims the model improved. Post-training quality is decided by the MATH-500 gate separately."
+  },
+  "measurement_sha256": "81bb1aafc619e75a98170518aeb408692f2d3ef9245ab9cc50282c3aa3da278c"
+}

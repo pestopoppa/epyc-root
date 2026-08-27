@@ -451,8 +451,18 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       2026-08-27: S2 IN FLIGHT — smallest real Stage-1 format-learning job** (Qwen3-0.6B,
       126 train samples, 1 epoch, seq 4096, GPU; launched 16:07Z, ~6-10 min). The belief hook
       fires at train-stage finalize → `stage1_belief_measurements.json` beside the run record
-      → first SC20 tuple. The 1.7B validation (the S2 gate proper) remains pending a HF-format
-      model acquisition (~3.5 GB download; only the 0.6B HF cache exists).**
+      → first SC20 tuple.
+      **2026-08-27 20:10Z: FIRST TUPLE EMITTED AND INGESTED ✅.** The re-run (deterministic —
+      identical Step-0 loss to the refused first run) completed 16 steps / 126 samples on CPU
+      (18.8 s/sample) and the fixed hook emitted `stage1_belief_measurements.json`:
+      integrity 168/168 lora_B nonzero, all tensors finite, quarters 1.485→1.337.
+      Root reader `memento_lora.py` (strict: measurement_sha256 self-hash re-derives, canonical
+      attestation over the run record re-derives, refusal artifacts project zero rows; 7 tests)
+      projected the row; frames ingested; fold `Witnessed/Attested`. NOTE: the first run's
+      refusal was a CHECK BUG (endswith vs substring on lora_B.default.weight), and its
+      artifacts were deleted before re-emission — the re-run recovered the measurement
+      deterministically. The 1.7B validation (the S2 gate proper) remains pending a HF-format
+      model acquisition; row residual = the 1.7B run's tuple.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
