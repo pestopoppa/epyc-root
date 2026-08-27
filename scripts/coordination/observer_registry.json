@@ -197,10 +197,10 @@
       "reason": "Out of discovery scope (one-shot operator ratifier, human reads the output once). Recorded because the finding is real: its AutoPilot precondition is `pgrep -f '[s]cripts/autopilot/autopilot.py start'`, carrying the same start-adjacency fragility as the specimen. Its sibling ratify_e8_empty_frontier_bootstrap_20260726.sh is identical, and the newer ratify_v9_cpu_bench_era_advance_20260811.sh already migrated off process patterns entirely ('host rule: never pgrep by name')."
     },
     {
-      "id": "ratify_observation_instrument_hazards_20260827",
-      "script": "scripts/operator/ratify_observation_instrument_hazards_20260827.sh",
+      "id": "ratify_20260827_session",
+      "script": "scripts/operator/ratify_20260827_session.sh",
       "contract": "exempt",
-      "reason": "NOT AN OBSERVER — reviewed 2026-08-27. This is a one-shot operator ratification script for a doctrine amendment; it observes no process and has no watchdog loop. The scanner matches it because the doctrine TEXT it inserts quotes `ps -eo ... | grep ... | head` as the illustrative example of the hazard being ratified (a probe truncated by head reports the absence of what it never looked at). The pattern appears only inside a python heredoc that writes markdown prose into agents/shared/OPERATING_CONSTRAINTS.md; the script itself never invokes ps, pgrep or pkill. Registered rather than left silent, per the 2026-08-12 relaunch-loop incident.",
+      "reason": "NOT AN OBSERVER — reviewed 2026-08-27. One-shot operator ratification script for a doctrine amendment; it observes no process and has no watchdog loop. The scanner matches it because the doctrine TEXT it inserts quotes `ps -eo ... | grep ... | head` as the illustrative example of the hazard being ratified (a probe truncated by head reports the absence of what it never looked at). The pattern appears only inside a python heredoc that writes markdown prose into agents/shared/OPERATING_CONSTRAINTS.md; the script itself never invokes ps, pgrep or pkill. Supersedes the narrower ratify_observation_instrument_hazards_20260827 entry.",
       "reviewed": "2026-08-27"
     }
   ]
