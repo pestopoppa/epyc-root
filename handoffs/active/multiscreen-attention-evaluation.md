@@ -546,7 +546,7 @@ See also the fifth GDN branch-map row in
       `…/frontdoor-amnesia-g1-2026-08-25/PAUSED-2026-08-27.md`. Resume = finish 128K (37 trials),
       f16-KV control, then a small 256K diagnostic (5–10 trials — sufficient for the published-scale
       effect) on GPU when free.)*
-- [ ] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
+- [x] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
       budget, parameter arithmetic, precedent. **The full-rank choice is what produces the entire
       +12.5 % active-parameter objection to GDN-2, and the paper gives no justification for it.**
       The precedent is in our own tree: Kimi Linear already factorizes its decay projection, and we
