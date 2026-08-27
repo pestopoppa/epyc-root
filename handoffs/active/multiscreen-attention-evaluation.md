@@ -537,6 +537,12 @@ See also the fifth GDN branch-map row in
       under the hazard record it tests. If the probe later needs to become a standing suite rather than
       a one-off, *that* is an eval-tower row.
       Both compute planes were held by other sessions through this wave — **filed, not run.**
+      *(2026-08-26/27 — RUN IN PROGRESS under an external full-instance runner (`/mnt/raid0/llm/tmp/epyc-takeover-2026-08-27/inf42/`): q8 grid 161/200 persisted at
+      `epyc-inference-research/data/frontdoor-amnesia-g1-2026-08-25/q8/trials/` — 4K 50/50, 32K 50/50,
+      64K 50/50 all 100% (no drop → gate NOT opening at those lengths), 128K arm running (~5,055 s/trial,
+      ~39 trials left at last check); runner holds region lock q0-q3 tag `inf42-g1-full-resume` and will
+      complete Q8, the f16-KV control, and summarization autonomously. This handoff's G1 checkbox belongs
+      to that runner; do not relaunch or edit while it holds the regions.)*
 - [ ] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
       budget, parameter arithmetic, precedent. **The full-rank choice is what produces the entire
       +12.5 % active-parameter objection to GDN-2, and the paper gives no justification for it.**
@@ -547,4 +553,7 @@ See also the fifth GDN branch-map row in
       `0db32c06e3e5`, 2026-08-23. **Informs `B9`** in
       [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md); validating that
       a low-rank gate *retains the reported gain* is compute-gated and belongs to whoever runs B9(b),
-      not here. No inference, no GPU — **executable now** (intake-1281#record).
+      not here. No inference, no GPU — **executable now** (intake-1281#record). ✅ 2026-08-25 — analysis
+      note complete: `epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`
+      (rank/parameter arithmetic + Kimi-Linear precedent; see the note for the verdict and what the
+      B9 compute gate would need).
