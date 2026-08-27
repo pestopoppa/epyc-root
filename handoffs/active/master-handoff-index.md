@@ -70,9 +70,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 51 | 473 | 12 | 2026-07-29 |
+| inference-research | 52 | 472 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
-| research-evaluation | 44 | 352 | 11 | 2026-07-29 |
+| research-evaluation | 44 | 349 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 32 | 11 | 2026-07-29 |
 | routing-and-optimization | 50 | 401 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 43 | 3 | 2026-07-29 |

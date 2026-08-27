@@ -1047,17 +1047,21 @@ function renderCommandBand(d){
   const lastTs=(d.autokernel_log||[]).map(row=>row.ts).filter(Boolean).sort().pop()||null;
   const lastAgeS=lastTs?Math.max(0,(Date.now()-Date.parse(lastTs))/1000):null;
   const pulse=$("#cmd-pulse"), livenessWord=$("#cmd-liveness-word"), liveCard=$("#cmd-liveness");
+  // The server's status is authoritative: it folds the run lock, the durable
+  // state's transition age and per-stage no-transition budgets (the authoring
+  // and single-threaded build legitimately span tens of minutes of lifecycle
+  // silence).  The lifecycle-event age below is context, never the verdict.
   let word, cls;
   if(!active){word="STOPPED"; cls="dead";}
   else if(status==="failed"){word="FAILED"; cls="dead";}
-  else if(status==="stalled"||(lastAgeS!=null&&lastAgeS>900)){word="STALLED"; cls="warn";}
+  else if(status==="stalled"){word="STALLED"; cls="warn";}
   else {word="RUNNING"; cls="run";}
   pulse.className="cmd-pulse "+cls;
   livenessWord.textContent=word;
   liveCard.className="cmd-card "+(cls==="run"?"ok":cls==="dead"?"fail":"warn");
   const liveBits=["deployment "+esc(d.deployment||"—")];
-  if(lastTs) liveBits.push("last event "+esc(lastTs.replace("T"," ").slice(0,19))+"Z"+
-    (lastAgeS!=null?" ("+esc(elapsedText(lastAgeS))+" ago)":""));
+  if(lastTs) liveBits.push("last lifecycle event "+esc(lastTs.replace("T"," ").slice(0,19))+"Z"+
+    (lastAgeS!=null?" ("+esc(elapsedText(lastAgeS))+" ago)":"")+" — authoring/build are event-silent by design");
   else liveBits.push("no lifecycle event yet");
   $("#cmd-liveness-sub").innerHTML=liveBits.join(" · ");
 

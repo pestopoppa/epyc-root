@@ -16,7 +16,7 @@
 | EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-B2 — wire refutation-counterfactual capture at stop time (safety_gate.py:1528 write-side + readjudicate split) | — |
 | EVL-05 | backlog roi audit 2026 07 14 | [backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) | RE-1 · Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) — the math_verify scorer is landed in orchestrator but zero pool… | — |
 | EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | K-LCM-1 — LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite) | — |
-| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-1a — corpus is already cached (gpqa_diamond 198 rows); build the judge slate from it | — |
+| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-3a/b/c DONE 2026-08-27 (BFCL-V3 acquired, split recorded); next: CJ-1d wire + CJ-1e discrimination run | — |
 | EVL-09 | design backlog triage 2026 07 23 | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | OPERATOR: rule on each item in the 2026-07-23 design triage; the doc carries no boxes, so nothing can be dispatched | — |
 | EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-11a — first re-distil; INFERENCE-gated, do not run without an approved window | — |
 | EVL-11 | eval benchmark cost reduction | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies | — |

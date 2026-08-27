@@ -130,7 +130,7 @@ both of which are overridden by measured rewards later.
 | GPQA-Diamond | **already cached, ~140K total**: `datasets--hendrydong--gpqa_diamond` 108K (198-row membership) + `datasets--ankner--gpqa` 2.0M (MC framing/distractors; `datasets--Idavidrein--gpqa` 28K, gated) | **none** — deterministic letter-match via canonical `extract_letter_answer` |
 | LiveCodeBench (cached v1-era) | **8.8G measured** — `datasets--livecodebench--code_generation/snapshots/bb83f1c3.../test.jsonl` = 9,375,644,586 bytes, **400 rows**, contest window **2023-05-07 → 2024-03-02**. Size is dominated by inline private test cases, not problem text. Also `datasets--cassanof--livecodebench_lite_filtered` 364M, `datasets--minimario--livecodebench-execute` 324K | `datasets` **already installed (5.0.0)**, and the exec sandbox **already exists** (`code_exec_scorer.py`). The prior claim in `architect-model-selection-bench.md` that "LiveCodeBench needs `datasets`+exec-sandbox" was true when written (2026-07-24) and is now **satisfied** by `scoring-infra-standardization.md` 2a-i/2a-ii — only the 2a-iv isolation hardening remains before at-scale runs |
 | LiveCodeBench v6 (date-windowed, post-cutoff) | **unknown — needs sizing.** The cached window predates these models' cutoffs and is contamination-suspect; a v5/v6 release is a separate download. Extrapolating from the cached release (~23MB/row) it could be multi-GB, but that is an estimate, not a measurement | same substrate as above |
-| BFCL | **unknown — needs sizing. Nothing on disk** — no `bfcl` / `gorilla` path found anywhere under `/mnt/raid0/llm` or `/workspace/repos`. Corpus is JSON and expected to be small | **unknown — needs determination.** BFCL's executable categories require live/mocked API execution, which is a different substrate from `code_exec_scorer.py`'s stdin/stdout+assert model. AST-only categories may need no sandbox at all — size the two categories separately |
+| BFCL | **11.7 MB API / 12 MB on disk (measured 2026-08-27)** — 5,251 rows across 26 JSONL categories + gold answers + func docs, at `epyc-inference-research/data/bfcl-cj3-2026-08-25/` | **split**: 2,760 checker-only (runnable, no sandbox) · 240 exec via mock substrate (not modeled by `code_exec_scorer.py`; buildable, declined pending CJ-GATE) · 2,251 live-API (declined — no keys/egress) |
 | tau-bench | **unknown — needs sizing. Nothing on disk** | **unknown — needs determination.** Multi-turn agentic with a simulated user; closest existing substrate is `agentic_swe_harness.py`, but the user-simulator is not built |
 | SWE-bench (already paid for) | repo checkouts **1.3G measured** at `epyc-inference-research/artifacts/architect-code-eval-20260724/swebench_repos`; `swebench_verified.json` 7.8M; `questions_livecodebench_hard.json` 6.3M (materialised LCB-hard n=53); `.venv-swebench` 361M | official docker eval. **Not visible from this devcontainer's docker context** (19 images / 49.66G, none SWE) — the gold images live on the host daemon; confirm before assuming they are still cached |
 | OlympiadBench | **736K measured** (`datasets--math-ai--olympiadbench`) | none — numeric/symbolic checker; `olympiadbench_numeric` / `olympiadbench_hard` adapters already registered |
@@ -198,13 +198,26 @@ fleet models.** No inference runs without the standing region claim; no at-scale
 
 ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy)
 
-- [ ] **CJ-3a. Acquire corpus** — nothing on disk today. Identify the release and license before
-      downloading.
-- [ ] **CJ-3b. Size on disk** — **unknown, needs sizing.** Expected small (JSON), but measure.
-- [ ] **CJ-3c. Execution requirement** — **unknown, needs determination, and size it separately from
-      the corpus.** Split the answer by category: AST/relevance categories are likely checker-only;
-      executable categories need live or mocked API execution, which `code_exec_scorer.py` does NOT
-      currently model. State which categories we can run and which we decline.
+- [x] **CJ-3a. Acquire corpus** — **BFCL-V3** from `huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard`; **license Apache-2.0** (card + README verified before download). 51 files: 26 root JSONL (5,251 rows), 16 `possible_answer/` gold files, 8 `multi_turn_func_doc/`, README + eval.yaml. Eval-code reference: `github.com/ShishirPatil/gorilla` → berkeley-function-call-leaderboard. **BFCL-v4 is NOT in this repo** — the published `bfcl_v4` vendor keys trace to a newer release; v4 corpus = follow-on acquisition if adopted. ✅ 2026-08-27
+- [x] **CJ-3b. Size on disk** — **11.7 MB** per HF API (11,720,054 B); **12 MB on disk** at
+      `epyc-inference-research/data/bfcl-cj3-2026-08-25/`. 5,251/5,251 rows parse clean (JSONL, 0
+      failures); SHA256SUMS recorded. ✅ 2026-08-27
+- [x] **CJ-3c. Execution requirement** — **split by category (measured)**:
+      **RUNNABLE NOW — checker-only (2,760 rows)**: simple (400), multiple/parallel/parallel_multiple
+      (200 each), irrelevance (240), chatable (200), java (100), javascript (50), sql (100), rest (70),
+      multi_turn_base/composite/long_context/miss_func/miss_param (200 each). Deterministic comparison
+      against `possible_answer/` gold files — no sandbox, no API.
+      **EXECUTABLE via mock substrate (240 rows)**: exec_simple (100), exec_multiple (50),
+      exec_parallel (50), exec_parallel_multiple (40) — BFCL's exec framework runs emitted calls
+      against hand-written Python mocks ("inspired by free REST API endpoints... compute directly").
+      `code_exec_scorer.py` (stdin/stdout+assert) does NOT model the API-call shape — the substrate is
+      small-but-buildable; **declined until CJ-GATE picks the instrument**.
+      **DECLINED — live API execution (2,251 rows)**: live_simple (258), live_multiple (1053),
+      live_parallel (16), live_parallel_multiple (24), live_relevance (18), live_irrelevance (882) —
+      needs real external APIs at eval time; no keys / no egress guarantee.
+      Evidence + category tables: `epyc-inference-research/data/bfcl-cj3-2026-08-25/summary.json`.
+      CJ-3d caveat recorded: production tool path is the bespoke REPL protocol, not native function
+      calling; the instrument decision (REPL vs native) belongs to CJ-GATE. ✅ 2026-08-27
 - [ ] **CJ-3d. Wire a representative sample** — note that the orchestrator's production tool path is
       the bespoke Python-REPL protocol (`TOOL()/CALL()/FINAL()`), **not** llama-server native
       function calling, and `ChatRequest.tools` is accepted-but-never-consumed. Decide deliberately

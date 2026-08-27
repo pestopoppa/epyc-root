@@ -3913,12 +3913,19 @@ _DISCOVERY_STAGE_STALL_S = {
     # synthetic heartbeats or execution timeouts.
     "planner": 900.0,
     "critic": 900.0,
-    "build": 1800.0,
+    "build": 5400.0,
     # The governed test-backend-ops correctness plan has an 1800-second
     # execution timeout.  A live held source-proof claim is positive actor
     # evidence throughout that window; the generic five-minute budget would
     # falsely mark a healthy 1139-case ROCm suite stalled.
     "correctness": 1800.0,
+    # First-turn authoring and the portfolio advance run the Codex planner for
+    # the whole source catalogue and then wait on the build; both are silent
+    # by design.  The single-threaded (-j1) candidate build alone measures
+    # 45-60 minutes on this host, so the no-transition budgets must cover the
+    # full measured window or every healthy campaign trips the stall alarm.
+    "next_hypothesis": 5400.0,
+    "source_materialization": 3600.0,
 }
 
 
@@ -4022,6 +4029,30 @@ _DISCOVERY_V26_GRAPH_KEYS = {
     "production_runtime_snapshot_sha256", "mutable_roots", "device_id",
     "device_reservation", "claim_journal", "graph_sha256",
 }
+_DISCOVERY_V27_GRAPH_KEYS = (
+    _DISCOVERY_V26_GRAPH_KEYS | {"attribution_expectation_erratum",
+                                 "carry_forward",
+                                 "frozen_production_comparator"})
+_DISCOVERY_V27_ERRATUM_SOURCE_KEYS = {
+    "schema", "erratum_schema", "erratum_sha256", "file_sha256",
+    "operation_key", "attribution_refusal_file_sha256",
+    "candidate_semantic_sha256",
+}
+_DISCOVERY_V27_ERRATUM_KEYS = {
+    "schema", "predecessor_campaign_id", "operation_key", "hypothesis_id",
+    "candidate_semantic_sha256", "candidate_patch_sha256",
+    "cross_campaign_candidate_sha256", "source_manifest_file_sha256",
+    "correctness_receipt_file_sha256", "correctness_receipt_sha256",
+    "evidence_policy_file_sha256", "attribution_refusal_file_sha256",
+    "attribution_refusal_receipt_sha256", "classification",
+    "candidate_source_commit", "candidate_binary_sha256",
+    "candidate_hip_library_sha256", "anchor_hip_library_sha256",
+    "profiler_trace_sha256", "reason", "invalidated_predecessor_projection",
+    "stale_candidate_lds_bytes", "corrected_candidate_lds_bytes",
+    "compiler_metadata_proof", "preserved_evidence",
+    "scientific_budget_spent", "do_not_repeat", "replay_authorized",
+    "replacement_disposition", "resolution", "erratum_sha256",
+}
 _DISCOVERY_V26_PREAUTHORED_GRAPH_KEYS = {
     "schema", "carrier_sha256", "file_sha256", "hypothesis_id",
     "template_id", "patch_sha256", "source_backed_diff_sha256",
@@ -4062,6 +4093,7 @@ _DISCOVERY_V26_STATE_OPTIONAL = {
     "portfolio_attribution_failures", "portfolio_authoring_failures",
     "portfolio_measurement_output_failures", "portfolio_skips",
     "portfolio_terminals", "portfolio_validations", "terminal_reason",
+    "c6_admission_config",
 }
 _DISCOVERY_V26_CHECKPOINT_STATES = {
     "discovery_authorization_refused",
@@ -4154,18 +4186,169 @@ def _discovery_v26_input(value: object, bundle: Path,
     return value, snapshot[0]
 
 
-def _discovery_v26_contract(config_path: Path, config: object,
-                            bundle: Path) -> dict | None:
-    """Validate v26's sealed config/planner/graph without importing producer code.
+def _discovery_v27_erratum(value: object) -> bool:
+    """Validate the one Q5 attribution-expectation correction carried by v27."""
+    if (not isinstance(value, dict) or set(value) != _DISCOVERY_V27_ERRATUM_KEYS
+            or value.get("schema") !=
+               "epyc.autokernel.attribution_expectation_erratum.v1"
+            or value.get("predecessor_campaign_id") !=
+               "ak-discovery-03fc1b1230487a35"
+            or value.get("operation_key") !=
+               "fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837"
+            or value.get("hypothesis_id") !=
+               "akh-v2-q5-onewave-preauthored"
+            or value.get("candidate_semantic_sha256") !=
+               "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63"
+            or value.get("candidate_patch_sha256") !=
+               "f4cc49cd11cdfd93a2d5d2e00e653f503b6a16ce675bfb12c034fbbfae3e7a77"
+            or value.get("cross_campaign_candidate_sha256") !=
+               "d5671a1dc197e5d0d53f34f9c4d25f640e0e410d6917b3099459bc40064581b2"
+            or value.get("attribution_refusal_file_sha256") !=
+               "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86"
+            or value.get("classification") != "attribution_route_falsified"
+            or value.get("scientific_budget_spent") is not False
+            or value.get("do_not_repeat") is not False
+            or value.get("replay_authorized") is not True
+            or value.get("replacement_disposition") !=
+               "attribution_expectation_invalid"
+            or value.get("resolution") != "unresolved_retry_eligible"
+            or value.get("preserved_evidence") !=
+               ["source_manifest", "governed_correctness"]
+            or value.get("erratum_sha256") !=
+               _discovery_controller_state_hash({
+                   key: item for key, item in value.items()
+                   if key != "erratum_sha256"})):
+        return False
+    invalidated = value.get("invalidated_predecessor_projection")
+    if invalidated != {
+            "turn": 1,
+            "result_file_sha256":
+                "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86",
+            "removed_effects": [
+                "scientific_attempt", "attempted_candidate_identity",
+                "portfolio_skip", "cross_campaign_do_not_repeat"],
+            "history_retained": True,
+    }:
+        return False
+    corrected = value.get("corrected_candidate_lds_bytes")
+    stale = value.get("stale_candidate_lds_bytes")
+    if (not isinstance(corrected, dict) or not corrected
+            or not isinstance(stale, dict)
+            or set(corrected) != set(stale)
+            or any(type(item) is not int for item in stale.values())
+            or any(type(item) is not int or item != 0
+                   for item in corrected.values())
+            or sorted(stale.values()) != [256, 512, 512, 512]):
+        return False
+    proof = value.get("compiler_metadata_proof")
+    proof_keys = {
+        "schema", "llvm_objcopy_sha256", "llvm_objcopy_version",
+        "section_extraction_command", "clang_offload_bundler_sha256",
+        "clang_offload_bundler_version", "llvm_readobj_sha256",
+        "llvm_readobj_version", "metadata_command", "symbol_command",
+        "bundle_parser", "candidate_code_object_sha256",
+        "anchor_code_object_sha256", "selected_mangled_name_set", "rows",
+    }
+    if (not isinstance(proof, dict) or set(proof) != proof_keys
+            or proof.get("schema") !=
+               "epyc.autokernel.amdgpu_group_segment_proof.v2"
+            or proof.get("candidate_code_object_sha256") !=
+               "53c63348f3e1797c6c27a82e887bb0b20649636c725fb04d85af3e2038838bd6"
+            or proof.get("anchor_code_object_sha256") !=
+               "ba878a186026165135705597b1c4966c06c7af6a46a5dd99c3194dc76e7d8ab0"
+            or not isinstance(proof.get("rows"), list)
+            or len(proof["rows"]) != 2
+            or any(not isinstance(row, dict) or set(row) != {
+                    "mangled_name", "candidate_group_segment_fixed_size",
+                    "anchor_group_segment_fixed_size"}
+                   or not isinstance(row.get("mangled_name"), str)
+                   or not row["mangled_name"]
+                   for row in proof["rows"])
+            or proof.get("selected_mangled_name_set") != sorted(
+                row["mangled_name"] for row in proof["rows"])
+            or len(set(proof["selected_mangled_name_set"])) != 2
+            or {(row.get("candidate_group_segment_fixed_size"),
+                 row.get("anchor_group_segment_fixed_size"))
+                for row in proof["rows"] if isinstance(row, dict)} !=
+               {(0, 512), (0, 1024)}):
+        return False
+    parser = proof.get("bundle_parser")
+    parser_keys = {
+        "format", "container_count", "selected_bundle_index",
+        "bundle_index_base", "selected_target_index", "target_index_base",
+        "selected_target", "payload_offset_within_container",
+        "candidate", "anchor",
+    }
+    object_keys = {
+        "section_sha256", "section_size", "container_offset",
+        "code_object_size"}
+    if (not isinstance(parser, dict) or set(parser) != parser_keys
+            or {key: parser.get(key) for key in (
+                "format", "container_count", "selected_bundle_index",
+                "bundle_index_base", "selected_target_index",
+                "target_index_base", "selected_target",
+                "payload_offset_within_container")} != {
+                    "format": "clang_offload_bundle_header_little_endian_v1",
+                    "container_count": 135, "selected_bundle_index": 35,
+                    "bundle_index_base": 0, "selected_target_index": 1,
+                    "target_index_base": 0,
+                    "selected_target": "hipv4-amdgcn-amd-amdhsa--gfx90a",
+                    "payload_offset_within_container": 4096,
+                }
+            or any(not isinstance(parser.get(arm), dict)
+                   or set(parser[arm]) != object_keys
+                   or not _discovery_sha256(
+                       parser[arm].get("section_sha256"))
+                   or any(type(parser[arm].get(key)) is not int
+                          or parser[arm][key] <= 0 for key in (
+                              "section_size", "container_offset",
+                              "code_object_size"))
+                   for arm in ("candidate", "anchor"))
+            or any(not _discovery_sha256(proof.get(key)) for key in (
+                "llvm_objcopy_sha256", "clang_offload_bundler_sha256",
+                "llvm_readobj_sha256"))
+            or any(not isinstance(proof.get(key), str) or not proof[key]
+                   for key in (
+                       "llvm_objcopy_version", "clang_offload_bundler_version",
+                       "llvm_readobj_version"))
+            or proof.get("section_extraction_command") != [
+                "/opt/rocm/llvm/bin/llvm-objcopy",
+                "--dump-section=.hip_fatbin=<section-output>",
+                "<hip-library>"]
+            or proof.get("metadata_command") != [
+                "/opt/rocm/llvm/bin/llvm-readobj", "--notes",
+                "<gfx90a-code-object>"]
+            or proof.get("symbol_command") != [
+                "/opt/rocm/llvm/bin/llvm-readelf", "-sW",
+                "<gfx90a-code-object>"]):
+        return False
+    return all(_discovery_sha256(value.get(key)) for key in (
+        "source_manifest_file_sha256", "correctness_receipt_file_sha256",
+        "correctness_receipt_sha256", "evidence_policy_file_sha256",
+        "attribution_refusal_receipt_sha256", "candidate_binary_sha256",
+        "candidate_hip_library_sha256", "anchor_hip_library_sha256",
+        "profiler_trace_sha256")) and bool(re.fullmatch(
+            r"[0-9a-f]{40}", str(value.get("candidate_source_commit"))))
+
+
+def _discovery_product_contract(
+        config_path: Path, config: object, bundle: Path, *,
+        deployment_schema: str, graph_schema: str,
+        input_keys: set[str], graph_keys: set[str],
+        execution_module_sha256: object, producer_commit: object,
+        deployment_semantic_sha256: object,
+        deployment_file_sha256: object, graph_sha256: object,
+        graph_file_sha256_frozen: object,
+        q5_erratum_required: bool = False) -> dict | None:
+    """Validate a sealed successor config/planner/graph without producer imports.
 
     The returned ``ready`` bit is true only when the graph matches the frozen
     producer commit, whole-graph digest, and all 30 role-bound module digests;
-    callers must not select a live v26 campaign on self-declared hashes alone.
+    callers must not select a live campaign on self-declared hashes alone.
     """
     if (not isinstance(config, dict)
             or set(config) != _DISCOVERY_V26_DEPLOYMENT_KEYS
-            or config.get("schema") !=
-            "epyc.autokernel.discovery_deployment.v5"
+            or config.get("schema") != deployment_schema
             or not _discovery_sha256(config.get("config_sha256"))
             or config["config_sha256"] != _discovery_content_hash({
                 key: value for key, value in config.items()
@@ -4181,7 +4364,8 @@ def _discovery_v26_contract(config_path: Path, config: object,
         "controller": {"state_root", "evidence_root", "operations_root",
                        "build_root", "max_iterations", "nomination_threshold"},
         "actors": {"wrapper_path", "wrapper_sha256", "critic_path",
-                   "critic_sha256", "environment_profile_id"},
+                   "critic_sha256", "environment_profile_id",
+                   "backup_critic_path", "backup_critic_sha256"},
         "gpu": {"device_id", "claim_timeout_s", "inference_window_lock",
                 "inference_window_lease_id"},
         "source_plan": {"source_builder_id", "evidence_plan_id",
@@ -4198,13 +4382,14 @@ def _discovery_v26_contract(config_path: Path, config: object,
             or not 1 <= max_iterations <= 1000):
         return None
     inputs = config.get("immutable_inputs")
-    input_keys = {"model", "workload", "runtime_config", "admission_policy",
-                  "hypothesis_portfolio", "hypothesis_evidence_manifest",
-                  "hypothesis_portfolio_contract", "preauthored_continuation"}
     if not isinstance(inputs, dict) or set(inputs) != input_keys:
         return None
+    # Input rows bind path+sha256; the producer's carry-forward row also
+    # carries its own semantic/self hash fields, which a strict exact-shape
+    # check would reject even though the file digest is still verified below.
     if any(not isinstance(value, dict)
-           or set(value) != {"path", "sha256"}
+           or not {"path", "sha256"}.issubset(value)
+           or set(value) - {"path", "sha256", "semantic_sha256", "self_sha256"}
            or not isinstance(value.get("path"), str)
            or not Path(value["path"]).is_absolute()
            or ".." in Path(value["path"]).parts
@@ -4267,6 +4452,17 @@ def _discovery_v26_contract(config_path: Path, config: object,
             or planner.get("preauthored_source_backed_diff_sha256") !=
                carrier["patch"].get("source_backed_sha256")):
         return None
+    erratum = None
+    if q5_erratum_required:
+        erratum_row = _discovery_v26_input(
+            inputs.get("q5_lds0_attribution_erratum"), bundle,
+            max_bytes=2 * 1024 * 1024)
+        if erratum_row is None:
+            return None
+        erratum = _strict_json_bytes(erratum_row[1])
+        if (not _discovery_v27_erratum(erratum)
+                or erratum_row[1] != _canonical_json_bytes(erratum) + b"\n"):
+            return None
     graph_path = _safe_bundle_path(
         str(Path(config["controller"]["state_root"]) / "deployment-graph.json"),
         bundle)
@@ -4279,9 +4475,8 @@ def _discovery_v26_contract(config_path: Path, config: object,
         graph = (_strict_json_bytes(graph_row[0])
                  if graph_row is not None else None)
     if graph is not None:
-        if (set(graph) != _DISCOVERY_V26_GRAPH_KEYS
-                or graph.get("schema") !=
-                   "epyc.autokernel.static_discovery_graph.v7"
+        if (set(graph) != graph_keys
+                or graph.get("schema") != graph_schema
                 or graph.get("authority") !=
                    "nonpromotable_candidate_only_discovery"
                 or graph.get("promotion_claim") is not False
@@ -4291,8 +4486,9 @@ def _discovery_v26_contract(config_path: Path, config: object,
                    _discovery_content_hash({
                        key: value for key, value in graph.items()
                        if key != "graph_sha256"})
-                or graph.get("template_registry_sha256") !=
-                   planner.get("template_registry_sha256")
+                 or (planner.get("template_registry_sha256") is not None
+                     and graph.get("template_registry_sha256") !=
+                     planner.get("template_registry_sha256"))
                 or graph.get("template_surfaces_sha256") !=
                    _discovery_content_hash(graph.get("template_surfaces"))
                 or graph.get("portfolio_dispatch_authority_sha256") !=
@@ -4301,8 +4497,9 @@ def _discovery_v26_contract(config_path: Path, config: object,
             return None
         modules = graph.get("execution_modules")
         if (not isinstance(modules, dict)
-                or set(modules) != set(
-                    _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26)):
+                or not set(
+                    _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26).issubset(
+                        modules)):
             return None
         for role, logical_path in (
                 _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26.items()):
@@ -4310,6 +4507,18 @@ def _discovery_v26_contract(config_path: Path, config: object,
             if (not isinstance(binding, dict)
                     or set(binding) != {"logical_path", "sha256"}
                     or binding.get("logical_path") != logical_path
+                    or not _discovery_sha256(binding.get("sha256"))):
+                return None
+        # The graph also binds newer static/importable modules (backup critic,
+        # cumulative composition, C6 reward integrity, …) that no supervisor
+        # executes; each must still carry a valid binding.
+        for role, binding in modules.items():
+            if role in _SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26:
+                continue
+            if (not isinstance(binding, dict)
+                    or set(binding) != {"logical_path", "sha256"}
+                    or not isinstance(binding.get("logical_path"), str)
+                    or not binding["logical_path"]
                     or not _discovery_sha256(binding.get("sha256"))):
                 return None
         preauthored = graph.get("preauthored_continuation")
@@ -4385,22 +4594,41 @@ def _discovery_v26_contract(config_path: Path, config: object,
                     key: row[key] for key in route_shape_keys}
                     for row in q5_routes)):
             return None
-    module_hashes = (_DISCOVERY_V26_EXECUTION_MODULE_SHA256
-                     if isinstance(_DISCOVERY_V26_EXECUTION_MODULE_SHA256, dict)
+        if q5_erratum_required:
+            source = graph.get("attribution_expectation_erratum")
+            if (not isinstance(source, dict)
+                    or set(source) != _DISCOVERY_V27_ERRATUM_SOURCE_KEYS
+                    or source.get("schema") !=
+                       "epyc.autokernel.attribution_expectation_erratum_source.v1"
+                    or source.get("erratum_schema") != erratum.get("schema")
+                    or source.get("erratum_sha256") !=
+                       erratum.get("erratum_sha256")
+                    or source.get("file_sha256") !=
+                       inputs["q5_lds0_attribution_erratum"]["sha256"]
+                    or source.get("operation_key") !=
+                       erratum.get("operation_key")
+                    or source.get("attribution_refusal_file_sha256") !=
+                       erratum.get("attribution_refusal_file_sha256")
+                    or source.get("candidate_semantic_sha256") !=
+                       erratum.get("candidate_semantic_sha256")):
+                return None
+    module_hashes = (execution_module_sha256
+                     if isinstance(execution_module_sha256, dict)
                      else None)
     hashes_frozen = bool(
         graph is not None and module_hashes is not None
-        and set(module_hashes) == set(_SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26)
+        and set(_SUPERVISOR_GRAPH_EXECUTION_MODULES_V4_V26).issubset(
+            module_hashes)
         and all(graph["execution_modules"][role]["sha256"] == digest
                 for role, digest in module_hashes.items())
-        and graph.get("graph_sha256") == _DISCOVERY_V26_GRAPH_SHA256
-        and graph_file_sha256 == _DISCOVERY_V26_GRAPH_FILE_SHA256
+        and graph.get("graph_sha256") == graph_sha256
+        and graph_file_sha256 == graph_file_sha256_frozen
         and config.get("config_sha256") ==
-            _DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256
-        and config_file_sha256 == _DISCOVERY_V26_DEPLOYMENT_FILE_SHA256
-        and isinstance(_DISCOVERY_V26_PRODUCER_COMMIT, str)
+            deployment_semantic_sha256
+        and config_file_sha256 == deployment_file_sha256
+        and isinstance(producer_commit, str)
         and re.fullmatch(r"[0-9a-f]{40}",
-                         _DISCOVERY_V26_PRODUCER_COMMIT) is not None)
+                         producer_commit) is not None)
     return {
         "ready": hashes_frozen, "schema": config["schema"],
         "planner_schema": planner["schema"],
@@ -4417,8 +4645,7 @@ def _discovery_v26_contract(config_path: Path, config: object,
                 graph["preauthored_continuation"]["template_id"]
             ]["excluded_signatures"][0]["calls"],
         } if graph is not None else None),
-        "producer_commit": (_DISCOVERY_V26_PRODUCER_COMMIT
-                            if hashes_frozen else None),
+        "producer_commit": (producer_commit if hashes_frozen else None),
         "deployment_identity_sha256": config["config_sha256"],
         "planner_context_file_sha256":
             config["planner_context"]["sha256"],
@@ -4432,6 +4659,9 @@ def _discovery_v26_contract(config_path: Path, config: object,
         "admission_corpus_version": admission["version"],
         "max_iterations": config["controller"].get("max_iterations"),
         "state_root": config["controller"].get("state_root"),
+        "operations_root": config["controller"].get("operations_root"),
+        "build_root": config["controller"].get("build_root"),
+        "bundle_root": str(bundle),
         "template_registry_sha256": planner["template_registry_sha256"],
         "hypothesis_portfolio_sha256":
             planner["hypothesis_portfolio_sha256"],
@@ -4443,7 +4673,57 @@ def _discovery_v26_contract(config_path: Path, config: object,
         "historical_commit": (
             carrier.get("historical_candidate", {}).get("commit")
             if isinstance(carrier.get("historical_candidate"), dict) else None),
+        **({
+            "q5_erratum": erratum,
+            "carry_forward_schema":
+                "epyc.autokernel.discovery_carry_forward.v2",
+        } if q5_erratum_required else {}),
     }
+
+
+def _discovery_v26_contract(config_path: Path, config: object,
+                            bundle: Path) -> dict | None:
+    """Validate the immutable v26 product contract."""
+    return _discovery_product_contract(
+        config_path, config, bundle,
+        deployment_schema="epyc.autokernel.discovery_deployment.v5",
+        graph_schema="epyc.autokernel.static_discovery_graph.v7",
+        input_keys={
+            "model", "workload", "runtime_config", "admission_policy",
+            "hypothesis_portfolio", "hypothesis_evidence_manifest",
+            "hypothesis_portfolio_contract", "preauthored_continuation"},
+        graph_keys=_DISCOVERY_V26_GRAPH_KEYS,
+        execution_module_sha256=_DISCOVERY_V26_EXECUTION_MODULE_SHA256,
+        producer_commit=_DISCOVERY_V26_PRODUCER_COMMIT,
+        deployment_semantic_sha256=
+            _DISCOVERY_V26_DEPLOYMENT_SEMANTIC_SHA256,
+        deployment_file_sha256=_DISCOVERY_V26_DEPLOYMENT_FILE_SHA256,
+        graph_sha256=_DISCOVERY_V26_GRAPH_SHA256,
+        graph_file_sha256_frozen=_DISCOVERY_V26_GRAPH_FILE_SHA256)
+
+
+def _discovery_v27_contract(config_path: Path, config: object,
+                            bundle: Path) -> dict | None:
+    """Validate v27 semantics while final immutable pins remain fail closed."""
+    return _discovery_product_contract(
+        config_path, config, bundle,
+        deployment_schema="epyc.autokernel.discovery_deployment.v6",
+        graph_schema="epyc.autokernel.static_discovery_graph.v9",
+        input_keys={
+            "model", "workload", "runtime_config", "admission_policy",
+            "hypothesis_portfolio", "hypothesis_evidence_manifest",
+            "hypothesis_portfolio_contract", "preauthored_continuation",
+            "q5_lds0_attribution_erratum", "carry_forward",
+            "frozen_production_comparator"},
+        graph_keys=_DISCOVERY_V27_GRAPH_KEYS,
+        execution_module_sha256=_DISCOVERY_V27_EXECUTION_MODULE_SHA256,
+        producer_commit=_DISCOVERY_V27_PRODUCER_COMMIT,
+        deployment_semantic_sha256=
+            _DISCOVERY_V27_DEPLOYMENT_SEMANTIC_SHA256,
+        deployment_file_sha256=_DISCOVERY_V27_DEPLOYMENT_FILE_SHA256,
+        graph_sha256=_DISCOVERY_V27_GRAPH_SHA256,
+        graph_file_sha256_frozen=_DISCOVERY_V27_GRAPH_FILE_SHA256,
+        q5_erratum_required=True)
 
 
 def _discovery_v26_checkpoint(path: Path, *, now: float) -> dict | None:
@@ -4890,6 +5170,225 @@ def _discovery_v26_generic_holder(
     return _discovery_v26_preauthored_pending(synthetic, state)
 
 
+_DISCOVERY_POSTBUILD_PATH_FIELDS = {
+    "anchor_build", "candidate_build", "measurement_binary",
+    "common_loader_dir", "anchor_loader_dir", "candidate_loader_dir",
+    "materialization_receipt", "anchor_source_tree_receipt",
+    "candidate_source_tree_receipt", "anchor_correctness_binary",
+    "candidate_correctness_binary", "anchor_correctness_capability_receipt",
+    "candidate_correctness_capability_receipt", "teardown_receipt",
+}
+_DISCOVERY_POSTBUILD_SCALAR_FIELDS = {
+    "reward_runtime_sha256", "operation_key", "build_key",
+    "materialization_sha256", "anchor_source_tree_sha256",
+    "candidate_source_tree_sha256", "anchor_correctness_binary_sha256",
+    "candidate_correctness_binary_sha256",
+    "anchor_correctness_capability_sha256",
+    "candidate_correctness_capability_sha256", "teardown_sha256",
+}
+_DISCOVERY_BUILD_IDENTITY_KEYS = {
+    "source_commit", "source_sha256", "binary_sha256",
+    "hip_library_sha256", "config_sha256", "linkage_sha256",
+}
+
+
+def _discovery_v27_build_identity(value: object) -> bool:
+    return bool(
+        isinstance(value, dict) and set(value) == _DISCOVERY_BUILD_IDENTITY_KEYS
+        and isinstance(value.get("source_commit"), str)
+        and bool(value["source_commit"])
+        and all(_discovery_sha256(value.get(key)) for key in (
+            "source_sha256", "binary_sha256", "hip_library_sha256",
+            "config_sha256", "linkage_sha256")))
+
+
+def _discovery_v27_postbuild_resource_wait(
+        pending: object, contract: dict) -> dict | None:
+    """Validate the exact controller+adapter checkpoint for a post-build wait."""
+    if not isinstance(pending, dict):
+        return None
+    checkpoint = pending.get("resource_wait")
+    checkpoint_keys = {
+        "schema", "authority", "promotion_claim", "operation_key",
+        "inflight", "inflight_sha256", "wait_receipt",
+        "wait_receipt_sha256", "resume_permit", "checkpoint_sha256",
+    }
+    if (not isinstance(checkpoint, dict) or set(checkpoint) != checkpoint_keys
+            or checkpoint.get("schema") !=
+               "epyc.autokernel.controller_resource_wait_checkpoint.v1"
+            or checkpoint.get("authority") !=
+               "nonpromotable_candidate_only_discovery"
+            or checkpoint.get("promotion_claim") is not False
+            or not _discovery_sha256(checkpoint.get("operation_key"))
+            or checkpoint.get("checkpoint_sha256") !=
+               _discovery_controller_state_hash({
+                   key: value for key, value in checkpoint.items()
+                   if key != "checkpoint_sha256"})):
+        return None
+    operation_key = checkpoint["operation_key"]
+    inflight = checkpoint.get("inflight")
+    wait = checkpoint.get("wait_receipt")
+    permit = checkpoint.get("resume_permit")
+    row = pending.get("row")
+    if (not isinstance(inflight, dict)
+            or checkpoint.get("inflight_sha256") !=
+               _discovery_controller_state_hash(inflight)
+            or inflight.get("operation_key") != operation_key
+            or not isinstance(inflight.get("lease"), dict)
+            or inflight["lease"].get("admitted") is not True
+            or inflight["lease"].get("operation_key") != operation_key
+            or not isinstance(wait, dict)
+            or checkpoint.get("wait_receipt_sha256") !=
+               _discovery_controller_state_hash(wait)
+            or not isinstance(permit, dict)
+            or permit != {**inflight["lease"], **wait}
+            or not isinstance(row, dict)
+            or row != {**inflight.get("row", {}),
+                       "status": "waiting_resource", "lease": wait}
+            or pending.get("candidate") != inflight.get("candidate")
+            or pending.get("authorization") != inflight.get("authorization")
+            or pending.get("confirmation") !=
+               bool(inflight.get("confirmation"))
+            or pending.get("parent_authorization") !=
+               inflight.get("parent_authorization")
+            or pending.get("infrastructure_retry_epoch") !=
+               inflight.get("infrastructure_retry_epoch", 0)):
+        return None
+    wait_keys = {
+        "admitted", "phase", "reason", "device_id", "operation_key",
+        "promotion_claim", "stage_receipt_path", "stage_receipt_sha256",
+    }
+    reason = wait.get("reason")
+    if isinstance(reason, str) and reason.startswith("foreign_kfd_"):
+        wait_keys.add("foreign_kfd_pids")
+    elif "detail" in wait:
+        wait_keys.add("detail")
+    if (set(wait) != wait_keys or wait.get("admitted") is not False
+            or wait.get("phase") != "pre_executor_reservation"
+            or wait.get("operation_key") != operation_key
+            or wait.get("promotion_claim") is not False
+            or reason not in {
+                "device_busy", "foreign_kfd_busy",
+                "foreign_kfd_inventory_invalid",
+                "foreign_kfd_inventory_unreadable"}
+            or not isinstance(wait.get("device_id"), str)
+            or not wait["device_id"]
+            or not _discovery_sha256(wait.get("stage_receipt_sha256"))):
+        return None
+    if reason.startswith("foreign_kfd_"):
+        pids = wait.get("foreign_kfd_pids")
+        if (not isinstance(pids, list) or pids != sorted(set(pids))
+                or any(type(pid) is not int or pid <= 0 for pid in pids)
+                or (reason == "foreign_kfd_busy") != bool(pids)):
+            return None
+    elif "detail" in wait and not isinstance(wait.get("detail"), str):
+        return None
+    bundle = Path(str(contract.get("bundle_root", "")))
+    operations_root = _safe_bundle_path(contract.get("operations_root"), bundle)
+    wait_path = _safe_bundle_path(wait.get("stage_receipt_path"), bundle)
+    if (operations_root is None or wait_path is None
+            or wait_path.parent != operations_root / operation_key / "resource-waits"
+            or re.fullmatch(r"wait-[0-9]{4}\.json", wait_path.name) is None):
+        return None
+    wait_snapshot = _owned_public_snapshot(wait_path, max_bytes=512 * 1024)
+    if (wait_snapshot is None
+            or hashlib.sha256(wait_snapshot[0]).hexdigest() !=
+               wait["stage_receipt_sha256"]):
+        return None
+    stage = _strict_json_bytes(wait_snapshot[0])
+    stage_keys = {
+        "schema", "authority", "promotion_claim", "operation_key",
+        "manifest_sha256", "gpu_executor_started", "proof_root_created",
+        "runner_plan_created", "runner_output_created", "build_key",
+        "materialization_sha256", "contention", "receipt_sha256",
+    }
+    stage_required = {
+        "schema": "epyc.autokernel.gpu_source_resource_wait.v1",
+        "authority": "nonpromotable_candidate_only_discovery",
+        "promotion_claim": False, "operation_key": operation_key,
+        "gpu_executor_started": False, "proof_root_created": False,
+        "runner_plan_created": False, "runner_output_created": False,
+    }
+    contention = {key: value for key, value in wait.items()
+                  if key not in {"stage_receipt_path", "stage_receipt_sha256"}}
+    candidate = pending.get("candidate")
+    manifest_sha256 = (candidate.get("source_manifest_sha256")
+                       if isinstance(candidate, dict) else None)
+    if (not isinstance(stage, dict) or set(stage) != stage_keys
+            or any(stage.get(key) != value
+                   for key, value in stage_required.items())
+            or not _discovery_sha256(manifest_sha256)
+            or stage.get("manifest_sha256") != manifest_sha256
+            or stage.get("contention") != contention
+            or stage.get("receipt_sha256") !=
+               _discovery_controller_state_hash({
+                   key: value for key, value in stage.items()
+                   if key != "receipt_sha256"})
+            or not _discovery_sha256(stage.get("build_key"))
+            or not _discovery_sha256(stage.get("materialization_sha256"))):
+        return None
+    operation_root = operations_root / operation_key
+    postbuild_path = operation_root / "postbuild-checkpoint.json"
+    postbuild_snapshot = _owned_public_snapshot(
+        postbuild_path, max_bytes=4 * 1024 * 1024)
+    postbuild = (_strict_json_bytes(postbuild_snapshot[0])
+                 if postbuild_snapshot is not None else None)
+    postbuild_keys = {
+        "schema", "authority", "promotion_claim", "operation_key",
+        "manifest_sha256", "build", "receipt_sha256",
+    }
+    build = postbuild.get("build") if isinstance(postbuild, dict) else None
+    build_keys = ({"candidate_identity", "anchor_identity"}
+                  | _DISCOVERY_POSTBUILD_PATH_FIELDS
+                  | _DISCOVERY_POSTBUILD_SCALAR_FIELDS)
+    if (not isinstance(postbuild, dict) or set(postbuild) != postbuild_keys
+            or postbuild.get("schema") !=
+               "epyc.autokernel.gpu_source_postbuild_checkpoint.v1"
+            or postbuild.get("authority") !=
+               "nonpromotable_candidate_only_discovery"
+            or postbuild.get("promotion_claim") is not False
+            or postbuild.get("operation_key") != operation_key
+            or postbuild.get("manifest_sha256") != manifest_sha256
+            or postbuild.get("receipt_sha256") !=
+               _discovery_controller_state_hash({
+                   key: value for key, value in postbuild.items()
+                   if key != "receipt_sha256"})
+            or not isinstance(build, dict) or set(build) != build_keys
+            or build.get("operation_key") != operation_key
+            or build.get("build_key") != stage["build_key"]
+            or build.get("materialization_sha256") !=
+               stage["materialization_sha256"]
+            or not _discovery_v27_build_identity(
+                build.get("candidate_identity"))
+            or not _discovery_v27_build_identity(build.get("anchor_identity"))
+            or build.get("candidate_identity") == build.get("anchor_identity")):
+        return None
+    policy_path = operation_root / "evidence-policy.json"
+    policy_snapshot = _owned_public_snapshot(
+        policy_path, max_bytes=4 * 1024 * 1024)
+    policy = (_strict_json_bytes(policy_snapshot[0])
+              if policy_snapshot is not None else None)
+    if (not isinstance(policy, dict)
+            or policy.get("schema") !=
+               "epyc.autokernel.gpu_source_execution_policy.v2"
+            or policy.get("manifest_sha256") != manifest_sha256
+            or policy.get("candidate_build_identity") !=
+               build["candidate_identity"]
+            or policy.get("anchor_build_identity") !=
+               build["anchor_identity"]):
+        return None
+    return {
+        "kind": "postbuild_resource_wait",
+        "operation_key": operation_key, "reason": reason,
+        "device_id": wait["device_id"],
+        "foreign_kfd_pids": list(wait.get("foreign_kfd_pids", [])),
+        "build_key": stage["build_key"],
+        "materialization_sha256": stage["materialization_sha256"],
+        "completed_builds_preserved": True,
+        "evidence_policy_bound": True,
+    }
+
+
 def _discovery_v26_state_contract(state: object,
                                   contract: dict, *,
                                   now: float | None = None) -> dict | None:
@@ -4900,7 +5399,9 @@ def _discovery_v26_state_contract(state: object,
             or not _DISCOVERY_V26_STATE_REQUIRED.issubset(state)
             or set(state) - (_DISCOVERY_V26_STATE_REQUIRED
                              | _DISCOVERY_V26_STATE_OPTIONAL)
-            or state.get("schema") != "epyc.autokernel.discovery_controller.v7"
+            or state.get("schema") not in {
+                "epyc.autokernel.discovery_controller.v7",
+                "epyc.autokernel.discovery_controller.v8"}
             or state.get("authority") !=
                "nonpromotable_candidate_only_discovery"
             or state.get("roster") != _DISCOVERY_V26_ROSTER
@@ -5093,6 +5594,699 @@ def _discovery_v26_state_contract(state: object,
         }
     return {"scientific_attempts": scientific, "provenance": provenance,
             "updated_at_unix": state_time}
+
+
+def _discovery_v27_state_contract(state: object,
+                                  contract: dict, *,
+                                  now: float | None = None) -> dict | None:
+    """Extend the unchanged v7 state grammar with v27's typed wait carrier."""
+    if (not isinstance(state, dict)
+            or state.get("state_sha256") !=
+               _discovery_controller_state_hash({
+                   key: value for key, value in state.items()
+                   if key != "state_sha256"})):
+        return None
+    pending = state.get("pending")
+    row = pending.get("row") if isinstance(pending, dict) else None
+    waiting = bool(isinstance(row, dict)
+                   and row.get("status") == "waiting_resource")
+    has_checkpoint = bool(isinstance(pending, dict)
+                          and "resource_wait" in pending)
+    resource_wait = None
+    projected_state = state
+    if has_checkpoint:
+        if not waiting:
+            return None
+        resource_wait = _discovery_v27_postbuild_resource_wait(
+            pending, contract)
+        if resource_wait is None:
+            return None
+        clean_pending = {
+            key: value for key, value in pending.items()
+            if key != "resource_wait"}
+        projected_state = {**state, "pending": clean_pending}
+        projected_state["state_sha256"] = _discovery_controller_state_hash({
+            key: value for key, value in projected_state.items()
+            if key != "state_sha256"})
+    elif waiting:
+        lease = row.get("lease") if isinstance(row, dict) else None
+        # The typed adapter receipt is never optional.  Its identifying fields
+        # without the atomic controller checkpoint are a torn post-build wait,
+        # not a legacy prebuild admission pause.
+        if (isinstance(lease, dict)
+                and (lease.get("phase") == "pre_executor_reservation"
+                     or "stage_receipt_path" in lease
+                     or "stage_receipt_sha256" in lease)):
+            return None
+        resource_wait = {
+            "kind": "prebuild_resource_wait",
+            "operation_key": row.get("operation_key"),
+            "reason": (lease.get("reason")
+                       if isinstance(lease, dict) else None),
+            "completed_builds_preserved": False,
+            "evidence_policy_bound": False,
+        }
+    projected = _discovery_v26_state_contract(
+        projected_state, contract, now=now)
+    erratum = contract.get("q5_erratum")
+    if projected is None or not _discovery_v27_erratum(erratum):
+        return None
+    history = [{
+        "turn": erratum["invalidated_predecessor_projection"]["turn"],
+        "hypothesis_id": erratum["hypothesis_id"],
+        "status": erratum["replacement_disposition"],
+        "raw_status": erratum["classification"],
+        "scientific_budget_spent": False,
+        "result_file_sha256":
+            erratum["invalidated_predecessor_projection"][
+                "result_file_sha256"],
+        "history_retained": True,
+    }]
+    return {
+        **projected,
+        "resource_wait": resource_wait,
+        "annulled_history": history,
+        "annulled_scientific_attempts": 1,
+        "scientific_budget": {
+            "spent": projected["scientific_attempts"],
+            "maximum": contract["max_iterations"],
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# v27 FINAL PRODUCER SCHEMA — cumulative performance vs frozen production
+#
+# The final producer carrier (research repo
+# codex/autokernel-performance-carrier-closure-v3-20260822, PERF repair
+# b12de815) seals a per-operation cumulative promotion statement:
+#
+#   operations/<operation_key>/runner-plan.json
+#       epyc.autokernel.gpu_source_runner_plan.v2        (receipt_sha256)
+#   operations/<operation_key>/proof/proof-bundle.json
+#       epyc.autokernel.gpu_source_evidence_bundle.v1    (receipt_sha256)
+#   operations/<operation_key>/runner/<sN>/<stage>/result.json
+#       epyc.autokernel.gpu_candidate_only_screen.v2     (result_sha256)
+#       stages: measurement-graphs-off, target-runtime-graphs-on,
+#       cumulative-vs-production-graphs-on
+#   operations/<operation_key>/cumulative-performance.json
+#       epyc.autokernel.cumulative_performance.v2        (result_sha256)
+#   operations/<operation_key>/composition-authority.jsonl
+#       epyc.autokernel.cumulative_authority_journal_event.v1 (pre_run, result)
+#   operations/<operation_key>/screen-result.json
+#       epyc.autokernel.gpu_source_operation_result.v2  (receipt_sha256)
+#   <state_root>/cumulative-composition.json
+#       epyc.autokernel.cumulative_composition_state.v3 (controller ledger)
+#
+# THE CUMULATIVE PERFORMANCE RECEIPT IS THE AUTHORITATIVE PROMOTION STATEMENT.
+# This projection renders promotion_eligible + promotion_reason +
+# cumulative_classification VERBATIM and never recomputes eligibility.  It
+# binds the receipt to the append-only authority journal (pre_run + result
+# events) and surfaces the binding as a trust indicator (matched / mismatched /
+# absent): a mismatch marks the row NOT-trusted but never hides it.
+#
+# Every v27 immutable pin stays UNSET by design: the final schema is
+# self-sealed (result_sha256 / receipt_sha256 native identities), so this
+# read-only binding needs no frozen producer commit to render.
+# ---------------------------------------------------------------------------
+
+_V27_RUNNER_PLAN_SCHEMA = "epyc.autokernel.gpu_source_runner_plan.v2"
+_V27_PROOF_BUNDLE_SCHEMA = "epyc.autokernel.gpu_source_evidence_bundle.v1"
+_V27_SCREEN_RESULT_SCHEMA = "epyc.autokernel.gpu_candidate_only_screen.v2"
+_V27_OPERATION_RESULT_SCHEMA = "epyc.autokernel.gpu_source_operation_result.v2"
+_V27_CUMULATIVE_PERFORMANCE_SCHEMA = \
+    "epyc.autokernel.cumulative_performance.v2"
+_V27_AUTHORITY_JOURNAL_SCHEMA = \
+    "epyc.autokernel.cumulative_authority_journal_event.v1"
+_V27_COMPOSITION_LEDGER_SCHEMA = \
+    "epyc.autokernel.cumulative_composition_state.v3"
+_V27_CUMULATIVE_DASHBOARD_SCHEMA = \
+    "epyc.dashboard.autokernel_v27_cumulative.v1"
+_V27_AUTHORITY = "nonpromotable_candidate_only_discovery"
+_V27_PROMOTION_GATE_AUTHORITY = "frozen_production_promotion_gate"
+_V27_AUTHORITY_JOURNAL_NAME = "composition-authority.jsonl"
+_V27_COMPOSITION_LEDGER_NAME = "cumulative-composition.json"
+_V27_CUMULATIVE_OPERATION_KEYS = (
+    "measurement_graphs_off_output_dir",
+    "target_runtime_graphs_on_output_dir",
+    "production_graphs_on_output_dir",
+    "cumulative_performance_path",
+)
+_V27_STAGE_LABELS = (
+    "measurement_graphs_off", "target_runtime_graphs_on",
+    "production_graphs_on",
+)
+_V27_STAGE_JOURNAL_KEYS = {
+    "measurement_graphs_off": "graphs_off",
+    "target_runtime_graphs_on": "graphs_on",
+    "production_graphs_on": "production_graphs_on",
+}
+
+
+def _v27_stable_snapshot(path: Path, *, max_bytes: int) -> bytes | None:
+    """Read one sealed producer receipt with the producer's stable-read rules.
+
+    Mirrors cumulative_composition._stable_receipt_bytes: regular file, single
+    link, same owner, no group/other write, bounded size, and identical
+    identity before/after the read.  Unlike the dashboard's
+    _owned_public_snapshot this deliberately does NOT require a private parent
+    directory: the producer's own receipts live under ordinary 0o755 runner
+    stage directories.
+    """
+    if not path.is_absolute() or ".." in path.parts:
+        return None
+    flags = os.O_RDONLY | os.O_CLOEXEC
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        before = os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.geteuid() or before.st_mode & 0o022
+                or before.st_size > max_bytes):
+            return None
+        chunks = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        pathname = os.lstat(path)
+    except OSError:
+        return None
+    identity = lambda row: (
+        row.st_dev, row.st_ino, row.st_uid, stat.S_IFMT(row.st_mode),
+        row.st_nlink, row.st_size, row.st_mtime_ns, row.st_ctime_ns)
+    if (identity(before) != identity(after)
+            or identity(after) != identity(pathname)):
+        return None
+    return b"".join(chunks)
+
+
+def _v27_receipt_snapshot(path: Path, *, max_bytes: int) \
+        -> tuple[bytes | None, dict | None]:
+    """Stable-read one receipt; (raw bytes, lenient strict-JSON body)."""
+    raw = _v27_stable_snapshot(path, max_bytes=max_bytes)
+    if raw is None:
+        return None, None
+    return raw, _strict_json_bytes(raw)
+
+
+def _v27_sealed_body(body: dict | None, *, schema: str,
+                     native_key: str) -> bool:
+    """True when a parsed receipt carries its exact native identity hash."""
+    if body is None or body.get("schema") != schema:
+        return False
+    native = body.get(native_key)
+    return (_discovery_sha256(native)
+            and native == _discovery_controller_state_hash({
+                key: item for key, item in body.items()
+                if key != native_key}))
+
+
+def _v27_pre_run_commitment(plan_raw: bytes, plan: dict,
+                         proof_raw: bytes | None) -> dict | None:
+    """Re-derive the pre_run journal payload from sealed on-disk bytes."""
+    if proof_raw is None:
+        return None
+    pair = plan.get("composition_build_pair")
+    correctness = plan.get("composition_correctness")
+    production = plan.get("composition_production_authority")
+    if not isinstance(pair, dict) or not isinstance(correctness, dict) \
+            or not isinstance(production, dict):
+        return None
+    return {
+        "runner_plan_file_sha256": hashlib.sha256(plan_raw).hexdigest(),
+        "runner_plan_receipt_sha256": plan.get("receipt_sha256"),
+        "proof_bundle_file_sha256": hashlib.sha256(proof_raw).hexdigest(),
+        "build_pair_sha256": pair.get("pair_sha256"),
+        "correctness_result_sha256": correctness.get("result_sha256"),
+        "exact_route_receipt_sha256":
+            plan.get("composition_exact_route_receipt_sha256"),
+        "expected_route_set_sha256":
+            plan.get("composition_expected_route_set_sha256"),
+        "target_runtime_frame_sha256":
+            plan.get("composition_target_runtime_frame_sha256"),
+        "frozen_production_authority_sha256":
+            production.get("authority_sha256"),
+    }
+
+
+def _v27_result_commitment(
+        operation_root: Path, plan_raw: bytes, stage_results: dict,
+        perf_raw: bytes | None, perf_body: dict | None,
+        receipt_valid: bool) -> dict | None:
+    """Re-derive the result journal payload; None while it is not derivable."""
+    if not all(stage_results[label]["valid"]
+               for label in _V27_STAGE_LABELS):
+        return None
+    if not receipt_valid or perf_raw is None or perf_body is None:
+        return None
+    results = {}
+    for label in _V27_STAGE_LABELS:
+        row = stage_results[label]
+        results[_V27_STAGE_JOURNAL_KEYS[label]] = {
+            "path": row["path"], "file_sha256": row["file_sha256"],
+            "result_sha256": row["result_sha256"],
+        }
+    return {
+        "runner_plan_file_sha256": hashlib.sha256(plan_raw).hexdigest(),
+        "results": results,
+        "cumulative_performance": {
+            "path": str(
+                (operation_root / "cumulative-performance.json").resolve()),
+            "file_sha256": hashlib.sha256(perf_raw).hexdigest(),
+            "result_sha256": perf_body["result_sha256"],
+        },
+    }
+
+
+def _v27_authority_journal_state(
+        operation_root: Path, operation_key: str, plan_raw: bytes,
+        plan: dict, proof_raw: bytes | None, stage_results: dict,
+        perf_raw: bytes | None, perf_body: dict | None,
+        receipt_valid: bool) -> dict:
+    """Bind the append-only authority journal; never hides a mismatch."""
+    path = operation_root / _V27_AUTHORITY_JOURNAL_NAME
+    raw = _v27_stable_snapshot(path, max_bytes=16 * 1024 * 1024)
+    events: list[dict] = []
+    chain_valid = True
+    if raw is not None:
+        if not raw or not raw.endswith(b"\n"):
+            chain_valid = False
+        else:
+            previous = "0" * 64
+            for index, line in enumerate(raw[:-1].split(b"\n"), 1):
+                row = _strict_json_bytes(line)
+                if (row is None
+                        or set(row) != {
+                            "schema", "sequence", "previous_event_sha256",
+                            "kind", "operation_key", "payload", "event_sha256"}
+                        or row.get("schema") != _V27_AUTHORITY_JOURNAL_SCHEMA
+                        or row.get("sequence") != index
+                        or row.get("previous_event_sha256") != previous
+                        or row.get("kind") not in {"pre_run", "result"}
+                        or not isinstance(row.get("payload"), dict)
+                        or row.get("operation_key") != operation_key):
+                    chain_valid = False
+                    break
+                event_sha = row.get("event_sha256")
+                if (not _discovery_sha256(event_sha)
+                        or event_sha != _discovery_controller_state_hash({
+                            key: item for key, item in row.items()
+                            if key != "event_sha256"})):
+                    chain_valid = False
+                    break
+                previous = event_sha
+                events.append({
+                    "kind": row["kind"], "sequence": row["sequence"],
+                    "event_sha256": event_sha,
+                    "operation_key": row["operation_key"],
+                    "payload": row["payload"],
+                })
+    if raw is None:
+        integrity = "absent"
+        detail = (
+            "composition-authority.jsonl is absent; the cumulative receipt "
+            "cannot be bound to its append-only journal")
+    elif not chain_valid:
+        integrity = "invalid"
+        detail = (
+            "composition-authority.jsonl is malformed or its hash chain is "
+            "broken")
+    else:
+        pre_run = [row for row in events if row["kind"] == "pre_run"]
+        result = [row for row in events if row["kind"] == "result"]
+        if len(pre_run) != 1 or len(result) > 1:
+            integrity = "invalid"
+            detail = (
+                "composition-authority.jsonl lacks exactly one pre_run event")
+        else:
+            expected_pre_run = _v27_pre_run_commitment(plan_raw, plan, proof_raw)
+            expected_result = _v27_result_commitment(
+                operation_root, plan_raw, stage_results,
+                perf_raw, perf_body, receipt_valid)
+            if expected_pre_run is None:
+                integrity = "invalid"
+                detail = (
+                    "runner plan or proof bundle cannot be re-derived; the "
+                    "pre_run commitment cannot be bound")
+            elif pre_run[0]["payload"] != expected_pre_run:
+                integrity = "mismatched"
+                detail = (
+                    "pre_run journal event disagrees with the sealed runner "
+                    "plan / proof bundle bytes")
+            elif expected_result is None:
+                if result:
+                    integrity = "mismatched"
+                    detail = (
+                        "result journal event exists without derivable result "
+                        "authority")
+                else:
+                    integrity = "incomplete"
+                    detail = (
+                        "pre_run committed; the cumulative runner has not yet "
+                        "sealed its result commitment")
+            elif not result or result[0]["payload"] != expected_result:
+                integrity = "mismatched"
+                detail = (
+                    "result journal event disagrees with the sealed runner "
+                    "results / cumulative performance receipt")
+            else:
+                integrity = "matched"
+                detail = (
+                    "append-only journal commits the exact sealed runner plan, "
+                    "proof bundle, runner results, and cumulative performance "
+                    "receipt")
+    return {
+        "present": raw is not None,
+        "pre_run": any(row["kind"] == "pre_run" for row in events),
+        "result": any(row["kind"] == "result" for row in events),
+        "integrity": integrity, "detail": detail,
+        "events": [{key: row[key] for key in (
+            "kind", "sequence", "event_sha256", "operation_key")}
+            for row in events],
+    }
+
+
+def _v27_receipt_view(body: dict | None) -> dict | None:
+    """Project the cumulative performance receipt fields verbatim."""
+    if body is None or not isinstance(body, dict):
+        return None
+    frozen = body.get("frozen_production")
+    return {
+        "schema": body.get("schema"),
+        "result_sha256": body.get("result_sha256"),
+        "operation_key": body.get("operation_key"),
+        "plan_sha256": body.get("plan_sha256"),
+        "metric": body.get("metric"),
+        "metric_direction": body.get("metric_direction"),
+        "production_graphs_mode": body.get("production_graphs_mode"),
+        "cumulative_classification": body.get("cumulative_classification"),
+        "cumulative_graphs_on_effect_fraction":
+            body.get("cumulative_graphs_on_effect_fraction"),
+        "incremental_exact_route_effect_fraction":
+            body.get("incremental_exact_route_effect_fraction"),
+        "incremental_graphs_off_effect_fraction":
+            body.get("incremental_graphs_off_effect_fraction"),
+        "incremental_graphs_on_effect_fraction":
+            body.get("incremental_graphs_on_effect_fraction"),
+        "incremental_exact_route_receipt_sha256":
+            body.get("incremental_exact_route_receipt_sha256"),
+        "incremental_graphs_off_receipt_sha256":
+            body.get("incremental_graphs_off_receipt_sha256"),
+        "incremental_graphs_on_receipt_sha256":
+            body.get("incremental_graphs_on_receipt_sha256"),
+        "production_graphs_on_receipt_sha256":
+            body.get("production_graphs_on_receipt_sha256"),
+        "promotion_eligible": body.get("promotion_eligible"),
+        "promotion_reason": body.get("promotion_reason"),
+        "frozen_production": ({
+            key: frozen.get(key) for key in (
+                "production_commit", "build_identity",
+                "build_identity_sha256", "runtime_snapshot_sha256",
+                "comparator_receipt_sha256", "graphs_mode", "frame_sha256",
+                "measurement_protocol_sha256", "measurement_receipt_sha256",
+                "model_sha256", "workload_sha256", "runtime_config_sha256",
+                "observed_workload_sha256",
+                "observed_runtime_config_sha256", "metric", "direction",
+                "authority_sha256")}
+            if isinstance(frozen, dict) else None),
+    }
+
+
+def _v27_controller_ledger_state(
+        state_root: Path, operation_key: str,
+        receipt: dict | None) -> dict:
+    """Project the controller ledger and cross-check its matching terminal."""
+    path = state_root / _V27_COMPOSITION_LEDGER_NAME
+    raw = _v27_stable_snapshot(path, max_bytes=16 * 1024 * 1024)
+    if raw is None:
+        return {"present": False, "valid": None, "agrees": None}
+    ledger = _strict_json_bytes(raw)
+    if ledger is None or ledger.get("schema") != _V27_COMPOSITION_LEDGER_SCHEMA:
+        return {"present": True, "valid": False, "agrees": None}
+    terminals = ledger.get("terminals") \
+        if isinstance(ledger.get("terminals"), list) else []
+    rows = []
+    matching = None
+    for terminal in terminals:
+        if not isinstance(terminal, dict):
+            continue
+        row = {key: terminal.get(key) for key in (
+            "operation_key", "disposition", "promotion_eligible",
+            "promotion_reason", "reason_code",
+            "cumulative_performance_result_sha256", "terminal_sha256",
+            "plan_sha256", "scientific_budget_spent")}
+        rows.append(row)
+        if terminal.get("operation_key") == operation_key:
+            matching = row
+    agrees = None
+    if matching is not None and isinstance(receipt, dict) \
+            and receipt.get("valid") is True:
+        agrees = bool(
+            matching.get("promotion_eligible") ==
+                receipt.get("promotion_eligible")
+            and matching.get("promotion_reason") ==
+                receipt.get("promotion_reason")
+            and matching.get("cumulative_performance_result_sha256") ==
+                receipt.get("result_sha256"))
+    return {
+        "present": True, "valid": True,
+        "campaign_id": ledger.get("campaign_id"),
+        "terminals": rows, "matching_terminal": matching, "agrees": agrees,
+    }
+
+
+def _v27_cumulative_operation(
+        operation_root: Path, state_root: Path,
+        deployment: str) -> dict | None:
+    """Project one cumulative operation; None when it is not cumulative.
+
+    The returned row is a read-only view: every promotion field is copied
+    verbatim from the producer receipt, and trust comes only from the
+    append-only journal binding and the controller ledger agreement.
+    """
+    plan_raw, plan = _v27_receipt_snapshot(
+        operation_root / "runner-plan.json", max_bytes=4 * 1024 * 1024)
+    if plan is None:
+        return None
+    if (plan.get("schema") != _V27_RUNNER_PLAN_SCHEMA
+            or plan.get("authority") != _V27_AUTHORITY
+            or plan.get("promotion_claim") is not False
+            or not _v27_sealed_body(plan, schema=_V27_RUNNER_PLAN_SCHEMA,
+                                    native_key="receipt_sha256")):
+        return None
+    operation_key = plan.get("operation_key")
+    if (not isinstance(operation_key, str) or not _discovery_sha256(operation_key)
+            or operation_key != operation_root.name):
+        return None
+    if not all(isinstance(plan.get(key), str)
+               for key in _V27_CUMULATIVE_OPERATION_KEYS):
+        return None
+    runner_root = (operation_root / "runner").resolve()
+    stage_paths = {}
+    for label in _V27_STAGE_LABELS:
+        path = Path(plan[f"{label}_output_dir"]).resolve()
+        if not path.is_relative_to(runner_root):
+            return None
+        stage_paths[label] = path
+    performance_path = (operation_root / "cumulative-performance.json").resolve()
+    if Path(plan["cumulative_performance_path"]).resolve() != performance_path:
+        return None
+    proof_raw, proof_body = _v27_receipt_snapshot(
+        operation_root / "proof" / "proof-bundle.json",
+        max_bytes=16 * 1024 * 1024)
+    proof_valid = _v27_sealed_body(
+        proof_body, schema=_V27_PROOF_BUNDLE_SCHEMA,
+        native_key="receipt_sha256")
+    stage_results = {}
+    for label in _V27_STAGE_LABELS:
+        result_path = stage_paths[label] / "result.json"
+        raw, body = _v27_receipt_snapshot(
+            result_path, max_bytes=16 * 1024 * 1024)
+        valid = _v27_sealed_body(
+            body, schema=_V27_SCREEN_RESULT_SCHEMA, native_key="result_sha256")
+        if (body is not None
+                and (body.get("promotion_claim") is not False
+                     or body.get("non_promotable") is not True)):
+            valid = False
+        stage_results[label] = {
+            "present": raw is not None, "valid": valid,
+            "path": str(result_path),
+            "file_sha256": (hashlib.sha256(raw).hexdigest()
+                            if raw is not None else None),
+            "result_sha256": body.get("result_sha256") if valid else None,
+        }
+    perf_raw, perf_body = _v27_receipt_snapshot(
+        performance_path, max_bytes=16 * 1024 * 1024)
+    receipt = _v27_receipt_view(perf_body)
+    receipt_valid = bool(
+        receipt is not None
+        and _v27_sealed_body(perf_body, schema=_V27_CUMULATIVE_PERFORMANCE_SCHEMA,
+                             native_key="result_sha256")
+        and perf_body.get("authority") == _V27_PROMOTION_GATE_AUTHORITY
+        and perf_body.get("promotion_authority") is True
+        and perf_body.get("operation_key") == operation_key)
+    receipt_error = None
+    if perf_raw is None:
+        receipt_error = (
+            "cumulative-performance.json is absent or unreadable")
+    elif not receipt_valid:
+        receipt_error = (
+            "cumulative-performance.json is not a sealed cumulative_performance.v2 "
+            "receipt for this operation")
+    if receipt is not None:
+        receipt["valid"] = receipt_valid
+    journal = _v27_authority_journal_state(
+        operation_root, operation_key, plan_raw, plan, proof_raw,
+        stage_results, perf_raw, perf_body, receipt_valid)
+    ledger = _v27_controller_ledger_state(
+        state_root, operation_key, receipt)
+    ledger_agrees = ledger.get("agrees")
+    trusted = bool(
+        journal["integrity"] == "matched" and receipt_valid
+        and proof_valid and ledger_agrees is not False)
+
+    def _mtime(path: Path) -> float:
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    receipt_stamp = (_mtime(performance_path) if perf_raw is not None
+                     else _mtime(operation_root / "runner-plan.json"))
+    sealed_at = None
+    if perf_raw is not None:
+        sealed_at = datetime.fromtimestamp(
+            receipt_stamp, timezone.utc).isoformat().replace("+00:00", "Z")
+    headline = None
+    classification = (receipt or {}).get("cumulative_classification")
+    if isinstance(classification, str):
+        positive = classification == "candidate"
+        headline = {
+            "classification": classification,
+            "positive": positive,
+            "label": (
+                "cumulative candidate is faster than frozen production "
+                "(validated)"
+                if positive else
+                "cumulative candidate is not faster than frozen production — "
+                "promotion denied (valid nonpositive result)"
+                if classification == "screened_out" else
+                "cumulative classification unavailable"),
+        }
+    screen_raw, screen_body = _v27_receipt_snapshot(
+        operation_root / "screen-result.json", max_bytes=16 * 1024 * 1024)
+    screen_valid = _v27_sealed_body(
+        screen_body, schema=_V27_OPERATION_RESULT_SCHEMA,
+        native_key="receipt_sha256")
+    files = {
+        "runner_plan": {
+            "present": plan_raw is not None,
+            "file_sha256": (hashlib.sha256(plan_raw).hexdigest()
+                            if plan_raw is not None else None),
+        },
+        "proof_bundle": {
+            "present": proof_raw is not None,
+            "valid": proof_valid,
+            "file_sha256": (hashlib.sha256(proof_raw).hexdigest()
+                            if proof_raw is not None else None),
+        },
+        "screen_result": {
+            "present": screen_raw is not None, "valid": screen_valid,
+            "file_sha256": (hashlib.sha256(screen_raw).hexdigest()
+                            if screen_raw is not None else None),
+        },
+        "cumulative_performance": {
+            "present": perf_raw is not None, "valid": receipt_valid,
+            "file_sha256": (hashlib.sha256(perf_raw).hexdigest()
+                            if perf_raw is not None else None),
+        },
+        "stages": stage_results,
+    }
+    return {
+        "schema": _V27_CUMULATIVE_DASHBOARD_SCHEMA,
+        "available": True,
+        "deployment": deployment,
+        "operation_key": operation_key,
+        "trusted": trusted,
+        "receipt_stamp": receipt_stamp,
+        "sealed_at": sealed_at,
+        "receipt": receipt,
+        "receipt_error": receipt_error,
+        "headline": headline,
+        "journal": journal,
+        "ledger": ledger,
+        "files": files,
+    }
+
+
+def _v27_cumulative_projection(deployments_root: Path) -> dict:
+    """Scan every deployment bundle for the newest sealed cumulative receipt.
+
+    Sealed rows always outrank in-flight rows; the newest receipt (by file
+    mtime, deterministic operation-key tiebreak) is the headline.  The final
+    producer schema is self-sealed, so this projection needs no frozen v27
+    pin: the dashboard binds each receipt to its append-only authority journal
+    and reports that binding as the trust indicator.
+    """
+    absent = {
+        "schema": _V27_CUMULATIVE_DASHBOARD_SCHEMA,
+        "available": False, "trusted": False,
+    }
+    try:
+        bundles = (sorted(deployments_root.iterdir())
+                   if deployments_root.is_dir() else [])
+    except OSError as exc:
+        return {**absent, "error": f"deployment discovery failed: {exc}"}
+    rows = []
+    for bundle in bundles:
+        if bundle.is_symlink() or not bundle.is_dir():
+            continue
+        present, config, error = _read_json_object(
+            bundle / "config" / "deployment.json", "discovery deployment")
+        if not present or config is None or error:
+            continue
+        controller = config.get("controller")
+        if not isinstance(controller, dict):
+            continue
+        operations_root = _safe_bundle_path(
+            controller.get("operations_root"), bundle)
+        state_root = _safe_bundle_path(controller.get("state_root"), bundle)
+        if operations_root is None or state_root is None:
+            continue
+        try:
+            operation_dirs = sorted(
+                (path for path in operations_root.iterdir()
+                 if path.is_dir() and not path.is_symlink()
+                 and re.fullmatch(r"[0-9a-f]{64}", path.name)),
+                key=lambda path: path.stat().st_mtime, reverse=True)[:50]
+        except OSError:
+            continue
+        for operation_root in operation_dirs:
+            plan_path = operation_root / "runner-plan.json"
+            if plan_path.is_symlink() or not plan_path.is_file():
+                continue
+            row = _v27_cumulative_operation(
+                operation_root, state_root, bundle.name)
+            if row is None:
+                continue
+            rows.append(row)
+    if not rows:
+        return {**absent,
+                "error": "no cumulative performance operation found across "
+                         "deployments"}
+    return max(rows, key=lambda row: (
+        1 if row["receipt"] is not None else 0,
+        row["receipt_stamp"], row["operation_key"]))
 
 
 def _discovery_portfolio_terminal_checkpoint(
@@ -8906,6 +10100,12 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     preauthored_pending = bool(
         isinstance(pending, dict) and isinstance(v26_state, dict)
         and isinstance(v26_state.get("provenance"), dict))
+    postbuild_resource_wait = (
+        v26_state.get("resource_wait")
+        if isinstance(v26_state, dict)
+        and isinstance(v26_state.get("resource_wait"), dict)
+        and v26_state["resource_wait"].get("kind") ==
+            "postbuild_resource_wait" else None)
     pending_authorized = bool(
         isinstance(pending, dict) and isinstance(pending.get("authorization"), dict))
     if isinstance(inflight, dict):
@@ -9430,7 +10630,27 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                       "controller restart from typed terminal")
         recoverability = "resume_controller_checkpoint"
     elif isinstance(pending, dict):
-        if pending_phase == "preauthored_ready" and preauthored_pending:
+        if postbuild_resource_wait is not None:
+            status = "waiting" if lock_held else "stopped"
+            stage = "resource_admission"
+            label = (
+                "Completed builds checkpointed; waiting for foreign GPU"
+                if str(postbuild_resource_wait.get("reason", "")).startswith(
+                    "foreign_kfd_") else
+                "Completed builds checkpointed; waiting for GPU")
+            waiting_on = (
+                "foreign GPU/KFD owner release"
+                if str(postbuild_resource_wait.get("reason", "")).startswith(
+                    "foreign_kfd_") else "GPU availability")
+            recoverability = "resume_postbuild_resource_wait"
+            for completed_stage in (
+                    "source_materialization", "build", "evidence_binding"):
+                pipeline[completed_stage]["state"] = "complete"
+            pipeline["resource_admission"]["state"] = "waiting"
+            pipeline["resource_admission"]["detail"] = (
+                "exact candidate/build checkpoint preserved; no GPU executor "
+                "or proof root started")
+        elif pending_phase == "preauthored_ready" and preauthored_pending:
             status = "running" if lock_held else "stopped"
             stage = "authorization"
             label = "Reviewed continuation checkpointed; actors bypassed"
@@ -9874,6 +11094,16 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
     history_rows = [{key: row.get(key) for key in
                      ("turn", "hypothesis_id", "status", "effect_fraction")}
                     for row in (*abandoned, *retest)]
+    annulled_history = (
+        v26_state.get("annulled_history", [])
+        if isinstance(v26_state, dict) else [])
+    if not isinstance(annulled_history, list):
+        annulled_history = []
+    history_rows.extend({
+        key: row.get(key) for key in (
+            "turn", "hypothesis_id", "status", "scientific_budget_spent",
+            "raw_status", "result_file_sha256", "history_retained")}
+        for row in annulled_history if isinstance(row, dict))
     latest_result = events[-1].get("result") if events else None
     latest_result = latest_result if isinstance(latest_result, dict) else {}
     refusal_event = next((row for row in reversed(events)
@@ -10192,6 +11422,7 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                    and recoverability in {
                        "same_candidate_retry", "not_required",
                        "resume_first_incomplete_stage",
+                       "resume_postbuild_resource_wait",
                        "resume_controller_checkpoint",
                        "resume_planner_provider_retry",
                        "resume_critic_provider_retry"}),
@@ -10204,6 +11435,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                               if recoverability == "planner_validation_requires_fresh_deployment"
                               else f"Resume at {first_incomplete}; completed stage receipts are revalidated and reused"
                               if recoverability == "resume_first_incomplete_stage"
+                              else "Restart or continue the controller after the foreign GPU owner releases; the exact completed builds and evidence policy are revalidated and reused"
+                              if recoverability == "resume_postbuild_resource_wait"
                               else "Restart the controller; the screened decision is durable and the next hypothesis is selected automatically"
                               if recoverability == "resume_controller_checkpoint"
                               else "Restart the controller; retry the same hypothesis from its durable planner checkpoint"
@@ -10233,10 +11466,18 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         "scientific_attempts": (
             v26_state.get("scientific_attempts")
             if isinstance(v26_state, dict) else None),
+        **({"scientific_budget": v26_state["scientific_budget"]}
+           if isinstance(v26_state, dict)
+           and "scientific_budget" in v26_state else {}),
         "history": {"abandoned_count": len(abandoned),
                     "retest_count": len(retest),
+                    **({"annulled_count": len(annulled_history)}
+                       if isinstance(v26_state, dict)
+                       and "annulled_history" in v26_state else {}),
                     "terminal_count": len(prior_terminals),
                     "summary": (f"{len(abandoned)} abandoned · {len(retest)} retest"
+                                + (f" · {len(annulled_history)} annulled"
+                                   if annulled_history else "")
                                 + (f" · {len(prior_terminals)} prior terminal"
                                    f"{'s' if len(prior_terminals) != 1 else ''}"
                                    if prior_terminals else "")),
@@ -10796,6 +12037,57 @@ _DISCOVERY_V26_GRAPH_SHA256 = \
     "20dec69b26c84dbdf7f97b92e39349437df9c28a10300fed210752070e0a2e4c"
 _DISCOVERY_V26_GRAPH_FILE_SHA256 = \
     "ef35a550a96bdc8b9cd089097c216078a1b5b8fa842df746d975592fd6ad6075"
+# The v27 consumer understands the successor schemas, but a generated bundle
+# must not become live until the combined producer and exact final-root files
+# have completed their independent freeze/audit.  Tests patch all five pins as
+# one authority; production deliberately remains fail closed meanwhile.
+# v27 final-root pins: the live sealed deployment
+# gpu-discovery-quant-ladder-occupancy-v27 (config semantic eac81e0d…,
+# graph 99b97bfd…).  Set at the deployment moment 2026-08-27; the hub
+# selects the deployment only while every pin matches the durable
+# final-root files.
+_DISCOVERY_V27_EXECUTION_MODULE_SHA256 = {
+    'c6_reward_integrity': 'fe1c71f98c9e990007caa4cc20152c4c1ad6136318e656832d29f49ba587a837',
+    'candidate_sandbox': '74d5a31ab2f0df113c435dbaab97169905780431548fbe0a5109e7fa58ef5bce',
+    'claude_fable5_critic_actor': 'fb7f728e829b105a37bbde3d28c31711c0ffee370ec1560efcbc6e92eeccfd5d',
+    'codex_container_actor': '0a1f4c4a64d36bde8944b2c2c41c052e59d15cb3b676df101f30ec5a0efc3c13',
+    'cpu_region_claim': 'cb8b474955313f7bd2855c6f59f26b53a481d74812372f4c3b38f9783efe5f19',
+    'cumulative_composition': '85af206f1a92620da5237acd44523e458cf6832582042055933bcb1fe3c42e68',
+    'deployment_factory': '90ba0e13924a350c70f0bf074df5865c694cca511b98bf27a47d94139c89143b',
+    'device_claim': 'ed079e49946a869399b905e2149f6b0a3c76c1c19d1acbb1bfd39766e4d861d7',
+    'device_sampler': '13f86ed2854d095241b609290e21318e426bd2a3e6b21ea56fb8a74e21c768f0',
+    'discovery_controller': '242cc683f1e2d295ea541a10c863d373976ff31a879447739b5852ea61ff9c59',
+    'discovery_deployment': '86a68e001af203503252fef9cf0ab8344d3425aca6c16606a3c2fccc1853c79b',
+    'discovery_static_registry': '465f78c9b4bcf6823b055c45f5d054a071a0e5dbfb6aa1ab5cbe6b7df05b6890',
+    'discovery_supervisor': '1321a7b7cb604a53ff93738869d900d589765137ad83c3c4653441c96e47e87c',
+    'discovery_supervisor_secure': '7b7ba4b5c1c25e8b98210b5ac31e773832e41661019c89cdbef87e4c601bea4d',
+    'discovery_telemetry': '9beba2a1c92c8b0326523b367148868fabfcf3076170a8188e31ecddfdd25841',
+    'do_not_repeat': '66c32876760b2f61c1064e0e6767c3ce3b5c22ae4878ee558439e188e7e6aec3',
+    'evaluator_integrity': 'dfc6dbc719aab525d4ddedd53ca087b00e1e632ed8147967175676884f415f1f',
+    'gpu_discovery_beliefs': 'da90a530ce8617ff1cde1be95fc2925fa6bfc270d5e4ffa8d57cf001c1fb6a2b',
+    'gpu_discovery_runner': '38af105216137095451ede024d66a88012f1e5fdef607fb89a2e1e71b0c75299',
+    'gpu_load_admission': 'f9d3f6331d985c8e496a4dc0de9b01d51de2a0606467acfe412b496f2378d15a',
+    'gpu_residency_sampler': '8eff7f6e54089725572965a56f827defa2150becb337fe55cc81d7494c5d9722',
+    'gpu_source_adapter': '2b9fc5c26192302c5e781ff967dfc698c036a94740f349f6708eea4c80e358c3',
+    'gpu_source_evidence': 'f0af5e696ea07dda1971183689e7f8d681e2fc8a5843666fe7a1d0e115a8f71c',
+    'gpu_source_proofs': '46ccc107caba8a371eb6d7f25f45ed6a126cf63ce76b5fb6f6e168bde0725c76',
+    'hawkeye_measurement': '7cad03616441d10bca26969bf80ddc7cc5cf65e991970f080e327c9352874767',
+    'hypotheses': '425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75',
+    'hypothesis_portfolio': 'bdd6e5d6e2c14e52e11a036ef020c9c999863777e60367616fb759a156a256df',
+    'inference_window': '67aaee97d981970224af097283478e98d8520b1109bae07f3beaa5fa6d957f5d',
+    'instrument_integrity': 'bbc1013e988cdbfb86b6adf7b7267cc1e8cccefc71769fd6d3ea0033e2872bee',
+    'opencode_deepseek_critic_actor': 'de232fc31d11654df7b9ea3bf9012c6178212401d8a228494a66b3b7692a1222',
+    'preauthored_continuation': '90c735981f686693e0ec0d7359475a40237e75134a6804ebf3bc71ff2cbe3311',
+    'source_candidate': '82366e6a289908a2265d45511501a95a117b163c518aec1a20cca9787906c315',
+    'split_runtime_verifier': 'ee6450ee111987a315262bbacdf0d43bb0259a1d1ead7a271b9c234db8b3abe0',
+    't0_provider': 'b91b7a15440c2031a7b567e59a8078be8b213cc78b8f5f9f37d453701c57d897',
+    'worktree': '153118cb9811eb97bb1320e237e9d6908c7c888171379c16a72b72ea09d76215',
+}
+_DISCOVERY_V27_PRODUCER_COMMIT = "5bbcc5498e4732162356953b7be96a53073a6706"
+_DISCOVERY_V27_DEPLOYMENT_SEMANTIC_SHA256 = "eac81e0d4755fd61aecf7688c6fddcc5b44f109500dd628e453a3ba2fb38f6df"
+_DISCOVERY_V27_DEPLOYMENT_FILE_SHA256 = "14ba06073c2b5d8ccc3c74417ba1649254f7f43178df16e928202dab5c23fe5d"
+_DISCOVERY_V27_GRAPH_SHA256 = "99b97bfd38e90992e04b60b393ecb1e1ce29879dffda7afe5ea7df57147006b1"
+_DISCOVERY_V27_GRAPH_FILE_SHA256 = "b41d4b1261662ec2702fc979ea4a0faf974a7c3cfc89a677352baef0f8b3d957"
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
@@ -11618,6 +12910,15 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                 config_path, config, bundle)
             if v26_contract is None:
                 continue
+        elif config.get("schema") == "epyc.autokernel.discovery_deployment.v6":
+            v26_contract = _discovery_v27_contract(
+                config_path, config, bundle)
+            if (v26_contract is None
+                    or v26_contract.get("ready") is not True):
+                # Schema support alone is not product authority.  Until all
+                # final-root pins are installed atomically, even an unlaunched
+                # v27 bundle remains invisible to the live selection surface.
+                continue
         controller = config.get("controller")
         if not isinstance(controller, dict):
             continue
@@ -11642,7 +12943,11 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             state_root / "state.json", "discovery state")
         v26_state = None
         if v26_contract is not None and state_present:
-            v26_state = _discovery_v26_state_contract(state, v26_contract)
+            v26_state = (
+                _discovery_v27_state_contract(state, v26_contract)
+                if v26_contract.get("schema") ==
+                   "epyc.autokernel.discovery_deployment.v6" else
+                _discovery_v26_state_contract(state, v26_contract))
             if v26_state is None:
                 continue
         (all_events, all_error, planner_events, planner_error,
@@ -11713,9 +13018,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                         or checkpoint is not None
                         or supervisor_terminal is not None)
         if (v26_contract is not None and launched
-                and (v26_contract.get("graph_schema") !=
-                     "epyc.autokernel.static_discovery_graph.v7"
-                     or v26_contract.get("ready") is not True)):
+                and v26_contract.get("ready") is not True):
             # The consumer is intentionally not execution authority for a
             # moving producer worktree.  A sealed v26 can be listed only after
             # its exact module/commit freeze is installed above.
@@ -11905,6 +13208,12 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                 v26_state.get("scientific_attempts")
                 if isinstance(v26_state, dict) else
                 state.get("scientific_attempts")),
+            **({
+                "scientific_budget": v26_state["scientific_budget"],
+                "annulled_iterations": v26_state["annulled_history"],
+            } if isinstance(v26_state, dict)
+                 and "scientific_budget" in v26_state
+                 and "annulled_history" in v26_state else {}),
             "iterations": [{key: row.get(key) for key in
                             ("turn", "hypothesis_id", "status", "effect_fraction")}
                            for row in iterations[-25:] if isinstance(row, dict)],
@@ -11969,6 +13278,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             AUTOKERNEL_SUPERVISOR_SCHEMA_PRODUCER_SHA,
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
+        "v27_cumulative": _v27_cumulative_projection(AUTOKERNEL_DEPLOYMENTS_ROOT),
     }
     obs = panels.Observation(
         artifact_present=True, timestamp=observed_ts,

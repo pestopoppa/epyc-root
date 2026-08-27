@@ -583,7 +583,16 @@ See also the fifth GDN branch-map row in
       under the hazard record it tests. If the probe later needs to become a standing suite rather than
       a one-off, *that* is an eval-tower row.
       Both compute planes were held by other sessions through this wave — **filed, not run.**
-- [ ] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
+      *(2026-08-26/27 — RUN, then **PAUSED BY OPERATOR 2026-08-27**: 163/200 Q8 trials persisted at
+      `epyc-inference-research/data/frontdoor-amnesia-g1-2026-08-25/q8/trials/` — 4K 50/50, 32K 50/50,
+      64K 50/50, 128K 13/13, all 100% — **no recall drop at any measured length; the gate is NOT
+      opening at ≤128K**. The decisive paper-regime arm (256K) was not run: operator decision that the
+      marginal value (no remediation path without the pre-SFT Base checkpoint; GPU owned by another
+      session) did not justify the ~week of exclusive compute. Checkpoint + resume plan:
+      `…/frontdoor-amnesia-g1-2026-08-25/PAUSED-2026-08-27.md`. Resume = finish 128K (37 trials),
+      f16-KV control, then a small 256K diagnostic (5–10 trials — sufficient for the published-scale
+      effect) on GPU when free.)*
+- [x] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
       budget, parameter arithmetic, precedent. **The full-rank choice is what produces the entire
       +12.5 % active-parameter objection to GDN-2, and the paper gives no justification for it.**
       The precedent is in our own tree: Kimi Linear already factorizes its decay projection, and we
@@ -593,4 +602,7 @@ See also the fifth GDN branch-map row in
       `0db32c06e3e5`, 2026-08-23. **Informs `B9`** in
       [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md); validating that
       a low-rank gate *retains the reported gain* is compute-gated and belongs to whoever runs B9(b),
-      not here. No inference, no GPU — **executable now** (intake-1281#record).
+      not here. No inference, no GPU — **executable now** (intake-1281#record). ✅ 2026-08-25 — analysis
+      note complete: `epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`
+      (rank/parameter arithmetic + Kimi-Linear precedent; see the note for the verdict and what the
+      B9 compute gate would need).
