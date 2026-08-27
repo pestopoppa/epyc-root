@@ -537,12 +537,15 @@ See also the fifth GDN branch-map row in
       under the hazard record it tests. If the probe later needs to become a standing suite rather than
       a one-off, *that* is an eval-tower row.
       Both compute planes were held by other sessions through this wave — **filed, not run.**
-      *(2026-08-26/27 — RUN IN PROGRESS under an external full-instance runner (`/mnt/raid0/llm/tmp/epyc-takeover-2026-08-27/inf42/`): q8 grid 161/200 persisted at
+      *(2026-08-26/27 — RUN, then **PAUSED BY OPERATOR 2026-08-27**: 163/200 Q8 trials persisted at
       `epyc-inference-research/data/frontdoor-amnesia-g1-2026-08-25/q8/trials/` — 4K 50/50, 32K 50/50,
-      64K 50/50 all 100% (no drop → gate NOT opening at those lengths), 128K arm running (~5,055 s/trial,
-      ~39 trials left at last check); runner holds region lock q0-q3 tag `inf42-g1-full-resume` and will
-      complete Q8, the f16-KV control, and summarization autonomously. This handoff's G1 checkbox belongs
-      to that runner; do not relaunch or edit while it holds the regions.)*
+      64K 50/50, 128K 13/13, all 100% — **no recall drop at any measured length; the gate is NOT
+      opening at ≤128K**. The decisive paper-regime arm (256K) was not run: operator decision that the
+      marginal value (no remediation path without the pre-SFT Base checkpoint; GPU owned by another
+      session) did not justify the ~week of exclusive compute. Checkpoint + resume plan:
+      `…/frontdoor-amnesia-g1-2026-08-25/PAUSED-2026-08-27.md`. Resume = finish 128K (37 trials),
+      f16-KV control, then a small 256K diagnostic (5–10 trials — sufficient for the published-scale
+      effect) on GPU when free.)*
 - [ ] **Z12 (Z) — can GDN-2's `b_proj` / `w_proj` be low-rank factorized?** Static analysis only: rank
       budget, parameter arithmetic, precedent. **The full-rank choice is what produces the entire
       +12.5 % active-parameter objection to GDN-2, and the paper gives no justification for it.**
