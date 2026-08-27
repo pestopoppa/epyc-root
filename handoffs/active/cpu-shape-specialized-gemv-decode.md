@@ -28,12 +28,25 @@ Diagnosis this rests on, from this file's own profiling and confirmed by
 13.8% of 460 GB/s — not BW-bound**, and 45% of Q4_K decode cycles are libomp barrier at 96t. The
 lever is therefore cutting barrier COUNT, **not more SIMD**.
 
-- [ ] **Fuse the expert gate+up operators (frontdoor Q8_0)** to cut barrier count. Est. +10–15%
+- [x] **Fuse the expert gate+up operators (frontdoor Q8_0)** to cut barrier count. Est. +10–15%
   decode across the pair with the QKV fusion; one cluster already measured **+2.6%**. Cheapest
   test: `llama-bench tg128`, frontdoor Q8_0, fusion flag on/off, same window. **Needs an inference
-  window — do not start without one.**
-- [ ] **Fuse the attention QKV cluster (frontdoor Q8_0)** to cut barrier count. Same measurement
+  window — do not start without one.** ✅ 2026-08-27 — **REFUTED, null result**: both arms implemented
+  (branch `inf10-gemv-fusion` @ `ea8ca0609`, build 10126, env-gated default OFF), correctness PASSED
+  (PPL 5.5410 ± 0.53 identical 4/4 arms, 96-token greedy parity identical), but tg128 clean window
+  (region-locked q0-q3, canonical env, 5×4 rotated): gateup **−2.11%**, qkv **+0.25%**, both **−0.57%**
+  (verified window both −1.33%). Mechanism note: removing ~50 of ~590 barriers/token does not move
+  wall-clock at tg128 (per-op barrier ≈1–2% of op time at Q8_0 op sizes; strided-view outputs offset
+  the savings); the +2.6% precedent was the DeltaNet native-fused wqkv cluster, not these arms.
+  Evidence: `epyc-inference-research/data/gemv-fusion-2026-08-25/` (summary + SHA256SUMS +
+  correctness/README_correctness.md + raw llama-bench logs).
+- [x] **Fuse the attention QKV cluster (frontdoor Q8_0)** to cut barrier count. Same measurement
   shape and the same window as the gate+up fusion; run them as one paired arm rather than two.
+  ✅ 2026-08-27 — measured as the paired arm above; **neutral (+0.25% tg128 clean) — no gain**.
+  Full-attention layers' separate wq/wk/wv were synthesized into a single wqkv projection
+  (10 tensors, bit-identical by construction); Gated-DeltaNet layers already run native fused wqkv
+  via `resolve_fused_ops`. No further barrier-fusion work is justified on this target; re-rank
+  levers (e.g. `GGML_PERF=1` graph profile at tg128) with the receipts.
 
 > **Certification coupling — read before closing anything.** The GEMV certification is
 > high-severity and belongs to the **CPU-lane owner**, and it requires this re-anchor to land

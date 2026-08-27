@@ -17,7 +17,7 @@
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Close C6 and cumulative-carrier trust gates, then prove 10 valid v27 science rows without a crash | INF-48, EVL-47 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
-| INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Measure tinyBLAS on/off first (Phase 0) — sgemm.cpp is already compiled in, so it confounds every later A/B | — |
+| INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Fusion arms DONE 2026-08-27 — est +10–15% REFUTED (both −0.57% tg128); next: re-rank levers (GGML_PERF profile) from the receipts | — |
 | INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-1 — build PR #27342 on llama.cpp-experimental from fresh production tip and forward-port the gfx90a MMQ patch a6b4b5263 | INF-06, INF-50 |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
