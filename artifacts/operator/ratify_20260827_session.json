@@ -1,0 +1,19 @@
+{
+  "schema": "epyc.operator.ratification.v1",
+  "id": "ratify_20260827_session",
+  "ratified_at": "2026-08-27T20:15:22Z",
+  "amends": [
+    "agents/shared/OPERATING_CONSTRAINTS.md#observation-windows",
+    "agents/shared/OPERATING_CONSTRAINTS.md#retry-policy"
+  ],
+  "adds": [
+    "state-file-is-not-the-phenomenon",
+    "probe-reports-absence-it-never-looked-at (truncation / wrong tree / vacuous mutation)",
+    "terminal-raise-on-resume-becomes-a-loop-once-restarts-are-enabled"
+  ],
+  "evidence": "2026-08-27 AutoKernel v28-v31; each hazard produced a confident false reading in one investigation",
+  "op19": "left-open — needs a ruling, not a script",
+  "op28": "withdrawn — raised on a worktree-invisible gitignored watermark that had existed since 2026-08-25",
+  "promotion_claim": false,
+  "took_compute": false
+}

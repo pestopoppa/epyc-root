@@ -74,7 +74,26 @@ sampling discipline that feeds it.)
   signal readable. Idle compute stays a reportable condition; this raises the bar for calling it
   idle, it does not license ignoring it.
 
-(origin: INC-20260812-post-exit-vram-sample; Appendix)
+- **The state file is not the phenomenon.** For a phase that runs for minutes, a controller's
+  state file only moves at phase BOUNDARIES — so "state unchanged" is the normal reading in the
+  middle of one, and is indistinguishable from a wedge. Prove liveness from ARTIFACT ACTIVITY (new
+  writes under the build/output tree) plus a live child process, and only then read the state file
+  for *what phase* it is in. A monitor built the other way round reported "no progress" through a
+  perfectly healthy 15-minute single-threaded HIP build.
+- **A probe reports the absence of what it never looked at.** Three shapes, one failure. (a)
+  TRUNCATION: `| head`, `| cut`, `--limit` on a probe's OUTPUT silently shrink its window —
+  `ps -eo … | grep … | head` dropped the supervisor, factory and compiler and produced a confident
+  "the campaign is DOWN" while all three were alive. (b) WRONG TREE: a git worktree contains only
+  TRACKED files, so a probe run there reports gitignored or untracked state as missing even when it
+  exists in the real clone — this produced a whole operator decision request against a watermark
+  that had existed for two days. (c) VACUOUS MUTATION: a mutation test whose injection did not
+  land (the tree lacked the line being mutated) passes while testing nothing. Count before you
+  truncate, run the probe in the tree the claim is about, and assert the mutation landed before
+  trusting that it fired.
+
+(origin: INC-20260812-post-exit-vram-sample; and the 2026-08-27 AutoKernel
+v28–v31 work, which produced all three false readings above within one
+investigation; Appendix)
 
 ## External Content Handling
 
@@ -107,6 +126,14 @@ sampling discipline that feeds it.)
 
 - Maximum 3 retries for the same failing command.
 - After 3 failures, stop retrying and perform root-cause analysis.
+- **A terminal raise on a RESUME path becomes an infinite loop the moment restarts are enabled.**
+  These are one change, not two. AutoKernel's supervisor was clamped to `max_restarts == 0`, so
+  every crash was a permanent exit and the operator was the restart loop. Lifting the clamp was
+  correct — the resume path worked, and a crashed campaign kept its accumulated state — but it also
+  turned an unreconcilable-in-flight raise from "die once" into a 30-second restart loop heading
+  for the 1000-restart cap. Before enabling restarts, every raise reachable on the resume path must
+  be demoted to a recorded, advancing disposition: losing one attempt is correct, looping forever
+  is not.
 
 ## Dangerous Operations
 
