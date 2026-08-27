@@ -874,6 +874,13 @@ primary artefact.
       hard-fail**. BLOCKED on ratifying **`INTERLEAVE_TOLERANCE`** (proposed ±25% relative, i.e.
       each node within `[0.75/n, 1.25/n]`) — there is no multi-node analogue of the single-node
       equality check without it. See **N25 P2-3**.)*
+      **Live evidence 2026-08-27:** the corrected INF-42 G1 server is a fresh `--no-mmap` process
+      launched with `numactl --interleave=all`, CPUs `0-95`, 96 threads and equal kernel weighted-
+      interleave weights. Nevertheless, a during-inference `numastat` sample placed 32.28/41.89 GiB
+      (~77%) on node 3; its largest 9,006,874-page anonymous mapping reports `interleave:0-3` but
+      has 7,198,279 pages on node 3. This is direct anti-vacuity evidence for T5: declared policy is
+      not proof of achieved placement, including for a multi-node `--no-mmap` process. The INF-42
+      recall outputs remain usable, but its timing fields are not placement-authoritative.
 - [x] **T6 — Audit the remaining roles for straddling cpusets** and for `numactl_policy: none` on
       any multi-node cpuset ✅ 2026-07-30 — done as a **programmatic invariant check over all of
       `NUMA_CONFIG`**, not a manual read: (1) no straddling cpuset without a declared memory

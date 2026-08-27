@@ -35,3 +35,33 @@
   interrupt confirmation was used. The parent turn now shows `interrupted`, has no child processes,
   and presents the queued operator message in an idle composer. No Enter/key submission was sent
   because the composer contains operator-authored input.
+
+## Operator-invoked wrap-up checkpoint — 10:56Z
+
+- The corrected chain remains live and identity-confirmed: region-lock runner PID `701965`,
+  compatibility-lease guard PID `701993`, wrapper PID `708656`, production-v9 server PID `708658`,
+  and probe driver PID `709327`. The physical `q0`–`q3` locks and advisory
+  `inf42-g1-full-resume` lease remain held.
+- Q8 persistence advanced to 163/200: 4K 50/50, 32K 50/50, 64K 50/50, and 128K 13/50. All 163
+  records parse, carry non-null scores, and are exact-match hits. Trial 164
+  (`l131072_d25_s03`) was active; a live-window sample showed 84,122 prompt tokens processed
+  (75%) at 33.25 tok/s. The wrapper remains autonomous through the rest of Q8, the required f16
+  control, both summaries, verified server cleanup, and lock release.
+- The original OpenCode owner is now responsive rather than interrupted. It completed operator
+  follow-up turns at 08:21Z and 10:52Z, has zero direct child processes, and is idle at an empty
+  composer. No further steering action is required from this takeover session.
+- Residual throughput caveat: the live argv and environment declare `-t 96`, CPUs `0-95`,
+  `numactl --interleave=all`, canonical OMP placement, and `GGML_IQK=1`, but `numastat` sampled
+  32.28 GiB of 41.89 GiB on NUMA node 3 (~77%). The largest 9,006,874-page anonymous mapping is
+  likewise concentrated on node 3 despite reporting policy `interleave:0-3`. This does not impair
+  the exact-match recall claim, but it keeps all phase-B timing fields non-authoritative. Existing
+  INF-43 task T5 / N25 P2-3 owns the missing multi-node locality gate and tolerance decision; no
+  duplicate task was filed.
+- Filed one non-duplicative post-G1 fence under INF-42: identity-reverify that the two legacy
+  session-local lease waiters have expired before treating release as safe, while preserving the
+  authoritative region-locked INF-40 waiter. At this checkpoint the legacy INF-40 child PID
+  `3847760` and EVL-08 child PID `3999604` remained asleep with deadlines around 15:03Z and 15:57Z;
+  the authoritative `inf40-moespec-bsweep` region-lock waiter PID `774647` remained queued.
+- Bus drain for `codex-inf42-takeover` failed closed because it is a lane/task identity, not a
+  roster id. It advanced no cursor and wrote no acknowledgement. The unrostered audit log has
+  successful task-end events for all three takeover tasks and no open task to close.

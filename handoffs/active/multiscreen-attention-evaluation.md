@@ -1,12 +1,20 @@
 # Multiscreen Attention — Evaluation for EPYC Inference
 
-**Status**: active (literature survey complete 2026-04-14, priority ranking established)
+**Status**: ACTIVE — G1 long-context recall probe running under a full-instance region lock
 **Created**: 2026-04-04 (via research intake)
-**Updated**: 2026-04-21 (monitoring confirmed — no new pretrained checkpoints; priority ranking unchanged from 2026-04-14 survey)
+**Updated**: 2026-08-27 (G1 recovered at 161/200; 163/200 persisted at wrap-up)
 **Categories**: kv_cache, inference_serving, ssm_hybrid
 **Scope note**: This handoff expanded beyond Multiscreen evaluation into a comprehensive sub-quadratic attention mechanism survey. Multiscreen-specific evaluation is Section 1. Log-Linear GDN readiness tracked in [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
 
-## Status as of 2026-04-21
+## Start here — 2026-08-27
+
+The live task is [G1](#tasks), not the historical architecture watch below. The corrected external
+runner holds `q0`–`q3`, has 163/200 Q8 trials persisted and exact-match clean, and autonomously
+continues through the remaining Q8 grid, the required f16 control, summaries and lock release.
+Before treating release as safe, confirm the two legacy lease waiters expired; then let the queued
+region-locked INF-40 job acquire. Publish the per-length/per-depth recall curve when G1 completes.
+
+## Historical survey status — 2026-04-21
 
 Backburner survey — awaiting pretrained weight releases for the prioritized architectures (Diff Attn V2, MoBA, Multiscreen). No upstream movement detected since 2026-04-14 survey. Section 1 (Multiscreen evaluation) remains gated on Section 2 priority items shipping weights first.
 
@@ -466,6 +474,13 @@ See also the fifth GDN branch-map row in
         then used OpenCode's displayed two-Escape interrupt confirmation to return its parent turn
         to an idle, operator-steerable composer; detached experiment daemons were untouched.
 
+      - [ ] **Fence the post-G1 compute handoff.** Before treating lock release as safe, re-resolve
+        the identities of the legacy INF-40 lease waiter (`3847760`, deadline ~15:03Z) and EVL-08
+        lease waiter (`3999604`, deadline ~15:57Z) and confirm they expired or were deliberately
+        quiesced. Preserve the authoritative queued `inf40-moespec-bsweep` region-lock job
+        (`774647`), which should acquire only after G1 releases `q0`–`q3`. PIDs are checkpoint
+        identities, not reusable names; verify PID/start/cmdline at action time.
+
       **Live execution checkpoint — 2026-08-27 07:46Z.** The initial launcher copied the 48-thread
       `:8080`/`:8180` serving-half argv but omitted that shape's CPU affinity, memory policy and
       canonical environment. Trials 1–161 were preserved as individually scored JSON records (all
@@ -477,6 +492,18 @@ See also the fifth GDN branch-map row in
       checkpoint, logs, original scripts, sanitized OpenCode transcript, process manifest, hashes
       and takeover provenance are under
       `/mnt/raid0/llm/epyc-inference-research/data/frontdoor-amnesia-g1-checkpoints/20260827T074200Z-pre-corrected-resume/`.
+
+      **Wrap-up checkpoint — 2026-08-27 10:56Z.** Q8 is 163/200 persisted and 163/163 exact-match;
+      the active 128K trial was 75% through prompt processing. The corrected wrapper still holds
+      the authoritative `q0`–`q3` region-lock and advisory lease and remains autonomous through
+      Q8, the required f16 control, summarization, verified cleanup and lock release. The original
+      OpenCode owner subsequently completed two operator follow-up turns and is now idle and
+      responsive with no child processes, so the takeover session requires no further steering.
+      One throughput caveat remains: although the live process carries `-t 96`, CPUs `0-95`,
+      `numactl --interleave=all`, the canonical OMP environment and `GGML_IQK=1`, a live-window
+      `numastat` sample still placed 32.28/41.89 GiB (~77%) on node 3. This does not change the
+      recall evidence, but no timing field from this phase is authoritative; INF-43 T5 / N25 P2-3
+      already owns the multi-node locality gate and tolerance decision.
 
       **Measurement.** RULER **S-NIAH-2** — essay haystack, single numeric magic value, question asks
       for the value — on the production frontdoor artifact
