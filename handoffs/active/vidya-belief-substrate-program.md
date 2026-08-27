@@ -442,7 +442,17 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       GPU-gated. SHARPENED TRIGGER: wire `memento_sft.py` to emit the tuple (s/sample, trainable
       params, per-quarter loss, adapter-integrity) before the S2 validation run — the claim shape
       stays "this configuration trains at X s/sample with an adapter that provably updated", never
-      "the model improved"**
+      "the model improved"
+      **EVENING 2026-08-26: write side WIRED — `memento_sft.py` emits
+      `stage{N}_belief_measurements.json` at train-stage finalize (s/sample lower_better,
+      trainable params, quarter losses, adapter-integrity: all tensors finite + `lora_B` off
+      zero-init, fail-closed otherwise; protocol `epyc.memento_sft.lora_training.v1`);
+      14/14 tests (research `da06b371`).
+      2026-08-27: S2 IN FLIGHT — smallest real Stage-1 format-learning job** (Qwen3-0.6B,
+      126 train samples, 1 epoch, seq 4096, GPU; launched 16:07Z, ~6-10 min). The belief hook
+      fires at train-stage finalize → `stage1_belief_measurements.json` beside the run record
+      → first SC20 tuple. The 1.7B validation (the S2 gate proper) remains pending a HF-format
+      model acquisition (~3.5 GB download; only the 0.6B HF cache exists).**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
