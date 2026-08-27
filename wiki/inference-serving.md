@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-25 (extends the 2026-08-24 ROUTE-A1 compile with the seam's never-co-place verification — re-place when possible, refuse when not — and closes the 2026-08-11 NUMA P0-1 IN-PROGRESS item: derived-priors full-instance drop resolved, PROMOTION_GATE_TARGETS 196/0, full suite 16 failed / 12526 passed, no source edits) (inference-serving carries the ROUTE-A1 overlap-queue falsification + SS-BENCH-GATE-c spawn guards); previously 2026-08-23 (evening wave-2/tier-1 compile: Q38-T6 cold-start lineup FIXED (orchestrator `96498c3d` — the launcher never read `ORCHESTRATOR_STACK_NUMA_MODE`, the cold-start fallback was hardcoded `"quarter"`, and a TOTAL cold start was misread as the env=full poison signature); the frontdoor's `-ub 8192` is SILENTLY INERT (no `-b` passed → effective micro-batch is the 2048 default); the slot save/restore path is ARMED-not-dormant and the post-migration request is a STRICT EXTENSION (H20/H21, with the two bounded exceptions: `context_compression` off but one-flag-away, and `request.tools` tail re-prefill); the misnamed `VERIFIED` migration state fixed (`98061c6b` — a restore returning `n_restored: 0` on an HTTP 200 can no longer destroy the source KV); #25592 is the LARGER exposure and a v10 candidate; the in-band `[ERROR: ...]` fail-open under the 2026-08-11 fix is now closed (502 / terminal SSE `error`); and the CT-9 pilot-adoption decision (HOLD all three, no fleet-wide extension — the evidence window carried calibration traffic only); earlier same-day: the Qwen3.8 swap is SERVED — Q38-T5 five-point checklist green on :8083, cold-start NUMA-mode gap filed as Q38-T6; DFlash2 challenger sealed at np1 against the predeclared 55.46 t/s comparator, np2/4/8 grid + greedy parity still mandatory; previously 2026-08-22: KV-restore semantics on the hybrid frontdoor: migration VERIFIED proves transport not reuse, only strict continuations reuse a restored cache, `-ub 8192` is inert; previously 2026-08-21 evening: Q38-T4 mode-artifact closure, Q38 registry swap complete end-to-end)
-**Sources**: 79 documents
+**Last compiled**: 2026-08-27 (official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Sources**: 82 documents
 
 ## Compiled Update — 2026-08-25: the overlap story is complete — re-place when possible, refuse when not — and the NUMA derived-priors regression from 2026-08-11 is closed
 
@@ -1765,3 +1765,36 @@ Decision basis = production behavior over ~18 h (2026-08-22 13:55Z → 2026-08-2
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
 - [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
 - [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle and the tier-1 backlog-pass context
+
+---
+
+## Compiled Update — 2026-08-27: Qwen3.8-Flash-Next-FP8 is acquired; evaluation starts at runtime qualification
+
+**Confidence: verified for artifact identity and local storage; unmeasured for inference behavior.**
+
+The official `Qwen/Qwen3.8-Flash-Next-FP8` checkpoint is now retained at
+`/mnt/raid0/llm/models/Qwen3.8-Flash-Next-FP8`: 185,563,783,823 bytes across 145 files and 131
+safetensors shards. Every advertised ModelScope SHA-256 passed, no partial files remained, and the
+weight payload is pinned both to ModelScope revision `f88480ebce48d6daed69eac86aab43b4122ad799`
+and checksum-identical Hugging Face weight revision `bcd9f01ddc9cff2316eb84281bebcd5b058bddce`.
+This is acquisition evidence only; it says nothing yet about correctness, speed, or quality.
+
+`INF-63` makes backend qualification the first dispatchable step. The architecture is `qwen4_exp`,
+the block-FP8 payload is 172.82 GiB, and one MI210 has 64 GiB VRAM. On gfx90a, FP8 storage must not
+be reported as native FP8 compute: the viable research path may instead use software dequantization
+to BF16/FP16 and heterogeneous CPU/GPU placement. Production llama.cpp support is deliberately not
+a dependency; the frozen production kernel and registries stay untouched while Transformers, vLLM,
+SGLang, TokenSpeed, or an experimental llama.cpp branch are audited as research backends.
+
+DeepSeek V4 Flash local testing is retired and its 265 GiB local model directory was removed. It is
+not a local comparison arm for `INF-63`; vendor results may provide context but cannot replace a
+protocol-matched local baseline. The future evaluation proceeds through bounded residency and
+coherence smokes, text plus vision probes, performance/context/MTP measurements where supported, a
+focused capability ladder, and a final `GO` / `WAIT` / `KILL` plus disk-retention verdict.
+
+### Source References (2026-08-27 Qwen3.8-Flash-Next-FP8)
+
+- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/active/qwen38-flash-next-fp8-evaluation.md) — artifact identity, backend gate, measurement scope, and completion verdict
+- [`progress/2026-08/2026-08-26.md`](../progress/2026-08/2026-08-26.md) — download completion, exact payload, integrity verification, and DeepSeek retirement record
+- [`progress/2026-08/2026-08-27-codex-root.md`](../progress/2026-08/2026-08-27-codex-root.md) — session closeout and durable next action
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — historical retirement banner and deleted-artifact record
