@@ -474,7 +474,14 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       already-ingested tuples remain merged under the old id (both Attested, so the fold
       verdict is unchanged either way). Row residual = format compliance (GGUF convert +
       masked-prompt structure test) + MATH-500 delta in the S2 table; no more training
-      runs until those are measured.**
+      runs until those are measured.
+      **2026-08-27 23:15Z: S2 GATE MEASURED.** Format compliance: FAIL at smoke scale —
+      with the corrected serving stack (extended-vocab base; the original serving vocab
+      cannot emit the memento tokens — they split into 6), the 126-sample smoke generates
+      only `<think>` reasoning, zero block/summary tokens. MATH-500 delta: 0.440 → 0.420
+      (n=50, within noise). Decision per the fork: CONTINUE — the pipeline is verified
+      end-to-end; the fix is stage-1 training scale (few thousand samples), not a stop.
+      All measurement tooling (math500 harness, extended base, lora convert) committed.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
