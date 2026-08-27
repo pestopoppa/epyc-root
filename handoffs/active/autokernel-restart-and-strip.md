@@ -93,10 +93,21 @@ within seconds — clean, no crash.
   pinned by `materialization.json` digests; `storage.expire_artifact` has zero callers. Also run
   `_recover_incomplete_attempt` at controller start for ALL incomplete attempts, not only on
   re-proposal (that is why 6 orphan worktrees survived). Not a crash — disk growth.
-- [ ] **Merge `lane/autokernel-restructure-20260827` to research `main`** so future launches use
-  the fixes by default. Deferred at launch time because the shared research clone had 1,212 dirty
-  files from other sessions; the lane is the source of truth and the running closure was staged
-  from it.
+- [x] **Merged `lane/autokernel-restructure-20260827` to research `main`** — future launches now get
+  the fixes by default. Promoted via the isolated-worktree pattern (never the shared clone, which had
+  1,212 dirty files from other sessions); research `origin/main` = `01f1d2be`, with `owner_root_pid`
+  verified present in the sampler on main. ✅ 2026-08-27
+- [x] **Reconciled the epyc-root divergence** (operator-directed). Local `main` 17 ahead / 11 behind
+  `origin/main` had been blocking EVERY session's wrap-up push all day, not just this one. Merged in
+  an isolated worktree; the single conflict was the **generated** master-index rollup, resolved by
+  regenerating from the merged tree (yielding a third value, `52 | 472` — proof that regeneration,
+  not side-picking, was correct). Superset-verified, then 18 commits published to `origin/main` under
+  the push lock; never forced. ✅ 2026-08-27
+  - Residual, benign: the shared clone cannot fast-forward while a peer's uncommitted
+    `wiki/knowledge-management.md` is also changed upstream (git aborts atomically; peer work
+    untouched). It is `ahead=0`, so nothing is unpublished. Until that file's owner commits or
+    discards it, sessions committing to `main` there will re-diverge; the working pattern is a
+    detached worktree at `origin/main` → commit → serialized push.
 
 Not live at HEAD (closures already refactored these away — do not re-add): preauthored-provenance
 raise, C6-admission path-embedded identity, C6-policy-refusal-as-crash. If they reappear:

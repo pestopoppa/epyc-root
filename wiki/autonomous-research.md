@@ -2,8 +2,86 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-25 (the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Last compiled**: 2026-08-27 (AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
+
+## Compiled Update — 2026-08-27: a loop's throughput is set by what it does on FAILURE — AutoKernel's zero-science era was recovery-by-restart, and v28 broke it
+
+**Confidence: verified** for the campaign counters, the crash forensics, the four code fixes and
+their test results, and the v28 first-disposition receipt. **Approximate** for the two ratios quoted
+below (a ~50-commit sample and a core-path line estimate); they are order-of-magnitude claims, not
+measurements. Nothing here is a champion, a promotion, or a kernel win — v28's first disposition is
+an explicit **null result**.
+
+Every AutoKernel campaign from v3 to v27 ended with `scientific_attempts: 0`. An independent audit
+found the cause was not the science and not the GPU: it was that **every failure class was terminal,
+and recovery was defined as starting over**. Two mechanisms did it. First, planner-provider outages
+were spun on rather than waited out — a Codex 401 token outage on 08-26 produced **284
+`planner_failed` events in 23 minutes**, because the typed-transient path `continue`d with no sleep,
+backoff, or consecutive-failure cap. Second, `discovery_supervisor` forced `max_restarts == 0` for
+`kind == "deployment"` (commit `f13434e3`), so any crash was a permanent exit and the **operator**
+became the restart loop — ≥9 hand relaunches in 48 h. Because recovery mints a *fresh sealed
+deployment*, each relaunch reset `iterations`/`scientific_attempts` to 0. The counter that measures
+progress was the counter that recovery destroyed, which is why weeks of relaunches looked identical
+to no work at all.
+
+The generalizable rule: **an autonomous loop's throughput is bounded by its failure semantics, not
+its success path.** A loop whose crash-recovery discards accumulated state cannot accumulate, no
+matter how correct each individual step is. The controller already resumed from durable state
+(`DurableState.load` is its only entry path), so a *supervised* restart was always a resume — the
+clamp, not the design, was the defect.
+
+Forensics on v27's 11 crashes classified 4 to one instrument bug: the KFD residency sampler accepted
+only descendants of the *sampled leg*, so the controller's **own** sibling process (pid 964901,
+ppid = controller) was labelled a "foreign KFD process" and killed the deployment. Any GPU overlap —
+foreign or self — aborted the run rather than waiting for the device to clear. A twelfth failure
+class was found at launch: `_SITE_CRITIC_WRAPPER` pinned `claude/versions/2.1.231`, a path Claude's
+own auto-updates had orphaned, so **every** new deployment bundle failed to initialise with
+`FileNotFoundError` — and that same rotted pin was the true cause of three long-standing "pre-existing
+environment" test failures.
+
+Four fixes landed (research `01f1d2be`): exponential planner backoff with a bounded actor timeout and
+transport-class errors reclassified as retryable transients; the deployment restart clamp lifted;
+the sampler given an `owner_root_pid` so the campaign's own subtree is never "foreign", plus a bounded
+`wait_until_clear()` preflight so a timed leg never opens on a contended GPU; and guarded
+orphan-branch pruning for the crash-orphaned worktree collision. Suite green at 779/779.
+
+v28, launched latched at `--max-restarts 1000`, reached the milestone in **56 minutes**: turn 1
+`authoring_refused` (the critic caught a diff deriving undeclared file-scope symbols — a real gate
+that correctly spends no science budget), turn 2 `inconclusive` on
+`akh-v2-q5-type-specific-dequant` with exact attribution **+0.129 %** against target runtime
+**−0.015 %**, refused by the conjunctive rule. A null result *recorded with evidence* (receipt
+`34f836cc…`), with both arms proving real device residency (anchor KFD pid 3623562, candidate
+3623486, both exit 0) across admission → correctness → attribution → graphs-off → graphs-on. Zero
+restarts; the loop advanced itself to turn 3. That two arms ran back-to-back with distinct KFD pids
+and neither was misflagged is the on-hardware confirmation of the sampler fix.
+
+Two cautions this episode also produced. The package is roughly **278 K LOC** around a measurement
+core of a few dozen lines — "receipt" occurs 2,735 times in non-test source, "authority" 824 — and a
+~50-commit sample ran on the order of 49:1 governance-to-science. The measurement constitution
+requires that custody at **claim** time (P-GPU-1), not at experiment time; a screening run that is
+wrong is simply refused later. Re-scoping the sealed apparatus around the *promotion* boundary while
+keeping the screening loop thin is an operator design question, deliberately not filed as an
+implementer task. Separately, the first monitor built for v28 reported a false stall: it watched only
+iteration-completion fields, so a normal 15-minute single-threaded HIP build was indistinguishable
+from a wedge. **Liveness of a long-running phase must be proven by artifact activity (build-tree
+writes plus a live child), never by a phase-boundary state file** — and never through a truncating
+pipe, which independently produced a false "process gone" reading in the same investigation.
+
+### Source References (2026-08-27 AutoKernel audit and v28 launch)
+
+- [AutoKernel restart-loop fix rider](../handoffs/active/autokernel-restart-and-strip.md) — the four
+  fixes, the v28 launch identities, the verified-dead module list, and the remaining disk-expiry task.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — the parent campaign
+  handoff whose v3→v27 history is the zero-science record analysed here.
+- [Audit session progress](../progress/2026-08/2026-08-27-autokernel-audit.md) — self-contained
+  chronology: audit findings, v27 stop, disk reclamation, v28 launch, first disposition, and the
+  epyc-root divergence reconciliation.
+- [Inference research index](../handoffs/active/inference-research-index.md) — rows INF-06 (campaign)
+  and INF-63 (this repair track).
+- [`gpu_residency_sampler.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/gpu_residency_sampler.py)
+  and [`discovery_supervisor.py`](../repos/epyc-inference-research/scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py)
+  — the two instruments whose failure semantics produced the zero-science era.
 
 ## Compiled Update — 2026-08-25: the root repo's last L5 criterion is closed by the vidya loop — and the F1/F4/F6 frontier program states moved
 

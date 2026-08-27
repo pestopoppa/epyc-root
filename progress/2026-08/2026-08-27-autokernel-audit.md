@@ -111,12 +111,46 @@ a phase-boundary state file, and never through a truncating pipe.** Monitor v2 d
 two-sample persistence before declaring a stall, and baselines the science counter so it wakes on an
 *increase* rather than on "non-zero".
 
-## Deferred (with named blockers)
+## Previously deferred — both since RESOLVED, same session
 
-- **Lane → research `main` merge**: blocked on the shared research clone having 1,212 dirty files
-  from other sessions; merging there now would sweep peers' work. The lane is the source of truth
-  and the running closure was staged from it.
-- **epyc-root push**: root `main` is 13 ahead / **11 behind** `origin/main` — divergent. Per the
-  wrap-up contract I do not force-push or auto-reconcile; the operator reconciles.
-- **Dead-weight strip + disk expiry**: filed as open tasks in the rider; not blockers, just not
-  this task's scope (the mandate was to get it running).
+- ~~Lane → research `main` merge~~ **DONE**: promoted via isolated-worktree merge; research
+  `origin/main` = `01f1d2be`, with the sampler fix verified present on main. Future launches get
+  the fixes by default.
+- ~~epyc-root push blocked by divergence~~ **DONE**: reconciled on operator instruction (below);
+  root `origin/main` = `ab970988`.
+- **Dead-weight strip + disk expiry**: still open, filed as tasks in the rider. Not blocked — out of
+  scope for the "get it running" mandate, and deliberately sequenced after v28 proves stable.
+
+## Operator-invoked wrap-up (15:43Z) — the two deferred operator-cadence steps
+
+Run while v28 continues (turn 4 in flight, `sci: 1`, zero restarts). This was the first
+operator-invoked wrap-up since the per-task ones, so **Step 3 pruning** and the **Step 5 wiki
+sweep** — which per-task wrap-ups must defer — were finally in scope.
+
+**Step 3 pruning.** The conservative screen returned exactly **one** candidate, INF-40
+(`moe-spec-cpu-spec-dec-integration.md`), and it is a **false positive** — do not archive. It reads
+prunable only because it has 0 open checkboxes; its actual remaining work is a *pending operator
+decision*: the measured architect_critic registry patch (+10.7 % at B=128) is held by the
+E8-reseed/**OP-19** gate, stated in prose at line 418 and never as a checkbox. This is the documented
+failure shape (a decision living in a handoff body), and it is why the screen is a screen and not a
+verdict. Action taken: OP-19's master-queue row amended to name what its non-ruling now costs — a
+15-day-old decision is now also parking a measured win. Nothing pruned, nothing archived.
+
+**Step 5 wiki sweep.** `compile_sources.py` reports `total_new: 898` — but `wiki/.last_compile`
+has **never existed**, so that number is "no watermark", not "898 uncompiled sources"; the wiki is
+demonstrably maintained by hand (32 pages, 27,440 lines, `Compiled Update` sections committed today).
+Resolving it by `--touch` would silently assert 898 sources were compiled — the exact silent loss the
+routine warns against — so it was **not** touched. Filed as **OP-28** with both options and a
+recommendation. What *was* compiled is this session's own knowledge: a new
+`## Compiled Update — 2026-08-27` section in `wiki/autonomous-research.md` carrying the generalizable
+finding (**an autonomous loop's throughput is bounded by its failure semantics, not its success
+path**), with confidence scoped verified-vs-approximate and 5 source references. Page contributes 0
+lint errors; all 6 of its link targets verified to resolve.
+
+**Two phantom defects caught by verifying before filing.** (1) `lint_wiki.py` reported 17 errors in
+the worktree; 16 were artifacts of `repos/` being an *untracked symlink* absent from every worktree —
+the targets all exist in the real clone. (2) The 17th, a dangling
+`../handoffs/active/deepseek-v4-flash-0731-dspark.md`, appeared only when linting `/workspace`, which
+is 13 commits behind; at current `origin/main` all five references already point to `completed/`.
+Both would have become filed-but-nonexistent bugs. **Lint results are only as current as the tree you
+run them in — and a worktree is not the deployment tree.**
