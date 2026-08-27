@@ -355,9 +355,25 @@ def collect() -> dict:
         if la and (agg["oldest_advance"] is None or la < agg["oldest_advance"]):
             agg["oldest_advance"] = la
 
+    # ROW-ID COLLISIONS (added 2026-08-27).
+    #
+    # `rows` below is keyed BY ID, so two rows sharing an id do not merely go
+    # unreported — the later one silently overwrites the earlier, which then
+    # disappears from every check in this file (schema, dead link, prose length,
+    # deps). The checker reported "0 problems" over exactly such a collision:
+    # two INF-63 rows, one allocated locally while the other sat unfetched in
+    # origin/main, merged into one index. Nothing downstream could see it.
+    #
+    # Collected BEFORE the dict comprehension collapses them, which is the only
+    # place the second row still exists.
+    id_sites: dict[str, list[str]] = {}
+    for r in rows:
+        id_sites.setdefault(r["id"], []).append(f"{r['index']}:{r['line']}")
+
     return {"schema": "index_state.v1", "handoffs": handoffs,
             "domains": dict(domains),
             "rows": {r["id"]: r for r in rows},
+            "row_id_collisions": {i: s for i, s in id_sites.items() if len(s) > 1},
             "duplicates": {h: [r["index"] for r in v] for h, v in dupes.items() if len(v) > 1}}
 
 
@@ -481,6 +497,11 @@ def build_graph(state: dict) -> dict:
 def check(state: dict) -> list[str]:
     errs = []
     paths = handoff_paths()
+
+    for rid, sites in sorted(state.get("row_id_collisions", {}).items()):
+        errs.append(f"ID COLLISION: row id {rid} is used by {len(sites)} rows ({', '.join(sites)}) — "
+                    f"all but the last are invisible to every other check here; renumber the "
+                    f"one published later")
 
     for h, idxs in sorted(state["duplicates"].items()):
         errs.append(f"DUPLICATE: {h} has rows in {len(idxs)} indices: {', '.join(sorted(set(idxs)))}")
