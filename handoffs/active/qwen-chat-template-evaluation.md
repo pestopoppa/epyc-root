@@ -62,7 +62,7 @@ Two conclusions, opposite in direction:
   the model swapped in 2026-08-20 and are tracked in `qwen38-27b-replace-qwen36.md`.
 - **The retention gap is the incumbents', not Qwen3.8's.** The three incumbent templates throw away
   past reasoning. That is precisely what the community templates fix, and it is the one claim in
-  intake-1213 that holds against our actual fleet.
+  intake-1213#02 that holds against our actual fleet.
 
 **But it is currently inert for us**, and that is the crux: we serve
 `chat_template_kwargs.enable_thinking: false` on every one of these roles, so there is no reasoning

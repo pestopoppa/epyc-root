@@ -80,7 +80,7 @@ Do not restart the Lightning Attention port. The historical ledger preserves the
 
 After any LQ task, update this active handoff with the command, model artifact, exact prompt/eval set, result, and the role decision. If a task resolves the remaining production decision, update [inference-research-index.md](inference-research-index.md) and [master-handoff-index.md](master-handoff-index.md).
 
-## Research Intake Update — 2026-08-22 (Stage-2b, intake-1287 MiniCPM-SALA)
+## Research Intake Update — 2026-08-22 (Stage-2b, intake-1287#record MiniCPM-SALA)
 
 A second architecture now lands on this handoff's GLA path. **MiniCPM-SALA** is a 9B hybrid in which
 25 % of layers (8 of 32, at indices 0, 9, 16, 17, 22, 29, 30, 31 — clustered, not strided) do

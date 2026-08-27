@@ -292,7 +292,7 @@ Source: control-plane planning session (audit `research/deep-dives/2026-07-16-ar
   - [x] Defer live enable/strategy activation until AXA-2 cost-model status is settled and any decision-grade GPU claim is rerun under production-named `P-GPU-1`; NumericSwarm cannot set `placement_policy.teleport_enabled`, and explicit true is rejected without `AUTOPILOT_AXA3_TELEPORT_ENABLE=1`. ✅ 2026-07-19
   - [x] Record the mid-stream quant-change policy as an operator decision and make AXA-2 fail closed by default: OP-5d tracks IQ2-acceptable tail roles versus same-quant-only teleport; `TeleportPolicy.quant_policy` now defaults to `same_quant_only`, rejects missing quant context, rejects cross-quant tails by default, and only permits cross-quant tails under `operator_approved_tail_roles` plus an explicit role allowlist. This records/enforces the gate; it does not grant cross-quant approval. ✅ 2026-07-19
 
-## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279)
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record)
 
 - [ ] **B3 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — add a ≥20K-token greedy
       coherence gate before `GGML_CUDA_GDN_STATE_BF16` is ever enabled in production.**

@@ -188,7 +188,7 @@ comparator.**
 
 ### Source References
 
-- `research/intake_index.yaml` intake-1164 (arXiv:2603.12520) — the recovery-rate definition, the
+- `research/intake_index.yaml` intake-1164#01 (arXiv:2603.12520) — the recovery-rate definition, the
   denominator, and the pool-composition sensitivity
 - `research/intake_index.yaml` intake-1167 (arXiv:2210.10760) — the best-of-n KL bridge, the ~2,000
   comparison floor, and the validation-loss instrument
@@ -1282,7 +1282,7 @@ The 2026-07-20/21 eval-tower audit cycle produced the deepest instrument review 
 
 - **Judge-validity intake: our judge-scored numbers have no validity check for the dominant failure mode.** Three convergent 2026-07-21 entries, all operator-review candidates (human-amendment-only):
   - **[intake-875]** *Self-Play Reward Hacking of Reference-Free LLM Judges* (arxiv:2607.05904, cred 2): a judge shown a candidate without ground truth scores plausibility, not correctness. Judge pass-rate rises 0.716→0.938 under self-play while hidden-anchor accuracy stays flat 0.209→0.202; best-of-N judge-selected gap widens 0.20@k=1 → **0.588@k=16** while true unit-test pass moves only 0.27→0.29. Hacked errors transfer across judge families and a three-family min-vote ensemble still accepts **~55%** of hacked wrong answers — directly undercutting the "cross-family verification is the strongest defense" rule this project already codified. The measured fix is **de-anchoring** (commit-first / blind-solve → FPR 0.906→0.012); a plain "verify/recompute" instruction is worthless (FPR 0.719).
-  - **[intake-874]** *Reward Hacking in Rubric-Based RL* (arxiv:2606.04923, Tsinghua KEG, cred 4): rubric judges are demonstrably, reproducibly hackable via *semantic* exploits (not rule-breaking). Exploitability is capped by whether the author can cheaply emit the pattern (format bias ~66% elicitation vs 95-100% for lexical/tone/self-praise); in-domain capability drops while aggregate general benchmarks stay flat → **an aggregate suite is an unreliable reward-hacking tripwire**. Honest scope: it kills "rubric judges are robust to hacking" but does NOT rank rubric-vs-verifiable (our own intake-660/664 show programmatic verifiers gamed 32.8% of the time — neither class is a safe default).
+  - **[intake-874]** *Reward Hacking in Rubric-Based RL* (arxiv:2606.04923, Tsinghua KEG, cred 4): rubric judges are demonstrably, reproducibly hackable via *semantic* exploits (not rule-breaking). Exploitability is capped by whether the author can cheaply emit the pattern (format bias ~66% elicitation vs 95-100% for lexical/tone/self-praise); in-domain capability drops while aggregate general benchmarks stay flat → **an aggregate suite is an unreliable reward-hacking tripwire**. Honest scope: it kills "rubric judges are robust to hacking" but does NOT rank rubric-vs-verifiable (our own intake-660/intake-664#record show programmatic verifiers gamed 32.8% of the time — neither class is a safe default).
   - **[intake-876]** *Agreement Metrics for LLM-as-Judge* (arxiv:2606.00093, Rao & Callison-Burch, cred 3): on non-degenerate binary judge-vs-human data Pearson/Spearman/Kendall/phi/MCC collapse to the *same number* — reporting several side-by-side manufactures false corroboration. **Cohen's kappa** is the only common coefficient adding information (it exposes judge positive-rate drift). A full-text search of the 865-entry intake index returned **zero** prior hits for kappa/Krippendorff/inter-rater, and neither MEASUREMENT.md nor MEASUREMENT_POLICY.md mentions agreement statistics.
   Proposed operator rules: an **anchor rule** (any judge-scored gating metric paired with a judge-independent verifier + the gap reported; widening-with-N is the hacking signature), a **de-anchoring rule** for selection judges, a **dual-judge offline audit** (clean vs bias-augmented rubric, runnable today), a **CHERRL bias taxonomy + exploitability axis** for RM-5, and a **chance-corrected agreement statistic** folded into P-REV-1 before it ratifies. ([eval-tower-verification](../handoffs/active/eval-tower-verification.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md))
 
@@ -2622,7 +2622,7 @@ and a source can pass one while failing the other.**
 ### Source References
 
 - `research/intake_index.yaml` intake-1156 (Copilot Arena, arXiv:2502.09328) — rank-correlation figures and deployment scale
-- `research/intake_index.yaml` intake-1150 (the harness benchmark) — protocol overturn, the 22 repeated configs, and the recomputed noise floor
+- `research/intake_index.yaml` intake-1150#record (the harness benchmark) — protocol overturn, the 22 repeated configs, and the recomputed noise floor
 - `research/intake_index.yaml` intake-1152 (EDIT-Bench, arXiv:2511.04486) and intake-1157 (CanItEdit, arXiv:2312.12450) — independent judge-free edit benchmarks; both score by hidden execution tests, no LLM judge in the path
 - [Architect model selection bench](../handoffs/active/architect-model-selection-bench.md) — CAL-1, where the rank-correlation prior is recorded
 - [Canonical judge suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-7a–d, the judge-free suite designs derived from this cohort

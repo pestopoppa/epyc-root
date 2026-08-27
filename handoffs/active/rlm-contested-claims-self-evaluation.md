@@ -23,7 +23,7 @@ D-c1 on real traffic.
 Replace received evidence with first-party measurement on three RLM claims that keep resurfacing in
 this repo, and settle two that nobody owns at all.
 
-> Every EPYC record of the RLM depth caveat traces to one external reproduction (intake-547,
+> Every EPYC record of the RLM depth caveat traces to one external reproduction (intake-547#record,
 > arXiv:2603.02615) that we have never run. `max_depth=1` is already our load-bearing default and N17
 > already frames the likely resolution — depth rescues failing attempts and hurts competent ones. This
 > handoff exists to replace received evidence with our own, and to settle two claims nobody owns at
@@ -34,7 +34,7 @@ this repo, and settle two that nobody owns at all.
 
 | Intake ID | Title | Relevance | Verdict | Verification |
 |-----------|-------|-----------|---------|--------------|
-| intake-547 | Think, But Don't Overthink: Reproducing Recursive Language Models (arXiv:2603.02615) | high | worth_investigating | (pre-lifecycle entry — no `verification` field; treat its numbers as unverified) |
+| intake-547#record | Think, But Don't Overthink: Reproducing Recursive Language Models (arXiv:2603.02615) | high | worth_investigating | (pre-lifecycle entry — no `verification` field; treat its numbers as unverified) |
 | intake-901 | fast-rlm REPL memory / resumable sessions (re-review 2026-07-27) | high | adopt_patterns | dive-verified |
 | intake-153 | Recursive Language Models (arXiv:2512.24601) | high | already_integrated | (pre-lifecycle entry) |
 
@@ -50,7 +50,7 @@ this repo, and settle two that nobody owns at all.
   but failed a strict-format scorer, and no rescoring was done). The idea stands; its headline
   evidence does not.
 - fast-rlm's own harness has **no baseline arm**: `benchmarks/_harness.py:4` states verbatim
-  *"No budget sweeps, no non-RLM baseline yet"*. Neither it nor intake-547 answers "versus just
+  *"No budget sweeps, no non-RLM baseline yet"*. Neither it nor intake-547#record answers "versus just
   sending the context". E3 exists because of this.
 
 ## Tasks
@@ -194,7 +194,7 @@ id, no attestation. None of it is decision-gating.
 
 ## Open Questions
 
-- Is the depth effect direction-of-effect model-dependent on *our* model lineup, as intake-547
+- Is the depth effect direction-of-effect model-dependent on *our* model lineup, as intake-547#00
   reports across DeepSeek v3.2 vs Kimi K2?
 - Does the code-log-in-prompt saving hold when the workload is not a synthetic corpus built by the
   same person measuring it?

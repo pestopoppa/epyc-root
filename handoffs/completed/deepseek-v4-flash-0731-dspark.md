@@ -1,10 +1,19 @@
 # DeepSeek-V4-Flash 0731 — Q8 Serving + DSpark Speculative Decoding
 
-**Status**: ACTIVE — DSpark support is frozen in production v9 and production-named Q8 `-np 1` parity passes; next work is model/quant research, not kernel promotion. Supersedes [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) (closed: port objective met by upstream PR #24162).
+**Status**: **CLOSED — LOCAL MODEL DEPRECATED FOR TESTING by operator direction 2026-08-26.** DSpark support remains frozen in production v9 and the completed integration evidence remains valid, but no further local DeepSeek-V4-Flash throughput, acceptance, parity, quality, or role-candidacy work will run. Supersedes [`deepseek-v4-flash-cpu-port.md`](deepseek-v4-flash-cpu-port.md) (closed: port objective met by upstream PR #24162).
 **Created**: 2026-08-09
 **Priority**: P2
 **Effort**: Medium — kernel integration is complete; the remaining work is an artifact-controlled drafter comparison
 **Predecessor**: `deepseek-v4-flash-cpu-port.md` (intake-637, antirez Q4-mixed — artifact deleted 2026-08-09)
+
+## Closure disposition — 2026-08-26
+
+The operator declined all remaining local DeepSeek-V4-Flash testing after selecting
+Qwen3.8-Flash-Next-FP8 as the better research target. The 265 GiB model directory
+`/mnt/raid0/llm/models/deepseek-v4-flash-0731/` was permanently deleted; historical run artifacts,
+receipts, and measurements remain preserved. Generic DFlash/DSpark mechanisms and the completed v9
+kernel integration remain reusable. Hosted DeepSeek provider usage is outside this local-model
+disposition. Every remaining task below is closed as explicitly cancelled, not claimed as executed.
 
 ## Objective
 
@@ -113,15 +122,17 @@ the rollback anchor. AutoKernel initialization remained outside this goal.
   6,971,242,976 bytes; publisher SHA-256
   `232dd3c3dc3f7082d242e8700940feedc85f6b65cf2991fd35be0a66dad3efa0` passed; no incomplete file
   remains.
-- [ ] Run the matched throughput, acceptance and exact-parity comparison against the existing
-  10.9 GB control.
-- [ ] **OPERATOR**: decide whether to configure an `HF_TOKEN` on this host. Downloads currently run unauthenticated at **~9 MB/s** (`hf auth whoami` → not logged in; `hf_xet` is already installed, so a token is the only remaining lever). Blocks nothing — the 0731 pull completes either way — but every future multi-hundred-GB acquisition pays the same ~5.5 h/170 GB tax. Credential provisioning is operator-only.
-- [ ] Prune the dead ik_llama branch `feature/deepseek4-port` @ `c04881fc0` and the `antirez` remote on that tree. Left in place 2026-08-09 as harmless; it is now unreachable work (the port was superseded by upstream #24162) and should go whenever ik_llama is next garbage-collected. Not urgent — ik_llama is deprecated as a serving path and consumes no serving resources.
+- [x] **CANCELLED BY OPERATOR** — matched throughput, acceptance, and exact-parity comparison against
+  the existing 10.9 GB control will not run. ✅ 2026-08-26
+- [x] **DECLINED WITH THIS ACQUISITION** — the DeepSeek-specific `HF_TOKEN` decision is closed;
+  refile credential provisioning only for a named future acquisition. ✅ 2026-08-26
+- [x] **CANCELLED AS A TASK** — retain the dead ik_llama branch and `antirez` remote as harmless
+  provenance; they consume no serving resources. ✅ 2026-08-26
 
 ### Phase 1 — Baseline on production v8 (no kernel change)
-- [ ] Load Q8 under `production-consolidated-v8`, no drafter. Canonical CPU protocol: `taskset 0-95 -t 96`, full OMP env stack, NPS4 — per `feedback_canonical_baseline_protocol` + `feedback_omp_env_stack_required`
-- [ ] Record decode t/s + prefill; pair with a correctness check (`feedback_pair_speed_with_correctness_check`)
-- [ ] Index the result by **model/quant, never role** (`feedback_model_not_role_indexing`)
+- [x] **CANCELLED BY OPERATOR** — do not load the Q8 target for a production-v8 baseline. ✅ 2026-08-26
+- [x] **CANCELLED BY OPERATOR** — do not record the associated decode/prefill or correctness pair. ✅ 2026-08-26
+- [x] **CANCELLED BY OPERATOR** — no new DeepSeek-V4 model/quant result will be indexed. ✅ 2026-08-26
 
 ### Phase 2 — DSpark integration (experimental branch only)
 
@@ -166,8 +177,8 @@ Tasks:
   because pooled acceptance was 35.954% versus the ratified 60% floor.
 
 ### Phase 3 — Quality parity
-- [ ] Reuse the predecessor's 20-prompt logprob-parity protocol (`v4_quality_gate_runner.py` + `v4_quality_gate_compare.py`, 34 comparator tests pass). The Mac/ds4 external reference dependency is **dissolved** — with the arch in mainline, take parity against a mainline build
-- [ ] Measure acceptance rate α for DSpark before drawing any spec-dec conclusions (`feedback_measure_alpha_before_specdec_investment`)
+- [x] **CANCELLED BY OPERATOR** — do not run the 20-prompt DeepSeek-V4 logprob-parity protocol. ✅ 2026-08-26
+- [x] **CANCELLED BY OPERATOR** — do not measure further DeepSeek-V4 DSpark acceptance. ✅ 2026-08-26
 - [x] Run a bounded IQ3_XXS cap-0/cap-3 parity and throughput observation ✅ 2026-08-11 —
   production v9 CPU, `-np 1`, nominal 2,048 context, 64 completion tokens: cap 0
   4.82846 t/s versus cap 3 4.61014 t/s (`0.95478×`, −4.52%). Exact token parity passed;
@@ -177,10 +188,14 @@ Tasks:
   (SHA-256 `950073f53dc56bf7e3629491ec8d0568f8ff86a8b40496f5f565babce70ce26e`).
 
 ### Phase 4 — Role candidacy
-- [ ] Only after Phases 1–3: evaluate against `architect_general` (which tolerates lower t/s — Qwen3.5-122B at 12 t/s is documented production), not `worker_general`
-- [ ] Promotion of any DSpark-carrying binary follows the four-step experimental→production rule; production v8 is never patched in place
+- [x] **DECLINED BY OPERATOR** — DeepSeek-V4 will not enter `architect_general` role candidacy. ✅ 2026-08-26
+- [x] **CLOSED WITH THE MODEL CAMPAIGN** — no additional DeepSeek-V4 DSpark candidate will be promoted;
+  the standing experimental→production rule remains unchanged for other work. ✅ 2026-08-26
 
-## Open questions
+## Historical unanswered questions — not backlog
+
+These questions are preserved as context only and must not be dispatched without a new operator
+decision that explicitly reopens local DeepSeek-V4 testing.
 
 - Does upstream PR 25784 apply cleanly to our v8 tip, or has mainline diverged enough to need a manual port?
 - Is DSpark's draft compatible with the MXFP4-expert Q8 quant, or does it assume a specific target quant?
@@ -188,11 +203,11 @@ Tasks:
 
 ## Cross-references
 
-- [`deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) — predecessor, CLOSED 2026-08-09
-- [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) — MoE spec-dec integration surface
-- [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) — sibling drafter work
-- [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) — adjacent upstream arch tracking
-- [`inference-research-index.md`](inference-research-index.md) · [`inference-research-index.md`](inference-research-index.md) — parent indices
+- [`deepseek-v4-flash-cpu-port.md`](deepseek-v4-flash-cpu-port.md) — predecessor, CLOSED 2026-08-09
+- [`moe-spec-cpu-spec-dec-integration.md`](../active/moe-spec-cpu-spec-dec-integration.md) — MoE spec-dec integration surface
+- [`speculative-decoding-mtp-refresh.md`](../active/speculative-decoding-mtp-refresh.md) — sibling drafter work
+- [`llama-cpp-dsa-contribution.md`](../active/llama-cpp-dsa-contribution.md) — adjacent upstream arch tracking
+- [`inference-research-index.md`](../active/inference-research-index.md) — former parent index
 
 ## Progress checklist
 
@@ -200,7 +215,7 @@ Tasks:
 - [x] Disk reclaimed (520 GB) and 0731 acquisition started ✅ 2026-08-09
 - [x] Phase 0 — acquisition verified ✅ 2026-08-10 — all 5 shards byte-exact + DSpark sidecar; 0731 revision confirmed in `general.name`
 - [x] Phase 2 effort re-scoped against the DFlash precedent ✅ 2026-08-10 — 14 files / ~712 insertions, not "one enum member"; file-level template recorded in Phase 2
-- [ ] Phase 1 — production-v8 Q8 baseline (claim-grade; required by v9 promotion qualification)
+- [x] Phase 1 — **CANCELLED BY OPERATOR; no local Q8 baseline will run** ✅ 2026-08-26
 - [x] Phase 2 — DSpark spec-type on experimental branch ✅ 2026-08-10
 - [x] IQ3_XXS research quant acquisition and checksum verification ✅ 2026-08-11
 - [x] IQ3_XXS bounded DSpark parity/throughput observation ✅ 2026-08-11 — exact 64-token
@@ -208,7 +223,7 @@ Tasks:
 - [x] DSpark/DFlash identity and 10.9 GB control composition corrected ✅ 2026-08-11
 - [x] Pinned 6,971,242,976-byte Q2_K/Q8_0 DFlash artifact verified against publisher SHA-256
   ✅ 2026-08-11
-- [ ] Run the matched sidecar throughput/acceptance/parity comparison
-- [ ] Phase 3 — broaden quality parity beyond the production 16-token exact-parity certification;
-  production α observation is 9/18 = 0.50 at `n_max=3`, `-np 1`
-- [ ] Phase 4 — role candidacy decision
+- [x] Matched sidecar throughput/acceptance/parity comparison **CANCELLED BY OPERATOR** ✅ 2026-08-26
+- [x] Phase 3 — broader quality parity **CANCELLED BY OPERATOR**; historical production α observation
+  remains 9/18 = 0.50 at `n_max=3`, `-np 1` ✅ 2026-08-26
+- [x] Phase 4 — role candidacy **DECLINED BY OPERATOR** ✅ 2026-08-26

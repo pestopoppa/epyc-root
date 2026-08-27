@@ -21,6 +21,15 @@ explicitly **uncoverable** rather than quietly omitting them:
 * `propagated` — claims that `depends_on` a claim of the mutated entry. These MUST move: a human
   applied the counterfactual test and wrote down that they would. This is the only scorable
   propagation in the system, and it exists only where somebody authored the edge.
+* `pre_alerted_dependents` — dependents whose OP-11 dependency alert was ALREADY active before the
+  mutation (the depended-on source never had support: dive-overturned, or con-only). For these the
+  "MUST move" expectation is unsatisfiable — retracting a source that had no support cannot newly
+  alert anyone — so they are counted and excluded from the propagated check, never scored. Scoring
+  them either way would manufacture a propagation answer for a counterfactual that was already
+  true; this is the same discipline as the uncoverable bucket. (2026-08-26: exposed by the
+  corrected mutation, when the top verified-only candidate became intake-664, a dive-overturned
+  source with 13 declared dependents, 12 of which failed "propagated" despite the engine behaving
+  correctly.)
 * **uncoverable** — claims of entries that merely CITE the mutated entry with no `depends_on`. The
   engine reports these unaffected because citation is not an evidential edge (measured: 18% of
   dived-source citations are evidential, so inferring it would be wrong 4 times in 5). Scoring them
@@ -46,6 +55,7 @@ __all__ = ["draw_families", "score_live_family", "run_live"]
 
 FT_CLAIM = "epyc.vidya/frame/claim_proposed/v1"
 FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
+FT_OPPOSE = "epyc.vidya/frame/evidence_opposes_claim/v1"
 FT_DEPENDS = "epyc.vidya/frame/claim_depends_on/v1"
 DEFAULT_FLOOR = "Verified/Anchored"
 
@@ -66,7 +76,15 @@ def _entry_of(claim_id: str) -> str:
 
 
 def _index_claims(frames: list[dict]) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
-    """(entry -> claim ids, source id -> support frame ids). Deterministic order for a stable draw."""
+    """(entry -> claim ids, source id -> evidence frame ids). Deterministic order for a stable draw.
+
+    Sources are indexed from BOTH evidence directions (support and oppose): a source retraction is
+    the "this source is discredited" event, and retracting it must reach every frame carrying its
+    `source_id`, whichever way the evidence points. Indexing only support frames left con-only
+    claims (a Verified refutation from the entry's own dive, with no support frame of their own)
+    unmovable — the mutation never touched their evidence, so the claims could not be retracted
+    (the 2026-08-26 gate run 2 harmfuls: clm_intake_1107_02, clm_intake_363_03, clm_intake_363_04).
+    """
     by_entry: dict[str, list[str]] = {}
     by_source: dict[str, list[str]] = {}
     for frame in frames:
@@ -77,7 +95,7 @@ def _index_claims(frames: list[dict]) -> tuple[dict[str, list[str]], dict[str, l
             continue
         if ftype == FT_CLAIM:
             by_entry.setdefault(_entry_of(cid), []).append(cid)
-        elif ftype == FT_SUPPORT and assertion.get("source_id"):
+        elif ftype in (FT_SUPPORT, FT_OPPOSE) and assertion.get("source_id"):
             by_source.setdefault(assertion["source_id"], []).append(frame.get("frame_id", ""))
     for claims in by_entry.values():
         claims.sort()
@@ -181,34 +199,57 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
     before = fold(frames, as_of=as_of)
     grade_floor = parse_grade(floor)
 
+    # Alias resolution (2026-08-26): the fold unions aliased claim identities and keys every
+    # belief by the CANONICAL id; the impact report flags canonical ids. A mutated claim that is
+    # aliased to another claim therefore has no belief entry and no flag under its raw id -- the
+    # 1106_00/1105_00 family: the operator judged the pair `same` (linked restatement), the
+    # retraction of src_1106 breaks the canonical's support path (impact reports it under
+    # 1105_00), and the raw-id lookup scored the engine harmful for honoring the alias. Resolving
+    # every lookup through the alias map makes the two views agree; the impact semantics already
+    # flag the alias case honestly (a broken path is impact even when the belief survives).
+    alias_map = getattr(before, "alias_map", {}) or {}
+
+    def canon(cid: str) -> str:
+        return alias_map.get(cid, cid)
+
     rows: list[dict] = []
     points: list[int] = []
 
     for cid in family["mutated_claims"]:
-        belief = before.beliefs.get(cid)
+        belief = before.beliefs.get(canon(cid))
         if family["expect_never_believed"]:
             # An unverified entry's claim must not clear a decision-gating floor, retraction or no.
             supported = bool(belief and belief.verdict(grade_floor) == "Supported")
             correct, harmful, expected = not supported, supported, "never_believed"
         else:
-            correct = cid in flagged
+            correct = canon(cid) in flagged
             harmful = not correct
             expected = "retracted"
         points.append(1 if correct else (-1 if harmful else 0))
         rows.append({"claim_id": cid, "expected": expected, "correct": correct})
 
     # Declared dependents MUST move. This is the only scorable propagation the system has, and it
-    # exists exactly where a human wrote the edge — which is why authoring them is the unblock, not
+    # exists exactly where a human wrote the edge -- which is why authoring them is the unblock, not
     # inferring them.
+    pre_alerted: list[str] = []
     for cid in family.get("dependent_claims", []):
-        correct = cid in flagged
+        belief = before.beliefs.get(canon(cid))
+        if belief and family["family_id"] in belief.dependency_alerts:
+            # OP-11 carve-out: this dependent was ALREADY alerted before the mutation, because the
+            # depended-on source never had support (dive-overturned, or con-only). "MUST move" is
+            # unsatisfiable -- a retraction can only newly alert a claim whose source had support
+            # to lose. Counted, never scored: the same discipline as the uncoverable bucket.
+            pre_alerted.append(cid)
+            continue
+        correct = canon(cid) in flagged
         points.append(1 if correct else -1)
         rows.append({"claim_id": cid, "expected": "propagated", "correct": correct})
 
     # Discrimination control: claims of entries with no evidential relationship at all. Drawn from
     # the fold rather than the index so a claim that exists only in the ledger is still eligible.
-    excluded = (set(family["mutated_claims"]) | set(family["citing_claims"])
-                | set(family.get("dependent_claims", [])))
+    excluded = ({canon(c) for c in family["mutated_claims"]}
+                | {canon(c) for c in family["citing_claims"]}
+                | {canon(c) for c in family.get("dependent_claims", [])})
     controls = [c for c in sorted(before.beliefs) if c not in excluded][:20]
     for cid in controls:
         correct = cid not in flagged
@@ -233,6 +274,7 @@ def score_live_family(family: dict, frames: list[dict], *, as_of: str, floor: st
         ),
         "uncoverable_claims": len(family["citing_claims"]),
         "propagation_claims": len(family.get("dependent_claims", [])),
+        "pre_alerted_dependents": len(pre_alerted),
         "citing_entries": family["citing_entries"],
         "verified_unaffected": len(report.verified_unaffected),
         "unaffected_but_unmapped": len(report.unaffected_but_unmapped),
@@ -269,6 +311,7 @@ def run_live(
         "harmful_outcomes": harmful,
         "uncoverable_claims": sum(r["uncoverable_claims"] for r in results),
         "propagation_claims": sum(r["propagation_claims"] for r in results),
+        "pre_alerted_dependents": sum(r["pre_alerted_dependents"] for r in results),
         "coverage_note": (
             "Claims of entries that CITE a mutated entry are counted as uncoverable, never "
             "scored: the ledger holds no cross-entry evidential edge, so the engine reports them "

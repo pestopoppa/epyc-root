@@ -283,7 +283,7 @@ llama-server"* — i.e. the integration was never done. `repl-turn-efficiency.md
 `PrefixRouter` only incidentally (both boxes ticked, compacted). Adopting the rows below is what
 closes that gap; re-home them if a better owner appears.
 
-Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-core cluster).
+Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-core cluster).
 
 **Already fixed in this pass (2026-08-20), recorded so the reasoning is not re-derived:**
 
@@ -312,7 +312,7 @@ Evidence: intake-1196 (KVFlow, dive-overturned), intake-1207 (SGLang Rust tree-c
   shared server, from existing logs. ZERO INFERENCE.** This gates everything below. Production
   `num_slots` is **2**; `coder_primary` and `coder_escalation` both declare `slots: 1`. **At slots=1
   there is no eviction order to improve**, and at 2 it is a coin flip. This gate has now been named
-  in two consecutive passes (intake-1182's dive, then intake-1196) with an unchanged blocker — by
+  in two consecutive passes (intake-1182's dive, then intake-1196#record) with an unchanged blocker — by
   the CLAUDE.md recurrence check that is proof it was never blocked. Do it before anything else here.
 - [ ] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** Both are
   already present at the call site (`model_server.py:91` requires `role`;

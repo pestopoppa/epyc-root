@@ -40,7 +40,7 @@ DSpark's Q8 `-np 1` lane passes exact cap-0/cap-3 parity (cap 3: **18 drafted / 
 on one kernel, acceptance rate and end-to-end speed do not co-vary in a way that would let either
 one stand in for the other.
 ([`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md),
-[`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md))
+[`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md))
 
 ### RETRACTED, and carried here because this page still cited the pre-retraction reading: the `ngram-mod` 2.80×
 
@@ -59,17 +59,17 @@ This page's 2026-07-16 subsection below still reports the pre-retraction `ngram-
 
 ### Still not measured
 
-The matched comparison that would settle the standardized 6.97 GB Q2_K/Q8_0 sidecar against the
-existing 10.9 GB control — same target, prompts, request shape and host, reporting throughput,
-acceptance *and* exact token parity — **has not been run**. Both artifacts are checksum-verified and
-on disk; the comparison is the missing thing, and the wiki should not be read as having a preference
-between them. Multi-slot DSpark also remains disabled pending the upstream speculative-cache defect.
-([`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md))
+The matched comparison that would have settled the standardized 6.97 GB Q2_K/Q8_0 sidecar against
+the 10.9 GB control — same target, prompts, request shape and host, reporting throughput, acceptance
+and exact token parity — **was never run**. The operator retired DeepSeek V4 Flash local testing on
+2026-08-26 and the 265 GiB model directory was deleted, so this is a historical unmeasured fork, not
+an open experiment. The wiki should not infer a preference between its old sidecar arms.
+([`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md))
 
 ### Source References (2026-08-12)
 
 - [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — the one-field surface, its clamp/reset/slot-isolation contract, and the unexposed-field list.
-- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — DSpark Q8 and IQ3_XXS acceptance/throughput pairs, and the un-run matched sidecar comparison.
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — DSpark Q8 and IQ3_XXS acceptance/throughput pairs, and the retired matched sidecar comparison.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the DFlash lineup-gate certification numbers in their promotion context.
 - [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the `ngram-mod` 2.80× retraction, its self-copy mechanism, and the corrected three-distinct-prompt figures.
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-topology-cutover-resume-20260730.md) — the cancelled P2-5 fold-into-production instruction and the recipe-survives-the-retraction distinction.
@@ -124,7 +124,7 @@ throughput, acceptance and exact token parity against this existing control.
 
 ### Source References (2026-08-11)
 
-- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — dependency closure, final production boundary, Q8 parity and IQ3 artifact identity.
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — historical dependency closure, production boundary, Q8 parity and IQ3 artifact identity.
 - [`v9-kernel-per-request-speculative-params.md`](../handoffs/active/v9-kernel-per-request-speculative-params.md) — request-local cap contract, qualification gates and frozen v9 evidence map.
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — session-level promotion, certification, stack-restoration and acquisition record.
 - [`ratify_v9_final_freeze_20260811.json`](../artifacts/operator/ratify_v9_final_freeze_20260811.json) — operator-ratified production identity and rollback boundary.
@@ -166,7 +166,7 @@ be measured before any conclusion, and the n-max default must be swept rather th
 
 ### Source References (2026-08-09)
 
-- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/active/deepseek-v4-flash-0731-dspark.md) — successor handoff; Phase 2 scopes the `DRAFT_DSPARK` integration
+- [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — retired successor handoff; historical Phase 2 scope for `DRAFT_DSPARK`
 - [`deepseek-v4-flash-cpu-port.md`](../handoffs/completed/deepseek-v4-flash-cpu-port.md) — closed predecessor; §"CLOSURE — 2026-08-09" records the upstream supersession
 - [`progress/2026-08/2026-08-09.md`](../progress/2026-08/2026-08-09.md) — the disk-reclaim session that surfaced the finding
 - Direct source reads in `/mnt/raid0/llm/llama.cpp` @ `67a433bf4`: `src/llama-arch.cpp:81`, `common/common.h:170-181`, `common/arg.cpp:3861,3935`

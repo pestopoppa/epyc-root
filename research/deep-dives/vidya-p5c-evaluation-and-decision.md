@@ -147,6 +147,19 @@ what an existing anchor means, and because the pilot's whole thesis is that a di
 acting on is worth recording. C is the right answer if the carrier change is judged too expensive
 for shadow mode.
 
+### Requirement 1 — ratified 2026-08-26: B (the implemented §4.2 amendment)
+
+The operator ratified **B** on 2026-08-26. The decision was already half-made in code: the
+2026-08-10 spec §4.2 amendment caps machine-located anchors at the distinct `MachineLocated`
+level (`_t_level`, `scripts/vidya/adapters/research_intake.py` — quote-pinned machine spans never
+reach `Anchored` without a human reading), and the gen-2b ledger carries 424 MachineLocated
+claims. Ratification confirms that reading of the axis: machine-located means *checkable, not
+vouched-for*, and policies choose whether to admit the rung. Requirement 1 is therefore **MET at
+B semantics** — the mechanism is settled; the coverage backlog (662 cited entries / ~2,994 claims
+unanchored at 2026-08-10) grows only at write time, when dives record `claim_anchors`, and is
+tracked, not gated. Option A (re-grade machine spans to T2) was declined on the doc's own
+fabrication-shape risk; C was declined as leaving the axis effectively dead.
+
 ## 4c. PR2 — the live-ledger evaluation, run 2026-08-10
 
 `scripts/vidya/live_eval.py`, `vidya eval-live`. Two draws over the 9,599-frame ledger, six
@@ -262,3 +275,32 @@ repos/epyc-orchestrator/.venv/bin/python -c \
 Deterministic: no clock, no network, no model. The corpus is frozen at the commit that lands this
 file; changing it to make a later test pass requires an explicit amendment record retaining both
 the pre- and post-amendment scores.
+
+## 6. Promotion — verdict PROMOTE, recorded 2026-08-26
+
+All four §4 requirements now stand satisfied, the §3 criteria hold, and no §5 termination
+indicator fires. Shadow status ends: the fold's grades are decision-admissible, with rollback
+= stop adapters, keep the ledger (the 2026-08-10 shadow contract).
+
+| # | Requirement | Evidence (2026-08-26) |
+|---|---|---|
+| 1 | Anchor the claims that get cited (P2d) | MET at B semantics — operator ratified option B (MachineLocated as the machine-anchor rung) on 2026-08-26; the §4.2 amendment is the ratified carrier. Coverage backlog is write-time growth, tracked not gated |
+| 2 | Cross-entry claim identity (R4b) | MET — operator passed all 43 candidate pairs (`node`, 2026-08-26): **18 same / 25 different**, 17 `claim_alias` frames emitted (one transitive group: 144_03=254_04=411_04), worksheet pinned by frame digests. The corroboration statistic now runs over operator-ratified identities |
+| 3 | Query log + obligation disposition (R5b) | MET (2026-08-10) |
+| 4 | Re-run the suite against a live-ledger corpus | EXECUTED on the alias-bearing gen-2b ledger (12,496 frames, checkpoint committed): **161/161** (default) and **155/155** (verified-only), invalidation_recall 1.0, discrimination 1.0, harmful 0 both draws |
+
+Promotion-gate evidence required three eval-harness fixes, all engine-exonerating and all
+recorded in `live_eval.py`: (1) con-only claims never moved — the source index covered support
+frames only; (2) never-supported dependents were scored against an unsatisfiable expectation
+(OP-11 alerts already active pre-mutation); (3) aliased claims were scored under their raw id
+while the fold keys beliefs canonically — the operator's alias judgment was read as an engine
+failure. All three have regression tests.
+
+§3 criteria re-verified same day: gold corpus **28/28, harmful 0, discrimination 1.0**;
+determinism/golden fixtures pass (x86-64); suite 599 passed (+1 pre-existing environmental
+failure: `test_autopilot_journal_adapter` needs the orchestrator `src` package). Ledger:
+frontier 12,496, chain=OK, checkpoints=OK (12,479 + 12,496). Correction queue: 0 unadjudicated.
+
+The two 2026-08-10 caveats stand as tracked work, not gate conditions: machine-anchored claims
+grow only at dive time, and uncoverable claims shrink only as `depends_on` edges accumulate
+(PR2d's conclusion — never infer dependency from citation).

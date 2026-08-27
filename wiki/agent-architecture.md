@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-25 (FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-23 (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
 
 ## Compiled Update — 2026-08-23: the filesystem-containment guard is one scanner, every surface derived
@@ -1457,7 +1457,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **Agentic Critical Training (ACT) shows RL-based self-reflection outperforms imitation by +5.07 points** and transfers across model sizes (4B trained with 8B trajectories reaches 92.14% on ALFWorld). ACT also improves general reasoning (MATH-500 87.73%) without reasoning-specific training data. This validates the autopilot's approach of using GRPO-based training for routing model improvement. [intake-106](https://arxiv.org/abs/2603.08706)
 
-- **Agent context files cost more without reliably helping.** ETH Zurich research (intake-272) found context files increase inference cost by 20%+ **for both arms** (~19% even for developer-provided files, p=0.0126). CORRECTED 2026-08-20 against v2 of the paper: it does **NOT** find that context files reduce success rates -- it finds no significant effect for LLM-generated files (p=0.87 / p=0.37) and a **+2.4% improvement** for developer-provided ones. The cost finding is the durable half; the earlier "reduce success" reading came from v1 and did not survive revision. The thin-map architecture used by EPYC's agent files may be near-optimal, but requires empirical validation via instruction token budget tracking (AP-16). [intake-272](https://arxiv.org/abs/2602.11988)
+- **Agent context files cost more without reliably helping.** ETH Zurich research (intake-272#01) found context files increase inference cost by 20%+ **for both arms** (~19% even for developer-provided files, p=0.0126). CORRECTED 2026-08-20 against v2 of the paper: it does **NOT** find that context files reduce success rates -- it finds no significant effect for LLM-generated files (p=0.87 / p=0.37) and a **+2.4% improvement** for developer-provided ones. The cost finding is the durable half; the earlier "reduce success" reading came from v1 and did not survive revision. The thin-map architecture used by EPYC's agent files may be near-optimal, but requires empirical validation via instruction token budget tracking (AP-16). [intake-272#01](https://arxiv.org/abs/2602.11988)
 
 - **Harness engineering, not model capability, is the primary performance differentiator.** The "Skill Issue" practitioner study (intake-271) showed ~28 rank positions on TerminalBench-2 from harness changes alone on the same Opus model. The "Mismanaged Geniuses" hypothesis (intake-312) extends this: frontier LLMs are already superhuman on hardest exams (IMO, IOI), and the bottleneck is orchestration, not model power. A 4B RLM achieved 100% on MRCRv2 via composition. [intake-271, intake-312]
 
@@ -1544,7 +1544,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [intake-131](https://arxiv.org/abs/2503.18102) AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% improvement on MATH-500
 - [intake-133](https://arxiv.org/abs/2603.08462) Reasoning as Compression -- information bottleneck view of budget forcing; theoretical grounding for think-harder ROI
 - [intake-271](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents) Skill Issue -- harness engineering drives ~28 rank positions on TerminalBench-2
-- [intake-272](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md -- +20% cost with NO significant success effect (LLM-generated) and +2.4% (developer-provided); corrected against v2 2026-08-20
+- [intake-272#01](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md -- +20% cost with NO significant success effect (LLM-generated) and +2.4% (developer-provided); corrected against v2 2026-08-20
 - [intake-312](https://alexzhang13.github.io/blog/2026/mgh/) Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
 - [meta-harness-optimization.md](../handoffs/completed/meta-harness-optimization.md) -- execution trace feedback (+15pts), code mutation search space, GEPA integration
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
@@ -1832,13 +1832,13 @@ May 2026 brought a coherent cluster of papers on recursive-agent training, RLM r
 
 **ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demos) is the **working open-source harness substrate** RAO presumes. MIT + Commons Clause licensed (research use OK, resale blocked). 98.9 KB Python core, Python ≥3.10, last push 2026-05-11. Built on `kani`; backend swappable to local llama-server via `OPENAI_BASE_URL` env var. Two delegation primitives: `DelegateOne` (blocking) and `DelegateWait` (non-blocking with `asyncio.gather`). First-class event-stream logger and web debugger. Lifts cleanly onto EPYC; substrate spike at [`rao-redel-substrate-spike.md`](../handoffs/active/rao-redel-substrate-spike.md) covers a 3-step gated rollout (1-day pre-flight → 1-week paired A/B vs in-house `repl_executor` → 2-3 week feature-flagged substrate replacement).
 
-**Wang RLM reproduction** (intake-547, arxiv:2603.02615) is the **load-bearing depth caveat**: independently reproduces the Zhang/Kraska/Khattab RLM framework on DeepSeek v3.2 and Kimi K2. **Direction-of-effect is model-dependent** — Kimi K2 OOLONG depth-0 (86.6%) BEATS depth-1 RLM (60.0%). Depth=2 inflates DeepSeek v3.2 S-NIAH wall-clock 96× (3.6s → 89.3s → 344.5s). `max_depth=1` is now the load-bearing default for any RAO/RLM-style integration on EPYC unless we explicitly train a depth-controller.
+**Wang RLM reproduction** (intake-547#01, arxiv:2603.02615) is the **load-bearing depth caveat**: independently reproduces the Zhang/Kraska/Khattab RLM framework on DeepSeek v3.2 and Kimi K2. **Direction-of-effect is model-dependent** — Kimi K2 OOLONG depth-0 (86.6%) BEATS depth-1 RLM (60.0%). Depth=2 inflates DeepSeek v3.2 S-NIAH wall-clock 96× (3.6s → 89.3s → 344.5s). `max_depth=1` is now the load-bearing default for any RAO/RLM-style integration on EPYC unless we explicitly train a depth-controller.
 
 **Orchestration-trace survey** (intake-548, arxiv:2605.02801) identifies the **stopping-decision gap** — as of May 2026 NO published RL method explicitly trains the stopping decision. RAO uses fixed depth/step caps. On CPU EPYC where every token is BW-expensive, a learned stop policy has more differential value than anywhere else. The survey's 5-sub-decision taxonomy `{when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop}` becomes a labelling axis on the episodic store (~50 LoC, mirrors `tri-role-coordinator-architecture.md` TR-2.2's `assigned_role` precedent).
 
 **Tree-GRPO** (intake-549, arxiv:2509.21240, ICLR 2026): methodological alternative to RAO's LOO baseline. Each tree node is a complete agent interaction step; prefix-sharing across siblings increases rollout count under fixed token+tool-call budgets. Proof: intra-tree group-relative optimization is equivalent to step-level direct preference learning — derives dense step-wise process signal from outcome-only rewards.
 
-**Sources**: [intake-536](https://arxiv.org/abs/2605.06639) RAO · [intake-547](https://arxiv.org/abs/2603.02615) Wang RLM reproduction · [intake-548](https://arxiv.org/abs/2605.02801) Orchestration-trace survey · [intake-549](https://arxiv.org/abs/2509.21240) Tree-GRPO · [intake-550](https://arxiv.org/abs/2408.02248) ReDel · [Deep-dive](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) · [Substrate spike](../handoffs/active/rao-redel-substrate-spike.md)
+**Sources**: [intake-536](https://arxiv.org/abs/2605.06639) RAO · [intake-547#record](https://arxiv.org/abs/2603.02615) Wang RLM reproduction · [intake-548](https://arxiv.org/abs/2605.02801) Orchestration-trace survey · [intake-549](https://arxiv.org/abs/2509.21240) Tree-GRPO · [intake-550](https://arxiv.org/abs/2408.02248) ReDel · [Deep-dive](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) · [Substrate spike](../handoffs/active/rao-redel-substrate-spike.md)
 
 ## Latent multi-agent systems cluster — heterogeneity actionable; latent handoff blocked (2026-05-19)
 
@@ -2637,13 +2637,13 @@ actually fanned out from one that worked serially and reported otherwise. Kimi's
 the paper defines the term once and never measures it; no rate, no threshold, no detector. The name is
 citable, the measurement is not — that detector is the open work in
 [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md). Separately, a
-controlled scaling study (intake-1107, arXiv:2512.08296) finds
+controlled scaling study (intake-1107#record, arXiv:2512.08296) finds
 returns from adding agents go structurally negative once a single agent already clears roughly 45%
 accuracy on a task, though that specific threshold turned out on dive to be a ratio of a
 statistically non-significant coefficient to one the paper's own robustness checks discount — so the
 *shape* (diminishing then negative returns as task difficulty falls) is usable, the *number* is not.
 
-**The dive process itself produced the most instructive artifact of the round.** The dive on intake-1110
+**The dive process itself produced the most instructive artifact of the round.** The dive on intake-1110#record
 (MAST, arXiv:2503.13657) initially reported a citation defect in four of our own handoffs — a "36.9%
 inter-agent misalignment" figure it judged stale against a differently-denominated 32.15% in the paper.
 That same dive later re-audited its own output, discovered five of seven delegated subagents had never
@@ -2663,7 +2663,7 @@ PARL's own recipe requires. First, AdaMAST (intake-1127, arXiv:2607.16387, Apach
 grading tool that runs against our own Claude Code and Codex transcript corpus at roughly one LLM call
 per trace, and — reversing an intermediate finding from earlier in the same dive — needs no
 success/failure oracle to do it: its induction pipeline is deliberately outcome-blind. Second, OrchBench
-(intake-1111, arXiv:2607.25656, dive-overturned on its headline correlation) still contributes a usable
+(intake-1111#record, arXiv:2607.25656, dive-overturned on its headline correlation) still contributes a usable
 specification for a per-subagent timing collector (declared/started/completed agent counts, parallel
 utilization, workflow depth) built from real transcript timestamps rather than the simulated,
 duration-as-input design that sank the rest of that entry. Both are now filed as open tasks in
@@ -2693,7 +2693,7 @@ theorised.
 Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
 [`agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md)):
 
-- **Denominate in WORDS, not lines.** External corpus evidence (intake-1199, re-derived from the
+- **Denominate in WORDS, not lines.** External corpus evidence (intake-1199#record, re-derived from the
   authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
   by words but only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES
   systematically under-finds**, and the E4 savings table was already denominated in words while the
@@ -2789,14 +2789,3 @@ The 2026-08-11 fix stopped *raised* exceptions becoming HTTP 200s, but the layer
 ### Source References (2026-08-23 evening)
 
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check), the 2026-08-11 fix it extends, HS-OD-1 still open (cross-listed with [Inference Serving](inference-serving.md))
-
-## Compiled Update — 2026-08-25: the fan-out doctrine gets its first measured number
-
-**Confidence: verified (instrumentation) / observation (corpus)** — `scripts/coordination/fanout_timing.py` (schema `fanout_timing.v1`, 14 tests) parses Claude Code and Codex transcripts into per-subagent start/finish records using Task/SendMessage edges (never keyword matching), per OrchBench Appendix D-I definitions.
-
-The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows (2.1%) with ≥2 overlapping subagents, holding 3,847 of the subagents**; mean workflow depth 1.38, max 4; 54 workflows joined to `queue.jsonl`. The read: real fan-out exists and is concentrated (2% of workflows carry 81% of subagents), so the fan-out doctrine's ROI is in the deep-dispatch workflows, and the fleet's mean depth (1.38) means most dispatches are single-level. FM-3's four-bucket diagnostic (fan-out-right/single-right/both/wrong) is the next question: does fan-out win by surfacing candidates or lose at synthesis.
-
-### Source References (2026-08-25)
-
-- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
-- [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore

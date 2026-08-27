@@ -312,7 +312,7 @@ Five structurally different answers to GDN's fixed-state forgetting are now inde
 | Segment checkpoints | O(NL) | intake-354 | reference only |
 | Bounded exact side-cache | leave the state fixed, bolt on a bounded cache | intake-1272 (LTE), intake-1268 (HOLA) | **LTE opened the branch 8.5 months before HOLA** |
 | **Fix the update rule** | diagonal key-Gram preconditioner, state size unchanged | **intake-1273 (PGDN)** | **new fourth branch — no checkpoint, gate 1 CLOSED** |
-| **Offload recall to a sparse-attention minority** | 8 of 32 layers do block-sparse **exact** attention at 2 KV heads; the linear state stays lossy and simple | **intake-1287 (MiniCPM-SALA)** | **new fifth branch — Apache-2.0 9B checkpoint released; a dense-fallback port needs zero new ggml ops** |
+| **Offload recall to a sparse-attention minority** | 8 of 32 layers do block-sparse **exact** attention at 2 KV heads; the linear state stays lossy and simple | **intake-1287#00 (MiniCPM-SALA)** | **new fifth branch — Apache-2.0 9B checkpoint released; a dense-fallback port needs zero new ggml ops** |
 
 **Two things about the fifth row that a one-line summary will get wrong, and both are load-bearing.**
 (a) **SALA's linear primitive is constant-decay Simple GLA, not Gated DeltaNet.** The paper says
@@ -345,7 +345,7 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
       token id** per trial.
       **Gate:** valid EOS as first token on the *meaningful* prompt → real exposure, escalate. Only on
       filler → model behaviour on degenerate input, close it. Neither → not reproducible on our path.
-      **Why it is not optional:** intake-1279 established that the upstream reporter's own log refutes
+      **Why it is not optional:** intake-1279#record established that the upstream reporter's own log refutes
       their diagnosis (`n_prompt_tokens_cache = 0` on all 14 requests — no cache, cold full prefill),
       that their exonerating control cannot detect wrong output at all, and that **nobody has tested
       any backend but Metal**. Our shared hybrid/recurrent code is byte-identical to the reproducing

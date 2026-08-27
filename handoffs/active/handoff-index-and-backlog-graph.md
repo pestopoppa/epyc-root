@@ -41,7 +41,8 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   threshold 0.38; hand-classified precision 0.86 (55/64 pairs ≥0.60 are the same unit of work filed
   twice). New finds beyond C2: DR-3 cluster (7 pairs: gpu-drafter-control-redesign ≡
   mi210-big-model-acceleration-roadmap), reviewer-typed-artifacts ≡ security-review-skill,
-  glm51-reap ≡ glm52 gates, deepseek-v4-flash ≡ v9-kernel (V9-7 cutover), autopilot P1 ≡
+  glm51-reap ≡ glm52 gates, deepseek-v4-flash ≡ v9-kernel (V9-7 cutover; pair resolved and local
+  model testing closed 2026-08-26), autopilot P1 ≡
   shape-keyed (marker polarity). The C2 pair list is re-homed below; the superseded dispatch queue
   can be pruned. (Filed from bus triage 2026-08-16, msg-20260812T111252Z-20.)
 - [x] **`backlog_row_check.py`: mid-text owner declaration is a measured false negative.** ✅ 2026-08-24.

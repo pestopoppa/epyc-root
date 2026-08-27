@@ -107,9 +107,9 @@ this page's ownership is the store schema they depend on.
 ### Source References (2026-08-25)
 
 - [`rao-redel-substrate-spike.md`](../handoffs/active/rao-redel-substrate-spike.md) — the 5-sub-decision taxonomy step-3 pre-work (files, LoC, 29 tests, polarity caveat), the Step 1/2 substrate results (depth-0 on every natural sample; forced-delegation arm-A truncation finding), the SkyRL rollout-tree accounting scope with its minimal data contract and review requirement, and the OOLONG adoption consideration.
-- [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547's model-dependent depth direction, and the RAO/ReDel substrate framing.
+- [`2026-05-19-rao-rlm-cluster.md`](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) — the cluster source: intake-548's 5-sub-decision taxonomy and stopping-decision gap, intake-547#01's model-dependent depth direction, and the RAO/ReDel substrate framing.
 - [`meta-harness-optimization.md`](../handoffs/completed/meta-harness-optimization.md) — the RLM-pattern coverage baseline (≈80%, R1–R6) that the taxonomy work extends and the Tier-3 in-house fallback the spike arbitrates.
-- [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547` for the depth direction-of-effect.
+- [intake-868](https://github.com/volcengine/verl) in [`research/intake_index.yaml`](../research/intake_index.yaml) — SkyRL `examples/train/rlm`: the parent/child rollout-tree accounting model (rollout_id / parent / depth / child_index) adopted as the accounting shape; `intake-547#01` for the depth direction-of-effect.
 - [Agent Architecture](agent-architecture.md) — the RAO + RLM substrate cluster and the 2026-08-03 episodic-store audit that retracted the "NULL is correct" framing and counted the zero producers.
 
 ## Source References
@@ -319,7 +319,7 @@ The connection between memory and the autopilot is especially significant. Befor
 - [progress 2026-07-05](../progress/2026-07/2026-07-05.md) -- exact episodic FAISS health (`526,729/526,729`, `100.0%` overlap, `0` missing/stale IDs) and current AutoPilot live state after the Fable restart
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
 - [rao-redel-substrate-spike.md](../handoffs/active/rao-redel-substrate-spike.md) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
-- [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547 model-dependent depth caveat, ReDel substrate viability
+- [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547#01 model-dependent depth caveat, ReDel substrate viability
 
 
 ## Updates — 2026-04-28

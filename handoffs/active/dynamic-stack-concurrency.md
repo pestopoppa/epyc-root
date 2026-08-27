@@ -145,7 +145,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 - DROP drove's ASR-facade idea: already shipped (`whisper_server.py` exposes OpenAI `/v1/audio/transcriptions`; `start_whisper` is a first-class managed service in `orchestrator_stack`).
 - KEEP: proactive WHOLE-PROCESS idle-teardown of COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) as an OPTIONAL RAM-reclaim policy (a "DS-7-profile" option), explicitly DISTINCT from the existing DS-6 quarter-eviction idle-timeout (reassigns quarters, does NOT reclaim RAM) and from earlyoom (reactive ceiling). NEVER for hot pre-warmed roles — wholesale lazy-load is an anti-pattern for our deliberately pre-warmed + mlock single-user stack. Gated on the DS-E1 evidence packet. No benchmarks (tiny project, observations).
 
-## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274 / intake-1279)
+## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274#record / intake-1279#record)
 
 - [ ] **K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`
       and `-b` is never passed, so the effective micro-batch is the **2048 default**. Either pass

@@ -826,9 +826,9 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
   ingest: DRAFT, 30 files, +7,617/-0, one commit, `mergeable_state: clean`, opened 2026-08-09 from
   fork `LifeIsSoSolong/OpenRSI` branch `codex/openmle-sandbox` by an account with GitHub
   `author_association: NONE` — **not a Frontis account by any GitHub signal**. It publishes the
-  distributed grading service that intake-940's dive named as the hard blocker on reproducing the
+  distributed grading service that intake-940#record's dive named as the hard blocker on reproducing the
   paper tables. **TRIGGER**: if it merges, re-open that reproducibility finding
-  ([intake-1024](../../research/intake_index.yaml) → intake-940). If it is abandoned, record that the
+  ([intake-1024](../../research/intake_index.yaml) → intake-940#record). If it is abandoned, record that the
   blocker hardened. `main` was last pushed 2026-08-04, five days before the PR, so nothing has landed.
   **Caveat if it does merge**: reproduction would still require pulling worker and controller images
   from an external registry (they are not in the patch) and reconfiguring this host to cgroup v1 via a

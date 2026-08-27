@@ -167,7 +167,7 @@ evaluation figures.
 
 ### UTM-V1..V6 — verifiable memory operations are scoped behind an append-only envelope, shadow-first
 
-The 2026-08-07 intake cluster (intake-1008/1015/1017/1018/1022/1023) scopes the next memory-store
+The 2026-08-07 intake cluster (intake-1008#record/1015/1017/1018/1022/1023) scopes the next memory-store
 layer: typed `ADD|UPDATE|DELETE|RETRIEVE|FILTER|SELECT_EPISODE|SUMMARIZE|NOOP` proposals over the
 existing raw-event authority, every operation carrying operation/session/actor ids, immutable
 source-event references, before/after value hashes, version and supersession links, an
@@ -183,7 +183,7 @@ None of this is wired to runtime; it is scoped design plus the landing order.
 
 ### Serving evidence: a nine-day retention hole made a correctness question unanswerable — the covered window was clean
 
-The llama-server log-retention audit (2026-08-21, intake-1279) is the observation-window discipline
+The llama-server log-retention audit (2026-08-21, intake-1279#record) is the observation-window discipline
 applied to long-context serving: a correctness question about production (upstream #27442,
 disclosed 2026-08-20) **could not be answered from retained evidence** — no llama-server or
 orchestrator log on disk is newer than 2026-08-11. Where the frontdoor log *does* cover, it is
@@ -201,7 +201,7 @@ the instrument-repair handoff.
   UTM-V1..V6 scoping (2026-08-07) with the append-only envelope, actor-vs-subject proposer, and the
   no-memory control arm in the UTM-V6 matrix.
 - [`evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) —
-  the 2026-08-21 intake-1279 log-retention finding, the covered-window negative, and the
+  the 2026-08-21 intake-1279#record log-retention finding, the covered-window negative, and the
   `empty_generation` detector's active status.
 - [`intake-1279#record`](../research/intake_index.yaml) — the retention-gap record with the
   detector-mechanism analysis.
@@ -640,6 +640,6 @@ for any budget-driven context assembly that assumes relevance implies benefit.
 
 - `research/intake_index.yaml` intake-1159 (`@oh-my-pi/snapcompact`) — mechanism, per-provider billing table, and the missing eval results
 - `research/intake_index.yaml` intake-1152 (EDIT-Bench, arXiv:2511.04486) — the context-ablation table quoted above
-- `research/intake_index.yaml` intake-1148 (oh-my-pi) — the parent harness whose compaction pipeline this serves
+- `research/intake_index.yaml` intake-1148#record (oh-my-pi) — the parent harness whose compaction pipeline this serves
 - [Optical context compression](../handoffs/active/optical-context-compression.md) — OCC-1, the decisive measurement on a reader we serve
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

@@ -24,7 +24,7 @@ mechanism for the same job; if it does not, that is a cheap negative result.
 | Intake ID | Title | Relevance | Verdict | Verification |
 |-----------|-------|-----------|---------|--------------|
 | intake-1159 | `@oh-my-pi/snapcompact` — bitmap-frame context compression | high | worth_investigating | dive-verified |
-| intake-1148 | oh-my-pi (omp) — the parent harness | high | adopt_patterns | dive-verified |
+| intake-1148#record | oh-my-pi (omp) — the parent harness | high | adopt_patterns | dive-verified |
 
 ## Open Questions
 

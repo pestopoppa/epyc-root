@@ -167,7 +167,7 @@ hand. The queue was offering standing constraints as dispatchable work.
 `intake-derived-work-2026-07-25.md:63` · `backlog-roi-audit-2026-07-14.md:16` ·
 `autopilot-continuous-optimization.md:1537` · `scaffold-autopilot-cost-lever-deployment.md:120` ·
 `scoring-infra-standardization.md:35` · `repo-readiness-scorer.md:414,415` ·
-`per-request-reasoning-budget.md:210,211` · `deepseek-v4-flash-cpu-port.md:443` ·
+`per-request-reasoning-budget.md:210,211` ·
 `routing-and-optimization-index.md:652,653` · `rao-redel-substrate-spike.md:432`
 
 Sized S/M in this queue but each fans out to a program, so treat as entry points, not atomic
@@ -201,7 +201,7 @@ read-only, now descends into child boxes).
 `scoring-infra-standardization.md:35` · `fable5-window2-findings-03-…:69,70` ·
 `tool-output-compression.md:450,451` · `repo-readiness-scorer.md:414,415` ·
 `stale-open-audit-2026-07-18.md:86,88,93` · `per-request-reasoning-budget.md:210,211` ·
-`laguna-s21-cpu-port.md:97` · `x-mas-text-routing.md:49` · `deepseek-v4-flash-cpu-port.md:443`
+`laguna-s21-cpu-port.md:97` · `x-mas-text-routing.md:49`
 
 ---
 # BY HANDOFF
@@ -513,12 +513,6 @@ re-grep before assigning.
 - L625 | none | L | N | needs post-fix reward corpus accrual | Retrain DAR-4 bilinear predictor on fixed reward | bilinear_scorer.py
 - L626 | none | L | N | reward redesign | DAR-5 gated behind reward redesign | irt_scorer.py
 - L636 | none | M | N | - | Split stage field out of producer_role | progress_logger.py, q_reward.py
-
-## deepseek-v4-flash-cpu-port.md (4)
-- L442 | none | S | Y | operator decision; needs D2 floor | Operator go/park on Strategy-A API translation | handoff, ik_llama feature/deepseek4-port
-- L443 | none | M | Y | - | Recalibrate 18 t/s floor to V4-arch-aware baseline | handoff, bench_canonical.sh
-- L444 | cpu | M | N | Mac/ds4 reference logprobs | Repurpose quality gate as architect_general candidacy probe | v4 quality gate script
-- L445 | none | M | N | external reference host (Mac/ds4) | Unblock quality gate on external reference logprobs | v4 quality gate script
 
 ## delegation-context-preassembly.md (2)
 - L46 | cpu | L | N | host-quiet window; AutoPilot stopped | DCP-6 larger quality-scored live A/B before enablement | dcp_j7_ab.py, context_discovery.py

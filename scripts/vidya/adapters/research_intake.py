@@ -188,6 +188,18 @@ def apply_claim_verdict(grade: Grade, is_opposition: bool, per_claim: dict | Non
     substance is not in dispute — the authors revised the "+9-16 points" figure away themselves — so
     "conflicted" was the adapter mis-recording settled history as a live disagreement.
 
+    **`uncertain` keeps the entry-level verdict — a chosen default, not an inherited one (SC16,
+    decided 2026-08-26).** `clm_intake_922_01` is the live instance: entry 922 carries a
+    dive-overturned entry-level verdict with `effect: uncertain` on claim 01, and the fold reports
+    `pro=Q0/T0 con=Verified/MachineLocated` — the dive's inability to decide about the claim is
+    recorded as the entry-level refutation, never as a weaker one. The alternative, clearing the
+    claim's opposition on `uncertain`, was considered and rejected: it would conflate "could not
+    tell" with "found fine", and on an overturned entry it would silently un-refute claims whose own
+    entry the dive rejected — the absence-of-evidence category error this adapter exists to prevent.
+    The failure mode of keeping is a true statement about the entry; the failure mode of clearing
+    would be a verdict the dive never gave. `unaffected`, `narrowed` and `reattributed` remain the
+    affirmative clearances; `uncertain` is deliberately not one of them.
+
     Used by BOTH the emitter and the run report, because those two drifted apart once before (the
     report claimed 112 opposition while the adapter emitted 106).
     """

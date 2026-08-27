@@ -90,3 +90,138 @@ def test_draw_is_deterministic_and_prefers_cited_entries():
     b = [f["family_id"] for f in draw_families(frames, index, count=2)]
     assert a == b
     assert a[0] == "intake-001", "the cited entry must be drawn first"
+
+
+def _oppose_frame(entry_id: str, cid: str, grade: dict) -> dict:
+    src = "src_" + entry_id.replace("-", "_")
+    return make_frame(
+        frame_type="epyc.vidya/frame/evidence_opposes_claim/v1",
+        assertion={"claim_id": cid, "evidence_id": f"evd_{cid}", "grade": grade,
+                   "source_id": src},
+        provenance={"evidence": f"evd_{cid}", "about": cid},
+        actor="test", authority_scope="test", created_at=AS_OF,
+    )
+
+
+def _depends_frame(cid: str, target_entry: str, target_src: str) -> dict:
+    return make_frame(
+        frame_type="epyc.vidya/frame/claim_depends_on/v1",
+        assertion={"claim_id": cid, "depends_on_source": target_src,
+                   "depends_on_entry": target_entry, "rationale": "test"},
+        provenance={"about": cid, "method": "test", "authored_by": "human"},
+        actor="test", authority_scope="test", created_at=AS_OF,
+    )
+
+
+def test_con_only_claims_move_when_their_oppose_evidence_is_retracted():
+    """A claim whose ONLY evidence is an oppose frame must still move when its source is retracted.
+
+    Regression for the 2026-08-26 gate run 2 harmfuls (clm_intake_1107_02, clm_intake_363_03,
+    clm_intake_363_04): the source index covered support frames only, so the mutation retracted
+    nothing on a con-only claim and it could never move.
+    """
+    frames = _entry_frames("intake-010", 1, VERIFIED)
+    con_only = "clm_intake_010_01"
+    frames += [
+        make_frame(
+            frame_type="epyc.vidya/frame/claim_proposed/v1",
+            assertion={"claim_id": con_only, "display_text": "con-only claim",
+                       "source_id": "src_intake_010"},
+            provenance={"method": "test", "about": con_only},
+            actor="test", authority_scope="test", created_at=AS_OF,
+        ),
+        _oppose_frame("intake-010", con_only, VERIFIED),
+    ]
+    index = [{"id": "intake-010", "verification": "dive-verified"}]
+    res = run_live(frames, index, as_of=AS_OF, count=1)
+    fam = res["families"][0]
+    assert {r["claim_id"] for r in fam["rows"]} == {"clm_intake_010_00", con_only}
+    assert all(r["correct"] for r in fam["rows"]), fam["rows"]
+    assert fam["invalidation_recall"] == 1.0
+    assert res["harmful_outcomes"] == 0
+
+
+def test_dependents_on_a_never_supported_source_are_carved_out_not_failed():
+    """OP-11 carve-out: an alert already active pre-mutation is not a propagation failure.
+
+    A dive-overturned source has no support to lose, so retracting it cannot newly alert its
+    dependents -- the engine behaved correctly and the "MUST move" expectation was unsatisfiable.
+    Such dependents are counted as pre_alerted_dependents, never scored.
+    """
+    a_src = "src_intake_020"
+    a_claim = "clm_intake_020_00"
+    frames = [
+        make_frame(
+            frame_type="epyc.vidya/frame/claim_proposed/v1",
+            assertion={"claim_id": a_claim, "display_text": "overturned claim", "source_id": a_src},
+            provenance={"method": "test", "about": a_claim},
+            actor="test", authority_scope="test", created_at=AS_OF,
+        ),
+        _oppose_frame("intake-020", a_claim, VERIFIED),
+    ]
+    b_claims = _entry_frames("intake-021", 2, VERIFIED)
+    frames += b_claims
+    frames += [_depends_frame(c, "intake-020", a_src) for c in
+               (f["assertion"]["claim_id"] for f in b_claims
+                if f["frame_type"].endswith("claim_proposed/v1"))]
+    index = [
+        {"id": "intake-020", "verification": "dive-overturned"},
+        {"id": "intake-021", "verification": "dive-verified",
+         "cross_references": {"intake_entries": ["intake-020"]}},
+    ]
+    res = run_live(frames, index, as_of=AS_OF, count=1)
+    fam = res["families"][0]
+    assert fam["family"] == "intake-020", "the overturned source must be drawn"
+    assert fam["pre_alerted_dependents"] == 2
+    assert not any(r["expected"] == "propagated" for r in fam["rows"])
+    assert {r["claim_id"] for r in fam["rows"]} == {a_claim}, "dependents are counted, not scored"
+    assert res["harmful_outcomes"] == 0
+    assert fam["invalidation_recall"] == 1.0, "the source's own claims must still move"
+
+
+def test_dependents_on_a_supported_source_still_must_move():
+    """The carve-out is narrow: a genuinely supported source's dependents are still required to move."""
+    frames, index = _corpus()
+    dependent = "clm_intake_002_00"
+    frames.append(_depends_frame(dependent, "intake-001", "src_intake_001"))
+    res = run_live(frames, index, as_of=AS_OF, count=1)
+    fam = res["families"][0]
+    assert fam["pre_alerted_dependents"] == 0
+    prop = [r for r in fam["rows"] if r["expected"] == "propagated"]
+    assert [r["claim_id"] for r in prop] == [dependent]
+    assert prop[0]["correct"] is True, "a supported source's retraction must propagate"
+    assert res["harmful_outcomes"] == 0
+
+
+def test_aliased_claim_scores_correct_under_canonical_flagging():
+    """A claim aliased to another entry's claim must score through the canonical id.
+
+    Regression for the 2026-08-26 alias-bearing draw (intake-1106 family): the operator judged
+    clm_intake_1106_00 == clm_intake_1105_00 (same proposition, linked restatement), so the fold
+    unions the pair and keys the belief under the canonical id (1105_00). The retraction of the
+    mutated source breaks the canonical's support path, and impact reports it under the canonical
+    id -- the raw-id lookup scored the engine harmful for honoring the alias. Every lookup must
+    resolve through the alias map.
+    """
+    frames = _entry_frames("intake-005", 1, VERIFIED)   # the aliased (survivor) source
+    frames += _entry_frames("intake-006", 1, VERIFIED)   # the mutated source
+    alias_frame = make_frame(
+        frame_type="epyc.vidya/frame/claim_alias/v1",
+        assertion={"claim_ids": ["clm_intake_005_00", "clm_intake_006_00"],
+                   "independent": False},
+        provenance={"method": "test", "about": "clm_intake_005_00"},
+        actor="test", authority_scope="test", created_at=AS_OF,
+    )
+    frames.append(alias_frame)
+    index = [
+        {"id": "intake-005", "verification": "dive-verified",
+         "cross_references": {"intake_entries": ["intake-006"]}},
+        {"id": "intake-006", "verification": "dive-verified"},
+    ]
+    res = run_live(frames, index, as_of=AS_OF, count=1)
+    fam = res["families"][0]
+    assert fam["family"] == "intake-006", fam["family"]
+    assert "clm_intake_006_00" in {r["claim_id"] for r in fam["rows"]}
+    assert all(r["correct"] for r in fam["rows"]), fam["rows"]
+    assert fam["invalidation_recall"] == 1.0
+    assert res["harmful_outcomes"] == 0

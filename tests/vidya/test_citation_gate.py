@@ -110,6 +110,19 @@ def test_citation_to_a_nonexistent_entry_is_dangling():
     assert (v.status, v.resolved) == ("dangling", None)
 
 
+def test_eight_digit_directory_name_produces_no_verdict_at_all():
+    """A source DIRECTORY (`research/sources/intake-20260819/`) is not an entry citation.
+
+    Regression, found 2026-08-26: the scanner read the 8-digit evidence-batch directory name as
+    `intake-20260819` and reported a dangling citation to an entry that cannot exist (entry ids
+    are 1-4 digits). A path component must yield no verdict, not a `dangling` one.
+    """
+    assert gate_text("see research/sources/intake-20260819/EVIDENCE-x.md",
+                     build("110", {0: ("Hinted", "Located", False)})) == []
+    assert gate_text("measured 2026-08-20 (intake-20260819)",
+                     build("110", {0: ("Hinted", "Located", False)})) == []
+
+
 def test_entry_with_no_ingested_claims_is_a_coverage_gap_not_a_defect():
     """`unknown` must never be blocking: it says the substrate has not read the entry."""
     (v,) = gate_text("see intake-1000", build("110", {0: ("Hinted", "Located", False)}))
