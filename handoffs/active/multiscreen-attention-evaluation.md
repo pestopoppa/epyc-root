@@ -459,6 +459,23 @@ See also the fifth GDN branch-map row in
 - [ ] **G1 (G) — the CoT-SFT amnesia probe, on our own production model.** *Highest-value compute row
       of the wave: no port, no new model, no SALA, no training.*
 
+      - [x] **Recover the live G1 execution without discarding persisted recall evidence.** ✅
+        2026-08-27 — checkpointed 161 scored trials, captured logs/scripts/session provenance,
+        quiesced the malformed half-instance launch, and resumed the first missing trial under a
+        held full-machine claim.
+
+      **Live execution checkpoint — 2026-08-27 07:46Z.** The initial launcher copied the 48-thread
+      `:8080`/`:8180` serving-half argv but omitted that shape's CPU affinity, memory policy and
+      canonical environment. Trials 1–161 were preserved as individually scored JSON records (all
+      161 exact-match hits); the interrupted, unpersisted trial 162 is being rerun. The continuation
+      uses the solo-batch/full production CPU shape: `-t 96`, `taskset -c 0-95`,
+      `numactl --interleave=all`, canonical OMP variables and `GGML_IQK=1`, under a held four-region
+      `region-lock`. This probe measures recall, not speed: phase-A scores remain evidence, while
+      elapsed-time/throughput fields must be stratified across the explicit recipe boundary. The
+      checkpoint, logs, original scripts, sanitized OpenCode transcript, process manifest, hashes
+      and takeover provenance are under
+      `/mnt/raid0/llm/epyc-inference-research/data/frontdoor-amnesia-g1-checkpoints/20260827T074200Z-pre-corrected-resume/`.
+
       **Measurement.** RULER **S-NIAH-2** — essay haystack, single numeric magic value, question asks
       for the value — on the production frontdoor artifact
       `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf` (30 GDN + 10 full attention), at context
