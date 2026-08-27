@@ -136,6 +136,17 @@ failure shape (a decision living in a handoff body), and it is why the screen is
 verdict. Action taken: OP-19's master-queue row amended to name what its non-ruling now costs — a
 15-day-old decision is now also parking a measured win. Nothing pruned, nothing archived.
 
+**RETRACTED 2026-08-27 (OP-28 withdrawn).** The Step-5 finding below is WRONG and the operator
+decision it raised has been removed from the master index. `wiki/.last_compile` is **gitignored**,
+so it is absent inside any git worktree by construction — and the `total_new: 898 / last_compile:
+None` reading was taken in a worktree. Run in the real clone the truth is `total_new: 56 |
+last_compile: 2026-08-25T15:11:14Z`: the watermark has existed for two days and the backlog is a
+normal incremental 56 sources, not an uninitialised pipeline. Nothing was ever wrong, and the
+`--touch` hazard described below, while real in general, did not apply. This is the third time in
+one session that a probe run in a worktree reported untracked or ignored state as absent, which is
+why that shape is now part of the ratified Observation Windows amendment. The 56 outstanding
+sources remain a normal Step-5 obligation for a future operator wrap-up.
+
 **Step 5 wiki sweep.** `compile_sources.py` reports `total_new: 898` — but `wiki/.last_compile`
 has **never existed**, so that number is "no watermark", not "898 uncompiled sources"; the wiki is
 demonstrably maintained by hand (32 pages, 27,440 lines, `Compiled Update` sections committed today).
