@@ -132,6 +132,34 @@
   @media(max-width:900px){.hero,.winner-grid,.strategy-grid{grid-template-columns:1fr 1fr}}
   @media(max-width:620px){.hero,.lane-grid,.winner-grid,.strategy-grid{grid-template-columns:1fr}}
   @media(max-width:850px){.live-grid{grid-template-columns:1fr}}
+  /* Command band — the four glance answers: aggregate, liveness, stage, hypothesis */
+  .command-band{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+  .cmd-card{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;min-width:0}
+  .cmd-card.ok{border-left:4px solid var(--good)}
+  .cmd-card.fail{border-left:4px solid var(--bad)}
+  .cmd-card.warn{border-left:4px solid var(--warn)}
+  .cmd-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+  .cmd-value{font-size:26px;font-weight:750;line-height:1.15;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .cmd-card.ok .cmd-value{color:var(--good)}
+  .cmd-card.fail .cmd-value{color:var(--bad)}
+  .cmd-card.warn .cmd-value{color:var(--warn)}
+  .cmd-value.code{font-size:19px;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:-.2px}
+  .cmd-sub{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+  .cmd-sub b{color:var(--text)}
+  .cmd-pulse{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:1px}
+  .cmd-pulse.run{background:var(--good);animation:pulse 1.6s ease-in-out infinite}
+  .cmd-pulse.warn{background:var(--warn);animation:pulse 1.6s ease-in-out infinite}
+  .cmd-pulse.dead{background:var(--bad)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .cmd-stepper{display:flex;align-items:center;gap:0;margin:8px 0 4px;overflow-x:auto;padding-bottom:2px}
+  .cmd-step{flex:0 0 auto;font-size:10px;padding:3px 8px;border:1px solid var(--border);border-radius:12px;color:var(--muted);background:transparent;white-space:nowrap}
+  .cmd-step.done{border-color:#1f4d38;color:var(--good)}
+  .cmd-step.now{border-color:var(--accent);color:var(--accent);background:rgba(96,165,250,.12);font-weight:700;box-shadow:0 0 8px rgba(96,165,250,.25)}
+  .cmd-step.bad{border-color:#7a2823;color:var(--bad)}
+  .cmd-step-arrow{flex:0 0 auto;color:var(--border);margin:0 3px;font-size:10px}
+  .cmd-refusal{font-size:11px;color:var(--bad);margin-top:5px;line-height:1.4}
+  @media(max-width:1100px){.command-band{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.command-band{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -151,6 +179,30 @@
 
   <div class="reporting" id="reporting"></div>
 
+  <section class="command-band" id="command-band" aria-label="AutoKernel at a glance">
+    <div class="cmd-card" id="cmd-aggregate">
+      <div class="cmd-label">Aggregate candidate · vs frozen production</div>
+      <div class="cmd-value" id="cmd-aggregate-value">—</div>
+      <div class="cmd-sub" id="cmd-aggregate-sub">awaiting sealed cumulative receipt</div>
+    </div>
+    <div class="cmd-card" id="cmd-liveness">
+      <div class="cmd-label">AutoKernel loop</div>
+      <div class="cmd-value"><span class="cmd-pulse" id="cmd-pulse"></span><span id="cmd-liveness-word">unknown</span></div>
+      <div class="cmd-sub" id="cmd-liveness-sub">connecting…</div>
+    </div>
+    <div class="cmd-card" id="cmd-stage">
+      <div class="cmd-label">Pipeline stage</div>
+      <div class="cmd-value" id="cmd-stage-value">—</div>
+      <div class="cmd-stepper" id="cmd-stepper"></div>
+      <div class="cmd-sub" id="cmd-stage-sub"></div>
+    </div>
+    <div class="cmd-card" id="cmd-hypothesis">
+      <div class="cmd-label">Hypothesis under test</div>
+      <div class="cmd-value code" id="cmd-hypothesis-value">—</div>
+      <div class="cmd-sub" id="cmd-hypothesis-sub"></div>
+    </div>
+  </section>
+
   <section class="panel" id="autokernel-live-state-panel">
     <h2>Current AutoKernel state <span class="tag">derived from durable transitions</span></h2>
     <div id="ak-live-summary" class="live-summary"><div class="empty">connecting to controller state…</div></div>
@@ -165,6 +217,11 @@
       <summary id="ak-live-history-summary">Abandoned / retest history</summary>
       <div id="ak-live-history-rows" class="history-rows"></div>
     </details>
+  </section>
+
+  <section class="panel" id="v27-cumulative-panel">
+    <h2>Cumulative candidate vs frozen production <span class="tag">v27 receipt · producer-owned promotion</span></h2>
+    <div id="v27-cumulative"><div class="empty">connecting to cumulative performance receipt…</div></div>
   </section>
 
   <div class="live-grid">
@@ -912,21 +969,33 @@ async function load(){
   try{ const r=await fetch("/api/kernel",{cache:"no-store"}); render(await r.json()); }
   catch(e){ setBadge("stale"); $("#observation").innerHTML='<b>OBSERVATION discipline.</b> failed to load contract'; console.error(e); }
 }
-function liveLine(row){
+const EVENT_WORDS={
+  planner_started:"Planner started", planner_completed:"Planner finished",
+  planner_failed:"Planner FAILED", planner_refused:"Planner output REFUSED",
+  critic_started:"Critic started", critic_completed:"Critic decided",
+  critic_failed:"Critic FAILED"};
+function shortId(id,len){ const s=String(id==null?"—":id);
+  return s.length>len+3?s.slice(0,len)+"…"+s.slice(-8):s; }
+function liveLine(row,withTooltip){
   const result=row.result||{};
+  const word=EVENT_WORDS[row.event]||String(row.event||"event");
   const facts=[];
-  if(row.event_id) facts.push("id="+String(row.event_id).slice(0,16)+"…");
-  if(row.operation_key) facts.push("op="+String(row.operation_key).slice(0,12)+"…");
-  if(result.decision) facts.push("decision="+result.decision);
-  if(result.stage) facts.push("stage="+result.stage);
-  if(result.first_incomplete_stage) facts.push("resume="+result.first_incomplete_stage);
-  if(result.replication) facts.push("replication="+result.replication);
-  if(Array.isArray(result.arm_order_schedule)) facts.push("order="+result.arm_order_schedule.join("→"));
-  if(result.refusal_type) facts.push("refusal="+result.refusal_type);
-  if(result.returncode!=null) facts.push("exit="+result.returncode);
-  if(result.stdout_sha256) facts.push("stdout="+String(result.stdout_sha256).slice(0,12));
-  return [row.ts||"—", row.event||"event", row.hypothesis_id||"—",
-          row.model||"—", facts.join(" ")].filter(Boolean).join(" · ");
+  if(result.decision) facts.push("→ "+result.decision);
+  if(result.refusal_type) facts.push("type="+result.refusal_type);
+  if(result.stage) facts.push("stage "+result.stage);
+  if(result.first_incomplete_stage) facts.push("resume "+result.first_incomplete_stage);
+  if(result.returncode!=null && row.event!=="planner_refused") facts.push("exit "+result.returncode);
+  if(result.replication) facts.push("replication "+result.replication);
+  if(result.refusal_reason_sha256) facts.push("reason "+String(result.refusal_reason_sha256).slice(0,12)+"…");
+  const time=String(row.ts||"—").replace("T"," ").slice(5,19);
+  const body=time+"  "+word+"  "+shortId(row.hypothesis_id,16);
+  const tail=(row.model&&row.model!=="—"?row.model+" · ":"")+facts.join(" · ");
+  const line=body+(tail?"  ·  "+tail:"");
+  if(withTooltip){
+    const wrap=document.createElement("span"); wrap.textContent=line;
+    wrap.title="raw telemetry row: "+JSON.stringify(row).slice(0,700); return wrap;
+  }
+  return line;
 }
 function controllerLine(row){
   const facts=[];
@@ -947,6 +1016,96 @@ function elapsedText(value){
   const hours=Math.floor(minutes/60), mins=minutes%60;
   return hours+" h"+(mins?" "+mins+" min":"");
 }
+function renderCommandBand(d){
+  const a=d.activity||{}, phase=a.phase||{}, stall=a.stall||{}, refusal=a.refusal||{};
+  const contract=a.stage_contract||{};
+  const status=String(a.status||(d.active?"running":"unknown"));
+  const active=d.active===true;
+
+  // Card 1 — aggregate candidate vs frozen production.
+  const v=d.v27_cumulative||{}, r=v.receipt||{};
+  const agg=$("#cmd-aggregate"), aggValue=$("#cmd-aggregate-value"), aggSub=$("#cmd-aggregate-sub");
+  const fraction=r.cumulative_graphs_on_effect_fraction;
+  if(typeof fraction==="number"&&isFinite(fraction)){
+    const positive=(v.headline||{}).positive===true;
+    const pct=fraction*100;
+    aggValue.textContent=(pct>=0?"+":"")+pct.toFixed(Math.abs(pct)<1?2:1)+"%";
+    agg.className="cmd-card "+(positive?"ok":"fail");
+    const bits=[esc(r.cumulative_classification||"classified")+" · "+esc(r.metric||"—")+" ("+esc(r.metric_direction||"—")+")"];
+    if(typeof r.promotion_eligible==="boolean"){
+      bits.push(r.promotion_eligible?'<b>promotion ELIGIBLE</b>':'<b style="color:var(--bad)">promotion NOT eligible</b>');
+    }
+    aggSub.innerHTML=bits.join(" · ");
+  } else {
+    aggValue.textContent="NO RECEIPT";
+    agg.className="cmd-card warn";
+    aggSub.textContent=(v.available?"receipt pending":"no sealed cumulative performance receipt yet")+
+      (v.error?" — "+v.error:"");
+  }
+
+  // Card 2 — is the loop alive?
+  const lastTs=(d.autokernel_log||[]).map(row=>row.ts).filter(Boolean).sort().pop()||null;
+  const lastAgeS=lastTs?Math.max(0,(Date.now()-Date.parse(lastTs))/1000):null;
+  const pulse=$("#cmd-pulse"), livenessWord=$("#cmd-liveness-word"), liveCard=$("#cmd-liveness");
+  let word, cls;
+  if(!active){word="STOPPED"; cls="dead";}
+  else if(status==="failed"){word="FAILED"; cls="dead";}
+  else if(status==="stalled"||(lastAgeS!=null&&lastAgeS>900)){word="STALLED"; cls="warn";}
+  else {word="RUNNING"; cls="run";}
+  pulse.className="cmd-pulse "+cls;
+  livenessWord.textContent=word;
+  liveCard.className="cmd-card "+(cls==="run"?"ok":cls==="dead"?"fail":"warn");
+  const liveBits=["deployment "+esc(d.deployment||"—")];
+  if(lastTs) liveBits.push("last event "+esc(lastTs.replace("T"," ").slice(0,19))+"Z"+
+    (lastAgeS!=null?" ("+esc(elapsedText(lastAgeS))+" ago)":""));
+  else liveBits.push("no lifecycle event yet");
+  $("#cmd-liveness-sub").innerHTML=liveBits.join(" · ");
+
+  // Card 3 — pipeline stage.
+  $("#cmd-stage-value").textContent=phase.label||phase.id||"—";
+  $("#cmd-stage-value").className="cmd-value";
+  const stepper=$("#cmd-stepper"); stepper.replaceChildren();
+  const pipe=a.pipeline||[];
+  const steps=pipe.length?pipe:[{id:phase.id||"current",label:phase.label||phase.id||"current stage",state:"now"}];
+  let nowMarked=false;
+  steps.forEach((step,i)=>{
+    if(i>0){const arrow=document.createElement("span"); arrow.className="cmd-step-arrow"; arrow.textContent="→"; stepper.appendChild(arrow);}
+    const node=document.createElement("span");
+    node.className="cmd-step";
+    if(step.id===phase.id||step.state==="running"){ node.classList.add("now"); nowMarked=true; }
+    else if(step.state==="complete") node.classList.add("done");
+    else if(step.state==="failed"||step.state==="interrupted") node.classList.add("bad");
+    node.textContent=(step.label||step.id||"step")+(typeof step.elapsed_s==="number"?" "+elapsedText(step.elapsed_s):"");
+    node.title="state "+step.state+" · "+(step.detail||"");
+    stepper.appendChild(node);
+  });
+  if(!nowMarked&&phase.id){
+    const arrow=document.createElement("span"); arrow.className="cmd-step-arrow"; arrow.textContent="→"; stepper.appendChild(arrow);
+    const node=document.createElement("span");
+    node.className="cmd-step now";
+    node.textContent=phase.label||phase.id||"current phase";
+    stepper.appendChild(node);
+  }
+  const stageBits=[];
+  if(typeof phase.elapsed_s==="number") stageBits.push("elapsed "+esc(elapsedText(phase.elapsed_s)));
+  if(contract.first_incomplete_stage) stageBits.push("first incomplete: "+esc(contract.first_incomplete_stage));
+  $("#cmd-stage-sub").innerHTML=stageBits.join(" · ");
+
+  // Card 4 — hypothesis under test.
+  const hyp=$("#cmd-hypothesis-value");
+  hyp.textContent=shortId(a.hypothesis_id,22)||"—";
+  hyp.className="cmd-value code";
+  const hypBits=[];
+  if(a.turn!=null) hypBits.push("turn "+esc(a.turn));
+  if(refusal.detected){
+    hypBits.push('<span style="color:var(--bad)">'+esc(refusal.type||"refused")+
+      (refusal.stage?" · "+esc(refusal.stage):"")+"</span>");
+  }
+  if(stall.state&&stall.state!=="unknown"&&stall.state!=="none") hypBits.push("stall "+esc(stall.state));
+  if(active&&!refusal.detected&&stall.state==="none") hypBits.push("screening");
+  $("#cmd-hypothesis-sub").innerHTML=hypBits.join(" · ")||"no active hypothesis";
+}
+
 function renderLive(d){
   const active=d.active===true, a=d.activity||{};
   const phase=a.phase||{}, gpu=a.gpu||{}, proof=a.correctness||{}, checkpoint=a.checkpoint||{};
@@ -1075,21 +1234,34 @@ function renderLive(d){
   const akRows=(d.autokernel_log||[]).map(row=>({ts:row.ts||"",line:liveLine(row)}));
   if(a.prior_terminal) akRows.push({ts:a.prior_terminal.ts||"",line:controllerLine(a.prior_terminal)});
   const ak=akRows.sort((x,y)=>String(x.ts).localeCompare(String(y.ts))).map(row=>row.line);
-  const planner=(d.planner_log||[]).map(liveLine);
   const actorRows=[...(d.planner_log||[]),...(d.autokernel_log||[]).filter(row=>/^critic_/.test(row.event||""))];
   const actorSeen=new Set();
   const actors=actorRows.sort((a,b)=>String(a.ts||"").localeCompare(String(b.ts||"")))
     .filter(row=>{const key=[row.ts,row.event,row.hypothesis_id].join("|");if(actorSeen.has(key))return false;actorSeen.add(key);return true;})
-    .map(liveLine);
+    .map(row=>liveLine(row));
   const akEmpty=["no durable lifecycle event yet"];
   const actorEmpty=[active?
     "planner call active; awaiting its first controller-owned lifecycle checkpoint":
     "no durable planner / critic event yet"];
   $("#ak-live-log").textContent=[header,"",...(ak.length?ak.slice(-6):akEmpty)].join("\n");
   $("#planner-live-log").textContent=[header,"",...(actors.length?actors.slice(-6):actorEmpty)].join("\n");
-  $("#ak-live-log-full").textContent=[header,"",...(ak.length?ak:akEmpty)].join("\n");
-  $("#planner-live-log-full").textContent=[header,"",...(actors.length?actors:actorEmpty)].join("\n");
-  for(const id of ["ak-live-log","planner-live-log","ak-live-log-full","planner-live-log-full"]){
+  const akFullNodes=[header]; akFullNodes.push(""); akFullNodes.push(...ak.map(line=>{
+    const span=document.createElement("span"); span.textContent=line; return span;}));
+  const actorFullNodes=[header]; actorFullNodes.push("");
+  actorFullNodes.push(...actors.map(line=>{const span=document.createElement("span");
+    span.textContent=line; return span;}));
+  $("#ak-live-log-full").replaceChildren();
+  for(const node of akFullNodes) $("#ak-live-log-full").appendChild(
+    node instanceof Node?node:document.createTextNode(node));
+  $("#ak-live-log-full").appendChild(document.createTextNode("\n"));
+  $("#planner-live-log-full").replaceChildren();
+  for(const node of actorFullNodes) $("#planner-live-log-full").appendChild(
+    node instanceof Node?node:document.createTextNode(node));
+  $("#planner-live-log-full").appendChild(document.createTextNode("\n"));
+  for(const id of ["ak-live-log","planner-live-log"]){
+    const node=$("#"+id); node.scrollTop=node.scrollHeight;
+  }
+  for(const id of ["ak-live-log-full","planner-live-log-full"]){
     const node=$("#"+id); node.scrollTop=node.scrollHeight;
   }
   const fresh=d._freshness||{};
@@ -1097,8 +1269,95 @@ function renderLive(d){
     (fresh.staleness_class||"missing")+" · showing "+Math.min(ak.length,6)+" / "+ak.length+" events";
   $("#planner-live-foot").textContent=cue+" · producer age "+producerAge+" · showing "+Math.min(actors.length,6)+" / "+actors.length+" actor events";
 }
+// v27 FINAL PRODUCER SCHEMA — cumulative candidate effect vs exact frozen
+// production.  The headline is the validated cumulative graphs-on effect
+// fraction + the producer's own cumulative_classification, and a VALID
+// nonpositive result renders distinctly ("not faster than frozen production,
+// promotion denied") — never as a blank or an error.  Promotion eligibility
+// and reason are rendered VERBATIM from the receipt with an explicit
+// producer-owned label; this view never computes eligibility.  The append-only
+// composition-authority journal binding is the trust indicator: a mismatch
+// marks the row NOT-TRUSTED but keeps it visible.
+function renderV27Cumulative(d){
+  const box=$("#v27-cumulative"), v=d.v27_cumulative||{};
+  if(!v.available){
+    box.innerHTML='<div class="muted">No cumulative performance receipt: '+esc(v.error||"not exported by any deployment")+
+      ' — the v27 headline appears only when a deployment seals <code>cumulative-performance.json</code>.</div>';
+    return;
+  }
+  const r=v.receipt||{}, h=v.headline||{}, journal=v.journal||{}, ledger=v.ledger||{};
+  let html='';
+  if(v.trusted!==true){
+    html+='<div class="fail" style="margin:0 0 10px;padding:8px 10px;border:1px solid #4d1f1c;border-radius:7px;background:rgba(248,81,73,.08)">'+
+      '<b>NOT-TRUSTED</b> · journal binding '+esc(journal.integrity||"unknown")+' · '+esc(journal.detail||"")+'</div>';
+  } else {
+    html+='<div class="ok" style="margin:0 0 10px;font-size:12px"><b>TRUSTED</b> · '+esc(journal.detail||"journal binding matched")+'</div>';
+  }
+  html+='<div class="hero">';
+  const fraction=r.cumulative_graphs_on_effect_fraction;
+  if(typeof fraction==="number"&&isFinite(fraction)){
+    const positive=h.positive===true;
+    html+='<div class="hero-card"><div class="hero-label">Cumulative candidate vs frozen production</div>'+
+      '<div class="hero-value '+(positive?'ok':'fail')+'">'+esc(effectPct({effect_fraction:fraction}))+'</div>'+
+      '<div class="result-headline">'+esc(h.label||"")+'</div>'+
+      '<div class="muted">classification '+esc(r.cumulative_classification||"—")+' · '+esc(r.metric||"—")+' · '+esc(r.metric_direction||"—")+'</div></div>';
+  } else {
+    html+='<div class="hero-card"><div class="hero-label">Cumulative candidate vs frozen production</div>'+
+      '<div class="hero-value muted">—</div>'+
+      '<div class="result-headline">cumulative runner has not sealed a receipt yet'+(v.receipt_error?' — '+esc(v.receipt_error):'')+'</div></div>';
+  }
+  html+='<div class="hero-card"><div class="hero-label">Promotion status <span class="tag">producer-owned</span></div>';
+  if(r.valid===true&&typeof r.promotion_eligible==="boolean"){
+    html+='<div class="hero-value '+(r.promotion_eligible?'ok':'fail')+'">'+(r.promotion_eligible?'ELIGIBLE':'NOT ELIGIBLE')+'</div>'+
+      '<div class="result-headline">'+esc(r.promotion_reason||"—")+'</div>'+
+      '<div class="muted">verbatim from the cumulative performance receipt — the dashboard does not compute promotion eligibility</div>';
+  } else if(v.receipt_error){
+    html+='<div class="hero-value muted">UNVERIFIED</div>'+
+      '<div class="result-headline">'+esc(v.receipt_error)+'</div>'+
+      '<div class="muted">promotion fields render only from a sealed, journal-bound receipt</div>';
+  } else {
+    html+='<div class="hero-value muted">AWAITING RECEIPT</div>'+
+      '<div class="result-headline">no sealed cumulative performance receipt yet</div>';
+  }
+  html+='</div>';
+  const inc=[["exact route","incremental_exact_route_effect_fraction"],
+             ["graphs off","incremental_graphs_off_effect_fraction"],
+             ["graphs on","incremental_graphs_on_effect_fraction"]];
+  html+='<div class="hero-label" style="margin-top:12px">Incremental effect <span class="muted" style="text-transform:none;letter-spacing:0">· secondary — the newest lever vs its anchor</span></div>'+
+    '<table><thead><tr><th>route</th><th>effect</th></tr></thead><tbody>';
+  inc.forEach(function(pair){
+    const value=r[pair[1]];
+    html+='<tr><td>'+esc(pair[0])+'</td><td class="num">'+
+      (typeof value==="number"&&isFinite(value)?deltaCell(value*100):'<span class="muted">—</span>')+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  const chain=(journal.events||[]).map(function(e){return e.kind+" #"+e.sequence;}).join(" → ")||"no events";
+  html+='<div class="hero-label" style="margin-top:12px">Authority journal binding <span class="muted" style="text-transform:none;letter-spacing:0">· composition-authority.jsonl</span></div>'+
+    '<div class="detail">'+esc(journal.detail||"—")+'</div>'+
+    '<div class="muted">pre_run '+(journal.pre_run?'<span class="ok">committed</span>':'<span class="fail">absent</span>')+
+    ' · result '+(journal.result?'<span class="ok">committed</span>':'<span class="fail">absent</span>')+
+    ' · integrity '+esc(journal.integrity||"—")+' · chain '+esc(chain)+'</div>';
+  if(ledger.present){
+    const mt=ledger.matching_terminal||{};
+    html+='<div class="hero-label" style="margin-top:12px">Controller ledger <span class="muted" style="text-transform:none;letter-spacing:0">· cumulative-composition.json</span></div>'+
+      '<div class="muted">terminal '+(mt.operation_key?
+        '<code>'+esc(String(mt.operation_key).slice(0,12))+'…</code> · '+esc(mt.disposition||"—")+' · '+
+        (mt.promotion_eligible?'<span class="ok">eligible</span>':'<span class="fail">not eligible</span>')+' · '+esc(mt.promotion_reason||"—"):
+        'none for this operation')+
+      (ledger.agrees===false?' · <span class="fail">LEDGER DISAGREES WITH RECEIPT</span>':
+       ledger.agrees===true?' · <span class="ok">receipt agrees</span>':'')+'</div>';
+  }
+  const frozen=r.frozen_production||{};
+  html+='<div class="hero-label" style="margin-top:12px">Exact frozen production comparator</div>'+
+    '<div class="muted">commit <code>'+esc(String(frozen.production_commit||"—").slice(0,12))+'…</code> · graphs '+esc(frozen.graphs_mode||"—")+
+    ' · metric '+esc(frozen.metric||"—")+' ('+esc(frozen.direction||"—")+')'+
+    ' · authority <code>'+esc(String(frozen.authority_sha256||"—").slice(0,12))+'…</code></div>'+
+    '<div class="live-foot">operation <code>'+esc(v.operation_key||"—")+'</code> · deployment '+esc(v.deployment||"—")+
+    ' · sealed '+esc(v.sealed_at||"—")+'</div>';
+  box.innerHTML=html;
+}
 async function loadLive(){
-  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); renderLive(await r.json()); }
+  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderCommandBand(d); renderLive(d); renderV27Cumulative(d); }
   catch(e){ $("#ak-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#planner-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#ak-live-log-full").textContent="live endpoint unavailable: "+e.message;
