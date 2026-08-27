@@ -69,6 +69,35 @@ and directed latching autokernel.
   turn 3. This also confirms the GPU-path fixes on real hardware: two arms ran back-to-back with
   distinct KFD pids and neither was misflagged "foreign" — the condition behind 4 of 11 v27 crashes.
 
+### epyc-root divergence reconciled (operator-directed)
+
+`epyc-root` had been unpushable all day: local `main` 17 ahead / 11 behind `origin/main`, so EVERY
+session's wrap-up push was rejected non-fast-forward and several sessions' finished work was sitting
+un-published. Cause: sessions committing directly to `main` in the shared clone while other sessions
+promoted lanes (`codex-inf42-takeover`, `codex-root`) to `origin/main` — neither side reachable from
+the other. Not a conflict of content, just two unmerged histories.
+
+Reconciled by merging in an **isolated detached worktree** (never the shared clone, whose working
+tree holds several sessions' uncommitted files):
+
+- one conflict, in `handoffs/active/master-handoff-index.md` — purely the **generated** rollup
+  counts (473 vs 465 open). Neither side was right: resolved by re-running
+  `scripts/handoffs/index_state.py` against the merged tree, which produced `52 | 472` — a third
+  value, confirming regeneration was correct rather than picking a side. `--check` → 0 problems.
+- superset-verified before publishing: `5fbb38ad..refs/heads/main` and `5fbb38ad..origin/main` both
+  `0`, i.e. nothing dropped from either side.
+- published **18 commits** to `origin/main` (`725c358f..5fbb38ad`) through
+  `serialized_push.py --push` under the push lock — a raw `git push` is correctly hook-blocked here.
+  Never forced.
+
+**Left deliberately undone:** the shared clone's local `main` pointer is still 12 behind. A
+fast-forward is refused because `wiki/knowledge-management.md` carries another session's
+uncommitted edit and is also changed upstream; git aborted atomically and that peer work is
+untouched. This is benign — the clone is `ahead=0`, so nothing is unpublished — and any session can
+`git merge --ff-only origin/main` once that file is committed or discarded by its owner. **Until
+then, sessions committing to `main` in the shared clone will re-diverge**; the workaround that
+works today is exactly the pattern used here (detached worktree at `origin/main` → commit → serialized push).
+
 ### Monitoring defect found and fixed (worth recording)
 
 The first monitor watched only iteration-completion fields, so a normal 15-min single-threaded
