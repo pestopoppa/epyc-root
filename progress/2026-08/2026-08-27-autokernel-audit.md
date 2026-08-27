@@ -59,7 +59,28 @@ and directed latching autokernel.
 - **Disk: 371 G → 589 G free** (144/146 stale autokernel worktrees removed, dirty state backed up).
 - **v28 LAUNCHED 14:23Z and advancing** — latched `--max-restarts 1000`, running a closure verified
   to contain the fixes, reached `planner_started` on iteration 1 within seconds with no crash.
-  This is further than any campaign got cleanly. Monitor armed for the first disposition.
+- **FIRST SCIENCE AT 15:19Z — `scientific_attempts: 1`.** The milestone no campaign v3→v27 ever
+  reached, ~56 minutes after launch. Turn 1 `authoring_refused` (critic caught undeclared
+  file-scope symbols — a legitimate gate, no science spent); turn 2 `inconclusive` on
+  `akh-v2-q5-type-specific-dequant` with exact attribution **+0.129 %** and target runtime
+  **−0.015 %** → conjunctive rule ⇒ inconclusive. A **null result recorded with evidence**, sealed
+  as receipt `34f836cc…`. Both arms proved real GPU residency (anchor KFD pid 3623562, candidate
+  3623486, both exit 0) through the full stage chain. **Zero crashes**; loop self-advanced to
+  turn 3. This also confirms the GPU-path fixes on real hardware: two arms ran back-to-back with
+  distinct KFD pids and neither was misflagged "foreign" — the condition behind 4 of 11 v27 crashes.
+
+### Monitoring defect found and fixed (worth recording)
+
+The first monitor watched only iteration-completion fields, so a normal 15-min single-threaded
+(`-j1`) HIP build was indistinguishable from a wedge — it produced a false "no progress" reading at
+14:55Z while the anchor arm was actively compiling. Compounding it, two of my own diagnostic probes
+lied: a `ps | head` truncated away the very processes I was checking for (I briefly and wrongly
+concluded the campaign was down), and a `find -newermt` reported "0 files in 10 min" while the build
+was writing files that same second. **Lesson, consistent with the observation-window doctrine:
+liveness of a long build must be proven by build-tree file activity + a live child process, never by
+a phase-boundary state file, and never through a truncating pipe.** Monitor v2 does that, plus
+two-sample persistence before declaring a stall, and baselines the science counter so it wakes on an
+*increase* rather than on "non-zero".
 
 ## Deferred (with named blockers)
 

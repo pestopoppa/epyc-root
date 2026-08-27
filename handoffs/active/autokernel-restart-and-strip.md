@@ -55,9 +55,24 @@ within seconds — clean, no crash.
 
 ## Open
 
-- [ ] **Confirm v28 reaches a real screen disposition** (`scientific_attempts` ≥ 1) — the milestone
-  no campaign v3→v27 ever reached. Monitor is armed; first disposition or crash re-invokes the
-  owning session.
+- [x] **v28 reached a real screen disposition — `scientific_attempts: 1` at 15:19Z.** The milestone
+  no campaign v3→v27 ever reached, achieved ~56 min after launch. ✅ 2026-08-27
+  - turn 1 `authoring_refused` — critic caught a diff deriving undeclared file-scope symbols in
+    `vecdotq.cuh` (a legitimate gate, costs no science budget).
+  - turn 2 `inconclusive` on `akh-v2-q5-type-specific-dequant`: exact attribution
+    **+0.129 %**, target runtime **−0.015 %** → conjunctive rule (either ≤ 0 → inconclusive).
+    A null result, recorded with evidence. Receipt `34f836cc…`, sealed at
+    `operations/941c8fde…/screen-result.json`.
+  - Both arms proved real GPU residency: anchor KFD pid 3623562, candidate 3623486, both exit 0,
+    through admission → correctness → attribution → graphs-off measurement → graphs-on runtime.
+  - **Zero crashes** (1 `child_started` = the initial launch), no transient streak, no
+    operator-attention flag. Loop advanced to turn 3 by itself.
+  - This is the end-to-end on-real-hardware confirmation the GPU-path fixes needed: two arms ran
+    back-to-back with distinct KFD pids and neither was misflagged as "foreign" — the exact
+    condition that caused 4 of the 11 v27 crashes.
+- [ ] **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
+  ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
+  stall. No action needed unless it wakes.
 - [ ] **Strip the 19 verified-dead modules** (10,500 LOC + 19 test files ~4,870 LOC +
   `c5_rocm_oracle.json`). Deletion MUST regenerate `FOOTPRINT.md` in the same commit
   (`python -m …controller.test_campaign_footprint --refresh`) — it is asserted by
