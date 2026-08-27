@@ -61,9 +61,12 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   just a source diff.
 - [ ] **CH-2 — Make "a champion always exists" an invariant**, re-seeded from production on every
   promotion, rather than an end-of-campaign action.
-- [ ] **CH-3 — Screen against the champion** (SOLE baseline; settled by operator 2026-08-27) so
+- [x] **CH-3 — Screen against the champion** (SOLE baseline; settled by operator 2026-08-27) so
   gains compound. Production stays the promotion reference via the mandatory re-validation of the
-  composed champion against the anchor at composition time.
+  composed champion against the anchor at composition time. ✅ 2026-08-27 — no controller change was
+  needed: the anchor arm has always been built from the instrument, and `_verify_instrument` only
+  requires a descendant of the frozen production head. Instrument re-pinned to
+  `ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a` (research `a086c95a`).
 - [ ] **CH-4 — Compose MoE-Spec as the first real arm** (`c7c37a0d9`). Note its evidence is currently
   below policy: n=3 where `MEASUREMENT_POLICY.md:37` requires ≥5 for a ≥5% claim, α −2.4pp, and the
   5-rep confirm was declined. The composed candidate must earn its own T0/T1/T2 regardless.
@@ -72,14 +75,101 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   parity failure before charging it to DFlash2: the in-production MMQ patch `a6b4b5263` is
   numerically valid but NOT bit-exact. Needs GPU; sequence against the live campaign rather than
   killing it.
-- [ ] **CH-7 — Build the manual→champion admission pipeline.** A documented, repeatable path to
+- [x] **CH-7 — Build the manual→champion admission pipeline.** A documented, repeatable path to
   admit an externally developed source arm (branch + evidence manifest) as a champion MEMBER, with
   the composed candidate rebuilt and re-measured. This is the reusable mechanism for all future
-  manual inference research, not a one-off for MoE-Spec and DFlash2.
-- [ ] **CH-6 — Re-run the orphaned config leaders against the stable champion.** `MMQ_MFMA ON→OFF`
-  (+26.6%) and `ubatch 512→1024` (+46.9%) are the highest-EV unexploited leads in the program and are
-  currently stuck as *inconclusive* with sign conflicts and a 53.5pp spread — settleable in hours
-  against a fixed baseline.
+  manual inference research, not a one-off for MoE-Spec and DFlash2. ✅ 2026-08-27 — exercised on
+  both manual arms; DFlash2 is preserved rather than rediscovered, which was the operator's
+  explicit requirement. The path is: external branch → merge onto the current champion → build with
+  the house flags (**including `GGML_HIP_ROCWMMA_FATTN=ON`, see CH-8**) → gates → re-pin the
+  instrument. See *The champion as built* below.
+
+  One design note worth carrying: MoE-Spec and DFlash2 both touch `src/llama-context.cpp`, and
+  `compatibility()` conservatively treats any two arms touching the same file as an explicit
+  conflict — so as separate members they could **never** have composed. Synthesised into a single
+  arm they compose trivially, and the combination earns its gates as a unit, so interactions get
+  measured rather than assumed.
+- [ ] **CH-6 — the config leaders. REVISED 2026-08-27: one of the two is not a lead at all.**
+  The earlier framing ("the highest-EV unexploited leads… settleable in hours") is **withdrawn** for
+  the ubatch arm, on source evidence:
+  - **`ubatch 512→1024` (+46.9%) is a NULL ARM — do not re-run it.** llama.cpp clamps
+    `n_ubatch = min(n_batch, n_ubatch)` (`src/llama-context.cpp:265`), and the screen passed
+    `-b 512 -ub 1024`, so **both arms ran at an effective ubatch of 512 on one identical binary**.
+    The +46.9% is a bimodal sample (`25409, 18083, 25372, 16175, 25381`) whose median landed on the
+    fast mode, measured against an anchor bank ~30% below the independently established steady state
+    (AK-BH-2, n=30: 24647 t/s vs this screen's 17275 anchor). Its `batch_up` sibling, equally null,
+    reported +0.59% purely by landing on the other mode — two null arms 46pp apart. The "sign
+    conflicts and 53.5pp spread" that made this look like a live lead were the artifact, not a
+    signal. A guard now refuses this class at the producer (`run_autokernel_gpu_discovery.py`,
+    research `c84ecdb7`), mutation-tested to fire on `ubatch_up` and stay silent on `ubatch`-down,
+    `batch`, `batch_up`, `poll_zero` and `mmap`.
+  - **`MMQ_MFMA ON→OFF` (+26.6%) is real** for `Qwen2.5-Coder-0.5B-Q4_K_M @ pp512, np=1, gfx90a`,
+    independently reproduced at n=30 (+26.81%). But it is a **build-time** flag: `champion.py`
+    requires source evidence for every member, so it cannot be constructed as one, and
+    `discovery_static_registry` accepts no CMake flag from planner output. Re-run it as a
+    build-config A/B on the champion, and note the open question is not the 0.5B pp512 number but
+    whether it survives a real model at `-np > 1` — the champion's own state file records MMQ
+    forcing *inverting* on MoE workloads (B2 −30%, B4 −21%, B8 −10.5%).
+- [ ] **CH-8 (new, 2026-08-27) — AutoKernel's GPU builder omits the house flash-attention flag.**
+  `discovery_deployment_factory.py:2052` passes only `GGML_HIP=ON`, `AMDGPU_TARGETS=gfx90a`,
+  `GGML_NATIVE=OFF`, so every AutoKernel GPU candidate is built with `GGML_HIP_ROCWMMA_FATTN`
+  **OFF** while production, the AK-BH factorial builds and the standalone DF2 build are all ON.
+  Consequences: candidates are measured on a different flash-attention kernel than production runs,
+  which undercuts transferability of any GPU result; and the OFF path is the one measured below to
+  produce non-finite values at longer sequences under `-fa on`.
+  **Operator decision required before changing it** — adding the flag changes the sealed build
+  identity and breaks comparability with every prior GPU screen, so it is not a silent fix.
+  Scope discipline: the non-finite behaviour was observed in the DFlash **target-feature** path;
+  whether plain non-speculative decode also degrades at length on an OFF build is **not measured**
+  and must not be asserted.
+
+## The champion as built — 2026-08-27
+
+`ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a4af2735587b4023613310ccf2341f46` — 35 files,
++3371/−146 over frozen v9, both merges clean, `llama-server` version 10139:
+
+```
+5bbcc5498  reviewed measurement instrument (correctness oracle, llama-bench, iqk sources)
+ + c7c37a0d9  MoE-Spec  — per-batch top-B expert budget, --moe-spec-budget, default 0 (inert)
+ + 2046c64e9  DFlash2   — block-diffusion drafter, a parallel --spec-type pathway
+= 5c278648a  the champion
+```
+
+It exposes **both** `--moe-spec-budget` and `--spec-type draft-dflash` alongside `draft-mtp`, and it
+loads the DFlash2 GGUF that frozen v9 refuses (`wrong number of tensors; expected 81, got 58`).
+
+**The champion must be built ON the reviewed instrument.** A first attempt (`fdc56acb3`) was
+synthesised onto raw v9 and was refused by `_instrument_review_receipt`. That refusal was correct:
+it had dropped the measurement apparatus, so every screen would have run on a baseline missing its
+own instruments. Exactly one pinned measurement blob changed in the rebuild — `llama-bench.cpp`
+(MoE-Spec's 8-line env-var fallback for a flag that defaults to 0). `test-backend-ops.cpp`, the
+correctness oracle that decides verdicts, is **unchanged**.
+
+### The build flag that is not optional
+
+`GGML_HIP_ROCWMMA_FATTN` **defaults to OFF** (`ggml/CMakeLists.txt:219`). On gfx90a with `-fa on`
+the non-rocWMMA flash-attention path produces **non-finite values at longer sequence lengths**.
+Measured on the champion built with it OFF: every one of the 12 pinned olympiadbench prompts failed
+on task 0 —
+
+```
+E process: rejecting DFlash batch after 3020800/3020800 non-finite target features (limit=16)
+E srv  decode: failed to process speculative batch
+```
+
+— while a 25-character prompt succeeded on the same binary. **Prompt length is the discriminator**,
+which is why a short smoke test passes and hides it.
+
+Attribution was verified rather than assumed. The first hypothesis — that merging MoE-Spec into
+DFlash2 broke it — was **wrong**: the standalone DFlash2 build `2046c64e9` ran the identical prompts
+and flags at 46.1 / 69.4 / 58.9 t/s with zero non-finite errors, and
+`git diff 2046c64e9 5c278648a -- src/ common/` is **+67 insertions, 0 deletions**, so DFlash's
+source is byte-identical between them. Rebuilt with the flag ON: all prompts pass, zero errors.
+MoE-Spec is separately exonerated — it is guarded by `moe_spec_budget > 0` (`llama-graph.cpp:1985`)
+and defaults to 0, so the champion carries the capability, not the behaviour.
+
+Had the gates not been run before relaunching discovery, AutoKernel would have spent days screening
+against a reference that fails on every real prompt.
 
 ## Why this is safe
 

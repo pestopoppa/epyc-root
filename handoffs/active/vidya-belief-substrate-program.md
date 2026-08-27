@@ -442,7 +442,39 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       GPU-gated. SHARPENED TRIGGER: wire `memento_sft.py` to emit the tuple (s/sample, trainable
       params, per-quarter loss, adapter-integrity) before the S2 validation run — the claim shape
       stays "this configuration trains at X s/sample with an adapter that provably updated", never
-      "the model improved"**
+      "the model improved"
+      **EVENING 2026-08-26: write side WIRED — `memento_sft.py` emits
+      `stage{N}_belief_measurements.json` at train-stage finalize (s/sample lower_better,
+      trainable params, quarter losses, adapter-integrity: all tensors finite + `lora_B` off
+      zero-init, fail-closed otherwise; protocol `epyc.memento_sft.lora_training.v1`);
+      14/14 tests (research `da06b371`).
+      2026-08-27: S2 IN FLIGHT — smallest real Stage-1 format-learning job** (Qwen3-0.6B,
+      126 train samples, 1 epoch, seq 4096, GPU; launched 16:07Z, ~6-10 min). The belief hook
+      fires at train-stage finalize → `stage1_belief_measurements.json` beside the run record
+      → first SC20 tuple.
+      **2026-08-27 20:10Z: FIRST TUPLE EMITTED AND INGESTED ✅.** The re-run (deterministic —
+      identical Step-0 loss to the refused first run) completed 16 steps / 126 samples on CPU
+      (18.8 s/sample) and the fixed hook emitted `stage1_belief_measurements.json`:
+      integrity 168/168 lora_B nonzero, all tensors finite, quarters 1.485→1.337.
+      Root reader `memento_lora.py` (strict: measurement_sha256 self-hash re-derives, canonical
+      attestation over the run record re-derives, refusal artifacts project zero rows; 7 tests)
+      projected the row; frames ingested; fold `Witnessed/Attested`. NOTE: the first run's
+      refusal was a CHECK BUG (endswith vs substring on lora_B.default.weight), and its
+      artifacts were deleted before re-emission — the re-run recovered the measurement
+      deterministically. The 1.7B validation (the S2 gate proper) is IN FLIGHT: the HF repo is
+      GATED (no token on the host; the HF download is dead) and the ModelScope mirror download
+      is running into hf-home (~5 MB/s, weights expected complete 2026-08-27 ~21:30Z); the same
+      smoke config launches on completion.
+      **2026-08-27 21:40Z: 1.7B TUPLE INGESTED.** The smoke completed (16 steps / 126 samples,
+      29.9 s/sample CPU, loss quarters 1.68→1.25, integrity 168/168 lora_B nonzero, all
+      finite) and its row is in the ledger (Witnessed/Attested). KNOWN DEFECT, producer-fixed:
+      the first two smokes (0.6B + 1.7B) collided on the stage-only `measurement_id`
+      (`memento_sft_stage1_seconds_per_sample`), merging two measurements into one fold
+      belief — the hook now mints run-unique ids (model + stage + UTC timestamp); the two
+      already-ingested tuples remain merged under the old id (both Attested, so the fold
+      verdict is unchanged either way). Row residual = format compliance (GGUF convert +
+      masked-prompt structure test) + MATH-500 delta in the S2 table; no more training
+      runs until those are measured.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
@@ -1218,7 +1250,16 @@ task is filed **now, before any of them runs** — not when results land. Source
       first run per the filed spec, with the two load-bearing caveats (G1 negative control never a
       model-quality claim; G2 `n_max` + mean accepted length travel together) in every tuple
       **EVENING 2026-08-26: unchanged — no sweep has run (verified). G1 is CPU-runnable and the
-      lease regime is granting compute, so the trigger is schedule-gated, not operator-gated**
+      lease regime is granting compute, so the trigger is schedule-gated, not operator-gated
+      **CLOSED-ISH 2026-08-27 — G1 EXECUTED and its tuples are live.** The sweep ran 10/10 trials
+      (frozen v9 llama-completion, frontdoor Q8_0, 5 lengths × pangram/meaningful, greedy
+      seed 27442, cold prefill): first token uniformly `248068` (`<think>`), never EOS — the
+      #27442 exposure is NOT reproducible on our path (gate verdict, G1 row ticked in
+      `log-linear-gated-deltanet-readiness.md`). `research_sweeps.py` projected all 10 claims,
+      frames ingested (ledger frontier 12,532), fold `Witnessed/Anchored`; runner
+      (`g1_27442_boundary_sweep.sh`) fixed en route (tokenize stdin round-trip, proportional
+      prompt-step, console-notice hygiene) and committed. G2/G3/G4 remain pending their own
+      first runs — this row's residual is them, not G1**
 
 ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22)
 

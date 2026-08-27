@@ -338,13 +338,24 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
 
 ### Tasks
 
-- [ ] **G1 (G) — #27442 boundary sweep on our CPU.** Frozen v9, frontdoor GGUF Q8_0, at 15,401 /
-      16,501 / 17,601 / 19,801 / 23,981 prompt tokens. **Greedy (`temp 0`, fixed seed)**,
-      `cache_prompt=false`, `-np 1`, no speculation. **Two prompt classes**: repeated-pangram filler
-      *and* a semantically meaningful document carrying a real instruction. Record the **first sampled
-      token id** per trial.
-      **Gate:** valid EOS as first token on the *meaningful* prompt → real exposure, escalate. Only on
-      filler → model behaviour on degenerate input, close it. Neither → not reproducible on our path.
+- [x] **G1 (G) — #27442 boundary sweep on our CPU.** ✅ 2026-08-27 — **executed, gate verdict:
+      NOT REPRODUCIBLE on our path (neither arm).** Frozen v9 (llama-completion, version 10125
+      @ 0db32c06e), frontdoor Qwen3.6-35B-A3B-MTP-Q8_0, at 15,401 / 16,501 / 17,601 / 19,801 /
+      23,981 prompt tokens, **greedy (`temp 0`, fixed seed 27442)**, `cache_prompt=false` (no
+      `--prompt-cache` → cold prefill every trial; `--no-cache-prompt` is server-only in v9),
+      single sequence, no speculation. Two prompt classes (seeded pangram filler + meaningful
+      doc ending with a real instruction). **10/10 trials: first sampled token = 248068
+      (`<think>`) on BOTH classes at ALL five lengths — a valid EOS was NEVER the first token,
+      and no trial ended in EOS (`stop=completed` at the 1-token limit).** The meaningful arm
+      ENGAGES the instruction (thinking start, not degenerate EOS); the filler arm behaves
+      identically — the empty-completion exposure from #27442 does not reproduce on our frozen
+      v9 CPU path at 15.4k-24k cold prefills. Trials + self-hashed manifest:
+      `data/g1-27442-20260827T1537Z/`; 10 claims ingested, `Witnessed/Anchored` in the fold.
+      **B1 note:** the CPU comparison baseline now exists; the HIP sweep is unblocked but remains
+      a choice, not a requirement (the handoff's own "a CPU result does not transfer" caveat
+      still holds for the GDN kernel's missing chunked-prefill TODO).
+      *(Original spec: greedy temp 0 fixed seed, cache_prompt=false, np 1, no speculation,
+      two prompt classes, first-sampled-token-id per trial.)*
       **Why it is not optional:** intake-1279#record established that the upstream reporter's own log refutes
       their diagnosis (`n_prompt_tokens_cache = 0` on all 14 requests — no cache, cold full prefill),
       that their exonerating control cannot detect wrong output at all, and that **nobody has tested

@@ -12,7 +12,16 @@ DeltaNet verification, not a DFlash defect; does not apply to this GPU path)
 **AutoKernel routing:** this is the Qwen3.8-27B replacement campaign's `experimental_runtime` sibling,
 not an additional source-mutation portfolio arm. It reuses AutoKernel's planner/critic, device claim,
 stop/resume, typed refusal, telemetry, and dashboard pulse contracts, while owning separate build,
-proof, and measurement roots. No DFlash2 result may enter the kernel-source champion frontier.
+proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source champion frontier.~~
+
+> **SUPERSEDED 2026-08-27 by operator ruling.** DFlash2 **is** in the aggregate champion
+> (`ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a`): *"It is the superior spec decode path for
+> running qwen3.8-27b. Our future production candidate should support this new spec decode type"*,
+> and *"DFlash2 is a parallel spec decode pathway. Not all models have dflash2 drafter heads. When
+> we promote to production, we will adjust the lean registry compiler accordingly."* `--spec-type`
+> binds a server instance, not the kernel, so one kernel carrying both `draft-mtp` and
+> `draft-dflash` is a capability, not a conflict. Program handoff:
+> [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
 
 The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
 `matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
@@ -170,6 +179,52 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       **Experimental branch only**, branched from the current production tip per the four-step
       workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
       [intake-1288#record]
+
+- [ ] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
+      recipe.** The flag **defaults to OFF** (`ggml/CMakeLists.txt:219`), and on gfx90a with
+      `-fa on` the non-rocWMMA path produces non-finite values at longer sequence lengths — see the
+      2026-08-27 checkpoint below. The standalone DF2 candidate build already carries it ON, so no
+      DF2 result to date is affected; this task is to make that explicit in the recipe rather than
+      inherited by luck. Related: **CH-8** in
+      [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md), where AutoKernel's own
+      GPU builder omits it.
+
+## 2026-08-27 checkpoint — runners landed, grid running, and a build-flag trap
+
+**Gate runners now exist** (epyc-inference-research `c84ecdb7`). The DF2-5 reader contract
+(`epyc.g2_df25_draft_grid.v1` in `scripts/vidya/adapters/research_sweeps.py`) already existed and
+its docstring stated *"G2–G4 runners do not exist yet"* — that gap is closed:
+
+- `scripts/benchmark/g2_df25_concurrency_grid.py` — DF2-5. Implements all five revised design
+  rules, including the paired `--kv-unified` control and **per-slot** acceptance parsing (the
+  `id N` field is present in every `slot print_timing` line and every prior parser dropped it).
+  Written as a new runner rather than an extension of `dflash2_followups.py`, whose sealed
+  `EXPECTED_PROTOCOL` / `REQUIRED_ARM_FILES` contracts carry DF2-4's receipts and would be
+  invalidated by adding arms.
+- `scripts/benchmark/df2_greedy_parity.py` — DF2-6, with the `draft-simple` and `ngram` controls
+  (DF2-6b), `GGML_CUDA_LOG_MMVQ_ROUTE=1` on every arm, `-ctk f16 -ctv f16`, a fresh process per
+  arm, ≥5 prompts, per-prompt PASS/FAIL with the first-differing generation-token index, and the
+  `draft_n == 0` / `draft_n > 0` negative controls carried from the k35 dspark method — without
+  which a PASS can be a false clean sheet produced by speculation never engaging.
+
+**DF2-5 grid launched 2026-08-27 22:15Z** against the champion `5c278648a` (24 cells: in-flight
+1/2/4/8 × none/MTP/DFlash2 × `--kv-unified` off/on). First cell `none_c1_kvu0` = 26.6 t/s.
+
+**The build-flag trap, recorded because it nearly invalidated the whole grid.**
+`GGML_HIP_ROCWMMA_FATTN` defaults to OFF. A champion built with it OFF failed **every** pinned
+olympiadbench prompt on task 0:
+
+```
+E process: rejecting DFlash batch after 3020800/3020800 non-finite target features (limit=16)
+```
+
+while a 25-character prompt succeeded on the same binary — **prompt length is the discriminator**,
+so a short smoke test passes and hides it. Attribution was verified, not assumed: the standalone
+DF2 build `2046c64e9` ran the identical prompts and flags at 46.1 / 69.4 / 58.9 t/s with zero
+non-finite errors, and `git diff 2046c64e9 5c278648a -- src/ common/` is +67/−0, so DFlash's source
+is byte-identical between them. Rebuilt with the flag ON: all prompts pass, zero errors. Scope
+discipline: this was observed in the DFlash **target-feature** path; whether plain non-speculative
+decode also degrades at length on an OFF build is **not measured** and is not claimed.
 
 ## 2026-08-20 measured checkpoint
 
