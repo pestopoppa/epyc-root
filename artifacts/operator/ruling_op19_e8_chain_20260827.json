@@ -1,0 +1,71 @@
+{
+  "schema": "epyc.operator.ruling.v1",
+  "id": "ruling_op19_e8_chain_20260827",
+  "ruled_at": "2026-08-27",
+  "decision": "re-anchor the reseed gate to the current eras and scope it; retire the E8 chain",
+  "supersedes": "OP-19 (master-handoff-index.md operator queue, open since 2026-08-12)",
+
+  "findings": {
+    "b9_b10_moot_more_broadly_than_op19_stated": {
+      "op19_premise": "the era advanced to E9 on 2026-08-11, so the replay is superseded",
+      "correction": "that advance was scope cpu_bench ONLY. B9/B10 feed a QUALITY baseline, and eval_quality left E8 on 2026-08-05, passing E10-E15 to E16. The E8 quality chain was already seven boundaries stale before the cited event.",
+      "hold_already_closed": "autopilot_state.json.e8_quality_rebaseline = status closed_operational_e15, closed_at 2026-08-08T17:28:07Z, closed_by operator via consolidated E15 v7 ratifier",
+      "fix_status": "the scorer-isolation fix is upstream in orchestrator main and independently verified twice (79f3d2f3 + 8bc6eaa9, merged 2026-07-29 in the required order)",
+      "replay_result": "executed against the corpus that survives: 18 corpora, 6746 rows, 5324 re-scored, 0 divergences, 0 corrections",
+      "evidence_destroyed": "artifacts/operator/e8_quality_baseline_v5_partial_r2_final_c1_capacityfix_20260729T112433Z (sha-tree b0a19752) plus both failed completion attempts; swept by a git clean -ffdx in /workspace on 2026-08-12 ~08:36Z; never tracked, no reflog, no backup, unrecoverable",
+      "residual_loss": "ordinal 418 / bcb_BigCodeBench/190 is permanently unadjudicable. Nothing live rests on it; no E8 baseline was ever applied or published."
+    },
+    "gate_was_selectively_dead": {
+      "unsatisfiable_in_e8_form": [
+        "the era advanced (cpu_bench E9 2026-08-11; eval_quality already E16)",
+        "the source evidence was destroyed and is unrecoverable",
+        "the instrument breaks on the current tree: run_e8_quality_baseline_reseed.py fires at :1313 because the v9 freeze moved it",
+        "3 of 5 preflight blockers describe a stack shape retired on 2026-07-30 (24 unique ports, five live frontdoors, both-mode 6/6)"
+      ],
+      "already_bypassed_after_2026_08_11": [
+        "1cff5162 stack template: architect_general -> Qwen3.8-27B, draft_max 24 -> 8",
+        "7483d7fb registry chain recompiled for the Qwen3.8-27B swap",
+        "96498c3d cold-start lineup defaults to ratified both mode",
+        "7fe84d9c ledger: active_kernel_era rolled to production-consolidated-v9"
+      ],
+      "conclusion": "the gate was not load-bearing, it was SELECTIVELY load-bearing: dead for stack-template and registry work that shipped through it, still binding FG-4b, SEQ-3b and B9/B10. That is worse than either enforcing or removing it."
+    },
+    "inf40_is_not_a_reason_to_rule": {
+      "retraction": "the 2026-08-27 amendment to the OP-19 row claimed an unruled decision was parking a measured win. That was WRONG and is retracted here.",
+      "why_inert": [
+        "MoE-Spec is absent from the frozen production kernel: git grep moe_spec on production-consolidated-v9 @ 0db32c06e returns zero hits",
+        "the LLAMA_ARG_MOE_SPEC_BUDGET env plumbing was deliberately deleted (stack_env.py:89-92, 'do NOT blanket-apply')",
+        "no launch-path reader for moe_spec_budget exists in the orchestrator"
+      ],
+      "evidence_below_policy": "n=3 where MEASUREMENT_POLICY.md:37 requires >=5 reps for a >=5% claim; alpha -2.4pp on the winner with no online quality detector; the 5-rep architect confirm was offered and declined by the operator",
+      "real_blocker": "making it live needs a per-role experimental binary or a v10 promotion, which is the KERNEL FREEZE, not this gate",
+      "correct_next_step": "the declined 5-rep architect confirm, not an operator ruling"
+    }
+  },
+
+  "ruling": {
+    "e8_chain": "RETIRED. B9 and B10 close as superseded, not as completed. The integration half of B9 was done and verified upstream; the replay half and B10's ledger cannot be satisfied because their source bytes no longer exist. Ordinal 418 is recorded as permanently unadjudicable. No verdict was fabricated at any point and fail-closed held throughout.",
+    "gate": "RE-ANCHORED AND SCOPED. The standing rule no longer reads as a blanket freeze on every model-stack/lineup/registry change pending an E8-form reseed. It now names the current eras and states the protection it actually provides.",
+    "gate_scope_after_ruling": "A quality-baseline reseed gates AUTOPILOT QUALITY DECISIONS - applying or publishing a quality baseline, and any change that would invalidate an in-flight baseline while it is being collected. It does not gate stack-template, lineup or registry changes in general, which have been shipping through it since 2026-08-11 regardless.",
+
+    "gates_bind_at_promotion_not_at_discovery": {
+      "operator_direction_20260827": "AutoKernel must not be bogged down by baggage; it needs to find faster, more efficient kernels. The gates apply when the operator chooses to promote an aggregate candidate to production.",
+      "rule": "Era fences, baseline reseeds and rebaseline holds bind at the PROMOTION boundary - applying a baseline, publishing a claim, or cutting a new production kernel. They do NOT bind discovery, screening or characterisation, which emit observations and never claims.",
+      "why_this_is_safe_not_a_relaxation": [
+        "the production kernel is FROZEN: production-consolidated-v9 @ 0db32c06e, ratified, with the branch pattern production-consolidated-* pinned in human_only_paths.yaml:42-49 and on_pin_mismatch: refuse",
+        "AutoKernel builds only in throwaway worktrees off llama.cpp-experimental; discovery has no write path to the frozen tree",
+        "every discovery receipt is already stamped promotion_claim: false by construction, so a screen cannot become a claim by accident",
+        "the constitution already places custody at CLAIM time (P-GPU-1), not at experiment time: a screening run that is wrong is simply refused later"
+      ],
+      "consequence_for_autokernel": "The fail-closed E8 AutoPilot rebaseline hold cited at autokernel-research-loop.md:806-811 is a PROMOTION-time obligation for a kernel cutover. It does not gate running screens, and no AutoKernel campaign should stop or refuse to start on account of it.",
+      "what_still_binds_at_promotion": "Unchanged: correctness before speed, P-GPU-1 for a decision-grade number, the frozen-kernel workflow (branch from the current production tip, validate, deploy as a NEW version), and operator authorisation for any production cutover."
+    },
+    "restatements": "This ruling supersedes every restatement of the E8-form gate in the handoff tree. The gate text in CURRENT-CAMPAIGN.md is the single source of truth; handoffs asserting the old E8 form are stale on that point and inherit this ruling without needing individual edits.",
+    "orchestrator_guard": "orchestrator_stack.py's refusal to start/stop/reload while a reseed process is RUNNING is left in place. It is a concurrency interlock, not the E8 gate, and is inert while no reseed runs."
+  },
+
+  "unblocks": ["FG-4b re-anchor registry patch (review-required, now not era-blocked)", "SEQ-3b", "B9", "B10"],
+  "does_not_unblock": ["INF-40 - held by the kernel freeze and by sub-policy evidence, not by this gate"],
+  "promotion_claim": false,
+  "took_compute": false
+}

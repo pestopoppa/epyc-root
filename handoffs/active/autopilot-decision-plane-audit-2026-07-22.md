@@ -328,7 +328,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     `b0a19752ad2fdbcd293a59ea448a7d801ea620282f735c624d559d3c423ca9b9`. This preserves the
     generated requests only; no final evidence, inference completion, state apply, or publication
     occurred.
-  - [ ] **Integrate scorer-isolation before deterministic-score replay, then re-run the bounded
+  - [x] **Integrate scorer-isolation before deterministic-score replay, then re-run the bounded
     deterministic completion** — reviewed scorer isolation is orchestrator branch
     `codex/debug-scorer-isolation-20260729`, commit `79f3d2f35ddd00d21dc2fab235ff269db7c7dec7`.
     **ADJUDICATED 2026-08-12 (`auditor`, B9): the INTEGRATION half is DONE-UPSTREAM and
@@ -365,7 +365,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     exist** (18 corpora, 6,746 rows under `orchestration/reports/`): **5,324 re-scored, 0
     divergences.** Tool `scripts/audit/deterministic_rescore_ledger.py`, 23 counted tests, 7
     mutants all killed.
-  - [ ] **Resolve the saved-output BigCodeBench score divergence fail-closed** — completion attempt
+  - [x] **Resolve the saved-output BigCodeBench score divergence fail-closed** — completion attempt
     `...deterministic_completion_20260729T124832Z` correctly refused admission because ordinal
     `418` / `bcb_BigCodeBench/190` stored `false` while deterministic code scoring returned `true`.
     **ADJUDICATED 2026-08-12 (`auditor`, B10, pairs with B9 above): BLOCKED-AND-LIKELY-MOOT for
@@ -375,7 +375,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     provenance). No ledger was fabricated — FAIL-CLOSED held. The scorer-side fix is already
     upstream and verified (see B9 note). If the operator rules the E8 chain retired, this row
     closes as superseded; a fresh E9-era run would carry isolation from birth and never store
-    the collision-class false. Routed with `e8-token-retire`.
+    the collision-class false. Routed with `e8-token-retire`. **CLOSED SUPERSEDED 2026-08-27 by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json)** — the E8 chain is retired. The hold this row served is already closed (`autopilot_state.json.e8_quality_rebaseline` = `closed_operational_e15`, operator, 2026-08-08); `eval_quality` had in any case left E8 on 2026-08-05 and is now E16. Source bytes were swept by a `git clean -ffdx` on 2026-08-12 and were never tracked, so they are unrecoverable. Closed as SUPERSEDED, not completed; ordinal 418 stays permanently unadjudicable and no verdict was fabricated.
     Classification: the old scorer used shared `/mnt/raid0/llm/tmp` execution state, allowing a
     colliding `test.db`; the stored false has no execution witness. The correction ledger must bind
     source bytes, scorer source hashes, per-row before/after verdicts, and corrected sidecars before
