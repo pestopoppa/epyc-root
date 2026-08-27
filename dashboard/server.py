@@ -12043,7 +12043,7 @@ _DISCOVERY_V26_GRAPH_FILE_SHA256 = \
 # one authority; production deliberately remains fail closed meanwhile.
 # v27 final-root pins: the live sealed deployment
 # gpu-discovery-quant-ladder-occupancy-v27 (config semantic eac81e0d…,
-# graph b9588cc3…).  Set at the deployment moment 2026-08-27; the hub
+# graph 7b5d4df8…).  Set at the deployment moment 2026-08-27; the hub
 # selects the deployment only while every pin matches the durable
 # final-root files.
 _DISCOVERY_V27_EXECUTION_MODULE_SHA256 = {
@@ -12069,7 +12069,7 @@ _DISCOVERY_V27_EXECUTION_MODULE_SHA256 = {
     'gpu_load_admission': 'f9d3f6331d985c8e496a4dc0de9b01d51de2a0606467acfe412b496f2378d15a',
     'gpu_residency_sampler': '8eff7f6e54089725572965a56f827defa2150becb337fe55cc81d7494c5d9722',
     'gpu_source_adapter': '2b9fc5c26192302c5e781ff967dfc698c036a94740f349f6708eea4c80e358c3',
-    'gpu_source_evidence': '36632ae19f5ba5356360d06ed728e419221998ea8778c42b58e3d0f0ccf85146',
+    'gpu_source_evidence': 'd20f82036d9da3fca54e4e54188e4c2653c0b2e743386faec869559bd7782f82',
     'gpu_source_proofs': '46ccc107caba8a371eb6d7f25f45ed6a126cf63ce76b5fb6f6e168bde0725c76',
     'hawkeye_measurement': '7cad03616441d10bca26969bf80ddc7cc5cf65e991970f080e327c9352874767',
     'hypotheses': '425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75',
@@ -12086,8 +12086,8 @@ _DISCOVERY_V27_EXECUTION_MODULE_SHA256 = {
 _DISCOVERY_V27_PRODUCER_COMMIT = "5bbcc5498e4732162356953b7be96a53073a6706"
 _DISCOVERY_V27_DEPLOYMENT_SEMANTIC_SHA256 = "eac81e0d4755fd61aecf7688c6fddcc5b44f109500dd628e453a3ba2fb38f6df"
 _DISCOVERY_V27_DEPLOYMENT_FILE_SHA256 = "14ba06073c2b5d8ccc3c74417ba1649254f7f43178df16e928202dab5c23fe5d"
-_DISCOVERY_V27_GRAPH_SHA256 = "b9588cc30ee988f545999b1235a528b908cd63f4f464197841bfdd9749545986"
-_DISCOVERY_V27_GRAPH_FILE_SHA256 = "1fce692f1293c0c9a4356f9b9e26666f24977e5b7d7c5c5da2b58318d5cc83c2"
+_DISCOVERY_V27_GRAPH_SHA256 = "7b5d4df8995df8b0fc6461ba32ec8b4cefb51a93eb8c886ffa6bd442b6584349"
+_DISCOVERY_V27_GRAPH_FILE_SHA256 = "0e7914e55d7aa16c169f006810e44f05dddbae528328fc5aa039357cc776462f"
 _SUPERVISOR_GRAPH_MISMATCH = (
     b"DeploymentFactoryError: durable deployment graph differs from current sealed graph")
 
