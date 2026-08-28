@@ -6,6 +6,20 @@ holds all the experimented tweaks and is ready for promotion gate testing."* And
 against that aggregate, *"attempting to make it better"*, rather than re-deriving deltas against a
 fixed production anchor.
 
+## Start here — open work (everything else on this page is closed evidence)
+
+| task | what to do |
+|---|---|
+| **CH-14** | Write the manual-research loop runbook (admit → gate → attest) in `docs/guides/`, stating the authority boundary explicitly. |
+| **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
+| **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
+
+**The champion's standing, as of 2026-08-28**: instrument pin `270b48ed64d6`, ahead of frozen
+production, carrying MoE-Spec + DFlash2. Correctness proven, no regression on the default path,
+**+28–48% on the Qwen3.8-27B serving path that production cannot reach at all**. That evidence is
+operator-gated (CH-13) and carries **no promotion authority** — it is not a campaign receipt, and
+no campaign has yet banked one.
+
 ## The finding that reframes this
 
 **`champion.py` already implements composition, not best-of.** `compatible_groups` is documented as
@@ -156,6 +170,15 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   conflict — so as separate members they could **never** have composed. Synthesised into a single
   arm they compose trivially, and the combination earns its gates as a unit, so interactions get
   measured rather than assumed.
+
+  **Correction, 2026-08-28: this was closed one half short.** CH-7 was ticked on 2026-08-27 for the
+  *admission* pipeline alone, and the closure was reported to the operator as the manual-research
+  loop being available. It was not. The operator's requirement is the full loop — *do manual
+  research → update the champion → **see its standing*** — and the attestation half did not exist,
+  so manually gated evidence stayed invisible on the surface that reports champion standing. The
+  gap was then filed as CH-13 rather than built, across four repeated asks. Both halves exist as of
+  2026-08-28; **CH-7 alone does not constitute the loop and must not be cited as such** — cite
+  CH-7 + CH-13 together, or CH-14's runbook once written.
 - [x] **CH-6 — the config leaders. SETTLED 2026-08-28: neither belongs in the champion.** ✅
   Both were investigated to a conclusion; the earlier framing ("the highest-EV unexploited leads…
   settleable in hours") is **withdrawn**. One was never a lead; the other is real but buys nothing
@@ -453,13 +476,37 @@ moment the champion advances**, and the champion advances by design.
       So the champion's standing is: **correctness proven, no regression on the default path, and a
       +28–48% measured gain on the Qwen3.8-27B serving path that production cannot reach.**
 
-- [ ] **CH-13 (new, 2026-08-28) — manual gate evidence has no path into the receipt surface.** This
+- [x] **CH-13 (new, 2026-08-28) — manual gate evidence has no path into the receipt surface.** This
       is the real gap CH-12 was groping at. The champion's best evidence (CH-4 validation, the DF2-5
       grid, DF2-6 parity) came from operator-run gates, and the dashboard's aggregate card reads only
       a campaign-produced cumulative performance receipt — so the strongest measured result in the
       program is invisible to the surface that reports champion standing. This is the receipt-side
       twin of CH-7 (the manual→champion *admission* pipeline): admission works, attestation does not.
-      Either teach the cumulative-receipt reader to accept an operator-sealed gate bundle, or emit
-      one from the manual gate harnesses. Until then the card must not imply absence of measurement —
-      it currently says "unmeasured, not zero", which is now itself inaccurate and is fixed alongside
-      this task.
+      ✅ 2026-08-28 — **both halves built** (research `5677cd51`, epyc-root `91da1172`).
+
+      **Write side**: `scripts/benchmark/emit_operator_gate_bundle.py` seals the manual gate
+      harnesses' own artifacts into `epyc.autokernel.operator_gate_bundle.v1`. Every gate carries
+      its source artifact path AND that artifact's SHA-256, so a claim resolves to the file that
+      produced it and a silently edited artifact invalidates the bundle. A gate whose artifact is
+      missing is **RECORDED as missing**, never dropped — absence cannot masquerade as a pass.
+
+      **Read side**: `_read_operator_gate_bundle()` in `dashboard/server.py`. Verified live on
+      `:8100/api/kernel` this session — bundle SHA `56ceede0f738…`, champion `270b48ed64d6`,
+      headline `+48.9% at 2 in-flight vs production's ceiling`, gates PASS / PASS / NOT_BIT_EXACT,
+      `gates_missing: []`.
+
+      **The design decision worth carrying.** The cheap fix was to emit a
+      `epyc.autokernel.cumulative_performance.v2` — the receipt the card already read. That was
+      deliberately NOT done: that schema's authority derives from a chain only a campaign builds,
+      so minting one from operator evidence would launder manual measurement into campaign
+      authority and poison every later comparison that trusts its provenance. The bundle is a
+      separate carrier that declares what it is (`authority: operator_gated_manual_research`,
+      `promotion_claim: false`), and the reader **refuses** any bundle claiming more — including
+      one wearing the campaign schema. Mutation-tested: deleting the authority check fails
+      `test_a_bundle_claiming_campaign_authority_is_refused` and
+      `test_a_bundle_claiming_promotion_is_refused`.
+- [ ] **CH-14 (new, 2026-08-28) — document the manual-research loop as a runbook.** CH-7 + CH-13
+      now compose into a complete loop (research → admit → gate → attest → visible standing), but
+      it is only reconstructible by reading two handoffs and three scripts. Write it up in
+      `docs/guides/` as the standing procedure, with the authority boundary stated explicitly so a
+      future session does not "simplify" it by emitting a campaign receipt.

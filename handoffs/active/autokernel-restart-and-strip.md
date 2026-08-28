@@ -254,3 +254,22 @@ nobody invokes. The staleness watchdog was correct and simply unreachable on the
       scoped, so handoffs, scripts and progress on the served tree keep lagging origin/main with no
       reconciler. Decide whether anything beyond `dashboard/` should auto-advance, or whether the
       served tree should simply be pinned and read-only.
+
+      **Measured 2026-08-28, and it is worse than "lagging".** The served tree's local `main` stood
+      **45 behind / 1 ahead** of origin/main, and carried
+      `handoffs/active/autokernel-champion-aggregate.md` as an **untracked 144-line file where
+      origin/main has 465 lines** — a superseded draft occupying the authoritative path. It read as
+      untracked only because local `main` predates the commit that added it. Every substantive
+      passage was verified present in origin/main's version before the stale copy was displaced
+      (backup: `/mnt/raid0/llm/tmp/champ_aggregate_stale_worktree_20260828.md`). The one commit
+      ahead was another session's completed-but-unpushed work.
+      So the failure mode is not just staleness: **a stale untracked file is indistinguishable from
+      live uncommitted work**, and the dashboard reads handoffs. Whatever is decided, it must
+      distinguish those two cases — the AK-DEPLOY-1 provenance predicate is the existing pattern.
+- [ ] **AK-INST-3 (new, 2026-08-28) — AK-INST-1 is fixed in code but UNPROVEN end-to-end.** The
+      lineage helper is unit- and mutation-tested, but no campaign has yet ridden it to a
+      scientific attempt. v37 reached `sci=0` and was stopped deliberately (champion work had to
+      finalize first, per the operator's standing sequencing rule), so the whole point of the
+      fix — a champion-instrumented campaign passing preflight and spending screen budget — has
+      never been observed. Relaunch against the finalized champion and watch to `sci >= 1`;
+      **do not record AK-INST-1 as validated until a campaign banks a real screen.**
