@@ -26,13 +26,12 @@ why every prior reachability audit was wrong.
 
 ## CURRENT STATE — read this first on pickup
 
-- **Phase 0 — filing this rider.** IN PROGRESS.
-- **Next action:** Phase 1.1 — route the profiler hotspot table already produced on every attempt
-  into the planner and both critic passes.
+- **Phase 0 — DONE** (root `7f86e383`). **Phase 1 — P1.1, P1.2, P1.4, P1.5 DONE; P1.3 verified.**
+- **Next action:** Phase 2 — replace the 0.5B Q5_0 workload and write the explicit build recipe.
+  **Do not relaunch a campaign before Phase 2 completes**; every number taken on the current
+  surface is uninterpretable.
 - **Nothing is running.** `gpu-discovery-champion-v37` was stopped 2026-08-28T14:23:38Z
   (`death-ledger.jsonl`: `supervisor_stopped`, `exit_code: 143`). The MI210 is free.
-- **Do not relaunch a campaign before Phase 2 completes.** Every number taken on the current
-  surface is uninterpretable (see cause 2 and cause 3).
 
 ---
 
@@ -159,11 +158,12 @@ failure mode this program exists to end.
 - [ ] **P0 — File this rider + index row.** Exit: `python3 scripts/handoffs/index_state.py --check`
       exits 0 and this page names the current phase and next action.
 
-- [ ] **P1 — Close the feedback loop.** No permission needed; independent of the rebuild.
-  - [ ] P1.1 Route the per-kernel hotspot table (already produced) to the planner and both critic
+- [x] **P1 — Close the feedback loop.** ✅ 2026-08-28. Research `e1ebf691` (P1.1), `8248e3d7`
+      (P1.2), `c3034ede` (P1.4); root `a353381a` (P1.5).
+  - [x] P1.1 Route the per-kernel hotspot table (already produced) to the planner and both critic
         passes. Extend `gpu_source_evidence._exact_duration_comparison` (`:3059`); thread into
         `discovery_controller.py:1521-1591`.
-  - [ ] P1.2 Experimental memory. **(a)** Long-lived campaigns — stop every crash re-minting the
+  - [x] P1.2 Experimental memory. **(a)** Long-lived campaigns — stop every crash re-minting the
         deployment and resetting counters; the supervisor already resumes from durable state.
         **(b)** `experiments.md` + a small SQLite index carrying hypothesis, mechanism, patch summary,
         gates, effect with sample vector, verdict — **negatives written up as carefully as wins**.
@@ -173,13 +173,24 @@ failure mode this program exists to end.
         records. **Idea only — no FAISS, no FTS5, no RRF.** That store is 2,076 LOC; ours is ~150.
   - [ ] P1.3 Planner and both critic passes receive the same bundle: hotspots · `experiments.md` ·
         prior refusal reasons verbatim · `hypotheses/inbox/` · champion diff to date.
-  - [ ] P1.4 Fix the estimator (`run_autokernel_gpu_discovery.py:3143`) — one estimator on both arms
+  - [x] P1.4 Fix the estimator (`run_autokernel_gpu_discovery.py:3143`) — one estimator on both arms
         — then re-score all 25 historical results and publish before/after.
-  - [ ] P1.5 Fix `scripts/vidya/cli.py:633` (`choices=["intake"]`), which strands **2,601** gradeable
+  - [x] P1.5 Fix `scripts/vidya/cli.py:633` (`choices=["intake"]`), which strands **2,601** gradeable
         ClaimTuples the ten autokernel adapters already produce correctly.
-  - **Exit:** re-scored table published; planner **and** critic transcripts each showing the hotspot
-    list, ≥1 prior refusal reason and ≥1 prior negative in context; `vidya` ledger contains
-    `vidya.adapters.autokernel*` rows.
+  - **Exit — MEASURED 2026-08-28:**
+    - Re-score published (`artifacts/autokernel-rescore/rescore.json`, research). All 25 historical
+      two-arm screens, every stored `median_relative` reproducing exactly from raw samples through
+      the producer's own centre rule: reported **+2.215%** vs like-for-like **+0.202%** —
+      **+2.014 pp** injected. **10 of 25 flip sign.** Nominations **7 → 3**. Anchor median-vs-mean
+      gap **+1.959%**, the mechanism.
+    - `vidya` ledger 12,538 → **13,141**: **603 autokernel frames persisted for the first time**
+      (aux_receipt 234, reward_integrity 159, governed_receipt 135, rocm_diagnostic 66,
+      evaluation_event 9). The audit's "2,601 tuples" figure did **not** reproduce on the real
+      walk; 603 is what the corpus yields today, and the walk reports its own four-way accounting
+      (projected / refused / declined / not-an-entry-point) rather than a single number.
+    - Context wiring pinned by test rather than by transcript (no campaign may launch before
+      Phase 2): `kernel_hotspots`, `prior_experiments`, `prior_authoring_refusals` and
+      `prior_results` all present in the bundle both actors read.
 
 - [ ] **P2 — Fix the measurement surface.** Precedes any further GPU spend.
   - [ ] Replace the 0.5B Q5_0 workload with a quant-ladder rung sharing a dispatch path and size
@@ -345,6 +356,9 @@ program**; each phase proceeds without them.
       validity-penalised at retrieval. No banking, no promotion authority, no readiness contribution
       — those denials stay verbatim. The mechanism is borrowed from autopilot's AP-28 store, not
       invented. Annex K is human-amendment-only (invariant 15), so this is the operator's write.
+      **Staged for you:** `scripts/operator/ratify_ak_search_1_a3_20260828.sh --show` to read it,
+      `--apply` to stage the amendment with an isolated `git apply --cached`. The store already
+      ships with `ranking_authorized=False`; applying this is what lets that flag be turned on.
       P1.2(a) ships regardless — it is a bug fix, and denial 4 governs *cross-campaign* reuse only.
 - [ ] **D2 — add a `T-screen` tier below T0**, requiring only: held claim, residency evidence, named
       anchor commit, codified recipe, and a once-per-host-state A/A noise floor. Drops, **for
