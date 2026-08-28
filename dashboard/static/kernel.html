@@ -1090,25 +1090,33 @@ function renderCommandBand(d){
   const status=String(a.status||(d.active?"running":"unknown"));
   const active=d.active===true;
 
-  // Card 1 — aggregate candidate vs frozen production.
+  // Card 1 — the cumulative RECEIPT line of the champion card.
+  //
+  // The champion and the aggregate candidate are one card, so this no longer owns a
+  // value element: the card's value is the champion commit (written below) and this
+  // contributes the measured-vs-production line beneath it. Merging the cards without
+  // updating this block is what threw "aggValue is null" and took the whole live
+  // render down with it -- `node --check` cannot catch a null deref, only a browser
+  // or a DOM-level check can, which is why the smoke test added alongside this asserts
+  // every element the renderers look up actually exists in the markup.
   const v=d.v27_cumulative||{}, r=v.receipt||{};
-  const agg=$("#cmd-aggregate"), aggValue=$("#cmd-aggregate-value"), aggSub=$("#cmd-aggregate-sub");
+  const agg=$("#cmd-aggregate"), aggSub=$("#cmd-aggregate-sub");
   const fraction=r.cumulative_graphs_on_effect_fraction;
   if(typeof fraction==="number"&&isFinite(fraction)){
     const positive=(v.headline||{}).positive===true;
     const pct=fraction*100;
-    aggValue.textContent=(pct>=0?"+":"")+pct.toFixed(Math.abs(pct)<1?2:1)+"%";
-    agg.className="cmd-card "+(positive?"ok":"fail");
-    const bits=[esc(r.cumulative_classification||"classified")+" · "+esc(r.metric||"—")+" ("+esc(r.metric_direction||"—")+")"];
+    if(agg) agg.className="cmd-card "+(positive?"ok":"fail");
+    const bits=["<b>"+(pct>=0?"+":"")+pct.toFixed(Math.abs(pct)<1?2:1)+"%</b> vs frozen production",
+                esc(r.cumulative_classification||"classified")+" · "+esc(r.metric||"—")];
     if(typeof r.promotion_eligible==="boolean"){
       bits.push(r.promotion_eligible?'<b>promotion ELIGIBLE</b>':'<b style="color:var(--bad)">promotion NOT eligible</b>');
     }
-    aggSub.innerHTML=bits.join(" · ");
+    if(aggSub) aggSub.innerHTML=bits.join(" · ");
   } else {
-    aggValue.textContent="NO RECEIPT";
-    agg.className="cmd-card warn";
-    aggSub.textContent=(v.available?"receipt pending":"no sealed cumulative performance receipt yet")+
-      (v.error?" — "+v.error:"");
+    if(agg) agg.className="cmd-card warn";
+    if(aggSub) aggSub.textContent="no sealed cumulative receipt yet — the champion's "
+      + "measured effect vs production is unmeasured, not zero"
+      + (v.error?" ("+v.error+")":"");
   }
 
   // Card 2 — is the loop alive?
