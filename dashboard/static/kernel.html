@@ -156,6 +156,12 @@
   .cmd-step.done{border-color:#1f4d38;color:var(--good)}
   .cmd-step.now{border-color:var(--accent);color:var(--accent);background:rgba(96,165,250,.12);font-weight:700;box-shadow:0 0 8px rgba(96,165,250,.25)}
   .cmd-step.bad{border-color:#7a2823;color:var(--bad)}
+  /* the collapsed remainder — present but deliberately quiet */
+  .cmd-step.muted{border-style:dashed;opacity:.65}
+  /* Explanations behind the freshness disclosure: readable, never the headline. */
+  .fresh-why{margin-top:6px}
+  .fresh-why>summary{cursor:pointer;color:var(--muted);font-size:11px}
+  .fresh-why>summary:hover{color:var(--fg)}
   .cmd-step-arrow{flex:0 0 auto;color:var(--border);margin:0 3px;font-size:10px}
   .cmd-refusal{font-size:11px;color:var(--bad);margin-top:5px;line-height:1.4}
   @media(max-width:1100px){.command-band{grid-template-columns:1fr 1fr}}
@@ -200,6 +206,11 @@
       <div class="cmd-label">Hypothesis under test</div>
       <div class="cmd-value code" id="cmd-hypothesis-value">—</div>
       <div class="cmd-sub" id="cmd-hypothesis-sub"></div>
+    </div>
+    <div class="cmd-card" id="cmd-champion">
+      <div class="cmd-label">Aggregate champion</div>
+      <div class="cmd-value" id="cmd-champion-value">—</div>
+      <div class="cmd-sub" id="cmd-champion-sub">awaiting the campaign's champion record</div>
     </div>
   </section>
 
@@ -1078,29 +1089,46 @@ function renderCommandBand(d){
   // Card 3 — pipeline stage.
   $("#cmd-stage-value").textContent=phase.label||phase.id||"—";
   $("#cmd-stage-value").className="cmd-value";
+  // PIPELINE (2026-08-28). This drew all 21 steps as tiny nodes in a horizontally
+  // scrolling strip — the same wall of text, turned sideways: a reader could not tell
+  // where the campaign WAS. Now it answers "how far along, doing what, what next" and
+  // collapses the finished run into a count. The full step list stays one click away
+  // in the existing pipeline disclosure below, so nothing is lost.
   const stepper=$("#cmd-stepper"); stepper.replaceChildren();
   const pipe=a.pipeline||[];
-  const steps=pipe.length?pipe:[{id:phase.id||"current",label:phase.label||phase.id||"current stage",state:"now"}];
-  let nowMarked=false;
-  steps.forEach((step,i)=>{
-    if(i>0){const arrow=document.createElement("span"); arrow.className="cmd-step-arrow"; arrow.textContent="→"; stepper.appendChild(arrow);}
-    const node=document.createElement("span");
-    node.className="cmd-step";
-    if(step.id===phase.id||step.state==="running"){ node.classList.add("now"); nowMarked=true; }
-    else if(step.state==="complete") node.classList.add("done");
-    else if(step.state==="failed"||step.state==="interrupted") node.classList.add("bad");
-    node.textContent=(step.label||step.id||"step")+(typeof step.elapsed_s==="number"?" "+elapsedText(step.elapsed_s):"");
-    node.title="state "+step.state+" · "+(step.detail||"");
-    stepper.appendChild(node);
-  });
-  if(!nowMarked&&phase.id){
-    const arrow=document.createElement("span"); arrow.className="cmd-step-arrow"; arrow.textContent="→"; stepper.appendChild(arrow);
-    const node=document.createElement("span");
-    node.className="cmd-step now";
-    node.textContent=phase.label||phase.id||"current phase";
-    stepper.appendChild(node);
+  const steps=pipe.length?pipe:[{id:phase.id||"current",label:phase.label||phase.id||"current stage",state:"running"}];
+  const isNow=(st)=> st.id===phase.id||st.state==="running";
+  const isBad=(st)=> st.state==="failed"||st.state==="interrupted";
+  let cur=steps.findIndex(isNow);
+  if(cur<0) cur=steps.findIndex(st=>st.state!=="complete");
+  if(cur<0) cur=steps.length-1;
+  const done=steps.filter(st=>st.state==="complete").length;
+
+  const chip=(text,cls,title)=>{
+    const n=document.createElement("span");
+    n.className="cmd-step"+(cls?" "+cls:"");
+    n.textContent=text;
+    if(title) n.title=title;
+    stepper.appendChild(n);
+    return n;
+  };
+  const arrow=()=>{const x=document.createElement("span"); x.className="cmd-step-arrow"; x.textContent="→"; stepper.appendChild(x);};
+
+  if(done>0) chip("✓ "+done+" done","done",steps.filter(st=>st.state==="complete").map(st=>st.label||st.id).join(" → "));
+  const now=steps[cur];
+  if(now){
+    if(done>0) arrow();
+    chip((now.label||now.id||"current")+(typeof now.elapsed_s==="number"?" "+elapsedText(now.elapsed_s):""),
+         isBad(now)?"bad":"now", "state "+(now.state||"?")+" · "+(now.detail||""));
+  }
+  const rest=steps.slice(cur+1);
+  if(rest.length){
+    arrow();
+    chip("next: "+(rest[0].label||rest[0].id), "", rest.map(st=>st.label||st.id).join(" → "));
+    if(rest.length>1) chip("+"+(rest.length-1)+" more","muted",rest.slice(1).map(st=>st.label||st.id).join(" → "));
   }
   const stageBits=[];
+  if(steps.length>1) stageBits.push("<b>step "+(cur+1)+" of "+steps.length+"</b>");
   if(typeof phase.elapsed_s==="number") stageBits.push("elapsed "+esc(elapsedText(phase.elapsed_s)));
   if(contract.first_incomplete_stage) stageBits.push("first incomplete: "+esc(contract.first_incomplete_stage));
   $("#cmd-stage-sub").innerHTML=stageBits.join(" · ");
@@ -1122,6 +1150,25 @@ function renderCommandBand(d){
   if(stall.state&&stall.state!=="unknown"&&stall.state!=="none") hypBits.push("stall "+esc(stall.state));
   if(active&&!refusal.detected&&stall.state==="none") hypBits.push("screening");
   $("#cmd-hypothesis-sub").innerHTML=hypBits.join(" · ")||"no active hypothesis";
+
+  // Card 5 — the aggregate champion. The operator asked for this first, and the card
+  // was blank because nothing read the controller's champion record. A SEEDED champion
+  // equals production until members compose, so say exactly that rather than implying
+  // an unearned win.
+  const ch=a.champion||{};
+  const chv=$("#cmd-champion-value"), chs=$("#cmd-champion-sub");
+  if(!ch.exists){
+    chv.textContent="none yet";
+    chv.className="cmd-value";
+    chs.textContent="no champion recorded for this campaign";
+  }else{
+    chv.textContent=ch.members?(ch.members+" member"+(ch.members===1?"":"s")):"= production";
+    chv.className="cmd-value"+(ch.members?"":" muted");
+    const cbits=[];
+    if(ch.headline) cbits.push(esc(ch.headline));
+    if(ch.anchor_commit_short) cbits.push('anchor <code>'+esc(ch.anchor_commit_short)+'</code>');
+    chs.innerHTML=cbits.join(" · ");
+  }
 }
 
 function renderLive(d){

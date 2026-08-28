@@ -11267,10 +11267,44 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             state, latest_iteration, headline_refusal_observation)
         if measurement_recovery is not None:
             measurement_output_view["recovery"] = measurement_recovery
+    # CHAMPION (2026-08-28). The aggregate candidate is the thing the operator asked
+    # to see first, and its card was blank because the surface's `champion` section
+    # still reports "the one-candidate driver banks a result; it does not mint a
+    # champion" -- true before CH-2, false now: the controller seeds a champion at
+    # campaign start and records the anchor it was seeded from. That IS the producer;
+    # nothing was reading it.
+    #
+    # Reported honestly: a seeded champion EQUALS production until members compose, so
+    # this says "equals production (seeded)" rather than implying a win that has not
+    # been earned. `members` counts composed candidates, which a seed has none of.
+    champion_seeded_at = (state.get("champion_seeded_at")
+                          if isinstance(state, dict) else None)
+    champion_anchor = (state.get("champion_seed_anchor_commit")
+                       if isinstance(state, dict) else None)
+    champion_members = [
+        row for row in ((state or {}).get("iterations") or [])
+        if isinstance(row, dict) and row.get("status") == "candidate"
+    ] if isinstance(state, dict) else []
+    champion_view = {
+        "exists": bool(champion_seeded_at),
+        "seeded_at": champion_seeded_at,
+        "anchor_commit": champion_anchor,
+        "anchor_commit_short": (champion_anchor[:12]
+                                if isinstance(champion_anchor, str) else None),
+        "members": len(champion_members),
+        # A seed is not a claim. Until a member composes and the combined candidate
+        # re-earns its tiers against the anchor, the honest headline is parity.
+        "headline": ("equals production (seeded)" if champion_seeded_at
+                     and not champion_members else
+                     f"{len(champion_members)} banked candidate"
+                     f"{'' if len(champion_members) == 1 else 's'} not yet composed"
+                     if champion_members else None),
+    }
     return {
         "status": status,
         "phase": {"id": stage, "label": label, "started_at": stage_started_at,
                   "elapsed_s": elapsed_s},
+        "champion": champion_view,
         "turn": turn, "hypothesis_id": hypothesis,
         "last_progress_at": last_progress_at, "progress_age_s": progress_age,
         "waiting_on": waiting_on, "stall": stall,
