@@ -157,19 +157,32 @@ failing to suppress re-proposals — was **wrong**. The ledger and the bounded-s
 `scientific_terminal: false` (campaign-scoped, not permanent), and provider transients are
 explicitly excluded from the count, as they should be. The ledger was fine; the planner was blind.
 
-- [ ] **AK-VIS-1 — authoring refusals are invisible on the dashboard.** The refusal surface keys on
-      the telemetry event `planner_refused` (`dashboard/server.py:3245,3274`), and **no
-      `authoring_refused` row emits a telemetry event at all** — verified on v33, where every row
-      has `telemetry_event: None`; the only assignment (`discovery_controller.py:2960`) writes
-      `planner_refused`. So all 22 authoring refusals are invisible to the operator, who asked
-      specifically for visibility into *what hypotheses and insights the planner/critic are
-      structuring experiments around*. Not fixed here on purpose: the dashboard's projection is
-      strict (`set(projected) != {...}` refusals), so emitting a new event name without the
-      matching dashboard-side contract risks breaking the page. Per `dashboard/README.md` this needs
-      the data contract **and** a registry entry, health probe and freshness envelope together.
-- [ ] **AK-VIS-2 — `critic_revise` consumes an authoring-failure strike.**
-      `discovery_controller.py:3624` calls `_note_portfolio_authoring_failure` for
-      `critic_<decision>` rows, so a critic asking for a revision — the mechanism by which
-      proposals are supposed to improve — counts toward the same 3-strike
-      `bounded_authoring_skip` as a malformed diff. In v33 it supplied the third strike. Decide
-      whether critic revisions deserve their own (larger) budget, or none.
+- [x] **AK-VIS-1 — authoring refusals rendered as NOTHING on the command band.** ✅ 2026-08-28
+      (epyc-root `2cc984a7`). **My first diagnosis of this was wrong and is corrected here.** I
+      filed it as a telemetry-event gap; the real mechanism is the status→label map in the live
+      payload. `refusal.detected` is `refusal_type is not None`, and `authoring_refused` was absent
+      from that map — so the whole refusal block (type, stage **and** the `detail` carrying the
+      guard's message) was skipped. The map did contain
+      `planner_contract_refused -> "authoring_refused"`, emitting the LABEL while never matching
+      the status of that name, which is why it survived review.
+      Added `authoring_refused` plus `authorization_refused`,
+      `candidate_semantic_repeat_refused` and `portfolio_dnr_refused`; `kernel.html` now renders
+      `refusal.detail`, so the card shows *why* ("derives undeclared symbols in vecdotq.cuh")
+      rather than a bare "refused". The server already computed it.
+      **A secret boundary was nearly weakened and was not:** the first attempt also surfaced the
+      raw iteration `reason`, which `test_v2_planner_refusal_is_typed_secret_free_and_advances`
+      correctly failed — a `planner_refused` reason can carry raw actor stdout, which is why that
+      path ships only a digest. The change was reverted rather than the test weakened.
+      Regression test drives the real payload path; its first version was vacuous twice over (a
+      local copy of the map, and a source grep matching unrelated lines) and was rewritten until
+      the mutation actually fails. Failure SETS diffed against origin/main: 0 newly broken.
+- [x] **AK-VIS-2 — `critic_revise` consumed an authoring-failure strike.** ✅ 2026-08-28
+      (research `26f587a9`). A critic asking for a revision is the mechanism by which a proposal
+      improves; charging it to the same 3-strike budget as a malformed diff retires hypotheses for
+      being reviewed. It supplied v33's third strike, skipping
+      `akh-v2-q5-type-specific-dequant` without it ever being tested. Revisions now have their own
+      larger budget (`CRITIC_REVISION_BUDGET` 6 vs `AUTHORING_FAILURE_BUDGET` 3) and their own
+      disposition `bounded_critic_revision_skip`, so the two are distinguishable in state; both
+      stay `scientific_terminal: false`. A critic **reject** deliberately still counts — the
+      proposal was judged unsound, not merely improvable. Tests replay v33's exact sequence and
+      are mutation-tested.
