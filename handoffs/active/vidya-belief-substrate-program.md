@@ -481,7 +481,14 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       only `<think>` reasoning, zero block/summary tokens. MATH-500 delta: 0.440 → 0.420
       (n=50, within noise). Decision per the fork: CONTINUE — the pipeline is verified
       end-to-end; the fix is stage-1 training scale (few thousand samples), not a stop.
-      All measurement tooling (math500 harness, extended base, lora convert) committed.**
+      All measurement tooling (math500 harness, extended base, lora convert) committed.
+      **2026-08-27 23:40Z: SCALED RUN GPU-GATED + DEFERRED (operator).** CPU cost is 10-40 h
+      @ seq 4096 (measured ~4.7 min/step); the operator decided the scaled run happens on
+      the GPU. Prereqs when picked up: (1) ROCm torch build in the ml-training venv (the
+      current torch is CUDA-only; the ROCm install was explicitly declined this session),
+      (2) a GPU window, (3) the recommended first checkpoint: 1,000 samples @ seq 2048. If
+      the format still fails there, the diagnosis shifts to the training objective (stage-2
+      masking) before any larger investment. Row residual = the GPU-gated scaled run.**
 - [x] SC13 **E5 cell affinity-preflight artifacts need a write-side ClaimTuple hook** (filed 2026-08-12
       by `mainA`, at the moment of changing the producer rather than afterwards).
       `affinity_preflight.py` cell mode writes `data/contention_matrix/affinity_preflight_*.json` per
