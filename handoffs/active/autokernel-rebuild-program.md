@@ -35,12 +35,77 @@ why every prior reachability audit was wrong.
   ten consecutive real iterations need the external codex planner and hours of GPU.
 - **Next action:** run the new loop end to end (P4 exit). Until it passes, **P5 must not start** —
   the strip is gated on the replacement being proven, and that gate is the point.
-- **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80):**
-  single-pair p95 **2.175%** prefill, **3.452%** decode; **4 of 20 pure-noise decode pairs
-  already exceed the loop's 3% nomination bar.** Five pairs bring those to 0.75% / 1.85%.
-  `--arm-pairs` must be ≥5. Artifact: `artifacts/autokernel-aa-noise-floor/` (research).
-- **Nothing is running.** `gpu-discovery-champion-v37` was stopped 2026-08-28T14:23:38Z
-  (`death-ledger.jsonl`: `supervisor_stopped`, `exit_code: 143`). The MI210 is free.
+- **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80).**
+  Recomputed exhaustively — p95 |median effect| over EVERY C(20,k) subset, so it re-derives
+  exactly (`bench.MEASURED_FLOOR_PCT`, research):
+
+  | pairs | prefill | decode |
+  |---|---|---|
+  | 1 | 2.175% | 3.452% |
+  | 5 | **0.479%** | **1.502%** |
+  | 9 | 0.168% | 1.175% |
+
+  **4 of 20 pure-noise decode pairs exceed the superseded loop's 3% bar.** An earlier
+  hand-written table quoting 0.753% / 1.848% at k=5 reproduces by no method from the raw pairs
+  and is superseded. The loop **enforces** 0.973% / 1.544% — above the measured rows on purpose,
+  since 20 pairs is a thin sample of a heavy tail. `--arm-pairs` must be ≥5.
+  Artifact: `artifacts/autokernel-aa-noise-floor/` (research).
+
+### Runs 5–9, and the four harness defects they exposed (2026-08-28 evening)
+
+Nine real iterations produced **zero measurements**, and every cause was in the harness rather
+than the actors. Recorded because each one looked like planner quality and was not:
+
+1. **The placeholder guard rejected real answers** (research `bb468613`). `_PLACEHOLDER` listed
+   a bare `"<"`, so any falsifier stating `delta < 0.97%` or naming `mul_mat_vec_q<Q4_K>` read
+   as our own prompt echoed back. Three consecutive correct hypotheses retired — a guard
+   forbidding its own compliant idiom.
+2. **The worktree was never reset between iterations** (research `edc004ac`). A failed authoring
+   attempt left its edits behind, so the next iteration's "did the actor actually change
+   something" check was satisfied by the previous attempt's leftovers.
+3. **The profile described a surface the A/B never measured** (research `30b71b44`) — the big
+   one. `hotspots.profile` defaulted to `pp=0, tg=32` (DECODE) and `run.py` never overrode it,
+   while `--surface` defaults to `pp512` (PREFILL). **No hypothesis derived from that table
+   could ever have been kept.** `pp`/`tg` are now required arguments. Found by the loop's own
+   critic, unprompted, at a cost of one planner call.
+4. **Three inconsistent noise floors** (research `7fe7bd4d`), resolved above.
+
+**Structural finding, now in `program.md`:** on `pp512` about **51% of device time is
+rocBLAS/Tensile GEMM** (`Cijk_*`) — vendor library code this loop cannot patch. Prefill is a
+dequantize-then-vendor-GEMM path: `dequantize_block_q4_K` (15.06%) → `convert_unary` (9.32%) →
+Tensile (51.33%) = **75.7%** of device time. `tg128` by contrast dispatches `mul_mat_vec_q`,
+entirely our source. **Surface selection is an open operator decision**, and note that every
+seeded hypothesis is a decode hypothesis.
+
+### The information base is seeded (2026-08-28 evening)
+
+The loop shipped with two inbound channels and nothing in either — the `inbox/` directory did
+not exist. Harvested from the backlog and verified into the live rendered context, not merely
+onto disk:
+
+- **`inbox/`** — `AK-H-QL-1/2/3`, the quant-ladder occupancy knee (`autokernel-research-loop.md`
+  §22.1, still unchecked), and the ranked dequant-gap levers L1–L8
+  (`mi210-q8-dequant-gemv-roofline.md`), each carrying its falsifier.
+- **Measured negatives** into the experiment store under a synthetic historical epoch, so
+  `recall()` marks them stale: the mechanism transfers, the number does not.
+- **`program.md` now reaches the actors at all** (research `c4e74739`). Its own "Settled — do not
+  re-open" section names `GGML_IQK`, MMQ and HIP graphs as already in v9 — exactly what the
+  planner proposed for nine straight iterations. Nothing had been wired to hand it to anyone.
+  It also now carries the measured gfx90a receipts (32 LDS banks / 8 phase cliques, no fp8
+  MFMA, our `mma.cuh` tile ≡ HipKittens `rt_base`) and what `test-backend-ops` cannot catch.
+
+Tooling: `python3 -m autokernel.loop.seed --store <store>` (idempotent). A test refuses any
+seeded lever that a seeded negative refutes — added after this session seeded
+KV-quant-at-long-context as live when 05c gap-list L14 had already killed it (−16.7% GDN,
+−6.9% dense 27B).
+
+- **Run 9 is executing** (10 iterations, `pp512`, seeded, profile and measurement now matched).
+  P4 exit remains **UNMET**: it needs ≥6 measurements and ≥1 champion commit.
+- **The loop is visible at `:8100/loop`** (root `c639a01c`) — state, three-valued freshness,
+  every disposition including negatives, and GPU held-vs-busy. That last number reported
+  **100% idle across 62 minutes of held claim** on run 6, which is what the surface exists to
+  make impossible to miss. A sub-iteration heartbeat (research `f46c2860`) keeps a healthy
+  long iteration from reading `stale`.
 
 ---
 
