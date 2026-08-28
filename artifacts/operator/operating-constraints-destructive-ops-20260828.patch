@@ -1,0 +1,33 @@
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -153,6 +153,30 @@
+   buffer is cosmetic: submit and follow with a correction — escalating to destructive input
+   handling to fix a cosmetic problem is the error, independent of which key turns out to be
+   fatal. (origin: INC-20260728-ctrlc-destroyed-main)
++
++### Destructive operations — mandatory pre-flight and the trash-first rule
++
++**Never `rm -rf`, `mv` over, or `kill` on an assumption. "Looks like a duplicate" is an
++assumption; identity is evidence.** (origin: INC-20260828-glm53-model-deleted — a "duplicate
++cleanup" deleted the only copy of a 200 GB model: two paths with identical listings were
++treated as two copies when both were aliases of one physical tree.)
++
++1. **Identity check, before any delete/move/kill of a path or process:**
++   - `scripts/safety/path_identity.sh <path>...` — prints realpath, inode, device, mount, and
++     any ALIAS paths that reach the same inode. Two paths are the same file iff inode+device
++     match; `realpath` resolving one path into the other is decisive even when listings look
++     identical. For processes: only kill PIDs you captured yourself (see Process Management).
++   - Cross-check with `du -sb <parent tree>`: a real second copy adds its size to the parent;
++     a symlink/bind alias adds nothing.
++2. **Trash-first, always:** recursive deletes of data go through
++   `scripts/safety/guarded_rm.sh`, which moves the target to `/mnt/raid0/llm/.trash/` and logs
++   a manifest (recoverable until `scripts/safety/trash-sweep.sh --older-than DAYS` ages it
++   out). Direct `rm -rf` on data roots is a violation even when the operator approved the
++   deletion — approve the deletion, not the method. `--bypass-guard` exists only for operator-
++   approved cases and writes a CRITICAL audit line.
++3. **Audit:** every guarded deletion and every identity check that found aliases appends to
++   `/workspace/logs/safety_audit.log`; a deletion that was justified by a wrong identity
++   conclusion must be reported as an incident, not folded into the task summary.
+ 
+ ## Act, Don't Defer — the admission test for escalating at all
+ 
