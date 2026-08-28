@@ -366,3 +366,129 @@ def test_fixtures_are_self_consistent_against_the_producer_contract():
     assert result["median_relative"] == sorted([
         (value - result["baseline_center"]) / result["baseline_center"]
         for value in result["candidate_samples"]])[1]
+
+
+# ── the corrected estimator ────────────────────────────────────────────────────
+#
+# The producer used to centre on mean(anchor) and report median(per-sample effects)
+# against it. Across all 25 historical screens that mismatch injected +2.014pp,
+# flipped 10 signs and took nominations from 3 to 7. Corrected records declare an
+# `estimator` and use ONE statistic on BOTH arms. A record that declares the
+# corrected rule but carries legacy arithmetic must be REFUSED, never quietly
+# accepted -- that is the laundering path these tests exist to close.
+
+# median 101, mean 97.667: chosen so the two rules give visibly different answers.
+SKEWED_ANCHOR = [90.0, 101.0, 102.0]
+CANDIDATE = [110.0, 112.0, 111.0]
+CORRECTED_EFFECT = 111.0 / 101.0 - 1.0          # median(cand) / median(anchor) - 1
+
+
+def corrected_native_pair():
+    """A bank+result pair written by the corrected producer (native contract)."""
+    bank = bank_receipt(serialized=False)
+    bank["anchor_samples"] = list(SKEWED_ANCHOR)
+    bank["anchor_runs"] = [run(SKEWED_ANCHOR, 101.0)]
+    bank["estimator"] = "median_over_median"
+    bank["belief_measurements"] = gpu._expected_rows(
+        bank, samples=list(SKEWED_ANCHOR), reps=3, runs=bank["anchor_runs"],
+        producer=bank["producer"], frame=bank["frame"], factor=bank["sole_factor"])
+    resign(bank)
+
+    result = result_receipt(bank=bank, serialized=False)
+    result["estimator"] = "median_over_median"
+    result["baseline_center"] = 101.0                       # median, not mean
+    result["baseline_anchor_samples"] = list(SKEWED_ANCHOR)
+    result["candidate_samples"] = list(CANDIDATE)
+    result["relative_effects"] = [(v - 101.0) / 101.0 for v in CANDIDATE]
+    result["median_relative"] = CORRECTED_EFFECT
+    result["belief_measurements"] = gpu._expected_rows(
+        result, samples=list(CANDIDATE), reps=3, runs=result["candidate_runs"],
+        producer=result["producer"], frame=result["frame"],
+        factor=result["sole_factor"])
+    resign(result)
+    return bank, result
+
+
+def test_corrected_record_projects_the_like_for_like_effect():
+    """The projected value is median(cand)/median(anchor) - 1, computed here by hand."""
+    bank, result = corrected_native_pair()
+    rows = gpu.native_rows(result, receipt_locator="gpu:v38/result.json",
+                           receipt_sha256="7" * 64, attestation_present=True)
+    effect_row = next(r for r in rows
+                      if r["measurement"]["measurement_id"].endswith("relative_effect"))
+    assert effect_row["measurement"]["value"] == pytest.approx(CORRECTED_EFFECT, abs=1e-12)
+    assert effect_row["measurement"]["extra"]["estimator"] == "median_over_median"
+    # And it is materially below what the superseded rule would have reported.
+    legacy_center = sum(SKEWED_ANCHOR) / 3
+    legacy = sorted((v - legacy_center) / legacy_center for v in CANDIDATE)[1]
+    assert legacy - CORRECTED_EFFECT > 0.03, "fixture no longer separates the two rules"
+    assert all(ct.grade(gpu.project(native))[:2] == ("Witnessed", "Attested")
+               for native in gpu.native_rows(
+                   bank, receipt_locator="gpu:v38/baseline-bank.json",
+                   receipt_sha256="8" * 64, attestation_present=True))
+
+
+def test_corrected_bank_declares_the_median_centre_method():
+    bank, _ = corrected_native_pair()
+    rows = gpu.native_rows(bank, receipt_locator="gpu:v38/baseline-bank.json",
+                           receipt_sha256="9" * 64, attestation_present=True)
+    extra = rows[0]["measurement"]["extra"]
+    assert extra["sealed_baseline_center"] == 101.0
+    assert extra["baseline_center_method"] == "median_native_samples"
+    assert extra["estimator"] == "median_over_median"
+
+
+def test_declaring_the_correction_while_carrying_a_mean_centre_is_refused():
+    """The laundering path: claim the corrected rule, keep the biased arithmetic."""
+    _, result = corrected_native_pair()
+    mean_center = sum(SKEWED_ANCHOR) / 3
+    result["baseline_center"] = mean_center
+    result["relative_effects"] = [(v - mean_center) / mean_center for v in CANDIDATE]
+    result["median_relative"] = sorted(result["relative_effects"])[1]
+    resign(result)
+    with pytest.raises(ct.ProjectionError, match="baseline_center does not rederive"):
+        gpu.native_rows(result, receipt_locator="gpu:v38/result.json",
+                        receipt_sha256="a" * 64, attestation_present=True)
+
+
+def test_on_the_native_path_the_centre_is_the_only_thing_that_can_differ():
+    """Why there is exactly one anti-laundering check on this path, not two.
+
+    Given a shared centre C, median([(v-C)/C for v in cand]) and median(cand)/C - 1
+    are the SAME number -- the transform is affine and monotone, so it commutes with
+    the median. The superseded rule and the corrected rule therefore differ on the
+    native path solely through C: mean(anchor) versus median(anchor). That makes
+    `baseline_center` the single load-bearing assertion, and a test that tampered
+    with `median_relative` alone would be unfalsifiable by construction.
+
+    The pair-max path is different: its statistic is one run's metric, not a median
+    of the sample vector, so there the two genuinely diverge.
+    """
+    from statistics import median
+    center = 101.0
+    effects = [(v - center) / center for v in CANDIDATE]
+    assert median(effects) == pytest.approx(median(CANDIDATE) / center - 1.0, abs=1e-15)
+    # And the two rules diverge exactly as much as the two centres do.
+    mean_center = sum(SKEWED_ANCHOR) / 3
+    legacy = median([(v - mean_center) / mean_center for v in CANDIDATE])
+    assert legacy - CORRECTED_EFFECT == pytest.approx(
+        median(CANDIDATE) * (1 / mean_center - 1 / center), abs=1e-12)
+
+
+def test_unknown_estimator_is_refused_not_guessed():
+    _, result = corrected_native_pair()
+    result["estimator"] = "whatever_fits"
+    resign(result)
+    with pytest.raises(ct.ProjectionError, match="unknown estimator"):
+        gpu.native_rows(result, receipt_locator="gpu:v38/result.json",
+                        receipt_sha256="c" * 64, attestation_present=True)
+
+
+def test_legacy_records_still_rederive_under_the_legacy_rule():
+    """Receipts already sealed on disk must keep projecting byte-identically."""
+    legacy = result_receipt(serialized=False)
+    assert "estimator" not in legacy
+    rows = gpu.native_rows(legacy, receipt_locator="gpu:v27/native-result.json",
+                           receipt_sha256="d" * 64, attestation_present=True)
+    assert len(rows) == 2
+    assert all("estimator" not in r["measurement"]["extra"] for r in rows)

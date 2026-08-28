@@ -50,6 +50,11 @@ ALLOWED_REPS = frozenset({3, 5, 9})
 NATIVE_CONTRACT = "epyc.autokernel.native_llama_bench_metric.v1"
 SERIALIZED_CONTRACT = "epyc.autokernel.serialized_pair_max_metric.v1"
 CONTRACTS = frozenset({NATIVE_CONTRACT, SERIALIZED_CONTRACT})
+# Estimators the corrected producer may declare. A record with no `estimator` field
+# predates the correction (mean-centred anchor, median-reduced effect vector) and is
+# rederived under the legacy rule; an unrecognised value is refused outright rather
+# than guessed at.
+_ESTIMATORS = frozenset({"median_over_median", "pair_max_metric_over_pair_max_metric"})
 RECIPES = {
     "pp512-ngl99": "prefill_tokens_per_s",
     "tg128-ngl99": "decode_tokens_per_s",
@@ -315,11 +320,26 @@ def _row(*, measurement_id: str, metric: str, value: float, unit: str,
     return row
 
 
-def _baseline_center(frame: dict, *, samples: list[float], run: dict) -> float:
+def _baseline_center(frame: dict, *, samples: list[float], run: dict,
+                     estimator: str | None = None) -> float:
+    """The anchor centre, rederived through the producer's DECLARED estimator.
+
+    A record carrying `estimator` was written by the corrected producer, which uses
+    ONE statistic on BOTH arms (median/median, or pair-max/pair-max). A record
+    without the field predates that fix: it centred on the MEAN of the anchor
+    samples while reporting the MEDIAN of the per-sample effects against it.
+
+    The two rules are told apart by the record's own declaration, never by trying
+    both and accepting whichever fits. The legacy rule injected +2.014pp of apparent
+    improvement across all 25 historical screens, so an adapter that silently
+    accepted either would launder that artifact into the belief substrate.
+    """
     if frame["metric_contract"]["schema"] == SERIALIZED_CONTRACT:
         return _positive(run.get("metric"),
                          "serialized pair-max run metric (mean protected latency)")
-    return sum(samples) / len(samples)
+    if estimator is None:
+        return sum(samples) / len(samples)
+    return statistics.median(samples)
 
 
 def _expected_rows(receipt: dict, *, samples: list[float], reps: int,
@@ -332,7 +352,14 @@ def _expected_rows(receipt: dict, *, samples: list[float], reps: int,
     if receipt["schema"] == BANK_SCHEMA:
         common.update({"arm": "anchor",
                        "build_identity": receipt["anchor_identity"]})
-        center = _baseline_center(frame, samples=samples, run=runs[0])
+        estimator = receipt.get("estimator")
+        center = _baseline_center(frame, samples=samples, run=runs[0], estimator=estimator)
+        if frame["metric_contract"]["schema"] == SERIALIZED_CONTRACT:
+            center_method = "tokens_per_mean_protected_latency"
+        elif estimator is None:
+            center_method = "arithmetic_mean_native_samples"
+        else:
+            center_method = "median_native_samples"
         return [_row(
             measurement_id=f"gpu_discovery_anchor_{label}_median_tokens_per_s",
             metric=f"gpu_{metric}", value=statistics.median(samples),
@@ -340,19 +367,30 @@ def _expected_rows(receipt: dict, *, samples: list[float], reps: int,
             claim=(f"Non-promotable GPU discovery anchor observed median {label} throughput "
                    f"{statistics.median(samples):.9g} tokens/s"),
             reps_basis=f"scored:{reps} anchor-bank MI210 llama-bench native repetitions",
+            # `estimator` is added ONLY when the record declares one. Legacy receipts
+            # were sealed with their belief rows already written; adding a key to
+            # those rows would break the exact-rederivation check on every receipt
+            # already on disk.
             extra={**common, "sealed_baseline_center": center,
-                   "baseline_center_method": (
-                       "tokens_per_mean_protected_latency"
-                       if frame["metric_contract"]["schema"] == SERIALIZED_CONTRACT
-                       else "arithmetic_mean_native_samples")},
+                   **({"estimator": estimator} if estimator is not None else {}),
+                   "baseline_center_method": center_method},
             protocol_id=BANK_SCHEMA, reps=reps)]
     center = _positive(receipt.get("baseline_center"), "baseline_center")
     effects = [(value - center) / center for value in samples]
+    estimator = receipt.get("estimator")
+    # The reported effect. A corrected record declares its estimator and carries a
+    # like-for-like statistic; a legacy record reduced the per-sample effect vector
+    # with a median against a mean-centred anchor. Both are rederived below in
+    # native_rows(); this is the value that is projected.
+    effect = (float(receipt["median_relative"]) if estimator is not None
+              else statistics.median(effects))
     common.update({
         "arm": "candidate", "build_identity": receipt["candidate_identity"],
         "baseline_sha256": receipt["baseline_sha256"],
         "baseline_anchor_samples": receipt["baseline_anchor_samples"],
         "baseline_center": center, "hip_residency_proved": True,
+        # Added only when declared -- see the note on the anchor row above.
+        **({"estimator": estimator} if estimator is not None else {}),
     })
     basis = f"scored:{reps} candidate-only MI210 llama-bench invocations"
     return [
@@ -366,9 +404,15 @@ def _expected_rows(receipt: dict, *, samples: list[float], reps: int,
         _row(
             measurement_id=f"gpu_discovery_candidate_{label}_median_relative_effect",
             metric=f"gpu_{metric.removesuffix('_tokens_per_s')}_relative_effect_vs_sealed_anchor",
-            value=statistics.median(effects), unit="fraction", category="CANDIDATE",
-            claim=("Non-promotable GPU candidate discovery observed median relative effect "
-                   f"{statistics.median(effects):.9g} versus its sealed anchor bank"),
+            value=effect, unit="fraction", category="CANDIDATE",
+            # Wording is byte-stable for the median family so legacy receipts keep
+            # rederiving; only the pair-max family, whose statistic is not a median
+            # of anything, gets its own phrasing.
+            claim=(("Non-promotable GPU candidate discovery observed relative effect "
+                    f"{effect:.9g} versus its sealed anchor bank")
+                   if estimator == "pair_max_metric_over_pair_max_metric" else
+                   ("Non-promotable GPU candidate discovery observed median relative effect "
+                    f"{effect:.9g} versus its sealed anchor bank")),
             reps_basis=basis, extra={**common, "relative_effects": effects},
             protocol_id=RESULT_SCHEMA, reps=reps),
     ]
@@ -429,9 +473,22 @@ def _validate_receipt(receipt: dict) -> list[dict]:
         if (isinstance(center, bool) or not isinstance(center, (int, float))
                 or not math.isfinite(center) or center <= 0):
             raise ProjectionError("baseline_center must be positive and finite")
-        if frame["metric_contract"]["schema"] == NATIVE_CONTRACT and not math.isclose(
-                float(center), sum(bank_samples) / reps, rel_tol=1e-12, abs_tol=1e-12):
-            raise ProjectionError("baseline_center does not rederive from anchor samples")
+        # The producer's estimator, taken from the record's own declaration. A
+        # record without the field predates the correction and centred on the MEAN
+        # while reporting the MEDIAN of the per-sample effects -- a mismatch that
+        # injected +2.014pp across all 25 historical screens. Never try both rules
+        # and accept whichever fits; that would launder the artifact.
+        estimator = receipt.get("estimator")
+        if estimator is not None and estimator not in _ESTIMATORS:
+            raise ProjectionError(f"unknown estimator {estimator!r}")
+        native = frame["metric_contract"]["schema"] == NATIVE_CONTRACT
+        if native:
+            expected_center = (sum(bank_samples) / reps if estimator is None
+                               else statistics.median(bank_samples))
+            if not math.isclose(float(center), expected_center,
+                                rel_tol=1e-12, abs_tol=1e-12):
+                raise ProjectionError("baseline_center does not rederive from anchor samples "
+                                      f"under the declared estimator {estimator or 'legacy'}")
         effects = [(value - float(center)) / float(center) for value in samples]
         declared = receipt.get("relative_effects")
         if (not isinstance(declared, list) or len(declared) != reps
@@ -440,10 +497,21 @@ def _validate_receipt(receipt: dict) -> list[dict]:
                                            rel_tol=1e-12, abs_tol=1e-12)
                        for item, expected in zip(declared, effects))):
             raise ProjectionError("relative effects do not rederive from candidate and bank samples")
-        if not math.isclose(float(receipt.get("median_relative")),
-                            statistics.median(effects),
+        if estimator is None:
+            expected_effect = statistics.median(effects)
+        elif native:
+            expected_effect = statistics.median(samples) / float(center) - 1.0
+        else:
+            candidate_runs = receipt.get("candidate_runs")
+            if not isinstance(candidate_runs, list) or not candidate_runs:
+                raise ProjectionError("pair-max estimator requires a candidate run")
+            expected_effect = _positive(
+                _mapping(candidate_runs[0], "candidate_runs[0]").get("metric"),
+                "candidate pair-max run metric") / float(center) - 1.0
+        if not math.isclose(float(receipt.get("median_relative")), expected_effect,
                             rel_tol=1e-12, abs_tol=1e-12):
-            raise ProjectionError("median_relative does not rederive from the effect vector")
+            raise ProjectionError("median_relative does not rederive under the declared "
+                                  f"estimator {estimator or 'legacy'}")
         opened = receipt.get("device_claim_open")
         if opened is not None:
             opened = _mapping(opened, "device_claim_open")

@@ -66,6 +66,44 @@ warrant is a new class — declare it deliberately, never by accident.
    - *absence is not back-filled* — a record predating the producer's hook is skipped, not invented
    - *the extractor does not understate* — probe what it missed before accepting a low coverage number
 
+## Running the AutoKernel corpus
+
+```
+python3 scripts/vidya/cli.py ingest autokernel --as-of <UTC now> [--root ...] [--dry-run]
+```
+
+`autokernel_corpus.py` walks `/mnt/raid0/llm/autokernel`, dispatches each schema-bearing
+document to its owning adapter, and emits through the shared carrier. It is a
+**dispatcher, not a grader** — every adapter still projects and `claim_tuple.grade()`
+still decides.
+
+**This path did not exist until 2026-08-28.** Ten AutoKernel adapters had been written,
+tested and verified against the real corpus, and not one had ever persisted a row: the
+CLI hard-limited `ingest` to `choices=["intake"]`, so the read side was complete and the
+write side had never fired. First run: **603 frames from 201 rows.**
+
+Two things the walk had to get right, both of which under-report silently if missed:
+
+- **Journal records key on `journal_schema`, not `schema`,** and carry the event in
+  `payload`. Dispatching only on `schema` found 628 documents; handling the envelope
+  found 3,107.
+- **"Unsupported schema" is a mapping miss, not a refusal.** Separating them took the
+  apparent refusal count from 476 to 234 real refusals plus 242 documents whose schema
+  names an inner document rather than an entry point. Conflating them hides the real
+  refusals inside a large, reassuring number.
+
+The report distinguishes four outcomes for every matched document: projected, `refused`
+(a strict reader rejecting a record that does not rederive), `declined`
+(`documents_yielding_no_rows` — accepted and deliberately projecting nothing: pre-hook,
+void, non-measurement), and `schema_not_an_entry_point`. Three adapters are **named as
+unwired with their reason** rather than skipped silently, because silence reads as
+coverage: `planner_reduction` (needs manifest + panel + prefilter contract together),
+`scaffold_panel` (reads a panel document, not a receipt), and `fault_rehearsal` (emits
+dependency classifications only, never a `ClaimTuple`, by design).
+
+The per-source status column below was written before this path existed; where a row
+says *"awaiting the first real post-hook event"*, check the walk's own output first.
+
 ## Known and candidate sources
 
 Keep this table current. It is the answer to "has anyone already looked at this?"

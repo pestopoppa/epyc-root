@@ -477,7 +477,44 @@ def cmd_alias_emit(args) -> int:
 
 # ------------------------------------------------------------------ ingest
 
+AUTOKERNEL_CORPUS_ROOT = Path("/mnt/raid0/llm/autokernel")
+
+
+def _ingest_autokernel(args) -> int:
+    """Walk the AutoKernel runtime corpus through its ten strict adapters.
+
+    The adapters were built, tested and verified against the real corpus (2,601
+    gradeable tuples) and had never persisted a row, because this command only ever
+    accepted `intake`. The read side was complete; the write side had never fired.
+    """
+    from adapters.autokernel_corpus import ingest_corpus  # noqa: PLC0415
+
+    root = Path(args.root) if args.root else AUTOKERNEL_CORPUS_ROOT
+    if not root.is_dir():
+        print(f"no such AutoKernel corpus root: {root}", file=sys.stderr)
+        return 2
+    led = _ledger(args)
+    report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
+                           dry_run=args.dry_run)
+    human = [
+        f"documents matched={report['documents_matched']}  "
+        f"rows projected={report['rows_projected']}  "
+        f"frames={'(dry run) ' if args.dry_run else ''}{report['frames_emitted']}  "
+        f"refused={report['refused']}  declined={report['documents_yielding_no_rows']}  "
+        f"not-an-entry-point={report['schema_not_an_entry_point']}",
+        f"by adapter: {report['by_adapter'] or '(none)'}",
+    ]
+    if report["refused"]:
+        human.append("refusals (strict readers rejecting records that do not rederive):")
+        human.extend(f"  {item['reason'][:110]}" for item in report["refusal_sample"][:5])
+    human.append("unwired (reported, not skipped silently):")
+    human.extend(f"  {name}: {why}" for name, why in report["unwired_adapters"].items())
+    return _emit(report, args.json, "\n".join(human))
+
+
 def cmd_ingest(args) -> int:
+    if args.adapter == "autokernel":
+        return _ingest_autokernel(args)
     if args.adapter != "intake":
         print(f"unknown adapter {args.adapter!r}", file=sys.stderr)
         return 2
@@ -630,8 +667,10 @@ def build_parser() -> argparse.ArgumentParser:
     ae.set_defaults(func=cmd_alias_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake"])
+    i.add_argument("adapter", choices=["intake", "autokernel"])
     i.add_argument("--index", help="path to intake_index.yaml")
+    i.add_argument("--root", help="corpus root for the autokernel adapter "
+                                  f"(default {AUTOKERNEL_CORPUS_ROOT})")
     i.add_argument("--limit", type=int, help="only the first N entries")
     i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
     i.add_argument("--dry-run", action="store_true", help="report without appending")
