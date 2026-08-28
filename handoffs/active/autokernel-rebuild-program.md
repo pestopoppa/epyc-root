@@ -222,7 +222,20 @@ failure mode this program exists to end.
       deliberately unshipped rather than shipped blind**, both recorded below.
   - [x] `BuildParallelism(jobs=1)` → `jobs=64` with `cpu_list` / `load_average_cap` (fields
         `execution/worktree.py` already carries at `:2249` and `:2597`).
-  - [ ] **NOT SHIPPED — cache the anchor build.** `_build_key_contract` hashes
+  - [x] **SHIPPED and validated on a real build 2026-08-28** (research `d9254d31`).
+        **Measured first:** a full HIP build of frozen v9 with the house recipe took **1,012 s at
+        `-j1`** (the median across 77 logs) and **65 s at `-j64`** — 15.6×, so the width fix alone
+        takes an attempt from 33.7 min of compiling to 2.2. `anchor_build_key` is the contract
+        minus exactly the candidate fields; reuse is verified on source-tree digest, defines,
+        anchor key, artifact presence and recorded targets, and any failure falls through to a
+        fresh build rather than raising. **Validated against the real 65 s build:** reuse HIT in
+        **0.18 s**, MISS after a one-line change to `vecdotq.cuh`, HIT again after reverting.
+        The replayed `BuildResult` is the real one, persisted beside the build, because the
+        materialization record downstream hashes it.
+        *Bug this caught:* `integrity.hash_source_tree` returns a `TreeDigest`, not a string, so
+        the receipt would not canonicalise — and a broad `except` was swallowing it into a
+        permanent silent cache miss. The except is now narrowed to `OSError`/`StaticRegistryError`.
+  - [ ] ~~NOT SHIPPED — cache the anchor build.~~ *(superseded by the entry above)* `_build_key_contract` hashes
         `patch_bundle_sha256`/`patch_sha256`/`proposal_sha256` into ONE key covering BOTH plans,
         so the anchor — built from the instrument commit, independent of the patch — gets a new
         key per candidate; **44 of 51 anchor builds compiled a byte-identical tree.** Splitting it
