@@ -9941,7 +9941,8 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                         refusal_observation: dict | None,
                         refusal_history_observations: list[dict],
                         now: float, v26_contract: dict | None = None,
-                        v26_state: dict | None = None) -> dict:
+                        v26_state: dict | None = None,
+                        deployment_config: dict | None = None) -> dict:
     """Derive an honest lifecycle view from durable producer facts.
 
     This does not invent percentage progress. A lock proves controller
@@ -11267,38 +11268,51 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
             state, latest_iteration, headline_refusal_observation)
         if measurement_recovery is not None:
             measurement_output_view["recovery"] = measurement_recovery
-    # CHAMPION (2026-08-28). The aggregate candidate is the thing the operator asked
-    # to see first, and its card was blank because the surface's `champion` section
-    # still reports "the one-candidate driver banks a result; it does not mint a
-    # champion" -- true before CH-2, false now: the controller seeds a champion at
-    # campaign start and records the anchor it was seeded from. That IS the producer;
-    # nothing was reading it.
+    # CHAMPION (2026-08-28, corrected). The aggregate candidate and the champion are
+    # THE SAME OBJECT -- the operator's ruling, and the page previously drew them as
+    # two cards that disagreed.
     #
-    # Reported honestly: a seeded champion EQUALS production until members compose, so
-    # this says "equals production (seeded)" rather than implying a win that has not
-    # been earned. `members` counts composed candidates, which a seed has none of.
+    # The first version of this block was WRONG in a way worth naming: it reported the
+    # campaign's champion RECORD (seeded from the frozen production anchor) and so
+    # rendered "equals production (seeded)" while the champion KERNEL the campaign
+    # actually screens against already carried DFlash2 and MoE-Spec. It counted
+    # `members` from this campaign's banked candidates -- zero on a fresh campaign --
+    # and presented that as the champion's contents. Two different objects, conflated.
+    #
+    # The champion kernel is the sealed INSTRUMENT: `instrument.branch` /
+    # `instrument.commit` in the deployment config, which is exactly what the
+    # controller builds its anchor arm from. Arms admitted into it are source history
+    # on that branch, not rows in this campaign's state, so they are reported from the
+    # pin rather than inferred from iterations.
+    cfg = deployment_config if isinstance(deployment_config, dict) else {}
+    instrument = cfg.get("instrument") if isinstance(cfg.get("instrument"), dict) else {}
+    production = cfg.get("production") if isinstance(cfg.get("production"), dict) else {}
+    champion_branch = instrument.get("branch")
+    champion_commit = instrument.get("commit")
+    production_head = production.get("head") or cfg.get("production_ancestor")
     champion_seeded_at = (state.get("champion_seeded_at")
                           if isinstance(state, dict) else None)
-    champion_anchor = (state.get("champion_seed_anchor_commit")
-                       if isinstance(state, dict) else None)
-    champion_members = [
-        row for row in ((state or {}).get("iterations") or [])
-        if isinstance(row, dict) and row.get("status") == "candidate"
-    ] if isinstance(state, dict) else []
+    # Does the champion differ from frozen production at all? That is the honest
+    # "is there anything in it" test, and it is a commit comparison -- not a count of
+    # what this campaign happened to bank.
+    ahead_of_production = bool(
+        champion_commit and production_head and champion_commit != production_head)
     champion_view = {
-        "exists": bool(champion_seeded_at),
+        "exists": bool(champion_commit),
+        "branch": champion_branch,
+        "commit": champion_commit,
+        "commit_short": (champion_commit[:12]
+                         if isinstance(champion_commit, str) else None),
+        "production_head_short": (production_head[:12]
+                                  if isinstance(production_head, str) else None),
+        "ahead_of_production": ahead_of_production,
         "seeded_at": champion_seeded_at,
-        "anchor_commit": champion_anchor,
-        "anchor_commit_short": (champion_anchor[:12]
-                                if isinstance(champion_anchor, str) else None),
-        "members": len(champion_members),
-        # A seed is not a claim. Until a member composes and the combined candidate
-        # re-earns its tiers against the anchor, the honest headline is parity.
-        "headline": ("equals production (seeded)" if champion_seeded_at
-                     and not champion_members else
-                     f"{len(champion_members)} banked candidate"
-                     f"{'' if len(champion_members) == 1 else 's'} not yet composed"
-                     if champion_members else None),
+        # A champion that is byte-identical to production carries nothing yet; one
+        # that is ahead carries admitted work. Neither statement claims a measured
+        # WIN -- that is the cumulative receipt's job, and it is reported separately.
+        "headline": ("carries admitted work over frozen production"
+                     if ahead_of_production else
+                     "identical to frozen production" if champion_commit else None),
     }
     return {
         "status": status,
@@ -13254,7 +13268,8 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
             claim_observation=claim_observation,
             refusal_observation=refusal_observation,
             refusal_history_observations=refusal_history_observations,
-            now=now, v26_contract=v26_contract, v26_state=v26_state)
+            now=now, v26_contract=v26_contract, v26_state=v26_state,
+            deployment_config=config)
     # Poll time is not producer progress. In particular, a held controller lock
     # must not keep a stuck stage green forever.
     observed_ts = (_parse_semantic_timestamp(activity["last_progress_at"])

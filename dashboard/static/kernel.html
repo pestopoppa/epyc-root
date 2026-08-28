@@ -191,8 +191,9 @@
 
   <section class="command-band" id="command-band" aria-label="AutoKernel at a glance">
     <div class="cmd-card" id="cmd-aggregate">
-      <div class="cmd-label">Aggregate candidate · vs frozen production</div>
-      <div class="cmd-value" id="cmd-aggregate-value">—</div>
+      <div class="cmd-label">Aggregate champion · vs frozen production</div>
+      <div class="cmd-value" id="cmd-champion-value">—</div>
+      <div class="cmd-sub" id="cmd-champion-sub">reading the campaign's sealed instrument…</div>
       <div class="cmd-sub" id="cmd-aggregate-sub">awaiting sealed cumulative receipt</div>
     </div>
     <div class="cmd-card" id="cmd-liveness">
@@ -210,11 +211,6 @@
       <div class="cmd-label">Hypothesis under test</div>
       <div class="cmd-value code" id="cmd-hypothesis-value">—</div>
       <div class="cmd-sub" id="cmd-hypothesis-sub"></div>
-    </div>
-    <div class="cmd-card" id="cmd-champion">
-      <div class="cmd-label">Aggregate champion</div>
-      <div class="cmd-value" id="cmd-champion-value">—</div>
-      <div class="cmd-sub" id="cmd-champion-sub">awaiting the campaign's champion record</div>
     </div>
   </section>
 
@@ -452,6 +448,37 @@ function renderProgression(d){
   if(gpuLeader) headline.push("GPU "+String(gpuLeader.candidate||gpuLeader.hypothesis||"—")+" "+effectPct(gpuLeader));
   if(Number.isFinite(funnel.pursued)) headline.push(String(funnel.pursued)+" pursued");
   $("#progression-headline").textContent=headline.join(" · ")||"no candidate headline";
+  // ADMISSIBILITY (2026-08-28). The hero cards showed the top effect per lane as a
+  // bare percentage, which read as "a gain we have and have not collected". Three of
+  // the four headline leaders cannot be collected AT ALL, and the page said nothing:
+  //
+  //   GGML_IQK          already in production since v8 — the champion is built on v9,
+  //                     so this re-measures a frozen feature. Not an additional gain.
+  //   ubatch_size       DISPROVED 2026-08-28: llama.cpp clamps n_ubatch to n_batch, so
+  //                     `-b 512 -ub 1024` ran both arms at 512 — an A/A comparison whose
+  //                     median landed on the fast mode of a bimodal sample.
+  //   flash_attention / build + runtime FLAGS, not source. champion.py requires source
+  //   *_MMQ_MFMA,       evidence for every member, so a flag is structurally
+  //   mmap, batch_size, unadmissible as one; it belongs in a build recipe.
+  //   gpu_helper_threads, gpu_poll, op_offload, kv_offload, GGML_HIP_GRAPHS,
+  //   GGML_HIP_ROCWMMA_FATTN
+  //
+  // The funnel's own `champion: 0` was already saying this; the leaders just were not
+  // labelled. This is a display of what the data already implies, not a new claim.
+  const IN_PRODUCTION = ["GGML_IQK"];
+  const CONFIG_ONLY = ["ubatch_size","batch_size","flash_attention","mmap","op_offload",
+                       "kv_offload","gpu_helper_threads","gpu_poll","GGML_HIP_GRAPHS",
+                       "GGML_HIP_MMQ_MFMA","GGML_HIP_ROCWMMA_FATTN"];
+  const REFUTED = {"ubatch_size":"null arm — n_ubatch clamps to n_batch, both arms ran 512"};
+  const admissibility=function(r){
+    const name=String((r||{}).candidate||"");
+    if(REFUTED[name]) return {tag:"REFUTED", why:REFUTED[name], cls:"fail"};
+    if(IN_PRODUCTION.indexOf(name)>=0)
+      return {tag:"ALREADY IN PRODUCTION", why:"in v9; the champion is built on it", cls:"muted"};
+    if(CONFIG_ONLY.indexOf(name)>=0)
+      return {tag:"CONFIG, NOT A MEMBER", why:"build/runtime flag — champion members need source evidence", cls:"muted"};
+    return {tag:"", why:"", cls:""};
+  };
   const phaseInfo=function(r){
     const workload=String((r||{}).workload||""), metric=String((r||{}).metric||"");
     const decode=/decode/i.test(workload)||/^decode_/i.test(metric);
@@ -488,7 +515,17 @@ function renderProgression(d){
       if(r) leaderCards.push([lane[0],r]);
     });
   });
-  leaderCards.forEach(function(pair){ const r=pair[1], phase=phaseInfo(r); h+='<div class="hero-card"><div class="hero-label">'+pair[0]+' lane</div><div class="hero-phase">'+esc(phase.title)+'</div><div class="hero-value '+(r.effect_fraction>=0?'ok':'fail')+'">'+esc(effectPct(r))+'</div><div>'+esc(r.candidate)+'</div><div class="muted">'+esc(phase.detail)+' · '+esc(r.stage)+'</div></div>'; });
+  leaderCards.forEach(function(pair){
+    const r=pair[1], phase=phaseInfo(r), adm=admissibility(r);
+    // A leader that cannot enter the champion is shown MUTED, never as a live gain.
+    const valueCls = adm.tag ? (adm.cls==="fail"?"fail":"muted") : (r.effect_fraction>=0?'ok':'fail');
+    h+='<div class="hero-card"><div class="hero-label">'+pair[0]+' lane</div>'
+      +'<div class="hero-phase">'+esc(phase.title)+'</div>'
+      +'<div class="hero-value '+valueCls+'">'+esc(effectPct(r))+'</div>'
+      +'<div>'+esc(r.candidate)+'</div>'
+      +(adm.tag?'<div class="'+esc(adm.cls)+'"><b>'+esc(adm.tag)+'</b> — '+esc(adm.why)+'</div>':'')
+      +'<div class="muted">'+esc(phase.detail)+' · '+esc(r.stage)+'</div></div>';
+  });
   h+='<div class="hero-card"><div class="hero-label">Funnel</div><div class="hero-value">'+esc(funnel.candidate||0)+' → '+esc(funnel.strict_keep||0)+' → '+esc(funnel.champion||0)+' → '+esc(funnel.promotable||0)+'</div><div>screen → strict keep → champion → promotable</div><div class="muted">promotion claim: <span class="'+(p.promotion_claim===false?'ok':'fail')+'">'+esc(String(p.promotion_claim===true))+'</span></div></div></div>';
   if(!p.available){ h+='<div class="fail">Progression producer unavailable: '+esc(p.error||"not exported")+'</div>'; box.innerHTML=h; return; }
 
@@ -1161,22 +1198,22 @@ function renderCommandBand(d){
   if(active&&!refusal.detected&&stall.state==="none") hypBits.push("screening");
   $("#cmd-hypothesis-sub").innerHTML=hypBits.join(" · ")||"no active hypothesis";
 
-  // Card 5 — the aggregate champion. The operator asked for this first, and the card
-  // was blank because nothing read the controller's champion record. A SEEDED champion
-  // equals production until members compose, so say exactly that rather than implying
-  // an unearned win.
+  // The aggregate champion IS the aggregate candidate — one card, not two. The
+  // earlier version drew both and they disagreed: this one said "= production" while
+  // the champion kernel already carried DFlash2 and MoE-Spec, because it reported the
+  // campaign's seeded RECORD instead of the sealed instrument it screens against.
   const ch=a.champion||{};
   const chv=$("#cmd-champion-value"), chs=$("#cmd-champion-sub");
   if(!ch.exists){
-    chv.textContent="none yet";
-    chv.className="cmd-value";
-    chs.textContent="no champion recorded for this campaign";
+    chv.textContent="none";
+    chv.className="cmd-value muted";
+    chs.textContent="no champion instrument pinned for this campaign";
   }else{
-    chv.textContent=ch.members?(ch.members+" member"+(ch.members===1?"":"s")):"= production";
-    chv.className="cmd-value"+(ch.members?"":" muted");
+    chv.textContent=ch.commit_short||"—";
+    chv.className="cmd-value code"+(ch.ahead_of_production?"":" muted");
     const cbits=[];
     if(ch.headline) cbits.push(esc(ch.headline));
-    if(ch.anchor_commit_short) cbits.push('anchor <code>'+esc(ch.anchor_commit_short)+'</code>');
+    if(ch.production_head_short) cbits.push('production <code>'+esc(ch.production_head_short)+'</code>');
     chs.innerHTML=cbits.join(" · ");
   }
 }

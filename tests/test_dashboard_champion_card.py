@@ -1,15 +1,15 @@
-"""The aggregate champion must be visible, and must not overclaim.
+"""The champion card must report the champion KERNEL, not a seeded record.
 
-The champion card was blank because nothing read the controller's champion record.
-The surface's `champion` section still reports "the current one-candidate driver banks
-a result; it does not mint a champion" -- true before CH-2, false afterwards: the
-controller now seeds a champion at campaign start and records the anchor commit it was
-seeded from.
+The first version of this card said "equals production (seeded)" while the champion
+it names already carried DFlash2 and MoE-Spec. It reported the campaign's champion
+RECORD (seeded from the frozen production anchor) and counted `members` from the
+campaign's own banked candidates -- zero on a fresh campaign -- while the champion
+KERNEL the campaign screens against is the sealed INSTRUMENT pin. Two different
+objects, conflated, and the page asserted something false about work done the night
+before.
 
-The honesty rule is the reason this has tests at all. A SEEDED champion *equals*
-production; it has earned nothing. A card that showed a champion existing without
-saying so would imply a win that no measurement supports, which is exactly the failure
-the measurement constitution exists to prevent.
+The aggregate candidate and the champion are ALSO the same object, so there is one
+card. The page previously drew two that disagreed with each other.
 """
 from __future__ import annotations
 
@@ -20,7 +20,8 @@ import unittest
 
 from dashboard import server
 
-ANCHOR = "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+PROD = "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+CHAMP = "270b48ed64d617db9128054f3bd0620bbb9371f5"
 
 
 class ChampionCardTests(unittest.TestCase):
@@ -37,64 +38,67 @@ class ChampionCardTests(unittest.TestCase):
         (self.bundle / "config").mkdir(parents=True)
         self.state.mkdir()
         (self.bundle / "operations/live").mkdir(parents=True)
-        (self.bundle / "config/deployment.json").write_text(json.dumps({
-            "config_sha256": "a" * 64,
-            "controller": {"state_root": str(self.state),
-                           "operations_root": str(self.bundle / "operations")},
-        }))
-        (self.state / "controller.run.lock").touch()
+        self.cfgpath = self.bundle / "config/deployment.json"
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = root
         server.AUTOKERNEL_SUPERVISORS_ROOT = sup
+        (self.state / "controller.run.lock").touch()
 
     def tearDown(self) -> None:
         server.AUTOKERNEL_DEPLOYMENTS_ROOT = self._old_root
         server.AUTOKERNEL_SUPERVISORS_ROOT = self._old_sup
         self.temp.cleanup()
 
-    def _champion(self, state_extra: dict, iterations: list | None = None) -> dict:
-        base = {"updated_at": "2026-08-28T12:00:00Z", "next": 2, "complete": False,
-                "iterations": iterations or []}
-        base.update(state_extra)
-        (self.state / "state.json").write_text(json.dumps(base))
+    def _champion(self, champion_commit: str | None) -> dict:
+        cfg = {"config_sha256": "a" * 64,
+               "controller": {"state_root": str(self.state),
+                              "operations_root": str(self.bundle / "operations")},
+               "production": {"branch": "production-consolidated-v9", "head": PROD}}
+        if champion_commit:
+            cfg["instrument"] = {"branch": "ak/champion/llama-cpp-0db32c06e3e5",
+                                 "commit": champion_commit}
+        self.cfgpath.write_text(json.dumps(cfg))
+        (self.state / "state.json").write_text(json.dumps({
+            "updated_at": "2026-08-28T12:00:00Z", "next": 2, "complete": False,
+            "iterations": [], "champion_seeded_at": "2026-08-28T12:02:05Z"}))
         activity = server.discovery_live_payload().get("activity") or {}
         return activity.get("champion") or {}
 
-    def test_a_seeded_champion_is_reported_as_equal_to_production(self):
-        """The honesty rule: a seed has earned nothing, so say parity explicitly."""
-        ch = self._champion({"champion_seeded_at": "2026-08-28T12:02:05Z",
-                             "champion_seed_anchor_commit": ANCHOR})
+    def test_a_champion_ahead_of_production_is_never_called_equal_to_it(self):
+        """The exact regression: DFlash2 and MoE-Spec were in it and the card said
+        'equals production (seeded)'."""
+        ch = self._champion(CHAMP)
         self.assertTrue(ch.get("exists"))
-        self.assertEqual(ch.get("members"), 0)
-        self.assertEqual(ch.get("headline"), "equals production (seeded)")
-        self.assertEqual(ch.get("anchor_commit_short"), ANCHOR[:12])
+        self.assertTrue(ch.get("ahead_of_production"),
+                        "a champion whose commit differs from production is AHEAD of it")
+        self.assertEqual(ch.get("commit_short"), CHAMP[:12])
+        self.assertNotIn("equals production", (ch.get("headline") or ""))
+        self.assertIn("admitted work", ch.get("headline") or "")
 
-    def test_no_champion_record_reports_none_rather_than_inventing_one(self):
-        ch = self._champion({})
+    def test_a_champion_identical_to_production_says_so(self):
+        ch = self._champion(PROD)
+        self.assertFalse(ch.get("ahead_of_production"))
+        self.assertIn("identical to frozen production", ch.get("headline") or "")
+
+    def test_no_instrument_pin_reports_none_rather_than_inventing_one(self):
+        ch = self._champion(None)
         self.assertFalse(ch.get("exists"))
         self.assertIsNone(ch.get("headline"))
-        self.assertIsNone(ch.get("anchor_commit"))
 
-    def test_banked_candidates_are_counted_but_not_called_composed(self):
-        """A banked candidate is not yet a champion member; the wording must not
-        promote it to one before the combined candidate re-earns its tiers."""
-        ch = self._champion(
-            {"champion_seeded_at": "2026-08-28T12:02:05Z",
-             "champion_seed_anchor_commit": ANCHOR},
-            iterations=[{"turn": 1, "status": "candidate"},
-                        {"turn": 2, "status": "authoring_refused"},
-                        {"turn": 3, "status": "candidate"}])
-        self.assertEqual(ch.get("members"), 2)
-        self.assertIn("not yet composed", ch.get("headline") or "")
+    def test_the_champion_is_not_derived_from_this_campaigns_banked_rows(self):
+        """The original bug: `members` came from iterations, so a fresh campaign made
+        a fully-loaded champion look empty."""
+        ch = self._champion(CHAMP)
+        self.assertNotIn("members", ch,
+                         "champion contents come from the instrument pin, never from "
+                         "this campaign's iteration rows")
 
-    def test_refusals_and_inconclusives_are_never_counted_as_members(self):
-        ch = self._champion(
-            {"champion_seeded_at": "2026-08-28T12:02:05Z",
-             "champion_seed_anchor_commit": ANCHOR},
-            iterations=[{"turn": 1, "status": "authoring_refused"},
-                        {"turn": 2, "status": "inconclusive"},
-                        {"turn": 3, "status": "critic_revise"}])
-        self.assertEqual(ch.get("members"), 0)
-        self.assertEqual(ch.get("headline"), "equals production (seeded)")
+    def test_one_card_only(self):
+        """The aggregate candidate and the champion are the same object."""
+        html = Path("dashboard/static/kernel.html").read_text()
+        self.assertEqual(html.count('id="cmd-champion"'), 0,
+                         "the duplicate champion card must be gone")
+        self.assertEqual(html.count('id="cmd-aggregate"'), 1)
+        self.assertIn("cmd-champion-value", html)
 
 
 if __name__ == "__main__":
