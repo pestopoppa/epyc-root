@@ -42,8 +42,16 @@
 set -euo pipefail
 
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
-PATCH="${REPO_ROOT}/artifacts/operator/operating-constraints-destructive-ops-20260828.patch"
 TARGET="agents/shared/OPERATING_CONSTRAINTS.md"
+MERGED="${REPO_ROOT}/artifacts/operator/OPERATING_CONSTRAINTS.merged-20260828.md"
+
+# The two sides of the divergence, and the intended result. Installing the full
+# merged FILE rather than applying a context patch is deliberate: this script must
+# be correct whichever side the tree it runs in happens to hold, and a patch built
+# against one side silently misapplies against the other.
+SHA_ORIGIN=7202449e22ed6ff59db820b4c9831409cc53deb9b67d87ac5fdfef8198df4b9b
+SHA_SHARED=95c5ff5fba8b6c5856ffd6c9a593c9ab1e8cadca4e5637b206181235cc64a014
+SHA_MERGED=01ef1a8a9aa9ad358aa44177c761723f3536083d7f9dc7dc47a8fe2445e33ab5
 
 usage() {
     echo "usage: $(basename "$0") --show | --apply" >&2
@@ -51,24 +59,40 @@ usage() {
 }
 
 [[ $# -eq 1 ]] || usage
+[[ -f "${MERGED}" ]] || { echo "REFUSED: no merged file at ${MERGED}" >&2; exit 1; }
+
+got="$(sha256sum "${MERGED}" | cut -d' ' -f1)"
+[[ "${got}" == "${SHA_MERGED}" ]] || {
+    echo "REFUSED: ${MERGED} is not the reviewed content" >&2
+    echo "  expected ${SHA_MERGED}" >&2
+    echo "  got      ${got}" >&2
+    exit 1
+}
 
 case "$1" in
     --show)
-        [[ -f "${PATCH}" ]] || { echo "REFUSED: no patch at ${PATCH}" >&2; exit 1; }
-        cat "${PATCH}"
+        diff -u "${REPO_ROOT}/${TARGET}" "${MERGED}" \
+            --label "current  (${TARGET})" --label "merged" || true
         ;;
     --apply)
-        [[ -f "${PATCH}" ]] || { echo "REFUSED: no patch at ${PATCH}" >&2; exit 1; }
-        # --index, not --cached: --cached stages WITHOUT touching the working tree,
-        # so the file on disk would still lack the amendment after you commit it,
-        # and the next edit to that path would silently revert it. --index applies
-        # to both and refuses if they disagree.
-        #
+        current="$(sha256sum "${REPO_ROOT}/${TARGET}" | cut -d' ' -f1)"
+        case "${current}" in
+            "${SHA_MERGED}")
+                echo "Already merged; nothing to do."; exit 0 ;;
+            "${SHA_ORIGIN}"|"${SHA_SHARED}")
+                ;;                       # a known side of the divergence
+            *)
+                echo "REFUSED: ${TARGET} is in an unrecognised state (${current})." >&2
+                echo "Someone has edited it since this script was prepared. Re-derive" >&2
+                echo "the merge rather than overwriting an unreviewed change." >&2
+                exit 1 ;;
+        esac
+        cp "${MERGED}" "${REPO_ROOT}/${TARGET}"
         # Isolated staging: never a blanket `git add`. A human-only path must not
         # ride into a commit alongside anything else -- five sessions share this
         # index.
-        git -C "${REPO_ROOT}" apply --index "${PATCH}"
-        echo "Applied and staged: ${TARGET}"
+        git -C "${REPO_ROOT}" add -- "${TARGET}"
+        echo "Installed and staged: ${TARGET}"
         echo
         echo "Review:  git -C ${REPO_ROOT} diff --cached -- ${TARGET}"
         echo "Commit:  git -C ${REPO_ROOT} commit -m 'doctrine: recover the destructive-operations trash-first rule (INC-20260828-glm53-model-deleted)'"
