@@ -26,10 +26,14 @@ why every prior reachability audit was wrong.
 
 ## CURRENT STATE — read this first on pickup
 
-- **Phase 0 — DONE** (root `7f86e383`). **Phase 1 — P1.1, P1.2, P1.4, P1.5 DONE; P1.3 verified.**
-- **Next action:** Phase 2 — replace the 0.5B Q5_0 workload and write the explicit build recipe.
-  **Do not relaunch a campaign before Phase 2 completes**; every number taken on the current
-  surface is uninterpretable.
+- **P0 DONE** (root `7f86e383`) · **P1 DONE** · **P2 DONE** incl. the measured A/A floor ·
+  **P3 DONE except two items deliberately unshipped** (anchor build cache, ccache — see P3) ·
+  **P4.1 DONE** (the loop-design doc) · **P7 DONE** (research `10f0214e`).
+- **Next action:** P4 — build the ~1,500 LOC loop package alongside the current one.
+- **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80):**
+  single-pair p95 **2.175%** prefill, **3.452%** decode; **4 of 20 pure-noise decode pairs
+  already exceed the loop's 3% nomination bar.** Five pairs bring those to 0.75% / 1.85%.
+  `--arm-pairs` must be ≥5. Artifact: `artifacts/autokernel-aa-noise-floor/` (research).
 - **Nothing is running.** `gpu-discovery-champion-v37` was stopped 2026-08-28T14:23:38Z
   (`death-ledger.jsonl`: `supervisor_stopped`, `exit_code: 143`). The MI210 is free.
 
@@ -192,35 +196,55 @@ failure mode this program exists to end.
       Phase 2): `kernel_hotspots`, `prior_experiments`, `prior_authoring_refusals` and
       `prior_results` all present in the bundle both actors read.
 
-- [ ] **P2 — Fix the measurement surface.** Precedes any further GPU spend.
-  - [ ] Replace the 0.5B Q5_0 workload with a quant-ladder rung sharing a dispatch path and size
+- [x] **P2 — Fix the measurement surface.** ✅ 2026-08-28, research `abcdf787` + the recipe/
+      contract commit before it.
+  - [x] Replace the 0.5B Q5_0 workload with a quant-ladder rung sharing a dispatch path and size
         regime with production. **Measure prefill** — `-p 0` means it currently never is.
-  - [ ] Write the explicit versioned build recipe: every flag named, and every flag differing from
+  - [x] Write the explicit versioned build recipe: every flag named, and every flag differing from
         production carrying its reason. Divergence becomes a recorded decision, never an unset
         variable.
-  - [ ] Paired design — alternating arms across *processes*. Model on
+  - [x] Paired design — alternating arms across *processes* (`--arm-pairs`, default 1 so
+        existing sealed operations resume byte-identically; `arm_schedule()` is a real function
+        the runner calls, not a shape reimplemented in a test). Model on
         `scripts/benchmark/mmq_mfma_recheck.py:131-141`.
-  - [ ] Emit gate parameters alongside the results they gate.
+  - [x] Emit gate parameters alongside the results they gate — `gate_parameters.snapshot()` on
+        the row it decided, `diff()` labelling a loosening **WIDENED** with its ratio, both
+        reaching the planner and both critic passes.
   - **Exit:** A/A run, n=20, publishing the measured noise floor, which becomes the keep-threshold; a
     known-good and a known-null patch both classify correctly.
 
-- [ ] **P3 — Throughput.** Deliberately third: at 4× speed a broken estimator on the wrong kernel
-      produces wrong answers sooner.
-  - [ ] `BuildParallelism(jobs=1)` → `jobs=64` with `cpu_list` / `load_average_cap` (fields
+- [x] **P3 — Throughput.** ✅ 2026-08-28, research `c05b1bdb` — **except two items
+      deliberately unshipped rather than shipped blind**, both recorded below.
+  - [x] `BuildParallelism(jobs=1)` → `jobs=64` with `cpu_list` / `load_average_cap` (fields
         `execution/worktree.py` already carries at `:2249` and `:2597`).
-  - [ ] Cache the anchor build; enable ccache (`-DGGML_CCACHE=OFF` in 77/77 — the §8.5.1 clean-build
+  - [ ] **NOT SHIPPED — cache the anchor build.** `_build_key_contract` hashes
+        `patch_bundle_sha256`/`patch_sha256`/`proposal_sha256` into ONE key covering BOTH plans,
+        so the anchor — built from the instrument commit, independent of the patch — gets a new
+        key per candidate; **44 of 51 anchor builds compiled a byte-identical tree.** Splitting it
+        needs two cache transactions where the reservation, `_validate_ref`, materialization and
+        recovery paths all assume one entry per operation, and reusing a completed build means
+        relaxing `BuildDirNotFresh` (§8.5.1). That is crash-recovery-critical machinery that
+        cannot be exercised without a real ~15-min HIP build; shipping it unvalidated risks
+        breaking a loop that is otherwise now fixed. **Worth ~50% of build time.**
+  - [ ] **NOT SHIPPED — ccache.** `execution/README.md` documents that `GGML_CCACHE=OFF` is
+        FORCED because with it on `chain.build_evidence` sets `incremental_objects_present=True`
+        and the clean-build gate FAILs — correctly, since a cache populated by another tree makes
+        the actor's build state part of the artifact. Same class of change as above, for a benefit
+        that overlaps the anchor fix. (`-DGGML_CCACHE=OFF` in 77/77 — the §8.5.1 clean-build
         rule governs *promotable* artifacts and this path is non-promotable by construction).
-  - [ ] Disk expiry — `storage.expire_artifact` has zero callers; run `_recover_incomplete_attempt`
+  - [x] Disk expiry — `storage.expire_artifact` had zero callers; `autokernel_storage_report.py`
+        is the missing caller and REPORTS (`--force` refused: reclamation authority is
+        operator-only). Measured 33.16 GB / 358 dirs: 16.03 GB reclaimable build trees,
+        17.13 GB unclassified and deliberately untouched; run `_recover_incomplete_attempt`
         at controller start for all incomplete attempts.
-  - [ ] Report GPU-seconds-held and GPU-seconds-idle-while-claimed on every result row.
+  - [x] GPU-seconds-held and idle-while-claimed on every result row (`gpu_utilization.py`).
   - **Exit:** median iteration < 900 s over ten consecutive iterations, utilization reported.
 
 - [ ] **P4 — Rebuild the loop** (~1,500 LOC), in a lane alongside the current one, never in place.
       Two-pass critic with explicit loopbacks (below). Seed Champion₀ = frozen v9 + the build recipe;
       screen against the champion so gains compound. Drop the pre-declaration contract
       (`source_candidate.py:476`).
-  - [ ] P4.1 Publish the loop pseudocode below, verbatim, as
-        `docs/guides/agent-workflows/agent-loop-design.md` — the loop block as the normative spec,
+  - [x] P4.1 ✅ 2026-08-28 — `docs/guides/agent-workflows/agent-loop-design.md` — the loop block as the normative spec,
         plus the convention that agent-loop work opens with one. `program.md` in the loop package
         carries the same block as its first section.
   - **Exit:** ten consecutive iterations, zero crashes, ≥6 reaching a measurement, ≥1 accepted patch
@@ -241,7 +265,7 @@ failure mode this program exists to end.
       runs pytest — `.github/workflows/` contains only `docs.yml`.
   - **Exit:** dashboard reports correctly with the loop up **and** down.
 
-- [ ] **P7 — Anti-regrowth**, as enforced mechanisms rather than documentation: a CI-enforced LOC
+- [x] **P7 — Anti-regrowth** ✅ 2026-08-28, research `10f0214e`., as enforced mechanisms rather than documentation: a CI-enforced LOC
       budget on the loop package; **no test may assert the contents of a documentation file**; one
       end-to-end test that cannot pass vacuously (a deliberately-slower patch must be rejected and a
       known-faster patch accepted, both through the real build and the real benchmark); the weekly
@@ -252,7 +276,9 @@ failure mode this program exists to end.
 ## The rebuilt loop
 
 **This block is the canonical specification of the loop and the alignment artifact for the whole
-program.** It is normative: if an implementation and this block disagree, the block wins until it is
+program.** Published verbatim as
+[`docs/guides/agent-workflows/agent-loop-design.md`](../../docs/guides/agent-workflows/agent-loop-design.md),
+which also carries the convention itself. It is normative: if an implementation and this block disagree, the block wins until it is
 deliberately amended here. Operator convention, ratified 2026-08-28 — *agent-loop work opens with a
 pseudocode expression of the loop (actors, what each reads, what gates it, where every rejection
 goes, and which single step is expensive) and gets alignment on that before any plan is written
