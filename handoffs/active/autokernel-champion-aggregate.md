@@ -59,8 +59,29 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   equals production, which immediately satisfies the standing requirement and gives discovery a
   stable baseline. Requires extending the champion model to carry a build recipe (config arms), not
   just a source diff.
-- [ ] **CH-2 — Make "a champion always exists" an invariant**, re-seeded from production on every
-  promotion, rather than an end-of-campaign action.
+- [x] **CH-2 — Make "a champion always exists" an invariant**, re-seeded from production on every
+  promotion, rather than an end-of-campaign action. ✅ 2026-08-28 (research `38bbd045`).
+  `_seed_champion_if_absent()` runs once at campaign start, before any iteration. The gap it closes
+  was concrete: `seed_champion()` had **no production caller at all** — it was reachable only from
+  its own unit test — so early in a campaign there was simply no aggregate to screen against.
+
+  The seed cites the **ratified** production digests from `scripts/session/verify_llama_cpp.sh`
+  (both verified against the on-disk binaries), because `champion_seed` refuses a mismatch and
+  anchoring Champion₀ on an unratified build would silently re-anchor every later comparison. It is
+  idempotent on resume (so it can never displace a champion composition has advanced), skipped
+  rather than fatal when no production tree is configured, and skipped on dry runs, which promise
+  no durable side effects.
+
+  Five tests, **mutation-tested three ways** — seed never runs / ratified digests ignored /
+  idempotence removed — each mutation failing exactly the test that should catch it.
+
+  **It also uncovered and fixed a live bug in the earlier inflight-discard change.** That block set
+  `precompute_refused` and then *fell through* to the `recovery.status == "sealed_result"` test, so
+  on the very path it was written for — the adapter returning a non-`Recovery` — it dereferenced
+  `None.status`. The restart-loop fix would have become an `AttributeError` crash on the first
+  unreconcilable inflight, and with restarts now permitted, a crash loop again. Found by probing
+  two red blackbox tests instead of assuming they were merely stale; whole-suite failure **sets**
+  were diffed against `origin/main` rather than compared by count (2 fixed, 0 newly broken).
 - [x] **CH-3 — Screen against the champion** (SOLE baseline; settled by operator 2026-08-27) so
   gains compound. Production stays the promotion reference via the mandatory re-validation of the
   composed champion against the anchor at composition time. ✅ 2026-08-27 — no controller change was

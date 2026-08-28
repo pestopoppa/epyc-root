@@ -159,12 +159,19 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       is unattributable.
       (iv) Compare by stripped-output hash **plus** first-differing *generation-token* index via
       same-vocab `llama-tokenize`, and report per-prompt PASS/FAIL — never an aggregate verdict.
-- [ ] **DF2-7 — `draft-dflash` multi-slot guard (EXPERIMENTAL BRANCH ONLY).** *(blocked on DF2-5.)*
-      Frozen v9's server already hard-refuses `draft-dspark` above `--parallel 1`, citing #26741;
-      there is **no equivalent guard for `draft-dflash`**, whose code is present in v9 (24 files).
-      If DF2-5 reproduces #27117 on gfx90a, add the symmetric guard **to the experimental branch**.
-      **Explicitly NOT a change to frozen v9.** We do not currently serve DFlash-1, so this is
-      exposure, not an incident.
+- [x] **DF2-7 — `draft-dflash` multi-slot guard. CLOSED 2026-08-28 AS UNNECESSARY, not done.** ✅
+      Its own trigger condition was *"if DF2-5 reproduces #27117 on gfx90a"*. **DF2-5 did not
+      reproduce it**: DFlash2 scales cleanly to 8 in-flight requests (+47.8% over MTP at 8) with
+      per-slot acceptance FLAT across the sweep (0.6205 → 0.6294), and 8 is precisely where every
+      upstream report places onset. There is no failure to guard against, so adding a guard would
+      forbid a configuration we have measured to be healthy and would cost real throughput.
+      Closed on the operator's instruction, 2026-08-28.
+
+      Retained for the record: frozen v9 hard-refuses `draft-dspark` above `--parallel 1` citing
+      #26741 and has no equivalent guard for `draft-dflash`. That asymmetry is now understood as
+      **correct rather than an oversight** — the two drafters do not share the defect. Should a
+      multi-slot DFlash failure ever be observed, reopen with the measurement that shows it; a
+      guard is only justified by a reproduced fault.
 - [ ] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
       `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
       reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
