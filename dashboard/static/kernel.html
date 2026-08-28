@@ -158,6 +158,10 @@
   .cmd-step.bad{border-color:#7a2823;color:var(--bad)}
   /* the collapsed remainder — present but deliberately quiet */
   .cmd-step.muted{border-style:dashed;opacity:.65}
+  .proposal-box{margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.02)}
+  .proposal-box .pl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .proposal-box .pv{font-size:12px;line-height:1.4;margin-bottom:8px}
+  .proposal-box details>summary{cursor:pointer;color:var(--muted);font-size:11px}
   .obs-note>summary{cursor:pointer;list-style:none}
   .obs-note>summary::-webkit-details-marker{display:none}
   .obs-note>summary:after{content:" ⌄";color:var(--muted)}
@@ -217,6 +221,7 @@
   <section class="panel" id="autokernel-live-state-panel">
     <h2>Current AutoKernel state <span class="tag">derived from durable transitions</span></h2>
     <div id="ak-live-summary" class="live-summary"><div class="empty">connecting to controller state…</div></div>
+    <div id="ak-proposal" class="proposal-box"></div>
     <div id="ak-live-last-transition" class="last-transition">awaiting the first producer transition…</div>
     <details id="ak-live-details" class="live-detail">
       <summary>Pipeline, checkpoint and full transition timeline</summary>
@@ -1194,9 +1199,20 @@ function renderCommandBand(d){
   $("#cmd-stage-sub").innerHTML=stageBits.join(" · ");
 
   // Card 4 — hypothesis under test.
+  // The SLUG is not the hypothesis. `akh-v2-q5-type-s…-dequant` says nothing; the
+  // statement the planner actually proposed does. The slug moves to the sub-line as
+  // the citable handle.
+  const prop=a.proposal||{};
   const hyp=$("#cmd-hypothesis-value");
-  hyp.textContent=shortId(a.hypothesis_id,22)||"—";
-  hyp.className="cmd-value code";
+  if(prop.statement){
+    hyp.textContent=prop.statement;
+    hyp.className="cmd-value";
+    hyp.style.fontSize="12px"; hyp.style.lineHeight="1.35"; hyp.style.fontWeight="600";
+    hyp.title=prop.statement;
+  }else{
+    hyp.textContent=shortId(a.hypothesis_id,22)||"—";
+    hyp.className="cmd-value code";
+  }
   const hypBits=[];
   if(a.turn!=null) hypBits.push("turn "+esc(a.turn));
   if(refusal.detected){
@@ -1209,6 +1225,12 @@ function renderCommandBand(d){
   }
   if(stall.state&&stall.state!=="unknown"&&stall.state!=="none") hypBits.push("stall "+esc(stall.state));
   if(active&&!refusal.detected&&stall.state==="none") hypBits.push("screening");
+  if(prop.target_symbol) hypBits.push('<code>'+esc(prop.target_symbol)+'</code>');
+  if(a.hypothesis_id) hypBits.push('<span class="muted">'+esc(shortId(a.hypothesis_id,26))+'</span>');
+  if(prop.critic_decision){
+    const good = prop.critic_decision==="accept";
+    hypBits.push('critic <b class="'+(good?"ok":"fail")+'">'+esc(prop.critic_decision)+'</b>');
+  }
   $("#cmd-hypothesis-sub").innerHTML=hypBits.join(" · ")||"no active hypothesis";
 
   // The aggregate champion IS the aggregate candidate — one card, not two. The
@@ -1229,6 +1251,47 @@ function renderCommandBand(d){
     if(ch.production_head_short) cbits.push('production <code>'+esc(ch.production_head_short)+'</code>');
     chs.innerHTML=cbits.join(" · ");
   }
+}
+
+// The planner/critic DECISION, in words. The log tail only ever said
+// "Planner finished exit 0" and "Critic decided -> accept", which answers neither
+// "what is being tried" nor "why was it accepted" -- while the controller had both in
+// durable state all along. These are validated structured actor fields, not raw
+// stdout, which is what makes them safe to show verbatim.
+function renderProposal(d){
+  const box=$("#ak-proposal"); if(!box) return;
+  const p=(d.activity||{}).proposal||{};
+  if(!p.statement && !p.critic_decision){ box.innerHTML=""; box.style.display="none"; return; }
+  box.style.display="";
+  let h="";
+  if(p.statement){
+    h+='<div class="pl">Hypothesis under test</div><div class="pv">'+esc(p.statement)+'</div>';
+  }
+  if(p.falsifier){
+    h+='<div class="pl">Falsifier — what would disprove it</div><div class="pv">'+esc(p.falsifier)+'</div>';
+  }
+  const facts=[];
+  if(p.target_symbol) facts.push('target <code>'+esc(p.target_symbol)+'</code>');
+  if(p.target_surface) facts.push(esc(p.target_surface));
+  if(p.mechanism_id_short) facts.push('mechanism <code>'+esc(p.mechanism_id_short)+'</code>');
+  if(facts.length) h+='<div class="pv muted">'+facts.join(" · ")+'</div>';
+  if(p.critic_decision){
+    const good=p.critic_decision==="accept";
+    h+='<div class="pl">Critic</div><div class="pv"><b class="'+(good?"ok":"fail")+'">'
+      +esc(p.critic_decision)+'</b>';
+    if(p.critic_reason){
+      const r=String(p.critic_reason);
+      const head=r.length>240?r.slice(0,240)+"…":r;
+      h+=' — '+esc(head);
+      if(r.length>240) h+='<details><summary>full critique</summary><div class="pv">'+esc(r)+'</div></details>';
+    }
+    h+='</div>';
+  }
+  if(p.regime){
+    h+='<details><summary>measurement regime</summary><div class="pv"><code>'
+      +esc(JSON.stringify(p.regime))+'</code></div></details>';
+  }
+  box.innerHTML=h;
 }
 
 function renderLive(d){
@@ -1482,7 +1545,7 @@ function renderV27Cumulative(d){
   box.innerHTML=html;
 }
 async function loadLive(){
-  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderCommandBand(d); renderLive(d); renderV27Cumulative(d); }
+  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderCommandBand(d); renderProposal(d); renderLive(d); renderV27Cumulative(d); }
   catch(e){ $("#ak-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#planner-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#ak-live-log-full").textContent="live endpoint unavailable: "+e.message;

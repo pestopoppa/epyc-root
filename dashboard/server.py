@@ -11314,11 +11314,45 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
                      if ahead_of_production else
                      "identical to frozen production" if champion_commit else None),
     }
+    # THE PROPOSAL AND THE CRITIQUE (2026-08-28). The log tail showed only
+    # "Planner finished exit 0" and "Critic decided -> accept", which tells a reader
+    # nothing about WHAT was proposed or WHY it was accepted -- while the controller
+    # had recorded all of it in durable state the whole time.
+    #
+    # These are the actor's VALIDATED STRUCTURED fields (statement, falsifier,
+    # mechanism, target, regime, and the critic's own decision + reason), not raw
+    # actor stdout. That distinction is what makes them safe to surface: the separate
+    # secret boundary applies to a `planner_refused` reason, which can carry raw
+    # stdout and still ships only as a digest.
+    live_row = None
+    for holder in ("inflight", "pending"):
+        candidate = state.get(holder) if isinstance(state, dict) else None
+        if isinstance(candidate, dict) and isinstance(candidate.get("row"), dict):
+            live_row = candidate["row"]
+            break
+    if live_row is None and isinstance(state, dict):
+        rows = state.get("iterations") or []
+        live_row = rows[-1] if rows and isinstance(rows[-1], dict) else None
+    live_row = live_row or {}
+    critic_row = live_row.get("critic") if isinstance(live_row.get("critic"), dict) else {}
+    proposal_view = {
+        # The hypothesis SLUG is not the hypothesis. The statement is.
+        "statement": live_row.get("statement"),
+        "falsifier": live_row.get("falsifier"),
+        "target_surface": live_row.get("target_surface"),
+        "target_symbol": live_row.get("target_symbol"),
+        "mechanism_id_short": (live_row["mechanism_id"][:12]
+                               if isinstance(live_row.get("mechanism_id"), str) else None),
+        "regime": live_row.get("regime") if isinstance(live_row.get("regime"), dict) else None,
+        "critic_decision": critic_row.get("decision"),
+        "critic_reason": critic_row.get("reason"),
+    }
     return {
         "status": status,
         "phase": {"id": stage, "label": label, "started_at": stage_started_at,
                   "elapsed_s": elapsed_s},
         "champion": champion_view,
+        "proposal": proposal_view,
         "turn": turn, "hypothesis_id": hypothesis,
         "last_progress_at": last_progress_at, "progress_age_s": progress_age,
         "waiting_on": waiting_on, "stall": stall,
