@@ -596,7 +596,15 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       tests). EV-14a remains inference-gated and the host is mid-deployment — staged:
       `python3 scripts/autopilot/core_v2_calibrate.py --n 300 --repeats 3 --seed 4242
       --trial-id-base 900000` (+ `pin_tier` before repeat 0, `pin_moved` after,
-      `build_band_artifact`). NEW TRIGGER: first real band → first tuple → close**
+      `build_band_artifact`). NEW TRIGGER: first real band → first tuple → close
+      **ATTEMPTED 2026-08-28 (CPU-only session): repeat 1 of 3 ran clean on protocol
+      (q=1.410 r=0.943 n=300, 4-wide, ~3.9h) but 17 infra-failed questions voided the band
+      fail-closed — no `.band.json`, no tuple, run stopped. Corrected root cause: 10×
+      physreason = missing images (zip extracted to /mnt/raid0/llm/tmp/physreason/, 0 missing
+      now); 5× architect_general = GPU-lane generation escalations (not judge calls —
+      LLM_JUDGE_ROLE override would not help); 2× transient. HELD until architect_general /
+      worker_vision are realized again (operator: GPU occupied). Adapter and write side remain
+      verified and staged; first band → first tuple trigger stands.****
 
 - [ ] SC38 **Wire worker-pool completion reports on the write side — filed 2026-08-16 by the
       loop-owned-fleet session, WHILE `scripts/coordination/worker_runner.py` is still being
