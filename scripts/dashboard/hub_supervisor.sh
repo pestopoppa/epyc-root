@@ -390,22 +390,42 @@ sync_dashboard_from_origin() {
   # Only files that DIFFER between the working tree's HEAD and origin/main.
   while IFS= read -r path; do
     [[ -n "${path}" ]] || continue
-    # ALREADY DEPLOYED? Compare against origin/main FIRST. The served tree
-    # legitimately lags origin/main, so "differs from local HEAD" is true of every
-    # correctly-deployed file — comparing only against HEAD makes the guard below
-    # fire forever and the sync never runs again. Observed live on the first cycle
-    # after this shipped, which is why the order is this way round.
+    # ALREADY CURRENT? Nothing to do.
     if [[ -f "${EPYC_ROOT}/${path}" ]] \
        && git -C "${EPYC_ROOT}" show "origin/main:${path}" 2>/dev/null \
           | cmp -s - "${EPYC_ROOT}/${path}"; then
       continue
     fi
-    # Rule 2: never overwrite work in progress. Reached only when the file differs
-    # from origin/main, so a difference from HEAD here is a real local edit.
-    if ! git -C "${EPYC_ROOT}" diff --quiet -- "${path}" 2>/dev/null; then
-      log "deploy-sync: SKIP ${path} — locally modified, someone is editing it"
-      skipped=$(( skipped + 1 ))
-      continue
+    # Rule 2: never overwrite work in progress -- but "work in progress" cannot be
+    # "differs from local HEAD". The served tree deliberately runs dashboard/ at
+    # origin/main content while HEAD lags by design, so that test called every
+    # correctly-deployed file a hand edit and the sync stopped forever. It did,
+    # twice, each time looking like success.
+    #
+    # The honest test is PROVENANCE: if the working blob is one this project
+    # published for that path, it is a deployed version, not somebody's edit. A hand
+    # edit produces a blob that has never existed on origin/main.
+    if [[ -f "${EPYC_ROOT}/${path}" ]]; then
+      wt_blob="$(git -C "${EPYC_ROOT}" hash-object "${EPYC_ROOT}/${path}" 2>/dev/null || echo "")"
+      known=0
+      if [[ -n "${wt_blob}" ]]; then
+        while IFS= read -r past; do
+          [[ -n "${past}" ]] || continue
+          if [[ "${past}" == "${wt_blob}" ]]; then known=1; break; fi
+        done < <(git -C "${EPYC_ROOT}" rev-list --max-count=100 origin/main -- "${path}" 2>/dev/null \
+                 | while IFS= read -r c; do
+                     git -C "${EPYC_ROOT}" rev-parse "${c}:${path}" 2>/dev/null || true
+                   done)
+      fi
+      # Also fine if it simply matches local HEAD, i.e. nobody has touched it.
+      if (( known == 0 )) && git -C "${EPYC_ROOT}" diff --quiet -- "${path}" 2>/dev/null; then
+        known=1
+      fi
+      if (( known == 0 )); then
+        log "deploy-sync: SKIP ${path} — content never published for this path; treating as local work"
+        skipped=$(( skipped + 1 ))
+        continue
+      fi
     fi
     # A file deleted upstream is left in place deliberately: removing a served file
     # is not something a watchdog should decide unattended.

@@ -99,19 +99,52 @@ grep -q "someone is editing it" <<<"${out}" \
   && fail "a file already matching origin/main was reported as work-in-progress"
 pass "a lagging tree does not mistake deployed files for local edits"
 
+# --- 5c. a file at an OLDER PUBLISHED version must still advance ---------------- #
+# This is the case that broke the sync twice, each time looking like success: the
+# served file held a PREVIOUS origin/main version, so it differed from both current
+# origin/main and from local HEAD, and a "differs from HEAD" guard called it a hand
+# edit forever. Provenance is the test: that blob was published for this path, so it
+# is a deployment, not somebody's work.
+git -C "$UP" show HEAD~1:dashboard/static/kernel.html > "$REPO/dashboard/static/kernel.html" 2>/dev/null \
+  || git -C "$UP" show HEAD:dashboard/static/kernel.html > "$REPO/dashboard/static/kernel.html"
+echo "v5" > "$UP/dashboard/static/kernel.html"
+git -C "$UP" add -A; git -C "$UP" commit -qm v5; git -C "$REPO" fetch -q origin
+rm -f "$DEPLOY_SYNC_STATE"; DEPLOY_SYNC_INTERVAL_S=0
+sync_dashboard_from_origin >/dev/null 2>&1
+[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "v5" ]] \
+  || fail "a file at an older PUBLISHED version was not advanced (read as a local edit)"
+pass "an older published version still advances to current"
+
+# --- 5d. a genuine hand edit is still protected ------------------------------- #
+echo "HAND EDIT NEVER PUBLISHED" > "$REPO/dashboard/static/kernel.html"
+echo "v6" > "$UP/dashboard/static/kernel.html"
+git -C "$UP" add -A; git -C "$UP" commit -qm v6; git -C "$REPO" fetch -q origin
+rm -f "$DEPLOY_SYNC_STATE"
+sync_dashboard_from_origin >/dev/null 2>&1
+[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "HAND EDIT NEVER PUBLISHED" ]] \
+  || fail "a never-published hand edit was overwritten — the data-loss case"
+pass "a never-published hand edit is still protected"
+# restore for the tests that follow
+git -C "$UP" show HEAD:dashboard/static/kernel.html > "$REPO/dashboard/static/kernel.html"
+
 # --- 6. rate limiting actually limits ---------------------------------------- #
+# Compare against whatever is CURRENT rather than a hardcoded version: earlier
+# assertions legitimately advance the fixture, and a literal here silently rots.
+before_rl="$(cat "$REPO/dashboard/static/kernel.html")"
 DEPLOY_SYNC_INTERVAL_S=99999
+date +%s > "$DEPLOY_SYNC_STATE"        # a sync JUST happened
 echo "v4" > "$UP/dashboard/static/kernel.html"
 git -C "$UP" add -A; git -C "$UP" commit -qm v4; git -C "$REPO" fetch -q origin
 sync_dashboard_from_origin
-[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "v2" ]] \
+[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "$before_rl" ]] \
   || fail "sync ran despite the rate limit"
 pass "the rate limit suppresses a too-soon sync"
 
 # --- 7. it can be switched off ----------------------------------------------- #
+before_off="$(cat "$REPO/dashboard/static/kernel.html")"
 DEPLOY_SYNC_ENABLED=0; DEPLOY_SYNC_INTERVAL_S=0; rm -f "$DEPLOY_SYNC_STATE"
 sync_dashboard_from_origin
-[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "v2" ]] || fail "disabled sync still ran"
+[[ "$(cat "$REPO/dashboard/static/kernel.html")" == "$before_off" ]] || fail "disabled sync still ran"
 pass "DEPLOY_SYNC_ENABLED=0 disables it"
 
 # --- 8. the loop actually calls it ------------------------------------------- #
