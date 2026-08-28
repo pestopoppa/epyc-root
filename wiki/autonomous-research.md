@@ -1935,9 +1935,50 @@ the leaders shown beside it were a mix of already-in-production, config-only and
 autonomous loop's dashboard must distinguish *cannot be collected* from *not yet collected*, or a
 reader infers progress from numbers that can never move.
 
+### Evidence needs a carrier that matches its authority — not the nearest carrier that fits
+
+An autonomous loop accumulates evidence under an authority its own machinery confers: a campaign
+receipt means something because a sealed chain produced it. The moment humans also produce evidence
+about the same object, there are **two authorities and only one carrier**, and the cheap resolution
+— write the human evidence into the machine's receipt schema — is the expensive mistake.
+
+The concrete case: the champion's strongest measured result (a serving-path gain frozen production
+cannot reach at all, because it rejects the drafter's GGUF outright) came from operator-run gates.
+The dashboard surface that reports champion standing read exactly one artifact, a campaign-produced
+cumulative performance receipt. So the program's best measurement was invisible on the page that
+exists to report it, and the obvious fix was to emit that receipt from the manual harness.
+
+**That fix is a provenance forgery.** The receipt's authority is not in its fields; it is in the
+chain that only a campaign builds. Minting one from operator evidence makes every later consumer
+that trusts the schema's provenance wrong, and the corruption is undetectable at the point of use —
+the artifact validates. The general shape: *when a surface refuses your evidence, the defect may be
+the surface's reader, but the fix is never to disguise the evidence as something it is not.*
+
+The resolution that holds: a **separate carrier that declares its own authority**
+(`authority: operator_gated_manual_research`, `promotion_claim: false`), and a reader that
+**refuses any bundle claiming more than it is** — including one wearing the campaign schema. The
+refusal is the load-bearing part, and it is the part a later "simplification" will remove, so it
+belongs in a mutation test rather than a comment.
+
+Two integrity properties generalise beyond this case:
+
+- **Bind each claim to the artifact that produced it, by hash.** A gate carries its source path and
+  that file's SHA-256, so a claim resolves to its evidence and a silently edited artifact
+  invalidates the bundle rather than quietly restating a stale number.
+- **A missing input is RECORDED, never dropped.** A gate whose artifact is absent appears as
+  missing. Dropping it lets absence read as a pass — the fail-open shape that poisons stores
+  precisely when the component that would detect it is the component that is down.
+
+**Corollary for loop design**: admission and attestation are separate mechanisms and neither
+implies the other. A pipeline that lets manual work *become part of* the optimised object is only
+half a loop; without a path for that work's evidence to *appear as standing*, the human doing the
+research cannot see whether it counted — which is the whole reason they were promised the loop.
+Closing one half and reporting the loop as available is a category error, not a rounding error.
+
 ### Source References (2026-08-28)
 
 - [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-INST-1, the v36 postmortem and the lineage fix
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-3's second cost, CH-10/CH-11
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-3's second cost, CH-10/CH-11, CH-7's premature closure, CH-13's two-carrier resolution
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2 gates the champion carries
+- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
 
