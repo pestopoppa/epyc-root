@@ -86,7 +86,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       `--spec-type draft-dflash` + `incoai/Qwen3.8-27B-DFlash2-GGUF:Q8_0`
       (already downloaded: `/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf`, 2,056,414,752 bytes, Apache-2.0).
       Report decode t/s **and** acceptance against the table above.
-- [ ] **DF2-5 — Concurrency.** *(compute-gated; design REVISED 2026-08-21 by intake-1277 — the earlier
+- [x] **DF2-5 — Concurrency.** ✅ 2026-08-28 — PASS, see the results section below. *(compute-gated; design REVISED 2026-08-21 by intake-1277 — the earlier
       wording would have returned a clean sheet that means nothing.)* Re-run against the MTP grid
       (47.6 / 75.4 / 108.7 / 157.3 t/s) with five design changes, each of which fixes a specific way
       the naive version fails:
@@ -115,7 +115,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       is backend-agnostic *by construction*.
       Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
       sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
-- [ ] **DF2-6 — Greedy-parity check.** dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
+- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
       at temp 0, reusing the method preserved in
       [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md).
       *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
@@ -139,7 +139,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       `ne11 >= 2`. The same `N==1` vs `N>1` split exists on both CPU paths too (`llamafile_sgemm`'s
       `mnpack` register blocking; iqk's `funcs[ny-1]` dispatch), so batch invariance is not a property
       any of our three compute planes holds.
-- [ ] **DF2-6b — add an `ngram` arm.** *(2026-08-22.)* Upstream #25618 — a five-week-older, far
+- [x] **DF2-6b — add an `ngram` arm.** ✅ 2026-08-28 — ngram 11/12 vs external drafters 7/12. *(2026-08-22.)* Upstream #25618 — a five-week-older, far
       better-diagnosed thread that #27407 never cites, with 15 comments and reproductions on Vulkan,
       Metal and ROCm — reports `ngram-simple` and `ngram-mod` staying **byte-identical on the same
       quantized target even with accepts**, through the same `common_sampler_sample_and_accept_n` path,
@@ -148,7 +148,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       **Gate:** ngram byte-identical while `draft-simple` diverges, on our identical target and prompts,
       would localise the defect to the **external-drafter verify path** rather than to multi-token
       verify as such — and would overturn #27407's headline for our stack. v9 supports both spec types.
-- [ ] **DF2-6c — protocol fixes that decide whether DF2-6 means anything.** *(2026-08-22.)*
+- [x] **DF2-6c — protocol fixes that decide whether DF2-6 means anything.** *(2026-08-22.)*
       (i) **Run at least 5 prompts, not 1.** #27407's own `draft-simple` arm was byte-identical on one
       workload and divergent on the other; a third-party run went 0/5 → 4/5 depending on patch. A
       single-prompt parity check returns a false clean sheet at a rate near 50 %.
@@ -180,7 +180,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
       [intake-1288#record]
 
-- [ ] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
+- [x] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
       recipe.** The flag **defaults to OFF** (`ggml/CMakeLists.txt:219`), and on gfx90a with
       `-fa on` the non-rocWMMA path produces non-finite values at longer sequence lengths — see the
       2026-08-27 checkpoint below. The standalone DF2 candidate build already carries it ON, so no
@@ -188,6 +188,68 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       inherited by luck. Related: **CH-8** in
       [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md), where AutoKernel's own
       GPU builder omits it.
+
+## 2026-08-28 RESULTS — DF2-5 PASS, DF2-6 non-parity but not DFlash2's fault
+
+Both gates run against the champion `5c278648a` (rocWMMA ON), GPU exclusively held.
+Artifacts: `artifacts-df25/dflash2_concurrency_20260827/` and `…/dflash2_greedy_parity_20260828/`.
+
+### DF2-5 — PASS. 24/24 cells, 192 per-slot rows, zero refusals.
+
+| in-flight | none | MTP | DFlash2 | DF2 vs MTP |
+|---|---|---|---|---|
+| 1 | 26.6 | 54.5 | **70.0** | +28.4% |
+| 2 | 31.4 | 78.7 | **117.2** | +48.9% |
+| 4 | 54.2 | 104.5 | **153.6** | +47.0% |
+| 8 | 58.0 | 104.9 | **155.0** | +47.8% |
+
+*(`--kv-unified` OFF; the ON half of the grid is in `cells.json` and tells the same story.)*
+
+**The #27117 phenomenon does not reproduce on gfx90a.** Per-slot acceptance is FLAT across the
+sweep — DFlash2 0.6205 → 0.6294 and MTP 0.4782 → 0.4818 from 1 to 8 in-flight — with no degradation
+at 8, which is where every upstream report places onset. Aggregate throughput could never have
+shown this; it required the per-slot parsing that no prior parser captured (the `id N` field was
+present in the logs all along).
+
+**Replication is exact where it can be checked**: np=1 DFlash2 gives 70.0 t/s and weighted
+acceptance 0.6205 against DF2-4's 70.0 and 0.62049 — a different binary, a rewritten harness, the
+same answer.
+
+**The `--kv-unified` control came back NEGATIVE** — DFlash2 is slightly *worse* with it on at c4
+(142.7 vs 153.6) and c8 (151.9 vs 155.0), and acceptance is unmoved. Per this handoff's own gate
+wording, a negative "retires the leading root-cause hypothesis for free". It is retired.
+
+**The `none` arm earned its place**: it scales weakly (26.6 → 58.0), so without it the concurrency
+gains could not have been attributed to speculation rather than ordinary scheduling.
+
+### DF2-6 — DFlash2 is NOT bit-exact, and the controls prove that is not a DFlash2 defect
+
+| arm | PASS | FAIL | drafted? |
+|---|---|---|---|
+| baseline (`--spec-type none`) | — | — | **no** (negative control clean) |
+| dflash2 | 7 | 5 | yes |
+| **draft_simple** | **7** | **5** | yes |
+| ngram_simple | 11 | 1 | yes |
+
+`draft-simple` contains **no DFlash code whatsoever**, yet fails at the same rate and at three
+**identical first-differing generation-token indices** (34, 216, 238). Two unrelated drafters
+diverging at the same token positions places the divergence in the shared speculative-verify path,
+reproducing upstream #27407 on our stack. ngram — same multi-token verify path, no external drafter
+— diverges 1/12 rather than 5/12, consistent with #25618 and pointing at the external-drafter
+verify path specifically rather than at multi-token verification as such.
+
+**Verdict: DFlash2's losslessness claim fails bit-exactness, but DFlash2 is no worse than the
+generic speculative path, so this is not a reason to withhold it.** Combined with DF2-5, DFlash2 is
+the superior spec-decode path for Qwen3.8-27B on this hardware.
+
+**One mandated instrument did NOT produce evidence — stated plainly rather than glossed.**
+`GGML_CUDA_LOG_MMVQ_ROUTE=1` yielded **zero** route lines on all four arms, and a dedicated probe
+with the flag passed directly on a successful generation also yielded zero. Cause:
+`ggml_cuda_log_mul_mat_route` is called only from `ggml_cuda_mul_mat` (`ggml-cuda.cu:1863–1890`)
+and **never from `ggml_cuda_mul_mat_id`**, so MoE expert matmuls are invisible to it. Therefore the
+`a6b4b5263` attribution question is **not settled by direct evidence**; it is addressed only
+indirectly by the ngram asymmetry above. Tracked as **CH-9** in
+[`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
 
 ## 2026-08-27 checkpoint — runners landed, grid running, and a build-flag trap
 

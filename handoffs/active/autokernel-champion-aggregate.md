@@ -70,11 +70,31 @@ apparatus exists to prevent — and would destroy the comparability of every lat
 - [ ] **CH-4 — Compose MoE-Spec as the first real arm** (`c7c37a0d9`). Note its evidence is currently
   below policy: n=3 where `MEASUREMENT_POLICY.md:37` requires ≥5 for a ≥5% claim, α −2.4pp, and the
   5-rep confirm was declined. The composed candidate must earn its own T0/T1/T2 regardless.
-- [ ] **CH-5 — Run DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity), then admit DFlash2 as
-  a parallel spec-decode capability.** Approved by the operator 2026-08-27. Attribute any DF2-6
-  parity failure before charging it to DFlash2: the in-production MMQ patch `a6b4b5263` is
-  numerically valid but NOT bit-exact. Needs GPU; sequence against the live campaign rather than
-  killing it.
+- [x] **CH-5 — Run DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity), then admit DFlash2 as
+  a parallel spec-decode capability.** Approved by the operator 2026-08-27. ✅ 2026-08-28 — both
+  gates run against the champion. Full detail in
+  [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md).
+
+  **DF2-5 PASS.** 24/24 cells, 192 per-slot rows, zero refusals. DFlash2 beats MTP at every
+  concurrency — +28.4% / +48.9% / +47.0% / +47.8% at 1/2/4/8 in-flight (kv-unified off). **The
+  #27117 concurrency phenomenon does not reproduce on gfx90a**: per-slot acceptance is flat across
+  the sweep (DFlash2 0.62→0.66, MTP 0.47→0.50) with no degradation at 8, where every upstream
+  report places onset. Throughput alone could not have shown that; it needed the per-slot parsing.
+  Replicates DF2-4 at np=1 almost exactly (70.0 t/s, acceptance 0.6205 vs 0.62049) on a different
+  binary and a rewritten harness. The paired `--kv-unified` control came back **negative** —
+  slightly worse at c4 (142.7 vs 153.6) — which retires the leading root-cause hypothesis for free,
+  exactly as the gate predicted a negative would.
+
+  **DF2-6: DFlash2 is NOT bit-exact, and that is NOT a DFlash2 defect.** Per-prompt verdicts:
+  dflash2 7 PASS / 5 FAIL, **draft_simple 7 PASS / 5 FAIL**, ngram_simple 11 PASS / 1 FAIL,
+  baseline negative control clean (drafted nothing). The controls carry the whole conclusion:
+  `draft-simple` contains **no DFlash code at all** yet diverges at the same rate and at three
+  *identical* first-differing token indices (34, 216, 238). Two unrelated drafters diverging at the
+  same token positions locates the divergence in the shared speculative-verify path, reproducing
+  upstream #27407. ngram, through the same multi-token verify path, diverges 1/12 rather than 5/12
+  — consistent with #25618 and pointing at the external-drafter verify path specifically.
+  Consequence: DFlash2's losslessness claim fails bit-exactness, but it is **no worse than the
+  generic speculative path**, so this is not a reason to withhold it.
 - [x] **CH-7 — Build the manual→champion admission pipeline.** A documented, repeatable path to
   admit an externally developed source arm (branch + evidence manifest) as a champion MEMBER, with
   the composed candidate rebuilt and re-measured. This is the reusable mechanism for all future
@@ -89,9 +109,27 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   conflict — so as separate members they could **never** have composed. Synthesised into a single
   arm they compose trivially, and the combination earns its gates as a unit, so interactions get
   measured rather than assumed.
-- [ ] **CH-6 — the config leaders. REVISED 2026-08-27: one of the two is not a lead at all.**
-  The earlier framing ("the highest-EV unexploited leads… settleable in hours") is **withdrawn** for
-  the ubatch arm, on source evidence:
+- [x] **CH-6 — the config leaders. SETTLED 2026-08-28: neither belongs in the champion.** ✅
+  Both were investigated to a conclusion; the earlier framing ("the highest-EV unexploited leads…
+  settleable in hours") is **withdrawn**. One was never a lead; the other is real but buys nothing
+  where the fleet runs. Measured results below; harness `scripts/benchmark/mmq_mfma_recheck.py`
+  (research `46de4e1e`), artifacts `artifacts-df25/mmq_recheck_20260828/`.
+
+  | surface | OFF vs ON |
+  |---|---|
+  | Qwen2.5-Coder-0.5B-Q4_K_M pp512 (the original surface) | **+23.09%** |
+  | Qwen3.8-27B-Q8_0 pp512 (production model) | **+0.50%** |
+  | Qwen3.8-27B-Q8_0 tg128 | **−0.28%** |
+
+  The +26.6% **replicates** where it was taken (+23.1% here) and **vanishes** on the production
+  model — precisely what the recorded counter-argument predicted, since pp512 single-stream is the
+  regime where MFMA has least to offer. **Do not adopt `MMQ_MFMA=OFF` into the champion's build
+  recipe.** The re-run fixed the original design: arms ALTERNATED rather than block-sequential (so
+  drift hits both arms equally instead of loading onto one), n=6 pairs instead of 3 single-rep
+  observations, full sample vectors printed rather than medians alone, and an automatic max/min >
+  1.3× spread check — which fired once, on a cold first sample, and does not change the conclusion.
+
+  Original detail retained below.
   - **`ubatch 512→1024` (+46.9%) is a NULL ARM — do not re-run it.** llama.cpp clamps
     `n_ubatch = min(n_batch, n_ubatch)` (`src/llama-context.cpp:265`), and the screen passed
     `-b 512 -ub 1024`, so **both arms ran at an effective ubatch of 512 on one identical binary**.
@@ -117,11 +155,47 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   Consequences: candidates are measured on a different flash-attention kernel than production runs,
   which undercuts transferability of any GPU result; and the OFF path is the one measured below to
   produce non-finite values at longer sequences under `-fa on`.
-  **Operator decision required before changing it** — adding the flag changes the sealed build
-  identity and breaks comparability with every prior GPU screen, so it is not a silent fix.
-  Scope discipline: the non-finite behaviour was observed in the DFlash **target-feature** path;
-  whether plain non-speculative decode also degrades at length on an OFF build is **not measured**
-  and must not be asserted.
+  **RULED 2026-08-28, and done.** Operator: *"if it leads to better performance finds, I don't care
+  if it breaks comparability with prior GPU screens. We only added the GPU recently anyways."*
+  Prior GPU screens are therefore **superseded, not reconciled** — they were taken on a kernel
+  configuration production does not run. Two flags changed in
+  `discovery_deployment_factory.py` (research `71db62e9`):
+
+  | flag | was | now |
+  |---|---|---|
+  | `GGML_HIP_ROCWMMA_FATTN` | unset → CMake default **OFF** | **ON** |
+  | `GGML_NATIVE` | explicitly **OFF** | **ON** |
+
+  `GGML_NATIVE` was ruled the same way and for the same reason: every reference build on this host
+  is ON, and matching production is what makes a find transferable. It is the portability trade
+  taken deliberately — OFF is what a portable build wants, and this is a single-host program.
+  Verified by mutation test that both survive `_sealed_cmake_defines()` rather than being dropped
+  as unknown keys (only the RPATH keys are force-overridden there), and confirmed present in the
+  live v33 execution closure.
+
+  The repo README gained a *"Build configuration — read this before forking or reproducing"*
+  section at the operator's request, recording which flags are host-specific and why, so a fork
+  knows these numbers hold for this hardware and these flags and that reproducing them elsewhere
+  means re-measuring rather than re-reading.
+
+  Scope discipline, unchanged: the non-finite behaviour was observed in the DFlash
+  **target-feature** path; whether plain non-speculative decode also degrades at length on an OFF
+  build is **not measured** and is not asserted.
+- [ ] **CH-9 (new, 2026-08-28) — the MMQ route instrument is blind to MoE, so DF2-6's mandated
+  routing evidence could not be captured.** DF2-6 requires `GGML_CUDA_LOG_MMVQ_ROUTE=1` on every
+  arm, to tell whether a parity failure is attributable to our local `a6b4b5263` patch (which
+  routes Q8_0 to a different kernel at `ne11 >= 2` and is "numerically-valid (not bit-exact)" by
+  its own commit message). **All four arms produced zero route lines**, and a dedicated probe with
+  the flag passed directly, on a successful generation, also produced zero. Cause located:
+  `ggml_cuda_log_mul_mat_route` is called only from `ggml_cuda_mul_mat`
+  (`ggml-cuda.cu:1863–1890`) and **never from `ggml_cuda_mul_mat_id`**, so every MoE expert matmul
+  is invisible to it; the emitter is additionally gated on `src0->type == GGML_TYPE_Q8_0`.
+  Consequence to state plainly: **the a6b4b5263 attribution question is not settled by direct
+  evidence.** It is addressed only indirectly — ngram runs multi-token verify batches through the
+  same routing and diverges 1/12 where the external drafters diverge 5/12, so batch-width routing
+  alone cannot account for the divergence. Wire the instrument into the `mul_mat_id` path (or log
+  unconditionally under the flag) before any future claim that rests on which kernel a verify batch
+  took.
 
 ## The champion as built — 2026-08-27
 
