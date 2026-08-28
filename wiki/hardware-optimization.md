@@ -3704,3 +3704,54 @@ claim; the next performance-bearing run must prove achieved locality before admi
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — G1 recipe, recovery checkpoint, live count, lock ownership and recall/timing boundary.
 - [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — T5 locality-gate contract and the live multi-node `--no-mmap` placement witness.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — PID identities, checkpoint provenance, 163-record validation and OpenCode ownership reconciliation.
+
+---
+
+## gfx90a: `GGML_HIP_ROCWMMA_FATTN` defaults OFF, and the OFF path is unsafe (2026-08-28)
+
+**The CMake default is wrong for this hardware.** `GGML_HIP_ROCWMMA_FATTN` defaults to `OFF`
+(`ggml/CMakeLists.txt:219`). On gfx90a with `-fa on`, the non-rocWMMA flash-attention path produces
+**non-finite values at longer sequence lengths**. Measured: a kernel built with it OFF failed every
+one of 12 pinned olympiadbench prompts on the first task —
+
+```
+E process: rejecting DFlash batch after 3020800/3020800 non-finite target features (limit=16)
+```
+
+— while a 25-character prompt succeeded on the same binary. **Prompt length is the discriminator**,
+which is exactly why a short smoke test passes and hides it.
+
+**Attribution was verified, not assumed.** The first hypothesis (a bad source merge) was wrong: an
+independently built tree ran the identical prompts and flags at 46.1 / 69.4 / 58.9 t/s with zero
+errors, and `git diff` between the two trees was +67/−0 with the relevant sources byte-identical.
+Rebuilt with the flag ON, all prompts pass, and `test-backend-ops` passes `MUL_MAT`, `MUL_MAT_ID`
+and `FLASH_ATTN_EXT` (2/2 backends each).
+
+Production, the AK-BH factorial builds and every other reference build on this host are ON. **ON is
+the house standard for gfx90a; anything else needs justification.** A discovery loop that omitted
+the flag was building every GPU candidate on a different flash-attention kernel than production
+runs, which silently undercuts transferability of any result it produced.
+
+## `MMQ_MFMA OFF` is real and worth nothing where it matters (2026-08-28)
+
+A +26.6% prefill win, independently reproduced at n=30, **vanishes on the production model**:
+
+| surface | `MMQ_MFMA` OFF vs ON |
+|---|---|
+| Qwen2.5-Coder-0.5B-Q4_K_M pp512 (the original surface) | **+23.09%** |
+| Qwen3.8-27B-Q8_0 pp512 | **+0.50%** |
+| Qwen3.8-27B-Q8_0 tg128 | **−0.28%** |
+
+It replicates where it was taken and disappears where the fleet runs — as the mechanism predicts,
+since the MMQ weight tile is dequantized once and reused across B columns with MFMA engaging at
+batch>1, so single-stream pp512 on a 398 MB model is the regime where MFMA has least to offer. The
+same program's own state file records MMQ forcing *inverting* on MoE workloads at low batch
+(B2 −30%, B4 −21%, B8 −10.5%). **A build-flag win measured on one small-model surface is evidence
+for that surface only.**
+
+### Source References (2026-08-28)
+
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-8 build-flag ruling, CH-6 settlement, and the CH-4 anchor validation
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-9, the build-flag trap and the prompt-length discriminator
+- [`autokernel-research-loop.md`](../handoffs/active/autokernel-research-loop.md) — the original MMQ_MFMA screen and the AK-BH factorial it replicates against
+

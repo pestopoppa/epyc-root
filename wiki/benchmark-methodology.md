@@ -3134,3 +3134,49 @@ defect in any suite.
 - [`reviewer-decision-plane.md`](../handoffs/completed/reviewer-decision-plane.md) — RD-12 row tick, replay numbers, H-LB handoff
 - [`reviewer-trace-materialization.md`](../handoffs/completed/reviewer-trace-materialization.md) — TM-8 gate tick, coverage instrumentation (`src/trace/coverage.py`), replay harness
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record with the run details
+
+---
+
+## Two ways an A/B screen reports a win that does not exist (2026-08-28)
+
+### 1. The arm was clamped away — a null comparison reporting +46.9%
+
+A screen varying `ubatch 512 -> 1024` passed `-b 512 -ub 1024`. llama.cpp clamps
+`n_ubatch = min(n_batch, n_ubatch)` (`src/llama-context.cpp:265`), so **both arms ran at an
+effective ubatch of 512 on one identical binary** — an A/A comparison. It reported **+46.9%**.
+
+The number came from a bimodal sample (`25409, 18083, 25372, 16175, 25381`) whose median landed on
+the fast mode, measured against an anchor bank sitting ~30% below the independently established
+steady state. Its sibling `batch_up` screen, equally null, reported **+0.59%** purely by landing on
+the other mode — two null arms 46 percentage points apart. The "sign conflicts and 53.5pp spread"
+that made the pair look like a live lead *were the artifact*.
+
+**Guard, not lore:** the producer now refuses any batch/ubatch screen whose two arms have the same
+*effective* configuration after the clamp, and the guard is mutation-tested to fire on the null arm
+and stay silent on genuine factors.
+
+### 2. Block-sequential arms confound drift with the arm
+
+The same screen family ran all anchors consecutively, then all candidates. Any drift across the
+measurement window loads entirely onto one arm. A corrected re-run **alternates** arms (A,B,A,B…),
+raises n per arm, prints the **full sample vector** rather than the median alone — because the
+failure mode is bimodality, which a median hides — and flags any arm whose max/min exceeds 1.3×.
+
+### Verification lessons that generalise
+
+- **Diff failing-test SETS, never counts.** A fixed test and a newly broken one cancel out in a
+  count. Twice this session a set-diff was the only thing separating "0 newly broken" from a
+  silently shipped regression.
+- **A green suite proves nothing until a mutation turns it red.** One regression test here was
+  vacuous twice over — it asserted against a *local copy* of the map under test, and its source
+  grep matched the same string at unrelated lines — so deleting the code it guarded left it green.
+  Mutation-testing caught it; review had not.
+- **A low failure count on an arm with low exposure is not immunity.** Report the exposure metric
+  (`draft_n`, sample count, invocation count) beside every verdict.
+
+### Source References (2026-08-28)
+
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-6 settlement with both artifacts and the corrected re-run design
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the AK-VIS findings and the vacuous-test record
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the ngram exposure retraction (DF2-6b-bis)
+

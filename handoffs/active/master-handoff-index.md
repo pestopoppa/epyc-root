@@ -30,6 +30,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-29 | MoE-Spec registry integration — B-sweep gate MET (+10.7% architect CPU) but it measures **−2.92%** on the GPU champion's pp512: enable per-role, or hold | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) | 2026-08-28 |
+| OP-30 | AutoKernel GPU results taken before 2026-08-28 were built with `ROCWMMA_FATTN`/`GGML_NATIVE` OFF, a different kernel than production runs — confirm they are superseded rather than re-baselined | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | 2026-08-28 |
 | OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
 | OP-3 | Zero-inference decision batch — residual `dispatch_swarm_fanout` items | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 2026-07-14 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
@@ -69,7 +71,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 53 | 468 | 12 | 2026-07-29 |
+| inference-research | 53 | 470 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 44 | 347 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 32 | 11 | 2026-07-29 |

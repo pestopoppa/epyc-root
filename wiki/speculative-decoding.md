@@ -1492,4 +1492,66 @@ hardware, a band and never a baseline. ([`intake-1282#record`](../research/intak
 - [`intake-1284#record`](../research/intake_index.yaml) -- llama.cpp Metal PRs 27390/27450; the dequantize-quantized-KV-to-F16-before-FA path as a deliberate performance design point, strictly Metal-local.
 
 ---
+
 ---
+
+## DFlash2 on MI210: measured, and why the parity failure is not the drafter's (2026-08-28)
+
+**DFlash2 beats the in-file MTP head at every concurrency, with no collapse at 8.** Measured on
+the aggregate champion (Qwen3.8-27B-Q8_0, gfx90a, 24 cells, 192 per-slot rows, zero refusals):
+
+| in-flight | none | MTP | DFlash2 | DF2 vs MTP |
+|---|---|---|---|---|
+| 1 | 26.6 | 54.5 | **70.0** | +28.4% |
+| 2 | 31.4 | 78.7 | **117.2** | +48.9% |
+| 4 | 54.2 | 104.5 | **153.6** | +47.0% |
+| 8 | 58.0 | 104.9 | **155.0** | +47.8% |
+
+**The upstream #27117 concurrency collapse does not reproduce on gfx90a.** Per-slot acceptance is
+*flat* across the sweep — DFlash2 0.6205 → 0.6294, MTP 0.4782 → 0.4818 — with no degradation at 8
+in-flight, which is where every upstream report places onset. Aggregate throughput cannot show
+this; it requires parsing the per-slot `id N` field that the `slot print_timing` line has always
+carried and that no parser was reading. The np=1 cell replicates a prior independent campaign
+almost exactly (70.0 t/s, acceptance 0.6205 vs 0.62049) on a different binary and a rewritten
+harness.
+
+**The `--kv-unified` control came back negative** — DFlash2 is slightly *worse* with it on at 4 and
+8 in-flight and acceptance is unmoved. That retires the leading upstream root-cause hypothesis for
+the collapse, on the one control nobody upstream had run.
+
+### Greedy parity fails, and the controls show it is not DFlash2's fault
+
+| arm | PASS | FAIL | total `draft_n` |
+|---|---|---|---|
+| baseline (`--spec-type none`) | — | — | 0 (negative control clean) |
+| dflash2 | 7 | 5 | 4012 |
+| **draft_simple** | **7** | **5** | 11951 |
+| ngram_simple | 11 | 1 | **218** |
+
+`draft-simple` contains **no DFlash code** yet fails at the same rate and at three *identical*
+first-differing generation-token indices (34, 216, 238). Two unrelated drafters diverging at the
+same token positions locates the divergence in the shared speculative-verify path, reproducing
+upstream #27407. **DFlash2 is therefore not bit-exact but is no worse than the generic speculative
+path**, which is not a reason to withhold it.
+
+**A caution that cost a retraction here:** the ngram arm looks immune (11/12) but drafted only 218
+tokens against draft_simple's 11951 — 55× less, with one prompt drafting nothing at all. Its
+kernel-route profile is byte-identical to the no-drafter baseline. A low failure count on an arm
+that barely speculates is **exposure, not immunity**; always report `draft_n` per arm beside the
+verdict.
+
+### The verify batch takes a different kernel than the greedy baseline
+
+Route capture on all four arms (Q8_0, gfx90a) shows the local `a6b4b5263` rule
+(`Q8_0: ne11 <= 1`) firing exactly as written: **every speculative verify batch (`ne11 >= 2`) takes
+MMQ while greedy decode (`ne11 = 1`) takes MMVQ** — e.g. dflash2 MMQ 4687 / MMVQ 3. That patch is
+"numerically-valid (not bit-exact)" by its own commit message, so it is a *directly evidenced*
+candidate cause of the non-parity, not a speculative one. Any future parity claim on this stack has
+to account for it.
+
+### Source References (2026-08-28)
+
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-5 grid, DF2-6 per-prompt verdicts, the ngram retraction and DF2-6b-bis
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-5 gate closure and the champion the measurements were taken against
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the route-capture instrument and its verbosity gate
+
