@@ -80,7 +80,7 @@ if str(_REPO_ROOT) not in sys.path:
 # ``freshness`` is no longer imported here: every classification now goes through
 # ``panels`` (which owns the one classifier), so the hub cannot grow a fourth
 # hand-rolled threshold ladder by reaching past the registry.
-from dashboard import handoff_parser, panels
+from dashboard import handoff_parser, loop_status, panels
 
 # ``resolve()`` follows the /workspace -> /mnt/raid0/llm/epyc-root symlink, so the
 # hub always reads its own repo regardless of which path launched it.
@@ -95,6 +95,9 @@ BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 MACHINE_HTML = _STATIC / "machine.html"
 AUTOPILOT_HTML = _STATIC / "autopilot.html"
+#: The rebuilt AutoKernel loop. Its own page, not a section of kernel.html — see
+#: the note above ``loop_payload``.
+LOOP_HTML = _STATIC / "loop.html"
 NAV_JS = _STATIC / "nav.js"
 
 # RTG-47 Phase 0. The MACHINE-READABLE dashboard directory: one file naming every
@@ -14171,6 +14174,7 @@ def panel_envelopes() -> dict:
         # (and holds the TTL cache the probes live in), so reuse it rather than
         # letting the fold compute a second answer for one panel.
         "dashboards": lambda: dashboards_payload()["_freshness"],
+        "autokernel_loop": lambda: loop_status.snapshot()[1],
     }
     out: dict = {}
     for name in panels.PANELS:
@@ -14214,6 +14218,133 @@ def health_payload() -> dict:
         "outcome": envs["outcome"],
         "now": time.time(),
     }
+
+
+# --------------------------------------------------------------------------- #
+# The rebuilt AutoKernel loop — a SMALL, SEPARATE surface
+# --------------------------------------------------------------------------- #
+# Deliberately not wired into the Kernel-R&D surface above. That surface pins 29
+# cross-repo source paths and 47 SHA-256 digests of another repository's modules
+# and is slated for wholesale rewrite; growing it would re-arm that landmine and
+# make one contract's rewrite a second contract's outage. Two producers, two
+# panels, two probes, no shared blast radius. The reader is
+# ``dashboard/loop_status.py``; nothing here caches, so no value can outlive the
+# freshness envelope that is the whole point of the envelope.
+
+
+def loop_payload() -> dict:
+    """``/api/loop`` — the rebuilt loop's status plus its panel envelope.
+
+    ``loop`` is ``null``, never ``{}``, when nothing readable was found: ``[]``
+    says "the producer reported and there is nothing", ``null`` says "no producer
+    reported", and the old shell said ``[]`` for both — which is how a dead loop
+    rendered as a clean, empty, trusted page (see ``_read_kernel_contract``).
+    """
+    payload, observation = loop_status.snapshot()
+    payload["_freshness"] = _panel_envelope("autokernel_loop", observation)
+    payload["now"] = time.time()
+    return payload
+
+
+def loop_data_health() -> tuple[int, dict]:
+    """``/api/loop/health`` — *is what the loop page shows still true?*
+
+    The ``/api/health``-KIND of probe, not the ``/health`` kind. ``/health`` is
+    transport-only and stays green over a dead producer, which is why the
+    supervisor may poll it and must never poll this one.
+
+    Non-recursive by construction: it folds ONE envelope, so a registry consumer
+    can distinguish a live hub from a silent loop without dragging in the global
+    fold (whose dashboard-directory panel points back at this route).
+
+    Three-valued, and the third value is load-bearing:
+
+      * ``ok``       — a fresh report inside the loop's own declared envelope.
+      * ``absent``   — nobody has ever published here. Not ``stale``: a producer
+                       that never ran and a producer that stopped are different
+                       facts about different subsystems.
+      * ``degraded`` — stale, malformed, watchdog-alarmed, or a loop that
+                       DECLARED ``state=failed``.
+
+    ``failed`` is raised explicitly rather than left to freshness. A loop that
+    crashed one minute ago is perfectly fresh and perfectly broken, and a probe
+    that answers "current" to "is this still true?" over a dead loop is the
+    green-over-a-corpse reading this surface exists to prevent.
+
+    HTTP 200 only for ``ok``; ``absent`` and ``degraded`` both answer 503 for
+    simple health clients, with the three-valued verdict preserved in the body
+    (same convention as ``kernel_data_health``).
+    """
+    payload, observation = loop_status.snapshot()
+    env = _panel_envelope("autokernel_loop", observation)
+    verdict = panels.fold({"autokernel_loop": env},
+                          registry={"autokernel_loop": panels.source("autokernel_loop")})
+    status = verdict["status"]
+
+    def _raise(candidate: str) -> None:
+        nonlocal status
+        if (panels.STATUS_ORDER.index(candidate)
+                > panels.STATUS_ORDER.index(status)):
+            status = candidate
+
+    # THE PANEL'S OWN VERDICT IS NOT THE GLOBAL FOLD'S.
+    #
+    # ``autokernel_loop`` declares ``absence_is_anomalous=False`` so a host where
+    # no campaign has ever run does not redden ``/api/health`` — a cold start is
+    # not an outage. But THIS route answers a narrower question about ONE panel
+    # ("is what the loop page shows still true?"), and there the answer to
+    # "nobody ever published" is ``absent``, never ``ok``. Reading the global
+    # fold's leniency as this panel's verdict is exactly the true-about-a-wider-
+    # set error that lets a surface report green over a producer nobody can find.
+    body = payload.get("loop") or {}
+    loop_state = body.get("state")
+    if payload["freshness_state"] == loop_status.STATE_ABSENT:
+        _raise(panels.STATUS_ABSENT)
+    elif payload["freshness_state"] == loop_status.STATE_MALFORMED:
+        # BROKEN IS NOT A COLD START. Something wrote here and the write is
+        # unusable; that is a defect in the producer's writer, and it must not
+        # inherit absence's benefit of the doubt.
+        _raise(panels.STATUS_DEGRADED)
+    elif payload["freshness_state"] == loop_status.STATE_STALE:
+        # ...unless the loop DECLARED it finished. That is the compliant path
+        # this repo already ratified for `kernel` and `outcome`: a producer that
+        # says it stopped is allowed to be silent, and the hub never INFERS
+        # idleness from silence alone.
+        if loop_state != "complete":
+            _raise(panels.STATUS_DEGRADED)
+
+    declared_failure = None
+    if loop_state == "failed":
+        _raise(panels.STATUS_DEGRADED)
+        declared_failure = (
+            "the loop DECLARED state=failed. It published on the way out rather "
+            "than going quiet, so this reading is fresh and the loop is dead; "
+            "freshness alone would have answered 'ok'.")
+    out = {
+        "status": status,
+        "probe": "panel-data",
+        "panel": "autokernel_loop",
+        "data_route": panels.source("autokernel_loop").route,
+        "transport_health": "/health",
+        "global_health": "/api/health",
+        "status_set_by": verdict["status_set_by"],
+        "worst": verdict["worst"],
+        "attention": verdict["attention"],
+        "absent": verdict["absent"],
+        # The producer contract's own four-valued verdict, beside the hub's fold.
+        # They answer different questions — "is this report current?" versus "is
+        # this panel healthy?" — and printing one under the other's name is how
+        # an operator reads the wrong offender.
+        "freshness_state": payload["freshness_state"],
+        "age_s": payload["age_s"],
+        "stale_after_s": payload["stale_after_s"],
+        "evidence": payload["evidence"],
+        "reader_error": payload["reader_error"],
+        "loop_state": loop_state,
+        "declared_failure": declared_failure,
+        "freshness": env,
+    }
+    return (200 if status == panels.STATUS_OK else 503), out
 
 
 def transport_probe_payload() -> dict:
@@ -14303,6 +14434,7 @@ HTML_ROUTES = {
     "/machine": MACHINE_HTML,
     "/autopilot": AUTOPILOT_HTML,
     "/kernel": KERNEL_HTML,
+    "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
 }
@@ -14332,6 +14464,7 @@ API_ROUTES = {
     "/api/handoff_graph": graph_payload,
     "/api/kernel": kernel_payload,
     "/api/kernel/live": discovery_live_payload,
+    "/api/loop": loop_payload,
     "/api/bus": bus_payload,
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,
@@ -14355,6 +14488,7 @@ API_ROUTES_WITH_STATUS = {
 #: ``panels.registry_gaps`` without creating a duplicate panel in the global fold.
 PANEL_HEALTH_ROUTES = {
     "/api/kernel/health": kernel_data_health,
+    "/api/loop/health": loop_data_health,
 }
 
 #: The supervisor's transport probe. In its OWN table, not ``API_ROUTES``: it is

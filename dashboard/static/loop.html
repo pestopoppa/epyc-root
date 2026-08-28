@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — AutoKernel Loop</title>
+<!--
+  The rebuilt AutoKernel loop, and the ONLY surface that watches it.
+
+  The operator had zero visibility: the dashboard showed the superseded
+  deployment gpu-discovery-champion-v37 as STOPPED (true, it was stopped at
+  2026-08-28T14:23Z) while this loop ran as a process nothing observed.
+
+  Three things this page refuses to do, each one a scar:
+    * render a clean empty body over an absent producer — ABSENT, STALE and
+      MALFORMED each get their own loud banner; absent and malformed carry no
+      body at all (`loop` is null, never {}), and a stale body is shown under a
+      banner that says in words that it is the LAST report, not the current one;
+    * show only the wins — every disposition is listed, negatives first-class,
+      because 0 promotions looked like progress for a month;
+    * invent GPU utilisation from an empty gpu map — held-vs-busy renders "not
+      reported" rather than a fabricated 100% idle.
+-->
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#60a5fa; --good:#3fb950;
+    --warn:#d29922; --bad:#f85149; --amber:#f0883e;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:12px 20px;
+    background:rgba(13,17,23,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  header .sub{color:var(--muted);font-size:12px}
+  nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
+  nav a.active{color:var(--text);font-weight:650;border-bottom:2px solid var(--accent);padding-bottom:2px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.fresh .dot{background:var(--good)}.badge.fresh{color:var(--good);border-color:#1f4d38}
+  .badge.stale .dot{background:var(--bad)}.badge.stale{color:var(--bad);border-color:#5c2321}
+  .badge.absent .dot{background:var(--muted)}.badge.absent{color:var(--muted)}
+  .badge.malformed .dot{background:var(--amber)}.badge.malformed{color:var(--amber);border-color:#5c3a1e}
+  main{padding:20px;max-width:1400px;margin:0 auto;display:grid;gap:18px}
+  section{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  section > h2{margin:0;padding:11px 16px;font-size:13px;font-weight:650;letter-spacing:.02em;
+    background:var(--panel2);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center}
+  section > h2 .count{color:var(--muted);font-weight:400}
+  .pad{padding:14px 16px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 16px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  td.mono,th.mono,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  .muted{color:var(--muted)}
+  .empty{padding:18px 16px;color:var(--muted);font-size:13px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;margin:0}
+  .kv dt{color:var(--muted)} .kv dd{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  footer{padding:8px 20px 28px;color:var(--muted);font-size:12px;max-width:1400px;margin:0 auto}
+
+  /* The freshness banner. Loud on purpose: this is the one control that stops a
+     dead producer rendering as a clean page, so it is never a small grey pill. */
+  #banner{border-radius:10px;border:1px solid var(--border);padding:14px 16px;display:none}
+  #banner.show{display:block}
+  #banner .hd{font-size:14px;font-weight:700;letter-spacing:.02em}
+  #banner .bd{margin-top:6px;font-size:13px;color:var(--text)}
+  #banner .ev{margin-top:8px;font-size:12px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+  #banner.absent{border-color:#3a4048;background:#191d24}
+  #banner.absent .hd{color:var(--muted)}
+  #banner.stale{border-color:#5c2321;background:#26191a}
+  #banner.stale .hd{color:var(--bad)}
+  #banner.malformed{border-color:#5c3a1e;background:#241d16}
+  #banner.malformed .hd{color:var(--amber)}
+
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--border)}
+  .tile{background:var(--panel);padding:12px 16px}
+  .tile .lab{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .tile .val{font-size:20px;font-weight:650;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:2px}
+  .tile .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .tile .val.good{color:var(--good)} .tile .val.bad{color:var(--bad)}
+  .tile .val.warn{color:var(--warn)} .tile .val.dim{color:var(--muted)}
+
+  .state{display:inline-block;font-size:11px;padding:1px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .state.running{color:var(--good);border-color:#1f4d38}
+  .state.starting{color:var(--accent);border-color:#1e3a5f}
+  .state.complete{color:var(--accent);border-color:#1e3a5f}
+  .state.failed{color:var(--bad);border-color:#5c2321}
+
+  /* Dispositions: keeps are ONE row among many, never the only row. */
+  .disp{display:flex;align-items:center;gap:10px;padding:7px 16px;border-bottom:1px solid var(--border)}
+  .disp:last-child{border-bottom:none}
+  .disp .nm{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;min-width:190px}
+  .disp .n{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;min-width:34px;text-align:right}
+  .disp .bar{height:8px;border-radius:4px;background:var(--muted);opacity:.55;min-width:2px}
+  .disp.win .nm{color:var(--good)} .disp.win .bar{background:var(--good);opacity:1}
+  .disp.neg .nm{color:var(--muted)} .disp.neg .bar{background:var(--amber);opacity:.8}
+  .disp .tag{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-left:auto}
+
+  .eff.pos{color:var(--good)} .eff.neg{color:var(--bad)} .eff.nil{color:var(--muted)}
+  .rowstat{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  .rowstat.win{color:var(--good)} .rowstat.lose{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>AutoKernel Loop</h1>
+  <span class="sub">rebuilt loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
+  <span id="fresh" class="badge absent"><span class="dot"></span><span id="freshtxt">…</span></span>
+  <span id="hdr-state" class="state">—</span>
+  <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
+       hand-add cross-dashboard links here; add a registry row. -->
+  <nav id="epyc-nav"></nav>
+</header>
+<script defer src="/nav.js"></script>
+
+<main>
+  <div id="banner"></div>
+
+  <section id="sec-tiles">
+    <h2>Progress</h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section id="sec-disp">
+    <h2>Dispositions <span class="count" id="disp-count"></span></h2>
+    <div id="disp"></div>
+  </section>
+
+  <section id="sec-recent">
+    <h2>Recent iterations <span class="count">newest first &middot; negatives included</span></h2>
+    <div id="recent"></div>
+  </section>
+
+  <section id="sec-gpu">
+    <h2>GPU &mdash; held vs busy</h2>
+    <div id="gpu"></div>
+  </section>
+
+  <section id="sec-hot">
+    <h2>Hotspots <span class="count" id="hot-count"></span></h2>
+    <div id="hot"></div>
+  </section>
+
+  <section id="sec-ident">
+    <h2>Identity &amp; gate</h2>
+    <div class="pad"><dl class="kv" id="ident"></dl></div>
+  </section>
+</main>
+
+<footer>
+  Read-only view. The hub owns nothing here: the contract
+  <code>epyc.autokernel.loop_status.v1</code> is written by
+  <code>autokernel.loop.status.write</code> in <code>epyc-inference-research</code>
+  and read at request time — never cached, so no value can outlive its freshness
+  envelope. Data probe: <a href="/api/loop/health"><code>/api/loop/health</code></a>
+  (three-valued: is what this page shows still true?). <code>/health</code> is
+  transport-only and stays green over a dead loop. Auto-refresh 20s.
+</footer>
+
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
+  {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const age = s => s == null ? "—" : s < 90 ? `${Math.round(s)}s`
+  : s < 5400 ? `${Math.round(s/60)}m` : `${(s/3600).toFixed(1)}h`;
+const dur = s => s == null ? "—" : s < 90 ? `${Math.round(s)}s`
+  : s < 5400 ? `${(s/60).toFixed(1)} min` : `${(s/3600).toFixed(2)} h`;
+const num = v => (typeof v === "number" && isFinite(v));
+const short = s => s == null ? "—" : String(s).slice(0, 12);
+
+/* Dispositions that mean the candidate actually reached the instrument. Every
+   other disposition is a NEGATIVE and is rendered as such, never omitted. */
+const MEASURED = new Set(["kept", "measured_null"]);
+
+/* The four freshness states, each with its own banner. `absent` is not `stale`
+   is not `malformed`: one means nobody ever ran, one means the loop stopped
+   talking, one means something wrote a file this page cannot trust. Collapsing
+   any pair is how a dead producer renders as a clean, empty, trusted page. */
+const BANNERS = {
+  absent: {
+    hd: "ABSENT — no loop has ever published here",
+    note: "This is not an idle loop and not an empty run. Nothing has written the " +
+          "contract at all. The loop publishes at start, after every iteration and " +
+          "on exit including on failure, so a running loop is never absent."
+  },
+  stale: {
+    hd: "STALE — the loop has stopped reporting",
+    note: "Everything below is the loop's LAST report, not its current state. It " +
+          "is shown so the last known standing is not lost, and it must not be " +
+          "read as live."
+  },
+  malformed: {
+    hd: "MALFORMED — a status file exists that this page cannot trust",
+    note: "Broken is not the same fact as never-exported: something wrote here and " +
+          "the write is unusable, which points at the producer's writer rather " +
+          "than at whether the loop exists. No figures are rendered from it."
+  }
+};
+
+function setFreshBadge(state, ageS){
+  const el = document.getElementById("fresh");
+  el.className = "badge " + esc(state);
+  document.getElementById("freshtxt").textContent =
+    state === "fresh" ? `fresh · ${age(ageS)} ago`
+    : state === "stale" ? `STALE · ${age(ageS)} ago`
+    : state === "malformed" ? "MALFORMED"
+    : "ABSENT";
+}
+
+function renderBanner(d){
+  const el = document.getElementById("banner");
+  const spec = BANNERS[d.freshness_state];
+  if(!spec){ el.className = ""; el.innerHTML = ""; return; }
+  el.className = "show " + esc(d.freshness_state);
+  const budget = num(d.stale_after_s) ? ` (its own envelope is ${dur(d.stale_after_s)})` : "";
+  el.innerHTML =
+    `<div class="hd">${esc(spec.hd)}</div>` +
+    `<div class="bd">${esc(d.detail || "")}${esc(budget)}</div>` +
+    `<div class="bd muted">${esc(spec.note)}</div>` +
+    `<div class="ev">evidence: ${esc(d.evidence || "—")}` +
+    (d.reader_error ? `<br>reader error: ${esc(d.reader_error)}` : "") + `</div>`;
+}
+
+function tile(lab, val, sub, cls){
+  return `<div class="tile"><div class="lab">${esc(lab)}</div>` +
+         `<div class="val ${cls || ""}">${esc(val)}</div>` +
+         `<div class="sub">${esc(sub || "")}</div></div>`;
+}
+
+function renderTiles(d){
+  const L = d.loop, D = d.derived;
+  const host = document.getElementById("tiles");
+  if(!L){
+    host.innerHTML = `<div class="tile"><div class="lab">nothing to show</div>` +
+      `<div class="val dim">—</div><div class="sub">no readable report; see the ` +
+      `banner above</div></div>`;
+    return;
+  }
+  const done = num(L.iterations_done) ? L.iterations_done : 0;
+  const planned = num(L.iterations_planned) ? L.iterations_planned : null;
+  const reached = num(L.measurements_reached) ? L.measurements_reached : 0;
+  const kept = D ? D.kept : 0;
+  const negatives = D ? D.negatives : 0;
+  const gpu = (D && D.gpu) || {};
+  host.innerHTML = [
+    tile("Iterations", planned == null ? String(done) : `${done} / ${planned}`,
+         planned == null ? "planned count not reported"
+                         : `${D && D.iterations_remaining != null ? D.iterations_remaining : "—"} remaining`),
+    tile("Reached a measurement", `${reached}`,
+         `${done - reached} never got to the instrument`,
+         reached === 0 && done > 0 ? "bad" : ""),
+    tile("Kept", `${kept}`, "promotions, not attempts",
+         kept > 0 ? "good" : "dim"),
+    tile("Negatives", `${negatives}`, "every non-keep disposition",
+         negatives > 0 ? "warn" : "dim"),
+    tile("Noise floor", num(L.noise_floor_pct) ? `${L.noise_floor_pct.toFixed(3)}%` : "—",
+         "the bar a candidate must clear"),
+    tile("GPU busy", gpu.reported ? `${gpu.busy_pct == null ? "—" : gpu.busy_pct + "%"}` : "not reported",
+         gpu.reported ? `${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
+                      : "the loop published no held/busy seconds",
+         gpu.reported ? (num(gpu.busy_pct) && gpu.busy_pct < 25 ? "bad" : "") : "dim"),
+  ].join("");
+}
+
+function renderDispositions(d){
+  const host = document.getElementById("disp");
+  const counts = (d.loop && d.loop.dispositions) || null;
+  const keys = counts ? Object.keys(counts) : [];
+  document.getElementById("disp-count").textContent =
+    counts ? `(${keys.length} kind${keys.length === 1 ? "" : "s"})` : "";
+  if(!counts){
+    host.innerHTML = `<div class="empty">No readable report — this is NOT ` +
+      `“zero dispositions”. See the banner above.</div>`;
+    return;
+  }
+  if(!keys.length){
+    host.innerHTML = `<div class="empty">The loop reported and has recorded no ` +
+      `iteration outcome yet (an empty report, not a missing one).</div>`;
+    return;
+  }
+  const max = Math.max(...keys.map(k => counts[k] || 0), 1);
+  // Sorted by count, and the keeps are NOT hoisted to the top: a board whose
+  // layout privileges the wins is how 0 promotions looked like progress.
+  keys.sort((a, b) => (counts[b] - counts[a]) || a.localeCompare(b));
+  host.innerHTML = keys.map(k => {
+    const n = counts[k] || 0;
+    const win = k === "kept";
+    const measured = MEASURED.has(k);
+    return `<div class="disp ${win ? "win" : "neg"}">` +
+      `<span class="nm">${esc(k)}</span>` +
+      `<span class="n">${esc(n)}</span>` +
+      `<span class="bar" style="width:${Math.round(220 * n / max)}px"></span>` +
+      `<span class="tag">${win ? "kept" : measured ? "measured, not kept" : "never measured"}</span>` +
+      `</div>`;
+  }).join("");
+}
+
+function renderRecent(d){
+  const host = document.getElementById("recent");
+  const rows = (d.loop && d.loop.recent) || null;
+  if(!rows){
+    host.innerHTML = `<div class="empty">No readable report — not an empty ` +
+      `iteration list. See the banner above.</div>`;
+    return;
+  }
+  if(!rows.length){
+    host.innerHTML = `<div class="empty">The loop reported and has completed no ` +
+      `iteration yet.</div>`;
+    return;
+  }
+  host.innerHTML = `<table><thead><tr><th>#</th><th>Disposition</th>` +
+    `<th>Effect</th><th>Mechanism</th><th>Reason</th></tr></thead><tbody>` +
+    rows.map((r, i) => {
+      const win = r.status === "kept";
+      const e = r.effect_fraction;
+      const pct = num(e) ? `${(e * 100 >= 0 ? "+" : "")}${(e * 100).toFixed(3)}%` : "—";
+      const ecls = !num(e) ? "nil" : e > 0 ? "pos" : e < 0 ? "neg" : "nil";
+      return `<tr><td class="mono muted">${i + 1}</td>` +
+        `<td><span class="rowstat ${win ? "win" : "lose"}">${esc(r.status)}</span></td>` +
+        `<td class="mono eff ${ecls}">${esc(pct)}</td>` +
+        `<td class="mono">${esc(r.mechanism_id || "—")}</td>` +
+        `<td class="muted">${esc(r.reason || "")}</td></tr>`;
+    }).join("") + `</tbody></table>`;
+}
+
+function renderGpu(d){
+  const host = document.getElementById("gpu");
+  const gpu = (d.derived && d.derived.gpu) || null;
+  if(!gpu){
+    host.innerHTML = `<div class="empty">No readable report.</div>`;
+    return;
+  }
+  if(!gpu.reported){
+    // An empty gpu map must NOT become "0s busy, 100% idle". A fabricated
+    // measurement is worse than the silence it replaces.
+    host.innerHTML = `<div class="empty">The loop published no held/busy seconds, ` +
+      `so this panel reports <strong>nothing</strong> rather than 0% busy. ` +
+      `The loop ran 95.4% idle on a held device for a month and no surface said ` +
+      `so; an invented full-idle reading would be that same failure with a ` +
+      `number on it.` +
+      (Object.keys(gpu.raw || {}).length
+        ? `<div class="mono" style="margin-top:8px">raw gpu keys: ` +
+          esc(Object.keys(gpu.raw).join(", ")) + `</div>` : "") +
+      `</div>`;
+    return;
+  }
+  const busyW = num(gpu.busy_pct) ? Math.max(0, Math.min(100, gpu.busy_pct)) : 0;
+  host.innerHTML = `<div class="pad">` +
+    `<div style="height:14px;border-radius:7px;background:#30363d;overflow:hidden">` +
+    `<div style="height:100%;width:${busyW}%;background:var(--good)"></div></div>` +
+    `<dl class="kv" style="margin-top:12px">` +
+    `<dt>held</dt><dd>${esc(dur(gpu.held_s))}</dd>` +
+    `<dt>busy</dt><dd>${esc(dur(gpu.busy_s))} (${esc(gpu.busy_pct == null ? "—" : gpu.busy_pct + "%")})</dd>` +
+    `<dt>idle</dt><dd>${esc(dur(gpu.idle_s))}</dd>` +
+    `</dl></div>`;
+}
+
+function renderHotspots(d){
+  const host = document.getElementById("hot");
+  const rows = (d.loop && d.loop.hotspots) || null;
+  document.getElementById("hot-count").textContent =
+    Array.isArray(rows) ? `(${rows.length})` : "";
+  if(!Array.isArray(rows)){
+    host.innerHTML = `<div class="empty">No readable report.</div>`;
+    return;
+  }
+  if(!rows.length){
+    host.innerHTML = `<div class="empty">The loop reported no hotspot profile — ` +
+      `the planner is told so rather than left to guess.</div>`;
+    return;
+  }
+  host.innerHTML = `<table><thead><tr><th>Kernel</th><th>Share</th>` +
+    `<th>Calls</th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td class="mono">${esc(r.signature)}</td>` +
+      `<td class="mono">${num(r.share_of_device_time)
+          ? (r.share_of_device_time * 100).toFixed(1) + "%" : "—"}</td>` +
+      `<td class="mono">${esc(r.calls == null ? "—" : r.calls)}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+
+function renderIdentity(d){
+  const L = d.loop;
+  const rows = [
+    ["freshness", `${d.freshness_state}${d.age_s == null ? "" : " · " + age(d.age_s) + " old"}` +
+                  `${d.stale_after_s == null ? "" : " · envelope " + dur(d.stale_after_s)}`],
+    ["evidence", d.evidence],
+    ["store root", d.store_root],
+  ];
+  if(L){
+    rows.push(
+      ["state", L.state],
+      ["campaign", L.campaign_id],
+      ["epoch", short(L.epoch_sha256)],
+      ["anchor commit", short(L.anchor_commit)],
+      ["champion head", short(L.champion_head)],
+      ["surface", `${L.surface} · ${L.pairs} pairs`],
+      ["noise floor", num(L.noise_floor_pct) ? L.noise_floor_pct.toFixed(3) + "%" : "—"],
+      ["generated at", L.generated_at]);
+  }
+  document.getElementById("ident").innerHTML = rows.map(
+    ([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v == null ? "—" : v)}</dd>`).join("");
+}
+
+function render(d){
+  const L = d.loop;
+  setFreshBadge(d.freshness_state, d.age_s);
+  document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
+  const st = document.getElementById("hdr-state");
+  st.textContent = L ? (L.state || "—") : d.freshness_state;
+  st.className = "state " + esc(L && L.state ? L.state : "");
+  renderBanner(d);
+  renderTiles(d);
+  renderDispositions(d);
+  renderRecent(d);
+  renderGpu(d);
+  renderHotspots(d);
+  renderIdentity(d);
+}
+
+function renderFetchFailure(err){
+  document.getElementById("banner").className = "show malformed";
+  document.getElementById("banner").innerHTML =
+    `<div class="hd">HUB UNREACHABLE</div><div class="bd">${esc(err)}</div>` +
+    `<div class="bd muted">This says nothing about the loop: the page could not ` +
+    `reach <code>/api/loop</code>. Do not read it as an idle loop.</div>`;
+  setFreshBadge("malformed", null);
+}
+
+async function tick(){
+  try{
+    const res = await fetch("/api/loop", {cache: "no-store"});
+    if(!res.ok) throw new Error(`/api/loop responded ${res.status}`);
+    render(await res.json());
+  }catch(err){
+    renderFetchFailure(err && err.message ? err.message : String(err));
+  }
+}
+
+tick();
+setInterval(tick, 20000);
+</script>
+</body>
+</html>

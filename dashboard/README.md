@@ -77,7 +77,9 @@ the orchestrator's venv is **not** required.
 | `dashboard/arena_attempt_dispositions.json` | Exact-attempt, one-way Arena integrity retractions for the Kernel-R&D view |
 | `dashboard/handoff_parser.py` | pure parser: cards, tasks, status-derived Blocked column |
 | `dashboard/freshness.py` | the one age→`fresh/aging/stale/missing` classifier (+ a legacy mtime badge) |
+| `dashboard/loop_status.py` | read side of the **rebuilt AutoKernel loop's** `loop-status.json` contract: four-valued freshness + derived folds |
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
+| `dashboard/static/loop.html` | the AK Loop page: state, freshness banner, dispositions incl. negatives, GPU held-vs-busy |
 | `scripts/handoffs/build_handoff_timeline.py` | git-history → `data/handoff_timeline.json` |
 | `scripts/handoffs/install_timeline_hook.sh` | post-commit hook that regenerates the artifact |
 | `tests/test_handoff_parser.py`, `tests/test_handoff_timeline.py` | `unittest` suites |
@@ -94,6 +96,12 @@ the orchestrator's venv is **not** required.
   AutoKernel and planner lifecycle tails from the deployment-owned live contract
 - `GET /api/kernel/health` — Kernel-R&D producer/data health only; HTTP 200 when
   fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
+- `GET /loop` — the **rebuilt AutoKernel loop** page (separate surface, separate
+  producer; see below)
+- `GET /api/loop` — that loop's `epyc.autokernel.loop_status.v1` report + its panel
+  envelope. `loop` is `null`, never `{}`, when nothing readable was found
+- `GET /api/loop/health` — the loop's producer/data health; HTTP 200 only for `ok`,
+  HTTP 503 with `absent`/`degraded` otherwise
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
 - `GET /api/health` — **the fold**: every registered panel's envelope + one verdict
 
@@ -488,6 +496,64 @@ audits its own source to keep it that way.
   `/health` is untouched and answers with every producer dead or broken.
 * **The running hub on :8100 holds pre-change code in memory.** Reloading it
   belongs to whoever owns that service; nothing here restarts it.
+
+## The rebuilt AutoKernel loop (`/loop`) — a second, separate AK surface
+
+The operator had **zero visibility** into the rebuilt loop. The dashboard showed
+only the superseded deployment `gpu-discovery-champion-v37` as STOPPED — true,
+and about a *different process* — while the new loop ran as something nothing
+observed. A loop nobody can see is a loop nobody can trust.
+
+**It is a separate surface on purpose, not a section of `/kernel`.** The
+Kernel-R&D surface pins 29 cross-repo source paths and 47 SHA-256 digests of
+another repository's modules and is slated for wholesale rewrite; growing it
+would re-arm that landmine and make one contract's rewrite a second contract's
+outage. Two producers, two panels, two probes, no shared blast radius.
+
+* **Contract** — `epyc.autokernel.loop_status.v1`, written atomically by
+  `scripts/kernel_rnd/autokernel/loop/status.py` in **epyc-inference-research**
+  into the loop's store root (default
+  `/mnt/raid0/llm/autokernel/loop-memory/loop-status.json`, overridable with
+  `AUTOKERNEL_LOOP_STORE_ROOT`, resolved **per request**). The plane rule holds:
+  the producer owns the schema, this hub owns the page, the nav row and the probe.
+  The hub **never imports** that package and pins no path or digest of it.
+* **Four-valued freshness** — `absent` / `malformed` / `stale` / `fresh`, each
+  with its own loud banner and its own probe verdict. `absent` is not `stale`
+  (a producer that never ran and a producer that stopped are different facts
+  about different subsystems); `malformed` is not `absent` (**broken ≠ never
+  exported** — one points at the writer, the other at whether the loop exists).
+  `payload["loop"]` is `null`, never `{}`, when nothing readable was found — the
+  same `[]`-vs-`null` rule `_read_kernel_contract` records.
+* **The envelope is the PRODUCER'S** — the body's own `stale_after_s` is handed
+  to `panels.envelope` as an `Observation.silence_budget_s`, clamped to
+  `[60 s, MAX_STALE_S]`, so the hub does not hold a second, drifting opinion
+  about when this loop is late. A loop that declares a longer cadence does not
+  read stale.
+* **The negatives are on the page.** Every disposition, not just the keeps —
+  a board that shows only wins is how 0 promotions looked like progress for a
+  month. Each row is tagged `kept` / `measured, not kept` / `never measured`.
+* **GPU held-vs-busy, or an honest silence.** The loop ran 95.4% idle on a held
+  device for a month and no surface said so. But an *empty* `gpu` map renders
+  "not reported" — never a fabricated `0 s busy / 100% idle`, which would be the
+  same failure with a number on it.
+* **`/api/loop/health` is the `/api/health` KIND of probe**, not the `/health`
+  kind: it answers *is what this page shows still true?*. It folds ONE envelope
+  and never recurses through the global fold. Two rulings live in it rather than
+  in freshness alone: a loop that DECLARED `state=failed` is `degraded` even
+  while perfectly fresh (a loop that crashed a minute ago is fresh *and* dead),
+  and a loop that DECLARED `state=complete` is allowed to be silent (the same
+  compliant path `kernel` and `outcome` already obey — the hub never *infers*
+  idleness).
+* **Cold start does not cry wolf.** The panel declares
+  `absence_is_anomalous=False`, so a host where no campaign has run does not
+  redden the global `/api/health`. It is still always listed under `absent`,
+  named in `attention`, and `/api/loop/health` answers `absent` with HTTP 503 —
+  nothing is hidden, it just is not an outage.
+
+Tests: `tests/test_dashboard_loop_surface.py` (mutation-checked: collapsing
+`absent` into `stale`, an always-200 probe, a deleted registry row, a fabricated
+GPU reading, a keeps-only disposition list, and a laundered `failed` state are
+each caught).
 
 ## Data model
 

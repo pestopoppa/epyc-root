@@ -52,4 +52,12 @@ for (const name of NAMES) {
   try { fn(data); ran++; } catch (e) { threw.push(`${name}: ${e.message}`); }
 }
 const html = Object.values(made).map(e => e._html || '').join('');
-console.log(JSON.stringify({ threw, ran, html, rendered_chars: html.length }));
+// `by_id` is ADDITIVE, and it exists because a whole-page substring check is a
+// key that is too wide: asserting that "100%" is absent from the joined page
+// failed on the "+3.100%" in an unrelated table. A test that can only ask about
+// the whole page cannot ask about one panel, so it asks a looser question and
+// then passes (or fails) for the wrong reason. Existing consumers read
+// `html`/`threw`/`ran` and are untouched.
+const by_id = {};
+for (const [id, el] of Object.entries(made)) by_id[id] = el._html || '';
+console.log(JSON.stringify({ threw, ran, html, by_id, rendered_chars: html.length }));

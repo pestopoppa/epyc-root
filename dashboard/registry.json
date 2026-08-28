@@ -38,6 +38,15 @@
       "blurb": "AutoKernel MI210 loop + live controller/planner logs (contract-backed)"
     },
     {
+      "id": "autokernel-loop",
+      "title": "AK Loop",
+      "port": 8100,
+      "path": "/loop",
+      "owner_repo": "epyc-root",
+      "health_path": "/api/loop/health",
+      "blurb": "rebuilt AutoKernel loop: state, freshness, every disposition incl. negatives, GPU held-vs-busy"
+    },
+    {
       "id": "bus",
       "title": "Bus",
       "port": 8100,

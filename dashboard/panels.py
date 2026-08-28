@@ -389,6 +389,47 @@ PANELS: Mapping[str, PanelSource] = _index((
                "completed controller declares idle; unexplained telemetry silence gates health."),
     ),
     PanelSource(
+        panel="autokernel_loop",
+        kind=KIND_EXPORT,
+        payload_func="loop_payload",
+        route="/api/loop",
+        health_route="/api/loop/health",
+        health_func="loop_data_health",
+        producer="autokernel.loop.status.write (the rebuilt AutoKernel loop)",
+        producer_repo="epyc-inference-research",
+        evidence="/mnt/raid0/llm/autokernel/loop-memory/loop-status.json",
+        timestamp_field="generated_at",
+        absence_means=(
+            "the rebuilt loop has never published a status in this store root. It "
+            "is not 'quiet' and it is not 'between iterations': the loop publishes "
+            "at start, after every iteration and on exit INCLUDING on failure, so a "
+            "running loop is never absent here. This is a SEPARATE producer from "
+            "the `kernel` panel — the superseded gpu-discovery deployment reading "
+            "STOPPED is a true statement about a different process, and reading it "
+            "as coverage of this loop is exactly the zero-visibility gap this "
+            "surface closes."),
+        # The producer declares its own cadence in `stale_after_s`, and the reader
+        # hands that to the envelope as a dynamic silence budget. These are the
+        # FALLBACK ladder for a body that omits it — not a second opinion the hub
+        # holds about when this loop is late.
+        warn_s=30 * _MINUTE,
+        stale_s=2 * _HOUR,
+        silent_after_s=30 * _MINUTE,
+        watched=True,
+        gates_health=True,
+        # A loop invoked per campaign is legitimately absent on a host where no
+        # campaign has run, so absence must not redden the GLOBAL fold. It is
+        # still always listed under `absent` and named in `attention`, and
+        # /api/loop/health reports `absent` with HTTP 503 — nothing is hidden;
+        # the cold start just does not cry wolf.
+        absence_is_anomalous=False,
+        notes="Deliberately NOT part of the Kernel-R&D surface: that surface pins "
+              "29 cross-repo source paths and 47 content digests and is slated for "
+              "wholesale rewrite. One contract, one panel, no shared blast radius. "
+              "A loop that DECLARES state=complete reads `idle`; state=failed is "
+              "never laundered into idle — loop_data_health raises it to degraded.",
+    ),
+    PanelSource(
         panel="bus",
         kind=KIND_FILETREE,
         payload_func="bus_payload",
