@@ -85,11 +85,23 @@ case "$1" in
             echo "REFUSED: no amendment patch at ${PATCH}" >&2
             exit 1
         }
-        # Isolated staging: never a blanket `git add`. A human-only path must not
-        # ride into a commit alongside anything else.
-        git -C "${REPO_ROOT}" apply --cached "${PATCH}"
-        echo "Staged. Review with: git -C ${REPO_ROOT} diff --cached -- measurement/protocols/kernel-research.md"
-        echo "Then commit that path alone."
+        # --index, not --cached: --cached stages WITHOUT touching the working tree,
+        # so the file on disk would still lack the amendment after you commit it, and
+        # the next edit to that file would silently revert it. --index applies to both
+        # and refuses if they disagree.
+        #
+        # Still isolated staging: never a blanket `git add`. A human-only path must
+        # not ride into a commit alongside anything else.
+        git -C "${REPO_ROOT}" apply --index "${PATCH}"
+        echo "Staged AND applied to the working tree."
+        echo
+        echo "Review:  git -C ${REPO_ROOT} diff --cached -- measurement/protocols/kernel-research.md"
+        echo "Commit:  git -C ${REPO_ROOT} commit -m 'RATIFIED: P-AK-SEARCH-1-A3 — epoch-scoped memory across campaigns' \\"
+        echo "                 -- measurement/protocols/kernel-research.md"
+        echo
+        echo "Commit promptly: a staged file in this shared index can ride into a"
+        echo "peer session's bare 'git commit'."
+        echo "On ratifying, change the A3 heading from PROPOSED to RATIFIED."
         ;;
     *) usage ;;
 esac
