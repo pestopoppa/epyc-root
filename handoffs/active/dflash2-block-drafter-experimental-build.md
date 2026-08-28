@@ -187,6 +187,14 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
       [intake-1288#record]
 
+- [ ] **DF2-6b-bis (new, 2026-08-28) — re-run the ngram arm at COMPARABLE DRAFT VOLUME.**
+      The 2026-08-28 ngram arm drafted 218 tokens against dflash2's 4012 and draft_simple's 11951,
+      and drafted nothing at all on one of the 12 prompts, so its 11/12 parity is explained by lack
+      of exposure rather than by immunity. Its kernel-route profile is byte-identical to the
+      no-drafter baseline, confirming it barely speculated. Until an ngram arm speculates at a
+      comparable rate, #25618's localisation cannot be tested on our stack. Use `ngram-cache` or
+      `ngram-mod`, or prompts with high n-gram repetition, and REPORT `draft_n` per arm beside the
+      verdict so exposure is visible rather than assumed.
 - [x] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
       recipe.** The flag **defaults to OFF** (`ggml/CMakeLists.txt:219`), and on gfx90a with
       `-fa on` the non-rocWMMA path produces non-finite values at longer sequence lengths — see the
@@ -241,9 +249,25 @@ gains could not have been attributed to speculation rather than ordinary schedul
 `draft-simple` contains **no DFlash code whatsoever**, yet fails at the same rate and at three
 **identical first-differing generation-token indices** (34, 216, 238). Two unrelated drafters
 diverging at the same token positions places the divergence in the shared speculative-verify path,
-reproducing upstream #27407 on our stack. ngram — same multi-token verify path, no external drafter
-— diverges 1/12 rather than 5/12, consistent with #25618 and pointing at the external-drafter
-verify path specifically rather than at multi-token verification as such.
+reproducing upstream #27407 on our stack.
+
+> **RETRACTED 2026-08-28 — the ngram claim in the first version of this section.** It read: *"ngram
+> — same multi-token verify path, no external drafter — diverges 1/12 rather than 5/12, consistent
+> with #25618 and pointing at the external-drafter verify path specifically."* **That comparison is
+> confounded and does not support the conclusion.** Drafting volumes over the same 12 prompts:
+>
+> | arm | total `draft_n` | accepted | prompts that drafted nothing |
+> |---|---:|---:|---:|
+> | dflash2 | 4012 | 2479 | 0 |
+> | draft_simple | 11951 | 1541 | 0 |
+> | **ngram_simple** | **218** | 135 | **1** |
+>
+> ngram drafted **18× less than dflash2 and 55× less than draft_simple**, and produced no draft at
+> all on one prompt. Its 11/12 pass rate is largely explained by **near-absence of exposure**, not
+> by immunity to the divergence mechanism. The route capture agrees: ngram's kernel-route profile
+> is byte-identical to the no-drafter baseline (MMQ 1984 / MMVQ 581), i.e. it barely speculated.
+> A #25618-style localisation needs an ngram arm with **comparable draft volume**; until then this
+> arm adjudicates nothing. Filed as **DF2-6b-bis**.
 
 **Verdict: DFlash2's losslessness claim fails bit-exactness, but DFlash2 is no worse than the
 generic speculative path, so this is not a reason to withhold it.** Combined with DF2-5, DFlash2 is

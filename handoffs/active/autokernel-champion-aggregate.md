@@ -88,9 +88,35 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   needed: the anchor arm has always been built from the instrument, and `_verify_instrument` only
   requires a descendant of the frozen production head. Instrument re-pinned to
   `ak/champion/llama-cpp-0db32c06e3e5` @ `5c278648a` (research `a086c95a`).
-- [ ] **CH-4 — Compose MoE-Spec as the first real arm** (`c7c37a0d9`). Note its evidence is currently
-  below policy: n=3 where `MEASUREMENT_POLICY.md:37` requires ≥5 for a ≥5% claim, α −2.4pp, and the
-  5-rep confirm was declined. The composed candidate must earn its own T0/T1/T2 regardless.
+- [x] **CH-4 — Compose MoE-Spec as the first real arm** (`c7c37a0d9`). ✅ 2026-08-28
+  (research `f54e5262`, harness `scripts/benchmark/champion_anchor_validation.py`, artifacts
+  `artifacts-df25/champion_anchor_20260828/`).
+
+  **Wording discipline: this is NOT "the champion passed T0/T1/T2".** `champion.py` records those
+  from campaign tier *events*, which only a full campaign produces. What ran is the set of
+  measurements those tiers stand for, against the same sealed anchor:
+
+  | check | result |
+  |---|---|
+  | T0-equivalent — `test-backend-ops -o MUL_MAT` | 2/2 backends passed |
+  | T0-equivalent — `test-backend-ops -o MUL_MAT_ID` | 2/2 backends passed |
+  | T0-equivalent — `test-backend-ops -o FLASH_ATTN_EXT` | 2/2 backends passed |
+  | T1/T2-equivalent — Qwen3.8-27B pp512 vs anchor | 748.34 → 768.83 (**+2.74%**) |
+  | T1/T2-equivalent — Qwen3.8-27B tg128 vs anchor | 28.21 → 28.20 (**−0.02%**) |
+
+  Sample ranges overlap heavily on both surfaces, so the honest reading is **no regression**, not a
+  prefill win — which is exactly what should happen, since MoE-Spec is inert at budget 0 and
+  DFlash2 only activates on `--spec-type`. The FA result also independently confirms the rocWMMA
+  path is numerically sound, which is the defect CH-8 was raised over.
+
+  **MoE-Spec has NOT earned its keep.** At `budget=32` on the production model it measures
+  **−2.92% on pp512** — a regression, not a win. The `tg128` row (−0.06%) is uninformative **by
+  construction** and is reported as such: batch-1 decode never reaches `--moe-spec-min-batch 4`, so
+  that arm executed identical code. This does not so much contradict the original n=3 evidence as
+  fail to reproduce it on the surface that matters, and that evidence was already below
+  `MEASUREMENT_POLICY.md:37`'s ≥5 reps for a ≥5% claim with the 5-rep confirm declined. MoE-Spec
+  stays in the champion as a **capability defaulting to 0**, enabled nowhere. Re-open only with a
+  surface and budget where it demonstrably wins.
 - [x] **CH-5 — Run DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity), then admit DFlash2 as
   a parallel spec-decode capability.** Approved by the operator 2026-08-27. ✅ 2026-08-28 — both
   gates run against the champion. Full detail in
@@ -202,21 +228,43 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   Scope discipline, unchanged: the non-finite behaviour was observed in the DFlash
   **target-feature** path; whether plain non-speculative decode also degrades at length on an OFF
   build is **not measured** and is not asserted.
-- [ ] **CH-9 (new, 2026-08-28) — the MMQ route instrument is blind to MoE, so DF2-6's mandated
-  routing evidence could not be captured.** DF2-6 requires `GGML_CUDA_LOG_MMVQ_ROUTE=1` on every
-  arm, to tell whether a parity failure is attributable to our local `a6b4b5263` patch (which
-  routes Q8_0 to a different kernel at `ne11 >= 2` and is "numerically-valid (not bit-exact)" by
-  its own commit message). **All four arms produced zero route lines**, and a dedicated probe with
-  the flag passed directly, on a successful generation, also produced zero. Cause located:
-  `ggml_cuda_log_mul_mat_route` is called only from `ggml_cuda_mul_mat`
-  (`ggml-cuda.cu:1863–1890`) and **never from `ggml_cuda_mul_mat_id`**, so every MoE expert matmul
-  is invisible to it; the emitter is additionally gated on `src0->type == GGML_TYPE_Q8_0`.
-  Consequence to state plainly: **the a6b4b5263 attribution question is not settled by direct
-  evidence.** It is addressed only indirectly — ngram runs multi-token verify batches through the
-  same routing and diverges 1/12 where the external drafters diverge 5/12, so batch-width routing
-  alone cannot account for the divergence. Wire the instrument into the `mul_mat_id` path (or log
-  unconditionally under the flag) before any future claim that rests on which kernel a verify batch
-  took.
+- [x] **CH-9 — the MMQ route instrument. RESOLVED 2026-08-28, and MY FIRST DIAGNOSIS WAS WRONG.** ✅
+
+  **What I originally wrote here — that `ggml_cuda_log_mul_mat_route` is never called from
+  `ggml_cuda_mul_mat_id`, so MoE expert matmuls are invisible — was true but was NOT why DF2-6
+  captured nothing.** I instrumented `mul_mat_id`, rebuilt, and the log was *still* empty. So was a
+  level-2 build that logs every type. The actual cause is that **common's log callback filters
+  backend `GGML_LOG_INFO` at the default verbosity**; `ggml_cuda_init` is visible only because it
+  logs during backend registration, before that callback is installed. `--verbose` yields **4705
+  route lines from a single 24-token generation**. The operative fix was a runtime flag, not a code
+  change. Recorded because the wrong root cause was published first.
+
+  Two code changes were kept anyway, on their own merits (champion `270b48ed6`): `mul_mat_id`
+  route logging, since MoE routes genuinely were uninstrumented; and a verbosity **level**, so that
+  an empty log is no longer ambiguous between "nothing was routed" and "the instrument never
+  fired" — the exact ambiguity that made this expensive to diagnose.
+
+  **The deployment gate then refused an over-reach, correctly.** The first attempt also edited
+  `ggml/src/ggml-cuda/mmvq.cu`, and validation failed with `production/instrument reviewed target
+  differs`. `_TARGET_SOURCE_SHA256` pins files that must be byte-identical between frozen
+  production and the instrument, because those are the files the planner is allowed to **mutate**;
+  an instrument that pre-modifies a mutation target corrupts attribution at the root. The mmvq.cu
+  edit was reverted (digest back to the pinned value) and only `ggml-cuda.cu`, which is not a
+  mutation target, remains.
+
+  **The evidence DF2-6 mandated is now captured**, per arm (24-token probe):
+
+  | arm | routes | Q8_0 decisions |
+  |---|---|---|
+  | baseline (`none`) | MMQ 1984 / MMVQ 581 | ne11=1 → mmvq; 2,4,7 → mmq |
+  | dflash2 | MMQ 4687 / MMVQ 3 | ne11=1 → mmvq; 2,4,5,7,8 → mmq |
+  | draft_simple | MMQ 13595 / MMVQ 759 | ne11=1 → mmvq; 2…9 → mmq |
+  | ngram_simple | MMQ 1984 / MMVQ 581 | identical to baseline |
+
+  This is `a6b4b5263`'s rule (`Q8_0: ne11 <= 1`) firing exactly as written: **every speculative
+  verify batch takes MMQ while greedy decode takes MMVQ.** Since that patch is "numerically-valid
+  (not bit-exact)" by its own commit message, it is now a **directly evidenced** candidate cause of
+  DF2-6's non-parity rather than a speculative one.
 
 ## The champion as built — 2026-08-27
 
