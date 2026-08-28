@@ -644,6 +644,31 @@ documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_r
       **Do NOT build a new rescore harness.** External method: `intake-1140#02` (published and
       citable). External evidence of magnitude: `intake-1141` measured one *unchanged* harness at
       0.800 and 0.547 on the same suite.
+      **ATTEMPTED 2026-08-28 (first real run, CPU-only) — run performed, band NOT emitted, root
+      cause documented, HELD pending the GPU judge lane.** Staged protocol executed from the
+      orchestrator repo (`core_v2_calibrate.py --n 300 --repeats 3 --seed 4242 --trial-id-base
+      900000`, tier-1 baseline pinned before repeat 0, core `tier_stratified_equal_thirds_v1_
+      seed_4242_n300_rot45000`, era E16-eval-history-scoped-quiescence-v10-quality) against the
+      CPU serving fleet (orchestrator :8000 → frontdoor 35B / worker gemma / ingest 80B lanes).
+      Repeat 1/3 completed clean on the protocol side (q=1.410, r=0.943, n=300, 4-wide
+      concurrency, eval_wall 14,033s ≈ 3.9h) but carried **17 infra-failed questions**, and
+      `build_band_artifact` is fail-closed on ANY degraded repeat — so no `.band.json` was
+      emitted and the run was stopped before repeats 2-3. **Corrected failure attribution (13:50Z
+      wrap):** 10× physreason `vision_unavailable` = MISSING IMAGES on disk, not a dead lane —
+      the PhysReason-full.zip (68 MB) sat unextracted in the HF cache (`datasets--zhibei1204--
+      PhysReason`); **extracted 2026-08-28 to `/mnt/raid0/llm/tmp/physreason/`, 0/2576 image
+      rows now missing** (vl images were already present, which is why vl scored clean on the
+      same worker_vision route). 5× architect_general `conn_refused`/`circuit_open` on
+      agentic/coder/gpqa_diamond/mmlu_pro = **generation-lane escalations to the GPU-resident
+      architect_general** (substring/multiple_choice scored, NOT judge calls — an
+      `LLM_JUDGE_ROLE=architect_critic` override would NOT have fixed them); these wait on the
+      GPU lane being realized again (operator: architect_general is GPU-hosted and occupied).
+      2× transient (placement + request timeout). **Band estimate once the GPU lane is back:
+      ~12h** (3 × ~3.9h measured + ~1h build/ingest/rows); the physreason data fix is already in
+      place so a re-run should be clean on that front. Evidence:
+      `/mnt/raid0/llm/epyc-inference-research/data/eval-tower-bands-2026-08-28/` (JSONL + driver
+      + waiter + ingest scripts). Pending: re-pin + re-run when architect_general (and
+      worker_vision for the image suites) are realized.
 - [ ] **EV-14b — Decide whether the measured band should BLOCK.** The only measured instrument (MAD)
       never blocks and never sees negative deltas; the only blocking resolution bound (3/n) is
       analytic. `self_criticism.py` already computes the right third state and discards it. Proposal:
