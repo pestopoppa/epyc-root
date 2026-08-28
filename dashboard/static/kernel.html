@@ -1104,6 +1104,10 @@ function renderCommandBand(d){
   if(refusal.detected){
     hypBits.push('<span style="color:var(--bad)">'+esc(refusal.type||"refused")+
       (refusal.stage?" · "+esc(refusal.stage):"")+"</span>");
+    // AK-VIS-1: `type` says a diff was refused; only `detail` says WHY -- e.g.
+    // "derives undeclared symbols in vecdotq.cuh". The server already computes it;
+    // it never rendered because `detected` was false for authoring refusals.
+    if(refusal.detail) hypBits.push(esc(String(refusal.detail).slice(0,160)));
   }
   if(stall.state&&stall.state!=="unknown"&&stall.state!=="none") hypBits.push("stall "+esc(stall.state));
   if(active&&!refusal.detected&&stall.state==="none") hypBits.push("screening");

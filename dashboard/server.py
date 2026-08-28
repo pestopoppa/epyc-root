@@ -11119,9 +11119,25 @@ def _discovery_activity(*, lock_held: bool, campaign_id: str | None,
         or isinstance(latest_iteration, dict)
         and latest_iteration.get("status") == "planner_refused")
     if refusal_type is None and isinstance(latest_iteration, dict):
+        # AK-VIS-1. `refusal.detected` is `refusal_type is not None`, so a status
+        # missing from this map renders NO refusal on the command band at all -- the
+        # operator sees an active hypothesis with no indication it was refused.
+        #
+        # `authoring_refused` was missing, and it is by far the most common failure:
+        # across campaigns v28-v34 it occurs 22 times against 1 `planner_refused`. The
+        # map carried `planner_contract_refused -> "authoring_refused"`, i.e. it
+        # produced the LABEL while never matching the status of that name. Measured on
+        # v33 and v34, whose turns ended `authoring_refused` and displayed nothing.
+        #
+        # The remaining refusal statuses the controller really writes are added for the
+        # same reason; each is a terminal turn outcome the operator needs to see.
         refusal_type = {
             "planner_refused": "planner_output_refusal",
+            "authoring_refused": "authoring_refused",
             "planner_contract_refused": "authoring_refused",
+            "authorization_refused": "authorization_refused",
+            "candidate_semantic_repeat_refused": "candidate_semantic_repeat_refused",
+            "portfolio_dnr_refused": "portfolio_dnr_refused",
             "critic_reject": "critic_refused",
         }.get(latest_iteration.get("status"))
         if latest_iteration.get("status") == "screen_refused":
