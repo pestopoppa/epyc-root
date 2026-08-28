@@ -158,6 +158,10 @@
   .cmd-step.bad{border-color:#7a2823;color:var(--bad)}
   /* the collapsed remainder — present but deliberately quiet */
   .cmd-step.muted{border-style:dashed;opacity:.65}
+  .obs-note>summary{cursor:pointer;list-style:none}
+  .obs-note>summary::-webkit-details-marker{display:none}
+  .obs-note>summary:after{content:" ⌄";color:var(--muted)}
+  .obs-note[open]>summary:after{content:" ⌃"}
   /* Explanations behind the freshness disclosure: readable, never the headline. */
   .fresh-why{margin-top:6px}
   .fresh-why>summary{cursor:pointer;color:var(--muted);font-size:11px}
@@ -892,8 +896,14 @@ function renderActivity(d){
 }
 
 function render(d){
+  // LEGIBILITY (2026-08-28). This is 223 characters of governance prose that never
+  // changes, sitting in the page's most valuable space on every load. It is a
+  // standing rule, not news: worth one glance, then noise. The label stays visible so
+  // the discipline is never implicit; the sentence itself is one click away.
   const notice = d.observation_notice || "Every number is an OBSERVATION; operator-only authorizes prod push.";
-  $("#observation").innerHTML='<b>OBSERVATION discipline.</b> '+esc(notice);
+  $("#observation").innerHTML='<details class="obs-note"><summary><b>OBSERVATION discipline</b>'
+    +' — no number here authorizes a deploy</summary><div style="margin-top:6px">'
+    +esc(notice)+'</div></details>';
   setBadge((d._freshness&&d._freshness.staleness_class)||"missing", d._freshness);
   renderReporting(d);
   renderProgression(d);
