@@ -3983,6 +3983,26 @@ _DISCOVERY_TERMINAL_STATE_KEYS = {
     "scientific_attempts", "state_sha256", "terminal_reason", "updated_at",
 }
 
+#: Keys a terminal v5 state MAY carry. Kept separate from the required set above
+#: because that set is matched by SUBSET-plus-known-optional, and a key listed as
+#: required would reject every campaign that legitimately never wrote it.
+#:
+#: CROSS-PLANE COUPLING (2026-08-28): the controller lives in another repo, so a key
+#: it adds to durable state rejects the whole terminal surface here until it is
+#: listed — the operator sees an unexplained blank, not a degraded panel.
+#:   champion_seeded_at / champion_seed_anchor_commit -- CH-2 always-exists champion.
+#:   portfolio_critic_revisions -- AK-VIS-2 critic-revision budget.
+#:   planner_provider_attempt -- PRE-EXISTING GAP: set on any provider transient and
+#:     persisted into terminal state, but previously listed only as v26-optional, so
+#:     any v5 campaign that hit a codex outage would have been rejected on
+#:     completion. Campaign v33 carries it today.
+#: test_dashboard_controller_state_contract.py fails when the controller grows
+#: another one.
+_DISCOVERY_TERMINAL_STATE_OPTIONAL = {
+    "champion_seeded_at", "champion_seed_anchor_commit",
+    "portfolio_critic_revisions", "planner_provider_attempt",
+}
+
 
 def _discovery_controller_state_hash(value: object) -> str | None:
     """Match discovery_controller._sha (ASCII-escaped canonical JSON)."""
@@ -4094,6 +4114,11 @@ _DISCOVERY_V26_STATE_OPTIONAL = {
     "portfolio_measurement_output_failures", "portfolio_skips",
     "portfolio_terminals", "portfolio_validations", "terminal_reason",
     "c6_admission_config",
+    # Same 2026-08-28 controller additions as the terminal set above. Listed here too
+    # so the v7/v8 live path accepts them when the controller moves to that schema —
+    # this gate rejects on ANY unlisted key (`set(state) - (REQUIRED | OPTIONAL)`).
+    "champion_seeded_at", "champion_seed_anchor_commit",
+    "portfolio_critic_revisions",
 }
 _DISCOVERY_V26_CHECKPOINT_STATES = {
     "discovery_authorization_refused",
@@ -6304,8 +6329,9 @@ def _discovery_portfolio_terminal_checkpoint(
     state_from_disk = (_strict_json_bytes(state_snapshot[0])
                        if state_snapshot is not None else None)
     if (not isinstance(state, dict) or state_from_disk != state
-            or set(state) !=
-            _DISCOVERY_TERMINAL_STATE_KEYS
+            or not _DISCOVERY_TERMINAL_STATE_KEYS.issubset(state)
+            or set(state) - (_DISCOVERY_TERMINAL_STATE_KEYS
+                             | _DISCOVERY_TERMINAL_STATE_OPTIONAL)
             or state.get("schema") != "epyc.autokernel.discovery_controller.v5"
             or state.get("authority") !=
             "nonpromotable_candidate_only_discovery"

@@ -344,17 +344,27 @@ function renderReporting(d){
   bits.push("artifact "+(f.artifact_present?"present":"absent"));
   bits.push("watchdog "+esc(wd.state||"—"));
   if(f.age_s!=null) bits.push("age "+(f.age_s>=86400?(f.age_s/86400).toFixed(1)+"d":(f.age_s/3600).toFixed(1)+"h"));
-  let h=bits.join(" · ");
-  if(wd.reason && wd.state!=="ok" && wd.state!=="unwatched") h+='<div style="margin-top:6px">'+esc(wd.reason)+'</div>';
-  // A PARTIAL report is not an absent one. `absence_means` is the registry's one
-  // declared sentence for this panel, so it is led into differently when some
-  // owners did report — otherwise the card reads "OBSERVED … NOBODY IS REPORTING"
-  // side by side, which is a third confusing state rather than a clearer one.
+  // LEGIBILITY (2026-08-28): the status line stays visible; every explanation goes
+  // behind a disclosure. This block used to render five stacked paragraphs — watchdog
+  // reason, unreported sections, the registry's `absence_means` essay and a
+  // producer/evidence line — as the FIRST thing on the page. That is a card hint
+  // presented as a headline: it buries the one fact a reader needs (is this fresh?)
+  // under prose that only matters once they have asked why.
   const partial = f.reporting==="observed" && Array.isArray(f.unreported) && f.unreported.length;
-  if(partial) h+='<div style="margin-top:6px">'+f.unreported.length+' of the producer\'s sections have NO PRODUCER: <code>'+esc(f.unreported.join(", "))+'</code></div>';
-  else if(Array.isArray(f.unreported)&&f.unreported.length) h+='<div style="margin-top:6px">unreported sections: <code>'+esc(f.unreported.join(", "))+'</code></div>';
-  if(f.absence_means) h+='<div style="margin-top:6px"'+(partial?' class="muted"':'')+'>'+(partial?"What a blank card here would mean: ":"")+esc(f.absence_means)+'</div>';
-  h+='<div style="margin-top:6px" class="muted">producer: '+esc(f.producer||"—")+' ('+esc(f.producer_repo||"—")+') · evidence: <code>'+esc(f.evidence||"—")+'</code></div>';
+  let h=bits.join(" · ");
+  if(partial) h+=' · <b>'+f.unreported.length+' section'+(f.unreported.length===1?"":"s")+' unreported</b>';
+
+  const notes=[];
+  if(wd.reason && wd.state!=="ok" && wd.state!=="unwatched") notes.push(esc(wd.reason));
+  if(Array.isArray(f.unreported)&&f.unreported.length)
+    notes.push((partial?"No producer for: ":"Unreported sections: ")+'<code>'+esc(f.unreported.join(", "))+'</code>');
+  // `absence_means` is the registry's one declared sentence for this panel, led into
+  // differently when some owners DID report — otherwise the card reads
+  // "OBSERVED … NOBODY IS REPORTING" side by side, a third confusing state.
+  if(f.absence_means) notes.push((partial?"If this card were blank: ":"")+esc(f.absence_means));
+  notes.push('producer: '+esc(f.producer||"—")+' ('+esc(f.producer_repo||"—")+') · evidence: <code>'+esc(f.evidence||"—")+'</code>');
+  h+='<details class="fresh-why"><summary>why this reading, and who reports it</summary>'
+    +notes.map(n=>'<div style="margin-top:6px">'+n+'</div>').join("")+'</details>';
   box.innerHTML=h;
 }
 
