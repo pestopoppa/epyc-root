@@ -1114,9 +1114,14 @@ function renderCommandBand(d){
     if(aggSub) aggSub.innerHTML=bits.join(" · ");
   } else {
     if(agg) agg.className="cmd-card warn";
-    if(aggSub) aggSub.textContent="no sealed cumulative receipt yet — the champion's "
-      + "measured effect vs production is unmeasured, not zero"
-      + (v.error?" ("+v.error+")":"");
+    // "unmeasured" would be FALSE here and the operator caught it: the champion has
+    // gated measurements against production (CH-4 no-regression, and DFlash2 at
+    // +28-48% on a serving path production cannot run at all). What is absent is a
+    // CAMPAIGN-sealed cumulative receipt, which is the only thing this card can read.
+    // Name the missing artifact, not a missing measurement — see CH-13.
+    if(aggSub) aggSub.innerHTML="no campaign-sealed cumulative receipt yet — "
+      + "operator-gated measurements are NOT shown here (CH-13)"
+      + (v.error?" ("+esc(v.error)+")":"");
   }
 
   // Card 2 — is the loop alive?

@@ -421,7 +421,45 @@ moment the champion advances**, and the champion advances by design.
       champion is built on), `ubatch_size` is REFUTED (the null arm proved on 2026-08-28), and
       `flash_attention` is CONFIG, NOT A MEMBER (a flag; `champion.py` requires source evidence).
       The funnel's own `champion: 0` was already saying this; the leaders simply were not labelled.
-- [ ] **CH-12 — the champion has no measured effect vs production yet.** The cumulative receipt is
-      absent, so the card correctly reports the effect as *unmeasured, not zero*. Producing one
-      requires a campaign that reaches a sealed cumulative performance operation — which is
-      precisely what AK-INST-1 unblocked. Re-check once v37 (or its successor) banks a candidate.
+- [x] **CH-12 — RETRACTED AND CORRECTED 2026-08-28. The champion DOES have a measured effect vs
+      production; what is missing is that evidence in the RECEIPT FORM the dashboard reads.** ✅
+
+      The original wording ("no measured effect vs production yet") was wrong, and the operator was
+      right to challenge it. It conflated two different things:
+
+      1. **The v27 cumulative performance receipt** — a specific sealed artifact produced by an
+         AutoKernel campaign's cumulative performance operation. That genuinely does not exist, and
+         no campaign has reached one (see AK-INST-1 for why: every campaign since the re-pin died at
+         preflight).
+      2. **The champion's measured effect vs production** — which EXISTS, was gated, and was
+         measured this session.
+
+      **What is measured, on the champion, against production:**
+
+      | measurement | result |
+      |---|---|
+      | `test-backend-ops` MUL_MAT / MUL_MAT_ID / FLASH_ATTN_EXT | 2/2 backends each |
+      | default path vs frozen anchor, Qwen3.8-27B pp512 | 748.34 → 768.83 (+2.74%) |
+      | default path vs frozen anchor, Qwen3.8-27B tg128 | 28.21 → 28.20 (−0.02%) |
+      | **DFlash2 vs MTP, in-flight 1 / 2 / 4 / 8** | **+28.4% / +48.9% / +47.0% / +47.8%** |
+
+      The DFlash2 row IS an effect versus production, not merely versus MTP: **frozen v9 cannot run
+      DFlash2 at all** — it rejects the GGUF with `wrong number of tensors; expected 81, got 58` —
+      so MTP at 54.5 / 104.9 t/s is production's *ceiling* for this model, and the champion reaches
+      70.0 / 155.0. That was measured across a 24-cell grid with a no-drafter attribution arm, per-slot
+      acceptance, and a paired `--kv-unified` control, and it replicated a prior independent campaign
+      at np=1 to three significant figures.
+
+      So the champion's standing is: **correctness proven, no regression on the default path, and a
+      +28–48% measured gain on the Qwen3.8-27B serving path that production cannot reach.**
+
+- [ ] **CH-13 (new, 2026-08-28) — manual gate evidence has no path into the receipt surface.** This
+      is the real gap CH-12 was groping at. The champion's best evidence (CH-4 validation, the DF2-5
+      grid, DF2-6 parity) came from operator-run gates, and the dashboard's aggregate card reads only
+      a campaign-produced cumulative performance receipt — so the strongest measured result in the
+      program is invisible to the surface that reports champion standing. This is the receipt-side
+      twin of CH-7 (the manual→champion *admission* pipeline): admission works, attestation does not.
+      Either teach the cumulative-receipt reader to accept an operator-sealed gate bundle, or emit
+      one from the manual gate harnesses. Until then the card must not imply absence of measurement —
+      it currently says "unmeasured, not zero", which is now itself inaccurate and is fixed alongside
+      this task.
