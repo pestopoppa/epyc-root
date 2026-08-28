@@ -49,7 +49,9 @@ EPYC_ROOT="$REPO"
 LOG_DIR="$REPO/logs"
 DEPLOY_SYNC_ENABLED=1
 DEPLOY_SYNC_INTERVAL_S=0
-log() { :; }
+# `log` must ECHO, not swallow: assertions below read its output, and a silent
+# stub made the lagging-tree assertion vacuous — it passed with the bug present.
+log() { echo "$*"; }
 eval "$(sed -n '/^DEPLOY_SYNC_STATE=/,/^}/p' "$SUP")"
 eval "$(sed -n '/^deploy_sync_age_s()/,/^}/p' "$SUP")"
 eval "$(sed -n '/^sync_dashboard_from_origin()/,/^}/p' "$SUP")"
@@ -83,6 +85,19 @@ sync_dashboard_from_origin
 [[ "$(cat "$REPO/dashboard/server.py")" == "LOCAL WORK IN PROGRESS" ]] \
   || fail "sync overwrote a locally-modified file — this is the no-reflog data loss case"
 pass "a locally-modified file is never overwritten"
+
+# --- 5b. a LAGGING tree must not permanently skip ---------------------------- #
+# Observed live on the first cycle after this shipped: the served tree legitimately
+# lags origin/main, so a file already deployed to origin/main content differs from
+# local HEAD and read as "someone is editing it" -- forever. The guard must compare
+# against origin/main before judging a local edit.
+git -C "$REPO" checkout -q -- dashboard/server.py 2>/dev/null || true
+git -C "$UP" show HEAD:dashboard/server.py > "$REPO/dashboard/server.py"   # == origin/main
+rm -f "$DEPLOY_SYNC_STATE"
+out="$(DEPLOY_SYNC_INTERVAL_S=0; sync_dashboard_from_origin 2>&1 || true)"
+grep -q "someone is editing it" <<<"${out}" \
+  && fail "a file already matching origin/main was reported as work-in-progress"
+pass "a lagging tree does not mistake deployed files for local edits"
 
 # --- 6. rate limiting actually limits ---------------------------------------- #
 DEPLOY_SYNC_INTERVAL_S=99999

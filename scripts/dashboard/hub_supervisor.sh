@@ -390,7 +390,18 @@ sync_dashboard_from_origin() {
   # Only files that DIFFER between the working tree's HEAD and origin/main.
   while IFS= read -r path; do
     [[ -n "${path}" ]] || continue
-    # Rule 2: never overwrite work in progress.
+    # ALREADY DEPLOYED? Compare against origin/main FIRST. The served tree
+    # legitimately lags origin/main, so "differs from local HEAD" is true of every
+    # correctly-deployed file — comparing only against HEAD makes the guard below
+    # fire forever and the sync never runs again. Observed live on the first cycle
+    # after this shipped, which is why the order is this way round.
+    if [[ -f "${EPYC_ROOT}/${path}" ]] \
+       && git -C "${EPYC_ROOT}" show "origin/main:${path}" 2>/dev/null \
+          | cmp -s - "${EPYC_ROOT}/${path}"; then
+      continue
+    fi
+    # Rule 2: never overwrite work in progress. Reached only when the file differs
+    # from origin/main, so a difference from HEAD here is a real local edit.
     if ! git -C "${EPYC_ROOT}" diff --quiet -- "${path}" 2>/dev/null; then
       log "deploy-sync: SKIP ${path} — locally modified, someone is editing it"
       skipped=$(( skipped + 1 ))
