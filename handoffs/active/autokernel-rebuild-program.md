@@ -29,7 +29,12 @@ why every prior reachability audit was wrong.
 - **P0 DONE** (root `7f86e383`) · **P1 DONE** · **P2 DONE** incl. the measured A/A floor ·
   **P3 DONE except two items deliberately unshipped** (anchor build cache, ccache — see P3) ·
   **P4.1 DONE** (the loop-design doc) · **P7 DONE** (research `10f0214e`).
-- **Next action:** P4 — build the ~1,500 LOC loop package alongside the current one.
+- **P4 loop package BUILT** (research `6408f685`): 8 files, **828 LOC** against a 3,000 budget
+  and against the 153,865 it replaces. Control flow is pure — every side effect injected — so
+  17 tests run in 0.05s with no GPU, no API key and no ROCm. **Its exit criterion is NOT met:**
+  ten consecutive real iterations need the external codex planner and hours of GPU.
+- **Next action:** run the new loop end to end (P4 exit). Until it passes, **P5 must not start** —
+  the strip is gated on the replacement being proven, and that gate is the point.
 - **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80):**
   single-pair p95 **2.175%** prefill, **3.452%** decode; **4 of 20 pure-noise decode pairs
   already exceed the loop's 3% nomination bar.** Five pairs bring those to 0.75% / 1.85%.
@@ -247,17 +252,34 @@ failure mode this program exists to end.
   - [x] P4.1 ✅ 2026-08-28 — `docs/guides/agent-workflows/agent-loop-design.md` — the loop block as the normative spec,
         plus the convention that agent-loop work opens with one. `program.md` in the loop package
         carries the same block as its first section.
-  - **Exit:** ten consecutive iterations, zero crashes, ≥6 reaching a measurement, ≥1 accepted patch
-    committed onto the champion branch and re-measurable from a fresh checkout. Transcripts must show
-    a **completed loopback** — a pass-1 rejection whose reason appears verbatim in the planner's next
-    hypothesis, which is then accepted, and the same for pass 2.
+  - **Exit — NOT MET.** Ten consecutive iterations, zero crashes, ≥6 reaching a measurement, ≥1
+    accepted patch committed onto the champion branch and re-measurable from a fresh checkout.
+    Transcripts must show a **completed loopback** — a pass-1 rejection whose reason appears
+    verbatim in the planner's next hypothesis, which is then accepted, and the same for pass 2.
+    The loopback is proven **in test** (mutation-tested three ways: discarding the pass-1 reason,
+    charging a patch rejection to the hypothesis budget, and ignoring the noise floor each fail
+    exactly the two tests that should catch them). It is **not** proven against a real planner on
+    real hardware, and this handoff does not claim it is.
 
 - [ ] **P5 — Strip.** Only after P4 proves the replacement. Delete `FOOTPRINT.md` and
       `test_campaign_footprint.py` **first**, so later deletions stop costing a regeneration each.
   - **Exit:** after each deletion batch the loop still passes P4's criterion. Not "tests green" —
     *the loop still measures*.
 
-- [ ] **P6 — Reconnect the surfaces.** Rewrite the `dashboard/server.py` kernel surface (~11,500 of
+- [ ] **P6 — Reconnect the surfaces.** CI DONE (root `.github/workflows/tests.yml`); the
+      surface rewrite is not started.
+
+      **Measured baseline for the red tests, so the next session does not re-derive it:** the
+      dashboard autokernel suites are **11 failed / 60 passed at `origin/main`** — verified in a
+      clean worktree, so they are pre-existing and unrelated to this program's changes. They fail
+      because `server.py` pins content digests of *another repository's* source modules (29 paths,
+      47 digests). **Do not re-pin them.** That is the defect P6 exists to remove, and re-pinning
+      digests on code slated for replacement only re-arms the landmine. Rewrite, then delete the
+      6 obsolete test files.
+
+      One audit claim did NOT reproduce: `tests/test_dashboard_operator_gates.py:51-57` *does*
+      override `OPERATOR_GATE_BUNDLE_JSON`, so "zero of 168 override it" was overstated. The
+      hermeticity concern stands for the autokernel suites specifically. Rewrite the `dashboard/server.py` kernel surface (~11,500 of
       12,841 function/class lines) with **no cross-repo pinning** — it currently pins 29 producer
       source paths and 47 SHA-256 digests of another repo's modules, so renaming a producer module
       silently drops a deployment off the live surface. Repoint the vidya adapters. Fix the 40
@@ -270,6 +292,11 @@ failure mode this program exists to end.
       end-to-end test that cannot pass vacuously (a deliberately-slower patch must be rejected and a
       known-faster patch accepted, both through the real build and the real benchmark); the weekly
       artifact is the scoreboard, and a week with no rows reports exactly that.
+      **Note on the guard itself:** its first doc-coupling detector was VACUOUS — a regex over
+      assert lines found zero hits against `test_readme.py`, which does pin README prose, because
+      the real assertions compare a module constant against `self.text` rather than an inline
+      literal. It now detects the coupling, and a test fails if it ever stops finding
+      `test_readme.py`, so the vacuous version cannot return silently.
 
 ---
 

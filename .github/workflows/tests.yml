@@ -1,0 +1,57 @@
+name: tests
+
+# 40 dashboard tests sat RED, committed, for a day. `.github/workflows/` contained
+# only `docs.yml`, which never invokes pytest, so nothing on a push would have said
+# so. This workflow is that missing signal.
+#
+# It runs the HERMETIC suites -- the ones that need no GPU, no ROCm toolchain, and no
+# live runtime state under /mnt/raid0. Suites that read production state are excluded
+# BY NAME below rather than silently skipped, because a green run over an empty
+# selection is worse than no run at all.
+
+on:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'dashboard/**'
+      - '.github/workflows/tests.yml'
+  pull_request:
+
+jobs:
+  hermetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml
+
+      - name: Belief substrate
+        # The vidya adapters and their ladder: pure projection, no hardware.
+        run: python -m pytest -q tests/vidya/
+
+      - name: Handoff index integrity
+        # Coverage, schema and freshness of the index rollup. Must exit 0 before a
+        # commit lands, and now does so on a push as well.
+        run: python3 scripts/handoffs/index_state.py --check
+
+      - name: Report what was NOT run
+        # Named, not hidden. A suite excluded without saying so reads as coverage.
+        if: always()
+        run: |
+          echo "NOT run in CI, and why:"
+          echo "  tests/test_dashboard_autokernel_*.py  - read live deployment state"
+          echo "      under /mnt/raid0/llm/autokernel and pin content digests of"
+          echo "      another repository's source modules. 11 of these are RED at"
+          echo "      origin/main as of 2026-08-28; they are slated for rewrite in"
+          echo "      P6 of handoffs/active/autokernel-rebuild-program.md, and"
+          echo "      re-pinning digests on code about to be replaced would only"
+          echo "      re-arm the landmine."
+          echo "  anything requiring an MI210, ROCm, or a llama.cpp build tree."
