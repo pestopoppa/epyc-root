@@ -125,3 +125,51 @@ The constitution requires the custody at CLAIM time (P-GPU-1), not at EXPERIMENT
 run that is wrong just gets refused later. Long-term the discovery loop should be re-scoped so the
 sealed apparatus wraps the *promotion* boundary and the *screening* loop is thin. Filing that as a
 task would be premature: it needs an operator design session, not an implementer.
+
+
+## 2026-08-28 — the planner was never told why its diffs were refused
+
+Investigating why v33 hit the identical authoring refusal on two consecutive turns.
+Root cause found, fixed and merged (research `9516ac05`); two follow-ups filed below.
+
+**The defect.** `prior_authoring_refusals` — the channel that tells the planner why its
+previous diff was rejected — filtered on `status == "planner_refused"`. The status actually
+written for a rejected diff is `authoring_refused`. Real tally across campaigns v28–v34:
+
+| status | occurrences |
+|---|---:|
+| `authoring_refused` | **22** |
+| `planner_refused` | 1 |
+
+So for **22 of 23** authoring failures the planner got no feedback and re-derived rejected work
+blind. The field's own name said `authoring_refusals` while its predicate excluded the status of
+that name.
+
+**Measured consequence (v33, `akh-v2-q5-type-specific-dequant`):** turns 2 and 3 produced two
+*different* diffs (distinct `operation_key`s) with a byte-identical refusal — `committed diff in
+'ggml/src/ggml-cuda/vecdotq.cuh' derives undeclared symbols ['<file-scope>']`. Those strikes hit
+the 3-strike `bounded_authoring_skip`, retiring the hypothesis for the campaign **without ever
+testing it**. v34 reproduced it: `authoring_refused` on turn 1. Fixed and relaunched as **v35**.
+
+**What the investigation CLEARED.** My initial suspicion — that the do-not-repeat ledger was
+failing to suppress re-proposals — was **wrong**. The ledger and the bounded-skip are correct:
+`portfolio_authoring_failures` reached 3, the hypothesis was skipped with
+`scientific_terminal: false` (campaign-scoped, not permanent), and provider transients are
+explicitly excluded from the count, as they should be. The ledger was fine; the planner was blind.
+
+- [ ] **AK-VIS-1 — authoring refusals are invisible on the dashboard.** The refusal surface keys on
+      the telemetry event `planner_refused` (`dashboard/server.py:3245,3274`), and **no
+      `authoring_refused` row emits a telemetry event at all** — verified on v33, where every row
+      has `telemetry_event: None`; the only assignment (`discovery_controller.py:2960`) writes
+      `planner_refused`. So all 22 authoring refusals are invisible to the operator, who asked
+      specifically for visibility into *what hypotheses and insights the planner/critic are
+      structuring experiments around*. Not fixed here on purpose: the dashboard's projection is
+      strict (`set(projected) != {...}` refusals), so emitting a new event name without the
+      matching dashboard-side contract risks breaking the page. Per `dashboard/README.md` this needs
+      the data contract **and** a registry entry, health probe and freshness envelope together.
+- [ ] **AK-VIS-2 — `critic_revise` consumes an authoring-failure strike.**
+      `discovery_controller.py:3624` calls `_note_portfolio_authoring_failure` for
+      `critic_<decision>` rows, so a critic asking for a revision — the mechanism by which
+      proposals are supposed to improve — counts toward the same 3-strike
+      `bounded_authoring_skip` as a malformed diff. In v33 it supplied the third strike. Decide
+      whether critic revisions deserve their own (larger) budget, or none.
