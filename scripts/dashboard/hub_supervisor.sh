@@ -58,6 +58,11 @@ POLL_INTERVAL="${POLL_INTERVAL:-15}"     # seconds between healthy polls
 MAX_BACKOFF="${MAX_BACKOFF:-300}"        # cap on restart backoff (seconds)
 HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-5}"    # per-probe curl timeout (seconds)
 STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-30}" # wait for /health after a relaunch
+# Deployment sync: how often to look for dashboard code landed on origin/main.
+# A network fetch, so it is rate-limited independently of POLL_INTERVAL.
+DEPLOY_SYNC_INTERVAL_S="${DEPLOY_SYNC_INTERVAL_S:-300}"
+# Set to 0 to disable the sync entirely (the watchdog keeps working without it).
+DEPLOY_SYNC_ENABLED="${DEPLOY_SYNC_ENABLED:-1}"
 
 LOG_DIR="${EPYC_ROOT}/logs"
 SUP_LOG="${LOG_DIR}/hub_supervisor.log"       # this supervisor's own log
@@ -332,6 +337,88 @@ hub_source_is_newer() {
   (( src > started + STALE_SRC_SKEW_S ))
 }
 
+# --------------------------------------------------------------------------- #
+# Deployment sync — bring dashboard code landed on origin/main into the SERVED tree
+# --------------------------------------------------------------------------- #
+#
+# WHY (2026-08-28). The stale-source watchdog below answers "is the running hub
+# older than dashboard/ ON DISK". It was working correctly and still reported
+# nothing, because nothing ever updated dashboard/ on disk: the hub serves
+# ${EPYC_ROOT} directly, that tree sat 35 commits behind origin/main, and four
+# dashboard fixes published that day were invisible for hours. The watchdog closed
+# "committed but not restarted"; this closes "committed but never arrived".
+#
+# THREE SAFETY RULES, each protecting something this repo has actually lost before:
+#
+#   1. NEVER touch the git INDEX. Files are written with `git show origin/main:path >
+#      path`, never `git checkout --`. ${EPYC_ROOT} is a SHARED clone: a staged file
+#      rides into whatever a peer commits next, under their name.
+#   2. NEVER overwrite a locally-modified file. If the working copy differs from
+#      local HEAD, someone is editing it — skip it and say so. `git checkout --` on
+#      a peer's edit reverts it with no conflict and NO REFLOG.
+#   3. NEVER move the branch pointer, and never push. The served branch legitimately
+#      carries other sessions' unpushed commits; reconciling those is not a
+#      watchdog's decision.
+#
+# Scope is dashboard/ ONLY. This is a dashboard watchdog; it has no business
+# advancing handoffs, scripts, or anyone else's work.
+DEPLOY_SYNC_STATE="${LOG_DIR}/hub_supervisor.deploy_sync"
+
+# Seconds since the last sync attempt, or a large number if never.
+deploy_sync_age_s() {
+  local last now
+  [[ -f "${DEPLOY_SYNC_STATE}" ]] || { echo 999999; return 0; }
+  last="$(cat "${DEPLOY_SYNC_STATE}" 2>/dev/null || echo 0)"
+  [[ "${last}" =~ ^[0-9]+$ ]] || { echo 999999; return 0; }
+  now="$(date +%s)"
+  echo $(( now - last ))
+}
+
+# Copy dashboard/ files that origin/main has and the working tree does not.
+# Returns 0 always: a deployment sync must never take the watchdog down with it.
+sync_dashboard_from_origin() {
+  local changed=0 path skipped=0
+  [[ "${DEPLOY_SYNC_ENABLED}" == "1" ]] || return 0
+  (( $(deploy_sync_age_s) >= DEPLOY_SYNC_INTERVAL_S )) || return 0
+  date +%s > "${DEPLOY_SYNC_STATE}" 2>/dev/null || true
+
+  git -C "${EPYC_ROOT}" fetch origin --quiet >/dev/null 2>&1 || {
+    log "deploy-sync: fetch failed (offline?) — leaving the served tree alone"
+    return 0
+  }
+
+  # Only files that DIFFER between the working tree's HEAD and origin/main.
+  while IFS= read -r path; do
+    [[ -n "${path}" ]] || continue
+    # Rule 2: never overwrite work in progress.
+    if ! git -C "${EPYC_ROOT}" diff --quiet -- "${path}" 2>/dev/null; then
+      log "deploy-sync: SKIP ${path} — locally modified, someone is editing it"
+      skipped=$(( skipped + 1 ))
+      continue
+    fi
+    # A file deleted upstream is left in place deliberately: removing a served file
+    # is not something a watchdog should decide unattended.
+    if ! git -C "${EPYC_ROOT}" cat-file -e "origin/main:${path}" 2>/dev/null; then
+      log "deploy-sync: SKIP ${path} — absent on origin/main (deletion is operator work)"
+      skipped=$(( skipped + 1 ))
+      continue
+    fi
+    # Rule 1: write the FILE, never the index.
+    if git -C "${EPYC_ROOT}" show "origin/main:${path}" > "${EPYC_ROOT}/${path}" 2>/dev/null; then
+      log "deploy-sync: updated ${path} from origin/main"
+      changed=$(( changed + 1 ))
+    else
+      log "deploy-sync: FAILED to write ${path}"
+    fi
+  done < <(git -C "${EPYC_ROOT}" diff --name-only HEAD origin/main -- dashboard/ 2>/dev/null || true)
+
+  if (( changed > 0 )); then
+    log "deploy-sync: ${changed} dashboard file(s) updated; the stale-source check restarts the hub"
+  fi
+  (( skipped > 0 )) && log "deploy-sync: ${skipped} file(s) skipped (see reasons above)"
+  return 0
+}
+
 check_hub_stale_source() {
   local src rc=0
   # `|| rc=$?`, never `cmd; rc=$?`. Under `set -e` a FUNCTION returning non-zero as
@@ -378,6 +465,16 @@ cmd_loop() {
   while true; do
     if health_ok; then
       reconcile_hub_pid
+      # DEPLOYMENT (2026-08-28). Both of these ran in `cmd_once` and NEITHER ran
+      # here — and `loop` is the mode the long-lived supervisor actually uses. So a
+      # healthy hub serving week-old code was never noticed by the running
+      # watchdog, only by the cron-style one-shot nobody invokes.
+      #
+      # Order matters: sync first so the stale-source check sees the new mtimes on
+      # the same pass and restarts once, rather than noticing them a cycle later.
+      sync_dashboard_from_origin
+      # A HEALTHY hub can still be the wrong hub.
+      check_hub_stale_source
       backoff="${POLL_INTERVAL}"
       sleep "${POLL_INTERVAL}"
       continue
