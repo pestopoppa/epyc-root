@@ -186,3 +186,71 @@ explicitly excluded from the count, as they should be. The ledger was fine; the 
       stay `scientific_terminal: false`. A critic **reject** deliberately still counts — the
       proposal was judged unsound, not merely improvable. Tests replay v33's exact sequence and
       are mutation-tested.
+
+
+## 2026-08-28 — v36 died at preflight: the champion-as-instrument ruling was refused in code
+
+The dashboard reported `stalled`; it was not a stall. Campaign **v36 was dead** — supervisor gone,
+4 turns, **0 scientific attempts** — and the real cause was in the live payload the whole time:
+
+```
+RuntimeError: shared source-discovery reward requires the exact sealed 81bf32f11
+timed-output instrument
+```
+
+A hard preflight refusal on **every** attempt, not a slow stage.
+
+**CH-3 and the runner were in direct contradiction, and the runner won silently.** CH-3 made the
+aggregate champion the campaign's instrument so gains compound. But two gates in
+`run_autokernel_gpu_discovery.py` compared the anchor arm's source commit for **equality** against
+`READY_CONTINUE_INSTRUMENT_COMMIT` (`5bbcc5498`, the original reviewed instrument). A
+champion-instrumented campaign can never satisfy equality, so every campaign since the re-pin was
+refused before it could do any science. This is the mechanism behind v33–v36 all ending at 0.
+
+**Fixed by accepting the instrument LINEAGE** (research `23e9be47`). What the gate protects is that
+the timed-output oracle carries the reviewed measurement apparatus, and a descendant does: the
+champion is built ON the instrument (its own review receipt enforces the delta) and
+`tests/test-autokernel-ready-continue-contract.py` is **byte-identical** between `5bbcc5498` and
+champion `270b48ed6` — which `READY_CONTINUE_CONTRACT_SHA256` pins independently. Ancestry plus
+that unchanged contract blob is the same guarantee equality gave; equality merely also forbade the
+champion. **The gate keeps its teeth**: frozen production v9 predates the instrument and is still
+refused, asserted rather than assumed.
+
+- [x] **AK-INST-1 — the timed-output gates must accept a champion instrument.** ✅ 2026-08-28
+      (research `23e9be47`). Mutation-tested: collapsing the helper back to equality fails
+      `test_a_champion_built_on_the_instrument_is_accepted`. Suite 56 passed, including the
+      pre-existing assertion that the guard still raises for a non-instrument anchor. The git tree
+      is resolved from `--anchor-build` (the path `build_identity` already runs `git -C` in);
+      a first attempt used a non-existent `--instrument-path` argument and would have thrown.
+- [x] **AK-MSG-1 — make the authoring-refusal message actionable.** ✅ 2026-08-28 (research
+      `4d2fa807`). The journal line read `derives undeclared symbols ['<file-scope>']` — naming a
+      "symbol" that exists nowhere in the source, omitting what the proposal DID declare. Three
+      audiences read it and none can ask a follow-up: the planner (fed back since `9516ac05`), the
+      dashboard command band, and a human. It now states what changed, what was declared, and that
+      `<file-scope>` means a hunk outside any function body.
+- [ ] **AK-INST-2 — audit for OTHER hardcoded instrument pins.** `READY_CONTINUE_INSTRUMENT_COMMIT`
+      was found only because it killed a campaign. Any other equality comparison against a fixed
+      instrument/production commit will fail the same way the next time the champion advances.
+      Grep the discovery plane for 40-hex constants compared with `==` and convert the ones that
+      mean "descends from the reviewed instrument".
+
+## 2026-08-28 — dashboard deployment gap (the reason four fixes were invisible)
+
+Landed dashboard code never reached the served tree: the hub serves `${EPYC_ROOT}` directly and
+that tree sat **35 commits behind** origin/main. Separately, `cmd_loop` called neither the sync nor
+the pre-existing `check_hub_stale_source` — both ran only in `cmd_once`, the cron-style one-shot
+nobody invokes. The staleness watchdog was correct and simply unreachable on the path in use.
+
+- [x] **AK-DEPLOY-1 — the supervisor deploys landed dashboard code and restarts the hub.** ✅
+      2026-08-28 (epyc-root `2dbf5dc1`, `7adc4127`, `fc9502ab`). Proven live: the served file was
+      reverted by hand and the supervisor repaired it unattended, then restarted the hub. Three
+      safety rules, each mutation-tested — never writes the git index, never overwrites work in
+      progress, never moves the branch or pushes; scope is `dashboard/` only.
+      **The predicate took three attempts and the first two failed by looking like success**:
+      comparing to local HEAD calls every correctly-deployed file a hand edit, because the served
+      tree deliberately lags. It now judges by PROVENANCE — a blob this project has published for
+      that path is a deployment; one that never existed on origin/main is someone's work.
+- [ ] **AK-DEPLOY-2 — the served tree still drifts outside `dashboard/`.** The sync is deliberately
+      scoped, so handoffs, scripts and progress on the served tree keep lagging origin/main with no
+      reconciler. Decide whether anything beyond `dashboard/` should auto-advance, or whether the
+      served tree should simply be pinned and read-only.

@@ -385,3 +385,43 @@ Read of `champion.py` before writing any code:
   that derives the production `AnchorIdentity` (including per-backend artifact digests) from the
   verified frozen tree. The build-recipe carrier (config arms) is a separate field the champion
   record does not model yet — that part is genuinely new.
+
+
+## 2026-08-28 — the champion card asserted something false, and CH-3 had a second cost
+
+Two consequences of CH-3 ("the instrument IS the champion") surfaced only once the dashboard was
+made legible. Both are recorded here because they are properties of the champion model, not of the
+dashboard.
+
+**1. The card said "equals production (seeded)" while the champion carried DFlash2 and MoE-Spec.**
+It reported the campaign's champion RECORD (seeded from the frozen production anchor
+`0db32c06e3e5`) and counted `members` from *this campaign's* banked iteration rows — zero on a
+fresh campaign — while the champion KERNEL the campaign screens against is the sealed instrument
+pin `270b48ed6`. Two different objects, conflated, asserting the wrong one as fact about work done
+the night before. Fixed (epyc-root `42033897`): the card reports the instrument branch/commit and
+whether that commit differs from frozen production, which is a commit comparison rather than a
+count, so a champion loaded by manual admission reads as loaded from turn zero.
+
+**The aggregate candidate and the champion are ONE object** — the page had drawn two cards that
+disagreed with each other. There is now one.
+
+**2. CH-3 was refused in code and killed four campaigns.** The timed-output gates compared the
+anchor arm's source commit for equality against the ORIGINAL instrument, so no
+champion-instrumented campaign could pass preflight. See **AK-INST-1** in
+[`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). This is the standing hazard
+of the champion-as-instrument design: **anything that pins the instrument by equality breaks the
+moment the champion advances**, and the champion advances by design.
+
+- [x] **CH-10 — the champion's dashboard identity is the instrument pin, not the seeded record.**
+      ✅ 2026-08-28 (epyc-root `42033897`). Mutation-tested: restoring the "equals production"
+      wording fails `test_a_champion_ahead_of_production_is_never_called_equal_to_it`.
+- [x] **CH-11 — lane leaders now state why they are not champion members.** ✅ 2026-08-28. The
+      hero cards showed bare percentages that read as uncollected gains. Three of the four headline
+      leaders cannot be collected at all: `GGML_IQK` is ALREADY IN PRODUCTION (in v9, which the
+      champion is built on), `ubatch_size` is REFUTED (the null arm proved on 2026-08-28), and
+      `flash_attention` is CONFIG, NOT A MEMBER (a flag; `champion.py` requires source evidence).
+      The funnel's own `champion: 0` was already saying this; the leaders simply were not labelled.
+- [ ] **CH-12 — the champion has no measured effect vs production yet.** The cumulative receipt is
+      absent, so the card correctly reports the effect as *unmeasured, not zero*. Producing one
+      requires a campaign that reaches a sealed cumulative performance operation — which is
+      precisely what AK-INST-1 unblocked. Re-check once v37 (or its successor) banks a candidate.

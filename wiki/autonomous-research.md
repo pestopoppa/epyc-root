@@ -1897,3 +1897,47 @@ production v9 was not modified, rebuilt, or executed anywhere in this window.
 - [ROCm verify/profile backend](../handoffs/active/rocm-verify-profile-backend.md) — INF-48 status
   "v27 C6 launch boundary remains open": the rejected `91a75a05` carrier list and the two-process
   oracle/Ghost wiring as the owning next action.
+
+---
+
+## A ratified design can be refused in code, silently, for four campaigns (2026-08-28)
+
+AutoKernel produced **zero scientific attempts across campaigns v33–v36**. The cause was not the
+search, the planner, or the hardware. A ruling was adopted at the design level and contradicted by
+a constant in the runner, and the runner won every time without anyone being told.
+
+The ruling: the aggregate **champion** becomes the campaign's measurement instrument, so gains
+compound instead of being re-derived against a fixed anchor forever. The contradiction: two
+preflight gates compared the anchor arm's source commit for **equality** against the original
+reviewed instrument. A champion-instrumented campaign cannot satisfy equality, so every attempt
+died at preflight with a message naming a commit nobody was looking for.
+
+Three properties made this expensive rather than obvious:
+
+- **The failure looked like a stall.** The dashboard reported `stalled`, so it read as slowness.
+  Only the payload's `stall.detail` carried the RuntimeError, and only once the page was made
+  legible did anyone see it.
+- **The healthy dispositions masked it.** Turns ended `planner_transient`, `critic_revise`,
+  `authoring_refused` — all legitimate outcomes that spend no science budget. A campaign can look
+  busy and productive while being structurally incapable of producing a result.
+- **The pin was invisible to the design.** Nothing linked "the instrument may now advance" to "some
+  code compares the instrument by equality". It was found only because it killed a campaign.
+
+**The generalisable rule: a design that makes an identity MOVE is incompatible with any code that
+pins that identity by equality.** When adopting such a design, grep the plane for equality
+comparisons against the thing that will now move, before running anything. The fix here was to
+compare by *lineage* — descends-from plus an independently pinned contract blob — which preserves
+what the gate protected (the oracle carries the reviewed apparatus) while permitting the movement
+the design requires. Frozen production still fails the check, asserted rather than assumed.
+
+**Corollary for observability**: the loop's own funnel had reported `champion: 0` throughout, and
+the leaders shown beside it were a mix of already-in-production, config-only and refuted arms. An
+autonomous loop's dashboard must distinguish *cannot be collected* from *not yet collected*, or a
+reader infers progress from numbers that can never move.
+
+### Source References (2026-08-28)
+
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-INST-1, the v36 postmortem and the lineage fix
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-3's second cost, CH-10/CH-11
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2 gates the champion carries
+
