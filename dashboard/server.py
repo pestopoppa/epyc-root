@@ -129,6 +129,63 @@ KERNEL_PROGRESSION_JSON = Path(os.environ.get(
     "/mnt/raid0/llm/autokernel/surface/kernel_progression.json"))
 KERNEL_PROGRESSION_SCHEMA = "epyc.autokernel.progression.v1"
 
+#: Operator-gated manual research evidence for the champion.
+#:
+#: The champion surface previously read ONLY a campaign-produced cumulative receipt, so
+#: manual gate evidence -- the strongest measured result in the program -- was invisible
+#: to the surface reporting champion standing. Manual ADMISSION into the champion
+#: already worked (DFlash2 and MoE-Spec arrived that way); manual ATTESTATION did not,
+#: which broke the loop "do manual research -> update the champion -> see its standing".
+#:
+#: Deliberately a SEPARATE carrier, never a forged cumulative receipt: that receipt's
+#: authority derives from a chain only a campaign builds, and manufacturing one would
+#: launder operator evidence into campaign authority. This bundle declares
+#: `authority: operator_gated_manual_research` and `promotion_claim: false`, and the UI
+#: labels it so no reader can mistake which produced a number.
+OPERATOR_GATE_BUNDLE_JSON = Path(os.environ.get(
+    "OPERATOR_GATE_BUNDLE_JSON",
+    "/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json"))
+OPERATOR_GATE_BUNDLE_SCHEMA = "epyc.autokernel.operator_gate_bundle.v1"
+
+
+def _read_operator_gate_bundle() -> dict:
+    """Read the operator-gated bundle, or say why it is unavailable.
+
+    Refuses anything that does not declare the exact schema AND
+    `authority: operator_gated_manual_research` AND `promotion_claim: false` -- a file
+    claiming more than operator authority is rejected outright rather than displayed
+    with its claim trimmed.
+    """
+    try:
+        raw = OPERATOR_GATE_BUNDLE_JSON.read_bytes()
+    except OSError as exc:
+        return {"available": False, "error": str(exc)}
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return {"available": False, "error": f"malformed bundle: {exc}"}
+    if not isinstance(value, dict):
+        return {"available": False, "error": "bundle is not an object"}
+    if value.get("schema") != OPERATOR_GATE_BUNDLE_SCHEMA:
+        return {"available": False, "error": "wrong bundle schema"}
+    if (value.get("authority") != "operator_gated_manual_research"
+            or value.get("promotion_claim") is not False):
+        return {"available": False,
+                "error": "bundle claims authority it may not have"}
+    champion = value.get("champion") if isinstance(value.get("champion"), dict) else {}
+    headline = value.get("headline") if isinstance(value.get("headline"), dict) else None
+    gates = [g for g in (value.get("gates") or []) if isinstance(g, dict)]
+    return {
+        "available": True,
+        "champion_commit": champion.get("commit"),
+        "headline": headline,
+        "gates": [{"gate": g.get("gate"), "status": g.get("status"),
+                   "claim": g.get("claim")} for g in gates],
+        "gates_missing": value.get("gates_missing") or [],
+        "caveat": value.get("caveat"),
+        "bundle_sha256": value.get("bundle_sha256"),
+    }
+
 # The two contract versions the hub reads. Copied as STRINGS on purpose: the hub
 # is stdlib-only and must never import epyc-inference-research to render a page
 # (a consumer that needs its producer's code installed is a consumer that goes
@@ -13312,6 +13369,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                    (selected["producer_stamp"] or selected["config_stamp"])
                    if selected["launched"] else
                    selected["config_stamp"])
+    operator_gates = _read_operator_gate_bundle()
     state_view = None
     if state is not None:
         iterations = state.get("iterations") if isinstance(state.get("iterations"), list) else []
@@ -13404,6 +13462,9 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
         "telemetry_note": ("Actor prompts, model text, commands, environment, and credentials are "
                            "never exported; only controller-owned lifecycle facts and hashes."),
         "v27_cumulative": _v27_cumulative_projection(AUTOKERNEL_DEPLOYMENTS_ROOT),
+        # Operator-gated manual research, shown BESIDE the campaign receipt and never
+        # in place of it, so a reader can always tell which produced a number.
+        "operator_gates": operator_gates,
     }
     obs = panels.Observation(
         artifact_present=True, timestamp=observed_ts,
@@ -13464,6 +13525,7 @@ def kernel_payload() -> dict:
     # Additive discovery/funnel projection.  It cannot alter any strict section,
     # freshness watermark, campaign decision, champion, or promotion authority.
     data["_progression"] = _read_kernel_progression()
+    data["_operator_gates"] = _read_operator_gate_bundle()
     # Live implementation and calibration activity is useful even while the
     # first campaign contract is absent.  It stays separate from the Observation
     # above so a new commit or A/A result can never resurrect a dead controller.

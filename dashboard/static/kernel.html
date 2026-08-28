@@ -222,6 +222,7 @@
     <h2>Current AutoKernel state <span class="tag">derived from durable transitions</span></h2>
     <div id="ak-live-summary" class="live-summary"><div class="empty">connecting to controller state…</div></div>
     <div id="ak-proposal" class="proposal-box"></div>
+    <div id="ak-opgates" class="proposal-box"></div>
     <div id="ak-live-last-transition" class="last-transition">awaiting the first producer transition…</div>
     <details id="ak-live-details" class="live-detail">
       <summary>Pipeline, checkpoint and full transition timeline</summary>
@@ -1124,9 +1125,24 @@ function renderCommandBand(d){
     // +28-48% on a serving path production cannot run at all). What is absent is a
     // CAMPAIGN-sealed cumulative receipt, which is the only thing this card can read.
     // Name the missing artifact, not a missing measurement — see CH-13.
-    if(aggSub) aggSub.innerHTML="no campaign-sealed cumulative receipt yet — "
-      + "operator-gated measurements are NOT shown here (CH-13)"
-      + (v.error?" ("+esc(v.error)+")":"");
+    // No CAMPAIGN receipt. That is not the same as no measurement: operator-run gates
+    // may have measured this champion against production, and until CH-13 that
+    // evidence had nowhere to appear. Show it, labelled, so the two authorities are
+    // never confused for one another.
+    const og=d.operator_gates||{};
+    const ogh=og.available?(og.headline||{}):null;
+    if(ogh && typeof ogh.effect_fraction==="number"){
+      const p2=ogh.effect_fraction*100;
+      if(agg) agg.className="cmd-card "+(ogh.positive?"ok":"fail");
+      if(aggSub) aggSub.innerHTML='<b>'+(p2>=0?"+":"")+p2.toFixed(1)+'%</b> '
+        +esc(ogh.summary||"")
+        +' · <b>OPERATOR-GATED</b> (no campaign receipt; carries no promotion authority)';
+    } else {
+      if(agg) agg.className="cmd-card warn";
+      if(aggSub) aggSub.innerHTML="no campaign-sealed cumulative receipt, and no "
+        + "operator-gated bundle either — champion standing is unmeasured"
+        + (v.error?" ("+esc(v.error)+")":"");
+    }
   }
 
   // Card 2 — is the loop alive?
@@ -1258,6 +1274,27 @@ function renderCommandBand(d){
 // "what is being tried" nor "why was it accepted" -- while the controller had both in
 // durable state all along. These are validated structured actor fields, not raw
 // stdout, which is what makes them safe to show verbatim.
+function renderOperatorGates(d){
+  const box=$("#ak-opgates"); if(!box) return;
+  const og=d.operator_gates||{};
+  if(!og.available){ box.innerHTML=""; box.style.display="none"; return; }
+  box.style.display="";
+  let h='<div class="pl">Operator-gated evidence · manual research, no promotion authority</div>';
+  const hd=og.headline||{};
+  if(hd.summary) h+='<div class="pv"><b class="'+(hd.positive?"ok":"fail")+'">'
+    +esc(hd.summary)+'</b></div>';
+  (og.gates||[]).forEach(function(g){
+    const bad = g.status && g.status!=="PASS";
+    h+='<div class="pv"><b class="'+(bad?"fail":"ok")+'">'+esc(g.status||"—")+'</b> · '
+      +esc(g.gate||"—")+(g.claim?'<br><span class="muted">'+esc(g.claim)+'</span>':'')+'</div>';
+  });
+  if((og.gates_missing||[]).length)
+    h+='<div class="pv fail">missing gates: <code>'+esc(og.gates_missing.join(", "))+'</code></div>';
+  if(og.caveat) h+='<details><summary>what this evidence does and does not authorise</summary>'
+    +'<div class="pv">'+esc(og.caveat)+'</div></details>';
+  box.innerHTML=h;
+}
+
 function renderProposal(d){
   const box=$("#ak-proposal"); if(!box) return;
   const p=(d.activity||{}).proposal||{};
@@ -1545,7 +1582,7 @@ function renderV27Cumulative(d){
   box.innerHTML=html;
 }
 async function loadLive(){
-  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderCommandBand(d); renderProposal(d); renderLive(d); renderV27Cumulative(d); }
+  try{ const r=await fetch("/api/kernel/live",{cache:"no-store"}); const d=await r.json(); renderCommandBand(d); renderProposal(d); renderOperatorGates(d); renderLive(d); renderV27Cumulative(d); }
   catch(e){ $("#ak-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#planner-live-log").textContent="live endpoint unavailable: "+e.message;
     $("#ak-live-log-full").textContent="live endpoint unavailable: "+e.message;
