@@ -31,10 +31,13 @@ why every prior reachability audit was wrong.
   **P4.1 DONE** (the loop-design doc) · **P7 DONE** (research `10f0214e`).
 - **P4 loop package BUILT** (research `6408f685`): 8 files, **828 LOC** against a 3,000 budget
   and against the 153,865 it replaces. Control flow is pure — every side effect injected — so
-  17 tests run in 0.05s with no GPU, no API key and no ROCm. **Its exit criterion is NOT met:**
-  ten consecutive real iterations need the external codex planner and hours of GPU.
-- **Next action:** run the new loop end to end (P4 exit). Until it passes, **P5 must not start** —
-  the strip is gated on the replacement being proven, and that gate is the point.
+  17 tests run in 0.05s with no GPU, no API key and no ROCm. **Its exit criterion is NOT met**
+  (see the run-10 line below for the exact bar); each attempt costs the external codex planner and
+  hours of GPU.
+- **Next action:** run 11 is live — let it finish, then read whether pinned clocks removed the
+  anchor drift that vetoed 4 of run 10's 5 measurements, and keep running until P4 exit (**≥6
+  measurements and ≥1 champion commit**). Until that passes, **P5 must not start** — the strip is
+  gated on the replacement being proven, and that gate is the point.
 - **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80).**
   Recomputed exhaustively — p95 |median effect| over EVERY C(20,k) subset, so it re-derives
   exactly (`bench.MEASURED_FLOOR_PCT`, research):
@@ -109,22 +112,36 @@ KV-quant-at-long-context as live when 05c gap-list L14 had already killed it (�
 - **Run 9 finished 0/10** — 10 iterations, 149 min, zero measurements. Every refusal was
   produced by a broken instrument, not by the science: 7 of 10 died on a `MUL_MAT` verdict
   that was never measured (see D5 below).
-- **Run 10 is executing** — `tg128` decode, 9 alternating pairs, floor **1.175%** (the
-  measured row, not the parametric 1.151% which sits below what the instrument resolves).
-  **First run in the program with every known instrument defect closed.** It has reached
-  MEASUREMENTS for the first time: 2 by iteration 5, full pipeline exercised end to end —
-  hypothesis → critic pass 1 → patch → critic pass 2 → build → correctness oracle PASSED →
-  9-pair A/B, 18/18 invocations resident.
-  P4 exit remains **UNMET**: it needs ≥6 measurements and ≥1 champion commit.
+- **Run 10 FINISHED (2026-08-29 morning)** — `tg128` decode, 9 alternating pairs, floor **1.175%**
+  (the measured row, not the parametric 1.151% which sits below what the instrument resolves).
+  10 iterations, 91.7 min, **5 measurements, 0 kept**. The full pipeline ran end to end for the
+  first time (hypothesis → critic → patch → critic → build → correctness oracle PASSED → 9-pair
+  A/B, 18/18 resident). **P4 exit remains UNMET: it needs ≥6 measurements AND ≥1 champion commit.**
+- **The run-10 finding — the anchor drifted, and the anchor cannot change.** 4 of the 5
+  measurements were vetoed for drift, and in *every* one of them the drifting arm was the
+  **anchor**: a fixed binary at `0db32c06`, same build and same workload on every invocation.
+  Anchor drift ran **−1.465% to +4.175%** against a 1.175% floor, and for two of the four the veto
+  was decision-changing (+1.664% and −2.067% both exceed the floor in magnitude and would otherwise
+  have read as decisive). Root cause confirmed by **direct observation**, not inference: a passive
+  read-only sysfs trace (2,554 samples / 21.7 min) found
+  exactly two clock states — 800 MHz at 0.05% mean busy, 1700 MHz at 72.4% — so the card idled at
+  800 and jumped to 1700 at the start of every benchmark window, a **2.125× transition**, and since
+  each `llama-bench` invocation is its own process it paid that ramp every time. Detail and the
+  per-mechanism table: `progress/2026-08/2026-08-29.md`.
+- **Resolved — clocks are pinned.** The operator set `power_dpm_force_performance_level = high`
+  (root-owned; we are uid 1000); verified `high` with `pp_dpm_sclk` pinned at 1700 MHz.
+  **Run 11 IS EXECUTING** — identical to run 10 in every respect *except* the pin (same surface,
+  pairs, floor, store, anchor), so the two are a clean comparison of clock policy alone.
+  Independently of the pin, every residency proof now records `sclk_min_mhz` / `sclk_max_mhz` /
+  `clock_stable` (research `44da8b2e`): a result taken across a clock change says so in its own
+  record. The pin is host policy a reboot or another session can undo — the record is ours.
 - **Decode is 99.70% our own kernels, 0.00% vendor** (`mul_mat_vec_q<Q4_K>` 32.79%,
   `quantize_q8_1` 17.90%, `flash_attn_ext_vec` 10.31%) against ~51% vendor on prefill.
   That, plus every seeded hypothesis being a decode hypothesis, is why the surface moved.
-- **Open instrument question, NOT yet acted on:** the GPU runs at
-  `power_dpm_force_performance_level = auto` (root-owned; we are uid 1000), so DVFS ramping
-  is a plausible source of the drift the veto keeps catching — one of two decode
-  measurements was vetoed on **anchor** drift of +1.302%. That is n=2. Decide from run 10's
-  full drift distribution, then choose between pinned clocks (operator, shared host) and
-  more warm-up pairs (ours).
+- **The DVFS question is CLOSED** — it was opened at n=2 against `auto` clocks and is answered
+  above by run 10's full drift distribution plus the passive trace. Pinned clocks were chosen over
+  extra warm-up pairs; if the drift veto still fires on the anchor under run 11's pin, DVFS was not
+  the whole cause and the next candidate is more warm-up pairs (ours, no operator needed).
 - **The loop is visible at `:8100/loop`** (root `c639a01c`) — state, three-valued freshness,
   every disposition including negatives, and GPU held-vs-busy. That last number reported
   **100% idle across 62 minutes of held claim** on run 6, which is what the surface exists to
