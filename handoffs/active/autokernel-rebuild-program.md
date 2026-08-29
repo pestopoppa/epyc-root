@@ -47,11 +47,15 @@ why every prior reachability audit was wrong.
 
   **4 of 20 pure-noise decode pairs exceed the superseded loop's 3% bar.** An earlier
   hand-written table quoting 0.753% / 1.848% at k=5 reproduces by no method from the raw pairs
-  and is superseded. The loop **enforces** 0.973% / 1.544% — above the measured rows on purpose,
-  since 20 pairs is a thin sample of a heavy tail. `--arm-pairs` must be ≥5.
+  and is superseded. The loop's enforced floor is `run.noise_floor_pct(surface, pairs)` =
+  **max(sigma/sqrt(pairs), the measured row for that pair count)**, because neither bound
+  dominates: sigma/sqrt(n) is conservative on prefill but on decode predicts 1.151% at 9 pairs
+  where the instrument actually resolves 1.175%, which would let pure noise clear the bar.
+  `--pairs` must be ≥5.
   Artifact: `artifacts/autokernel-aa-noise-floor/` (research).
 
-### Runs 5–9, and the four harness defects they exposed (2026-08-28 evening)
+### Runs 5–9, and the harness defects they exposed (2026-08-28 evening; D5–D6 in
+`progress/2026-08/2026-08-29.md`, six in total)
 
 Nine real iterations produced **zero measurements**, and every cause was in the harness rather
 than the actors. Recorded because each one looked like planner quality and was not:
@@ -74,8 +78,11 @@ than the actors. Recorded because each one looked like planner quality and was n
 rocBLAS/Tensile GEMM** (`Cijk_*`) — vendor library code this loop cannot patch. Prefill is a
 dequantize-then-vendor-GEMM path: `dequantize_block_q4_K` (15.06%) → `convert_unary` (9.32%) →
 Tensile (51.33%) = **75.7%** of device time. `tg128` by contrast dispatches `mul_mat_vec_q`,
-entirely our source. **Surface selection is an open operator decision**, and note that every
-seeded hypothesis is a decode hypothesis.
+entirely our source. **Surface selection was resolved 2026-08-29 in favour of decode** after
+the `GGML_CUDA_FORCE_MMQ` build arm returned a bounded null (+0.105%, inside the 0.973% floor,
+9 pairs, no drift): prefill's one structural lever does not exist, and every seeded hypothesis
+is a decode hypothesis. Prefill's MICRO lever is untested rather than refuted — run 9's seven
+`MUL_MAT` refusals were fabricated.
 
 ### The information base is seeded (2026-08-28 evening)
 
@@ -99,8 +106,25 @@ seeded lever that a seeded negative refutes — added after this session seeded
 KV-quant-at-long-context as live when 05c gap-list L14 had already killed it (−16.7% GDN,
 −6.9% dense 27B).
 
-- **Run 9 is executing** (10 iterations, `pp512`, seeded, profile and measurement now matched).
+- **Run 9 finished 0/10** — 10 iterations, 149 min, zero measurements. Every refusal was
+  produced by a broken instrument, not by the science: 7 of 10 died on a `MUL_MAT` verdict
+  that was never measured (see D5 below).
+- **Run 10 is executing** — `tg128` decode, 9 alternating pairs, floor **1.175%** (the
+  measured row, not the parametric 1.151% which sits below what the instrument resolves).
+  **First run in the program with every known instrument defect closed.** It has reached
+  MEASUREMENTS for the first time: 2 by iteration 5, full pipeline exercised end to end —
+  hypothesis → critic pass 1 → patch → critic pass 2 → build → correctness oracle PASSED →
+  9-pair A/B, 18/18 invocations resident.
   P4 exit remains **UNMET**: it needs ≥6 measurements and ≥1 champion commit.
+- **Decode is 99.70% our own kernels, 0.00% vendor** (`mul_mat_vec_q<Q4_K>` 32.79%,
+  `quantize_q8_1` 17.90%, `flash_attn_ext_vec` 10.31%) against ~51% vendor on prefill.
+  That, plus every seeded hypothesis being a decode hypothesis, is why the surface moved.
+- **Open instrument question, NOT yet acted on:** the GPU runs at
+  `power_dpm_force_performance_level = auto` (root-owned; we are uid 1000), so DVFS ramping
+  is a plausible source of the drift the veto keeps catching — one of two decode
+  measurements was vetoed on **anchor** drift of +1.302%. That is n=2. Decide from run 10's
+  full drift distribution, then choose between pinned clocks (operator, shared host) and
+  more warm-up pairs (ours).
 - **The loop is visible at `:8100/loop`** (root `c639a01c`) — state, three-valued freshness,
   every disposition including negatives, and GPU held-vs-busy. That last number reported
   **100% idle across 62 minutes of held claim** on run 6, which is what the surface exists to
