@@ -13,7 +13,7 @@ existing test exercises ``dashboard/server.py`` and ``dashboard/panels.py`` —
 the Python that *serves* the page — so a page that parses to nothing still
 passed everything. This closes that gap.
 
-THREE CHECKS, and the split is deliberate:
+TWO CHECKS, and the split is deliberate:
 
 * ``test_no_duplicate_top_level_declarations`` is pure Python and ALWAYS runs.
   It catches the exact class that bit, and it must not depend on a toolchain
@@ -22,9 +22,13 @@ THREE CHECKS, and the split is deliberate:
 * ``test_scripts_parse`` shells out to ``node --check`` for full syntax coverage
   and skips when node is unavailable. It is the broader net, not the load-bearing
   one; the check above is what holds when it is missing.
-* ``test_kernel_current_state_renderer_executes`` runs the Kernel-R&D evidence
-  renderer against a minimal contract. Parsing cannot catch a free identifier
-  that throws only when a production-kernel-set card is rendered.
+
+A third check used to execute ``kernel.html``'s renderers under node, on the
+reasoning that parsing cannot catch a free identifier that throws only when a
+card is actually drawn. It was retired with that page on 2026-08-30. Both checks
+above glob ``dashboard/static/*.html`` rather than naming pages, so they picked
+up ``loop.html`` — now the Kernel R&D surface — the moment it landed, and nothing
+here had to be re-pointed.
 
 Run: ``python3 -m unittest tests.test_dashboard_static_js``
 """
@@ -141,246 +145,6 @@ class StaticJsTest(unittest.TestCase):
                 self.assertEqual(
                     proc.returncode, 0,
                     f"{page.name} script block #{i} does not parse:\n{proc.stderr}")
-
-    @unittest.skipIf(shutil.which("node") is None, "node unavailable")
-    def test_kernel_current_state_renderer_executes(self):
-        """Execute the evidence-snapshot renderer against its minimum wire shape.
-
-        ``node --check`` cannot catch a free identifier inside a function.  The
-        production-kernel-set renderer once read ``state.production_kernel_set``
-        even though the function binds the payload as ``s``.  The page parsed, but
-        the resulting ReferenceError prevented controls, activity, and contract
-        sections from rendering.  This small DOM stub exercises that boundary.
-        """
-        page = _STATIC / "kernel.html"
-        blocks = _scripts(page)
-        self.assertEqual(len(blocks), 1, "kernel.html must carry one inline script")
-        source = blocks[0].split("async function load()", 1)[0]
-        payload = r'''{
-          _activity: {current_state: {
-            production_kernel: {available: false},
-            production_kernel_set: {
-              intact: false, expected_kernels: 3, expected_binaries: 4,
-              trees_matching: 3, binaries_proven: 4, binaries_unverified: 0,
-              members: [{title: "llama.cpp", branch: "production-v9", head: "abc",
-                matches_attestation: true,
-                ggml_generation: {observed: "0.16.0", expected: null}}],
-              binaries: [], stable_links: [], linkage: [],
-              stable_links_ok: 4, linkage_verified: 4,
-              ggml_generations_proven: 2, alarms: [],
-              ambient_library_path: {clean: true, note: "dashboard process only"}
-            },
-            decision_controls: {available: false},
-            instrument_preflight: {available: false},
-            gpu_prefetch_replay: {available: false},
-            loop_engineering: {available: false},
-            scaffold_engineering: {available: false},
-            arena_campaign_progress: {
-              available: true, campaign_evidence_valid: false,
-              completed_checkpoints: 5, planned_checkpoints: 64,
-              completed_cells: 2, planned_cells: 24,
-              tasks: 4, arms: 6, checkpoint_hours: [2, 8, 32],
-              rankable: false, released_measurement_windows: 10,
-              measurement_windows: 10, measurement_samples: 215,
-              measurement_claimed_seconds: 52.588, belief_measurement_count: 10,
-              attempt_id: "941fece21400362f", output_root: "/campaigns/inf03-r4",
-              observations: [], attempts: [], rejected_attempts: 0,
-              retraction: {reason: "64 intermediate evaluations escaped claim windows",
-                           evidence: "/campaigns/inf03-r4/controller-receipt.json"}
-            },
-            rocm_diagnostics: {available: false},
-            hip_decision_grade: {
-              available: true, correctness_passed: 24, correctness_total: 24,
-              median_speedup: 1.0769349742219618,
-              task_id: "torch2hip/gpumode/16636_SiLU",
-              target: {gpu_model: "MI210", gfx_arch: "gfx90a"},
-              max_abs_error: 1.2280521204388606e-6,
-              e_process_first_crossing_block: 9,
-              duration_admissions_passed: 40, duration_admissions_total: 40,
-              minimum_observed_duration_ns: 276039581.2988281,
-              authority: "task_local_rank_no_release_or_promotion_authority",
-              release_or_promotion_authority: false,
-              receipt_self_sha256: "self-hash", receipt_file_sha256: "file-hash",
-              evidence: "/campaigns/hip-r6/receipt.json"
-            },
-            belief_source_wiring: {sources: []},
-            fault_rehearsal: {available: false},
-            fixed_campaign: {available: false},
-            available_source_diagnostic: {available: false},
-            diagnostic_pilot: {
-              available: true, status: "pass", arm_id: "k_search",
-              model_call_count: 6,
-              task_id: "instruction2triton.rocmbench.test_add_kernel",
-              broker_evaluation_count: 1,
-              pass_compilation: true, pass_correctness: true,
-              valid_optimized_cases: 4, valid_baseline_cases: 4,
-              average_speedup: 1.0019039030109136,
-              released_measurement_windows: 3,
-              measurement_windows: [
-                {phase: "vendor_baseline", sample_count: 11},
-                {phase: "controller_intermediate_evaluation", sample_count: 21},
-                {phase: "centralized_final_evaluation", sample_count: 21}
-              ],
-              controller_writable_devices: ["/dev/null"],
-              controller_cgroup_verified_empty: true,
-              controller_cgroup_removed: true,
-              evaluator_sandboxes: [{
-                phase: "controller_intermediate_evaluation",
-                evaluator_network_profile: "deny_all",
-                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
-                evaluator_cgroup_verified_empty: true,
-                evaluator_cgroup_removed: true
-              }, {
-                phase: "centralized_final_evaluation",
-                evaluator_network_profile: "deny_all",
-                evaluator_devices: ["/dev/kfd", "/dev/dri/renderD128", "/dev/null"],
-                evaluator_cgroup_verified_empty: true,
-                evaluator_cgroup_removed: true
-              }],
-              authority_verified: true,
-              matched_campaign_result_implied: false,
-              rankable: false, belief_update_authority: false,
-              promotion_authority: false,
-              note: "terminal one-task compatibility pilot only",
-              evidence: "/probes/pilot-r15/diagnostic-pilot-receipt.json"
-            },
-            empirical_smoke: {available: false},
-            receipt_coverage: {note: "CURATED VIEW", projected_schemas: ["one.v1"]}
-          }}
-        }'''
-        harness = f'''\nconst __box = {{innerHTML: "", classList: {{remove() {{}}, add() {{}}}}, style: {{}}}};
-globalThis.document = {{
-  querySelector() {{ return __box; }},
-  querySelectorAll() {{ return []; }},
-  createElement() {{ return __box; }}
-}};
-{source}
-renderCurrentState({payload});
-const __stateHtml = __box.innerHTML;
-if (!__stateHtml.includes("Production kernel SET")) {{
-  throw new Error("current-state renderer did not reach the kernel-set card");
-}}
-for (const expected of ["ggml observed 0.16.0", "not attested",
-                        "dashboard process only", "CURATED VIEW",
-                        "AK-LE-3 scaffold", "INF-03", "ROCm diagnostics",
-                        "Governed Arena pilot", "6 model calls",
-                        "deny_all", "/dev/kfd,/dev/dri/renderD128,/dev/null",
-                        "NO CAMPAIGN AUTHORITY", "promotion/release false",
-                        "STOPPED · DIAGNOSTIC HISTORY ONLY",
-                        "campaign evidence invalid", "resume forbidden",
-                        "64 intermediate evaluations escaped claim windows",
-                        "Belief source wiring", "24 / 24 sealed cases",
-                        "NOT A CHAMPION", "Experimental llama integration is required",
-                        "task_local_rank_no_release_or_promotion_authority",
-                        "self-hash", "file-hash"]) {{
-  if (!__stateHtml.includes(expected)) throw new Error("missing distinction: " + expected);
-}}
-renderActivity({{_activity: {{implementation: {{recent_commits: []}},
-  mainline_integration: [{{available: true, label: "epyc-root",
-    first_parent_commits: 666, first_parent_merges: 38,
-    since: "2026-07-29T00:00:00Z", tip: "abcdef123456"}}],
-  work_bundles: [], durable_state: {{journals: []}}, probe_receipts: {{receipts: []}}
-}}}});
-if (!__box.innerHTML.includes("38 merges") ||
-    !__box.innerHTML.includes("path-filtered commit list")) {{
-  throw new Error("mainline integration count was hidden or confused with path history");
-}}
-renderSections({{
-  _render: {{mode: "contract_v2"}},
-  sections: {{blocking_conditions: {{status: "observed", as_of: "now", open: [{{
-    kind: "PREFLIGHT_REFUSED", detail: "host uptime exceeds the ratified ceiling"
-  }}]}}}}
-}});
-if (!__box.innerHTML.includes("host uptime exceeds the ratified ceiling")) {{
-  throw new Error("blocking-condition detail was reduced to a generic label");
-}}
-'''
-        proc = subprocess.run(
-            [shutil.which("node"), "-e", harness], capture_output=True,
-            text=True, timeout=60)
-        self.assertEqual(
-            proc.returncode, 0,
-            "kernel current-state renderer failed at runtime:\n" + proc.stderr)
-
-    @unittest.skipIf(shutil.which("node") is None, "node unavailable")
-    def test_kernel_progression_headlines_separate_phase_and_lane(self):
-        page = _STATIC / "kernel.html"
-        source = _scripts(page)[0].split("async function load()", 1)[0]
-        harness = f'''
-const __box = {{innerHTML: "", classList: {{remove() {{}}, add() {{}}}}, style: {{}}}};
-globalThis.document = {{
-  querySelector() {{ return __box; }},
-  querySelectorAll() {{ return []; }},
-  createElement() {{ return __box; }}
-}};
-{source}
-renderProgression({{
-  _activity: {{current_state: {{production_kernel: {{available: false}}}}}},
-  _progression: {{available: true, promotion_claim: false,
-    funnel: {{candidate: 3, strict_keep: 0, champion: 0, promotable: 0}},
-    candidates: [
-      {{lane: "CPU", candidate: "IQK prefill", workload: "prefill pp512",
-        metric: "prefill_tokens_per_s", effect_fraction: .31, evidence_tier: "screening",
-        stage: "candidate", transition: "0 → 1", confidence: "screening",
-        current_gate: "strict", next_action: "confirm", evidence: []}},
-      {{lane: "CPU", candidate: "IQK decode", workload: "decode tg128",
-        metric: "decode_tokens_per_s", effect_fraction: .08, evidence_tier: "screening",
-        stage: "candidate", transition: "0 → 1", confidence: "screening",
-        current_gate: "strict", next_action: "confirm", evidence: []}},
-      {{lane: "GPU", candidate: "MFMA", workload: "MI210 prefill pp512",
-        metric: "prefill_tokens_per_s", effect_fraction: .26, evidence_tier: "screening",
-        stage: "candidate", transition: "ON → OFF", confidence: "HIP resident",
-        current_gate: "strict-hidden-gate", next_action: "hidden-next-action",
-        regime: {{architecture: "gfx90a", quant: "Q4_K"}},
-        replication_effects: [.25,.27], spread_fraction: .02,
-        evidence: [{{path: "/hidden/top-result.json", file_sha256: "abcdef1234567890"}}]}}
-    ], strategy: {{pursued: [
-      {{lane: "GPU", candidate: "pursued-lever", workload: "decode tg128",
-        metric: "decode_tokens_per_s", effect_fraction: .02, stage: "inconclusive",
-        current_gate: "pursued-hidden-gate", next_action: "pursued-hidden-next",
-        evidence: [{{path: "/hidden/pursued.json", file_sha256: "bb"}}]}}
-    ], accepted: [], abandoned: [
-      {{lane: "GPU", candidate: "abandoned-lever", workload: "decode tg128",
-        metric: "decode_tokens_per_s", effect_fraction: -.12, stage: "screened_out",
-        current_gate: "abandoned-hidden-gate", next_action: "none",
-        evidence: [{{path: "/hidden/abandoned.json", file_sha256: "cc"}}]}}
-    ]}}, unexplored: []}}
-}});
-const html=__box.innerHTML;
-for (const expected of ["CPU lane", "GPU lane", "Prompt processing",
-  "Token generation", "prefill · 512 input tokens (pp512)",
-  "decode · 128 generated tokens (tg128)", "technical workload: MI210 prefill pp512"]) {{
-  if (!html.includes(expected)) throw new Error("missing phase/lane distinction: " + expected);
-}}
-if (html.includes("CPU leader") || html.includes("GPU leader")) {{
-  throw new Error("ambiguous lane-only leader label remains");
-}}
-const detailTags=[...html.matchAll(/<details class="result-detail"([^>]*)>/g)];
-if(detailTags.length<5) throw new Error("result rows do not carry per-item details");
-if(detailTags.some(m=>/\bopen\b/.test(m[1]))) throw new Error("result detail expanded by default");
-const topStart=html.indexOf('<div class="winner-card"><div><b>GPU · MFMA');
-const topEnd=html.indexOf('</div>',html.indexOf('</details>',topStart))+6;
-const top=html.slice(topStart,topEnd), detailAt=top.indexOf('<details class="result-detail">');
-for(const headline of ["GPU · MFMA","candidate","+26.0%","Prompt processing","MI210 prefill pp512"]) {{
-  const at=top.indexOf(headline);
-  if(at<0||at>detailAt) throw new Error("headline hidden in disclosure: "+headline);
-}}
-for(const hidden of ["strict-hidden-gate","hidden-next-action","/hidden/top-result.json",
-                     "abcdef1234567890","gfx90a","[0.25,0.27]","0.02"]) {{
-  const at=top.indexOf(hidden);
-  if(at<detailAt) throw new Error("diagnostic leaked into headline: "+hidden);
-}}
-const abandonedTag=html.match(/<details id="ak-progression-abandoned"([^>]*)>/);
-if(!abandonedTag||/\bopen\b/.test(abandonedTag[1])) {{
-  throw new Error("abandoned/retest history must stay collapsed by default");
-}}
-'''
-        proc = subprocess.run(
-            [shutil.which("node"), "-e", harness], capture_output=True,
-            text=True, timeout=60)
-        self.assertEqual(
-            proc.returncode, 0,
-            "kernel progression headline renderer failed at runtime:\n" + proc.stderr)
 
 
 if __name__ == "__main__":

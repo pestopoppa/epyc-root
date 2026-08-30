@@ -9,7 +9,10 @@ objects, conflated, and the page asserted something false about work done the ni
 before.
 
 The aggregate candidate and the champion are ALSO the same object, so there is one
-card. The page previously drew two that disagreed with each other.
+card. The page previously drew two that disagreed with each other. The markup guard
+that counted those cards went with `kernel.html` on 2026-08-30; what survives here
+is the card's DATA contract, which is where the conflation actually lived and which
+any page drawing the champion has to read correctly.
 """
 from __future__ import annotations
 
@@ -91,14 +94,6 @@ class ChampionCardTests(unittest.TestCase):
         self.assertNotIn("members", ch,
                          "champion contents come from the instrument pin, never from "
                          "this campaign's iteration rows")
-
-    def test_one_card_only(self):
-        """The aggregate candidate and the champion are the same object."""
-        html = Path("dashboard/static/kernel.html").read_text()
-        self.assertEqual(html.count('id="cmd-champion"'), 0,
-                         "the duplicate champion card must be gone")
-        self.assertEqual(html.count('id="cmd-aggregate"'), 1)
-        self.assertIn("cmd-champion-value", html)
 
 
 if __name__ == "__main__":

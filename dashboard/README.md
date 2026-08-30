@@ -51,7 +51,17 @@ three are checkable:
 
 **No unregistered pages.** A page reachable but absent from the registry is
 invisible to the nav, has no probe, and no one learns it exists — which is how the
-7.6k-line `:8000/dashboard` page accreted in the first place.
+7.6k-line `:8000/dashboard` page accreted in the first place. A **retired** route
+that answers a redirect rather than a page is not an exception to that rule: the
+rule is about pages, and a redirect is not one. `/kernel` (retired 2026-08-30,
+301 to `/loop`) therefore has no registry row and correctly should not — a row for
+it would put a dead link in the shared nav, which is the failure the registry
+exists to prevent, not an instance of it. No `retired` or `archived` registry
+disposition was invented to hold it: the plane rule provides none, a third status
+would need its own nav semantics and its own probe semantics, and inventing one
+was out of scope for a page retirement. The redirect is enumerable in
+`server.REDIRECT_ROUTES` instead, which is where a test greps to prove a page is
+gone rather than merely unlinked.
 
 ## Running
 
@@ -79,7 +89,7 @@ the orchestrator's venv is **not** required.
 | `dashboard/freshness.py` | the one age→`fresh/aging/stale/missing` classifier (+ a legacy mtime badge) |
 | `dashboard/loop_status.py` | read side of the **rebuilt AutoKernel loop's** `loop-status.json` contract: four-valued freshness + derived folds |
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
-| `dashboard/static/loop.html` | the AK Loop page: state, freshness banner, dispositions incl. negatives, GPU held-vs-busy |
+| `dashboard/static/loop.html` | **THE Kernel R&D page** (`/loop`): the rebuilt AutoKernel loop's state, freshness banner, dispositions incl. negatives, GPU held-vs-busy — **plus** the operator-gated champion evidence merged in from the retired `/kernel`, on its own second envelope. Two producers, two envelopes, neither dating the other |
 | `scripts/handoffs/build_handoff_timeline.py` | git-history → `data/handoff_timeline.json` |
 | `scripts/handoffs/install_timeline_hook.sh` | post-commit hook that regenerates the artifact |
 | `tests/test_handoff_parser.py`, `tests/test_handoff_timeline.py` | `unittest` suites |
@@ -91,23 +101,37 @@ the orchestrator's venv is **not** required.
 - `GET /api/handoff_board` — compact cards for all four columns (live scan, 30 s cache)
 - `GET /api/handoff_detail?id=<state>/<stem>` — full card + scrubbed markdown body (path-traversal guarded)
 - `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
-- `GET /api/kernel` — the AutoKernel `/kernel` contract (v2, v1 still readable) + freshness
+- `GET /api/kernel` — the controller-era AutoKernel contract (v2, v1 still readable)
+  + freshness. **The page this fed is retired**; the route is not
 - `GET /api/kernel/live` — active discovery lock/state plus bounded, secret-free
-  AutoKernel and planner lifecycle tails from the deployment-owned live contract
-- `GET /api/kernel/health` — Kernel-R&D producer/data health only; HTTP 200 when
+  AutoKernel and planner lifecycle tails from the deployment-owned live contract.
+  Same standing: retired page, live route
+- `GET /api/kernel/health` — that producer's data health only; HTTP 200 when
   fully reported and current, HTTP 503 with `absent`/`degraded` detail otherwise
-- `GET /loop` — the **rebuilt AutoKernel loop** page (separate surface, separate
-  producer; see below)
-- `GET /api/loop` — that loop's `epyc.autokernel.loop_status.v1` report + its panel
-  envelope. `loop` is `null`, never `{}`, when nothing readable was found
-- `GET /api/loop/health` — the loop's producer/data health; HTTP 200 only for `ok`,
-  HTTP 503 with `absent`/`degraded` otherwise
+- `GET /kernel` — **retired 2026-08-30**: a `301` to `/loop`, `Cache-Control:
+  no-store`, plain-text body (withheld on HEAD). `static/kernel.html` is deleted
+  and the `kernel` registry row is gone; see below for why a redirect and not an
+  archive page
+- `GET /loop` — **THE Kernel R&D page.** The rebuilt AutoKernel loop, and since
+  2026-08-30 the operator-gated champion evidence merged in from `/kernel`
+- `GET /api/loop` — the loop's `epyc.autokernel.loop_status.v1` report + its panel
+  envelope. `loop` is `null`, never `{}`, when nothing readable was found. It also
+  carries **`operator_gates`**, the `epyc.autokernel.operator_gate_bundle.v1`
+  reading with its **own** four-valued envelope — `_freshness` still dates only the
+  loop, deliberately, so neither producer's liveness certifies the other's silence
+- `GET /api/loop/health` — the **loop's** producer/data health; HTTP 200 only for
+  `ok`, HTTP 503 with `absent`/`degraded` otherwise. It does not fold
+  `operator_gates`; see *Known open items on this surface*
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
 - `GET /api/health` — **the fold**: every registered panel's envelope + one verdict
 
-Routes are **tables** (`HTML_ROUTES`, `API_ROUTES`, `API_ROUTES_WITH_STATUS`,
-`PROBE_ROUTES`), not an `if/elif` chain, so the surface is enumerable and
-`panels.registry_gaps(server)` can fail when a panel has no registered producer.
+Routes are **tables** (`HTML_ROUTES`, `REDIRECT_ROUTES`, `API_ROUTES`,
+`API_ROUTES_WITH_STATUS`, `PROBE_ROUTES`), not an `if/elif` chain, so the surface
+is enumerable and `panels.registry_gaps(server)` can fail when a panel has no
+registered producer. `REDIRECT_ROUTES` is a table for the same reason the others
+are: a retirement that lives in an `if`-branch is a retirement nothing can
+enumerate, and `do_GET` dispatches it immediately after `HTML_ROUTES` so a route
+can never be both a page and a redirect.
 
 ## Panel → producer registry, freshness envelope, watchdog (AK6)
 
@@ -157,10 +181,14 @@ trusted.
 * `/health` stays transport-only because
   `scripts/dashboard/hub_supervisor.sh` restarts the hub on a non-ok body, and
   restarting the dashboard cannot revive a producer in another repository.
-* `/api/kernel/health` is the non-recursive Kernel-R&D data probe used by the
-  dashboard registry. It reads and folds only the `kernel` envelope; it never
-  calls the global `/api/health` fold. This lets registry consumers see a live hub
-  and an absent/partial AutoKernel producer as two different facts.
+* `/api/kernel/health` is the non-recursive data probe for the controller-era
+  producer. It reads and folds only the `kernel` envelope; it never calls the
+  global `/api/health` fold. This lets a consumer see a live hub and an
+  absent/partial AutoKernel producer as two different facts. It was the registry
+  probe for the `kernel` row until that row was removed with the page on
+  2026-08-30; the route stays because `/api/kernel` does. Today it answers
+  `503 degraded`, which is more than `/api/kernel` itself will say — see *Known
+  open items on this surface*.
 
 Producer side (contract v2): `epyc-inference-research` →
 `scripts/kernel_rnd/autokernel/dashboard.py`. The campaign driver exports only
@@ -412,15 +440,19 @@ champion/release plane: it says `NOT A CHAMPION`, preserves
 llama integration as a prerequisite. Like the other `_activity.current_state`
 cards, it cannot make Kernel-R&D healthy or fresh.
 
-The Kernel-R&D page executes its current-state renderer in the static-JavaScript
-suite, not just a syntax parser. This matters because the complete-kernel-set card
+The retired Kernel-R&D page executed its current-state renderer in the
+static-JavaScript suite, not just a syntax parser — a rule that outlives the page
+it was written for, and one any renderer built on `/api/kernel` inherits. This
+mattered because the complete-kernel-set card
 once referenced a free identifier: the script parsed, the API remained complete,
 but rendering stopped before controls, empirical gates, activity, or the seven
-contract sections. Producer-authored blocking-condition details are rendered in
-full, so a generic `PREFLIGHT_REFUSED` label cannot hide the actionable gate. The
-production-set card also labels tree identity, observed versus attested ggml
+contract sections. Producer-authored blocking-condition details were rendered in
+full, so a generic `PREFLIGHT_REFUSED` label could not hide the actionable gate.
+The production-set card labelled tree identity, observed versus attested ggml
 generation, non-executing `readelf` linkage, and dashboard-process ambient
 `LD_LIBRARY_PATH` as distinct claims rather than folding them into one green mark.
+Those are the two things worth carrying forward into whatever P6 builds on this
+contract; the markup that held them is in git history.
 
 ### The seam: what the hub owns of the producer's document
 
@@ -444,7 +476,11 @@ literals here, and literals drift. Two rules keep them honest:
   the same scar, in the render layer, pointing the other way. The page now draws
   the section table from `d.sections`, shows the reporting banner
   (`reporting`/`content`/`watchdog`/`absence_means`) above the fold, and prints
-  `_render.note` where it has nothing of its own to draw.
+  `_render.note` where it has nothing of its own to draw. That page was retired on
+  2026-08-30 and its markup deleted; `_kernel_render` stays on the wire because
+  `/api/kernel` does, and the rule it encodes — the empty-state sentence is
+  derived from the document, never hardcoded in the renderer — is the reusable
+  part.
 * **`evidence` names the file that was actually read.** The registry declares the
   default; the two env-overridable readers (`KERNEL_DASHBOARD_JSON`,
   `AUTOPILOT_OUTCOME_JSON`) put the resolved path in the envelope and keep the
@@ -496,20 +532,86 @@ audits its own source to keep it that way.
   `/health` is untouched and answers with every producer dead or broken.
 * **The running hub on :8100 holds pre-change code in memory.** Reloading it
   belongs to whoever owns that service; nothing here restarts it.
+* **`/loop` now has two producers and one probe.** `/api/loop/health` still
+  answers for the **loop** producer only; it was not changed to fold the
+  operator-gate bundle's envelope, and `_read_operator_gate_bundle` is not
+  registered in `dashboard/panels.py`, so the bundle is not in the `/api/health`
+  global fold either. Both of those were already true before the merge — that
+  reader has never been a registered panel — but they were true of a card on a
+  secondary page, and they are now true of a card on the **primary** surface, so
+  the gap is declared here rather than left to be inferred. The mitigation, not a
+  fix: the bundle's four-valued verdict (`fresh`/`stale`/`absent`/`malformed`)
+  travels in the body it dates and is rendered loudly on the card — its own badge,
+  its own verdict line, an amber number outside its envelope — so a reader on the
+  page is never misled, only an automated consumer of `/api/loop/health` or
+  `/api/health` is under-informed. It was not closed in this change because
+  registering a new panel changes what `health_payload()` folds, and that function
+  is under concurrent edit in another session.
+* **`/api/kernel`, `/api/kernel/live` and `/api/kernel/health` still exist and
+  still serve the retired page's data.** Only the *page* was retired. Removing the
+  routes would strand `panels.PANELS["kernel"]` and `panels.PANELS["kernel_live"]`,
+  which means editing `panels.py` and therefore changing `health_payload()`'s
+  fold — the same function under concurrent edit. The consequence is real, not
+  cosmetic, and worth stating exactly: `/api/kernel` currently reports
+  `_freshness.reporting == "observed"` and `watchdog == "idle"` over a 16.8-day-old
+  export, because the producer travels the compliant-silence path the hub
+  deliberately honours (*the hub never infers idleness*). So that JSON does **not**
+  loudly read stale, and a consumer polling it would be told a dead campaign is a
+  quiet one. `/api/kernel/health` does answer `503 degraded`. The page a human
+  could land on is gone; the route a script could still trust is not.
 
-## The rebuilt AutoKernel loop (`/loop`) — a second, separate AK surface
+## Kernel R&D (`/loop`) — THE surface
 
-The operator had **zero visibility** into the rebuilt loop. The dashboard showed
-only the superseded deployment `gpu-discovery-champion-v37` as STOPPED — true,
-and about a *different process* — while the new loop ran as something nothing
-observed. A loop nobody can see is a loop nobody can trust.
+`/loop` is the single Kernel-R&D page. It was built as a second, separate surface
+and it is now the only one: `/kernel` was retired to a redirect on 2026-08-30 and
+its markup deleted.
 
-**It is a separate surface on purpose, not a section of `/kernel`.** The
-Kernel-R&D surface pins 29 cross-repo source paths and 47 SHA-256 digests of
-another repository's modules and is slated for wholesale rewrite; growing it
-would re-arm that landmine and make one contract's rewrite a second contract's
-outage. Two producers, two panels, two probes, no shared blast radius.
+It exists because the operator had **zero visibility** into the rebuilt loop. The
+dashboard showed only the superseded deployment `gpu-discovery-champion-v37` as
+STOPPED — true, and about a *different process* — while the new loop ran as
+something nothing observed. A loop nobody can see is a loop nobody can trust.
 
+**It is named for the domain, not the mechanism.** The registry row
+`autokernel-loop` is titled *Kernel R&D*, not *AutoKernel*: "AutoKernel loop" is
+the name of the machine currently doing the work, and the domain outlives the
+machine. A page named after its mechanism has to be renamed or duplicated every
+time the mechanism is replaced, which is exactly how there came to be two.
+
+**It was built separate from `/kernel` on purpose, and that reasoning is why the
+merge was safe.** The Kernel-R&D contract on the old page pinned 29 cross-repo
+source paths and 47 SHA-256 digests of another repository's modules and is slated
+for wholesale rewrite; growing that page would have re-armed the landmine and made
+one contract's rewrite a second contract's outage. What merged here is a *page*
+and one small live reader, not a data plane: `/loop` still imports nothing from
+the producer, pins no path and no digest, and nothing on it fetches `/api/kernel`.
+The retired surface must never become a data dependency of the live one.
+
+* **Two producers, two envelopes, and neither dates the other.** `loop_payload()`
+  returns `loop` (+ `_freshness`, the loop's panel envelope) *and*
+  `operator_gates`, produced by the **existing** `_read_operator_gate_bundle` —
+  one reader moved, not a second reader written. `_freshness` still dates only the
+  loop. Merging the two envelopes is precisely how one producer's silence gets
+  certified by another's liveness: a fresh loop is not evidence that the gate
+  bundle is current, and a stale bundle is not an outage of the loop.
+* **The gate-bundle card renders all four states, `absent` included.** On
+  `/kernel` that box hid itself when the bundle was absent, which was defensible
+  there because a command band above it said so. There is no command band on
+  `/loop`, so hiding it would have restored the original defect in a new place — a
+  section that renders nothing is indistinguishable from a section whose producer
+  died. It has its own badge, its own verdict line, and its own evidence path; a
+  figure outside its envelope is drawn amber rather than the green or red of a
+  live gain, because the measurement happened and it is its *currency* that is in
+  doubt.
+* **`evidence` rides on the unavailable reading too.** `_read_operator_gate_bundle`'s
+  `_unavailable()` branch now carries the path it checked. Absent and malformed are
+  exactly the readings where someone is about to go looking for the emitter, and a
+  card that says "nothing was ever written here" without naming *here* sends that
+  investigation nowhere.
+* **No liveness card was ported for the retired controller.** The v37 deployment's
+  "STOPPED" was *correct* — which is precisely why it may not sit on the live page.
+  A correct statement about a dead thing, placed on a surface about a living one,
+  reads as a statement about the living one. That is the original defect, not a
+  cure for it.
 * **Contract** — `epyc.autokernel.loop_status.v1`, written atomically by
   `scripts/kernel_rnd/autokernel/loop/status.py` in **epyc-inference-research**
   into the loop's store root (default
@@ -543,7 +645,9 @@ outage. Two producers, two panels, two probes, no shared blast radius.
   while perfectly fresh (a loop that crashed a minute ago is fresh *and* dead),
   and a loop that DECLARED `state=complete` is allowed to be silent (the same
   compliant path `kernel` and `outcome` already obey — the hub never *infers*
-  idleness).
+  idleness). It answers for the **loop** producer only: it was not widened to fold
+  the gate bundle, which is declared as an open item above rather than papered
+  over here.
 * **Cold start does not cry wolf.** The panel declares
   `absence_is_anomalous=False`, so a host where no campaign has run does not
   redden the global `/api/health`. It is still always listed under `absent`,
@@ -572,7 +676,7 @@ observation — cross-checked against the producer's own
 `idle_fraction_while_claimed`, a field the reader never looks at, so a
 right-shaped wrong pair of keys cannot pass.
 
-### Two AK surfaces, and how a reader tells them apart (2026-08-30)
+### Two AK surfaces, merged into one (2026-08-30)
 
 Separate producers justify separate pages; they do not justify two pages both
 called *AutoKernel* with neither acknowledging the other. On 2026-08-30 the
@@ -587,46 +691,77 @@ stopped. The defect was that a card labelled *AutoKernel loop* reported a
 controller deployment, and no surface said the other one existed. A correct
 reading of one producer was unreadable as anything but a claim about the other.
 
-The fixes, none of which merges the data planes (INF-66 P6 still owns the
-rewrite; one contract's rewrite must not be another contract's outage):
+It took three passes in one day to get to the right fix, and the first two are
+worth keeping on the record because each was a smaller, more plausible answer than
+the one the situation actually needed.
 
-* **`/kernel` names what it observes and shows the loop's own reading.** A
-  banner above everything else fetches `/api/loop` — the other surface's
-  existing route, no new reader, no re-derived freshness — and renders `fresh`
-  / `stale` / `absent` / `malformed` plus an **unreachable** case, five distinct
-  renderings. A banner that vanishes when it cannot read `/api/loop` would put
-  the page back where it started, quietly implying this deployment is all there
-  is; the unreachable rendering therefore says explicitly that it is a fact
-  about *this hub* and not about the loop.
-* **The card is "Controller deployment", not "AutoKernel loop".**
-* **The "event-silent by design" excuse is conditional now.** It is true of a
-  controller mid-stage and false of one that stopped two days ago, and it was
-  printed unconditionally — so the card explained away the silence of a producer
-  the hub had *already* declared `stopped_reporting`. That verdict lived in
-  `_freshness.watchdog` and the page never rendered it. It does now, and the
-  excuse is suppressed when the watchdog is `stopped_reporting`/`silent`.
-* **`/loop` links back**, so the campaign, HIP and operator-gate evidence that
-  exists only on `/kernel` stays findable. It is a **link, not a fetch**:
-  `/loop` must keep working while the surface P6 rewrites is broken.
-* **The nav says which is live before you click.** `chip` is a registry field
-  now rather than an id hardcoded in `nav.js` (`autokernel-loop` → `live`,
-  `kernel` → `controller`, `orchestrator-legacy` keeps `legacy` as data), and
-  the live row is listed first.
+**Pass one: make the two pages honest about each other.** `/kernel` grew a banner
+above everything else that fetched `/api/loop` — the other surface's existing
+route, no new reader, no re-derived freshness — and rendered `fresh` / `stale` /
+`absent` / `malformed` plus an **unreachable** case, five distinct renderings, the
+unreachable one saying explicitly that it was a fact about *this hub* and not about
+the loop. The card was retitled "Controller deployment". The "event-silent by
+design" excuse was made conditional, because it is true of a controller mid-stage
+and false of one that stopped two days ago, and printing it unconditionally meant
+the card explained away the silence of a producer the hub had *already* declared
+`stopped_reporting` in `_freshness.watchdog` and never rendered. `/loop` gained a
+link back — a link, not a fetch. And `chip` became a registry field rather than an
+id hardcoded in `nav.js`, so the nav could say which row was live before you
+clicked. Every one of those was a real improvement and none of them was the ask.
+Two correct pages that describe each other accurately are still two pages, and the
+reader still has to hold both to know one thing.
 
-Tests: `tests/test_dashboard_which_loop.py` (mutation-checked against the
-pre-change pages: 13 of its 15 assertions go red when `kernel.html`,
-`loop.html`, `nav.js` and `registry.json` are reverted; the two that stay green
-are the deliberate opposite-direction guards — a *healthy* producer must KEEP
-the by-design silence explanation, and `/loop` must never fetch `/api/kernel`).
+**Pass two: archive `/kernel` behind a banner.** Same panels, marked archived, out
+of the nav. This is the answer that feels responsible and is not: an archive page
+is still a navigable surface rendering stale numbers, and somebody lands on it.
+The operator's actual ask was that this stop existing.
 
-**KNOWN GAP, not closed here.** `/kernel` still renders numbers from producers
-with no freshness envelope at all — above all the *Aggregate champion* card's
-`+48.9%`, read from `operator_gate_bundle.json`, for which
-`_read_operator_gate_bundle()` computes no timestamp and no age, so it will
-render identically forever after that producer dies. The candidate funnel and
-lane hero cards do have envelopes, but render them only inside a collapsed
-`<details>`, and the `kernel_live` watchdog now reaches exactly one card. Those
-are inside INF-66 P6's rewrite of this surface, not inside a labelling fix.
+**Pass three, what shipped: merge.** `/loop` became *Kernel R&D*, `/kernel` became
+a 301 to it, `static/kernel.html` was deleted and the `kernel` registry row
+removed. The justification is that there was nothing live left to keep. The v37
+controller's last lifecycle event was 2026-08-28 14:12 and it is superseded and
+never coming back. `kernel_dashboard.json` was 16.8 d old. `kernel_progression.json`
+needs two numbers, not one, and the distinction is the whole reason a merge was
+defensible: its **file** age was 2.8 d — something was still rewriting it — while
+its `observed_through` **data horizon** stood 16.7 d back and was not advancing. A
+file being touched is not a producer making progress, and folding those two facts
+into a single "age" is how a frozen campaign passes for a slow one. The one live
+producer, the operator-gated champion bundle, moved to `/loop` and kept its own
+envelope. Everything else is in git, in the handoffs and in the artifacts —
+history does not need a route a human can land on and misread.
+
+The data planes were still not merged. INF-66 P6 owns that rewrite, and one
+contract's rewrite must not be another contract's outage: `/loop` imports nothing
+from the producer and fetches nothing from `/api/kernel`.
+
+Tests: `tests/test_dashboard_which_loop.py` was replaced by
+`tests/test_dashboard_kernel_rnd_merge.py`. The old suite's assertions were
+mutation-checked against pages that no longer exist — 13 of its 15 went red when
+`kernel.html`, `loop.html`, `nav.js` and `registry.json` were reverted — and a
+suite that pins the shape of a deleted page is a suite that has to be deleted with
+it, not carried forward as passing.
+
+**What the KNOWN GAP became.** This section used to record that `/kernel` rendered
+numbers from producers with no freshness envelope at all — above all the
+*Aggregate champion* `+48.9%`, read from `operator_gate_bundle.json`, for which
+`_read_operator_gate_bundle()` computed no timestamp and no age, so it would have
+rendered identically forever after that producer died. **That one is closed**, in
+commit `7feec9d4`: the reader gained the four-valued envelope
+(`fresh`/`stale`/`absent`/`malformed`), dated from the bundle's own timestamp where
+it carries one and from file mtime otherwise, with `generated_at_source` labelling
+which of the two it used so a reader is never told a filesystem fact in a
+producer's voice. The card has since moved to `/loop` and renders that envelope
+loudly rather than inside a disclosure. Authority answers *may this be shown*;
+freshness answers *is it still true*; the old reader validated the first
+meticulously and never asked the second.
+
+The other half is closed in a weaker sense and it is worth saying plainly: the
+candidate-funnel and lane-hero cards *did* have envelopes and rendered them only
+inside a collapsed `<details>`, and the `kernel_live` watchdog reached exactly one
+card. Nobody fixed that. **It went away with the page.** A defect that stops being
+reachable is not a defect that was understood, and if those cards are ever rebuilt
+under P6 the envelope-inside-a-`<details>` mistake is available to be made again —
+so it is recorded here as a lesson rather than struck out as resolved.
 
 ## Data model
 

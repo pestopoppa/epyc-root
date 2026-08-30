@@ -79,5 +79,16 @@ for (const [id, el] of Object.entries(made)) by_id[id] = el._html || '';
 // the empty string, which passes for the wrong reason.
 const text_by_id = {};
 for (const [id, el] of Object.entries(made)) text_by_id[id] = el._text || '';
-console.log(JSON.stringify({ threw, ran, html, by_id, text_by_id,
+// `class_by_id` is likewise ADDITIVE, and it exists because a mutation got
+// through. A freshness badge carries its verdict in TWO places: the word in its
+// text node, and the state in its className, which is what COLOURS it. Swapping
+// only the class yields a green pill reading "STALE" — one producer's liveness
+// painted over another's silence, with the correct word still sitting on it. The
+// harness reported innerHTML and textContent, neither of which can see that, so
+// the assertion was unwritable and folding two producers' envelopes into one went
+// undetected by a suite that had a test named for exactly that risk. Existing
+// consumers read `html`/`threw`/`ran`/`by_id`/`text_by_id` and are untouched.
+const class_by_id = {};
+for (const [id, el] of Object.entries(made)) class_by_id[id] = el.className || '';
+console.log(JSON.stringify({ threw, ran, html, by_id, text_by_id, class_by_id,
                              names: NAMES, rendered_chars: html.length }));

@@ -1,4 +1,4 @@
-"""The two headline numbers on /kernel must not be readable as live when dead.
+"""The operator-gated headline must not be readable as live when dead.
 
 TWO GAPS, ONE SHAPE.
 
@@ -14,6 +14,24 @@ B. The discovery funnel's staleness verdict existed and was correct, and was
    expanded nothing read a 16-day-dead funnel as a live one. Alongside it,
    ``esc(funnel.candidate||0)`` coerced *missing* into a confident ``0``.
 
+GAP B WENT AWAY WITH ITS PAGE, WHICH IS NOT THE SAME AS BEING FIXED. On
+2026-08-30 the two AutoKernel surfaces merged: ``/kernel`` became a 301 to
+``/loop`` and ``dashboard/static/kernel.html`` was deleted, because every
+producer behind it was dead or frozen — ``kernel_progression.json`` among them
+(the file was still being rewritten while its ``observed_through`` horizon stood
+16.7 d back and was not advancing). The funnel's render assertions are therefore
+gone from this file: they asserted against markup that no longer exists. The
+reader ``server._read_kernel_progression`` is untouched and still serves
+``/api/kernel``; nothing here covers its rendering any more, because nothing
+renders it. That is a real reduction in coverage and it is recorded rather than
+quietly absorbed.
+
+GAP A MOVED. The operator-gated bundle was the ONE live producer on that page, so
+its card moved to ``/loop`` and the render assertions below moved with it — same
+reader, same four states, new host element (``#opgate``, and on ``/loop`` the
+absent state is rendered rather than hidden, because there is no command band
+above it to say so).
+
 WHY THE FIXTURES ARE COPIES OF THE REAL RECORDS. Every fixture below is
 ``operator_gate_bundle.json`` / ``kernel_progression.json`` as the emitters
 actually wrote them, mutated. Hand-authoring the key names is how a reader and its
@@ -23,7 +41,7 @@ the real records are not on this host these tests SKIP loudly rather than fall
 back to an invented record.
 
 WHY THE RENDER ASSERTIONS EXECUTE THE PAGE. Asserting that a string appears in
-``kernel.html`` proves the source contains it, not that a reader ever sees it. The
+``loop.html`` proves the source contains it, not that a reader ever sees it. The
 node harness runs the real render functions against these payloads and the
 assertions read the resulting innerHTML/textContent of the specific element.
 """
@@ -41,11 +59,10 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-PAGE = REPO / "dashboard/static/kernel.html"
+PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 
 REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
-REAL_PROGRESSION = Path("/mnt/raid0/llm/autokernel/surface/kernel_progression.json")
 
 sys.path.insert(0, str(REPO))
 from dashboard import server  # noqa: E402
@@ -87,30 +104,6 @@ def bundle_at(tmp_path, monkeypatch):
 
     place.raw = raw
     place.path = target
-    return place
-
-
-@pytest.fixture
-def progression_at(tmp_path, monkeypatch):
-    raw = _real(REAL_PROGRESSION)
-    target = tmp_path / "kernel_progression.json"
-
-    def place(*, body_edit=None, drop=(), raw_bytes=None, delete=False):
-        if delete:
-            target.unlink(missing_ok=True)
-        elif raw_bytes is not None:
-            target.write_bytes(raw_bytes)
-        else:
-            value = json.loads(raw)
-            for key in drop:
-                value.pop(key, None)
-            if body_edit:
-                value.update(body_edit)
-            target.write_text(json.dumps(value))
-        monkeypatch.setattr(server, "KERNEL_PROGRESSION_JSON", target)
-        return server._read_kernel_progression()
-
-    place.raw = raw
     return place
 
 
@@ -230,7 +223,7 @@ pytestmark_node = pytest.mark.skipif(
 def _page_js() -> str:
     html = PAGE.read_text(encoding="utf-8")
     blocks = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
-    assert blocks, "no script blocks found in kernel.html"
+    assert blocks, "no script blocks found in loop.html"
     return "\n".join(blocks)
 
 
@@ -249,145 +242,166 @@ def _render(payload: dict, fn: str, tmp_path: Path) -> dict:
 
 
 @pytest.fixture(scope="module")
-def live_payload() -> dict:
-    """The REAL /api/kernel/live payload — the one renderCommandBand is fed."""
-    return server._discovery_live_read()[0]
+def loop_body() -> dict:
+    """The REAL ``/api/loop`` payload — the one ``render`` is fed in a browser.
+
+    Its ``operator_gates`` key is overwritten per test with a mutated bundle; every
+    other key stays the server's own, so a page-side fault outside the champion
+    card still surfaces here rather than being fixtured away.
+    """
+    return server.loop_payload()
+
+
+def _text(html: str) -> str:
+    """Tag-stripped text of a rendered fragment.
+
+    A sentence a reader sees as one phrase can be split across an ``<em>`` in the
+    markup, so a substring assertion against innerHTML fails on a rewording that
+    changes nothing visible — and gets "fixed" by weakening it. Assert on what the
+    reader reads.
+    """
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+
+
+def _opgate(payload: dict, tmp_path: Path) -> str:
+    """Render the whole page and return the champion card's innerHTML.
+
+    The FULL ``render``, not ``renderOperatorGate`` alone: the card sits on a page
+    with another producer on it, and a card that only renders when called directly
+    is a card a reader never sees. The harness keys ``by_id`` by BARE id for a page
+    that uses ``getElementById`` — asking it for ``"#opgate"`` returns ``""`` for
+    every input, which is a probe outside the tool, passing for the wrong reason on
+    all of them at once.
+    """
+    out = _render(payload, "render", tmp_path)
+    assert "opgate" in out["by_id"], (
+        "the harness reported no #opgate element at all; the card did not render "
+        f"and every assertion about its content would be vacuous. ids: "
+        f"{sorted(out['by_id'])}")
+    return out["by_id"]["opgate"]
 
 
 @pytestmark_node
 def test_a_stale_bundle_renders_a_stale_verdict_beside_the_number(
-        bundle_at, live_payload, tmp_path):
+        bundle_at, loop_body, tmp_path):
     """The regression this exists for: a dead number that read as live."""
-    payload = dict(live_payload)
+    payload = dict(loop_body)
     payload["operator_gates"] = bundle_at(age_days=16.7)
-    out = _render(payload, "renderCommandBand", tmp_path)
-    sub = out["by_id"]["#cmd-aggregate-sub"]
-    assert "48.9%" in sub, "the operator-gated figure did not render at all"
-    assert "STALE" in sub, "the number rendered with no staleness verdict beside it"
-    assert "16.7 d" in sub
-    # And the card must not be painted as a live gain.
-    assert "STALE" in sub.split("48.9%")[0], (
+    card = _opgate(payload, tmp_path)
+    assert "48.9%" in card, "the operator-gated figure did not render at all"
+    assert "STALE" in card, "the number rendered with no staleness verdict beside it"
+    assert "16.7 d" in card
+    assert "STALE" in card.split("48.9%")[0], (
         "the verdict must precede the number, not trail it")
+    # And it must not be painted as a live gain. `og-num dated` is the amber
+    # rendering; `og-num pos` is the green one.
+    assert "og-num dated" in card and "og-num pos" not in card, (
+        "a figure outside its envelope was painted as a current gain")
 
 
 @pytestmark_node
-def test_a_fresh_bundle_renders_no_stale_badge(bundle_at, live_payload, tmp_path):
+def test_a_fresh_bundle_renders_no_stale_badge(bundle_at, loop_body, tmp_path):
     """The negative control: the badge must be caused by the data, not printed
     unconditionally. Without this, the assertion above passes over a page that
     always says STALE."""
-    payload = dict(live_payload)
+    payload = dict(loop_body)
     payload["operator_gates"] = bundle_at(age_days=0)
-    sub = _render(payload, "renderCommandBand", tmp_path)["by_id"]["#cmd-aggregate-sub"]
-    assert "48.9%" in sub
-    assert "STALE" not in sub and "ABSENT" not in sub and "MALFORMED" not in sub
+    card = _opgate(payload, tmp_path)
+    assert "48.9%" in card
+    assert "STALE" not in card and "ABSENT" not in card and "MALFORMED" not in card
+    assert "og-num pos" in card, "a current, positive figure was not rendered as one"
 
 
 @pytestmark_node
 def test_absent_and_malformed_bundles_render_differently(
-        bundle_at, live_payload, tmp_path):
-    absent = dict(live_payload); absent["operator_gates"] = bundle_at(delete=True)
-    broken = dict(live_payload)
-    broken["operator_gates"] = bundle_at(raw_bytes=bundle_at.raw[: len(bundle_at.raw) // 2])
-    a = _render(absent, "renderCommandBand", tmp_path)["by_id"]["#cmd-aggregate-sub"]
-    m = _render(broken, "renderCommandBand", tmp_path)["by_id"]["#cmd-aggregate-sub"]
+        bundle_at, loop_body, tmp_path):
+    absent = dict(loop_body)
+    absent["operator_gates"] = bundle_at(delete=True)
+    broken = dict(loop_body)
+    broken["operator_gates"] = bundle_at(
+        raw_bytes=bundle_at.raw[: len(bundle_at.raw) // 2])
+    a = _opgate(absent, tmp_path)
+    m = _opgate(broken, tmp_path)
     assert a != m, "an absent emitter and a broken one render identically"
     assert "48.9%" not in a and "48.9%" not in m
-    assert "cannot read" in m, m
-    assert "unmeasured" in a, a
-
-
-# --------------------------------------------------------------------------- #
-# GAP B — the funnel
-# --------------------------------------------------------------------------- #
-
-def _progression_payload(progression: dict) -> dict:
-    return {"_progression": progression, "_activity": {"current_state": {}}}
+    assert "ABSENT" in a and "MALFORMED" not in a
+    assert "MALFORMED" in m and "ABSENT" not in m
 
 
 @pytestmark_node
-def test_the_collapsed_summary_carries_the_funnels_staleness(
-        progression_at, tmp_path):
-    """Visible WITHOUT expanding anything — the whole point of gap B.
+def test_an_absent_bundle_is_rendered_not_hidden(bundle_at, loop_body, tmp_path):
+    """The behaviour that had to CHANGE when the card moved.
 
-    ``#progression-headline`` is the text inside the panel's ``<summary>``: it is
-    what a reader sees while the section is shut.
+    On the retired page this box hid itself (``display:none``) when the bundle was
+    absent, because a command band above it carried the same fact. There is no
+    command band on ``/loop``, so hiding it would put the original defect back in a
+    new place: a section that renders nothing is indistinguishable from a section
+    whose producer died.
     """
-    payload = _progression_payload(progression_at())
-    out = _render(payload, "renderProgression", tmp_path)
-    summary = out["by_id"]["#progression-headline"] or out["text_by_id"]["#progression-headline"]
-    assert summary, "the summary line rendered nothing"
-    assert "STALE" in summary, (
-        "the collapsed summary shows funnel numbers with no staleness verdict: "
-        + summary)
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(delete=True)
+    card = _opgate(payload, tmp_path)
+    assert card.strip(), "an absent bundle rendered an empty card"
+    assert "ABSENT" in card
+    assert "not a measured zero" in _text(card).lower(), (
+        "the card must say what absence is NOT, or a reader supplies the meaning")
+    # And it must name the path it looked at, or the investigation has nowhere to go.
+    assert "operator_gate_bundle.json" in card
 
 
 @pytestmark_node
-def test_a_fresh_projection_leaves_the_summary_unbadged(progression_at, tmp_path):
-    """Negative control for the badge above."""
-    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    payload = _progression_payload(progression_at(body_edit={"observed_through": now}))
-    out = _render(payload, "renderProgression", tmp_path)
-    summary = out["by_id"]["#progression-headline"] or out["text_by_id"]["#progression-headline"]
-    assert "STALE" not in summary and "ABSENT" not in summary, summary
+def test_every_state_renders_a_DISTINCT_card(bundle_at, loop_body, tmp_path):
+    """Structural: no two of the four collapse into the same rendering.
+
+    Collapsing any pair is how a dead producer renders as a live one — the same
+    rule the loop's own banner obeys, applied to the second producer on the page.
+    """
+    cases = {
+        "fresh": {"age_days": 0},
+        "stale": {"age_days": 30},
+        "absent": {"delete": True},
+        "malformed": {"raw_bytes": b"{not json"},
+    }
+    seen = {}
+    for label, kwargs in cases.items():
+        payload = dict(loop_body)
+        payload["operator_gates"] = bundle_at(**kwargs)
+        seen[label] = _opgate(payload, tmp_path)
+    assert len(set(seen.values())) == 4, (
+        "two or more freshness states render identically: "
+        + repr({k: v[:80] for k, v in seen.items()}))
 
 
 @pytestmark_node
-def test_the_stale_banner_is_not_inside_a_disclosure(progression_at, tmp_path):
-    """A verdict a reader has to click for is a verdict a reader does not read."""
-    out = _render(_progression_payload(progression_at()), "renderProgression", tmp_path)
-    box = out["by_id"]["#progression"]
-    head, _, _ = box.partition("<details")
-    assert "STALE" in head, (
-        "the staleness banner is only rendered inside a <details>")
-    assert head.index("STALE") < head.index("hero-card"), (
-        "the banner must precede the hero cards it qualifies")
+def test_the_loops_freshness_never_dates_the_champion_bundle(
+        bundle_at, loop_body, tmp_path):
+    """Two producers on one page, and neither may certify the other's silence.
 
+    A fresh loop beside a stale bundle must still read STALE on the card. This is
+    the merge's central risk: one page, one header badge, and a reader who dates
+    everything on it by the loudest green thing in view.
+    """
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(age_days=30)
+    out = _render(payload, "render", tmp_path)
+    assert out["by_id"]["opgate"], "the card did not render"
+    assert "STALE" in out["by_id"]["opgate"]
+    assert "STALE" in (out["text_by_id"].get("opgate-badgetxt") or ""), (
+        "the champion card's own badge did not carry its own verdict")
+    # ...while the loop's own badge is reporting the loop, not the bundle.
+    assert "STALE" not in (out["text_by_id"].get("freshtxt") or ""), (
+        "the loop's badge inherited the bundle's staleness; the two envelopes "
+        "have been folded together")
 
-@pytestmark_node
-def test_a_missing_funnel_count_renders_unknown_not_zero(
-        progression_at, tmp_path):
-    """`funnel.candidate||0` made a missing number indistinguishable from a real
-    zero — and `0 -> 0 -> 0 -> 0` is a perfectly plausible funnel."""
-    out = _render(_progression_payload(progression_at(drop=["funnel"])),
-                  "renderProgression", tmp_path)
-    box = out["by_id"]["#progression"]
-    value = box.split('<div class="hero-label">Funnel</div>')[1].split("</div>")[0]
-    assert "?" in value, f"a missing funnel count did not render as unknown: {value}"
-    assert "0" not in value, f"a missing funnel count rendered as a number: {value}"
-    assert "not reported" in box
-
-
-@pytestmark_node
-def test_a_real_zero_still_renders_as_zero(progression_at, tmp_path):
-    """The other half: unknown must not swallow a genuine measured zero. The real
-    record already reports `champion: 0` and `promotable: 0`."""
-    out = _render(_progression_payload(progression_at()), "renderProgression", tmp_path)
-    box = out["by_id"]["#progression"]
-    value = box.split('<div class="hero-label">Funnel</div>')[1].split("</div>")[0]
-    assert "38" in value and "0" in value, value
-    assert "?" not in value, f"a reported count rendered as unknown: {value}"
-
-
-@pytestmark_node
-def test_an_absent_projection_says_absent_not_stale(progression_at, tmp_path):
-    out = _render(_progression_payload(progression_at(delete=True)),
-                  "renderProgression", tmp_path)
-    box = out["by_id"]["#progression"]
-    summary = out["by_id"]["#progression-headline"] or out["text_by_id"]["#progression-headline"]
-    assert "ABSENT" in summary, summary
-    assert "STALE" not in summary, summary
-    assert "no producer" in box
-
-
-@pytestmark_node
-def test_a_malformed_projection_says_malformed_not_absent(
-        progression_at, tmp_path):
-    out = _render(
-        _progression_payload(
-            progression_at(raw_bytes=progression_at.raw[: len(progression_at.raw) // 2])),
-        "renderProgression", tmp_path)
-    summary = out["by_id"]["#progression-headline"] or out["text_by_id"]["#progression-headline"]
-    box = out["by_id"]["#progression"]
-    assert "MALFORMED" in summary, summary
-    assert "ABSENT" not in summary, summary
-    assert "cannot read it" in box, box
+    # THE CLASS, NOT ONLY THE WORD. A badge says its verdict twice: in its text
+    # and in the className that colours it. Driving the class from the OTHER
+    # producer yields a green pill reading "STALE" — which the two assertions
+    # above both pass. That mutation survived this test until the harness was
+    # taught to report className at all.
+    classes = out["class_by_id"]
+    assert classes.get("opgate-badge") == "badge stale", (
+        "the champion badge is not COLOURED by its own producer's state: "
+        f"{classes.get('opgate-badge')!r}")
+    assert classes.get("fresh") == "badge fresh", (
+        "the loop's badge is not coloured by the loop's state: "
+        f"{classes.get('fresh')!r}")

@@ -90,13 +90,15 @@ TIMELINE_PATH = REPO / "data" / "handoff_timeline.json"
 GRAPH_PATH = REPO / "handoffs" / "active" / ".index-graph.json"
 _STATIC = Path(__file__).resolve().parent / "static"
 STATIC_HTML = _STATIC / "handoffs.html"
-KERNEL_HTML = _STATIC / "kernel.html"
 BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 MACHINE_HTML = _STATIC / "machine.html"
 AUTOPILOT_HTML = _STATIC / "autopilot.html"
-#: The rebuilt AutoKernel loop. Its own page, not a section of kernel.html — see
-#: the note above ``loop_payload``.
+#: THE Kernel-R&D page. There is no ``KERNEL_HTML`` any more: ``static/kernel.html``
+#: was deleted and ``/kernel`` retired to a redirect (``REDIRECT_ROUTES``) on
+#: 2026-08-30, because two pages carried this domain and the other one's producers
+#: were all dead or frozen. The constant is gone rather than left dangling so
+#: nothing can quietly re-serve the retired page by re-adding one table entry.
 LOOP_HTML = _STATIC / "loop.html"
 NAV_JS = _STATIC / "nav.js"
 
@@ -224,8 +226,14 @@ def _read_operator_gate_bundle() -> dict:
 
     def _unavailable(error: str, *, present: bool, state: str,
                      detail: str) -> dict:
+        # ``evidence`` rides on the UNAVAILABLE reading too, not just the
+        # successful one. A card that says "nothing has ever been written to this
+        # path" without naming the path sends the investigation nowhere — and
+        # absent/malformed are exactly the readings where someone is about to go
+        # looking for the emitter.
         return {"available": False, "error": error,
                 "artifact_present": present,
+                "evidence": str(OPERATOR_GATE_BUNDLE_JSON),
                 "freshness": _envelope(state, detail),
                 "absence_means": OPERATOR_GATE_BUNDLE_ABSENCE_MEANS}
 
@@ -1165,10 +1173,14 @@ def timeline_payload() -> dict:
 
 
 #: What the panel looks like when NO producer reported. ``null``, not ``[]`` —
-#: see ``_read_kernel_contract``. The deployed ``static/kernel.html`` reads every
-#: one of these through ``x || []`` / ``x || {}``, so a null degrades to the same
-#: empty render it always did (absence tolerance is preserved) while the WIRE now
-#: distinguishes the two facts that page could not.
+#: see ``_read_kernel_contract``. ``static/kernel.html`` read every one of these
+#: through ``x || []`` / ``x || {}``, so a null degraded to the same empty render
+#: it always did (absence tolerance preserved) while the WIRE distinguished the
+#: two facts that page could not. **That page was retired on 2026-08-30** and
+#: ``/kernel`` is now a redirect, so nothing renders this shape today; the
+#: distinction stays on the wire because it is a property of the CONTRACT, and a
+#: consumer that cannot tell "nobody reported" from "nothing to report" is the
+#: defect regardless of who is reading.
 _KERNEL_ABSENT = {
     "db_present": None, "runs": None, "pareto": None, "best_per_model": None,
     "totals": None, "sections": None, "degraded": True,
@@ -1180,8 +1192,11 @@ _KERNEL_ABSENT = {
 }
 
 
-#: What the ``/kernel`` PAGE is able to draw for a given document, and the
-#: sentence it must show when it can draw nothing of its own.
+#: What a PAGE is able to draw for a given document, and the sentence it must
+#: show when it can draw nothing of its own. Written for ``/kernel``, which was
+#: retired to a redirect on 2026-08-30; the reasoning below is why this belongs to
+#: the contract rather than to whichever page happens to consume it, and it is the
+#: reason retiring that page did not take this with it.
 #:
 #: ON THE WIRE, not in ``static/kernel.html``, for two reasons. A sentence
 #: hardcoded in the page cannot be tested and cannot know which contract it is
@@ -14389,9 +14404,32 @@ def loop_payload() -> dict:
     says "the producer reported and there is nothing", ``null`` says "no producer
     reported", and the old shell said ``[]`` for both — which is how a dead loop
     rendered as a clean, empty, trusted page (see ``_read_kernel_contract``).
+
+    TWO PRODUCERS ON ONE PAGE (2026-08-30), AND NEITHER DATES THE OTHER.
+    ``/loop`` is now the single Kernel-R&D surface: ``/kernel`` was retired to a
+    redirect because every producer behind it was dead (the ``v37`` controller,
+    ``kernel_dashboard.json`` at 16.8 d) or had a data horizon that had stopped
+    advancing (``kernel_progression.json``: the FILE was rewritten 2.8 d ago, its
+    ``observed_through`` is 16.7 d old — two different facts that must never be
+    folded into one number). The one live producer that page carried is the
+    operator-gated bundle, so it moves here.
+
+    ``operator_gates`` therefore rides beside ``loop`` **with its own four-valued
+    envelope**, produced by the existing ``_read_operator_gate_bundle`` — one
+    reader, not a second. The two envelopes are deliberately NOT merged and
+    ``_freshness`` still dates ONLY the loop: a fresh loop is not evidence that
+    the gate bundle is current, and a stale bundle is not an outage of the loop.
+    Merging them is precisely how one producer's silence gets certified by
+    another's liveness.
+
+    ``/api/loop/health`` is likewise left alone — it answers for the loop
+    producer, and the bundle's verdict travels in the body it dates. That seam is
+    declared in ``dashboard/README.md`` under "Known open items" rather than left
+    to be inferred.
     """
     payload, observation = loop_status.snapshot()
     payload["_freshness"] = _panel_envelope("autokernel_loop", observation)
+    payload["operator_gates"] = _read_operator_gate_bundle()
     payload["now"] = time.time()
     return payload
 
@@ -14583,10 +14621,41 @@ HTML_ROUTES = {
     "/": STATIC_HTML,
     "/machine": MACHINE_HTML,
     "/autopilot": AUTOPILOT_HTML,
-    "/kernel": KERNEL_HTML,
     "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
+}
+
+#: ``route -> destination`` for RETIRED pages. A retired page answers a redirect,
+#: never markup.
+#:
+#: WHY ``/kernel`` IS NOT AN ARCHIVE PAGE (2026-08-30). It was going to be one —
+#: same panels, an "archived" banner on top, out of the nav. That is still a
+#: navigable surface rendering stale numbers, and the operator's actual ask was
+#: that this stop existing. Every producer behind that page was dead or frozen:
+#: the ``gpu-discovery-champion-v37`` controller (last lifecycle event
+#: 2026-08-28 14:12, superseded and never coming back), ``kernel_dashboard.json``
+#: at 16.8 d, and ``kernel_progression.json`` — whose FILE age (2.8 d) and DATA
+#: horizon (``observed_through``, 16.7 d) are two different true facts, the
+#: second of which had stopped advancing. A dashboard is a live instrument;
+#: history belongs in git, in the handoffs and in the artifacts, not on a route a
+#: human can land on and misread.
+#:
+#: The one LIVE producer that page carried — ``operator_gate_bundle.json`` — moved
+#: to ``/loop`` rather than being dropped (see ``loop_payload``).
+#:
+#: OUTSIDE THE PANEL REGISTRY UNIVERSE, and for the same reason ``HTML_ROUTES``
+#: and ``ASSET_ROUTES`` are: ``panels.registry_gaps`` folds the routes that serve
+#: a PRODUCER'S EVIDENCE, and a redirect serves none — it has no body, no
+#: producer, and nothing to be silent about. It is a table rather than an
+#: ``if``-branch so the retirement stays enumerable: ``REDIRECT_ROUTES`` is what a
+#: test greps to prove a page is gone rather than merely unlinked.
+#:
+#: 301, not 302: this is permanent, and a permanent code is what stops the old
+#: URL being re-shared as a live one. The response still carries ``no-store`` so a
+#: cached redirect can never outlive a future decision to change it.
+REDIRECT_ROUTES = {
+    "/kernel": "/loop",
 }
 
 #: ``route -> (content_type, body_builder)`` for static ASSETS the hub generates.
@@ -14680,6 +14749,24 @@ class _Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
+    def _send_redirect(self, location: str) -> None:
+        """Answer a retired page with a permanent redirect and a plain-text body.
+
+        The body is not decoration: a ``curl`` of a retired route otherwise
+        returns nothing at all, which reads as an empty page rather than as a
+        move. It is sent for GET and withheld for HEAD, like every other
+        response here.
+        """
+        body = (f"moved permanently to {location}\n").encode("utf-8")
+        self.send_response(301)
+        self.send_header("Location", location)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
     def _send_asset(self, content_type: str, body: bytes) -> None:
         self.send_response(200)
         self.send_header("Content-Type", content_type)
@@ -14695,6 +14782,8 @@ class _Handler(BaseHTTPRequestHandler):
         try:
             if route in HTML_ROUTES:
                 self._send_html(HTML_ROUTES[route])
+            elif route in REDIRECT_ROUTES:
+                self._send_redirect(REDIRECT_ROUTES[route])
             elif route == TRANSPORT_PROBE_ROUTE:
                 self._send_json(transport_probe_payload())
             elif route in ASSET_ROUTES:

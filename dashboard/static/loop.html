@@ -3,15 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EPYC — AutoKernel Loop</title>
+<title>EPYC — Kernel R&amp;D</title>
 <!--
-  The rebuilt AutoKernel loop, and the ONLY surface that watches it.
+  THE Kernel R&D surface. One page, not two.
 
-  The operator had zero visibility: the dashboard showed the superseded
-  deployment gpu-discovery-champion-v37 as STOPPED (true, it was stopped at
-  2026-08-28T14:23Z) while this loop ran as a process nothing observed.
+  There were two, both called some form of "AutoKernel", and neither could be
+  read as a statement about the other. /kernel showed the superseded deployment
+  gpu-discovery-champion-v37 as STOPPED — true of the controller it observed, and
+  unreadable as anything but a claim about the loop — while this loop ran 46
+  iterations in as a process nothing watched.
 
-  Three things this page refuses to do, each one a scar:
+  The first fix made the two pages honest about each other. That was not the ask.
+  The second fix was going to archive /kernel behind a banner. That was not it
+  either: an archive page is still a navigable surface rendering stale numbers.
+  So /kernel is now a 301 to here, its markup is deleted, and every producer
+  behind it that was dead (v37 controller; kernel_dashboard.json at 16.8 d) or
+  frozen (kernel_progression.json: file rewritten, observed_through 16.7 d and
+  not advancing) went with it. History lives in git, in the handoffs and in the
+  artifacts — not on a route a human can land on and misread.
+
+  ONE producer from that page was live and moved here rather than being dropped:
+  the operator-gated champion bundle (+48.9%). It keeps its OWN four-valued
+  envelope. The loop's freshness never dates it and it never dates the loop.
+
+  Named for the DOMAIN, not the mechanism: "AutoKernel loop" is what the current
+  machine is called; Kernel R&D is the subject, and it outlives the machine.
+
+  Four things this page refuses to do, each one a scar:
     * render a clean empty body over an absent producer — ABSENT, STALE and
       MALFORMED each get their own loud banner; absent and malformed carry no
       body at all (`loop` is null, never {}), and a stale body is shown under a
@@ -19,7 +37,11 @@
     * show only the wins — every disposition is listed, negatives first-class,
       because 0 promotions looked like progress for a month;
     * invent GPU utilisation from an empty gpu map — held-vs-busy renders "not
-      reported" rather than a fabricated 100% idle.
+      reported" rather than a fabricated 100% idle;
+    * carry a liveness card for a retired subsystem. The v37 controller's
+      "STOPPED" was CORRECT, which is exactly why it may not sit on the live
+      page: a correct statement about a dead thing reads as a statement about
+      the living one.
 -->
 <style>
   :root{
@@ -100,12 +122,42 @@
   .eff.pos{color:var(--good)} .eff.neg{color:var(--bad)} .eff.nil{color:var(--muted)}
   .rowstat{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
   .rowstat.win{color:var(--good)} .rowstat.lose{color:var(--amber)}
+
+  /* Operator-gated champion evidence (moved off /kernel, 2026-08-30).
+     Its own class prefix rather than the retired page's `.proposal-box`/`.pv`:
+     a second producer on this page must never inherit the first one's styling
+     cues, or a reader learns to date one by the other. */
+  .og-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;
+    border-bottom:1px solid var(--border)}
+  .og-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:26px;font-weight:650}
+  .og-num.pos{color:var(--good)} .og-num.neg{color:var(--bad)}
+  /* A number outside its envelope is NEVER painted as a live gain. Amber, not
+     green and not red: the measurement happened; it is its CURRENCY that is in
+     doubt, and green would say the opposite. */
+  .og-num.dated{color:var(--amber)}
+  .og-sum{font-size:13px}
+  .og-verdict{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+  .og-verdict.stale{background:#26191a;border-color:#5c2321;color:var(--bad)}
+  .og-verdict.absent{background:#191d24;color:var(--muted)}
+  .og-verdict.malformed{background:#241d16;border-color:#5c3a1e;color:var(--amber)}
+  .og-auth{font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    border:1px solid var(--border);border-radius:20px;padding:1px 8px;color:var(--muted)}
+  .og-gate{display:flex;gap:10px;align-items:baseline;padding:7px 16px;border-bottom:1px solid var(--border)}
+  .og-gate:last-child{border-bottom:none}
+  .og-gate .st{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+    min-width:52px;font-weight:650}
+  .og-gate .st.pass{color:var(--good)} .og-gate .st.fail{color:var(--bad)}
+  .og-gate .nm{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  .og-gate .cl{color:var(--muted);font-size:12px}
+  .og-miss{padding:8px 16px;font-size:12px;color:var(--bad);border-bottom:1px solid var(--border)}
+  .og-cav{padding:10px 16px;font-size:12px;color:var(--muted)}
+  .og-cav summary{cursor:pointer;color:var(--accent)}
 </style>
 </head>
 <body>
 <header>
-  <h1>AutoKernel Loop</h1>
-  <span class="sub">rebuilt loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
+  <h1>Kernel R&amp;D</h1>
+  <span class="sub">AutoKernel loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
   <span id="fresh" class="badge absent"><span class="dot"></span><span id="freshtxt">…</span></span>
   <span id="hdr-state" class="state">—</span>
   <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
@@ -117,25 +169,40 @@
 <main>
   <div id="banner"></div>
 
-  <!-- The other half of the /kernel banner (2026-08-30). Two pages carried the
-       name "AutoKernel" and neither acknowledged the other, so an operator on
-       either one could not tell whether they were looking at the live producer.
-       This page is the live one; the link is stated so the campaign evidence
-       that lives only on /kernel is still findable, and is deliberately NOT a
-       data dependency — nothing here reads /api/kernel. -->
+  <!-- Scope, in one paragraph, because a merged page has to say what it merged.
+       Deliberately NOT a link to /kernel: that route is a 301 back to here and
+       its markup is deleted, so a link would be a loop. Nothing on this page
+       fetches /api/kernel — the retired surface must not become a data
+       dependency of the live one. -->
   <div class="pad" id="sec-scope" style="border:1px solid var(--border);border-radius:8px;
        padding:10px 12px;margin-bottom:18px;font-size:12px;line-height:1.55;color:var(--muted)">
-    This is the <strong>live</strong> AutoKernel surface — the rebuilt loop, reading its own
-    <code>epyc.autokernel.loop_status.v1</code>. The superseded discovery
-    <strong>controller</strong> (deployment <code>gpu-discovery-champion-v37</code>, stopped
-    2026-08-28) and the campaign / HIP / operator-gate evidence around it live on
-    <a href="/kernel">Kernel-R&amp;D</a>. Different producer, different envelope: a reading
-    there is never a statement about this loop.
+    The <strong>single</strong> Kernel R&amp;D surface. Two pages used to carry this domain;
+    <code>/kernel</code> was <strong>retired on 2026-08-30</strong> and now redirects here,
+    because every producer behind it was dead (the superseded discovery controller
+    <code>gpu-discovery-champion-v37</code>; <code>kernel_dashboard.json</code>, 16.8 d) or had
+    stopped advancing (<code>kernel_progression.json</code> — the file was still being
+    rewritten while its <code>observed_through</code> horizon stood 16.7 d back). Its one
+    live producer, the operator-gated champion bundle, moved here and kept its own
+    envelope. Everything else is in git history, the handoffs and the artifacts.
   </div>
 
   <section id="sec-tiles">
-    <h2>Progress</h2>
+    <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
     <div class="tiles" id="tiles"></div>
+  </section>
+
+  <!-- Moved off /kernel (2026-08-30). A SECOND producer on this page, and the
+       only reason this section carries its own badge, its own verdict line and
+       its own evidence path: the loop's freshness says nothing about this
+       bundle, and this bundle's says nothing about the loop. A shared header
+       badge would let either one certify the other's silence. -->
+  <section id="sec-opgate">
+    <h2>Operator-gated champion evidence
+      <span class="count">manual research &middot; separate producer</span>
+      <span id="opgate-badge" class="badge absent" style="margin-left:auto">
+        <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
+    </h2>
+    <div id="opgate"></div>
   </section>
 
   <section id="sec-disp">
@@ -165,13 +232,19 @@
 </main>
 
 <footer>
-  Read-only view. The hub owns nothing here: the contract
-  <code>epyc.autokernel.loop_status.v1</code> is written by
-  <code>autokernel.loop.status.write</code> in <code>epyc-inference-research</code>
-  and read at request time — never cached, so no value can outlive its freshness
-  envelope. Data probe: <a href="/api/loop/health"><code>/api/loop/health</code></a>
-  (three-valued: is what this page shows still true?). <code>/health</code> is
-  transport-only and stays green over a dead loop. Auto-refresh 20s.
+  Read-only view, and <strong>two producers</strong> — neither dates the other.
+  The hub owns neither contract: <code>epyc.autokernel.loop_status.v1</code> is
+  written by <code>autokernel.loop.status.write</code> in
+  <code>epyc-inference-research</code>;
+  <code>epyc.autokernel.operator_gate_bundle.v1</code> is emitted by the
+  operator-gated manual-research path. Both are read at request time — never
+  cached, so no value can outlive its freshness envelope. Data probe:
+  <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
+  what this page shows still true?) — it answers for the <em>loop</em> producer;
+  the champion bundle's four-valued verdict travels in the body it dates, on the
+  card above. <code>/health</code> is transport-only and stays green over both of
+  them being dead. <code>/kernel</code> redirects here (retired 2026-08-30).
+  Auto-refresh 20s.
 </footer>
 
 <script>
@@ -400,6 +473,108 @@ function renderHotspots(d){
     `</tbody></table>`;
 }
 
+/* The operator-gated champion bundle, moved here from the retired /kernel page.
+   Same reader (`server._read_operator_gate_bundle`), same four-valued envelope;
+   only the surface changed.
+
+   THE RULE THIS CARD EXISTS TO OBEY: the number and its date are rendered
+   together or not at all. `+48.9%` rendered identically forever after its
+   emitter died, because the reader validated schema and authority meticulously
+   and read no timestamp. Authority answers "may this be shown"; freshness
+   answers "is it still true".
+
+   AND ABSENT IS NOT HIDDEN HERE. On /kernel this box hid itself when the bundle
+   was absent, because the command band above it said so. There is no command
+   band on this page, so hiding it would restore the original defect in a new
+   place: a section that renders nothing is indistinguishable from a section
+   whose producer died. All four states draw something. */
+const OG_BANNERS = {
+  fresh:     {hd: "", note: ""},
+  stale:     {hd: "STALE — this evidence is outside its own envelope",
+              note: "The figures below are the LAST bundle the emitter wrote. The " +
+                    "measurement happened; whether it is still true is what is in doubt."},
+  absent:    {hd: "ABSENT — no operator-gated bundle has ever been written",
+              note: "This is not “the champion is unmeasured” and not “the " +
+                    "gates failed”. Nothing emitted the carrier at all, so this " +
+                    "surface has no operator evidence to show either way."},
+  malformed: {hd: "MALFORMED — a bundle exists that this page cannot trust",
+              note: "Something emitted a carrier and the hub cannot read it. That " +
+                    "points at the emitter's writer, not at whether the evidence " +
+                    "exists. No figures are rendered from it."}
+};
+
+function renderOperatorGate(d){
+  const host = document.getElementById("opgate");
+  const og = d.operator_gates || {};
+  const f = og.freshness || {};
+  const state = String(f.state || "absent");
+  const current = state === "fresh";
+
+  const badge = document.getElementById("opgate-badge");
+  badge.className = "badge " + esc(state);
+  document.getElementById("opgate-badgetxt").textContent =
+    current ? `fresh · ${age(f.age_s)} ago`
+    : state === "stale" ? `STALE · ${age(f.age_s)} ago`
+    : state === "malformed" ? "MALFORMED" : "ABSENT";
+
+  const spec = OG_BANNERS[state] || OG_BANNERS.absent;
+  let h = "";
+  if(!current){
+    h += `<div class="og-verdict ${esc(state)}"><b>${esc(spec.hd)}</b>` +
+         `<div style="margin-top:5px">${esc(f.detail || og.error ||
+            og.absence_means || "")}</div>` +
+         `<div class="muted" style="margin-top:5px">${esc(spec.note)}</div></div>`;
+  }
+
+  if(!og.available){
+    // No numbers at all — and the reason, in its own words, not a shared one.
+    host.innerHTML = h + `<div class="empty">No operator-gated figures are shown ` +
+      `because the bundle is <strong>${esc(state.toUpperCase())}</strong>. ` +
+      `This is <em>not</em> a measured zero.</div>` +
+      `<div class="og-cav">evidence: <span class="mono">${esc(og.evidence || "—")}</span></div>`;
+    return;
+  }
+
+  const hd = og.headline || {};
+  const e = hd.effect_fraction;
+  const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
+  // Outside its envelope the figure is amber, never the green/red of a live
+  // gain or regression.
+  const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
+  h += `<div class="og-head">` +
+       `<span class="og-num ${cls}">${esc(pct)}</span>` +
+       `<span class="og-sum">${esc(hd.summary || "no headline summary in this bundle")}</span>` +
+       `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
+       `no promotion authority</span></div>`;
+
+  const gates = og.gates || [];
+  if(gates.length){
+    h += gates.map(g => {
+      const pass = g.status === "PASS";
+      return `<div class="og-gate">` +
+        `<span class="st ${pass ? "pass" : "fail"}">${esc(g.status || "—")}</span>` +
+        `<span class="nm">${esc(g.gate || "—")}</span>` +
+        `<span class="cl">${esc(g.claim || "")}</span></div>`;
+    }).join("");
+  } else {
+    h += `<div class="empty">The bundle declares no gates.</div>`;
+  }
+  if((og.gates_missing || []).length)
+    h += `<div class="og-miss">missing gates: <span class="mono">` +
+         esc(og.gates_missing.join(", ")) + `</span></div>`;
+  h += `<div class="og-cav">` +
+       (og.caveat ? `<details><summary>what this evidence does and does not ` +
+          `authorise</summary><div style="margin-top:6px">${esc(og.caveat)}</div></details>` : "") +
+       `<div style="margin-top:6px">evidence: <span class="mono">` +
+       esc(og.evidence || "—") + `</span>` +
+       (f.generated_at ? ` · dated ${esc(f.generated_at)}` +
+          (f.generated_at_source === "file_mtime"
+            ? ` <span class="muted">(file mtime — this bundle carries no ` +
+              `generated_at of its own)</span>` : "") : "") +
+       `</div></div>`;
+  host.innerHTML = h;
+}
+
 function renderIdentity(d){
   const L = d.loop;
   const rows = [
@@ -432,6 +607,9 @@ function render(d){
   st.className = "state " + esc(L && L.state ? L.state : "");
   renderBanner(d);
   renderTiles(d);
+  // Second producer, rendered unconditionally: an unreadable LOOP must not take
+  // the champion card down with it, and vice versa.
+  renderOperatorGate(d);
   renderDispositions(d);
   renderRecent(d);
   renderGpu(d);
@@ -446,6 +624,18 @@ function renderFetchFailure(err){
     `<div class="bd muted">This says nothing about the loop: the page could not ` +
     `reach <code>/api/loop</code>. Do not read it as an idle loop.</div>`;
   setFreshBadge("malformed", null);
+  // BOTH producers go unknown, not just the loop. Leaving the last successful
+  // champion render on screen under an unreachable hub would present an
+  // arbitrarily old reading as the current one — the same defect this page was
+  // built to end, one refresh cycle later.
+  document.getElementById("opgate-badge").className = "badge malformed";
+  document.getElementById("opgate-badgetxt").textContent = "UNKNOWN";
+  document.getElementById("opgate").innerHTML =
+    `<div class="og-verdict malformed"><b>UNKNOWN — the hub could not be reached` +
+    `</b><div class="muted" style="margin-top:5px">This is a fact about this hub, ` +
+    `not about the operator-gated evidence. The last reading is cleared rather ` +
+    `than left on screen, because an undated figure is exactly what this card ` +
+    `exists to prevent.</div></div>`;
 }
 
 async function tick(){

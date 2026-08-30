@@ -30,23 +30,13 @@
     },
     {
       "id": "autokernel-loop",
-      "title": "AutoKernel",
+      "title": "Kernel R&D",
       "chip": "live",
       "port": 8100,
       "path": "/loop",
       "owner_repo": "epyc-root",
       "health_path": "/api/loop/health",
-      "blurb": "THE LIVE AutoKernel surface — the rebuilt loop's own status contract: state, freshness, every disposition incl. negatives, GPU held-vs-busy"
-    },
-    {
-      "id": "kernel",
-      "title": "Kernel-R&D",
-      "chip": "controller",
-      "port": 8100,
-      "path": "/kernel",
-      "owner_repo": "epyc-root",
-      "health_path": "/api/kernel/health",
-      "blurb": "AutoKernel discovery CONTROLLER (superseded deployment gpu-discovery-champion-v37, stopped 2026-08-28) + campaign/HIP/operator-gate evidence — the live loop is /loop"
+      "blurb": "THE Kernel R&D surface: the rebuilt AutoKernel loop's own status contract (state, freshness, every disposition incl. negatives, GPU held-vs-busy) plus the operator-gated champion evidence, each carrying its own envelope. /kernel was retired into this page 2026-08-30 and now redirects here"
     },
     {
       "id": "bus",

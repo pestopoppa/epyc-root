@@ -706,9 +706,13 @@ class KernelAbsenceOnTheWireTest(unittest.TestCase):
     def test_the_deployed_page_still_tolerates_the_absence(self):
         """COMPLIANT-PATH CONTROL: absence tolerance is REQUIRED, not removed.
 
-        ``static/kernel.html`` reads every one of these through ``x || []`` /
-        ``x || {}``, so a null degrades to the same empty render it always did —
-        the page must not crash on a dead producer. Only the wire changed.
+        What is pinned here is the WIRE: on a dead producer these keys carry
+        ``null`` — 'no producer reported' — never ``[]``, and ``/api/kernel``
+        still serves exactly that. The page that consumed it was retired on
+        2026-08-30, so this is no longer a statement about one page's ``x || []``
+        tolerance; it is the contract's own absence semantics. A null must stay
+        cheap to consume — it degrades to an empty render for any reader that
+        coalesces, and the payload must stay serialisable so the route cannot 500.
         """
         with _KernelFile(None):
             out = server.kernel_payload()
@@ -1215,17 +1219,6 @@ class KernelActivityContextTest(unittest.TestCase):
                       state["production_kernel"]["scope"])
         self.assertFalse(state["promotion_claim"])
 
-    def test_current_state_renderer_cannot_show_replay_positivity_without_floor(self):
-        page = (Path(__file__).resolve().parents[1] / "dashboard" / "static" /
-                "kernel.html").read_text(encoding="utf-8")
-        renderer = page.split("function renderCurrentState", 1)[1].split(
-            "function renderActivity", 1)[0]
-        for field in ("replay.verdict", "replay.all_blocks_positive",
-                      "replay.median_relative_delta",
-                      "replay.contribution_floor"):
-            self.assertIn(field, renderer)
-        self.assertIn("ATTESTATION UNAVAILABLE", renderer)
-
     def test_current_state_fails_soft_when_evidence_is_absent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -1469,13 +1462,26 @@ class KernelDataHealthProbeTest(unittest.TestCase):
             status_code, body = server.kernel_data_health()
         self.assertEqual((status_code, body["status"]), (200, panels.STATUS_OK))
 
-    def test_dashboard_registry_selects_the_data_probe_only_for_kernel(self):
+    def test_dashboard_registry_selects_the_data_probe_only_for_kernel_rnd(self):
+        """Kernel R&D is the one surface whose nav chip must answer 'is what this
+        page shows still true', so it alone points at a DATA probe; the rest point
+        at transport. The Kernel R&D row is ``autokernel-loop`` — the older
+        ``kernel`` row was retired on 2026-08-30, when ``/kernel`` stopped serving
+        a page and became a redirect to ``/loop``. A registry row is what draws the
+        nav, so leaving one behind for a route that serves no page of its own is
+        how a dead link gets into the nav and stays there.
+        """
         registry = json.loads(server.DASHBOARD_REGISTRY_JSON.read_text())
         paths = {entry["id"]: entry["health_path"]
                  for entry in registry["dashboards"]}
-        self.assertEqual(paths["kernel"], "/api/kernel/health")
+        self.assertEqual(paths["autokernel-loop"], "/api/loop/health")
         self.assertEqual(paths["handoffs"], "/health")
         self.assertEqual(paths["machine"], "/health")
+        self.assertNotIn(
+            "kernel", paths,
+            "the /kernel row was retired on 2026-08-30 when the page became a "
+            "redirect to /loop; a registry row for a route that serves no page "
+            "puts a dead link in the nav")
 
 
 # --------------------------------------------------------------------------- #

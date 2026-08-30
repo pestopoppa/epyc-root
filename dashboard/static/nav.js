@@ -25,10 +25,14 @@
 
   var NAV_ID = "epyc-nav";
   var STYLE_ID = "epyc-nav-style";
-  /* Chips come from the REGISTRY now (2026-08-30), not from an id hardcoded
-   * here. There was one chip and one id, so a constant was enough; then two
-   * rows both meant "AutoKernel" and the nav could not say which one was the
-   * live producer — a distinction that has to survive without clicking through.
+  /* Chips come from the REGISTRY (2026-08-30), not from an id hardcoded here.
+   * There was one chip and one id, so a constant was enough; then two rows both
+   * meant "AutoKernel" and the nav could not say which one was the live
+   * producer. Those two were merged into a single "Kernel R&D" row later the
+   * same day — `/kernel` is a 301 to `/loop` now and has no registry row at all
+   * — so the chip no longer disambiguates a pair. It stays because it still
+   * makes a claim worth making on its own ("this row's producers are live"), and
+   * because the field, not a hardcoded id, is what a future second row needs.
    * `orchestrator-legacy` keeps its chip by carrying `"chip": "legacy"`. */
   var LEGACY_ID = "orchestrator-legacy";
   var MAX_CHIP = 12;
