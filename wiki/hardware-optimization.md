@@ -3794,3 +3794,28 @@ The session evidence frames the prize. qwen4exp was entirely missing from every 
 - [CPU Fused Decoder Blocks](../handoffs/active/cpu-fused-decoder-blocks.md) — the megakernel plan, operator decisions, phase gates, validation strategy, risks, and the Phase 0/1 committed state
 - [2026-08-28 progress](../progress/2026-08/2026-08-28.md) — qwen4exp runnability (PR #27742 backport), the CPU tuning/fusion rounds 1–6, the machine-limit measurement, the NUMA interleave+no-mmap baseline fix, and the fused-decoder session closes
 
+
+## Compiled Update — 2026-08-30 (incremental): fused decoder Phase 2 — full-attn layer function committed
+
+**Confidence: verified** (commit + checkbox state in the INF-64/67 handoff).
+
+Phase 2 of the CPU fused-decoder megakernel plan landed same-day: the fused full-attn layer
+function is committed (`95902fefa`) — QSA indexer (top-k blocks) + flash-kernel attention,
+covering the 12 attention layers of the qwen4exp family; rotations and the long-context
+indexer rope are marked for the validation pass. Remaining per the plan: thread-pool
+integration (mms + GDN kernel at nth>1), PLE + head, then the `process_ubatch` hook +
+logit-diff validation (≤1e-4 before any perf claim).
+
+Key findings:
+
+- **Phase 1 → Phase 2 progression holds to plan**: GDN fused-layer op (`e57e1d542`) → full-attn
+  fused-layer op (`95902fefa`); both single-threaded correctness-first, tree green.
+- **The ~6,800 → ~100 node collapse target is still the frame**: per-node machinery cost is
+  irreducible per-node; only fewer/fatter nodes move batch-1 decode (~74 ms/token → 35–45 ms target).
+- **Validation gates unchanged**: logit diff ≤1e-4 before perf claims; arch test necessary-but-
+  insufficient; in-situ profiler the only trusted instrument.
+
+### Source References (2026-08-30)
+
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — the INF-64/67
+  handoff: plan, operator decisions, phase checklist with the Phase-2 commit state.
