@@ -11,14 +11,21 @@ fixed production anchor.
 | task | what to do |
 |---|---|
 | **CH-14** | Write the manual-research loop runbook (admit → gate → attest) in `docs/guides/`, stating the authority boundary explicitly. |
+| **CH-16** | Correct the loop champion's inflated per-commit claims at the branch tip and in `program.md` — blocked on run 19 finishing. |
 | **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
 | **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
 
-**The champion's standing, as of 2026-08-28**: instrument pin `270b48ed64d6`, ahead of frozen
-production, carrying MoE-Spec + DFlash2. Correctness proven, no regression on the default path,
-**+28–48% on the Qwen3.8-27B serving path that production cannot reach at all**. That evidence is
-operator-gated (CH-13) and carries **no promotion authority** — it is not a campaign receipt, and
-no campaign has yet banked one.
+**Two different champions live on this page — do not conflate them.**
+
+1. **The manual-admission champion**, instrument pin `270b48ed64d6`, ahead of frozen production and
+   carrying MoE-Spec + DFlash2. Standing as of 2026-08-28: correctness proven, no regression on the
+   default path, **+28–48% on the Qwen3.8-27B serving path that production cannot reach at all**.
+   That evidence is operator-gated (CH-13) and carries **no promotion authority** — it is not a
+   campaign receipt, and no campaign has yet banked one.
+2. **The loop champion**, `5ad3e36d` on `ak/loop-champion-20260828`, 36 commits above frozen v9.
+   Standing as of 2026-08-30: **+8.524% tg128 vs frozen production, decisive by 7.2×; ~0 on
+   pp512** — the first measured default-path gain in the program. See *2026-08-30* below, and read
+   **CH-16** before quoting anything from that branch's commit messages.
 
 ## The finding that reframes this
 
@@ -69,10 +76,17 @@ apparatus exists to prevent — and would destroy the comparability of every lat
 
 ## Tasks
 
-- [ ] **CH-1 — Seed Champion₀ = frozen v9 plus an explicit build recipe.** At worst the aggregate
-  equals production, which immediately satisfies the standing requirement and gives discovery a
-  stable baseline. Requires extending the champion model to carry a build recipe (config arms), not
-  just a source diff.
+- [x] **CH-1 — Seed Champion₀ = frozen v9 plus an explicit build recipe.** ✅ 2026-08-30. Both
+  halves now exist. The *seed* half landed with CH-2 (research `38bbd045`,
+  `_seed_champion_if_absent()` at campaign start, citing the ratified production digests). The
+  *build recipe* half — the part this task named as genuinely new ("the build-recipe carrier
+  (config arms) is a separate field the champion record does not model yet") — landed as **D3**,
+  research `6cbb608c` + `3ba4339f`: a champion now carries a build recipe.
+  **Neither standing config win was adopted**, per CH-6, and both are recorded *in the recipe with
+  the numbers that correct them*, so the carrier ships its own refutations instead of inviting a
+  re-run. Decision-arithmetic floor raised 101 → 109.
+  One constant in that recipe module is now contradicted by measurement —
+  `build_recipe.py:43`'s `PRODUCTION_RECIPE_IS_VERIFIABLE = False`; see CH-15 and INF-66 R18-A.
 - [x] **CH-2 — Make "a champion always exists" an invariant**, re-seeded from production on every
   promotion, rather than an end-of-campaign action. ✅ 2026-08-28 (research `38bbd045`).
   `_seed_champion_if_absent()` runs once at campaign start, before any iteration. The gap it closes
@@ -510,3 +524,48 @@ moment the champion advances**, and the champion advances by design.
       it is only reconstructible by reading two handoffs and three scripts. Write it up in
       `docs/guides/` as the standing procedure, with the authority boundary stated explicitly so a
       future session does not "simplify" it by emitting a campaign receipt.
+
+## 2026-08-30 — the champion finally has a measured effect against production on the DEFAULT path
+
+CH-12 (retracted and corrected on 2026-08-28) established that the champion's measured effect vs
+production existed *on the DFlash2 serving path production cannot reach at all*. What did **not**
+exist was an effect on the default path beyond "no regression": CH-4's rows were 748.34 → 768.83
+pp512 and 28.21 → 28.20 tg128, read honestly as no change.
+
+**That gap is now closed, for the LOOP champion.** Note the two champions are different objects
+and must not be conflated: CH-4/CH-12 measured the *manual-admission* champion `5c278648a`
+(MoE-Spec + DFlash2); what follows measures the *loop* champion `5ad3e36d` on
+`ak/loop-champion-20260828`, 36 commits above frozen v9.
+
+| surface | production `0db32c06` | champion `5ad3e36d` | effect | floor | reading |
+|---|---|---|---|---|---|
+| **tg128** | 264.918 tok/s | 287.499 tok/s | **+8.524%** | 1.188% (calibrated) | **decisive by 7.2×** |
+| **pp512** | — | — | +0.090% | 0.029% (uncalibrated) | **NO CHANGE** |
+
+Both arms built fresh from named commits with the identical recipe · 20 alternating pairs · one
+claim held across both surfaces · neither arm drifting · 40/40 resident · clocks pinned 1700 MHz on
+all 80 invocations · correctness oracle rc=0, `2/2 backends passed`, on **both** arms. Stored as
+`/mnt/raid0/llm/autokernel/loop-memory/champion-vs-production.json`
+(`epyc.autokernel.champion_vs_production.v1`), five capability entries each carrying its evidence
+path. The pp512 `decisive=True` is a floor artifact — and the changed files predict ~0 prefill
+independently, since the 36 commits touch only the matrix-*vector* decode path and FA-vec and
+nothing in `mmq.*`.
+
+- [x] **CH-15 — the house recipe reproduces production's frozen build on BOTH backends.**
+      ✅ 2026-08-30. Established by comparing *artifacts* rather than flags: production's shipped
+      `libggml-cpu.so` vs our fresh v9 build, **584 defined symbols each, zero diff**; production's
+      `libggml-hip.so` vs ours, **918 distinct device kernels each, zero symbols unique to either
+      side**. This matters here because `champion.py`'s anchor identity and CH-1's build recipe both
+      rest on our recipe standing in for production's, which was previously unevidenced.
+      Follow-on, filed in INF-66 as **R18-A**: flip `build_recipe.py:43`'s
+      `PRODUCTION_RECIPE_IS_VERIFIABLE = False` with this evidence attached.
+- [ ] **CH-16 — the loop champion's per-commit claims are inflated 20× and must be corrected where
+      a reader of the branch will land.** The 36 commit messages on `ak/loop-champion-20260828`
+      claim gains **compounding to +171.7%** (arithmetic sum +101.8%) against a measured block
+      effect of **+8.524%** — the same cumulative-attribution defect as run 17's (INF-66 D14) at
+      twenty times the magnitude. **No individual percentage on that branch is a marginal effect.**
+      Commit messages are immutable, so the correction goes at the tip
+      (`NOTES-attribution.md`) and into `loop/program.md`'s *Settled — do not re-open* section.
+      Owned by INF-66 as **R18-C**; listed here because this page is where someone comes to ask
+      what the champion is worth. **Blocked on run 19 finishing** — `ak-loop-tree` is off limits
+      while it runs.

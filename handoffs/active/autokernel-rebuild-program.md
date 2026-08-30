@@ -26,6 +26,15 @@ why every prior reachability audit was wrong.
 
 ## CURRENT STATE — read this first on pickup
 
+> **In four lines, 2026-08-30.**
+> 1. The champion **is measurably better than production**: `5ad3e36d` vs `0db32c06`, **+8.524%
+>    tg128** (decisive by 7.2×), **~0 pp512**. That is the number this program existed to produce.
+> 2. **Run 19 is LIVE (pid `431205`) — take no GPU, no builds, no `ak-*` trees.**
+> 3. **Do not quote the champion branch's per-commit percentages.** They compound to +171.7%
+>    against a measured +8.524% (R18-C).
+> 4. **Next:** wait out run 19, then close **R18-B** (run-18 forensics, still OPEN) and start
+>    **P5, the strip** — which is now unblocked.
+
 - **P0 DONE** (root `7f86e383`) · **P1 DONE** · **P2 DONE** incl. the measured A/A floor ·
   **P3 DONE except two items deliberately unshipped** (anchor build cache, ccache — see P3) ·
   **P4.1 DONE** (the loop-design doc) · **P7 DONE** (research `10f0214e`).
@@ -41,32 +50,75 @@ why every prior reachability audit was wrong.
   "+1.846% keep". The **first genuinely marginal champion advances are run 16's two and run 18's
   `5ad3e36d`.** Runs 12–18 and defects D7–D14 are written up in `progress/2026-08/2026-08-29.md`
   and `progress/2026-08/2026-08-30.md`.
-- **CHAMPION: `5ad3e36d`** (`akm-q4k-chained-dp4a`, +9.321% marginal) on branch
+- **CHAMPION: `5ad3e36d`** (`akm-q4k-chained-dp4a`) on branch
   `ak/loop-champion-20260828` in `/mnt/raid0/llm/tmp/ak-loop-tree` — **36 commits above the
   frozen v9 tip `0db32c06`**. Provenance: run 11 (2) · run 13 (1 surviving of 4; the other three
   were cumulative artefacts, demoted and tagged `ak/pre-anchor-fix-full-history`) · run 16 (2) ·
-  run 17 (30) · run 18 (1 so far). **Run 17's 30 commits were audited as a block** against what
+  run 17 (30) · run 18 (1). **Run 17's 30 commits were audited as a block** against what
   the run started from (`432e501f`): **+3.942%, decisive, no drift, residency 40/40, clocks
   stable** (`run17-audit/total.json` in the store) — so they were KEPT rather than rolled back.
   Their individual attribution is not recoverable (D14) and is not worth the device time.
-- **RUN 18 IS LIVE and unattended** — pid `3307803`, ~6.5 h in as of 2026-08-30, anchor
-  `8fd1b23a`, **7 lanes, continuous, 20 pairs, floor 1.188%**. Holds the `mi210_0` claim, pid also
-  in `/workspace/tmp/ak-loop-deploy/run18.pid`, writing to
-  `/mnt/raid0/llm/autokernel/loop-memory/` (`loop-status.json` is the live view). **One keep so
-  far:** `5ad3e36d akm-q4k-chained-dp4a +9.321%`, champion advanced correctly.
-  **GPU idle-while-claimed is running 35–40%** and is now reported on every row — that is the
-  next efficiency target, and it is only visible because the row carries it.
-  Do not start GPU work, builds, `llama-bench` or `test-backend-ops` while it runs, and do not
-  touch `/mnt/raid0/llm/tmp/ak-lanes`, `ak-loop-tree` or `ak-lane-builds`.
+
+- **THE HEADLINE MEASUREMENT EXISTS — champion `5ad3e36d` vs frozen production v9 `0db32c06`,
+  2026-08-30.** Both arms built fresh from named commits with the *identical* recipe, 20
+  alternating pairs, one claim held across both surfaces.
+
+  | surface | production | champion | effect | floor | reading |
+  |---|---|---|---|---|---|
+  | **tg128** (decode) | 264.918 tok/s | 287.499 tok/s | **+8.524%** | 1.188% (calibrated) | **decisive by 7.2×** |
+  | **pp512** (prefill) | — | — | +0.090% | 0.029% (**uncalibrated**) | **NO CHANGE** |
+
+  Neither arm drifting · **40/40** invocations resident · clocks pinned 1700 MHz across all **80**
+  invocations · correctness oracle rc=0, `2/2 backends passed`, on **both** arms. Published as
+  `/mnt/raid0/llm/autokernel/loop-memory/champion-vs-production.json`
+  (`epyc.autokernel.champion_vs_production.v1`), five-entry capability list, each entry carrying
+  its own on-disk evidence path.
+
+  **The pp512 row's `decisive=True` is an artifact and the row means NO CHANGE.** Its floor is
+  the superseded uncalibrated construction (see the noise-floor bullet). The verdict does not
+  depend on the floor anyway, because **the diff predicts it**: the 36 commits touch only the
+  matrix-*vector* decode path and FA-vec — `mmvq.cu`, `vecdotq.cuh`, `quantize.cu`, `rope.cu`,
+  `fattn-vec.cuh`, `fattn.cu` — and **nothing in `mmq.*`**, the batched prefill path.
+
+- **⚠ THE PER-COMMIT RECORD ON THAT BRANCH IS INFLATED 20×. DO NOT QUOTE IT.** The 36 commit
+  messages claim gains **compounding to +171.7%** (arithmetic sum +101.8%). The block measures
+  **+8.524%**. This is run 17's cumulative-attribution defect (D14) at twenty times the magnitude.
+  The only defensible statement about `ak/loop-champion-20260828` is the block number. Anyone
+  reading those commit messages as marginal effects is reading a false claim — see R18-C.
+
+- **RUN 18 WAS STOPPED, AND MOST OF IT WAS INVALID.** 188 iterations · 138 measurements · **1
+  keep**. Stopped via the STOP sentinel; drained cleanly at **20:10:23Z** with `state: complete`.
+  Split at the 11:03 champion promotion:
+
+  | segment | n | median effect | **best** effect |
+  |---|---|---|---|
+  | BEFORE promotion | 16 | −1.441% | +0.060% |
+  | AFTER promotion | 122 | −9.539% | **−5.642%** |
+
+  After 11:03, **not one candidate of 122 could ever have been kept** — the whole distribution
+  sits below zero by more than the +9.321% champion advance that had just landed. **The evidence
+  sat in `experiments.db` for six hours while this session reported the run as healthy**; it was
+  found only because the operator pushed back on the keep rate. *A loop still emitting well-formed
+  measurements is not thereby working — "it is producing output" answers a liveness question, and
+  nobody had asked one.*
+
+- **RUN 19 IS LIVE — DO NOT TOUCH IT.** pid `431205`, started ~20:5x 2026-08-30. Anchor is the
+  freshly built, **verified** champion at `/mnt/raid0/llm/tmp/v9v-build-champ`. 7 lanes,
+  continuous, 20 pairs, `tg128`, floor 1.188%, **promotion A/A guard armed** — the first run in
+  which that guard can fire. Off limits for every session: pid `431205`,
+  `/mnt/raid0/llm/tmp/ak-lanes`, `ak-loop-tree`, `ak-lane-builds`, `v9v-build-*`. No GPU work, no
+  builds, no `llama-bench`, no `test-backend-ops`.
 - **SURFACES CONSOLIDATED 2026-08-30** — there is now exactly **one** kernel dashboard page,
   `/loop`, titled **Kernel R&D**; `/kernel` 301-redirects to it and `kernel.html` is deleted.
-  See P6.1–P6.4 for what landed and P6.5–P6.8 for what is knowingly left open.
-- **Next action:** let run 18 finish, then audit its block the way run 17's was audited — rebuild
-  both ends of the range from `ak-loop-tree`, `gates.op_correctness`, then `bench.compare` at 20
-  pairs under a held claim. The run-17 audit ran from an ad-hoc driver at
-  `/workspace/tmp/ak-loop-deploy/audit.py`; **promote it into the research repo before reusing
-  it**, or it is untracked evidence. Then **P5 — the strip** is unblocked: it was gated on the
-  replacement being proven, and the run-17 audit is that proof.
+  See P6.1–P6.4 for what landed and P6.5–P6.8 for what is knowingly left open. The champion
+  headline card is now **one number against one named anchor** and renders `NOT YET MEASURED`
+  until the A/B exists (root `bdeb450f` → `e1d22546`, 19/19 mutations caught).
+- **Next action:** let run 19 run. Then (a) close out **R18-F** — the run-18 post-promotion
+  forensics, still OPEN with three hypotheses refuted — and (b) **P5, the strip**, which is
+  unblocked: it was gated on the replacement being proven, and the run-17 block audit plus the
+  champion-vs-production A/B are that proof. The run-17 audit driver was ad-hoc at
+  `/workspace/tmp/ak-loop-deploy/audit.py`; it has since been promoted as
+  `scripts/benchmark/autokernel_champion_block_audit.py` (research) — use that, not the ad-hoc copy.
 - **Noise floor — RECALIBRATED 2026-08-29 (D8), the 2026-08-28 table is SUPERSEDED for decode.**
   The old table was p95 |median effect| over subsets of ONE fixed 20-pair sample, which cannot
   exceed that sample's own tail and so understated p95 by construction. Rebuilt by bootstrap from
@@ -80,8 +132,40 @@ why every prior reachability audit was wrong.
 
   **All runs from 13 onward use 20 pairs at 1.188%.** `pp512` was not measured by that campaign
   and its row is still the superseded construction — recalibrate before trusting any prefill
-  verdict. `--pairs` must be ≥5; `WARMUP_PAIRS = 1` is discarded before measurement.
+  verdict (**R18-D**; the champion-vs-production pp512 row is the first verdict this has actually
+  bitten). `--pairs` must be ≥5; `WARMUP_PAIRS = 1` is discarded before measurement.
   Artifacts: `artifacts/autokernel-aa-noise-floor/` and `loop-memory/aa-campaign/` (research).
+  The table lives at `scripts/kernel_rnd/autokernel/loop/bench.py:43`; the recalibration driver
+  already exists — `scripts/benchmark/autokernel_recalibrate_floor.py` (it has an `--apply` mode
+  that rewrites the table in place).
+
+- **CORRECTION 2026-08-30 — GPU idle-while-claimed is NOT ~35%, and the 13.5% serialized tail is
+  RETIRED.** Both figures were published by this session and both are wrong.
+  `gpu_reading()` (`loop/run.py:358`) defines busy as **summed `Comparison.device_seconds`**
+  (`run.py:367`), which counts only outcomes that produced a `Comparison` — so warmup pairs,
+  `test-backend-ops` and every rocprofv3 profile contribute **zero busy while consuming held wall
+  time**, even though the device is under load throughout. Roughly two thirds of the reported idle
+  is GPU work the metric does not count; **the device is closer to ~88% busy.** The 13.5%
+  serialized-tail figure was a single-lane number from run 13; run 18's tail cycle measured
+  **265.8 s median, IQR 263.3–270.6** — saturated. *An efficiency target derived from a metric that
+  under-counts its own numerator is a target for the metric, not for the machine — and this one was
+  written into this handoff as "the next efficiency target".* Fix filed as **R18-E**.
+
+- **CORRECTION 2026-08-30 — iqk is in EVERY build of this tree, production included.** This
+  session reported it absent from the candidate build. That was wrong, and the reasoning that
+  rested on it is void. **`GGML_IQK` is not a cmake option at all**: `GGML_USE_IQK_MULMAT` is set
+  *unconditionally* for the CPU backend, and `GGML_IQK=1` is a **runtime env gate** read at
+  `iqk_dispatch.cpp:49`. Verified: **23 iqk symbols in `libggml-cpu.so` in both arms.**
+
+- **NEW FACT 2026-08-30 — our house recipe reproduces production's frozen build on BOTH backends.**
+  Compared artifacts rather than flags: production's shipped `libggml-cpu.so` vs our fresh v9
+  build — **584 defined symbols each, zero diff**; production's `libggml-hip.so` vs ours — **918
+  distinct device kernels each, zero symbols unique to either side.** This is direct evidence
+  against `build_recipe.py:43`'s `PRODUCTION_RECIPE_IS_VERIFIABLE = False`, which was set because
+  production's *recipe* could not be recovered from disk (`build-hip/` has only `bin/`, no
+  `CMakeCache.txt`). *Verifiability of a recipe and equivalence of its output are two different
+  claims; we could not get the first and stopped, while the second was available the whole time
+  and is the one that licenses using the recipe as a production stand-in.* Flip filed as **R18-A**.
 - **Filed, not fixed:** the loop keeps on a SINGLE comparison and cannot pool repeated
   measurements of one mechanism, even though its planner reached for pooling unprompted twice
   (run 11 measured one patch six times, run 15 measured one five times). See D8.
@@ -524,11 +608,22 @@ failure mode this program exists to end.
         `scripts/kernel_rnd`. CI is green only because it happens to run from the root. Add a
         `conftest.py` with a `sys.path` insertion so the suite is location-independent.
         (epyc-inference-research.)
-  - [ ] P7.4 — **the LOC budget is 182 lines from binding** (loop package at 3218/3400). When it
-        next binds, the honest options are trimming `run.py` or excluding comment lines — 34% of
-        the package is docstring and incident prose — **not another round-number bump**. Raising
-        the number again is the failure mode the budget exists to catch; record the choice here
-        when it is made.
+  - [ ] P7.4 — **THE LOC BUDGET IS NOW BINDING: 3400 of 3400, zero headroom** (was 3218/3400;
+        `c39ecc43`'s promotion A/A guard consumed the rest). Verified by running the counter:
+        `loop package: 3400 LOC across 15 files (budget 3400)`, `0 guard violation(s)` — **the
+        next added line fails CI.** Constant at `check_regrowth_guards.py:50`, counter
+        `loop_package_loc()` at `:70` (raw `splitlines()`; blanks, comments and docstrings all
+        count), pinned by `test_check_regrowth_guards.py:98`.
+        The two honest options stand — trim `run.py` (553 lines, the largest of the 15) or exclude
+        comment/docstring lines — and **another round-number bump is not one of them**; raising the
+        number is the failure mode the budget exists to catch. Record the choice here when it is
+        made.
+        **Correction while measuring this:** the constant's own doc comment at
+        `check_regrowth_guards.py:41-42` claims *"2,102 lines are code and 1,071 are docstrings and
+        comments — 34% of the package is prose."* Measured now: **2082 code / 810 prose / 508 blank
+        = 23.8% prose.** The 34% figure does not reproduce and evidently folded blanks in. Fix the
+        comment in the same change — a stale number in the annotation of the constant it justifies
+        is how the "just bump it" argument gets made from bad data.
 
 ---
 
@@ -631,21 +726,43 @@ search. **Do not act on this before P4 passes.**
 Prepared as `scripts/operator/ratify_*.sh` for the operator to run. **None of these blocks the
 program**; each phase proceeds without them.
 
-- [ ] **D1 — amend `P-AK-SEARCH-1` denial 4.** It permits a later campaign to use a prior record
-      *"for hypothesis formation only — never to **rank**, bank, compose, or contribute to
-      readiness."* Choosing what to attempt next *is* ranking, so a planner that reads its own
-      history to prioritise is non-conformant on a strict reading — very likely why the memory was
-      never built and why one patch was proposed 38 times.
-      **Requested (Option 4):** prior records may inform ranking, provided each carries the hash of
-      its epoch (anchor commit, build recipe, host state) and cross-epoch records are
-      validity-penalised at retrieval. No banking, no promotion authority, no readiness contribution
-      — those denials stay verbatim. The mechanism is borrowed from autopilot's AP-28 store, not
-      invented. Annex K is human-amendment-only (invariant 15), so this is the operator's write.
-      **Staged for you:** `scripts/operator/ratify_ak_search_1_a3_20260828.sh --show` to read it,
-      `--apply` to stage the amendment with an isolated `git apply --cached`. The store already
-      ships with `ranking_authorized=False`; applying this is what lets that flag be turned on.
+**STATUS 2026-08-30: all three are resolved. D1 approved (operator write outstanding), D2 declined
+on measurement, D3 approved and shipped.** Detail in each entry.
+
+- [ ] **D1 — APPROVED BY THE OPERATOR 2026-08-30. The one outstanding action is the operator's
+      own write:** run `scripts/operator/ratify_ak_search_1_a3_20260828.sh --apply`. Annex K is
+      human-amendment-only (invariant 15), so no agent may apply it.
+      **⚠ Correction to this handoff's own earlier claim: the capability does NOT ship.** This page
+      previously said *"the store already ships with `ranking_authorized=False`; applying this is
+      what lets that flag be turned on."* Half of that is false. The parameter exists —
+      `ExperimentStore.recall(..., ranking_authorized: bool = False)` at
+      `controller/experiments.py:157`, recorded onto the recalled row at `:193` — but **no
+      production call site anywhere passes `True`**; the only caller that does is
+      `test_experiments.py:150`, and the identifier does not appear in the `loop/` package source
+      at all. So after ratification the **ranking capability still has to be built** (**R18-G**).
+
+      *What was requested and approved (retained verbatim):* amend `P-AK-SEARCH-1` denial 4, which
+      permits a later campaign to use a prior record *"for hypothesis formation only — never to
+      **rank**, bank, compose, or contribute to readiness."* Choosing what to attempt next *is*
+      ranking, so a planner that reads its own history to prioritise is non-conformant on a strict
+      reading — very likely why the memory was never built and why one patch was proposed 38 times.
+      **Option 4:** prior records may inform ranking, provided each carries the hash of its epoch
+      (anchor commit, build recipe, host state) and cross-epoch records are validity-penalised at
+      retrieval. No banking, no promotion authority, no readiness contribution — those denials stay
+      verbatim. The mechanism is borrowed from autopilot's AP-28 store, not invented.
+      `--show` reads it; `--apply` stages the amendment with an isolated `git apply --index`.
       P1.2(a) ships regardless — it is a bug fix, and denial 4 governs *cross-campaign* reuse only.
-- [ ] **D2 — add a `T-screen` tier below T0**, requiring only: held claim, residency evidence, named
+- [x] **D2 — DECLINED ON MEASUREMENT 2026-08-30.** ✅ 2026-08-30 — resolved to a decline, not
+      deferred. **The deciding number is 0.0 s per iteration.** D2 proposed dropping four T0
+      preconditions for screening; **none of the four is implemented in the rebuilt loop at all**,
+      so the time they cost is zero and the saving D2 was justified by does not exist. What
+      survives is a *conformance* question, not a throughput one — the loop produces records that
+      no ratified tier authorizes — and that is a different request needing its own framing.
+      Separately, **D2's precondition 4 (byte-for-byte anchor re-verification at both window edges)
+      is unsatisfiable by construction** while the anchor advances mid-run, which it does by design
+      (CH-3). Do not re-file D2 as written. Original request retained below for the conformance
+      question's benefit.
+      *(original)* **add a `T-screen` tier below T0**, requiring only: held claim, residency evidence, named
       anchor commit, codified recipe, and a once-per-host-state A/A noise floor. Drops, **for
       screening only**, the per-campaign calibration solve, byte-for-byte anchor re-verification at
       both window edges, evaluator runtime source-label attestation, and the storage-floor re-check.
@@ -654,11 +771,124 @@ program**; each phase proceeds without them.
       experiment-time preconditions come from P-AK-SEARCH-1, ratified 2026-08-03T08:30:05Z — six
       hours after this program's first commit (`75764052`, 02:15) and cited as a requirement by its
       third (`10843b6f`, 11:29, *"conforming to the ratified P-AK-SEARCH-1"*).
-- [ ] **D3 — build recipe as a champion arm.** Recommend adopting **neither** standing config win —
-      CH-6 settled both (`MMQ_MFMA` +0.50% on the 27B; `ubatch` a null arm, since llama.cpp clamps
-      `n_ubatch = min(n_batch, n_ubatch)` so both screens ran one identical binary) — but extending
-      `champion.py` to carry a build recipe anyway, since that is where the real wins have always
-      lived and it is currently inexpressible.
+- [x] **D3 — build recipe as a champion arm. APPROVED AND SHIPPED** ✅ 2026-08-30 (research
+      `6cbb608c` + `3ba4339f`). A champion now carries a build recipe. **Neither standing config
+      win was adopted** — CH-6 settled both (`MMQ_MFMA` +0.50% on the 27B; `ubatch` a null arm,
+      since llama.cpp clamps `n_ubatch = min(n_batch, n_ubatch)` so both screens ran one identical
+      binary) — and both are **recorded in the recipe with the numbers that correct them**, so the
+      carrier ships its own refutations rather than inviting a re-run. Decision-arithmetic floor
+      raised 101 → 109. The recipe module is
+      `scripts/kernel_rnd/autokernel/controller/build_recipe.py`; see **R18-A** for the one
+      constant in it that the 2026-08-30 symbol-identity evidence now contradicts.
+
+---
+
+## R18 — what run 18 and the champion-vs-production A/B left behind (2026-08-30, second pass)
+
+### Landed this pass
+
+- [x] **R18-L1 — the promotion A/A guard, and the abort that was being swallowed.** ✅ 2026-08-30
+      (research `c39ecc43`). After every promotion the new anchor is benched against a fresh
+      champion build and must read **inside the noise floor**, else `RunAborted`
+      (`loop/anchor.py:71`, assertion at `:98`).
+      **The assertion is magnitude-vs-floor and deliberately NOT `Comparison.decisive`:**
+      `decisive` returns `False` for a drifting arm *regardless of effect size*, so a
+      `decisive`-based guard would have certified run 18's −9.539% regime as indistinguishable
+      from zero. A guard whose predicate does not answer its stated subject is not a guard.
+      **Abort propagation was genuinely broken** — `RunAborted` was caught by a blanket handler and
+      filed as an ordinary `iteration_error`, so the guard would have aborted nothing; fixed at
+      `loop/loop.py:357` (re-raise before the blanket `except Exception` at `:359`) and
+      `loop/pipeline.py:249` (run-ending, not lane-ending: the anchor is shared, so the budget is
+      zeroed and every lane stops at its next draw — continuous runs included).
+      **Promotion now BUILDS** rather than `shutil.move`-ing: `pool.promote_anchor` builds the
+      champion into the anchor slot and writes `provenance.json` (`loop/pool.py:372`).
+      18 of 18 mutants caught, 1 control survived. Cost: the loop package hit **3400/3400 LOC**
+      (P7.4).
+- [x] **R18-L2 — the champion headline is one number against one named anchor.** ✅ 2026-08-30
+      (root `bdeb450f` → `e1d22546`). Renders **NOT YET MEASURED** until the A/B exists rather than
+      inheriting a number from somewhere else. 19 of 19 mutations caught.
+- [x] **R18-L3 — epyc-root CI had failed 8 of 8 runs since creation.** ✅ 2026-08-30 (root
+      `437f751f` → `54d2b8ad`). `actions/checkout` defaults to `fetch-depth: 1`; `index_state.py`
+      derives `last_advanced` with a `git log -S'- [x]'` pickaxe, so against a one-commit clone
+      **every handoff attributed to the tip** and the freshness check reported a stale generated
+      block on a tree that was in sync. Both root workflows and the research one are now green.
+      Same shape as P7.1 in a different repo: **a check fed an input it cannot answer from is not a
+      failing check, it is an absent one.**
+
+### Open
+
+- [ ] **R18-A — flip `PRODUCTION_RECIPE_IS_VERIFIABLE` to `True`, with the symbol-identity evidence
+      attached.** `controller/build_recipe.py:43`. It was set `False` because production's recipe
+      cannot be read back from disk (`build-hip/` has only `bin/`, no `CMakeCache.txt`), and it is
+      recorded, not gated — nothing refuses on it; it is emitted as
+      `production_reference_is_verifiable` in `Recipe.to_dict()` (`:152`) and pinned by
+      `test_build_recipe.py:66` plus the serialized key in `test_journal.py:249` and
+      `test_schemas.py:464`, all of which move with it. The evidence: **584/584 defined symbols,
+      zero diff, on `libggml-cpu.so`; 918/918 distinct device kernels, zero unique either side, on
+      `libggml-hip.so`.** Attach the evidence to the flip — a `True` with no artifact behind it is
+      the same defect in the other direction.
+- [ ] **R18-B — run-18 forensics: what binary was actually in `anchor-gen-001`, and why were
+      post-promotion effects −9.5%? OPEN — three hypotheses raised, three refuted.**
+      (a) *candidates missing the champion patch* — **REFUTED**, every lane source tree is at
+      `5ad3e36d`. (b) *CMake build-directory relocation at promotion* — plausible, **unconfirmed**.
+      (c) *arms swapped* — **REFUTED**: benching the actual binaries gives `anchor-gen-001`
+      **295.429** tok/s vs `lane0` **286.043**, a −3.2% gap, not −9.5%.
+      Two cautions that must travel with this task: the anchor slot benched **~2.8% FASTER than a
+      clean champion build** (295.429 vs 287.499), which is the wrong direction for every story
+      told about this failure; and that is a **single unpaired r=5 bench** near the 5-pair floor
+      (2.422%), so it is **not a finding**. What it establishes is only that *today's artifacts do
+      not reproduce the failure* — which is why no fix was shipped.
+      Start from the datum that is missing: `provenance.json`'s `"built_at"` key holds
+      `str(promoted)` — a **path, not a timestamp** (`loop/pool.py:372`) — and build time
+      (CMakeCache 06:01 vs libs 08:29 vs run start 09:37) is exactly what diagnosed run 18 by hand.
+      Make `built_at` a real timestamp as part of this.
+- [ ] **R18-C — record the champion branch's per-commit inflation where a reader of that branch
+      will find it.** 36 commit messages claiming **+171.7% compounded / +101.8% summed** against a
+      measured block effect of **+8.524%**. Commit messages are immutable, so the correction has to
+      live where someone lands: a `NOTES-attribution.md` at the tip of
+      `ak/loop-champion-20260828`, and the same statement in `loop/program.md`'s *Settled — do not
+      re-open* section so both actors read it. Cross-referenced from INF-65 (CH-16).
+      **Blocked on run 19 finishing** — `ak-loop-tree` is off limits while it runs. Named blocker,
+      external event.
+- [ ] **R18-D — recalibrate `bench.MEASURED_FLOOR_PCT["pp512"]`; until then no prefill verdict is
+      backed.** `loop/bench.py:43`. The prefill row is still the superseded construction (p95
+      |median effect| over subsets of ONE fixed 20-pair sample, which cannot exceed that sample's
+      own tail), which is why the champion-vs-production pp512 row reported `decisive=True` on a
+      +0.090% effect. The driver exists —
+      `scripts/benchmark/autokernel_recalibrate_floor.py` has an `--apply` mode that rewrites the
+      table. Needs a GPU window; **do not run it against run 19.**
+- [ ] **R18-E — instrument the tail, and stop under-counting device busy-time.** Three parts, one
+      change:
+      1. Add a `time.monotonic()` pair around `gates.run_all` (`loop/gates.py:140`) and an
+         `elapsed_s` field on `Verdict` (`:30` — it currently has `gate`, `passed`, `reason`,
+         `detail` and **no timing field at all**). The **53 s op-oracle figure is an estimate from
+         a single code comment** (`gates.py:23`, sitting next to a `CORRECTNESS_TIMEOUT_S = 1800`
+         that does not corroborate it) and it is the largest term in the idle split — nothing
+         verifies it at runtime.
+      2. Publish `tail_seconds` on live runs.
+      3. Count oracle, warmup and profile seconds as busy so `idle_fraction_while_claimed`
+         (`loop/run.py:375`) stops over-reporting by ~2×. **Model the fix on the controller-side
+         implementation that already does this correctly**: `controller/gpu_utilization.py`
+         `from_sampling` derives busy from an actual sample trace (`:56-62`) rather than from
+         elapsed wall time, and returns `None` on an absent trace rather than 0 (`:81` — a missing
+         measurement is not evidence of an idle device).
+      **Second defect found while locating this, fix it in the same change:** the loop's `busy`
+      term sums `Comparison.device_seconds`, which `bench.py:262` computes as
+      `time.monotonic() - started` for the *whole* `compare()` call — process spawn, model load,
+      residency sampling and the CPU-side gaps between paired runs included. So within its own
+      scope busy is *over*-stated even while the excluded oracle/warmup/profile time makes the
+      total *under*-stated. `held` uses `time.time()` and `busy` uses `time.monotonic()`: two
+      clocks in one ratio.
+- [ ] **R18-F — the loop package is at 3400/3400 LOC and the next line fails CI.** Tracked as
+      **P7.4**; listed here so the R18 batch is complete. Not another round-number bump.
+- [ ] **R18-G — build the ranking capability D1 authorizes.** D1 is approved but **the capability
+      does not exist**: `ranking_authorized` is a defaulted-`False` parameter of
+      `ExperimentStore.recall` (`controller/experiments.py:157`) written onto the recalled row at
+      `:193`, and **no production call site anywhere passes `True`** — only `test_experiments.py:150`
+      does, and the identifier appears nowhere in the `loop/` package source. Gated on the operator
+      running `ratify_ak_search_1_a3_20260828.sh --apply` (named blocker: an operator write).
+      Correct this handoff's earlier claim that the store "already ships" it — the parameter ships,
+      the capability does not.
 
 ---
 
@@ -684,6 +914,26 @@ kernel/AutoKernel surfaces; each item below was raised, then dropped on purpose.
 - **`machine` and `autopilot` have no entry in `panels.PANELS` at all**, so `/api/health` is silent
   about two of the eight registered surfaces. Structural and real; **out of scope now**, and not
   filed here because this handoff does not own those surfaces.
+
+### Second pass, 2026-08-30 — two more, both deliberate
+
+- **A CPU non-regression gate at every champion advance. DEFERRED BY THE OPERATOR — design
+  recorded, NOT built.** The operator raised it and the reasoning is correct and important: *"if
+  the champion is the promotion candidate, it cannot present a regression vs the CPU kernel
+  anchor."* Then deferred it explicitly — *"we can discuss CPU coupling later"*, *"I'd like to get
+  GPU science working once and for all."*
+  **The design, recorded so it is not re-derived:** an **unconditional** gate at every champion
+  advance, **once per keep** — emphatically *not* a per-patch file-scope check. Static file-scope
+  analysis cannot bound influence through shared headers, inlining or link order, so *"this patch
+  only touched `ggml-cuda/`"* is not a proof of CPU non-regression and must not be used as one.
+  **Named blocker:** this session is GPU-only by standing operator constraint, and the gate needs a
+  CPU window. **Do not build it** until that window and the operator's CPU-coupling discussion
+  exist.
+- **A fix for the "arms were swapped" hypothesis. NOT BUILT, on purpose.** The hypothesis was
+  **refuted by direct benchmarking** (R18-B(c)), so any patch would have been aimed at a mechanism
+  that had already been excluded. Recorded as open forensics rather than as a guessed patch. *The
+  temptation here is real and worth naming: three refuted hypotheses feel like an obligation to
+  ship the fourth, and a fix for an unidentified cause is indistinguishable from a coincidence.*
 
 ## Notes for whoever picks this up
 
