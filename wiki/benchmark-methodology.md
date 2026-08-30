@@ -3325,3 +3325,69 @@ SEQ-B do-not-miscite rule from the 2026-08-16 compile travel forward unchanged.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC37 row: write side built 2026-08-26 (`eval_tower_band.py`, one self-hashed `.band.json` per suite, 17/17 tests, instrument-resolution-only adapter scope, K recorded in the tuple), the 2026-08-28 attempt status, and the first-band → first-tuple trigger.
 - [`progress/2026-08/2026-08-28.md`](../progress/2026-08/2026-08-28.md) — session record: pre-run verification, run timeline (09:10Z→13:50Z), repeat-1 numbers, fail-closed refusal, the attribution table, the hold, and the SC37 no-tuple semantics.
 
+
+## Compiled Update — 2026-08-30: a block A/B beats a sum of commit claims by 20×, and a "decisive" verdict computed against an uncalibrated floor
+
+AutoKernel's loop champion `5ad3e36d` (36 commits above frozen production v9 `0db32c06`) was measured
+against production for the first time: both arms built fresh from named commits with the **identical**
+recipe, 20 alternating pairs, one claim held across both surfaces, correctness oracle run on **both**
+arms. Result: **tg128 +8.524%** (264.918 → 287.499 tok/s, floor 1.188%, decisive by 7.2×, neither arm
+drifting, 40/40 invocations resident, clocks pinned 1700 MHz across all 80 invocations) and **pp512
++0.090%, read as NO CHANGE**.
+
+The methodology content is in the two ways that measurement disagreed with the record around it.
+
+**The 36 commit messages on that branch claim gains compounding to +171.7%** (arithmetic sum
++101.8%). The block measures **+8.524%** — a 20× inflation, and the same cumulative-attribution
+defect that run 17's block audit found at 1/20th the magnitude. The mechanism is the one already
+compiled here: while the anchor is static, each keep is measured against a *stale* baseline, so every
+commit re-earns the gains of every commit before it. The correct handling is the one taken — audit
+the block against what the run started from, keep or roll back as a block, and state explicitly that
+individual attribution is not recoverable and not worth the device time.
+
+**The pp512 row reported `decisive=True` on a +0.090% effect, and that flag is an artifact.** It is
+computed against `MEASURED_FLOOR_PCT["pp512"][20] = 0.029%`, which is still the superseded
+construction — p95 |median effect| over subsets of ONE fixed 20-pair sample, a statistic that cannot
+exceed that sample's own tail and therefore understates the floor by construction. The decode row was
+rebuilt by bootstrap from a three-condition A/A campaign; the prefill row never was. The verdict
+happened not to depend on the floor, because **the diff predicted it independently**: the 36 commits
+touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`, `quantize.cu`,
+`rope.cu`, `fattn-vec.cuh`, `fattn.cu`) and nothing in `mmq.*`, the batched prefill path.
+
+- **A block of commits is one measurement, and the sum of its members' claims is not a prediction of
+  it.** +171.7% compounded against +8.524% measured is not a rounding error; quoting one of those
+  commit messages as a marginal effect is a false claim. Where commit messages are immutable, the
+  correction has to be placed where a reader lands — the branch tip and the actors' own settled-facts
+  document. [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md),
+  [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md)
+- **Half a calibrated floor table is a trap, because the uncalibrated half still returns a verdict.**
+  Both surfaces share one `decisive` predicate; only one had been recalibrated. Nothing in the
+  verdict says which. A floor table that mixes calibrated and superseded rows should refuse on the
+  superseded ones rather than answering from them.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **When a diff predicts the null, say so — it is stronger than the floor.** "~0 prefill because
+  nothing in the batched prefill path was touched" is an argument from the changed file set, and it
+  survives the floor being wrong. Pair every surface verdict with the file-scope reading that either
+  corroborates or contradicts it.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **Choose a guard's predicate to answer the guard's own subject.** A post-promotion A/A guard was
+  written as magnitude-vs-floor and deliberately **not** as `Comparison.decisive`, because `decisive`
+  returns `False` for a drifting arm *regardless of effect size* — so a `decisive`-based guard would
+  have certified a −9.539% regime as indistinguishable from zero. The stated subject was "is the
+  anchor right?"; `decisive` answers "is this comparison trustworthy?", and the two come apart
+  exactly when the anchor is wrong.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A utilization metric that under-counts its numerator produces work items for the metric.** GPU
+  idle-while-claimed was reported at 35–40% and written into a handoff as "the next efficiency
+  target". The busy term summed only per-comparison seconds, so warmup pairs, `test-backend-ops` and
+  every rocprofv3 profile contributed **zero busy while consuming held wall time** — the device was
+  closer to **~88% busy**. A companion 13.5% serialized-tail figure was retired at the same time: it
+  was a single-lane number from an older run, and the current tail measures 265.8 s median (IQR
+  263.3–270.6), i.e. saturated.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+
+### Source References (2026-08-30, champion-vs-production)
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the champion-vs-production table and its supporting conditions; the per-commit inflation warning; the noise-floor bullet and R18-D; the idle-metric correction and R18-E.
+- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the 2026-08-30 section distinguishing the manual-admission champion from the loop champion, and CH-16 on the per-commit correction.
+- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §1 (the measurement and the inflation), §5 (both self-corrections).

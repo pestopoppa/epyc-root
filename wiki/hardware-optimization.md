@@ -3819,3 +3819,48 @@ Key findings:
 
 - [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — the INF-64/67
   handoff: plan, operator decisions, phase checklist with the Phase-2 commit state.
+
+## Compiled Update — 2026-08-30: our house build recipe reproduces production's frozen kernel on both backends, and `GGML_IQK` is a runtime gate, not a build flag
+
+Two facts about this host's llama.cpp builds were established on 2026-08-30, both by inspecting
+artifacts rather than by reading flags, and both correcting a belief that had been operating for
+some time.
+
+**The house recipe reproduces frozen production v9 on both backends.** Production's shipped
+`libggml-cpu.so` versus a fresh v9 build with our recipe: **584 defined symbols each, zero diff.**
+Production's `libggml-hip.so` versus ours: **918 distinct device kernels each, zero symbols unique
+to either side.** This matters because production's *recipe* genuinely cannot be recovered from disk
+— its `build-hip/` directory contains only `bin/`, with no `CMakeCache.txt` — which is why
+AutoKernel's build-recipe module carries `PRODUCTION_RECIPE_IS_VERIFIABLE = False` and treats the
+production column as declared rather than read back. The flags remain unrecoverable; the equivalence
+of what they produce is now established by a different route.
+
+**`GGML_IQK` is not a cmake option at all.** It had been reported that iqk was missing from a
+candidate build. That was wrong. `GGML_USE_IQK_MULMAT` is set **unconditionally** for the CPU
+backend, and `GGML_IQK=1` is a **runtime environment gate**, read in `iqk_dispatch.cpp:49`. Verified
+directly: **23 iqk symbols present in `libggml-cpu.so` in both arms.** iqk is compiled into every
+build of this tree, production included; what the environment variable selects is whether the
+dispatch path is taken at run time.
+
+- **Verifiability of a recipe and equivalence of its output are two different claims, and the second
+  is often available when the first is not.** The recipe was declared unverifiable and the question
+  was dropped; comparing the artifacts the recipe produces was available the whole time, and it is
+  the claim that actually licenses using the recipe as a production stand-in.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **Symbol-set identity across two independently produced shared objects is a strong, cheap
+  equivalence check** — 584/584 on the CPU backend and 918/918 distinct device kernels on HIP, with
+  zero symbols unique to either side. It does not prove instruction-level identity, and should not be
+  claimed to; it does exclude the whole class of "a flag we did not set dropped a code path".
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A build-time flag and a runtime env gate look identical from a `cmake` invocation that omits
+  both.** `GGML_IQK` being absent from a candidate's cmake line said nothing about whether iqk was in
+  the binary, because it was never a cmake option; the discriminator is `nm` on the produced library,
+  not the configure command. Any reasoning that treated its absence from the build line as evidence
+  of absence from the build is void.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+
+### Source References (2026-08-30, build equivalence)
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the "NEW FACT" bullet with the symbol counts and the R18-A follow-on; the iqk correction bullet.
+- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-15, which records why this matters to the champion's anchor identity and to CH-1's build recipe.
+- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §5 (the iqk correction) and §6 (the symbol-identity table).

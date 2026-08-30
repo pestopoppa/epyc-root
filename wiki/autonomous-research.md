@@ -2059,3 +2059,69 @@ Closing one half and reporting the loop as available is a category error, not a 
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the DF2 gates the champion carries
 - [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) — the live bundle verification and the authority-boundary decision
 
+
+## Compiled Update — 2026-08-30: a loop that is still emitting measurements is not thereby working — the run-18 post-promotion collapse
+
+AutoKernel run 18 ran 188 iterations and produced 138 measurements and **one keep**. Split at the
+champion promotion that landed mid-run, the two halves are different experiments:
+
+| segment | n | median effect | **best** effect |
+|---|---|---|---|
+| before promotion | 16 | −1.441% | +0.060% |
+| after promotion | 122 | −9.539% | **−5.642%** |
+
+The `best` column carries the finding. After the promotion, **not one candidate of 122 could ever
+have been kept** — the entire distribution sat below zero by more than the +9.321% champion advance
+that had just landed. The loop kept iterating, kept producing well-formed rows, and kept reporting a
+healthy state, for **six hours**. The evidence was one query away in the experiment store the whole
+time. It was found because a human questioned the keep rate, not because anything in the loop asked
+whether its own output was still capable of being positive.
+
+Three hypotheses were raised for the mechanism and **the evidence refuted all three**: candidates
+built without the champion patch (refuted — every lane source tree was at the champion commit); a
+build-directory relocation at promotion (plausible, unconfirmed); the arms being swapped (refuted —
+benching the actual binaries gave a −3.2% gap, not −9.5%). The response was to record it as **open
+forensics rather than ship a fix for an unidentified cause**, and to build the guard that would have
+caught the class.
+
+- **"It is producing output" answers a liveness question, and nobody had asked a liveness question.**
+  A loop's own health signal must be a property of its *results distribution*, not of its throughput.
+  A regime in which the best achievable outcome is below the keep threshold is detectable from the
+  rows alone and is invisible to every liveness check.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **The state a long-running loop mutates about itself is the state to re-verify after mutating it.**
+  The fix that landed is a post-promotion A/A guard: after every promotion, the new anchor is benched
+  against a freshly built champion and must read inside the noise floor, else the run aborts. The
+  promotion path was also changed from moving a binary to **building** one and writing a
+  `provenance.json` beside it — the previous path installed an artifact whose identity nothing
+  recorded, which is precisely the hole the forensics fell into.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A guard is inert if its abort is laundered into an ordinary error.** The run-ending exception was
+  being caught by a blanket handler and filed as a per-iteration fault, so the loop drew the next
+  iteration and continued. Re-raise before the blanket handler, and — where the mutated state is
+  *shared* across lanes — end the run rather than the lane: a refused anchor voids every lane's next
+  measurement, continuous runs included.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **Refuting three hypotheses is not a licence to ship the fourth.** No fix was written for the
+  unidentified mechanism, because a fix for a cause that has not been identified is
+  indistinguishable from a coincidence — and the one probe that did run pointed the *wrong way*
+  (the anchor slot benched ~2.8% faster than a clean champion build) on a single unpaired sample
+  near the noise floor, so it was explicitly recorded as not-a-finding.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A decision package can be closed by measuring the thing it was justified by.** A proposal to add
+  a lighter screening tier below T0 was declined on measurement rather than deferred: the four
+  preconditions it proposed to drop are **not implemented in the rebuilt loop at all**, so the
+  time-saving that justified it is 0.0 s per iteration. What survived was a different question
+  (conformance — the loop produces records no ratified tier authorizes), which needs its own framing
+  rather than inheriting the original request's.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **An approved amendment does not deliver a capability.** The ranking amendment was approved, but the
+  flag it unlocks is a defaulted-`False` parameter that **no production call site passes** — the only
+  caller that sets it true is a unit test. The handoff had claimed the store "already ships" it.
+  Ratification and implementation are two separate deliverables and must be tracked as two.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+
+### Source References (2026-08-30, run 18)
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the run-18 split table and the six-hour detection gap; the R18 section (R18-L1 the guard and the abort-propagation fix, R18-B the open forensics, R18-G the unbuilt ranking capability); the operator decision package with D1 approved / D2 declined on measurement / D3 shipped.
+- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §2 (the collapse and the three refuted hypotheses), §3 (what landed instead), §7 (the decisions), §8 (the two declines).

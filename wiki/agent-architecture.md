@@ -2892,3 +2892,45 @@ The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows
 
 - [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
+
+## Compiled Update — 2026-08-30: a check fed an input it cannot answer from is not a failing check, it is an absent one
+
+Two CI failures in two repositories, found a day apart, share one shape and neither is a code defect.
+
+**epyc-root's tests workflow had failed 8 of 8 runs since it was created.** `actions/checkout`
+defaults to `fetch-depth: 1`. `index_state.py` derives each handoff's `last_advanced` with a
+`git log -S'- [x]'` pickaxe over history — so against a one-commit clone **every handoff attributed
+to the tip**, and the freshness gate then reported a stale generated block on a tree that was
+perfectly in sync. Nothing was wrong with the repository, the generator, or the gate; the gate was
+being asked a question about history in a checkout that had none.
+
+**The research repo's autokernel-guards workflow had failed 43 of 43 runs since its first commit**,
+every one dying on `No module named pytest` before collecting a single assertion —
+`actions/setup-python` ships a bare interpreter and nothing ever installed the runner. Because it
+looked identically red whatever the code did, it carried no signal, and it hid two genuine
+regressions for two days.
+
+Both are now green, in both repos.
+
+- **A permanently-red check is worse than an absent one, because it occupies the slot where a working
+  check would go.** The cost is not the red X; it is that the check's output is uncorrelated with the
+  code, so nobody can learn anything from either state of it.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **When a check fails, ask what input it was given before asking what it found.** In both cases the
+  assertion logic was correct and the subject was healthy; the defect was upstream, in what CI handed
+  the check — a truncated clone in one, a missing interpreter dependency in the other. A shallow
+  clone is the specific trap for any tool that reads git *history* rather than the working tree, and
+  pickaxe-based freshness generators are exactly that class.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **Closing the hole is not the same as closing its shape.** Installing pytest fixed the red; it did
+  not fix the fact that a suite running *fewer* assertions reports the same green. pytest exits 5 on
+  zero collected, but a **partial** collapse exits 0. The follow-on was a declared per-suite floor
+  asserted with `>=` rather than `==`, so the guard does not become a second thing to update on every
+  added test — and the floor guard found two defects in itself on first run, including laundering a
+  collection error into a plausible count by reading a number off a line it had not validated.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+
+### Source References (2026-08-30, CI inputs)
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
+- [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
