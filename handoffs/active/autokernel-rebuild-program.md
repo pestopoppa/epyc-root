@@ -416,6 +416,20 @@ failure mode this program exists to end.
 - [ ] **P6 — Reconnect the surfaces.** CI DONE (root `.github/workflows/tests.yml`); the
       surface rewrite is not started.
 
+      **Partial credit 2026-08-30 (root `0a18b132`), recorded so the rewrite does not redo it:**
+      the loop-up/loop-down exit criterion is met for `/loop` and for the loop banner now on
+      `/kernel`; the controller surface's own freshness envelopes remain the rewrite's job. Two
+      named gaps stay open and must not be mistaken for done — the Aggregate-champion `+48.9%`
+      card carries **no envelope at all** (`_read_operator_gate_bundle()` reads no timestamp, so
+      that number renders identically forever after its producer dies), and the funnel/lane
+      staleness verdict is rendered only inside a collapsed `<details>` while the headline says
+      nothing. Also fixed there: `/loop`'s GPU panel had been dark since the surface's first
+      commit because the reader looked for `held_s`/`busy_s` while the producer has always
+      written `claim_held_s`/`device_seconds_under_load` — and the 41 tests passed because the
+      hand-built fixture invented the reader's spelling, so fixture and reader agreed with each
+      other and disagreed with the producer. **A fixture authored from the consumer's guess
+      cannot witness the contract.**
+
       **Measured baseline for the red tests, so the next session does not re-derive it:** the
       dashboard autokernel suites are **11 failed / 60 passed at `origin/main`** — verified in a
       clean worktree, so they are pre-existing and unrelated to this program's changes. They fail
