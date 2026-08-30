@@ -46,6 +46,7 @@ Checklist (the dashboard gate — flipped as the phases land):
 - [x] Phase 0: logit-dump tool fixed and verified; A/B harness + in-situ profiler established
 - [x] Phase 1: fused GDN-layer function committed (`e57e1d542`) — compiles clean, single-threaded
 - [ ] Phase 1 gate: logit diff ≤1e-4 + greedy generation + arch test (needs the hook)
+- [x] Phase 3 partial: fused_head + fused_decode_token skeleton committed (`2d699f02c`)
 - [ ] Phase 2: full-attn layer function
 - [ ] Phase 3: PLE + head + hook + full fused decode
 - [ ] Phase 4: thread-pool integration + fused-kernel micro-opt
