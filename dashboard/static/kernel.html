@@ -480,11 +480,50 @@ function renderProgression(d){
   const cpu=rows.filter(r=>r.lane==="CPU"), gpu=rows.filter(r=>r.lane==="GPU");
   const best=list=>list.slice().sort((a,b)=>(b.effect_fraction||-Infinity)-(a.effect_fraction||-Infinity))[0];
   const cpuLeader=best(cpu), gpuLeader=best(gpu), funnel=p.funnel||{};
+
+  // FOUR-VALUED, AND VISIBLE WHILE COLLAPSED (2026-08-30).
+  //
+  // The producer's own verdict was correct and buried twice over: inside a
+  // `<details class="result-detail">` ("Projection provenance"), inside the
+  // `<details class="panel">` that wraps this whole section. Meanwhile the summary
+  // line — which IS visible while collapsed — showed lane leaders and a pursued
+  // count with no date on them, so a reader who expanded nothing read a
+  // 16-day-dead funnel as a live one.
+  //
+  // The server's ladder is fresh / aging / stale / unknown and it does not model
+  // absence, because `freshness` is only written when the projection PARSED. So
+  // absent-vs-malformed is folded here from the two facts the server does export
+  // for a failed read (`available`, `artifact_present`), giving the four states
+  // the envelope contract requires. `aging` is not `fresh`: it folds to `stale`
+  // and the exact age is printed beside it, so the band is narrowed, never lost.
+  const pf=p.freshness||{};
+  const pClass=String(pf.staleness_class||"unknown");
+  const progState=(!p.available)?(p.artifact_present?"malformed":"absent")
+    :({fresh:"fresh",aging:"stale",stale:"stale"})[pClass]||"malformed";
+  const progFresh=(progState==="fresh");
+  const ageDays=(typeof pf.age_s==="number"&&isFinite(pf.age_s))?(pf.age_s/86400):null;
+  const progWhy=(progState==="absent")
+      ? "no discovery projection has ever been exported to this path — this funnel has no producer"
+    :(!p.available)
+      ? "the discovery projection is present and this hub cannot read it: "+String(p.error||"unreadable")
+    :(progState==="malformed")
+      ? "the discovery projection carries no observed_through this hub could parse — "
+        +"a funnel nobody can date cannot be shown as current"
+    : "projection observed through "+String(p.observed_through||"an unstated time")
+      +(ageDays!=null?" — "+ageDays.toFixed(1)+" days ago":"")
+      +(progFresh?"":", so every number in this funnel is that old");
+
   const headline=[];
   if(cpuLeader) headline.push("CPU "+String(cpuLeader.candidate||cpuLeader.hypothesis||"—")+" "+effectPct(cpuLeader));
   if(gpuLeader) headline.push("GPU "+String(gpuLeader.candidate||gpuLeader.hypothesis||"—")+" "+effectPct(gpuLeader));
   if(Number.isFinite(funnel.pursued)) headline.push(String(funnel.pursued)+" pursued");
-  $("#progression-headline").textContent=headline.join(" · ")||"no candidate headline";
+  // innerHTML rather than textContent so the verdict can be coloured. Every
+  // interpolated value is producer-derived and goes through esc().
+  const headText=headline.map(esc).join(" · ")||"no candidate headline";
+  $("#progression-headline").innerHTML=
+    (progFresh?"":'<b class="fail">'+esc(progState.toUpperCase())+'</b>'
+       +(ageDays!=null?' <span class="muted">('+esc(ageDays.toFixed(1))+' d old)</span>':"")+" · ")
+    +headText;
   // ADMISSIBILITY (2026-08-28). The hero cards showed the top effect per lane as a
   // bare percentage, which read as "a gain we have and have not collected". Three of
   // the four headline leaders cannot be collected AT ALL, and the page said nothing:
@@ -540,7 +579,13 @@ function renderProgression(d){
     const phase=phaseInfo(r);
     return '<div class="'+cardClass+'"><div><b>'+esc(r.lane||"—")+' · '+esc(r.candidate||r.hypothesis||"—")+'</b><span class="stage">'+esc(r.stage||r.state||"—")+'</span></div><div class="effect '+(r.effect_fraction>=0?'ok':'fail')+'">'+esc(effectPct(r))+'</div><div class="result-headline">'+esc(phase.title)+' · '+esc(r.workload||phase.detail)+'</div>'+resultDetails(r)+'</div>';
   };
-  let h='<div class="hero">';
+  let h='';
+  // Above the hero cards, not below them and not inside a disclosure. This is the
+  // first thing in the box, so the numbers it qualifies cannot be read first.
+  if(!progFresh) h+='<div class="fail" style="margin:0 0 10px;padding:8px 10px;'
+    +'border:1px solid currentColor;border-radius:6px"><b>'+esc(progState.toUpperCase())
+    +'</b> — '+esc(progWhy)+'</div>';
+  h+='<div class="hero">';
   h+='<div class="hero-card production"><div class="hero-label">Production freeze</div>';
   if(prod.available) h+='<div class="hero-value">'+esc(prod.branch||"—")+'</div><div><code>'+esc(String(prod.head||"").slice(0,12))+'</code> · '+esc(prod.version||"—")+'</div><div class="muted">'+esc(prod.status||"—")+' · experimental results cannot mutate this anchor</div>';
   else h+='<div class="hero-value fail">Unverified</div><div class="muted">'+esc(prod.error||"production attestation unavailable")+'</div>';
@@ -563,7 +608,22 @@ function renderProgression(d){
       +(adm.tag?'<div class="'+esc(adm.cls)+'"><b>'+esc(adm.tag)+'</b> — '+esc(adm.why)+'</div>':'')
       +'<div class="muted">'+esc(phase.detail)+' · '+esc(r.stage)+'</div></div>';
   });
-  h+='<div class="hero-card"><div class="hero-label">Funnel</div><div class="hero-value">'+esc(funnel.candidate||0)+' → '+esc(funnel.strict_keep||0)+' → '+esc(funnel.champion||0)+' → '+esc(funnel.promotable||0)+'</div><div>screen → strict keep → champion → promotable</div><div class="muted">promotion claim: <span class="'+(p.promotion_claim===false?'ok':'fail')+'">'+esc(String(p.promotion_claim===true))+'</span></div></div></div>';
+  // A MISSING COUNT IS NOT ZERO. `funnel.candidate||0` coerced "the producer
+  // reported no value" into a confident `0`, so an absent projection and a real
+  // "nothing reached this stage" rendered identically — and `0 → 0 → 0 → 0` is a
+  // perfectly plausible funnel, which is what makes the coercion dangerous rather
+  // than merely wrong. Unknown renders as `?` and says why underneath.
+  const stages=[["candidate","screen"],["strict_keep","strict keep"],
+                ["champion","champion"],["promotable","promotable"]];
+  const funnelNum=k=>(typeof funnel[k]==="number"&&isFinite(funnel[k]))?String(funnel[k]):"?";
+  const funnelMissing=stages.filter(s=>funnelNum(s[0])==="?").map(s=>s[1]);
+  h+='<div class="hero-card"><div class="hero-label">Funnel</div><div class="hero-value'
+    +(funnelMissing.length?' muted':'')+'">'
+    +stages.map(s=>esc(funnelNum(s[0]))).join(' → ')
+    +'</div><div>screen → strict keep → champion → promotable</div>';
+  if(funnelMissing.length) h+='<div class="fail">? = not reported ('
+    +esc(funnelMissing.join(", "))+') — '+esc(progWhy)+'</div>';
+  h+='<div class="muted">promotion claim: <span class="'+(p.promotion_claim===false?'ok':'fail')+'">'+esc(String(p.promotion_claim===true))+'</span></div></div></div>';
   if(!p.available){ h+='<div class="fail">Progression producer unavailable: '+esc(p.error||"not exported")+'</div>'; box.innerHTML=h; return; }
 
   h+='<div class="hero-label" style="margin-top:14px">Top candidates</div><div class="winner-grid">';
@@ -1160,19 +1220,55 @@ function renderCommandBand(d){
     // may have measured this champion against production, and until CH-13 that
     // evidence had nowhere to appear. Show it, labelled, so the two authorities are
     // never confused for one another.
+    //
+    // FRESHNESS TRAVELS WITH THE NUMBER (2026-08-30). This branch renders the
+    // largest figure on the page — the operator-gated `+48.9%` — and until now it
+    // read no date at all: the reader validated schema and authority meticulously
+    // and never asked WHEN, so the card rendered identically forever after its
+    // emitter died. The verdict is written into this same line, beside the
+    // percentage, never into a disclosure: a reader who expands nothing must not
+    // be able to read a dead number as a live one.
     const og=d.operator_gates||{};
+    const ogf=og.freshness||{};
+    const ogState=String(ogf.state||"absent");
     const ogh=og.available?(og.headline||{}):null;
-    if(ogh && typeof ogh.effect_fraction==="number"){
+    if(ogh && typeof ogh.effect_fraction==="number" && isFinite(ogh.effect_fraction)){
       const p2=ogh.effect_fraction*100;
-      if(agg) agg.className="cmd-card "+(ogh.positive?"ok":"fail");
-      if(aggSub) aggSub.innerHTML='<b>'+(p2>=0?"+":"")+p2.toFixed(1)+'%</b> '
-        +esc(ogh.summary||"")
-        +' · <b>OPERATOR-GATED</b> (no campaign receipt; carries no promotion authority)';
+      const current=(ogState==="fresh");
+      // A number outside its envelope is never painted as a live gain. `warn`,
+      // not ok/fail: the measurement still happened, it is its CURRENCY that is
+      // in doubt, and colouring it green would say the opposite.
+      if(agg) agg.className="cmd-card "+(current?(ogh.positive?"ok":"fail"):"warn");
+      const bits=[];
+      if(!current) bits.push('<b class="fail">'+esc(ogState.toUpperCase())+'</b>');
+      bits.push('<b>'+(p2>=0?"+":"")+p2.toFixed(1)+'%</b> '+esc(ogh.summary||""));
+      bits.push('<b>OPERATOR-GATED</b> (no campaign receipt; carries no promotion authority)');
+      let line=bits.join(" · ");
+      // The envelope, in words, on the line under the number — not in a <details>.
+      if(ogf.detail) line+='<div class="'+(current?"muted":"fail")
+        +'" style="margin-top:5px">'+esc(ogf.detail)+'</div>';
+      if(aggSub) aggSub.innerHTML=line;
     } else {
       if(agg) agg.className="cmd-card warn";
-      if(aggSub) aggSub.innerHTML="no campaign-sealed cumulative receipt, and no "
-        + "operator-gated bundle either — champion standing is unmeasured"
-        + (v.error?" ("+esc(v.error)+")":"");
+      // ABSENT and MALFORMED are different facts about different subsystems and
+      // must not share a rendering: one says nothing ever emitted the carrier,
+      // the other says something emitted a carrier this hub cannot read. The old
+      // text asserted the first for both.
+      let why;
+      if(ogState==="malformed"){
+        why="an operator-gated bundle IS present and this hub cannot read it"
+          + (og.error?" ("+esc(og.error)+")":"")
+          + " — champion standing is unknown, not unmeasured";
+      } else if(og.available){
+        why="the operator-gated bundle carries no usable headline effect — "
+          + "champion standing is unknown, not zero";
+      } else {
+        why="no operator-gated bundle either — champion standing is unmeasured";
+      }
+      if(aggSub) aggSub.innerHTML="no campaign-sealed cumulative receipt, and "+why
+        + (v.error?" ("+esc(v.error)+")":"")
+        + (ogf.detail&&ogState!=="fresh"?'<div class="fail" style="margin-top:5px">'
+            +esc(ogf.detail)+'</div>':"");
     }
   }
 
@@ -1319,11 +1415,27 @@ function renderCommandBand(d){
 function renderOperatorGates(d){
   const box=$("#ak-opgates"); if(!box) return;
   const og=d.operator_gates||{};
-  if(!og.available){ box.innerHTML=""; box.style.display="none"; return; }
+  const ogf=og.freshness||{};
+  const ogState=String(ogf.state||"absent");
+  if(!og.available){
+    // ABSENT stays hidden — there is genuinely nothing to show and the command
+    // band above already says so. MALFORMED does NOT: something emitted a carrier
+    // and this hub cannot read it, and silently hiding that renders a broken
+    // emitter identically to one that never existed.
+    if(ogState!=="malformed"){ box.innerHTML=""; box.style.display="none"; return; }
+    box.style.display="";
+    box.innerHTML='<div class="pl">Operator-gated evidence</div>'
+      +'<div class="pv fail"><b>UNREADABLE</b> · '+esc(ogf.detail||og.error||"the bundle could not be read")+'</div>';
+    return;
+  }
   box.style.display="";
   let h='<div class="pl">Operator-gated evidence · manual research, no promotion authority</div>';
+  // The verdict sits above the gate rows, not under a disclosure: every claim in
+  // this panel is as current as the bundle that carries it, and no further.
+  if(ogState!=="fresh") h+='<div class="pv fail"><b>'+esc(ogState.toUpperCase())
+    +'</b> · '+esc(ogf.detail||"this bundle is outside its freshness envelope")+'</div>';
   const hd=og.headline||{};
-  if(hd.summary) h+='<div class="pv"><b class="'+(hd.positive?"ok":"fail")+'">'
+  if(hd.summary) h+='<div class="pv"><b class="'+(ogState==="fresh"?(hd.positive?"ok":"fail"):"muted")+'">'
     +esc(hd.summary)+'</b></div>';
   (og.gates||[]).forEach(function(g){
     const bad = g.status && g.status!=="PASS";

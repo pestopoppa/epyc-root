@@ -4,8 +4,16 @@
 // Stubs rather than jsdom on purpose: jsdom is not installed here, and a test that
 // skips forever is a test nobody notices is gone. The render path builds HTML strings
 // and assigns innerHTML, which these stubs model faithfully enough to execute it.
+//
+// OPTIONAL third-and-later argv entries name the render functions to call. With
+// none, the default NAMES list runs and nothing about the existing callers
+// changes. This exists because the two freshness envelopes live in
+// `renderCommandBand` and `renderProgression`, and `renderCommandBand` is fed by
+// a DIFFERENT endpoint (/api/kernel/live) than the default list (/api/kernel) —
+// adding it to NAMES would make every existing caller run it against a payload
+// it was never written for.
 const fs = require('fs');
-const [, , pageJsPath, payloadPath] = process.argv;
+const [, , pageJsPath, payloadPath, ...wanted] = process.argv;
 const src = fs.readFileSync(pageJsPath, 'utf8');
 const data = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
 
@@ -17,6 +25,10 @@ function mkEl(id) {
     set innerHTML(v) { this._html = String(v); }, get innerHTML() { return this._html; },
     set textContent(v) { this._text = String(v); }, get textContent() { return this._text || ''; },
     setAttribute() {}, removeAttribute() {}, appendChild() {}, removeChild() {},
+    // `replaceChildren` is used by the command band's stepper. Without it the
+    // stub throws a TypeError and the band's freshness verdict never renders —
+    // a missing stub method is indistinguishable from a page-side fault.
+    replaceChildren() {}, insertAdjacentHTML() {},
     addEventListener() {}, remove() {}, getContext() { return null; },
     querySelector(s) { return mkEl(id + '>' + s); }, querySelectorAll() { return []; },
   });
@@ -31,8 +43,9 @@ global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(dat
 global.setInterval = () => 0;
 global.setTimeout = () => 0;
 
-const NAMES = ['render', 'renderCurrentState', 'renderSections', 'renderActivity',
-               'renderReporting'];
+const NAMES = wanted.length ? wanted
+  : ['render', 'renderCurrentState', 'renderSections', 'renderActivity',
+     'renderReporting'];
 const probe = NAMES.map(n => `${n}: typeof ${n}==="function" ? ${n} : null`).join(', ');
 
 let ctx;
@@ -60,4 +73,11 @@ const html = Object.values(made).map(e => e._html || '').join('');
 // `html`/`threw`/`ran` and are untouched.
 const by_id = {};
 for (const [id, el] of Object.entries(made)) by_id[id] = el._html || '';
-console.log(JSON.stringify({ threw, ran, html, by_id, rendered_chars: html.length }));
+// `text_by_id` is likewise ADDITIVE. Some verdicts are written with textContent
+// rather than innerHTML, and a harness that only reports innerHTML cannot see
+// them — an assertion about such an element would silently be an assertion about
+// the empty string, which passes for the wrong reason.
+const text_by_id = {};
+for (const [id, el] of Object.entries(made)) text_by_id[id] = el._text || '';
+console.log(JSON.stringify({ threw, ran, html, by_id, text_by_id,
+                             names: NAMES, rendered_chars: html.length }));

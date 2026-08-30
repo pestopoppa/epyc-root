@@ -150,6 +150,33 @@ OPERATOR_GATE_BUNDLE_JSON = Path(os.environ.get(
     "/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json"))
 OPERATOR_GATE_BUNDLE_SCHEMA = "epyc.autokernel.operator_gate_bundle.v1"
 
+#: How long a bundle reading is treated as CURRENT.
+#:
+#: Not an invented threshold: ``_read_kernel_progression`` below already codifies
+#: the kernel surface's own fresh band at three days, and two exports of the same
+#: surface must not hold two opinions about when they are late. A bundle that
+#: declares its own ``stale_after_s`` still wins, clamped the way
+#: ``loop_status._budget`` clamps: a budget wider than ``panels.MAX_STALE_S``
+#: satisfies "declares a threshold" and monitors nothing, and a budget near zero
+#: makes every reading stale between two emissions.
+OPERATOR_GATE_BUNDLE_STALE_AFTER_S = 3 * 86400.0
+OPERATOR_GATE_BUNDLE_MIN_STALE_AFTER_S = 60.0
+
+#: What ABSENCE means here, in one sentence, travelling with every reading. The
+#: card this feeds is the most prominent number on ``/kernel``; a card that says
+#: nothing when its producer is gone is the card an operator reads as "fine".
+OPERATOR_GATE_BUNDLE_ABSENCE_MEANS = (
+    "no operator-gated bundle has ever been written to this path. That is not "
+    "'the champion is unmeasured' and it is not 'the gates failed' -- nothing "
+    "emitted the carrier at all, so this surface has no operator evidence to "
+    "show either way.")
+
+#: The four freshness states, deliberately distinct. ``absent`` and ``stale`` are
+#: different facts about different subsystems: one points the investigation at
+#: whether the emitter exists, the other at whether it still runs. Collapsing
+#: them is how a dead producer renders as a live one.
+OPERATOR_GATE_BUNDLE_STATES = ("fresh", "stale", "absent", "malformed")
+
 
 def _read_operator_gate_bundle() -> dict:
     """Read the operator-gated bundle, or say why it is unavailable.
@@ -158,28 +185,148 @@ def _read_operator_gate_bundle() -> dict:
     `authority: operator_gated_manual_research` AND `promotion_claim: false` -- a file
     claiming more than operator authority is rejected outright rather than displayed
     with its claim trimmed.
+
+    EVERY reading carries a ``freshness`` envelope, on the SAME dict as the numbers
+    it dates. Before this the reader validated schema and authority meticulously and
+    read no timestamp at all, so ``headline.effect_fraction`` -- the ``+48.9%`` that
+    is the largest figure on ``/kernel`` -- rendered identically forever after its
+    emitter died. Authority answers "may this number be shown"; freshness answers
+    "is it still true", and the card needs both.
+
+    The envelope rides in the returned dict rather than in a parallel structure so
+    no consumer can pick up the number without also picking up its date.
+
+    DATING A BUNDLE THAT CARRIES NO DATE. ``epyc.autokernel.operator_gate_bundle.v1``
+    has no ``generated_at`` field. This reader prefers one if a future emitter adds
+    it, and otherwise falls back to the file's mtime -- ALWAYS labelling which, via
+    ``generated_at_source``. mtime is the weaker fact (a copy or a ``touch`` moves it
+    without any new measurement) and a page that presented it as the producer's own
+    stamp would be overclaiming; naming the source is what keeps it honest.
     """
+    now = time.time()
+
+    def _budget(value: object) -> float:
+        try:
+            declared = float(value)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            return OPERATOR_GATE_BUNDLE_STALE_AFTER_S
+        if isinstance(value, bool) or not math.isfinite(declared) or declared <= 0:
+            return OPERATOR_GATE_BUNDLE_STALE_AFTER_S
+        return max(OPERATOR_GATE_BUNDLE_MIN_STALE_AFTER_S,
+                   min(declared, float(panels.MAX_STALE_S)))
+
+    def _envelope(state: str, detail: str, *, generated_at: object = None,
+                  source: str | None = None, age_s: float | None = None,
+                  stale_after_s: float | None = None) -> dict:
+        return {"state": state, "age_s": age_s, "stale_after_s": stale_after_s,
+                "generated_at": generated_at, "generated_at_source": source,
+                "detail": detail}
+
+    def _unavailable(error: str, *, present: bool, state: str,
+                     detail: str) -> dict:
+        return {"available": False, "error": error,
+                "artifact_present": present,
+                "freshness": _envelope(state, detail),
+                "absence_means": OPERATOR_GATE_BUNDLE_ABSENCE_MEANS}
+
     try:
         raw = OPERATOR_GATE_BUNDLE_JSON.read_bytes()
+    except FileNotFoundError as exc:
+        return _unavailable(str(exc), present=False, state="absent",
+                            detail=OPERATOR_GATE_BUNDLE_ABSENCE_MEANS)
     except OSError as exc:
-        return {"available": False, "error": str(exc)}
+        # Something is THERE and the hub cannot read it. A different, more urgent
+        # fact than "never emitted", and it points at a different subsystem.
+        return _unavailable(str(exc), present=OPERATOR_GATE_BUNDLE_JSON.exists(),
+                            state="malformed",
+                            detail=f"the bundle exists but is unreadable: {exc}")
+    if not raw.strip():
+        # An EMPTY file is not an absent one: something opened it. Most likely an
+        # emitter that died between create and rename -- an emitter bug, not a
+        # missing emitter.
+        return _unavailable(
+            "malformed bundle: empty file", present=True, state="malformed",
+            detail=("the bundle file is empty (0 bytes of content) -- an emitter "
+                    "created it and never finished writing it"))
     try:
         value = json.loads(raw)
     except json.JSONDecodeError as exc:
-        return {"available": False, "error": f"malformed bundle: {exc}"}
+        return _unavailable(f"malformed bundle: {exc}", present=True,
+                            state="malformed",
+                            detail=f"the bundle is not valid JSON: {exc}")
     if not isinstance(value, dict):
-        return {"available": False, "error": "bundle is not an object"}
+        return _unavailable("bundle is not an object", present=True,
+                            state="malformed",
+                            detail="the bundle is not a JSON object")
     if value.get("schema") != OPERATOR_GATE_BUNDLE_SCHEMA:
-        return {"available": False, "error": "wrong bundle schema"}
+        return _unavailable(
+            "wrong bundle schema", present=True, state="malformed",
+            detail=(f"the file declares schema {value.get('schema')!r}, not "
+                    f"{OPERATOR_GATE_BUNDLE_SCHEMA!r} -- its field names would not "
+                    "mean what this page says they mean"))
     if (value.get("authority") != "operator_gated_manual_research"
             or value.get("promotion_claim") is not False):
-        return {"available": False,
-                "error": "bundle claims authority it may not have"}
+        return _unavailable(
+            "bundle claims authority it may not have", present=True,
+            state="malformed",
+            detail=("the file claims authority this carrier may not have and was "
+                    "refused whole rather than displayed with its claim trimmed"))
     champion = value.get("champion") if isinstance(value.get("champion"), dict) else {}
     headline = value.get("headline") if isinstance(value.get("headline"), dict) else None
     gates = [g for g in (value.get("gates") or []) if isinstance(g, dict)]
+
+    budget = _budget(value.get("stale_after_s"))
+    stamped = value.get("generated_at")
+    written = _parse_semantic_timestamp(stamped)
+    source = "body_generated_at"
+    if written is None:
+        try:
+            written = OPERATOR_GATE_BUNDLE_JSON.stat().st_mtime
+        except OSError:
+            written = None
+        else:
+            source = "file_mtime"
+            stamped = datetime.fromtimestamp(written, timezone.utc).isoformat()
+    if written is None:
+        fresh = _envelope(
+            "malformed",
+            ("this bundle carries no date this reader could parse, and the file "
+             "could not be stat()ed either -- a number nobody can date cannot be "
+             "shown as current"),
+            generated_at=None, source=None, stale_after_s=budget)
+    else:
+        age = now - written
+        if age < 0 and -age > panels.FUTURE_SKEW_TOLERANCE_S:
+            # A reading dated in the FUTURE cannot age, so it would read fresh
+            # forever however long the emitter had been dead. Same rule as
+            # panels.FUTURE_SKEW_TOLERANCE_S, applied here so page and fold agree.
+            fresh = _envelope(
+                "malformed",
+                (f"this bundle is dated {-age:.0f}s IN THE FUTURE; a future "
+                 "timestamp cannot age, so it is treated as undated rather than "
+                 "as fresh"),
+                generated_at=stamped, source=source, stale_after_s=budget)
+        else:
+            age = max(0.0, age)
+            mtime_note = ("" if source == "body_generated_at" else
+                          " (dated by file mtime: the bundle carries no "
+                          "generated_at of its own, so this is when the file was "
+                          "last written, not necessarily when it was measured)")
+            fresh = _envelope(
+                "fresh" if age <= budget else "stale",
+                (f"operator-gated evidence written {age / 3600:.1f} h ago, within "
+                 f"its {budget / 86400:.1f} d envelope{mtime_note}"
+                 if age <= budget else
+                 f"operator-gated evidence was last written {age / 86400:.1f} d "
+                 f"ago, past its {budget / 86400:.1f} d envelope -- the figures "
+                 f"below are the LAST bundle the emitter wrote, not current "
+                 f"ones{mtime_note}"),
+                generated_at=stamped, source=source, age_s=round(age, 1),
+                stale_after_s=budget)
+
     return {
         "available": True,
+        "artifact_present": True,
         "champion_commit": champion.get("commit"),
         "headline": headline,
         "gates": [{"gate": g.get("gate"), "status": g.get("status"),
@@ -187,6 +334,9 @@ def _read_operator_gate_bundle() -> dict:
         "gates_missing": value.get("gates_missing") or [],
         "caveat": value.get("caveat"),
         "bundle_sha256": value.get("bundle_sha256"),
+        "evidence": str(OPERATOR_GATE_BUNDLE_JSON),
+        "freshness": fresh,
+        "absence_means": OPERATOR_GATE_BUNDLE_ABSENCE_MEANS,
     }
 
 # The two contract versions the hub reads. Copied as STRINGS on purpose: the hub
