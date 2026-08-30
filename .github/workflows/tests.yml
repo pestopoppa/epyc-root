@@ -23,6 +23,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # FULL history, not the action's default `fetch-depth: 1`.
+          #
+          # `index_state.py` derives the `Oldest advance` column from
+          # `git log -1 -S'- [x]' -- <handoff>` — the date of the last commit that
+          # flipped a CHECKBOX. In a depth-1 checkout the ONLY commit reachable is the
+          # tip, so the pickaxe attributes every handoff to it and all six domains
+          # collapse to the tip's own date. The rendered block then differs from the
+          # committed one in exactly that column, and the freshness assertion reports
+          # "generated block is stale" on a tree that is perfectly in sync. That is
+          # why this workflow failed 8 of its first 8 runs and never once passed.
+          #
+          # Do NOT "fix" this by relaxing the freshness check: the other three columns
+          # (Handoffs / Open / Blocked) are content-derived and matched exactly, so the
+          # check was right to fire — it was fed a repository that could not answer the
+          # question. Full history is ~47 MB packed / ~4 s to clone.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
