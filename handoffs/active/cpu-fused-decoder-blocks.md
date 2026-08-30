@@ -62,6 +62,11 @@ Collapse the ~6,800-node decode graph to ~100 nodes: **one fused op per layer** 
 - A/B harness: `numactl --interleave=all` + `-mmp 0`, t48/t64, IQK=1, the in-situ profiler (`GGML_CPU_PROF` + `[mm_prof]/[mmid_prof]`) — all established from the prior rounds.
 - **Fast-path hook design**: `llama_context::process_ubatch` (src/llama-context.cpp:1320) is the single hook point — after the mctx apply, a branch: `model.supports_fused_decode() && gtype == LLM_GRAPH_TYPE_DEFAULT && batch-1 decode && CPU backend` → the fused decode writes the logits into the `llm_graph_result` and returns; the graph machinery untouched otherwise. State access via the memory context (the hybrid-idx cast, like the graph does); weights via the model's layers. The user permitted the direct fast-path blast radius.
 
+## Phase 1 progress (2026-08-30) — foundation committed
+
+- `src/models/qwen4exp-fused.cpp` committed (`6321806b3`): the kernel-mirror helpers (FusedMM, lora_mm, hc_rms_norm_gamma, hc_stream_mean, hc_mix) — each mirrors the graph's exact function/order for bit-exactness. Single-threaded for now (correctness first).
+- Next: the full GDN layer function (qkvz + conv state + ssm_conv + GDN scan via ggml_gated_delta_net's kernel + output proj + MoE router/top-k/expert dots/shexp + hc_combine), then the full-attn layers + PLE + head, then the process_ubatch hook + logit-diff validation.
+
 ## Current tree state (starting point)
 
 - Branch `exp/cpu-fusion-qwen4exp-20260829` @ `7cdd7c97b` — clean, arch suite 0 FAILs, "Paris" verified.
