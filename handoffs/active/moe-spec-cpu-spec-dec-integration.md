@@ -416,3 +416,21 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
   | | 128 (gate-skip) | 58.54±4.75 | +2.3% (noise) | 0.570 | 0 |
 
   **Verdict + caveats**: Phase-1 shape reproduces (heaviest DRAM-bound role wins; lighter roles negative). (1) n=3/cell — architect Δ≈2.9σ; operator declined the 5-rep confirm. (2) α −2.4pp on the winner; budgeted arms' outputs differ from B=0 by construction — mechanism-fire control passed (worker B=n_expert bit-exact to B=0, 3/3). (3) Cross-run MTP non-determinism: same-seed B=0 reps differ across runs on every role → strict bit-exact guard enforceable only via the gate-skip control. **Registry implication (PROPOSED, NOT applied — E8-reseed/OP-19 gate)**: `architect_critic` (122B Q4_K_M, :8074 — the measured "architect" role since the 2026-07-31 swap; architect_general is now GPU 27B) → `moe_spec_budget: 128`; frontdoor/worker stay 0; launcher must env-pass `LLAMA_ARG_MOE_SPEC_BUDGET=128`; patch text: `data/moe-spec-bsweep-2026-08-25/registry_patch_proposal.yaml`.
+
+- [ ] **Registry integration — now UNBLOCKED, and NOT yet done.** The prior gate was "registry
+      integration remains blocked until current sweep evidence exists"; that evidence now exists
+      (B-sweep ✅ 2026-08-27, gate met). This has no checkbox of its own, so it was invisible to the
+      dashboard and screened as a prune candidate on 2026-08-28 — filed here rather than archived.
+      **Do not integrate on the +10.7% alone: see the countervailing surface below.**
+- [ ] **Reconcile the two MoE-Spec measurements before enabling it anywhere.** They do not conflict;
+      they bound where the win lives, and only one of them is on a production-serving surface.
+
+      | surface | posture | result |
+      |---|---|---|
+      | architect, live MTP verification batches, B=n_expert/2 | CPU verifier | **+10.7%** (2026-08-27, gate met) |
+      | Qwen3.8-27B-Q8_0 pp512, `budget=32` | GPU champion, llama-bench | **−2.92%** (2026-08-28, CH-4) |
+
+      The GPU `tg128` arm is uninformative **by construction** and must not be quoted as a null:
+      batch-1 decode never reaches `--moe-spec-min-batch 4`, so that arm executed identical code.
+      MoE-Spec is in the aggregate champion as a **capability defaulting to 0** and is enabled
+      nowhere; see [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) CH-4.

@@ -2,8 +2,78 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-08-25 (TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
+**Last compiled**: 2026-08-30 (two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split)
 **Sources**: 128+ documents
+
+## Compiled Update — 2026-08-30: a noise floor estimated from subsets of ONE sample cannot exceed that sample's own tail — and a fixed anchor turns every effect cumulative
+
+**Confidence: verified** for the bootstrap floor table, the anchor-drift arithmetic and the
+block-audit result; **explicitly UNCALIBRATED** for the prefill row, which is flagged as such below
+rather than quoted as a floor.
+
+Two measurement defects found in the AutoKernel rebuild generalise to any A/B screening loop.
+
+### The noise floor was understated by construction
+
+The 2026-08-28 floor table was built as p95 of |median effect| **over subsets of one fixed 20-pair
+sample**. That estimator **cannot exceed the tail of the sample it resamples**, so it understates
+p95 by construction — it measures how much that one sample disagrees with itself, not how much a
+*fresh* sample would. Rebuilt by bootstrap from a three-condition A/A campaign (fresh pairs, true
+effect zero):
+
+| pairs | prefill (UNCALIBRATED — old method) | decode (bootstrap) |
+|---|---|---|
+| 5 | 0.479% | **2.422%** |
+| 9 | 0.168% | **2.021%** (was 1.175% — low by 0.846 pp) |
+| 20 | 0.029% | **1.188%** (was 0.067%) |
+
+At 9 pairs the old method was low by **0.846 percentage points**; at 20 pairs it was low by a
+factor of ~18. Every run from 13 onward uses 20 pairs at 1.188%. **`pp512` was never measured by
+that campaign** and its row is still the superseded construction — no prefill verdict from this
+loop is trustworthy until it is recalibrated. `--pairs` must be ≥5, and `WARMUP_PAIRS = 1` is
+discarded before measurement.
+
+**The rule:** a noise floor must be estimated from *independent* samples of the null condition. A
+resampling estimator over a single captured sample is bounded by that sample and is not a floor.
+
+### A static anchor makes every effect cumulative, and the sign can flip
+
+The loop benchmarked a **fixed v9 binary** as the anchor while the candidate tree accumulated every
+accepted keep. Each measurement therefore reported *candidate-so-far vs v9*, not *this patch vs the
+champion* — and the loop treated it as the latter. The concrete cost: **a −2.864% regression was
+committed as a "+1.846% keep"**, because the accumulated stack was still ahead of v9 even as that
+one patch made it worse. Three commits were later demoted as cumulative artefacts (tagged
+`ak/pre-anchor-fix-full-history`). The first genuinely **marginal** advances are run 16's two and
+run 18's `5ad3e36d`.
+
+**The rule:** if gains are meant to compound, the anchor must advance with the champion. An anchor
+that does not move converts a marginal test into a cumulative one **silently** — every number still
+looks like an effect size, and its sign can be wrong.
+
+A related trap followed: pruning silently froze the *advancing* anchor after the first keep (D14),
+so run 17 logged `advanced to anchor-gen-002` seven times. Because individual attribution was then
+unrecoverable, run 17's 30 commits were audited **as a block** against what the run started from —
+rebuild both ends of the range, `gates.op_correctness`, then compare at 20 pairs under a held
+claim: **+3.942%, decisive, no drift, residency 40/40, clocks stable.** Block auditing is the
+correct fallback when per-commit attribution is lost, and it is far cheaper than re-running the
+range.
+
+### Filed, not fixed
+
+The loop keeps on a **single comparison** and cannot pool repeated measurements of one mechanism —
+even though its own planner reached for pooling unprompted twice (run 11 measured one patch six
+times, run 15 measured one five times). Until pooling exists, a marginal keep near the floor rests
+on one comparison.
+
+### Source References (2026-08-30 noise floor and anchor drift)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE
+  carries the floor table, `bench.MEASURED_FLOOR_PCT`, and the anchor-drift record (D8, D9, D14).
+- [Runs 11–18 chronology](../progress/2026-08/2026-08-30.md) and
+  [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-level evidence for both defects.
+- [Agent loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — the normative
+  loop specification whose screening step these floors gate.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
 ## Compiled Update — 2026-08-25: the agent-security eval fixture is in-tree (TU-DTAP-1), and the L5 closeout surfaced a gate that had been red for 22 days
 
@@ -3134,3 +3204,49 @@ defect in any suite.
 - [`reviewer-decision-plane.md`](../handoffs/completed/reviewer-decision-plane.md) — RD-12 row tick, replay numbers, H-LB handoff
 - [`reviewer-trace-materialization.md`](../handoffs/completed/reviewer-trace-materialization.md) — TM-8 gate tick, coverage instrumentation (`src/trace/coverage.py`), replay harness
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — session record with the run details
+
+---
+
+## Two ways an A/B screen reports a win that does not exist (2026-08-28)
+
+### 1. The arm was clamped away — a null comparison reporting +46.9%
+
+A screen varying `ubatch 512 -> 1024` passed `-b 512 -ub 1024`. llama.cpp clamps
+`n_ubatch = min(n_batch, n_ubatch)` (`src/llama-context.cpp:265`), so **both arms ran at an
+effective ubatch of 512 on one identical binary** — an A/A comparison. It reported **+46.9%**.
+
+The number came from a bimodal sample (`25409, 18083, 25372, 16175, 25381`) whose median landed on
+the fast mode, measured against an anchor bank sitting ~30% below the independently established
+steady state. Its sibling `batch_up` screen, equally null, reported **+0.59%** purely by landing on
+the other mode — two null arms 46 percentage points apart. The "sign conflicts and 53.5pp spread"
+that made the pair look like a live lead *were the artifact*.
+
+**Guard, not lore:** the producer now refuses any batch/ubatch screen whose two arms have the same
+*effective* configuration after the clamp, and the guard is mutation-tested to fire on the null arm
+and stay silent on genuine factors.
+
+### 2. Block-sequential arms confound drift with the arm
+
+The same screen family ran all anchors consecutively, then all candidates. Any drift across the
+measurement window loads entirely onto one arm. A corrected re-run **alternates** arms (A,B,A,B…),
+raises n per arm, prints the **full sample vector** rather than the median alone — because the
+failure mode is bimodality, which a median hides — and flags any arm whose max/min exceeds 1.3×.
+
+### Verification lessons that generalise
+
+- **Diff failing-test SETS, never counts.** A fixed test and a newly broken one cancel out in a
+  count. Twice this session a set-diff was the only thing separating "0 newly broken" from a
+  silently shipped regression.
+- **A green suite proves nothing until a mutation turns it red.** One regression test here was
+  vacuous twice over — it asserted against a *local copy* of the map under test, and its source
+  grep matched the same string at unrelated lines — so deleting the code it guarded left it green.
+  Mutation-testing caught it; review had not.
+- **A low failure count on an arm with low exposure is not immunity.** Report the exposure metric
+  (`draft_n`, sample count, invocation count) beside every verdict.
+
+### Source References (2026-08-28)
+
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-6 settlement with both artifacts and the corrected re-run design
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the AK-VIS findings and the vacuous-test record
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — the ngram exposure retraction (DF2-6b-bis)
+
