@@ -25,7 +25,13 @@
 
   var NAV_ID = "epyc-nav";
   var STYLE_ID = "epyc-nav-style";
+  /* Chips come from the REGISTRY now (2026-08-30), not from an id hardcoded
+   * here. There was one chip and one id, so a constant was enough; then two
+   * rows both meant "AutoKernel" and the nav could not say which one was the
+   * live producer — a distinction that has to survive without clicking through.
+   * `orchestrator-legacy` keeps its chip by carrying `"chip": "legacy"`. */
   var LEGACY_ID = "orchestrator-legacy";
+  var MAX_CHIP = 12;
   var warned = false;
 
   function warnOnce(msg) {
@@ -119,10 +125,17 @@
         a.className = "epyc-nav-link active";
         a.setAttribute("aria-current", "page");
       }
-      if (e.id === LEGACY_ID) {
+      /* A row's own chip, falling back to the legacy row's historic one so an
+       * older registry on a cached page still renders it. Truncated, because a
+       * registry row is data and a long chip would silently reflow the header
+       * of every dashboard. */
+      var chipText = (typeof e.chip === "string" && e.chip.trim())
+        ? e.chip.trim().slice(0, MAX_CHIP)
+        : (e.id === LEGACY_ID ? "legacy" : "");
+      if (chipText) {
         var chip = document.createElement("span");
         chip.className = "epyc-nav-chip";
-        chip.textContent = "legacy";
+        chip.textContent = chipText;
         a.appendChild(chip);
       }
       frag.appendChild(a);

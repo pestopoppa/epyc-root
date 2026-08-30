@@ -101,6 +101,17 @@ ABSENCE_MEANS = (
 #: rest out as NEGATIVES for the page.
 MEASURED_DISPOSITIONS = ("kept", "measured_null")
 
+#: The producer's OWN names first, then the shorter spellings this reader also
+#: accepts. Getting this list wrong is not a cosmetic fault: it was wrong from
+#: the surface's first commit — the reader looked only for ``held_s``/``busy_s``
+#: while ``autokernel/loop/run.py`` has always written ``claim_held_s`` and
+#: ``device_seconds_under_load`` — so the one panel this surface was built for
+#: rendered "the loop published no held/busy seconds" over a producer that was
+#: publishing them every iteration. The synthetic fixture invented the short
+#: names and agreed with the code, so 41 tests passed over a dark panel.
+HELD_KEYS = ("claim_held_s", "held_s", "held_seconds", "held")
+BUSY_KEYS = ("device_seconds_under_load", "busy_s", "busy_seconds", "busy")
+
 
 def store_root() -> Path:
     """The loop's store root, resolved at call time."""
@@ -251,11 +262,31 @@ def _gpu(body: Mapping[str, Any]) -> dict:
             return float(value)
         return None
 
-    held = _num("held_s", "held_seconds", "held")
-    busy = _num("busy_s", "busy_seconds", "busy")
+    held = _num(*HELD_KEYS)
+    busy = _num(*BUSY_KEYS)
     out = {"reported": held is not None and busy is not None,
            "held_s": held, "busy_s": busy, "idle_s": None, "busy_pct": None,
-           "raw": raw}
+           "raw": raw, "unreported_reason": None}
+    if not out["reported"]:
+        # WHY nothing is reported is a different fact depending on who is at
+        # fault, and a page that says "the loop published no held/busy seconds"
+        # over a loop that published four of them is making a false claim about
+        # the producer. Three cases, named apart:
+        if not raw:
+            out["unreported_reason"] = (
+                "the loop published no gpu map at all")
+        elif not any(key in raw for key in HELD_KEYS + BUSY_KEYS):
+            out["unreported_reason"] = (
+                "the loop published a gpu map, but this reader recognises none "
+                f"of its keys ({', '.join(sorted(raw))}) as held or busy "
+                "seconds — that is a READER defect, not a silent producer")
+        else:
+            missing = [name for name, value in (("held", held), ("busy", busy))
+                       if value is None]
+            out["unreported_reason"] = (
+                f"the loop published a gpu map with no usable "
+                f"{' and '.join(missing)} seconds (present keys: "
+                f"{', '.join(sorted(raw))})")
     if out["reported"] and held > 0:
         out["idle_s"] = round(max(0.0, held - busy), 1)
         out["busy_pct"] = round(100.0 * min(busy, held) / held, 1)
@@ -369,7 +400,8 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     return wire, observation(report, fresh)
 
 
-__all__ = ["ABSENCE_MEANS", "DEFAULT_STALE_AFTER_S", "DEFAULT_STORE_ROOT",
+__all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "DEFAULT_STALE_AFTER_S",
+           "DEFAULT_STORE_ROOT", "HELD_KEYS",
            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S", "STATES",
            "STATE_ABSENT", "STATE_FRESH", "STATE_MALFORMED", "STATE_STALE",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV", "freshness",

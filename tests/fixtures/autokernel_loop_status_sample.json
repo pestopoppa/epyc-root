@@ -1,0 +1,64 @@
+{
+  "anchor_commit": "8fd1b23acf2be83d2916518671a77493a8a3f045",
+  "campaign_id": "ak-loop",
+  "champion_head": "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
+  "dispositions": {
+    "kept": 1,
+    "measured_null": 59,
+    "planner_transient": 15,
+    "refused_at_formation": 8,
+    "superseded": 4
+  },
+  "epoch_sha256": "f6d6cca0b891133a560ee8750322e1a4c7d2d187ba185b72e0418bbcfd8efb95",
+  "generated_at": "2026-08-30T14:19:52.439876Z",
+  "gpu": {
+    "claim_held_s": 16918.7,
+    "device_seconds_under_load": 10932.1,
+    "gpu_seconds_idle_while_claimed": 5986.6,
+    "idle_fraction_while_claimed": 0.3538
+  },
+  "hotspots": [
+    {
+      "calls": 3612,
+      "share_of_device_time": 0.18709379010120689,
+      "signature": "void mul_mat_vec_q<(ggml_type)12, 1, true, true, true, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+      "total_duration_ns": 76403031
+    },
+    {
+      "calls": 12513,
+      "share_of_device_time": 0.16079877905869114,
+      "signature": "void mul_mat_vec_q<(ggml_type)12, 1, true, true, false, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+      "total_duration_ns": 65665002
+    }
+  ],
+  "iterations_done": 87,
+  "iterations_planned": 0,
+  "measurements_reached": 60,
+  "noise_floor_pct": 1.188,
+  "pairs": 20,
+  "recent": [
+    {
+      "effect_fraction": -0.088470238672134,
+      "mechanism_id": "akm-q6k-three-wave-k-split",
+      "reason": "effect -8.847% did not clear the 1.188% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.09650939848297091,
+      "mechanism_id": "akm-q4k-bias-postreduce-load",
+      "reason": "effect -9.651% did not clear the 1.188% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.09835026884706821,
+      "mechanism_id": "akm-q4k-dual-chained-dp4a",
+      "reason": "effect -9.835% did not clear the 1.188% noise floor",
+      "status": "measured_null"
+    }
+  ],
+  "schema": "epyc.autokernel.loop_status.v1",
+  "stale_after_s": 1800,
+  "state": "running",
+  "step": "[lane0] building and gating",
+  "surface": "tg128"
+}

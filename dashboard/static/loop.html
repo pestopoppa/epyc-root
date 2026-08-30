@@ -117,6 +117,22 @@
 <main>
   <div id="banner"></div>
 
+  <!-- The other half of the /kernel banner (2026-08-30). Two pages carried the
+       name "AutoKernel" and neither acknowledged the other, so an operator on
+       either one could not tell whether they were looking at the live producer.
+       This page is the live one; the link is stated so the campaign evidence
+       that lives only on /kernel is still findable, and is deliberately NOT a
+       data dependency — nothing here reads /api/kernel. -->
+  <div class="pad" id="sec-scope" style="border:1px solid var(--border);border-radius:8px;
+       padding:10px 12px;margin-bottom:18px;font-size:12px;line-height:1.55;color:var(--muted)">
+    This is the <strong>live</strong> AutoKernel surface — the rebuilt loop, reading its own
+    <code>epyc.autokernel.loop_status.v1</code>. The superseded discovery
+    <strong>controller</strong> (deployment <code>gpu-discovery-champion-v37</code>, stopped
+    2026-08-28) and the campaign / HIP / operator-gate evidence around it live on
+    <a href="/kernel">Kernel-R&amp;D</a>. Different producer, different envelope: a reading
+    there is never a statement about this loop.
+  </div>
+
   <section id="sec-tiles">
     <h2>Progress</h2>
     <div class="tiles" id="tiles"></div>
@@ -257,7 +273,7 @@ function renderTiles(d){
          "the bar a candidate must clear"),
     tile("GPU busy", gpu.reported ? `${gpu.busy_pct == null ? "—" : gpu.busy_pct + "%"}` : "not reported",
          gpu.reported ? `${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
-                      : "the loop published no held/busy seconds",
+                      : (gpu.unreported_reason || "no held/busy seconds available"),
          gpu.reported ? (num(gpu.busy_pct) && gpu.busy_pct < 25 ? "bad" : "") : "dim"),
   ].join("");
 }
@@ -333,8 +349,14 @@ function renderGpu(d){
   if(!gpu.reported){
     // An empty gpu map must NOT become "0s busy, 100% idle". A fabricated
     // measurement is worse than the silence it replaces.
-    host.innerHTML = `<div class="empty">The loop published no held/busy seconds, ` +
-      `so this panel reports <strong>nothing</strong> rather than 0% busy. ` +
+    // WHY it is unreported is not one fact. "The loop published no held/busy
+    // seconds" is FALSE when the loop published four of them under names this
+    // reader did not know — that is a reader defect, and blaming the producer
+    // for it sends the investigation to the wrong repository. The payload names
+    // the case; this panel repeats it rather than asserting its own.
+    host.innerHTML = `<div class="empty">` +
+      esc(gpu.unreported_reason || "no held/busy seconds are available") +
+      `, so this panel reports <strong>nothing</strong> rather than 0% busy. ` +
       `The loop ran 95.4% idle on a held device for a month and no surface said ` +
       `so; an invented full-idle reading would be that same failure with a ` +
       `number on it.` +

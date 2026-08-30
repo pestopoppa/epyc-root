@@ -172,6 +172,22 @@
   .fresh-why>summary:hover{color:var(--fg)}
   .cmd-step-arrow{flex:0 0 auto;color:var(--border);margin:0 3px;font-size:10px}
   .cmd-refusal{font-size:11px;color:var(--bad);margin-top:5px;line-height:1.4}
+  /* WHICH LOOP (2026-08-30). Two pages both called "AutoKernel"; this one
+     observes the SUPERSEDED controller. The banner says so, and carries the
+     other page's live reading so the two surfaces cannot silently disagree. */
+  .which-loop{border:1px solid var(--border);border-left-width:4px;border-radius:8px;
+    padding:11px 14px;margin-bottom:14px;font-size:12px;line-height:1.55;background:rgba(255,255,255,.02)}
+  .which-loop .wl-hd{font-weight:700;letter-spacing:.02em;margin-bottom:4px}
+  .which-loop .wl-bd{color:var(--fg)}
+  .which-loop .wl-note{color:var(--muted);margin-top:5px}
+  .which-loop.run{border-left-color:var(--good)}
+  .which-loop.run .wl-hd{color:var(--good)}
+  .which-loop.warn{border-left-color:var(--warn,#d29922)}
+  .which-loop.warn .wl-hd{color:var(--warn,#d29922)}
+  .which-loop.dead{border-left-color:var(--bad)}
+  .which-loop.dead .wl-hd{color:var(--bad)}
+  .which-loop.unknown{border-left-color:var(--muted)}
+  .which-loop.unknown .wl-hd{color:var(--muted)}
   @media(max-width:1100px){.command-band{grid-template-columns:1fr 1fr}}
   @media(max-width:620px){.command-band{grid-template-columns:1fr}}
 </style>
@@ -187,6 +203,16 @@
 <script defer src="/nav.js"></script>
 
 <main>
+  <!-- The FIRST thing on this page, because it is the first thing an operator
+       gets wrong here: everything below observes the AutoKernel *controller*
+       deployment, which is superseded. The rebuilt loop is a different producer
+       on a different page, and its reading is fetched here so this page can
+       never imply the loop is stopped when it is running. -->
+  <div class="which-loop unknown" id="which-loop">
+    <div class="wl-hd">Which AutoKernel is this?</div>
+    <div class="wl-bd">reading <code>/api/loop</code>…</div>
+  </div>
+
   <div class="observation" id="observation">
     <b>OBSERVATION discipline.</b> Loading…
   </div>
@@ -201,7 +227,12 @@
       <div class="cmd-sub" id="cmd-aggregate-sub">awaiting sealed cumulative receipt</div>
     </div>
     <div class="cmd-card" id="cmd-liveness">
-      <div class="cmd-label">AutoKernel loop</div>
+      <!-- WAS "AutoKernel loop" (2026-08-30). It never observed the AutoKernel
+           loop: it observes the discovery CONTROLLER deployment. Once the
+           rebuilt loop took that name, this label made a true STOPPED reading
+           about a superseded controller read as a false one about a running
+           loop — which is exactly how the operator read it. -->
+      <div class="cmd-label">Controller deployment <span class="tag">not the rebuilt loop — see /loop</span></div>
       <div class="cmd-value"><span class="cmd-pulse" id="cmd-pulse"></span><span id="cmd-liveness-word">unknown</span></div>
       <div class="cmd-sub" id="cmd-liveness-sub">connecting…</div>
     </div>
@@ -1162,10 +1193,21 @@ function renderCommandBand(d){
   livenessWord.textContent=word;
   liveCard.className="cmd-card "+(cls==="run"?"ok":cls==="dead"?"fail":"warn");
   const liveBits=["deployment "+esc(d.deployment||"—")];
+  // THE EXCUSE IS CONDITIONAL NOW (2026-08-30). "authoring/build are
+  // event-silent by design" is true of a controller mid-stage and false of one
+  // that stopped two days ago, and it was printed unconditionally — so the card
+  // explained away the silence of a dead producer. The server already holds the
+  // verdict in `_freshness.watchdog` and this card never rendered it; a page
+  // that owns a watchdog and hides it is worse off than one with none.
+  const wd=((d._freshness||{}).watchdog)||{};
+  const wdDead=wd.state==="stopped_reporting"||wd.state==="silent";
   if(lastTs) liveBits.push("last lifecycle event "+esc(lastTs.replace("T"," ").slice(0,19))+"Z"+
-    (lastAgeS!=null?" ("+esc(elapsedText(lastAgeS))+" ago)":"")+" — authoring/build are event-silent by design");
+    (lastAgeS!=null?" ("+esc(elapsedText(lastAgeS))+" ago)":"")+
+    (wdDead ? "" : " — authoring/build are event-silent by design"));
   else liveBits.push("no lifecycle event yet");
-  $("#cmd-liveness-sub").innerHTML=liveBits.join(" · ");
+  if(wdDead) liveBits.push('<b>watchdog: '+esc(wd.state)+'</b>');
+  $("#cmd-liveness-sub").innerHTML=liveBits.join(" · ")
+    +(wdDead&&wd.reason?'<div class="muted" style="margin-top:5px">'+esc(wd.reason)+'</div>':"");
 
   // Card 3 — pipeline stage.
   $("#cmd-stage-value").textContent=phase.label||phase.id||"—";
@@ -1588,7 +1630,92 @@ async function loadLive(){
     $("#ak-live-log-full").textContent="live endpoint unavailable: "+e.message;
     $("#planner-live-log-full").textContent="live endpoint unavailable: "+e.message; }
 }
+
+/* ---------------------------------------------------------------------------
+   WHICH AUTOKERNEL IS THIS? (2026-08-30)
+
+   Two dashboards were both titled "AutoKernel": this one, reading the discovery
+   CONTROLLER's deployment tree, and /loop, reading the rebuilt loop's own
+   `epyc.autokernel.loop_status.v1`. This page was right and unreadable — it
+   said STOPPED about a controller that genuinely stopped, under a card labelled
+   "AutoKernel loop", while the loop of that name was running. The operator read
+   the page, not the provenance, and concluded the loop was dead.
+
+   The fix is not to merge the two data planes. They have different producers,
+   different envelopes and different lifetimes (INF-66 P6 rewrites this
+   surface), and one contract's rewrite must not be another contract's outage.
+   The fix is that this page must never be readable as a statement about the
+   loop: it names what it observes, and shows the OTHER surface's own reading —
+   fetched from /api/loop, never re-derived here — so the two cannot disagree.
+
+   IT RENDERS FOUR STATES AND A FIFTH FAILURE, and none of them is silence: a
+   banner that disappears when it cannot read /api/loop would put this page back
+   where it started, quietly implying that this deployment is all there is.
+--------------------------------------------------------------------------- */
+const WL_SCOPE = "Everything below observes the AutoKernel <b>discovery controller</b> "
+  + "and its campaign evidence — a different producer from the rebuilt loop.";
+
+function renderWhichLoop(d){
+  const box=$("#which-loop"); if(!box) return;
+  const L=d.loop||{};
+  const st=d.freshness_state;
+  const ageTxt=(d.age_s==null)?"—":elapsedText(d.age_s);
+  let cls,hd,bd;
+  if(st==="fresh"){
+    const running=(L.state==="running");
+    cls=running?"run":"warn";
+    hd=running?"The rebuilt AutoKernel loop is RUNNING — and it is not what this page shows"
+              :"The rebuilt AutoKernel loop is reporting “"+esc(L.state||"—")+"”";
+    bd="iteration <b>"+esc(L.iterations_done==null?"—":L.iterations_done)+"</b>"
+      +(L.iterations_planned!=null?" of "+esc(L.iterations_planned):"")
+      +" · "+esc(L.measurements_reached==null?"—":L.measurements_reached)+" reached a measurement"
+      +" · champion <code>"+esc(String(L.champion_head||"—").slice(0,12))+"</code>"
+      +" · last heard "+esc(ageTxt)+" ago";
+  } else if(st==="stale"){
+    cls="warn";
+    hd="The rebuilt AutoKernel loop has STOPPED REPORTING";
+    bd="its last report was "+esc(ageTxt)+" ago, past its own envelope. That is a "
+      +"statement about the loop, not about this page's controller.";
+  } else if(st==="absent"){
+    cls="dead";
+    hd="No rebuilt AutoKernel loop has ever published";
+    bd=esc(d.absence_means||"nothing has written the loop's status contract.");
+  } else if(st==="malformed"){
+    cls="dead";
+    hd="The rebuilt loop's status file exists and cannot be trusted";
+    bd=esc(d.reader_error||d.detail||"unreadable status contract");
+  } else {
+    cls="unknown";
+    hd="The rebuilt AutoKernel loop's state is unknown";
+    bd="/api/loop returned an unrecognised freshness state "+esc(String(st));
+  }
+  box.className="which-loop "+cls;
+  box.innerHTML='<div class="wl-hd">'+hd+'</div>'
+    +'<div class="wl-bd">'+bd+' &middot; <a href="/loop">open /loop</a></div>'
+    +'<div class="wl-note">'+WL_SCOPE+'</div>';
+}
+
+function renderWhichLoopUnreachable(msg){
+  const box=$("#which-loop"); if(!box) return;
+  box.className="which-loop unknown";
+  // Says nothing about the loop. An unreachable /api/loop is a fact about this
+  // hub, and rendering it as "no loop" would be the original defect inverted.
+  box.innerHTML='<div class="wl-hd">The rebuilt AutoKernel loop could not be read from here</div>'
+    +'<div class="wl-bd">'+esc(msg)+' — this says nothing about whether the loop is '
+    +'running. Check <a href="/loop">/loop</a> directly.</div>'
+    +'<div class="wl-note">'+WL_SCOPE+'</div>';
+}
+
+async function loadWhichLoop(){
+  try{
+    const r=await fetch("/api/loop",{cache:"no-store"});
+    if(!r.ok) throw new Error("/api/loop responded "+r.status);
+    renderWhichLoop(await r.json());
+  }catch(e){ renderWhichLoopUnreachable(e&&e.message?e.message:String(e)); }
+}
+
 load(); setInterval(load, 60000); loadLive(); setInterval(loadLive, 2000);
+loadWhichLoop(); setInterval(loadWhichLoop, 20000);
 </script>
 </body>
 </html>

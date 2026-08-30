@@ -41,6 +41,31 @@ PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 REGISTRY = REPO / "dashboard/registry.json"
 
+#: A RECORDED body, captured verbatim from the running loop's own store root on
+#: 2026-08-30 (hotspots/recent trimmed for size; no field renamed, no field
+#: added). This is not a cross-repo pin — nothing here imports or resolves a
+#: path in epyc-inference-research — it is an OBSERVATION of what the producer
+#: actually writes, kept because the hand-built fixture below could not catch
+#: the defect that made this file necessary: ``body()`` invented ``held_s`` and
+#: ``busy_s``, the reader looked for ``held_s`` and ``busy_s``, the two agreed
+#: with each other and disagreed with the producer, and 41 tests passed while
+#: the GPU panel — the one panel this whole surface was built for — rendered
+#: "the loop published no held/busy seconds" over a producer publishing them
+#: every iteration.
+SAMPLE = REPO / "tests/fixtures/autokernel_loop_status_sample.json"
+
+
+def recorded(*, age_s: float = 45.0) -> dict:
+    """The recorded producer body, re-stamped so it is not permanently stale.
+
+    Only ``generated_at`` is rewritten. Every other field — the gpu key
+    spellings above all — is the producer's own.
+    """
+    payload = json.loads(SAMPLE.read_text(encoding="utf-8"))
+    stamped = datetime.now(timezone.utc) - timedelta(seconds=age_s)
+    payload["generated_at"] = stamped.isoformat().replace("+00:00", "Z")
+    return payload
+
 #: The registry row and the panel id for this surface.
 DASHBOARD_ID = "autokernel-loop"
 PANEL = "autokernel_loop"
@@ -548,6 +573,125 @@ class Rendering(_Fixture):
         gpu = self._render(S.loop_payload())["by_id"]["gpu"]
         self.assertIn("4.6%", gpu)
         self.assertIn("var(--good)", gpu)
+
+    def test_the_RECORDED_producer_body_draws_the_meter_too(self):
+        """The render half of :class:`RealProducerSample`.
+
+        Every GPU rendering assertion above runs on a body this suite wrote. On
+        the body the PRODUCER writes, the panel rendered its not-reported prose
+        for two days on a live device. Assert against the recording.
+        """
+        self.write(recorded())
+        out = self._render(S.loop_payload())
+        self.assertEqual(out["threw"], [])
+        gpu = out["by_id"]["gpu"]
+        self.assertIn("var(--good)", gpu,
+                      "the GPU meter is dark on the producer's own body")
+        self.assertNotIn("reports <strong>nothing</strong>", gpu)
+        self.assertNotIn("not reported", out["by_id"]["tiles"])
+
+    def test_an_unknown_gpu_dialect_names_the_READER_on_the_page(self):
+        """And the mutation half of THAT: the panel must still go dark — while
+        pointing at the right repository — when the keys really are unknown."""
+        self.write(body(gpu={"gpu_seconds_of_something_new": 12.0}))
+        out = self._render(S.loop_payload())
+        gpu = out["by_id"]["gpu"]
+        self.assertNotIn("var(--good)", gpu, "an unreadable GPU map drew a meter")
+        self.assertIn("READER defect", gpu)
+        self.assertIn("gpu_seconds_of_something_new", gpu)
+
+
+# --------------------------------------------------------------------------- #
+# The producer's OWN body — the fixture this suite could not invent
+# --------------------------------------------------------------------------- #
+class RealProducerSample(_Fixture):
+    """Reads a body recorded from the running loop, not one this suite made up.
+
+    WHY THIS CLASS EXISTS. Every other test here builds its fixture from
+    :func:`body`, which was written from a field list and never checked against
+    an actual export. It spelled the GPU seconds ``held_s``/``busy_s``; the
+    producer has always written ``claim_held_s``/``device_seconds_under_load``.
+    The reader agreed with the fixture, so 41 tests passed while ``/api/loop``
+    served ``"reported": false`` over a producer reporting four GPU fields every
+    iteration — and the page said *the loop published no held/busy seconds*,
+    which was a false statement about the producer, aimed at the wrong repo.
+
+    A hand-built fixture proves the reader is self-consistent. Only a recording
+    proves it reads the thing that exists.
+    """
+
+    def test_the_recording_is_this_contract_and_carries_gpu_seconds(self):
+        """Guards the fixture itself: a recording emptied of the field under
+        test would make every assertion below pass for the wrong reason."""
+        sample = json.loads(SAMPLE.read_text(encoding="utf-8"))
+        self.assertEqual(sample["schema"], loop_status.STATUS_SCHEMA)
+        self.assertTrue(sample.get("gpu"), "the recording carries no gpu map")
+        self.assertTrue(
+            set(sample["gpu"]) & set(loop_status.HELD_KEYS + loop_status.BUSY_KEYS),
+            "the recording no longer carries any key this reader knows — "
+            "re-record it and widen HELD_KEYS/BUSY_KEYS rather than deleting "
+            "this assertion")
+
+    def test_the_gpu_panel_is_not_dark_over_the_producers_own_body(self):
+        self.write(recorded())
+        gpu = S.loop_payload()["derived"]["gpu"]
+        self.assertTrue(gpu["reported"],
+                        f"GPU unreported over the real producer: {gpu}")
+        self.assertIsNotNone(gpu["busy_pct"])
+        self.assertIsNone(gpu["unreported_reason"])
+
+    def test_the_derived_idle_share_agrees_with_the_producers_own_fold(self):
+        """Cross-checked against a field the reader never looks at.
+
+        ``idle_fraction_while_claimed`` is computed independently by the
+        producer. If the reader picked up the wrong pair of keys but they
+        happened to be numbers, ``reported`` would still be true and the panel
+        would show a confident wrong percentage. This is the assertion that
+        catches that.
+        """
+        sample = recorded()
+        self.write(sample)
+        gpu = S.loop_payload()["derived"]["gpu"]
+        producer_busy_pct = 100.0 * (1.0 - sample["gpu"]["idle_fraction_while_claimed"])
+        self.assertAlmostEqual(gpu["busy_pct"], producer_busy_pct, places=1)
+        self.assertAlmostEqual(gpu["idle_s"],
+                               sample["gpu"]["gpu_seconds_idle_while_claimed"],
+                               places=0)
+
+    def test_an_unknown_dialect_blames_the_READER_not_the_producer(self):
+        """"The loop published no held/busy seconds" is a claim about the
+        producer. When the loop published four of them under names this reader
+        does not know, that claim is false and points the investigation at the
+        wrong repository."""
+        self.write(body(gpu={"joules_per_token": 3.0, "clock_mhz": 1700}))
+        gpu = S.loop_payload()["derived"]["gpu"]
+        self.assertFalse(gpu["reported"])
+        self.assertIn("READER defect", gpu["unreported_reason"])
+        self.assertIn("joules_per_token", gpu["unreported_reason"])
+
+    def test_no_gpu_map_at_all_blames_nobody(self):
+        self.write(body(gpu={}))
+        gpu = S.loop_payload()["derived"]["gpu"]
+        self.assertFalse(gpu["reported"])
+        self.assertIn("no gpu map at all", gpu["unreported_reason"])
+        self.assertNotIn("READER", gpu["unreported_reason"])
+
+    def test_a_half_reported_map_is_neither_of_the_other_two(self):
+        self.write(body(gpu={"claim_held_s": 900.0}))
+        gpu = S.loop_payload()["derived"]["gpu"]
+        self.assertFalse(gpu["reported"])
+        self.assertIn("busy", gpu["unreported_reason"])
+        self.assertNotIn("READER", gpu["unreported_reason"])
+
+    def test_the_recording_also_exercises_the_rest_of_the_payload(self):
+        """Not a GPU-only recording: the dispositions, hotspots and identity the
+        page renders come from the same body."""
+        self.write(recorded())
+        payload = S.loop_payload()
+        self.assertEqual(payload["freshness_state"], loop_status.STATE_FRESH)
+        self.assertTrue(payload["loop"]["dispositions"])
+        self.assertTrue(payload["loop"]["hotspots"])
+        self.assertGreaterEqual(payload["derived"]["negatives"], 1)
 
 
 if __name__ == "__main__":

@@ -29,22 +29,24 @@
       "blurb": "handoff kanban + backlog flow"
     },
     {
-      "id": "kernel",
-      "title": "Kernel-R&D",
-      "port": 8100,
-      "path": "/kernel",
-      "owner_repo": "epyc-root",
-      "health_path": "/api/kernel/health",
-      "blurb": "AutoKernel MI210 loop + live controller/planner logs (contract-backed)"
-    },
-    {
       "id": "autokernel-loop",
-      "title": "AK Loop",
+      "title": "AutoKernel",
+      "chip": "live",
       "port": 8100,
       "path": "/loop",
       "owner_repo": "epyc-root",
       "health_path": "/api/loop/health",
-      "blurb": "rebuilt AutoKernel loop: state, freshness, every disposition incl. negatives, GPU held-vs-busy"
+      "blurb": "THE LIVE AutoKernel surface — the rebuilt loop's own status contract: state, freshness, every disposition incl. negatives, GPU held-vs-busy"
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel-R&D",
+      "chip": "controller",
+      "port": 8100,
+      "path": "/kernel",
+      "owner_repo": "epyc-root",
+      "health_path": "/api/kernel/health",
+      "blurb": "AutoKernel discovery CONTROLLER (superseded deployment gpu-discovery-champion-v37, stopped 2026-08-28) + campaign/HIP/operator-gate evidence — the live loop is /loop"
     },
     {
       "id": "bus",
@@ -67,6 +69,7 @@
     {
       "id": "orchestrator-legacy",
       "title": "Legacy (:8000)",
+      "chip": "legacy",
       "port": 8000,
       "path": "/dashboard",
       "owner_repo": "epyc-orchestrator",

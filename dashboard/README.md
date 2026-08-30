@@ -555,6 +555,79 @@ Tests: `tests/test_dashboard_loop_surface.py` (mutation-checked: collapsing
 GPU reading, a keeps-only disposition list, and a laundered `failed` state are
 each caught).
 
+**The GPU panel was dark from this surface's first commit (fixed 2026-08-30).**
+The reader looked for `held_s`/`busy_s`; `autokernel/loop/run.py` has always
+written `claim_held_s`/`device_seconds_under_load`. The hand-built test fixture
+invented the short names, so it agreed with the reader, disagreed with the
+producer, and 41 tests passed while the one panel this surface exists for
+rendered *"the loop published no held/busy seconds"* over a producer publishing
+four of them every iteration. Two things changed: `HELD_KEYS`/`BUSY_KEYS` now
+carry the producer's own spellings first, and an unmatched map yields
+`unreported_reason` naming **which side is at fault** — no gpu map at all, a map
+whose keys this READER does not know, or a map genuinely missing one half. The
+old copy blamed the producer for a reader defect and sent the investigation to
+the wrong repository. The guard is `tests/fixtures/autokernel_loop_status_sample.json`,
+a body recorded verbatim from the running loop — not a cross-repo import, an
+observation — cross-checked against the producer's own
+`idle_fraction_while_claimed`, a field the reader never looks at, so a
+right-shaped wrong pair of keys cannot pass.
+
+### Two AK surfaces, and how a reader tells them apart (2026-08-30)
+
+Separate producers justify separate pages; they do not justify two pages both
+called *AutoKernel* with neither acknowledging the other. On 2026-08-30 the
+operator read this on `/kernel`, while the rebuilt loop was 46 iterations in:
+
+> AutoKernel loop / STOPPED / deployment `gpu-discovery-champion-v37` · last
+> lifecycle event 2026-08-28 14:12:42Z (48 h ago) — authoring/build are
+> event-silent by design
+
+**Every clause was true of the producer it observed.** The controller genuinely
+stopped. The defect was that a card labelled *AutoKernel loop* reported a
+controller deployment, and no surface said the other one existed. A correct
+reading of one producer was unreadable as anything but a claim about the other.
+
+The fixes, none of which merges the data planes (INF-66 P6 still owns the
+rewrite; one contract's rewrite must not be another contract's outage):
+
+* **`/kernel` names what it observes and shows the loop's own reading.** A
+  banner above everything else fetches `/api/loop` — the other surface's
+  existing route, no new reader, no re-derived freshness — and renders `fresh`
+  / `stale` / `absent` / `malformed` plus an **unreachable** case, five distinct
+  renderings. A banner that vanishes when it cannot read `/api/loop` would put
+  the page back where it started, quietly implying this deployment is all there
+  is; the unreachable rendering therefore says explicitly that it is a fact
+  about *this hub* and not about the loop.
+* **The card is "Controller deployment", not "AutoKernel loop".**
+* **The "event-silent by design" excuse is conditional now.** It is true of a
+  controller mid-stage and false of one that stopped two days ago, and it was
+  printed unconditionally — so the card explained away the silence of a producer
+  the hub had *already* declared `stopped_reporting`. That verdict lived in
+  `_freshness.watchdog` and the page never rendered it. It does now, and the
+  excuse is suppressed when the watchdog is `stopped_reporting`/`silent`.
+* **`/loop` links back**, so the campaign, HIP and operator-gate evidence that
+  exists only on `/kernel` stays findable. It is a **link, not a fetch**:
+  `/loop` must keep working while the surface P6 rewrites is broken.
+* **The nav says which is live before you click.** `chip` is a registry field
+  now rather than an id hardcoded in `nav.js` (`autokernel-loop` → `live`,
+  `kernel` → `controller`, `orchestrator-legacy` keeps `legacy` as data), and
+  the live row is listed first.
+
+Tests: `tests/test_dashboard_which_loop.py` (mutation-checked against the
+pre-change pages: 13 of its 15 assertions go red when `kernel.html`,
+`loop.html`, `nav.js` and `registry.json` are reverted; the two that stay green
+are the deliberate opposite-direction guards — a *healthy* producer must KEEP
+the by-design silence explanation, and `/loop` must never fetch `/api/kernel`).
+
+**KNOWN GAP, not closed here.** `/kernel` still renders numbers from producers
+with no freshness envelope at all — above all the *Aggregate champion* card's
+`+48.9%`, read from `operator_gate_bundle.json`, for which
+`_read_operator_gate_bundle()` computes no timestamp and no age, so it will
+render identically forever after that producer dies. The candidate funnel and
+lane hero cards do have envelopes, but render them only inside a collapsed
+`<details>`, and the `kernel_live` watchdog now reaches exactly one card. Those
+are inside INF-66 P6's rewrite of this surface, not inside a labelling fix.
+
 ## Data model
 
 * **State = parent directory** (authoritative). The one exception is the
