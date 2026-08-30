@@ -31,31 +31,51 @@ why every prior reachability audit was wrong.
   **P4.1 DONE** (the loop-design doc) · **P7 DONE** (research `10f0214e`).
 - **P4 loop package BUILT** (research `6408f685`): 8 files, **828 LOC** against a 3,000 budget
   and against the 153,865 it replaces. Control flow is pure — every side effect injected — so
-  17 tests run in 0.05s with no GPU, no API key and no ROCm. **Its exit criterion is NOT met**
-  (see the run-10 line below for the exact bar); each attempt costs the external codex planner and
-  hours of GPU.
-- **Next action:** run 11 is live — let it finish, then read whether pinned clocks removed the
-  anchor drift that vetoed 4 of run 10's 5 measurements, and keep running until P4 exit (**≥6
-  measurements and ≥1 champion commit**). Until that passes, **P5 must not start** — the strip is
-  gated on the replacement being proven, and that gate is the point.
-- **Measured A/A noise floor (2026-08-28, n=20 alternating pairs, residency proven 80/80).**
-  Recomputed exhaustively — p95 |median effect| over EVERY C(20,k) subset, so it re-derives
-  exactly (`bench.MEASURED_FLOOR_PCT`, research):
+  17 tests run in 0.05s with no GPU, no API key and no ROCm. It has since grown continuous
+  operation, a seven-lane pool with one serialized tail, an advancing anchor and a STOP sentinel;
+  each attempt costs the external codex planner and hours of GPU.
+- **P4 exit MET BY THE LETTER in run 11** (2026-08-29: 10 iterations, 8 reached a measurement,
+  2 champion commits). **Do not read it as met in spirit before run 16.** Until D9 was fixed the
+  anchor was a fixed v9 binary while the candidate tree accumulated every keep, so **every effect
+  through run 13 was CUMULATIVE, not marginal** — a −2.864% regression was committed as a
+  "+1.846% keep". The **first genuinely marginal champion advances are run 16's two and run 18's
+  `5ad3e36d`.** Runs 12–18 and defects D7–D14 are written up in `progress/2026-08/2026-08-29.md`
+  and `progress/2026-08/2026-08-30.md`.
+- **CHAMPION: `5ad3e36d`** (`akm-q4k-chained-dp4a`, +9.321% marginal) on branch
+  `ak/loop-champion-20260828` in `/mnt/raid0/llm/tmp/ak-loop-tree` — **36 commits above the
+  frozen v9 tip `0db32c06`**. Provenance: run 11 (2) · run 13 (1 surviving of 4; the other three
+  were cumulative artefacts, demoted and tagged `ak/pre-anchor-fix-full-history`) · run 16 (2) ·
+  run 17 (30) · run 18 (1 so far). **Run 17's 30 commits were audited as a block** against what
+  the run started from (`432e501f`): **+3.942%, decisive, no drift, residency 40/40, clocks
+  stable** (`run17-audit/total.json` in the store) — so they were KEPT rather than rolled back.
+  Their individual attribution is not recoverable (D14) and is not worth the device time.
+- **RUN 18 IS LIVE** — holds the `mi210_0` claim, pid in `/workspace/tmp/ak-loop-deploy/run18.pid`,
+  writing to `/mnt/raid0/llm/autokernel/loop-memory/` (`loop-status.json` is the live view).
+  Do not start GPU work, builds, `llama-bench` or `test-backend-ops` while it runs.
+- **Next action:** let run 18 finish, then audit its block the way run 17's was audited — rebuild
+  both ends of the range from `ak-loop-tree`, `gates.op_correctness`, then `bench.compare` at 20
+  pairs under a held claim. The run-17 audit ran from an ad-hoc driver at
+  `/workspace/tmp/ak-loop-deploy/audit.py`; **promote it into the research repo before reusing
+  it**, or it is untracked evidence. Then **P5 — the strip** is unblocked: it was gated on the
+  replacement being proven, and the run-17 audit is that proof.
+- **Noise floor — RECALIBRATED 2026-08-29 (D8), the 2026-08-28 table is SUPERSEDED for decode.**
+  The old table was p95 |median effect| over subsets of ONE fixed 20-pair sample, which cannot
+  exceed that sample's own tail and so understated p95 by construction. Rebuilt by bootstrap from
+  a three-condition A/A campaign (fresh pairs, true effect zero) — `bench.MEASURED_FLOOR_PCT`:
 
-  | pairs | prefill | decode |
+  | pairs | prefill (UNCALIBRATED, old method) | decode (bootstrap) |
   |---|---|---|
-  | 1 | 2.175% | 3.452% |
-  | 5 | **0.479%** | **1.502%** |
-  | 9 | 0.168% | 1.175% |
+  | 5 | 0.479% | **2.422%** |
+  | 9 | 0.168% | **2.021%** (was 1.175% — low by 0.846 pp) |
+  | 20 | 0.029% | **1.188%** (was 0.067%) |
 
-  **4 of 20 pure-noise decode pairs exceed the superseded loop's 3% bar.** An earlier
-  hand-written table quoting 0.753% / 1.848% at k=5 reproduces by no method from the raw pairs
-  and is superseded. The loop's enforced floor is `run.noise_floor_pct(surface, pairs)` =
-  **max(sigma/sqrt(pairs), the measured row for that pair count)**, because neither bound
-  dominates: sigma/sqrt(n) is conservative on prefill but on decode predicts 1.151% at 9 pairs
-  where the instrument actually resolves 1.175%, which would let pure noise clear the bar.
-  `--pairs` must be ≥5.
-  Artifact: `artifacts/autokernel-aa-noise-floor/` (research).
+  **All runs from 13 onward use 20 pairs at 1.188%.** `pp512` was not measured by that campaign
+  and its row is still the superseded construction — recalibrate before trusting any prefill
+  verdict. `--pairs` must be ≥5; `WARMUP_PAIRS = 1` is discarded before measurement.
+  Artifacts: `artifacts/autokernel-aa-noise-floor/` and `loop-memory/aa-campaign/` (research).
+- **Filed, not fixed:** the loop keeps on a SINGLE comparison and cannot pool repeated
+  measurements of one mechanism, even though its planner reached for pooling unprompted twice
+  (run 11 measured one patch six times, run 15 measured one five times). See D8.
 
 ### Runs 5–9, and the harness defects they exposed (2026-08-28 evening; D5–D6 in
 `progress/2026-08/2026-08-29.md`, six in total)
@@ -116,7 +136,8 @@ KV-quant-at-long-context as live when 05c gap-list L14 had already killed it (�
   (the measured row, not the parametric 1.151% which sits below what the instrument resolves).
   10 iterations, 91.7 min, **5 measurements, 0 kept**. The full pipeline ran end to end for the
   first time (hypothesis → critic → patch → critic → build → correctness oracle PASSED → 9-pair
-  A/B, 18/18 resident). **P4 exit remains UNMET: it needs ≥6 measurements AND ≥1 champion commit.**
+  A/B, 18/18 resident). **P4 exit was UNMET as of this run: it needs ≥6 measurements AND ≥1
+  champion commit.** (Run 11 met it by the letter the same day — see CURRENT STATE.)
 - **The run-10 finding — the anchor drifted, and the anchor cannot change.** 4 of the 5
   measurements were vetoed for drift, and in *every* one of them the drifting arm was the
   **anchor**: a fixed binary at `0db32c06`, same build and same workload on every invocation.
@@ -371,8 +392,15 @@ failure mode this program exists to end.
   - [x] P4.1 ✅ 2026-08-28 — `docs/guides/agent-workflows/agent-loop-design.md` — the loop block as the normative spec,
         plus the convention that agent-loop work opens with one. `program.md` in the loop package
         carries the same block as its first section.
-  - **Exit — NOT MET.** Ten consecutive iterations, zero crashes, ≥6 reaching a measurement, ≥1
-    accepted patch committed onto the champion branch and re-measurable from a fresh checkout.
+  - **Exit — MET BY THE LETTER, run 11 (2026-08-29); box left unticked pending operator sign-off.**
+    The bar: ten consecutive iterations, zero crashes, ≥6 reaching a measurement, ≥1 accepted
+    patch committed onto the champion branch and re-measurable from a fresh checkout.
+    **Run 11 delivered 10 iterations, 8 measurements, 2 champion commits**; run 17 delivered 464
+    iterations and 30 champion commits with zero lanes lost, and its block re-measures at
+    **+3.942%** from a fresh build of both ends. **The caveat that matters:** every keep through
+    run 13 was cumulative against a static v9 anchor rather than marginal against the champion,
+    so "screen against the champion so gains compound" — this phase's own requirement — was only
+    actually satisfied from run 15 onward. See CURRENT STATE.
     Transcripts must show a **completed loopback** — a pass-1 rejection whose reason appears
     verbatim in the planner's next hypothesis, which is then accepted, and the same for pass 2.
     The loopback is proven **in test** (mutation-tested three ways: discarding the pass-1 reason,
