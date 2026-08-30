@@ -37,10 +37,18 @@ Collapse the ~6,800-node decode graph to ~100 nodes: **one fused op per layer** 
 | Phase | Deliverable | Milestone / gate |
 |---|---|---|
 | **0** | Measurement infra: fix the logit-dump tool (was crashing), standard A/B harness at the interleave baseline, in-situ profiler runs (all present from prior rounds) | reproducible fused-vs-decomposed logit diff ≤1e-4 |
-| **1** | Fused GDN-layer op (36 layers): hc_mix + qkvz + conv + GDN scan (reuse the existing GATED_DELTA_NET op internally) + output proj + MoE (router/top-k/10 experts/shared expert/gate) + hc_combine; recurrent + conv state in/out | decode 74 → ~45 ms; logit diff + greedy generation + arch test |
-| **2** | Fused full-attn layer op (12 layers): QSA indexer (top-k blocks) + attention + gate + MoE; KV cache + indexer cache interfaces | decode → ~38 ms |
-| **3** | PLE + head + tail ops; full-graph fused assembly; the memory-context plumbing cleanup | full fused decode |
-| **4** | Gemv/activation micro-opt INSIDE the fused kernels (safe now — no dispatch to lose it): the software-pipelining/4-row/unroll results from round 6 become usable here | 30-40 t/s |
+| **1** | Fused GDN-layer function (36 layers): hc_mix + qkvz + conv + GDN scan (the ggml_gated_delta_net kernel) + output proj + MoE (router/top-k/topk-norm weights/expert dots/shexp) + hc_combine; recurrent + conv state in/out | decode 74 → ~45 ms; logit diff + greedy generation + arch test |
+| **2** | Fused full-attn layer function (12 layers): QSA indexer (top-k blocks) + attention + gate + MoE; KV cache + indexer cache interfaces | decode → ~38 ms |
+| **3** | PLE + head + tail; the process_ubatch hook; full fused decode | full fused decode + logit-diff validation |
+| **4** | Thread-pool integration + gemv/activation micro-opt INSIDE the fused kernels (safe now — no dispatch to lose it) | 30-40 t/s |
+
+Checklist (the dashboard gate — flipped as the phases land):
+- [x] Phase 0: logit-dump tool fixed and verified; A/B harness + in-situ profiler established
+- [x] Phase 1: fused GDN-layer function committed (`e57e1d542`) — compiles clean, single-threaded
+- [ ] Phase 1 gate: logit diff ≤1e-4 + greedy generation + arch test (needs the hook)
+- [ ] Phase 2: full-attn layer function
+- [ ] Phase 3: PLE + head + hook + full fused decode
+- [ ] Phase 4: thread-pool integration + fused-kernel micro-opt
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
 
