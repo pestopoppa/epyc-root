@@ -43,6 +43,8 @@ used to relocate an existing protocol.
 
 **NARROWED 2026-08-13 by `P-AK-SEARCH-1-A2`** (this annex, below): AutoKernel search is discovery-first. A sealed exact-frame O(1) baseline bank plus three candidate-only samples may nominate a non-promotable top-K before strict paired confirmation; the bank binds the complete anchor runtime parameter/environment surface and every screen proves that its declared factor is the sole intended difference. Ordinary service, agent, build, filesystem and host-load activity is recorded noise and never an AutoKernel search blocker. Only competing model inference overlapping the held compute claim is an environmental blocker. Correctness and identity gates remain, and promotion remains solely under the owning Annex B, Q, G or S release protocol.
 
+**NARROWED 2026-08-28 by `P-AK-SEARCH-1-A3`** (this annex, below): within a fixed epoch — anchor commit, build recipe and declared host state — a campaign may read prior campaigns' records to rank its own next attempt. A cross-epoch record remains readable as evidence that a mechanism was tried, never as a comparable magnitude, and is carried with an explicit staleness marker. Denial 4's comparability concern becomes a weight rather than a ban; banking, composition, readiness and promotion are untouched.
+
 **Purpose.** This protocol permits an automated kernel-research controller to **rank, retain,
 abandon, branch, and compose candidates inside experimental worktrees**, on the basis of measurements
 taken on those experimental candidates. It is the narrow lift of the consumption prohibition at
@@ -556,3 +558,79 @@ set now reads **B, Q, G or S**.
 This narrows nothing and lifts nothing. It records that the re-measurement route this protocol
 requires now EXISTS for the two speech backends; before Annex S it did not, which made the
 requirement unsatisfiable for them rather than strict.
+
+
+## P-AK-SEARCH-1-A3 — epoch-scoped memory across campaigns (PROPOSED 2026-08-28)
+
+Appended to Annex K as a narrowing of `P-AK-SEARCH-1`, which it does not restate or replace. It
+narrows denial 4 only as specified below, and leaves every other denial, every precondition, and
+the owning release protocols untouched.
+
+### What denial 4 currently forbids, and why
+
+> *"A later AutoKernel campaign MAY use a prior record for **hypothesis formation only** — never to
+> rank, bank, compose, or contribute to readiness — because a later campaign necessarily re-derives
+> its own calibration and a reused record would otherwise be scored against a floor and a threshold
+> it was never measured under."*
+
+The stated rationale is exactly right, and it is a statement about **comparability**, not about
+memory. A number taken against a different anchor, a different build recipe, or a different host
+state is not comparable to one taken now. Denial 4 protects that by forbidding the whole class.
+
+### What it cost
+
+Choosing which hypothesis to attempt next *is* ranking. So a planner that reads its own history to
+prioritise is, on a strict reading, non-conformant — which is very likely why the mechanism was
+never built. Measured consequence, across 355 hypothesis-ledger events in 123 ledgers:
+
+    HYPOTHESIS_CLAIM_AUTHORIZED   209
+    HYPOTHESIS_OPENED             129
+    HYPOTHESIS_ATTEMPTED           17
+    HYPOTHESIS_RESOLVED             0
+    HYPOTHESIS_ADOPTED              0
+    HYPOTHESIS_REOPENED             0
+
+The loop never resolved or adopted a hypothesis. One bit-deposit rewrite of
+`vec_dot_q5_0_q8_1_impl` was re-proposed **38 times** across 37 deployments, because every crash
+minted a fresh sealed deployment and reset the counters, and nothing was permitted to remember.
+
+### Clause 1 — epoch-scoped ranking
+
+Within a **fixed epoch**, a campaign MAY read prior campaigns' records to rank its own next
+attempt. An epoch is the SHA-256 of the anchor commit, the build recipe, and the declared host
+state, taken together.
+
+This grants ranking and nothing else. It does **not** authorise banking, composition, contribution
+to readiness, promotion, or retro-certification; every denial in *"What this protocol does NOT
+authorize"* stands verbatim, and a search record still can never become a claim.
+
+### Clause 2 — cross-epoch records are evidence of attempt, never of magnitude
+
+A record from a different epoch MAY be read to establish **that a mechanism was tried and what was
+concluded**. Its measured value MUST NOT be ranked, compared, or presented as comparable, and it
+MUST be carried with an explicit staleness marker.
+
+This is what replaces the prohibition with a mechanism. Denial 4's concern — a reused record
+"scored against a floor and a threshold it was never measured under" — becomes a **weight** rather
+than a ban: the record is visible, and its number is refused.
+
+### The mechanism is not invented here
+
+This is AP-28's context-hash staleness, already in production in
+`repos/epyc-orchestrator/orchestration/repl_memory/strategy_store.py`, which hashes
+`DEFAULT_CONTEXT_FILES` on every `store()` and applies a validity penalty at `retrieve()` time.
+The AutoKernel implementation is `scripts/kernel_rnd/autokernel/controller/experiments.py`
+(`epoch_sha256`, and `recall()` marking every cross-epoch row `stale_epoch: true`,
+`comparable_measurement: false`).
+
+**It already ships, disabled.** `recall(ranking_authorized=False)` is the default and nothing
+computes an order of merit from prior records. Ratifying this clause is what permits that flag to
+be set; declining it leaves the loop working exactly as it does today, with memory available for
+formation only.
+
+### What this does not change
+
+- Every precondition in *"Preconditions (all enforced or attested per run)"*.
+- The campaign calibration block. A campaign still derives its own thresholds; this clause governs
+  what it may READ, never what it may skip.
+- The release boundary. Promotion remains solely under the owning Annex B, Q, G or S protocol.
