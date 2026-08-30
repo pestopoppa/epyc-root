@@ -65,7 +65,8 @@ Collapse the ~6,800-node decode graph to ~100 nodes: **one fused op per layer** 
 ## Phase 1 progress (2026-08-30) — foundation committed
 
 - `src/models/qwen4exp-fused.cpp` committed (`6321806b3`): the kernel-mirror helpers (FusedMM, lora_mm, hc_rms_norm_gamma, hc_stream_mean, hc_mix) — each mirrors the graph's exact function/order for bit-exactness. Single-threaded for now (correctness first).
-- Next: the full GDN layer function (qkvz + conv state + ssm_conv + GDN scan via ggml_gated_delta_net's kernel + output proj + MoE router/top-k/expert dots/shexp + hc_combine), then the full-attn layers + PLE + head, then the process_ubatch hook + logit-diff validation.
+- `e57e1d542` committed the FULL fused GDN-layer function: hc_mix + qkvz + conv state + 4-tap causal conv + l2 norms + the ggml_gated_delta_net kernel (scratch ctx + 1-thread pool) + z-gated rms + ssm_out + fused_moe (softmax router, argsort top-k, topk-norm weights, expert dots, shared expert) + hc_combine x2. Every op mirrors the graph's function/order for bit-exactness. Single-threaded (correctness first). Compiles clean, tree green.
+- Next: thread-pool integration (the mms + the GDN kernel at nth>1), then the full-attn layers + PLE + head, then the process_ubatch hook + logit-diff validation.
 
 ## Current tree state (starting point)
 
