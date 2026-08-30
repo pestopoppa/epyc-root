@@ -252,6 +252,30 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
 - [ ] **OBS-12** (LOW): **`.claude/skills/kb-search/SKILL.md` documented an interpreter that cannot work — audit the other skills for the same shape.** Fixed for kb-search on 2026-08-19 (it told every session to run bare `python3`, which has no `numpy` and dies in `colbert_encoder.py`, independent of OBS-11); the hooks and batch scripts already used the venv. **A second instance is already confirmed**: `.claude/skills/project-wiki/scripts/lint_wiki.py` exits with `ERROR: PyYAML not installed` under bare `python3` and runs clean under the orchestrator venv — found incidentally while linting, not by any check. The open work is the sweep: nothing ties a skill's documented command to an interpreter that actually has the imports, so the remaining instances stay invisible until a session hits one.
 - [x] **OBS-3a** (LOW, follow-up 2026-08-23): add a mutation case to `scripts/nightshift/tests/test_inference_guard.sh` for "MemAvailable unreadable → `failed`" (awk-shim pattern as used in the OBS-3 fix scratch harness) — the existing suite predates the mem-channel fail-closed semantics. ✅ 2026-08-23 — mutation M-D added (PATH-shimmed `/bin/false` awk): asserts state=failed, RSS channel still measured 0 while failed, MEMAVAIL_GB=unknown, ACTIVE unset, "MEASUREMENT FAILED" wording, and no all-clear printed. Suite 15 → 21 passed; guard untouched.
 - [x] **NIB2-58b** (LOW, follow-up 2026-08-23): re-point `smoke_test_llama_v3.sh` / `prove_paged_attention.sh` binary paths from the extinct `build/bin` to the named experimental build dirs (`build-v9-cpu` / `build-v9-hip`) — operator-flagged convention change; the scripts currently fail fast with a clear message, which is correct behavior until then. ✅ 2026-08-23 — ground truth: `build-v9-cpu` is the only named CPU dir with the full binary set (llama-server/cli/bench/completion); both scripts re-pointed to it (CPU-oriented), verifier expected-roots updated; fail-fast preserved; live `verify_ggml_linkage.sh` runs on all four binaries PASS (exit 0).
+- [ ] **OBS-13** (MED, found 2026-08-30): **the wiki source scanner is blind in every lane worktree,
+  and its watermark is not shared.** `.claude/skills/project-wiki/scripts/compile_sources.py`
+  selects sources with `md_file.stat().st_mtime > since` — filesystem mtime. In a lane worktree
+  every file's mtime is the **checkout time**, which is later than any watermark, so the scan
+  returns **the entire repo**: measured 2026-08-30 from `lane/ak-rebuild-20260828`, `total_new =
+  908` where the true git-derived delta since the 2026-08-28 watermark was **17**. Two consequences,
+  both silent. (1) The wrap-up routine's Step 5 is unrunnable as written from the place the routine
+  says to run it. (2) `wiki/.last_compile` is **gitignored** (`.gitignore:44`), so it exists only in
+  the shared clone — the wrap-up lease claims to serialize "one watermark" that is in fact
+  per-checkout, and a `--touch` from a lane serializes nothing and records nothing. Worse, a
+  `--touch` run from a lane after "compiling 908 sources" would move the *local* watermark while a
+  regenerated `source_manifest.json` (which **is** tracked) would be committed carrying the
+  mtime artifact. **Fix: select by content hash against the tracked `source_manifest.json`, or by
+  git commit date, not mtime** — the manifest already stores a `content_hash` per source, so the
+  hash-diff is mtime-independent and lane-safe by construction. Interim workaround, used for the
+  2026-08-30 sweep: derive the delta with
+  `git log --since=<watermark> --name-only --pretty=format: origin/main -- <source dirs>`, compile
+  that, and do **not** regenerate the manifest from a lane.
+  **Same root, second instrument:** `.claude/skills/project-wiki/scripts/lint_wiki.py` reports **17
+  dangling-link errors** in a lane worktree and **0** in the shared clone, because every one is a
+  `../repos/epyc-inference-research/...` target and `repos/` is an **untracked symlink farm** that
+  `scripts/clone-repos.sh` creates only in `/workspace`. Both tools silently assume they are running
+  in the shared clone; neither can say "I cannot tell from here". Whatever fixes the scanner should
+  also give the linter a way to resolve or explicitly skip cross-repo targets it cannot see.
 - [ ] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
   host.** `netstat` is not installed and `2>/dev/null` swallows the "command not found", so the kill
   loop silently iterates zero times and the availability check prints `[✓] Ports 8000 and 8080

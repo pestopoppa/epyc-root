@@ -2,8 +2,85 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-27 (AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Last compiled**: 2026-08-30 (the rebuilt AutoKernel loop reached continuous unattended operation — run 17 delivered 464 iterations, 68 measurements and 30 champion commits with zero lanes lost, and the 30 were audited as a block at +3.942% rather than individually attributed; eight of fourteen defects across runs 11–18 shared one shape, a test proving a component EXISTED rather than that it was WIRED IN, and the remedy that worked was mutation testing; the guards' own CI had been red on 43 of 43 runs since its first commit on a missing pytest, hiding two real regressions, and a suite-floor guard now catches the partial-collapse case that exits 0; earlier: 2026-08-27 AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
+
+## Compiled Update — 2026-08-30: the rebuilt AutoKernel loop ran 464 iterations without losing a lane — and every defect it exposed was a guard that could not go red
+
+**Confidence: verified** for the run counters, the champion lineage, the block audit, and the CI
+run history (43 of 43, read from the workflow's own run list). **Verified as an open state** for
+run 18, which was still live at compile time. Nothing here is a promotion: the champion branch is
+a research lane, not a production kernel, and frozen v9 is untouched.
+
+The rebuilt loop (P4, ~828 LOC replacing 153,865) reached continuous unattended operation between
+runs 11 and 18. **Run 17 is the durability result: 464 iterations in 636.4 minutes, 68 reaching a
+measurement, 30 champion commits, and zero lanes lost.** Twenty-three iterations hit `lane_error`
+and each cost *an iteration, not a lane* — the containment fix (D12) doing exactly its job. The
+serialized tail was 470.5 of 636.3 wall minutes (73.9%), which is now the throughput ceiling to
+attack, and **GPU idle-while-claimed runs 35–40%**, a figure visible only because the row was made
+to carry it.
+
+**The defect family that matters generalises past this loop.** Eight of the fourteen defects found
+across runs 11–18 share one shape: **a test that proved a component EXISTED rather than that it was
+WIRED IN.**
+
+- A test asserting the *string* `shutil.move` appears in `run.py` passed while `shutil` was
+  unimported and every promotion raised `NameError` (D11).
+- A test asserting `pool.stop_requested()` returns True for a file on disk passed while **nothing
+  ever called it**, and the STOP sentinel sat inert for three hours (D13).
+- The drift and clock tests used **synthetic values** rather than real sample vectors or real
+  sysfs, so neither ever exercised the wrong path — `clock_stable` was True on every run, forever,
+  from a check that could not fail (D7).
+
+D12 is the structural cousin: the `lane_error` handler was correct and its **scope** was wrong, so
+a guard covering most of what it guards read exactly like one covering all of it. The remedy that
+actually worked, applied to every fix from D7 onward, is **mutation testing** — reintroduce the
+defect and confirm the suite goes red. Every fix commit from research `a1fcc89e` onward names the
+mutation it was tested with.
+
+**The same disease reached CI itself, in its purest form.** The autokernel-guards workflow had
+failed **43 of 43 runs since its first commit**, every one dying on `No module named pytest`
+before collecting a single assertion — `actions/setup-python` ships a bare interpreter and nothing
+installed the runner. Because it looked *identically red whatever the code did*, it carried no
+signal, and it hid two real regressions for two days: a guard test still asserting
+`LOOP_LOC_BUDGET == 3000` after the deliberate raise to 3400, and a test asserting that the same
+refusal at two different times *deduplicates* — the exact opposite of the identity fix that had
+put `recorded_at` into the hashed material precisely because repeated refusals were being silently
+dropped. **A permanently-red check is indistinguishable from an absent one, and worse, because it
+occupies the slot a working check would take** (research `ac785d2d`).
+
+Installing the runner closed the hole but not its *shape*: a suite that runs FEWER assertions
+reports the same green. pytest exits 5 on zero collected — verified — but a **partial** collapse
+exits 0. Both suites now declare a floor (101 and 196) asserted with `>=`, never `==`, so the
+guard does not become a second thing to update per test. The guard found two defects in itself on
+first run: it laundered a collection error into a plausible "93 collected", because pytest prints
+the count on the same line as `, 1 error`; and its own test module had a cwd-dependent import
+(research `7ee090a5`).
+
+**Two of the run failures were the operator's, not the loop's**, and they are one class. Stopping
+run 12 reached the `timeout` **wrapper** rather than the workload underneath it, so what died was
+`llama-bench` mid-measurement (`rc=-9`), taking the run with it. And run 16's STOP sentinel was
+reported as proven working on the strength of a **shared status file that had gone stale** — a
+second-hand reading of a producer that was no longer writing, which is "verify THE consumer, not A
+consumer" in human form.
+
+**Champion lineage, for the record:** `5ad3e36d` (`akm-q4k-chained-dp4a`, +9.321% marginal) on
+`ak/loop-champion-20260828`, 36 commits above frozen v9 `0db32c06`. Run 17's 30 commits were
+audited **as a block** against what the run started from — **+3.942%, decisive, no drift, residency
+40/40, clocks stable** — and kept rather than rolled back; their individual attribution is not
+recoverable (D14) and is not worth the device time. Run 18 was live at compile time with one keep.
+
+### Source References (2026-08-30 AutoKernel runs 11–18)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66, the
+  program of record: CURRENT STATE, the phase ledger P0–P7, and the D1–D3 operator decisions.
+- [Run 11–18 chronology](../progress/2026-08/2026-08-30.md) and
+  [runs 12–16](../progress/2026-08/2026-08-29.md) — the run-by-run counters and defects D7–D14.
+- [Surface and CI half of the day](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
+  CI-never-ran finding, the suite-floor guard, and the deploy-path correction.
+- [AutoKernel restart-and-strip rider](../handoffs/active/autokernel-restart-and-strip.md) — INF-64,
+  the predecessor campaign this rebuild replaces.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
 ## Compiled Update — 2026-08-27: a loop's throughput is set by what it does on FAILURE — AutoKernel's zero-science era was recovery-by-restart, and v28 broke it
 
