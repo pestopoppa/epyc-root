@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-27 (incremental: SC52 prospective write-side contract for INF-42 G1; earlier compiled findings remain below)
+**Last compiled**: 2026-08-27 (incremental: SC52 prospective write-side contract for INF-42 G1; earlier compiled findings remain below) · 2026-08-30 (vidya belief-substrate PROMOTED 2026-08-26 — verdict PROMOTE in vidya-p5c-evaluation-and-decision.md §6, all four §4 requirements met: anchored cited claims at B semantics, 43/43 alias pairs + 17 claim_alias frames, query-log/obligation disposition, live-ledger eval 161/161 + 155/155, invalidation_recall 1.0, discrimination 1.0, harmful 0; shadow status ends; open rows are freeze-gated producer triggers only — see bottom section)
 **Sources**: 50+ documents
 
 ## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
@@ -1864,3 +1864,84 @@ Vidya**. The first fully post-hook run is the first eligible belief source.
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC52 producer vector, strict adapter, identity bindings and explicit no-backfill rule.
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md) — native G1 measurement definition, persisted-score recovery and mixed-recipe timing boundary.
 - [`progress/2026-08/2026-08-27-codex-inf42-takeover.md`](../progress/2026-08/2026-08-27-codex-inf42-takeover.md) — checkpoint inventory, 161-record recovery and the prospective-source decision.
+
+## Compiled Update — 2026-08-30: the belief substrate is promoted — all four §4 requirements met, shadow status ends
+
+**Confidence: verified** — the verdict is recorded with its full evidence block in
+`research/deep-dives/vidya-p5c-evaluation-and-decision.md` §6; every number below is from that
+block or the 2026-08-26 state block of the program handoff (gen-2 ledger, frontier 12,479,
+checkpoint committed, corrections 0 unadjudicated, chain=OK).
+
+The vidya substrate is now what the audit said EPYC needed and nothing more: typed
+claim/evidence/intent frames on an append-only JSONL ledger (fsync-per-append, torn-tail
+handling; SQLite is a rebuildable derived index), folded deterministically through
+`claim_tuple.grade()` into a Q × T graded belief state — never by prose, never by a second
+ladder (`register_ladder()` refuses one per source class, and the adapters PROJECT native
+records into a `ClaimTuple` without ever grading them). Refusal semantics carry the load:
+freshness gating maps onto `dashboard/freshness.py`'s one classifier, future-stamped frames are
+refused at append time, an unsealed manifest is a run in progress rather than a result, and a
+pre-hook run emits zero rows, always. The read side was already wired before this promotion —
+`cite-check` gates every commit through `index_state.py --check` (self-heals a missing ledger by
+re-ingesting; blocking is exactly `{dangling, overturned, conflicted}`), the correction queue is
+drained to zero, and the kernel's first live contention-gate measurements (`clm_cg_api-*` at
+Witnessed/Anchored, SC19 closed) prove a producer-authored envelope can reach the fold.
+
+**The 2026-08-26 promotion ran the P5c gate to verdict PROMOTE.** The gate's first execution
+returned ITERATE only because requirement-4 evidence was freshly "never started" — the run then
+surfaced two eval-harness defects (`_index_claims` indexed only `evidence_supports_claim`, so a
+retraction never retracted its dive refutations; and 13 declared dependents of dive-overturned
+`intake-664#record` had never had support, an expectation no ledger could satisfy), and the
+re-run on the UNCHANGED ledger came back clean: default draw **161/161** and verified-only
+**155/155**, invalidation_recall 1.0, discrimination 1.0, harmful 0; gold corpus re-measured
+28/28, 598 tests green. All four §4 requirements are MET: (1) cited claims anchored at B
+semantics — machine-anchor admissibility RATIFIED by the operator, with machine-located spans
+grading `MachineLocated` (quote-pinned, unreviewed), never `Anchored` without a human reading;
+(2) cross-entry claim identity — the operator passed all 43 pairs (18 same / 25 different) and
+17 `claim_alias` frames were emitted, one transitive group (144_03=254_04=411_04); (3) query
+log + obligation disposition MET; (4) the live-ledger eval EXECUTED. The "shadow-only until
+promotion" constraint is lifted.
+
+**What stays open is a list of named producer events, not open questions.** Every open row
+carries a STATUS and a SHARPENED TRIGGER: SC6-LIVE/SC7 ride the first autopilot cycle after the
+operator-owned restart; SC12 closes at the first COMPLETED post-hook K35 paired run; SC12-ARTIFACT
+at the next model acquisition emitting its run-level record; SC14-B at the first promotion after
+the freeze lift (behind the pre-promotion journal-ordering attestation, confirmed absent today);
+SC38/SC39/SC40 at pool re-enable; SC37 at EV-14a's first band (CPU-attempted 2026-08-28,
+fail-closed on infra, held on GPU); SC41 at the V27 screen's completion; SC43 at the first RM-11
+run; SC45 at RVP-C5-6 (schedule-gated, not operator-gated); SC49/SC50 residuals at their first
+sweeps. The program's own close: these are "tracked work, not gate conditions" — and two
+triggers already fired since the verdict (SC20's first tuple ingested and SC49's G1 executed,
+both 2026-08-27), which is the model working, not the promotion needing maintenance.
+
+**The promotion changes nothing about the write-side rule, and that is the rule's whole point.**
+Wiring the write side is cheap and permanent; retrofitting the read side is impossible — a tuple
+invented on read claims warrant the original run never captured, which is why `benchmarks/results`
+stays permanently rejected (4,562 files, 0 of 200 sampled carrying a usable tuple) and why every
+pre-hook corpus (DF2-4 np1, the 2026-08-12 A1/A3/A4 panel, SC6-LIVE's 1,390 rows) emits zero rows
+rather than reconstructed ones. An empty capture is not a measurement; a verdict drawn from a
+ledger is only worth as much as the producers that wrote into it while the evidence was alive.
+
+Key findings:
+
+- **Verdict PROMOTE, 2026-08-26** — all four §4 requirements met; decision doc §6 carries the
+  full evidence block; shadow status ends.
+- **Requirement-4 evidence**: 161/161 + 155/155, invalidation_recall 1.0, discrimination 1.0,
+  harmful 0 (the pre-fix 3 harmfuls were harness artifacts, engine exonerated); gold corpus 28/28
+  unchanged; ledger frontier 12,479 with chain/checkpoints verified.
+- **Read side fully wired before promotion**: `cite-check` in `index_state.py --check`; correction
+  queue 129 → 0; first live contention-gate tuples at Witnessed/Anchored (SC19).
+- **Open rows are freeze-gated producer triggers only** — named events (freeze lift, autopilot
+  restart, capture flag, successor runs), not gate conditions; SC20 and SC49-G1 have already fired
+  post-promotion.
+
+### Source References (2026-08-30)
+
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — the P5c
+  promotion-gate evidence block, the §4 requirement status table, the verdict, and the open rows
+  with their sharpened triggers.
+- [Vidya belief-substrate audit](../research/deep-dives/vidya-belief-substrate-audit.md) — the
+  dive-verified gap analysis and adoption kit the program was built from (37 sources,
+  intake-1031..1067).
+- [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md)
+  §6 — the ratified decision record: the operator's machine-anchor admissibility call and the
+  full evidence block behind the PROMOTE verdict.
