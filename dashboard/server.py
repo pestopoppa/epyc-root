@@ -282,6 +282,17 @@ def _read_operator_gate_bundle() -> dict:
     champion = value.get("champion") if isinstance(value.get("champion"), dict) else {}
     headline = value.get("headline") if isinstance(value.get("headline"), dict) else None
     gates = [g for g in (value.get("gates") or []) if isinstance(g, dict)]
+    # THE ANCHOR WAS ON DISK ALL ALONG AND THIS READER DROPPED IT.
+    # ``production_anchor.commit`` names exactly what this bundle's +48.9% is a
+    # gain OVER, and until 2026-08-30 it never reached the wire — so the largest
+    # figure on the page was rendered with no anchor beside it, next to a loop
+    # whose own champion is worth about a tenth of that against a DIFFERENT
+    # baseline. The operator read the page and reasonably asked why the champion
+    # said +48.9% when they had been told +9%. Two producers, two anchors, two
+    # questions; the fix is to make every one of those three facts visible, and
+    # the first of them was already in the file.
+    anchor = (value.get("production_anchor")
+              if isinstance(value.get("production_anchor"), dict) else {})
 
     budget = _budget(value.get("stale_after_s"))
     stamped = value.get("generated_at")
@@ -336,9 +347,24 @@ def _read_operator_gate_bundle() -> dict:
         "available": True,
         "artifact_present": True,
         "champion_commit": champion.get("commit"),
+        "champion_branch": champion.get("branch"),
+        # The baseline, by name. Passed through verbatim — the hub asserts
+        # nothing about it and does not compare it to any constant of its own;
+        # it is the EMITTER's statement of what it measured against, and the
+        # card's job is to show it beside the number rather than to grade it.
+        "production_anchor_commit": anchor.get("commit"),
+        "not_campaign_sealed": value.get("not_campaign_sealed"),
         "headline": headline,
+        # Per-gate measured points, each carrying BOTH arms. `delta_pct` alone
+        # is a percentage with no anchor — the defect one level down from the
+        # headline's — so the arm values ride with it and the page prints them.
         "gates": [{"gate": g.get("gate"), "status": g.get("status"),
-                   "claim": g.get("claim")} for g in gates],
+                   "claim": g.get("claim"), "kind": g.get("kind"),
+                   "artifact": g.get("artifact"),
+                   "surfaces": [s for s in (g.get("surfaces") or [])
+                                if isinstance(s, dict)],
+                   "points": [p for p in (g.get("points") or [])
+                              if isinstance(p, dict)]} for g in gates],
         "gates_missing": value.get("gates_missing") or [],
         "caveat": value.get("caveat"),
         "bundle_sha256": value.get("bundle_sha256"),

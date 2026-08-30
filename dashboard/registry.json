@@ -36,7 +36,7 @@
       "path": "/loop",
       "owner_repo": "epyc-root",
       "health_path": "/api/loop/health",
-      "blurb": "THE Kernel R&D surface: the rebuilt AutoKernel loop's own status contract (state, freshness, every disposition incl. negatives, GPU held-vs-busy) plus the operator-gated champion evidence, each carrying its own envelope. /kernel was retired into this page 2026-08-30 and now redirects here"
+      "blurb": "THE Kernel R&D surface, three producers each with its own envelope: the champion headline (one number, the cumulative gain over the frozen production kernel, rendered as NOT MEASURED until a direct A/B exists); the rebuilt AutoKernel loop's own status (run lifecycle, freshness, every disposition incl. negatives, GPU held-vs-busy); and the operator-gated serving-path evidence, which answers a different question against a different anchor. /kernel was retired into this page 2026-08-30 and now redirects here"
     },
     {
       "id": "bus",

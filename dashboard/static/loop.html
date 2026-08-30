@@ -94,6 +94,13 @@
   #banner.stale .hd{color:var(--bad)}
   #banner.malformed{border-color:#5c3a1e;background:#241d16}
   #banner.malformed .hd{color:var(--amber)}
+  /* A finished run is BLUE, not red: it did what it was told. Painting a
+     compliant exit in the colour of an outage is how an operator learns to
+     ignore the banner. A declared failure keeps the red. */
+  #banner.finished{border-color:#1e3a5f;background:#161d27}
+  #banner.finished .hd{color:var(--accent)}
+  #banner.failed{border-color:#5c2321;background:#26191a}
+  #banner.failed .hd{color:var(--bad)}
 
   .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--border)}
   .tile{background:var(--panel);padding:12px 16px}
@@ -122,6 +129,38 @@
   .eff.pos{color:var(--good)} .eff.neg{color:var(--bad)} .eff.nil{color:var(--muted)}
   .rowstat{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
   .rowstat.win{color:var(--good)} .rowstat.lose{color:var(--amber)}
+
+  /* THE CHAMPION HEADLINE. One number, one anchor, its own producer.
+     Deliberately the largest type on the page and deliberately the first
+     section: the operator's ruling is that this slot holds the collective gain
+     over the frozen production kernel and nothing else competes for it. Its own
+     `.ch-` prefix, for the same reason the operator-gated card has `.og-`: three
+     producers share this page, and a reader who learns to date one by another's
+     styling has learned the wrong thing. */
+  .ch-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:16px}
+  .ch-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:38px;
+    font-weight:700;line-height:1}
+  .ch-num.pos{color:var(--good)} .ch-num.neg{color:var(--bad)}
+  .ch-num.dated{color:var(--amber)}
+  /* NOT MEASURED is grey and it is TEXT, never a 0%. A zero is a measurement. */
+  .ch-num.unmeasured{color:var(--muted);font-size:24px;font-weight:650}
+  .ch-vs{font-size:13px;line-height:1.45}
+  .ch-vs .anchor{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  .ch-verdict{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+  .ch-verdict.stale{background:#26191a;border-color:#5c2321;color:var(--bad)}
+  .ch-verdict.absent{background:#191d24;color:var(--muted)}
+  .ch-verdict.malformed{background:#241d16;border-color:#5c3a1e;color:var(--amber)}
+  .ch-sup{padding:10px 16px;font-size:12px;color:var(--amber);
+    border-bottom:1px solid var(--border);background:#241d16}
+  .ch-note{padding:10px 16px;font-size:12px;color:var(--muted);
+    border-bottom:1px solid var(--border)}
+  .ch-note:last-child{border-bottom:none}
+  .ch-note b{color:var(--text)}
+  .ch-caps{padding:10px 16px;font-size:12px;border-bottom:1px solid var(--border)}
+  .ch-caps ul{margin:6px 0 0;padding-left:18px}
+  .ch-caps li{margin:2px 0}
+  .ch-caps .ev{color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+  .ch-caps .unk{color:var(--amber);font-weight:650}
 
   /* Operator-gated champion evidence (moved off /kernel, 2026-08-30).
      Its own class prefix rather than the retired page's `.proposal-box`/`.pv`:
@@ -152,6 +191,17 @@
   .og-miss{padding:8px 16px;font-size:12px;color:var(--bad);border-bottom:1px solid var(--border)}
   .og-cav{padding:10px 16px;font-size:12px;color:var(--muted)}
   .og-cav summary{cursor:pointer;color:var(--accent)}
+  /* The one line that stops this card being read as the champion headline. */
+  .og-scope{padding:10px 16px;font-size:12px;line-height:1.5;color:var(--muted);
+    background:var(--panel2);border-bottom:1px solid var(--border)}
+  .og-scope b{color:var(--text)}
+  /* Measured arms, both of them. `delta_pct` on its own is a percentage with no
+     anchor — the same defect as the headline's, one level down. */
+  .og-pts{width:100%;border-collapse:collapse;font-size:12px}
+  .og-pts th,.og-pts td{padding:4px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  .og-pts th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+  .og-pts td{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .og-pts td.d.pos{color:var(--good)} .og-pts td.d.neg{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -176,33 +226,47 @@
        dependency of the live one. -->
   <div class="pad" id="sec-scope" style="border:1px solid var(--border);border-radius:8px;
        padding:10px 12px;margin-bottom:18px;font-size:12px;line-height:1.55;color:var(--muted)">
-    The <strong>single</strong> Kernel R&amp;D surface. Two pages used to carry this domain;
+    The <strong>single</strong> Kernel R&amp;D surface, and <strong>three producers</strong> —
+    each with its own envelope, none dating another. (1) the rebuilt loop's own status
+    (<code>epyc.autokernel.loop_status.v1</code>): iterations, dispositions, GPU held-vs-busy;
+    (2) the <strong>champion headline</strong> below
+    (<code>epyc.autokernel.champion_vs_production.v1</code>): ONE number, the champion tree's
+    cumulative gain over the frozen production kernel; (3) the operator-gated manual-research
+    bundle (<code>epyc.autokernel.operator_gate_bundle.v1</code>), which answers a
+    <em>different</em> question against a <em>different</em> anchor and is further down the
+    page for exactly that reason.
     <code>/kernel</code> was <strong>retired on 2026-08-30</strong> and now redirects here,
     because every producer behind it was dead (the superseded discovery controller
     <code>gpu-discovery-champion-v37</code>; <code>kernel_dashboard.json</code>, 16.8 d) or had
     stopped advancing (<code>kernel_progression.json</code> — the file was still being
     rewritten while its <code>observed_through</code> horizon stood 16.7 d back). Its one
-    live producer, the operator-gated champion bundle, moved here and kept its own
-    envelope. Everything else is in git history, the handoffs and the artifacts.
+    live producer, the operator-gated bundle, moved here and kept its own envelope.
+    Everything else is in git history, the handoffs and the artifacts.
   </div>
+
+  <!-- THE headline, and the first thing on the page (operator ruling,
+       2026-08-30): "the champion headline number shown should JUST BE THE
+       COLLECTIVE PERFORMANCE GAIN VS FROZEN PRODUCTION KERNEL", with the
+       capabilities that tree enables listed beside it.
+
+       It is allowed to be empty, and today it IS: no direct A/B of the current
+       champion against frozen v9 exists. The per-iteration effects further down
+       are marginals against an advancing anchor and composing them would
+       manufacture a measurement no run ever took — so the slot says NOT
+       MEASURED and names what would fill it. An empty slot that says why beats
+       a number nobody took. -->
+  <section id="sec-champion">
+    <h2>Champion vs frozen production kernel
+      <span class="count">one number &middot; one named anchor</span>
+      <span id="champ-badge" class="badge absent" style="margin-left:auto">
+        <span class="dot"></span><span id="champ-badgetxt">…</span></span>
+    </h2>
+    <div id="champ"></div>
+  </section>
 
   <section id="sec-tiles">
     <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
     <div class="tiles" id="tiles"></div>
-  </section>
-
-  <!-- Moved off /kernel (2026-08-30). A SECOND producer on this page, and the
-       only reason this section carries its own badge, its own verdict line and
-       its own evidence path: the loop's freshness says nothing about this
-       bundle, and this bundle's says nothing about the loop. A shared header
-       badge would let either one certify the other's silence. -->
-  <section id="sec-opgate">
-    <h2>Operator-gated champion evidence
-      <span class="count">manual research &middot; separate producer</span>
-      <span id="opgate-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
-    </h2>
-    <div id="opgate"></div>
   </section>
 
   <section id="sec-disp">
@@ -225,6 +289,29 @@
     <div id="hot"></div>
   </section>
 
+  <!-- Moved off /kernel (2026-08-30), and moved BELOW the champion headline
+       (2026-08-30, same day) because side by side they were unreadable.
+       This card's +48.9% is a DIFFERENT producer answering a DIFFERENT question
+       against a DIFFERENT anchor: aggregate decode throughput of a speculative
+       serving path at 2 in-flight, versus production's measured ceiling for one
+       model — not the kernel's cumulative single-stream gain over frozen v9.
+       The operator read the two together and reasonably asked why the champion
+       said +48.9% when they had been told +9%. Nothing here is retracted; it is
+       relocated, re-scoped in words, and made to name its own baseline.
+
+       It keeps its own badge, its own verdict line and its own evidence path:
+       the loop's freshness says nothing about this bundle, and this bundle's
+       says nothing about the loop. A shared header badge would let either one
+       certify the other's silence. -->
+  <section id="sec-opgate">
+    <h2>Operator-gated serving-path evidence
+      <span class="count">manual research &middot; separate producer &middot; different question</span>
+      <span id="opgate-badge" class="badge absent" style="margin-left:auto">
+        <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
+    </h2>
+    <div id="opgate"></div>
+  </section>
+
   <section id="sec-ident">
     <h2>Identity &amp; gate</h2>
     <div class="pad"><dl class="kv" id="ident"></dl></div>
@@ -232,12 +319,15 @@
 </main>
 
 <footer>
-  Read-only view, and <strong>two producers</strong> — neither dates the other.
-  The hub owns neither contract: <code>epyc.autokernel.loop_status.v1</code> is
+  Read-only view, and <strong>three producers</strong> — none dates another.
+  The hub owns no contract here: <code>epyc.autokernel.loop_status.v1</code> is
   written by <code>autokernel.loop.status.write</code> in
   <code>epyc-inference-research</code>;
+  <code>epyc.autokernel.champion_vs_production.v1</code> is the champion
+  headline's own bundle, whose baseline must be the frozen production kernel or
+  the hub refuses it;
   <code>epyc.autokernel.operator_gate_bundle.v1</code> is emitted by the
-  operator-gated manual-research path. Both are read at request time — never
+  operator-gated manual-research path. All are read at request time — never
   cached, so no value can outlive its freshness envelope. Data probe:
   <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
   what this page shows still true?) — it answers for the <em>loop</em> producer;
@@ -250,8 +340,13 @@
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
   {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+/* ONE age vocabulary for all three producers. The days branch is not cosmetic:
+   the champion A/B's envelope is measured in weeks, so without it a two-month-
+   old measurement rendered "1416.0h ago" — a number an operator has to do
+   arithmetic on to find out it is unusable. */
 const age = s => s == null ? "—" : s < 90 ? `${Math.round(s)}s`
-  : s < 5400 ? `${Math.round(s/60)}m` : `${(s/3600).toFixed(1)}h`;
+  : s < 5400 ? `${Math.round(s/60)}m`
+  : s < 172800 ? `${(s/3600).toFixed(1)}h` : `${(s/86400).toFixed(1)}d`;
 const dur = s => s == null ? "—" : s < 90 ? `${Math.round(s)}s`
   : s < 5400 ? `${(s/60).toFixed(1)} min` : `${(s/3600).toFixed(2)} h`;
 const num = v => (typeof v === "number" && isFinite(v));
@@ -261,10 +356,20 @@ const short = s => s == null ? "—" : String(s).slice(0, 12);
    other disposition is a NEGATIVE and is rendered as such, never omitted. */
 const MEASURED = new Set(["kept", "measured_null"]);
 
-/* The four freshness states, each with its own banner. `absent` is not `stale`
-   is not `malformed`: one means nobody ever ran, one means the loop stopped
-   talking, one means something wrote a file this page cannot trust. Collapsing
-   any pair is how a dead producer renders as a clean, empty, trusted page. */
+/* The banner is keyed on `payload.notice.kind`, which is freshness AND the run's
+   DECLARED lifecycle folded together server-side (`loop_status.notice`), not on
+   freshness alone.
+
+   Freshness alone gets two cases exactly backwards. A run stopped on purpose —
+   by a STOP sentinel or by exhausting its planned iterations — publishes
+   `complete` and exits, so half an hour later its final report is outside the
+   envelope and a freshness-keyed banner shouts "the loop has stopped reporting"
+   at a producer that did what it was told. And a run that DECLARED `failed`
+   published on the way out, so it is perfectly fresh and perfectly dead, and a
+   freshness-keyed banner draws nothing at all over it.
+
+   Six keys, and `none` draws nothing. The four freshness words still own the
+   BADGE; this is a second, orthogonal axis. */
 const BANNERS = {
   absent: {
     hd: "ABSENT — no loop has ever published here",
@@ -273,16 +378,30 @@ const BANNERS = {
           "on exit including on failure, so a running loop is never absent."
   },
   stale: {
-    hd: "STALE — the loop has stopped reporting",
+    hd: "STALE — the loop has stopped reporting and did not say why",
     note: "Everything below is the loop's LAST report, not its current state. It " +
           "is shown so the last known standing is not lost, and it must not be " +
-          "read as live."
+          "read as live. The run declared no end, so this silence is unexplained."
   },
   malformed: {
     hd: "MALFORMED — a status file exists that this page cannot trust",
     note: "Broken is not the same fact as never-exported: something wrote here and " +
           "the write is unusable, which points at the producer's writer rather " +
           "than at whether the loop exists. No figures are rendered from it."
+  },
+  finished: {
+    hd: "FINISHED — the run declared it was complete and exited",
+    note: "Everything below is this run's FINAL standing, and it is complete rather " +
+          "than lost: the loop published `complete` on its way out. A STOP sentinel " +
+          "ends a run through this same path, so an operator-stopped run looks " +
+          "exactly like one that finished its planned iterations. Silence after " +
+          "this point is expected and is not an outage."
+  },
+  failed: {
+    hd: "FAILED — the run declared it ended badly",
+    note: "The loop published `failed` on its way out rather than going quiet, so " +
+          "this reading can be perfectly fresh while the run is over and broken. " +
+          "Freshness alone would have drawn no banner here at all."
   }
 };
 
@@ -298,16 +417,178 @@ function setFreshBadge(state, ageS){
 
 function renderBanner(d){
   const el = document.getElementById("banner");
-  const spec = BANNERS[d.freshness_state];
+  // `notice.kind` when the hub folds it; `freshness_state` only as a fallback
+  // for a hub older than this page, which would otherwise draw NO banner at all.
+  const notice = d.notice || null;
+  const kind = notice ? notice.kind : d.freshness_state;
+  const spec = BANNERS[kind];
   if(!spec){ el.className = ""; el.innerHTML = ""; return; }
-  el.className = "show " + esc(d.freshness_state);
+  el.className = "show " + esc(kind);
   const budget = num(d.stale_after_s) ? ` (its own envelope is ${dur(d.stale_after_s)})` : "";
   el.innerHTML =
     `<div class="hd">${esc(spec.hd)}</div>` +
-    `<div class="bd">${esc(d.detail || "")}${esc(budget)}</div>` +
+    `<div class="bd">${esc((notice && notice.detail) || d.detail || "")}${esc(budget)}</div>` +
     `<div class="bd muted">${esc(spec.note)}</div>` +
     `<div class="ev">evidence: ${esc(d.evidence || "—")}` +
     (d.reader_error ? `<br>reader error: ${esc(d.reader_error)}` : "") + `</div>`;
+}
+
+/* THE CHAMPION HEADLINE.
+   =======================
+   The operator's ruling: this slot holds the champion tree's collective
+   performance gain over the FROZEN PRODUCTION KERNEL, and nothing else competes
+   for it. Beside it, the capabilities that tree enables.
+
+   THREE RULES THIS PANEL EXISTS TO OBEY.
+
+   1. The anchor is printed on EVERY reading, measured or not. A percentage with
+      no named baseline is the defect that produced this whole page revision: the
+      operator saw +48.9% in the largest type on the page beside a champion worth
+      about a tenth of that, and had no way to know the two were measured against
+      different things by different producers.
+
+   2. NOT MEASURED renders as words, never as a number. There is no direct
+      champion-vs-v9 A/B for the current champion; the last one was several
+      commits ago. The per-iteration effects further down are MARGINALS against
+      an anchor that advances on every keep, so composing them arithmetically
+      would invent a measurement no run ever took. This program has made that
+      exact error once already. A grey "not yet measured" plus a sentence saying
+      what would fill it is worth more than a fabricated headline.
+
+   3. A measurement for a SUPERSEDED champion says so. The champion advances on
+      every keep and a cumulative A/B is expensive, so "measured, but three keeps
+      ago" is the normal case, not an edge one. A number that silently
+      re-anchors to whatever the champion is today is the same defect one level
+      down. */
+const CH_BANNERS = {
+  fresh:     {hd: "", note: ""},
+  stale:     {hd: "STALE — this A/B is outside its own envelope",
+              note: "The measurement happened and stands for the tree it measured. " +
+                    "What is in doubt is whether it is still the current standing."},
+  absent:    {hd: "NOT YET MEASURED — no champion-vs-production A/B has been published",
+              note: "Nothing else on this page can stand in for it. The per-iteration " +
+                    "effects below are marginals against the loop's own advancing " +
+                    "anchor, and the operator-gated card at the foot of the page is a " +
+                    "different producer measuring a different thing against a " +
+                    "different anchor."},
+  malformed: {hd: "MALFORMED — a bundle exists that this page cannot trust",
+              note: "Something wrote a champion bundle and the hub refused it. That " +
+                    "points at the emitter's writer, or at the anchor it named. No " +
+                    "figure is rendered from it."}
+};
+
+function renderChampion(d){
+  const host = document.getElementById("champ");
+  const badge = document.getElementById("champ-badge");
+  const badgetxt = document.getElementById("champ-badgetxt");
+  const c = d.champion_vs_production || null;
+  if(!c){
+    // The hub served no champion block at all — a wiring fact about THIS hub,
+    // and it must not be rendered as "the measurement is absent".
+    badge.className = "badge malformed";
+    badgetxt.textContent = "UNKNOWN";
+    host.innerHTML = `<div class="ch-verdict malformed"><b>UNKNOWN — this hub ` +
+      `served no champion block</b><div class="muted" style="margin-top:5px">` +
+      `<code>/api/loop</code> carried no <code>champion_vs_production</code>. ` +
+      `That is a fact about this hub's version, not about whether the champion ` +
+      `has been measured.</div></div>`;
+    return;
+  }
+  const f = c.freshness || {};
+  const state = String(f.state || "absent");
+  const measured = !!c.measured;
+  badge.className = "badge " + esc(state);
+  badgetxt.textContent =
+    state === "fresh" ? `fresh · ${age(f.age_s)} ago`
+    : state === "stale" ? `STALE · ${age(f.age_s)} ago`
+    : state === "malformed" ? "MALFORMED" : "ABSENT";
+
+  const base = c.baseline || {};
+  const champ = c.champion || {};
+  const anchorTxt = `${esc(base.kind || "production kernel")} ` +
+    `<span class="anchor">${esc(base.label || "—")} ${esc(short(base.commit))}</span>`;
+
+  let h = "";
+  const spec = CH_BANNERS[state] || CH_BANNERS.absent;
+  if(state !== "fresh"){
+    h += `<div class="ch-verdict ${esc(state)}"><b>${esc(spec.hd)}</b>` +
+         `<div style="margin-top:5px">${esc(f.detail || c.reader_error || "")}</div>` +
+         `<div class="muted" style="margin-top:5px">${esc(spec.note)}</div></div>`;
+  }
+
+  const e = c.effect_fraction;
+  const showNum = measured && num(e);
+  // The three no-number cases read differently on purpose. "refused" is a fact
+  // about a bundle that exists and was rejected; "not yet measured" is a fact
+  // about a measurement nobody took. Printing the second over the first would
+  // send an investigator looking for a run instead of for the emitter's writer.
+  const pct = showNum
+    ? `${e >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%`
+    : state === "malformed" ? "refused" : "not yet measured";
+  const ncls = !showNum ? "unmeasured"
+    : (state !== "fresh" || c.supersession) ? "dated"
+    : (e > 0 ? "pos" : e < 0 ? "neg" : "");
+  // THE NUMBER AND ITS ANCHOR ARE ONE ELEMENT. They are rendered together or
+  // not at all; there is no code path that emits the figure without the "vs".
+  h += `<div class="ch-head">` +
+    `<span class="ch-num ${ncls}">${esc(pct)}</span>` +
+    `<span class="ch-vs">` +
+      `<b>vs the ${anchorTxt}</b><br>` +
+      (showNum
+        ? `cumulative gain of champion <span class="anchor">` +
+          `${esc(short(champ.measured_commit))}</span>` +
+          (c.metric ? ` · metric <span class="anchor">${esc(c.metric)}</span>` +
+             (c.metric_direction ? ` (${esc(c.metric_direction)})` : "") : "") +
+          (c.surface ? ` · surface <span class="anchor">${esc(c.surface)}</span>` : "") +
+          (num(c.pairs) ? ` · ${esc(c.pairs)} pairs` : "") +
+          (num(c.noise_floor_pct)
+            ? ` · noise floor ${esc(c.noise_floor_pct.toFixed(3))}% of the anchor` : "")
+        : `the loop's champion is <span class="anchor">` +
+          `${esc(short(champ.loop_champion_head))}</span> and no A/B against ` +
+          `this anchor has been published for it`) +
+    `</span></div>`;
+
+  if(c.supersession){
+    h += `<div class="ch-sup"><b>SUPERSEDED CHAMPION</b> — ` +
+         `${esc(c.supersession.detail)}</div>`;
+  }
+
+  if(!showNum){
+    h += `<div class="ch-note"><b>What would produce this number:</b> ` +
+         `${esc(c.would_populate || "—")}</div>`;
+  }
+  // Printed on EVERY reading, measured or not. It is the reason this slot is
+  // allowed to be empty, and the reason it must not be filled by arithmetic.
+  h += `<div class="ch-note"><b>Why the effects below cannot be added up:</b> ` +
+       `${esc(c.not_composable || "—")}</div>`;
+
+  const caps = c.capabilities || {};
+  h += `<div class="ch-caps"><b>Capabilities this champion tree enables</b>`;
+  if(caps.known && (caps.items || []).length){
+    h += ` <span class="muted">(source: ${esc(caps.source || "—")})</span><ul>` +
+      caps.items.map(it => `<li>${esc(it.name)}` +
+        (it.evidence ? ` <span class="ev">${esc(it.evidence)}</span>` : "") +
+        `</li>`).join("") + `</ul>`;
+  } else if(caps.known){
+    h += `<div style="margin-top:5px">The producer published the list and it is ` +
+         `<strong>empty</strong>. That is a statement, and a different one from ` +
+         `never having been asked.</div>`;
+  } else {
+    h += ` <span class="unk">UNKNOWN</span>` +
+         `<div class="muted" style="margin-top:5px">${esc(caps.unknown_reason || "—")}</div>` +
+         (caps.would_populate
+           ? `<div class="muted" style="margin-top:5px"><b>What would populate it:</b> ` +
+             `${esc(caps.would_populate)}</div>` : "");
+  }
+  h += `</div>`;
+
+  h += `<div class="ch-note muted">evidence: <span class="anchor">` +
+       `${esc(c.evidence || "—")}</span>` +
+       (f.generated_at ? ` · measured ${esc(f.generated_at)}` : "") +
+       (c.measurement_evidence
+         ? `<br>run record: <span class="anchor">${esc(c.measurement_evidence)}</span>` : "") +
+       `</div>`;
+  host.innerHTML = h;
 }
 
 function tile(lab, val, sub, cls){
@@ -331,21 +612,26 @@ function renderTiles(d){
   const kept = D ? D.kept : 0;
   const negatives = D ? D.negatives : 0;
   const gpu = (D && D.gpu) || {};
+  // EVERY figure names what it is a figure OF. A count says of what; a
+  // percentage says of what and against what. The unlabelled percentage is the
+  // defect this whole revision exists to close, and it does not stop being one
+  // because the tile is small.
   host.innerHTML = [
     tile("Iterations", planned == null ? String(done) : `${done} / ${planned}`,
-         planned == null ? "planned count not reported"
-                         : `${D && D.iterations_remaining != null ? D.iterations_remaining : "—"} remaining`),
+         planned == null ? "candidates drawn; planned count not reported"
+                         : `${D && D.iterations_remaining != null ? D.iterations_remaining : "—"} of the planned count remaining`),
     tile("Reached a measurement", `${reached}`,
-         `${done - reached} never got to the instrument`,
+         `of ${done} iterations · ${done - reached} never got to the instrument`,
          reached === 0 && done > 0 ? "bad" : ""),
-    tile("Kept", `${kept}`, "promotions, not attempts",
+    tile("Kept", `${kept}`, `of ${done} iterations · promotions into the champion, not attempts`,
          kept > 0 ? "good" : "dim"),
-    tile("Negatives", `${negatives}`, "every non-keep disposition",
+    tile("Negatives", `${negatives}`, `of ${done} iterations · every non-keep disposition`,
          negatives > 0 ? "warn" : "dim"),
     tile("Noise floor", num(L.noise_floor_pct) ? `${L.noise_floor_pct.toFixed(3)}%` : "—",
-         "the bar a candidate must clear"),
+         `of the ANCHOR's mean on ${L.surface || "this surface"} · the bar a ` +
+         `candidate must clear, not a gain`),
     tile("GPU busy", gpu.reported ? `${gpu.busy_pct == null ? "—" : gpu.busy_pct + "%"}` : "not reported",
-         gpu.reported ? `${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
+         gpu.reported ? `of claim-held seconds · ${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
                       : (gpu.unreported_reason || "no held/busy seconds available"),
          gpu.reported ? (num(gpu.busy_pct) && gpu.busy_pct < 25 ? "bad" : "") : "dim"),
   ].join("");
@@ -397,8 +683,25 @@ function renderRecent(d){
       `iteration yet.</div>`;
     return;
   }
-  host.innerHTML = `<table><thead><tr><th>#</th><th>Disposition</th>` +
-    `<th>Effect</th><th>Mechanism</th><th>Reason</th></tr></thead><tbody>` +
+  // THE ANCHOR MOVES, SO EACH ROW HAS ITS OWN BASELINE. The anchor is rebuilt
+  // from the champion on every keep, which is the whole point of it — without
+  // that, a patch that regresses the champion still clears the floor. The
+  // consequence is that these effects are MARGINALS against different
+  // baselines, and the column has to say so or a reader adds them up. That is
+  // not a hypothetical: composing them is exactly how a champion headline gets
+  // invented, which is why the headline panel at the top of this page renders
+  // "not yet measured" instead.
+  const anchorNow = (d.loop && d.loop.anchor_commit) || null;
+  host.innerHTML =
+    `<div class="ch-note muted" style="border-bottom:1px solid var(--border)">` +
+    `Each effect is a <b>marginal</b> against the anchor <em>as it stood for ` +
+    `that iteration</em>` +
+    (anchorNow ? ` (currently <span class="mono">${esc(short(anchorNow))}</span>)` : "") +
+    `, not against the frozen production kernel and not against each other. ` +
+    `The anchor is rebuilt from the champion on every keep, so these rows have ` +
+    `different baselines and <b>must not be summed</b>.</div>` +
+    `<table><thead><tr><th>#</th><th>Disposition</th>` +
+    `<th>Effect vs anchor at the time</th><th>Mechanism</th><th>Reason</th></tr></thead><tbody>` +
     rows.map((r, i) => {
       const win = r.status === "kept";
       const e = r.effect_fraction;
@@ -444,9 +747,11 @@ function renderGpu(d){
     `<div style="height:14px;border-radius:7px;background:#30363d;overflow:hidden">` +
     `<div style="height:100%;width:${busyW}%;background:var(--good)"></div></div>` +
     `<dl class="kv" style="margin-top:12px">` +
-    `<dt>held</dt><dd>${esc(dur(gpu.held_s))}</dd>` +
-    `<dt>busy</dt><dd>${esc(dur(gpu.busy_s))} (${esc(gpu.busy_pct == null ? "—" : gpu.busy_pct + "%")})</dd>` +
-    `<dt>idle</dt><dd>${esc(dur(gpu.idle_s))}</dd>` +
+    `<dt>held (the claim)</dt><dd>${esc(dur(gpu.held_s))}</dd>` +
+    `<dt>busy (under load)</dt><dd>${esc(dur(gpu.busy_s))} ` +
+      `(${esc(gpu.busy_pct == null ? "—" : gpu.busy_pct + "%")} of held)</dd>` +
+    `<dt>idle while claimed</dt><dd>${esc(dur(gpu.idle_s))} ` +
+      `(${esc(num(gpu.busy_pct) ? (100 - gpu.busy_pct).toFixed(1) + "%" : "—")} of held)</dd>` +
     `</dl></div>`;
 }
 
@@ -464,7 +769,8 @@ function renderHotspots(d){
       `the planner is told so rather than left to guess.</div>`;
     return;
   }
-  host.innerHTML = `<table><thead><tr><th>Kernel</th><th>Share</th>` +
+  host.innerHTML = `<table><thead><tr><th>Kernel</th>` +
+    `<th>Share of device time in the champion profile</th>` +
     `<th>Calls</th></tr></thead><tbody>` +
     rows.map(r => `<tr><td class="mono">${esc(r.signature)}</td>` +
       `<td class="mono">${num(r.share_of_device_time)
@@ -503,6 +809,45 @@ const OG_BANNERS = {
                     "exists. No figures are rendered from it."}
 };
 
+/* The bundle's own words for what it measured, so the scope line above is built
+   from the record rather than from prose typed here. Empty string when the
+   bundle does not say — silence, never a guess. */
+function hdMetricPhrase(og){
+  const hd = og.headline || {};
+  const bits = [];
+  if(hd.metric) bits.push(String(hd.metric));
+  if(num(hd.at_in_flight)) bits.push(`at ${hd.at_in_flight} in-flight`);
+  return bits.join(", ");
+}
+
+/* BOTH ARMS OF EVERY MEASURED POINT. A `delta_pct` on its own is a percentage
+   with no anchor — the same defect as an unlabelled headline, one level down —
+   and these are the rows the headline is drawn from, so they are the last place
+   it may be repeated. Each row names the baseline it was measured against, in
+   that baseline's own units. */
+function gateArms(g){
+  const rows = [];
+  (g.surfaces || []).forEach(s => rows.push({
+    at: s.surface, baseName: "frozen anchor", base: s.anchor,
+    arm: s.champion, delta: s.delta_pct}));
+  (g.points || []).forEach(p => rows.push({
+    at: num(p.in_flight) ? `${p.in_flight} in-flight` : "—",
+    baseName: "production ceiling", base: p.production_ceiling_tps,
+    arm: p.champion_tps, delta: p.delta_pct}));
+  if(!rows.length) return "";
+  const cell = v => num(v) ? v.toFixed(3) : "—";
+  return `<table class="og-pts"><thead><tr><th>Measured at</th>` +
+    `<th>Baseline</th><th>Champion</th><th>Δ vs that baseline</th></tr></thead><tbody>` +
+    rows.map(r => {
+      const dcls = !num(r.delta) ? "" : r.delta > 0 ? "pos" : r.delta < 0 ? "neg" : "";
+      return `<tr><td>${esc(r.at)}</td>` +
+        `<td>${esc(cell(r.base))} <span class="muted">(${esc(r.baseName)})</span></td>` +
+        `<td>${esc(cell(r.arm))}</td>` +
+        `<td class="d ${dcls}">${num(r.delta)
+            ? (r.delta >= 0 ? "+" : "") + r.delta.toFixed(3) + "%" : "—"}</td></tr>`;
+    }).join("") + `</tbody></table>`;
+}
+
 function renderOperatorGate(d){
   const host = document.getElementById("opgate");
   const og = d.operator_gates || {};
@@ -535,6 +880,36 @@ function renderOperatorGate(d){
     return;
   }
 
+  // THE LINE THAT ENDS THE CONFUSION, and it is built from the bundle's own
+  // fields — the commit it measured, the anchor it named — not from prose typed
+  // here. `production_anchor.commit` was in the file from the start and this
+  // reader used to drop it, so the largest number on the page had no anchor
+  // beside it while a loop headline against a DIFFERENT anchor sat next to it.
+  // THREE outcomes, not two. With no readable loop there is no champion head to
+  // compare against, and "a different tree" would then be a claim this page
+  // cannot support — asserted, as it happens, about a commit rendered as "—".
+  const loopHead = (d.loop && d.loop.champion_head) || null;
+  const rel = !og.champion_commit || !loopHead ? "unknown"
+    : og.champion_commit === loopHead ? "same" : "different";
+  h += `<div class="og-scope"><b>This is not the champion headline.</b> ` +
+    `It is a separate producer answering a different question against a ` +
+    `different anchor. The panel at the top of this page is the champion ` +
+    `tree's cumulative gain over the frozen production kernel on the loop's ` +
+    `own single-stream surface; this card is manual research into a ` +
+    `<em>serving path</em>` +
+    (hdMetricPhrase(og) ? ` (${esc(hdMetricPhrase(og))})` : "") + `. ` +
+    `Measured champion <span class="mono">${esc(short(og.champion_commit))}</span>` +
+    (og.champion_branch ? ` on <span class="mono">${esc(og.champion_branch)}</span>` : "") +
+    (rel === "unknown"
+      ? `; the loop's own champion is not readable right now, so whether these ` +
+        `are the same tree cannot be established from this page.`
+      : `; the loop's champion is <span class="mono">${esc(short(loopHead))}</span>` +
+        (rel === "same" ? ` — the same tree.`
+          : ` — <b>a different tree</b>, so the two numbers are not even about ` +
+            `the same commit.`)) +
+    (og.not_campaign_sealed
+      ? ` This bundle is not campaign-sealed.` : "") + `</div>`;
+
   const hd = og.headline || {};
   const e = hd.effect_fraction;
   const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
@@ -543,7 +918,17 @@ function renderOperatorGate(d){
   const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
   h += `<div class="og-head">` +
        `<span class="og-num ${cls}">${esc(pct)}</span>` +
-       `<span class="og-sum">${esc(hd.summary || "no headline summary in this bundle")}</span>` +
+       `<span class="og-sum">${esc(hd.summary || "no headline summary in this bundle")}` +
+       `<br><span class="muted">vs ` +
+       (og.production_anchor_commit
+         ? `the frozen production kernel <span class="mono">` +
+           `${esc(short(og.production_anchor_commit))}</span>`
+         : `an anchor this bundle does not name — treat the figure as ` +
+           `uninterpretable`) +
+       `${hd.metric ? ` · metric ${esc(hd.metric)}` : ""}` +
+       `${hd.metric_direction ? ` (${esc(hd.metric_direction)})` : ""}` +
+       `${num(hd.at_in_flight) ? ` · at ${esc(hd.at_in_flight)} in-flight` : ""}` +
+       `</span></span>` +
        `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
        `no promotion authority</span></div>`;
 
@@ -554,7 +939,8 @@ function renderOperatorGate(d){
       return `<div class="og-gate">` +
         `<span class="st ${pass ? "pass" : "fail"}">${esc(g.status || "—")}</span>` +
         `<span class="nm">${esc(g.gate || "—")}</span>` +
-        `<span class="cl">${esc(g.claim || "")}</span></div>`;
+        `<span class="cl">${esc(g.claim || "")}</span></div>` +
+        gateArms(g);
     }).join("");
   } else {
     h += `<div class="empty">The bundle declares no gates.</div>`;
@@ -577,11 +963,20 @@ function renderOperatorGate(d){
 
 function renderIdentity(d){
   const L = d.loop;
+  const c = d.champion_vs_production || {};
   const rows = [
     ["freshness", `${d.freshness_state}${d.age_s == null ? "" : " · " + age(d.age_s) + " old"}` +
                   `${d.stale_after_s == null ? "" : " · envelope " + dur(d.stale_after_s)}`],
+    // Lifecycle beside freshness, never folded into it: "the run finished" and
+    // "the report is old" are two facts and an operator needs both.
+    ["run notice", d.notice ? `${d.notice.kind}${d.notice.run_state
+        ? " · declared state " + d.notice.run_state : ""}` : "—"],
     ["evidence", d.evidence],
     ["store root", d.store_root],
+    ["headline baseline", `${(c.baseline || {}).label || "—"} ` +
+       `${short((c.baseline || {}).commit)} · ${c.measured
+          ? "measured" : "NOT measured for this champion"}`],
+    ["headline evidence", c.evidence],
   ];
   if(L){
     rows.push(
@@ -606,9 +1001,13 @@ function render(d){
   st.textContent = L ? (L.state || "—") : d.freshness_state;
   st.className = "state " + esc(L && L.state ? L.state : "");
   renderBanner(d);
+  // THE headline first, and unconditionally. It has its own producer and its
+  // own envelope: an unreadable LOOP must not take it down, and its own absence
+  // — which is the current state — must be drawn rather than hidden.
+  renderChampion(d);
   renderTiles(d);
-  // Second producer, rendered unconditionally: an unreadable LOOP must not take
-  // the champion card down with it, and vice versa.
+  // Third producer, rendered unconditionally for the same reason. None of the
+  // three dates either of the others.
   renderOperatorGate(d);
   renderDispositions(d);
   renderRecent(d);
@@ -624,10 +1023,18 @@ function renderFetchFailure(err){
     `<div class="bd muted">This says nothing about the loop: the page could not ` +
     `reach <code>/api/loop</code>. Do not read it as an idle loop.</div>`;
   setFreshBadge("malformed", null);
-  // BOTH producers go unknown, not just the loop. Leaving the last successful
-  // champion render on screen under an unreachable hub would present an
-  // arbitrarily old reading as the current one — the same defect this page was
-  // built to end, one refresh cycle later.
+  // ALL THREE producers go unknown, not just the loop. Leaving the last
+  // successful champion render on screen under an unreachable hub would present
+  // an arbitrarily old reading as the current one — the same defect this page
+  // was built to end, one refresh cycle later.
+  document.getElementById("champ-badge").className = "badge malformed";
+  document.getElementById("champ-badgetxt").textContent = "UNKNOWN";
+  document.getElementById("champ").innerHTML =
+    `<div class="ch-verdict malformed"><b>UNKNOWN — the hub could not be reached` +
+    `</b><div class="muted" style="margin-top:5px">This says nothing about ` +
+    `whether the champion has been measured against the frozen production ` +
+    `kernel. The last reading is cleared rather than left on screen: an undated ` +
+    `headline is exactly what this panel exists to prevent.</div></div>`;
   document.getElementById("opgate-badge").className = "badge malformed";
   document.getElementById("opgate-badgetxt").textContent = "UNKNOWN";
   document.getElementById("opgate").innerHTML =
