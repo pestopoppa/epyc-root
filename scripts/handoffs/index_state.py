@@ -55,6 +55,7 @@ a human still certifies want.
 from __future__ import annotations
 
 import argparse
+import functools
 import importlib.util
 import json
 import os
@@ -151,6 +152,42 @@ def _git_env() -> dict:
     """Subprocess env without the hook-injected git vars — see `last_advanced`."""
     return {k: v for k, v in os.environ.items()
             if k not in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE")}
+
+
+@functools.lru_cache(maxsize=1)
+def is_shallow() -> bool:
+    """True when this repository has TRUNCATED history, so `last_advanced` cannot be computed.
+
+    `last_advanced` walks history with a pickaxe. Truncate that history and the walk does not
+    fail — it returns a confident WRONG answer: the oldest commit in a shallow clone looks like
+    the commit that introduced every file, so every handoff reads as advanced on the tip's date.
+
+    Measured at e0ceada9 in a `--depth 1` checkout (what `actions/checkout@v4` produces by
+    default): 164 of 167 handoffs collapsed from their real dates to a single 2026-08-30, and
+    all six domains reported an `Oldest advance` of the tip date instead of 2026-07-29. The
+    content-derived columns were byte-identical, which is what makes the failure so misleading —
+    it presents as a stale index rather than as an unanswerable question.
+
+    Callers must therefore REFUSE rather than degrade. Returning `None` per row would be just as
+    wrong and would look like "never advanced".
+    """
+    try:
+        out = subprocess.run(["git", "rev-parse", "--is-shallow-repository"],
+                             cwd=REPO_ROOT, capture_output=True, text=True,
+                             timeout=30, env=_git_env())
+    except (subprocess.TimeoutExpired, OSError):
+        return False          # cannot tell; do not invent a blocker
+    return out.returncode == 0 and out.stdout.strip() == "true"
+
+
+#: Shown wherever a shallow repository blocks the git-derived columns. One string so the
+#: check path and the write path cannot drift into describing the same condition differently.
+SHALLOW_MSG = (
+    "repository history is SHALLOW, so `last_advanced` (and the `Oldest advance` column "
+    "derived from it) cannot be computed — a truncated walk reports every handoff as "
+    "advanced on the tip commit's date. Re-run in a full clone, or `git fetch --unshallow`. "
+    "In GitHub Actions set `actions/checkout` to `fetch-depth: 0`."
+)
 
 
 def last_advanced(path: Path) -> str | None:
@@ -566,7 +603,15 @@ def check(state: dict) -> list[str]:
         if BEGIN not in text:
             errs.append("FRESHNESS: master index has no generated block — run without --check")
         elif render_block(state) not in text:
-            errs.append("FRESHNESS: master index generated block is stale — run without --check")
+            # A shallow repository makes this comparison unanswerable rather than false: the
+            # rendered `Oldest advance` is garbage, so it disagrees with a master index that
+            # may be perfectly current. Say THAT, and never the generic remedy — "run without
+            # --check" here would splice the garbage into the committed file (see is_shallow).
+            if is_shallow():
+                errs.append(f"FRESHNESS: cannot verify — {SHALLOW_MSG}")
+            else:
+                errs.append(
+                    "FRESHNESS: master index generated block is stale — run without --check")
     return errs
 
 
@@ -664,6 +709,14 @@ def main(argv: list[str] | None = None) -> int:
             print(e)
         print(f"\n{len(errs)} problem(s)")
         return 1 if errs else 0
+
+    # REFUSE to generate from a truncated history. This is the path the old failure message
+    # sent people down ("run without --check"), and in a shallow clone it rewrites the
+    # COMMITTED master index with a date that is simply wrong for 164 of 167 handoffs.
+    # Writing nothing and exiting non-zero is the only safe answer.
+    if is_shallow():
+        print(f"REFUSING to write — {SHALLOW_MSG}", file=sys.stderr)
+        return 2
 
     SIDECAR.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     graph = build_graph(state)
