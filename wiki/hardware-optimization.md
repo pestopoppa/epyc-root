@@ -3819,3 +3819,55 @@ Key findings:
 
 - [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — the INF-64/67
   handoff: plan, operator decisions, phase checklist with the Phase-2 commit state.
+
+
+## Compiled Update — 2026-08-31 (incremental): external audit corrections; the INF-68 quant-type-mix baseline control
+
+**Confidence: verified** (external audit + clean-window A/B with SHA256SUMS evidence; retractions adopted by the owning session same-day).
+
+An operator-commissioned external audit of the fused-decoder program corrected three findings
+that had been recorded as confirmed root causes — all three retracted by the owning session
+(`c43f888d`) — and the audit-spun INF-68 baseline control produced two standing measurement facts.
+
+Key findings:
+
+- **The gallocr "inp_tokens corruption" was not a correctness bug.** The 0-size-tensor aliasing
+  and freed-INPUT-slot reuse are real allocator behaviors, but the only consumer of the tokens
+  input is node 0 and the overwriting writer runs at node 144+ — no in-graph read follows the
+  overwrite; the graph's greedy was correct all along. Standing lesson (now thrice-measured in
+  this program): **post-compute dumps of memory-reusing graph buffers are not evidence** — sample
+  via pre-compute eval callbacks only. The "never free INPUT tensors" patch is a debugging aid,
+  not an upstream fix.
+- **The ple_norm_query "weight difference" was instrumentation**: the harness's pattern-matching
+  eval callback latched onto layer-0's `hc_ffn_norm` MUL (weight[0]=1.02417); the real weight
+  (0.826172) was identical on both paths — two paths in one process cannot disagree on a tensor
+  they both dereference. The true divergence was fused-side conv-window/l2-norm layout, fixed in
+  `e3ddf1583`.
+- **The flash_attn_ext "NaN on real activations" was the repro's own bug** (Q staged F16 where
+  the CPU kernel reads F32-only). An attention path was abandoned on a misdiagnosis a one-line
+  experiment would have caught.
+- **Quant TYPE MIX moves qwen4exp CPU decode double-digits (INF-68, clean-window A/B, build
+  10151 @`7cdd7c97b`, canonical interleave+no-mmap recipe)**: uniform IQ4_XS tg128 10.52 t/s
+  vs the UD file's 9.13 at t48 (+15.2%; +10.5% t64; pp512 +23–32%) — the UD's IQ3_S-heavy
+  expert mix is the slow path on IQK decode. Evidence with SHA256SUMS:
+  `epyc-inference-research/data/inf68-uniform-iq4xs-ab-20260831/` @`0dbc9992`. Adoption is
+  operator decision OP-30.
+- **Baseline reproducibility caveat**: the documented UD 13.46 t/s (08-29) did not reproduce on
+  the 08-31 box state (9.13–9.18 across clean verified windows; `-fa 1` refuted as the cause) —
+  same-window ratios survive, absolute-level anchors must be re-measured at their own boundary.
+- Cross-check while compiling: INF-63's "artifact verified" status is stale — the FP8 checkpoint
+  path was deleted in the 08-28 `rm -rf` incident after the 08-27 verification; corrected in the
+  handoff this wrap-up.
+
+### Source References (2026-08-31)
+
+- [`qwen4exp-uniform-iq4xs-baseline-control.md`](../handoffs/active/qwen4exp-uniform-iq4xs-baseline-control.md) —
+  INF-68: method, results table, operator decision OP-30 options.
+- [`2026-08-31-inf68-baseline-control.md`](../progress/2026-08/2026-08-31-inf68-baseline-control.md) —
+  the audit + control session record (method detail, hygiene notes).
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the fused-decoder session's daily:
+  retraction record and ATTN-rewrite defect list.
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff
+  post-retraction state (layers 0-6 bit-exact, logit 0.684 at compile time).
+- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/active/qwen38-flash-next-fp8-evaluation.md) —
+  INF-63, corrected this wrap-up (artifact deleted 08-28).

@@ -1,4 +1,20 @@
-# 2026-08-31 — INF-68: qwen4exp uniform-IQ4_XS baseline control (ad-hoc audit session)
+# 2026-08-31 — ad-hoc audit session: INF-67 external audit + INF-68 baseline control
+
+## Task 1 — INF-67 external audit (operator-commissioned)
+
+Four-subagent audit of the fused-decoder session's work (code safety, allocator/weight claims,
+measurement premises, debugging narrative). Verdict delivered to the operator and relayed:
+direction + GDN/MoE/PLE core SOUND (kernel-mirror method proven bit-exact where wired right);
+three headline root-cause findings MISDIAGNOSED (gallocr "inp_tokens corruption" — real aliasing,
+no consumer after the overwrite, graph greedy was 13 all along; ple_norm_query "weight diff" —
+harness eval-callback matched layer-0's hc_ffn_norm, weight 0.826172 correct on both paths;
+flash_attn_ext "NaN" — the repro's own F16-Q staging bug); full-attn layer wrong ~6 independent
+ways; fallback contract unsafe (state commits before bail-outs); premise constants (65 µs/9.4 ms/
+180 GB/s) unmatched by committed records. Uptake by the owning session same-day: retractions +
+ATTN defect list (`c43f888d`, `962c23f1`), ATTN rewrite landed (`73bf7e34` — layers 0-6
+bit-exact, logit O(10)→0.684). Production v9 verified untouched throughout.
+
+## Task 2 — INF-68: qwen4exp uniform-IQ4_XS baseline control
 
 Spun out of the operator-commissioned INF-67 audit; executed same-day on operator go.
 Evidence: `epyc-inference-research/data/inf68-uniform-iq4xs-ab-20260831/` (SHA256SUMS) @ `0dbc9992`.

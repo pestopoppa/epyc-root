@@ -1,6 +1,8 @@
 # Qwen3.8-Flash-Next-FP8 — Future Inference Evaluation
 
-**Status**: ACTIVE — artifact verified; backend compatibility audit is ready to dispatch
+**Status**: BLOCKED — **the FP8 artifact no longer exists on disk** (correction 2026-08-31): the 08-28 `rm -rf` incident (progress 08-28, 4th entry) deleted `models/Qwen3.8-Flash-Next-FP8/` AFTER this handoff's 08-27 verification; the path verifies absent 2026-08-31. Re-acquisition (~185 GB) is blocked on disk (98% full) + the reclaim decision.
+
+- [ ] Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ~185 GB) once disk allows, or park this evaluation — fold into the disk-reclaim operator decision (2026-08-31)
 **Created**: 2026-08-27
 **Owner**: inference research (`INF-63`)
 **Priority**: P2 — preserve and qualify a promising large-model research candidate without changing production

@@ -37,6 +37,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-26 | ParEval CPU/HIP trials — flagged tier-1 at Hawkeye Stage-2b close but never reached the approved plan: run, file, or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-27 | ~20 unselected Stage-2b sources from the Hawkeye batch — QiMeng-Xpiler `2505.02146` highest-value (only AMD/HIP-touching artifact in the line): select dives or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-28 | AutoKernel D1–D3 bundle: amend P-AK-SEARCH-1 denial 4 (reuse of a prior record); add a T-screen tier below T0; extend champion.py to carry a build recipe as a champion arm (recommend adopting NEITHER standing config win) | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) §Operator decision package | 2026-08-28 |
+| OP-30 | Adopt uniform IQ4_XS for qwen4exp CPU work? Measured +15% decode vs UD (evidence @0dbc9992); options A/B/C, rec **B** (comparison baseline now, serving unchanged) — also gates the INF-67 headline denominator | [qwen4exp-uniform-iq4xs-baseline-control.md](qwen4exp-uniform-iq4xs-baseline-control.md) §Operator decision | 2026-08-31 |
 | OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-11 | `main` cannot push — 90 ahead / 111 behind `origin/main`, and **103 files changed on BOTH sides**, so `-s ours` would silently revert origin's half of each. Real three-way merge in flight (other session); D9-ack needed to land it | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) §OP-11 | 2026-08-16 |
@@ -72,7 +73,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 54 | 478 | 12 | 2026-07-29 |
+| inference-research | 55 | 482 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 45 | 355 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 32 | 11 | 2026-07-29 |
