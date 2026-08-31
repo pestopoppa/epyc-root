@@ -173,9 +173,20 @@ Checklist (the dashboard gate — flipped as the phases land):
   uses ratio[il] + the pooled/query ropes.
   Validation: attn_pregate/Qcur/Kcur/Vcur/gate/gated/wo EXACT (max_abs=0) at layers 3+7;
   layers 0-6 bit-exact (l_last 1.3e-7); greedy 13=13; logit diff 7.19 -> 0.684 (nmse 1.7e-2).
-- REMAINING (the 0.68): the routed expert dots at the ATTN layers run ~1.6e-4 off — the
-  audit's repack guard: the fused's expert gemvs must detect CPU_REPACK (tensor->extra) for
-  Q8_0/Q6_K mats too, not only the IQ4_NL downs.
+- Repack guard INVESTIGATED (79fceb05d): the expert types are all handled (up/gate IQ3_S
+  plain, down IQ4_NL repacked-with-mirror or Q8_0 plain; verified via per-call dumps). The
+  ~1.6e-4 routed diff at layer 7 traced to the layer-7 ffn-side hc_mixed (2.6e-4) — the
+  input to moe2 — while the ffn-side xn is 6.7e-6 (the layer-7 res after the attn-combine;
+  the inject/attn_out/res_in all exact). The amplification (6.7e-6 xn -> 2.6e-4 mixed -> 
+  1.6e-4 routed -> 1.6e-4 l_last) is the remaining divergence chain — bisection continues
+  (the res's 6.7e-6 source is the open question).
+- CRASH (open, 79fceb05d): the fused decode segfaults at the fused_head's first hc_mix
+  (Q8_0 vec_dot), nondeterministic, ASAN-clean. Two genuine overflows found and fixed in the
+  process: the flash staging's wdata was 16 floats short of the kernel's need (6976 vs
+  6960), and the GDN kernel writes its [attn | new_state] output (3.2 MB) past the ne-sized
+  24 KB scratch tensor — the real heap corruption; the tensor now points at a full-size
+  buffer. The crash persists — the remaining corruption source is the active item; the
+  validation runs crash before the step-1 compare.
 - Safety contract (audit item 3, before any serving exposure): the hook must become OPT-IN
   (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
   true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells) must
