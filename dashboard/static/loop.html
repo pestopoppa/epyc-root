@@ -497,9 +497,19 @@ function renderChampion(d){
   const f = c.freshness || {};
   const state = String(f.state || "absent");
   const measured = !!c.measured;
-  badge.className = "badge " + esc(state);
+  // SUPERSESSION OUTRANKS FRESHNESS IN THE BADGE, and this order is the whole
+  // point. `state` answers "how old is this FILE"; supersession answers "does it
+  // describe the champion we have". A bundle written an hour ago for a champion
+  // the loop has since advanced past twice is `fresh` and is also NOT ABOUT THE
+  // CURRENT TREE -- and a badge reading "fresh · 11.0h ago" beside +8.5% was read,
+  // correctly, as a claim about the current champion. It was a claim about a
+  // superseded one. The supersession block further down was already rendered and
+  // was not enough: nobody reads the body to decide whether to trust the header.
+  const superseded = !!c.supersession;
+  badge.className = "badge " + (superseded ? "stale" : esc(state));
   badgetxt.textContent =
-    state === "fresh" ? `fresh · ${age(f.age_s)} ago`
+    superseded ? `SUPERSEDED · measured ${age(f.age_s)} ago`
+    : state === "fresh" ? `fresh · ${age(f.age_s)} ago`
     : state === "stale" ? `STALE · ${age(f.age_s)} ago`
     : state === "malformed" ? "MALFORMED" : "ABSENT";
 
