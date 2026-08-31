@@ -163,27 +163,19 @@ Checklist (the dashboard gate — flipped as the phases land):
      fused's else-if skipped it.
   Layers 0-2 now bit-exact (l_last 1.3e-7); greedy g=13 f=13 (was 89). Logit diff 7.2 starts
   at layer 3 = the first full-ATTN layer.
-- Next action (2026-08-31 external audit redirect, operator-approved): **the full-attention
-  layer is a REWRITE, not a debug** — ≥6 independent defects, all confirmed in code:
-  1. `fused_rope` applies the partial-rotary rope to a flat `[n_rot × n_head]` prefix of a
-     `[head][256]` vector — the head stride is 256, the tensor assumes 64 → heads 6-23 are
-     never roped. Fix: stage `[n_embd_head, n_head]` and rotate `n_rot` dims (the graph's shapes).
-  2. `fused_attn_qsa` computes ONE score distribution per KV head from `q[hk*256]` (the wrong
-     query — the group's first head only) and reuses it across the n_repeat=12 group heads.
-     Fix: per-query-head scores.
-  3. K/V reads are transposed: `k_all[h*256*n_kv + i*n_kv + j]` vs the cache's dim-major
-     `i + h*256 + j*512` (measured: tk/tv ne=[256,2,256,1] nb=[2,512,1024,524288] F16). The
-     flat staging + the per-view stride indexing must match the measured layout.
-  4. The KV writes target cell `n_used-1` (measured cells pos 0-5, n_used=6) — the current
-     decode cell is `n_used`; the fused overwrites the batch's last cell. (The audit's v_trans
-     scribble claim was measured FALSE for this model: the V view nb == the K view nb, so
-     v_trans is inactive here and the V write layout is fine.)
-  5. The current token is masked out of its own attention (n_visible excludes it) while the
-     graph includes it.
-  6. The QSA indexer skips rope entirely (the graph ropes the pooled block keys AND the
-     query), and uses `dsv4_compress_ratios[0]` for every layer instead of `[il]`.
-  Additional confirmed defect: the fused q/k/v projections pass `nullptr` lora scale while the
-  graph uses `wq_s/wk_s/wv_s` — the pre-rope Q/K divergence (V exact ⟹ only q/k carry scales).
+- ATTN REWRITE DONE (470730838): the ≥6 audit defects fixed — fused_rope now stages the
+  graph's [n_embd_head, n_head] tensor (heads 6-23 were never roped); the q/k/v/wo lora
+  scales restored (the pre-rope Q/K divergence); the attention replaced by the graph's OWN
+  flash kernel staged with F32 Q (the earlier F16-Q staging was the NaN source — the audit
+  was right; flash_attn defaults to AUTO in this tree, so the graph IS the flash path); the
+  k/v stage builds AFTER the current-cell write (the pre-write stage read the stale cell —
+  the actual source of the 1.2 attention diff); the current cell is attended; the indexer
+  uses ratio[il] + the pooled/query ropes.
+  Validation: attn_pregate/Qcur/Kcur/Vcur/gate/gated/wo EXACT (max_abs=0) at layers 3+7;
+  layers 0-6 bit-exact (l_last 1.3e-7); greedy 13=13; logit diff 7.19 -> 0.684 (nmse 1.7e-2).
+- REMAINING (the 0.68): the routed expert dots at the ATTN layers run ~1.6e-4 off — the
+  audit's repack guard: the fused's expert gemvs must detect CPU_REPACK (tensor->extra) for
+  Q8_0/Q6_K mats too, not only the IQ4_NL downs.
 - Safety contract (audit item 3, before any serving exposure): the hook must become OPT-IN
   (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
   true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells) must
@@ -195,3 +187,4 @@ Checklist (the dashboard gate — flipped as the phases land):
 - Sequence: logit gate ≤1e-4 → Paris → arch suite stays; no perf claims before it passes.
   Then the honest baseline (uniform IQ4_XS requant control, ~12 min) + one symbol profile of
   the 46 ms non-gemv composition before Phase 4.
+
