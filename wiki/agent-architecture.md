@@ -2968,3 +2968,37 @@ Sources:
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L4 and R21-1.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).
+
+---
+
+## Compiled Update — 2026-08-31 (evening): staleness anchored to the subject, agendas derived from the store, and instruments that refuse while a claim is held
+
+**Staleness is a property of the SUBJECT, not the clock (root `5f2151c9`).** Episodic evidence on
+the dashboard is now graded *relevant / superseded / unverifiable* against what it describes:
+movement of the subject (a new champion, a new measurement) outranks elapsed time, and the
+wall-clock age is demoted to advisory. The proof case: the live reconciliation bundle correctly
+reads **relevant at 3.1 days old**, where the old clock rule would have flagged it — while a
+minutes-old measurement of a superseded champion correctly reads stale. This completes the
+morning's semantic-staleness work: first the *baseline* was resolved live, now the *evidence age*
+is subject-anchored. Mutation-tested in both directions (fresh-but-superseded, old-but-relevant).
+
+**An agenda card computed from the real store beats a narrated one (root `9425eaef`).** The
+hypothesis-ledger card walks the hotspot-first agenda directly from `experiments.db`:
+`mul_mat_vec_q` 49.3% hotspot share / 63 mechanisms tried; blind-spot lines surface what
+narration never would — `k_set_rows` never targeted, 3.3% of device time unexplored,
+`flash_attn` 12.3% with 0 kept over 29 attempts. A reader asks "what should the loop try next?"
+and the store answers; nobody maintains the answer. (Within a day the rms_norm blind spot this
+style of accounting kept visible produced the program's first rms_norm keep.)
+
+**A refresh instrument that refuses while the claim is held.** `serving_evidence_refresh.py`
+(research `8179dde0`) is one command that regenerates the entire serving-evidence bundle — and it
+is *claim-held*: it refuses to run while run 21 owns the device claim. The refusal is the
+scheduling contract enforced at the instrument, mirroring the loop's own startup refusal: tools
+that could contend for a claimed resource check the claim themselves rather than trusting the
+invoker's discipline.
+
+### Source References (2026-08-31 evening)
+
+- Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L7, R21-L9.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.

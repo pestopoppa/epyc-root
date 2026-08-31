@@ -3436,3 +3436,41 @@ Sources:
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2 (the merge, the bands, the measurement); R18-D (the prefill floor caveat the pp512 row re-confirms).
 - [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled-champion standing block.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3 (the reconciliation and the bundle correction).
+
+---
+
+## Compiled Update — 2026-08-31 (evening): surface expressiveness proven from source, floors that travel without their model, and a self-reproducing calibration
+
+**A benchmark surface's expressiveness is a source-code fact, not a flag question.** Choosing
+run-22 surfaces, the question "can `llama-bench` measure batched decode?" was answered by reading
+the tool's source, not by trying flags: the tg path can **never** express `ne11>1` (single-token
+decode by construction), while the prompt path with `-b/-ub N` can. The decision — `dec-b2/4/8`
+ride the prompt path; `llama-batched-bench` filed separately as the native parallel-sequence
+surface (R22-2) — is therefore proof-backed, and no sweep was spent discovering it empirically.
+
+**Uncalibrated floor ⇒ `decisive=None`, structurally.** The run-22 prep hardened the R18-D lesson
+into a 3-layer discipline: a surface without its own measured noise floor cannot emit a decisive
+verdict at all (`decisive=None`), and the floor is re-derived on the commit path rather than
+trusted from memory. The companion `--calibrate-surface` tool reuses the D8 method and
+**byte-for-byte reproduces the existing tg128 k=5 floor** — the calibrator is validated by
+reproducing the number it must supersede, the same self-check shape as an A/A guard.
+
+**A floor keyed too narrowly is the same defect as a stale floor.** Filed as R21-8:
+`MEASURED_FLOOR_PCT` is keyed by surface only — the model/workload identity behind the
+calibration is unenforced, so a floor calibrated on one workload silently gates another. Same
+class as R18-D (a floor that no longer describes the noise it gates); the fix is identity in the
+key or refusal on mismatch.
+
+**Bandwidth-utilization arithmetic as a cross-device intake screen.** The community-intake pilot
+normalized every external claim to bandwidth utilization before mapping it to hotspots: MI210
+production decode sits at **49.4%** of peak BW while upstream CUDA implementations band at
+**54–78%** and a 7900 XTX on HIP reaches **52.4%** — three points that together locate the
+deficit in the **ggml-HIP backend software**, not CDNA2 hardware. One normalization turned
+anecdotes from three ecosystems into a falsifiable placement of the gap.
+
+### Source References (2026-08-31 evening)
+
+- Research `a95581c8` — run-22 surface extension, floor discipline, `--calibrate-surface`, flag
+  admission + greedy-parity harness.
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L8, R21-8, R22-1/R22-2, R21-5 pilot sub-items.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §10, §11.

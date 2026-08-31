@@ -2174,3 +2174,45 @@ Sources:
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — the R21 block (R21-L1..L5, the open follow-ups, the declines); CURRENT STATE.
 - [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled single-champion standing.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §1 (the incident and the ruling), §2 (run 20), §4 (the research commits), §6 (the process rulings).
+
+---
+
+## Compiled Update — 2026-08-31 (evening): the loop advances the champion twice unattended, and the internet becomes a hypothesis source under contract
+
+**The rebuilt loop completed its purpose end-to-end, twice in one run.** Run 21 produced two
+champion advances, each a full unattended sequence — keep → anchor rebuilt → A/A guard verified →
+headline self-measured against live-resolved frozen production → published — with no human step:
+`akm-rmsnorm-1536-float4-384` (+1.359%, guard −0.263%, headline +15.326%) and
+`akm-q6k-paired-scale-pk-fma` (+1.811%, guard +0.327%, headline **+16.180%**). These are the
+**first keeps under ranked memory** (the D1-ratified epoch-scoped ranking, ON for run 21):
+2 keeps / 26 iterations after 68 dry — one run is not a verdict on the ranking, but the
+capability claim "the loop can advance the champion without a human" is now demonstrated, not
+projected.
+
+**Community intake as a standing pipeline, with the evidence ladder explicit (R21-5).** External
+knowledge enters through a contract, not by rebase: three source tiers (upstream llama.cpp
+commits/PRs since the freeze — each a pre-validated hypothesis with its own PR-thread numbers;
+community forks/writeups; papers via research-intake), each claim normalized to bandwidth
+utilization, mapped to the live hotspot profile, screened against `experiments.db` known nulls,
+and emitted as inbox seeds with provenance URLs. Run starts and inbox writes stay
+operator-gated; the loop elects seeds on its own schedule, so intake costs zero compute until a
+seed wins election. The pilot (two sweeps, 13 seeds injected) validated every stage.
+
+**An operator conditional can be encoded in the harness, not remembered.** On the
+`-funsafe-math-optimizations` finding (upstream removed the flag for flipping greedy argmax; our
+v9+champion still compile with it) the operator ruled "2% hit worth it IF quality demonstrated."
+The run-22 flag-admission branch encodes exactly that: the greedy-parity harness's verdict is
+*merge only on demonstrated divergence* — the conditional executes itself instead of relying on
+whoever runs the boundary to recall it.
+
+**"Never auto-started" is a mutation-tested property, not a promise.** Tonight's boundary driver
+ends at a run-22 readiness report and stops; the property that run 22 cannot start without the
+operator is enforced in the driver and mutation-tested, continuing the pattern that operator
+gates live in code (cf. the single-champion startup refusal).
+
+### Source References (2026-08-31 evening)
+
+- Research `a95581c8` (run-22 prep + flag admission), `8179dde0` (serving-evidence refresh
+  runbook, claim-held).
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 (pilot sub-items), R21-6.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10, §14.
