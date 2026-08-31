@@ -133,7 +133,10 @@ Checklist (the dashboard gate — flipped as the phases land):
   values (rms [0.451, 0.479, 0.153, 0.284]) — the graph's layer-0 input is NOT the embedding
   repeated 4× — while the fused path builds res_hc as 4 identical copies. The graph's rms_norm
   is identity on its input (gamma ≈ 1.05). The stream-dependent input is the root divergence.
-- Next action: understand the graph's hc_init construction (why the repeat_4d of the embedding
-  yields differing streams — the [n_embd, hc, n_tokens] layout or the input path), mirror the
-  graph's input + hc_mix math in the fused path → logit diff ≤1e-4 → Paris → arch suite →
-  Phase 4.
+- **ROOT CAUSE confirmed** (f36ea436c): the graph's step-1 get_rows tokens node holds
+  1056514818 (the harness fed token 11751) — the graph's embedding gather reads a garbage row,
+  the graph's layer-0 input is corrupted (the rms_norm "identity" was the corrupted input). The
+  fused path reads the correct embedding (maxdiff 0 vs the GGUF dequant).
+- Next action: find why the graph's tokens input is corrupted at step-1 (the harness's
+  llama_batch / the graph's set_input path / the ubatch handling), then the logit diff ≤1e-4 →
+  Paris → arch suite → Phase 4.

@@ -21,7 +21,7 @@
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Fusion arms DONE 2026-08-27 — est +10–15% REFUTED (both −0.57% tg128); next: re-rank levers (GGML_PERF profile) from the receipts | — |
-| INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | graph's hc_init has differing per-stream values; mirror the graph's input+hc_mix, then logit-diff ≤1e-4 + Paris + arch, then Phase 4 | INF-10 |
+| INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | graph's step-1 token input is corrupted (1056514818 vs 11751); find why, then logit-diff ≤1e-4 + Paris + arch, then Phase 4 | INF-10 |
 | INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-5/6/7 closed; next DF2-6b-bis (ngram arm was confounded by near-zero draft volume) and DF2-2 | INF-06, INF-50 |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
