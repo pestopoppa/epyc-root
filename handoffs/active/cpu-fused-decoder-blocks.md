@@ -48,7 +48,8 @@ Checklist (the dashboard gate — flipped as the phases land):
 - [ ] Phase 1 gate: logit diff ≤1e-4 + greedy generation + arch test (needs the hook)
 - [x] Phase 3 partial: fused_head + fused_decode_token skeleton committed (`2d699f02c`)
 - [x] Phase 2: full-attn layer function committed (`95902fefa`) — QSA indexer + flash-kernel attention; rotations + long-context indexer rope marked for the validation pass
-- [ ] Phase 3: PLE + head + hook + full fused decode
+- [x] Phase 3 partial: fused_ple committed (`8fd4c7f15`); head + decode-loop skeleton already in; the process_ubatch hook committed (`99a1c111e`)
+- [ ] Phase 1 gate: logit diff ≤1e-4 + greedy generation + arch test (needs the MoE fix)
 - [ ] Phase 4: thread-pool integration + fused-kernel micro-opt
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
@@ -82,3 +83,33 @@ Checklist (the dashboard gate — flipped as the phases land):
 - Branch `exp/cpu-fusion-qwen4exp-20260829` @ `7cdd7c97b` — clean, arch suite 0 FAILs, "Paris" verified.
 - The measurement recipe: `numactl --interleave=all` + `-mmp 0`, t48/t64, IQK=1, the in-situ profiler.
 - Decode baseline: ~12.4-14.9 t/s depending on the box state.
+
+## Validation round 1 (2026-08-31) — the hook is wired; five correctness fixes landed; MoE NaN open
+
+- The `process_ubatch` fast-path hook (committed `99a1c111e`, env-gated `GGML_FUSED_DECODE_OFF`
+  for A/B): single-token decode on a CPU-resident qwen4exp runs `fused_decode`; any failure or
+  unsupported cache type falls through to the graph.
+- **A/B harness** (`validation/dump_logits_seq`): one model, two contexts; both decode the prompt
+  batch through the graph (sanity: bit-identical, and bit-reproduces the Aug-30 `logits-ref.bin`),
+  then 8 single-token steps — the graph ctx (env OFF) drives the greedy token stream, the fused
+  ctx runs the fast path; per-step max-abs-diff + NMSE. Graph-only control: clean (0.0 diffs).
+- **Five fixes** (commit `9a915a823`, ASAN-verified, `build-asan`):
+  1. GDN kernel `wdata` null → segfault; sized scratch `S_v + 16` floats.
+  2. `qkv` span: `ssm_d_inner` (6144) is the v-span; `wqkv` writes 10240 → 16 KB heap overflow.
+  3. Conv-state staging `rl->ne[0]*4` → the row is `(d_conv-1)*conv_channels == rl->ne[0]`; 4×
+     copy-back overrun.
+  4. z-gate one scalar per head vs the graph's elementwise `sigmoid(z)`.
+  5. `ssm_norm` OOB: `znorm[h*S_v+i]` on a `{head_v_dim}` tensor → garbage → NaN `final_in` →
+     NaN router logits → `fused_moe` wrote `probs[-1]`.
+- **Full-attn wiring rewrite**: KV/indexer writes were going to local copies at `pos` (OOB and
+  lost). The caller now derives the used/visible cells from the cells API (`get_cells` passthrough
+  on `llama_kv_cache_context`); the layer writes into the cache views at the current cell
+  (n_used-1) and masks the current cell out of the attention; the QSA block path scores the
+  visible cells only.
+- **Open**: `fused_moe` outputs ~2500/2560 NaN from finite inputs (both calls, layer 0); the
+  expert `vec_dot` path (IQ3_S up/gate, IQ4_NL down, Q8_0 shared) is the suspect. The graph
+  control over the same tensors is finite. Direct-vec_dot test: `validation/test_vecdot2.cpp`
+  (raw-GGUF reader; needs its KV/alignment fixed — currently "up tensor not found"). Add the
+  `best == -1` guard in the argsort regardless.
+- Next action: fix the MoE NaN → run the 8-step logit diff → greedy "Paris" generation → arch
+  suite → Phase 4 thread-pool integration.
