@@ -117,8 +117,17 @@ the orchestrator's venv is **not** required.
 - `GET /api/loop` — the loop's `epyc.autokernel.loop_status.v1` report + its panel
   envelope. `loop` is `null`, never `{}`, when nothing readable was found. It also
   carries **`operator_gates`**, the `epyc.autokernel.operator_gate_bundle.v1`
-  reading with its **own** four-valued envelope — `_freshness` still dates only the
-  loop, deliberately, so neither producer's liveness certifies the other's silence
+  reading with its **own** envelope — `_freshness` still dates only the
+  loop, deliberately, so neither producer's liveness certifies the other's silence.
+  **The bundle's envelope is SUBJECT-ANCHORED, not wall-clock**: this producer is
+  EPISODIC — one bundle per human campaign, evidence rather than a stream — so
+  there is no cadence for a clock to police, and the evidence goes stale when its
+  SUBJECT moves, not when its file has a birthday. A readable bundle is
+  `relevant` / `superseded` / `unverifiable`, computed per reading by
+  `loop_status.opgate_subject_verdict` from git facts (measured commit vs the
+  champion lineage; production anchor vs the currently-resolved frozen kernel),
+  with `absent` / `malformed` still covering the artifact itself; age is
+  informational, earning only an advisory sentence past ~30 d, never an alarm
 - `GET /api/loop/health` — the **loop's** producer/data health; HTTP 200 only for
   `ok`, HTTP 503 with `absent`/`degraded` otherwise. It does not fold
   `operator_gates`; see *Known open items on this surface*
@@ -550,9 +559,10 @@ audits its own source to keep it that way.
   reader has never been a registered panel — but they were true of a card on a
   secondary page, and they are now true of a card on the **primary** surface, so
   the gap is declared here rather than left to be inferred. The mitigation, not a
-  fix: the bundle's four-valued verdict (`fresh`/`stale`/`absent`/`malformed`)
+  fix: the bundle's five-valued verdict
+  (`relevant`/`superseded`/`unverifiable`/`absent`/`malformed`)
   travels in the body it dates and is rendered loudly on the card — its own badge,
-  its own verdict line, an amber number outside its envelope — so a reader on the
+  its own verdict line, an amber number when the subject moved — so a reader on the
   page is never misled, only an automated consumer of `/api/loop/health` or
   `/api/health` is under-informed. It was not closed in this change because
   registering a new panel changes what `health_payload()` folds, and that function
@@ -603,15 +613,16 @@ The retired surface must never become a data dependency of the live one.
   loop. Merging the two envelopes is precisely how one producer's silence gets
   certified by another's liveness: a fresh loop is not evidence that the gate
   bundle is current, and a stale bundle is not an outage of the loop.
-* **The gate-bundle card renders all four states, `absent` included.** On
+* **The gate-bundle card renders all five states, `absent` included.** On
   `/kernel` that box hid itself when the bundle was absent, which was defensible
   there because a command band above it said so. There is no command band on
   `/loop`, so hiding it would have restored the original defect in a new place — a
   section that renders nothing is indistinguishable from a section whose producer
   died. It has its own badge, its own verdict line, and its own evidence path; a
-  figure outside its envelope is drawn amber rather than the green or red of a
-  live gain, because the measurement happened and it is its *currency* that is in
-  doubt.
+  `superseded` or `unverifiable` figure is drawn amber rather than the green or
+  red of a live gain, because the measurement happened and it is its *subject*
+  that has moved or cannot be checked — while a `relevant` figure keeps its live
+  colour however old it is, with the age stated informationally beside it.
 * **`evidence` rides on the unavailable reading too.** `_read_operator_gate_bundle`'s
   `_unavailable()` branch now carries the path it checked. Absent and malformed are
   exactly the readings where someone is about to go looking for the emitter, and a
@@ -779,6 +790,16 @@ producer's voice. The card has since moved to `/loop` and renders that envelope
 loudly rather than inside a disclosure. Authority answers *may this be shown*;
 freshness answers *is it still true*; the old reader validated the first
 meticulously and never asked the second.
+
+That fix then overcorrected (2026-08-31): the 3-day wall-clock band was borrowed
+from a STREAMING surface, and this producer is episodic — the live, still-current
+bundle crossed its own file's third birthday and the card alarmed STALE, which
+the operator correctly read as a broken card. The envelope is now
+**subject-anchored** (see the `/api/loop` route note above): `relevant` /
+`superseded` / `unverifiable` from git facts, with the wall clock demoted to an
+informational age plus an extreme-age advisory. The dating machinery this
+paragraph describes survives unchanged — it now dates the evidence rather than
+alarming on it.
 
 The other half is closed in a weaker sense and it is worth saying plainly: the
 candidate-funnel and lane-hero cards *did* have envelopes and rendered them only

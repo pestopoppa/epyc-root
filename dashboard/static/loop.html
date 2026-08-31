@@ -64,6 +64,12 @@
   .badge.stale .dot{background:var(--bad)}.badge.stale{color:var(--bad);border-color:#5c2321}
   .badge.absent .dot{background:var(--muted)}.badge.absent{color:var(--muted)}
   .badge.malformed .dot{background:var(--amber)}.badge.malformed{color:var(--amber);border-color:#5c3a1e}
+  /* The episodic producer's verdicts (operator-gated card). `relevant` is the
+     healthy state and is deliberately NEUTRAL — default border, muted text,
+     a calm green dot — never the amber/red of an alarm: age alone is not one. */
+  .badge.relevant .dot{background:var(--good)}.badge.relevant{color:var(--muted)}
+  .badge.superseded .dot{background:var(--bad)}.badge.superseded{color:var(--bad);border-color:#5c2321}
+  .badge.unverifiable .dot{background:var(--amber)}.badge.unverifiable{color:var(--amber);border-color:#5c3a1e}
   main{padding:20px;max-width:1400px;margin:0 auto;display:grid;gap:18px}
   section{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
   section > h2{margin:0;padding:11px 16px;font-size:13px;font-weight:650;letter-spacing:.02em;
@@ -220,7 +226,8 @@
   .og-num.dated{color:var(--amber)}
   .og-sum{font-size:13px}
   .og-verdict{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border)}
-  .og-verdict.stale{background:#26191a;border-color:#5c2321;color:var(--bad)}
+  .og-verdict.superseded{background:#26191a;border-color:#5c2321;color:var(--bad)}
+  .og-verdict.unverifiable{background:#241d16;border-color:#5c3a1e;color:var(--amber)}
   .og-verdict.absent{background:#191d24;color:var(--muted)}
   .og-verdict.malformed{background:#241d16;border-color:#5c3a1e;color:var(--amber)}
   .og-auth{font-size:10px;text-transform:uppercase;letter-spacing:.05em;
@@ -1183,25 +1190,42 @@ function renderHotspots(d){
 }
 
 /* The operator-gated champion bundle, moved here from the retired /kernel page.
-   Same reader (`server._read_operator_gate_bundle`), same four-valued envelope;
-   only the surface changed.
+   Same reader (`server._read_operator_gate_bundle`); the envelope it serves is
+   SUBJECT-ANCHORED, because this producer is EPISODIC — one bundle per human
+   campaign, not a stream. A wall-clock band alarmed a perfectly current
+   measurement three days after its own emission and the operator read STALE as
+   "broken — why keep it?". Evidence rots when its SUBJECT moves (champion
+   lineage broken, or production promoted past the bundle's anchor), never by
+   clock: the server computes `relevant` / `superseded` / `unverifiable` from
+   git facts per reading, and this card only repeats the verdict. Age is shown
+   informationally; past the advisory threshold the server adds an ADVISORY
+   sentence, which is text, never the alarm state.
 
-   THE RULE THIS CARD EXISTS TO OBEY: the number and its date are rendered
+   THE RULE THIS CARD EXISTS TO OBEY: the number and its verdict are rendered
    together or not at all. `+48.9%` rendered identically forever after its
    emitter died, because the reader validated schema and authority meticulously
-   and read no timestamp. Authority answers "may this be shown"; freshness
-   answers "is it still true".
+   and read no timestamp. Authority answers "may this be shown"; the subject
+   verdict answers "is it still about the current question".
 
    AND ABSENT IS NOT HIDDEN HERE. On /kernel this box hid itself when the bundle
    was absent, because the command band above it said so. There is no command
    band on this page, so hiding it would restore the original defect in a new
    place: a section that renders nothing is indistinguishable from a section
-   whose producer died. All four states draw something. */
+   whose producer died. All five states draw something. */
 const OG_BANNERS = {
-  fresh:     {hd: "", note: ""},
-  stale:     {hd: "STALE — this evidence is outside its own envelope",
-              note: "The figures below are the LAST bundle the emitter wrote. The " +
-                    "measurement happened; whether it is still true is what is in doubt."},
+  relevant:  {hd: "", note: ""},
+  superseded:{hd: "SUPERSEDED — the subject this evidence measured has moved",
+              note: "The measurement happened and still stands for what it " +
+                    "measured; the champion lineage or the production anchor has " +
+                    "moved past it, so it no longer answers the current serving " +
+                    "question. The verdict above names which fact moved."},
+  unverifiable:{hd: "UNVERIFIABLE — relevance cannot be established right now",
+              note: "The champion tree or the frozen production tree could not " +
+                    "be resolved, so nothing can say whether this evidence still " +
+                    "describes the current subject. Said explicitly rather than " +
+                    "silently falling back to the wall clock: “we cannot " +
+                    "say” is its own verdict, not “fine” and not " +
+                    "“stale”."},
   absent:    {hd: "ABSENT — no operator-gated bundle has ever been written",
               note: "This is not “the champion is unmeasured” and not “the " +
                     "gates failed”. Nothing emitted the carrier at all, so this " +
@@ -1256,13 +1280,17 @@ function renderOperatorGate(d){
   const og = d.operator_gates || {};
   const f = og.freshness || {};
   const state = String(f.state || "absent");
-  const current = state === "fresh";
+  // `relevant` is the CALM state: the subject verdict says this evidence still
+  // describes the current champion lineage and the current production anchor.
+  // Age never decides `current` — it is informational text beside the verdict.
+  const current = state === "relevant";
 
   const badge = document.getElementById("opgate-badge");
   badge.className = "badge " + esc(state);
   document.getElementById("opgate-badgetxt").textContent =
-    current ? `fresh · ${age(f.age_s)} ago`
-    : state === "stale" ? `STALE · ${age(f.age_s)} ago`
+    current ? `evidence · ${age(f.age_s)}`
+    : state === "superseded" ? `SUPERSEDED · measured ${age(f.age_s)} ago`
+    : state === "unverifiable" ? "UNVERIFIABLE"
     : state === "malformed" ? "MALFORMED" : "ABSENT";
 
   const spec = OG_BANNERS[state] || OG_BANNERS.absent;
@@ -1335,8 +1363,10 @@ function renderOperatorGate(d){
   const hd = og.headline || {};
   const e = hd.effect_fraction;
   const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
-  // Outside its envelope the figure is amber, never the green/red of a live
-  // gain or regression.
+  // A superseded or unverifiable figure is amber, never the green/red of a
+  // live gain or regression. A RELEVANT figure keeps its live colour however
+  // old it is — age alone never ambers this number; only the subject verdict
+  // can take its colour away.
   const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
   // The emitter's summary sentence often BEGINS with the very figure the
   // og-num span already shows; the duplicate is trimmed for display only —
@@ -1359,7 +1389,17 @@ function renderOperatorGate(d){
            `uninterpretable`) +
        ` · measured <span class="mono">${esc(short(og.champion_commit))}</span>` +
        ` (${esc(relShort)})` +
-       (num(f.age_s) ? ` · ${esc(age(f.age_s))} ago` : "") +
+       // Age is INFORMATIONAL here. On the calm verdict it reads as a plain
+       // fact plus the single-slot guarantee; it never turns anything amber.
+       // The server's advisory sentence ("consider re-measuring") rides along
+       // as text when the age is extreme — advice, not an alarm.
+       (num(f.age_s)
+         ? (current
+             ? ` · measured ${esc(age(f.age_s))} ago · no newer serving ` +
+               `measurement exists`
+             : ` · measured ${esc(age(f.age_s))} ago`) +
+           (f.advisory ? ` · ${esc(f.advisory)}` : "")
+         : "") +
        `</span>` +
        `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
        `no promotion authority</span></div>`;
@@ -1406,7 +1446,12 @@ function renderOperatorGate(d){
           (f.generated_at_source === "file_mtime"
             ? ` <span class="muted">(file mtime — this bundle carries no ` +
               `generated_at of its own)</span>` : "") : "") +
-       `</div></div>`;
+       `</div>` +
+       // The full subject-anchored reasoning, in the server's own words: which
+       // git facts were checked, what they said, and the informational age.
+       (f.detail ? `<div class="muted" style="margin-top:6px">freshness: ` +
+          `${esc(f.detail)}</div>` : "") +
+       `</div>`;
   h += `</details>`;
   host.innerHTML = h;
 }

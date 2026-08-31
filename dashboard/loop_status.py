@@ -728,6 +728,131 @@ def champion_relationship(measured: Optional[str],
     return out
 
 
+#: Subject-anchored staleness for the operator-gated bundle — the EPISODIC
+#: producer's contract, distinct from every streaming envelope on this page.
+#:
+#: The bundle is manual-research evidence, emitted once per human campaign, not
+#: a stream: there is no cadence for a wall clock to police, so "N days old" is
+#: not a defect of the evidence. Evidence does not rot by clock; it rots when
+#: its SUBJECT moves. The subject is a pair of computable git facts — the
+#: measured commit's place in the champion lineage
+#: (:func:`champion_relationship`) and the bundle's production anchor against
+#: the currently-resolved frozen production kernel (:func:`resolve_production`)
+#: — and the verdict is recomputed from both on every reading, never
+#: remembered.
+#:
+#: Three verdicts, ordered by strength:
+#:
+#: * ``superseded``   — at least one subject fact PROVABLY moved: the measured
+#:                      commit is no longer in the champion lineage, or
+#:                      production was promoted past the bundle's anchor.
+#:                      Proven movement outranks everything, including an
+#:                      unverifiable other half.
+#: * ``unverifiable`` — nothing provably moved AND at least one subject fact
+#:                      cannot be established (champion tree or production
+#:                      tree unresolvable, or the bundle names no usable
+#:                      commit/anchor). Said explicitly, never silently
+#:                      downgraded to a wall-clock reading.
+#: * ``relevant``     — the measured commit is the champion tip or an ancestor
+#:                      of it AND the anchor equals current production. The
+#:                      healthy state, however old the file is: age is
+#:                      informational, and only an extreme age earns an
+#:                      ADVISORY sentence ("consider re-measuring"), never an
+#:                      alarm state.
+OPGATE_RELEVANT = "relevant"
+OPGATE_SUPERSEDED = "superseded"
+OPGATE_UNVERIFIABLE = "unverifiable"
+OPGATE_SUBJECT_STATES = (OPGATE_RELEVANT, OPGATE_SUPERSEDED,
+                         OPGATE_UNVERIFIABLE)
+
+#: The two subject facts that can move, named so a verdict can say WHICH.
+OPGATE_MOVED_CHAMPION = "champion_lineage"
+OPGATE_MOVED_PRODUCTION = "production_anchor"
+
+
+def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+                           tree: Optional[Path] = None,
+                           frozen: Optional[Path] = None) -> dict:
+    """Relevance-anchored verdict for one operator-gated bundle reading.
+
+    ``measured`` is the bundle's ``champion.commit`` (what was measured);
+    ``anchor`` is its ``production_anchor.commit`` (what it was measured
+    AGAINST). Both halves reuse the existing resolvers — one ancestry query
+    against the champion tree, one HEAD resolution of the frozen tree — and
+    the caller renders the verdict; nothing here reads a clock.
+
+    "No newer bundle exists" is carried by construction, not by a check: the
+    canonical bundle path is a single slot the emitter overwrites in place,
+    so the file this verdict was computed for IS the newest emission.
+    """
+    rel = champion_relationship(measured, tree)
+    prod = resolve_production(frozen)
+    anchor_ok = bool(anchor) and bool(_FULL_SHA.fullmatch(str(anchor)))
+    moved: list = []
+    if rel["relation"] == REL_DIVERGENT:
+        moved.append(OPGATE_MOVED_CHAMPION)
+    if prod["resolved"] and anchor_ok and anchor != prod["commit"]:
+        moved.append(OPGATE_MOVED_PRODUCTION)
+
+    out = {"state": OPGATE_UNVERIFIABLE, "moved": moved,
+           "relationship": rel, "production": prod,
+           "anchor_commit": anchor,
+           "anchor_is_current": (anchor == prod["commit"]
+                                 if prod["resolved"] and anchor_ok else None),
+           "detail": None}
+
+    if moved:
+        # Proven movement first: a bundle whose anchor was promoted past is
+        # superseded even while the champion tree happens to be unreadable.
+        parts = []
+        if OPGATE_MOVED_CHAMPION in moved:
+            parts.append(
+                "the measured commit is no longer in the champion lineage "
+                f"(current champion tip {str(rel.get('current_champion'))[:12]})")
+        if OPGATE_MOVED_PRODUCTION in moved:
+            parts.append(
+                "production has been promoted past the bundle's anchor "
+                f"(bundle measured against {str(anchor)[:12]}, current "
+                f"production is {str(prod.get('commit'))[:12]} "
+                f"({prod.get('label')}))")
+        out["state"] = OPGATE_SUPERSEDED
+        out["detail"] = ("superseded by its subject: " + "; and ".join(parts)
+                         + ". The measurement happened and still stands for "
+                           "what it measured; it no longer describes the "
+                           "current serving question.")
+        return out
+
+    blockers = []
+    if rel["relation"] == REL_UNRESOLVABLE:
+        blockers.append(f"the champion side cannot be established "
+                        f"({rel.get('detail')})")
+    if not prod["resolved"]:
+        blockers.append(f"the frozen production tree cannot be resolved "
+                        f"({prod.get('error')})")
+    elif not anchor_ok:
+        blockers.append(f"the bundle names no full production anchor "
+                        f"(got {anchor!r}), so it cannot be checked against "
+                        "current production")
+    if blockers:
+        out["detail"] = ("relevance unverifiable: " + "; and ".join(blockers)
+                         + ". Nothing provably moved, and nothing here falls "
+                           "back to the wall clock: 'we cannot say' is its "
+                           "own verdict.")
+        return out
+
+    out["state"] = OPGATE_RELEVANT
+    tip_note = ("the measured commit IS the champion tip"
+                if rel["relation"] == REL_TIP else
+                "the measured commit is in the current champion's lineage")
+    out["detail"] = (f"{tip_note}, and its production anchor "
+                     f"{str(anchor)[:12]} is the currently-resolved frozen "
+                     f"production kernel ({prod.get('label')}) — the evidence "
+                     "still describes the current subject, and no newer "
+                     "serving measurement exists (the bundle path is a single "
+                     "slot the emitter overwrites in place)")
+    return out
+
+
 CHAMPION_SCHEMA = "epyc.autokernel.champion_vs_production.v1"
 CHAMPION_FILENAME = "champion-vs-production.json"
 #: A cumulative A/B is a deliberate, expensive act, not a per-iteration beat, so

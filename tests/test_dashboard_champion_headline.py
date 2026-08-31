@@ -1391,20 +1391,28 @@ class GateCardCompact(Rendering):
         self.assertIn(f"the frozen production kernel {anchor}", text)
         self.assertIn("operator-gated · no promotion authority", text)
 
-    def test_a_stale_bundle_keeps_its_verdict_outside_the_accordion(self):
-        """The freshness warning may never collapse: an operator must not have
-        to open an accordion to learn the number is outside its envelope."""
+    def test_a_superseded_bundle_keeps_its_verdict_outside_the_accordion(self):
+        """The alarming verdict may never collapse: an operator must not have
+        to open an accordion to learn the number is not about the current
+        subject.
+
+        Was ``test_a_stale_bundle_keeps_its_verdict_outside_the_accordion``,
+        fixtured by aging the file 10 days. Staleness is subject-anchored now
+        (age never alarms an episodic producer), so the alarm is earned the
+        honest way instead: this fixture's posing frozen tree resolves a HEAD
+        that is not the real bundle's production anchor — production promoted
+        past the measurement. The guard is unchanged: loud verdict outside the
+        accordion, figure not painted as a live gain.
+        """
         self.write_loop(recorded_loop())
         self.use_real_bundle()
-        target = self.root / "operator_gate_bundle.json"
-        past = target.stat().st_mtime - 10 * 86400
-        os.utime(target, (past, past))
         html = self._card()
         before = html.split('<details class="og-details"')[0]
-        self.assertIn("STALE — this evidence is outside its own envelope",
-                      self._text(before))
+        self.assertIn("SUPERSEDED — the subject this evidence measured has "
+                      "moved", self._text(before))
+        self.assertIn("promoted past", self._text(before))
         self.assertIn("og-num dated", before,
-                      "a stale figure painted as a live gain")
+                      "a superseded figure painted as a live gain")
 
 
 class Wiring(unittest.TestCase):

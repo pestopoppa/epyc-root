@@ -28,9 +28,24 @@ quietly absorbed.
 
 GAP A MOVED. The operator-gated bundle was the ONE live producer on that page, so
 its card moved to ``/loop`` and the render assertions below moved with it — same
-reader, same four states, new host element (``#opgate``, and on ``/loop`` the
-absent state is rendered rather than hidden, because there is no command band
-above it to say so).
+reader, new host element (``#opgate``, and on ``/loop`` the absent state is
+rendered rather than hidden, because there is no command band above it to say so).
+
+GAP A's FIX THEN OVERCORRECTED, AND THIS FILE CHANGED WITH THE CONTRACT
+(2026-08-31). The first envelope closed "forever fresh" with a 3-day wall-clock
+band borrowed from a STREAMING surface — and this producer is EPISODIC, one
+bundle per human campaign, not a stream. The live, perfectly current measurement
+crossed its own file's third birthday and the card alarmed STALE; the operator
+read it as "stale/broken — why keep it?". Staleness is now SUBJECT-ANCHORED
+(``loop_status.opgate_subject_verdict``): a readable bundle is ``relevant`` /
+``superseded`` / ``unverifiable`` by git facts (champion lineage, production
+anchor vs the currently-resolved frozen kernel), never by clock; ``absent`` and
+``malformed`` remain the artifact-level states. Age is informational, with an
+ADVISORY sentence past an extreme threshold. The tests below that used to pin
+the wall-clock STALE now pin the new contract; what each one GUARDS (a dead or
+moved-past number must not read live; dating must be labelled; the two
+producers' envelopes never merge) is unchanged — only the mechanism that
+answers "is it still true" moved from the clock to the subject.
 
 WHY THE FIXTURES ARE COPIES OF THE REAL RECORDS. Every fixture below is
 ``operator_gate_bundle.json`` / ``kernel_progression.json`` as the emitters
@@ -65,9 +80,15 @@ HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
 
 sys.path.insert(0, str(REPO))
+from dashboard import loop_status  # noqa: E402
 from dashboard import server  # noqa: E402
+# The temp-repo builders are shared with the champion-headline suite on
+# purpose: one way to pose as the frozen tree and the champion tree, not two
+# that drift.
+from tests.test_dashboard_champion_headline import (  # noqa: E402
+    advance_production_repo, make_production_repo)
 
-FOUR_STATES = {"fresh", "stale", "absent", "malformed"}
+FIVE_STATES = {"relevant", "superseded", "unverifiable", "absent", "malformed"}
 
 
 # --------------------------------------------------------------------------- #
@@ -80,19 +101,92 @@ def _real(path: Path) -> bytes:
     return path.read_bytes()
 
 
+class _Subject:
+    """Temp champion + frozen trees posing as the SUBJECT the bundle measured.
+
+    Every subject-anchored state is three lines of git here rather than a
+    thought experiment: ``tip``/``parent`` are in the champion lineage,
+    ``divergent`` is provably outside it, ``promote()`` moves production past
+    every anchored bundle, and the ``break_*`` helpers make a side
+    unresolvable. No 40-hex literal appears anywhere — every sha is minted by
+    the temp repos.
+    """
+
+    def __init__(self, tmp_path: Path, monkeypatch) -> None:
+        self._monkeypatch = monkeypatch
+        self.champ = tmp_path / "champ-tree"
+        self.parent = make_production_repo(
+            self.champ, branch="ak/champion/llama-cpp-test")
+        subprocess.run(["git", "-C", str(self.champ), "checkout", "-q", "-b",
+                        "side"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(self.champ), "-c", "user.name=t",
+                        "-c", "user.email=t@t", "commit", "-q",
+                        "--allow-empty", "-m", "divergent side work"],
+                       check=True, capture_output=True)
+        self.divergent = subprocess.run(
+            ["git", "-C", str(self.champ), "rev-parse", "HEAD"], check=True,
+            capture_output=True, text=True).stdout.strip()
+        subprocess.run(["git", "-C", str(self.champ), "checkout", "-q",
+                        "ak/champion/llama-cpp-test"],
+                       check=True, capture_output=True)
+        self.tip = advance_production_repo(self.champ)
+        assert self.divergent != self.tip
+        self.frozen = tmp_path / "frozen-tree"
+        self.prod = make_production_repo(self.frozen)
+        self._missing = tmp_path / "no-such-tree"
+        monkeypatch.setenv(loop_status.CHAMPION_TREE_ENV, str(self.champ))
+        monkeypatch.setenv(loop_status.FROZEN_TREE_ENV, str(self.frozen))
+
+    def aligned(self, *, measured: str | None = None,
+                anchor: str | None = None) -> dict:
+        """A ``body_edit`` pointing the bundle at THIS subject."""
+        return {"champion": {"branch": "ak/champion/llama-cpp-test",
+                             "commit": measured or self.tip},
+                "production_anchor": {"commit": anchor or self.prod}}
+
+    def promote(self) -> str:
+        return advance_production_repo(
+            self.frozen, rename_to="production-consolidated-v10")
+
+    def break_champion(self) -> None:
+        self._monkeypatch.setenv(loop_status.CHAMPION_TREE_ENV,
+                                 str(self._missing))
+
+    def break_frozen(self) -> None:
+        self._monkeypatch.setenv(loop_status.FROZEN_TREE_ENV,
+                                 str(self._missing))
+
+
 @pytest.fixture
-def bundle_at(tmp_path, monkeypatch):
-    """Point the reader at a copy of the real bundle and return a mutator."""
+def subject(tmp_path, monkeypatch) -> _Subject:
+    return _Subject(tmp_path, monkeypatch)
+
+
+@pytest.fixture
+def bundle_at(tmp_path, monkeypatch, subject):
+    """Point the reader at a copy of the real bundle and return a mutator.
+
+    The reader's verdict is subject-anchored, so the fixture ALWAYS stands up
+    the posing subject trees — by default the bundle is re-pointed at them in
+    the RELEVANT position (measured = champion tip, anchor = posing production
+    HEAD), and a test moves the subject (or passes its own ``body_edit``) to
+    reach the other states. Without this re-pointing every test would silently
+    measure the REAL host trees, and a promotion on the host would flip this
+    suite.
+    """
     raw = _real(REAL_BUNDLE)
     target = tmp_path / "operator_gate_bundle.json"
 
-    def place(*, body_edit=None, age_days=None, raw_bytes=None, delete=False):
+    def place(*, body_edit=None, age_days=None, raw_bytes=None, delete=False,
+              align=True):
         if delete:
             target.unlink(missing_ok=True)
         elif raw_bytes is not None:
             target.write_bytes(raw_bytes)
         else:
             value = json.loads(raw)
+            if align:
+                value.update(subject.aligned())
             if body_edit:
                 value.update(body_edit)
             target.write_text(json.dumps(value))
@@ -104,6 +198,7 @@ def bundle_at(tmp_path, monkeypatch):
 
     place.raw = raw
     place.path = target
+    place.subject = subject
     return place
 
 
@@ -121,25 +216,130 @@ def test_the_real_record_carries_no_date_of_its_own(bundle_at):
     assert "generated_at" not in json.loads(bundle_at.raw)
 
 
-def test_a_fresh_bundle_reads_fresh_and_says_how_it_was_dated(bundle_at):
+def test_a_relevant_bundle_reads_relevant_and_says_how_it_was_dated(bundle_at):
+    # Was ``test_a_fresh_bundle_reads_fresh..``: same guard (the healthy state
+    # is reachable, and the dating source is LABELLED), new verdict name — the
+    # healthy state is now earned from the subject, not from a young mtime.
     got = bundle_at(age_days=0)
     fresh = got["freshness"]
     assert got["available"] is True
-    assert fresh["state"] == "fresh"
+    assert fresh["state"] == "relevant"
     assert fresh["generated_at_source"] == "file_mtime"
     assert fresh["age_s"] is not None and fresh["age_s"] < 60
     # The weaker fact must be labelled as the weaker fact.
     assert "mtime" in fresh["detail"]
 
 
-def test_a_dead_emitter_reads_stale_and_the_number_is_still_carried(bundle_at):
-    """Stale is not absent: the measurement happened, its currency is in doubt."""
+def test_an_old_bundle_with_an_unmoved_subject_reads_RELEVANT_not_stale(
+        bundle_at):
+    """THE defect this revision fixes, in one assertion.
+
+    Was ``test_a_dead_emitter_reads_stale_and_the_number_is_still_carried``,
+    which pinned the wall-clock STALE at 16.7 d. That test conflated two
+    facts: "the emitter has not written lately" (true, and meaningless for an
+    episodic producer) and "the number is no longer true" (unknowable from a
+    clock). What it actually GUARDED — the number is still carried, and the
+    age is still reported honestly — is kept below; the alarm that age alone
+    used to raise is exactly what the operator called broken, and it is gone.
+    """
     got = bundle_at(age_days=16.7)
     assert got["available"] is True
-    assert got["freshness"]["state"] == "stale"
-    assert got["freshness"]["age_s"] > got["freshness"]["stale_after_s"]
+    assert got["freshness"]["state"] == "relevant"
+    assert got["freshness"]["basis"] == "subject"
+    # The number still rides, and the age is still an honest, visible fact...
     assert got["headline"]["effect_fraction"] == pytest.approx(0.489, abs=0.01)
+    assert got["freshness"]["age_s"] == pytest.approx(16.7 * 86400, rel=0.01)
     assert "16.7 d" in got["freshness"]["detail"]
+    # ...but it is informational: no advisory yet, and never an alarm state.
+    assert got["freshness"]["advisory"] is None
+
+
+def test_an_EXTREME_age_earns_an_advisory_sentence_not_an_alarm(bundle_at):
+    """Past the advisory threshold (default 30 d) the reading says "consider
+    re-measuring" — text riding on a still-calm verdict, never a state."""
+    got = bundle_at(age_days=45)
+    fresh = got["freshness"]
+    assert fresh["state"] == "relevant"
+    assert fresh["age_s"] > fresh["advisory_after_s"]
+    assert fresh["advisory"] and "consider re-measuring" in fresh["advisory"]
+    assert "consider re-measuring" in fresh["detail"]
+
+
+def test_ancestry_broken_reads_SUPERSEDED_naming_the_champion_fact(bundle_at):
+    """Subject fact one: the measured commit fell out of the champion lineage."""
+    subject = bundle_at.subject
+    got = bundle_at(body_edit=subject.aligned(measured=subject.divergent),
+                    age_days=0.1)
+    fresh = got["freshness"]
+    assert fresh["state"] == "superseded"
+    assert fresh["moved"] == [loop_status.OPGATE_MOVED_CHAMPION]
+    assert "no longer in the champion lineage" in fresh["detail"]
+    assert "promoted past" not in fresh["detail"]
+    # The evidence itself still rides — superseded is not absent.
+    assert got["available"] is True
+    assert got["headline"]["effect_fraction"] == pytest.approx(0.489, abs=0.01)
+
+
+def test_production_promoted_reads_SUPERSEDED_naming_the_anchor_fact(bundle_at):
+    """Subject fact two: production moved past the bundle's baseline — and a
+    freshly-written file must NOT save it, or a copy could launder a superseded
+    measurement back to healthy."""
+    subject = bundle_at.subject
+    edit = subject.aligned()          # anchored on the PRE-promotion HEAD
+    subject.promote()
+    got = bundle_at(body_edit=edit, age_days=0)
+    fresh = got["freshness"]
+    assert fresh["state"] == "superseded"
+    assert fresh["moved"] == [loop_status.OPGATE_MOVED_PRODUCTION]
+    assert "promoted past" in fresh["detail"]
+    assert "production-consolidated-v10" in fresh["detail"]
+    assert "no longer in the champion lineage" not in fresh["detail"]
+
+
+def test_both_subject_facts_moved_and_the_verdict_names_both(bundle_at):
+    subject = bundle_at.subject
+    edit = subject.aligned(measured=subject.divergent)
+    subject.promote()
+    got = bundle_at(body_edit=edit)
+    fresh = got["freshness"]
+    assert fresh["state"] == "superseded"
+    assert set(fresh["moved"]) == {loop_status.OPGATE_MOVED_CHAMPION,
+                                   loop_status.OPGATE_MOVED_PRODUCTION}
+    assert "no longer in the champion lineage" in fresh["detail"]
+    assert "promoted past" in fresh["detail"]
+
+
+def test_an_unresolvable_tree_reads_UNVERIFIABLE_never_relevant(bundle_at):
+    """"We cannot say" is its own verdict — folded into neither ``relevant``
+    (an unanswerable comparison rendering healthy) nor a silent wall-clock
+    fallback. Each broken side is named."""
+    subject = bundle_at.subject
+    edit = subject.aligned()
+
+    subject.break_champion()
+    got = bundle_at(body_edit=edit, age_days=0)
+    assert got["freshness"]["state"] == "unverifiable"
+    assert "champion side cannot be established" in got["freshness"]["detail"]
+    assert got["available"] is True
+
+    subject2 = _Subject(bundle_at.path.parent / "s2", bundle_at.subject._monkeypatch)
+    edit2 = subject2.aligned()
+    subject2.break_frozen()
+    got = bundle_at(body_edit=edit2)
+    assert got["freshness"]["state"] == "unverifiable"
+    assert "frozen production tree cannot be resolved" in got["freshness"]["detail"]
+
+
+def test_a_provably_moved_anchor_outranks_an_unverifiable_champion(bundle_at):
+    """Proven movement wins: production was promoted past the anchor, so the
+    verdict is SUPERSEDED even while the champion tree is unreadable."""
+    subject = bundle_at.subject
+    edit = subject.aligned()
+    subject.promote()
+    subject.break_champion()
+    got = bundle_at(body_edit=edit)
+    assert got["freshness"]["state"] == "superseded"
+    assert got["freshness"]["moved"] == [loop_status.OPGATE_MOVED_PRODUCTION]
 
 
 def test_absent_and_malformed_are_different_readings(bundle_at):
@@ -160,15 +360,25 @@ def test_an_empty_bundle_is_malformed_not_absent(bundle_at):
 
 
 def test_a_body_generated_at_overrides_a_freshly_touched_file(bundle_at):
-    """A copied file has a new mtime and no new measurement behind it."""
+    """A copied file has a new mtime and no new measurement behind it.
+
+    This used to assert the 20-day body stamp produced STALE. What it GUARDS is
+    the dating, not the alarm: the age the page shows must come from the
+    producer's own stamp, so a copy or a ``touch`` cannot make old evidence
+    look newly measured. The subject verdict is orthogonal and stays calm.
+    """
     stamp = time.strftime("%Y-%m-%dT%H:%M:%S+00:00",
                           time.gmtime(time.time() - 20 * 86400))
     got = bundle_at(body_edit={"generated_at": stamp}, age_days=0)
     assert got["freshness"]["generated_at_source"] == "body_generated_at"
-    assert got["freshness"]["state"] == "stale"
+    assert got["freshness"]["age_s"] == pytest.approx(20 * 86400, rel=0.01)
+    assert got["freshness"]["state"] == "relevant"
 
 
-def test_a_future_dated_bundle_cannot_read_fresh_forever(bundle_at):
+def test_a_future_dated_bundle_is_malformed_not_silently_dated(bundle_at):
+    # The guard survives the contract change unweakened: an impossible date is
+    # an emitter defect and must not be rendered as an informational age —
+    # even though age no longer decides any verdict.
     stamp = time.strftime("%Y-%m-%dT%H:%M:%S+00:00",
                           time.gmtime(time.time() + 86400))
     got = bundle_at(body_edit={"generated_at": stamp})
@@ -180,36 +390,56 @@ def test_a_refused_bundle_still_carries_an_envelope(bundle_at):
     """Refusal on authority must not drop back to the old envelope-less shape."""
     got = bundle_at(body_edit={"promotion_claim": True})
     assert got["available"] is False
-    assert got["freshness"]["state"] in FOUR_STATES
+    assert got["freshness"]["state"] in FIVE_STATES
 
 
-def test_every_reading_carries_an_envelope_and_only_the_four_states(bundle_at):
-    """Structural: no path out of the reader returns an undated number."""
+def test_every_reading_carries_an_envelope_and_only_the_five_states(bundle_at):
+    """Structural: no path out of the reader returns an unverdicted number —
+    and every one of the five states is actually reachable."""
+    subject = bundle_at.subject
+    divergent_edit = subject.aligned(measured=subject.divergent)
+    unverifiable_edit = subject.aligned()
     seen = set()
-    for kwargs in ({"age_days": 0}, {"age_days": 30}, {"delete": True},
-                   {"raw_bytes": b""}, {"raw_bytes": b"{not json"},
-                   {"raw_bytes": b"[]"},
-                   {"body_edit": {"schema": "epyc.autokernel.cumulative_performance.v2"}},
-                   {"body_edit": {"authority": "nonpromotable_candidate_only_discovery"}},
-                   {"body_edit": {"promotion_claim": True}}):
+    cases = [{"age_days": 0}, {"age_days": 30},
+             {"body_edit": divergent_edit},
+             {"delete": True},
+             {"raw_bytes": b""}, {"raw_bytes": b"{not json"},
+             {"raw_bytes": b"[]"},
+             {"body_edit": {"schema": "epyc.autokernel.cumulative_performance.v2"}},
+             {"body_edit": {"authority": "nonpromotable_candidate_only_discovery"}},
+             {"body_edit": {"promotion_claim": True}}]
+    for kwargs in cases:
         got = bundle_at(**kwargs)
         assert "freshness" in got, kwargs
         state = got["freshness"]["state"]
-        assert state in FOUR_STATES, (kwargs, state)
+        assert state in FIVE_STATES, (kwargs, state)
         seen.add(state)
-    assert {"fresh", "stale", "absent", "malformed"} <= seen
+    subject.break_champion()
+    got = bundle_at(body_edit=unverifiable_edit)
+    assert got["freshness"]["state"] in FIVE_STATES
+    seen.add(got["freshness"]["state"])
+    assert FIVE_STATES <= seen
 
 
 def test_a_producer_declared_budget_is_honoured_and_clamped(bundle_at):
+    """The declared ``stale_after_s`` still wins and is still clamped exactly
+    as before — its CONSEQUENCE changed (it is the ADVISORY threshold now,
+    ``advisory_after_s``), not the honouring or the clamps, and the last
+    assertions pin that crossing it advises rather than alarms."""
     from dashboard import panels
     assert bundle_at(body_edit={"stale_after_s": 60 * 60})["freshness"][
-        "stale_after_s"] == 3600
-    # A budget wider than any real cadence declares a threshold and monitors
-    # nothing; a zero budget makes every reading stale between two emissions.
+        "advisory_after_s"] == 3600
+    # A threshold wider than any real horizon declares itself and monitors
+    # nothing; a zero threshold nags on every reading between two emissions.
     assert bundle_at(body_edit={"stale_after_s": 10 ** 9})["freshness"][
-        "stale_after_s"] == float(panels.MAX_STALE_S)
+        "advisory_after_s"] == float(panels.MAX_STALE_S)
     assert bundle_at(body_edit={"stale_after_s": 0})["freshness"][
-        "stale_after_s"] == server.OPERATOR_GATE_BUNDLE_STALE_AFTER_S
+        "advisory_after_s"] == server.OPERATOR_GATE_BUNDLE_ADVISORY_AFTER_S
+    # Crossing the declared threshold produces ADVICE on a calm verdict — the
+    # clamp cannot be "honoured" back into a wall-clock alarm.
+    crossed = bundle_at(body_edit={"stale_after_s": 60 * 60}, age_days=0.5)
+    assert crossed["freshness"]["state"] == "relevant"
+    assert crossed["freshness"]["advisory"]
 
 
 # --------------------------------------------------------------------------- #
@@ -282,34 +512,105 @@ def _opgate(payload: dict, tmp_path: Path) -> str:
 
 
 @pytestmark_node
-def test_a_stale_bundle_renders_a_stale_verdict_beside_the_number(
+def test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number(
         bundle_at, loop_body, tmp_path):
-    """The regression this exists for: a dead number that read as live."""
+    """The regression this exists for: a moved-past number that read as live.
+
+    Was ``test_a_stale_bundle_renders_a_stale_verdict_beside_the_number``. The
+    guard is IDENTICAL — a number whose claim no longer holds must carry a loud
+    verdict before it and lose its live colour — only the cause changed: the
+    subject moving (here, ancestry broken), not the file aging.
+    """
+    subject = bundle_at.subject
     payload = dict(loop_body)
-    payload["operator_gates"] = bundle_at(age_days=16.7)
+    payload["operator_gates"] = bundle_at(
+        body_edit=subject.aligned(measured=subject.divergent), age_days=0.1)
     card = _opgate(payload, tmp_path)
     assert "48.9%" in card, "the operator-gated figure did not render at all"
-    assert "STALE" in card, "the number rendered with no staleness verdict beside it"
-    assert "16.7 d" in card
-    assert "STALE" in card.split("48.9%")[0], (
+    assert "SUPERSEDED" in card, (
+        "the number rendered with no supersession verdict beside it")
+    assert "no longer in the champion lineage" in _text(card)
+    assert "SUPERSEDED" in card.split("48.9%")[0], (
         "the verdict must precede the number, not trail it")
     # And it must not be painted as a live gain. `og-num dated` is the amber
     # rendering; `og-num pos` is the green one.
     assert "og-num dated" in card and "og-num pos" not in card, (
-        "a figure outside its envelope was painted as a current gain")
+        "a figure whose subject moved was painted as a current gain")
 
 
 @pytestmark_node
-def test_a_fresh_bundle_renders_no_stale_badge(bundle_at, loop_body, tmp_path):
-    """The negative control: the badge must be caused by the data, not printed
-    unconditionally. Without this, the assertion above passes over a page that
-    always says STALE."""
+def test_a_promoted_past_bundle_renders_the_loud_verdict_too(
+        bundle_at, loop_body, tmp_path):
+    """The OTHER subject fact, executed at the page: production promoted past
+    the bundle's anchor renders the same loud treatment, naming the anchor."""
+    subject = bundle_at.subject
+    edit = subject.aligned()
+    subject.promote()
     payload = dict(loop_body)
-    payload["operator_gates"] = bundle_at(age_days=0)
+    payload["operator_gates"] = bundle_at(body_edit=edit, age_days=0)
     card = _opgate(payload, tmp_path)
+    assert "SUPERSEDED" in card
+    assert "promoted past" in _text(card)
+    assert "og-num dated" in card and "og-num pos" not in card
+
+
+@pytestmark_node
+def test_an_unverifiable_subject_says_so_and_renders_no_calm_state(
+        bundle_at, loop_body, tmp_path):
+    """Unresolvable trees must not fold into the healthy rendering — and must
+    not fall back to a wall-clock word either."""
+    subject = bundle_at.subject
+    edit = subject.aligned()
+    subject.break_champion()
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(body_edit=edit, age_days=0)
+    card = _opgate(payload, tmp_path)
+    assert "UNVERIFIABLE" in card
+    assert "cannot be established" in _text(card)
+    assert "STALE" not in card
+    assert "og-num dated" in card and "og-num pos" not in card, (
+        "an unverifiable figure was painted as a current gain")
+
+
+@pytestmark_node
+def test_a_relevant_OLD_bundle_renders_CALM(bundle_at, loop_body, tmp_path):
+    """The operator's exact scenario, executed: 3.1 days old, subject unmoved.
+
+    The old contract alarmed STALE here (3-day wall-clock band). The new card
+    must be calm: no alarm banner, the age informational in the summary line
+    with the single-slot guarantee spelled out, and the number in its live
+    colour — not amber.
+    """
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(age_days=3.1)
+    out = _render(payload, "render", tmp_path)
+    card = out["by_id"]["opgate"]
     assert "48.9%" in card
-    assert "STALE" not in card and "ABSENT" not in card and "MALFORMED" not in card
-    assert "og-num pos" in card, "a current, positive figure was not rendered as one"
+    for alarm in ("STALE", "SUPERSEDED", "UNVERIFIABLE", "ABSENT", "MALFORMED"):
+        assert alarm not in card, f"a calm state rendered the {alarm} alarm"
+    assert "og-verdict" not in card, "a banner rendered over the healthy state"
+    text = _text(card)
+    assert "measured 3.1d ago" in text
+    assert "no newer serving measurement exists" in text
+    assert "og-num pos" in card and "og-num dated" not in card, (
+        "age alone ambered a relevant figure")
+    # The badge is the neutral evidence pill, not the stale/amber style.
+    badge = out["text_by_id"].get("opgate-badgetxt") or ""
+    assert badge.startswith("evidence ·"), badge
+    assert out["class_by_id"].get("opgate-badge") == "badge relevant"
+
+
+@pytestmark_node
+def test_an_EXTREME_age_renders_advice_and_stays_calm(
+        bundle_at, loop_body, tmp_path):
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(age_days=45)
+    card = _opgate(payload, tmp_path)
+    assert "consider re-measuring" in _text(card)
+    for alarm in ("STALE", "SUPERSEDED", "UNVERIFIABLE"):
+        assert alarm not in card
+    assert "og-num pos" in card and "og-num dated" not in card, (
+        "the >30d advisory coloured the number amber on its own")
 
 
 @pytestmark_node
@@ -351,14 +652,19 @@ def test_an_absent_bundle_is_rendered_not_hidden(bundle_at, loop_body, tmp_path)
 
 @pytestmark_node
 def test_every_state_renders_a_DISTINCT_card(bundle_at, loop_body, tmp_path):
-    """Structural: no two of the four collapse into the same rendering.
+    """Structural: no two of the FIVE collapse into the same rendering.
 
     Collapsing any pair is how a dead producer renders as a live one — the same
     rule the loop's own banner obeys, applied to the second producer on the page.
+    ``unverifiable`` folding into ``relevant`` is the pair that matters most: an
+    unanswerable comparison rendering as a healthy one.
     """
+    subject = bundle_at.subject
+    promoted_edit = subject.aligned()
     cases = {
-        "fresh": {"age_days": 0},
-        "stale": {"age_days": 30},
+        "relevant": {"age_days": 0},
+        "superseded": {"body_edit": subject.aligned(
+            measured=subject.divergent)},
         "absent": {"delete": True},
         "malformed": {"raw_bytes": b"{not json"},
     }
@@ -367,41 +673,60 @@ def test_every_state_renders_a_DISTINCT_card(bundle_at, loop_body, tmp_path):
         payload = dict(loop_body)
         payload["operator_gates"] = bundle_at(**kwargs)
         seen[label] = _opgate(payload, tmp_path)
-    assert len(set(seen.values())) == 4, (
-        "two or more freshness states render identically: "
+    subject.break_champion()
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(body_edit=promoted_edit)
+    seen["unverifiable"] = _opgate(payload, tmp_path)
+    assert len(set(seen.values())) == 5, (
+        "two or more verdict states render identically: "
         + repr({k: v[:80] for k, v in seen.items()}))
 
 
 @pytestmark_node
 def test_the_loops_freshness_never_dates_the_champion_bundle(
         bundle_at, loop_body, tmp_path):
-    """Two producers on one page, and neither may certify the other's silence.
+    """Two producers on one page, and neither may certify the other's verdict.
 
-    A fresh loop beside a stale bundle must still read STALE on the card. This is
-    the merge's central risk: one page, one header badge, and a reader who dates
-    everything on it by the loudest green thing in view.
+    A live loop beside a SUPERSEDED bundle must still read SUPERSEDED on the
+    card, and the loop's badge must not catch it. This is the merge's central
+    risk: one page, one header badge, and a reader who dates everything on it
+    by the loudest green thing in view. The guard is envelope INDEPENDENCE and
+    it is unchanged from the wall-clock era — only the alarming verdict's name
+    moved (STALE → SUPERSEDED), because for this producer the alarm is now
+    earned by its subject moving rather than by its file aging.
     """
+    subject = bundle_at.subject
     payload = dict(loop_body)
-    payload["operator_gates"] = bundle_at(age_days=30)
+    payload["operator_gates"] = bundle_at(
+        body_edit=subject.aligned(measured=subject.divergent), age_days=30)
     out = _render(payload, "render", tmp_path)
     assert out["by_id"]["opgate"], "the card did not render"
-    assert "STALE" in out["by_id"]["opgate"]
-    assert "STALE" in (out["text_by_id"].get("opgate-badgetxt") or ""), (
+    assert "SUPERSEDED" in out["by_id"]["opgate"]
+    assert "SUPERSEDED" in (out["text_by_id"].get("opgate-badgetxt") or ""), (
         "the champion card's own badge did not carry its own verdict")
     # ...while the loop's own badge is reporting the loop, not the bundle.
-    assert "STALE" not in (out["text_by_id"].get("freshtxt") or ""), (
-        "the loop's badge inherited the bundle's staleness; the two envelopes "
+    assert "SUPERSEDED" not in (out["text_by_id"].get("freshtxt") or ""), (
+        "the loop's badge inherited the bundle's verdict; the two envelopes "
         "have been folded together")
 
     # THE CLASS, NOT ONLY THE WORD. A badge says its verdict twice: in its text
     # and in the className that colours it. Driving the class from the OTHER
-    # producer yields a green pill reading "STALE" — which the two assertions
-    # above both pass. That mutation survived this test until the harness was
-    # taught to report className at all.
+    # producer yields a green pill reading "SUPERSEDED" — which the two
+    # assertions above both pass. That mutation survived this test until the
+    # harness was taught to report className at all.
     classes = out["class_by_id"]
-    assert classes.get("opgate-badge") == "badge stale", (
+    assert classes.get("opgate-badge") == "badge superseded", (
         "the champion badge is not COLOURED by its own producer's state: "
         f"{classes.get('opgate-badge')!r}")
     assert classes.get("fresh") == "badge fresh", (
         "the loop's badge is not coloured by the loop's state: "
         f"{classes.get('fresh')!r}")
+
+    # And the independence holds in the CALM direction too: an old-but-relevant
+    # bundle must not paint the loop old, and the loop's liveness must not be
+    # what made the bundle calm (the calm came from the subject verdict).
+    payload = dict(loop_body)
+    payload["operator_gates"] = bundle_at(age_days=30)
+    out = _render(payload, "render", tmp_path)
+    assert out["class_by_id"].get("opgate-badge") == "badge relevant"
+    assert "30.0d" in (out["text_by_id"].get("opgate-badgetxt") or "")

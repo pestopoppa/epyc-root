@@ -152,17 +152,23 @@ OPERATOR_GATE_BUNDLE_JSON = Path(os.environ.get(
     "/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json"))
 OPERATOR_GATE_BUNDLE_SCHEMA = "epyc.autokernel.operator_gate_bundle.v1"
 
-#: How long a bundle reading is treated as CURRENT.
+#: When AGE alone earns an ADVISORY sentence ("consider re-measuring").
 #:
-#: Not an invented threshold: ``_read_kernel_progression`` below already codifies
-#: the kernel surface's own fresh band at three days, and two exports of the same
-#: surface must not hold two opinions about when they are late. A bundle that
-#: declares its own ``stale_after_s`` still wins, clamped the way
-#: ``loop_status._budget`` clamps: a budget wider than ``panels.MAX_STALE_S``
-#: satisfies "declares a threshold" and monitors nothing, and a budget near zero
-#: makes every reading stale between two emissions.
-OPERATOR_GATE_BUNDLE_STALE_AFTER_S = 3 * 86400.0
-OPERATOR_GATE_BUNDLE_MIN_STALE_AFTER_S = 60.0
+#: NOT a staleness envelope. This producer is EPISODIC — one bundle per human
+#: campaign, not a stream — so a wall-clock envelope is the wrong contract:
+#: the previous 3-day band (borrowed from the kernel surface's streaming
+#: cadence) alarmed the card the moment a perfectly current measurement's
+#: file crossed an arbitrary birthday, and the operator read the loud STALE
+#: banner as "stale/broken — why keep it?". Staleness for this producer is
+#: SUBJECT-ANCHORED (``loop_status.opgate_subject_verdict``): evidence rots
+#: when the champion lineage or the production anchor moves, never by clock.
+#: Age is shown informationally; only an extreme age past this threshold adds
+#: advisory text, and a bundle that declares its own ``stale_after_s`` still
+#: wins as the advisory threshold, clamped the way ``loop_status._budget``
+#: clamps — declared-but-unbounded monitors nothing, near-zero nags on every
+#: reading.
+OPERATOR_GATE_BUNDLE_ADVISORY_AFTER_S = 30 * 86400.0
+OPERATOR_GATE_BUNDLE_MIN_ADVISORY_AFTER_S = 60.0
 
 #: What ABSENCE means here, in one sentence, travelling with every reading. The
 #: card this feeds is the most prominent number on ``/kernel``; a card that says
@@ -173,11 +179,17 @@ OPERATOR_GATE_BUNDLE_ABSENCE_MEANS = (
     "emitted the carrier at all, so this surface has no operator evidence to "
     "show either way.")
 
-#: The four freshness states, deliberately distinct. ``absent`` and ``stale`` are
-#: different facts about different subsystems: one points the investigation at
-#: whether the emitter exists, the other at whether it still runs. Collapsing
-#: them is how a dead producer renders as a live one.
-OPERATOR_GATE_BUNDLE_STATES = ("fresh", "stale", "absent", "malformed")
+#: The five verdicts, deliberately distinct. ``relevant`` / ``superseded`` /
+#: ``unverifiable`` are the subject-anchored verdicts for a readable bundle
+#: (``loop_status.OPGATE_SUBJECT_STATES``); ``absent`` and ``malformed`` are
+#: facts about the artifact itself — one points the investigation at whether
+#: the emitter exists, the other at its writer. There is no ``fresh``/``stale``
+#: here any more: a wall clock cannot alarm this episodic producer, and folding
+#: ``unverifiable`` into ``relevant`` is how an unanswerable comparison renders
+#: as a healthy one.
+OPERATOR_GATE_BUNDLE_STATES = (
+    loop_status.OPGATE_RELEVANT, loop_status.OPGATE_SUPERSEDED,
+    loop_status.OPGATE_UNVERIFIABLE, "absent", "malformed")
 
 
 def _read_operator_gate_bundle() -> dict:
@@ -195,6 +207,20 @@ def _read_operator_gate_bundle() -> dict:
     emitter died. Authority answers "may this number be shown"; freshness answers
     "is it still true", and the card needs both.
 
+    STALENESS IS SUBJECT-ANCHORED, NOT WALL-CLOCK. The first envelope fixed the
+    forever-fresh defect with a 3-day wall-clock band borrowed from a STREAMING
+    surface, which swapped one wrong contract for another: this producer is
+    EPISODIC (one bundle per human campaign), so a perfectly current measurement
+    alarmed STALE three days after its own emission with nothing having changed,
+    and the operator read the banner as "stale/broken -- why keep it?". Evidence
+    rots when its SUBJECT moves, and the subject is computable:
+    ``loop_status.opgate_subject_verdict`` folds the measured commit's
+    champion-lineage relationship and the production anchor's identity with the
+    currently-resolved frozen production kernel into ``relevant`` /
+    ``superseded`` / ``unverifiable``. Age is informational -- shown in the
+    envelope, and past the advisory threshold it adds an ADVISORY sentence --
+    but it never sets the state and never alarms the card on its own.
+
     The envelope rides in the returned dict rather than in a parallel structure so
     no consumer can pick up the number without also picking up its date.
 
@@ -208,21 +234,29 @@ def _read_operator_gate_bundle() -> dict:
     now = time.time()
 
     def _budget(value: object) -> float:
+        # The ADVISORY threshold, not a staleness gate: crossing it adds a
+        # "consider re-measuring" sentence and nothing else.
         try:
             declared = float(value)  # type: ignore[arg-type]
         except (TypeError, ValueError):
-            return OPERATOR_GATE_BUNDLE_STALE_AFTER_S
+            return OPERATOR_GATE_BUNDLE_ADVISORY_AFTER_S
         if isinstance(value, bool) or not math.isfinite(declared) or declared <= 0:
-            return OPERATOR_GATE_BUNDLE_STALE_AFTER_S
-        return max(OPERATOR_GATE_BUNDLE_MIN_STALE_AFTER_S,
+            return OPERATOR_GATE_BUNDLE_ADVISORY_AFTER_S
+        return max(OPERATOR_GATE_BUNDLE_MIN_ADVISORY_AFTER_S,
                    min(declared, float(panels.MAX_STALE_S)))
 
     def _envelope(state: str, detail: str, *, generated_at: object = None,
                   source: str | None = None, age_s: float | None = None,
-                  stale_after_s: float | None = None) -> dict:
-        return {"state": state, "age_s": age_s, "stale_after_s": stale_after_s,
+                  advisory_after_s: float | None = None,
+                  advisory: str | None = None, basis: str = "artifact",
+                  moved: list | None = None) -> dict:
+        # ``basis`` says which contract produced ``state``: "subject" for the
+        # relevance verdicts, "artifact" for absent/malformed. There is no
+        # wall-clock basis to name, by design.
+        return {"state": state, "age_s": age_s,
+                "advisory_after_s": advisory_after_s, "advisory": advisory,
                 "generated_at": generated_at, "generated_at_source": source,
-                "detail": detail}
+                "basis": basis, "moved": moved or [], "detail": detail}
 
     def _unavailable(error: str, *, present: bool, state: str,
                      detail: str) -> dict:
@@ -306,42 +340,56 @@ def _read_operator_gate_bundle() -> dict:
         else:
             source = "file_mtime"
             stamped = datetime.fromtimestamp(written, timezone.utc).isoformat()
+
+    # THE VERDICT IS THE SUBJECT'S, NOT THE CLOCK'S. Computed once per reading
+    # from git facts (champion lineage + current frozen production), reused for
+    # both the envelope and the ``champion_relationship`` the card renders —
+    # one ancestry query, not two.
+    verdict = loop_status.opgate_subject_verdict(
+        champion.get("commit"), anchor.get("commit"))
+
     if written is None:
         fresh = _envelope(
             "malformed",
             ("this bundle carries no date this reader could parse, and the file "
              "could not be stat()ed either -- a number nobody can date cannot be "
              "shown as current"),
-            generated_at=None, source=None, stale_after_s=budget)
+            generated_at=None, source=None, advisory_after_s=budget)
     else:
         age = now - written
         if age < 0 and -age > panels.FUTURE_SKEW_TOLERANCE_S:
-            # A reading dated in the FUTURE cannot age, so it would read fresh
-            # forever however long the emitter had been dead. Same rule as
-            # panels.FUTURE_SKEW_TOLERANCE_S, applied here so page and fold agree.
+            # A reading dated in the FUTURE has no honest age to show. Same
+            # rule as panels.FUTURE_SKEW_TOLERANCE_S, applied here so page and
+            # fold agree: an impossible date is an emitter defect, reported as
+            # such rather than rendered as an informational age.
             fresh = _envelope(
                 "malformed",
                 (f"this bundle is dated {-age:.0f}s IN THE FUTURE; a future "
-                 "timestamp cannot age, so it is treated as undated rather than "
-                 "as fresh"),
-                generated_at=stamped, source=source, stale_after_s=budget)
+                 "timestamp cannot age, so it is treated as undated rather "
+                 "than dated"),
+                generated_at=stamped, source=source, advisory_after_s=budget)
         else:
             age = max(0.0, age)
             mtime_note = ("" if source == "body_generated_at" else
                           " (dated by file mtime: the bundle carries no "
                           "generated_at of its own, so this is when the file was "
                           "last written, not necessarily when it was measured)")
+            age_phrase = (f"measured {age / 86400:.1f} d ago" if age >= 86400
+                          else f"measured {age / 3600:.1f} h ago")
+            # Age is INFORMATIONAL. Past the advisory threshold it earns one
+            # advisory sentence — text, never a state, never an alarm.
+            advisory = None
+            if age > budget:
+                advisory = (f"{age_phrase} — consider re-measuring; this is "
+                            "advisory only, because age alone never alarms an "
+                            "episodic producer")
             fresh = _envelope(
-                "fresh" if age <= budget else "stale",
-                (f"operator-gated evidence written {age / 3600:.1f} h ago, within "
-                 f"its {budget / 86400:.1f} d envelope{mtime_note}"
-                 if age <= budget else
-                 f"operator-gated evidence was last written {age / 86400:.1f} d "
-                 f"ago, past its {budget / 86400:.1f} d envelope -- the figures "
-                 f"below are the LAST bundle the emitter wrote, not current "
-                 f"ones{mtime_note}"),
+                verdict["state"],
+                f"{verdict['detail']}; {age_phrase}{mtime_note}"
+                + (f". ADVISORY: {advisory}" if advisory else ""),
                 generated_at=stamped, source=source, age_s=round(age, 1),
-                stale_after_s=budget)
+                advisory_after_s=budget, advisory=advisory,
+                basis="subject", moved=verdict["moved"])
 
     return {
         "available": True,
@@ -354,9 +402,10 @@ def _read_operator_gate_bundle() -> dict:
         # as prose; a reconciliation merge then made the measured commit a
         # PARENT of the champion, and the line kept rendering the opposite of
         # the truth. Four verdicts (tip / ancestor / divergent / unresolvable),
-        # each earned by `loop_status.champion_relationship` at request time.
-        "champion_relationship": loop_status.champion_relationship(
-            champion.get("commit")),
+        # each earned at request time — served from the SAME resolution the
+        # subject verdict above was computed from, so the envelope's state and
+        # this relationship can never disagree about what git said.
+        "champion_relationship": verdict["relationship"],
         # The baseline, by name. Passed through verbatim — the hub asserts
         # nothing about it and does not compare it to any constant of its own;
         # it is the EMITTER's statement of what it measured against, and the
