@@ -122,6 +122,46 @@ investigation; Appendix)
   through the same bus path. Nothing above about physical claims, residency evidence or
   drain-at-boundary changes.
 
+
+## The Single Champion — one aggregate per production kernel tree, between promotions
+
+**Ratified 2026-08-31 (operator, verbatim requirement).** Inference research owns **ONE SINGLE
+CHAMPION PER PRODUCTION KERNEL TREE**, each aggregating **all** improvement work done on that
+tree between its production promotions — manual inference research AND AutoKernel keeps, merged
+into one branch, always precompiled, always carrying a current measured standing versus that
+tree's frozen production state.
+
+The production kernel SET is three frozen trees (`llama.cpp`, `whisper.cpp`, `qwentts.cpp` —
+CLAUDE.md § the 2026-08-11 kernel-set freeze), so up to three champions may exist, one each.
+Today only the `llama.cpp` champion is active; an STT or TTS champion follows the same contract
+if and when that work opens. **The uniqueness constraint is per tree**: two champion lineages
+for the same tree is a defect the moment the second one exists.
+
+- **The lifecycle is a cycle, not a tree.** Promotion N → that tree's champion := its production
+  state (the aggregate is empty) → every improvement on that tree merges IN → promotion N+1 →
+  reset. "Seed the champion from frozen production" is correct in exactly ONE moment: immediately
+  after that tree's promotion. Applied mid-cycle it silently discards the accumulated research.
+- **The loop anchors on its tree's champion branch tip and commits keeps onto it**; manual
+  research admits through the documented admission pipeline onto the same branch. Never fork a
+  sibling "champion" from the frozen base.
+- **Every champion change updates the aggregate standing**: the measured performance number(s)
+  versus the CURRENT frozen production state of that tree — resolved live from the frozen tree,
+  never a pinned commit that goes stale at the next promotion — and the artifact-derived feature
+  list, refreshed automatically at every advance AND at loop startup. A restart may never present
+  a stale headline.
+- **A champion exists so that promotion is "take the one precompiled branch"** — never a hunt
+  across worktrees. Whatever is not merged into its tree's champion does not exist at promotion
+  time.
+- **Enforced in code, not memory**: `autokernel.loop.run` refuses to start if its worktree or
+  anchor provenance disagrees with the champion branch tip. Do not bypass or weaken that
+  refusal; a run that cannot prove its anchor is the champion is run 18/19/20 again.
+
+(origin: INC-20260831-champion-lineage-fork — the rebuilt loop was seeded from bare frozen v9
+while the populated llama.cpp aggregate `ak/champion/llama-cpp-0db32c06e3e5` (+3371/−146,
+DFlash2 + iqk + speculative) sat one branch over; runs 18–20 optimised the wrong base and the
+dashboard showed two "champions". Operator: "inference research should always own ONE SINGLE
+CHAMPION aggregating all improvement work done BETWEEN production promotions", refined
+2026-08-31: "one single champion for EACH production kernel tree".)
 ## Retry Policy
 
 - Maximum 3 retries for the same failing command.
