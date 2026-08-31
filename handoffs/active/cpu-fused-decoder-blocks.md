@@ -125,6 +125,10 @@ Checklist (the dashboard gate — flipped as the phases land):
   gate is effectively 1 — the mixed = the input — while the fused's manual hc_mix (per-stream
   rms → lo/gate → mean) differs. **The first divergence is the hc_mix's rms_norm/gate
   behavior.**
-- Next action: understand the graph's rms_norm norm~1 / gate=1 behavior for the [2560,4,1]
-  input (norm/eps semantics) and mirror the graph's exact hc_mix math in the fused path →
-  logit diff ≤1e-4 → Paris → arch suite → Phase 4.
+- **The graph's step-1 rms_norm is identity-like** (b0edc7177): the batch decode's rms_norm
+  output is properly normalized (-0.0309...), but the step-1's output equals the input exactly
+  (norm ~1) — the fused's per-stream rms gives [0.965, 1.81, 1.54, 1.36]. The fused's hc_mix
+  diverges at the very first rms_norm.
+- Next action: determine why the graph's step-1 rms_norm yields norm~1 (the [2560,4,1] ubatch
+  norm/eps semantics vs the batch's [2560,4,5]) and mirror the graph's exact hc_mix math in the
+  fused path → logit diff ≤1e-4 → Paris → arch suite → Phase 4.
