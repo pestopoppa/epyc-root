@@ -131,6 +131,12 @@ plain dirs via rm.
 Also observed during execution: a live llama-server is now serving the INF-68
 `IQ4_XS-uniform` artifact (relevant to OP-30 — someone is already running the uniform file).
 
+**GLM-5.2 EXECUTED (same day, second ruling)**: the operator resolved OP-8 as KILL ("we have
+GLM-5.3-flash to test") — `models/GLM-5.2-UD-IQ2_M/` (223 G) deleted, ledgered, the GLM-MoE-DSA
+evaluation handoff completed with the verdict, and the transferable DSA findings seeded into
+`handoffs/active/glm53-flash-evaluation.md` (INF-69; GLM-5.3-Flash is arch `glm5next` — new arch,
+same DSA/NextN surface). **Free space after both executions: 87 G → 480 G (87%).**
+
 ## Execution contract (when the operator picks)
 
 Named paths one at a time (no wildcards, no parent-dir `rm -rf`), deletion-ledger entries in the

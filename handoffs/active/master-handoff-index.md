@@ -38,8 +38,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-27 | ~20 unselected Stage-2b sources from the Hawkeye batch — QiMeng-Xpiler `2505.02146` highest-value (only AMD/HIP-touching artifact in the line): select dives or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-28 | AutoKernel D1–D3 bundle: amend P-AK-SEARCH-1 denial 4 (reuse of a prior record); add a T-screen tier below T0; extend champion.py to carry a build recipe as a champion arm (recommend adopting NEITHER standing config win) | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) §Operator decision package | 2026-08-28 |
 | OP-30 | Adopt uniform IQ4_XS for qwen4exp CPU work? Measured +15% decode vs UD (evidence @0dbc9992); options A/B/C, rec **B** (comparison baseline now, serving unchanged) — also gates the INF-67 headline denominator | [qwen4exp-uniform-iq4xs-baseline-control.md](qwen4exp-uniform-iq4xs-baseline-control.md) §Operator decision | 2026-08-31 |
-| OP-31 | Disk reclaim, minimal set EXECUTED 2026-08-31 (~212 G freed, 268 G free): remaining decisions — Tier D pick-list (~698 G, purgeable in principle), 4 HELD items whose menu rationale was false (Coder-32B 51 G preserved spec; MTP-Q8_0 28 G rollback anchor; VL-7B 5.7 G rollback target; preserved-tree 14 G DIRTY worktree of the production clone), the 186 G `opencode.db` owner conversation, GLM-5.2 222 G (via OP-8) | [2026-08-31-disk-reclaim-menu.md](../../progress/2026-08/2026-08-31-disk-reclaim-menu.md) §EXECUTED | 2026-08-31 |
-| OP-8 | GLM-5.2 GO/WAIT/KILL verdict — also governs **222 GB** of disk | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | 2026-08-10 |
+| OP-31 | Disk reclaim, minimal set EXECUTED 2026-08-31 (~212 G freed, 268 G free): remaining decisions — Tier D pick-list (~698 G, purgeable in principle), 4 HELD items whose menu rationale was false (Coder-32B 51 G preserved spec; MTP-Q8_0 28 G rollback anchor; VL-7B 5.7 G rollback target; preserved-tree 14 G DIRTY worktree of the production clone), the 186 G `opencode.db` owner conversation | [2026-08-31-disk-reclaim-menu.md](../../progress/2026-08/2026-08-31-disk-reclaim-menu.md) §EXECUTED | 2026-08-31 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-11 | `main` cannot push — 90 ahead / 111 behind `origin/main`, and **103 files changed on BOTH sides**, so `-s ours` would silently revert origin's half of each. Real three-way merge in flight (other session); D9-ack needed to land it | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) §OP-11 | 2026-08-16 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
@@ -74,7 +73,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 55 | 482 | 12 | 2026-07-29 |
+| inference-research | 55 | 476 | 12 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 45 | 355 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 32 | 11 | 2026-07-29 |
