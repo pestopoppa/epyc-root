@@ -188,6 +188,13 @@ class _Store(unittest.TestCase):
         os.environ[loop_status.FROZEN_TREE_ENV] = str(self.prod_tree)
         self.addCleanup(self._restore_env, loop_status.FROZEN_TREE_ENV,
                         prior_tree)
+        # The champion-tip resolver points at a NONEXISTENT path by default, so
+        # tests exercise the last-run fallback unless they build a champion
+        # repo deliberately — no test may lean on the real host's champ tree.
+        prior_champ = os.environ.get(loop_status.CHAMPION_TREE_ENV)
+        os.environ[loop_status.CHAMPION_TREE_ENV] = str(self.root / "no-champ-tree")
+        self.addCleanup(self._restore_env, loop_status.CHAMPION_TREE_ENV,
+                        prior_champ)
         self.prior_gate = S.OPERATOR_GATE_BUNDLE_JSON
         self.addCleanup(setattr, S, "OPERATOR_GATE_BUNDLE_JSON", self.prior_gate)
         with S._watchdog_lock:
@@ -416,6 +423,50 @@ class Contract(_Store):
         # ORTHOGONALITY: a superseded CHAMPION is not a superseded BASELINE.
         self.assertIsNone(got["baseline_supersession"])
         self.assertEqual(got["baseline_check"], "current")
+
+    def _champion_repo(self, at_commit_of: str | None = None) -> tuple[Path, str]:
+        """A temp git repo posing as the champion tree, attached to an
+        ak/champion/* branch. Returns (path, HEAD)."""
+        path = self.root / "champ-tree"
+        head = make_production_repo(path, branch="ak/champion/llama-cpp-test")
+        os.environ[loop_status.CHAMPION_TREE_ENV] = str(path)
+        return path, head
+
+    def test_the_branch_tip_outranks_a_dead_runs_status_file(self):
+        """INC geometry, 2026-08-31: run 20's dying status named the
+        pre-reconciliation head while the merge moved the branch; the panel
+        called a fresh measurement of the REAL champion superseded. The tip is
+        the champion (the single-champion invariant); the status file is one
+        run's view and outlives the run."""
+        path, tip = self._champion_repo()
+        stale = dict(recorded_loop());  stale["champion_head"] = "4" * 40
+        self.write_loop(stale)
+        self.write_champion(self.bundle(champion_commit=tip))
+        got = self.block()
+        self.assertIsNone(got["supersession"],
+                          "measured == branch tip must never read superseded, "
+                          "whatever a dead run's status file says")
+        self.assertEqual(got["champion"]["branch_tip"], tip)
+
+    def test_a_tip_past_the_measurement_supersedes_with_its_source_named(self):
+        path, _ = self._champion_repo()
+        older = real_bundle()["champion"]["commit"]
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle(champion_commit=older))
+        got = self.block()
+        self.assertIsNotNone(got["supersession"])
+        self.assertEqual(got["supersession"]["current_champion_source"],
+                         "the champion branch tip")
+
+    def test_an_unresolvable_tree_falls_back_to_the_last_runs_view(self):
+        self.write_loop(recorded_loop())
+        older = real_bundle()["champion"]["commit"]
+        self.write_champion(self.bundle(champion_commit=older))
+        got = self.block()
+        self.assertIsNotNone(got["supersession"])
+        self.assertEqual(got["supersession"]["current_champion_source"],
+                         "the last loop run's status")
+        self.assertIn("last loop run", got["supersession"]["detail"])
 
     def test_the_same_commit_raises_no_supersession(self):
         """Compliant-path control: the flag must not fire on every reading."""

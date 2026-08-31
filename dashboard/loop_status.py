@@ -591,6 +591,58 @@ def resolve_production(tree: Optional[Path] = None) -> dict:
     out["resolved"] = True
     return out
 
+#: Where the champion BRANCH lives. The single-champion invariant (ratified
+#: 2026-08-31, OPERATING_CONSTRAINTS.md: one champion per production kernel tree)
+#: makes the BRANCH TIP the definition of "the current champion". The loop status
+#: file's `champion_head` is one RUN's view and outlives the run: run 20's dying
+#: status named its own (pre-reconciliation) branch tip while the merge moved the
+#: champion, and this panel called a fresh measurement of the REAL champion
+#: superseded. Branch-pattern check, not a pinned name: the canonical branch is
+#: renamed at each production promotion (`ak/champion/<tree>-<anchor12>`).
+CHAMPION_BRANCH_PREFIX = "ak/champion/"
+
+
+CHAMPION_TREE_ENV = "AUTOKERNEL_CHAMPION_TREE"
+
+
+def champion_tree() -> Path:
+    return Path(os.environ.get(CHAMPION_TREE_ENV, "/mnt/raid0/llm/tmp/champ2"))
+
+
+def resolve_champion(tree: Optional[Path] = None) -> dict:
+    """``{resolved, commit, branch, error}`` for the champion branch tip.
+
+    Same contract shape as :func:`resolve_production`, same refusal to fall
+    back to a remembered sha. ``resolved`` requires an attached HEAD on an
+    ``ak/champion/*`` branch.
+    """
+    tree = champion_tree() if tree is None else Path(tree)
+    out = {"resolved": False, "commit": None, "branch": None,
+           "tree": str(tree), "error": None}
+    if not (tree / ".git").exists():
+        out["error"] = f"no champion worktree at {tree} (no .git)"
+        return out
+    try:
+        commit = _git_read(tree, "rev-parse", "HEAD")
+        branch = _git_read(tree, "branch", "--show-current")
+    except (RuntimeError, OSError, subprocess.SubprocessError) as exc:
+        out["error"] = f"git could not read the champion tree: {exc}"
+        return out
+    if not _FULL_SHA.fullmatch(commit):
+        out["error"] = f"champion HEAD resolved to {commit!r}, not a full sha"
+        return out
+    out["commit"] = commit
+    out["branch"] = branch or None
+    if not branch or not branch.startswith(CHAMPION_BRANCH_PREFIX):
+        out["error"] = (f"the champion tree at {tree} is on "
+                        f"{branch or 'a DETACHED HEAD'!s}, not an "
+                        f"{CHAMPION_BRANCH_PREFIX}* branch — its HEAD cannot "
+                        "be trusted to be the champion")
+        return out
+    out["resolved"] = True
+    return out
+
+
 CHAMPION_SCHEMA = "epyc.autokernel.champion_vs_production.v1"
 CHAMPION_FILENAME = "champion-vs-production.json"
 #: A cumulative A/B is a deliberate, expensive act, not a per-iteration beat, so
@@ -847,7 +899,8 @@ def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
 def champion_snapshot(root: Optional[Path] = None, *,
                       now: Optional[float] = None,
                       champion_head: Optional[str] = None,
-                      production: Optional[Mapping[str, Any]] = None) -> dict:
+                      production: Optional[Mapping[str, Any]] = None,
+                      champion: Optional[Mapping[str, Any]] = None) -> dict:
     """The wire block for the champion headline.
 
     ``champion_head`` is the loop's CURRENT champion, passed in rather than
@@ -866,6 +919,7 @@ def champion_snapshot(root: Optional[Path] = None, *,
     both commits named — not refused and not fresh.
     """
     prod = dict(production) if production is not None else resolve_production()
+    tip = dict(champion) if champion is not None else resolve_champion()
     report = read_champion(root)
     fresh = champion_freshness(report, now=now)
     body = report.get("body")
@@ -885,17 +939,28 @@ def champion_snapshot(root: Optional[Path] = None, *,
         measured_commit = champ.get("commit")
         measured_commit = str(measured_commit) if measured_commit else None
 
+    # WHO defines "the current champion": the BRANCH TIP when it resolves (the
+    # single-champion invariant — the tip IS the champion), and only failing
+    # that, the loop status file's champion_head, which is one run's view and
+    # OUTLIVES the run. Deciding against the status file while a reconciliation
+    # merge moved the branch made this panel call a fresh measurement of the
+    # real champion "superseded" — inverted, with the truth one rev-parse away.
     supersession = None
-    if measured_commit and champion_head and measured_commit != champion_head:
+    if tip.get("resolved"):
+        current, current_src = tip["commit"], "the champion branch tip"
+    else:
+        current, current_src = champion_head, "the last loop run's status"
+    if measured_commit and current and measured_commit != current:
         supersession = {
             "measured_for": measured_commit,
-            "current_champion": champion_head,
+            "current_champion": current,
+            "current_champion_source": current_src,
             "detail": (
-                f"this A/B measured champion {measured_commit[:12]}; the loop's "
-                f"champion is now {str(champion_head)[:12]}. The number stands "
-                f"for the tree it measured and for no other. The commits added "
-                f"since were screened as marginals against an advancing anchor "
-                f"and cannot be added to it."),
+                f"this A/B measured champion {measured_commit[:12]}; the "
+                f"current champion per {current_src} is {str(current)[:12]}. "
+                f"The number stands for the tree it measured and for no other. "
+                f"The commits added since were screened as marginals against "
+                f"an advancing anchor and cannot be added to it."),
         }
 
     # THE OTHER SIDE OF THE SAME COIN, and orthogonal to it on purpose: the
@@ -990,7 +1055,10 @@ def champion_snapshot(root: Optional[Path] = None, *,
         "baseline_check": baseline_check,
         "baseline_supersession": baseline_supersession,
         "champion": {"measured_commit": measured_commit,
-                     "loop_champion_head": champion_head},
+                     "loop_champion_head": champion_head,
+                     "branch_tip": tip.get("commit"),
+                     "branch": tip.get("branch"),
+                     "tip_error": tip.get("error")},
         "supersession": supersession,
         "effect_fraction": effect,
         "metric": (body or {}).get("metric"),
