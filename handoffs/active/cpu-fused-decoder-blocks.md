@@ -119,10 +119,12 @@ Checklist (the dashboard gate — flipped as the phases land):
   fused attention now uses the session's manual `fused_attn_qsa` (the NMSE-ok path).
 - **Current**: the complete fused decode runs all 8 validation steps without crashing or NaN;
   the per-step logit diff vs the graph is O(10). The same-position layer comparison
-  (env-gated dumps, commit `bf0425286`) shows layer 0 differs by ~5.8 with identical inputs —
-  **the first divergence is the hc_mix**: the graph's layer-0 `hc_mixed` = the input embedding
-  exactly (the DSV4_HC_PRE weighted sum, Σpre=1), the fused's manual hc_mix (per-stream rms +
-  lo/gate/mean) differs. The qkv/conv/GDN downstream inherit it.
-- Next action: determine the graph's actual hc_mix for the qwen4exp (the deepseek4 DSV4 HC
-  machinery — `hc_fn` [hc_dim,24] → mixes → pre/post/comb — vs the manual build_hc_mix) and
-  mirror it in the fused path → logit diff ≤1e-4 → Paris → arch suite → Phase 4.
+  (env-gated dumps) shows layer 0 differs by ~5.8 with identical inputs. The op-id mapping is
+  corrected (aae8cae1d): the graph's layer-0 hc_mix runs the MANUAL build_hc_mix (no DSV4
+  machinery — no hc_fn tensor), but its rms_norm passes the input through (norm ~1) and the
+  gate is effectively 1 — the mixed = the input — while the fused's manual hc_mix (per-stream
+  rms → lo/gate → mean) differs. **The first divergence is the hc_mix's rms_norm/gate
+  behavior.**
+- Next action: understand the graph's rms_norm norm~1 / gate=1 behavior for the [2560,4,1]
+  input (norm/eps semantics) and mirror the graph's exact hc_mix math in the fused path →
+  logit diff ≤1e-4 → Paris → arch suite → Phase 4.
