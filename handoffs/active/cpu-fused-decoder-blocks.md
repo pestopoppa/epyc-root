@@ -140,5 +140,15 @@ Checklist (the dashboard gate — flipped as the phases land):
 - **The corruption mechanism** (3fccd0ddf): the harness → ubatch → set_inputs all carry the
   correct token 11751, but **the graph compute overwrites the inp_tokens tensor** (the data
   becomes 0x3e8fe571, a float bit pattern) — the embedding gather then reads a garbage row.
-- Next action: find which graph node writes into the inp_tokens memory (the scheduler buffer
-  overlap at the 1-token ubatch), then the logit diff ≤1e-4 → Paris → arch suite → Phase 4.
+- Fixed (ac4532bab, 2794abc7f): the gallocr never frees input tensors; zero-size allocs take
+  no slot; the fused PLE n-gram predecessor order was double-reversed. The graph is now
+  bit-stable at step 1 (token 11751 intact through compute).
+- PLE component verification (a56a79cc0): token embed, rows, key, key_n, value are ALL
+  graph==fused EXACT (verified via pre-compute eval-callback dumps; post-compute dumps
+  read freed memory and were the source of the earlier phantom divergences).
+- REMAINING: the graph's PLE query_n (~0.60) vs the fused (1.07) — the fused matches the
+  independent rms(embed)*qn expectation (1.09); the graph's implied hidden deviates from
+  the embed element-wise. The graph is the production reference, so the query's hidden
+  wiring (the hc_init) is the suspect.
+- Next action: resolve the query_n/hidden discrepancy, then the logit diff ≤1e-4 → Paris →
+  arch suite → Phase 4.
