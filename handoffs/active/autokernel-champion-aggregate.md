@@ -10,7 +10,7 @@ fixed production anchor.
 
 | task | what to do |
 |---|---|
-| **CH-14** | Write the manual-research loop runbook (admit → gate → attest) in `docs/guides/`, stating the authority boundary explicitly. |
+| **CH-14** | Write the manual-research loop runbook — START FROM `scripts/benchmark/serving_evidence_refresh_runbook.md` (research repo, 2026-08-31): the serving-side procedure is now fully documented+scripted there (emitter chain, ceiling derivation, claim/residency gates); CH-14's remaining scope is the authority-boundary statement in docs/guides/ wrapping it.  (admit → gate → attest) in `docs/guides/`, stating the authority boundary explicitly. |
 | **CH-16** | Correct the loop champion's inflated per-commit claims at the branch tip and in `program.md` — UNBLOCKED 2026-08-31 (branch merged + tagged); coordinate with INF-66 R21-3 (if the branch is retired, the note lands at tag `ak/pre-reconcile-loop-20260831`). |
 | **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
 | **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
