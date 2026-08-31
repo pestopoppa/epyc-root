@@ -118,7 +118,11 @@ Checklist (the dashboard gate — flipped as the phases land):
   isolation, all inputs finite; the graph never uses it — flash_attn=false → manual MHA). The
   fused attention now uses the session's manual `fused_attn_qsa` (the NMSE-ok path).
 - **Current**: the complete fused decode runs all 8 validation steps without crashing or NaN;
-  the per-step logit diff vs the graph is still O(10). Layers 0-2 (GDN/PLE) pass the input
-  difference through unchanged; the remaining numerics bug is in the attn layers or the head.
-- Next action: per-layer same-position comparison (snapshot + `GGML_FUSED_LAYER_CMP` wired) →
-  logit diff ≤1e-4 → greedy "Paris" generation → arch suite → Phase 4 thread-pool integration.
+  the per-step logit diff vs the graph is O(10). The same-position layer comparison
+  (env-gated dumps, commit `bf0425286`) shows layer 0 differs by ~5.8 with identical inputs —
+  **the first divergence is the hc_mix**: the graph's layer-0 `hc_mixed` = the input embedding
+  exactly (the DSV4_HC_PRE weighted sum, Σpre=1), the fused's manual hc_mix (per-stream rms +
+  lo/gate/mean) differs. The qkv/conv/GDN downstream inherit it.
+- Next action: determine the graph's actual hc_mix for the qwen4exp (the deepseek4 DSV4 HC
+  machinery — `hc_fn` [hc_dim,24] → mixes → pre/post/comb — vs the manual build_hc_mix) and
+  mirror it in the fused path → logit diff ≤1e-4 → Paris → arch suite → Phase 4.
