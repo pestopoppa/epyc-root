@@ -5,7 +5,7 @@
 **Priority**: HIGH — the last identified path to 20-60 t/s batch-1 CPU decode
 **Categories**: hardware_optimization, inference_serving, local_inference, kernel_architecture
 **Workstream**: Inference Acceleration
-**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-64)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-67; the kernel-tree commit tags historically said INF-64)
 **Related**:
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (INF-10) — the direct predecessor: same diagnosis (barrier/op-count-bound, not BW), 4 fusion arms REFUTED, the +2.6% DeltaNet-native-fused-wqkv precedent this project scales up
 - [`batched-decode-measurement.md`](batched-decode-measurement.md) — the NUMA×placement canonical recipe (interleave+no-mmap), the same family's reference numbers
@@ -114,9 +114,12 @@ Checklist (the dashboard gate — flipped as the phases land):
   (must copy tgd's state region, not ts), the F16 attention/indexer caches (staged F32 view +
   cast-back writes), the IMROPE 4-position format, the rope/flash kernel wdata + threadpool,
   and the meta-only result ctx (logits into the previous graph's sched-known t_logits).
-- **The flash_attn_ext kernel is NaN on this model's real activations** (reproduced in
-  isolation, all inputs finite; the graph never uses it — flash_attn=false → manual MHA). The
-  fused attention now uses the session's manual `fused_attn_qsa` (the NMSE-ok path).
+- ~~flash_attn_ext is NaN on this model's real activations~~ — **RETRACTED (2026-08-31
+  external audit)**: the NaN was the repro's own staging bug — it staged Q as F16 while the
+  CPU kernel reads Q as `const float*` unconditionally (4096 NaNs = 16 overflowed heads × 256).
+  The graph never uses flash (flash_attn=false → manual MHA), but the flash staging with F32 Q
+  was the better path and will be retried in the ATTN rewrite. The manual `fused_attn_qsa`
+  used meanwhile is itself broken (see the rewrite section).
 - **Current**: the complete fused decode runs all 8 validation steps without crashing or NaN;
   the per-step logit diff vs the graph is O(10). The same-position layer comparison
   (env-gated dumps) shows layer 0 differs by ~5.8 with identical inputs. The op-id mapping is
@@ -133,21 +136,25 @@ Checklist (the dashboard gate — flipped as the phases land):
   values (rms [0.451, 0.479, 0.153, 0.284]) — the graph's layer-0 input is NOT the embedding
   repeated 4× — while the fused path builds res_hc as 4 identical copies. The graph's rms_norm
   is identity on its input (gamma ≈ 1.05). The stream-dependent input is the root divergence.
-- **ROOT CAUSE confirmed** (f36ea436c): the graph's step-1 get_rows tokens node holds
-  1056514818 (the harness fed token 11751) — the graph's embedding gather reads a garbage row,
-  the graph's layer-0 input is corrupted (the rms_norm "identity" was the corrupted input). The
-  fused path reads the correct embedding (maxdiff 0 vs the GGUF dequant).
-- **The corruption mechanism** (3fccd0ddf): the harness → ubatch → set_inputs all carry the
-  correct token 11751, but **the graph compute overwrites the inp_tokens tensor** (the data
-  becomes 0x3e8fe571, a float bit pattern) — the embedding gather then reads a garbage row.
-- Fixed (ac4532bab, 2794abc7f): the gallocr never frees input tensors; zero-size allocs take
-  no slot; the fused PLE n-gram predecessor order was double-reversed. The graph is now
-  bit-stable at step 1 (token 11751 intact through compute).
+- ~~ROOT CAUSE confirmed~~ (f36ea436c / 3fccd0ddf / ac4532bab / 2794abc7f) — **RETRACTED as a
+  correctness bug by the 2026-08-31 external audit**: the gallocr mechanism is real (zero-size
+  requests alias live free blocks without consuming them; input tensors are freed after last
+  use; the gate scalar really overwrites the token's bytes — and the pre-fix allocator is
+  byte-identical to upstream), but the graph's only consumer of inp_tokens is node 0 and the
+  overwrite happens at node 144+ — nothing ever reads the corrupted bytes. The graph greedy was
+  13 hours before the fix and 13 after; the fused path was the diverging side all along. The
+  "evidence" was post-compute dumps of memory-reusing buffers (the instrumentation class the
+  session had already declared unreliable). The patch changed the debugger's view, not the
+  computation: NOT a correctness bug, do NOT upstream it as one; the graph-path validation
+  stands. (The fused PLE n-gram predecessor-order fix in 2794abc7f was a genuine fused-side bug.)
 - PLE component verification (a56a79cc0): token embed, rows, key, key_n, value are ALL
   graph==fused EXACT (verified via pre-compute eval-callback dumps; post-compute dumps
   read freed memory and were the source of the earlier phantom divergences).
-- BREAKTHROUGH (e3ddf1583): the "query weight differs" was a mismatched dump (1.02417 was a
-  layer-0 hc_mix norm MUL; the true graph query weight = 0.826172 = the fused's read). The
+- BREAKTHROUGH (e3ddf1583): the "query weight differs" theory (78922ed81) was IMPOSSIBLE and
+  is RETRACTED — both paths dereference the same tensor object; the GGUF ground truth says
+  blk.1.ple_norm_query.weight[0] = 0.8261719 (the fused value); the harness's "1.02417" was
+  blk.0.hc_ffn_norm.weight[0] picked up by the pattern-matching eval callback latching onto the
+  wrong MUL node. The fix in e3ddf1583 was right; the theory on the record was wrong. The
   real bugs — all fixed:
   1) conv windows (GDN ssm_conv + PLE dilated conv) are channel-major (tap k, channel i at
      i*ncs + k); the fused built them column-major (transposed state, wrong tap/channel pairing).
@@ -156,5 +163,35 @@ Checklist (the dashboard gate — flipped as the phases land):
      fused's else-if skipped it.
   Layers 0-2 now bit-exact (l_last 1.3e-7); greedy g=13 f=13 (was 89). Logit diff 7.2 starts
   at layer 3 = the first full-ATTN layer.
-- Next action: bisect fused_full_attn_layer (layer 3) with the same component-dump protocol,
-  then the logit diff ≤1e-4 → Paris → arch suite → Phase 4.
+- Next action (2026-08-31 external audit redirect, operator-approved): **the full-attention
+  layer is a REWRITE, not a debug** — ≥6 independent defects, all confirmed in code:
+  1. `fused_rope` applies the partial-rotary rope to a flat `[n_rot × n_head]` prefix of a
+     `[head][256]` vector — the head stride is 256, the tensor assumes 64 → heads 6-23 are
+     never roped. Fix: stage `[n_embd_head, n_head]` and rotate `n_rot` dims (the graph's shapes).
+  2. `fused_attn_qsa` computes ONE score distribution per KV head from `q[hk*256]` (the wrong
+     query — the group's first head only) and reuses it across the n_repeat=12 group heads.
+     Fix: per-query-head scores.
+  3. K/V reads are transposed: `k_all[h*256*n_kv + i*n_kv + j]` vs the cache's dim-major
+     `i + h*256 + j*512` (measured: tk/tv ne=[256,2,256,1] nb=[2,512,1024,524288] F16). The
+     flat staging + the per-view stride indexing must match the measured layout.
+  4. The KV writes target cell `n_used-1` (measured cells pos 0-5, n_used=6) — the current
+     decode cell is `n_used`; the fused overwrites the batch's last cell. (The audit's v_trans
+     scribble claim was measured FALSE for this model: the V view nb == the K view nb, so
+     v_trans is inactive here and the V write layout is fine.)
+  5. The current token is masked out of its own attention (n_visible excludes it) while the
+     graph includes it.
+  6. The QSA indexer skips rope entirely (the graph ropes the pooled block keys AND the
+     query), and uses `dsv4_compress_ratios[0]` for every layer instead of `[il]`.
+  Additional confirmed defect: the fused q/k/v projections pass `nullptr` lora scale while the
+  graph uses `wq_s/wk_s/wv_s` — the pre-rope Q/K divergence (V exact ⟹ only q/k carry scales).
+- Safety contract (audit item 3, before any serving exposure): the hook must become OPT-IN
+  (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
+  true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells) must
+  commit atomically at end-of-token — a mid-token fallback double-applies shift registers; the
+  t_logits write relies on allocation-ordering luck; repack-sensitive matmuls must guard on
+  `tensor->extra` + type, not just the IQ4_NL down-experts; committed debug I/O (getenv in the
+  expert inner loops, per-token fopen/fprintf, ~2.5 GB/token context churn) must be stripped
+  before any perf measurement.
+- Sequence: logit gate ≤1e-4 → Paris → arch suite stays; no perf claims before it passes.
+  Then the honest baseline (uniform IQ4_XS requant control, ~12 min) + one symbol profile of
+  the 46 ms non-gemv composition before Phase 4.
