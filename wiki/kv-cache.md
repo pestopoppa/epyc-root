@@ -746,3 +746,37 @@ point at, as untrusted content.
 - [intake-1291](https://arxiv.org/abs/2606.09864) Alignment Collapse Under KV Cache Quantization -- ConditionalFlip as a paired behavioural gate; K carries 76-102% of the damage at 4-bit; **Group-64 is its mitigation, which our group-32 blocks are already finer than**. Unreviewed preprint, NVIDIA-only hardware, no independent replication located. Cite as `intake-1291#record`
 - [intake-1282](https://arxiv.org/abs/2605.17613) VeriCache -- draft on the compressed KV cache, verify against the FULL KV cache; the algorithmic core is expressible in frozen v9 via `-ctkd`/`-ctvd` with the model as its own drafter, while the systems contribution needs an interconnect we do not have. Cite as `intake-1282#record`
 - [intake-1292](https://github.com/ggml-org/llama.cpp/issues/25913) llama.cpp `/slots` save/restore (issue #25913 + PR #26004) -- post-restore reuse is zero only for a DIVERGENT or EXACT-REPEAT prompt and full for a strict continuation; detectable today via `timings.cache_n`; PR #25592 (live in-memory checkpoint path) is the larger exposure for us. Cite as `intake-1292#record`
+
+
+## Compiled Update — 2026-08-31 (incremental): GLM-5.2 KILLED; the DSA findings transfer to glm5next
+
+**Confidence: verified** (operator ruling + artifact deletion ledgered; GGUF header read for the successor arch).
+
+The GLM-MoE-DSA evaluation closed with a KILL (OP-8, operator ruling 2026-08-31: GLM-5.3-flash
+supersedes any reason to run GLM-5.2); the 223 G UD-IQ2_M artifact is deleted and ledgered. What
+survives the model is the DSA layer knowledge, now seeded into the GLM-5.3-Flash handoff (INF-69):
+
+- **GLM-5.3-Flash is arch `glm5next`** (288×10B), NOT `glm-dsa` — but it carries the same
+  DSA-family metadata surface (`indexer.{head_count,key_length,top_k}`, a NEW `kpool` field, and
+  `nextn_predict_layers`). Arch-support audit is the INF-69 gate; the `3dee86a5a` GLM→DSA-cache
+  wiring is the worked precedent, not reusable code.
+- **DSA-DENSE-MASK stands as a fork-level finding**: the generic DSA path computes the indexer +
+  top-k but final attention masks over FULL KV (no sparse gather) — any glm5next bringup inherits
+  it, and the sparse-gather/profiling gate stays owned by `llama-cpp-dsa-contribution.md` (D2/D3).
+- **`indexer_top_k` is a correctness cliff, not a tuning knob**: an under-sized cap corrupts exact
+  output once prompt length exceeds it (GLM-5.2's safe policy was next-power-of-two ≥ prompt
+  tokens). glm5next's `kpool` may change the semantics — re-derive before any quality run.
+- **NextN/MTP**: GLM GGUFs preserve the NextN tail, the fork's GLM archs skip it and never
+  dispatch `LLM_GRAPH_TYPE_DECODER_MTP`; the smallest credible port is Qwen-style tail-tensor
+  loading + a DECODER_MTP graph.
+- The GLM-5.2 reviewer-capability program (REV-02) is mooted by the KILL; its retarget-or-close
+  disposition is flagged to the reviewer control plane.
+
+### Source References (2026-08-31)
+
+- [`glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md) — the
+  completed evaluation: KILL verdict, DSA-DENSE-MASK evidence, top-k schedule records.
+- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — INF-69: the
+  inherited-findings contract and the glm5next arch facts (GGUF header read).
+- [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) —
+  OP-31 execution record incl. the GLM-5.2 deletion and disk state (87 G → 480 G).

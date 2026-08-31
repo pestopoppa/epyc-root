@@ -78,3 +78,11 @@ Adopt uniform IQ4_XS for qwen4exp CPU work? Options + tradeoffs + recommendation
   session demonstrably syncs from the repo at its boundaries) — noted in the handoff T5.
 - Pinned build tree `/mnt/raid0/llm/tmp/inf68-baseline-tree` retained for the ratification run;
   delete freely once the decision closes.
+
+## Addendum — same-day disk executions (Tasks 3-4 of this session)
+
+OP-31 minimal set executed (~212 G) and OP-8 resolved KILL with the GLM-5.2 deletion (223 G):
+full record in [`2026-08-31-disk-reclaim-menu.md`](2026-08-31-disk-reclaim-menu.md) §EXECUTED.
+Day-end disk: **87 G → 480 G free (87%)**. Notable: pre-deletion re-verification caught 4
+misclassifications in the approved set (held with registry evidence); the GLM handoff audit split
+its content into dead (model-quality) vs transferable (DSA-layer), seeding INF-69.
