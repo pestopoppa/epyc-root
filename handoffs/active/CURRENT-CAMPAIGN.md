@@ -7,6 +7,18 @@
 
 ---
 
+> **🟢 2026-08-31 — AUTOKERNEL RUN 21 IS LIVE ON THE ONE CHAMPION — DO NOT TOUCH IT.** pid
+> `2767457`, worktree `champ2` attached to `ak/champion/llama-cpp-0db32c06e3e5` @ `a2728701` (the
+> 2026-08-31 reconciliation merge: manual `270b48ed` + loop `4925b208`, measured **+12.618% tg128
+> vs production resolved live**, 20 pairs, 10.6× floor, oracle 3/3). 7 lanes, continuous, ranking
+> ON (P-AK-SEARCH-1-A3, operator-ratified). Off limits: the pid, `/mnt/raid0/llm/tmp/ak-lanes`,
+> `ak-lane-builds`, `champ2`, `build-champ-a2728701`; no GPU/CPU inference, no process management.
+> **Ratified invariant (INC-20260831-champion-lineage-fork, root `35c1a6d1`): ONE champion per
+> production kernel tree** — all improvement work aggregates there between promotions;
+> seed-from-production only immediately after a promotion; the loop refuses to start off the
+> canonical branch. **Run starts are operator-gated** behind a verifiable readiness package.
+> Owner: [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66, R21 block).
+
 > **⛔ 2026-08-22 — AUTOKERNEL V27 REMAINS PRE-LAUNCH AT SCIENCE 0/10.** No provider banner stopped
 > a running campaign: no v27 campaign was launched. The frozen comparator base `cffb98d3` and ordinary
 > refusal recovery fix `caa22f42` are closed, but independent audits rejected the current evaluator

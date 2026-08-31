@@ -26,14 +26,20 @@ why every prior reachability audit was wrong.
 
 ## CURRENT STATE — read this first on pickup
 
-> **In four lines, 2026-08-30.**
-> 1. The champion **is measurably better than production**: `5ad3e36d` vs `0db32c06`, **+8.524%
->    tg128** (decisive by 7.2×), **~0 pp512**. That is the number this program existed to produce.
-> 2. **Run 19 is LIVE (pid `431205`) — take no GPU, no builds, no `ak-*` trees.**
-> 3. **Do not quote the champion branch's per-commit percentages.** They compound to +171.7%
->    against a measured +8.524% (R18-C).
-> 4. **Next:** wait out run 19, then close **R18-B** (run-18 forensics, still OPEN) and start
->    **P5, the strip** — which is now unblocked.
+> **In four lines, 2026-08-31.**
+> 1. **There is ONE champion now, by ratified invariant** (INC-20260831-champion-lineage-fork, root
+>    `35c1a6d1`): the reconciliation merge **`a2728701`** (manual `270b48ed` + loop `4925b208`,
+>    zero conflicts, disjoint file sets), measured **+12.618% tg128 vs production resolved live**
+>    (264.53→297.91 tok/s, 20 pairs, decisive by 10.6×; pp512 +0.078% = NO CHANGE, floor still
+>    uncalibrated — R18-D). Inside the chain-estimate band [11.2–15.3] → **additive, no
+>    interaction**; the pre-committed contingency did not fire. Oracle 3/3.
+> 2. **Run 21 is LIVE (pid `2767457`), operator-approved — worktree `champ2` on THE champion
+>    branch @ `a2728701`, ranking ON. Do not touch it** (see the R21 block).
+> 3. **Run starts are operator-gated** behind a verifiable readiness package — *"don't start ANY
+>    run without my explicit permission"* — and the champion's baseline is the **CURRENT frozen
+>    production, resolved live**, never a pinned sha.
+> 4. **Next:** R18-B (run-18 forensics, still OPEN), **P5 the strip**, and the R21 follow-ups
+>    (headline-at-startup, A/B evidence promotion, loop-branch retirement decision).
 
 - **P0 DONE** (root `7f86e383`) · **P1 DONE** · **P2 DONE** incl. the measured A/A floor ·
   **P3 DONE except two items deliberately unshipped** (anchor build cache, ccache — see P3) ·
@@ -50,7 +56,9 @@ why every prior reachability audit was wrong.
   "+1.846% keep". The **first genuinely marginal champion advances are run 16's two and run 18's
   `5ad3e36d`.** Runs 12–18 and defects D7–D14 are written up in `progress/2026-08/2026-08-29.md`
   and `progress/2026-08/2026-08-30.md`.
-- **CHAMPION: `5ad3e36d`** (`akm-q4k-chained-dp4a`) on branch
+- **⚠ SUPERSEDED 2026-08-31 — the loop lineage below was a FORK (INC-20260831), merged into the
+  single champion `a2728701`. Historical record only from here to the run-19 bullet.**
+- **CHAMPION (loop lineage, historical): `5ad3e36d`** (`akm-q4k-chained-dp4a`) on branch
   `ak/loop-champion-20260828` in `/mnt/raid0/llm/tmp/ak-loop-tree` — **36 commits above the
   frozen v9 tip `0db32c06`**. Provenance: run 11 (2) · run 13 (1 surviving of 4; the other three
   were cumulative artefacts, demoted and tagged `ak/pre-anchor-fix-full-history`) · run 16 (2) ·
@@ -102,18 +110,33 @@ why every prior reachability audit was wrong.
   measurements is not thereby working — "it is producing output" answers a liveness question, and
   nobody had asked one.*
 
-- **RUN 19 IS LIVE — DO NOT TOUCH IT.** pid `431205`, started ~20:5x 2026-08-30. Anchor is the
-  freshly built, **verified** champion at `/mnt/raid0/llm/tmp/v9v-build-champ`. 7 lanes,
-  continuous, 20 pairs, `tg128`, floor 1.188%, **promotion A/A guard armed** — the first run in
-  which that guard can fire. Off limits for every session: pid `431205`,
-  `/mnt/raid0/llm/tmp/ak-lanes`, `ak-loop-tree`, `ak-lane-builds`, `v9v-build-*`. No GPU work, no
-  builds, no `llama-bench`, no `test-backend-ops`.
+- **RUNS 18–20 OPTIMISED THE WRONG BASE (INC-20260831-champion-lineage-fork).** The rebuilt loop
+  was seeded 2026-08-30 from bare frozen v9 as a NEW sibling branch while THE champion
+  (`ak/champion/llama-cpp-0db32c06e3e5` @ `270b48ed`, +3371/−146 over v9, DFlash2 + iqk dispatch
+  gating + speculative, admitted via CH-7) sat one branch over. Surfaced when the operator asked
+  why DFlash2 was absent from the dashboard capability list. **Ruling ratified into
+  `agents/shared/OPERATING_CONSTRAINTS.md` (root `35c1a6d1`): one single champion per production
+  kernel tree; seed-from-production legal only immediately after a promotion; a second lineage is
+  a defect the moment it exists; standing resolved against CURRENT frozen production, live.**
+  Enforcement shipped: single-champion **startup refusal** + live-resolved production baseline
+  (research `470378a9`, 34/34 mutants, proven live both directions,
+  attachment-stronger-than-tip-equality).
+- **RUN 20 was killed on operator order** — STOP was honoured only at iteration boundary, so the
+  loop "drained" ~50 min of idle-GPU through external codex calls. Fixed: **drain tiers**
+  (research `95eeb0ae`) — STOP abandons at actor boundaries recording `stopped_mid_formation`,
+  never mid-tail.
+- **RUN 21 IS LIVE — OPERATOR-APPROVED — DO NOT TOUCH IT.** pid `2767457`, started ~11:5xZ
+  2026-08-31. Worktree `champ2` attached to THE champion branch @ `a2728701` (startup refusal
+  verified — first log line); anchor = the measured reconciliation build with provenance. 7
+  lanes, continuous, 20 pairs, `tg128`, floor 1.188%, **ranking ON** (P-AK-SEARCH-1-A3). Off
+  limits for every session: pid `2767457`, `/mnt/raid0/llm/tmp/ak-lanes`, `ak-lane-builds`,
+  `champ2`, `build-champ-a2728701`. No GPU/CPU inference, no builds, no process management.
 - **SURFACES CONSOLIDATED 2026-08-30** — there is now exactly **one** kernel dashboard page,
   `/loop`, titled **Kernel R&D**; `/kernel` 301-redirects to it and `kernel.html` is deleted.
   See P6.1–P6.4 for what landed and P6.5–P6.8 for what is knowingly left open. The champion
   headline card is now **one number against one named anchor** and renders `NOT YET MEASURED`
   until the A/B exists (root `bdeb450f` → `e1d22546`, 19/19 mutations caught).
-- **Next action:** let run 19 run. Then (a) close out **R18-F** — the run-18 post-promotion
+- **Next action:** let run 21 run. Then (a) close out **R18-B** — the run-18 post-promotion
   forensics, still OPEN with three hypotheses refuted — and (b) **P5, the strip**, which is
   unblocked: it was gated on the replacement being proven, and the run-17 block audit plus the
   champion-vs-production A/B are that proof. The run-17 audit driver was ad-hoc at
@@ -503,6 +526,9 @@ failure mode this program exists to end.
 
 - [ ] **P5 — Strip.** Only after P4 proves the replacement. Delete `FOOTPRINT.md` and
       `test_campaign_footprint.py` **first**, so later deletions stop costing a regeneration each.
+  - **Scope note 2026-08-31:** the legacy `controller/` suites carry **~75 pre-existing failures
+    outside the enforced CI floors** — do not repair them; the strip retires those suites with the
+    code they test. Their existence is one more argument for P5, not a P5 prerequisite.
   - **Exit:** after each deletion batch the loop still passes P4's criterion. Not "tests green" —
     *the loop still measures*.
 
@@ -729,7 +755,10 @@ program**; each phase proceeds without them.
 **STATUS 2026-08-30: all three are resolved. D1 approved (operator write outstanding), D2 declined
 on measurement, D3 approved and shipped.** Detail in each entry.
 
-- [ ] **D1 — APPROVED BY THE OPERATOR 2026-08-30. The one outstanding action is the operator's
+- [x] **D1 — RATIFIED AND BUILT** ✅ 2026-08-31. The operator applied the amendment (root
+      `4e42e8db`, heading flipped `c5ddc4fc`) and the capability was then actually built —
+      research `198f5b4b` (see R18-G). Run 21 runs with ranking ON under it.
+      *(original, retained)* **APPROVED BY THE OPERATOR 2026-08-30. The one outstanding action is the operator's
       own write:** run `scripts/operator/ratify_ak_search_1_a3_20260828.sh --apply`. Annex K is
       human-amendment-only (invariant 15), so no agent may apply it.
       **⚠ Correction to this handoff's own earlier claim: the capability does NOT ship.** This page
@@ -848,8 +877,11 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       live where someone lands: a `NOTES-attribution.md` at the tip of
       `ak/loop-champion-20260828`, and the same statement in `loop/program.md`'s *Settled — do not
       re-open* section so both actors read it. Cross-referenced from INF-65 (CH-16).
-      **Blocked on run 19 finishing** — `ak-loop-tree` is off limits while it runs. Named blocker,
-      external event.
+      **Unblocked 2026-08-31**: run 19/20 are over, the branch is merged into `a2728701` and
+      tagged (`ak/pre-reconcile-loop-20260831`), and `ak-loop-tree` is NOT on run 21's off-limits
+      list. Coordinate with **R21-3** (the retirement decision) — if the operator retires the
+      branch, the `NOTES-attribution.md` half lands at the tag instead; the `loop/program.md` half
+      is doable now either way.
 - [ ] **R18-D — recalibrate `bench.MEASURED_FLOOR_PCT["pp512"]`; until then no prefill verdict is
       backed.** `loop/bench.py:43`. The prefill row is still the superseded construction (p95
       |median effect| over subsets of ONE fixed 20-pair sample, which cannot exceed that sample's
@@ -879,16 +911,112 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       scope busy is *over*-stated even while the excluded oracle/warmup/profile time makes the
       total *under*-stated. `held` uses `time.time()` and `busy` uses `time.monotonic()`: two
       clocks in one ratio.
-- [ ] **R18-F — the loop package is at 3400/3400 LOC and the next line fails CI.** Tracked as
-      **P7.4**; listed here so the R18 batch is complete. Not another round-number bump.
-- [ ] **R18-G — build the ranking capability D1 authorizes.** D1 is approved but **the capability
-      does not exist**: `ranking_authorized` is a defaulted-`False` parameter of
-      `ExperimentStore.recall` (`controller/experiments.py:157`) written onto the recalled row at
-      `:193`, and **no production call site anywhere passes `True`** — only `test_experiments.py:150`
-      does, and the identifier appears nowhere in the `loop/` package source. Gated on the operator
-      running `ratify_ak_search_1_a3_20260828.sh --apply` (named blocker: an operator write).
-      Correct this handoff's earlier claim that the store "already ships" it — the parameter ships,
-      the capability does not.
+- [x] **R18-F — the loop code budget is freed, not bumped.** ✅ 2026-08-31 (research `33715a7e` →
+      `f2c05dc1` → `95eeb0ae`). The guards now bound **code** and compute the prose share instead
+      of remembering it wrong (`check_regrowth_guards.py`: `LOOP_CODE_BUDGET = 2100` enforced;
+      `LOOP_LOC_BUDGET = 3450` still printed for the split). The trim took code 2099 → **2040/2100**
+      by deletion, not by budget motion: the pool now owns the consecutive-error breaker — **the
+      pooled path previously had NONE and would spin forever** — the sequential path is deleted
+      (`loop.run` kept as a documented test-only seam), `SINGLE_PAIR_P95` deduped, dead code
+      removed. 13/13 mutants; decision-arithmetic floors argued 304→309.
+- [x] **R18-G — the ranking capability D1 authorizes is BUILT.** ✅ 2026-08-31 (research
+      `198f5b4b`, epoch-scoped, default off; companion `068ffb67` emits the champion-vs-production
+      headline at every advance). Run 21 runs it ON. Building it surfaced a **real conformance
+      breach**: `actors.py` pooled **cross-epoch** magnitudes into a do-not-re-measure median —
+      biting at every epoch transition; fixed by checking **both** provenance markers. The earlier
+      claim that the store "already ships" the flag was FALSE and stands corrected (parameter
+      existed inert; capability did not).
+
+---
+
+## R21 — the reconciliation (2026-08-31): INC-20260831, the merge, the measurement, run 21
+
+Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
+
+### Landed this pass
+
+- [x] **R21-L1 — single-champion invariant ratified and ENFORCED.** ✅ 2026-08-31. Ratification
+      root `35c1a6d1` (operator-applied; the stale-worktree recovery en route — the shared clone's
+      `OPERATING_CONSTRAINTS.md` was missing 28 lines of ratified 08-27 content, caught by
+      `git apply --index` refusing). Enforcement research `470378a9`: startup refusal proven live
+      both directions, attachment-stronger-than-tip-equality, pool champion ref aliased to the
+      canonical branch, 34/34 mutants; plus the live-resolved frozen-production baseline in
+      `production.py` (per-commit build cache).
+- [x] **R21-L2 — the reconciliation merge and its measurement.** ✅ 2026-08-31. `a2728701` =
+      `270b48ed` + `4925b208`, zero conflicts, disjoint file sets, parents tagged
+      `ak/pre-reconcile-{manual,loop}-20260831`. **+12.618% tg128 vs production resolved live**
+      (264.53→297.91, 20 pairs, 10.6× the 1.188% floor; pp512 +0.078%, uncalibrated floor —
+      R18-D), oracle 3/3, inside the pre-committed chain-estimate band [11.2–15.3] → additive, no
+      interaction. Bundle published; `generated_at` was stamped 5.5 min in the future by the
+      publishing agent, the reader refused it, restamped from raw-file mtime with a correction
+      note. Capability list now **artifact-derived** incl. DFlash2 symbols (`build_dflash2_conv`,
+      libllama 10125→10180); corrected finding: **iqk shipped in v9 already** — the champion adds
+      dispatch gating only.
+- [x] **R21-L3 — run-20 drain flaw fixed (drain tiers).** ✅ 2026-08-31 (research `95eeb0ae`).
+      STOP abandons at actor boundaries recording `stopped_mid_formation`, never mid-tail. (The
+      trim itself is under R18-F.)
+- [x] **R21-L4 — dashboard: the anchor is resolved, staleness is semantic, the champion is the
+      branch tip.** ✅ 2026-08-31 (root `479ffb47`, `2a3881d4`, `86bc7b8b`, `f9c00551`).
+      Live-resolved frozen production + `SUPERSEDED-BASELINE` state, source-guard banning 40-hex
+      literals (19/19 mutants); a measurement of a superseded champion is not "fresh"; **the
+      champion branch tip defines "current champion"** — run 20's dead status file had the panel
+      calling the fresh merged measurement superseded by its own parent; five operator notes incl.
+      computed scope-line ancestry (`270b48ed` reads "ancestor — its work is IN the current
+      champion") and the accumulated-knowledge card reading `experiments.db` read-only (1051
+      attempts / 326 mechanisms / 79 revisited / 18 kept / 402 measured-null / 132
+      refused-at-formation) with a per-card staleness audit table (12/12 mutants).
+- [x] **R21-L5 — CI identity fix.** ✅ 2026-08-31 (research `af43cfb0`). Champion-keep tests drove
+      a real `git commit`: green locally via host gitconfig, red on the runner ("Author identity
+      unknown", run 33384448851). Fixed with fixture-local identity, proven under
+      `GIT_CONFIG_GLOBAL=/dev/null`.
+
+### Open
+
+- [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
+      an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
+      Small: emit the headline once during loop startup from the same path `068ffb67` added.
+- [ ] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** The published
+      bundle cites `/mnt/raid0/llm/tmp/champ-a2728701-ab/…` (the JSON and the three oracle logs) —
+      decision-grade evidence in scratch, the exact defect the run-17 promotion (`d6130c7b`)
+      closed. **PREPARED this wrap-up**: 22 files ≈1.4 MB staged in the research lane at
+      `artifacts/autokernel-champ-a2728701-ab/` (result JSON, `run_ab.py` driver, `run_ab.log`,
+      3 oracle logs, `symdiff/added-*`+`removed-*`; the 7.2 MB regenerable `base-*/champ-*` dumps
+      excluded). Operator pushes; after it lands, re-point the bundle's evidence paths at the
+      repo copy at the next boundary the bundle is rewritten anyway (do not touch the live bundle
+      mid-run).
+- [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
+      Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
+      (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.
+      Commands (operator's, at a boundary of their choosing):
+      `git -C /mnt/raid0/llm/llama.cpp worktree remove /mnt/raid0/llm/tmp/ak-loop-tree` then
+      `branch -D ak/loop-champion-20260828` (`-D` required: the main tree's HEAD is
+      `production-consolidated-v9`, so `-d`'s merged-into-HEAD check refuses despite full merge).
+      Bundle into the same action: `ak-loop-tree-b`/`-c` (branches `…20260828b`/`c`, both still at
+      base `0db32c06e`, zero commits — trivially disposable).
+- [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
+      state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
+      (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
+      recovered without taking the loop down; the live readers are in
+      `test_dashboard_operator_gates.py` (real gate bundle), `test_dashboard_controller_state_contract.py`
+      (live `state.json`), `test_dashboard_knowledge_card.py` (real `experiments.db`),
+      `test_dashboard_champion_headline.py` (real bundle + production resolution). Standing debt
+      already noted in `.github/workflows/tests.yml` ("Report what was NOT run") and P6. Fix is
+      recorded producer fixtures, not skips — fold into the P6 rewrite.
+
+### Declined 2026-08-31 — deliberate
+
+- **STOP refusing tail ENTRY for post-stop completed formations (~2 lines + test). NOT BUILT.**
+  The operator is aware and did not request it; drain tiers already stop everything upstream of
+  the tail, and a formation that completed before STOP finishing its one paired measurement is
+  bounded (~one tail cycle). Re-raise only if a future stop shows the tail entry mattering.
+- **`test_production.py`'s dated mutation-note narrates the old breaker path for 3 mutants
+  (M19/M20/M40 "reach `loop.run`, which turns three consecutive faults into `RunAborted`" — the
+  breaker is the pool's since `95eeb0ae`).** Kept as a dated record per the operator; a one-line
+  parenthetical was added pointing at the pool so a reader tracing those mutants today is not sent
+  to a breaker that no longer exists there.
+- **Legacy `controller/` suites carry ~75 pre-existing failures outside the enforced floors.**
+  Not filed as its own task: it predates this pass and is **P5-strip territory** — noted in P5's
+  scope so the strip retires the suites with the code they test rather than repairing them first.
 
 ---
 

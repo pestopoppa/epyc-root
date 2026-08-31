@@ -11,21 +11,33 @@ fixed production anchor.
 | task | what to do |
 |---|---|
 | **CH-14** | Write the manual-research loop runbook (admit → gate → attest) in `docs/guides/`, stating the authority boundary explicitly. |
-| **CH-16** | Correct the loop champion's inflated per-commit claims at the branch tip and in `program.md` — blocked on run 19 finishing. |
+| **CH-16** | Correct the loop champion's inflated per-commit claims at the branch tip and in `program.md` — UNBLOCKED 2026-08-31 (branch merged + tagged); coordinate with INF-66 R21-3 (if the branch is retired, the note lands at tag `ak/pre-reconcile-loop-20260831`). |
 | **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
 | **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
 
-**Two different champions live on this page — do not conflate them.**
+**RECONCILED 2026-08-31 — there is ONE champion now, by ratified invariant.** The two lineages
+this page used to distinguish were the incident (INC-20260831-champion-lineage-fork: the rebuilt
+loop was seeded 2026-08-30 from bare v9 as a NEW sibling branch while THE champion sat one branch
+over; runs 18–20 optimised the wrong base; surfaced when the operator asked why DFlash2 was absent
+from the dashboard capability list). Operator ruling, ratified into
+`agents/shared/OPERATING_CONSTRAINTS.md` (root `35c1a6d1`): **one single champion per production
+kernel tree**, aggregating ALL improvement work (manual + AutoKernel) between promotions;
+seed-from-production is legal only immediately after a promotion; a second lineage for the same
+tree is a defect the moment it exists; standing is resolved against the CURRENT frozen production,
+live, never a pinned sha; the champion exists so promotion = take the one precompiled branch.
 
-1. **The manual-admission champion**, instrument pin `270b48ed64d6`, ahead of frozen production and
-   carrying MoE-Spec + DFlash2. Standing as of 2026-08-28: correctness proven, no regression on the
-   default path, **+28–48% on the Qwen3.8-27B serving path that production cannot reach at all**.
-   That evidence is operator-gated (CH-13) and carries **no promotion authority** — it is not a
-   campaign receipt, and no campaign has yet banked one.
-2. **The loop champion**, `5ad3e36d` on `ak/loop-champion-20260828`, 36 commits above frozen v9.
-   Standing as of 2026-08-30: **+8.524% tg128 vs frozen production, decisive by 7.2×; ~0 on
-   pp512** — the first measured default-path gain in the program. See *2026-08-30* below, and read
-   **CH-16** before quoting anything from that branch's commit messages.
+**The current champion: `a2728701` on `ak/champion/llama-cpp-0db32c06e3e5`** — merge of the
+manual-admission side (`270b48ed`, MoE-Spec + DFlash2, tag `ak/pre-reconcile-manual-20260831`)
+and the loop side (`4925b208`, tag `ak/pre-reconcile-loop-20260831`); zero conflicts, disjoint
+file sets. **Measured 2026-08-31: +12.618% tg128 vs production resolved live** (264.53→297.91
+tok/s, 20 pairs, 10.6× the calibrated 1.188% floor; pp512 +0.078% = NO CHANGE, floor
+uncalibrated), oracle 3/3, inside the pre-committed chain-estimate band [11.2–15.3] → the
+lineages are **additive, no interaction**. `270b48ed` is an *ancestor* — its work is IN the
+current champion. The +28–48% Qwen3.8-27B serving-path evidence remains operator-gated (CH-13)
+with no promotion authority. The loop-side per-commit history remains inflated — read **CH-16**
+before quoting anything from the old branch's commit messages. Enforcement: single-champion
+startup refusal (research `470378a9`) — the loop refuses to start off the canonical branch; run
+21 runs attached to it at `a2728701`.
 
 ## The finding that reframes this
 
