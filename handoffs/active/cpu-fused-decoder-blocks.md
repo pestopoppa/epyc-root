@@ -137,6 +137,8 @@ Checklist (the dashboard gate — flipped as the phases land):
   1056514818 (the harness fed token 11751) — the graph's embedding gather reads a garbage row,
   the graph's layer-0 input is corrupted (the rms_norm "identity" was the corrupted input). The
   fused path reads the correct embedding (maxdiff 0 vs the GGUF dequant).
-- Next action: find why the graph's tokens input is corrupted at step-1 (the harness's
-  llama_batch / the graph's set_input path / the ubatch handling), then the logit diff ≤1e-4 →
-  Paris → arch suite → Phase 4.
+- **The corruption mechanism** (3fccd0ddf): the harness → ubatch → set_inputs all carry the
+  correct token 11751, but **the graph compute overwrites the inp_tokens tensor** (the data
+  becomes 0x3e8fe571, a float bit pattern) — the embedding gather then reads a garbage row.
+- Next action: find which graph node writes into the inp_tokens memory (the scheduler buffer
+  overlap at the 1-token ubatch), then the logit diff ≤1e-4 → Paris → arch suite → Phase 4.
