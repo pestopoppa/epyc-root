@@ -1036,6 +1036,16 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       refresh (`serving_evidence_refresh.py`) → run-22 readiness report. ~5–7.5 h device.
       **Run 22 is NEVER auto-started** — operator gate, property mutation-tested. Open operator
       question (in the queue): pre-authorize run-22 on all-green, or hold for morning go.
+- [ ] **R21-10 — Build-determinism forensics: two builds of ONE commit differed by +1.765%.**
+      Run 21's fourth promotion, 2026-08-31 21:2xZ: the guard measured promoted `anchor-gen-007`
+      1.765% SLOWER than a fresh build of the same commit `14ba0262` (floor 1.188%) and aborted
+      the run — the guard's first live catch, run-18's class stopped in one iteration. The keep
+      itself is legitimate; the PROMOTED BUILD is the anomaly. Candidate causes: ccache
+      hit-pattern differences, link order, `-j` scheduling. The boundary's overnight fresh builds
+      add data points. Until root-caused, every promoted-anchor rebuild is suspect and only the
+      guard stands between it and void measurements — which is an argument it must stay
+      unconditional, and possibly for measuring the FRESH arm as the anchor instead of the
+      promoted rebuild.
 - [ ] **R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep
       consumed the `95eeb0ae` trim's headroom; filed 2026-08-31). Next trim candidate: delete the
       `loop.run` test-only seam (kept as a documented seam by `95eeb0ae`; its tests move to the
