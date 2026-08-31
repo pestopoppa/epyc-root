@@ -124,6 +124,15 @@ config change with a rehearsed rollback, never a rebuild.
 - [ ] **P3-1** — arms: stock-27B vs FF, duties scored SEPARATELY: coder (escalation-shaped SWE-flavored tasks, production sampling) and co-critic (wired through reviewer-control-plane typed decisions). A4-GPU control arm runs sequentially in bench windows (co-residency impossible: 37.8GB). **Per D11 (activation sequencing decided 2026-07-29): starts immediately on the incumbent 184-191 placement, ahead of the P2-5j sweep — the P3-2 package must carry a placement-pending caveat on absolute latency/token-economics numbers.**
 - [ ] **P3-2** — tenancy decision package to operator: per-duty winner(s), token-efficiency, latency; duties may split across epochs but one resident tenant at a time.
 - [ ] **P3-3 (operator)** — three-gates sign-off → coder_escalation rebind (or explicit keep-A4 verdict). First production traffic on the lane only after this.
+- [ ] **P3-4 (NEW 2026-08-31, candidate from the autokernel program — SERVING scope, filed here
+  deliberately, not in INF-66)** — **native-MTP vs DFlash2 serving A/B.** The autokernel champion
+  binary carries DFlash2 (`build_dflash2_conv`, libllama 10125→10180), which frozen v9 cannot
+  load; the champion serving bundle's "production ceiling" is therefore the MTP arm *on the
+  champion binary* (see `autokernel-champion-aggregate.md` / INF-65 and research `8179dde0`).
+  Open serving question: on models where both apply, does native MTP or DFlash2 win the serving
+  duty mix (throughput AND the D6 launch-bound mode-toggle economics)? Candidate only — needs its
+  own measurement design under MEASUREMENT.md; sequenced behind the champion promotion decision;
+  zero compute until an operator grant.
 
 ### Phase 4 — AutoPilot on the new surface
 - [ ] **P4-1** — Stage-2 typed knobs ONLY: tenant ∈ {stock, FF} + np_ceiling within measured bounds; flag-gate + strategy-store seeding pattern; fail-closed on any 5xx class. **Invariant: autopilot never touches launch plumbing, registry, or lane lifecycle.**

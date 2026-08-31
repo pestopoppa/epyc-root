@@ -3889,3 +3889,36 @@ Sources:
 - [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled standing and the capability rules.
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2, R21-2.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3.
+
+---
+
+## Compiled Update — 2026-08-31 (evening): the first rms_norm keep in program history, and the HIP bandwidth deficit located in software
+
+**A 34-mechanism-dry surface finally kept — under ranked memory.**
+`akm-rmsnorm-1536-float4-384` (+1.359% tg128) is the first rms_norm keep in program history:
+hotspot share 7.3%, 34 prior mechanisms attempted, 0 kept. The same run kept
+`akm-q6k-paired-scale-pk-fma` (+1.811%). Champion headline vs frozen production (resolved live):
+**+16.180%** (`aba5a815`), up from +12.618% at the morning's reconciliation — every point a
+direct measurement. A surface's dry streak is evidence about the *mechanisms tried*, not the
+surface: the keep came from a new formation (float4/384-thread shaping), not from retrying old
+ones harder.
+
+**The MI210 decode bandwidth deficit is a ggml-HIP-backend property.** Cross-ecosystem
+BW-utilization arithmetic: our production decode = **49.4%** of peak; upstream CUDA band =
+**54–78%**; a 7900 XTX (RDNA3, same ggml HIP path) = **52.4%**. If CDNA2 hardware were the
+limit, the RDNA3 HIP number would not clear ours while CUDA clears both — so ~3–29 points of
+utilization are recoverable in the backend. Seeds filed accordingly: multi-column MMVQ (an
+untouched surface), quantized-KV FA revisit, Q8_0 GEMV roofline, MMVQ nwarps, MMQ decode
+crossover (upstream has no CDNA rows — a blind spot working in both directions).
+
+**`-funsafe-math-optimizations` is load-bearing and quality-suspect at once.** Upstream removed
+it after it flipped greedy argmax; our v9+champion trees still compile with it (verified at the
+flag's line). The finding enters as a *paired parity/speed A/B at tonight's boundary* — never a
+silent merge — because the operator's conditional ("2% hit worth it IF quality demonstrated")
+requires the quality demonstration first. A compiler flag that changes argmax is a correctness
+surface, not a build detail.
+
+### Source References (2026-08-31 evening)
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 pilot sub-items, R21-6.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10.
