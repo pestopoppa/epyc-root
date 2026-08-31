@@ -129,6 +129,11 @@ Checklist (the dashboard gate — flipped as the phases land):
   output is properly normalized (-0.0309...), but the step-1's output equals the input exactly
   (norm ~1) — the fused's per-stream rms gives [0.965, 1.81, 1.54, 1.36]. The fused's hc_mix
   diverges at the very first rms_norm.
-- Next action: determine why the graph's step-1 rms_norm yields norm~1 (the [2560,4,1] ubatch
-  norm/eps semantics vs the batch's [2560,4,5]) and mirror the graph's exact hc_mix math in the
-  fused path → logit diff ≤1e-4 → Paris → arch suite → Phase 4.
+- **ROOT CAUSE found** (580e0e5ed): the graph's step-1 `hc_init` has DIFFERENT per-stream
+  values (rms [0.451, 0.479, 0.153, 0.284]) — the graph's layer-0 input is NOT the embedding
+  repeated 4× — while the fused path builds res_hc as 4 identical copies. The graph's rms_norm
+  is identity on its input (gamma ≈ 1.05). The stream-dependent input is the root divergence.
+- Next action: understand the graph's hc_init construction (why the repeat_4d of the embedding
+  yields differing streams — the [n_embd, hc, n_tokens] layout or the input path), mirror the
+  graph's input + hc_mix math in the fused path → logit diff ≤1e-4 → Paris → arch suite →
+  Phase 4.
