@@ -146,9 +146,15 @@ Checklist (the dashboard gate — flipped as the phases land):
 - PLE component verification (a56a79cc0): token embed, rows, key, key_n, value are ALL
   graph==fused EXACT (verified via pre-compute eval-callback dumps; post-compute dumps
   read freed memory and were the source of the earlier phantom divergences).
-- REMAINING (78922ed81): the PLE query_n divergence is localized to the query-norm WEIGHT:
-  the graph's ple_norm_query[0] = 1.02417 vs the fused's L.ple_norm_query[0] = 0.826172
-  (the key-norm weight matches exactly; emb/key/key_n/value all verified exact). The model
-  load path for ple_norm_query is the next suspect.
-- Next action: find why ple_norm_query differs (load/indexing), then the logit diff ≤1e-4 →
-  Paris → arch suite → Phase 4.
+- BREAKTHROUGH (e3ddf1583): the "query weight differs" was a mismatched dump (1.02417 was a
+  layer-0 hc_mix norm MUL; the true graph query weight = 0.826172 = the fused's read). The
+  real bugs — all fixed:
+  1) conv windows (GDN ssm_conv + PLE dilated conv) are channel-major (tap k, channel i at
+     i*ncs + k); the fused built them column-major (transposed state, wrong tap/channel pairing).
+  2) the GDN q/k l2_norm normalizes per ne[0] column (per head); the fused normalized flat once.
+  3) the PLE layer is ALSO recr: the graph runs the full GDN+ffn block after build_ple; the
+     fused's else-if skipped it.
+  Layers 0-2 now bit-exact (l_last 1.3e-7); greedy g=13 f=13 (was 89). Logit diff 7.2 starts
+  at layer 3 = the first full-ATTN layer.
+- Next action: bisect fused_full_attn_layer (layer 3) with the same component-dump protocol,
+  then the logit diff ≤1e-4 → Paris → arch suite → Phase 4.
