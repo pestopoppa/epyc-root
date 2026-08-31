@@ -969,6 +969,32 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       a real `git commit`: green locally via host gitconfig, red on the runner ("Author identity
       unknown", run 33384448851). Fixed with fixture-local identity, proven under
       `GIT_CONFIG_GLOBAL=/dev/null`.
+- [x] **R21-L6 — run 21: the loop advanced the champion TWICE, unattended, end-to-end.**
+      ✅ 2026-08-31. Each advance ran keep → anchor rebuild → A/A guard → self-measured headline →
+      publish with no human step. (1) `akm-rmsnorm-1536-float4-384` +1.359% — **first rms_norm
+      keep in program history** (hotspot 7.3%, 34 prior mechanisms, 0 kept); guard −0.263%;
+      headline `cb617372` +15.326%. (2) `akm-q6k-paired-scale-pk-fma` +1.811%; guard +0.327%;
+      headline `aba5a815` **+16.180% vs frozen production** (resolved live). Trajectory today
+      +12.618 → +16.180, all direct measurements. First keeps under ranked memory: 2 keeps /
+      26 iterations after 68 dry.
+- [x] **R21-L7 — the two operator-gated-card fixes.** ✅ 2026-08-31 (root `9425eaef`,
+      `5f2151c9`). Hypothesis-ledger card walks the hotspot-first agenda from the real store
+      (`mul_mat_vec_q` 49.3%/63 tried; `k_set_rows` never targeted; `flash_attn` 12.3%
+      0-kept-over-29 visible), card compacted to one summary line + accordion (17/17 mutants);
+      staleness for episodic evidence is SUBJECT-anchored (relevant/superseded/unverifiable,
+      movement outranks, clock advisory; 4/4 mutants both directions).
+- [x] **R21-L8 — run-22 prep landed.** ✅ 2026-08-31 (research `a95581c8`, pushed). `dec-b2/4/8`
+      surfaces (llama-bench source PROVEN: tg can never express `ne11>1`; the prompt path with
+      `-b/-ub N` can); 3-layer uncalibrated-floor discipline (`decisive=None`; commit-path
+      re-derivation); `--calibrate-surface` reusing the D8 method (byte-for-byte reproduces the
+      tg128 k=5 floor); flag admission branch + greedy-parity harness (verdict encodes the
+      operator's conditional). Budget consequence filed as R21-7.
+- [x] **R21-L9 — serving-evidence refresh package.** ✅ 2026-08-31 (research `8179dde0`, pushed;
+      CH-14 pointer root `a5e23465` — coordinate via INF-65). Original +48.9% bundle traced, all
+      four steps scripted (CH-4 validation → 24-cell concurrency grid → greedy parity → sealing
+      emitter); "production ceiling" = MTP arm on the champion binary because v9 cannot load the
+      DFlash2 GGUF (now documented); one-command `serving_evidence_refresh.py`, claim-held
+      (refuses while run 21 lives); next bundle carries `generated_at` + `champion.commit`.
 
 ### Open
 
@@ -982,7 +1008,50 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       normalize claims to bandwidth utilization, map to the live hotspot profile, check
       experiments.db for known nulls, emit inbox-format seeds with provenance URLs, operator
       reviews before injection (run starts and inbox writes stay operator-gated). Zero compute
-      until the loop itself elects a seed.
+      until the loop itself elects a seed. **Piloted 2026-08-31 — the pipeline stays open as
+      STANDING; the pilot sub-items below are done:**
+  - [x] Pilot sweep (a) — qwen38-mtp ✅ 2026-08-31. BW-utilization arithmetic: MI210 production
+        49.4% vs CUDA band 54–78%, 7900 XTX HIP 52.4% → the deficit is a **ggml-HIP-backend
+        property**, not CDNA2 hardware. 3 seeds: multi-column MMVQ (untouched surface),
+        quantized-KV FA (revisit-with-justification), Q8_0 GEMV roofline.
+  - [x] Pilot sweep (b) — upstream llama.cpp v0.2.0 delta since the 0db32c06 freeze
+        ✅ 2026-08-31. ~260 commits, 19 CUDA; 6 seeds incl. MMVQ nwarps, MMQ decode crossover
+        (no CDNA rows), and the **`-funsafe-math-optimizations` finding** — upstream removed it
+        for flipping greedy argmax; our v9+champion still compile with it (verified, line 134).
+        Operator ruled: "2% hit worth it IF quality demonstrated" — demonstration is a boundary
+        step (R21-6), never merge-by-default.
+  - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox
+        (operator-authorized) ✅ 2026-08-31. The loop elects on its own schedule.
+  - [ ] Decide the upstream-rebase cadence for the experimental branch (filed 2026-08-31): the
+        tree is ~260 commits behind upstream since the freeze; today's posture is
+        port-as-hypothesis only (each upstream kernel change enters as an inbox seed, never a
+        blind rebase). Either ratify that posture as the standing answer or set a periodic
+        delta-sweep cadence (e.g. per upstream release, reusing sweep (b)'s method).
+- [ ] **R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver
+      `scripts/benchmark/boundary_20260831.sh` (research lane; being written + stub-tested by the
+      active research-lane agent). Sequence: stop run 21 (STOP+SIGTERM, +25 min group-SIGKILL) →
+      `-funsafe-math` flag parity/speed A/B (merge ONLY on demonstrated divergence per the
+      operator's conditional; tagged; oracle-gated) → `dec-b*` calibrations → full serving
+      refresh (`serving_evidence_refresh.py`) → run-22 readiness report. ~5–7.5 h device.
+      **Run 22 is NEVER auto-started** — operator gate, property mutation-tested. Open operator
+      question (in the queue): pre-authorize run-22 on all-green, or hold for morning go.
+- [ ] **R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep
+      consumed the `95eeb0ae` trim's headroom; filed 2026-08-31). Next trim candidate: delete the
+      `loop.run` test-only seam (kept as a documented seam by `95eeb0ae`; its tests move to the
+      pooled path). Same rule as R18-F: the budget is freed by deletion, never bumped.
+- [ ] **R21-8 — `MEASURED_FLOOR_PCT` is keyed by SURFACE ONLY; the model identity behind the
+      calibration is unenforced** (filed 2026-08-31). A floor calibrated on one workload silently
+      gates a run on another — same defect class as R18-D's stale pp512 floor. Add the model (or
+      workload identity) to the floor key, or refuse a mismatch at gate time.
+- [ ] **R22-1 — run-22 primary surface: default STAYS tg128** (filed 2026-08-31, resolves at the
+      run-22 go). `dec-b2/4/8` enter as secondary, individually calibrated surfaces (R21-L8);
+      promotion of any of them to primary is an operator call made on the boundary's readiness
+      report — the report must carry the per-surface floors so the choice is decidable there.
+- [ ] **R22-2 — evaluate `llama-batched-bench` as the parallel-sequence surface** (filed
+      2026-08-31). llama-bench is source-proven unable to express `ne11>1` on the tg path
+      (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
+      serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
+      verdict may cite it; zero compute until then.
 - [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
       an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
       Small: emit the headline once during loop startup from the same path `068ffb67` added.
