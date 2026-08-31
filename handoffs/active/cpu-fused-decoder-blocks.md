@@ -146,9 +146,9 @@ Checklist (the dashboard gate — flipped as the phases land):
 - PLE component verification (a56a79cc0): token embed, rows, key, key_n, value are ALL
   graph==fused EXACT (verified via pre-compute eval-callback dumps; post-compute dumps
   read freed memory and were the source of the earlier phantom divergences).
-- REMAINING: the graph's PLE query_n (~0.60) vs the fused (1.07) — the fused matches the
-  independent rms(embed)*qn expectation (1.09); the graph's implied hidden deviates from
-  the embed element-wise. The graph is the production reference, so the query's hidden
-  wiring (the hc_init) is the suspect.
-- Next action: resolve the query_n/hidden discrepancy, then the logit diff ≤1e-4 → Paris →
-  arch suite → Phase 4.
+- REMAINING (78922ed81): the PLE query_n divergence is localized to the query-norm WEIGHT:
+  the graph's ple_norm_query[0] = 1.02417 vs the fused's L.ple_norm_query[0] = 0.826172
+  (the key-norm weight matches exactly; emb/key/key_n/value all verified exact). The model
+  load path for ple_norm_query is the next suspect.
+- Next action: find why ple_norm_query differs (load/indexing), then the logit diff ≤1e-4 →
+  Paris → arch suite → Phase 4.
