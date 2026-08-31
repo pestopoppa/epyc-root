@@ -180,6 +180,31 @@
     border-bottom:1px solid var(--border)}
   .kn-note:last-child{border-bottom:none}
   .kn-note b{color:var(--text)}
+  /* The hypothesis ledger's agenda walk: one block per profiled kernel. */
+  .ag{border-bottom:1px solid var(--border)}
+  .ag:last-child{border-bottom:none}
+  .ag-hd{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:9px 16px 3px}
+  .ag-kern{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:650}
+  .ag-share{font-size:12px;color:var(--accent)}
+  .ag-meta{font-size:11px;color:var(--muted)}
+  /* The blind spot is the loudest line in the walk, on purpose. */
+  .ag-untried{padding:3px 16px 10px;font-size:12px;color:var(--amber);font-weight:650}
+  .ag-sum{padding:2px 16px 5px;font-size:12px}
+  .ag-mech{display:flex;gap:8px;align-items:baseline;padding:3px 16px 3px 28px;font-size:12px}
+  .ag-mech .vd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
+    min-width:88px;font-weight:650;white-space:nowrap}
+  .ag-mech .vd.win{color:var(--good)} .ag-mech .vd.nil{color:var(--muted)}
+  .ag-mech .vd.ref{color:var(--amber)}
+  .ag-mech .id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;white-space:nowrap}
+  .ag-mech .st{color:var(--muted);flex:1;min-width:140px}
+  .ag-post{padding:2px 16px 9px 28px;font-size:11px;color:var(--muted)}
+  .ag-more{padding:0 0 6px}
+  .ag-more > summary{cursor:pointer;color:var(--accent);font-size:11px;
+    padding:2px 16px 2px 28px;list-style:revert}
+  .kn-rem{border-top:1px solid var(--border)}
+  .kn-rem > summary{cursor:pointer;padding:10px 16px;font-size:12px;
+    font-weight:650;color:var(--accent);list-style:revert}
+  .kn-rem[open] > summary{border-bottom:1px solid var(--border)}
 
   /* Operator-gated champion evidence (moved off /kernel, 2026-08-30).
      Its own class prefix rather than the retired page's `.proposal-box`/`.pv`:
@@ -210,6 +235,13 @@
   .og-miss{padding:8px 16px;font-size:12px;color:var(--bad);border-bottom:1px solid var(--border)}
   .og-cav{padding:10px 16px;font-size:12px;color:var(--muted)}
   .og-cav summary{cursor:pointer;color:var(--accent)}
+  /* The evidence accordion (operator note, 2026-08-31: the always-visible card
+     was a wall that read as stale clutter). Collapsed by default — a <details>
+     with no `open` attribute IS the collapsed state; nothing is deleted. */
+  .og-details{border-top:1px solid var(--border)}
+  .og-details > summary{cursor:pointer;padding:10px 16px;font-size:12px;
+    font-weight:650;color:var(--accent);list-style:revert}
+  .og-details[open] > summary{border-bottom:1px solid var(--border)}
   /* The one line that stops this card being read as the champion headline. */
   .og-scope{padding:10px 16px;font-size:12px;line-height:1.5;color:var(--muted);
     background:var(--panel2);border-bottom:1px solid var(--border)}
@@ -345,7 +377,9 @@
   operator-gated manual-research path;
   the accumulated-knowledge card reads the loop's own memory store
   (<code>experiments.db</code>, sqlite, opened read-only) and is dated by that
-  file's mtime. All are read at request time — never cached, so no value can
+  file's mtime; its hypothesis ledger joins those rows against the loop
+  status's hotspot profile and the store's <code>inbox/</code> seed files
+  (both read-only) — a join, not a fifth producer. All are read at request time — never cached, so no value can
   outlive its freshness envelope. Data probe:
   <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
   what this page shows still true?) — it answers for the <em>loop</em> producer;
@@ -372,6 +406,12 @@ const dur = s => s == null ? "—" : s < 90 ? `${Math.round(s)}s`
   : s < 5400 ? `${(s/60).toFixed(1)} min` : `${(s/3600).toFixed(2)} h`;
 const num = v => (typeof v === "number" && isFinite(v));
 const short = s => s == null ? "—" : String(s).slice(0, 12);
+/* Visible truncation for prompt-shaped, UNTRUSTED text (hypothesis statements,
+   critic reasons — LLM output). The full (server-capped) text rides in a title
+   attribute, escaped like everything else. */
+const trunc = (s, n) => s == null ? "" :
+  (String(s).length > n ? String(s).slice(0, n - 1) + "…" : String(s));
+const fmtPct = e => `${e >= 0 ? "+" : ""}${(e * 100).toFixed(2)}%`;
 
 /* Dispositions that mean the candidate actually reached the instrument. Every
    other disposition is a NEGATIVE and is rendered as such, never omitted. */
@@ -758,7 +798,16 @@ function renderDispositions(d){
 /* ACCUMULATED KNOWLEDGE — the fourth producer: the loop's own memory store
    (experiments.db), read server-side, read-only, folded server-side.
 
-   TWO RULES THIS CARD EXISTS TO OBEY.
+   THE SHAPE IS THE HOTSPOT WALK (operator, 2026-08-31, twice in one day:
+   disposition counts are attendance, not thinking; and the raw profile list
+   "doesn't tell me how the planner is thinking about tackling these profiling
+   bottlenecks"). The profile IS the planner's agenda, so the card walks it:
+   per top kernel, what has been tried against it — statements, verdicts, the
+   critic's reasons — what is aimed at it right now, and, loudest, the kernels
+   NOTHING has ever targeted. The counts shrink to one header line; levers
+   that map to no current hotspot go in a collapsed remainder, never dropped.
+
+   THREE RULES THIS CARD EXISTS TO OBEY.
 
    1. A missing count is NOT a zero (the standing rule on this page). An absent
       or unreadable store renders the standard absent/malformed wording and NO
@@ -767,9 +816,14 @@ function renderDispositions(d){
 
    2. A measured null is not "falsified forever". Each null was measured
       against the ANCHOR OF ITS DAY — the anchor advances on every keep — so
-      the split says "no effect above the floor vs the anchor of their day",
+      every null renders "no effect above the floor vs the anchor of its day",
       never "disproven". `refused_at_formation` is the opposite kind of
-      negative: the critic rejected it before it cost any device time. */
+      negative: the critic rejected it before it cost any device time. A row
+      from an EARLIER EPOCH says so beside its magnitude — it is not
+      comparable to current numbers.
+
+   3. Statements and refusal reasons are UNTRUSTED text (LLM output): escaped
+      everywhere they render, including inside title attributes. */
 const KN_BANNERS = {
   absent:    {hd: "ABSENT — the loop has never recorded an attempt here"},
   malformed: {hd: "MALFORMED — a memory store exists that this page cannot read"},
@@ -816,67 +870,207 @@ function renderKnowledge(d){
     h += `<div class="kn-verdict stale"><b>${esc(KN_BANNERS.stale.hd)}</b>` +
       `<div style="margin-top:5px">${esc(f.detail || "")}</div></div>`;
   }
+  // ONE compact header line: the counts are attendance, kept because they
+  // scope the ledger below — they are no longer the card.
   const g = k.groups || {};
   const m = k.mechanisms || {};
   const nv = g.no_verdict || {};
-  h += `<div class="tiles">` +
-    tile("Attempts ever", k.attempts == null ? "—" : String(k.attempts),
-         "every candidate the loop ever formed, across all runs") +
-    tile("Mechanisms explored", m.distinct == null ? "—" : String(m.distinct),
-         "distinct mechanism ids attempted at least once") +
-    tile("Mechanisms revisited", m.revisited == null ? "—" : String(m.revisited),
-         "attempted ≥2 times — the memory is steering repeats, not preventing " +
-         "them blindly", m.revisited > 0 ? "" : "dim") +
-    tile("Kept", g.kept == null ? "—" : String(g.kept),
-         "confirmed improvements promoted into the champion",
-         g.kept > 0 ? "good" : "dim") +
-    `</div>`;
+  h += `<div class="kn-note"><b>${esc(k.attempts == null ? "—" : k.attempts)}` +
+    `</b> attempts ever across <b>${esc(m.distinct == null ? "—" : m.distinct)}` +
+    `</b> mechanisms explored (${esc(m.revisited == null ? "—" : m.revisited)} ` +
+    `revisited) · kept <b>${esc(g.kept == null ? "—" : g.kept)}</b> · ` +
+    `measured_null ${esc(g.measured_null == null ? "—" : g.measured_null)} ` +
+    `<span class="muted">(no effect above the floor vs the anchor of their ` +
+    `day — not falsified forever)</span> · refused_at_formation ` +
+    `${esc(g.refused_at_formation == null ? "—" : g.refused_at_formation)} ` +
+    `<span class="muted">(by the critic, before costing any device time)</span>` +
+    ` · superseded ${esc(g.superseded == null ? "—" : g.superseded)} · ` +
+    `no scientific verdict ${esc(nv.total == null ? "—" : nv.total)}` +
+    `<span class="muted">${esc(Object.keys(nv.by_status || {}).length
+        ? " (" + Object.entries(nv.by_status)
+            .map(([s, n]) => `${s} ${n}`).join(" · ") + ")" : "")}</span></div>`;
 
-  // The disposition split — the whole record, negatives first-class, in the
-  // same row styling as the run-scoped card above so the split reads the same
-  // way, with the run/all-time difference carried by each card's header.
-  const splitRows = [
-    ["kept", g.kept, "confirmed improvement, promoted", "win"],
-    ["measured_null", g.measured_null,
-     "measured; no effect above the floor vs the anchor of their day — a " +
-     "null against that day's anchor, not falsified forever", "neg"],
-    ["refused_at_formation", g.refused_at_formation,
-     "rejected by the critic before costing any device time", "neg"],
-    ["superseded", g.superseded,
-     "overtaken by a later attempt before a verdict", "neg"],
-  ];
-  const max = Math.max(...splitRows.map(r => r[1] || 0), nv.total || 0, 1);
-  h += splitRows.map(([nm, n, tag, cls]) =>
-    `<div class="disp ${cls}"><span class="nm">${esc(nm)}</span>` +
-    `<span class="n">${esc(n == null ? "—" : n)}</span>` +
-    `<span class="bar" style="width:${Math.round(220 * (n || 0) / max)}px"></span>` +
-    `<span class="tag">${esc(tag)}</span></div>`).join("");
-  // Everything with NO scientific verdict, enumerated by the producer's own
-  // status names — folded out of the science but never hidden from the count.
-  h += `<div class="disp neg"><span class="nm">no scientific verdict</span>` +
-    `<span class="n">${esc(nv.total == null ? "—" : nv.total)}</span>` +
-    `<span class="bar" style="width:${Math.round(220 * (nv.total || 0) / max)}px"></span>` +
-    `<span class="tag">${esc(Object.entries(nv.by_status || {})
-        .map(([s, n]) => `${s} ${n}`).join(" · ") || "none")}</span></div>`;
+  h += renderLedger(k.ledger || null);
 
-  const recent = k.recent_kept || [];
-  if(recent.length){
-    h += `<div class="kn-note"><b>Most recent keeps</b> — each effect is a ` +
-      `<b>marginal</b> vs the anchor as it stood for that attempt; they must ` +
-      `not be summed.<ul style="margin:6px 0 0;padding-left:18px">` +
-      recent.map(r => `<li><span class="mono">${esc(r.mechanism_id || "—")}</span>` +
-        (num(r.effect_fraction)
-          ? ` <span class="eff ${r.effect_fraction > 0 ? "pos" : r.effect_fraction < 0 ? "neg" : "nil"} mono">` +
-            `${r.effect_fraction >= 0 ? "+" : ""}${(r.effect_fraction * 100).toFixed(2)}%</span>` +
-            ` <span class="muted">marginal vs the anchor of its day</span>` : "") +
-        (r.recorded_at ? ` <span class="muted">· ${esc(String(r.recorded_at).slice(0, 10))}</span>` : "") +
-        `</li>`).join("") + `</ul></div>`;
-  }
   const w = k.recorded_window || {};
   h += `<div class="kn-note muted">evidence: <span class="mono">${esc(k.evidence || "—")}</span>` +
     (w.first ? ` · records ${esc(String(w.first).slice(0, 10))} → ${esc(String(w.last || "").slice(0, 10))}` : "") +
     ` · ${esc(k.source || "")}</div>`;
   host.innerHTML = h;
+}
+
+/* One ledger row: a mechanism's verdict, its hypothesis statement (truncated,
+   full text in the title attribute), and the caveat its magnitude carries.
+   EVERY effect figure is printed beside "vs the anchor of its day": these are
+   marginals against an anchor that advances on every keep, and a cross-epoch
+   row additionally says its number is not comparable to current ones. */
+function ledgerRow(mech){
+  const kept = (mech.kept || 0) > 0;
+  const nulls = mech.measured_null || 0;
+  const refused = mech.refused_at_formation || 0;
+  const best = mech.best_effect || null;
+  let vd, cls, caveat;
+  if(kept && best && num(best.fraction)){
+    vd = `KEPT ${fmtPct(best.fraction)}`; cls = "win";
+    caveat = `marginal vs the anchor of its day` +
+      (best.cross_epoch ? ` (earlier epoch — not comparable to current numbers)` : "") +
+      ((mech.attempts || 0) > 1 ? ` · ${mech.attempts} attempts` : "");
+  } else if(kept){
+    vd = "KEPT"; cls = "win";
+    caveat = "kept with no recorded effect fraction; any magnitude in the " +
+      "statement is vs the anchor of its day";
+  } else if(nulls){
+    vd = `NULL ×${nulls}`; cls = "nil";
+    caveat = `no effect above the floor vs the anchor of its day` +
+      (mech.cross_epoch ? ` (incl. earlier-epoch attempts)` : "");
+  } else if(refused){
+    vd = refused > 1 ? `REFUSED ×${refused}` : "REFUSED"; cls = "ref";
+    // The trailing anchor clause is load-bearing: statements are untrusted
+    // prose that may cite magnitudes, and every figure on this page must sit
+    // beside its baseline.
+    caveat = "rejected by the critic before costing any device time; any " +
+      "magnitude it cites is vs the anchor of its day";
+  } else {
+    vd = mech.latest_status || "—"; cls = "nil";
+    caveat = "no scientific verdict; any magnitude in the statement is vs " +
+      "the anchor of its day";
+  }
+  const when = mech.last_recorded_at
+    ? ` · ${esc(String(mech.last_recorded_at).slice(0, 10))}` : "";
+  // The caveat renders BETWEEN the verdict and the statement: the effect
+  // figure and its anchor must sit together, and an untrusted statement may
+  // itself cite magnitudes — those too then have the anchor clause in reach.
+  let h = `<div class="ag-mech">` +
+    `<span class="vd ${cls}">${esc(vd)}</span>` +
+    `<span class="st" title="${esc(mech.statement || "")}">` +
+    `<span class="muted">${esc(caveat)}${when} —</span> ` +
+    `<span class="id">${esc(mech.mechanism_id || "—")}</span> ` +
+    `${esc(trunc(mech.statement, 90) || "(no statement recorded)")}` +
+    `</span></div>`;
+  if(refused && mech.refusal_reason){
+    // The critic's objection, verbatim (truncated): the most direct record of
+    // what the planner keeps getting wrong. Any magnitude it cites was
+    // measured vs the anchor of its day.
+    h += `<div class="ag-mech"><span class="vd"></span>` +
+      `<span class="st muted" title="${esc(mech.refusal_reason)}">the critic: ` +
+      `“${esc(trunc(mech.refusal_reason, 110))}” ` +
+      `<span class="muted">(cited magnitudes are vs the anchor of its day)</span>` +
+      `</span></div>`;
+  }
+  return h;
+}
+
+/* Rows beyond the cap collapse into a nested <details>; collapsed, never cut. */
+function ledgerRows(mechs, cap){
+  const shown = mechs.slice(0, cap);
+  const rest = mechs.slice(cap);
+  let h = shown.map(ledgerRow).join("");
+  if(rest.length){
+    h += `<details class="ag-more"><summary>${rest.length} more mechanism` +
+      `${rest.length === 1 ? "" : "s"} against this kernel</summary>` +
+      rest.map(ledgerRow).join("") + `</details>`;
+  }
+  return h;
+}
+
+/* THE HYPOTHESIS LEDGER: the hotspot walk plus the remainder. Server-folded
+   (`loop_status.knowledge_ledger`); this only draws it. */
+function renderLedger(led){
+  if(!led){
+    // The hub served counts but no ledger — a wiring fact about THIS hub.
+    return `<div class="kn-note muted">this hub served no <code>ledger</code> ` +
+      `block — a fact about the hub's version, not about the planner.</div>`;
+  }
+  let h = "";
+  if(!led.hotspots_reported){
+    h += `<div class="kn-note">${esc(led.hotspots_unavailable_reason ||
+      "no hotspot profile is available, so there is no agenda to walk")}</div>`;
+  }
+  (led.agenda || []).forEach(a => {
+    const share = num(a.share_of_device_time)
+      ? (a.share_of_device_time * 100).toFixed(1) + "%" : "—";
+    const varTitle = (a.variants || []).map(v =>
+      `${num(v.share_of_device_time) ? (v.share_of_device_time * 100).toFixed(1) : "?"}% ${v.signature}`
+    ).join("\n");
+    h += `<div class="ag"><div class="ag-hd">` +
+      `<span class="ag-kern" title="${esc(varTitle)}">${esc(a.kernel)}</span>` +
+      `<span class="ag-share">${esc(share)} of device time in the champion profile</span>` +
+      `<span class="ag-meta">· ${esc((a.variants || []).length)} variant` +
+      `${(a.variants || []).length === 1 ? "" : "s"}` +
+      (a.calls == null ? "" : ` · ${esc(a.calls)} calls`) + `</span></div>`;
+    const s = a.summary || {};
+    if(a.untried){
+      // THE BLIND SPOT, loud: an unexplored slice of device time is the most
+      // actionable line on this card.
+      h += `<div class="ag-untried">no hypothesis has ever targeted this ` +
+        `kernel — ${esc(share)} of device time in the champion profile ` +
+        `unexplored</div>`;
+    } else {
+      h += `<div class="ag-sum">${esc(s.mechanisms_tried)} mechanism` +
+        `${s.mechanisms_tried === 1 ? "" : "s"} tried against this hotspot ` +
+        `(${esc(s.attempts)} attempt${s.attempts === 1 ? "" : "s"})` +
+        (num(s.best_effect_fraction)
+          ? `; best <span class="eff ${s.best_effect_fraction > 0 ? "pos" : "nil"} mono">` +
+            `${esc(fmtPct(s.best_effect_fraction))}</span> marginal vs the anchor ` +
+            `of its day` + (s.best_effect_cross_epoch
+              ? ` <span class="muted">(earlier epoch — not comparable to ` +
+                `current numbers)</span>` : "")
+          : "") +
+        (s.null_mechanisms ? `; ${esc(s.null_mechanisms)} null` : "") +
+        (s.refused_mechanisms ? `; ${esc(s.refused_mechanisms)} refused by the critic` : "") +
+        `</div>`;
+      h += ledgerRows(a.mechanisms || [], 8);
+    }
+    const posture = [];
+    (a.tried_this_run || []).forEach(mid =>
+      posture.push(`in flight this run: <span class="mono">${esc(mid)}</span>`));
+    (a.queued_seeds || []).forEach(seed =>
+      posture.push(`queued in the inbox: <span class="mono">${esc(seed.file)}` +
+        `</span>${seed.title ? ` — ${esc(trunc(seed.title, 90))}` : ""}`));
+    if(posture.length){
+      h += `<div class="ag-post">${posture.join(" · ")}</div>`;
+    }
+    h += `</div>`;
+  });
+
+  // THE REMAINDER — nothing is silently dropped. Levers whose target maps to
+  // no kernel in TODAY'S profile: the profile has moved since they were
+  // tried, or the row names no profiled kernel.
+  const un = led.unmapped || {};
+  const c = un.confirmed || {total: 0, entries: []};
+  const n = un.null || {total: 0, entries: []};
+  const r = un.refused || {total: 0, entries: []};
+  const remTotal = (c.total || 0) + (n.total || 0) + (r.total || 0);
+  const seeds = ((led.inbox || {}).seeds || []);
+  const unmatchedSeeds = seeds.filter(sd => !(sd.matched_kernels || []).length);
+  h += `<details class="kn-rem"><summary>Beyond the current profile — ` +
+    `${remTotal} lever${remTotal === 1 ? "" : "s"} mapping to no hotspot in ` +
+    `today's profile</summary>` +
+    `<div class="kn-note muted">The profile has moved since these were tried, ` +
+    `or the row names no profiled kernel. ${esc(led.match_rule || "")}</div>`;
+  if(c.total){
+    h += `<div class="ag-sum"><b>Confirmed levers</b> (${esc(c.total)})</div>` +
+      ledgerRows(c.entries, 8);
+  }
+  if(n.total){
+    h += `<div class="ag-sum"><b>Null levers</b> (${esc(n.total)}) — measured, ` +
+      `no effect above the floor vs the anchor of their day</div>` +
+      ledgerRows(n.entries, 8);
+  }
+  if(r.total){
+    h += `<div class="ag-sum"><b>Rejected at formation</b> (${esc(r.total)}) — ` +
+      `the critic's objections, before any device time</div>` +
+      ledgerRows(r.entries, 8);
+  }
+  h += `<div class="kn-note muted">` +
+    `${esc(un.no_verdict_mechanisms || 0)} unmapped mechanisms carry no ` +
+    `scientific verdict · ${esc(un.unattributed_rows || 0)} rows name no ` +
+    `mechanism at all` +
+    (unmatchedSeeds.length
+      ? ` · inbox seeds matching no walked kernel: ` + unmatchedSeeds.map(sd =>
+          `<span class="mono">${esc(sd.file)}</span>`).join(", ")
+      : "") + `</div></details>`;
+  return h;
 }
 
 function renderRecent(d){
@@ -1104,6 +1298,16 @@ function renderOperatorGate(d){
   // its verdict — "we cannot say" is rendered as exactly that, never as
   // "different".
   const rel = og.champion_relationship || null;
+  // The SHORT relationship clause for the always-visible summary line —
+  // computed from the same per-render verdict as the full sentence below,
+  // never worded as a constant. The lineage detail keeps its full sentence
+  // inside the evidence accordion.
+  const relShort = !rel || rel.relation === "unresolvable"
+    ? "relationship to the current champion unresolvable"
+    : rel.relation === "tip" ? "the current champion tip"
+    : rel.relation === "ancestor"
+    ? "ancestor — its work is in the current champion"
+    : "divergent — not in the current champion's history";
   const relTxt = !rel || rel.relation === "unresolvable"
     ? `; how it relates to the current champion cannot be established right ` +
       `now (${esc((rel && rel.detail) || "this hub served no relationship " +
@@ -1121,6 +1325,49 @@ function renderOperatorGate(d){
       `${esc(short(rel.current_champion))}</span> and the measured commit is ` +
       `<b>not in its history</b> — a genuinely divergent tree, so the two ` +
       `numbers are not even about the same line of work.`;
+  // THE COMPACT CARD (operator, 2026-08-31: "I'm still seeing stale looking
+  // cards"). One always-visible summary line, every value from the payload —
+  // the bundle's own headline sentence, its anchor, the measured commit, the
+  // computed relationship, the reading's age. Everything else — the scope
+  // paragraph, both gate tables, the greedy-parity and authorisation notes,
+  // the evidence footer — collapses into the accordion below. Collapsed is
+  // not removed: nothing leaves the DOM.
+  const hd = og.headline || {};
+  const e = hd.effect_fraction;
+  const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
+  // Outside its envelope the figure is amber, never the green/red of a live
+  // gain or regression.
+  const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
+  // The emitter's summary sentence often BEGINS with the very figure the
+  // og-num span already shows; the duplicate is trimmed for display only —
+  // the payload is untouched, and a summary that does not start with this
+  // exact figure renders verbatim.
+  let sumTxt = hd.summary || hdMetricPhrase(og) ||
+      "no headline summary in this bundle";
+  if(sumTxt.trim().startsWith(pct))
+    sumTxt = sumTxt.trim().slice(pct.length).trim();
+  h += `<div class="og-head">` +
+       `<span class="og-num ${cls}">${esc(pct)}</span>` +
+       `<span class="og-sum">${esc(sumTxt)}` +
+       `${hd.metric ? ` · ${esc(hd.metric)}` : ""}` +
+       `${hd.metric_direction ? ` (${esc(hd.metric_direction)})` : ""}` +
+       ` · vs ` +
+       (og.production_anchor_commit
+         ? `the frozen production kernel <span class="mono">` +
+           `${esc(short(og.production_anchor_commit))}</span>`
+         : `an anchor this bundle does not name — treat the figure as ` +
+           `uninterpretable`) +
+       ` · measured <span class="mono">${esc(short(og.champion_commit))}</span>` +
+       ` (${esc(relShort)})` +
+       (num(f.age_s) ? ` · ${esc(age(f.age_s))} ago` : "") +
+       `</span>` +
+       `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
+       `no promotion authority</span></div>`;
+
+  // The evidence accordion. A <details> with no `open` attribute IS the
+  // collapsed state; the freshness verdict above never collapses.
+  h += `<details class="og-details"><summary>Serving-path evidence &amp; gates</summary>`;
+
   h += `<div class="og-scope"><b>This is not the champion headline.</b> ` +
     `It is a separate producer answering a different question against a ` +
     `different anchor. The panel at the top of this page is the champion ` +
@@ -1133,28 +1380,6 @@ function renderOperatorGate(d){
     relTxt +
     (og.not_campaign_sealed
       ? ` This bundle is not campaign-sealed.` : "") + `</div>`;
-
-  const hd = og.headline || {};
-  const e = hd.effect_fraction;
-  const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
-  // Outside its envelope the figure is amber, never the green/red of a live
-  // gain or regression.
-  const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
-  h += `<div class="og-head">` +
-       `<span class="og-num ${cls}">${esc(pct)}</span>` +
-       `<span class="og-sum">${esc(hd.summary || "no headline summary in this bundle")}` +
-       `<br><span class="muted">vs ` +
-       (og.production_anchor_commit
-         ? `the frozen production kernel <span class="mono">` +
-           `${esc(short(og.production_anchor_commit))}</span>`
-         : `an anchor this bundle does not name — treat the figure as ` +
-           `uninterpretable`) +
-       `${hd.metric ? ` · metric ${esc(hd.metric)}` : ""}` +
-       `${hd.metric_direction ? ` (${esc(hd.metric_direction)})` : ""}` +
-       `${num(hd.at_in_flight) ? ` · at ${esc(hd.at_in_flight)} in-flight` : ""}` +
-       `</span></span>` +
-       `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
-       `no promotion authority</span></div>`;
 
   const gates = og.gates || [];
   if(gates.length){
@@ -1182,6 +1407,7 @@ function renderOperatorGate(d){
             ? ` <span class="muted">(file mtime — this bundle carries no ` +
               `generated_at of its own)</span>` : "") : "") +
        `</div></div>`;
+  h += `</details>`;
   host.innerHTML = h;
 }
 

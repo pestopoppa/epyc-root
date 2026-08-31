@@ -1096,6 +1096,12 @@ class Rendering(_Store):
                   "vs that baseline", "the frozen production kernel",
                   "production's ceiling", "of the anchor", "production ceiling",
                   "frozen anchor", "marginal", "must not be summed",
+                  # The hypothesis ledger's anchors: every effect it lists is a
+                  # marginal against the anchor as it stood for that attempt,
+                  # and a profile share names the champion profile it is a
+                  # share OF.
+                  "anchor of its day", "anchor of their day",
+                  "of device time in the champion profile",
                   # The producer's own reason text names the bar it was measured
                   # against ("did not clear the 1.188% noise floor"), and that IS
                   # a named baseline — it is not the page's to relabel.
@@ -1309,6 +1315,96 @@ class Rendering(_Store):
         self.assertNotIn("IN the current champion", seen["unresolvable"])
         self.assertEqual(len(set(seen.values())), 4,
                          "two relationship states rendered identically")
+
+
+class GateCardCompact(Rendering):
+    """Operator, 2026-08-31: "I'm still seeing stale looking cards." The
+    operator-gated card is now ONE always-visible summary line — every value
+    from the payload — with everything else inside a collapsed <details>.
+    Collapsed is not removed: the existing content assertions elsewhere in
+    this file keep reading it through the accordion, and these tests pin that
+    the accordion actually collapses and that the summary cannot be prose."""
+
+    def _write_gate(self, mutate=None) -> dict:
+        source = real_bundle()
+        if mutate:
+            mutate(source)
+        target = self.root / "operator_gate_bundle.json"
+        target.write_text(json.dumps(source), encoding="utf-8")
+        S.OPERATOR_GATE_BUNDLE_JSON = target
+        return source
+
+    def _card(self) -> str:
+        out = self._render()
+        self.assertIn("opgate", out["by_id"])
+        return out["by_id"]["opgate"]
+
+    def test_the_summary_line_is_built_from_the_payload_not_prose(self):
+        """Every value in the line comes from the bundle on disk. Driven with
+        values that DIFFER from the emitted bundle's, so a summary hardcoding
+        the famous +48.9% (or the v9 anchor) fails here."""
+        self.write_loop(recorded_loop())
+        anchor = "ab" * 20
+        def mutate(body):
+            body["headline"]["effect_fraction"] = 0.123
+            body["headline"]["summary"] = "probe summary from the bundle"
+            body["production_anchor"]["commit"] = anchor
+        source = self._write_gate(mutate)
+        html = self._card()
+        head = html.split('<details class="og-details"')[0]
+        text = self._text(head)
+        self.assertIn("+12.3%", text)
+        self.assertNotIn("+48.9%", text)
+        self.assertIn("probe summary from the bundle", text)
+        self.assertIn(f"the frozen production kernel {anchor[:12]}", text)
+        self.assertIn(f"measured {source['champion']['commit'][:12]}", text)
+        self.assertIn("ago", text)
+        # The relationship clause is the COMPUTED verdict (the posing champion
+        # tree is unresolvable in this fixture), never a worded constant.
+        self.assertIn("relationship to the current champion unresolvable", text)
+
+    def test_the_evidence_is_collapsed_by_default_and_nothing_is_deleted(self):
+        self.write_loop(recorded_loop())
+        self.use_real_bundle()
+        html = self._card()
+        m = re.search(r'<details class="og-details"([^>]*)>(.*?)</details>\s*$',
+                      html, re.S)
+        self.assertIsNotNone(m, "no evidence accordion rendered")
+        self.assertNotIn("open", m.group(1),
+                         "the accordion must render collapsed by default")
+        inner = m.group(2)
+        # Everything the wall used to show is INSIDE — collapsed ≠ removed.
+        for fragment in ("This is not the champion headline",
+                         "dflash2_vs_production_serving_path", "greedy_parity",
+                         "no_regression_vs_production_anchor", "evidence:",
+                         "what this evidence does and does not authorise"):
+            self.assertIn(fragment, inner, f"{fragment!r} fell out of the DOM")
+        outside = html.replace(m.group(0), " ")
+        for cls in ("og-scope", "og-gate", "og-pts"):
+            self.assertNotIn(cls, outside,
+                             f"{cls} also renders outside the accordion")
+        self.assertNotIn("evidence:", outside)
+        # ...while the summary stays visible: number, anchor, authority badge.
+        text = self._text(outside)
+        self.assertIn("+48.9%", text)
+        anchor = real_bundle()["production_anchor"]["commit"][:12]
+        self.assertIn(f"the frozen production kernel {anchor}", text)
+        self.assertIn("operator-gated · no promotion authority", text)
+
+    def test_a_stale_bundle_keeps_its_verdict_outside_the_accordion(self):
+        """The freshness warning may never collapse: an operator must not have
+        to open an accordion to learn the number is outside its envelope."""
+        self.write_loop(recorded_loop())
+        self.use_real_bundle()
+        target = self.root / "operator_gate_bundle.json"
+        past = target.stat().st_mtime - 10 * 86400
+        os.utime(target, (past, past))
+        html = self._card()
+        before = html.split('<details class="og-details"')[0]
+        self.assertIn("STALE — this evidence is outside its own envelope",
+                      self._text(before))
+        self.assertIn("og-num dated", before,
+                      "a stale figure painted as a live gain")
 
 
 class Wiring(unittest.TestCase):

@@ -1194,6 +1194,389 @@ KNOWLEDGE_ABSENCE_MEANS = (
     "attempt here. A missing count is not a zero: this page can say nothing "
     "about what the program has tried, kept or ruled out.")
 
+# --------------------------------------------------------------------------- #
+# THE HYPOTHESIS LEDGER — the profile is the planner's agenda, and the card
+# walks it
+# --------------------------------------------------------------------------- #
+# Operator, 2026-08-31, twice in one day. First: the counts card "missed the
+# point" — disposition counts are attendance, not thinking. Then, on seeing the
+# raw hotspot table: "this doesn't tell me how the planner is thinking about
+# tackling these profiling bottlenecks." So the organizing principle is the
+# HOTSPOT WALK: for each top kernel in the champion profile, what has been
+# tried against it (kept / null / refused, with the statements and the critic's
+# reasons), what is aimed at it right now, and — loudest of all — the hotspots
+# NOTHING has ever targeted, because an unexplored 16% of device time is the
+# most actionable line on the card.
+#
+# Everything here is a FOLD over three producers' own records: the memory
+# store's rows, the live status file's hotspot profile, and the store's inbox
+# of seed hypotheses. Nothing is graded and nothing is invented; rows that
+# cannot be mapped to a current hotspot are shown in a remainder, never
+# silently dropped.
+
+#: How many hotspot GROUPS the agenda walks. The profile's 12 raw entries fold
+#: to ~7 groups today (five mul_mat_vec_q template variants are one kernel to a
+#: planner); the cap guards the card against a pathological profile.
+KNOWLEDGE_AGENDA_GROUPS = 8
+
+#: Server-side caps on untrusted text. Statements are prompt-shaped LLM output
+#: and can run long; the page truncates further for display and carries the
+#: capped text in a title attribute. The caps also bound the wire: ~330
+#: mechanism entries ride in every payload, so an uncapped statement column
+#: would make a 20s-refresh page fetch megabytes.
+KNOWLEDGE_STATEMENT_CAP = 300
+KNOWLEDGE_REASON_CAP = 300
+
+#: Cap per unmapped-remainder list. The visible page shows fewer; this bounds
+#: the wire.
+KNOWLEDGE_UNMAPPED_CAP = 40
+
+#: The seed-hypothesis inbox inside the store root, read-only like everything
+#: else here. Seeds are markdown files a human (or the intake pipeline) queued
+#: for the planner; they are posture, not measurements.
+KNOWLEDGE_INBOX_DIRNAME = "inbox"
+KNOWLEDGE_INBOX_MAX_SEEDS = 24
+KNOWLEDGE_INBOX_SCAN_BYTES = 65536
+
+#: THE MATCHING RULE, stated once and served on the wire so the card can say
+#: how its join was made. A profiled signature and a row's ``target_symbol``
+#: are both normalized to a BASE KERNEL NAME — strip a leading ``void``,
+#: cut at the first ``<`` (template arguments) or ``(`` (parameter list),
+#: take the last ``::`` component — and a row maps to a hotspot when either
+#: base contains the other (minimum 6 characters on the contained side, so a
+#: two-letter fragment cannot join everything to everything). Verified against
+#: the live profile: ``mul_mat_vec_q_switch_ncols_dst`` and
+#: ``ggml_cuda_mul_mat_vec_q`` both map to the ``mul_mat_vec_q`` variants;
+#: ``rope_neox``, ``quantize_q8_1_1d`` and ``rms_norm_f32`` map exactly. A
+#: symbol like ``vec_dot_q4_K_q8_1_impl_vmmq`` — work that is INLINED into a
+#: profiled kernel but shares no name with it — honestly fails to map and is
+#: shown in the remainder rather than guessed at.
+KNOWLEDGE_MATCH_RULE = (
+    "a row maps to a hotspot when the normalized base kernel name of its "
+    "target_symbol and of the profiled signature contain one another "
+    "(template arguments, parameter lists and namespaces stripped; 6-char "
+    "minimum on the contained side). Rows that map to no current hotspot are "
+    "listed in the remainder, never dropped.")
+
+_KERNEL_BASE_MIN_MATCH = 6
+
+
+def _kernel_base(name: Any) -> Optional[str]:
+    """Normalize a profiled signature OR a target symbol to a base kernel name."""
+    text = str(name or "").strip()
+    if not text:
+        return None
+    if text.startswith("void "):
+        text = text[5:]
+    cut = len(text)
+    for ch in "<(":
+        pos = text.find(ch)
+        if pos != -1:
+            cut = min(cut, pos)
+    text = text[:cut].strip()
+    if "::" in text:
+        text = text.rsplit("::", 1)[-1]
+    return text or None
+
+
+def _bases_match(symbol_base: Optional[str], signature_base: Optional[str]
+                 ) -> bool:
+    if not symbol_base or not signature_base:
+        return False
+    if symbol_base == signature_base:
+        return True
+    if len(signature_base) >= _KERNEL_BASE_MIN_MATCH \
+            and signature_base in symbol_base:
+        return True
+    if len(symbol_base) >= _KERNEL_BASE_MIN_MATCH \
+            and symbol_base in signature_base:
+        return True
+    return False
+
+
+def _agenda_groups(hotspots: Any) -> list:
+    """Group the raw hotspot table by base kernel name, biggest share first.
+
+    Five ``mul_mat_vec_q`` template variants are ONE kernel to a planner; a
+    walk that lists them separately repeats every mechanism five times and
+    buries the untried kernels below the fold. The variants stay inside the
+    group, each with its own share, so nothing is summed away invisibly.
+    """
+    if not isinstance(hotspots, (list, tuple)):
+        return []
+    groups: dict = {}
+    for row in hotspots:
+        if not isinstance(row, Mapping):
+            continue
+        base = _kernel_base(row.get("signature"))
+        if base is None:
+            continue
+        share = row.get("share_of_device_time")
+        share = float(share) if isinstance(share, (int, float)) \
+            and not isinstance(share, bool) and share == share else 0.0
+        calls = row.get("calls")
+        calls = int(calls) if isinstance(calls, (int, float)) \
+            and not isinstance(calls, bool) else None
+        group = groups.setdefault(base, {
+            "kernel": base, "share_of_device_time": 0.0, "calls": 0,
+            "calls_known": True, "variants": []})
+        group["share_of_device_time"] += share
+        if calls is None:
+            group["calls_known"] = False
+        else:
+            group["calls"] += calls
+        group["variants"].append({
+            "signature": str(row.get("signature")),
+            "share_of_device_time": share, "calls": calls})
+    out = sorted(groups.values(),
+                 key=lambda g: -g["share_of_device_time"])
+    for group in out:
+        if not group.pop("calls_known"):
+            group["calls"] = None
+    return out[:KNOWLEDGE_AGENDA_GROUPS]
+
+
+def _clip(text: Any, cap: int) -> Optional[str]:
+    if text is None:
+        return None
+    text = str(text)
+    return text if len(text) <= cap else text[:cap - 1] + "…"
+
+
+def _mechanism_entries(rows: list, current_epoch: Optional[str]) -> tuple:
+    """Fold the store's rows (newest first) into per-mechanism ledger entries.
+
+    Returns ``(entries, unattributed_rows)``. Repeats of one mechanism are one
+    entry with an attempt count — 35 identical nulls are one line saying x35,
+    not 35 lines. ``cross_epoch`` marks a mechanism whose evidence includes
+    rows from an epoch other than the CURRENT one; the best kept effect
+    carries its own ``cross_epoch`` flag because its magnitude specifically is
+    the thing that must not be read as comparable to current numbers.
+    """
+    by_mech: dict = {}
+    order: list = []
+    unattributed = 0
+    for row in rows:
+        mech = row.get("mechanism_id")
+        if not mech:
+            unattributed += 1
+            continue
+        entry = by_mech.get(mech)
+        if entry is None:
+            entry = by_mech[mech] = {
+                "mechanism_id": mech, "attempts": 0, "by_status": {},
+                "kept": 0, "measured_null": 0, "refused_at_formation": 0,
+                "target_symbols": [], "statement": None,
+                "latest_status": row.get("status"),
+                "last_recorded_at": row.get("recorded_at"),
+                "best_effect": None, "refusal_reason": None,
+                "epochs": [], "cross_epoch": False}
+            order.append(mech)
+        entry["attempts"] += 1
+        status = str(row.get("status") or "")
+        entry["by_status"][status] = entry["by_status"].get(status, 0) + 1
+        if status in ("kept", "measured_null", "refused_at_formation"):
+            entry[status] += 1
+        symbol = row.get("target_symbol")
+        if symbol and symbol not in entry["target_symbols"]:
+            entry["target_symbols"].append(symbol)
+        epoch = row.get("epoch_sha256")
+        if epoch and epoch not in entry["epochs"]:
+            entry["epochs"].append(epoch)
+        if current_epoch and epoch and epoch != current_epoch:
+            entry["cross_epoch"] = True
+        # Rows arrive newest first, so the FIRST statement/reason seen for a
+        # mechanism is its latest wording.
+        if entry["statement"] is None and row.get("statement"):
+            entry["statement"] = _clip(row["statement"],
+                                       KNOWLEDGE_STATEMENT_CAP)
+        if status == "refused_at_formation" and entry["refusal_reason"] is None \
+                and row.get("refusal_reason"):
+            entry["refusal_reason"] = _clip(row["refusal_reason"],
+                                            KNOWLEDGE_REASON_CAP)
+        effect = row.get("effect_fraction")
+        if status == "kept" and isinstance(effect, (int, float)) \
+                and not isinstance(effect, bool) and effect == effect:
+            best = entry["best_effect"]
+            if best is None or float(effect) > best["fraction"]:
+                entry["best_effect"] = {
+                    "fraction": float(effect),
+                    "recorded_at": row.get("recorded_at"),
+                    "epoch_sha256": epoch,
+                    "cross_epoch": bool(current_epoch and epoch
+                                        and epoch != current_epoch)}
+    return [by_mech[m] for m in order], unattributed
+
+
+def knowledge_inbox(root: Optional[Path] = None) -> dict:
+    """The store's queued seed hypotheses — read-only, posture not measurement."""
+    path = (store_root() if root is None else Path(root)) / KNOWLEDGE_INBOX_DIRNAME
+    out = {"present": False, "path": str(path), "seeds": [],
+           "reader_error": None}
+    try:
+        if not path.is_dir():
+            return out
+        files = sorted(p for p in path.iterdir()
+                       if p.is_file() and p.suffix == ".md")
+    except OSError as exc:
+        out["reader_error"] = f"the inbox could not be listed: {exc}"
+        return out
+    out["present"] = True
+    for seed in files[:KNOWLEDGE_INBOX_MAX_SEEDS]:
+        try:
+            text = seed.read_text(encoding="utf-8", errors="replace")
+            text = text[:KNOWLEDGE_INBOX_SCAN_BYTES]
+        except OSError as exc:
+            out["seeds"].append({"file": seed.name, "title": None,
+                                 "reader_error": str(exc), "_text": ""})
+            continue
+        title = ""
+        for line in text.splitlines():
+            if line.strip():
+                title = line.strip().lstrip("#").strip()
+                break
+        out["seeds"].append({"file": seed.name, "title": _clip(title, 200),
+                             "reader_error": None, "_text": text.lower()})
+    return out
+
+
+def knowledge_ledger(rows: list, status_body: Optional[Mapping[str, Any]],
+                     root: Optional[Path] = None) -> dict:
+    """The hotspot-first ledger: the profile as the planner's agenda.
+
+    ``rows`` are the store's rows newest-first; ``status_body`` is the live
+    loop status (its hotspot table, its epoch, its in-run attempts). A missing
+    or unreadable status body does not sink the ledger — it says so, walks no
+    hotspots, and every mechanism lands in the remainder rather than being
+    invented into an agenda nobody profiled.
+    """
+    body = status_body if isinstance(status_body, Mapping) else {}
+    current_epoch = body.get("epoch_sha256")
+    current_epoch = str(current_epoch) if current_epoch else None
+    hotspots = body.get("hotspots")
+    hotspots_reported = isinstance(hotspots, (list, tuple)) and bool(hotspots)
+    agenda = _agenda_groups(hotspots)
+    entries, unattributed = _mechanism_entries(rows, current_epoch)
+    inbox = knowledge_inbox(root)
+
+    #: Mechanisms the CURRENT run has attempted, from the status file's own
+    #: recent-iterations list — the planner's live posture, not history.
+    active = []
+    for row in (body.get("recent") or []):
+        if isinstance(row, Mapping) and row.get("mechanism_id"):
+            mech = str(row["mechanism_id"])
+            if mech not in active:
+                active.append(mech)
+
+    for group in agenda:
+        group["mechanisms"] = []
+        group["tried_this_run"] = []
+        group["queued_seeds"] = []
+    # Each mechanism joins the LARGEST-share group it matches, once — listing
+    # one mechanism under all five mul_mat_vec_q variants would say five
+    # experiments happened where one did.
+    unmapped = []
+    for entry in entries:
+        bases = [b for b in (_kernel_base(s) for s in entry["target_symbols"])
+                 if b]
+        target = None
+        for group in agenda:
+            if any(_bases_match(base, group["kernel"]) for base in bases):
+                target = group
+                break
+        if target is None:
+            unmapped.append(entry)
+        else:
+            target["mechanisms"].append(entry)
+            if entry["mechanism_id"] in active:
+                target["tried_this_run"].append(entry["mechanism_id"])
+
+    #: The walk leads with what WORKED: kept levers first, then nulls, then
+    #: refusals, then the verdict-less — newest first inside each class (the
+    #: entries arrive newest-first and the sort is stable). The wire also
+    #: drops each entry's epoch enumeration for a count: 64-hex shas times a
+    #: few hundred entries is weight the page never reads.
+    def _class_rank(entry: dict) -> int:
+        if entry["kept"] > 0:
+            return 0
+        if entry["measured_null"] > 0:
+            return 1
+        if entry["refused_at_formation"] > 0:
+            return 2
+        return 3
+
+    for group in agenda:
+        group["mechanisms"].sort(key=_class_rank)
+    for entry in entries:
+        entry["epoch_count"] = len(entry.pop("epochs"))
+
+    for seed in inbox["seeds"]:
+        text = seed.pop("_text", "")
+        matched = [g["kernel"] for g in agenda
+                   if g["kernel"].lower() in (seed["file"].lower() + " " + text)]
+        seed["matched_kernels"] = matched
+        for group in agenda:
+            if group["kernel"] in matched:
+                group["queued_seeds"].append(
+                    {"file": seed["file"], "title": seed["title"]})
+
+    for group in agenda:
+        mechs = group["mechanisms"]
+        kept = [m for m in mechs if m["kept"] > 0]
+        best = None
+        for m in kept:
+            if m["best_effect"] and (best is None or
+                                     m["best_effect"]["fraction"]
+                                     > best["fraction"]):
+                best = m["best_effect"]
+        group["untried"] = not mechs
+        group["summary"] = {
+            "mechanisms_tried": len(mechs),
+            "attempts": sum(m["attempts"] for m in mechs),
+            "kept_mechanisms": len(kept),
+            "null_mechanisms": len([m for m in mechs
+                                    if m["kept"] == 0
+                                    and m["measured_null"] > 0]),
+            "refused_mechanisms": len([m for m in mechs
+                                       if m["kept"] == 0
+                                       and m["measured_null"] == 0
+                                       and m["refused_at_formation"] > 0]),
+            "best_effect_fraction": best["fraction"] if best else None,
+            "best_effect_cross_epoch": best["cross_epoch"] if best else None,
+        }
+
+    def _cap(entries_list: list) -> dict:
+        return {"total": len(entries_list),
+                "entries": entries_list[:KNOWLEDGE_UNMAPPED_CAP]}
+
+    remainder = {
+        "confirmed": _cap([m for m in unmapped if m["kept"] > 0]),
+        "null": _cap([m for m in unmapped
+                      if m["kept"] == 0 and m["measured_null"] > 0]),
+        "refused": _cap([m for m in unmapped
+                         if m["kept"] == 0 and m["measured_null"] == 0
+                         and m["refused_at_formation"] > 0]),
+        "no_verdict_mechanisms": len(
+            [m for m in unmapped if m["kept"] == 0 and m["measured_null"] == 0
+             and m["refused_at_formation"] == 0]),
+        "unattributed_rows": unattributed,
+    }
+    # Strip the wire of the per-seed text scan; it was join input, not payload.
+    return {
+        "current_epoch": current_epoch,
+        "hotspots_reported": hotspots_reported,
+        "hotspots_unavailable_reason": (
+            None if hotspots_reported else
+            "the live loop status reported no hotspot profile, so there is no "
+            "agenda to walk — every mechanism is listed in the remainder and "
+            "nothing is invented into an agenda nobody profiled"),
+        "match_rule": KNOWLEDGE_MATCH_RULE,
+        "agenda": agenda,
+        "unmapped": remainder,
+        "inbox": inbox,
+        "active_this_run": active,
+    }
+
 
 def knowledge_path(root: Optional[Path] = None) -> Path:
     return (store_root() if root is None else Path(root)) / KNOWLEDGE_DB_FILENAME
@@ -1211,6 +1594,22 @@ def read_knowledge(root: Optional[Path] = None) -> dict:
     if not path.exists():
         return {"artifact_present": False, "body": None, "reader_error": None,
                 "path": str(path), "mtime": None}
+    for attempt in (1, 2):
+        try:
+            return _read_knowledge_once(path)
+        except sqlite3.OperationalError as exc:
+            # The producer is LIVE and writes continuously; a mid-read lock is
+            # scheduling, not corruption. One retry, then the honest verdict.
+            if attempt == 1 and "lock" in str(exc).lower():
+                time.sleep(0.2)
+                continue
+            return {"artifact_present": True, "body": None,
+                    "reader_error": (f"the memory store exists but could not "
+                                     f"be read: {exc}"),
+                    "path": str(path), "mtime": None}
+
+
+def _read_knowledge_once(path: Path) -> dict:
     try:
         mtime = path.stat().st_mtime
         # mode=ro: a read-only URI open. The hub must be INCAPABLE of writing a
@@ -1242,8 +1641,29 @@ def read_knowledge(root: Optional[Path] = None) -> dict:
             window = cur.execute(
                 "SELECT MIN(recorded_at), MAX(recorded_at) FROM experiments"
             ).fetchone()
+            # THE LEDGER'S RAW MATERIAL: every row's hypothesis identity, its
+            # verdict, and its target — capped server-side because statements
+            # are prompt-shaped LLM output. Newest first, which the mechanism
+            # fold relies on for "latest statement/reason".
+            ledger_rows = [
+                {"mechanism_id": r[0], "target_symbol": r[1],
+                 "target_surface": r[2], "status": r[3],
+                 "effect_fraction": r[4], "statement": r[5],
+                 "refusal_reason": r[6], "recorded_at": r[7],
+                 "epoch_sha256": r[8]}
+                for r in cur.execute(
+                    "SELECT mechanism_id, target_symbol, target_surface, "
+                    f"status, effect_fraction, "
+                    f"substr(statement, 1, {KNOWLEDGE_STATEMENT_CAP + 200}), "
+                    f"substr(refusal_reason, 1, {KNOWLEDGE_REASON_CAP + 200}), "
+                    "recorded_at, epoch_sha256 FROM experiments "
+                    "ORDER BY recorded_at DESC").fetchall()]
         finally:
             con.close()
+    except sqlite3.OperationalError:
+        # The caller retries a locked read once; anything else it folds to the
+        # same malformed verdict as below.
+        raise
     except (OSError, sqlite3.Error) as exc:
         # Exists-but-unreadable (a corrupt db, a foreign schema, a permissions
         # fault) is MALFORMED, never absent and never a page of zeros: a zero
@@ -1260,6 +1680,9 @@ def read_knowledge(root: Optional[Path] = None) -> dict:
                        "revisited": int(mech_revisited)},
         "recent_kept": recent_kept,
         "recorded_window": {"first": window[0], "last": window[1]},
+        # Internal to the snapshot fold — the ledger consumes these and the
+        # wire carries the FOLDED ledger, never 1000 raw rows.
+        "rows": ledger_rows,
     }
     return {"artifact_present": True, "body": body, "reader_error": None,
             "path": str(path), "mtime": mtime}
@@ -1319,16 +1742,25 @@ def knowledge_freshness(report: Mapping[str, Any], *,
 
 
 def knowledge_snapshot(root: Optional[Path] = None, *,
-                       now: Optional[float] = None) -> dict:
+                       now: Optional[float] = None,
+                       status_body: Any = "unread") -> dict:
     """The wire block for the accumulated-knowledge card.
 
     Every count is ``None`` — never 0 — when there is nothing readable to
     count: a missing count is not a zero (the standing rule on this page), and
     a zero here would claim the program has tried nothing.
+
+    ``status_body`` is the live loop status body the LEDGER joins against (its
+    hotspot profile and epoch). :func:`snapshot` passes the body it already
+    read; a direct caller gets the same join from one extra read of the status
+    file. Passing ``None`` explicitly means "there is no readable status" and
+    the ledger walks no agenda.
     """
     report = read_knowledge(root)
     fresh = knowledge_freshness(report, now=now)
     body = report.get("body")
+    if status_body == "unread":
+        status_body = read(root).get("body")
     return {
         "source": "the loop's own memory store (sqlite, read-only)",
         "evidence": report.get("path"),
@@ -1341,6 +1773,11 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
         "groups": _knowledge_groups(body["dispositions"]) if body else None,
         "recent_kept": body["recent_kept"] if body else None,
         "recorded_window": body["recorded_window"] if body else None,
+        # None — never an empty walk — when the store is unreadable: a ledger
+        # of zero levers over a missing store would claim the planner has
+        # thought about nothing.
+        "ledger": (knowledge_ledger(body.get("rows") or [], status_body, root)
+                   if body else None),
         "absence_means": KNOWLEDGE_ABSENCE_MEANS,
     }
 
@@ -1391,8 +1828,10 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
             champion_head=(body or {}).get("champion_head")),
         # A FOURTH producer: the loop's accumulated knowledge, from its own
         # memory store, on its own envelope. It dates none of the other three
-        # and none of them dates it.
-        "knowledge": knowledge_snapshot(root, now=now),
+        # and none of them dates it. The status BODY rides along so the
+        # hypothesis ledger joins the store against THIS reading's hotspot
+        # profile and epoch, not a second read a moment later.
+        "knowledge": knowledge_snapshot(root, now=now, status_body=body),
     }
     return wire, observation(report, fresh)
 
@@ -1405,9 +1844,12 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "DEFAULT_STALE_AFTER_S",
            "DEFAULT_STORE_ROOT", "DEFAULT_FROZEN_TREE", "FROZEN_TREE_ENV",
            "HELD_KEYS",
-           "KNOWLEDGE_ABSENCE_MEANS", "KNOWLEDGE_DB_FILENAME",
+           "KNOWLEDGE_ABSENCE_MEANS", "KNOWLEDGE_AGENDA_GROUPS",
+           "KNOWLEDGE_DB_FILENAME", "KNOWLEDGE_INBOX_DIRNAME",
+           "KNOWLEDGE_MATCH_RULE",
            "KNOWLEDGE_PRIMARY_DISPOSITIONS", "KNOWLEDGE_RECENT_KEPT",
-           "KNOWLEDGE_STALE_AFTER_S",
+           "KNOWLEDGE_STALE_AFTER_S", "KNOWLEDGE_STATEMENT_CAP",
+           "KNOWLEDGE_UNMAPPED_CAP",
            "RELATIONS", "REL_ANCESTOR", "REL_DIVERGENT", "REL_TIP",
            "REL_UNRESOLVABLE",
            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S",
@@ -1420,7 +1862,8 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
            "champion_freshness", "champion_path", "champion_relationship",
            "champion_snapshot",
-           "freshness", "frozen_tree", "knowledge_freshness", "knowledge_path",
+           "freshness", "frozen_tree", "knowledge_freshness", "knowledge_inbox",
+           "knowledge_ledger", "knowledge_path",
            "knowledge_snapshot", "notice",
            "observation", "payload", "read", "read_champion", "read_knowledge",
            "resolve_champion", "resolve_production", "snapshot",
