@@ -508,7 +508,8 @@ class Rendering(_Fixture):
         self.write("{half")
         heads["malformed"] = self._render(S.loop_payload())["html"]
         self.write(body(age_s=30))
-        heads["fresh"] = self._render(S.loop_payload())["html"]
+        fresh_out = self._render(S.loop_payload())
+        heads["fresh"] = fresh_out["html"]
 
         self.assertIn("ABSENT", heads["absent"])
         self.assertIn("has ever published here", heads["absent"])
@@ -516,9 +517,13 @@ class Rendering(_Fixture):
         self.assertIn("LAST report", heads["stale"])
         self.assertIn("MALFORMED", heads["malformed"])
         self.assertIn("cannot trust", heads["malformed"])
-        # ...and the fresh page raises no banner at all.
+        # ...and the fresh reading raises no LOOP banner at all. Keyed to the
+        # banner ELEMENT, not the whole page: the other producers on this page
+        # (the memory store above all) may honestly be ABSENT in this fixture
+        # root, and their own cards MUST say so — a whole-page key here would
+        # forbid exactly the honesty this page exists for.
         for shout in ("ABSENT", "STALE —", "MALFORMED"):
-            self.assertNotIn(shout, heads["fresh"],
+            self.assertNotIn(shout, fresh_out["by_id"].get("banner", ""),
                              f"a fresh reading rendered the {shout!r} banner")
         self.assertEqual(len(set(heads.values())), 4,
                          "two freshness states produced the same rendering")

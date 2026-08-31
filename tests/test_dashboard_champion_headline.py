@@ -236,6 +236,42 @@ class _Store(unittest.TestCase):
         target.write_text(json.dumps(source), encoding="utf-8")
         S.OPERATOR_GATE_BUNDLE_JSON = target
 
+    def use_bundle_with_commit(self, commit: str) -> None:
+        """The REAL emitted bundle, re-pointed at ``commit`` — for driving the
+        scope line's computed relationship against a posing champion tree."""
+        source = real_bundle()
+        source["champion"] = dict(source.get("champion") or {}, commit=commit)
+        target = self.root / "operator_gate_bundle.json"
+        target.write_text(json.dumps(source), encoding="utf-8")
+        S.OPERATOR_GATE_BUNDLE_JSON = target
+
+    def lineage_repo(self) -> tuple[Path, str, str, str]:
+        """A posing champion tree with a real lineage: ``parent`` is an
+        ancestor of ``tip`` (the branch HEAD), and ``divergent`` is a commit on
+        a side branch that is NOT in the tip's history. Returns
+        ``(path, parent, tip, divergent)`` and points the resolver at it."""
+        path = self.root / "champ-lineage"
+        parent = make_production_repo(path, branch="ak/champion/llama-cpp-test")
+        subprocess.run(["git", "-C", str(path), "checkout", "-q", "-b", "side"],
+                       check=True, capture_output=True)
+        # A DISTINCT message: two empty commits with the same parent, tree,
+        # message and second-resolution timestamps hash to the SAME sha, and
+        # "divergent" would silently equal "tip".
+        subprocess.run(["git", "-C", str(path), "-c", "user.name=t",
+                        "-c", "user.email=t@t", "commit", "-q", "--allow-empty",
+                        "-m", "divergent side work"],
+                       check=True, capture_output=True)
+        divergent = subprocess.run(
+            ["git", "-C", str(path), "rev-parse", "HEAD"], check=True,
+            capture_output=True, text=True).stdout.strip()
+        subprocess.run(["git", "-C", str(path), "checkout", "-q",
+                        "ak/champion/llama-cpp-test"],
+                       check=True, capture_output=True)
+        tip = advance_production_repo(path)
+        self.assertNotEqual(divergent, tip)
+        os.environ[loop_status.CHAMPION_TREE_ENV] = str(path)
+        return path, parent, tip, divergent
+
     def block(self) -> dict:
         return S.loop_payload()["champion_vs_production"]
 
@@ -736,6 +772,69 @@ class Lifecycle(_Store):
 
 
 # --------------------------------------------------------------------------- #
+# The gate card's scope line: the relationship is COMPUTED, never worded
+# --------------------------------------------------------------------------- #
+class GateScopeRelationship(_Store):
+    """Operator note, 2026-08-31. The scope line asserted "a different tree" as
+    prose written at commit time; a reconciliation merge then made the measured
+    commit a PARENT of the current champion and the line rendered the opposite
+    of the truth. The relationship is now a git-ancestry fact
+    (`loop_status.champion_relationship`, `merge-base --is-ancestor` against
+    the champion tree) computed per reading — four verdicts, each executed
+    here against a posing lineage repo, none reasoned about."""
+
+    def test_the_four_relationship_verdicts_are_computed_from_ancestry(self):
+        _, parent, tip, divergent = self.lineage_repo()
+        cases = {
+            "tip": (tip, loop_status.REL_TIP),
+            "ancestor": (parent, loop_status.REL_ANCESTOR),
+            "divergent": (divergent, loop_status.REL_DIVERGENT),
+        }
+        for label, (commit, want) in cases.items():
+            with self.subTest(label):
+                got = loop_status.champion_relationship(commit)
+                self.assertEqual(got["relation"], want, got)
+                self.assertEqual(got["current_champion"], tip)
+        self.assertIn("IN the current champion",
+                      loop_status.champion_relationship(parent)["detail"])
+        self.assertIn("different line of work",
+                      loop_status.champion_relationship(divergent)["detail"])
+
+    def test_an_unresolvable_tree_is_unresolvable_never_divergent(self):
+        """"We cannot say" is not "it is different" — folding the two is how
+        the original constant got written in the first place."""
+        os.environ[loop_status.CHAMPION_TREE_ENV] = str(self.root / "gone")
+        got = loop_status.champion_relationship("f" * 40)
+        self.assertEqual(got["relation"], loop_status.REL_UNRESOLVABLE)
+        self.assertIn("cannot be resolved", got["detail"])
+
+    def test_a_commit_the_tree_never_saw_is_unresolvable_never_divergent(self):
+        self.lineage_repo()
+        got = loop_status.champion_relationship("f" * 40)
+        self.assertEqual(got["relation"], loop_status.REL_UNRESOLVABLE)
+        self.assertIn("cannot be established", got["detail"])
+
+    def test_a_missing_measured_commit_is_unresolvable_with_the_reason(self):
+        self.lineage_repo()
+        for bad in (None, "", "270b48ed"):
+            with self.subTest(repr(bad)):
+                got = loop_status.champion_relationship(bad)
+                self.assertEqual(got["relation"], loop_status.REL_UNRESOLVABLE)
+                self.assertIn("no full 40-hex", got["detail"])
+
+    def test_the_gate_reader_carries_the_computed_verdict(self):
+        """The wiring: `_read_operator_gate_bundle` serves the verdict beside
+        the commit, so the page repeats a computation instead of asserting."""
+        _, parent, tip, _ = self.lineage_repo()
+        self.use_bundle_with_commit(parent)
+        got = S._read_operator_gate_bundle()
+        rel = got["champion_relationship"]
+        self.assertEqual(rel["relation"], loop_status.REL_ANCESTOR)
+        self.assertEqual(rel["current_champion"], tip)
+        self.assertEqual(rel["measured"], parent)
+
+
+# --------------------------------------------------------------------------- #
 # The rendered page
 # --------------------------------------------------------------------------- #
 @unittest.skipIf(shutil.which("node") is None, "node is not installed")
@@ -939,9 +1038,16 @@ class Rendering(_Store):
         anchor = real_bundle()["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", gate)
         self.assertNotIn("an anchor this bundle does not name", gate)
-        # ...and says which commit it measured, against the loop's current one.
+        # ...and says which commit it measured. Its relationship to the current
+        # champion is COMPUTED per render from git ancestry, never worded as a
+        # constant: this line once asserted "a different tree" as prose and
+        # kept rendering it after a reconciliation merge made the measured
+        # commit a PARENT of the champion. In this fixture the champion tree is
+        # deliberately unresolvable, so the honest verdict is "cannot say" —
+        # the four computed verdicts are executed in GateScopeRelationship.
         self.assertIn(real_bundle()["champion"]["commit"][:12], gate)
-        self.assertIn("a different tree", gate)
+        self.assertIn("cannot be established", gate)
+        self.assertNotIn("a different tree", gate)
         # The champion card does not carry the gate bundle's figure at all.
         self.assertNotIn("+48.9%", champ)
         self.assertNotIn("48.9", champ)
@@ -1052,7 +1158,7 @@ class Rendering(_Store):
         self.write_champion(self.bundle())
         out = self._render()
         offenders = []
-        for pid in ("champ", "tiles", "recent", "gpu", "hot", "opgate"):
+        for pid in ("champ", "tiles", "recent", "gpu", "hot", "opgate", "know"):
             offenders += self._unanchored(out["by_id"].get(pid, ""), pid)
         self.assertEqual(offenders, [], "\n".join(offenders))
 
@@ -1116,6 +1222,93 @@ class Rendering(_Store):
         self.assertEqual(out["class_by_id"].get("champ-badge"), "badge malformed")
         self.assertEqual(out["text_by_id"].get("champ-badgetxt"), "UNKNOWN")
         self.assertIn("hub could not be reached", self._text(out["by_id"]["champ"]))
+
+    def test_the_not_composable_lecture_is_off_the_card_but_still_served(self):
+        """Operator note (a), 2026-08-31: the "cannot be added up" paragraph no
+        longer renders on the headline card. The FIELD stays on the wire
+        (pinned by `test_the_marginals_are_declared_uncomposable_on_every_
+        reading`) and the recent-iterations table keeps its own
+        must-not-be-summed caption — the rule lives where the marginals live."""
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle())
+        out = self._render()
+        card = self._text(out["by_id"]["champ"])
+        self.assertNotIn("cannot be added up", card)
+        self.assertNotIn("must never be summed", card)
+        # The wire still carries the rationale, and the table still warns.
+        self.assertIn("must never be summed", self.block()["not_composable"])
+        self.assertIn("must not be summed", self._text(out["by_id"]["recent"]))
+
+    def test_the_capabilities_live_in_a_collapsed_accordion(self):
+        """Operator note (b), 2026-08-31: a `<details>` titled "Champion
+        Capabilities", COLLAPSED by default (no `open` attribute), the entries
+        unchanged inside it, and the evidence/run-record footer lines inside
+        it too — and nowhere else on the card."""
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle(capabilities=[
+            {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
+            "iqk IQ4_XS coverage",
+        ]))
+        html = self._render()["by_id"]["champ"]
+        m = re.search(r'<details class="ch-acc"([^>]*)>(.*?)</details>', html,
+                      re.S)
+        self.assertIsNotNone(m, "no capabilities accordion rendered")
+        self.assertNotIn("open", m.group(1),
+                         "the accordion must render collapsed by default")
+        inner = m.group(2)
+        self.assertIn("<summary>Champion Capabilities", inner)
+        for entry in ("FlashAttention2 on gfx90a", "gate fa2_supported",
+                      "iqk IQ4_XS coverage"):
+            self.assertIn(entry, inner, "an entry fell out of the accordion")
+        self.assertIn("evidence:", inner,
+                      "the evidence footer did not move into the accordion")
+        outside = html.replace(m.group(0), " ")
+        self.assertNotIn("FlashAttention2 on gfx90a", outside,
+                         "a capability entry also renders outside the accordion")
+        self.assertNotIn("evidence:", outside,
+                         "an evidence footer also renders outside the accordion")
+
+    def test_the_unknown_capability_state_is_visible_on_the_collapsed_summary(self):
+        """Collapsing must not hide "nobody has said" behind a heading that
+        implies a list exists: UNKNOWN rides on the summary line itself."""
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle())
+        html = self._render()["by_id"]["champ"]
+        m = re.search(r'<summary>(.*?)</summary>', html, re.S)
+        self.assertIsNotNone(m)
+        self.assertIn("UNKNOWN", m.group(1))
+
+    def test_the_scope_lines_relationship_is_computed_not_worded(self):
+        """Operator note (c), executed: four verdicts, four renderings, driven
+        by git ancestry against a posing champion tree — never by prose."""
+        self.write_loop(recorded_loop())
+        path, parent, tip, divergent = self.lineage_repo()
+        seen = {}
+        for label, commit in (("tip", tip), ("ancestor", parent),
+                              ("divergent", divergent)):
+            self.use_bundle_with_commit(commit)
+            seen[label] = self._text(self._render()["by_id"]["opgate"])
+        os.environ[loop_status.CHAMPION_TREE_ENV] = str(self.root / "gone-champ")
+        self.use_bundle_with_commit(parent)
+        seen["unresolvable"] = self._text(self._render()["by_id"]["opgate"])
+
+        self.assertIn("IS the current champion tip", seen["tip"])
+        self.assertIn(tip[:12], seen["tip"])
+
+        self.assertIn("its work is IN the current champion", seen["ancestor"])
+        self.assertIn(tip[:12], seen["ancestor"])
+        self.assertIn("same lineage", seen["ancestor"])
+        self.assertNotIn("divergent tree", seen["ancestor"])
+
+        self.assertIn("not in its history", seen["divergent"])
+        self.assertIn("genuinely divergent tree", seen["divergent"])
+        self.assertNotIn("IN the current champion", seen["divergent"])
+
+        self.assertIn("cannot be established", seen["unresolvable"])
+        self.assertNotIn("divergent tree", seen["unresolvable"])
+        self.assertNotIn("IN the current champion", seen["unresolvable"])
+        self.assertEqual(len(set(seen.values())), 4,
+                         "two relationship states rendered identically")
 
 
 class Wiring(unittest.TestCase):

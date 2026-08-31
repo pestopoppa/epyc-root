@@ -663,6 +663,21 @@ The retired surface must never become a data dependency of the live one.
   redden the global `/api/health`. It is still always listed under `absent`,
   named in `attention`, and `/api/loop/health` answers `absent` with HTTP 503 —
   nothing is hidden, it just is not an outage.
+* **The memory store is a FOURTH producer with its own envelope** (2026-08-31).
+  The accumulated-knowledge card reads the loop's own memory store
+  (`<store>/experiments.db`, sqlite) via `loop_status.knowledge_snapshot` —
+  opened READ-ONLY (`mode=ro` URI: the reader must be *incapable* of writing a
+  producer's store, and a bare `sqlite3.connect` would even create one), same
+  injectable root (`AUTOKERNEL_LOOP_STORE_ROOT`) as the other readers, folds
+  only (attempts ever, distinct/revisited mechanisms, the disposition split
+  with a no-scientific-verdict bucket that enumerates its members, the most
+  recent keeps). Its four-valued freshness comes from the db's **mtime** — the
+  file is the record and every insert touches it — on a day-scale budget,
+  because it dates *knowledge*, not liveness (the loop status card owns
+  liveness). A missing or unreadable db renders absent/malformed with the
+  standard wording and **no counts: a missing count is not a zero**. Tests:
+  `tests/test_dashboard_knowledge_card.py` (fixture db built from the real
+  store's schema with copied real rows, never invented columns).
 
 Tests: `tests/test_dashboard_loop_surface.py` (mutation-checked: collapsing
 `absent` into `stale`, an always-200 probe, a deleted registry row, a fabricated

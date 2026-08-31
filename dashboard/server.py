@@ -348,6 +348,15 @@ def _read_operator_gate_bundle() -> dict:
         "artifact_present": True,
         "champion_commit": champion.get("commit"),
         "champion_branch": champion.get("branch"),
+        # How the MEASURED commit relates to the CURRENT champion — computed
+        # per reading from git ancestry against the champion tree, never worded
+        # as a constant. The card's scope line once asserted "a different tree"
+        # as prose; a reconciliation merge then made the measured commit a
+        # PARENT of the champion, and the line kept rendering the opposite of
+        # the truth. Four verdicts (tip / ancestor / divergent / unresolvable),
+        # each earned by `loop_status.champion_relationship` at request time.
+        "champion_relationship": loop_status.champion_relationship(
+            champion.get("commit")),
         # The baseline, by name. Passed through verbatim — the hub asserts
         # nothing about it and does not compare it to any constant of its own;
         # it is the EMITTER's statement of what it measured against, and the

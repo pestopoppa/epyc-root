@@ -54,6 +54,7 @@ import json
 import os
 from pathlib import Path
 import re
+import sqlite3
 import subprocess
 import time
 from typing import Any, Mapping, Optional
@@ -466,14 +467,15 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
 # they had been told +9%. A percentage with no named anchor is not a small
 # labelling fault; it is the whole defect.
 #
-# WHY THIS READS A FILE NOBODY WRITES YET, AND WHY THAT IS THE CORRECT SHAPE.
-# There is no measured champion-vs-v9 number for the current champion. The last
-# direct A/B was several commits ago; since then run 17 added 30 commits and run
-# 18 one more. Those are MARGINALS against an anchor that advances on every keep
-# — different baselines, one per keep — and composing them arithmetically would
-# manufacture a measurement no run ever took. This program already made that
-# error once. So the slot renders NOT MEASURED and names what would fill it.
-# An empty slot that says why is worth more than a number nobody measured.
+# WHY THIS SLOT IS ALLOWED TO BE EMPTY, AND WHY THAT IS THE CORRECT SHAPE.
+# Whenever no direct A/B exists for the current champion, nothing may stand in
+# for it: the per-iteration effects are MARGINALS against an anchor that
+# advances on every keep — different baselines, one per keep — and composing
+# them arithmetically would manufacture a measurement no run ever took. This
+# program already made that error once. So an unmeasured slot renders NOT
+# MEASURED and names what would fill it. An empty slot that says why is worth
+# more than a number nobody measured. (Whether a bundle exists is a fact read
+# from the store per request, never asserted here.)
 
 # --------------------------------------------------------------------------- #
 # THE ANCHOR IS RESOLVED, NEVER REMEMBERED
@@ -640,6 +642,89 @@ def resolve_champion(tree: Optional[Path] = None) -> dict:
                         "be trusted to be the champion")
         return out
     out["resolved"] = True
+    return out
+
+
+#: The four relationship verdicts between a MEASURED commit and the CURRENT
+#: champion tip. Distinct on purpose: "its work is in the champion" and "it is
+#: a different tree" are opposite claims, and the line that renders them went
+#: stale precisely because it was worded as a constant instead of computed.
+REL_TIP = "tip"
+REL_ANCESTOR = "ancestor"
+REL_DIVERGENT = "divergent"
+REL_UNRESOLVABLE = "unresolvable"
+RELATIONS = (REL_TIP, REL_ANCESTOR, REL_DIVERGENT, REL_UNRESOLVABLE)
+
+
+def champion_relationship(measured: Optional[str],
+                          tree: Optional[Path] = None) -> dict:
+    """How ``measured`` relates to the CURRENT champion — computed, never worded.
+
+    THE SCAR THIS EXISTS FOR: the operator-gated card's scope line asserted
+    "a different tree" as prose. It was written when the bundle's commit and the
+    loop's champion_head disagreed, and it kept rendering after a reconciliation
+    merge made the measured commit a PARENT of the champion — same lineage, the
+    exact opposite of the claim. A relationship between two commits is a git
+    fact (`merge-base --is-ancestor`, a read); a sentence typed at commit time
+    is a memory of one reading of it.
+
+    Four verdicts, each earned per call:
+
+      * ``tip``          — ``measured`` IS the champion branch tip.
+      * ``ancestor``     — ``measured`` is in the tip's history: its work is IN
+                           the current champion.
+      * ``divergent``    — the tree answered, and ``measured`` is NOT in the
+                           tip's history: genuinely a different line of work.
+      * ``unresolvable`` — no verdict could be computed (no measured commit, an
+                           unresolvable champion tree, or a commit git cannot
+                           find), with the reason. NEVER folded into
+                           ``divergent``: "we cannot say" is not "it is
+                           different".
+    """
+    tip = resolve_champion(tree)
+    out = {"relation": REL_UNRESOLVABLE, "measured": measured,
+           "current_champion": tip.get("commit"),
+           "champion_branch": tip.get("branch"),
+           "champion_source": "the champion branch tip",
+           "detail": None}
+    if not measured or not _FULL_SHA.fullmatch(str(measured)):
+        out["detail"] = (f"the bundle names no full 40-hex measured commit "
+                         f"(got {measured!r}), so its relationship to the "
+                         "current champion cannot be established")
+        return out
+    if not tip.get("resolved"):
+        out["detail"] = (f"the current champion cannot be resolved right now "
+                         f"({tip.get('error')}), so the relationship cannot "
+                         "be established")
+        return out
+    if measured == tip["commit"]:
+        out["relation"] = REL_TIP
+        out["detail"] = "the measured commit IS the current champion tip"
+        return out
+    # One READ-ONLY ancestry query against the champion tree. Exit 0 = ancestor,
+    # exit 1 = not an ancestor — a real answer, not a failure — anything else
+    # (e.g. a commit this tree has never seen) is no verdict at all.
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(champion_tree() if tree is None else Path(tree)),
+             "merge-base", "--is-ancestor", str(measured), tip["commit"]],
+            capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError) as exc:
+        out["detail"] = (f"git could not answer the ancestry query: {exc}")
+        return out
+    if proc.returncode == 0:
+        out["relation"] = REL_ANCESTOR
+        out["detail"] = ("the measured commit is an ancestor of the current "
+                         "champion: its work is IN the current champion")
+    elif proc.returncode == 1:
+        out["relation"] = REL_DIVERGENT
+        out["detail"] = ("the measured commit is NOT in the current champion's "
+                         "history — a genuinely different line of work")
+    else:
+        message = (proc.stderr or proc.stdout or "").strip()
+        out["detail"] = (f"git could not answer the ancestry query "
+                         f"({message.splitlines()[0] if message else 'exit ' + str(proc.returncode)}), "
+                         "so the relationship cannot be established")
     return out
 
 
@@ -1074,6 +1159,192 @@ def champion_snapshot(root: Optional[Path] = None, *,
     }
 
 
+# --------------------------------------------------------------------------- #
+# THE LOOP'S ACCUMULATED KNOWLEDGE — the memory store, read as a FOURTH producer
+# --------------------------------------------------------------------------- #
+# The operator: "I still don't see a card tracking autokernel's generated
+# actionable knowledge and hypotheses tested/confirmed/falsified." The loop's
+# memory store (`experiments.db`, sqlite, written by the loop itself) is that
+# record: every attempt ever, its mechanism, and its disposition. This reader
+# opens it READ-ONLY (`mode=ro` URI — the hub must never be able to write a
+# producer's store), computes folds only, and carries its own four-valued
+# freshness envelope from the db's mtime. It is a fourth producer on the page:
+# the loop status card answers "is the loop alive"; this answers "what does the
+# program KNOW".
+
+KNOWLEDGE_DB_FILENAME = "experiments.db"
+
+#: The envelope for the MEMORY, not for liveness. The loop's own status card
+#: owns "is the loop running" on a minutes-scale budget; the memory store only
+#: advances when an attempt lands, and a store that has not grown for a day is
+#: dated knowledge, not an outage. The stale wording says exactly that.
+KNOWLEDGE_STALE_AFTER_S = 86400.0
+
+#: How many of the most recent keeps are named on the card, with their effects.
+KNOWLEDGE_RECENT_KEPT = 5
+
+#: The dispositions the card names first-class. Everything ELSE in the store is
+#: folded into a no-scientific-verdict bucket that ENUMERATES its members —
+#: never dropped, never silently merged into a named one.
+KNOWLEDGE_PRIMARY_DISPOSITIONS = ("kept", "measured_null",
+                                  "refused_at_formation", "superseded")
+
+KNOWLEDGE_ABSENCE_MEANS = (
+    "no memory store exists at this path — the loop has never recorded an "
+    "attempt here. A missing count is not a zero: this page can say nothing "
+    "about what the program has tried, kept or ruled out.")
+
+
+def knowledge_path(root: Optional[Path] = None) -> Path:
+    return (store_root() if root is None else Path(root)) / KNOWLEDGE_DB_FILENAME
+
+
+def read_knowledge(root: Optional[Path] = None) -> dict:
+    """Folds over the memory store — ``{artifact_present, body, reader_error}``.
+
+    The same three-outcome shape as :func:`read`: a store nobody ever wrote and
+    a store somebody wrote badly point at different subsystems. ``body`` holds
+    ONLY folds computed from the producer's own rows — counts, groupings and
+    the most recent keeps — never a row this reader invented.
+    """
+    path = knowledge_path(root)
+    if not path.exists():
+        return {"artifact_present": False, "body": None, "reader_error": None,
+                "path": str(path), "mtime": None}
+    try:
+        mtime = path.stat().st_mtime
+        # mode=ro: a read-only URI open. The hub must be INCAPABLE of writing a
+        # producer's store, not merely polite about it.
+        con = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+        try:
+            cur = con.cursor()
+            total = cur.execute("SELECT COUNT(*) FROM experiments").fetchone()[0]
+            by_status = dict(cur.execute(
+                "SELECT status, COUNT(*) FROM experiments GROUP BY status"
+            ).fetchall())
+            mech_distinct = cur.execute(
+                "SELECT COUNT(DISTINCT mechanism_id) FROM experiments "
+                "WHERE mechanism_id IS NOT NULL AND mechanism_id != ''"
+            ).fetchone()[0]
+            mech_revisited = cur.execute(
+                "SELECT COUNT(*) FROM (SELECT mechanism_id FROM experiments "
+                "WHERE mechanism_id IS NOT NULL AND mechanism_id != '' "
+                "GROUP BY mechanism_id HAVING COUNT(*) >= 2)"
+            ).fetchone()[0]
+            recent_kept = [
+                {"mechanism_id": row[0], "effect_fraction": row[1],
+                 "recorded_at": row[2]}
+                for row in cur.execute(
+                    "SELECT mechanism_id, effect_fraction, recorded_at "
+                    "FROM experiments WHERE status = 'kept' "
+                    "ORDER BY recorded_at DESC LIMIT ?",
+                    (KNOWLEDGE_RECENT_KEPT,)).fetchall()]
+            window = cur.execute(
+                "SELECT MIN(recorded_at), MAX(recorded_at) FROM experiments"
+            ).fetchone()
+        finally:
+            con.close()
+    except (OSError, sqlite3.Error) as exc:
+        # Exists-but-unreadable (a corrupt db, a foreign schema, a permissions
+        # fault) is MALFORMED, never absent and never a page of zeros: a zero
+        # here would be a fabricated claim that the program tried nothing.
+        return {"artifact_present": True, "body": None,
+                "reader_error": (f"the memory store exists but could not be "
+                                 f"read: {exc}"),
+                "path": str(path),
+                "mtime": None}
+    body = {
+        "attempts": int(total),
+        "dispositions": {str(k): int(v) for k, v in by_status.items()},
+        "mechanisms": {"distinct": int(mech_distinct),
+                       "revisited": int(mech_revisited)},
+        "recent_kept": recent_kept,
+        "recorded_window": {"first": window[0], "last": window[1]},
+    }
+    return {"artifact_present": True, "body": body, "reader_error": None,
+            "path": str(path), "mtime": mtime}
+
+
+def _knowledge_groups(dispositions: Mapping[str, int]) -> dict:
+    """The card's disposition split — a fold, so a test can execute it.
+
+    The four primary dispositions are counted even at zero (the store reported,
+    and there are none — a statement, not an absence). Every OTHER status the
+    producer ever wrote lands in ``no_verdict`` WITH its own name and count:
+    an attempt that hit a planner outage or a lane error produced no scientific
+    verdict, but hiding it would overstate how much of the record is science.
+    """
+    named = {key: int(dispositions.get(key, 0))
+             for key in KNOWLEDGE_PRIMARY_DISPOSITIONS}
+    rest = {key: int(value) for key, value in sorted(dispositions.items())
+            if key not in KNOWLEDGE_PRIMARY_DISPOSITIONS}
+    named["no_verdict"] = {"total": sum(rest.values()), "by_status": rest}
+    return named
+
+
+def knowledge_freshness(report: Mapping[str, Any], *,
+                        now: Optional[float] = None) -> dict:
+    """Four-valued verdict over the store, dated by the db file's mtime.
+
+    Same vocabulary as every other envelope on the page. The store carries no
+    ``generated_at`` of its own — the file IS the record and every insert
+    touches it — so mtime is the producer's own last-write fact here, not the
+    weaker stand-in it is for a JSON bundle.
+    """
+    now = time.time() if now is None else float(now)
+    if not report.get("artifact_present"):
+        return {"state": STATE_ABSENT, "age_s": None,
+                "stale_after_s": None, "detail": KNOWLEDGE_ABSENCE_MEANS}
+    if report.get("body") is None:
+        return {"state": STATE_MALFORMED, "age_s": None,
+                "stale_after_s": None,
+                "detail": (report.get("reader_error")
+                           or "the memory store exists but could not be read")}
+    mtime = report.get("mtime")
+    if not isinstance(mtime, (int, float)):
+        return {"state": STATE_MALFORMED, "age_s": None,
+                "stale_after_s": None,
+                "detail": "the memory store could not be dated (no mtime)"}
+    age = max(0.0, now - float(mtime))
+    fresh = age <= KNOWLEDGE_STALE_AFTER_S
+    return {
+        "state": STATE_FRESH if fresh else STATE_STALE,
+        "age_s": round(age, 1),
+        "stale_after_s": KNOWLEDGE_STALE_AFTER_S,
+        "detail": ("current" if fresh else
+                   f"no attempt has been recorded for {age / 86400:.1f} d — "
+                   "the knowledge below is complete as of the store's last "
+                   "write, not necessarily today's frontier"),
+    }
+
+
+def knowledge_snapshot(root: Optional[Path] = None, *,
+                       now: Optional[float] = None) -> dict:
+    """The wire block for the accumulated-knowledge card.
+
+    Every count is ``None`` — never 0 — when there is nothing readable to
+    count: a missing count is not a zero (the standing rule on this page), and
+    a zero here would claim the program has tried nothing.
+    """
+    report = read_knowledge(root)
+    fresh = knowledge_freshness(report, now=now)
+    body = report.get("body")
+    return {
+        "source": "the loop's own memory store (sqlite, read-only)",
+        "evidence": report.get("path"),
+        "artifact_present": bool(report.get("artifact_present")),
+        "reader_error": report.get("reader_error"),
+        "freshness": fresh,
+        "attempts": body["attempts"] if body else None,
+        "mechanisms": body["mechanisms"] if body else None,
+        "dispositions": body["dispositions"] if body else None,
+        "groups": _knowledge_groups(body["dispositions"]) if body else None,
+        "recent_kept": body["recent_kept"] if body else None,
+        "recorded_window": body["recorded_window"] if body else None,
+        "absence_means": KNOWLEDGE_ABSENCE_MEANS,
+    }
+
+
 def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict:
     """The wire payload for ``/api/loop``, minus the panel envelope.
 
@@ -1118,6 +1389,10 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         "champion_vs_production": champion_snapshot(
             root, now=now,
             champion_head=(body or {}).get("champion_head")),
+        # A FOURTH producer: the loop's accumulated knowledge, from its own
+        # memory store, on its own envelope. It dates none of the other three
+        # and none of them dates it.
+        "knowledge": knowledge_snapshot(root, now=now),
     }
     return wire, observation(report, fresh)
 
@@ -1130,6 +1405,11 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "DEFAULT_STALE_AFTER_S",
            "DEFAULT_STORE_ROOT", "DEFAULT_FROZEN_TREE", "FROZEN_TREE_ENV",
            "HELD_KEYS",
+           "KNOWLEDGE_ABSENCE_MEANS", "KNOWLEDGE_DB_FILENAME",
+           "KNOWLEDGE_PRIMARY_DISPOSITIONS", "KNOWLEDGE_RECENT_KEPT",
+           "KNOWLEDGE_STALE_AFTER_S",
+           "RELATIONS", "REL_ANCESTOR", "REL_DIVERGENT", "REL_TIP",
+           "REL_UNRESOLVABLE",
            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S",
            "NOTICES", "NOTICE_ABSENT", "NOTICE_FAILED", "NOTICE_FINISHED",
            "NOTICE_MALFORMED", "NOTICE_NONE", "NOTICE_STALE",
@@ -1138,8 +1418,10 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "RUN_STATES", "STATES",
            "STATE_ABSENT", "STATE_FRESH", "STATE_MALFORMED", "STATE_STALE",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
-           "champion_freshness", "champion_path", "champion_snapshot",
-           "freshness", "frozen_tree", "notice",
-           "observation", "payload", "read", "read_champion",
-           "resolve_production", "snapshot",
+           "champion_freshness", "champion_path", "champion_relationship",
+           "champion_snapshot",
+           "freshness", "frozen_tree", "knowledge_freshness", "knowledge_path",
+           "knowledge_snapshot", "notice",
+           "observation", "payload", "read", "read_champion", "read_knowledge",
+           "resolve_champion", "resolve_production", "snapshot",
            "status_path", "store_root", "summarize"]

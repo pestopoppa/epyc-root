@@ -455,5 +455,45 @@ class TestTheRetiredSubsystemDidNotComeAlong(unittest.TestCase):
         self.assertRegex(html, r"<h1>\s*Kernel R&amp;D\s*</h1>")
 
 
+class TestThePageOpensWithTheHeadline(unittest.TestCase):
+    """Operator note, 2026-08-31: the three-producer taxonomy lecture at the
+    top of the page goes entirely; the page opens with the headline. The one
+    load-bearing sentence from it — where /kernel went — survives as a single
+    short line at the BOTTOM (the footer), which is what keeps
+    ``test_the_prose_that_explains_the_retirement_is_still_there`` honest
+    rather than satisfied by a lecture."""
+
+    def test_the_top_explainer_is_gone_and_the_headline_is_first(self):
+        html = LOOP_PAGE.read_text(encoding="utf-8")
+        # RENDERED text only: strip comments AND the script/style bodies, or
+        # this grep matches the code's own explanations (the key-too-wide
+        # fault this suite keeps relearning).
+        visible = _strip_html_comments(html)
+        visible = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", visible,
+                         flags=re.S)
+        self.assertNotIn("sec-scope", html,
+                         "the top-of-page scope explainer is still in the markup")
+        self.assertNotIn("three producers", visible,
+                         "the producer-taxonomy lecture is still rendered")
+        main = html.split("<main>", 1)[1]
+        first_section = re.search(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
+        self.assertIsNotNone(first_section)
+        self.assertEqual(first_section.group(1), "sec-champion",
+                         "the page no longer opens with the champion headline")
+        # Nothing VISIBLE sits between the (empty-by-default) freshness banner
+        # and the headline section.
+        between = main.split('id="banner"', 1)[1].split("<section", 1)[0]
+        self.assertEqual(_strip_html_comments(between).replace("></div>", "")
+                         .strip(), "",
+                         "visible content sits above the headline")
+
+    def test_the_retirement_pointer_survives_at_the_bottom(self):
+        html = LOOP_PAGE.read_text(encoding="utf-8")
+        footer = html.split("<footer>", 1)[1].split("</footer>", 1)[0]
+        self.assertIn("gpu-discovery-champion-v37", footer)
+        self.assertIn("2026-08-30", footer)
+        self.assertIn("retired", footer.lower())
+
+
 if __name__ == "__main__":
     unittest.main()

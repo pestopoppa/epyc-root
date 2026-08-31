@@ -161,6 +161,25 @@
   .ch-caps li{margin:2px 0}
   .ch-caps .ev{color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
   .ch-caps .unk{color:var(--amber);font-weight:650}
+  /* The capabilities accordion: collapsed by default (operator note,
+     2026-08-31 — the list under the headline was long), entries unchanged
+     inside. A <details> with no `open` attribute IS the collapsed state. */
+  .ch-acc{border-top:1px solid var(--border)}
+  .ch-acc > summary{cursor:pointer;padding:10px 16px;font-size:12px;
+    font-weight:650;color:var(--accent);list-style:revert}
+  .ch-acc[open] > summary{border-bottom:1px solid var(--border)}
+
+  /* Accumulated knowledge — the fourth producer's card. `.kn-` prefix for the
+     same reason `.ch-`/`.og-` exist: a reader must never date one producer by
+     another's styling. */
+  .kn-verdict{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+  .kn-verdict.stale{background:#26191a;border-color:#5c2321;color:var(--bad)}
+  .kn-verdict.absent{background:#191d24;color:var(--muted)}
+  .kn-verdict.malformed{background:#241d16;border-color:#5c3a1e;color:var(--amber)}
+  .kn-note{padding:10px 16px;font-size:12px;color:var(--muted);
+    border-bottom:1px solid var(--border)}
+  .kn-note:last-child{border-bottom:none}
+  .kn-note b{color:var(--text)}
 
   /* Operator-gated champion evidence (moved off /kernel, 2026-08-30).
      Its own class prefix rather than the retired page's `.proposal-box`/`.pv`:
@@ -219,42 +238,20 @@
 <main>
   <div id="banner"></div>
 
-  <!-- Scope, in one paragraph, because a merged page has to say what it merged.
-       Deliberately NOT a link to /kernel: that route is a 301 back to here and
-       its markup is deleted, so a link would be a loop. Nothing on this page
-       fetches /api/kernel — the retired surface must not become a data
-       dependency of the live one. -->
-  <div class="pad" id="sec-scope" style="border:1px solid var(--border);border-radius:8px;
-       padding:10px 12px;margin-bottom:18px;font-size:12px;line-height:1.55;color:var(--muted)">
-    The <strong>single</strong> Kernel R&amp;D surface, and <strong>three producers</strong> —
-    each with its own envelope, none dating another. (1) the rebuilt loop's own status
-    (<code>epyc.autokernel.loop_status.v1</code>): iterations, dispositions, GPU held-vs-busy;
-    (2) the <strong>champion headline</strong> below
-    (<code>epyc.autokernel.champion_vs_production.v1</code>): ONE number, the champion tree's
-    cumulative gain over the frozen production kernel; (3) the operator-gated manual-research
-    bundle (<code>epyc.autokernel.operator_gate_bundle.v1</code>), which answers a
-    <em>different</em> question against a <em>different</em> anchor and is further down the
-    page for exactly that reason.
-    <code>/kernel</code> was <strong>retired on 2026-08-30</strong> and now redirects here,
-    because every producer behind it was dead (the superseded discovery controller
-    <code>gpu-discovery-champion-v37</code>; <code>kernel_dashboard.json</code>, 16.8 d) or had
-    stopped advancing (<code>kernel_progression.json</code> — the file was still being
-    rewritten while its <code>observed_through</code> horizon stood 16.7 d back). Its one
-    live producer, the operator-gated bundle, moved here and kept its own envelope.
-    Everything else is in git history, the handoffs and the artifacts.
-  </div>
+  <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
+       lecture above it — the /kernel-retirement pointer lives in one line in
+       the footer). Nothing on this page fetches /api/kernel: the retired
+       surface must not become a data dependency of the live one.
 
-  <!-- THE headline, and the first thing on the page (operator ruling,
-       2026-08-30): "the champion headline number shown should JUST BE THE
-       COLLECTIVE PERFORMANCE GAIN VS FROZEN PRODUCTION KERNEL", with the
-       capabilities that tree enables listed beside it.
+       Operator ruling, 2026-08-30: "the champion headline number shown should
+       JUST BE THE COLLECTIVE PERFORMANCE GAIN VS FROZEN PRODUCTION KERNEL",
+       with the capabilities that tree enables listed beside it.
 
-       It is allowed to be empty, and today it IS: no direct A/B of the current
-       champion against frozen v9 exists. The per-iteration effects further down
-       are marginals against an advancing anchor and composing them would
-       manufacture a measurement no run ever took — so the slot says NOT
-       MEASURED and names what would fill it. An empty slot that says why beats
-       a number nobody took. -->
+       The slot is allowed to be empty: whenever no direct A/B exists for the
+       current champion, it says NOT MEASURED and names what would fill it —
+       the per-iteration effects further down are marginals against an
+       advancing anchor, and composing them would manufacture a measurement no
+       run ever took. An empty slot that says why beats a number nobody took. -->
   <section id="sec-champion">
     <h2>Champion vs frozen production kernel
       <span class="count">one number &middot; one named anchor</span>
@@ -272,6 +269,22 @@
   <section id="sec-disp">
     <h2>Dispositions <span class="count" id="disp-count"></span></h2>
     <div id="disp"></div>
+  </section>
+
+  <!-- A FOURTH producer (2026-08-31): the loop's accumulated knowledge, read
+       from its own memory store (experiments.db, sqlite, opened read-only).
+       ALL RUNS, not this run: the Dispositions card above is one run's report;
+       this card is what the program KNOWS — every attempt ever, the mechanisms
+       explored, and what each attempt settled. Its own four-valued envelope
+       from the store's mtime; a missing store renders ABSENT with the standard
+       wording, never as zeros — a missing count is not a zero. -->
+  <section id="sec-knowledge">
+    <h2>Accumulated knowledge
+      <span class="count">all runs &middot; producer: the loop's memory store</span>
+      <span id="know-badge" class="badge absent" style="margin-left:auto">
+        <span class="dot"></span><span id="know-badgetxt">…</span></span>
+    </h2>
+    <div id="know"></div>
   </section>
 
   <section id="sec-recent">
@@ -319,7 +332,7 @@
 </main>
 
 <footer>
-  Read-only view, and <strong>three producers</strong> — none dates another.
+  Read-only view, and <strong>four producers</strong> — none dates another.
   The hub owns no contract here: <code>epyc.autokernel.loop_status.v1</code> is
   written by <code>autokernel.loop.status.write</code> in
   <code>epyc-inference-research</code>;
@@ -329,20 +342,26 @@
   since-promoted production renders as SUPERSEDED BASELINE, never as fresh and
   never refused;
   <code>epyc.autokernel.operator_gate_bundle.v1</code> is emitted by the
-  operator-gated manual-research path. All are read at request time — never
-  cached, so no value can outlive its freshness envelope. Data probe:
+  operator-gated manual-research path;
+  the accumulated-knowledge card reads the loop's own memory store
+  (<code>experiments.db</code>, sqlite, opened read-only) and is dated by that
+  file's mtime. All are read at request time — never cached, so no value can
+  outlive its freshness envelope. Data probe:
   <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
   what this page shows still true?) — it answers for the <em>loop</em> producer;
-  the champion bundle's four-valued verdict travels in the body it dates, on the
-  card above. <code>/health</code> is transport-only and stays green over both of
-  them being dead. <code>/kernel</code> redirects here (retired 2026-08-30).
+  the other three envelopes travel in the bodies they date, on their cards
+  above. <code>/health</code> is transport-only and stays green over all of
+  them being dead. <code>/kernel</code> redirects here — retired 2026-08-30,
+  all of its producers (incl. the superseded discovery controller
+  <code>gpu-discovery-champion-v37</code>) dead or frozen; history is in git,
+  the handoffs and the artifacts.
   Auto-refresh 20s.
 </footer>
 
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
   {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-/* ONE age vocabulary for all three producers. The days branch is not cosmetic:
+/* ONE age vocabulary for all four producers. The days branch is not cosmetic:
    the champion A/B's envelope is measured in weeks, so without it a two-month-
    old measurement rendered "1416.0h ago" — a number an operator has to do
    arithmetic on to find out it is unusable. */
@@ -449,13 +468,13 @@ function renderBanner(d){
       about a tenth of that, and had no way to know the two were measured against
       different things by different producers.
 
-   2. NOT MEASURED renders as words, never as a number. There is no direct
-      champion-vs-v9 A/B for the current champion; the last one was several
-      commits ago. The per-iteration effects further down are MARGINALS against
-      an anchor that advances on every keep, so composing them arithmetically
-      would invent a measurement no run ever took. This program has made that
-      exact error once already. A grey "not yet measured" plus a sentence saying
-      what would fill it is worth more than a fabricated headline.
+   2. NOT MEASURED renders as words, never as a number. Whenever no direct A/B
+      exists for the current champion, nothing may stand in for it: the
+      per-iteration effects further down are MARGINALS against an anchor that
+      advances on every keep, so composing them arithmetically would invent a
+      measurement no run ever took. This program has made that exact error once
+      already. A grey "not yet measured" plus a sentence saying what would fill
+      it is worth more than a fabricated headline.
 
    3. A measurement for a SUPERSEDED champion says so. The champion advances on
       every keep and a cumulative A/B is expensive, so "measured, but three keeps
@@ -614,25 +633,33 @@ function renderChampion(d){
     h += `<div class="ch-note"><b>What would produce this number:</b> ` +
          `${esc(c.would_populate || "—")}</div>`;
   }
-  // Printed on EVERY reading, measured or not. It is the reason this slot is
-  // allowed to be empty, and the reason it must not be filled by arithmetic.
-  h += `<div class="ch-note"><b>Why the effects below cannot be added up:</b> ` +
-       `${esc(c.not_composable || "—")}</div>`;
+  // The not-composable rationale stays a SERVER-SIDE fact (`c.not_composable`,
+  // pinned by tests) but is no longer rendered on this card (operator note,
+  // 2026-08-31): the marginals it warns about live in the Recent-iterations
+  // table, and that table carries its own must-not-be-summed caption.
 
+  // The capabilities list, in an accordion COLLAPSED by default (operator
+  // note, 2026-08-31 — the list was long). Entries unchanged inside; the
+  // evidence / run-record footer lines live inside it too. The UNKNOWN state
+  // is surfaced on the summary line so collapsing cannot hide "nobody has
+  // said" behind a heading that implies a list exists.
   const caps = c.capabilities || {};
-  h += `<div class="ch-caps"><b>Capabilities this champion tree enables</b>`;
+  const capCount = (caps.known && (caps.items || []).length)
+    ? ` (${caps.items.length})` : caps.known ? " (declared empty)" : "";
+  h += `<details class="ch-acc"><summary>Champion Capabilities${esc(capCount)}` +
+       (!caps.known ? ` <span class="unk">UNKNOWN</span>` : "") + `</summary>`;
+  h += `<div class="ch-caps">`;
   if(caps.known && (caps.items || []).length){
-    h += ` <span class="muted">(source: ${esc(caps.source || "—")})</span><ul>` +
+    h += `<span class="muted">(source: ${esc(caps.source || "—")})</span><ul>` +
       caps.items.map(it => `<li>${esc(it.name)}` +
         (it.evidence ? ` <span class="ev">${esc(it.evidence)}</span>` : "") +
         `</li>`).join("") + `</ul>`;
   } else if(caps.known){
-    h += `<div style="margin-top:5px">The producer published the list and it is ` +
+    h += `<div>The producer published the list and it is ` +
          `<strong>empty</strong>. That is a statement, and a different one from ` +
          `never having been asked.</div>`;
   } else {
-    h += ` <span class="unk">UNKNOWN</span>` +
-         `<div class="muted" style="margin-top:5px">${esc(caps.unknown_reason || "—")}</div>` +
+    h += `<div class="muted">${esc(caps.unknown_reason || "—")}</div>` +
          (caps.would_populate
            ? `<div class="muted" style="margin-top:5px"><b>What would populate it:</b> ` +
              `${esc(caps.would_populate)}</div>` : "");
@@ -645,6 +672,7 @@ function renderChampion(d){
        (c.measurement_evidence
          ? `<br>run record: <span class="anchor">${esc(c.measurement_evidence)}</span>` : "") +
        `</div>`;
+  h += `</details>`;
   host.innerHTML = h;
 }
 
@@ -725,6 +753,130 @@ function renderDispositions(d){
       `<span class="tag">${win ? "kept" : measured ? "measured, not kept" : "never measured"}</span>` +
       `</div>`;
   }).join("");
+}
+
+/* ACCUMULATED KNOWLEDGE — the fourth producer: the loop's own memory store
+   (experiments.db), read server-side, read-only, folded server-side.
+
+   TWO RULES THIS CARD EXISTS TO OBEY.
+
+   1. A missing count is NOT a zero (the standing rule on this page). An absent
+      or unreadable store renders the standard absent/malformed wording and NO
+      numbers — "0 attempts" over a missing db would claim the program has
+      tried nothing, which is a fabricated measurement.
+
+   2. A measured null is not "falsified forever". Each null was measured
+      against the ANCHOR OF ITS DAY — the anchor advances on every keep — so
+      the split says "no effect above the floor vs the anchor of their day",
+      never "disproven". `refused_at_formation` is the opposite kind of
+      negative: the critic rejected it before it cost any device time. */
+const KN_BANNERS = {
+  absent:    {hd: "ABSENT — the loop has never recorded an attempt here"},
+  malformed: {hd: "MALFORMED — a memory store exists that this page cannot read"},
+  stale:     {hd: "DATED — the store has not grown recently"}
+};
+
+function renderKnowledge(d){
+  const host = document.getElementById("know");
+  const badge = document.getElementById("know-badge");
+  const btxt = document.getElementById("know-badgetxt");
+  const k = d.knowledge || null;
+  if(!k){
+    // The hub served no knowledge block at all — a wiring fact about THIS hub,
+    // never rendered as "the store is absent".
+    badge.className = "badge malformed";
+    btxt.textContent = "UNKNOWN";
+    host.innerHTML = `<div class="kn-verdict malformed"><b>UNKNOWN — this hub ` +
+      `served no knowledge block</b><div class="muted" style="margin-top:5px">` +
+      `<code>/api/loop</code> carried no <code>knowledge</code>. That is a ` +
+      `fact about this hub's version, not about the memory store.</div></div>`;
+    return;
+  }
+  const f = k.freshness || {};
+  const state = String(f.state || "absent");
+  badge.className = "badge " + esc(state);
+  btxt.textContent =
+    state === "fresh" ? `fresh · ${age(f.age_s)} ago`
+    : state === "stale" ? `STALE · ${age(f.age_s)} ago`
+    : state === "malformed" ? "MALFORMED" : "ABSENT";
+
+  let h = "";
+  if(state === "absent" || state === "malformed"){
+    // No numbers at all. A missing count is not a zero.
+    h += `<div class="kn-verdict ${esc(state)}"><b>${esc(KN_BANNERS[state].hd)}</b>` +
+      `<div style="margin-top:5px">${esc(f.detail || k.reader_error || "")}</div>` +
+      `<div class="muted" style="margin-top:5px">No counts are rendered: a ` +
+      `missing count is not a zero, and a page of zeros here would claim the ` +
+      `program has tried nothing.</div></div>` +
+      `<div class="kn-note muted">evidence: <span class="mono">${esc(k.evidence || "—")}</span></div>`;
+    host.innerHTML = h;
+    return;
+  }
+  if(state === "stale"){
+    h += `<div class="kn-verdict stale"><b>${esc(KN_BANNERS.stale.hd)}</b>` +
+      `<div style="margin-top:5px">${esc(f.detail || "")}</div></div>`;
+  }
+  const g = k.groups || {};
+  const m = k.mechanisms || {};
+  const nv = g.no_verdict || {};
+  h += `<div class="tiles">` +
+    tile("Attempts ever", k.attempts == null ? "—" : String(k.attempts),
+         "every candidate the loop ever formed, across all runs") +
+    tile("Mechanisms explored", m.distinct == null ? "—" : String(m.distinct),
+         "distinct mechanism ids attempted at least once") +
+    tile("Mechanisms revisited", m.revisited == null ? "—" : String(m.revisited),
+         "attempted ≥2 times — the memory is steering repeats, not preventing " +
+         "them blindly", m.revisited > 0 ? "" : "dim") +
+    tile("Kept", g.kept == null ? "—" : String(g.kept),
+         "confirmed improvements promoted into the champion",
+         g.kept > 0 ? "good" : "dim") +
+    `</div>`;
+
+  // The disposition split — the whole record, negatives first-class, in the
+  // same row styling as the run-scoped card above so the split reads the same
+  // way, with the run/all-time difference carried by each card's header.
+  const splitRows = [
+    ["kept", g.kept, "confirmed improvement, promoted", "win"],
+    ["measured_null", g.measured_null,
+     "measured; no effect above the floor vs the anchor of their day — a " +
+     "null against that day's anchor, not falsified forever", "neg"],
+    ["refused_at_formation", g.refused_at_formation,
+     "rejected by the critic before costing any device time", "neg"],
+    ["superseded", g.superseded,
+     "overtaken by a later attempt before a verdict", "neg"],
+  ];
+  const max = Math.max(...splitRows.map(r => r[1] || 0), nv.total || 0, 1);
+  h += splitRows.map(([nm, n, tag, cls]) =>
+    `<div class="disp ${cls}"><span class="nm">${esc(nm)}</span>` +
+    `<span class="n">${esc(n == null ? "—" : n)}</span>` +
+    `<span class="bar" style="width:${Math.round(220 * (n || 0) / max)}px"></span>` +
+    `<span class="tag">${esc(tag)}</span></div>`).join("");
+  // Everything with NO scientific verdict, enumerated by the producer's own
+  // status names — folded out of the science but never hidden from the count.
+  h += `<div class="disp neg"><span class="nm">no scientific verdict</span>` +
+    `<span class="n">${esc(nv.total == null ? "—" : nv.total)}</span>` +
+    `<span class="bar" style="width:${Math.round(220 * (nv.total || 0) / max)}px"></span>` +
+    `<span class="tag">${esc(Object.entries(nv.by_status || {})
+        .map(([s, n]) => `${s} ${n}`).join(" · ") || "none")}</span></div>`;
+
+  const recent = k.recent_kept || [];
+  if(recent.length){
+    h += `<div class="kn-note"><b>Most recent keeps</b> — each effect is a ` +
+      `<b>marginal</b> vs the anchor as it stood for that attempt; they must ` +
+      `not be summed.<ul style="margin:6px 0 0;padding-left:18px">` +
+      recent.map(r => `<li><span class="mono">${esc(r.mechanism_id || "—")}</span>` +
+        (num(r.effect_fraction)
+          ? ` <span class="eff ${r.effect_fraction > 0 ? "pos" : r.effect_fraction < 0 ? "neg" : "nil"} mono">` +
+            `${r.effect_fraction >= 0 ? "+" : ""}${(r.effect_fraction * 100).toFixed(2)}%</span>` +
+            ` <span class="muted">marginal vs the anchor of its day</span>` : "") +
+        (r.recorded_at ? ` <span class="muted">· ${esc(String(r.recorded_at).slice(0, 10))}</span>` : "") +
+        `</li>`).join("") + `</ul></div>`;
+  }
+  const w = k.recorded_window || {};
+  h += `<div class="kn-note muted">evidence: <span class="mono">${esc(k.evidence || "—")}</span>` +
+    (w.first ? ` · records ${esc(String(w.first).slice(0, 10))} → ${esc(String(w.last || "").slice(0, 10))}` : "") +
+    ` · ${esc(k.source || "")}</div>`;
+  host.innerHTML = h;
 }
 
 function renderRecent(d){
@@ -942,12 +1094,33 @@ function renderOperatorGate(d){
   // here. `production_anchor.commit` was in the file from the start and this
   // reader used to drop it, so the largest number on the page had no anchor
   // beside it while a loop headline against a DIFFERENT anchor sat next to it.
-  // THREE outcomes, not two. With no readable loop there is no champion head to
-  // compare against, and "a different tree" would then be a claim this page
-  // cannot support — asserted, as it happens, about a commit rendered as "—".
-  const loopHead = (d.loop && d.loop.champion_head) || null;
-  const rel = !og.champion_commit || !loopHead ? "unknown"
-    : og.champion_commit === loopHead ? "same" : "different";
+  //
+  // THE RELATIONSHIP IS COMPUTED PER RENDER, NEVER WORDED AS A CONSTANT. This
+  // line once said "a different tree" from a commit-time equality check against
+  // the loop's status file; a reconciliation merge then made the measured
+  // commit a PARENT of the current champion and the line rendered the opposite
+  // of the truth. The hub now answers from git ancestry against the champion
+  // tree (`champion_relationship`, four verdicts) and this card only repeats
+  // its verdict — "we cannot say" is rendered as exactly that, never as
+  // "different".
+  const rel = og.champion_relationship || null;
+  const relTxt = !rel || rel.relation === "unresolvable"
+    ? `; how it relates to the current champion cannot be established right ` +
+      `now (${esc((rel && rel.detail) || "this hub served no relationship " +
+      "verdict — a fact about the hub's version, not about the trees")}).`
+    : rel.relation === "tip"
+    ? `; that IS the current champion tip ` +
+      `<span class="mono">${esc(short(rel.current_champion))}</span> — the ` +
+      `two cards measure the same tree against different anchors.`
+    : rel.relation === "ancestor"
+    ? `; the current champion is <span class="mono">` +
+      `${esc(short(rel.current_champion))}</span> and the measured commit is ` +
+      `an <b>ancestor</b> of it — same lineage, so its work is IN the current ` +
+      `champion (the number still stands only for the commit it measured).`
+    : `; the current champion is <span class="mono">` +
+      `${esc(short(rel.current_champion))}</span> and the measured commit is ` +
+      `<b>not in its history</b> — a genuinely divergent tree, so the two ` +
+      `numbers are not even about the same line of work.`;
   h += `<div class="og-scope"><b>This is not the champion headline.</b> ` +
     `It is a separate producer answering a different question against a ` +
     `different anchor. The panel at the top of this page is the champion ` +
@@ -957,13 +1130,7 @@ function renderOperatorGate(d){
     (hdMetricPhrase(og) ? ` (${esc(hdMetricPhrase(og))})` : "") + `. ` +
     `Measured champion <span class="mono">${esc(short(og.champion_commit))}</span>` +
     (og.champion_branch ? ` on <span class="mono">${esc(og.champion_branch)}</span>` : "") +
-    (rel === "unknown"
-      ? `; the loop's own champion is not readable right now, so whether these ` +
-        `are the same tree cannot be established from this page.`
-      : `; the loop's champion is <span class="mono">${esc(short(loopHead))}</span>` +
-        (rel === "same" ? ` — the same tree.`
-          : ` — <b>a different tree</b>, so the two numbers are not even about ` +
-            `the same commit.`)) +
+    relTxt +
     (og.not_campaign_sealed
       ? ` This bundle is not campaign-sealed.` : "") + `</div>`;
 
@@ -1063,9 +1230,10 @@ function render(d){
   // — which is the current state — must be drawn rather than hidden.
   renderChampion(d);
   renderTiles(d);
-  // Third producer, rendered unconditionally for the same reason. None of the
-  // three dates either of the others.
+  // Third and fourth producers, rendered unconditionally for the same reason.
+  // None of the four dates any of the others.
   renderOperatorGate(d);
+  renderKnowledge(d);
   renderDispositions(d);
   renderRecent(d);
   renderGpu(d);
@@ -1080,7 +1248,7 @@ function renderFetchFailure(err){
     `<div class="bd muted">This says nothing about the loop: the page could not ` +
     `reach <code>/api/loop</code>. Do not read it as an idle loop.</div>`;
   setFreshBadge("malformed", null);
-  // ALL THREE producers go unknown, not just the loop. Leaving the last
+  // ALL FOUR producers go unknown, not just the loop. Leaving the last
   // successful champion render on screen under an unreachable hub would present
   // an arbitrarily old reading as the current one — the same defect this page
   // was built to end, one refresh cycle later.
@@ -1100,6 +1268,13 @@ function renderFetchFailure(err){
     `not about the operator-gated evidence. The last reading is cleared rather ` +
     `than left on screen, because an undated figure is exactly what this card ` +
     `exists to prevent.</div></div>`;
+  document.getElementById("know-badge").className = "badge malformed";
+  document.getElementById("know-badgetxt").textContent = "UNKNOWN";
+  document.getElementById("know").innerHTML =
+    `<div class="kn-verdict malformed"><b>UNKNOWN — the hub could not be reached` +
+    `</b><div class="muted" style="margin-top:5px">This says nothing about the ` +
+    `memory store. The last reading is cleared rather than left on screen — an ` +
+    `undated count is a missing count, and a missing count is not a zero.</div></div>`;
 }
 
 async function tick(){
