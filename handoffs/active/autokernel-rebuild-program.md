@@ -972,6 +972,17 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 
 ### Open
 
+- [ ] **R21-5 — Standing community-intake → hypothesis-inbox pipeline.** Operator 2026-08-31:
+      "I imagine we could distill a lot of autokernel-valuable insights from the wider internet
+      community." The qwen38-mtp sweep is the pilot; make it a repeatable flow. Three source
+      tiers by evidence quality: (1) **upstream llama.cpp commits/PRs since the 0db32c06 freeze**
+      — each CUDA/HIP kernel improvement is a pre-validated hypothesis with its own PR-thread
+      numbers, attempted by the loop as a gfx90a port rather than merged blind; (2) community
+      forks/writeups; (3) papers via the existing research-intake stages. Contract per sweep:
+      normalize claims to bandwidth utilization, map to the live hotspot profile, check
+      experiments.db for known nulls, emit inbox-format seeds with provenance URLs, operator
+      reviews before injection (run starts and inbox writes stay operator-gated). Zero compute
+      until the loop itself elects a seed.
 - [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
       an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
       Small: emit the headline once during loop startup from the same path `068ffb67` added.
