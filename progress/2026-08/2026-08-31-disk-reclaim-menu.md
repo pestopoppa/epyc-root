@@ -98,6 +98,39 @@ Fastest single-decision alternative: **GLM-5.2 (222 G, one dir; interacts with O
    host-side prune unaudited.
 7. claude-backups rotation broken since 08-02 (rsync EPERM) — backup-integrity issue.
 
+## EXECUTED 2026-08-31 (operator approved the minimal set) — ~212 G freed, 87 G → 268 G (93%)
+
+Pre-deletion re-verification caught **4 misclassifications** in the agent's minimal set; the
+verified-safe subset was executed, the rest held with evidence:
+
+**Deleted (ledgered in the master registry, one named path at a time, parents verified intact):**
+1. `supergemma4-26b-abliterated-multimodal-8bit` (27 G) · 2. `nemotron-cascade-2` (24 G) ·
+3. `unsloth/Qwen3.5-35B-A3B-GGUF` (19 G) · 4. `Qwable-v1-GGUF` (18 G — re-execution of the
+ledgered 07-26 deletion; the copy had re-appeared 07-28) · 5. `lmstudio-community/DeepSeek-R1-Distill-Qwen-14B-GGUF`
+(8.4 G — master already recorded it deleted). Then the three profile-dump dirs via **`git clean -x`
+scoped to the exact paths** (~97 G) — NOT `rm -rf`: the dirs contained TRACKED evidence files
+(`findings.md`, symbol lists, `commands.txt`) that the menu's "gitignored" claim missed; all
+tracked files verified intact after. Then the 11 `/tmp` audit sandboxes (~19 G): 6 were REGISTERED
+WORKTREES of the research repo (clean, nothing unpushed, removed via `git worktree remove`), 5
+plain dirs via rm.
+
+**HELD — the menu's safety rationale was false for these; they move to the operator pick-list:**
+- `models/lmstudio-community/Qwen2.5-Coder-32B-Instruct-GGUF` (51 G): master keeps the
+  `qwen25_coder_32b_q4km` launch spec pointing at it ("kept per model_not_role_indexing").
+- `models/Qwen3.6-27B-MTP-Q8_0.gguf` (28 G): lean registry names it the ROLLBACK ANCHOR
+  ("retained") for the 2026-08-20 coder swap, whose replacement's coder-suite quality is
+  explicitly "NOT yet measured".
+- `models/lmstudio-community/Qwen2.5-VL-7B-Instruct-GGUF` (5.7 G): lean registry: "Weights REMAIN
+  ON DISK; this entry is the rollback target."
+- `llama.cpp-experimental-preserved-20260724T135832Z` (14 G): NOT a standalone clone — a
+  registered worktree **of the frozen production clone** (`llama.cpp/.git/worktrees/llama.cpp-experimental`),
+  and DIRTY (uncommitted mods to ggml-backend/ggml-cpu/ggml-cuda under "Add default-off GDN timing
+  hook"). Needs its owner to preserve-or-discard the hunks, then `git worktree remove` from the
+  production clone — not a `--force` from an ad-hoc session, NIB2-66 notwithstanding.
+
+Also observed during execution: a live llama-server is now serving the INF-68
+`IQ4_XS-uniform` artifact (relevant to OP-30 — someone is already running the uniform file).
+
 ## Execution contract (when the operator picks)
 
 Named paths one at a time (no wildcards, no parent-dir `rm -rf`), deletion-ledger entries in the
