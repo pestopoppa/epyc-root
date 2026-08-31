@@ -106,10 +106,19 @@ Checklist (the dashboard gate — flipped as the phases land):
   on `llama_kv_cache_context`); the layer writes into the cache views at the current cell
   (n_used-1) and masks the current cell out of the attention; the QSA block path scores the
   visible cells only.
-- **Open**: `fused_moe` outputs ~2500/2560 NaN from finite inputs (both calls, layer 0); the
-  expert `vec_dot` path (IQ3_S up/gate, IQ4_NL down, Q8_0 shared) is the suspect. The graph
-  control over the same tensors is finite. Direct-vec_dot test: `validation/test_vecdot2.cpp`
-  (raw-GGUF reader; needs its KV/alignment fixed — currently "up tensor not found"). Add the
-  `best == -1` guard in the argsort regardless.
-- Next action: fix the MoE NaN → run the 8-step logit diff → greedy "Paris" generation → arch
-  suite → Phase 4 thread-pool integration.
+- **FIXED — the MoE NaN (commit `2fcfc5bc1`)**: the IQ4_NL down-expert tensors live in the
+  **CPU_REPACK** buffer (8x8-interleaved rows on AVX2; the repack compute handles that layout,
+  the plain vec_dot cannot). The fused MoE detects `tensor->extra` and mirrors
+  `ggml_gemv_iq4_nl_8x8_q8_0_generic`. Also fixed in the same pass: the conv kernels read
+  transposed (tap-fast per `c[i0 + i1*nc]`), the GDN state copy-back froze the recurrence
+  (must copy tgd's state region, not ts), the F16 attention/indexer caches (staged F32 view +
+  cast-back writes), the IMROPE 4-position format, the rope/flash kernel wdata + threadpool,
+  and the meta-only result ctx (logits into the previous graph's sched-known t_logits).
+- **The flash_attn_ext kernel is NaN on this model's real activations** (reproduced in
+  isolation, all inputs finite; the graph never uses it — flash_attn=false → manual MHA). The
+  fused attention now uses the session's manual `fused_attn_qsa` (the NMSE-ok path).
+- **Current**: the complete fused decode runs all 8 validation steps without crashing or NaN;
+  the per-step logit diff vs the graph is still O(10). Layers 0-2 (GDN/PLE) pass the input
+  difference through unchanged; the remaining numerics bug is in the attn layers or the head.
+- Next action: per-layer same-position comparison (snapshot + `GGML_FUSED_LAYER_CMP` wired) →
+  logit diff ≤1e-4 → greedy "Paris" generation → arch suite → Phase 4 thread-pool integration.
