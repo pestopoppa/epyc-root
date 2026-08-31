@@ -2934,3 +2934,37 @@ Both are now green, in both repos.
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R18-L3 (the epyc-root shallow-clone defect); P7.1 and P7.2 (the research-repo guards workflow and the suite-floor follow-on).
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the `ac785d2d`/`7ee090a5` section and §3's `437f751f` → `54d2b8ad` entry.
+
+## Compiled Update — 2026-08-31: a dashboard that remembers is a dashboard that lies later
+
+Three defects in the kernel R&D surface shared one shape — the page *remembered* a fact whose
+source of truth had moved on — and were replaced with resolution (root `2a3881d4`, `86bc7b8b`,
+`479ffb47`, `f9c00551`).
+
+- **Identity facts are resolved, never remembered.** The frozen-production anchor was a pinned sha
+  in the page; it is now resolved live from the freeze record, and a source-guard test bans 40-hex
+  literals in the dashboard source so the regression class cannot quietly return (19/19 mutants).
+  When resolution shows the displayed measurement was taken against a baseline that is no longer
+  the champion's parent, the page says so with an explicit `SUPERSEDED-BASELINE` state instead of
+  rendering the stale number as current.
+- **"Current" is defined by the durable artifact, not by the last process's droppings.** The panel
+  derived "current champion" from a dead run's status file, so the fresh reconciliation
+  measurement rendered as superseded *by its own parent*. The champion branch tip now defines the
+  current champion — a definition that survives every process restart. Same lesson as freshness:
+  a measurement of a superseded champion is not "fresh" no matter how recent its timestamp;
+  staleness is semantic (against the current champion), not chronological.
+- **Ancestry is computable — compute it.** The scope line for a superseded pin (`270b48ed`) is
+  derived from `merge-base --is-ancestor`, so it correctly reads "ancestor — its work is IN the
+  current champion" rather than implying lost work.
+- **Show the accumulated knowledge, read-only.** A new card reads the loop's `experiments.db`
+  directly (read-only): 1051 attempts / 326 mechanisms / 79 revisited / 18 kept / 402
+  measured-null / 132 refused-at-formation — the negative results are the bulk of the value and
+  now visible. Every card carries a per-card staleness audit row (12/12 mutants).
+- **Known gap, filed:** the headline is emitted per-advance only; a restart after an unmeasured
+  advance briefly shows `SUPERSEDED-BASELINE` until the next advance (INF-66 R21-1: emit once at
+  startup too).
+
+Sources:
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L4 and R21-1.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §5 (the five root commits).

@@ -3391,3 +3391,48 @@ touch only the matrix-*vector* decode path and FA-vec (`mmvq.cu`, `vecdotq.cuh`,
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the champion-vs-production table and its supporting conditions; the per-commit inflation warning; the noise-floor bullet and R18-D; the idle-metric correction and R18-E.
 - [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the 2026-08-30 section distinguishing the manual-admission champion from the loop champion, and CH-16 on the per-commit correction.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §1 (the measurement and the inflation), §5 (both self-corrections).
+
+## Compiled Update — 2026-08-31: pre-committed contingency bands, additivity tested against a chain estimate, and a future timestamp correctly refused
+
+The two AutoKernel champion lineages (the manual-admission side at `270b48ed` and the loop side at
+`4925b208` — see the single-champion invariant in autonomous-research.md) were reconciled by merge
+(`a2728701`, zero conflicts, disjoint file sets, both parents tagged) and the merge was measured as
+a block against production **resolved live**: **tg128 +12.618%** (264.53 → 297.91 tok/s, 20 pairs,
+10.6× the calibrated 1.188% floor; pp512 +0.078% on the still-uncalibrated prefill floor, read as
+NO CHANGE), correctness oracle 3/3 on both arms.
+
+The methodology content is in how the decision around that number was structured *before* it existed.
+
+- **Pre-commit the contingency bands, then measure.** Before the reconciliation A/B ran, four
+  outcomes were bound to four responses — proceed / quantify / measure-interaction /
+  reset-to-manual — so the decision rule was fixed before any data could argue for a softer one.
+  The measured +12.618% fell in the proceed band and the other three responses never activated.
+  A decision rule written after the number is a rationalization with a timestamp.
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A chain estimate makes "additive" a testable claim instead of an assumption.** The two
+  lineages' independent standings chained to a predicted band of **[11.2–15.3]** for the merge.
+  The block landing inside it is evidence of *no interaction* — the merge is worth the sum of its
+  parts — and landing outside it in either direction would have triggered the measure-interaction
+  contingency. Composition claims about merged optimization work should always carry this check:
+  the merge is one new tree and must earn its own block measurement, but the chain band is what
+  tells you whether the parts explain it.
+  [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md)
+- **Resolve the baseline live; never pin it.** The standing is against the CURRENT frozen
+  production, resolved from the freeze record at measurement time — not against "v9" as a
+  remembered constant. Operator, on the distinction: pinning the baseline sha bakes today's
+  accident of history into tomorrow's claims. The dashboard and the loop's `production.py` now
+  both resolve rather than remember (with a source-guard test banning 40-hex literals on the
+  dashboard side).
+  [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md)
+- **A future timestamp is a refusable defect, and the refusal is the system working.** The
+  published bundle's `generated_at` was stamped ~5.5 minutes in the future by the publishing
+  agent; the freshness reader refused to age it rather than inventing a negative age. The repair
+  was a restamp from the raw results file's own mtime, recorded as a correction note in the bundle
+  with measurement values untouched — provenance corrected in the open, not overwritten.
+  [progress/2026-08/2026-08-31-ak-rebuild-20260828.md](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md)
+
+Sources:
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2 (the merge, the bands, the measurement); R18-D (the prefill floor caveat the pp512 row re-confirms).
+- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled-champion standing block.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3 (the reconciliation and the bundle correction).

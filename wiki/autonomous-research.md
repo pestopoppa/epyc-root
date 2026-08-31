@@ -2125,3 +2125,52 @@ caught the class.
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the run-18 split table and the six-hour detection gap; the R18 section (R18-L1 the guard and the abort-propagation fix, R18-B the open forensics, R18-G the unbuilt ranking capability); the operator decision package with D1 approved / D2 declined on measurement / D3 shipped.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §2 (the collapse and the three refuted hypotheses), §3 (what landed instead), §7 (the decisions), §8 (the two declines).
+
+## Compiled Update — 2026-08-31: one champion per tree — a lineage fork becomes doctrine, and a STOP that kept spending
+
+**INC-20260831-champion-lineage-fork.** The rebuilt AutoKernel loop was seeded 2026-08-30 from
+bare frozen v9 as a NEW sibling branch while THE champion — `ak/champion/llama-cpp-0db32c06e3e5`
+at `270b48ed`, +3371/−146 over v9 with DFlash2 + iqk dispatch gating + speculative work admitted
+via the CH-7 manual pipeline — sat one branch over. **Runs 18–20 optimised the wrong base.** The
+fork was invisible to every gate the loop had; it surfaced because the operator asked why DFlash2
+was missing from the dashboard capability list. Ruling ratified into
+`agents/shared/OPERATING_CONSTRAINTS.md` (root `35c1a6d1`): **one single champion per production
+kernel tree**, aggregating all improvement work — manual and autonomous — between promotions;
+seeding from bare production is legal only immediately after a promotion; a second lineage for the
+same tree is a defect the moment it exists; the champion exists so promotion = take the one
+precompiled branch.
+
+- **An invariant an agent can violate silently must be enforced at startup, not written in a
+  doc.** The loop now refuses to start unless its worktree is *attached to* the canonical champion
+  branch — attachment checked as stronger than tip equality (a detached HEAD at the right sha
+  still refuses), proven live in both directions against the real trees, 34/34 mutants. Run 21's
+  first log line is this check passing. (research `470378a9`)
+- **Autonomous run starts are now operator-gated behind a verifiable readiness package** —
+  *"don't start ANY run without my explicit permission."* The gate is not a formality: the
+  readiness package is what made the startup-refusal check verifiable before GPU-hours were spent.
+- **A STOP honoured only at iteration boundary is a STOP that keeps spending.** Run 20 "drained"
+  ~50 minutes of idle-GPU through external planner calls after the stop order; the operator killed
+  it. Drain tiers now land the stop at **actor boundaries** (recording `stopped_mid_formation`)
+  and never mid-tail — a paired measurement in flight completes, everything upstream halts
+  immediately. (research `95eeb0ae`)
+- **Building an authorized feature is how its conformance bugs get found.** Implementing the
+  ratified epoch-scoped ranking (P-AK-SEARCH-1-A3, research `198f5b4b`) surfaced a real breach
+  that predated it: `actors.py` pooled **cross-epoch** magnitudes into a do-not-re-measure
+  median — biting at every epoch transition — fixed by checking both provenance markers. The
+  amendment's own claim that the flag "already ships, disabled" was FALSE (the parameter existed
+  inert); ratifying an assumption does not instantiate the capability.
+- **A "trim" is also an audit.** Deleting the sequential path to free the code budget revealed
+  that the pooled path — the one production actually runs — had **no consecutive-error breaker at
+  all** and would spin forever on a persistent fault; the breaker the sequential path owned moved
+  to the pool. Code that exists twice is guarded once, in whichever copy the tests happen to
+  exercise. (research `95eeb0ae`, 13/13 mutants)
+- **A test that borrows ambient host state passes for a reason unrelated to the code.** The
+  champion-keep tests drove a real `git commit` and were green locally via the host gitconfig,
+  red on the CI runner ("Author identity unknown"). Fixed with fixture-local identity and proven
+  under `GIT_CONFIG_GLOBAL=/dev/null`. (research `af43cfb0`)
+
+Sources:
+
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — the R21 block (R21-L1..L5, the open follow-ups, the declines); CURRENT STATE.
+- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled single-champion standing.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §1 (the incident and the ruling), §2 (run 20), §4 (the research commits), §6 (the process rulings).

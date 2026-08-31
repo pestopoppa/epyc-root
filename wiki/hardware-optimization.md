@@ -3864,3 +3864,28 @@ dispatch path is taken at run time.
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — CURRENT STATE: the "NEW FACT" bullet with the symbol counts and the R18-A follow-on; the iqk correction bullet.
 - [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-15, which records why this matters to the champion's anchor identity and to CH-1's build recipe.
 - [`progress/2026-08/2026-08-30-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — §5 (the iqk correction) and §6 (the symbol-identity table).
+
+## Compiled Update — 2026-08-31: the reconciled champion — +12.618% decode, an artifact-derived capability list, and iqk was in v9 all along
+
+The single champion is now the reconciliation merge `a2728701` (manual `270b48ed` + loop
+`4925b208`), measured **+12.618% tg128 vs production resolved live** (264.53 → 297.91 tok/s, 20
+pairs, 10.6× the calibrated floor; pp512 +0.078% = NO CHANGE on the uncalibrated prefill floor),
+oracle 3/3 — inside the chain-estimate band [11.2–15.3], so the manual and loop gains are
+**additive with no interaction**.
+
+- **The capability list is derived from the artifact, not from the narrative.** DFlash2's presence
+  is proven by its symbols in the built libraries (`build_dflash2_conv`; libllama symbol count
+  10125 → 10180), not by a branch name in prose. That derivation is also what caught the fork
+  incident's original symptom — DFlash2 absent from the list — and a real over-claim in the other
+  direction: **iqk shipped in frozen v9 already** (unconditional `GGML_USE_IQK_MULMAT`, runtime
+  env gate); the champion adds *dispatch gating only*, so "the champion carries iqk" was crediting
+  it with production's own code.
+- The reconciliation A/B evidence (result JSON, oracle logs, symbol-diff deltas) is being promoted
+  out of volatile tmp into the research repo (`artifacts/autokernel-champ-a2728701-ab/`, INF-66
+  R21-2) — the same untracked-evidence defect the run-17 block-audit promotion closed.
+
+Sources:
+
+- [`handoffs/active/autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the reconciled standing and the capability rules.
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L2, R21-2.
+- [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §3.
