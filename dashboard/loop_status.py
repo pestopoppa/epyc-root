@@ -53,6 +53,8 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
+import subprocess
 import time
 from typing import Any, Mapping, Optional
 
@@ -473,11 +475,121 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
 # error once. So the slot renders NOT MEASURED and names what would fill it.
 # An empty slot that says why is worth more than a number nobody measured.
 
-#: The anchor, and it is not negotiable: this headline is DEFINED as the gain
-#: over the frozen production kernel. A bundle measured against anything else is
-#: some other number and is refused rather than shown under this heading.
-FROZEN_PRODUCTION_COMMIT = "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
-FROZEN_PRODUCTION_LABEL = "production-consolidated-v9"
+# --------------------------------------------------------------------------- #
+# THE ANCHOR IS RESOLVED, NEVER REMEMBERED
+# --------------------------------------------------------------------------- #
+# The headline is DEFINED as the gain over the frozen production kernel — but
+# WHICH kernel that is, is a fact about the canonical frozen tree, not about
+# this module. The first version of this reader remembered it as a constant
+# (the v9 sha), which was exactly right until the first promotion and then
+# exactly wrong in BOTH directions: a bundle correctly baselined on the newly
+# promoted production would have been refused as malformed, and a stale
+# v9-baselined bundle would have kept rendering as the current standing.
+# Operator ruling (2026-08-31, near-verbatim): "Once we promote a new frozen
+# version in the future, the comparison should be against the newly promoted
+# version, NOT stale v9."
+#
+# So the current production commit is resolved LIVE from the frozen tree —
+# `git rev-parse HEAD` plus the branch contract `scripts/session/
+# verify_llama_cpp.sh` enforces (`production-consolidated-*`) — once per
+# snapshot, never per field, and NEVER cached across requests (the module's own
+# no-cache doctrine: a cached anchor can outlive a promotion). A resolution
+# failure is its own explicit state on the wire (`production.resolved=False`
+# with the reason), never a silent fallback to a remembered sha and never a
+# crash of the payload: the rest of the page must still render.
+
+#: Where the frozen production tree lives. Overridable for tests — the resolver
+#: must be injectable so no unit test depends on the real host tree — and
+#: resolved PER CALL, like ``STORE_ROOT_ENV``.
+FROZEN_TREE_ENV = "AUTOKERNEL_FROZEN_TREE"
+DEFAULT_FROZEN_TREE = Path("/mnt/raid0/llm/llama.cpp")
+
+#: The branch shape the freeze contract enforces. The PREFIX is the contract;
+#: the suffix (v9, v10, …) is the part promotions advance, so it is never
+#: pinned here. The displayed label ("production-consolidated-v9" today) is the
+#: branch name itself — derived, not remembered.
+PRODUCTION_BRANCH_PREFIX = "production-consolidated-"
+
+_FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
+
+PRODUCTION_UNRESOLVED_MEANS = (
+    "the hub could not resolve WHICH kernel is currently the frozen production "
+    "kernel, so nothing on this panel can be checked against it. This is a "
+    "fact about the frozen tree or this host, not about the champion or its "
+    "measurement — and it renders as its own state rather than falling back "
+    "to a remembered sha, because a remembered sha is stale the day after a "
+    "promotion.")
+
+
+def frozen_tree() -> Path:
+    """The canonical frozen production tree, resolved at call time."""
+    return Path(os.environ.get(FROZEN_TREE_ENV) or DEFAULT_FROZEN_TREE)
+
+
+def _git_read(tree: Path, *args: str) -> str:
+    """One READ-ONLY git query against ``tree``. Raises on any failure.
+
+    Read-only by construction: only ``rev-parse``/``branch`` queries are ever
+    passed, because the frozen tree must never be written, fetched or checked
+    out by this hub.
+    """
+    proc = subprocess.run(["git", "-C", str(tree), *args],
+                          capture_output=True, text=True, timeout=10)
+    if proc.returncode != 0:
+        message = (proc.stderr or proc.stdout or "").strip()
+        message = message.splitlines()[0] if message else (
+            f"exit status {proc.returncode}")
+        raise RuntimeError(f"git {' '.join(args)}: {message}")
+    return proc.stdout.strip()
+
+
+def resolve_production(tree: Optional[Path] = None) -> dict:
+    """``{resolved, commit, branch, label, tree, error}`` for the frozen tree.
+
+    ``resolved`` is True only when HEAD is a full commit AND the tree sits on a
+    ``production-consolidated-*`` branch — the same contract
+    ``verify_llama_cpp.sh`` enforces at session start. Any other outcome
+    (missing tree, git error, detached HEAD, off-contract branch) carries the
+    reason in ``error`` and resolves NOTHING: there is deliberately no
+    hardcoded sha to fall back to.
+    """
+    tree = frozen_tree() if tree is None else Path(tree)
+    out = {"resolved": False, "commit": None, "branch": None, "label": None,
+           "tree": str(tree), "error": None}
+    if not (tree / ".git").exists():
+        out["error"] = (f"the frozen production tree is not a git repository "
+                        f"at {tree} (no .git) — the canonical tree is missing "
+                        "from this host or the hub is misconfigured")
+        return out
+    try:
+        commit = _git_read(tree, "rev-parse", "HEAD")
+        branch = _git_read(tree, "branch", "--show-current")
+    except (RuntimeError, OSError, subprocess.SubprocessError) as exc:
+        out["error"] = f"git could not read the frozen production tree: {exc}"
+        return out
+    if not _FULL_SHA.fullmatch(commit):
+        out["error"] = (f"the frozen tree's HEAD resolved to {commit!r}, not a "
+                        "full 40-hex commit")
+        return out
+    out["commit"] = commit
+    out["branch"] = branch or None
+    if not branch:
+        out["error"] = (f"the frozen production tree at {tree} is on a "
+                        f"DETACHED HEAD, not a {PRODUCTION_BRANCH_PREFIX}* "
+                        "branch — off the freeze contract, so its HEAD cannot "
+                        "be trusted to be the production kernel")
+        return out
+    if not branch.startswith(PRODUCTION_BRANCH_PREFIX):
+        out["error"] = (f"the frozen production tree at {tree} is on branch "
+                        f"{branch!r}, not a {PRODUCTION_BRANCH_PREFIX}* branch "
+                        "— off the freeze contract, so its HEAD cannot be "
+                        "trusted to be the production kernel")
+        return out
+    #: The label is the branch name — "production-consolidated-v9" today,
+    #: "-v10" the day after a promotion, with no edit to this module.
+    out["label"] = branch
+    out["resolved"] = True
+    return out
 
 CHAMPION_SCHEMA = "epyc.autokernel.champion_vs_production.v1"
 CHAMPION_FILENAME = "champion-vs-production.json"
@@ -500,10 +612,19 @@ CHAMPION_NOT_COMPOSABLE = (
     "This headline can only ever come from one direct A/B.")
 
 
-def _champion_would_populate(path: Path) -> str:
+def _champion_would_populate(path: Path, production: Mapping[str, Any]) -> str:
+    if production.get("resolved"):
+        anchor = (f"the frozen production kernel "
+                  f"{str(production.get('commit'))[:12]} "
+                  f"({production.get('label')})")
+    else:
+        # No remembered sha stands in for a failed resolution — the sentence
+        # says the anchor is currently unresolvable rather than naming a
+        # kernel that may already be superseded.
+        anchor = ("the CURRENT frozen production kernel (unresolvable right "
+                  "now — see the resolution failure on this card)")
     return (f"one direct A/B — the champion commit built and benched against "
-            f"the frozen production kernel {FROZEN_PRODUCTION_COMMIT[:12]} "
-            f"({FROZEN_PRODUCTION_LABEL}) on the loop's own surface and pair "
+            f"{anchor} on the loop's own surface and pair "
             f"count, both arms measured in the same session — published as "
             f"{CHAMPION_SCHEMA} at {path}.")
 
@@ -592,20 +713,23 @@ def read_champion(root: Optional[Path] = None) -> dict:
     baseline = body.get("baseline")
     baseline = baseline if isinstance(baseline, Mapping) else {}
     measured_against = baseline.get("commit")
-    if measured_against != FROZEN_PRODUCTION_COMMIT:
-        # REFUSED, not relabelled. This headline is DEFINED as the gain over the
-        # frozen production kernel; a bundle measured against the loop's
-        # advancing anchor, or against an older production, is a different
-        # number, and showing it here under this heading is exactly the
-        # anchor-swap that produced the confusion this panel exists to end.
+    if not isinstance(measured_against, str) \
+            or not _FULL_SHA.fullmatch(measured_against):
+        # MALFORMED, and deliberately narrower than the first version of this
+        # check. A bundle that names NO full baseline commit is a percentage
+        # whose anchor cannot be identified — it can be neither verified
+        # current nor honestly marked superseded, so it is refused as the
+        # emitter's fault. A bundle that names a full commit which is NOT the
+        # current production is a DIFFERENT case: it is honest about what it
+        # measured, and it renders downstream as SUPERSEDED-BASELINE rather
+        # than being refused — refusing it is exactly how a hardcoded anchor
+        # would have rejected the first correct post-promotion bundle.
         return {"artifact_present": True, "body": None,
                 "reader_error": (
-                    f"the champion bundle names baseline "
-                    f"{str(measured_against)[:12] or '(none)'}, not the frozen "
-                    f"production kernel {FROZEN_PRODUCTION_COMMIT[:12]}. This "
-                    f"headline is defined as the gain over frozen production, "
-                    f"so a measurement against any other anchor is a different "
-                    f"number and is refused rather than shown here"),
+                    f"the champion bundle names no full 40-hex baseline "
+                    f"commit (got {measured_against!r}) — a comparison whose "
+                    f"anchor cannot be identified cannot be shown under this "
+                    f"headline, verified current, or marked superseded"),
                 "path": str(path)}
     return {"artifact_present": True, "body": body, "reader_error": None,
             "path": str(path)}
@@ -722,7 +846,8 @@ def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
 
 def champion_snapshot(root: Optional[Path] = None, *,
                       now: Optional[float] = None,
-                      champion_head: Optional[str] = None) -> dict:
+                      champion_head: Optional[str] = None,
+                      production: Optional[Mapping[str, Any]] = None) -> dict:
     """The wire block for the champion headline.
 
     ``champion_head`` is the loop's CURRENT champion, passed in rather than
@@ -731,7 +856,16 @@ def champion_snapshot(root: Optional[Path] = None, *,
     champion advances on every keep, so "measured, but three keeps ago" is the
     normal case and must be visible — a number that silently re-anchors to
     whatever the champion is today is the same defect one level down.
+
+    ``production`` is a pre-resolved :func:`resolve_production` block, for
+    callers (and tests) that already hold one; by default it is resolved here,
+    ONCE per snapshot — never per field, and never cached across requests.
+    The same supersession logic then runs on the OTHER side of the comparison:
+    a bundle whose baseline is no longer the current production kernel is
+    honest about what it measured and renders as SUPERSEDED-BASELINE — dated,
+    both commits named — not refused and not fresh.
     """
+    prod = dict(production) if production is not None else resolve_production()
     report = read_champion(root)
     fresh = champion_freshness(report, now=now)
     body = report.get("body")
@@ -764,6 +898,76 @@ def champion_snapshot(root: Optional[Path] = None, *,
                 f"and cannot be added to it."),
         }
 
+    # THE OTHER SIDE OF THE SAME COIN, and orthogonal to it on purpose: the
+    # champion supersession above says the MEASURED arm has moved on; this one
+    # says the ANCHOR has. A bundle can be champion-superseded,
+    # baseline-superseded, both, or neither, and the page must be able to say
+    # which. ``baseline_check`` is the server-side fold, so a test executes it
+    # instead of re-deriving it from three fields:
+    #   * ``current``      — the bundle's anchor IS the resolved production;
+    #   * ``superseded``   — production has been promoted past the bundle's
+    #                        anchor (or the bundle was never anchored on a
+    #                        production kernel at all — either way the number
+    #                        does not answer "gain over CURRENT production");
+    #   * ``unverifiable`` — production did not resolve, so no comparison can
+    #                        be made in either direction;
+    #   * ``None``         — no readable bundle to check.
+    bundle_baseline = {}
+    if body is not None:
+        raw_baseline = body.get("baseline")
+        bundle_baseline = (dict(raw_baseline)
+                           if isinstance(raw_baseline, Mapping) else {})
+    measured_baseline = bundle_baseline.get("commit")
+
+    baseline_check = None
+    baseline_supersession = None
+    if body is not None:
+        if not prod.get("resolved"):
+            baseline_check = "unverifiable"
+        elif measured_baseline == prod.get("commit"):
+            baseline_check = "current"
+        else:
+            baseline_check = "superseded"
+            measured_label = bundle_baseline.get("label")
+            baseline_supersession = {
+                "measured_against": measured_baseline,
+                "measured_label": measured_label,
+                "current_production": prod.get("commit"),
+                "current_label": prod.get("label"),
+                "detail": (
+                    f"this A/B was measured against production kernel "
+                    f"{str(measured_baseline)[:12]}"
+                    + (f" ({measured_label})" if measured_label else "")
+                    + f", which has since been superseded by a promotion: the "
+                    f"frozen production kernel is now "
+                    f"{str(prod.get('commit'))[:12]} ({prod.get('label')}). "
+                    f"The number stands for the comparison it made and for no "
+                    f"other — only a new direct A/B against "
+                    f"{prod.get('label')} can say what the champion is worth "
+                    f"over CURRENT production."),
+            }
+
+    # The anchor printed beside the number. For a readable bundle it is the
+    # bundle's OWN declared anchor — what was actually measured, even when that
+    # anchor is superseded — because relabelling a measurement with today's
+    # production would claim a comparison nobody ran. With no readable bundle
+    # it is the resolved current production (the anchor a measurement WOULD be
+    # against), and with no resolution either, it is honestly empty.
+    if body is not None:
+        shown_baseline = {"commit": measured_baseline,
+                          "label": bundle_baseline.get("label"),
+                          "kind": "frozen production kernel",
+                          "source": "the bundle's own declared anchor"}
+    elif prod.get("resolved"):
+        shown_baseline = {"commit": prod.get("commit"),
+                          "label": prod.get("label"),
+                          "kind": "frozen production kernel",
+                          "source": "resolved live from the frozen tree"}
+    else:
+        shown_baseline = {"commit": None, "label": None,
+                          "kind": "frozen production kernel",
+                          "source": None}
+
     return {
         "schema": CHAMPION_SCHEMA,
         "evidence": str(path),
@@ -777,9 +981,14 @@ def champion_snapshot(root: Optional[Path] = None, *,
         # The anchor is stated on EVERY reading, present or not. The headline is
         # a claim about a comparison; naming only one side of it is how a
         # percentage becomes unreadable.
-        "baseline": {"commit": FROZEN_PRODUCTION_COMMIT,
-                     "label": FROZEN_PRODUCTION_LABEL,
-                     "kind": "frozen production kernel"},
+        "baseline": shown_baseline,
+        # The RESOLVED current production kernel — or the explicit reason it
+        # could not be resolved. Never a remembered sha.
+        "production": prod,
+        "production_unresolved_means": (
+            None if prod.get("resolved") else PRODUCTION_UNRESOLVED_MEANS),
+        "baseline_check": baseline_check,
+        "baseline_supersession": baseline_supersession,
         "champion": {"measured_commit": measured_commit,
                      "loop_champion_head": champion_head},
         "supersession": supersession,
@@ -792,7 +1001,7 @@ def champion_snapshot(root: Optional[Path] = None, *,
         "measurement_evidence": (body or {}).get("evidence"),
         "capabilities": _champion_capabilities(body),
         "absence_means": CHAMPION_ABSENCE_MEANS,
-        "would_populate": _champion_would_populate(path),
+        "would_populate": _champion_would_populate(path, prod),
         "not_composable": CHAMPION_NOT_COMPOSABLE,
     }
 
@@ -851,16 +1060,18 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "CHAMPION_DEFAULT_STALE_AFTER_S", "CHAMPION_FILENAME",
            "CHAMPION_NOT_COMPOSABLE", "CHAMPION_SCHEMA",
            "DEFAULT_STALE_AFTER_S",
-           "DEFAULT_STORE_ROOT", "FROZEN_PRODUCTION_COMMIT",
-           "FROZEN_PRODUCTION_LABEL", "HELD_KEYS",
+           "DEFAULT_STORE_ROOT", "DEFAULT_FROZEN_TREE", "FROZEN_TREE_ENV",
+           "HELD_KEYS",
            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S",
            "NOTICES", "NOTICE_ABSENT", "NOTICE_FAILED", "NOTICE_FINISHED",
            "NOTICE_MALFORMED", "NOTICE_NONE", "NOTICE_STALE",
+           "PRODUCTION_BRANCH_PREFIX", "PRODUCTION_UNRESOLVED_MEANS",
            "RUN_COMPLETE", "RUN_FAILED", "RUN_RUNNING", "RUN_STARTING",
            "RUN_STATES", "STATES",
            "STATE_ABSENT", "STATE_FRESH", "STATE_MALFORMED", "STATE_STALE",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
            "champion_freshness", "champion_path", "champion_snapshot",
-           "freshness", "notice",
-           "observation", "payload", "read", "read_champion", "snapshot",
+           "freshness", "frozen_tree", "notice",
+           "observation", "payload", "read", "read_champion",
+           "resolve_production", "snapshot",
            "status_path", "store_root", "summarize"]

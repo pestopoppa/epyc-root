@@ -20,6 +20,20 @@ from*) and run 18 added one. Those are MARGINALS against an anchor that advances
 on every keep, and composing them would manufacture a measurement no run ever
 took -- the derived-marginal error this program already made once.
 
+THE ANCHOR IS RESOLVED, NEVER REMEMBERED (operator ruling, 2026-08-31)
+----------------------------------------------------------------------
+"Once we promote a new frozen version in the future, the comparison should be
+against the newly promoted version, NOT stale v9." So the reader resolves the
+frozen production kernel LIVE from the canonical frozen tree, and these tests
+drive it with a TEMP git repository posing as that tree -- resolvable, promoted
+past the bundle's baseline, off-contract, detached, or missing -- so no unit
+test here depends on the real host tree. Exactly ONE integration test touches
+the real ``/mnt/raid0/llm/llama.cpp``, read-only, and skips with a stated
+reason where it is absent. A bundle honestly anchored on a since-promoted
+production renders as SUPERSEDED-BASELINE (dated, both commits named, number
+kept), NOT as malformed and NOT as fresh; it composes orthogonally with the
+existing champion supersession.
+
 WHERE THE FIXTURES COME FROM, AND WHY IT MATTERS
 ------------------------------------------------
 A fixture written from the READER's expectations proves only that the reader is
@@ -33,17 +47,12 @@ So every value here is lifted from a record that exists on disk:
     verbatim recording of the running loop's own store root;
   * the operator-gated bundle is the REAL emitted file, read from the host, and
     these tests SKIP rather than invent one if it is not there;
-  * the champion bundle's *values* are lifted from real records too: its baseline
-    commit from the real bundle's ``production_anchor.commit``, its champion
-    commit from the real loop status's ``champion_head``, and its effect, surface,
-    pairs and noise floor from ``run17-audit/total.json``, the real audit record.
-
-The CARRIER is new -- nothing writes ``champion-vs-production.json`` yet, which is
-the whole point of the panel -- so its key names cannot be recorded from a
-producer. They are stated once, here, as the contract the emitter must meet, and
-``test_the_contract_this_file_pins_is_the_one_the_reader_reads`` keeps this file
-and the reader from drifting apart silently. The one field with no real analogue
-at all, ``capabilities``, is marked as such below.
+  * the champion bundle is the REAL emitted
+    ``loop-memory/champion-vs-production.json`` (a producer writes it since
+    2026-08-30), re-dated and re-anchored per test -- its baseline commit MUST
+    be parametrized, because the whole point of the live resolver is that the
+    correct anchor is whatever the (temp) frozen tree's HEAD is, not a sha
+    this file remembers.
 """
 from __future__ import annotations
 
@@ -73,9 +82,38 @@ SAMPLE = REPO / "tests/fixtures/autokernel_loop_status_sample.json"
 #: stand-in would let this file and the page agree with each other while both
 #: disagreed with the emitter.
 REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
-#: The real run-17 block audit. Its fields are where this file's champion-bundle
-#: numbers come from, so no measurement value below is invented.
-REAL_AUDIT = Path("/mnt/raid0/llm/autokernel/loop-memory/run17-audit/total.json")
+#: The REAL champion-vs-production bundle: a producer writes this carrier since
+#: 2026-08-30, so its key names are recorded from disk rather than stated here.
+REAL_CHAMPION = Path(
+    "/mnt/raid0/llm/autokernel/loop-memory/champion-vs-production.json")
+#: The real frozen production tree, used by exactly ONE read-only integration
+#: test. Every other test drives a temp repository posing as it.
+REAL_FROZEN_TREE = Path("/mnt/raid0/llm/llama.cpp")
+
+#: The label every temp frozen tree starts on. A test value, not a remembered
+#: production fact: the reader must DERIVE whatever branch the tree is on.
+V9_BRANCH = "production-consolidated-v9"
+
+
+def make_production_repo(path: Path, branch: str = V9_BRANCH) -> str:
+    """A temp git repo posing as the frozen production tree. Returns HEAD."""
+    path.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["git", "init", "-q", "-b", branch, str(path)],
+                   check=True, capture_output=True)
+    return advance_production_repo(path)
+
+
+def advance_production_repo(path: Path, rename_to: str | None = None) -> str:
+    """One more commit on the posing tree -- a promotion when renamed. HEAD."""
+    subprocess.run(["git", "-C", str(path), "-c", "user.name=t",
+                    "-c", "user.email=t@t", "commit", "-q", "--allow-empty",
+                    "-m", "promote"], check=True, capture_output=True)
+    if rename_to is not None:
+        subprocess.run(["git", "-C", str(path), "branch", "-m", rename_to],
+                       check=True, capture_output=True)
+    return subprocess.run(["git", "-C", str(path), "rev-parse", "HEAD"],
+                          check=True, capture_output=True,
+                          text=True).stdout.strip()
 
 
 def _stamp(seconds_ago: float) -> str:
@@ -98,70 +136,81 @@ def real_bundle() -> dict:
     return json.loads(REAL_BUNDLE.read_text(encoding="utf-8"))
 
 
-def real_audit() -> dict:
-    if not REAL_AUDIT.is_file():
-        raise unittest.SkipTest(f"{REAL_AUDIT} is not on this host")
-    return json.loads(REAL_AUDIT.read_text(encoding="utf-8"))
+def real_champion() -> dict:
+    if not REAL_CHAMPION.is_file():
+        raise unittest.SkipTest(
+            f"{REAL_CHAMPION} is not on this host; refusing to hand-author the "
+            "producer's key names")
+    return json.loads(REAL_CHAMPION.read_text(encoding="utf-8"))
 
 
-def champion_bundle(*, age_s: float = 3600.0, champion_commit: str | None = None,
-                    baseline_commit: str | None = None,
+def champion_bundle(*, baseline_commit: str,
+                    age_s: float = 3600.0, champion_commit: str | None = None,
+                    baseline_label: str = V9_BRANCH,
                     capabilities: object = "unset") -> dict:
-    """A well-formed ``epyc.autokernel.champion_vs_production.v1`` body.
+    """The REAL emitted champion bundle, re-dated and re-anchored per test.
 
-    Values from real records (see the module docstring); the carrier is the new
-    contract. ``capabilities`` is the ONE field with no on-disk analogue anywhere
-    under the campaign -- there is no FlashAttention2 record of any kind on this
-    host -- so the entry below is the test's own, used only to prove the render
-    path exists for a producer that publishes one. Nothing in the shipped page
-    contains a capability name.
+    Every key comes from the file the producer actually writes (see the module
+    docstring). ``baseline_commit`` is REQUIRED with no default on purpose: the
+    correct anchor is whatever the posing frozen tree's HEAD is, and a default
+    here would be exactly the remembered sha this revision removes.
+    ``capabilities`` defaults to REMOVED so the unknown-path tests exercise a
+    producer that never published the field; the real file's list is a real
+    record, not this file's.
     """
-    audit = real_audit()
-    bundle = real_bundle()
-    body = {
-        "schema": loop_status.CHAMPION_SCHEMA,
-        "generated_at": _stamp(age_s),
-        "stale_after_s": int(loop_status.CHAMPION_DEFAULT_STALE_AFTER_S),
-        "baseline": {
-            "commit": (baseline_commit if baseline_commit is not None
-                       else bundle["production_anchor"]["commit"]),
-            "label": loop_status.FROZEN_PRODUCTION_LABEL,
-        },
-        "champion": {"commit": (champion_commit if champion_commit is not None
-                                else recorded_loop()["champion_head"])},
-        "effect_fraction": audit["effect"],
-        "metric": "tg128_tok_s",
-        "metric_direction": "higher_better",
-        "surface": audit["surface"],
-        "pairs": audit["pairs"],
-        "noise_floor_pct": audit["noise_floor_pct"],
-        "evidence": str(REAL_AUDIT),
-    }
-    if capabilities != "unset":
+    body = real_champion()
+    body["generated_at"] = _stamp(age_s)
+    body["stale_after_s"] = int(loop_status.CHAMPION_DEFAULT_STALE_AFTER_S)
+    body["baseline"] = {"commit": baseline_commit, "label": baseline_label}
+    body["champion"] = {"commit": (champion_commit if champion_commit is not None
+                                   else recorded_loop()["champion_head"])}
+    if capabilities == "unset":
+        body.pop("capabilities", None)
+    else:
         body["capabilities"] = capabilities
     return body
 
 
 class _Store(unittest.TestCase):
-    """Points the hub's loop store root and gate path at a temp directory."""
+    """Temp store root, temp gate path, and a TEMP GIT REPO posing as the
+    frozen production tree — so no test below depends on the real host tree,
+    and a "promotion" is three lines of git rather than a thought experiment."""
 
     def setUp(self) -> None:
         self.root = Path(tempfile.mkdtemp(prefix="champ-headline-"))
         self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
         prior = os.environ.get(loop_status.STORE_ROOT_ENV)
         os.environ[loop_status.STORE_ROOT_ENV] = str(self.root)
-        self.addCleanup(self._restore_env, prior)
+        self.addCleanup(self._restore_env, loop_status.STORE_ROOT_ENV, prior)
+        self.prod_tree = self.root / "frozen-tree"
+        self.prod_sha = make_production_repo(self.prod_tree)
+        prior_tree = os.environ.get(loop_status.FROZEN_TREE_ENV)
+        os.environ[loop_status.FROZEN_TREE_ENV] = str(self.prod_tree)
+        self.addCleanup(self._restore_env, loop_status.FROZEN_TREE_ENV,
+                        prior_tree)
         self.prior_gate = S.OPERATOR_GATE_BUNDLE_JSON
         self.addCleanup(setattr, S, "OPERATOR_GATE_BUNDLE_JSON", self.prior_gate)
         with S._watchdog_lock:
             S._watchdog_state.clear()
 
     @staticmethod
-    def _restore_env(prior: str | None) -> None:
+    def _restore_env(name: str, prior: str | None) -> None:
         if prior is None:
-            os.environ.pop(loop_status.STORE_ROOT_ENV, None)
+            os.environ.pop(name, None)
         else:
-            os.environ[loop_status.STORE_ROOT_ENV] = prior
+            os.environ[name] = prior
+
+    def bundle(self, **kw) -> dict:
+        """A champion bundle anchored, by default, on the POSING tree's HEAD."""
+        kw.setdefault("baseline_commit", self.prod_sha)
+        return champion_bundle(**kw)
+
+    def promote(self, branch: str = "production-consolidated-v10") -> str:
+        """Advance the posing tree past every anchored bundle — a promotion."""
+        return advance_production_repo(self.prod_tree, rename_to=branch)
+
+    def use_tree(self, path: Path) -> None:
+        os.environ[loop_status.FROZEN_TREE_ENV] = str(path)
 
     def write_loop(self, body: object) -> None:
         target = self.root / loop_status.STATUS_FILENAME
@@ -200,7 +249,7 @@ class Contract(_Store):
         values through.
         """
         self.write_loop(recorded_loop())
-        body = champion_bundle()
+        body = self.bundle()
         self.write_champion(body)
         got = self.block()
         self.assertTrue(got["measured"])
@@ -213,40 +262,93 @@ class Contract(_Store):
 
     def test_the_anchor_is_the_frozen_production_kernel_and_is_stated_always(self):
         """Named on EVERY reading -- measured, absent, refused. A percentage
-        with no named anchor is the defect that produced this whole revision."""
+        with no named anchor is the defect that produced this whole revision.
+        The expected commit is the POSING TREE's HEAD, read back with git by
+        this test — never a constant, in the reader or in here."""
         self.write_loop(recorded_loop())
         for label, setup in (("absent", lambda: None),
                              ("malformed", lambda: self.write_champion("{half")),
                              ("measured",
-                              lambda: self.write_champion(champion_bundle()))):
+                              lambda: self.write_champion(self.bundle()))):
             with self.subTest(label):
                 if label != "absent":
                     (self.root / loop_status.CHAMPION_FILENAME).unlink(
                         missing_ok=True)
                 setup()
                 got = self.block()
-                self.assertEqual(got["baseline"]["commit"],
-                                 loop_status.FROZEN_PRODUCTION_COMMIT)
-                self.assertEqual(got["baseline"]["label"],
-                                 loop_status.FROZEN_PRODUCTION_LABEL)
+                self.assertEqual(got["baseline"]["commit"], self.prod_sha)
+                self.assertEqual(got["baseline"]["label"], V9_BRANCH)
+                # And the RESOLVED production is served beside it, from git.
+                self.assertTrue(got["production"]["resolved"])
+                self.assertEqual(got["production"]["commit"], self.prod_sha)
+                self.assertEqual(got["production"]["label"], V9_BRANCH)
 
-    def test_the_frozen_commit_is_the_one_the_repo_froze(self):
-        """The anchor is a fact about the repository, not a spelling choice."""
-        self.assertEqual(loop_status.FROZEN_PRODUCTION_COMMIT,
-                         real_bundle()["production_anchor"]["commit"])
-
-    def test_a_bundle_measured_against_another_anchor_is_REFUSED(self):
-        """The forgery this panel exists to prevent: a marginal against the
-        loop's advancing anchor, or against an older production, promoted into
-        the cumulative-vs-frozen-production slot by renaming the carrier."""
+    def test_a_bundle_anchored_on_a_SUPERSEDED_production_is_dated_not_refused(self):
+        """THE promotion case (operator ruling, 2026-08-31). The bundle is
+        honest about what it measured; production has moved past it. It is NOT
+        malformed and NOT fresh — it is SUPERSEDED-BASELINE, number kept, both
+        commits named."""
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(
-            baseline_commit=recorded_loop()["anchor_commit"]))
+        old = self.prod_sha
+        new = self.promote("production-consolidated-v10")
+        self.assertNotEqual(old, new)
+        self.write_champion(self.bundle(baseline_commit=old))
         got = self.block()
-        self.assertFalse(got["measured"])
-        self.assertEqual(got["freshness"]["state"], loop_status.STATE_MALFORMED)
-        self.assertIn("not the frozen production kernel", got["reader_error"])
-        self.assertIsNone(got["effect_fraction"])
+        self.assertTrue(got["measured"], "an honest bundle lost its number")
+        self.assertIsNone(got["reader_error"], "the bundle was refused")
+        self.assertIsNotNone(got["effect_fraction"])
+        self.assertEqual(got["freshness"]["state"], loop_status.STATE_FRESH,
+                         "file freshness is a separate axis and the file is new")
+        self.assertEqual(got["baseline_check"], "superseded")
+        sup = got["baseline_supersession"]
+        self.assertIsNotNone(sup)
+        self.assertEqual(sup["measured_against"], old)
+        self.assertEqual(sup["current_production"], new)
+        self.assertEqual(sup["current_label"], "production-consolidated-v10")
+        self.assertIn("superseded by a promotion", sup["detail"])
+        # The displayed anchor stays the bundle's own — relabelling it with
+        # today's production would claim a comparison nobody ran.
+        self.assertEqual(got["baseline"]["commit"], old)
+
+    def test_a_freshly_promoted_baseline_is_current_not_refused(self):
+        """The OTHER direction the hardcoded sha got wrong: the first correct
+        post-promotion bundle must read as the current standing."""
+        self.write_loop(recorded_loop())
+        new = self.promote("production-consolidated-v10")
+        self.write_champion(self.bundle(
+            baseline_commit=new, baseline_label="production-consolidated-v10"))
+        got = self.block()
+        self.assertTrue(got["measured"])
+        self.assertIsNone(got["reader_error"])
+        self.assertEqual(got["baseline_check"], "current")
+        self.assertIsNone(got["baseline_supersession"])
+        self.assertEqual(got["freshness"]["state"], loop_status.STATE_FRESH)
+        self.assertEqual(got["production"]["label"],
+                         "production-consolidated-v10")
+
+    def test_a_bundle_naming_no_identifiable_anchor_is_REFUSED(self):
+        """MALFORMED is now exactly this: an anchor that cannot be identified.
+        Unidentifiable is the emitter's fault; merely superseded is not."""
+        self.write_loop(recorded_loop())
+        cases = {
+            "short sha": self.bundle(baseline_commit=self.prod_sha[:12]),
+            "empty": self.bundle(baseline_commit=""),
+        }
+        no_commit = self.bundle()
+        del no_commit["baseline"]["commit"]
+        cases["no commit key"] = no_commit
+        no_baseline = self.bundle()
+        del no_baseline["baseline"]
+        cases["no baseline at all"] = no_baseline
+        for label, body in cases.items():
+            with self.subTest(label):
+                self.write_champion(body)
+                got = self.block()
+                self.assertFalse(got["measured"])
+                self.assertEqual(got["freshness"]["state"],
+                                 loop_status.STATE_MALFORMED)
+                self.assertIn("baseline", got["reader_error"])
+                self.assertIsNone(got["effect_fraction"])
 
     def test_absent_is_not_a_measured_zero(self):
         self.write_loop(recorded_loop())
@@ -256,8 +358,10 @@ class Contract(_Store):
         self.assertEqual(got["freshness"]["state"], loop_status.STATE_ABSENT)
         self.assertIn("not been taken", got["absence_means"])
         self.assertIn("direct A/B", got["would_populate"])
-        self.assertIn(loop_status.FROZEN_PRODUCTION_COMMIT[:12],
-                      got["would_populate"])
+        # The sentence names the RESOLVED current production, from the
+        # posing tree — a remembered sha here would go stale on promotion.
+        self.assertIn(self.prod_sha[:12], got["would_populate"])
+        self.assertIn(V9_BRANCH, got["would_populate"])
 
     def test_absent_is_not_malformed_is_not_stale_is_not_fresh(self):
         """Four states, four verdicts, in the SAME vocabulary the loop badge and
@@ -268,10 +372,10 @@ class Contract(_Store):
         seen["absent"] = self.block()
         self.write_champion("")
         seen["malformed"] = self.block()
-        self.write_champion(champion_bundle(
+        self.write_champion(self.bundle(
             age_s=60 * 86400))
         seen["stale"] = self.block()
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         seen["fresh"] = self.block()
         states = {k: v["freshness"]["state"] for k, v in seen.items()}
         self.assertEqual(states, {"absent": "absent", "malformed": "malformed",
@@ -291,7 +395,7 @@ class Contract(_Store):
 
     def test_a_future_stamp_cannot_buy_permanent_freshness(self):
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(age_s=-86400))
+        self.write_champion(self.bundle(age_s=-86400))
         got = self.block()
         self.assertEqual(got["freshness"]["state"], loop_status.STATE_MALFORMED)
         self.assertIn("FUTURE", got["freshness"]["detail"])
@@ -301,7 +405,7 @@ class Contract(_Store):
         the champion advances on every keep."""
         self.write_loop(recorded_loop())
         older = real_bundle()["champion"]["commit"]
-        self.write_champion(champion_bundle(champion_commit=older))
+        self.write_champion(self.bundle(champion_commit=older))
         got = self.block()
         self.assertTrue(got["measured"])
         self.assertIsNotNone(got["supersession"])
@@ -309,19 +413,24 @@ class Contract(_Store):
         self.assertEqual(got["supersession"]["current_champion"],
                          recorded_loop()["champion_head"])
         self.assertIn("cannot be added", got["supersession"]["detail"])
+        # ORTHOGONALITY: a superseded CHAMPION is not a superseded BASELINE.
+        self.assertIsNone(got["baseline_supersession"])
+        self.assertEqual(got["baseline_check"], "current")
 
     def test_the_same_commit_raises_no_supersession(self):
         """Compliant-path control: the flag must not fire on every reading."""
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle())
-        self.assertIsNone(self.block()["supersession"])
+        self.write_champion(self.bundle())
+        got = self.block()
+        self.assertIsNone(got["supersession"])
+        self.assertIsNone(got["baseline_supersession"])
 
     def test_the_marginals_are_declared_uncomposable_on_every_reading(self):
         self.write_loop(recorded_loop())
         for label in ("absent", "measured"):
             with self.subTest(label):
                 if label == "measured":
-                    self.write_champion(champion_bundle())
+                    self.write_champion(self.bundle())
                 note = self.block()["not_composable"]
                 self.assertIn("must never be summed", note)
                 self.assertIn("advances on every keep", note)
@@ -331,7 +440,7 @@ class Capabilities(_Store):
 
     def test_unknown_is_stated_with_a_reason_and_a_remedy(self):
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         caps = self.block()["capabilities"]
         self.assertFalse(caps["known"])
         self.assertEqual(caps["items"], [])
@@ -341,7 +450,7 @@ class Capabilities(_Store):
 
     def test_a_published_list_is_carried_verbatim_with_its_evidence(self):
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(capabilities=[
+        self.write_champion(self.bundle(capabilities=[
             {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
             "iqk IQ4_XS coverage",
         ]))
@@ -357,7 +466,7 @@ class Capabilities(_Store):
         """Two different facts. 'The producer looked and found none' is a
         statement; 'nobody has been asked' is the absence of one."""
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(capabilities=[]))
+        self.write_champion(self.bundle(capabilities=[]))
         caps = self.block()["capabilities"]
         self.assertTrue(caps["known"])
         self.assertEqual(caps["items"], [])
@@ -378,6 +487,143 @@ class Capabilities(_Store):
                        "IQ4_XS", "rocwmma"):
             self.assertNotIn(banned, code,
                              f"{banned!r} is typed into the shipped page")
+
+
+# --------------------------------------------------------------------------- #
+# The production anchor is RESOLVED from the frozen tree, never remembered
+# --------------------------------------------------------------------------- #
+class ProductionResolution(_Store):
+    """Operator ruling, 2026-08-31: after a promotion the comparison must be
+    against the newly promoted kernel, never a stale remembered one. Every
+    state here is EXECUTED against a temp git repo posing as the frozen tree."""
+
+    def test_the_label_is_derived_from_the_branch_not_a_constant(self):
+        """A tree on -v10 must render -v10 with no edit anywhere: the label is
+        the branch name, read live."""
+        tree = self.root / "v10-tree"
+        sha = make_production_repo(tree, branch="production-consolidated-v10")
+        got = loop_status.resolve_production(tree)
+        self.assertTrue(got["resolved"], got["error"])
+        self.assertEqual(got["commit"], sha)
+        self.assertEqual(got["branch"], "production-consolidated-v10")
+        self.assertEqual(got["label"], "production-consolidated-v10")
+
+    def test_a_missing_tree_is_an_explicit_state_with_no_fallback_sha(self):
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle())
+        self.use_tree(self.root / "no-such-tree")
+        got = self.block()
+        prod = got["production"]
+        self.assertFalse(prod["resolved"])
+        self.assertIn("not a git repository", prod["error"])
+        self.assertIn("no-such-tree", prod["error"])
+        # NO silent fallback: nothing resolves, nothing is remembered.
+        self.assertIsNone(prod["commit"])
+        self.assertIsNone(prod["label"])
+        self.assertEqual(got["baseline_check"], "unverifiable")
+        self.assertIsNone(got["baseline_supersession"])
+        # The bundle itself is honest and keeps its number...
+        self.assertTrue(got["measured"])
+        self.assertIn("could not resolve", got["production_unresolved_means"])
+
+    def test_an_off_contract_branch_does_not_resolve(self):
+        """`verify_llama_cpp.sh` enforces production-consolidated-*; a tree on
+        any other branch is not provably the production kernel."""
+        tree = self.root / "off-contract"
+        make_production_repo(tree, branch="feature/not-production")
+        got = loop_status.resolve_production(tree)
+        self.assertFalse(got["resolved"])
+        self.assertIn("feature/not-production", got["error"])
+        self.assertIn("production-consolidated-", got["error"])
+        self.assertIsNone(got["label"])
+        # The commit IS reported — it resolved — but earns no trust flag.
+        self.assertIsNotNone(got["commit"])
+
+    def test_a_detached_head_does_not_resolve(self):
+        tree = self.root / "detached"
+        make_production_repo(tree)
+        subprocess.run(["git", "-C", str(tree), "checkout", "-q", "--detach"],
+                       check=True, capture_output=True)
+        got = loop_status.resolve_production(tree)
+        self.assertFalse(got["resolved"])
+        self.assertIn("DETACHED", got["error"])
+
+    def test_a_resolution_failure_does_not_take_down_the_payload(self):
+        """Requirement 2: its own state, never a crash — the loop block, the
+        tiles, the notice must all still be served."""
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle())
+        self.use_tree(self.root / "gone")
+        payload = S.loop_payload()
+        self.assertIsNotNone(payload["loop"])
+        self.assertIsNotNone(payload["derived"])
+        self.assertEqual(payload["freshness_state"], "fresh")
+        self.assertFalse(
+            payload["champion_vs_production"]["production"]["resolved"])
+
+    def test_both_supersessions_compose_and_stay_distinct(self):
+        """Requirement 4: champion-superseded and baseline-superseded are
+        orthogonal — a bundle can be both, and each block names its own facts."""
+        self.write_loop(recorded_loop())
+        old = self.prod_sha
+        older_champ = real_bundle()["champion"]["commit"]
+        new = self.promote("production-consolidated-v10")
+        self.write_champion(self.bundle(
+            baseline_commit=old, champion_commit=older_champ))
+        got = self.block()
+        self.assertTrue(got["measured"])
+        self.assertIsNotNone(got["supersession"])
+        self.assertIsNotNone(got["baseline_supersession"])
+        self.assertEqual(got["supersession"]["measured_for"], older_champ)
+        self.assertEqual(got["baseline_supersession"]["measured_against"], old)
+        self.assertEqual(got["baseline_supersession"]["current_production"], new)
+        self.assertNotEqual(got["supersession"]["detail"],
+                            got["baseline_supersession"]["detail"])
+
+    def test_the_resolver_is_injectable_and_the_injection_is_used(self):
+        """The verification bar: tests must never NEED the real host tree. A
+        pre-resolved block passed in wins over the (broken) environment."""
+        self.write_loop(recorded_loop())
+        forged_sha = "f" * 40
+        self.write_champion(self.bundle(
+            baseline_commit=forged_sha,
+            baseline_label="production-consolidated-v99"))
+        self.use_tree(self.root / "gone")  # resolving would fail loudly
+        got = loop_status.champion_snapshot(production={
+            "resolved": True, "commit": forged_sha,
+            "branch": "production-consolidated-v99",
+            "label": "production-consolidated-v99",
+            "tree": "injected", "error": None})
+        self.assertTrue(got["production"]["resolved"])
+        self.assertEqual(got["baseline_check"], "current")
+        self.assertIsNone(got["baseline_supersession"])
+
+    def test_no_production_sha_is_remembered_anywhere_in_the_surface(self):
+        """The defect itself, as a guard: the v9 sha (or ANY 40-hex literal)
+        hardcoded in the reader or the page is a comparison that goes stale at
+        the next promotion. Comments included on purpose — a sha in a comment
+        becomes the next copy-paste."""
+        for path in (REPO / "dashboard/loop_status.py", PAGE):
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("0db32c06", text, f"v9 sha remembered in {path}")
+            self.assertNotRegex(text, r"\b[0-9a-f]{40}\b",
+                                f"a 40-hex literal is remembered in {path}")
+
+    def test_the_real_frozen_tree_resolves_on_contract(self):
+        """THE one integration test, read-only (rev-parse and branch query
+        only). It asserts the SHAPE of the contract, never a specific sha or
+        version — that is the point of the revision."""
+        if not (REAL_FROZEN_TREE / ".git").exists():
+            self.skipTest(
+                f"{REAL_FROZEN_TREE} is not on this host — the live resolver "
+                "contract cannot be exercised against the real frozen tree")
+        got = loop_status.resolve_production(REAL_FROZEN_TREE)
+        self.assertTrue(got["resolved"], got["error"])
+        self.assertRegex(got["commit"], r"^[0-9a-f]{40}$")
+        self.assertTrue(
+            got["branch"].startswith(loop_status.PRODUCTION_BRANCH_PREFIX),
+            got["branch"])
+        self.assertEqual(got["label"], got["branch"])
 
 
 # --------------------------------------------------------------------------- #
@@ -505,13 +751,15 @@ class Rendering(_Store):
         """One element, both facts. There is no code path that emits the figure
         without the 'vs'."""
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         card = self._text(self._render()["by_id"]["champ"])
-        pct = f"+{champion_bundle()['effect_fraction'] * 100:.1f}%"
+        pct = f"+{self.bundle()['effect_fraction'] * 100:.1f}%"
         self.assertIn(pct, card)
         self.assertIn("vs the frozen production kernel", card)
-        self.assertIn(loop_status.FROZEN_PRODUCTION_LABEL, card)
-        self.assertIn(loop_status.FROZEN_PRODUCTION_COMMIT[:12], card)
+        self.assertIn(V9_BRANCH, card)
+        self.assertIn(self.prod_sha[:12], card)
+        # ...and, matching the live-resolved production, it is tagged current.
+        self.assertIn("current production — resolved live", card)
         # And the figure sits in front of its anchor, not somewhere else on the
         # page: the two are within one short span of each other.
         self.assertLess(card.index("vs the frozen") - card.index(pct), 40)
@@ -522,7 +770,7 @@ class Rendering(_Store):
         `1416.0h ago` — a figure an operator has to do arithmetic on to discover
         is unusable."""
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(age_s=59 * 86400))
+        self.write_champion(self.bundle(age_s=59 * 86400))
         out = self._render()
         badge = out["text_by_id"]["champ-badgetxt"]
         self.assertTrue(badge.startswith("STALE"), badge)
@@ -531,20 +779,99 @@ class Rendering(_Store):
 
     def test_a_superseded_measurement_is_marked_in_the_card(self):
         self.write_loop(recorded_loop())
-        self.write_champion(champion_bundle(
+        self.write_champion(self.bundle(
             champion_commit=real_bundle()["champion"]["commit"]))
         out = self._render()
         card = self._text(out["by_id"]["champ"])
         self.assertIn("SUPERSEDED CHAMPION", card)
         self.assertIn(real_bundle()["champion"]["commit"][:12], card)
         self.assertIn(recorded_loop()["champion_head"][:12], card)
+        # The badge names WHICH side is superseded — "SUPERSEDED" alone sends
+        # an investigator to the wrong arm of the A/B.
+        badge = out["text_by_id"]["champ-badgetxt"]
+        self.assertTrue(badge.startswith("SUPERSEDED CHAMPION"), badge)
+        self.assertNotIn("BASELINE", badge)
+
+    def test_a_promotion_renders_SUPERSEDED_BASELINE_dated_with_both_commits(self):
+        """Requirement 3, executed. The number was measured against a since-
+        promoted production: still shown, visibly dated, both kernels named —
+        and the supersession outranks the file's freshness in the badge (the
+        lesson this panel already learned once for the champion side)."""
+        self.write_loop(recorded_loop())
+        old = self.prod_sha
+        new = self.promote("production-consolidated-v10")
+        self.write_champion(self.bundle(baseline_commit=old))
+        out = self._render()
+        badge = out["text_by_id"]["champ-badgetxt"]
+        self.assertTrue(badge.startswith("SUPERSEDED BASELINE"), badge)
+        self.assertNotIn("CHAMPION", badge)
+        self.assertNotIn("fresh", badge)
+        html = out["by_id"]["champ"]
+        card = self._text(html)
+        self.assertIn("SUPERSEDED BASELINE", card)
+        self.assertIn(old[:12], card)
+        self.assertIn(new[:12], card)
+        self.assertIn("production-consolidated-v10", card)
+        self.assertIn("superseded by a promotion", card)
+        # The old number still shows — the measurement happened — but DATED
+        # (amber), never in the fresh-gain colour.
+        pct = f"+{self.bundle()['effect_fraction'] * 100:.1f}%"
+        self.assertIn(pct, card)
+        self.assertIn("ch-num dated", html)
+        self.assertNotIn("ch-num pos", html)
+        # And it is NOT tagged as the current production comparison.
+        self.assertNotIn("current production — resolved live", card)
+
+    def test_both_supersessions_render_distinguishably(self):
+        """Requirement 4, executed on the page: both badges/states visible and
+        tellable apart in one card."""
+        self.write_loop(recorded_loop())
+        old = self.prod_sha
+        older_champ = real_bundle()["champion"]["commit"]
+        new = self.promote("production-consolidated-v10")
+        self.write_champion(self.bundle(
+            baseline_commit=old, champion_commit=older_champ))
+        out = self._render()
+        badge = out["text_by_id"]["champ-badgetxt"]
+        self.assertTrue(badge.startswith("SUPERSEDED BASELINE+CHAMPION"), badge)
+        card = self._text(out["by_id"]["champ"])
+        self.assertIn("SUPERSEDED BASELINE", card)
+        self.assertIn("SUPERSEDED CHAMPION", card)
+        self.assertIn(old[:12], card)
+        self.assertIn(new[:12], card)
+        self.assertIn(older_champ[:12], card)
+        self.assertIn(recorded_loop()["champion_head"][:12], card)
+
+    def test_an_unresolvable_production_renders_its_own_state_not_a_fallback(self):
+        """Requirement 2, executed. No remembered sha, no crash: the champ card
+        carries the explicit failure with its reason, and every other panel on
+        the page still renders."""
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle())
+        self.use_tree(self.root / "gone-tree")
+        out = self._render()
+        self.assertEqual(out["text_by_id"]["champ-badgetxt"],
+                         "PRODUCTION UNRESOLVED")
+        html = out["by_id"]["champ"]
+        card = self._text(html)
+        self.assertIn("CANNOT RESOLVE THE FROZEN PRODUCTION KERNEL", card)
+        self.assertIn("not a git repository", card)
+        self.assertIn("gone-tree", card)
+        # No sha is invented for the missing anchor, and the number that IS
+        # shown is dated, not painted as a verified-current gain.
+        self.assertNotIn("0db32c06", card)
+        self.assertIn("ch-num dated", html)
+        # The rest of the page survives the failure.
+        for pid in ("tiles", "recent", "gpu"):
+            self.assertTrue(self._text(out["by_id"].get(pid, "")).strip(),
+                            f"panel #{pid} went dark on a resolver failure")
 
     def test_the_champion_card_and_the_gate_card_cannot_be_confused(self):
         """THE defect, in one assertion. Both cards carry a large percentage;
         each must name its own anchor, its own producer and its own question."""
         self.write_loop(recorded_loop())
         self.use_real_bundle()
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         out = self._render()
         champ = self._text(out["by_id"]["champ"])
         gate = self._text(out["by_id"]["opgate"])
@@ -671,7 +998,7 @@ class Rendering(_Store):
         """
         self.write_loop(recorded_loop())
         self.use_real_bundle()
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         out = self._render()
         offenders = []
         for pid in ("champ", "tiles", "recent", "gpu", "hot", "opgate"):
@@ -685,7 +1012,7 @@ class Rendering(_Store):
         with nothing near it."""
         self.write_loop(recorded_loop())
         self.use_real_bundle()
-        self.write_champion(champion_bundle())
+        self.write_champion(self.bundle())
         out = self._render()
         found = sum(len(re.findall(r"[-+]?\d+(?:\.\d+)?%",
                                    self._text(out["by_id"].get(pid, ""))))

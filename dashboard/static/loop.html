@@ -324,8 +324,10 @@
   written by <code>autokernel.loop.status.write</code> in
   <code>epyc-inference-research</code>;
   <code>epyc.autokernel.champion_vs_production.v1</code> is the champion
-  headline's own bundle, whose baseline must be the frozen production kernel or
-  the hub refuses it;
+  headline's own bundle, whose declared baseline is checked at request time
+  against the frozen production tree's live HEAD — a bundle anchored on a
+  since-promoted production renders as SUPERSEDED BASELINE, never as fresh and
+  never refused;
   <code>epyc.autokernel.operator_gate_bundle.v1</code> is emitted by the
   operator-gated manual-research path. All are read at request time — never
   cached, so no value can outlive its freshness envelope. Data probe:
@@ -472,9 +474,12 @@ const CH_BANNERS = {
                     "different producer measuring a different thing against a " +
                     "different anchor."},
   malformed: {hd: "MALFORMED — a bundle exists that this page cannot trust",
-              note: "Something wrote a champion bundle and the hub refused it. That " +
-                    "points at the emitter's writer, or at the anchor it named. No " +
-                    "figure is rendered from it."}
+              note: "Something wrote a champion bundle and the hub refused it — bad " +
+                    "JSON, a foreign schema, or no identifiable baseline commit. That " +
+                    "points at the emitter's writer. (A bundle honestly anchored on a " +
+                    "SUPERSEDED production kernel is not refused; it renders below, " +
+                    "dated, as SUPERSEDED BASELINE.) No figure is rendered from a " +
+                    "refused bundle."}
 };
 
 function renderChampion(d){
@@ -497,6 +502,8 @@ function renderChampion(d){
   const f = c.freshness || {};
   const state = String(f.state || "absent");
   const measured = !!c.measured;
+  const prod = c.production || {};
+  const prodResolved = !!prod.resolved;
   // SUPERSESSION OUTRANKS FRESHNESS IN THE BADGE, and this order is the whole
   // point. `state` answers "how old is this FILE"; supersession answers "does it
   // describe the champion we have". A bundle written an hour ago for a champion
@@ -505,20 +512,53 @@ function renderChampion(d){
   // correctly, as a claim about the current champion. It was a claim about a
   // superseded one. The supersession block further down was already rendered and
   // was not enough: nobody reads the body to decide whether to trust the header.
-  const superseded = !!c.supersession;
-  badge.className = "badge " + (superseded ? "stale" : esc(state));
+  //
+  // TWO supersessions now, ORTHOGONAL and both outranking freshness: the
+  // champion one ("the measured tree has moved on") and the baseline one ("the
+  // production anchor has been PROMOTED past what this bundle measured
+  // against"). Both, either, or neither — and the badge says which, because
+  // "SUPERSEDED" alone sends an investigator to the wrong side of the A/B.
+  // Above them all: a production anchor that did not RESOLVE. With no resolved
+  // anchor neither supersession can even be computed, and a badge keyed on
+  // freshness alone would read "fresh" over a comparison nobody can verify.
+  const supC = !!c.supersession;
+  const supB = !!c.baseline_supersession;
+  const superseded = supC || supB;
+  badge.className = "badge " +
+    (!prodResolved ? "malformed" : superseded ? "stale" : esc(state));
   badgetxt.textContent =
-    superseded ? `SUPERSEDED · measured ${age(f.age_s)} ago`
+    !prodResolved ? "PRODUCTION UNRESOLVED"
+    : (supB && supC) ? `SUPERSEDED BASELINE+CHAMPION · measured ${age(f.age_s)} ago`
+    : supB ? `SUPERSEDED BASELINE · measured ${age(f.age_s)} ago`
+    : supC ? `SUPERSEDED CHAMPION · measured ${age(f.age_s)} ago`
     : state === "fresh" ? `fresh · ${age(f.age_s)} ago`
     : state === "stale" ? `STALE · ${age(f.age_s)} ago`
     : state === "malformed" ? "MALFORMED" : "ABSENT";
 
   const base = c.baseline || {};
   const champ = c.champion || {};
+  // The anchor beside the number is the bundle's OWN declared anchor — what
+  // was measured, even when superseded — and it earns the "current" tag only
+  // by matching the live-resolved production HEAD on THIS reading.
   const anchorTxt = `${esc(base.kind || "production kernel")} ` +
-    `<span class="anchor">${esc(base.label || "—")} ${esc(short(base.commit))}</span>`;
+    `<span class="anchor">${esc(base.label || "—")} ${esc(short(base.commit))}</span>` +
+    (c.baseline_check === "current"
+      ? ` <span class="muted">(current production — resolved live)</span>` : "");
 
   let h = "";
+  if(!prodResolved){
+    // ITS OWN EXPLICIT STATE, never a silent fallback: the hub resolves the
+    // frozen production kernel live from the canonical tree on every reading,
+    // and when it cannot, it says so and why — a remembered sha here would be
+    // exactly right until the first promotion and exactly wrong after it.
+    h += `<div class="ch-verdict malformed"><b>CANNOT RESOLVE THE FROZEN ` +
+         `PRODUCTION KERNEL</b>` +
+         `<div style="margin-top:5px">${esc(prod.error || "the hub served no resolver detail")}</div>` +
+         `<div class="muted" style="margin-top:5px">${esc(c.production_unresolved_means || "")} ` +
+         `Resolved from <span class="anchor">${esc(prod.tree || "the frozen tree")}</span> ` +
+         `at request time. Until it resolves, nothing below can be verified ` +
+         `current against production.</div></div>`;
+  }
   const spec = CH_BANNERS[state] || CH_BANNERS.absent;
   if(state !== "fresh"){
     h += `<div class="ch-verdict ${esc(state)}"><b>${esc(spec.hd)}</b>` +
@@ -536,7 +576,7 @@ function renderChampion(d){
     ? `${e >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%`
     : state === "malformed" ? "refused" : "not yet measured";
   const ncls = !showNum ? "unmeasured"
-    : (state !== "fresh" || c.supersession) ? "dated"
+    : (state !== "fresh" || supC || supB || !prodResolved) ? "dated"
     : (e > 0 ? "pos" : e < 0 ? "neg" : "");
   // THE NUMBER AND ITS ANCHOR ARE ONE ELEMENT. They are rendered together or
   // not at all; there is no code path that emits the figure without the "vs".
@@ -558,6 +598,13 @@ function renderChampion(d){
           `this anchor has been published for it`) +
     `</span></div>`;
 
+  if(c.baseline_supersession){
+    // The ANCHOR side: production has been promoted past what this bundle
+    // measured against. The number is honest and stands — visibly dated, both
+    // commits named — it just no longer answers "gain over CURRENT production".
+    h += `<div class="ch-sup"><b>SUPERSEDED BASELINE</b> — ` +
+         `${esc(c.baseline_supersession.detail)}</div>`;
+  }
   if(c.supersession){
     h += `<div class="ch-sup"><b>SUPERSEDED CHAMPION</b> — ` +
          `${esc(c.supersession.detail)}</div>`;
