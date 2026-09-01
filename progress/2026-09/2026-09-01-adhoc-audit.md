@@ -118,3 +118,79 @@ wrapper chains (`taskset`/`numactl`) and `region-lock run ... -- ...` handoffs.
 
 Layer 3 (disk-free alarm — `alarm_config.yaml` has no disk check today) NOT implemented: outside
 the two layers approved. Filed here so it is a decision, not a silent drop.
+
+## Task 8 — qwen38-mtp community submission: measured, and submitted as PR #70
+
+Operator-approved public submission to `github.com/sudoingX/qwen38-mtp` (Qwen3.8-27B MTP results
+collection). Three MI210 seams granted and released by the AutoKernel session (device owner);
+attested binary `/mnt/raid0/llm/tmp/build-champ-tip-clean/bin`, champion tip `9e18beb0`, whose
+`libggml-hip.so` code-section digest is byte-equal to guard-verified `anchor-gen-011`.
+
+**Measured** (Qwen3.8-27B Q8_0 unsloth, f16 KV, `-c 32768`, `-np 1`, unmodified `probe.py` @
+`431bf8a821`, 3 prompts x 3 runs, thinking off):
+
+| arm | P1 py | P2 prose | P3 bash | median | mean | acceptance | mean len | VRAM |
+|---|---|---|---|---|---|---|---|---|
+| baseline | 30.4 | 30.5 | 30.3 | **30.4** | 30.4 | — | — | 28.65 GiB |
+| MTP n-max 2 | 42.0 | 32.0 | 40.3 | 40.3 | 37.5 | 0.880 | 2.76 | — |
+| MTP n-max 8 | 74.6 | 30.5 | 46.8 | **46.8** (+54.0%) | 52.0 | 0.375 | 3.99 | 30.90 GiB |
+| DFlash n-max 8 | 93.4 | 39.6 | 61.1 | **61.1** (2.0x) | 64.6 | 0.537 | 4.75 | 33.92 GiB |
+
+Findings, all novel against that repo's 63-row corpus:
+- **n-max 8 is the optimum here (+16% over n-max 2)** — against the table's trend, where n-max 8 is
+  recorded as a loser everywhere it was swept (5090 NVFP4 "confirmed worst", b10680 "turns down",
+  A5000 declined it on spread). Extends their rule 1 tiering onto datacenter silicon.
+- **Prompt dependence is extreme and grows with depth**: at n8, python +145%, bash +54%,
+  **prose +0% (30.5 vs a 30.5 baseline)**. A single-prompt headline would mislead either way.
+- Acceptance as vanity metric confirmed: 0.880 → 0.375 while mean accepted length 2.76 → 3.99 and
+  throughput rises. Deep drafting wins on tokens-per-verify, not on being more often right.
+
+**Submitted**: PR #70 — one table row (30.4 → 46.8, n-max 8, 0.375), a footnote carrying the
+n-max 2 arm, the full per-run spread (P3 `[58.2, 46.8, 45.9]`, one ~25% excursion, disclosed
+because the A5000 declined n-max 8 on spread grounds), non-stock-fork disclosure per their rule 6,
+the gfx90a `-funsafe-math-optimizations` greedy-argmax warning, and a new `sweeps/instinct-cdna.md`.
+DFlash included as a labelled non-MTP path with AK's required parity caveat verbatim. No internal
+figures cited.
+
+## Task 9 — two false alarms of mine, both corrected same-day
+
+1. **"DFlash2 is 3.1x slower than baseline / the config is broken."** WRONG. I copied the flags off
+   AK's running server and assumed they were the DFlash arm; they were the `draft-simple` CONTROL
+   arm, deliberately wrong-on-purpose. 9.7 t/s at acceptance 0.126 is that control behaving as
+   designed. The load warnings I cited as a fault signature appear identically in healthy 70 t/s
+   runs. **Lesson: argv tells you WHAT is running, never WHY** — one question to the owner would
+   have cost a message and saved an investigation. (AK accepted the warnings-are-a-trap point as a
+   real finding and filed a champion-lineage cleanup to demote/annotate them.)
+2. Correct arm is `--spec-type draft-dflash` (not `dflash2`, which was the arm's internal name).
+
+## Task 10 — six hypotheses relayed to the AutoKernel planner
+
+Sent (msg `2fa07724`), each with a falsifier, framed as planner input under AK's own admission flow:
+**H1** the loop's objective may measure a shape production never runs (champion +16.180% on
+llama-bench tg, which is source-proven unable to express `ne11>1`; measured transfer to the DFlash
+serving cell was **+0.57%**) · **H2** the seed space may inherit the same blind spot · **H3**
+serving config may move acceptance more than kernels move throughput (0.537 vs 0.371 on identical
+prompts/model/drafter) · **H4** per-request decay in one config (`[67.3, 52.6, 46.7]` monotonic)
+would make request index a hidden variable in every multi-request benchmark · **H5** the ~13%
+server-vs-client instrument gap may be a calibratable constant · **H6** kernel ranking may be
+prompt-class dependent.
+
+Provenance stated in the message: H1 rests on AK's figures and note, not on anything I measured;
+H4 rests on three runs.
+
+## Wrap-up notes (task 8-10 cycle)
+
+- Checkbox flips: 0 in `handoffs/` — correct. This cycle's work is an external submission plus
+  cross-session relays; no handoff-tracked task was completed. The one handoff-adjacent item
+  (Layer 1 llama-cli patch) already carries its own `- [ ]` from the earlier commit.
+- Derived-actionables dispositions: **6 filed with AK** (the hypotheses — AK's planner owns them,
+  it confirmed filing H3/H4-class items as a one-factor sweep and the instrument gap into INF-22
+  P3-4); **2 explicit declines** — (a) I did NOT add my numbers to INF-61's surface
+  (`gpu-candidates-surface-qwen38-update.md`) because the GPU/AK lane owns that comparison and has
+  already filed the instrument gap itself; writing into it would duplicate a record its owner
+  maintains. (b) I did NOT open an operator-queue row for H1 despite its significance — it is a
+  hypothesis for AK to test, not a decision only the operator can make; if it survives its
+  falsifier it becomes one, and AK owns raising it then.
+- Device hygiene: three seams, all released on time; every `llama-server` killed by captured PID
+  and verified dead; all four regions free at each release. Contrast with yesterday's 11h runaway —
+  the difference was killing by captured PID inside the harness rather than trusting a flag.
