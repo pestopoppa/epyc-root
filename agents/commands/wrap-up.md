@@ -135,13 +135,20 @@ directory is load-bearing: roster ids are shared by a main and its subagents, so
 ```bash
 WRAPUP_AGENT_ID="${WRAPUP_AGENT_ID:?set WRAPUP_AGENT_ID to your roster id}"
 WRAPUP_REPO="${WRAPUP_REPO:-.}"
-WRAPUP_LOCK_DIR="${WRAPUP_LOCK_DIR:-coordination/push-locks}"
+# No --lock-dir: the tool derives ONE canonical dir per repository from the git
+# common dir, so every lane worktree contends for the same lease. The old
+# relative default (coordination/push-locks) resolved against each lane's own
+# checkout, giving every lane a private lock dir that serialized nothing —
+# measured 2026-09-01: --status from a lane read FREE while the lock was HELD
+# in the main clone. Set WRAPUP_LOCK_DIR only for a deliberate side-channel;
+# the tool warns loudly that default users will not see it.
 WRAPUP_TOKEN_DIR="$(mktemp -d "${TMPDIR:-/tmp}/epyc-wrapup-token.XXXXXXXX")"
 WRAPUP_TOKEN_FILE="${WRAPUP_TOKEN_DIR}/lease.token"
 LEASE=(python3 scripts/coordination/serialized_push.py
        --agent "$WRAPUP_AGENT_ID" --repo "$WRAPUP_REPO"
-       --lock-dir "$WRAPUP_LOCK_DIR" --lock-name wrapup
+       --lock-name wrapup
        --token-file "$WRAPUP_TOKEN_FILE")
+if [ -n "${WRAPUP_LOCK_DIR:-}" ]; then LEASE+=(--lock-dir "$WRAPUP_LOCK_DIR"); fi
 WRAPUP_LEASE_HELD=0
 
 wrapup_lease_acquire() {
