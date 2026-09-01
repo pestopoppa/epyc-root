@@ -91,6 +91,33 @@ EXIT_PUSH_FAILED = 4
 
 DEFAULT_LOCK_DIR = Path(__file__).resolve().parents[2] / "coordination" / "push-locks"
 
+
+def default_lock_dir(repo: os.PathLike | str) -> Path:
+    """One lock directory per REPOSITORY, not per worktree.
+
+    The repo key (device+inode of the common dir) is shared by every worktree of a
+    repository — but a lock file is only a lock if every contender looks in the same
+    DIRECTORY for it. Deriving the directory from this script's own path (each lane
+    worktree carries its own checkout of scripts/) or from a relative path (resolved
+    against whichever worktree is cwd) gives each lane a private lock dir, and locks
+    taken in one lane are invisible to every other — measured 2026-09-01: --status
+    from a lane reported the push lock FREE while it was HELD in the main clone, and
+    each lane had accumulated its own displacements.jsonl. The git common dir is the
+    one path all worktrees of a repository agree on, so the lock dir hangs off its
+    parent (the main clone root, where the pre-push hook already looks).
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", os.fspath(repo), "rev-parse", "--path-format=absolute",
+             "--git-common-dir"],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout.strip()
+        if out:
+            return Path(out).parent / "coordination" / "push-locks"
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return DEFAULT_LOCK_DIR
+
 # ---------------------------------------------------------------------------
 # Errors. Every one carries a machine-readable `condition`, because "fail loud"
 # means naming the specific cause: a generic "repo not clean" tells the next
@@ -322,7 +349,9 @@ def describe_holder(rec: dict) -> str:
     lines = [
         f"  holder : {rec.get('agent')!r}",
         f"  since  : {rec.get('ts')}{age_txt}",
-        f"  pid    : {rec.get('pid')} on {rec.get('host')}  [{state}]",
+        f"  pid    : {rec.get('pid')} on {rec.get('host')}  [{state}]"
+        + (" — normal for a held lease; NOT residue evidence"
+           if state == "gone" and mode == "hold" else ""),
         f"  repo   : {rec.get('repo_path')}  (key {rec.get('repo_key')})",
         f"  mode   : {mode}" + ("  (held across invocations via --acquire)"
                                 if mode == "hold" else "  (taken for a single push)"),
@@ -922,9 +951,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--agent", required=True,
                    help="your roster id; recorded as the lock holder")
     p.add_argument("--repo", default=".", help="path inside the repository (default: cwd)")
-    p.add_argument("--lock-dir", default=os.environ.get("SERIALIZED_PUSH_LOCK_DIR",
-                                                        str(DEFAULT_LOCK_DIR)),
-                   help="where push locks live (default: %(default)s)")
+    p.add_argument("--lock-dir", default=os.environ.get("SERIALIZED_PUSH_LOCK_DIR") or None,
+                   help="where push locks live (default: <main clone root>/coordination/"
+                        "push-locks, derived from --repo's git common dir so every "
+                        "worktree of a repository contends for the same lock)")
     g = p.add_mutually_exclusive_group()
     g.add_argument("--dry-run", action="store_true",
                    help="explicit form of the default: show the manifest, publish nothing")
@@ -980,6 +1010,17 @@ def main(argv: list[str] | None = None) -> int:
     except (PreflightError, SerializedPushError) as exc:
         print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
         return EXIT_PREFLIGHT
+    canonical_dir = default_lock_dir(repo)
+    if args.lock_dir is None:
+        args.lock_dir = str(canonical_dir)
+    elif Path(args.lock_dir).resolve() != canonical_dir.resolve():
+        # An explicit --lock-dir that is not the canonical one is allowed (tests,
+        # deliberate side-channels) but it serializes against nobody who uses the
+        # default — say so, loudly, every time. The classic accident is a RELATIVE
+        # --lock-dir resolved against a lane worktree's cwd.
+        print(f"serialized_push: WARNING — lock dir {Path(args.lock_dir).resolve()} "
+              f"is not the repository's canonical {canonical_dir}; contenders using "
+              f"the default will NOT see this lock.", file=sys.stderr)
     path = lock_path(args.lock_dir, key, args.lock_name)
 
     # ---- pure lock operations ------------------------------------------------
