@@ -211,6 +211,17 @@ Checklist (the dashboard gate — flipped as the phases land):
 - Sequence: logit gate ≤1e-4 → Paris → arch suite stays; no perf claims before it passes.
   Then the honest baseline (uniform IQ4_XS requant control, ~12 min) + one symbol profile of
   the 46 ms non-gemv composition before Phase 4.
+- SESSION-OWNED operational note (2026-09-01, operator-ruled, owned by this session):
+  ~/.local/share/opencode/opencode.db is ~210 GB (the host's largest file, ~44% of the free
+  space after yesterday's 435 GB reclaim; churning tens of GB, not a steady trend — three
+  samples 186/224.9/210.3 GB). The plan, owned here: LEAVE ALONE while this session is live
+  (held open by pid 433986, actively written). At a natural boundary — the INF-67 ≤1e-4
+  gate or a /clear+close — run a maintenance window with the process stopped: back the DB
+  up, then VACUUM (needs ~2× transient, only with the free space confirmed), and prune
+  sessions only after the campaign's findings are committed, never mid-effort. The
+  mechanism hypothesis (tool outputs stored verbatim per message — this campaign moved
+  genuinely large artifacts) is worth knowing independently: every large tool output is
+  paid for twice. No action taken; not deferred — operator-ruled, tracked here.
 - SAFETY contract (audit item 3, before any serving exposure): the hook must become OPT-IN
   (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
   true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells)
