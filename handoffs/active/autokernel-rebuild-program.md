@@ -1233,6 +1233,19 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       calibration window (~5–6 h) — OPERATOR-GATED, next boundary.** Frozen v9 carries the dflash
       arch (verified in `0db32c06e`), so the 2 GB rung is loadable by both arms; the smoke decides
       D5, the A/A window is D6's only real device cost.
+      **D6 SCHEDULED 2026-09-01: operator — "let run 23 hunt until 22:00Z, full boundary then."**
+      Boundary sequence: stop run 23 (graceful drain, captured PID 2214942) → merge R23-11
+      (review-token gated) → apply re-anchored seeds (R23-12, staged copies) → rocprof dispatch
+      sanity (R23-13) → DFlash2 smoke → 27B A/A on dec-b4+dec-b8 (keyed calibration artifacts) →
+      readiness package.
+- [x] **OP-35 RESOLVED 2026-09-01 — operator: run 24 PRE-AUTHORIZED on the all-green
+      conjunction** ("yes, you're pre-authed"): run 23 drained clean · R23-11 merge landed +
+      full hardware-free suite green · re-anchored seeds applied · dispatch-sanity recorded ·
+      27B A/A calibrations written and sane. The owning session places
+      `/mnt/raid0/llm/tmp/boundary-20260901/PREAUTH_RUN24` in the evening ONLY after reviewing
+      the R23-11 commits (separate `REVIEW_TOKEN_R23_11`) and the driver's `--dry-run`; the
+      driver launches run 24 (~04:00–05:00Z) iff token AND all-green — any single non-green
+      holds everything for morning review. Mirrors OP-34/run-22. ✅ 2026-09-01
 - [x] **R23-10 — production-shaped rung decision package drafted**
       (`docs/design/autokernel-production-shaped-rung.md`, research `b15c480b`) ✅ 2026-09-01 —
       **RULED 2026-09-01: operator approved the two-rung screen/confirm recommendation** — D1(iii)
