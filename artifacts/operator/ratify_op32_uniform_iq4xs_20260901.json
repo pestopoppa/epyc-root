@@ -1,0 +1,22 @@
+{
+  "id": "OP-32",
+  "decision": "uniform IQ4_XS for qwen4exp (Qwen3.8-Flash-Next)",
+  "choice": "B",
+  "ratified_utc": "2026-09-01T12:54:20Z",
+  "evidence": {
+    "repo": "epyc-inference-research",
+    "path": "data/inf68-uniform-iq4xs-ab-20260831",
+    "commit": "0dbc9992",
+    "claim_status": "observations (no codified protocol id); sufficient to choose a baseline, not to promote",
+    "measured": {
+      "ud_iq4xs_tg128_t48": 9.13,
+      "uniform_iq4xs_tg128_t48": 10.52,
+      "decode_delta_pct": 15.2,
+      "ud_iq4xs_pp512_t48": 130.7,
+      "uniform_iq4xs_pp512_t48": 161.2
+    }
+  },
+  "artifact": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/",
+  "artifact_caveat": "quant-from-quant off the UD file; quality unverified beyond a greedy sanity check",
+  "policy_amendment": "agents/shared/MEASUREMENT_POLICY.md — OPTIMUM measured on the fastest validated artifact; served artifact named alongside"
+}
