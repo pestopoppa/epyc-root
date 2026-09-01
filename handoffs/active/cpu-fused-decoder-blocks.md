@@ -180,13 +180,17 @@ Checklist (the dashboard gate — flipped as the phases land):
   the inject/attn_out/res_in all exact). The amplification (6.7e-6 xn -> 2.6e-4 mixed -> 
   1.6e-4 routed -> 1.6e-4 l_last) is the remaining divergence chain — bisection continues
   (the res's 6.7e-6 source is the open question).
-- CRASH (open, 79fceb05d): the fused decode segfaults at the fused_head's first hc_mix
-  (Q8_0 vec_dot), nondeterministic, ASAN-clean. Two genuine overflows found and fixed in the
-  process: the flash staging's wdata was 16 floats short of the kernel's need (6976 vs
-  6960), and the GDN kernel writes its [attn | new_state] output (3.2 MB) past the ne-sized
-  24 KB scratch tensor — the real heap corruption; the tensor now points at a full-size
-  buffer. The crash persists — the remaining corruption source is the active item; the
-  validation runs crash before the step-1 compare.
+- CRASH FIXED (5c575e211): the deterministic crash was the "hc_mix w:" debug print (added
+  during the repack investigation) — it evaluated ggml_type_name(w_inject->type)
+  unconditionally, and the head's hc_mix is called with w_inject=nullptr — a NULL deref in
+  the print, not in the compute. Isolated via the instrumentation-strip test (per the
+  2026-08-31 audit follow-up): the gates→0 build passed, the bisect named the print. The
+  user's ASAN-vacuity point is confirmed (GGML_SANITIZE_ADDRESS=OFF for libggml-cpu; both
+  scratch overflows lived in that blind spot) — a sanitized ggml rebuild is queued before
+  the next corruption hunt. Two genuine overflows were also fixed along the way: the flash
+  staging's wdata (16 floats short of the kernel's 6976 need) and the GDN kernel's 3.2 MB
+  state write past the ne-sized 24 KB scratch tensor. Current state: full-instrumentation
+  runs exit 0, logit diff 0.684, greedy 13=13, layers 0-6 bit-exact, layer 7 at 1.6e-4.
 - Safety contract (audit item 3, before any serving exposure): the hook must become OPT-IN
   (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
   true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells) must
