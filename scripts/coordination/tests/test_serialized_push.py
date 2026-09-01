@@ -1122,3 +1122,56 @@ def test_cli_refuses_to_push_under_a_non_push_lock_name(tmp_path):
 def test_lock_name_cannot_escape_the_lock_directory(bad):
     with pytest.raises(SerializedPushError):
         validate_lock_name(bad)
+
+
+def test_default_lock_dir_is_shared_across_worktrees(tmp_path):
+    """Every worktree of one repository must contend for ONE lock directory.
+
+    Before 2026-09-01 the default derived from this script's own path, so each
+    lane worktree (carrying its own checkout of scripts/) got a private lock dir:
+    --status from a lane reported the push lock FREE while it was HELD in the
+    main clone. The canonical dir hangs off the git common dir's parent, which
+    is the one path every worktree agrees on.
+    """
+    from scripts.coordination.serialized_push import default_lock_dir
+
+    work, _ = _clone_with_remote(tmp_path)
+    wt = tmp_path / "lane-worktree"
+    subprocess.run(["git", "-C", str(work), "worktree", "add", "--detach", str(wt)],
+                   check=True, capture_output=True)
+    main_dir = default_lock_dir(work)
+    lane_dir = default_lock_dir(wt)
+    assert main_dir == lane_dir, (
+        f"worktree resolved a different lock dir ({lane_dir}) than the main "
+        f"clone ({main_dir}); locks taken there serialize against nobody")
+    assert main_dir == work.resolve() / "coordination" / "push-locks"
+
+
+def test_cli_warns_when_lock_dir_diverges_from_canonical(tmp_path):
+    """An explicit non-canonical --lock-dir is allowed but must announce itself."""
+    work, _ = _clone_with_remote(tmp_path)
+    side = tmp_path / "private-locks"
+    res = _cli("--agent", "mainA", "--repo", str(work),
+               "--lock-dir", str(side), "--status")
+    assert res.returncode == EXIT_OK
+    assert "NOT see this lock" in res.stderr
+
+    canonical = work.resolve() / "coordination" / "push-locks"
+    res2 = _cli("--agent", "mainA", "--repo", str(work),
+                "--lock-dir", str(canonical), "--status")
+    assert res2.returncode == EXIT_OK
+    assert "NOT see this lock" not in res2.stderr
+
+
+def test_held_lease_pid_line_says_gone_is_expected():
+    """The pid line itself must carry the exculpation, not only a note four lines
+    later — a reader who stops at '[gone]' displaces a live review window."""
+    import socket
+    proc = subprocess.Popen(["true"])
+    proc.wait()
+    rec = {"agent": "mainA", "host": socket.gethostname(), "pid": proc.pid,
+           "mode": "hold", "repo_path": ".", "repo_key": "k",
+           "ts": "2026-09-01T00:00:00+00:00", "token_sha256": "x"}
+    text = describe_holder(rec)
+    pid_line = next(line for line in text.splitlines() if line.startswith("  pid"))
+    assert "normal for a held lease" in pid_line
