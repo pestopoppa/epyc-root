@@ -1048,6 +1048,13 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       authenticity is decided by the staged device experiment (below). Headline integrity is
       unaffected either way — champion-vs-production is measured direct, so a dead patch in the
       lineage costs hygiene, not truth. ✅ 2026-09-01
+- [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
+      M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
+      1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
+      Rationale from our own record: nearly every INF-67 fused-decoder defect (span overflow,
+      conv-window layout, copy-back overrun, scratch overflows) was a boundary condition; the
+      dominant defect class that kernel-isolated perf tests miss. Cheap; loop-budget cost is
+      near zero if the case list lives in controller/. Source: intake-1295#record.
 - [ ] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):**
       (1) persist the guard's full `Comparison` in the AnchorVerdict archive row — the abort's
       samples/drift/clocks died with the process; (2) **hash pre-check as the primary fix**:
