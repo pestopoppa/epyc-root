@@ -1057,6 +1057,17 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       `inbox_file_unreadable` note, never raise. Verified 2026-09-01: all 17 current seeds
       read cleanly (42,783 chars, well within prompt budget), so this is preventive, not
       urgent.
+- [ ] **R23-2 — Demote/annotate the two benign-but-alarming DFlash2 load warnings.** "failed
+      to measure draft model memory" and "legacy draft hidden size 5120" print identically in
+      healthy 70 t/s runs and in a genuinely broken load — a peer session escalated a false
+      champion-regression on exactly that signature (2026-09-01, retracted). Make the log
+      distinguish "benign legacy path, sizes verified matching" from a fault, at the source in
+      the champion lineage. Small; pairs naturally with R23-1's admission window.
+- [ ] **R23-3 — probe.py client-side instrument for the MTP-vs-DFlash2 serving A/B** (feeds
+      INF-22 P3-4): peer session workspace-62 has offered to run the correct `--spec-type
+      dflash2` arm under the qwen38-mtp repo's client-streaming instrument in a seam we name.
+      Two independent instruments on the same arms; standing numbers to beat: DFlash2 70.4 t/s
+      c1 (server-side), native MTP 46.8 median n-max 8 (probe.py). Schedule at a future boundary.
 - [ ] **R23-1 — Admit the llama-cli EOF fix at the run-23→24 boundary (manual path).** Peer
       patch (epyc-root `b9607cd3`, operator-approved): `ui::read_input` discards EOF so
       `llama-cli` re-prompts forever on closed stdin — the root cause of the 2026-09-01
