@@ -194,3 +194,51 @@ H4 rests on three runs.
 - Device hygiene: three seams, all released on time; every `llama-server` killed by captured PID
   and verified dead; all four regions free at each release. Contrast with yesterday's 11h runaway —
   the difference was killing by captured PID inside the harness rather than trusting a flag.
+
+## Task 11 — OP-11 resolved: the push backlog is cleared (merge `21cefca5` on origin/main)
+
+Operator directive: "let's resolve OP-11 so the push backlog clears."
+
+**The blocker's premise was stale, and that is the finding.** OP-11 (open since 2026-08-16) read
+*"90 ahead / 111 behind, 103 files changed on BOTH sides, so `-s ours` would silently revert
+origin's half; real three-way merge in flight; D9-ack needed."* Measured at resolution time:
+**42 ahead / 30 behind, FOUR both-sides files**, merge-base `e56c1d68` (2026-08-30) — the
+2026-08-30 reconciliation had already collapsed the divergence. The option its owning handoff
+rejected as ~78 hand-resolved conflicts cost **two**, both disjoint appends. No `-s ours`, no
+force-push, nothing discarded. I had re-reported this blocker verbatim in four consecutive
+wrap-ups without re-measuring it.
+
+Conflicts and resolutions (all "keep both", never "pick a side"):
+
+| file | conflict | resolution |
+|---|---|---|
+| `wiki/hardware-optimization.md` | both lanes appended compiled updates | kept all five (3 origin, 2 mine) |
+| `handoffs/active/master-handoff-index.md` | **duplicate OP-ID collision** | origin's OP-30/31 keep their numbers (published first); mine renumbered **OP-32** (uniform IQ4_XS) / **OP-33** (disk reclaim), references updated in 3 progress files + the owning handoff |
+| same file, generated block | both regenerated | took origin's, regenerated after the merge |
+| `wiki/source_manifest.json` | my regen was SMALLER | took origin's — a generated file must never regress on a merge |
+
+**Two deliberate deletions preserved against the merge's instinct to resurrect them**: OP-8 (mine —
+GLM-5.2 ruled KILL, artifact deleted, handoff completed) and OP-28 (origin's — the autokernel lane
+resolved its own bundle). A naive "union" resolution would have re-opened both.
+
+Verification before commit: origin-only and mine-only markers both present post-merge; no tracked
+file regressed in size vs `origin/main`; `--diff-filter=U` empty.
+
+**Push mechanics — two refusals, both correct, neither bypassed.** (1) The pre-push guard wants the
+**push** lock, which is a *different lease* from the wrap-up lease I held. (2) Holding it was still
+not enough: the guard requires the pusher to *prove* ownership, since a lock file alone does not
+show the pushing process belongs to the holder — resolved with `AGENT_ID=adhoc-audit`, the
+sanctioned path, NOT `EPYC_ALLOW_UNSERIALIZED_PUSH`.
+
+**Pushed from the isolated merge worktree, deliberately.** The shared clone still holds the
+fused-decoder session's uncommitted work; advancing its branch pointer under them would have made
+their next commit revert origin's changes. Their tree was never touched. Local `main` is now simply
+behind and fast-forwards whenever each session chooses.
+
+Result: **everything from both lanes is on `origin/main`** — two days of audit, INF-68, the
+OP-31/OP-8 executions, the llama-cli fix and guard, the wiki compiles, and the MI210 submission
+record. The only local-only commit is the fused-decoder session's `7bdd6376`, theirs to push.
+
+- [x] OP-11 resolved and the row removed from the operator queue ✅ 2026-09-01
+- [ ] Fleet follow-up: local `main` in the shared clone is 31 behind `origin/main` and holds one
+      unpushed peer commit — each session fast-forwards at its own boundary; not mine to force.

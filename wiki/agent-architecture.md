@@ -3002,3 +3002,47 @@ invoker's discipline.
 - Root `9425eaef`, `5f2151c9` — served-verified; 17/17 and 4/4 mutants.
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L7, R21-L9.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §12, §13.
+
+
+## Compiled Update — 2026-09-01 (incremental): a blocker row is a measurement with a timestamp, not a standing fact
+
+**Confidence: verified** (OP-11 resolved by ordinary merge `21cefca5` after 16 days in the operator queue; divergence re-measured at resolution time).
+
+OP-11 ("`main` cannot push") sat in the operator decision queue from 2026-08-16 to 2026-09-01 and
+was re-reported verbatim in four consecutive wrap-ups. Its stated premise — *90 ahead / 111 behind,
+**103 files changed on both sides**, so `-s ours` would silently revert origin's half* — was what
+made every listed option unattractive: `-s ours` unsafe, a full merge ~78 hand-resolved conflicts,
+leaving it diverged a compounding debt. **Re-measured at resolution: 42 ahead / 30 behind, FOUR
+both-sides files.** The 2026-08-30 reconciliation had already collapsed the divergence; nobody
+re-measured, so the option rejected as prohibitive cost two conflicts, both disjoint appends.
+
+Key findings:
+
+- **A blocker's cost estimate decays.** The condition that justified escalating is a snapshot of a
+  moving tree. Re-measure the *predicate* before re-reporting a blocker — and note that a
+  recurrence check ("appeared in two consecutive wrap-ups with an unchanged blocker") catches the
+  *repetition* but not the *staleness*: this row's blocker was reported unchanged precisely because
+  nobody re-derived it.
+- **Concurrent lanes silently collide on hand-maintained ID spaces.** The operator queue is
+  explicitly "the one hand-maintained list", and while `main` was diverged two lanes each minted
+  OP-30 and OP-31 for unrelated decisions. Generated indices cannot collide this way; hand-numbered
+  queues can, and the collision is invisible until the merge. Resolution rule used: the side already
+  published keeps its numbers, the other renumbers and fixes its own references.
+- **Merging must preserve DELETIONS, not just additions.** Both sides had intentionally removed a
+  row (one closed by a KILL ruling, one resolved by its owning lane). A union-style resolution
+  resurrects exactly the decisions that were deliberately closed. Ask of every merge conflict in a
+  queue file: *which side deleted something on purpose?*
+- **Generated files must never regress across a merge.** A regenerated manifest computed on a lane
+  that had not seen the other side came out SMALLER; taking it would have silently dropped entries.
+  Take the larger/published side and regenerate after, never during.
+- **Serialization and identity are different gates.** The push guard refused twice: once because the
+  push lease is a *different lock* from the wrap-up lease, and once because holding the lock does
+  not prove the *pushing process* belongs to the holder. Both refusals were correct and neither
+  needed the emergency bypass.
+
+### Source References (2026-09-01)
+
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md)
+  §OP-11 — the original options table and the 2026-09-01 closing banner.
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
+  conflict-by-conflict resolution record and the push-guard mechanics.
