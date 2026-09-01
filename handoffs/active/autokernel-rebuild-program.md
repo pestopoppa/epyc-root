@@ -1048,6 +1048,15 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       authenticity is decided by the staged device experiment (below). Headline integrity is
       unaffected either way — champion-vs-production is measured direct, so a dead patch in the
       lineage costs hygiene, not truth. ✅ 2026-09-01
+- [ ] **R22-6 — Harden `read_inbox` (3-line fix, coordinate with R22-3's lane work).**
+      `run.py`'s `read_inbox` does a bare `read_text(encoding="utf-8")` per file, per
+      iteration, with no error handling: one invalid-UTF-8 or unreadable file in the live
+      inbox raises inside `build_context()` on EVERY iteration — all lanes error, the
+      consecutive-error breaker fires, the run dies. The operator's injection channel is
+      also a kill switch. Fix: per-file try/except → skip with a logged
+      `inbox_file_unreadable` note, never raise. Verified 2026-09-01: all 17 current seeds
+      read cleanly (42,783 chars, well within prompt budget), so this is preventive, not
+      urgent.
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
       M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
       1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
