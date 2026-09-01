@@ -560,7 +560,7 @@ requires now EXISTS for the two speech backends; before Annex S it did not, whic
 requirement unsatisfiable for them rather than strict.
 
 
-## P-AK-SEARCH-1-A3 — epoch-scoped memory across campaigns (PROPOSED 2026-08-28)
+## P-AK-SEARCH-1-A3 — epoch-scoped memory across campaigns (RATIFIED 2026-08-31)
 
 Appended to Annex K as a narrowing of `P-AK-SEARCH-1`, which it does not restate or replace. It
 narrows denial 4 only as specified below, and leaves every other denial, every precondition, and

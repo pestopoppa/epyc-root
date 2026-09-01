@@ -413,6 +413,26 @@ none is an "open item" restated as a question.
 
 ### OP-11 — `main` cannot push, and the graph is the only thing left unreconciled
 
+> **CLOSED 2026-09-01 — resolved by an ordinary three-way merge (`21cefca5`, on `origin/main`).**
+> The blocking premise below had gone STALE and nobody re-measured it: the row and this section
+> describe *89-90 ahead / 111 behind with 103 files changed on both sides*, which is what made
+> option (a)'s `-s ours` tempting and option (b)'s ~78 conflicts forbidding. At resolution time the
+> real divergence was **42 ahead / 30 behind with FOUR both-sides files** — the 2026-08-30
+> reconciliation had already collapsed it. Option (b), the one rejected as too costly, took two
+> conflicts and no hand-picking: both were disjoint appends resolved by keeping both sides. No
+> `-s ours`, no force-push, nothing discarded.
+>
+> The one real hazard was not in the options table at all: the operator queue had a **duplicate-ID
+> collision** — the autokernel lane and this session each minted OP-30 and OP-31 while `main` was
+> diverged. Origin's kept their numbers; ours became OP-32/OP-33 with references updated. Two
+> *deliberate* deletions also had to be preserved against the merge's instinct to resurrect them
+> (OP-8, GLM-5.2 KILL; OP-28, resolved by the autokernel lane).
+>
+> **Standing lesson: a blocker row is a measurement with a timestamp, not a standing fact.** This
+> one was carried for 16 days and re-reported in four consecutive wrap-ups after it had ceased to
+> be true. Re-measure a blocker before re-reporting it.
+
+
 `main` is 89 ahead / 111 behind `origin/main`, so `git push` will be rejected. **Never
 force-push it.** The content, however, is reconciled: measured 2026-08-16, **no file on
 `origin/main` is absent locally** (`git diff --name-status HEAD origin/main` yields zero `A`

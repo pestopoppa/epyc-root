@@ -1555,3 +1555,56 @@ to account for it.
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-5 gate closure and the champion the measurements were taken against
 - [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — the route-capture instrument and its verbosity gate
 
+
+## Compiled Update — 2026-09-01 (incremental): MTP depth on datacenter silicon — n-max 8 wins where consumer cards lose
+
+**Confidence: verified** (own measurement, attested binary, unmodified third-party instrument; published as sudoingX/qwen38-mtp PR #70 with full disclosure).
+
+First MTP speculative-decoding characterization on our MI210 (CDNA2/gfx90a) against a 63-row
+community corpus of consumer cards. Qwen3.8-27B Q8_0 (unsloth), f16 KV, `-c 32768`, `--parallel 1`,
+champion tip `9e18beb0`, `probe.py` @ `431bf8a821` unmodified, 3 prompts x 3 runs.
+
+| arm | overall median | vs baseline | acceptance | mean accepted draft len |
+|---|---|---|---|---|
+| spec off | 30.4 t/s | — | — | — |
+| draft-mtp n-max 2 | 40.3 | +32.6% | 0.880 | 2.76 |
+| **draft-mtp n-max 8** | **46.8** | **+54.0%** | 0.375 | 3.99 |
+| draft-dflash n-max 8 (fork-only path) | 61.1 | 2.0x | 0.537 | 4.75 |
+
+Key findings:
+
+- **Draft depth optimum is capacity-tiered, and 64 GB HBM2e sits a tier above the published range.**
+  The community corpus records n-max 8 as a loser nearly everywhere it was swept (5090 NVFP4
+  "confirmed worst setting"; b10680 5090 "turns down"; 2x9070 30.0-36.7 vs 42.9 at n-max 4; the
+  A5000 pair measured it faster and *declined* it on spread). On MI210 n-max 8 beats n-max 2 by
+  **16%**. The community's rule ("24 GB cards peak at 2, bigger/faster at 3-4") extends rather than
+  breaks — but it means depth must be swept per capacity class, never inherited.
+- **Acceptance rate is a vanity metric; accepted LENGTH is the throughput driver.** Acceptance falls
+  0.880 → 0.375 from n-max 2 to 8 while mean accepted draft length rises 2.76 → 3.99 and throughput
+  rises 16%. Deep drafting wins on tokens-per-verify, not on being right more often. Optimizing a
+  serving recipe toward acceptance would have selected the slower arm.
+- **Speculative gain is strongly prompt-class dependent, and the dependence GROWS with depth.**
+  At n-max 2 the three prompts span 1.3x; at n-max 8 they span **2.4x**: python +145%, bash +54%,
+  **prose +0% — dead even with baseline**. For prose-shaped workloads the flag's value on this card
+  rounds to zero at every depth tested. Any single-prompt headline is uninformative in either
+  direction.
+- **Serving config appears to move draft acceptance materially** — 0.537 vs 0.371 on identical
+  model, drafter, prompts and depth, with only context length / `--no-kv-unified` / CPU pinning
+  differing. Unresolved (three factors were bundled), filed as a one-factor sweep; if real it is
+  worth more than most kernel-level work.
+- **Client-side and server-side instruments disagree by ~13%, directionally** (client pessimistic,
+  it counts per-token delivery). Cross-instrument speculative-decoding comparisons must name the
+  instrument or they are not comparable.
+- **Kernel gains screened at `ne11=1` need not reach a speculative serving path.** A champion
+  measuring +16.180% vs frozen production on llama-bench's tg path — which is source-proven unable
+  to express `ne11>1` — delivered **+0.57%** on the DFlash c1 serving cell. Speculative verification
+  IS the `ne11>1` regime, so an ne11=1 objective can select kernels for a regime production does not
+  occupy. Filed as hypothesis H1 to the autokernel planner with an `ne11 ∈ {1,2,4,8}` falsifier.
+
+### Source References (2026-09-01)
+
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — measurement record,
+  all arms, VRAM, acceptance, and the two corrected false alarms.
+- sudoingX/qwen38-mtp PR #70 and `sweeps/instinct-cdna.md` — the public artifact and its caveats.
+- [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
+  — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.

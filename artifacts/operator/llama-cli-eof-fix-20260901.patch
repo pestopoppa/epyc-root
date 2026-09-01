@@ -1,0 +1,58 @@
+diff --git a/tools/cli/cli-context.cpp b/tools/cli/cli-context.cpp
+index 0bc2a7d8d..6cf6d584f 100644
+--- a/tools/cli/cli-context.cpp
++++ b/tools/cli/cli-context.cpp
+@@ -254,7 +254,11 @@ bool cli_context::list_and_ask_models() {
+             return false;
+         }
+         ui::user_turn user_turn;
+-        selection = user_turn.read_input(false, "Select model by number: ");
++        bool eof = false;
++        selection = user_turn.read_input(false, "Select model by number: ", &eof);
++        if (eof) {
++            return false;
++        }
+         if (selection.empty()) {
+             continue;
+         }
+@@ -488,7 +492,13 @@ int cli_context::run() {
+             ui::user_turn user_turn;
+ 
+             if (params.prompt.empty()) {
+-                buffer = user_turn.read_input(params.multiline_input);
++                bool eof = false;
++                buffer = user_turn.read_input(params.multiline_input, nullptr, &eof);
++                if (eof) {
++                    // stdin exhausted (closed, redirected from /dev/null, or ctrl-D): no further
++                    // input can arrive, so stop instead of re-prompting in a tight loop forever
++                    break;
++                }
+             } else {
+                 // process input prompt from args
+                 for (auto & fname : params.image) {
+diff --git a/tools/cli/cli-ui.h b/tools/cli/cli-ui.h
+index 43aaba6f8..c1061162a 100644
+--- a/tools/cli/cli-ui.h
++++ b/tools/cli/cli-ui.h
+@@ -163,7 +163,10 @@ namespace ui {
+                 console::log("\n> %s\n", buffer.c_str());
+             }
+         }
+-        std::string read_input(bool multiline_input, const char * prompt = nullptr) {
++        // out_eof distinguishes end-of-stream from an empty line: both console::readline backends
++        // leave the line without a trailing newline only at EOF (a real empty line yields "\n"),
++        // so an empty buffer means the stream is exhausted and a caller looping on input must stop.
++        std::string read_input(bool multiline_input, const char * prompt = nullptr, bool * out_eof = nullptr) {
+             if (prompt) {
+                 console::log("%s", prompt);
+             } else {
+@@ -176,6 +179,9 @@ namespace ui {
+                 another_line = console::readline(line, multiline_input);
+                 buffer += line;
+             } while (another_line);
++            if (out_eof) {
++                *out_eof = buffer.empty();
++            }
+             return buffer;
+         }
+     };
