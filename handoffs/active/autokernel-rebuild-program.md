@@ -1155,15 +1155,13 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 - [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
       an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
       Small: emit the headline once during loop startup from the same path `068ffb67` added.
-- [ ] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** The published
-      bundle cites `/mnt/raid0/llm/tmp/champ-a2728701-ab/…` (the JSON and the three oracle logs) —
-      decision-grade evidence in scratch, the exact defect the run-17 promotion (`d6130c7b`)
-      closed. **PREPARED this wrap-up**: 22 files ≈1.4 MB staged in the research lane at
-      `artifacts/autokernel-champ-a2728701-ab/` (result JSON, `run_ab.py` driver, `run_ab.log`,
-      3 oracle logs, `symdiff/added-*`+`removed-*`; the 7.2 MB regenerable `base-*/champ-*` dumps
-      excluded). Operator pushes; after it lands, re-point the bundle's evidence paths at the
-      repo copy at the next boundary the bundle is rewritten anyway (do not touch the live bundle
-      mid-run).
+- [x] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** ✅ 2026-09-01 —
+      landed as research `2ee10ff5` (`artifacts/autokernel-champ-a2728701-ab/`, 24 files ≈1.4 MB:
+      result JSON, `run_ab.py`, `run_ab.log`, 3 oracle logs, symdiff; regenerable dumps excluded),
+      verified on `origin/main`. Queue row OP-31 deleted at the 2026-09-01 wrap-up — it had gone
+      stale after the commit landed without the flip (recurrence-check catch).
+- [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
+      boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
 - [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
       Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
       (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.
@@ -1225,18 +1223,34 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       production's own Q8_0 model).** Verified: `Q8_0` is absent from the frozenset, so
       `verify_workload()` refuses production's own Qwen3.8-27B-Q8_0 while passing the mismatched
       1.5B instrument. Land at the run-23 boundary, never mid-run. (Rung design §5.1.)
+      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.*
 - [ ] **R23-8 — floor keying (surface, workload-class) per rung design §5.1/R21-8.**
       `bench.floor_rows()` keys by surface only; calibration artifacts record `"model"` but
       nothing reads it — confirmed structurally. Key by (surface, workload-class); mismatch →
       uncalibrated/refuse. Land at the run-23 boundary, never mid-run.
+      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.*
 - [ ] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A
       calibration window (~5–6 h) — OPERATOR-GATED, next boundary.** Frozen v9 carries the dflash
       arch (verified in `0db32c06e`), so the 2 GB rung is loadable by both arms; the smoke decides
       D5, the A/A window is D6's only real device cost.
 - [x] **R23-10 — production-shaped rung decision package drafted**
       (`docs/design/autokernel-production-shaped-rung.md`, research `b15c480b`) ✅ 2026-09-01 —
-      **awaiting operator ruling on D1–D6** (rung structure · gate surfaces · confirm pairs ·
-      headline migration · screen swap · calibration window).
+      **RULED 2026-09-01: operator approved the two-rung screen/confirm recommendation** — D1(iii)
+      two-rung · D2 confirm gate on dec-b4+dec-b8, tg128 kept for headline context · D3 pairs=5
+      gate / 20 headline · D4 headline MOVES to the 27B rung · D5 screen swap deferred to the
+      §5.6 smokes (DFlash2 first if it passes) · D6 window scheduling stays the operator's call.
+- [ ] **R23-11 — implement the approved rung design in loop code** (§5.1 census-based
+      quant-family + rung-parity check · §5.2 (surface, workload-class) floor keying — subsumes
+      R23-7/R23-8 · §5.3 KEEP_CANDIDATE screen→confirm gate, headline-on-rung, rung on every
+      record). Built on side branch `ak/rung-fixes-20260901` (never the lane mid-run); full
+      hardware-free suite green + regrowth budget justified; MERGE AT THE RUN-23 BOUNDARY.
+- [ ] **R23-12 — re-anchor inbox seeds to the rung they will be measured on (§5.4)** — 01, 02,
+      03, 05, 07, 08, 10 cite Q4_K routes/1536 widths; 07 + 18 become directly measurable on the
+      production rung. Rung-tag (never invalidate) the 1.5B negatives. AT THE BOUNDARY ONLY —
+      the running loop re-reads the inbox every iteration.
+- [ ] **R23-13 — rung identity artifact (§5.6 step 2)**: one rocprofv3 dispatch-sanity invocation
+      per confirm surface on the 27B (~5 min device), recording the production dispatch table.
+      Rides the same boundary window as R23-9.
 
 ---
 
