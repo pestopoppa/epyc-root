@@ -78,3 +78,43 @@ log for evidence — and never checked whether the process was still running. No
 handling it. Memory filed: `llama-cli-repl-must-be-killed`. Standing correction: every `llama-cli`
 launch pairs with an explicit kill+verify, and every task boundary includes a `ps` sweep for my own
 long-lived leftovers (`ps -o etime` is the tell).
+
+## Layers 1 + 2 — permanent fix for the runaway-llama-cli class (operator-approved)
+
+**Layer 1 — the defect, fixed and verified.** Root cause is NOT `-no-cnv` being ignored:
+`ui::read_input()` (`tools/cli/cli-ui.h:166`) discards the EOF signal that `console::readline()`
+returns, so `cli_context::run()`'s `while (true)` loop (`cli-context.cpp:489`) cannot distinguish
+"stdin closed" from "empty line" — it re-prompts forever, and `< /dev/null` makes every read return
+instantly. Both readline backends agree on an exact invariant: **at EOF the line comes back WITHOUT
+a trailing newline, while a real empty line always yields `"\n"`** (`readline_simple` clears the
+line; `readline_advanced` skips its `line += '\n'` under `end_of_stream`) — so an empty buffer is a
+precise EOF signal that cannot misfire on interactive users.
+
+Patch (19 insertions, 3 files touched → `artifacts/operator/llama-cli-eof-fix-20260901.patch`):
+`read_input()` gains an optional `bool * out_eof`; the main loop breaks on EOF; the
+model-selection loop (`cli-context.cpp:252`, the SAME bug, second instance) returns on EOF.
+
+Verified in a scratch clone at `7cdd7c97b`, exit code as the assertion:
+
+| test | before | after |
+|---|---|---|
+| `-p ... -n 8 < /dev/null` (the incident command) | **124** (timeout killed a spinning process) | **0**, one `"> "`, `Exiting...` |
+| generation still happens | — | ✅ 304.9 t/s prompt / 109.6 t/s gen |
+| piped prompt, no `-p` | — | ✅ exit 0, 1 generation |
+| **regression: 2 empty lines then a real prompt** | — | ✅ exit 0, prompt processed — empty lines do NOT exit |
+
+- [ ] Land the patch in the champion lineage (routed to the AutoKernel session, which owns it).
+      NOT applicable to frozen production v9, so unpatched binaries persist on this host — which is
+      why Layer 2 exists. Worth upstreaming: affects any llama-cli run with redirected/closed stdin.
+
+**Layer 2 — PreToolUse hook (protects today, regardless of binary).**
+`scripts/hooks/check_llama_cli_guard.sh` + `llama_cli_guard_scan.py`, wired into the
+PreToolUse/Bash group. Blocks an *unbounded* `llama-cli` invocation; passes `timeout <secs>
+llama-cli`, an `EPYC_LLAMA_CLI_ACK="why"` escape, and — per the C21 lesson — all TEXT mentions
+(quoted strings and heredocs are stripped, so this record, `ls .../llama-cli` and `grep llama-cli`
+are unaffected). Fails OPEN if the scanner is missing: this guards a resource burn, not a
+correctness violation. Mutation-tested 14/14 scanner cases + 3 end-to-end hook cases, including
+wrapper chains (`taskset`/`numactl`) and `region-lock run ... -- ...` handoffs.
+
+Layer 3 (disk-free alarm — `alarm_config.yaml` has no disk check today) NOT implemented: outside
+the two layers approved. Filed here so it is a decision, not a silent drop.
