@@ -1029,7 +1029,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
         port-as-hypothesis only (each upstream kernel change enters as an inbox seed, never a
         blind rebase). Either ratify that posture as the standing answer or set a periodic
         delta-sweep cadence (e.g. per upstream release, reusing sweep (b)'s method).
-- [x] **OP-32 RESOLVED 2026-08-31** — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
+- [x] **OP-34 RESOLVED 2026-08-31** (minted as OP-32; renumbered 2026-09-01 — the queue reconciliation reassigned OP-32 to the uniform-IQ4_XS decision and this lane's third minted ID was missed) — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
 - [ ] **R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver
       `scripts/benchmark/boundary_20260831.sh` (research lane; being written + stub-tested by the
       active research-lane agent). Sequence: stop run 21 (STOP+SIGTERM, +25 min group-SIGKILL) →
