@@ -51,3 +51,30 @@ input, gated by AK's own admission flow. No reply requested; uptake visible in i
 - Wiki sweep: 2 new sources, both INF-67 mid-flight crash-triage churn — compile deferred with
   reason, watermark NOT touched (they compile when the hunt settles; their own precedent).
 - OP-11 divergence grew overnight (local ahead 30 / behind 25); epyc-root push still blocked.
+
+## INCIDENT (self-inflicted, found + closed 2026-09-01) — runaway llama-cli: 322 GB + an 11 h region lock
+
+While verifying whether the AutoKernel session was running Qwen3.8-27B numbers (operator question),
+a `ps` sweep found MY OWN process from the 08-31 INF-68 Paris sanity check still alive:
+
+- `llama-cli` (pid 1294948), started 2026-08-31 20:37:50, **elapsed 11 h 15 m**. Its generation had
+  completed correctly hours earlier; the REPL kept writing `"> "` — with `-no-cnv` AND stdin from
+  `/dev/null`, so neither guard stops it.
+- It wrote **322,428,757,161 bytes (~300 GiB)** to `scratchpad/inf68-paris2.log`, taking the array
+  from 480 G free (post-reclaim) down to **191 G** — silently undoing most of the operator-approved
+  OP-31/OP-8 reclaim within hours of it landing.
+- Its `region-lock run` wrapper (pid 1294923) held **q0-q3 (cpus 0-95, role bench, tag inf68-paris)
+  for the whole 11 h**, which would have blocked or skewed any peer's CPU bench in that window.
+
+Closed: SIGTERM to the captured PID → verified dead (`ps -p`) → wrapper exited and **all four
+regions verified free** → runaway log deleted → **disk 191 G → 489 G free**. The committed evidence
+copy (20 KB head, `data/inf68-uniform-iq4xs-ab-20260831/paris-uniform-greedy.head.log`) is intact,
+so no evidence was lost.
+
+**The real defect is mine and it is a repeat.** The footgun was already documented in progress
+2026-08-28 ("llama-cli with closed stdin spins a REPL loop writing '> ' forever — always pipe stdin
+or use llama-bench"). On 08-31 I hit it, *noticed* it, wrote it into the hygiene notes, trimmed the
+log for evidence — and never checked whether the process was still running. Noting a symptom is not
+handling it. Memory filed: `llama-cli-repl-must-be-killed`. Standing correction: every `llama-cli`
+launch pairs with an explicit kill+verify, and every task boundary includes a `ps` sweep for my own
+long-lived leftovers (`ps -o etime` is the tell).
