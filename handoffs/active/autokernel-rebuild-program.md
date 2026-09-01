@@ -1057,6 +1057,14 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       `inbox_file_unreadable` note, never raise. Verified 2026-09-01: all 17 current seeds
       read cleanly (42,783 chars, well within prompt budget), so this is preventive, not
       urgent.
+- [ ] **R23-1 — Admit the llama-cli EOF fix at the run-23→24 boundary (manual path).** Peer
+      patch (epyc-root `b9607cd3`, operator-approved): `ui::read_input` discards EOF so
+      `llama-cli` re-prompts forever on closed stdin — the root cause of the 2026-09-01
+      funsafe-harness hang (worked around with `-st`) and of a peer's 322 GB/11 h runaway that
+      held a region claim overnight. Present in frozen v9 (untouched, per doctrine). Host-tool
+      correctness fix → CH-7 manual admission, not a loop keep. Keep the harness's `-st` +
+      slice-extraction as belt regardless. **Operator decision attached: file the fix upstream?**
+      v9-era llama.cpp carries the same defect for anyone running llama-cli non-interactively.
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
       M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
       1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
