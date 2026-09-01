@@ -3028,6 +3028,13 @@ Key findings:
   OP-30 and OP-31 for unrelated decisions. Generated indices cannot collide this way; hand-numbered
   queues can, and the collision is invisible until the merge. Resolution rule used: the side already
   published keeps its numbers, the other renumbers and fixes its own references.
+  **Strengthened same day: it happened a THIRD time, and the merge could not have caught it.** The
+  other lane had also minted an OP-32 that lived only in its own handoff files, never in the queue —
+  so a reconciliation seeing both sides of the queue still missed it, and it surfaced only because
+  that lane read the post-merge report and said so. Three collisions in one divergence window.
+  Corollary: reconciling the queue file is NOT sufficient; an ID minted anywhere must be checked
+  against the queue at mint time, and a cross-lane report after any reconciliation is the only thing
+  that catches the ones filed outside it.
 - **Merging must preserve DELETIONS, not just additions.** Both sides had intentionally removed a
   row (one closed by a KILL ruling, one resolved by its owning lane). A union-style resolution
   resurrects exactly the decisions that were deliberately closed. Ask of every merge conflict in a
