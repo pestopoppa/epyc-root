@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | REV-01 | autopilot control plane integration | [autopilot-control-plane-integration.md](autopilot-control-plane-integration.md) | AP-3 — Classes 2/4 (spec-dec composition; per-role KV config): restart-scoped launch-arg knobs (--spec-type set, --spec-draft-n-max, tree w… | INF-56 |
-| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | GC-1a — Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim-grade reviewer corpus/K-of-M protocol after the… | INF-69 |
+| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | RETARGETED to GLM-5.3-Flash (operator 2026-09-01); blocked on INF-69 T0-T2 (no tree loads `glm5next` yet) — re-derive kpool/top_k first | INF-69 |
 | REV-03 | reviewer calibration accounting | [reviewer-calibration-accounting.md](reviewer-calibration-accounting.md) | RC-6a — operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks into MEASUREMENT.md §1/§2/§3 via PR-reviewed amendme… | — |
 | REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain). | UFH-01 |
 | REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 — Reproduce + attribute the regression: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the… | — |

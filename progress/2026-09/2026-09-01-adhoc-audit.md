@@ -242,3 +242,22 @@ record. The only local-only commit is the fused-decoder session's `7bdd6376`, th
 - [x] OP-11 resolved and the row removed from the operator queue ✅ 2026-09-01
 - [ ] Fleet follow-up: local `main` in the shared clone is 31 behind `origin/main` and holds one
       unpushed peer commit — each session fast-forwards at its own boundary; not mine to force.
+
+## Operator decisions recorded 2026-09-01 (closing the open items)
+
+- **M4 Prefill Engine dive — DECLINED** (operator, following the Stage-1 recommendation).
+  `intake-1295`/`intake-1296` stay `stage1-unverified` and are NOT promoted; nothing downstream may
+  quote their numbers under the unverified contract. Rationale on record: the transferable value
+  (boundary-length correctness matrix, masked-tile-skip contrast, fusion-thesis corroboration) was
+  extracted at Stage 1, and the 3.4-3.7x headline is unverifiable from here — it is measured against
+  a baseline left unnamed in both primary sources, and we have no Apple hardware to reproduce on.
+  The intake wave is closed; no Stage-2/3/4 follows.
+- **`opencode.db` — DO NOT TOUCH** (operator). Recorded in the OP-33 disk-reclaim record; ruled out
+  rather than deferred, because a live session holds it open and it is plausibly the INF-67 state
+  store.
+- **REV-02 — RETARGET at GLM-5.3-Flash** (operator). Applied this session: the capability gates and
+  the corpus/harness asset carry over; the GLM-5.2 measurements and serving constants are demoted to
+  historical evidence about a deleted model; GC-4 (RAM residency, sized on 239 GB) is void; the
+  handoff is re-blocked on INF-69 T0-T2 because no tree here is yet known to load `glm5next`.
+- **PR #70 — maintainer's call, stop tracking.** OPEN/MERGEABLE, 0 reviews, 0 comments at hand-off.
+  Nothing is owed by us and it is dropped from this session's open list.
