@@ -1,6 +1,13 @@
+> **COMPLETED 2026-09-01 — OP-32 ratified, option B.** Serving unchanged (UD keeps its imatrix
+> pedigree); the uniform IQ4_XS artifact is now the REQUIRED comparison baseline for qwen4exp
+> CPU work, and INF-67 must re-anchor its fused-decoder headline denominator to it before
+> quoting any speedup. The generalizable rule landed in `agents/shared/MEASUREMENT_POLICY.md`:
+> an absolute headline is the SERVED artifact's number, while a delta is measured with the
+> artifact held identical on both arms.
+
 # Qwen4exp uniform-IQ4_XS baseline control (requant A/B)
 
-**Status**: MEASURED 2026-08-31 (same-day, ad-hoc audit session) — T1-T5 done; **open: the operator adoption decision** (see Results)
+**Status**: **COMPLETE — ratified OP-32 option B, 2026-09-01.** All tasks done and the operator decision is taken: serving stays on UD; the uniform IQ4_XS artifact is the required comparison baseline for qwen4exp CPU work. Ratification artifact: `artifacts/operator/ratify_op32_uniform_iq4xs_20260901.json`; policy amendment landed in `agents/shared/MEASUREMENT_POLICY.md`.
 **Created**: 2026-08-31 (spun out of the operator-commissioned INF-67 audit)
 **Priority**: MEDIUM — ~1 short session, cheap; but the INF-67 headline inherits this control's honesty
 **Categories**: hardware_optimization, benchmarking, quantization
@@ -58,13 +65,13 @@ Full record: `progress/2026-08/2026-08-31-inf68-baseline-control.md`. Clean, ver
 
 *(Master-index row **OP-32**; minted as OP-30 and renumbered at the 2026-09-01 reconciliation, where the autokernel lane had concurrently minted OP-30/31.)*
 
-- [ ] **Option A**: adopt as the serving + bench reference. +15% decode / +23-32% pp for
+- [x] **Option A — NOT SELECTED** ✅ 2026-09-01: adopt as the serving + bench reference. +15% decode / +23-32% pp for
   +4.4 GB file size. Requires: codified attestation run + a quality gate (this artifact is
   quant-from-quant off the imatrix-tuned UD — quality unverified beyond greedy sanity).
-- [ ] **Option B (recommended)**: keep UD canonical for serving (imatrix pedigree); the uniform
+- [x] **Option B — SELECTED AND RATIFIED** ✅ 2026-09-01: keep UD canonical for serving (imatrix pedigree); the uniform
   file becomes the REQUIRED comparison baseline for INF-67 headlines and CPU-kernel work.
   Zero quality risk, honest headlines, decision reversible to A after a quality run.
-- [ ] **Option C**: from-source uniform requant (FP8 re-download ~250 GB) — **blocked on disk**
+- [x] **Option C — NOT SELECTED** ✅ 2026-09-01: from-source uniform requant (FP8 re-download ~250 GB) — **blocked on disk**
   (90 G free) until the reclaim sweep lands; strictly dominates A on quality if taken later.
 
 Recommendation: **B now**, revisit A/C after the quality suite and the disk reclaim.
