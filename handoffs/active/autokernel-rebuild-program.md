@@ -1036,16 +1036,30 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       refresh (`serving_evidence_refresh.py`) → run-22 readiness report. ~5–7.5 h device.
       **Run 22 is NEVER auto-started** — operator gate, property mutation-tested. Open operator
       question (in the queue): pre-authorize run-22 on all-green, or hold for morning go.
-- [ ] **R21-10 — Build-determinism forensics: two builds of ONE commit differed by +1.765%.**
-      Run 21's fourth promotion, 2026-08-31 21:2xZ: the guard measured promoted `anchor-gen-007`
-      1.765% SLOWER than a fresh build of the same commit `14ba0262` (floor 1.188%) and aborted
-      the run — the guard's first live catch, run-18's class stopped in one iteration. The keep
-      itself is legitimate; the PROMOTED BUILD is the anomaly. Candidate causes: ccache
-      hit-pattern differences, link order, `-j` scheduling. The boundary's overnight fresh builds
-      add data points. Until root-caused, every promoted-anchor rebuild is suspect and only the
-      guard stands between it and void measurements — which is an argument it must stay
-      unconditional, and possibly for measuring the FRESH arm as the anchor instead of the
-      promoted rebuild.
+- [x] **R21-10 RESOLVED 2026-09-01 — the +1.765% was the INSTRUMENT, not the build.** Read-only
+      investigation (report in `artifacts/r2110-anchor-guard-abort/`, research lane): ccache is
+      NOT INSTALLED on this host (`GGML_CCACHE_FOUND-NOTFOUND` — the "~80s ccache-warm builds"
+      belief was false); a controlled double-build of `14ba0262` is bit-identical in every code
+      section (1 byte of RUNPATH `.dynstr` differs); the loop's own gen-010/fresh pair differs
+      only in relocation-table offsets. Builds are DETERMINISTIC, funsafe included. The abort was
+      a 4.2σ measurement excursion (pooled A/A sd 0.417%, n=11) — and it sits 0.006pp from the
+      keep that preceded it (+1.759%), back-to-back in one session: either the keep is real and
+      the guard fluked, or ONE ~12-min instrument excursion manufactured BOTH. The 4th keep's
+      authenticity is decided by the staged device experiment (below). Headline integrity is
+      unaffected either way — champion-vs-production is measured direct, so a dead patch in the
+      lineage costs hygiene, not truth. ✅ 2026-09-01
+- [ ] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):**
+      (1) persist the guard's full `Comparison` in the AnchorVerdict archive row — the abort's
+      samples/drift/clocks died with the process; (2) **hash pre-check as the primary fix**:
+      compare code-section hashes (`.text`+`.hip_fatbin`, ignore `.dynstr`/`.rela*`) before
+      measuring — identical code + above-floor A/A indicts the SESSION (log `anchor_guard_excursion`,
+      continue), differing code is deterministic run-18 proof (abort, no pairs wasted); (3) heal
+      once: one rebuild+re-verify before aborting. Verify-and-adopt evaluated and REJECTED
+      (adopted arm would itself be unverified; determinism makes it moot).
+- [ ] **R22-4 — Next-boundary device experiment (builds staged at `/mnt/raid0/llm/tmp/r2110-build-{a,b,parent}`):**
+      A/A a-vs-b (identical binaries, distinct paths) → instrument sanity; A/B parent-vs-a twice,
+      order-swapped → ≈+1.76% both = the 4th keep stands; ≈0 = the keep was manufactured by the
+      excursion and gets a hygiene revert. ~25 min device time.
 - [ ] **R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep
       consumed the `95eeb0ae` trim's headroom; filed 2026-08-31). Next trim candidate: delete the
       `loop.run` test-only seam (kept as a documented seam by `95eeb0ae`; its tests move to the
