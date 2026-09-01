@@ -1063,6 +1063,17 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       champion-regression on exactly that signature (2026-09-01, retracted). Make the log
       distinguish "benign legacy path, sizes verified matching" from a fault, at the source in
       the champion lineage. Small; pairs naturally with R23-1's admission window.
+- [ ] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability**
+      (from the peer's 2026-09-01 seam; feeds INF-22 P3-4 and INF-62). Two findings need
+      attribution: (a) P3 decays monotonically across repeated requests at the verbatim c1
+      config `[67.3, 52.6, 46.7]` while the 32K config is tight `[57.6, 61.1, 62.9]`; (b)
+      acceptance moved 0.537 → 0.371 on identical prompts/model/drafter across configs. The
+      peer's arm deliberately bundled THREE differences (context 32768 vs 4096, kv-unified vs
+      --no-kv-unified, taskset) — attribution requires one factor at a time. If config moves
+      acceptance that much, the serving recipe may leave ~15% on the table. Instrument note
+      recorded: server-side 70.4 vs client-side 61.1 ≈ 13% expected gap; prompt-dependence spans
+      2.4x within one arm, so single-prompt headlines are banned from this comparison. Also:
+      32K-beats-4K REFUTED the VRAM-pressure prediction.
 - [ ] **R23-3 — probe.py client-side instrument for the MTP-vs-DFlash2 serving A/B** (feeds
       INF-22 P3-4): peer session workspace-62 has offered to run the correct `--spec-type
       dflash2` arm under the qwen38-mtp repo's client-streaming instrument in a seam we name.
