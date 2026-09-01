@@ -1063,6 +1063,24 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       champion-regression on exactly that signature (2026-09-01, retracted). Make the log
       distinguish "benign legacy path, sizes verified matching" from a fault, at the source in
       the champion lineage. Small; pairs naturally with R23-1's admission window.
+- [ ] **R23-5 — H1 transfer falsifier (OPERATOR DECISION PENDING: run before or after run 23).**
+      One measured data point says ~1/28th of the tg128 headline transferred to the DFlash c1
+      serving cell (70.0 → 70.4 across the merge that added all loop kernels). Two candidate
+      causes, both structural: (a) ne11=1 vs the verify-batch shapes production actually runs
+      (llama-bench tg cannot express ne11>1 — proven from source); (b) model-shape
+      specialization — many keeps are `fixed-1536` (the 1.5B instrument model's n_embd);
+      production's 27B is n_embd=5120, so those kernels never fire in serving. Falsifier:
+      champion vs frozen production at ne11 ∈ {1,2,4,8} via the CALIBRATED dec-b* surfaces
+      (~30-40 min). Collapse at ne11≥2 → dec-b* becomes the gate and the workload question
+      (production-shaped rung, 5120-class/Q8_0 — the original P2 intent) reopens; hold across
+      ne11 → H1 dies, the 1536-specialization half remains. H2 rider: after the falsifier, one
+      run with ne11∈{2,4,8} in the seed surface — a disjoint winner set proves the search was
+      half-blind. Provenance: peer msg 2fa07724 + our own commit titles.
+- [ ] **R23-6 — H6 prompt-class ranking stability** (cheap, piggybacks R23-3's instrument work):
+      score one candidate pair on code-heavy vs prose-heavy prompt sets; stable ranking →
+      stratification unnecessary, only the span (2.4x measured) needs reporting. H5 (calibratable
+      ~13% instrument gap) folds into R23-3: measure 3-4 arms on both instruments; wide ratio
+      variance → cross-instrument claims stay banned rather than corrected.
 - [ ] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability**
       (from the peer's 2026-09-01 seam; feeds INF-22 P3-4 and INF-62). Two findings need
       attribution: (a) P3 decays monotonically across repeated requests at the verbatim c1
