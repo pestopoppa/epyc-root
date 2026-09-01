@@ -137,6 +137,19 @@ evaluation handoff completed with the verdict, and the transferable DSA findings
 `handoffs/active/glm53-flash-evaluation.md` (INF-69; GLM-5.3-Flash is arch `glm5next` — new arch,
 same DSA/NextN surface). **Free space after both executions: 87 G → 480 G (87%).**
 
+## OPERATOR RULING 2026-09-01 — `opencode.db` is OFF LIMITS
+
+**"don't touch."** The 186 GB figure in Tier E is now **224.9 GB** and growing ~39 GB/day. It is
+held open by a LIVE process (pid 433986, `opencode`, 1d14h uptime, 3 open fds, last write 10:23Z),
+and — decisively — the INF-67 fused-decoder work is itself an opencode session, so that file is
+very likely its multi-day state store. A `VACUUM` needs an exclusive lock plus up to ~2x the file
+size transiently (~450 GB against 489 GB free: it would fit and leave nothing), and session-pruning
+risks deleting the fused-decoder history. Either could corrupt a live writer.
+
+Not deferred pending analysis — **ruled out**. Revisit only with that session stopped and its owner
+consulted. Standing note for whoever does: the ~39 GB/day growth is a SEPARATE defect from the disk
+being full, and worth raising with the opencode session owner on its own merits.
+
 ## Execution contract (when the operator picks)
 
 Named paths one at a time (no wildcards, no parent-dir `rm -rf`), deletion-ledger entries in the

@@ -242,3 +242,77 @@ record. The only local-only commit is the fused-decoder session's `7bdd6376`, th
 - [x] OP-11 resolved and the row removed from the operator queue ✅ 2026-09-01
 - [ ] Fleet follow-up: local `main` in the shared clone is 31 behind `origin/main` and holds one
       unpushed peer commit — each session fast-forwards at its own boundary; not mine to force.
+
+## Operator decisions recorded 2026-09-01 (closing the open items)
+
+- **M4 Prefill Engine dive — DECLINED** (operator, following the Stage-1 recommendation).
+  `intake-1295`/`intake-1296` stay `stage1-unverified` and are NOT promoted; nothing downstream may
+  quote their numbers under the unverified contract. Rationale on record: the transferable value
+  (boundary-length correctness matrix, masked-tile-skip contrast, fusion-thesis corroboration) was
+  extracted at Stage 1, and the 3.4-3.7x headline is unverifiable from here — it is measured against
+  a baseline left unnamed in both primary sources, and we have no Apple hardware to reproduce on.
+  The intake wave is closed; no Stage-2/3/4 follows.
+- **`opencode.db` — DO NOT TOUCH** (operator). Recorded in the OP-33 disk-reclaim record; ruled out
+  rather than deferred, because a live session holds it open and it is plausibly the INF-67 state
+  store.
+- **REV-02 — RETARGET at GLM-5.3-Flash** (operator). Applied this session: the capability gates and
+  the corpus/harness asset carry over; the GLM-5.2 measurements and serving constants are demoted to
+  historical evidence about a deleted model; GC-4 (RAM residency, sized on 239 GB) is void; the
+  handoff is re-blocked on INF-69 T0-T2 because no tree here is yet known to load `glm5next`.
+- **PR #70 — maintainer's call, stop tracking.** OPEN/MERGEABLE, 0 reviews, 0 comments at hand-off.
+  Nothing is owed by us and it is dropped from this session's open list.
+
+## Task 12 — OP-32 ratification path, REV-02 retarget, and a self-correction
+
+**OP-32 — runnable ratification, not a prose recommendation.** The operator asked for a script and
+a command rather than a written decision. `scripts/operator/ratify_op32_uniform_iq4xs_20260901.sh`
+(`--show` / `--apply {A|B|C}`) lands the choice, writes a ratification JSON with the evidence
+inline, and stages the human-only `MEASUREMENT_POLICY.md` amendment via `git apply --index` — never
+a blanket `git add` on a trust-boundary path. Verified end-to-end in a throwaway worktree and the
+test application reverted before commit.
+
+**The amendment was revised BEFORE ratification, on a peer's review.** The autokernel lane read the
+draft and raised that "the OPTIMUM is measured on the fastest validated artifact" closes one
+absorption hole while opening its mirror image — it could license an absolute headline on an
+artifact production does not serve. Correct, and my draft was one-sided. The rule now states two
+deliberately opposing halves:
+
+- an **absolute** headline is the **served** artifact's number; a faster unserved artifact is named
+  as *available headroom*, never as the headline (else we claim throughput nobody receives);
+- a **delta** is measured with the artifact held **identical** on both arms, and quoting it against
+  a needlessly slow artifact is a defect (else the artifact gap is credited to the work).
+
+Fixing it before the operator ran the script beat amending an amendment afterwards. Their lane is
+credited in the script text and commit message.
+
+**A THIRD OP-ID collision surfaced, from a place my reconciliation could not see.** The autokernel
+lane had also minted OP-32 (run-22 pre-authorization, resolved 08-31) — but in its own lane files,
+not the queue, so the merge could not have caught it. They renumbered theirs to OP-34 and pushed.
+Verified `origin/main` afterwards: 20 OP ids, **zero duplicates**. Final: OP-30/31 autokernel's,
+OP-32 (uniform IQ4_XS) / OP-33 (disk reclaim) mine, OP-34 autokernel's-resolved. Three concurrent
+collisions on one hand-maintained ID space in a single divergence window — the general form is
+already compiled into `wiki/agent-architecture.md`.
+
+**REV-02 retargeted to GLM-5.3-Flash** (operator ruling; see the handoff banner for the
+transfers/does-not-transfer split and the INF-69 T0-T2 block). GC-4 voided — its 239 GB premise was
+the deleted artifact.
+
+### Self-correction: I asserted a trend from two points
+
+I told the operator `opencode.db` was "growing ~39 GB/day" on the strength of two samples (186 GB
+in the morning report, 224.9 GB at my check). A third sample an hour later read **210.3 GB** —
+*down* 15 GB. The file churns tens of GB; the direction is not established, and my claim was the
+exact error I spent this session flagging in other people's work (INF-67's premature ROOT CAUSE
+commits, the autokernel H1 transfer inference). Retracted to the operator before the relay message
+went out, so it did not reach the opencode session's owner as an assertion.
+
+What survives the correction, and is what the relay actually says: the file is **210.3 GB**, the
+largest single object on the host, ~44% of current free space, held open by a live process, and
+plausibly the INF-67 session's own state store. The open question for its owner is whether that
+magnitude is expected and whether tool outputs are persisted verbatim — which would make every
+large dump this program has read a second time on disk.
+
+- [x] OP-32 ratification script + amendment patch delivered (operator-runnable) ✅ 2026-09-01
+- [x] REV-02 retargeted at GLM-5.3-Flash per operator ruling ✅ 2026-09-01
+- [x] opencode.db relay drafted for the operator to send ✅ 2026-09-01
+- [ ] OP-32 awaits the operator running the script (`--apply A|B|C`); nothing is applied until then.
