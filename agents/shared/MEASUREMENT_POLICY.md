@@ -26,6 +26,23 @@ If an instrument cannot run the production recipe, its numbers are recorded, not
 Do not exclude a role from a headline because "speculation is off" — check first whether a
 draft path exists at all. If none does, that row is an OPTIMUM and belongs in the table.
 
+**Artifact and delta are separate axes — never let one absorb the other.** When a faster artifact
+of the same model exists (a different quantization of the same weights, a repack, a rebuilt file),
+two rules apply and they point in OPPOSITE directions:
+
+- **An absolute headline is the SERVED artifact's number.** A faster artifact production does not
+  serve is named as *available headroom*, never as the headline — otherwise the table claims
+  throughput nobody receives.
+- **A DELTA (a kernel, a patch, a fused path) is measured with the artifact held IDENTICAL on both
+  arms, and quoting it against a needlessly slow artifact is a defect** — otherwise the artifact
+  gap is credited to the work.
+
+Measured 2026-08-31 (INF-68): qwen4exp decode is **+15.2% on uniform IQ4_XS over the shipped
+unsloth UD-IQ4_XS mix** at an identical recipe — the UD file's IQ3_S-heavy experts are the slow
+path on IQK decode. Serving UD and quoting a kernel speedup against it would have credited that
+15% to the kernel; quoting an absolute number on the uniform file would have claimed throughput
+production does not deliver. **Name both artifacts, always.**
+
 ## Historical numbers — era-label first, then apply the verb
 
 1. Era-label it (`instrument_eras.yaml`): pre-canonical CPU bench (E0)? pre-speed-fix autopilot speed (E2, ×0.5 deinflate by `pareto_epoch_ts` timestamp — NEVER by `speed_metric_mode`, which is identical across the fix)? pre-tool-era quality (E3a)? which T1 n (E3b, by `details.total`)?
