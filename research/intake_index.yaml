@@ -118818,3 +118818,163 @@
     scratchpad despite a no-files instruction — nothing reached the repo and no tracked path was
     touched, but it was not clean compliance and the dive flagged it rather than letting it pass.
 # =====================================================================================
+- id: intake-1295
+  arxiv_id: null
+  url: 'https://mohamedhossammohamed.github.io/m4-prefill-engine/'
+  source_type: blog
+  title: 'M4 Prefill Engine — a custom Metal engine for M4 prompt processing (technical report page)'
+  authors:
+    - 'Mohammed Hossam'
+  categories: [hardware_optimization, local_inference, kv_cache, quantization]
+  key_claims:
+    - >-
+      ~3.4x to 3.7x prefill speedup on a 1B-parameter Transformer on an M4 MacBook Air (10-core
+      GPU, 16 GB unified memory), measured kernel-isolated via Metal GPUStartTime/GPUEndTime.
+      THE BASELINE IS UNSPECIFIED on both the page and the README — no named framework or figures.
+    - >-
+      Design recipe: aligned float4 (128-bit) load saturation of the load-store unit; Q4_0
+      dequantization fused into consumer kernels (no intermediate global dequant writes); SwiGLU
+      fused in registers via head-major projection; FlashAttention as online softmax in registers
+      with causal triangular block SKIPPING (masked tiles cost nothing).
+    - >-
+      Dynamic Q8_0 KV cache dequantized on the fly inside the FlashAttention shader; ~47%
+      cache-footprint reduction reported with no observed fidelity loss at tested lengths.
+    - >-
+      Correctness validated at sequence lengths M in {33, 127, 128, 129, 512, 1023, 1024, 2047,
+      2048} — deliberately probing off-by-one boundaries around tile sizes — plus 60-second
+      thermal-equilibrium sustained loads.
+    - >-
+      Explicit non-claims: research artifact / proof-of-concept, not a llama.cpp/MLX drop-in;
+      decode is not claimed to improve (bandwidth-bound); manual weight extraction required.
+  techniques:
+    - '128-bit aligned float4 load saturation (LSU in-flight queue depth as the first-order target)'
+    - 'Dequant-into-consumer fusion (Q4_0 bitwise unpack directly to half4, no global intermediate)'
+    - 'Register-resident SwiGLU fusion (head-major layout, no transpose kernel)'
+    - 'Online-softmax FlashAttention with causal triangular block skipping'
+    - 'Q8_0 KV cache with in-shader dequant at point of use'
+    - 'Boundary-length correctness matrix (off-by-one probes around tile sizes)'
+  reported_results: >-
+    ~3.4-3.7x kernel-isolated prefill speedup vs an UNNAMED conventional GPU path on the same M4;
+    ~47% KV cache footprint reduction from Q8_0. No end-to-end, decode, or cross-machine numbers.
+    Fetched 2026-09-01; no independent corroboration located in a bounded search.
+  referenced_arxiv_ids: []
+  novelty: medium
+  novelty_justification: >-
+    The fusion direction (fewer/fatter kernels, data resident in registers) is already deeply
+    covered in this corpus (INF-67 megakernel, INF-10); the LSU-saturation framing and the
+    boundary-length validation matrix are the new perspectives. Apple-Silicon specifics are
+    uncovered in the corpus but out of fleet scope.
+  relevance: medium
+  relevance_justification: >-
+    In-domain kernel optimization with three transfer points to active work — corroboration of the
+    INF-67 fusion thesis, tile-skip-vs-dense-mask contrast for the DSA D2/D3 gate
+    (llama-cpp-dsa-contribution.md), and the boundary-length correctness matrix as a methodology
+    adoption for INF-67/autokernel screens — but no Apple hardware in the fleet, so nothing is
+    directly runnable.
+  credibility_score: 1
+  credibility_justification: >-
+    Not peer-reviewed (0); <=12 months (+1); unknown independent author (0); no commercial bias
+    penalty; no independent corroboration found (0). Kernel-isolated claim vs an unspecified
+    baseline is the material limiter: the magnitude is uninterpretable without knowing what it
+    beat. Repo evidence base is 5 commits/16 stars with no third-party validation
+    (companion: intake-1296).
+  verdict: adopt_patterns
+  verdict_justification: >-
+    Not runnable in this fleet (no Apple hardware; open-source policy satisfied but hardware out
+    of scope) yet pattern-donating on four axes: boundary-length correctness matrix (methodology,
+    immediately adoptable), masked-tile SKIPPING as the contrast to the fork's DSA-DENSE-MASK
+    finding, dequant-into-consumer fusion for GPU prefill paths, and corroboration of the CPU
+    megakernel direction. not_applicable would be wrong: in-domain and pattern-rich.
+  contradicting_evidence:
+  - 'None surfaced in a bounded Stage-1 search (provisional).'
+  - >-
+    A community simdgroup-matmul suggestion described in operator-supplied article text could not
+    be independently located (unverified-in-stage1); build-on suggestion, not a refutation.
+  - >-
+    Kernel-isolated vs in-situ transfer gap is this corpus's own standing caveat (0-for-5
+    clean-room transfer record, progress 2026-08-28), not an external contradiction.
+  cross_references:
+    - 'handoffs/active/cpu-fused-decoder-blocks.md (INF-67) — same fusion thesis on CPU decode'
+    - 'handoffs/active/llama-cpp-dsa-contribution.md — D2/D3 sparse-attention gate; this source does skip-not-mask'
+    - 'handoffs/active/glm53-flash-evaluation.md (INF-69) — inherits the DSA-DENSE-MASK finding'
+    - 'wiki/kv-cache.md — quantized-KV-at-point-of-use already covered (KIVI et al.)'
+  prior_coverage_found: >-
+    No Apple-Silicon/Metal kernel coverage in the corpus beyond passing mentions
+    (frontier-f6-upstream-publication.md, wiki/speculative-decoding.md). Fusion and quantized-KV
+    themes extensively covered.
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-09-01'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: >-
+    Project page fetched 2026-09-01 (no version identifier on page); companion repo at 5 commits,
+    fetched same day.
+  newer_version_exists: 'unknown'
+  notes: >-
+    Operator-supplied article text (2026-09-01) framed this against Apple M5 prefill marketing
+    (reported 3-4x generational gain) — that framing is the article's, not verified from the
+    primary source. Companion repo is intake-1296 (distinct artifact, not a duplicate). Assessment
+    delivered to operator same day: methodology adoption + two corroborations; kernel-isolated
+    claim-class caveat applies.
+- id: intake-1296
+  arxiv_id: null
+  url: 'https://github.com/mohamedhossammohamed/m4-prefill-engine'
+  source_type: repo
+  title: 'm4-prefill-engine — source repository (Metal shaders + Obj-C++ benches)'
+  authors:
+    - 'Mohammed Hossam'
+  categories: [hardware_optimization, local_inference]
+  key_claims:
+    - >-
+      Repo contains 5 Metal shader files (flash_attn_kernels, kernels, micro_kernels,
+      pipelined_kernels, unified_kernels) + 6 Obj-C++ bench/engine files incl. a thermal stress
+      test, Makefile build; Apache-2.0.
+    - >-
+      README repeats the ~3.4-3.7x prefill claim with no explicit baseline figures; validation
+      described as boundary-length probes + causal-mask/thread-group guards + 60s thermal loads.
+    - >-
+      No model/weights workflow is provided ("manual weight extraction" required, undocumented) —
+      the artifact is not independently reproducible as published.
+  techniques:
+    - 'Metal shader organization: micro/pipelined/unified kernel tiers with per-tier benches'
+    - 'Native GPU timestamp benchmarking harness (GPUStartTime/GPUEndTime)'
+  reported_results: >-
+    Same figures as intake-1295 (one project). Activity at fetch (2026-09-01): 16 stars, 1 fork,
+    5 commits, 0 issues/PRs — very early, no third-party engagement or CI.
+  referenced_arxiv_ids: []
+  novelty: medium
+  novelty_justification: >-
+    Companion artifact of intake-1295; the kernel-tier organization and timestamp harness are the
+    repo-specific items.
+  relevance: medium
+  relevance_justification: >-
+    Same transfer points as intake-1295; the repo is additionally the only place the kernel
+    structure could be read if a dive were ever wanted.
+  credibility_score: null
+  credibility_justification: >-
+    Repo artifact scored null per rubric; empirical claims are carried by intake-1295. Evidence
+    base note: 5 commits, no CI, no reproduction workflow.
+  verdict: adopt_patterns
+  verdict_justification: >-
+    Pattern source only (kernel organization, bench harness); not runnable in this fleet.
+  contradicting_evidence:
+  - 'None surfaced (bounded, provisional); see intake-1295.'
+  cross_references:
+    - 'intake-1295 — the technical-report page this repo accompanies'
+  prior_coverage_found: >-
+    None (see intake-1295).
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-09-01'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: >-
+    GitHub HEAD at 5 commits, fetched 2026-09-01. No release tags observed.
+  newer_version_exists: 'unknown'
+  notes: >-
+    Companion of intake-1295 (distinct artifact per intake policy, not a duplicate). Community
+    simdgroup-matmul suggestion mentioned in operator-supplied text: unverified-in-stage1, not
+    located in a bounded search.
