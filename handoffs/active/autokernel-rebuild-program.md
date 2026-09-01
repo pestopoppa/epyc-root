@@ -1238,6 +1238,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       (review-token gated) → apply re-anchored seeds (R23-12, staged copies) → rocprof dispatch
       sanity (R23-13) → DFlash2 smoke → 27B A/A on dec-b4+dec-b8 (keyed calibration artifacts) →
       readiness package.
+- [x] **R23-14 — boundary driver drafted, reviewed, armed** ✅ 2026-09-01 —
+      `boundary_20260901.sh` + helper (research side branch `8634f0c7`), modeled on the 20260831
+      trio (state-file resume, fail-closed refusals, PID-verified stop). **Review fix
+      `6f405233`**: run 24 launches from the latest guard-verified anchor-gen — the drafted
+      incremental-tip-rebuild + `--allow-unverified-anchor` path was the 2026-08-31
+      attestation-failure pattern and was removed. Driver LIVE: pid 2715782 (waiting for
+      22:00Z), `REVIEW_TOKEN_R23_11` + `PREAUTH_RUN24` placed per OP-35.
 - [x] **OP-35 RESOLVED 2026-09-01 — operator: run 24 PRE-AUTHORIZED on the all-green
       conjunction** ("yes, you're pre-authed"): run 23 drained clean · R23-11 merge landed +
       full hardware-free suite green · re-anchored seeds applied · dispatch-sanity recorded ·
