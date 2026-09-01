@@ -35,6 +35,8 @@ why every prior reachability audit was wrong.
 >    interaction**; the pre-committed contingency did not fire. Oracle 3/3.
 > 2. **Run 21 is LIVE (pid `2767457`), operator-approved — worktree `champ2` on THE champion
 >    branch @ `a2728701`, ranking ON. Do not touch it** (see the R21 block).
+>    *(SUPERSEDED 2026-09-01: **run 23 is LIVE, pid `2214942`, surface dec-b4** — see the R23
+>    block; R23-5's curve showed the tg128 headline collapsing on production shapes.)*
 > 3. **Run starts are operator-gated** behind a verifiable readiness package — *"don't start ANY
 >    run without my explicit permission"* — and the champion's baseline is the **CURRENT frozen
 >    production, resolved live**, never a pinned sha.
@@ -1063,7 +1065,16 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       champion-regression on exactly that signature (2026-09-01, retracted). Make the log
       distinguish "benign legacy path, sizes verified matching" from a fault, at the source in
       the champion lineage. Small; pairs naturally with R23-1's admission window.
-- [ ] **R23-5 — H1 transfer falsifier (OPERATOR DECISION PENDING: run before or after run 23).**
+- [x] **R23-5 — H1 transfer falsifier EXECUTED (H1-first, operator-approved) ✅ 2026-09-01.**
+      **H1 CONFIRMED in substance: the +17.9% headline is ne11=1-concentrated and collapses on
+      production serving shapes.** Champion `9e18beb0` vs frozen v9, 20 pairs/surface, all four
+      effects decisive on bootstrap-calibrated floors: **+17.259%** (tg128, ne11=1) → **+3.834%**
+      (dec-b2, floor 0.866%) → **+1.178%** (dec-b4, floor 0.668%) → **−1.462% a decisive
+      REGRESSION** (dec-b8, floor 0.656%). Dispatch sanity proven by rocprofv3 (MMVQ ncols=1 →
+      ncols=2 → MMQ across the curve — the instrument isolates ne11, not vacuous). Formally the
+      partial-decay bracket, so the curve went to the operator; ruling: run 23 hunts **dec-b4**;
+      the b8 repair is seed 18. Full record `/mnt/raid0/llm/tmp/r23-5-results/` (VERDICT.md,
+      per-surface drain points, binary digests). Original task text kept below for provenance:
       One measured data point says ~1/28th of the tg128 headline transferred to the DFlash c1
       serving cell (70.0 → 70.4 across the merge that added all loop kernels). Two candidate
       causes, both structural: (a) ne11=1 vs the verify-batch shapes production actually runs
@@ -1186,6 +1197,46 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 - **Legacy `controller/` suites carry ~75 pre-existing failures outside the enforced floors.**
   Not filed as its own task: it predates this pass and is **P5-strip territory** — noted in P5's
   scope so the strip retires the suites with the code they test rather than repairing them first.
+
+---
+
+## R23 — H1 verdict, run 23 launch, production-shaped rung (2026-09-01)
+
+**Run 23 is LIVE (pid `2214942`, started 10:21Z), operator-approved** ("proceed" on H1-first, then
+the dec-b4 go): `--surface dec-b4 --pairs 20 --workers 7 --rank-prior-experiments`, anchor = the
+attested clean build `/mnt/raid0/llm/tmp/build-champ-tip-clean`, champion worktree `champ2` @
+`9e18beb0`, floor 0.668%, startup refusal verified (anchor == champion tip), monitor armed. This
+is the first run pointed at a surface production actually occupies — R23-5's curve (see the
+flipped box above) showed the tg128 headline collapsing to +1.2% at ne11=4 and inverting to a
+decisive −1.462% at ne11=8. First dec-b4 profile: **Tensile GEMM (`Cijk_…HSS…`) is the top
+hotspot** — a different target than the MMVQ templates every prior run chased. **Seed 18 injected**
+(operator channel): `loop-memory/inbox/18-b8-regression-repair.md` (repair the dec-b8
+regression); inbox now 18 seeds. Do not touch pid `2214942`, `champ2`, `build-champ-tip-clean`,
+or `loop-memory/`.
+
+**The production-shaped rung decision package is drafted** (research `b15c480b`,
+`docs/design/autokernel-production-shaped-rung.md`, subagent, zero compute) — recommendation:
+two-rung screen/confirm (1.5B keeps screening; keeps gated + headline confirmed on the 27B
+production model at pairs=5, ~18% cadence overhead). Six operator decision items D1–D6 in §6.
+
+### Open (R23 follow-ups)
+
+- [ ] **R23-7 — fix stale `PRODUCTION_QUANT_FAMILY` (`workload_contract.py:58` refuses
+      production's own Q8_0 model).** Verified: `Q8_0` is absent from the frozenset, so
+      `verify_workload()` refuses production's own Qwen3.8-27B-Q8_0 while passing the mismatched
+      1.5B instrument. Land at the run-23 boundary, never mid-run. (Rung design §5.1.)
+- [ ] **R23-8 — floor keying (surface, workload-class) per rung design §5.1/R21-8.**
+      `bench.floor_rows()` keys by surface only; calibration artifacts record `"model"` but
+      nothing reads it — confirmed structurally. Key by (surface, workload-class); mismatch →
+      uncalibrated/refuse. Land at the run-23 boundary, never mid-run.
+- [ ] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A
+      calibration window (~5–6 h) — OPERATOR-GATED, next boundary.** Frozen v9 carries the dflash
+      arch (verified in `0db32c06e`), so the 2 GB rung is loadable by both arms; the smoke decides
+      D5, the A/A window is D6's only real device cost.
+- [x] **R23-10 — production-shaped rung decision package drafted**
+      (`docs/design/autokernel-production-shaped-rung.md`, research `b15c480b`) ✅ 2026-09-01 —
+      **awaiting operator ruling on D1–D6** (rung structure · gate surfaces · confirm pairs ·
+      headline migration · screen swap · calibration window).
 
 ---
 
