@@ -1155,15 +1155,13 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 - [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
       an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
       Small: emit the headline once during loop startup from the same path `068ffb67` added.
-- [ ] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** The published
-      bundle cites `/mnt/raid0/llm/tmp/champ-a2728701-ab/…` (the JSON and the three oracle logs) —
-      decision-grade evidence in scratch, the exact defect the run-17 promotion (`d6130c7b`)
-      closed. **PREPARED this wrap-up**: 22 files ≈1.4 MB staged in the research lane at
-      `artifacts/autokernel-champ-a2728701-ab/` (result JSON, `run_ab.py` driver, `run_ab.log`,
-      3 oracle logs, `symdiff/added-*`+`removed-*`; the 7.2 MB regenerable `base-*/champ-*` dumps
-      excluded). Operator pushes; after it lands, re-point the bundle's evidence paths at the
-      repo copy at the next boundary the bundle is rewritten anyway (do not touch the live bundle
-      mid-run).
+- [x] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** ✅ 2026-09-01 —
+      landed as research `2ee10ff5` (`artifacts/autokernel-champ-a2728701-ab/`, 24 files ≈1.4 MB:
+      result JSON, `run_ab.py`, `run_ab.log`, 3 oracle logs, symdiff; regenerable dumps excluded),
+      verified on `origin/main`. Queue row OP-31 deleted at the 2026-09-01 wrap-up — it had gone
+      stale after the commit landed without the flip (recurrence-check catch).
+- [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
+      boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
 - [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
       Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
       (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.

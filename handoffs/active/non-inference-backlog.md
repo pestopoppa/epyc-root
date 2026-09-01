@@ -334,6 +334,14 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 - [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
   <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
   caches also live under `cache/`.
+- [ ] **NIB2-68** (MED): **wiki compile watermark is per-worktree** — `wiki/.last_compile` (and the
+  manifest write) is gitignored, so a lane worktree never sees the shared clone's watermark: the
+  scanner run from a lane reports the full-history backlog (919 phantom "new" sources measured
+  2026-09-01 vs the true delta of 2), and a lane `--touch` would write a lane-local watermark the
+  fleet never reads. Same worktree-invariance class as the serialized_push lock-dir fix
+  (`022686f3`): resolve the wiki shared surface against the git common dir's parent, or make
+  `compile_sources.py` refuse to run outside the main clone. Until fixed: run scanner and
+  `--touch` from `/workspace` only.
 
 ---
 
