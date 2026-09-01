@@ -3922,3 +3922,93 @@ surface, not a build detail.
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 pilot sub-items, R21-6.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10.
+
+## Compiled Update — 2026-08-31 (incremental): external audit corrections; the INF-68 quant-type-mix baseline control
+
+**Confidence: verified** (external audit + clean-window A/B with SHA256SUMS evidence; retractions adopted by the owning session same-day).
+
+An operator-commissioned external audit of the fused-decoder program corrected three findings
+that had been recorded as confirmed root causes — all three retracted by the owning session
+(`c43f888d`) — and the audit-spun INF-68 baseline control produced two standing measurement facts.
+
+Key findings:
+
+- **The gallocr "inp_tokens corruption" was not a correctness bug.** The 0-size-tensor aliasing
+  and freed-INPUT-slot reuse are real allocator behaviors, but the only consumer of the tokens
+  input is node 0 and the overwriting writer runs at node 144+ — no in-graph read follows the
+  overwrite; the graph's greedy was correct all along. Standing lesson (now thrice-measured in
+  this program): **post-compute dumps of memory-reusing graph buffers are not evidence** — sample
+  via pre-compute eval callbacks only. The "never free INPUT tensors" patch is a debugging aid,
+  not an upstream fix.
+- **The ple_norm_query "weight difference" was instrumentation**: the harness's pattern-matching
+  eval callback latched onto layer-0's `hc_ffn_norm` MUL (weight[0]=1.02417); the real weight
+  (0.826172) was identical on both paths — two paths in one process cannot disagree on a tensor
+  they both dereference. The true divergence was fused-side conv-window/l2-norm layout, fixed in
+  `e3ddf1583`.
+- **The flash_attn_ext "NaN on real activations" was the repro's own bug** (Q staged F16 where
+  the CPU kernel reads F32-only). An attention path was abandoned on a misdiagnosis a one-line
+  experiment would have caught.
+- **Quant TYPE MIX moves qwen4exp CPU decode double-digits (INF-68, clean-window A/B, build
+  10151 @`7cdd7c97b`, canonical interleave+no-mmap recipe)**: uniform IQ4_XS tg128 10.52 t/s
+  vs the UD file's 9.13 at t48 (+15.2%; +10.5% t64; pp512 +23–32%) — the UD's IQ3_S-heavy
+  expert mix is the slow path on IQK decode. Evidence with SHA256SUMS:
+  `epyc-inference-research/data/inf68-uniform-iq4xs-ab-20260831/` @`0dbc9992`. Adoption is
+  operator decision OP-30.
+- **Baseline reproducibility caveat**: the documented UD 13.46 t/s (08-29) did not reproduce on
+  the 08-31 box state (9.13–9.18 across clean verified windows; `-fa 1` refuted as the cause) —
+  same-window ratios survive, absolute-level anchors must be re-measured at their own boundary.
+- Cross-check while compiling: INF-63's "artifact verified" status is stale — the FP8 checkpoint
+  path was deleted in the 08-28 `rm -rf` incident after the 08-27 verification; corrected in the
+  handoff this wrap-up.
+
+### Source References (2026-08-31)
+
+- [`qwen4exp-uniform-iq4xs-baseline-control.md`](../handoffs/active/qwen4exp-uniform-iq4xs-baseline-control.md) —
+  INF-68: method, results table, operator decision OP-30 options.
+- [`2026-08-31-inf68-baseline-control.md`](../progress/2026-08/2026-08-31-inf68-baseline-control.md) —
+  the audit + control session record (method detail, hygiene notes).
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the fused-decoder session's daily:
+  retraction record and ATTN-rewrite defect list.
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff
+  post-retraction state (layers 0-6 bit-exact, logit 0.684 at compile time).
+- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/active/qwen38-flash-next-fp8-evaluation.md) —
+  INF-63, corrected this wrap-up (artifact deleted 08-28).
+
+
+## Compiled Update — 2026-09-01 (incremental): the fused-decoder crash was the instrumentation — third occurrence of a self-observation hazard
+
+**Confidence: verified** (commit `5c575e211` fixes it; the diagnosis was reached by the strip-the-instrumentation experiment).
+
+The INF-64/67 head-stage segfault that consumed an overnight triage — optimization-independent
+(-O3/-O1/-O0 all crashed), "ASAN clean", with the crashing frame's first-arg register holding a
+`getenv` return — **was the debug print itself**: a NULL `w_inject` dereference in the `hc_mix`
+w-print, added with the trace instrumentation. Fixed `5c575e211`; the fused path then advanced to
+bit-exactness hunting, where the current seed is numerics rather than memory: the graph's GLU uses
+the SIMD `ggml_v_expf` approximation, not `expf`, so a mirror calling `expf` cannot be bit-exact.
+
+Key findings:
+
+- **This is the THIRD self-observation hazard in one program**, and the pattern is now the finding
+  rather than the incident: (1) post-compute eval-callback dumps read freed memory and produced
+  phantom divergences; (2) a harness eval-callback pattern-matched the wrong MUL node and invented a
+  "weight difference" that could not exist; (3) a debug print crashed the process it was added to
+  observe. **Instrumentation added to a hot path is part of the system under test.** The cheap
+  discriminator, which resolved this one, is to build with the instrumentation *removed* — not
+  env-disabled, since the `getenv` and its argument handling still execute.
+- **"ASAN clean" was vacuous here**: the `build-asan` tree had `GGML_SANITIZE_ADDRESS=OFF`, so
+  `libggml-cpu.so` carried zero `__asan` symbols and every ggml-side buffer — exactly where the
+  fault lived — was outside coverage. A sanitizer that does not instrument the crashing library
+  reports clean for a reason unrelated to correctness.
+- **A guard against the class now exists at the harness layer**: an unbounded `llama-cli`
+  invocation is refused by a PreToolUse hook, and the underlying defect (EOF discarded by
+  `read_input`, so a closed stdin spins the prompt loop forever) is patched and queued for the
+  champion lineage. Origin: a runaway that wrote 322 GB in 11 h and held a CPU region lock
+  throughout.
+
+### Source References (2026-09-01)
+
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67, crash
+  resolution and the current bit-exactness state.
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the overnight triage record.
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the ASAN blind-spot
+  finding, the trace-strip discriminator, and the llama-cli guard/patch.

@@ -59,6 +59,11 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_filesystem_containment.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_llama_cli_guard.sh\"",
+            "timeout": 5
           }
         ]
       },

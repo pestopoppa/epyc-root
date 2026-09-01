@@ -1,272 +1,302 @@
 {
-  "session_id": "13e02952-5150-4fdc-b00f-f0b549e6dac4",
-  "started_at": "2026-08-21T13:50:00Z",
-  "last_checkpoint": "2026-08-22T14:05:00Z",
-  "phase": 5,
-  "stage": "wave2-stage3-gate",
-  "session_kind": "research-intake (10 operator-submitted sources: 8 URLs + 2 pasted inline write-ups)",
-  "previous_session": {
-    "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
-    "stage": "stage4-complete",
-    "mandate": "Ingest 4 operator-submitted URLs: openreview.net/pdf?id=e3pxJbBRBk, alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1, github.com/Zanatticus/Hawkeye/, arxiv.org/html/2603.12440v1",
-    "note": "Hawkeye batch, stage4-complete; unrelated mandate. Not resumed - this is a fresh session."
+ "session_id": "13e02952-5150-4fdc-b00f-f0b549e6dac4",
+ "started_at": "2026-08-21T13:50:00Z",
+ "last_checkpoint": "2026-08-22T14:05:00Z",
+ "phase": 5,
+ "stage": "wave2-stage3-gate",
+ "session_kind": "research-intake (10 operator-submitted sources: 8 URLs + 2 pasted inline write-ups)",
+ "previous_session": {
+  "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
+  "stage": "stage4-complete",
+  "mandate": "Ingest 4 operator-submitted URLs: openreview.net/pdf?id=e3pxJbBRBk, alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1, github.com/Zanatticus/Hawkeye/, arxiv.org/html/2603.12440v1",
+  "note": "Hawkeye batch, stage4-complete; unrelated mandate. Not resumed - this is a fresh session."
+ },
+ "mandate": "Ingest 10 operator-submitted sources: arxiv 2608.12875, github spiritbuun/buun-llama-cpp, INLINE-A dual-loop context/memory write-up, arxiv 2602.11865, INLINE-B Qwen3.8-27B campaign write-up, hf analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF, arxiv 2608.17896, ornith.ai/ornith_1_5.html, hf Audio8/Audio8-TTS-Preview-0.1b, arxiv 2608.17981",
+ "submitted_url_count": 10,
+ "max_existing_intake_id_at_start": 1236,
+ "next_intake_id": 1280,
+ "expansion_cap": 10,
+ "expansion_count": 10,
+ "processed_urls": [
+  "https://arxiv.org/html/2608.12875v1",
+  "https://github.com/spiritbuun/buun-llama-cpp",
+  "INLINE-A dual-loop-context-memory (sha256 0c153ab3dbe0...)",
+  "https://arxiv.org/html/2602.11865v1",
+  "INLINE-B qwen38-27b-not-one-number (sha256 692dd8583830...)",
+  "https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF",
+  "https://arxiv.org/html/2608.17896v1",
+  "https://ornith.ai/ornith_1_5.html",
+  "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.1b",
+  "https://arxiv.org/html/2608.17981v1"
+ ],
+ "entries_processed": {
+  "submitted": {
+   "intake-1252": "2608.12875 Embedder's Dilemma",
+   "intake-1253": "INLINE-A dual-loop",
+   "intake-1254": "2602.11865 Intelligent AI Delegation",
+   "intake-1255": "INLINE-B Qwen3.8 campaign",
+   "intake-1256": "analogalok DFlash2 Q2_K",
+   "intake-1257": "2608.17896 Dynamic Compression",
+   "intake-1258": "ornith 1.5",
+   "intake-1259": "Audio8 TTS 0.1b",
+   "intake-1260": "2608.17981 Recirculation"
   },
-  "mandate": "Ingest 10 operator-submitted sources: arxiv 2608.12875, github spiritbuun/buun-llama-cpp, INLINE-A dual-loop context/memory write-up, arxiv 2602.11865, INLINE-B Qwen3.8-27B campaign write-up, hf analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF, arxiv 2608.17896, ornith.ai/ornith_1_5.html, hf Audio8/Audio8-TTS-Preview-0.1b, arxiv 2608.17981",
-  "submitted_url_count": 10,
-  "max_existing_intake_id_at_start": 1236,
-  "next_intake_id": 1280,
-  "expansion_cap": 10,
-  "expansion_count": 10,
-  "processed_urls": [
-    "https://arxiv.org/html/2608.12875v1",
-    "https://github.com/spiritbuun/buun-llama-cpp",
-    "INLINE-A dual-loop-context-memory (sha256 0c153ab3dbe0...)",
-    "https://arxiv.org/html/2602.11865v1",
-    "INLINE-B qwen38-27b-not-one-number (sha256 692dd8583830...)",
-    "https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF",
-    "https://arxiv.org/html/2608.17896v1",
-    "https://ornith.ai/ornith_1_5.html",
-    "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.1b",
-    "https://arxiv.org/html/2608.17981v1"
-  ],
-  "entries_processed": {
-    "submitted": {
-      "intake-1252": "2608.12875 Embedder's Dilemma",
-      "intake-1253": "INLINE-A dual-loop",
-      "intake-1254": "2602.11865 Intelligent AI Delegation",
-      "intake-1255": "INLINE-B Qwen3.8 campaign",
-      "intake-1256": "analogalok DFlash2 Q2_K",
-      "intake-1257": "2608.17896 Dynamic Compression",
-      "intake-1258": "ornith 1.5",
-      "intake-1259": "Audio8 TTS 0.1b",
-      "intake-1260": "2608.17981 Recirculation"
-    },
-    "expansion": {
-      "intake-1261": "vLLM #40831/#40880/#40914",
-      "intake-1262": "llama.cpp #25725/#25823",
-      "intake-1263": "Blackwellboy evidence repo",
-      "intake-1264": "llama.cpp PR #27342",
-      "intake-1265": "incoai DFlash2 GGUF",
-      "intake-1266": "embedders-dilemma repo",
-      "intake-1267": "2407.05483 Just Read Twice",
-      "intake-1268": "2607.02303 HOLA",
-      "intake-1269": "2605.23872 Training-Free Looped Transformers",
-      "intake-1270": "2506.05176 Qwen3 Embedding"
-    },
-    "duplicates_not_minted": {
-      "https://github.com/spiritbuun/buun-llama-cpp": "EXACT url collision with intake-194; re-encounter recorded on that entry per Phase-1 step 2b, no new id minted"
-    }
+  "expansion": {
+   "intake-1261": "vLLM #40831/#40880/#40914",
+   "intake-1262": "llama.cpp #25725/#25823",
+   "intake-1263": "Blackwellboy evidence repo",
+   "intake-1264": "llama.cpp PR #27342",
+   "intake-1265": "incoai DFlash2 GGUF",
+   "intake-1266": "embedders-dilemma repo",
+   "intake-1267": "2407.05483 Just Read Twice",
+   "intake-1268": "2607.02303 HOLA",
+   "intake-1269": "2605.23872 Training-Free Looped Transformers",
+   "intake-1270": "2506.05176 Qwen3 Embedding"
   },
-  "steering_ledger": [
-    {
-      "seq": 1,
-      "stage": 2,
-      "verbatim": "Proceed with Ranked dive recommendations",
-      "disposition": "planned",
-      "plan_ref": "Stage-2 dives on the 8 ranked intakes: 1260, 1268, 1264, 1269, 1266, 1252, 1258, 1256",
-      "note": "Operator selected the ranked dive list as presented. The 11 explicitly-declined intakes stay declined; declines were presented with reasons and were not contested."
-    },
-    {
-      "seq": 2,
-      "stage": "2b",
-      "verbatim": "process all of them please",
-      "disposition": "planned",
-      "plan_ref": "Stage-2b ingest-and-dive on all 9 presented dive-surfaced sources: 2510.20787 (LTE), 2602.14759 (Lys), 2502.10424 (QuantSpec), llama.cpp #27442, llama.cpp #27117, m-a-p/340M-20B-GatedDeltaNet-pure-baseline, 2604.21100, 2510.07019, answerai-colbert-small-v1",
-      "note": "Operator selected the full presented shortlist. Stage-2b is UNCAPPED and does not draw from the Stage-1 expansion budget. These land already dive-verified/dive-overturned with dive_corrections, which is what makes them quotable in the Stage-3 plan."
-    },
-    {
-      "seq": 3,
-      "stage": "2b",
-      "verbatim": "\"Three of eight sources carry licence blockers\" - nonsense, this is a non-commercial project",
-      "disposition": "planned",
-      "plan_ref": "CORR-1",
-      "note": "Applied immediately to intake-1271..1278: 23 edits stripping licence-as-blocker framing from verdict_justification, contradicting_evidence, reader_should_conclude and unverifiable_from_stage2. Licence now appears only as a factual detail, per feedback_sourcing_and_licensing_policy. Committed in 402519e4. Stage-3 plan must not reintroduce it."
-    },
-    {
-      "seq": 4,
-      "stage": "2b",
-      "verbatim": "\"whether to commit the 5-hunk YAML repair, and whether to test frontdoor exposure to #27442.\" - yes to both",
-      "disposition": "planned",
-      "plan_ref": "CORR-2 / P-27442",
-      "note": "(a) YAML repair COMMITTED 402519e4 via a private GIT_INDEX_FILE so the shared index and 17 files of other sessions' staged deletions were not swept; HEAD now parses (1275 entries). (b) The #27442 test is APPROVED AS A PLAN ITEM, not as self-authorization to run inference - see seq 5."
-    },
-    {
-      "seq": 5,
-      "stage": "2b",
-      "verbatim": "why do you need inference compute? You're a research-intake session",
-      "disposition": "planned",
-      "plan_ref": "SCOPE-1",
-      "note": "Correction accepted and acted on: no server was started. A research-intake session files inference tasks, it does not execute them. Operator 'yes' to a proposed experiment approves the ITEM for the plan, never self-authorization to take compute. Saved as memory feedback_research_intake_never_takes_compute. Stage-3 plan must route every inference task to an owning handoff for someone else to run."
-    },
-    {
-      "seq": 6,
-      "stage": "3",
-      "verbatim": "if tasks are gated by analysis/verifications which depend on compute, bake that into your final handoff strategy",
-      "disposition": "planned",
-      "plan_ref": "PLAN-STRUCTURE",
-      "note": "BINDING ON THE STAGE-3 PLAN SHAPE: every task is classified by compute dependency - zero-compute (do now, in-session), compute-gated (name the gate, the owning handoff, and the measurement that opens it), and blocked-on-a-gated-result (name the upstream task). No task may be listed without stating which class it is and what unblocks it."
-    },
-    {
-      "seq": 7,
-      "stage": "3",
-      "verbatim": "follow the research-intake script",
-      "disposition": "planned",
-      "plan_ref": "PROCESS",
-      "note": "Resume the staged workflow: close the Stage-2 close-out gate by presenting the dive-surfaced sources for operator selection, THEN enter plan mode for Stage 3. No handoff, stub or index-row writes before the plan is approved."
-    },
-    {
-      "seq": 8,
-      "stage": "2-closeout",
-      "verbatim": "Deep dive all recommended material",
-      "disposition": "planned",
-      "plan_ref": "wave-2: all 15 close-out dive candidates launched as Stage-2b (combined Stage-1+Stage-2). Operator selected the WHOLE list, so the expansion cap of 10/run does not apply - these are operator-selected, not auto-expanded. Entries land as dive-verified/dive-overturned."
-    },
-    {
-      "seq": 9,
-      "stage": "3",
-      "verbatim": "and proceed with stage 3",
-      "disposition": "planned",
-      "plan_ref": "wave-1 Stage-3 plan approved and applied (stage4-complete, commits 402519e4..b7d6aaa7). Per skill amendment 6faa32bc this approval does NOT extend to wave-2 actionables - they get their own Stage-3 gate."
-    },
-    {
-      "seq": 10,
-      "stage": "2b",
-      "verbatim": "status update?",
-      "disposition": "context-only",
-      "plan_ref": null
-    },
-    {
-      "seq": 11,
-      "stage": "2b",
-      "verbatim": "recuperate them now",
-      "disposition": "planned",
-      "plan_ref": "re-launched the 6 wave-2 dives that died at the concurrency cap and resumed 4 partial ones via SendMessage rather than re-forking, preserving their partial findings. All 15 dives now complete."
-    },
-    {
-      "seq": 12,
-      "stage": "3",
-      "verbatim": "proceed with next stage",
-      "disposition": "planned",
-      "plan_ref": "wave-2 Stage-3 gate: present the audited action plan for the 15 Stage-2b entries. Per skill amendment 6faa32bc this wave does NOT inherit the wave-1 approval."
-    }
-  ],
-  "open_gates": [
-    "STAGE-2 CLOSE-OUT GATE OPEN: consolidated dive-surfaced source list presented to operator; awaiting selection for a Stage-2b ingest-and-dive round (uncapped). Stage 3 MAY NOT BEGIN until every dive-surfaced source is either ingested-and-dived or explicitly declined and recorded in the bearing entry dive_corrections.",
-    "Stage 3 plan mode not entered; no handoff, stub or index-row writes made in any stage so far.",
-    "UNRELATED TO THE PIPELINE: HEAD carries an unparseable research/intake_index.yaml; the 5-hunk YAML repair is uncommitted in the working tree. Operator decision pending."
-  ],
-  "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit was made. handoffs/ carries only pre-existing peer modifications, none intake-caused.",
-  "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1266 entries (baseline before append: 1247)",
-  "incident_concurrent_writer": {
-    "what": "A parallel session performed a whole-file read-modify-write on research/intake_index.yaml and CLOBBERED a completed 263KB 19-entry append.",
-    "detected": "Post-append verification: validator reported 1247 entries and grep for intake-1252/1260/1270 returned 0. File mtime 14:48:09 was ~1 min after my write.",
-    "peer_write_was_stale_by": "minutes - my earlier intake-194 targeted edit SURVIVED, so the peer's read snapshot postdated that edit but predated the append.",
-    "recovery": "Re-derived max id from the CURRENT file, remapped all 19 ids and their expanded_from cross-refs, re-appended, verified immediately.",
-    "note": "No lock convention exists for this file and flock would not bind an uncooperative peer. The append block is retained at scratchpad/APPEND_BLOCK.yaml so a further clobber is recoverable."
-  },
-  "yaml_hazards_fixed_in_block": [
-    "plain-scalar ' #' parsed as a YAML comment (authors item, techniques item)",
-    "flow sequence containing ' #' (authors: [...])",
-    "flow sequence containing nested {} (techniques)",
-    "flow sequence containing nested [] ([EOS] in techniques)"
-  ],
-  "owner_corrections_to_analyst_output": "scratchpad/OWNER_CORRECTIONS.md - C1 coder_escalation vs frontdoor incumbent (registry-verified), C2 cross-reference-map omits handoffs/archived/, C3 intake-401 stale framing, C4 intake-158/417 stale DFlash posture",
-  "stage2_selected": [
-    "intake-1260",
-    "intake-1268",
-    "intake-1264",
-    "intake-1269",
-    "intake-1266",
-    "intake-1252",
-    "intake-1258",
-    "intake-1256"
-  ],
-  "stage2_not_selected_declined": [
-    "intake-1253",
-    "intake-1254",
-    "intake-1255",
-    "intake-1257",
-    "intake-1259",
-    "intake-1261",
-    "intake-1262",
-    "intake-1263",
-    "intake-1265",
-    "intake-1267",
-    "intake-1270"
-  ],
-  "stage2_results": {
-    "intake-1252": "dive-verified",
-    "intake-1256": "dive-overturned",
-    "intake-1258": "dive-overturned",
-    "intake-1260": "dive-overturned",
-    "intake-1264": "dive-overturned",
-    "intake-1266": "dive-overturned",
-    "intake-1268": "dive-overturned",
-    "intake-1269": "dive-verified"
-  },
-  "production_risk_surfaced": {
-    "what": "llama.cpp issue #27442 (open, 2026-08-20, no maintainer reply): qwen35moe hybrid-recurrent models return EMPTY GENERATION above ~16K context via llama-server, localized to the prompt-cache / context-checkpoint restore path for recurrent layers.",
-    "our_exposure": "Frontdoor (port 8070, Root LM) serves Qwen3.6-35B-A3B-MTP-Q8_0.gguf = general.architecture qwen35moe, 753 tensors, block_count 41, full_attention_interval 4, context_length 262144, configured n_ctx 262144. Verified directly from the GGUF header by the owning session.",
-    "status": "Reproduced on Metal only. CPU status UNKNOWN. NOT an Ornith question - Ornith GGUF is merely the reporter test case.",
-    "action_taken": "Surfaced to operator only. No probes, no restarts, no config changes - inference is owned elsewhere."
-  },
-  "kb_rag_defect_surfaced": {
-    "what": "markdown_chunker.py DEFAULT_MAX_CHARS = 4000 vs kb_rag.py _DOC_MAX_TOKENS = 256 (~1024 chars): up to ~75% of a full-size chunk is never embedded in the live KB-RAG index (577 files / 18,010 chunks).",
-    "verified_by": "owning session, read directly 2026-08-21",
-    "status": "Stage-3 candidate; measurement task drafted by the intake-1266 dive (zero-inference, CPU-only tokenization sweep)."
-  },
-  "stage2b_selected": [
-    "2510.20787",
-    "2602.14759",
-    "2502.10424",
-    "llamacpp-27442",
-    "llamacpp-27117",
-    "m-a-p/340M-20B-GatedDeltaNet-pure-baseline",
-    "2604.21100",
-    "2510.07019",
-    "answerai-colbert-small-v1"
-  ],
-  "stage2b_results": {
-    "entries_landed": "intake-1271..1279",
-    "verification": "8 dive-verified, 1 dive-overturned (1279)",
-    "validator": "exit 0, 1275 entries",
-    "commit": "402519e4"
-  },
-  "stage3_plan": {
-    "file": "/home/node/.claude/plans/rippling-exploring-castle.md",
-    "approved": true,
-    "structure": "Z zero-compute / G compute-gated / B blocked-on",
-    "ledger_rows_closed": 7
-  },
-  "stage4_applied": {
-    "commit": "a55f44e8",
-    "files": 16,
-    "record_corrections": [
-      "C3 intake-1258 cache localization STRUCK",
-      "C4a-d intake-1268 x4",
-      "C5 intake-1264 flag correlation + scoped depends_on:intake-1277",
-      "C6 intake-430 denominator",
-      "C8 tq3 PR#21089 re-verified closed unmerged 2026-06-02"
-    ],
-    "task_rows": [
-      "G1 #27442 greedy boundary sweep",
-      "G2 DF2-5 redesigned + DF2-6 control + DF2-7 guard",
-      "G3 MI210 VEC verify probe",
-      "G4 post-restore reuse",
-      "G5 HOLA retrofit",
-      "G6 ROCm 6.2 torch/triton floor",
-      "B1-B5 blocked chains",
-      "SC49 belief-kernel write-side hook"
-    ],
-    "not_done": "Stage-2b wave 2 (15 dives) ALL FAILED on a session API limit; nothing landed; needs its own Stage-3 gate per skill amendment 6faa32bc",
-    "validators": "validate_intake.sh exit 0 (1275 entries); index_state.py --check 0 problems"
-  },
-  "wave2": {
-    "trigger": "steering_ledger seq 8 - operator: 'Deep dive all recommended material'",
-    "dive_count": 15,
-    "dives_complete": 15,
-    "entries_to_mint": 15,
-    "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval.",
-    "entries_minted": "intake-1280..1294 (commit 22650200)"
+  "duplicates_not_minted": {
+   "https://github.com/spiritbuun/buun-llama-cpp": "EXACT url collision with intake-194; re-encounter recorded on that entry per Phase-1 step 2b, no new id minted"
   }
+ },
+ "steering_ledger": [
+  {
+   "seq": 1,
+   "stage": 2,
+   "verbatim": "Proceed with Ranked dive recommendations",
+   "disposition": "planned",
+   "plan_ref": "Stage-2 dives on the 8 ranked intakes: 1260, 1268, 1264, 1269, 1266, 1252, 1258, 1256",
+   "note": "Operator selected the ranked dive list as presented. The 11 explicitly-declined intakes stay declined; declines were presented with reasons and were not contested."
+  },
+  {
+   "seq": 2,
+   "stage": "2b",
+   "verbatim": "process all of them please",
+   "disposition": "planned",
+   "plan_ref": "Stage-2b ingest-and-dive on all 9 presented dive-surfaced sources: 2510.20787 (LTE), 2602.14759 (Lys), 2502.10424 (QuantSpec), llama.cpp #27442, llama.cpp #27117, m-a-p/340M-20B-GatedDeltaNet-pure-baseline, 2604.21100, 2510.07019, answerai-colbert-small-v1",
+   "note": "Operator selected the full presented shortlist. Stage-2b is UNCAPPED and does not draw from the Stage-1 expansion budget. These land already dive-verified/dive-overturned with dive_corrections, which is what makes them quotable in the Stage-3 plan."
+  },
+  {
+   "seq": 3,
+   "stage": "2b",
+   "verbatim": "\"Three of eight sources carry licence blockers\" - nonsense, this is a non-commercial project",
+   "disposition": "planned",
+   "plan_ref": "CORR-1",
+   "note": "Applied immediately to intake-1271..1278: 23 edits stripping licence-as-blocker framing from verdict_justification, contradicting_evidence, reader_should_conclude and unverifiable_from_stage2. Licence now appears only as a factual detail, per feedback_sourcing_and_licensing_policy. Committed in 402519e4. Stage-3 plan must not reintroduce it."
+  },
+  {
+   "seq": 4,
+   "stage": "2b",
+   "verbatim": "\"whether to commit the 5-hunk YAML repair, and whether to test frontdoor exposure to #27442.\" - yes to both",
+   "disposition": "planned",
+   "plan_ref": "CORR-2 / P-27442",
+   "note": "(a) YAML repair COMMITTED 402519e4 via a private GIT_INDEX_FILE so the shared index and 17 files of other sessions' staged deletions were not swept; HEAD now parses (1275 entries). (b) The #27442 test is APPROVED AS A PLAN ITEM, not as self-authorization to run inference - see seq 5."
+  },
+  {
+   "seq": 5,
+   "stage": "2b",
+   "verbatim": "why do you need inference compute? You're a research-intake session",
+   "disposition": "planned",
+   "plan_ref": "SCOPE-1",
+   "note": "Correction accepted and acted on: no server was started. A research-intake session files inference tasks, it does not execute them. Operator 'yes' to a proposed experiment approves the ITEM for the plan, never self-authorization to take compute. Saved as memory feedback_research_intake_never_takes_compute. Stage-3 plan must route every inference task to an owning handoff for someone else to run."
+  },
+  {
+   "seq": 6,
+   "stage": "3",
+   "verbatim": "if tasks are gated by analysis/verifications which depend on compute, bake that into your final handoff strategy",
+   "disposition": "planned",
+   "plan_ref": "PLAN-STRUCTURE",
+   "note": "BINDING ON THE STAGE-3 PLAN SHAPE: every task is classified by compute dependency - zero-compute (do now, in-session), compute-gated (name the gate, the owning handoff, and the measurement that opens it), and blocked-on-a-gated-result (name the upstream task). No task may be listed without stating which class it is and what unblocks it."
+  },
+  {
+   "seq": 7,
+   "stage": "3",
+   "verbatim": "follow the research-intake script",
+   "disposition": "planned",
+   "plan_ref": "PROCESS",
+   "note": "Resume the staged workflow: close the Stage-2 close-out gate by presenting the dive-surfaced sources for operator selection, THEN enter plan mode for Stage 3. No handoff, stub or index-row writes before the plan is approved."
+  },
+  {
+   "seq": 8,
+   "stage": "2-closeout",
+   "verbatim": "Deep dive all recommended material",
+   "disposition": "planned",
+   "plan_ref": "wave-2: all 15 close-out dive candidates launched as Stage-2b (combined Stage-1+Stage-2). Operator selected the WHOLE list, so the expansion cap of 10/run does not apply - these are operator-selected, not auto-expanded. Entries land as dive-verified/dive-overturned."
+  },
+  {
+   "seq": 9,
+   "stage": "3",
+   "verbatim": "and proceed with stage 3",
+   "disposition": "planned",
+   "plan_ref": "wave-1 Stage-3 plan approved and applied (stage4-complete, commits 402519e4..b7d6aaa7). Per skill amendment 6faa32bc this approval does NOT extend to wave-2 actionables - they get their own Stage-3 gate."
+  },
+  {
+   "seq": 10,
+   "stage": "2b",
+   "verbatim": "status update?",
+   "disposition": "context-only",
+   "plan_ref": null
+  },
+  {
+   "seq": 11,
+   "stage": "2b",
+   "verbatim": "recuperate them now",
+   "disposition": "planned",
+   "plan_ref": "re-launched the 6 wave-2 dives that died at the concurrency cap and resumed 4 partial ones via SendMessage rather than re-forking, preserving their partial findings. All 15 dives now complete."
+  },
+  {
+   "seq": 12,
+   "stage": "3",
+   "verbatim": "proceed with next stage",
+   "disposition": "planned",
+   "plan_ref": "wave-2 Stage-3 gate: present the audited action plan for the 15 Stage-2b entries. Per skill amendment 6faa32bc this wave does NOT inherit the wave-1 approval."
+  }
+ ],
+ "open_gates": [
+  "STAGE-2 CLOSE-OUT GATE OPEN: consolidated dive-surfaced source list presented to operator; awaiting selection for a Stage-2b ingest-and-dive round (uncapped). Stage 3 MAY NOT BEGIN until every dive-surfaced source is either ingested-and-dived or explicitly declined and recorded in the bearing entry dive_corrections.",
+  "Stage 3 plan mode not entered; no handoff, stub or index-row writes made in any stage so far.",
+  "UNRELATED TO THE PIPELINE: HEAD carries an unparseable research/intake_index.yaml; the 5-hunk YAML repair is uncommitted in the working tree. Operator decision pending."
+ ],
+ "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit was made. handoffs/ carries only pre-existing peer modifications, none intake-caused.",
+ "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1266 entries (baseline before append: 1247)",
+ "incident_concurrent_writer": {
+  "what": "A parallel session performed a whole-file read-modify-write on research/intake_index.yaml and CLOBBERED a completed 263KB 19-entry append.",
+  "detected": "Post-append verification: validator reported 1247 entries and grep for intake-1252/1260/1270 returned 0. File mtime 14:48:09 was ~1 min after my write.",
+  "peer_write_was_stale_by": "minutes - my earlier intake-194 targeted edit SURVIVED, so the peer's read snapshot postdated that edit but predated the append.",
+  "recovery": "Re-derived max id from the CURRENT file, remapped all 19 ids and their expanded_from cross-refs, re-appended, verified immediately.",
+  "note": "No lock convention exists for this file and flock would not bind an uncooperative peer. The append block is retained at scratchpad/APPEND_BLOCK.yaml so a further clobber is recoverable."
+ },
+ "yaml_hazards_fixed_in_block": [
+  "plain-scalar ' #' parsed as a YAML comment (authors item, techniques item)",
+  "flow sequence containing ' #' (authors: [...])",
+  "flow sequence containing nested {} (techniques)",
+  "flow sequence containing nested [] ([EOS] in techniques)"
+ ],
+ "owner_corrections_to_analyst_output": "scratchpad/OWNER_CORRECTIONS.md - C1 coder_escalation vs frontdoor incumbent (registry-verified), C2 cross-reference-map omits handoffs/archived/, C3 intake-401 stale framing, C4 intake-158/417 stale DFlash posture",
+ "stage2_selected": [
+  "intake-1260",
+  "intake-1268",
+  "intake-1264",
+  "intake-1269",
+  "intake-1266",
+  "intake-1252",
+  "intake-1258",
+  "intake-1256"
+ ],
+ "stage2_not_selected_declined": [
+  "intake-1253",
+  "intake-1254",
+  "intake-1255",
+  "intake-1257",
+  "intake-1259",
+  "intake-1261",
+  "intake-1262",
+  "intake-1263",
+  "intake-1265",
+  "intake-1267",
+  "intake-1270"
+ ],
+ "stage2_results": {
+  "intake-1252": "dive-verified",
+  "intake-1256": "dive-overturned",
+  "intake-1258": "dive-overturned",
+  "intake-1260": "dive-overturned",
+  "intake-1264": "dive-overturned",
+  "intake-1266": "dive-overturned",
+  "intake-1268": "dive-overturned",
+  "intake-1269": "dive-verified"
+ },
+ "production_risk_surfaced": {
+  "what": "llama.cpp issue #27442 (open, 2026-08-20, no maintainer reply): qwen35moe hybrid-recurrent models return EMPTY GENERATION above ~16K context via llama-server, localized to the prompt-cache / context-checkpoint restore path for recurrent layers.",
+  "our_exposure": "Frontdoor (port 8070, Root LM) serves Qwen3.6-35B-A3B-MTP-Q8_0.gguf = general.architecture qwen35moe, 753 tensors, block_count 41, full_attention_interval 4, context_length 262144, configured n_ctx 262144. Verified directly from the GGUF header by the owning session.",
+  "status": "Reproduced on Metal only. CPU status UNKNOWN. NOT an Ornith question - Ornith GGUF is merely the reporter test case.",
+  "action_taken": "Surfaced to operator only. No probes, no restarts, no config changes - inference is owned elsewhere."
+ },
+ "kb_rag_defect_surfaced": {
+  "what": "markdown_chunker.py DEFAULT_MAX_CHARS = 4000 vs kb_rag.py _DOC_MAX_TOKENS = 256 (~1024 chars): up to ~75% of a full-size chunk is never embedded in the live KB-RAG index (577 files / 18,010 chunks).",
+  "verified_by": "owning session, read directly 2026-08-21",
+  "status": "Stage-3 candidate; measurement task drafted by the intake-1266 dive (zero-inference, CPU-only tokenization sweep)."
+ },
+ "stage2b_selected": [
+  "2510.20787",
+  "2602.14759",
+  "2502.10424",
+  "llamacpp-27442",
+  "llamacpp-27117",
+  "m-a-p/340M-20B-GatedDeltaNet-pure-baseline",
+  "2604.21100",
+  "2510.07019",
+  "answerai-colbert-small-v1"
+ ],
+ "stage2b_results": {
+  "entries_landed": "intake-1271..1279",
+  "verification": "8 dive-verified, 1 dive-overturned (1279)",
+  "validator": "exit 0, 1275 entries",
+  "commit": "402519e4"
+ },
+ "stage3_plan": {
+  "file": "/home/node/.claude/plans/rippling-exploring-castle.md",
+  "approved": true,
+  "structure": "Z zero-compute / G compute-gated / B blocked-on",
+  "ledger_rows_closed": 7
+ },
+ "stage4_applied": {
+  "commit": "a55f44e8",
+  "files": 16,
+  "record_corrections": [
+   "C3 intake-1258 cache localization STRUCK",
+   "C4a-d intake-1268 x4",
+   "C5 intake-1264 flag correlation + scoped depends_on:intake-1277",
+   "C6 intake-430 denominator",
+   "C8 tq3 PR#21089 re-verified closed unmerged 2026-06-02"
+  ],
+  "task_rows": [
+   "G1 #27442 greedy boundary sweep",
+   "G2 DF2-5 redesigned + DF2-6 control + DF2-7 guard",
+   "G3 MI210 VEC verify probe",
+   "G4 post-restore reuse",
+   "G5 HOLA retrofit",
+   "G6 ROCm 6.2 torch/triton floor",
+   "B1-B5 blocked chains",
+   "SC49 belief-kernel write-side hook"
+  ],
+  "not_done": "Stage-2b wave 2 (15 dives) ALL FAILED on a session API limit; nothing landed; needs its own Stage-3 gate per skill amendment 6faa32bc",
+  "validators": "validate_intake.sh exit 0 (1275 entries); index_state.py --check 0 problems"
+ },
+ "wave2": {
+  "trigger": "steering_ledger seq 8 - operator: 'Deep dive all recommended material'",
+  "dive_count": 15,
+  "dives_complete": 15,
+  "entries_to_mint": 15,
+  "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval.",
+  "entries_minted": "intake-1280..1294 (commit 22650200)"
+ },
+ "wave_20260901_m4prefill": {
+  "owner": "adhoc-audit (workspace-62)",
+  "date": "2026-09-01",
+  "stage": "stage1-complete",
+  "processed_urls": [
+   "https://mohamedhossammohamed.github.io/m4-prefill-engine/",
+   "https://github.com/mohamedhossammohamed/m4-prefill-engine"
+  ],
+  "entries": [
+   "intake-1295",
+   "intake-1296"
+  ],
+  "next_intake_id": 1297,
+  "steering_ledger": [
+   {
+    "seq": 1,
+    "stage": 1,
+    "verbatim": "Is there anythign that we could learn from this report concerning kernel optimization on apple silicon?",
+    "disposition": "context-only",
+    "plan_ref": null
+   },
+   {
+    "seq": 2,
+    "stage": 1,
+    "verbatim": "yes, run it through intake and fold the boundary-matrix into the relay. Also, there's a parallel claude agent session managing autokernel work on the gpu kernels, distill any insights it may need and relay them to it directly. I imagine much of what you said could be formatted as planner hypotheses",
+    "disposition": "planned",
+    "plan_ref": "relay+AK-distillation executed as operator-directed communication (not handoff writes); boundary-matrix HANDOFF filing remains Stage-3-gated if a dive is later selected"
+   }
+  ]
+ }
 }
