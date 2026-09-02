@@ -1381,7 +1381,25 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       with the confirm gate on. Cheapest, zero measurement, loses only screen-rung work that is
       worthless on production anyway. (c) **Launch run 24 as-is** — the confirm gate protects
       future keeps but bakes in the -1.4%. NOT recommended.
-      **Recommendation: (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
+      **CORRECTED 2026-09-02 (before acting — two errors in the options above):**
+      **(i) Option (b) is BARRED by the ratified single-champion invariant.** "Seed Champion = frozen
+      production" is correct in exactly ONE moment: immediately after a promotion. We are MID-cycle,
+      so applying it would silently discard the accumulated research — the precise 2026-08-31
+      incident whose ruling reads *"I NEVER WANT TO SEE YOU MAKE THIS MISTAKE EVER AGAIN."*
+      Option (b) is withdrawn; it must never be recommended mid-cycle again.
+      **(ii) The -1.414% is the AGGREGATE's standing, NOT proven to be the three keeps' fault.**
+      The champion is **67 commits / +4720 -310** above v9 and contains the manual-admission
+      aggregate — DFlash2 loader + metadata, iqk fallbacks, speculative work (`5c278648a` verified
+      an ancestor) — as well as every autokernel keep. Attributing the regression to run 23's three
+      keeps was premature; R23-23's `9e18beb0` probe is exactly the test that attributes it.
+      **Revised options**: (a) probe `9e18beb0` (RUNNING, result ~15:55Z) — if it is neutral the
+      three keeps own the regression and a 3-commit revert cleans the base; if it is also ~-1.4%
+      the regression predates them and lives in the older aggregate. (c) **launch run 24 as-is with
+      the confirm gate already configured** — invariant-compliant, zero GPU cost, and every FUTURE
+      keep must clear the 27B, so the loop cannot deepen the hole.
+      **Recommendation: (a) then (c)** — the probe is already in flight and free, and run 24 cannot
+      start before it finishes anyway (a second GPU workload would contend and corrupt both).
+      **Recommendation (superseded): (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
       whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
