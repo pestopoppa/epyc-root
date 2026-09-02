@@ -155,6 +155,44 @@ two sources as uncompiled. Corrected by touching in the persistent tree.
 Worth knowing generally: **the wiki compile step is not worktree-safe.** Page edits are ordinary
 tracked work and travel fine; the watermark does not. Run `--touch` where `.last_compile` persists.
 
+
+## 7. opencode.db taken over and closed — the 210 GB is gone, nothing to reclaim
+
+Operator handed this over after closing the INF-67 session, which had recorded a
+LEAVE-ALONE-then-VACUUM plan against a "~210 GB" `opencode.db`. **The premise no longer holds.**
+
+| measured 2026-09-02 | |
+|---|---|
+| `opencode.db` | **315 MB** (not ~210 GB) |
+| whole opencode tree | 403 MB (`log` 73 MB, `snapshot` 5.8 MB, rest <1 MB) |
+| other `opencode.db` on host | none — it is the only one |
+| any `.db` >1 GB under `/mnt/raid0` | none |
+| deleted-but-open files >1 GB | none (checked — that is how a "vanished" 210 GB usually hides) |
+| host free | 736 GB, 80% used |
+
+**A VACUUM would reclaim ~0 bytes.** `freelist_count = 0`, `auto_vacuum = 0` — the file is fully
+packed live data. Occupancy: `event` 260 MB (82%), `part` 27 MB, `message` 21 MB. With auto_vacuum
+off, deleting rows *leaves* free pages; a zero freelist therefore means the file was replaced or
+vacuumed, not pruned in place. Which of the two, I did not observe and do not assert.
+
+History survived: 228 sessions, 2026-04-28 → 2026-09-02. The campaign window (08-29 → 08-31) holds
+no sessions — consistent with that being the data that went — while 09-01 (83) and 09-02 (110) are
+present. The campaign's substance is in git either way.
+
+**Two reasons I took no action, both of which would have blocked it anyway:**
+1. A live `opencode` (pid 500205) holds db/wal/shm open **read-write**. It is in a DIFFERENT
+   devcontainer — the path resolves only through its mount namespace, which is why it is invisible
+   from here. The operator's "no opencode sessions open" is true of this devcontainer, not the host.
+   Nothing was killed or stopped; the DB was read via a throwaway copy, since deleted.
+2. The path is outside `/mnt/raid0/llm/`, so the containment guard blocks writes to it regardless —
+   real maintenance needs an explicit `EPYC_FS_ACK` on top of stopping the holder.
+
+Left as a **watch item, not a task**: ~193 of 228 sessions are from the last two days and `event`
+carries 82% of the bytes, so ordinary growth is ~100s of MB/day — immaterial against 736 GB free.
+The original 210 GB was real (three samples) and its mechanism was never confirmed, so if an
+artifact ever again approaches tens of GB, re-measure rather than assuming the old
+tool-output hypothesis. No maintenance pre-built for it.
+
 ## Deferred
 
 Nothing blocked on me. Carried, each with a named blocker:
