@@ -1401,6 +1401,28 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       start before it finishes anyway (a second GPU workload would contend and corrupt both).
       **Recommendation (superseded): (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
       whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
+      **RESOLVED 2026-09-02T16:15Z — probe (a) run, keeps EXONERATED, run 24 launched as-is (c).**
+      `9e18beb0` (the pre-keep parent) measures **-1.751%** vs production — `drifting: False`,
+      `decisive: True`, cleanest drift of any run yet (0.080/0.079, rho 0.081/0.090); production
+      66.10 t/s vs 64.91 t/s. Against the champion's -1.414%, the three run-23 keeps moved
+      production by **+0.337 pp — INSIDE the 0.949% floor** — so they are production-NEUTRAL, not
+      the cause. **The regression predates them and lives in the older aggregate.** A 3-commit
+      revert would have fixed nothing; none was made.
+      **Reframing: this is very likely a FEATURE COST, not a defect.** The aggregate's
+      -1.4/-1.75% is measured on dec-b4 = `pp=512, tg=0, ubatch=4` — a PREFILL-shaped surface that
+      by construction cannot see DFlash2, whose entire value is in DECODE. The same champion
+      delivers **2.38x speculative decode** at acceptance 0.6501 (R23-17). Paying ~1.7% of prefill
+      for 2.38x decode is a good trade for real serving, not a regression to repair.
+      Run 24 launched **pid 260751**, confirm gate ACTIVE (27B, 5 pairs, dec-b4 1.142% + dec-b8
+      1.753%), screen parity waived-and-recorded, claim held on mi210_0.
+- [ ] **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.**
+      Established by R23-22/R23-23: the headline is measured on dec-b4 (`pp512/tg0`), a
+      prefill-only shape, while the champion's largest asset (DFlash2, 2.38x) is a DECODE feature
+      that surface cannot observe. The published headline therefore systematically UNDERSTATES the
+      champion and reads as a regression while the aggregate may be strongly net-positive in real
+      serving. Propose: the headline for an aggregate carrying decode features must include a
+      decode/speculative surface (tg128 and/or a DFlash2-enabled arm) reported ALONGSIDE prefill,
+      never replacing it. Until then quote the headline as "prefill-only".
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
