@@ -181,7 +181,13 @@ not a gate.
       each `llama-server` pid in the orchestrator stack) and hand the owning session the list of skewed ones
       for an eviction + restart at their boundary — this is almost certainly the mechanism behind
       [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) and the "frontdoor at 46% of
-      canonical" drift. (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
+      canonical" drift. **(b) audited 2026-09-02 11:49Z (read-only):** no CPU `llama-server` is live at all —
+      the orchestrator API answers on :8000 with no CPU model resident, so the fix belongs in the launch path
+      before the next stack start, not in a restart. The two long-lived model processes found: `sd-server`
+      (Ernie image turbo, 12 GB, up since 08-21, `-t 96`, interleave policy set) sits **8 / 40 / 32 / 19 %**
+      across nodes — the same fallback; and the autokernel loop's GPU `llama-bench` is 89 % on node 3 by
+      design (host threads pinned to 184-191). Per-node free after this session's evictions: 70 / 31 / 34 /
+      24 GB — still uneven, so the next 98 GB interleaved load will skew again without (a). (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
       the intended node before falling back — system-wide, hurts file-heavy work), a drop_caches hook in the
       stack's launch path, or BIOS NPS1 (hardware interleave makes the placement question disappear; C0-c
       says whether it also lifts the 153 GB/s). Memory note: `feedback_page_cache_defeats_numa_interleave`.

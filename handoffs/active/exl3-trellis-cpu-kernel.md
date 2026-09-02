@@ -58,6 +58,13 @@ converter/importer from the exl3 safetensors into GGUF for the expert tensors on
 
 ## Plan — phases with gates
 
+- [ ] **X-DL — weights on disk.** Started 2026-09-02 11:50Z at the operator's direction
+      (`/mnt/raid0/llm/tmp/inf70/download_exl3.sh`, one file at a time, resume-safe, sha256 against the LFS
+      oids): `4.05bpw_h6_ng6` (100.1 GiB — 9 shards + 36.4 GiB `ngram_embedding.safetensors` + `vision_k6`)
+      first, then `3.05bpw_h5_ng5` (79.3 GiB, includes `mtp_hyper_connection_mixer_patch.safetensors`), into
+      `models/turboderp/Qwen3.8-Flash-Next-exl3/<branch>/`. ~10 MB/s → ~3 h and ~2.3 h. Tick when
+      `download.log` shows `SHA-OK` for every LFS file of both branches. Not a measurement-window concern
+      (I/O only), but do not start a second download while it runs.
 - [ ] **X0 — format spec from source (no compute).** Read `moe_mul1.cpp`, `codebook.cuh`, `exl3.md` and the
       4.05 branch's tensor metadata; write `docs/design/exl3-mul1-ggml-type.md`: the bit layout of a 16×16
       tile at K bits, the `suh`/`svh` role at inference (which side gets the Hadamard, per tile or per row),
