@@ -1259,18 +1259,42 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       two-rung · D2 confirm gate on dec-b4+dec-b8, tg128 kept for headline context · D3 pairs=5
       gate / 20 headline · D4 headline MOVES to the 27B rung · D5 screen swap deferred to the
       §5.6 smokes (DFlash2 first if it passes) · D6 window scheduling stays the operator's call.
-- [ ] **R23-11 — implement the approved rung design in loop code** (§5.1 census-based
+- [x] **R23-11 — implement the approved rung design in loop code** ✅ 2026-09-02 (§5.1 census-based
       quant-family + rung-parity check · §5.2 (surface, workload-class) floor keying — subsumes
       R23-7/R23-8 · §5.3 KEEP_CANDIDATE screen→confirm gate, headline-on-rung, rung on every
-      record). Built on side branch `ak/rung-fixes-20260901` (never the lane mid-run); full
-      hardware-free suite green + regrowth budget justified; MERGE AT THE RUN-23 BOUNDARY.
-- [ ] **R23-12 — re-anchor inbox seeds to the rung they will be measured on (§5.4)** — 01, 02,
-      03, 05, 07, 08, 10 cite Q4_K routes/1536 widths; 07 + 18 become directly measurable on the
-      production rung. Rung-tag (never invalidate) the 1.5B negatives. AT THE BOUNDARY ONLY —
-      the running loop re-reads the inbox every iteration.
-- [ ] **R23-13 — rung identity artifact (§5.6 step 2)**: one rocprofv3 dispatch-sanity invocation
-      per confirm surface on the 27B (~5 min device), recording the production dispatch table.
-      Rides the same boundary window as R23-9.
+      record). Built on side branch `ak/rung-fixes-20260901` (never the lane mid-run); merged at
+      the boundary — lane at `765fc6bb` (research), gate suite green 06:51Z (see R23-15 for the
+      two refusals on the way there).
+- [x] **R23-12 — re-anchor inbox seeds to the rung they will be measured on (§5.4)** ✅ 2026-09-02 —
+      9 seed files applied by the driver at 06:51Z (manifest
+      `/mnt/raid0/llm/tmp/boundary-20260901/step3-seeds-manifest.txt`); loop was verified dead
+      first, live inbox never edited mid-run.
+- [x] **R23-13 — rung identity artifact (§5.6 step 2)** ✅ 2026-09-02 — production dispatch tables
+      recorded per confirm surface on the 27B:
+      `/mnt/raid0/llm/tmp/boundary-20260901/rung-identity/dec-b{4,8}.Qwen3.8-27B-Q8_0.json`.
+- [x] **R23-15 — boundary step2 gate defect found + repaired (operator-approved)** ✅ 2026-09-02 —
+      the drafted gate demanded ABSOLUTE green on `pytest loop/ controller/`, but controller/
+      carries 74–76 pre-existing legacy-red tests (StaticBuildCache sealed-key fixtures, Arena
+      adapters, V8Deterministic setup errors) — the gate could never pass and was armed without a
+      dry-run of its exact command. Refusal #1 22:17Z (fail-closed, lane rolled back — GPU idle
+      overnight). A/B in fresh worktrees proved the failing sets at `74b936b5` and `9c40429d`
+      byte-identical (merge introduces 0, adds 35 passing). Fix 1 `ecb6288a`: pytest becomes a
+      DELTA gate vs the pre-merge tag. Refusal #2 06:45Z: one legacy test audits the
+      *checkout's own git-cleanliness* (passes in a fresh worktree, fails in any working lane at
+      the same commit) — fresh-baseline-vs-live-lane compared environments, not commits. Fix 2
+      `9fa7a6fa`: environment parity, both sides in fresh detached worktrees. Gate green 06:51Z:
+      74 = 74, 0 introduced. Floors + regrowth guards stayed absolute and green throughout.
+      OP-35's "full suite green" conjunct is read as this delta-green per operator "proceed"
+      (2026-09-02 morning). NOT filing a fix-the-legacy-red task: Phase 5 strip deletes those
+      suites; fixing them first is work the teardown plan already declines.
+- [x] **R23-16 — DFlash2 smoke result (D5 settled for run 24)** ✅ 2026-09-02 — smoke FAILED
+      rc=1, non-gating as designed: `llama-bench` cannot load
+      `Qwen3.8-27B-DFlash2-Q8_0.gguf` standalone (2.06 GB drafter HEAD, present and readable —
+      it is a companion artifact, not a self-contained model). Run 24 screens on the 1.5B rung.
+- [ ] **R23-17 — route the DFlash2 loadability finding to the DFlash2 handoff owner** — the
+      drafter-head GGUF needs a composite/loadable smoke path before it can ever be a screen
+      rung; owning handoff `dflash2-block-drafter-experimental-build.md` (not this session's
+      scope to fix).
 
 ---
 
