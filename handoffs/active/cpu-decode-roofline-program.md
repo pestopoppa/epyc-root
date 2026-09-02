@@ -82,11 +82,15 @@ per-row `vec_dot` in `FusedMM::dot` is a fixable implementation error, not a str
 **⚠ The measurement trap on A1, stated because a correct result will look wrong.** With the churn
 still present, a *perfect* gemv fix reads: fused ≈ 300 (gemv) + 215 (other) = **~515 ms at 1T vs
 the graph's 350 ms** — still 1.5x slower, because the graph's own 1T overhead is only ~50 ms.
-Both A1 and A2 are individually fatal; the design needs both. With both, at 48 threads:
-~28 ms gemv + ~5-15 ms other ≈ **33-43 ms ≈ 23-30 t/s**, which is the original target.
+Both A1 and A2 are individually fatal; the design needs both. With both, in a CLEAN build at 48
+threads: ~28 ms gemv + ~5-15 ms other ≈ **33-43 ms ≈ 23-30 t/s**, which is the original target.
+Note the fused/graph ratio is ~3.9x at 1T in the same build and roughly stable across thread
+counts — so a same-build 48T comparison is the honest interim check, and the clean-build
+projection above is a target, not a measurement.
 
-- [ ] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, then re-measure
-      at 48 threads against the 74 ms baseline. Only then does the bit-exactness hunt resume.
+- [ ] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, **both arms in
+      the SAME build**, then re-measure at 48 threads — again same-build — before comparing to the
+      74 ms clean-build baseline. Only then does the bit-exactness hunt resume.
 
 ## Axis B — the expert path's bandwidth deficit (THE hard gain)
 
@@ -134,7 +138,21 @@ access pattern that would do it.
       memory, an eval-callback matching the wrong node, a debug print dereferencing NULL and
       costing a multi-hour crash hunt, and a profiler mis-attributing 90% of what it named. The
       assertion `component <= total && duration >= 0` would have caught the fourth for free.
-- [ ] **C3 — a control arm for every claim.** The fused path's "84% gemv" was uninterpretable until
+- [ ] **C3 — hold the BUILD constant, not just the artifact.** OP-32 ratified the rule that a delta
+      is measured with the *artifact* identical on both arms; this campaign shows the same applies to
+      the *build*. The INF-67 session's own wrap-up records the graph at **8.00 t/s (~125 ms) at -t 48
+      in the debug build** against **13.46 t/s (~74 ms) clean** — a **1.7x** systematic penalty from
+      the instrumentation. Any fused-vs-graph or before-vs-after number that crosses that boundary is
+      not a measurement.
+
+      **Worked example, and it is mine.** I told the session the graph gains "4.7x from 1 thread
+      (350 ms) to 48 (74 ms)" and used it to extrapolate. That divided a DEBUG-build 1T number by a
+      CLEAN-build 48T number. The same-build scaling is **2.8x** (350 → 125 ms). The correction does
+      not change the verdict — the fused/graph ratio is ~3.9x at 1T and roughly stable across thread
+      counts, which is the cleaner way to state it — but the error is exactly the class OP-32 was
+      ratified to prevent, committed one level up from where the rule was written. Cite build id and
+      thread count on every row, always.
+- [ ] **C4 — a control arm for every claim.** The fused path's "84% gemv" was uninterpretable until
       the graph was measured at the same thread count; the control took one run and inverted the
       conclusion. No same-conditions control, no claim.
 
