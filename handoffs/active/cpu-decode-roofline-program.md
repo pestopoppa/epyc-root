@@ -576,10 +576,22 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       in batched verification per se** (caveat: the ngram control never batched at position 28, so it
       proves a 2-token verify batch *can* be exact here, not that it always is; the default-`n-match 24`
       ngram arm was vacuous — it never drafted). Bisect (running, two arms): the one target-side
-      difference between the arms is `cparams.embeddings_nextn = true, masked = false`, which disables the
-      layer-47 `inp_out_ids` gather through the ported `gather_now` predicate — force `masked = true` and
-      see whether the flip survives; second suspect, the acceptance comparison (31 of 31 accepted). No
-      serving exposure until this is settled; E-GATE's "output unchanged" claim depends on it.
+      difference between the arms is `cparams.embeddings_nextn = true, masked = false` — **bisected
+      2026-09-02 (env-gated diagnostics, `5497d7864`)**: forcing `masked = true` cannot even start (the
+      driver reads the target's hidden state at every prompt position — the ungathered export is its
+      contract), so the deferred-gather hypothesis is refuted; the acceptance comparison is exact
+      token-id equality and does reject (2 genuine rejections in 33 steps). **The divergent token is the
+      BONUS token**: `common_sampler_sample_and_accept_n`'s `i == draft.size()` branch
+      (`common/sampling.cpp:657-663`) reads it from the last row of the verification batch and compares it
+      against nothing. Underneath: **the target's logits at rows ≥ 1 of a multi-token decode differ from
+      the same position decoded singly on this hybrid** (GDN chunked path / PLE conv / QSA indexer) — which
+      also means the "verified" tokens are checked against slightly non-exact logits, and **acceptance rate
+      is not evidence of exactness on this architecture** (p1 reported 1.00 and diverged). Options: (a) an
+      extra single-token decode per round for the bonus token — correct, costs most of the win; **(b) make
+      qwen4exp's multi-token path row-exact vs the single-token path — the real fix, the subject of
+      upstream `36b101543` (#27941), being ported and re-tested now as E2b-1**; (c) accept non-exactness
+      and drop the "output unchanged" claim. If (b) via the port closes the flip, E2a closes; otherwise
+      (a)/(b)/(c) is the operator's decision. No serving exposure until then; E-GATE depends on it.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
