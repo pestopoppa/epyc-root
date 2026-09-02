@@ -460,15 +460,24 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       unchanged within error. Inside D7's predicted −0.5…−1.5 ms band. **Recommendation adopted: the
       gate-up file is the comparison baseline for Axis B/D decode work from here** (new artifact per the
       artifact rule; the uniform file stays the era anchor); B4's `--tensor-type` overrides apply on top of
-      it in one `llama-quantize` pass since they touch none of the fused tensors. B3-k (the kernel half)
-      stays open.
+      it in one `llama-quantize` pass since they touch none of the fused tensors. **B3-4 combined ✅ 2026-09-02** (subagent `b34`, first Fable-low agent):
+      `IQ4_XS-uniform-gateup-r16` = the gate-up file + `ffn_gate_inp` F32→F16 only, via B4's patched
+      quantizer (48 s); 98,267,079,776 B, SHA-256
+      `6468558b42579664af5a4551292828264905109f9a8d3fea4d8e10e3c7ce47d7`; GGUFReader diff exactly 48 type
+      changes, routers exactly `float16(F32)`; bytes/token 4.1656 → 4.0397 GB (−3.02%). ABA + bracket at
+      t48, build 10196, placement proven: gate-up 10.33 → **r16 10.49 ±0.02 t/s (95.33 ms, −1.48 ms,
+      +1.55%)**; t96 9.76 → 10.21 (one arm each, non-claim); prefill-only ABAB **neutral (200.3 vs
+      200.2)**. Greedy agreement 82.6% (p2/p3 identical; p1 diverges at a low-confidence branch —
+      expected, the router precision changed; C9 is what would prove equivalence). **`IQ4_XS-uniform-gateup-r16`
+      is the Axis B/D comparison baseline from here** (prefill equal within noise, decode and bytes better;
+      the uniform file stays the era anchor, UD stays the served file). B3-k (the kernel half) stays open.
 - [x] **B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,
       `/mnt/raid0/llm/tmp/inf70/agents/b4/`) — three artifacts vs the uniform control, build 10196, t48, r5,
       placement proven in-window on every arm. Full override set `IQ4_XS-uniform-b4` (router F16 +
       `output.weight` Q5_K + `ffn_down_exps` IQ4_NL; bytes/token 4.1656 → 3.9369, −5.49%; SHA
       `bcddc62b…`): decode **10.385 → 10.515 t/s (+1.25%, −1.19 ms; −1.49 ms predicted at 153 GB/s)** but
       **prefill −15.1% (177.4 → 150.6)**. Separation arms invert the naive reading: **`ffn_gate_inp`
-      F32→F16 is decode-neutral (+0.05%) and +11.9% PREFILL (198.5) — take it**; `output.weight`
+      F32→F16 is decode-neutral (+0.05%) and read as +11.9% prefill (198.5) — take it** (the prefill part did NOT reproduce in B34's prefill-only ABAB, 200.3 vs 200.2 pp512, so it is decode- and prefill-neutral; the +11.9% was one arm against a drifting control); `output.weight`
       Q6_K→Q5_K −84 MB/token with no measured effect — optional; **`ffn_down_exps` Q5_1→IQ4_NL is the
       whole regression, −21.7% prefill for 0.44% of the stream — do not take it.** Correction to the
       ledger: only **6 of 48** `ffn_down_exps` were Q5_1 (layers 0–5, `use_more_bits`); 42 were already
