@@ -1291,10 +1291,25 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       rc=1, non-gating as designed: `llama-bench` cannot load
       `Qwen3.8-27B-DFlash2-Q8_0.gguf` standalone (2.06 GB drafter HEAD, present and readable —
       it is a companion artifact, not a self-contained model). Run 24 screens on the 1.5B rung.
-- [ ] **R23-17 — route the DFlash2 loadability finding to the DFlash2 handoff owner** — the
-      drafter-head GGUF needs a composite/loadable smoke path before it can ever be a screen
-      rung; owning handoff `dflash2-block-drafter-experimental-build.md` (not this session's
-      scope to fix).
+- [ ] **R23-17 — DFlash2 capability verification on the post-keep champion (OWNED here —
+      operator reassignment 2026-09-02: "I want you to own this"; "We can't afford having any
+      issues with the DFlash2 performance boost. It is central to this champion's feature set").**
+      Exposure: run 23's keeps were validated ONLY on the 1.5B dec-b4 surface; `db18f393` edits
+      `fattn-wmma-f16.cu` (on the 27B batched draft-verify path) and `732389d6` rewrites 119
+      lines of `mmvq.cu` — the DFlash2 path has never been exercised post-keep. Built
+      `scripts/benchmark/dflash2_capability_smoke.sh` (research lane `b412f37d`): replays the
+      DF2-5 server recipe verbatim on a given build, gates on acceptance ≥0.58 (bar 0.6205) and
+      speculation boost ≥1.5× none-control (bar 2.6×); step5's standalone `llama-bench` on the
+      drafter head could never work (companion artifact, not a model — R23-16). **Run-24 launch
+      HELD**: `PREAUTH_RUN24` → `.held-for-dflash2-verify` + `HOLD_REASON.txt`; at step6
+      completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
+      re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
+      (candidates in commit order), report with rollback options.
+- [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
+      keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
+      before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
+      Decide after R23-17's first measured result whether this goes in loop code or stays a
+      boundary-step; if loop code, it rides the regrowth budget conversation.
 
 ---
 

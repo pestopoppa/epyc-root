@@ -172,6 +172,13 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       **correct rather than an oversight** — the two drafters do not share the defect. Should a
       multi-slot DFlash failure ever be observed, reopen with the measurement that shows it; a
       guard is only justified by a reproduced fault.
+- [ ] **DF2-10 (2026-09-02, owned by ak-rebuild-20260828 per operator reassignment) — post-keep
+      capability verification.** Run 23 advanced the champion three keeps past `5c278648a`
+      (`7d2ea88b` mmvq · `db18f393` fattn-wmma-f16 · `732389d6` mmvq rewrite) with zero DFlash2
+      exercise. `scripts/benchmark/dflash2_capability_smoke.sh` (research `b412f37d`) replays the
+      DF2-5 server recipe on any build and gates acceptance ≥0.58 / boost ≥1.5×; first run
+      targets anchor-gen-014 at the boundary GPU seam (~2026-09-02T13:00Z), run-24 launch held on
+      its PASS. Tracking + verdict live in `autokernel-rebuild-program.md` R23-17/R23-18.
 - [ ] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
       `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
       reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
