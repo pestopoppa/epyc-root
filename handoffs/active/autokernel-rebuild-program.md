@@ -1162,15 +1162,18 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       stale after the commit landed without the flip (recurrence-check catch).
 - [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
       boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
-- [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
-      Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
-      (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.
-      Commands (operator's, at a boundary of their choosing):
-      `git -C /mnt/raid0/llm/llama.cpp worktree remove /mnt/raid0/llm/tmp/ak-loop-tree` then
-      `branch -D ak/loop-champion-20260828` (`-D` required: the main tree's HEAD is
-      `production-consolidated-v9`, so `-d`'s merged-into-HEAD check refuses despite full merge).
-      Bundle into the same action: `ak-loop-tree-b`/`-c` (branches `…20260828b`/`c`, both still at
-      base `0db32c06e`, zero commits — trivially disposable).
+- [x] **R21-3 — RETIRED ✅ 2026-09-02 (operator executed).** `ak-loop-tree`, `-b`, `-c` worktrees
+      removed and branches `ak/loop-champion-20260828{,b,c}` deleted (`-D`); ~495 MB reclaimed.
+      Safety RE-VERIFIED same day rather than trusting the 2026-08-31 record: `4925b2084` is an
+      ancestor of the **current** champion tip `732389d6d` (not just the older `a2728701`) with
+      **zero** commits unique to the branch, tag `ak/pre-reconcile-loop-20260831` still resolves
+      and the object is intact, all three trees idle on two samples 48 s apart, and nothing live
+      depends on them (driver + run 24 pass `--worktree champ2` explicitly). Post-deletion checks:
+      0 worktrees, 0 branches, tag resolves, `4925b2084` still ancestor of the live champion,
+      `champ2` untouched on the canonical champion branch. **The review changed the command**:
+      `ak-loop-tree-c` held 82 uncommitted lines present in NO commit on any ref, so plain
+      `worktree remove` would have refused and a reflex `--force` would have destroyed them —
+      rescued first (R21-5), and only then was `--force` scoped to that one tree.
 - [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
       state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
       (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
