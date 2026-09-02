@@ -320,13 +320,28 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       (without it the server serializes the whole recurrent state per draft round; upstream measured
       108 → 183 t/s with MTP) plus `36b101543` (#27941) qwen4exp correctness — filed under E2. Upstream's
       CPU `graph_optimize` hook (#27301 plumbing) is the natural home for D2's plan-time barrier bitmap.
-- [ ] **D7a — enable the CONCAT dim-0 row partition (found by D7).** `ggml_compute_forward_concat_f32`
-      shards over ne2; the GDN/PLE conv concat is `[conv_kernel, conv_channels, n_seqs] = [4, 10240, 1]`,
-      so ne2 = 1 and **thread 0 does all 40,960 element copies while 47 threads wait** — 37 nodes per token
-      (36 GDN + 1 PLE). Our tree already carries the fix (`e5dffb4e8`) behind `GGML_CPU_CONCAT_DIM0_ROWS`,
-      default OFF. One same-build A/B on the C5 anchor plus the `GGML_CPU_PROF` CONCAT row; estimated
-      0.8–3.0 ms/token, bit-exact (partition change only). If it lands, decide whether to flip the default
-      in this tree or carry it in `canonical_recipe.py`. (A/B running 2026-09-02, subagent `d7a`.)
+- [x] **D7a — enable the CONCAT dim-0 row partition (found by D7).** ✅ measured 2026-09-02 (subagent
+      `d7a`, `/mnt/raid0/llm/tmp/inf70/agents/d7a/REPORT.md`). `ggml_compute_forward_concat_f32` shards over
+      ne2; the GDN conv concat `[4, 10240, 1]` has ne2 = 1, so thread 0 did all 40,960 copies on 37
+      nodes/token. `GGML_CPU_CONCAT_DIM0_ROWS=1` (our `e5dffb4e8`, default OFF), build 10196, uniform
+      IQ4_XS, canonical recipe, two same-window OFF/ON pairs with verified 23.5 GB × 4 placement:
+      **decode −1.10 ms/token at t48 (10.41 → 10.53 t/s) and −1.29 at t96; reproduced −1.41 / −1.32 in a
+      second window; prefill pp512 +28.2% at t48 (184.5 → 236.5 t/s), +22.5% at t96.** `GGML_CPU_PROF`
+      CONCAT row 1.318 → 0.112 ms/token over 37 nodes (35.6 → 3.0 µs/node, 11.8×). Greedy output
+      bit-identical on 3 prompts × 128 tokens. One OFF arm was excluded because its placement skewed
+      (node 3 at 20.1 GB after an eviction that did not reach the target on a cold box — the placement
+      proof caught it, which is C7 working). Drift between the two OFF arms 45 min apart was −1.6%, the
+      same order as the decode effect; the profiler row is the load-bearing decode evidence and the prefill
+      gain stands on its own. **Note for the prefill owners (out of INF-70 scope): +23–28% pp512 from this
+      flag alone.**
+- [x] **D7b — flip `GGML_CPU_CONCAT_DIM0_ROWS` default-ON in the fusion tree.** ✅ 2026-09-02 — branch
+      `inf70/d7a-default`, commit `3026caac` (1 file, +18/−1): default enabled, env is an explicit opt-out
+      (`=0`/`false`/empty disables). `test-backend-ops test -o CONCAT -b CPU`: **210/210 OK with the new
+      default and 210/210 with the stock kernels** (the 18 `concat_transpose_dim0` cases included; note
+      that without `-b CPU` the suite skips the CPU device and passes vacuously with zero cases — the
+      0-vs-210 count is the non-vacuity check). Merge with the other Axis D branches. Rationale for default rather than
+      `canonical_recipe.py`: the recipe governs our benches, not the served stack — an env-gated win would
+      silently miss `llama-server` in production.
 
 ## Axis B — the weight stream: bytes per token and achieved GB/s per path
 
@@ -408,9 +423,10 @@ design record; this is the live task list.
       (`380278b40`, branch `inf70/fused`, subagent `fused`) — every per-row `vec_dot` loop replaced by
       `ggml_compute_forward_mul_mat` (via `ggml_cpu_extra_compute_forward` first). **Measured at 1T, same
       build (Release + OpenMP, build 1274 `740d0cfea`), same process, same window, uniform artifact,
-      clean placement: fused gemv column = 810 ms against a whole graph token of 197 ms.** The success
-      criterion (→ ~300 ms) was not met; a call census is being taken to say whether the residual is
-      structural (more calls / more bytes than the graph) or mechanical. The pre-A1 per-row path could not
+      clean placement: fused gemv column = 232 ms after the census fix (810 ms before it — 598 ms was the
+      un-migrated repacked-down-expert path), against a whole graph token of 195 ms.** The success criterion
+      (→ ~300 ms) is met for the column; the census says the residual is structural (4.1× the calls, the
+      double MoE), not mechanical — per-call time is ordinary (36.6 µs per 640×2560 expert slice). The pre-A1 per-row path could not
       be timed in the same build: it aborts with `double free or corruption` on its first token — and the
       abort reproduces on the pristine `c035bbf3d` tree in Release, so the heap corruption pre-dates this
       work and was masked by the debug build the INF-67 campaign measured on.
@@ -446,16 +462,27 @@ raise the rate) plus a fused-path overhead that has to be measured — **≈ 25�
 the honest interim metric; it is same-build and roughly stable across thread counts.
 
 - [x] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, same build. ✅ run
-      2026-09-02 — **FAIL, and not marginally: fused 961 ms/token vs graph 196.9 ms at `-t 1` (4.88×);
-      gemv column 810 ms (4.1× the whole graph token), other column 150.6 ms (0.77× the whole graph
-      token).** Same process, same model load, same window, non-claim but a same-build ratio. Logit gate
-      at step 1: max_abs 1.311 / NMSE 6.07e-2 (fails ≤ 1e-4; greedy token agreed). **The megakernel
-      design is refuted on its own terms**: A1 and A2 were both necessary and together are not sufficient,
-      and the non-gemv machinery alone costs more than the graph's entire token at a thread count where
-      the graph pays no barrier. No 48-thread arm and no further numerics work unless the operator
-      overrules this gate. The branch `inf70/fused` keeps the safety contract, the debug strip, the
-      batched kernels and the three bug fixes as the record. INF-67's row and phase checklist should be
-      closed against this result (owning session's call).
+      2026-09-02 — **FAIL at 1.51×: fused 294.7 ms/token vs graph 195.2 ms at `-t 1`** (6 decode steps,
+      same process, same model load, same window, placement 23.55 GB × 4; build 1274 `d48029dd0`,
+      branch `inf70/fused`). The first reading was 923 ms (4.70×); the operator-directed **call census**
+      showed 598 ms of it was one un-migrated hand-rolled path (42 of 48 `ffn_down_exps` are CPU_REPACK
+      and A1 had excluded repacked down-experts, so 84 of 96 MoE invocations walked 2,560 rows × 10 experts
+      by hand — 2.15 M scalar dots/token, confirmed to the unit by the call count 2,040); routed through
+      the same dispatcher the graph uses, 923 → 294.7 ms. **What remains is structural and named:** the
+      fused path issues **3,893 `mul_mat` calls vs the graph's 941** and streams **5,555 vs ~4,260 MB**
+      — the excess entirely in routed experts (2,473 vs 1,296 MB) because the transcription **calls
+      `fused_moe` twice per layer** (attention side at `qwen4exp-fused.cpp:1058/:1675` and ffn side),
+      where the graph runs the MoE once (`build_layer_ffn` at `qwen4exp.cpp:356` is the only
+      `build_moe_ffn` call). That is ~105 ms and ~1.2 GB/token, and the extra MoE output was being added
+      into the residual — which also bears on the logit gate (max_abs 1.2–2.7, NMSE 4e-2–2.4e-1 per step;
+      greedy agreed 6/6). One more iteration authorized: remove the attention-side calls, re-run the same
+      1T arm with the logit diff (result to be appended here). **Decision for the operator after that
+      run:** (a) if fused ≤ graph at 1T on both columns, the 48-thread question requires multi-threading
+      the fused path (INF-67 Phase 4 scope — the current path is single-threaded by construction); (b) if
+      still slower, the axis closes with this report as the refutation. The branch keeps the safety
+      contract, the debug strip, the batched kernels and the three bug fixes either way; A4b (owned logits
+      buffer, call sites listed in the report) precedes any serving exposure. Lock discipline: every arm
+      held the bench lock 80–84 s.
 
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
