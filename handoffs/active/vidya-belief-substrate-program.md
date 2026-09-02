@@ -410,7 +410,12 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
       empirical observation, not a static implementation gap.
 - [x] SC11 Survey the remaining candidate sources named in the register ✅ 2026-08-26 — **priced-and-declined, both sub-sources, verdict recorded rather than carried.** (1) llama-bench: the bulk corpus was already REJECTED by SC6-PRICE (0/200 full tuple); the scout subset is 3 records all from 2026-08-12 with no successor producer since — below any adapter's pay line. (2) speech kernels (whisper/qwentts): frozen production serving paths; examination shows no protocol-admissible measurement corpus exists to sample — runs are serving telemetry, and pricing requires a corpus. If a speech benchmark protocol or a new llama-bench scout campaign is ever declared, re-file a wiring row at that moment (the SC9 rule)
-- [ ] **SC53 — Wire the INF-70 CPU decode roofline ledger on the write side before its first run (filed 2026-09-02).**
+- [x] **SC53 — Wire the INF-70 CPU decode roofline ledger on the write side before its first run (filed 2026-09-02).** ✅ 2026-09-02
+      — adapter `scripts/vidya/adapters/inf70_roofline_ledger.py` (13bb588c): one ClaimTuple per llama-bench arm / readbw kernel row /
+      barrier row through the existing measurement ladder, no new grading rule; strict reader refuses by name what it cannot rederive
+      (missing bench log, arms.log/bench-log row disagreement, absent or mismatched `artifact.sha256`); 37 tests + a real-corpus replay
+      pinning identity. Write side wired the same day (7d2d2e1d): `cli.py ingest inf70`, dry-run over the corpus = 147 rows / 441 frames,
+      zero arm refusals; producer gap closed (bced4565).
       [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) C0/C5/B1/D0 produce the numbers every later
       keep/revert in that program will cite: read-only DRAM bandwidth under the decode recipe, the clean-build
       re-anchor sweep (t1/t48/t64, uniform IQ4_XS, OMP stack on/off), the per-path achieved GB/s and the per-node

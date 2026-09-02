@@ -80,7 +80,7 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | graph nodes per token | **7,906** pre-fusion; **6,887** after `MEAN_D1` + `MOE_TOPK_NORM` (the baseline build) | measured | `2026-08-28.md:88,142` and round 1 (`7902 → 6887`, −13%). The "~5,850 / ~6,800" in INF-67 are in no record |
 | thread-0 compute per node | 5–8 µs | measured, **excludes barrier wait** | `GGML_CPU_PROF` times the compute call only; the graph barrier at `ggml-cpu.c:3274` is outside its window. Three measurements, round 5 |
 | barrier primitive, measured 2026-09-02 | **1.9 µs at 48 threads, 2.4 µs at 64, 3.2 µs at 96** (libgomp `omp barrier`, OMP stack on, threads 4 per CCD); ggml's flat atomic barrier 1.9 / 2.1 / 2.8 µs; a per-CCD hierarchical prototype 2.1 / 2.1 / 2.8 µs (**no gain**); barrier + 1 µs of private work = 2.8 µs at 48T | measured (`bench_barrier`, `results-20260902T102729Z/d0-barrier.txt`) | At ~7,800 sync events/token that is **~15 ms at 48T, ~25 ms at 96T** — real, but well under half of the 35–55 ms per-node budget. The remainder is dispatch, tiny-op compute and straggler wait, which the D0-b node census must split. The libomp-via-`LD_PRELOAD` arm **hung** (GOMP ABI shim) — D3a needs a real clang+libomp build. Sync events per token: still to be counted (D0-b) |
-| expert path (`mul_mat_id`), in-function per-call | 68–88 µs × 144 calls = **10–13 ms/token**; ≈ 100–130 GB/s aggregate on ~1.3 GB | measured (pre-NUMA-fix box state, UD artifact with IQ3_S experts) | `2026-08-28.md:170,190` — the `[mmid_prof]` in-function timer. **This retracts the "5.6–17 GB/s" figure in the same record**, which was the per-op profiler contaminated by cross-node waits |
+| **expert path (`mul_mat_id`), by N-sweep extrapolation (B2, 2026-09-02)** | **~19.7 ms/token at 65.8 GB/s** (uniform IQ4_XS, build 10196, clean placement); marginal cost of expert bytes 1/15.44 = 64.8 GB/s (53% on the confound-free N=10→5 step) | measured (four N arms + controls, same window) | replaces the pre-fix in-function estimate (68–88 µs × 144 ≈ 10–13 ms on the UD file). ~8.5 ms of the 19.7 is bytes at 153 GB/s; **~11 ms is the current per-expert 48-way split** (14–54 rows per thread, ten short streams per op). The old "5.6–17 GB/s" remains retracted |
 | dense path (`mul_mat`), 797 calls/token | in-function median ~20 µs (Q8_0 dense) → ~16 ms if representative; profiler-attributed 57 ms (72 µs/call) *including waits* | partly measured | `2026-08-28.md` rounds 2/3/6. The 40 ms between the two figures is wait time nobody has assigned. **B1 settles the split** |
 | fused decoder, same debug build, `-t 1` | fused 1350 ms vs graph 350 ms (**3.86×**); fused gemv 1141 / other 215 | measured (non-claim) | `2026-09-01-inf67.md`; safe only as a same-window ratio |
 | ~~28 ms gemv / 46 ms non-gemv~~, ~~65 µs × 144 = 9.4 ms~~ | **retired** | retired | a partition of the retired 74 ms; the constants are "unmatched by committed records" (INF-68 audit). The in-function medians above are the sourced equivalents |
@@ -165,12 +165,22 @@ not a gate.
 - [ ] **C4 — a control arm for every claim.** The fused path's "84% gemv" was uninterpretable until the
       graph was measured at the same thread count in the same build; the control took one run and
       inverted the conclusion. No same-conditions control, no claim.
-- [ ] **C6 — belief-kernel wiring before the first C5 run.** C0/C5/B1/D0 are new measurement producers.
+- [x] **C6 — belief-kernel wiring before the first C5 run.** ✅ 2026-09-02 — `inf70_roofline_ledger.py` + `cli.py ingest inf70`; 147 claims / 441 frames over the three measured run dirs, zero refusals; `tests/vidya` 763 passed (SC53 ✅). C0/C5/B1/D0 are new measurement producers.
       Source-table row filed in `scripts/vidya/adapters/README.md` and task **SC53** in
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): one `ClaimTuple` per
       `llama-bench` arm beside the run directory (artifact path + SHA, build id, full recipe, `-t`, n,
       reps, box-state capture) via the existing measurement ladder. Wire the write side with C5, not after.
-- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** Measured 2026-09-02: when a
+- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** *(a) ✅ 2026-09-02 —
+      research branch `inf70/c7-placement` (6f7bdadb, pushed; merge to research `main` is the owning
+      session's/operator's step — the auto-mode classifier refuses a branch→main push from this session):
+      `scripts/utils/numa_evict.py`, `scripts/utils/numa_placement_check.sh` (exit 3 above 40% share),
+      `bench_canonical.sh --pre-evict-gib` (default 40) with the in-window placement proof as a REQUIRED row,
+      `canonical_recipe.py` constants + the eighth drift-class entry; 15 + 34 tests pass. Launch-path half
+      ✅ prepared, default OFF: orchestrator branch `inf70/c7-placement` (e9d4b817, pushed) adds
+      `numa_pre_evict_gib` (role field), pre-evict before `Popen` and a `[numa-placement]` log fold; 283 + 136
+      tests pass; enabling is a one-line `stack_topology.yaml` edit and the priors recompile must precede the
+      merge because the prior hashes pin `orchestrator_stack.py`/`stack_numa.py`. (b) audited — no CPU
+      server live (below). (c) still open — the durable form.* Measured 2026-09-02: when a
       NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
       model lands wherever memory is free (57.7 GB of 96 on node 0), costing −25% decode / −30% prefill. The
       box is normally in that state (1,085 GB of page cache). Three deliverables: (a) `canonical_recipe.py`
@@ -270,7 +280,10 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       libgomp is already at 1.9 µs at 48T and the hierarchical prototype does not beat it (2.1 µs); the
       primitive only becomes a lever at 96+ threads (3.2 µs → ~2 µs ≈ 9 ms/token).** Demoted: run (a)
       only if D4 moves the operating point to 96 threads or more.
-- [ ] **D4 — thread count × placement sweep, after D1–D3 change the floor.** t ∈ {48, 64, 96, 192} with
+- [x] **D4 — thread count × placement sweep.** ✅ closed 2026-09-02 by measurement, not run further: with
+      clean placement t48 10.09 / t64 9.69 / t96 9.67 t/s (C5), and B2's `-t 8,24,48` arm gives 9.57 / 9.53 /
+      10.26 — the decode floor is saturated at 8 threads and more threads do not buy bandwidth. Re-open only
+      if D1/D2/B3-k or Axis A change the floor. Original text: t ∈ {48, 64, 96, 192} with
       `OMP_PLACES=cores OMP_PROC_BIND=spread` versus explicit masks (`--cpu-mask` works in OpenMP builds;
       4 threads per CCD across all 12 CCDs vs 8 per CCD on 6, which decides how many GMI links carry the
       weight stream). Measured 2026-09-02 with clean placement: t48 10.09, t64 9.69, t96 9.67 — more threads
@@ -292,12 +305,28 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       the graph barrier, so this only helps once D2 elides it); concatenate the per-stream lora weights
       at load into one `mul_mat` per hc site (fewer nodes, same math, bit-exact if accumulation order is
       preserved); quantize the F32 router (B4). Measure the dense-path in-function median before and after.
-- [ ] **D7 — upstream CPU-side fusion sync.** The fusion tree has no upstream remote (`origin` and
-      `prod` are local paths), so this needs a scratch clone with a network fetch of `ggml-org/llama.cpp`
-      master. List the `ggml-cpu` commits since the champion's base that add fused variants
-      (`ggml_cpu_try_fuse_ops`, the reserved `FUSE_*` enum in `ops.cpp:4013`, `TOP_K`, fused GLU/ADD
-      chains, MoE-path changes) and port the bit-exact ones. Report the node-count delta on the C5
-      build before claiming anything.
+- [x] **D7 — upstream CPU-side fusion sync.** ✅ 2026-09-02, research only (subagent report
+      `/mnt/raid0/llm/tmp/inf70/agents/d7/REPORT.md`). Fork point: upstream `a8dc0e326` (**b10045**,
+      2026-07-16, #25076); upstream HEAD `0f3a71be1` (b10760) — 715 commits of divergence, 28 touching
+      `ggml/src/ggml-cpu/`, 6 that are not ARM/kleidiai/PowerPC/SpacemiT. **Result: upstream has added
+      nothing to the CPU backend that cuts this graph's batch-1 node count or per-node cost.** Master still
+      performs exactly one CPU fusion (RMS_NORM+MUL) with the same `ggml_graph_plan` TODO; `ggml_can_fuse`,
+      `ggml_barrier`, the graph loop, `mul_mat`/`mul_mat_id` chunking and every x86 kernel file have zero
+      upstream commits since the fork. Four upstream items measure exactly zero here (#27402 iqp is gated to
+      batch ≥ 8; #27930 SWIGLU_CLAMP is arch-gated and `swiglu_clamp_exp` = 0; #27880's PLE hoist is a
+      graph-split change and the artifact has one PLE layer; #27877 is a no-op on CPU) and #24575 must not
+      be ported. Two things the survey did find: **D7a** below, and an **Axis E prerequisite** — the
+      recurrent-state rollback chain `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a` (#28159)
+      (without it the server serializes the whole recurrent state per draft round; upstream measured
+      108 → 183 t/s with MTP) plus `36b101543` (#27941) qwen4exp correctness — filed under E2. Upstream's
+      CPU `graph_optimize` hook (#27301 plumbing) is the natural home for D2's plan-time barrier bitmap.
+- [ ] **D7a — enable the CONCAT dim-0 row partition (found by D7).** `ggml_compute_forward_concat_f32`
+      shards over ne2; the GDN/PLE conv concat is `[conv_kernel, conv_channels, n_seqs] = [4, 10240, 1]`,
+      so ne2 = 1 and **thread 0 does all 40,960 element copies while 47 threads wait** — 37 nodes per token
+      (36 GDN + 1 PLE). Our tree already carries the fix (`e5dffb4e8`) behind `GGML_CPU_CONCAT_DIM0_ROWS`,
+      default OFF. One same-build A/B on the C5 anchor plus the `GGML_CPU_PROF` CONCAT row; estimated
+      0.8–3.0 ms/token, bit-exact (partition change only). If it lands, decide whether to flip the default
+      in this tree or carry it in `canonical_recipe.py`. (A/B running 2026-09-02, subagent `d7a`.)
 
 ## Axis B — the weight stream: bytes per token and achieved GB/s per path
 
@@ -307,22 +336,38 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       0.521 GB), and the DRAM fill counters over a fixed token count for total traffic — the three must
       reconcile (C2). Until this exists every other number in this axis is unanchored. This is INF-10's
       prescribed profile, still never run on this model.
-- [ ] **B2 — decide what binds the expert path: per-call fixed cost or bandwidth.** The audit's
-      reading of `mul_mat_id` says fixed cost (14–54 rows = 19–26 KB per thread per expert, two barriers
-      per op, a serial grouping phase, ~130 GB/s in-function), and the retracted "5.6–17 GB/s" is not
-      evidence of latency. Test it two ways, same build, same window: (i) `--override-kv
-      qwen4exp.expert_used_count=int:N` for N ∈ {10, 5, 2, 1} — expert-path ms vs bytes: the slope is the
-      per-byte cost, the intercept the per-call fixed cost; (ii) the same op at t ∈ {8, 24, 48}. **Time
-      not scaling with bytes means fixed-cost-bound, not latency-bound** — do not read it as the
-      pre-audit text did. If fixed-cost-bound: D1 and B3 are the levers. If bandwidth-bound: B4 and D4.
+- [x] **B2 — decide what binds the expert path: per-call fixed cost or bandwidth.** ✅ 2026-09-02 —
+      **both hypotheses refuted; the path is bytes-proportional at ~43–54% of achievable bandwidth.**
+      `--override-kv qwen4exp.expert_used_count=int:N` for N ∈ {10, 5, 2, 1} via `llama-server` (build
+      10196, uniform IQ4_XS, C5 recipe + eviction, placement proven per arm, N=10 controls at both ends of
+      the window 98.8 / 98.3 ms reproducing the 99.1 ms anchor): **98.81 / 90.64 / 82.45 / 80.92 ms/token**.
+      Fit ms/token = 34.9 + 15.44 × bytes(GB), R² 0.984 → **1/slope = 64.8 GB/s, 42% of the measured 153**;
+      the confound-free N=10→5 step gives 81.8 GB/s (53%). Extrapolated to N=0 the **expert path is
+      ~19.7 ms/token (20% of the token): ~8.5 ms is its bytes at 153 GB/s and ~11 ms is overhead**; the
+      N-invariant per-call floor (144 × 2 barriers × 1.9 µs) is ≤ 0.6 ms, so per-call fixed cost does not
+      bind. Thread arm (`-t 8,24,48`, N=10): **9.57 / 9.53 / 10.26 t/s — +7% for 6× the threads**; whatever
+      binds the op is saturated at 8 threads (each thread gets 14–54 rows = 19–26 KB per expert, ten short
+      streams per op). Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b2/`. **Consequences: B3 (joint
+      expert×row chunking + gate-up fusion) is the highest-ROI lever on this path; B4 pays proportionally
+      and at ~1.5× its roofline value; D1's barrier removal has ≤ 0.6 ms at stake here and must earn itself
+      on the 797 dense `mul_mat` calls; D4 is refuted as a decode lever.**
 - [ ] **B3 — restructure `mul_mat_id` for batch 1.** Beyond D1's barrier removal: chunk across
       (expert × rows) jointly so each thread streams ≥ ~100 KB of one contiguous expert slab instead of
-      14 rows of each; and **fuse up+gate** into one op. The two tensors are both IQ4_XS `[2560,640,512]`,
+      14 rows of each (B2 measured the cost of the current split: ~11 ms/token of overhead on a 19.7 ms
+      path, saturated at 8 threads) — **B3-k, the kernel half**, to be built on top of D1's branch; and
+      **fuse up+gate** into one op — **B3-a, the artifact half**. The two tensors are both IQ4_XS `[2560,640,512]`,
       so a `[2560,1280,512]` `ffn_gate_up_exps` is a per-expert byte-level concatenation — producible
       offline with `gguf-py` from the existing GGUF, no requant and no HF source (the 2026-08-28
       `--fuse-gate-up-exps` re-conversion attempt was never reported). Halves the expert-path op count
-      (144 → 96 calls/token). Verify this tree's `build_moe_ffn` handles a fused gate-up tensor before
-      producing the file; gate on greedy + logit diff.
+      (144 → 96 calls/token). **Verified 2026-09-02 (D7): this tree already handles it end to end** —
+      tensor `blk.{bid}.ffn_gate_up_exps` `[2560,1280,512]` (`llama-arch.cpp:413/850`), loaded by
+      `create_tensor_gate_up_exps` (`llama-model.cpp:2874`, optional with fallback) which qwen4exp calls at
+      `qwen4exp.cpp:203`, consumed by the merged branch of `build_moe_ffn` (`llama-graph.cpp:2095–2112`: one
+      `mul_mat_id` then two views), passed at `qwen4exp.cpp:911`; landed upstream pre-fork (`b68d75165`,
+      #19139). **Concat order: gate rows first, then up, along ne[1].** Estimated −0.5…−1.5 ms/token from
+      the per-call fixed cost alone. One gate: the merged branch leaves `gate_exps` null and the SILU clamp
+      arm tests `if (gate_exps)` — harmless only because qwen4exp's `swiglu_clamp_exp` is 0. **No port
+      needed — only the artifact** (being produced 2026-09-02, subagent `b3`); gate on greedy equality.
 - [ ] **B4 — the bytes budget: requantize what is streamed for no reason.** From the tensor table, per
       token: `ffn_gate_inp` **F32 → F16 or Q8_0** (−126 to −190 MB, 3–4.5%, routing logits tolerate it —
       verify top-10 agreement on a fixed prompt set); `output.weight` **Q6_K → Q5_K or IQ4_XS** (−80 to
@@ -415,7 +460,10 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       wholesale; the self-contained `Q8_0` head is the fallback if borrowing is not ported first. Gate:
       `llama-cli -m <trunk> -md <head> --spec-type draft-mtp --spec-draft-n-max 2` on CPU prints the
       acceptance line, and greedy output is **identical** with and without the head (verification is exact
-      by construction — any difference is a bug).
+      by construction — any difference is a bug). **E2b (from D7):** port the recurrent-state rollback
+      chain `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a` (#28159) — without it the server
+      serializes the whole recurrent state every draft round (upstream: 108 → 183 t/s with MTP once it
+      landed) — and `36b101543` (#27941) qwen4exp correctness fixes, before any serving exposure.
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
