@@ -36,8 +36,8 @@ the fused decoder becomes one axis of a roofline program, not the program.
 | decode, **required comparison baseline** (OP-32 opt. B) | **~95 ms/token (10.52 t/s)** | INF-68, uniform IQ4_XS, current box |
 | decode, UD-IQ4_XS on the same box | ~110 ms/token (9.13 t/s) | INF-68, same window (+15.2% for uniform) |
 | ~~74 ms/token (13.46 t/s)~~ | **DOES NOT REPRODUCE — do not cite** | INF-67 progress 2026-08-31: "needs re-anchoring before any perf claim" |
-| of which gemv | ~28 ms | in-situ profiler |
-| of which non-gemv | ~46 ms | subtraction |
+| of which gemv | ~28 ms | in-situ profiler — directly measured, but on the pre-re-anchor run; carry the build id |
+| ~~of which non-gemv ~46 ms~~ | **INVALID — was 74 minus 28** | dies with the anchor; against ~95 ms it would be ~67 ms, but neither is measured. C5 must produce the split directly |
 | active bytes/token | ~2.8-3.4 GB | 6B active of 125B, 512 experts / 10 used, ~4.25 bpw |
 | **machine DRAM traffic, measured** | **~425 GB/s** | STREAM copy 212 GB/s = 425 GB/s traffic (read+write), progress 2026-08-28 |
 | theoretical | 460 GB/s | 12 channels x 4800 MT/s |
@@ -57,10 +57,15 @@ excuse anywhere in this gap.
 Two independent multipliers, and the previous program pursued only the second:
 - **the arithmetic runs far under roofline** (28 ms for 3.2 GB ≈ 114 GB/s aggregate — and the
   expert path is far worse than that, see Axis B);
-- **the non-gemv 46 ms** (Axis A).
+- **the non-gemv remainder** (Axis A) — its *size* is now unknown: it was 74-28=46, and the 74 is
+  retired. Against the re-anchored ~95 ms it is nearer ~67 ms. C5 settles it; until then treat the
+  non-gemv cost as "large and unmeasured", not as 46.
 
-Perfect elimination of the 46 ms alone lands at 28 ms ≈ 36 t/s — and note that even that leaves
-the arithmetic at **27% of roofline** (28 ms for 3.2 GB = 114 GB/s of 425). Both axes together
+Perfect elimination of the non-gemv remainder alone lands at ~28 ms ≈ 36 t/s **if the 28 ms holds
+at the re-anchored baseline** — an arithmetic sketch, not a projection, since its input was a
+partition of the retired 74. What does NOT depend on the anchor: the arithmetic sits at **27% of
+roofline** (28 ms for 3.2 GB = 114 GB/s of 425), because that ratio uses only the profiled gemv
+and the measured bandwidth. Both axes together
 approach 7.5-15 ms ≈ 66-133 t/s. **Neither axis alone reaches the original 20-60 t/s ambition, and
 Axis B is the one with the larger ceiling.**
 
@@ -87,7 +92,9 @@ per-row `vec_dot` in `FusedMM::dot` is a fixable implementation error, not a str
 still present, a *perfect* gemv fix reads: fused ≈ 300 (gemv) + 215 (other) = **~515 ms at 1T vs
 the graph's 350 ms** — still 1.5x slower, because the graph's own 1T overhead is only ~50 ms.
 Both A1 and A2 are individually fatal; the design needs both. With both, in a CLEAN build at 48
-threads: ~28 ms gemv + ~5-15 ms other ≈ **33-43 ms ≈ 23-30 t/s**, which is the original target.
+threads: ~28 ms gemv + ~5-15 ms other ≈ **33-43 ms ≈ 23-30 t/s**, which is the original target —
+a target computed from pre-re-anchor inputs, so treat it as the ambition to test, never as a
+predicted result.
 Note the fused/graph ratio is ~3.9x at 1T in the same build and roughly stable across thread
 counts — so a same-build 48T comparison is the honest interim check, and the clean-build
 projection above is a target, not a measurement.
@@ -109,7 +116,8 @@ of magnitude down, which no bandwidth argument can explain. Dense `mul_mat` is f
 is where the bandwidth goes to die**, and 10-of-512 expert selection per token is exactly the
 access pattern that would do it.
 
-- [ ] **B1 — split the 28 ms by path and report achieved GB/s, not just ms.** Dense `mul_mat` vs
+- [ ] **B1 — split the gemv cost by path and report achieved GB/s, not just ms.** Measure the split
+      on the C5 re-anchored run rather than assuming the ~28 ms carries over. Dense `mul_mat` vs
       expert `mul_mat_id`, bytes touched per path per token, achieved GB/s each, against 425. Until
       this exists every other number in this axis is unanchored. (This is INF-10's prescribed
       `GGML_PERF`/symbol profile, still never run.)
