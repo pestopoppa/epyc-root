@@ -404,19 +404,38 @@ The go/no-go was answered 2026-09-01: the batched `mul_mat` is callable on stage
 `vec_dot` in `FusedMM::dot` is a fixable implementation error, not a structural one. INF-67 remains the
 design record; this is the live task list.
 
-- [ ] **A1 — batched `mul_mat` substitution in `lora_mm`/`FusedMM`.** **Judge it on the gemv column
-      ALONE, same build both arms**: 1141 ms → ~300 ms at 1T is success (the graph's own 1T gemv is of
-      that order). Do NOT judge on total — see the trap below.
-- [ ] **A2 — scratch arena.** Replace the per-layer `ggml_init`/free with one arena sized once. The
-      "~2.5 GB/token of churn" is an **unsourced code-reading estimate** — the record describes the
-      ~215 ms "other" cost only qualitatively; measure it before quoting it. This is half the viability
-      case, not a Phase-4 nicety.
-- [ ] **A3 — strip the debug I/O** before any timing is reported (~114 `fprintf`/`fopen` sites, ~70
-      `getenv`, several in expert inner loops — counts as of 2026-09-01).
-- [ ] **A4 — the safety contract** before any serving exposure: hook becomes OPT-IN
-      (`supports_fused_decode()` is unconditionally `true` today, no residency checks), all persistent
-      state commits atomically at end-of-token, repack guards on `tensor->extra` + type, remove the
-      `t_logits` write that relies on allocation-ordering luck.
+- [x] **A1 — batched `mul_mat` substitution in `lora_mm`/`FusedMM`.** ✅ implemented 2026-09-02
+      (`380278b40`, branch `inf70/fused`, subagent `fused`) — every per-row `vec_dot` loop replaced by
+      `ggml_compute_forward_mul_mat` (via `ggml_cpu_extra_compute_forward` first). **Measured at 1T, same
+      build (Release + OpenMP, build 1274 `740d0cfea`), same process, same window, uniform artifact,
+      clean placement: fused gemv column = 810 ms against a whole graph token of 197 ms.** The success
+      criterion (→ ~300 ms) was not met; a call census is being taken to say whether the residual is
+      structural (more calls / more bytes than the graph) or mechanical. The pre-A1 per-row path could not
+      be timed in the same build: it aborts with `double free or corruption` on its first token — and the
+      abort reproduces on the pristine `c035bbf3d` tree in Release, so the heap corruption pre-dates this
+      work and was masked by the debug build the INF-67 campaign measured on.
+- [x] **A2 — scratch arena.** ✅ implemented 2026-09-02 (`5d2d27510` + `672c5e9e5`) — one arena per
+      nesting slot plus one staging buffer for the recurrent state. **Churn measured (replaces the retired
+      "~2.5 GB" estimate): 73 `ggml_init`/`ggml_free` pairs per token asking for 3,520 MB/token before A2,
+      223.7 MB actually needed, plus 112.6 MB/token of state-staging allocations; after A2 the four arenas
+      hold 12.2 MB total.** With both A1 and A2 in, the fused "other" column is still **150.6 ms at 1T —
+      77% of the graph's entire 197 ms token** — so the non-gemv machinery of the fused design costs more
+      than the whole graph does, at a thread count where the graph pays no barrier at all.
+- [x] **A3 — strip the debug I/O.** ✅ 2026-09-02 (`e02ddbdff`) — ~70 `getenv` and ~114 `fprintf`/`fopen`
+      sites behind the compile-time `QWEN4EXP_FUSED_DEBUG` (OFF by default); the worst were ~2.5 M
+      `getenv` calls per token inside the expert row loops, two of them inside the `FUSED_PROF` gemv window,
+      and five `GGML_FUSED_DUMP_GLAYERS` getenv sites in `process_ubatch` that ran on the GRAPH arm of
+      every A/B too.
+- [x] **A4 — the safety contract.** ✅ 2026-09-02 (`bf56cf94e` + `07d980e5e`) — hook is OPT-IN
+      (`GGML_FUSED_DECODE=1`); `supports_fused_decode()` checks CPU-device residency, repack layout and the
+      hparams it assumes; a preflight validates the memory context, cache views/types and the logits
+      carrier before any work; PLE and GDN recurrent state staged and committed in one pass at
+      end-of-token. The logits carrier remains the previous graph's tensor under a checked contract; the
+      owned-buffer form (`decode()` taking the fused result's own buffer) is **A4b**, moot unless the gate
+      below is overruled. Three fused-path correctness bugs found and fixed on the way: the GDN state
+      copy-back read at a byte offset where the state starts at a float offset (`a188b2f70`), repacked
+      IQ4_NL hc loras read as plain rows, and F16 `ple_conv1d` read as F32 — 81 KB past the tensor
+      (`b1439ce59`). The INF-67 residual (0.684 / 1.7e-2) was measured with all three present.
 
 **⚠ The measurement trap on A1.** With the churn still present, a *perfect* gemv fix reads fused ≈ 300
 (gemv) + 215 (other) = **~515 ms at 1T vs the graph's 350** — still 1.5× slower, because the graph's own
@@ -426,9 +445,17 @@ raise the rate) plus a fused-path overhead that has to be measured — **≈ 25�
 ≤ 10 ms**. That is the ambition to test, not a predicted result. The fused/graph ratio (3.86× at 1T) is
 the honest interim metric; it is same-build and roughly stable across thread counts.
 
-- [ ] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, **both arms in the
-      SAME build**, then re-measure at 48 threads — again same-build — before comparing to the C5 anchor.
-      Only then does the bit-exactness hunt resume.
+- [x] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, same build. ✅ run
+      2026-09-02 — **FAIL, and not marginally: fused 961 ms/token vs graph 196.9 ms at `-t 1` (4.88×);
+      gemv column 810 ms (4.1× the whole graph token), other column 150.6 ms (0.77× the whole graph
+      token).** Same process, same model load, same window, non-claim but a same-build ratio. Logit gate
+      at step 1: max_abs 1.311 / NMSE 6.07e-2 (fails ≤ 1e-4; greedy token agreed). **The megakernel
+      design is refuted on its own terms**: A1 and A2 were both necessary and together are not sufficient,
+      and the non-gemv machinery alone costs more than the graph's entire token at a thread count where
+      the graph pays no barrier. No 48-thread arm and no further numerics work unless the operator
+      overrules this gate. The branch `inf70/fused` keeps the safety contract, the debug strip, the
+      batched kernels and the three bug fixes as the record. INF-67's row and phase checklist should be
+      closed against this result (owning session's call).
 
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
@@ -454,7 +481,19 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       (2,786,568,256 B) and self-contained `mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B) in
       `models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/` with the README; both `SHA-OK` against the repo's LFS
       oids (`download.log` there, 10:21–10:35Z, at the operator's direction).
-- [ ] **E2 — port the `qwen4exp` MTP path into the experimental tree.** Source: `unslothai/llama.cpp#144`
+- [ ] **E2 — port the `qwen4exp` MTP path into the experimental tree.** *Port landed 2026-09-02 on branch
+      `inf70/mtp` (`d6d175d09`, 15 files, +401/−47; subagent `e2`): `t_h_nextn` export from the trunk graph,
+      MTP tensor loading under `mparams.load_mtp` (`n_layer_all` = 49, the head is `blk.48`), the qwen4exp
+      `LLM_GRAPH_TYPE_DECODER_MTP` graph, cross-model borrowing for the `shared-` head
+      (`model_shared` + `borrow_shared_tensor`, `{arch}.nextn_shared_target_tensors`), and one fix beyond
+      the PR: the INF-64 fused fast path exported logits only, so its gate now also requires
+      `!cparams.embeddings_nextn`. Head facts read from the files: the MTP block is an **attention** block
+      (not GDN) with its own hc mixing and a final `nextn.hc_head_{norm,down,up}` mixer, **no PLE tensors**
+      (no PLE gather per draft token), a **full 512-expert MoE and the 2560×248320 LM head** — a draft step
+      is one full layer plus the lm_head (~0.55 GB streamed), so expect ~5–6 ms per draft token against a
+      ~99 ms trunk token. Validation (acceptance line, identical greedy output, unchanged trunk-only path)
+      pending the bench lock at audit close; run it through `llama-server` + `/completion`, never
+      `llama-cli` (REPL spin).* Source: `unslothai/llama.cpp#144`
       (the `qwen4exp` MTP graph, the head-file tensor/metadata conventions, cross-model borrowing for the
       `shared-` heads). Reconcile with our existing `draft-mtp` driver rather than importing theirs
       wholesale; the self-contained `Q8_0` head is the fallback if borrowing is not ported first. Gate:
