@@ -63,16 +63,20 @@ Every row names its record and its conditions. **Measured** = a number someone r
 
 | quantity | value | status | record / conditions |
 |---|---|---|---|
-| decode, **required comparison baseline** (OP-32 opt. B): uniform IQ4_XS | **95.1 ms/token (10.52 ±0.05 t/s)** at t48; 102 ms (9.79) at t64 | measured | INF-68 `2026-08-31-inf68-baseline-control.md`: fresh Release clone @ `7cdd7c97b` (build 10151), `taskset -c 0-95 numactl --interleave=all`, OMP spread/cores/active/dynamic-false, `GGML_IQK=1`, `-mmp 0`, tg128 r5, load-gated clean windows |
-| decode, UD-IQ4_XS (the served file) | 109.5 ms (9.13 ±0.04) t48 | measured | same run; uniform is +15.2% |
-| ~~74 ms / 13.46 t/s~~ | **retired — does not reproduce** (−32% on the same lineage and recipe) | retired | `2026-08-28.md:206` origin; `2026-08-31.md:228` and INF-68 Finding 2 retraction |
+| **decode anchor (C5, 2026-09-02), uniform IQ4_XS, placement PROVEN interleaved** | **98.6 ms/token (10.14 ±0.04 t/s)** at t48 on the INF-68 build 10151; **99.1 ms (10.09 ±0.04)** on the C5 build 10196 (`58c345093`, Release, gcc 15.2, OpenMP, graph path via `GGML_FUSED_DECODE_OFF=1`); t64 9.73 / 9.69; t96 9.67; OMP placement stack OFF 9.76 (−3%); **t1 = 5.04 t/s (198 ms)** → 1T→48T scaling **2.0×** | measured | `/mnt/raid0/llm/tmp/inf70/results-c5v2-20260902T103808Z/` (per-arm logs, in-window `numastat -p`, `AnonHugePages`, MHz). Recipe = INF-68's exactly (`taskset -c 0-95 numactl --interleave=all`, OMP spread/cores/active/dynamic-false, `GGML_IQK=1`, `-mmp 0`, tg128+pp512 r5, region-locked, load-gated) **plus per-node page-cache eviction before load**. Artifact SHA-256 `4bfb98496364f8721c1e3ea084a238d690c52b1042a317e05fb43b756c9f8957`. Model pages per node 27.4 / 23.5 / 23.5 / 19.6 GB; `AnonHugePages` = 100% of RSS. INF-68's 10.52 reproduces within 4% |
+| **the same run with the box AS-IS** (nodes full of page cache) | **130.7 ms (7.65 ±0.03)** t48, 7.22 t64; pp512 124 vs 176 | measured | same build, same recipe, 12 minutes earlier; model pages per node **57.7 / 10.7 / 8.0 / 17.7 GB** under `--interleave=all`. **Placement alone is −25% decode / −30% prefill.** This is the mechanism behind the 08-28 → 08-31 "−32%": the kernel's zone fallback ignores the interleave policy when the chosen node has no free pages |
+| decode, UD-IQ4_XS (the served file), **placement proven interleaved** | **109 ms (9.18 ±0.01)** t48, 8.73 t64; pp512 136 | measured 2026-09-02 (`results-c5fu-20260902T111721Z/`) | INF-68's 9.13 reproduces; uniform is **+10.5%** over UD under clean placement (+15.2% in the INF-68 window). The 08-28 **13.46 t/s does not reproduce under any regime measured** — retired for good |
+| ~~74 ms / 13.46 t/s~~ (UD, 08-28) | **retired**: UD under clean placement measures 9.18 t/s on the same lineage and recipe; as-is 7.65 (uniform). Nothing measured today reaches 13.46 — treat the 08-28 row as unexplained, not as a target | retired | `2026-08-28.md:206`; `2026-08-31.md:228`; the 2026-09-02 arms |
 | bytes streamed per token | **≈ 4.16 GB** = dense 2.344 + routed experts 1.296 (10/512 × 48 layers, avg 2.70 MB/expert) + `output.weight` 0.521 (Q6_K, 2560×248320) | computed 2026-09-02 from the artifact's tensor table (`gguf_dump`, 1224 tensors) | replaces the retired "2.8–3.4 GB", which was a different model's 2026-05-28 figure. Notable: `ffn_gate_inp` (router) is stored **F32** — 252 MB/token (6%) just to route; `ffn_down_exps` is **Q5_1** in the "uniform" file (640 % 256 ≠ 0, so IQ4_XS is impossible and llama-quantize fell back) |
 | DRAM bandwidth, theoretical | **460.8 GB/s today** (12 ch × 4800 MT/s × 8 B); **537.6 GB/s at the DIMMs' rated 5600** | measured config (SMBIOS type 17, 2026-09-02) | Supermicro H13SSL-NT, 12 × Samsung M321RYGA0PB0-CWMCJ 96 GB 2R DDR5 RDIMMs, one per channel, **rated 5600 MT/s, configured 4800**. One DIMM per channel is the fast population on SP5 (the 4800 cap belonged to EPYC 9004; a 9655 supports 6000 at 1DPC). Operator: BIOS memory clock → 5600 at the next reboot; **re-run C0 and C5 after it** — every bandwidth-bound number scales by up to +17% |
 | DRAM bandwidth, measured **copy** | **212 GB/s, read+write already counted** | measured (conditions incomplete) | `bench_stream3.cpp` 2026-08-29: 2 GiB arrays, malloc + parallel first-touch, default 96 threads, NUMA mode and OMP placement unrecorded. The tool divides 4 GiB by the copy time of a 2 GiB array — standard STREAM convention |
 | ~~425 GB/s "traffic"~~ | **retired — a double count** | retired | the tool's "traffic" column multiplies the already-read+write copy figure by 2 again. Never measured on this box. Every "% of 425" in the pre-audit handoff, the ~8% fraction, the "1.3–4% expert path" and the DGX-Spark comparison inherited it |
-| DRAM bandwidth, **read-only, under the decode recipe** | **NOT MEASURED** | — | the only read-only figure (80–90 GB/s, `2026-08-28.md:181`) is the refuted single-node first-touch artifact. **C0 produces this number.** |
-| roofline (bytes ÷ read bandwidth) | between **19.6 ms (51 t/s)** at the proven 212 GB/s and **~10.4 ms (96 t/s)** if reads reach ~85% of theoretical, as a well-placed 12-channel EPYC normally does | computed | the true ceiling sits between these until C0 lands |
-| achieved fraction | **21% → 11%** of the two bounds | computed | 19.6/95.1 and 10.4/95.1 |
+| **DRAM bandwidth, read-only, under the decode recipe (C0, measured 2026-09-02)** | **152.6 GB/s at 48 threads, 165.6 at 96** (read-sum); gemv-pattern 153 / 167; copy 92 / 94 (STREAM convention, RFO); copy-NT 134; triad 102–105 — **with free memory on every node**. Box AS-IS: a flat **67–77 GB/s from 24 to 192 threads**, identical to one node's 3 channels (66 GB/s at 24 threads `membind=0`) | measured (`bench_readbw`, `results-c5v2-…/c0-evicted.txt`, `results-20260902T102729Z/c0-readbw.txt`) | Even with clean placement, a single process under NPS4 software interleave reads at **33–36% of the 460.8 GB/s theoretical**; one node alone reaches 57% of its 115 GB/s. **C0-c (four node-local processes at once, 24 threads each): 38 + 42 + 38 + 54 = 171 GB/s aggregate — each node drops from 66 GB/s alone to ~40 when all four stream.** The cap is therefore **global (~170 GB/s), not per-node channels and not remote-quadrant traffic** — the memory subsystem delivers ~37% of nominal in every locality pattern, which points at the uncore: memory clock, UCLK:MEMCLK ratio, Infinity-Fabric P-state/APBDIS, DF C-states or DRAM power-down — BIOS-level, see C8. Huge pages made no difference to the microbench |
+| roofline (bytes ÷ read bandwidth) | **27 ms/token (37 t/s)** at the measured 153 GB/s the recipe delivers today; **9 ms (111 t/s)** against the 460.8 GB/s theoretical | computed | 4.16 GB ÷ 153 GB/s; the gap between the two rows is the NPS4/placement question, not the kernel's |
+| achieved fraction | **27% of the recipe's bandwidth; 9% of theoretical** | computed | 27/99.1 and 9/99.1 |
+| **the dispatch floor, by difference (C5 − C0)** | **~70 ms of the 99 ms token is not bandwidth**: 99.1 − 27 (4.16 GB at 153 GB/s) | computed from two same-day measurements | cross-check: 1T = 198 ms ≈ ~150 ms of single-core streaming (~28 GB/s) + ~45 ms of single-thread tiny-op compute; at 48T the streaming shrinks to ~27 ms and the ~45 ms stays, plus ~15 ms of barriers (below), plus imbalance. Adding threads no longer helps (t64 −4%, t96 −4%) |
+| tiny `mul_mat` node cost in the real OpenMP build (`test-barrier`, 2000 × [64×128] Q4_0) | **0.50 µs at 1T, 3.0 at 8T, 3.7 at 24T and 48T, 5.5 at 96T** per node | measured (`results-c5v2-…/d0-test-barrier.txt`) | a matmul node pays two barriers (`from_float` + graph) ≈ 2 × 1.9 µs — consistent with the primitive; ~940 matmuls + ~6,000 other nodes ≈ **15 ms/token of barriers at 48T** |
+| instrumentation penalty, 1T | debug/`GGML_FUSED_PROF` build 350 ms vs Release 198 ms = **1.77×** | measured (same lineage, `58c345093` vs the INF-67 debug tree) | the fused decoder's 1350 ms at 1T is therefore **~6.8× slower than the clean graph**, not 3.86× |
 | graph nodes per token | **7,906** pre-fusion; **6,887** after `MEAN_D1` + `MOE_TOPK_NORM` (the baseline build) | measured | `2026-08-28.md:88,142` and round 1 (`7902 → 6887`, −13%). The "~5,850 / ~6,800" in INF-67 are in no record |
 | thread-0 compute per node | 5–8 µs | measured, **excludes barrier wait** | `GGML_CPU_PROF` times the compute call only; the graph barrier at `ggml-cpu.c:3274` is outside its window. Three measurements, round 5 |
 | barrier primitive, measured 2026-09-02 | **1.9 µs at 48 threads, 2.4 µs at 64, 3.2 µs at 96** (libgomp `omp barrier`, OMP stack on, threads 4 per CCD); ggml's flat atomic barrier 1.9 / 2.1 / 2.8 µs; a per-CCD hierarchical prototype 2.1 / 2.1 / 2.8 µs (**no gain**); barrier + 1 µs of private work = 2.8 µs at 48T | measured (`bench_barrier`, `results-20260902T102729Z/d0-barrier.txt`) | At ~7,800 sync events/token that is **~15 ms at 48T, ~25 ms at 96T** — real, but well under half of the 35–55 ms per-node budget. The remainder is dispatch, tiny-op compute and straggler wait, which the D0-b node census must split. The libomp-via-`LD_PRELOAD` arm **hung** (GOMP ABI shim) — D3a needs a real clang+libomp build. Sync events per token: still to be counted (D0-b) |
@@ -81,16 +85,21 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | fused decoder, same debug build, `-t 1` | fused 1350 ms vs graph 350 ms (**3.86×**); fused gemv 1141 / other 215 | measured (non-claim) | `2026-09-01-inf67.md`; safe only as a same-window ratio |
 | ~~28 ms gemv / 46 ms non-gemv~~, ~~65 µs × 144 = 9.4 ms~~ | **retired** | retired | a partition of the retired 74 ms; the constants are "unmatched by committed records" (INF-68 audit). The in-function medians above are the sourced equivalents |
 
-**What the ledger says.** A token is roughly one third weight streaming at ~100–150 GB/s-class rates and
-roughly one half per-node fixed cost, with the remainder unassigned. The two ceilings are therefore
-**bandwidth** (C0 measures it; Axis B converts more of it) and the **dispatch floor** (D0 measures it;
-Axis D lowers it). The fused decoder (Axis A) attacks the second structurally; Axis E multiplies whatever
-is left. No comparison to other hardware is admissible until C0 exists.
+**What the ledger says (measured 2026-09-02).** With placement fixed, a 99 ms token is **~27 ms of weight
+streaming at the 153 GB/s the recipe delivers, ~15 ms of barriers, and ~55 ms of single-thread tiny-op
+compute plus imbalance across ~6,900 nodes.** Two ceilings, in this order: (1) the **dispatch floor** —
+~70 ms, and more threads do not buy it down (t96 is slower than t48); Axis D and Axis A attack it, and it
+is where 2–3× lives; (2) **bandwidth** — the recipe gets 153 GB/s of a 460.8 GB/s machine: placement
+(fixed by eviction, −25% otherwise), then NPS4's software interleave (C0-c decides between BIOS NPS1 and
+per-quadrant sharding), then the 4800→5600 MT/s BIOS change. Axis B's bytes levers scale the 27 ms only.
+Axis E multiplies whatever is left. The DGX-Spark comparison stays withdrawn: this box currently *reads*
+at 153 GB/s in the configuration that serves.
 
 ## Ordering
 
-1. **C0 → C5** (one session, under one region claim, ~1 h of box time): the denominator and the anchor.
-   Until both land, no absolute before/after claim is admissible — only same-window ratios.
+1. ~~**C0 → C5**~~ ✅ done 2026-09-02 (ledger). Every absolute number below reports against **99.1 ms /
+   153 GB/s** with the eviction step in the recipe. **C7 (make the placement fix permanent) is the first
+   open item**, because without it every later measurement silently regresses to the as-is regime.
 2. **B1 + D0** (one session, no new kernels): the per-path GB/s split and the per-node floor, on the C5
    build. These two numbers rank every lever below by ms/token at stake.
 3. **Levers by measured ROI**: Axis D (D1–D7) and Axis B (B2–B4) are independent of each other and of
@@ -103,7 +112,12 @@ not a gate.
 
 ## Axis C — measurement (FIRST; cheap, and it makes every other axis legible)
 
-- [ ] **C0 — measure the roofline denominator: read-only DRAM bandwidth under the decode recipe.**
+- [x] **C0 — measure the roofline denominator: read-only DRAM bandwidth under the decode recipe.** ✅ 2026-09-02
+      — 152.6 GB/s at 48T / 165.6 at 96T with free memory on all nodes; 67–77 GB/s as-is (ledger).
+      Remaining sub-question **C0-c**: four node-local processes at once (`c5_followup.sh`, running at
+      audit close) — if the aggregate approaches 4 × 66 GB/s, the single-process 153 is the NPS4 fabric and
+      BIOS NPS1 / per-quadrant sharding become Axis B levers. The counter cross-check could not run: `perf`
+      is not installed in this container. Original task text follows for the method.
       Extend `bench_stream3.cpp` (on disk under `/tmp/qwen4exp-builds/`, or rewrite it under the research
       repo) with a **read-only** kernel (sum-reduce over a 2 GiB buffer, and a second "gemv pattern"
       variant: 2560-element rows dotted against a resident vector), malloc + parallel first-touch, run
@@ -112,7 +126,10 @@ not a gate.
       stated (bytes read only). Cross-check one point with the DRAM fill counters
       (`perf stat -e ls_dmnd_fills_from_sys.dram_io_all,ls_hw_pf_dc_fills.dram_io_all`, ×64 B) so the
       counter method is calibrated for B1. This is the number every "% of roofline" divides by. ~15 min.
-- [ ] **C5 — re-anchor the baseline in ONE clean build.** Build the fusion tree at its current tip in
+- [x] **C5 — re-anchor the baseline in ONE clean build.** ✅ 2026-09-02 — 10.14 / 10.09 t/s at t48 (INF-68
+      build 10151 / C5 build 10196), t1 5.04 t/s, OMP-stack-off −3%, artifact SHA recorded, placement proven by
+      in-window `numastat -p`; the as-is arm (7.65 t/s) measured the mechanism (ledger). The libomp arm was
+      dropped (the `LD_PRELOAD` shim hangs). Original task text follows for the method. Build the fusion tree at its current tip in
       Release (record the commit and `llama-server --version` build id — this is *the C5 build*; every
       lever below reports against it). Artifact: the OP-32 uniform IQ4_XS file (record path and a fresh
       SHA-256 — none is on record). Recipe: the `canonical_recipe.py` wrapping at t ∈ {1, 48, 64}, r5,
@@ -153,6 +170,34 @@ not a gate.
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): one `ClaimTuple` per
       `llama-bench` arm beside the run directory (artifact path + SHA, build id, full recipe, `-t`, n,
       reps, box-state capture) via the existing measurement ladder. Wire the write side with C5, not after.
+- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** Measured 2026-09-02: when a
+      NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
+      model lands wherever memory is free (57.7 GB of 96 on node 0), costing −25% decode / −30% prefill. The
+      box is normally in that state (1,085 GB of page cache). Three deliverables: (a) `canonical_recipe.py`
+      and `bench_canonical.sh` gain a **pre-load step** — per-node free check, then either `drop_caches`
+      (root) or the targeted membind allocate-and-touch eviction (`/mnt/raid0/llm/tmp/inf70/where_pages.py`,
+      ~30 s per 30 GiB) — and record `numastat -p <pid>` in-window as a required row; a run without it is
+      not an interleaved measurement. (b) **Audit the live production servers** (read-only: `numastat -p` on
+      each `llama-server` pid in the orchestrator stack) and hand the owning session the list of skewed ones
+      for an eviction + restart at their boundary — this is almost certainly the mechanism behind
+      [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) and the "frontdoor at 46% of
+      canonical" drift. (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
+      the intended node before falling back — system-wide, hurts file-heavy work), a drop_caches hook in the
+      stack's launch path, or BIOS NPS1 (hardware interleave makes the placement question disappear; C0-c
+      says whether it also lifts the 153 GB/s). Memory note: `feedback_page_cache_defeats_numa_interleave`.
+- [ ] **C8 — the BIOS session at the next reboot (operator-executed; this task prepares and verifies).**
+      C0-c shows a **global ~170 GB/s read cap** (37% of nominal) that no software placement lifts, and the
+      DIMMs run at 4800 of their rated 5600 MT/s. Prepare a one-page checklist for the operator's BIOS
+      session on the H13SSL-NT: (1) DDR5 memory clock 5600 MT/s (DIMMs rated; 9655 supports 6000 at 1DPC);
+      (2) **UCLK:MEMCLK = 1:1 (UCLK DIV1 mode)** — a 1:2 ratio halves controller bandwidth and would
+      match the observed ~37%; (3) **APBDIS = 1 with fixed SOC/DF P-state P0** and DF C-states disabled
+      (AMD's bandwidth-sensitive tuning guidance; a low fabric P-state caps DRAM bandwidth globally);
+      (4) DRAM power-down / memory power-down mode disabled; (5) keep NPS4 for now (C0-c says locality is
+      not the binding term; revisit NPS1 only after 1–4); (6) leave IOMMU/SMT as they are. Verification,
+      immediately after the reboot and before anything else loads: `numactl -H` free per node, then the
+      C0 microbench (`bench_readbw`, 2 min) — target ≥ 300 GB/s read at 96T on a 12-channel 5600 MT/s
+      socket; then C5 (15 min) and record both in this ledger with the new build/BIOS state. Every
+      bandwidth-bound number in the program moves with this; the dispatch floor (~70 ms) does not.
 
 ## Axis D — the dispatch floor (the largest term, and the least measured)
 
@@ -173,8 +218,11 @@ threadpool). Host THP is `enabled=[always] defrag=[always]`, but ggml allocates 
 `posix_memalign(64)` and never asks for huge pages. **Measured 2026-09-02 (D0-a):** the barrier primitive is
 1.9 µs at 48 threads and 3.2 µs at 96 in the exact runtime the graph uses, and a hierarchical prototype does
 not beat it — so the 5–8 µs thread-0 compute per node plus the barrier is ~2 µs of synchronisation and the
-rest is dispatch, tiny-op work and waiting for the slowest thread. That moves the weight of this axis from
-D3 (the primitive) to D0-b/D2/D6 (how many sync points, and how unbalanced the work between them is).
+rest is dispatch, tiny-op work and waiting for the slowest thread. **C5 then sized the whole floor: ~70 ms of
+a 99 ms token, of which barriers are ~15 ms; the ~55 ms remainder is tiny-op compute that does not
+parallelise (the same ops cost ~45 ms single-threaded) plus imbalance.** That moves the weight of this axis
+from D3 (the primitive) to D0-b/c (which nodes carry the 55 ms), D2 (fewer sync points) and, above all, to
+Axis A's structural answer — fewer, fatter nodes — which this measurement now supports with clean numbers.
 
 - [ ] **D0 — measure the per-node floor directly; count the sync events per token.** (a) Build
       `test-barrier` twice — the internal threadpool (as-is) and an OpenMP twin — plus a barrier-only
@@ -219,10 +267,14 @@ D3 (the primitive) to D0-b/D2/D6 (how many sync points, and how unbalanced the w
 - [ ] **D4 — thread count × placement sweep, after D1–D3 change the floor.** t ∈ {48, 64, 96, 192} with
       `OMP_PLACES=cores OMP_PROC_BIND=spread` versus explicit masks (`--cpu-mask` works in OpenMP builds;
       4 threads per CCD across all 12 CCDs vs 8 per CCD on 6, which decides how many GMI links carry the
-      weight stream). The recorded "t64 sweet spot" and "t96 sync collapse" were measured under the old
-      barrier; a cheaper barrier moves the optimum toward more threads and more bandwidth. Same build,
-      same window, same artifact.
-- [ ] **D5 — huge pages.** Measure first: `AnonHugePages` in `/proc/<pid>/smaps_rollup` during a C5
+      weight stream). Measured 2026-09-02 with clean placement: t48 10.09, t64 9.69, t96 9.67 — more threads
+      do not help today because the floor is not bandwidth; re-sweep only after D1/D2 or Axis A move the
+      floor. Same build, same window, same artifact.
+- [ ] **D5 — huge pages (demoted to verify-only).** Measured 2026-09-02: with free memory on the nodes the
+      weight buffers are **100% `AnonHugePages`** (96.3 of 96.4 GB) with no code change — THP `always` does
+      it at fault time; only the as-is/cache-full regime showed 68%. Nothing to gain once C7 is in place;
+      keep the in-window `AnonHugePages` line as a check. Original: measure `AnonHugePages` in
+      `/proc/<pid>/smaps_rollup` during a C5
       run. If the weight buffers are not ~100% huge, add `MADV_HUGEPAGE` with 2 MB alignment in
       `ggml_backend_cpu_buffer_type_alloc_buffer` (`ggml-backend.cpp:2314` → `ggml_aligned_malloc`) —
       one self-contained change; the 2026-05-28 record shows khugepaged alone (~26 MB/s) cannot
@@ -416,3 +468,14 @@ Corrections applied in this file:
    run did not), C5 gained the OMP on/off arm and the box-state capture, C6 wires the belief kernel.
 10. INF-68 path fixed (`../completed/`), INF-67 given a pointer to this task list, wiki
     `benchmark-methodology.md` correction 1 rewritten as the fifth correction.
+11. **Measured the same day (operator granted the CPU):** C0 read bandwidth 67–77 GB/s as-is vs 153/166 GB/s
+    after per-node eviction; C5 anchor 10.14 / 10.09 t/s at t48 (as-is 7.65), t1 5.04; barrier primitive
+    1.9 µs at 48T; tiny-node cost 3.7 µs at 48T; 100% THP when memory is free. The **placement mechanism**
+    (page-cache-full nodes defeat `--interleave=all`) explains the 08-28→08-31 −32% and became task C7.
+12. SMBIOS read: 12 × Samsung 96 GB DDR5-5600 RDIMMs configured at 4800 MT/s (one per channel); the BIOS
+    change to 5600 is queued by the operator for the next reboot — re-run C0/C5 after it.
+13. Operator direction folded in: unsloth heads downloaded (E1 ✅); no DFlash2 drafter exists for this
+    model; EXL3 weights exist with a fused VNNI CPU decode → INF-71.
+14. Follow-up arms: UD under clean placement 9.18 t/s (13.46 retired for good); C0-c four node-local
+    streams total 171 GB/s with each node dropping from 66 to ~40 → a global uncore cap → task C8 (BIOS
+    checklist for the operator's reboot: 5600 MT/s, UCLK 1:1, APBDIS/DF P0, DF C-states, power-down).
