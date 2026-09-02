@@ -483,3 +483,45 @@ def test_cli_ingest_rejects_a_missing_root(capsys):
     rc = cli.main(["ingest", "inf70", "--as-of", AS_OF, "--root", "/nonexistent/inf70"])
     assert rc == 2
     assert "no such INF-70 corpus root" in capsys.readouterr().err
+
+
+# --- the multi-shard sidecar contract ----------------------------------------
+#
+# A sharded model (UD-IQ4_XS is 3 shards) must pin every shard, but the command
+# names only the first. The producer (`c5_followup.sh`) therefore writes the
+# LOADED shard first and the siblings after; the reader takes the first line.
+# Both halves of that contract are pinned here, because a producer that ordered
+# the lines by filename would silently hand the reader the wrong shard.
+
+def _sharded_run(tmp_path, lines: list[str]):
+    run = tmp_path / "results-20260902T111721Z"
+    run.mkdir()
+    for name in ("DONE", "arms.log", "bench-c5-t1.log"):
+        (run / name).write_bytes((FIXTURE / name).read_bytes())
+    model = reader.parse_command((run / "bench-c5-t1.log").read_text())["model"]
+    (run / "artifact.sha256").write_text("".join(lines).replace("{MODEL}", model))
+    return run, model
+
+
+def test_loaded_shard_first_is_accepted_and_is_the_sha_carried(tmp_path):
+    run, model = _sharded_run(tmp_path, [
+        "a" * 64 + "  {MODEL}\n",
+        "b" * 64 + "  /mnt/raid0/llm/models/x-00002-of-00003.gguf\n",
+        "c" * 64 + "  /mnt/raid0/llm/models/x-00003-of-00003.gguf\n",
+    ])
+    # only c5-t1 carries a bench log in this trimmed run; the point is that it is
+    # NOT refused for an artifact reason
+    assert "c5-t1" not in reader.arm_refusals(run)
+    sha, path = reader.artifact_sha_and_path(run)
+    assert sha == "a" * 64 and path == model
+    arm = [r for r in reader.native_rows(run) if r["kind"] == "arm"][0]
+    assert reader.project(arm).extra["artifact_sha256"] == "a" * 64
+
+
+def test_a_sibling_shard_first_is_refused_not_silently_adopted(tmp_path):
+    run, _ = _sharded_run(tmp_path, [
+        "b" * 64 + "  /mnt/raid0/llm/models/x-00002-of-00003.gguf\n",
+        "a" * 64 + "  {MODEL}\n",
+    ])
+    why = reader.arm_refusals(run)["c5-t1"]
+    assert "names" in why and "00002-of-00003" in why
