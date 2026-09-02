@@ -1,6 +1,6 @@
 # EXL3 trellis weights on the CPU kernel — Qwen3.8-Flash-Next
 
-**Status**: NEW — filed 2026-09-02 from the INF-70 audit at the operator's request ("EXL3 weights are all
+**Status**: **PARKED 2026-09-02 behind INF-70 Axis D** — X0 and the reference half of X1 done the same day (below); the measured ceiling of the lever does not justify X2–X4 while the token is dispatch-bound. Filed 2026-09-02 from the INF-70 audit at the operator's request ("EXL3 weights are all
 the rage; if they exist for this model, explore using them and building the supporting feature into the
 experimental CPU kernel"). Feasibility established from source; no code written yet.
 **Created**: 2026-09-02
@@ -72,19 +72,38 @@ from the downloaded 4.05 branch's headers + exllamav3's own `mul1` CPU GEMV extr
 harness and run on REAL expert tensors at 1/8/24/48 threads, cache-resident and DRAM-streaming. Note for the
 record: nothing on this host can execute EXL3 end to end today — no GGUF, exllamav3 is CUDA-first with no
 ROCm support, and its CPU code covers only the MoE expert GEMV.)*
-- [ ] **X0 — format spec from source (no compute).** Read `moe_mul1.cpp`, `codebook.cuh`, `exl3.md` and the
-      4.05 branch's tensor metadata; write `docs/design/exl3-mul1-ggml-type.md`: the bit layout of a 16×16
-      tile at K bits, the `suh`/`svh` role at inference (which side gets the Hadamard, per tile or per row),
-      the `mul1` scale tensors, how `out_scales: always` applies, and what a GGUF tensor of the new type
-      must carry. Decide K range to support first (the 3.05 and 4.05 branches → K ∈ {3, 4} plus the fractional
-      mix). Deliverable: a spec another session can implement from.
-- [ ] **X1 — clean-room micro-kernel + honest benchmark.** A ggml-external C++ kernel for one expert
-      matrix `[2560 × 640]` at K=4 (and K=3): the fused byte-sum decode → `vpdpbusd` GEMV against a Q8
-      activation row, band-contiguous layout. Benchmark per INF-70 C3/C4 discipline: same box, same window,
-      against the IQ4_XS `vec_dot` and the IQ4_NL 8×8 repack path on the *same shape*, cache-resident and
-      DRAM-streaming, at 1 and 48 threads. **Remember the campaign's standing lesson: clean-room gemv wins
-      have failed to transfer in situ four times** — this phase only proves the decode is not compute-bound;
-      it does not predict end-to-end gain.
+- [x] **X0 — format spec from source.** ✅ 2026-09-02 (subagent `x1`, Fable-low) — `docs/design/exl3-mul1-ggml-type.md`
+      (from the downloaded 4.05 branch's headers + exllamav3 source, decoder validated bit-exact against
+      `pack.cu` on 2304/2304 states). Facts that correct this file's premise: `trellis` is `[k/16, n/16,
+      16·K] int16` — weight i's 16-bit codebook index is the K-bit window ending at bit (i+1)·K of the
+      tile's MSB-first bitstring, tail-biting, positioned by `make_tc_perm`; `w = (bytesum(s·0x83DCD12D)
+      − 510)·k_inv`, **k_inv = fp16(0x1eee) = 1/147.77**. **`suh` is not a sign vector** — it is sign ×
+      input-channel scale ÷ codebook scale ÷ global scale; **`svh` = sign × output-channel scale, which is
+      where `out_scales: always` lives**; `mul1` (int32) is the multiplier constant. Forward =
+      `svh ⊙ H128(Wq · Q8(H128(suh ⊙ x)))` — a Hadamard-128 on BOTH sides per 128-block, and `suh` differs
+      per expert AND per projection, so the activation transform is per expert-projection (O(k) each), not
+      once per op. K is uniform per class: routed experts K=4 (4.05) / K=3 (3.05), dense/shared/lm_head K=6/5
+      (`_h6` = head bits), the 39 GB n-gram table at K=6 (`_ng6`, a different row format), the MTP head's
+      own 512 experts at K=4/3. Experts are one tensor-set each. The kernel wants the band-swizzled layout
+      and splits work in 8-tile groups.
+- [x] **X1 (reference half) — exllamav3's own `mul1` CPU GEMV on REAL tensors.** ✅ 2026-09-02 — layer-3
+      experts, 10 experts × gate/up/down (24.6 MB at K4), `g++ -O3 -march=native`, region-locked, placement
+      recorded; VBMI-swizzled ≡ VNNI-native bit-for-bit, ≤ 1.3e-7 vs a double reference, Q8-vs-fp32 output
+      RMS 0.66–0.98%. **Per core the fused path is compute-bound** (K4: 1418 µs/call = 17.3 GB/s in cache
+      and 16 GB/s from DRAM — extraction dominates; decode-only is 1.5–1.7× faster); **from ~10 threads it
+      is memory-bound: at 48T 110–124 GB/s on random experts (K4), 91–105 (K3), 160–172 on sequential sets**
+      — i.e. the same 153 GB/s ceiling as everything else, and t64/t96 do not help. Bytes/token for the
+      expert stream: IQ4_XS 1.296 GB → **K4 1.180 (−9%), K3 0.885 (−32%)**. Honest end-to-end arithmetic
+      (bytes only; the expert stream is ~21% of a 99 ms token): **+2% (K4) / +7% (K3) at today's in-situ
+      efficiency, +11–13% at the harness's 48T rate, +15–18% at the bandwidth ceiling — that is the cap.**
+      Remaining X1 arms (IQ4_XS `vec_dot` and IQ4_NL 8×8 on the same shape in the same harness) are not run.
+      Effort re-estimated from the format: X2 ~1 session; **X3 3–5 sessions** (a tile spans 16 rows of
+      `ne[0]`, the per-expert activation prep and the per-128-block epilogue do not fit `from_float`/`vec_dot`
+      → an opaque-blob type with its own `mul_mat_id` path and a dequant-then-GEMM prefill fallback); X4 1
+      session. Caveats: the K3 1T/8T DRAM arms were bimodal (unexplained); the 3.05 branch's quality is
+      unmeasured and C9 blocks measuring it. **Decision taken with the recommendation: park** — the bytes are
+      not where this token goes; reopen when Axis D has moved the floor enough that the expert stream binds,
+      or when C9 lets the K3 quality claim be tested.
 - [ ] **X2 — importer.** `gguf-py` tool that reads the exl3 safetensors branch and writes a GGUF whose
       expert tensors (`ffn_{up,gate,down}_exps`) are the new type and whose remaining tensors are copied
       from the uniform IQ4_XS trunk (INF-70 B4/B5 artifact) — a mixed artifact. Handle the per-expert
@@ -93,7 +112,7 @@ ROCm support, and its CPU code covers only the MoE expert GEMV.)*
       same tensor (their `dequant` utility; numerical identity is the gate).
 - [ ] **X3 — ggml type + `mul_mat_id` path in the experimental tree.** New `GGML_TYPE_EXL3_MUL1_K{3,4}`,
       `type_traits`, `from_float` = Q8 activation quant, `vec_dot`/gemv for the type, and the
-      `mul_mat_id` expert path; **activation Hadamard applied once per op, not per expert.** Gates: greedy
+      `mul_mat_id` expert path; **the activation transform (`suh` ⊙ x then Hadamard-128) is per expert-projection, and `svh` ⊙ H128 on the output — see X0; it does not reduce to once per op.** Gates: greedy
       generation identical in *meaning* (not bit-exact — different weights), logit KLD vs the IQ4_XS-uniform
       trunk on a fixed 64-prompt set, `test-backend-ops` for the new type, arch test.
 - [ ] **X4 — the measured comparison per INF-70's artifact rule.** Mixed EXL3-experts artifact vs the
