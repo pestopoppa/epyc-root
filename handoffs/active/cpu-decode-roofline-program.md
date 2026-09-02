@@ -257,16 +257,21 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       single-task**, UNARY 510 / 5.8, CPY 162 / 3.7 (2.2 wait), GATED_DELTA_NET 36 / 3.0 (0.8 compute —
       3.8× wait), ADD 689 / 1.7. Evidence `/mnt/raid0/llm/tmp/inf70/agents/prof/` (TABLES.md, node table,
       per-node table).
-- [ ] **D1 — remove the internal `mul_mat` / `mul_mat_id` barrier at batch 1.** For `ne11 == 1` every
-      thread quantizes the whole activation row redundantly into thread-local `wdata` (2560 elements,
-      ~1 µs) instead of splitting it 48 ways and synchronizing; for `mul_mat_id` at `n_tokens == 1` the
-      row→expert map is trivial and can be built per thread, deleting the serial grouping, the barrier
-      and the 512-entry scan. Removes ~940 sync events per token, bit-exact by construction. Expected:
-      940 × 1.9 µs ≈ **1.8 ms/token at 48T** (measured primitive) — small on its own, larger if the
-      internal barrier also carries imbalance from the 48-way split of a 2560-element quantization. Gate:
-      greedy generation + logit diff vs the C5 build.
-- [ ] **D2 — barrier elision between nodes that do not need one (demoted by D0: 579 eligible pairs ≈
-      1.1 ms/token).** Two safe classes, both decided at
+- [x] **D1 — remove the internal `mul_mat` / `mul_mat_id` barrier at batch 1.** ✅ 2026-09-02 — implemented
+      and **proven bit-exact** (3 prompts × 128 steps bitwise-identical logits; 2,280 `test-backend-ops -b CPU`
+      cases with receipts identical to a same-commit control; `test-iqk-ser`, `test-llama-archs`), but **no
+      measurable speedup: 96.06 vs 96.11 ms/token at t48 (+0.05%, inside the base build's own 0.5% spread);
+      t96 −0.7%**. Branch `inf70/d1` (`1ba448e74`, +328/−39 in `ggml-cpu.c` and `iqk/iqk_dispatch.cpp`), not
+      merged — keep, land only if D2 proceeds. Two findings that outrank the null result: **(a) under
+      `GGML_IQK=1` the iqk dispatch hooks own the activation quantization and the barrier and return before
+      the generic code — the generic `ggml-cpu.c` matmul path is dead on this model, so any barrier or
+      chunking work (B3-k included) must patch `iqk_dispatch.cpp`**; (b) deleting ~940 sync events/token is
+      invisible in the token, so the barrier-count levers D2/D3 are re-priced to ~zero — the 22.5 ms of
+      wait the profiler sees is straggler/imbalance, not the primitive. Report:
+      `/mnt/raid0/llm/tmp/inf70/agents/d1/REPORT.md`.
+- [ ] **D2 — barrier elision between nodes that do not need one (re-priced to ~zero: D0 counts 579 eligible
+      pairs ≈ 1.1 ms and D1 showed 940 removed sync events are invisible in the token; do not run unless a
+      later measurement reopens it).** Two safe classes, both decided at
       plan time (the standing TODO at `ggml-cpu.c:3244` to move fusion detection into `ggml_graph_plan`
       is the natural home — a per-node "barrier required" bitmap): (i) consecutive nodes that both run
       on thread 0 only; (ii) consecutive row-parallel elementwise nodes over the same shape with the
