@@ -755,6 +755,72 @@ def frames_for_run(run_dir: str | Path, *, as_of: str) -> list[dict]:
     return frames
 
 
+def ingest_corpus(ledger, *, root: str | Path = DEFAULT_CORPUS, as_of: str,
+                  limit: int | None = None, dry_run: bool = False) -> dict:
+    """Project every admissible INF-70 run under `root` into the ledger.
+
+    A refusal is an OUTCOME, not a crash. Three kinds are counted separately
+    because conflating them hides the one that needs a producer fix:
+
+    * `runs_refused` — the directory is not a run (no emissions) or is dateless.
+    * `arms_refused` — a real arm the strict reader cannot rederive. This is the
+      producer-gap channel: `c5_followup.sh` shipping no `artifact.sha256` shows
+      up here by name, not as silence.
+    * `rows_refused` — a native row `project()` rejected. Should be zero, since
+      `native_rows` only emits what it could rederive; a non-zero count means
+      the two disagree and that is a defect to fix, not a number to tolerate.
+    """
+    root = Path(root)
+    frames: list[dict] = []
+    runs_seen = 0
+    runs_refused: list[dict] = []
+    arms_refused: list[dict] = []
+    rows_refused: list[dict] = []
+    projected = 0
+    by_kind: dict[str, int] = {}
+
+    for run in discover(root):
+        reason = refusal_reason(run)
+        if reason:
+            runs_refused.append({"run": run.name, "reason": reason})
+            continue
+        runs_seen += 1
+        for arm, why in sorted(arm_refusals(run).items()):
+            arms_refused.append({"run": run.name, "arm": arm, "reason": why})
+        for native in native_rows(run):
+            try:
+                tup = project(native)
+            except ProjectionError as exc:
+                rows_refused.append({"run": run.name, "kind": native.get("kind"),
+                                     "reason": str(exc)})
+                continue
+            frames.extend(
+                to_frames(tup, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)
+            )
+            projected += 1
+            by_kind[native["kind"]] = by_kind.get(native["kind"], 0) + 1
+            if limit is not None and projected >= limit:
+                break
+        if limit is not None and projected >= limit:
+            break
+
+    if not dry_run and frames:
+        for frame in frames:
+            ledger.append(frame)
+
+    return {
+        "root": str(root),
+        "runs_matched": runs_seen,
+        "runs_refused": runs_refused,
+        "rows_projected": projected,
+        "frames_emitted": len(frames),
+        "by_kind": dict(sorted(by_kind.items())),
+        "arms_refused": arms_refused,
+        "rows_refused": rows_refused,
+        "dry_run": dry_run,
+    }
+
+
 def discover(root: str | Path = DEFAULT_CORPUS) -> list[Path]:
     root = Path(root)
     if not root.is_dir():
@@ -809,7 +875,7 @@ __all__ = [
     "PROTOCOL_ARM", "PROTOCOL_READBW", "PROTOCOL_BARRIER",
     "run_timestamp", "artifact_sha_and_path", "parse_command", "parse_build",
     "parse_bench_rows", "placement_proof", "arm_refusals", "refusal_reason",
-    "native_rows", "project", "frames_for_run", "discover", "main",
+    "native_rows", "project", "frames_for_run", "ingest_corpus", "discover", "main",
 ]
 
 

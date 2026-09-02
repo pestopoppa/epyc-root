@@ -353,3 +353,133 @@ def test_real_corpus_replays_with_unique_identity():
     assert len(ids) == len(rows), "identity collision on the real corpus"
     for row in rows:
         ct.grade(reader.project(row))  # must not raise
+
+
+# --- the write side actually fires -------------------------------------------
+#
+# The AutoKernel adapters were built, tested and verified against a real corpus
+# and had never persisted a row, because `cli.py ingest` only accepted the names
+# in its `choices` list. Wiring the name IS the write side, so it gets pinned
+# here rather than assumed.
+
+class _Ledger:
+    def __init__(self):
+        self.frames = []
+
+    def append(self, frame):
+        self.frames.append(frame)
+
+
+class _RefusingLedger:
+    def append(self, frame):  # pragma: no cover - must never run
+        raise AssertionError("a dry run must not append")
+
+
+@pytest.fixture
+def corpus(tmp_path):
+    """A corpus root holding the fixture under a real `results-<UTC>` name.
+
+    `discover()` only walks `results*` directories, which is how the corpus root
+    stays free of the helper scripts and logs that share it.
+    """
+    run = tmp_path / "results-20260902T103808Z"
+    run.mkdir()
+    for path in FIXTURE.iterdir():
+        (run / path.name).write_bytes(path.read_bytes())
+    return tmp_path
+
+
+def test_ingest_appends_three_frames_per_row(corpus):
+    led = _Ledger()
+    report = reader.ingest_corpus(led, root=corpus, as_of=AS_OF)
+    assert report["runs_matched"] == 1
+    assert report["rows_projected"] == len(_rows())
+    assert report["frames_emitted"] == 3 * report["rows_projected"]
+    assert len(led.frames) == report["frames_emitted"]
+    assert report["by_kind"] == {"arm": 3, "barrier": 24, "readbw": 12}
+    assert report["dry_run"] is False
+
+
+def test_ingest_dry_run_writes_nothing(corpus):
+    report = reader.ingest_corpus(_RefusingLedger(), root=corpus,
+                                  as_of=AS_OF, dry_run=True)
+    assert report["frames_emitted"] == 3 * len(_rows())
+    assert report["dry_run"] is True
+
+
+def test_ingest_limit_is_honoured(corpus):
+    led = _Ledger()
+    report = reader.ingest_corpus(led, root=corpus, as_of=AS_OF, limit=5)
+    assert report["rows_projected"] == 5
+    assert len(led.frames) == 15
+
+
+def test_ingest_separates_the_three_refusal_channels(corpus):
+    """Run-level, arm-level and row-level refusals are different problems.
+
+    Folding them into one count is how a producer gap (an arm that exists and
+    cannot be cited) hides behind a directory that was never a run at all.
+    """
+    report = reader.ingest_corpus(_RefusingLedger(), root=corpus,
+                                  as_of=AS_OF, dry_run=True)
+    assert report["runs_refused"] == []
+    assert {r["arm"] for r in report["arms_refused"]} == {
+        "c5-omp-on", "inf68-asis", "inf68-evicted"}
+    assert all(r["run"] == "results-20260902T103808Z" for r in report["arms_refused"])
+    # native_rows only emits what it could rederive, so project() must never
+    # refuse one of its rows. A non-zero count is a defect, not a tolerance.
+    assert report["rows_refused"] == []
+
+
+def test_ingest_of_a_root_with_no_runs_is_empty_not_an_error(tmp_path):
+    report = reader.ingest_corpus(_Ledger(), root=tmp_path, as_of=AS_OF)
+    assert report["runs_matched"] == 0
+    assert report["rows_projected"] == 0
+    assert report["frames_emitted"] == 0
+
+
+def test_cli_accepts_the_inf70_adapter_name():
+    """Without the name in `choices`, everything above can never fire."""
+    import cli  # noqa: PLC0415
+
+    action = next(a for a in cli.build_parser()._subparsers._group_actions[0]
+                  .choices["ingest"]._actions if a.dest == "adapter")
+    assert "inf70" in action.choices
+
+
+def test_cli_corpus_root_does_not_drift_from_the_adapter():
+    import cli  # noqa: PLC0415
+
+    assert cli.INF70_CORPUS_ROOT == reader.DEFAULT_CORPUS
+
+
+def test_cli_ingest_dispatches_to_the_inf70_walk(monkeypatch, capsys):
+    import cli  # noqa: PLC0415
+
+    seen = {}
+
+    def fake_ingest(ledger, *, root, as_of, limit, dry_run):
+        seen.update(root=root, as_of=as_of, limit=limit, dry_run=dry_run)
+        return {"root": str(root), "runs_matched": 1, "rows_projected": 2,
+                "frames_emitted": 6, "by_kind": {"arm": 2}, "runs_refused": [],
+                "arms_refused": [{"run": "r", "arm": "a", "reason": "no artifact.sha256"}],
+                "rows_refused": [], "dry_run": dry_run}
+
+    monkeypatch.setattr(reader, "ingest_corpus", fake_ingest)
+    monkeypatch.setattr(cli, "_ledger", lambda args: _Ledger())
+    rc = cli.main(["ingest", "inf70", "--as-of", AS_OF, "--dry-run",
+                   "--root", str(FIXTURE.parent)])
+    assert rc == 0
+    assert seen["dry_run"] is True and seen["as_of"] == AS_OF
+    out = capsys.readouterr().out
+    assert "rows projected=2" in out
+    # a refused arm is NAMED in the operator-facing output, never silent
+    assert "no artifact.sha256" in out
+
+
+def test_cli_ingest_rejects_a_missing_root(capsys):
+    import cli  # noqa: PLC0415
+
+    rc = cli.main(["ingest", "inf70", "--as-of", AS_OF, "--root", "/nonexistent/inf70"])
+    assert rc == 2
+    assert "no such INF-70 corpus root" in capsys.readouterr().err
