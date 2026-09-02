@@ -2,100 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-30 (the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-08-25 (FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
-
-## Compiled Update — 2026-08-30: a dashboard is a claim about a producer — and every defect found merging two kernel pages was the surface agreeing with itself instead of with the producer
-
-**Confidence: verified** for the field-name mismatch, the mutation results, the route sweep, the
-test-count delta and the freshness behaviours (each reproduced against the live surface or the real
-record). **Verified as an open state** for the three surface gaps left deliberately unclosed.
-
-epyc-root shipped **two** kernel dashboards: `/kernel` and `/loop`. They are now one — `/loop`,
-titled **Kernel R&D**, with `/kernel` a 301 redirect and `dashboard/static/kernel.html` deleted
-(1,833 lines). The merge is unremarkable. What it *found* is not, and every finding has the same
-shape: **the surface was internally consistent and wrong about the producer.**
-
-### A fixture authored from the consumer's guess cannot witness the contract
-
-`/loop`'s GPU panel had been dark since the surface's first commit. The reader looked for `held_s`
-and `busy_s`; the producer has **always** written `claim_held_s` and `device_seconds_under_load`.
-41 tests passed over it, because the hand-built fixture invented **the reader's** spelling — so
-fixture and reader agreed with each other, and both disagreed with the producer. The tests proved
-the reader was self-consistent, which was never in doubt.
-
-**Rule: build fixtures from a real producer record, never from the consumer's expectation.** A
-fixture written by the same person, from the same mental model, as the reader is a mirror, not a
-witness. (This is the cross-repo cousin of the same program's "a test that proves a component
-EXISTED rather than that it was WIRED IN" family — see *Autonomous Research*, 2026-08-30.)
-
-### A mutation that survives because the harness cannot express the assertion is not a pass
-
-The merge was mutation-tested 13 ways. Twelve died. **M7 survived — producing a green pill whose
-text read `STALE`** — and the reason is the lesson: the test harness exposed only `innerHTML` and
-`textContent`, so the assertion that would have caught a colour/label mismatch was *literally
-unwritable*. The harness now also emits `class_by_id`.
-
-**Rule: before trusting a mutation score, check what the harness is capable of saying.** A surviving
-mutant may be reporting a gap in the harness rather than a gap in the tests, and the two are
-indistinguishable from the score alone.
-
-### Freshness: an envelope that is not rendered at the headline is not an envelope
-
-Two headline numbers could not be read as dead. The operator-gated `+48.9%` champion card carried
-**no envelope at all** — its reader took no timestamp, so the number would render identically
-forever after its producer died. The funnel's staleness verdict existed, but rendered **only inside
-a collapsed `<details>`** while the headline said nothing. Both fixed, and verified by aging the
-real record to 4 d and 20 d → `stale`, and deleting it → `absent`.
-
-Two structural holes in the freshness contract itself were found and left open, deliberately:
-
-- **Compliant silence has no age.** `/api/kernel` reports `reporting=observed, watchdog=idle` over
-  a **16.8-day** export, because that producer travels the compliant-silence path the hub honours.
-  The JSON does not read stale even though the data is. Compliant silence must still carry an age,
-  and an age past the envelope must degrade the verdict.
-- **A health fold that does not cover what the page renders.** `/api/loop/health` folds only the
-  loop producer, not the operator-gate bundle that moved onto the page. A human is never misled —
-  the verdict travels in the body and renders loudly — but an automated consumer is
-  under-informed.
-
-### Quiescent is not dead, and a dead-producer rule applied to a paused producer gives a wrong verdict
-
-A staleness audit widened past its scope also declared the `autopilot` dashboard stale. It is not:
-`autopilot_alive: false` with `paused: true` is a **quiescent** producer, and a dashboard showing
-the last known state of a paused system is *correct*. **A freshness contract must distinguish
-"nobody is writing because the system is stopped" from "nobody is writing because the system
-died"** — the same reading, opposite verdicts.
-
-### Reporting a coverage change honestly
-
-Dashboard test failures went **40 → 12**, and the sets are **not byte-identical** — legitimately,
-because 28 of the 40 lived in the deleted page's own test class. Saying "28 fewer failures" without
-that decomposition would have claimed a fix for tests that were deleted rather than repaired. One
-coverage loss is real and filed: the funnel and lane-hero render tests went away *with* the page
-rather than being fixed, and the reader still exists with nothing rendering it.
-
-### Deploying a dashboard change: push to `origin/main` and stop
-
-The hub supervisor gained `sync_dashboard_from_origin` + `check_hub_stale_source` on 2026-08-28: it
-fetches `origin/main` every **300 s**, syncs changed `dashboard/` files, and **restarts the hub
-itself**. The session that merged these pages twice asked the operator to `kill -TERM` the hub by
-hand, because it read *"Never restarts a healthy hub"* in the usage text and never opened the log
-that showed deploy-sync running. Hand-patching the shared clone is both unnecessary and fragile —
-the sync has a provenance test that trusts only a blob which has existed on `origin/main`.
-
-**Rule: a usage string describes intent; the log describes behaviour. When they disagree, the log
-wins**, and it costs one `tail` to find out.
-
-### Source References (2026-08-30 kernel surface merge)
-
-- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66, phase P6:
-  what landed (P6.1–P6.4), what is knowingly open (P6.5–P6.8), and the *Declined 2026-08-30* block.
-- [Surface and CI session record](../progress/2026-08/2026-08-30-ak-rebuild-20260828.md) — the
-  commit-by-commit account, the mutation results and the route sweep.
-- [Dashboard README](../dashboard/README.md) — the plane rule, the `/kernel` → `/loop` retirement
-  record, and the registry/probe/envelope requirement for any new surface.
-- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
 
 ## Compiled Update — 2026-08-23: the filesystem-containment guard is one scanner, every surface derived
 
@@ -2892,3 +2800,49 @@ The first corpus run over 2,428 workflows / 4,727 subagents found **52 workflows
 
 - [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-1 row tick, corpus numbers, FM-2/FM-3/FM-4 follow-ons
 - [`progress/2026-08/2026-08-25-unattributed.md`](../progress/2026-08/2026-08-25-unattributed.md) — the session that verified the FM-1 artifacts post-restore
+
+## Compiled Update — 2026-09-02 (incremental): retiring a worktree is a THIRD way to destroy uncommitted work, and `--force` is where it happens
+
+**Confidence: verified** (measured during the OP-30 retirement, 2026-09-02; the orphaned work was
+found by `git log --all -S` returning empty and rescued before deletion).
+
+The shared-tree custody hazards already recorded here cover two shapes — a pathspec commit
+**sweeping** a peer's hunks, and `git checkout/restore -- <path>` **reverting** them with no
+conflict and no reflog. Worktree retirement is the third, and it is the one that arrives wearing
+an approval: the branch is provably merged, the tag pins the tip, the operator has decided, and
+the command looks purely administrative.
+
+**The mechanism.** `git worktree remove` *refuses* a dirty tree — that refusal is the safety net.
+The natural next move is `--force`, which deletes the working tree outright. Uncommitted content
+was never an object in the database, so there is no reflog, no dangling blob, and no recovery.
+Measured: retiring three long-idle loop-champion worktrees, one of them (`ak-loop-tree-c`,
+untouched for five days, branch sitting at base with **zero** commits above it) held **82
+uncommitted lines** implementing a HIP/CUDA stream-capture probe in `mmvq.cu`. The branch being
+empty is exactly why nobody expected content: *commit-level* emptiness says nothing about the
+working tree.
+
+**The check that catches it, before any `--force`:**
+
+```bash
+git -C <worktree> status --porcelain          # any output at all = STOP, inspect
+git -C <worktree> diff -- <file> | head -40   # what is it?
+git log --all -S "<a distinctive symbol from the diff>"   # empty output = exists in NO commit
+```
+
+`log --all -S` is the decisive one: it searches every ref for the content, so an empty result
+means the work is unique to that working tree and deletion is terminal. Rescue is one command
+(`git diff > artifacts/<dated>.patch`, committed and pushed) and costs nothing next to the loss.
+
+**The generalizable rule**: an idle, merged, tag-pinned branch tells you the *history* is safe. It
+says nothing about the *working tree* attached to it. Verify the two independently — and treat a
+`remove` that refuses as evidence to investigate, never as an obstacle to `--force` past.
+
+Corollary for handed-over commands: a retirement command recorded days earlier encodes the tree
+state of that day. Re-verify before executing, because the safe command and the destructive one
+differ by a flag that only becomes necessary once the tree has drifted dirty.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-3 (the
+  retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
+- [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
+  the session record.
