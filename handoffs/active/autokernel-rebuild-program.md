@@ -1370,7 +1370,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       **Note the workload split**: DFlash2 generation is FINE on this champion (R23-17: 72.65 t/s,
       acceptance 0.6501). The regression is specific to the dec-b4 prefill-shaped surface — the
       very surface the loop optimized on the 1.5B.
-- [ ] **R23-23 — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.**
+- [x] **R23-23 — RESOLVED ✅ 2026-09-02 — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.**
       Run 24 would launch WITH the confirm gate active, so it cannot repeat this defect going
       forward — but it would start from a base that is already -1.4% on production. Options:
       (a) **Bisect then repair** — first measure the pre-keep parent `9e18beb0` vs production
