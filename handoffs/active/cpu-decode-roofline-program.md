@@ -67,7 +67,7 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | **the same run with the box AS-IS** (nodes full of page cache) | **130.7 ms (7.65 ±0.03)** t48, 7.22 t64; pp512 124 vs 176 | measured | same build, same recipe, 12 minutes earlier; model pages per node **57.7 / 10.7 / 8.0 / 17.7 GB** under `--interleave=all`. **Placement alone is −25% decode / −30% prefill.** This is the mechanism behind the 08-28 → 08-31 "−32%": the kernel's zone fallback ignores the interleave policy when the chosen node has no free pages |
 | decode, UD-IQ4_XS (the served file), **placement proven interleaved** | **109 ms (9.18 ±0.01)** t48, 8.73 t64; pp512 136 | measured 2026-09-02 (`results-c5fu-20260902T111721Z/`) | INF-68's 9.13 reproduces; uniform is **+10.5%** over UD under clean placement (+15.2% in the INF-68 window). The 08-28 **13.46 t/s does not reproduce under any regime measured** — retired for good |
 | ~~74 ms / 13.46 t/s~~ (UD, 08-28) | **retired**: UD under clean placement measures 9.18 t/s on the same lineage and recipe; as-is 7.65 (uniform). Nothing measured today reaches 13.46 — treat the 08-28 row as unexplained, not as a target | retired | `2026-08-28.md:206`; `2026-08-31.md:228`; the 2026-09-02 arms |
-| bytes streamed per token | **≈ 4.16 GB** = dense 2.344 + routed experts 1.296 (10/512 × 48 layers, avg 2.70 MB/expert) + `output.weight` 0.521 (Q6_K, 2560×248320) | computed 2026-09-02 from the artifact's tensor table (`gguf_dump`, 1224 tensors) | replaces the retired "2.8–3.4 GB", which was a different model's 2026-05-28 figure. Notable: `ffn_gate_inp` (router) is stored **F32** — 252 MB/token (6%) just to route; `ffn_down_exps` is **Q5_1** in the "uniform" file (640 % 256 ≠ 0, so IQ4_XS is impossible and llama-quantize fell back) |
+| bytes streamed per token | **≈ 4.16 GB** = dense 2.344 + routed experts 1.296 (10/512 × 48 layers, avg 2.70 MB/expert) + `output.weight` 0.521 (Q6_K, 2560×248320) | computed 2026-09-02 from the artifact's tensor table (`gguf_dump`, 1224 tensors) | replaces the retired "2.8–3.4 GB", which was a different model's 2026-05-28 figure. Notable: `ffn_gate_inp` (router) is stored **F32** — 252 MB/token (6%) just to route; `ffn_down_exps` is **Q5_1 in layers 0–5 and IQ4_NL in the other 42** (640 % 256 ≠ 0, so IQ4_XS is impossible; `use_more_bits` picks Q5_1 for the first n_layer/8) — corrected by B4 on 2026-09-02 |
 | DRAM bandwidth, theoretical | **460.8 GB/s today** (12 ch × 4800 MT/s × 8 B); **537.6 GB/s at the DIMMs' rated 5600** | measured config (SMBIOS type 17, 2026-09-02) | Supermicro H13SSL-NT, 12 × Samsung M321RYGA0PB0-CWMCJ 96 GB 2R DDR5 RDIMMs, one per channel, **rated 5600 MT/s, configured 4800**. One DIMM per channel is the fast population on SP5 (the 4800 cap belonged to EPYC 9004; a 9655 supports 6000 at 1DPC). Operator: BIOS memory clock → 5600 at the next reboot; **re-run C0 and C5 after it** — every bandwidth-bound number scales by up to +17% |
 | DRAM bandwidth, measured **copy** | **212 GB/s, read+write already counted** | measured (conditions incomplete) | `bench_stream3.cpp` 2026-08-29: 2 GiB arrays, malloc + parallel first-touch, default 96 threads, NUMA mode and OMP placement unrecorded. The tool divides 4 GiB by the copy time of a 2 GiB array — standard STREAM convention |
 | ~~425 GB/s "traffic"~~ | **retired — a double count** | retired | the tool's "traffic" column multiplies the already-read+write copy figure by 2 again. Never measured on this box. Every "% of 425" in the pre-audit handoff, the ~8% fraction, the "1.3–4% expert path" and the DGX-Spark comparison inherited it |
@@ -199,7 +199,12 @@ not a gate.
       (Ernie image turbo, 12 GB, up since 08-21, `-t 96`, interleave policy set) sits **8 / 40 / 32 / 19 %**
       across nodes — the same fallback; and the autokernel loop's GPU `llama-bench` is 89 % on node 3 by
       design (host threads pinned to 184-191). Per-node free after this session's evictions: 70 / 31 / 34 /
-      24 GB — still uneven, so the next 98 GB interleaved load will skew again without (a). (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
+      24 GB — still uneven, so the next 98 GB interleaved load will skew again without (a). **Recurrence
+      2026-09-02 (B4, D7a, PROF each saw one): a run skewed even after eviction reached ≥ 40 GiB free per
+      node inside the lock (B4: 44.6/23.5/23.5/2.4 GB with node 3 at 41 GB free at eviction time) — the
+      allocator still falls back under concurrent page-cache growth (a 180 GB download was writing all
+      afternoon). Eviction reduces the odds; only the in-window `numastat` proof makes a run valid, and
+      only a durable form closes it.** (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
       the intended node before falling back — system-wide, hurts file-heavy work), a drop_caches hook in the
       stack's launch path, or BIOS NPS1 (hardware interleave makes the placement question disappear; C0-c
       says whether it also lifts the 153 GB/s). Memory note: `feedback_page_cache_defeats_numa_interleave`.
@@ -216,6 +221,15 @@ not a gate.
       C0 microbench (`bench_readbw`, 2 min) — target ≥ 300 GB/s read at 96T on a 12-channel 5600 MT/s
       socket; then C5 (15 min) and record both in this ledger with the new build/BIOS state. Every
       bandwidth-bound number in the program moves with this; the dispatch floor (~70 ms) does not.
+- [ ] **C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.**
+      Measured 2026-09-02 on build 10196 against the OP-32 uniform artifact: `nan` from chunk 1 under
+      `-b 2048` / `-b 512` / `-fa 1` / `-c 2048`; the same binary returns `PPL = 17.29 ± 3.29` on
+      Qwen3-1.7B-Q8_0, so the tool is sound and the defect is architecture-specific — suspect the
+      all-logits (`n_outputs > 1`) path, which `llama-bench` and server generation never exercise. Until
+      fixed, quant quality can only be gated by greedy-generation agreement
+      (`agents/b4/gen_arm.sh` + `compare_gen.py`), which cannot prove equivalence. **Blocks B4's, B5's,
+      INF-71's and every future quant decision on this model.** Note E2c's finding on the single-token vs
+      batched forward when investigating — the all-logits path is the batched path.
 
 ## Axis D — the dispatch floor (the largest term, and the least measured)
 
@@ -420,15 +434,28 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       artifact rule; the uniform file stays the era anchor); B4's `--tensor-type` overrides apply on top of
       it in one `llama-quantize` pass since they touch none of the fused tensors. B3-k (the kernel half)
       stays open.
-- [ ] **B4 — the bytes budget: requantize what is streamed for no reason.** From the tensor table, per
-      token: `ffn_gate_inp` **F32 → F16 or Q8_0** (−126 to −190 MB, 3–4.5%, routing logits tolerate it —
-      verify top-10 agreement on a fixed prompt set); `output.weight` **Q6_K → Q5_K or IQ4_XS** (−80 to
-      −200 MB; PPL/KL check on a fixed corpus); `ffn_down_exps` **Q5_1 → IQ4_NL** (block-32, so the
-      640-wide rows fit, and it has the AVX2 8×8 repack path the UD file already used; −18% of ~590 MB).
-      Each is a `llama-quantize --tensor-type` override on the existing GGUF. Every change makes a **new
-      artifact**: per the artifact rule a delta is measured with the artifact identical on both arms, so
-      the comparison is new-artifact-vs-uniform in the same build and window, and any headline is the
-      served artifact's number. Quality gate alongside speed (`feedback_pair_speed_with_correctness_check`).
+- [x] **B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,
+      `/mnt/raid0/llm/tmp/inf70/agents/b4/`) — three artifacts vs the uniform control, build 10196, t48, r5,
+      placement proven in-window on every arm. Full override set `IQ4_XS-uniform-b4` (router F16 +
+      `output.weight` Q5_K + `ffn_down_exps` IQ4_NL; bytes/token 4.1656 → 3.9369, −5.49%; SHA
+      `bcddc62b…`): decode **10.385 → 10.515 t/s (+1.25%, −1.19 ms; −1.49 ms predicted at 153 GB/s)** but
+      **prefill −15.1% (177.4 → 150.6)**. Separation arms invert the naive reading: **`ffn_gate_inp`
+      F32→F16 is decode-neutral (+0.05%) and +11.9% PREFILL (198.5) — take it**; `output.weight`
+      Q6_K→Q5_K −84 MB/token with no measured effect — optional; **`ffn_down_exps` Q5_1→IQ4_NL is the
+      whole regression, −21.7% prefill for 0.44% of the stream — do not take it.** Correction to the
+      ledger: only **6 of 48** `ffn_down_exps` were Q5_1 (layers 0–5, `use_more_bits`); 42 were already
+      IQ4_NL, so that lever was worth 18 MB/token, not ~590 MB. Requires a quantizer patch (`inf70/b4`
+      `49a1255`, +14 lines): stock `llama-quantize` accepts a `--tensor-type` on `ffn_gate_inp` and
+      **silently ignores it** (`tensor_allows_quantization()` rejects the router before the pattern list;
+      anchor the regexes — `output\.weight` unanchored also matches `attn_output`). Quality: **no PPL/KL
+      possible — see C9**; greedy-generation gate only: 33.5% prefix agreement over 5 × 128 tokens,
+      median |Δ logprob| 0.0014 nats on agreed tokens, all continuations coherent — no visible regression,
+      equivalence not proven. One arm discarded for placement skew (44.6/23.5/23.5/2.4 GB) **despite
+      eviction inside the lock — C7 recurs; the in-window sampler is what caught it.** Open question for
+      B1/D6: −21.7% prefill from IQ4_NL on six 640-wide expert tensors is backwards from the naive
+      prediction (`llamafile_sgemm` covers IQ4_NL, not Q5_1) — point the per-path profile at `mul_mat_id`
+      for those two types before anyone uses IQ4_NL on a 640-wide expert tensor. Artifacts kept:
+      `IQ4_XS-uniform-b4` and `IQ4_XS-uniform-b4r` (router-only, 98,267,083,136 B); `-b4b` deleted.
 - [ ] **B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform
       file is a quant-from-quant of the unsloth UD shards ("speed control only — not quality-representative",
       INF-68). Operator direction 2026-09-02: skip the FP8 download and converter run. The route is the
