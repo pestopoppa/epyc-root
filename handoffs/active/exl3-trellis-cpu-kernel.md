@@ -65,6 +65,13 @@ converter/importer from the exl3 safetensors into GGUF for the expert tensors on
       `models/turboderp/Qwen3.8-Flash-Next-exl3/<branch>/`. ~10 MB/s → ~3 h and ~2.3 h. Tick when
       `download.log` shows `SHA-OK` for every LFS file of both branches. Not a measurement-window concern
       (I/O only), but do not start a second download while it runs.
+*(Gate satisfied 2026-09-02: INF-70 C0/C5/B1/D0 have ranked the levers — the weight paths run at ~40% of read
+bandwidth and the expert path is bytes-proportional, so a bytes lever pays at ~1.5× its roofline value (B2).
+X0 and the reference-kernel half of X1 started 2026-09-02 ~19:00Z as subagent `x1`, Fable-low: format facts
+from the downloaded 4.05 branch's headers + exllamav3's own `mul1` CPU GEMV extracted into a torch-free
+harness and run on REAL expert tensors at 1/8/24/48 threads, cache-resident and DRAM-streaming. Note for the
+record: nothing on this host can execute EXL3 end to end today — no GGUF, exllamav3 is CUDA-first with no
+ROCm support, and its CPU code covers only the MoE expert GEMV.)*
 - [ ] **X0 — format spec from source (no compute).** Read `moe_mul1.cpp`, `codebook.cuh`, `exl3.md` and the
       4.05 branch's tensor metadata; write `docs/design/exl3-mul1-ggml-type.md`: the bit layout of a 16×16
       tile at K bits, the `suh`/`svh` role at inference (which side gets the Hadamard, per tile or per row),
