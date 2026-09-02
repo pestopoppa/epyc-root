@@ -12,6 +12,14 @@
 - [`autokernel-research-loop.md`](autokernel-research-loop.md) — the GPU megakernel/persistent-kernel literature (L4 lever) this project is the CPU analogue of
 - `handoffs/active/master-handoff-index.md` — the router
 
+**Framing superseded 2026-09-02 (INF-70 audit)**: this file remains the fused decoder's design record
+and phase checklist. The live viability task list (A1–A4, A-GATE), the corrected measurement ledger and
+the program this work now belongs to are in [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md)
+(INF-70). The section below is the historical design premise: the 74 ms anchor does not reproduce
+(INF-68 measured ~110 ms UD / ~95 ms uniform on a clean build), the 28/46 ms split and the 65 µs/9.4 ms
+constants are in no committed profiler record, and the measured node count is 7,906 pre-fusion /
+~6,890 on the baseline build, not ~5,850. Do not quote this section's numbers; quote INF-70's ledger.
+
 ## The measured problem (2026-08-29/30, qwen4exp IQ4_XS UD, interleave baseline)
 
 Batch-1 decode = ~74 ms/token (~13.5 t/s, t48; t64 sweet spot ~14). Breakdown, all in situ:

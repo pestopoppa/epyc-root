@@ -3483,10 +3483,17 @@ the surviving figure, and the commit that made the change).
 A single campaign (INF-67/INF-70, CPU fused decode) produced four corrections in sequence, each
 found by the *next step* rather than by review. The sequence is the finding, not any one error:
 
-1. **The roofline denominator.** A gap was framed against the **212 GB/s STREAM `copy`** figure.
-   Decode is a **read-only weight stream**, so the correct denominator is the ~**425 GB/s of DRAM
-   traffic** the machine sustains — `copy` counts only bytes copied and hides the read half. The
-   achieved fraction moved from ~20% to ~10%.
+1. **The roofline denominator — and the correction to it was itself wrong (fifth correction,
+   2026-09-02 audit).** A gap was first framed against the **212 GB/s STREAM `copy`** figure, then
+   "corrected" to **~425 GB/s** on the argument that `copy` counts only bytes copied and hides the
+   read half. The source tool (`bench_stream3.cpp`, 2026-08-29) divides **4 GiB by the copy time of a
+   2 GiB array** — i.e. it already counts read + write, the standard STREAM convention — and its
+   "traffic" column multiplies by two *again*. **425 GB/s was never measured on this box**; the
+   measured copy traffic is 212 GB/s (at an unrecorded thread count, without the OMP placement
+   stack), and the **read-only** bandwidth under the decode recipe has never been measured at all.
+   Every "% of 425" downstream (the 7.5 ms roofline, the ~8% achieved fraction, "1.3–4% on the
+   expert path", "more bandwidth than a DGX Spark") inherited the doubling. The live denominator is
+   task C0 of [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md).
 2. **A cross-build ratio.** "The graph gains 4.7× from 1 thread (350 ms) to 48 (74 ms)" divided a
    **debug-build** 1T number by a **clean-build** 48T number. Same-build scaling is **2.8×**.
 3. **A ratio against a dead anchor.** The correction to (2) asserted a "1.7× debug penalty" from
@@ -3510,16 +3517,23 @@ Key findings:
 - **Mark invalid, do not silently substitute.** Replacing 46 ms with a rescaled ~67 ms would have
   manufactured a second unmeasured number with the authority of a correction. The row was struck
   through and labeled INVALID, with the re-derivation assigned to a task.
-- **Distinguish figures that depend on the anchor from those that do not.** The "27% of roofline"
-  statement survived the retraction untouched because it uses only the *profiled* gemv and the
-  *measured* bandwidth — neither derived from the baseline. Auditing dependency, not recency, is
-  what separates the two.
+- **Distinguish figures that depend on the anchor from those that do not — and then check the
+  survivors' own inputs.** The "27% of roofline" statement was kept because it used only the
+  *profiled* gemv and the *measured* bandwidth. The 2026-09-02 audit found both inputs unsound: the
+  bandwidth was the doubled 425 GB/s, and the "profiled 28 ms" (65 µs × 144 expert calls + ~18 ms
+  dense) appears in no committed profiler record — the INF-68 audit had already flagged the
+  65 µs / 9.4 ms / 180 GB/s constants as "unmatched by committed records". A figure that survives a
+  retraction on dependency grounds still needs each of its own inputs traced to a primary record.
 - **"Same-window ratios are safe" is the usable form of the rule.** Ratios inside one build, one
   window, one artifact are admissible when absolute numbers are not; the fused/graph **3.86×** at 1T
   and the **2.8×** thread scaling both survived all four corrections because both are same-window.
 - **The build is part of the artifact.** An instrumented build is a different instrument. Its penalty
   here remains **unmeasured** — the honest position, since the only available clean-side anchor was
   itself retired.
+- **An instrument's counting convention is part of the number.** STREAM-style copy figures count
+  bytes read *and* written; a memcpy-style figure counts one side; a DRAM-counter figure
+  (`ls_dmnd_fills_from_sys.dram_io_all` + `ls_hw_pf_dc_fills.dram_io_all`, ×64 B) counts cache-line
+  fills. Before dividing by a bandwidth, name which one it is and read the source that printed it.
 - **Verification surfaced errors that review did not.** Corrections 3 and 4 were found by compiling
   the material into the wiki and by re-reading the handoff against `git` — not by re-reading the
   reasoning. Rules were not in short supply; mechanically checking each number against its source was.
