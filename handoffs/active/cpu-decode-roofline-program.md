@@ -33,14 +33,16 @@ the fused decoder becomes one axis of a roofline program, not the program.
 
 | | measured | source |
 |---|---|---|
-| decode, canonical recipe | **~74 ms/token (~13.5 t/s)** | INF-67 handoff, llama-bench r5 |
+| decode, **required comparison baseline** (OP-32 opt. B) | **~95 ms/token (10.52 t/s)** | INF-68, uniform IQ4_XS, current box |
+| decode, UD-IQ4_XS on the same box | ~110 ms/token (9.13 t/s) | INF-68, same window (+15.2% for uniform) |
+| ~~74 ms/token (13.46 t/s)~~ | **DOES NOT REPRODUCE — do not cite** | INF-67 progress 2026-08-31: "needs re-anchoring before any perf claim" |
 | of which gemv | ~28 ms | in-situ profiler |
 | of which non-gemv | ~46 ms | subtraction |
 | active bytes/token | ~2.8-3.4 GB | 6B active of 125B, 512 experts / 10 used, ~4.25 bpw |
 | **machine DRAM traffic, measured** | **~425 GB/s** | STREAM copy 212 GB/s = 425 GB/s traffic (read+write), progress 2026-08-28 |
 | theoretical | 460 GB/s | 12 channels x 4800 MT/s |
 | **implied roofline** | **~7.5 ms/token (~133 t/s)** | 3.2 GB read / 425 GB/s |
-| **achieved fraction** | **~10%** | 7.5 / 74 |
+| **achieved fraction** | **~8%** | 7.5 / 95 (vs the ratified baseline) |
 
 **We convert about a TENTH of this machine's memory bandwidth into tokens.** Decode is a read-only
 weight stream, so the denominator is the ~425 GB/s of real traffic the machine demonstrably
@@ -90,7 +92,8 @@ projection above is a target, not a measurement.
 
 - [ ] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, **both arms in
       the SAME build**, then re-measure at 48 threads — again same-build — before comparing to the
-      74 ms clean-build baseline. Only then does the bit-exactness hunt resume.
+      re-anchored clean-build baseline from C5 — NOT the 74 ms figure, which does not reproduce.
+      Only then does the bit-exactness hunt resume.
 
 ## Axis B — the expert path's bandwidth deficit (THE hard gain)
 
@@ -141,17 +144,37 @@ access pattern that would do it.
 - [ ] **C3 — hold the BUILD constant, not just the artifact.** OP-32 ratified the rule that a delta
       is measured with the *artifact* identical on both arms; this campaign shows the same applies to
       the *build*. The INF-67 session's own wrap-up records the graph at **8.00 t/s (~125 ms) at -t 48
-      in the debug build** against **13.46 t/s (~74 ms) clean** — a **1.7x** systematic penalty from
-      the instrumentation. Any fused-vs-graph or before-vs-after number that crosses that boundary is
-      not a measurement.
+      in the debug build**. The instrumented build is clearly slower than a clean one, but **the size of
+      that penalty is NOT yet measured** — see the correction below. Any fused-vs-graph or
+      before-vs-after number that crosses a build boundary is not a measurement.
+
+      What IS safe, and is the model to copy: the session's own **same-build, same-thread control arm**
+      — graph 350 ms vs fused 1350 ms, both at `-t 1` in the one debug build. Their progress record
+      states the principle exactly: *"same-window ratios are safe."* Ratios inside one window; never
+      across two.
 
       **Worked example, and it is mine.** I told the session the graph gains "4.7x from 1 thread
       (350 ms) to 48 (74 ms)" and used it to extrapolate. That divided a DEBUG-build 1T number by a
-      CLEAN-build 48T number. The same-build scaling is **2.8x** (350 → 125 ms). The correction does
-      not change the verdict — the fused/graph ratio is ~3.9x at 1T and roughly stable across thread
-      counts, which is the cleaner way to state it — but the error is exactly the class OP-32 was
-      ratified to prevent, committed one level up from where the rule was written. Cite build id and
-      thread count on every row, always.
+      CLEAN-build 48T number. The same-build scaling is **2.8x** (350 → 125 ms, both debug).
+
+      **Then I did it again inside the correction.** My first fix asserted a "1.7x debug penalty" from
+      8.00 vs 13.46 t/s — but 13.46 is the very figure the INF-67 record flags as not reproducing on
+      this box, so that ratio crossed *both* a build boundary and a dead anchor. On the current box the
+      measured baselines are 9.13 t/s (UD) and 10.52 t/s (uniform), so even the direction of a
+      "1.7x" is unsupported. **The rule was right and I broke it twice while writing it down.**
+      That is why C5 exists: no build-crossing ratio gets asserted until someone measures one.
+
+      What survives, all same-build and same-thread: fused/graph **3.86x** at 1T, and graph thread
+      scaling **2.8x** from 1T to 48T. Cite build id and thread count on every row, always.
+- [ ] **C5 — RE-ANCHOR THE BASELINE. This gates every absolute number in this program.** The
+      74 ms / 13.46 t/s figure is quoted throughout INF-67 and does not reproduce; INF-68 measured
+      9.13 t/s (UD) and 10.52 t/s (uniform IQ4_XS) on the current box, and OP-32 option B made the
+      uniform artifact the required comparison baseline. Until this is settled, **no absolute
+      before/after claim is admissible** — only same-window ratios. Produce, in ONE clean build,
+      one thread sweep: graph at `-t 1` and `-t 48`, on the OP-32 uniform artifact, canonical
+      recipe (interleave + no-mmap). That single run yields the honest clean baseline, the true
+      thread scaling, and — paired with the existing debug numbers — the first *measured*
+      instrumentation penalty. Report all three with build id and artifact SHA.
 - [ ] **C4 — a control arm for every claim.** The fused path's "84% gemv" was uninterpretable until
       the graph was measured at the same thread count; the control took one run and inverted the
       conclusion. No same-conditions control, no claim.
