@@ -72,7 +72,9 @@ per-row `vec_dot` in `FusedMM::dot` is a fixable implementation error, not a str
 - [ ] **A1 — batched `mul_mat` substitution in `lora_mm`/`FusedMM`** (in flight). **Judge it on the
       gemv column ALONE**: 1141 ms → ~300 ms at 1T is success. Do NOT judge on total —
       see the warning below, it will look like a refutation when it is not.
-- [ ] **A2 — scratch arena.** Replace the per-layer `ggml_init`/free (~2.5 GB/token of churn) with
+- [ ] **A2 — scratch arena.** Replace the per-layer `ggml_init`/free (~2.5 GB/token of churn — an
+      UNSOURCED estimate from a read of `qwen4exp-fused.cpp`, not a measurement; the sources describe
+      the ~215 ms "other" cost only qualitatively, so measure it before quoting it) with
       one reusable arena sized once. This is now HALF the viability case, not a Phase-4 nicety.
 - [ ] **A3 — strip the debug I/O** before any timing is reported (112 `fprintf`/`fopen` sites, 67
       `getenv`, several in expert inner loops).
