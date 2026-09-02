@@ -104,6 +104,17 @@ projection above is a target, not a measurement.
       re-anchored clean-build baseline from C5 — NOT the 74 ms figure, which does not reproduce.
       Only then does the bit-exactness hunt resume.
 
+## Ordering — run Axis C FIRST
+
+- [ ] **C-FIRST — settle C5 before spending a session on A1/A2 or B1.** Not the original plan
+      (C was written as discipline running alongside the work), but four corrections in this
+      campaign all had the same shape: a number quoted from the wrong build, the wrong artifact,
+      or a retired baseline. Axis A's gate and Axis B's whole scope are stated in units of a
+      baseline that is currently retired, so a session spent on either now produces results that
+      have to be re-expressed the moment C5 lands. C5 is ONE clean run. Do it first, then A and B
+      report against a live anchor. **If this is overruled, say so in the handoff — the ordering is
+      a recommendation with a reason, not a gate.**
+
 ## Axis B — the expert path's bandwidth deficit (THE hard gain)
 
 This is independent of the fused decoder and applies to the **graph** as it stands today. It is the
@@ -176,6 +187,16 @@ access pattern that would do it.
 
       What survives, all same-build and same-thread: fused/graph **3.86x** at 1T, and graph thread
       scaling **2.8x** from 1T to 48T. Cite build id and thread count on every row, always.
+
+      **And the rule this axis actually needs, which is stronger than the one above: retracting a
+      number is not done until you have chased what was DERIVED from it.** Re-anchoring the
+      headline was not enough — the gemv/non-gemv split sitting directly beneath the struck-through
+      row was a partition *of* it (28 + 46 = 74), and it went on scoping Axis B for a further
+      revision. A derived figure keeps full apparent authority precisely because it does not look
+      like the thing that was retracted. On any retraction, enumerate every quantity computed from
+      the retired one and give each an explicit disposition — **survives / invalid / re-derive** —
+      and mark the invalid ones invalid rather than silently substituting a rescaled value, which
+      only manufactures a second unmeasured number wearing the authority of a correction.
 - [ ] **C5 — RE-ANCHOR THE BASELINE. This gates every absolute number in this program.** The
       74 ms / 13.46 t/s figure is quoted throughout INF-67 and does not reproduce; INF-68 measured
       9.13 t/s (UD) and 10.52 t/s (uniform IQ4_XS) on the current box, and OP-32 option B made the

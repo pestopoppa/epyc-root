@@ -3474,3 +3474,61 @@ anecdotes from three ecosystems into a falsifiable placement of the gap.
   admission + greedy-parity harness.
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L8, R21-8, R22-1/R22-2, R21-5 pilot sub-items.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §10, §11.
+
+## Compiled Update — 2026-09-02: retracting a number is not done until you chase what was derived from it
+
+**Confidence: verified** (four self-corrections inside one campaign, each with the retracted figure,
+the surviving figure, and the commit that made the change).
+
+A single campaign (INF-67/INF-70, CPU fused decode) produced four corrections in sequence, each
+found by the *next step* rather than by review. The sequence is the finding, not any one error:
+
+1. **The roofline denominator.** A gap was framed against the **212 GB/s STREAM `copy`** figure.
+   Decode is a **read-only weight stream**, so the correct denominator is the ~**425 GB/s of DRAM
+   traffic** the machine sustains — `copy` counts only bytes copied and hides the read half. The
+   achieved fraction moved from ~20% to ~10%.
+2. **A cross-build ratio.** "The graph gains 4.7× from 1 thread (350 ms) to 48 (74 ms)" divided a
+   **debug-build** 1T number by a **clean-build** 48T number. Same-build scaling is **2.8×**.
+3. **A ratio against a dead anchor.** The correction to (2) asserted a "1.7× debug penalty" from
+   8.00 vs **13.46 t/s** — but the source record states the 13.46 figure *"doesn't reproduce on the
+   current box — the 74 ms arithmetic needs re-anchoring before any perf claim (**same-window ratios
+   are safe**)"*. Current-box baselines: **9.13 t/s** (UD-IQ4_XS) and **10.52 t/s** (uniform IQ4_XS,
+   +15.2%). Re-anchored, the achieved fraction is **~8%**, not ~10% — the gap was *worse* than
+   reported.
+4. **The partition of the dead anchor.** Two table rows directly beneath the struck-through 74 ms
+   entry were a decomposition **of** it: gemv ~28 ms + non-gemv ~46 ms, the second labeled
+   "subtraction". Retiring the headline left the split load-bearing for the campaign's main axis.
+   The profiled **28 ms survives** (directly measured); the **46 ms is invalid** (74 − 28), and no
+   substitute is asserted because none was measured.
+
+Key findings:
+
+- **A derived figure outlives the retraction of its parent, because it does not look like the thing
+  that was retracted.** A number one subtraction away from a withdrawn baseline keeps full apparent
+  authority. Retracting a figure is not complete until every quantity computed from it has been
+  chased down and given an explicit disposition — survives / invalid / re-derive.
+- **Mark invalid, do not silently substitute.** Replacing 46 ms with a rescaled ~67 ms would have
+  manufactured a second unmeasured number with the authority of a correction. The row was struck
+  through and labeled INVALID, with the re-derivation assigned to a task.
+- **Distinguish figures that depend on the anchor from those that do not.** The "27% of roofline"
+  statement survived the retraction untouched because it uses only the *profiled* gemv and the
+  *measured* bandwidth — neither derived from the baseline. Auditing dependency, not recency, is
+  what separates the two.
+- **"Same-window ratios are safe" is the usable form of the rule.** Ratios inside one build, one
+  window, one artifact are admissible when absolute numbers are not; the fused/graph **3.86×** at 1T
+  and the **2.8×** thread scaling both survived all four corrections because both are same-window.
+- **The build is part of the artifact.** An instrumented build is a different instrument. Its penalty
+  here remains **unmeasured** — the honest position, since the only available clean-side anchor was
+  itself retired.
+- **Verification surfaced errors that review did not.** Corrections 3 and 4 were found by compiling
+  the material into the wiki and by re-reading the handoff against `git` — not by re-reading the
+  reasoning. Rules were not in short supply; mechanically checking each number against its source was.
+
+### Source References (2026-09-02)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70, the
+  re-anchored headline, C3/C5, and the struck-through anchor and partition rows.
+- [`2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) — the four corrections
+  with their commits.
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the source record for the baseline
+  re-anchoring caution and the current-box 9.13 / 10.52 t/s measurements.

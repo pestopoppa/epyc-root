@@ -110,6 +110,51 @@ describe the ~215 ms "other" cost only qualitatively) and the withdrawn 1.7×.
 **Three corrections, each found by the next step rather than by review.** The measurement rules were
 not the thing in short supply — following them was.
 
+## 5. A fourth correction — the same error, one subtraction away
+
+The operator asked whether the handoff actually reflected §4. Verifying it against `git` rather than
+asserting it surfaced a **fourth** propagation. Two table rows directly *beneath* the struck-through
+74 ms entry were a decomposition **of** it:
+
+```
+| of which gemv     | ~28 ms | in-situ profiler |
+| of which non-gemv | ~46 ms | subtraction      |   <- 28 + 46 = 74
+```
+
+The table said "subtraction" outright. Retiring the headline had left the split load-bearing for
+**Axis B — the campaign's main gain**, scoped as "split the 28 ms", and it had propagated into the
+two-multipliers list, the "eliminate 46 ms -> 36 t/s" projection, the A1+A2 target and the index row.
+
+Fixed in `af738a99`, with each quantity given an explicit disposition rather than a blanket edit:
+
+| quantity | disposition |
+|---|---|
+| gemv ~28 ms | **survives** — directly profiled, not derived; carries a build-id caveat, re-measure on the C5 run |
+| non-gemv ~46 ms | **INVALID** — it was 74 − 28. Marked invalid, **not** silently rescaled to ~67 |
+| "eliminate 46 ms -> 36 t/s" | relabeled an arithmetic sketch |
+| 27% of roofline | **kept**, and justified — uses only the profiled gemv and measured bandwidth, so it never depended on the anchor |
+| 33–43 ms / 23–30 t/s | relabeled the ambition to test, not a predicted result |
+| B1 + index row | rescoped onto the C5 re-anchored run |
+
+**The rule this proved, now in C3:** *retracting a number is not done until you have chased what was
+derived from it.* A derived figure keeps full apparent authority precisely because it does not look
+like the thing that was retracted. And **mark invalid rather than substituting** — a rescaled ~67 ms
+would have manufactured a second unmeasured number wearing the authority of a correction.
+
+Two actionables I had left in prose are now filed rather than stated: **C-FIRST** (settle C5 before
+spending a session on A1/A2 or B1 — both are scoped in units of a retired baseline) and the C3 rule
+above. The index row now reads C5-first.
+
+## 6. Wrap-up defect found in my own previous wrap-up
+
+`wiki/.last_compile` is **gitignored** — a local-only watermark. Last wrap-up I ran the wiki
+`--touch` inside a throwaway worktree and then deleted it, so the page content landed on `main` while
+the watermark advanced only in a directory that no longer exists. The scanner still reported the same
+two sources as uncompiled. Corrected by touching in the persistent tree.
+
+Worth knowing generally: **the wiki compile step is not worktree-safe.** Page edits are ordinary
+tracked work and travel fine; the watermark does not. Run `--touch` where `.last_compile` persists.
+
 ## Deferred
 
 Nothing blocked on me. Carried, each with a named blocker:
