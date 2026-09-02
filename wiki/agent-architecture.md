@@ -3053,3 +3053,49 @@ Key findings:
   §OP-11 — the original options table and the 2026-09-01 closing banner.
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — Task 11: the
   conflict-by-conflict resolution record and the push-guard mechanics.
+
+## Compiled Update — 2026-09-02 (incremental): retiring a worktree is a THIRD way to destroy uncommitted work, and `--force` is where it happens
+
+**Confidence: verified** (measured during the OP-30 retirement, 2026-09-02; the orphaned work was
+found by `git log --all -S` returning empty and rescued before deletion).
+
+The shared-tree custody hazards already recorded here cover two shapes — a pathspec commit
+**sweeping** a peer's hunks, and `git checkout/restore -- <path>` **reverting** them with no
+conflict and no reflog. Worktree retirement is the third, and it is the one that arrives wearing
+an approval: the branch is provably merged, the tag pins the tip, the operator has decided, and
+the command looks purely administrative.
+
+**The mechanism.** `git worktree remove` *refuses* a dirty tree — that refusal is the safety net.
+The natural next move is `--force`, which deletes the working tree outright. Uncommitted content
+was never an object in the database, so there is no reflog, no dangling blob, and no recovery.
+Measured: retiring three long-idle loop-champion worktrees, one of them (`ak-loop-tree-c`,
+untouched for five days, branch sitting at base with **zero** commits above it) held **82
+uncommitted lines** implementing a HIP/CUDA stream-capture probe in `mmvq.cu`. The branch being
+empty is exactly why nobody expected content: *commit-level* emptiness says nothing about the
+working tree.
+
+**The check that catches it, before any `--force`:**
+
+```bash
+git -C <worktree> status --porcelain          # any output at all = STOP, inspect
+git -C <worktree> diff -- <file> | head -40   # what is it?
+git log --all -S "<a distinctive symbol from the diff>"   # empty output = exists in NO commit
+```
+
+`log --all -S` is the decisive one: it searches every ref for the content, so an empty result
+means the work is unique to that working tree and deletion is terminal. Rescue is one command
+(`git diff > artifacts/<dated>.patch`, committed and pushed) and costs nothing next to the loss.
+
+**The generalizable rule**: an idle, merged, tag-pinned branch tells you the *history* is safe. It
+says nothing about the *working tree* attached to it. Verify the two independently — and treat a
+`remove` that refuses as evidence to investigate, never as an obstacle to `--force` past.
+
+Corollary for handed-over commands: a retirement command recorded days earlier encodes the tree
+state of that day. Re-verify before executing, because the safe command and the destructive one
+differ by a flag that only becomes necessary once the tree has drifted dirty.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-3 (the
+  retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
+- [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
+  the session record.
