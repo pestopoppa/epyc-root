@@ -352,7 +352,13 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       counts identical. The cross-binary greedy check (unpatched prof binary vs patched, 70 tokens) is
       byte-identical. **So D8's real effect is ≈ 95.5 → 83.4 ms/token (10.4 → 12.0 t/s, −12%) at t48 —
       the largest single gain of the day — and D6's GET_ROWS ranking stands; the "retracted" line above is
-      itself retracted.** Confirmation arms (anchor / pristine / prof-only / d8) running as D8x.
+      itself retracted.** Per-op attribution from the two profiled runs (same command and recipe): GET_ROWS
+      9.34 → 2.59 ms, **CPY 3.65 → 0.50, GATED_DELTA_NET 3.00 → 0.49, MUL_MAT 41.9 → 40.1**, MUL_MAT_ID
+      +0.9; total profiled wall 96.0 → 82.2 ms (−13.8) — the parallel gather leaves each 3 MB row spread
+      across the 48 threads' caches, so its consumers stop pulling everything from one CCD. The node table's
+      `n_tasks = 1` count for GET_ROWS is 175 in BOTH runs while its wall fell 3.6× — direct proof that the
+      planned task count does not gate execution in this tree. Confirmation arms (anchor / pristine /
+      prof-only / d8, plus a cross-binary greedy pair) running as D8x.
 - [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
       B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
       op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
