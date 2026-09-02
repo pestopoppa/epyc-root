@@ -12,6 +12,14 @@
 - [`autokernel-research-loop.md`](autokernel-research-loop.md) — the GPU megakernel/persistent-kernel literature (L4 lever) this project is the CPU analogue of
 - `handoffs/active/master-handoff-index.md` — the router
 
+**Framing superseded 2026-09-02 (INF-70 audit)**: this file remains the fused decoder's design record
+and phase checklist. The live viability task list (A1–A4, A-GATE), the corrected measurement ledger and
+the program this work now belongs to are in [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md)
+(INF-70). The section below is the historical design premise: the 74 ms anchor does not reproduce
+(INF-68 measured ~110 ms UD / ~95 ms uniform on a clean build), the 28/46 ms split and the 65 µs/9.4 ms
+constants are in no committed profiler record, and the measured node count is 7,906 pre-fusion /
+~6,890 on the baseline build, not ~5,850. Do not quote this section's numbers; quote INF-70's ledger.
+
 ## The measured problem (2026-08-29/30, qwen4exp IQ4_XS UD, interleave baseline)
 
 Batch-1 decode = ~74 ms/token (~13.5 t/s, t48; t64 sweet spot ~14). Breakdown, all in situ:
@@ -222,6 +230,31 @@ Checklist (the dashboard gate — flipped as the phases land):
   mechanism hypothesis (tool outputs stored verbatim per message — this campaign moved
   genuinely large artifacts) is worth knowing independently: every large tool output is
   paid for twice. No action taken; not deferred — operator-ruled, tracked here.
+- **CLOSED 2026-09-02 — the premise no longer holds; no maintenance needed.** Ownership passed to
+  the adhoc-audit session after the INF-67 session was closed. Measured on the live host:
+  `/mnt/raid0/users/daniele/.local/share/opencode/opencode.db` is **315 MB**, not ~210 GB; the whole
+  opencode tree is **403 MB** (`log` 73 MB, `snapshot` 5.8 MB, everything else under 1 MB). It is the
+  ONLY `opencode.db` on the host, and no `.db` anywhere under `/mnt/raid0` exceeds 1 GB.
+  - **A VACUUM would reclaim ~0.** `freelist_count = 0` and `auto_vacuum = 0` — the file is fully
+    packed live data, no free pages. Occupancy: `event` 260 MB (82%), `part` 27 MB, `message` 21 MB.
+  - **Therefore the shrink was not an in-place delete.** With `auto_vacuum` off, deleting rows leaves
+    free pages behind; a zero freelist means the file was replaced or vacuumed, not merely pruned.
+    Which of the two is NOT determined here — do not record a mechanism that was not observed.
+  - **History survived**: 228 sessions spanning 2026-04-28 → 2026-09-02. The campaign-window days
+    (08-29 → 08-31) hold no sessions, consistent with that data being what went; 09-01 (83) and
+    09-02 (110) are present. The campaign's substance is in git regardless.
+  - **Not acted on, deliberately**: a live `opencode` (pid 500205, a DIFFERENT devcontainer — the path
+    resolves only via its mount namespace) holds the db/wal/shm open read-write. Nothing was killed,
+    stopped or written; the DB was inspected via a throwaway copy. The operator's "no opencode
+    sessions open" is true of THIS devcontainer, not of the host.
+  - **Policy note for any future attempt**: that path is outside `/mnt/raid0/llm/`, so the filesystem
+    containment guard blocks writes to it — real maintenance would need an explicit operator
+    `EPYC_FS_ACK`, on top of stopping the holder.
+  - **Residual risk: a watch item, not a task.** ~193 of the 228 sessions are from the last two days
+    and the `event` table carries 82% of the bytes, so ordinary growth is ~100s of MB/day — immaterial
+    against 736 GB free. The original 210 GB was real (three samples) and its mechanism was never
+    confirmed, so if a single artifact ever again approaches tens of GB, re-measure before assuming
+    the old hypothesis. Do not pre-build maintenance for it.
 - SAFETY contract (audit item 3, before any serving exposure): the hook must become OPT-IN
   (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
   true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells)

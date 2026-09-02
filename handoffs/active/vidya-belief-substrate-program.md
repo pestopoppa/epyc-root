@@ -410,6 +410,13 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
       empirical observation, not a static implementation gap.
 - [x] SC11 Survey the remaining candidate sources named in the register ✅ 2026-08-26 — **priced-and-declined, both sub-sources, verdict recorded rather than carried.** (1) llama-bench: the bulk corpus was already REJECTED by SC6-PRICE (0/200 full tuple); the scout subset is 3 records all from 2026-08-12 with no successor producer since — below any adapter's pay line. (2) speech kernels (whisper/qwentts): frozen production serving paths; examination shows no protocol-admissible measurement corpus exists to sample — runs are serving telemetry, and pricing requires a corpus. If a speech benchmark protocol or a new llama-bench scout campaign is ever declared, re-file a wiring row at that moment (the SC9 rule)
+- [ ] **SC53 — Wire the INF-70 CPU decode roofline ledger on the write side before its first run (filed 2026-09-02).**
+      [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) C0/C5/B1/D0 produce the numbers every later
+      keep/revert in that program will cite: read-only DRAM bandwidth under the decode recipe, the clean-build
+      re-anchor sweep (t1/t48/t64, uniform IQ4_XS, OMP stack on/off), the per-path achieved GB/s and the per-node
+      µs floor. Emit one `ClaimTuple` per arm beside the run directory (artifact path + SHA, build id, full recipe,
+      `-t`, n, reps, box-state capture) via the existing measurement ladder — no new grading rule. Prepared by the
+      INF-70 owner; applied here per ruling (b). Source-table row: `scripts/vidya/adapters/README.md`.
 - [ ] SC21 **The contention matrix became gradeable on 2026-08-12 — wire it while the producer is warm**
       (filed by `mainC`; the emitting change is orchestrator `77e5a214`, landed hours earlier). Before
       that commit the artifact carried a bare `verdict: allow/block` with no warrant, which is precisely

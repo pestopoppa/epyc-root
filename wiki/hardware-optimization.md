@@ -4083,3 +4083,4 @@ Key findings:
   control-arm measurement, the baseline re-anchoring caution, and the go/no-go commit record.
 - [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff,
   current phase and bit-exactness state.
+- [`2026-09-01-inf67.md`](../progress/2026-09/2026-09-01-inf67.md) — the INF-67 session shard: the measured numbers, the operator's four corrections verbatim, the go/no-go.

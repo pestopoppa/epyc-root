@@ -110,6 +110,89 @@ describe the ~215 ms "other" cost only qualitatively) and the withdrawn 1.7×.
 **Three corrections, each found by the next step rather than by review.** The measurement rules were
 not the thing in short supply — following them was.
 
+## 5. A fourth correction — the same error, one subtraction away
+
+The operator asked whether the handoff actually reflected §4. Verifying it against `git` rather than
+asserting it surfaced a **fourth** propagation. Two table rows directly *beneath* the struck-through
+74 ms entry were a decomposition **of** it:
+
+```
+| of which gemv     | ~28 ms | in-situ profiler |
+| of which non-gemv | ~46 ms | subtraction      |   <- 28 + 46 = 74
+```
+
+The table said "subtraction" outright. Retiring the headline had left the split load-bearing for
+**Axis B — the campaign's main gain**, scoped as "split the 28 ms", and it had propagated into the
+two-multipliers list, the "eliminate 46 ms -> 36 t/s" projection, the A1+A2 target and the index row.
+
+Fixed in `af738a99`, with each quantity given an explicit disposition rather than a blanket edit:
+
+| quantity | disposition |
+|---|---|
+| gemv ~28 ms | **survives** — directly profiled, not derived; carries a build-id caveat, re-measure on the C5 run |
+| non-gemv ~46 ms | **INVALID** — it was 74 − 28. Marked invalid, **not** silently rescaled to ~67 |
+| "eliminate 46 ms -> 36 t/s" | relabeled an arithmetic sketch |
+| 27% of roofline | **kept**, and justified — uses only the profiled gemv and measured bandwidth, so it never depended on the anchor |
+| 33–43 ms / 23–30 t/s | relabeled the ambition to test, not a predicted result |
+| B1 + index row | rescoped onto the C5 re-anchored run |
+
+**The rule this proved, now in C3:** *retracting a number is not done until you have chased what was
+derived from it.* A derived figure keeps full apparent authority precisely because it does not look
+like the thing that was retracted. And **mark invalid rather than substituting** — a rescaled ~67 ms
+would have manufactured a second unmeasured number wearing the authority of a correction.
+
+Two actionables I had left in prose are now filed rather than stated: **C-FIRST** (settle C5 before
+spending a session on A1/A2 or B1 — both are scoped in units of a retired baseline) and the C3 rule
+above. The index row now reads C5-first.
+
+## 6. Wrap-up defect found in my own previous wrap-up
+
+`wiki/.last_compile` is **gitignored** — a local-only watermark. Last wrap-up I ran the wiki
+`--touch` inside a throwaway worktree and then deleted it, so the page content landed on `main` while
+the watermark advanced only in a directory that no longer exists. The scanner still reported the same
+two sources as uncompiled. Corrected by touching in the persistent tree.
+
+Worth knowing generally: **the wiki compile step is not worktree-safe.** Page edits are ordinary
+tracked work and travel fine; the watermark does not. Run `--touch` where `.last_compile` persists.
+
+
+## 7. opencode.db taken over and closed — the 210 GB is gone, nothing to reclaim
+
+Operator handed this over after closing the INF-67 session, which had recorded a
+LEAVE-ALONE-then-VACUUM plan against a "~210 GB" `opencode.db`. **The premise no longer holds.**
+
+| measured 2026-09-02 | |
+|---|---|
+| `opencode.db` | **315 MB** (not ~210 GB) |
+| whole opencode tree | 403 MB (`log` 73 MB, `snapshot` 5.8 MB, rest <1 MB) |
+| other `opencode.db` on host | none — it is the only one |
+| any `.db` >1 GB under `/mnt/raid0` | none |
+| deleted-but-open files >1 GB | none (checked — that is how a "vanished" 210 GB usually hides) |
+| host free | 736 GB, 80% used |
+
+**A VACUUM would reclaim ~0 bytes.** `freelist_count = 0`, `auto_vacuum = 0` — the file is fully
+packed live data. Occupancy: `event` 260 MB (82%), `part` 27 MB, `message` 21 MB. With auto_vacuum
+off, deleting rows *leaves* free pages; a zero freelist therefore means the file was replaced or
+vacuumed, not pruned in place. Which of the two, I did not observe and do not assert.
+
+History survived: 228 sessions, 2026-04-28 → 2026-09-02. The campaign window (08-29 → 08-31) holds
+no sessions — consistent with that being the data that went — while 09-01 (83) and 09-02 (110) are
+present. The campaign's substance is in git either way.
+
+**Two reasons I took no action, both of which would have blocked it anyway:**
+1. A live `opencode` (pid 500205) holds db/wal/shm open **read-write**. It is in a DIFFERENT
+   devcontainer — the path resolves only through its mount namespace, which is why it is invisible
+   from here. The operator's "no opencode sessions open" is true of this devcontainer, not the host.
+   Nothing was killed or stopped; the DB was read via a throwaway copy, since deleted.
+2. The path is outside `/mnt/raid0/llm/`, so the containment guard blocks writes to it regardless —
+   real maintenance needs an explicit `EPYC_FS_ACK` on top of stopping the holder.
+
+Left as a **watch item, not a task**: ~193 of 228 sessions are from the last two days and `event`
+carries 82% of the bytes, so ordinary growth is ~100s of MB/day — immaterial against 736 GB free.
+The original 210 GB was real (three samples) and its mechanism was never confirmed, so if an
+artifact ever again approaches tens of GB, re-measure rather than assuming the old
+tool-output hypothesis. No maintenance pre-built for it.
+
 ## Deferred
 
 Nothing blocked on me. Carried, each with a named blocker:
