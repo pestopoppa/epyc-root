@@ -1350,7 +1350,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       production-rung gain is at best flat and possibly negative. **What is NOT established**: that
       it is a real -1.6% regression.
       **Consequence**: run 24 stays HELD (pre-auth not restored). Next action is R23-22.
-- [ ] **R23-22 — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is
+- [x] **R23-22 — DONE ✅ 2026-09-02 — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is
       drift-flagged and cannot carry a verdict either way. Let the GPU idle (no benches) before
       re-running `headline_on_confirm_rung.py` with the same arguments, and check `drifting` is
       False before believing the number. If the settled re-measure is inside the floor -> champion
@@ -1358,6 +1358,31 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       reproduces beyond the floor -> the keeps are a real production REGRESSION and the lineage
       needs a bisect (`7d2ea88b` / `db18f393` / `732389d6`) before any promotion. Either outcome is
       a decision package for the operator, not an autonomous action.
+      **RESULT 2026-09-02T14:2xZ, 30 min idle settle, device verified 0% before start:
+      `-1.414%`, `drifting: False`, `decisive: True`.** production median **65.92 t/s** vs
+      champion **65.00 t/s**; drift 0.385/0.318, rho -0.307/-0.389 (inside tolerance), 40/40
+      resident, clocks pinned 1700/1700. It REPRODUCES the drift-flagged 12:49Z run (-1.600%),
+      two independent measurements agreeing within 0.19 pp.
+      **VERDICT: the champion is a REAL ~1.4% production REGRESSION on dec-b4** — while being
+      +27.363% on the 1.5B screen rung on THAT SAME SURFACE. The keeps are model-scale-specific
+      and actively harmful at production scale. This is the sharpest possible vindication of the
+      two-rung design (R23-10/R23-11) and of holding run 24.
+      **Note the workload split**: DFlash2 generation is FINE on this champion (R23-17: 72.65 t/s,
+      acceptance 0.6501). The regression is specific to the dec-b4 prefill-shaped surface — the
+      very surface the loop optimized on the 1.5B.
+- [ ] **R23-23 — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.**
+      Run 24 would launch WITH the confirm gate active, so it cannot repeat this defect going
+      forward — but it would start from a base that is already -1.4% on production. Options:
+      (a) **Bisect then repair** — first measure the pre-keep parent `9e18beb0` vs production
+      (~50 min, ONE measurement): if it is neutral, today's three keeps own the regression and the
+      culprit is isolated in 1-2 more runs; if it is already negative, the regression predates them
+      and the whole lineage is suspect. Most informative; tells us WHICH mechanism class hurts
+      production. (b) **Re-anchor to production-v9** — discard all three keeps, start run 24 clean
+      with the confirm gate on. Cheapest, zero measurement, loses only screen-rung work that is
+      worthless on production anyway. (c) **Launch run 24 as-is** — the confirm gate protects
+      future keeps but bakes in the -1.4%. NOT recommended.
+      **Recommendation: (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
+      whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
       **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
       `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
       `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
