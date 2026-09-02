@@ -1162,15 +1162,18 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       stale after the commit landed without the flip (recurrence-check catch).
 - [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
       boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
-- [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
-      Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
-      (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.
-      Commands (operator's, at a boundary of their choosing):
-      `git -C /mnt/raid0/llm/llama.cpp worktree remove /mnt/raid0/llm/tmp/ak-loop-tree` then
-      `branch -D ak/loop-champion-20260828` (`-D` required: the main tree's HEAD is
-      `production-consolidated-v9`, so `-d`'s merged-into-HEAD check refuses despite full merge).
-      Bundle into the same action: `ak-loop-tree-b`/`-c` (branches `…20260828b`/`c`, both still at
-      base `0db32c06e`, zero commits — trivially disposable).
+- [x] **R21-3 — RETIRED ✅ 2026-09-02 (operator executed).** `ak-loop-tree`, `-b`, `-c` worktrees
+      removed and branches `ak/loop-champion-20260828{,b,c}` deleted (`-D`); ~495 MB reclaimed.
+      Safety RE-VERIFIED same day rather than trusting the 2026-08-31 record: `4925b2084` is an
+      ancestor of the **current** champion tip `732389d6d` (not just the older `a2728701`) with
+      **zero** commits unique to the branch, tag `ak/pre-reconcile-loop-20260831` still resolves
+      and the object is intact, all three trees idle on two samples 48 s apart, and nothing live
+      depends on them (driver + run 24 pass `--worktree champ2` explicitly). Post-deletion checks:
+      0 worktrees, 0 branches, tag resolves, `4925b2084` still ancestor of the live champion,
+      `champ2` untouched on the canonical champion branch. **The review changed the command**:
+      `ak-loop-tree-c` held 82 uncommitted lines present in NO commit on any ref, so plain
+      `worktree remove` would have refused and a reflex `--force` would have destroyed them —
+      rescued first (R21-5), and only then was `--force` scoped to that one tree.
 - [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
       state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
       (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
@@ -1305,6 +1308,44 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
       re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
       (candidates in commit order), report with rollback options.
+- [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
+      has never been measured.** Proven 2026-09-02 from the headline evidence record
+      `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
+      t/s — that is the 1.5B DeepSeek-R1-Distill screen rung, not Qwen3.8-27B-Q8_0 (~29 GB,
+      ~65 t/s on the same surface per the 10:03Z keyed floor). Run 23 predates R23-11, so
+      `headline_model` fell back to `--model` by construction; this is the design working, not a
+      defect — D4 exists precisely because a screen-rung headline does not transfer (CH-6
+      precedent: MMQ_MFMA +23.09% on the 0.5B vs **+0.50%** on the 27B, ~46× attenuation).
+      **Standing operator instruction violated by my own reporting** (headlines MUST be the
+      production recipe), corrected in-session. ACTION: measure champion-vs-production on the 27B
+      at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
+      smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
+      bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
+      **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
+      `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
+      `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
+      R23-11's `model` provenance field (the absence of which made the screen-rung headline
+      unreadable in the first place). Floor re-keyed via `noise_floor_pct` to the 27B: **0.949%**
+      at 20 pairs, not the 1.5B's 0.668%. Dry-run green; BOTH refusals mutation-tested live —
+      provenance mismatch (rc=2) and uncalibrated surface (rc=3, proven against dec-b8 while its
+      calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
+      SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
+- [x] **R23-19a — the confirm-rung headline instrument built and proven** ✅ 2026-09-02 —
+      `scripts/benchmark/headline_on_confirm_rung.py`: dry-run resolves the 27B keyed floor
+      (0.949% @20 pairs) and the dec-b4 shape (pp=512 tg=0 ub=4); BOTH fail-closed paths
+      mutation-tested rather than assumed — provenance mismatch rc=2, uncalibrated surface rc=3
+      (fired against dec-b8 live, while its calibration was still running). Cached
+      `v9v-build-base` reused, so no production rebuild. Measurement itself is R23-19.
+- [x] **R23-20 — the 27B dec-b4 keyed floor landed and was verified sane** ✅ 2026-09-02 (10:03Z)
+      — `calibration/dec-b4.Qwen3.8-27B-Q8_0.json`: floor 0.949% @20 pairs (1.142% at the pairs=5
+      confirm gate), A/A effect +0.576% sitting INSIDE its own derived floor as a clean A/A must,
+      drift 0.13/0.27% with no trend, residency 40/40 resident and clocks pinned 1700 MHz,
+      device_seconds 3282 per condition. First 27B floor the program has ever had.
+- [ ] **R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4
+      is the approved scope (operator 2026-09-02); dec-b8 would cost another ~1 h and is the other
+      confirm surface. NOT auto-run: it doubles the hold on run 24 for a second view of the same
+      question. Decide after R23-19's dec-b4 number is in hand — if dec-b4 shows heavy
+      attenuation, dec-b8 becomes informative rather than confirmatory.
 - [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
       keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
       before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
