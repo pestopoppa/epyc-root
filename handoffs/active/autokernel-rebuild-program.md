@@ -1383,6 +1383,39 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       future keeps but bakes in the -1.4%. NOT recommended.
       **Recommendation: (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
       whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
+- [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
+      (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
+      performed by autokernel could have actually been beneficial in production?"* — yes).
+      **Why today's result raises this, not just the false-positive risk**: the prior working
+      model was ATTENUATION (CH-6: +23.09% on the 0.5B -> +0.50% on the 27B). Attenuation is
+      monotone — it shrinks magnitude but preserves sign, so it can only manufacture false
+      POSITIVES. R23-22 measured a **sign INVERSION** (+27.363% screen -> -1.414% production on
+      the same surface). Once the transfer function can flip sign it can flip in BOTH directions,
+      so the same evidence that convicted the keeps also admits false negatives.
+      **Structurally they may be MORE likely than false positives**: an optimization with fixed
+      setup cost + size-scaling benefit looks NEGATIVE at n_embd=1536 (overhead dominates) and
+      POSITIVE at n_embd=5120 (benefit dominates). That is the textbook false negative.
+      **Bounded exposure, measured**: run 23 produced 80 `measured_null` rows, but **71 were
+      INSIDE the floor** — inconclusive on the screen rung, carrying no information about
+      production either way. Only **9 were decisive negatives**, and they are the candidates:
+      `akm-fattn-causal-tile-skip` -4.851% · `akm-cdna2-mmvq-256-thread-block` -1.885% ·
+      `akm-cdna2-b1-mmvq-eight-nwarps` -1.699% · `akm-mmvq-dense-256-thread-launch` -1.055% ·
+      `akm-mmvq-gfx90a-four-wave-launch` -1.020% · `akm-q4k-wave-scale-broadcast-rerun` -0.959% ·
+      `akm-mmvq-gfx90a-256-thread-launch` -0.928% · `akm-mmvq-cdna2-256-thread-launch` -0.830% ·
+      `akm-fattn-gfx90a-prefill-eight-wave-vkq` -0.720%.
+      **They cluster in exactly the size-dependent families** (MMVQ thread-block/wave-launch
+      geometry, fattn wave geometry) — the same families as the keeps whose sign just inverted.
+      **Nothing is lost**: every negative carries mechanism, statement, falsifier and full sample
+      vector in `experiments.db` (a rebuild design goal), so all 9 are re-testable on the confirm
+      rung at ~50 min each (~7.5 h for all). Do NOT chase all of them reflexively.
+- [ ] **R23-25 — route hypotheses to a rung by MECHANISM FAMILY, not uniformly.** Follows from
+      R23-24. A screen-rung verdict is only informative for mechanisms whose effect is
+      size-INDEPENDENT (removing redundant work, algebraic simplification, fewer dispatches).
+      For size-DEPENDENT families — launch geometry, occupancy, wave/thread-block counts, tiling —
+      the 1.5B verdict is uninformative and today's evidence suggests it can be anti-informative.
+      Proposal: mark those families to SKIP the screen and go straight to the confirm rung,
+      accepting the higher per-attempt cost in exchange for a verdict that means something.
+      Decide after R23-23's bisect names the culprit family.
       **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
       `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
       `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
