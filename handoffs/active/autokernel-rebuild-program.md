@@ -1323,7 +1323,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       `llama-server --help | grep -q`, and under `set -o pipefail` grep -q closes the pipe ->
       SIGPIPE(141) -> a SUCCESSFUL match read as a failed pipeline -> false REFUSE (rc=2).
       Capture-then-match now.
-- [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
+- [x] **R23-19 — MEASURED ✅ 2026-09-02 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
       has never been measured.** Proven 2026-09-02 from the headline evidence record
       `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
       t/s — that is the 1.5B DeepSeek-R1-Distill screen rung, not Qwen3.8-27B-Q8_0 (~29 GB,
@@ -1336,6 +1336,28 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
       smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
       bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
+      **MEASURED 2026-09-02T12:49Z — the production-rung headline is `-1.600%`, and the run is
+      DRIFT-FLAGGED so it is INCONCLUSIVE, not a proven regression.**
+      champion `732389d6` vs frozen production-v9 on Qwen3.8-27B-Q8_0, dec-b4, 20 pairs, floor
+      0.949%: production median **66.09 t/s** vs champion **65.05 t/s**. Residency clean (40/40
+      resident, 1 KFD proc, 28.0 GB VRAM, clocks pinned 1700/1700, `clock_stable` true), so this
+      is NOT a placement or throttle artifact. BUT `drifting: True` — both arms declined together
+      (anchor -0.535%, candidate -0.654%; trend rho -0.481 / -0.668), and the instrument therefore
+      returns `decisive: False` despite |effect| > floor. Contrast the SAME surface at 06:52-10:03Z
+      (the A/A calibration): drift 0.13/0.27, rho 0.06/0.21, `drifting: False` — the machine was
+      steady this morning and is not now, after ~6 h of continuous GPU load.
+      **What is established**: the +27.363% figure does NOT transfer to production; the champion's
+      production-rung gain is at best flat and possibly negative. **What is NOT established**: that
+      it is a real -1.6% regression.
+      **Consequence**: run 24 stays HELD (pre-auth not restored). Next action is R23-22.
+- [ ] **R23-22 — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is
+      drift-flagged and cannot carry a verdict either way. Let the GPU idle (no benches) before
+      re-running `headline_on_confirm_rung.py` with the same arguments, and check `drifting` is
+      False before believing the number. If the settled re-measure is inside the floor -> champion
+      is production-NEUTRAL (the keeps bought screen-rung speed that does not transfer); if it
+      reproduces beyond the floor -> the keeps are a real production REGRESSION and the lineage
+      needs a bisect (`7d2ea88b` / `db18f393` / `732389d6`) before any promotion. Either outcome is
+      a decision package for the operator, not an autonomous action.
       **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
       `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
       `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
