@@ -1305,6 +1305,19 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
       re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
       (candidates in commit order), report with rollback options.
+- [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
+      has never been measured.** Proven 2026-09-02 from the headline evidence record
+      `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
+      t/s — that is the 1.5B DeepSeek-R1-Distill screen rung, not Qwen3.8-27B-Q8_0 (~29 GB,
+      ~65 t/s on the same surface per the 10:03Z keyed floor). Run 23 predates R23-11, so
+      `headline_model` fell back to `--model` by construction; this is the design working, not a
+      defect — D4 exists precisely because a screen-rung headline does not transfer (CH-6
+      precedent: MMQ_MFMA +23.09% on the 0.5B vs **+0.50%** on the 27B, ~46× attenuation).
+      **Standing operator instruction violated by my own reporting** (headlines MUST be the
+      production recipe), corrected in-session. ACTION: measure champion-vs-production on the 27B
+      at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
+      smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
+      bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
 - [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
       keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
       before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
