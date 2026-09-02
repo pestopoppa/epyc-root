@@ -74,7 +74,7 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | **DRAM bandwidth, read-only, under the decode recipe (C0, measured 2026-09-02)** | **152.6 GB/s at 48 threads, 165.6 at 96** (read-sum); gemv-pattern 153 / 167; copy 92 / 94 (STREAM convention, RFO); copy-NT 134; triad 102–105 — **with free memory on every node**. Box AS-IS: a flat **67–77 GB/s from 24 to 192 threads**, identical to one node's 3 channels (66 GB/s at 24 threads `membind=0`) | measured (`bench_readbw`, `results-c5v2-…/c0-evicted.txt`, `results-20260902T102729Z/c0-readbw.txt`) | Even with clean placement, a single process under NPS4 software interleave reads at **33–36% of the 460.8 GB/s theoretical**; one node alone reaches 57% of its 115 GB/s. **C0-c (four node-local processes at once, 24 threads each): 38 + 42 + 38 + 54 = 171 GB/s aggregate — each node drops from 66 GB/s alone to ~40 when all four stream.** The cap is therefore **global (~170 GB/s), not per-node channels and not remote-quadrant traffic** — the memory subsystem delivers ~37% of nominal in every locality pattern, which points at the uncore: memory clock, UCLK:MEMCLK ratio, Infinity-Fabric P-state/APBDIS, DF C-states or DRAM power-down — BIOS-level, see C8. Huge pages made no difference to the microbench |
 | roofline (bytes ÷ read bandwidth) | **27 ms/token (37 t/s)** at the measured 153 GB/s the recipe delivers today; **9 ms (111 t/s)** against the 460.8 GB/s theoretical | computed | 4.16 GB ÷ 153 GB/s; the gap between the two rows is the NPS4/placement question, not the kernel's |
 | achieved fraction | **27% of the recipe's bandwidth; 9% of theoretical** | computed | 27/99.1 and 9/99.1 |
-| **the dispatch floor, by difference (C5 − C0)** | **~70 ms of the 99 ms token is not bandwidth**: 99.1 − 27 (4.16 GB at 153 GB/s) | computed from two same-day measurements | cross-check: 1T = 198 ms ≈ ~150 ms of single-core streaming (~28 GB/s) + ~45 ms of single-thread tiny-op compute; at 48T the streaming shrinks to ~27 ms and the ~45 ms stays, plus ~15 ms of barriers (below), plus imbalance. Adding threads no longer helps (t64 −4%, t96 −4%) |
+| **the token, decomposed by the profiler (D0/B1, 2026-09-02)** | **97.3 ms = 62.9 ms in the 941 weight-path nodes (43% of read BW on average: small gemvs 40%, lm_head 94%) + 33.4 ms in 3,468 non-weight nodes + 22.5 ms of barrier/straggler wait folded across both; 5,410 sync events ≈ 10.3 ms of it** | measured (build 10197, thread-0 wall after the barrier, reconciles to +0.9%) | replaces the by-difference estimate. The bandwidth-only floor is 27 ms (4.16 GB at 153 GB/s); the rest is small-gemv inefficiency (~36 ms above the floor), non-weight compute (~33 ms) and waits. Adding threads no longer helps (t64 −4%, t96 −4%; B2: 8→48 threads +7%) |
 | tiny `mul_mat` node cost in the real OpenMP build (`test-barrier`, 2000 × [64×128] Q4_0) | **0.50 µs at 1T, 3.0 at 8T, 3.7 at 24T and 48T, 5.5 at 96T** per node | measured (`results-c5v2-…/d0-test-barrier.txt`) | a matmul node pays two barriers (`from_float` + graph) ≈ 2 × 1.9 µs — consistent with the primitive; ~940 matmuls + ~6,000 other nodes ≈ **15 ms/token of barriers at 48T** |
 | instrumentation penalty, 1T | debug/`GGML_FUSED_PROF` build 350 ms vs Release 198 ms = **1.77×** | measured (same lineage, `58c345093` vs the INF-67 debug tree) | the fused decoder's 1350 ms at 1T is therefore **~6.8× slower than the clean graph**, not 3.86× |
 | graph nodes per token | **7,906** pre-fusion; **6,887** after `MEAN_D1` + `MOE_TOPK_NORM` (the baseline build) | measured | `2026-08-28.md:88,142` and round 1 (`7902 → 6887`, −13%). The "~5,850 / ~6,800" in INF-67 are in no record |
@@ -85,9 +85,11 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | fused decoder, same debug build, `-t 1` | fused 1350 ms vs graph 350 ms (**3.86×**); fused gemv 1141 / other 215 | measured (non-claim) | `2026-09-01-inf67.md`; safe only as a same-window ratio |
 | ~~28 ms gemv / 46 ms non-gemv~~, ~~65 µs × 144 = 9.4 ms~~ | **retired** | retired | a partition of the retired 74 ms; the constants are "unmatched by committed records" (INF-68 audit). The in-function medians above are the sourced equivalents |
 
-**What the ledger says (measured 2026-09-02).** With placement fixed, a 99 ms token is **~27 ms of weight
-streaming at the 153 GB/s the recipe delivers, ~15 ms of barriers, and ~55 ms of single-thread tiny-op
-compute plus imbalance across ~6,900 nodes.** Two ceilings, in this order: (1) the **dispatch floor** —
+**What the ledger says (measured 2026-09-02, profiler-confirmed).** With placement fixed, a 97 ms token is
+**63 ms in 941 weight-path nodes that reach only 40% of the machine's read bandwidth because they are
+small (the one big gemv reaches 94%), 33 ms in 3,468 nodes that move no weights (9.3 ms of it GET_ROWS on
+one thread), and 22 ms of barrier and straggler wait spread across both (10 ms of it the 5,410 barrier
+primitives themselves).** Two ceilings, in this order: (1) the **dispatch floor** —
 ~70 ms, and more threads do not buy it down (t96 is slower than t48); Axis D and Axis A attack it, and it
 is where 2–3× lives; (2) **bandwidth** — the recipe gets 153 GB/s of a 460.8 GB/s machine: placement
 (fixed by eviction, −25% otherwise), then NPS4's software interleave (C0-c decides between BIOS NPS1 and
@@ -240,19 +242,21 @@ parallelise (the same ops cost ~45 ms single-threaded) plus imbalance.** That mo
 from D3 (the primitive) to D0-b/c (which nodes carry the 55 ms), D2 (fewer sync points) and, above all, to
 Axis A's structural answer — fewer, fatter nodes — which this measurement now supports with clean numbers.
 
-- [ ] **D0 — measure the per-node floor directly; count the sync events per token.** (a) Build
-      `test-barrier` twice — the internal threadpool (as-is) and an OpenMP twin — plus a barrier-only
-      variant (2000 × SCALE on 16 elements) and run each at t ∈ {1, 8, 16, 24, 48, 64, 96} under the OMP
-      stack: **µs per barrier vs thread count, per runtime** — ✅ (a) done 2026-09-02 for libgomp and the
-      flat/hierarchical atomics (ledger row); the libomp arm needs a clang build. (b) From `GGML_CPU_PROF_NODES` (extend it
-      past 260 nodes) count, for one token on the C5 build: non-empty nodes, `mul_mat` internal barriers
-      (797), `mul_mat_id` internal barriers (144), and the number of *consecutive thread-0-only* node
-      pairs and *same-partition elementwise* node pairs (the D2 candidates). Deliverable: the dispatch
-      floor in ms/token = Σ sync events × µs/barrier(t), and the ranked list of what D1–D3 can remove.
-      (c) **Add a per-node timestamp AFTER the graph barrier** to `GGML_CPU_PROF` so each node's wall cost
-      (compute + imbalance + barrier) is measured, not just thread-0 compute; report the distribution of
-      (wall − thread-0 compute) per op type — that difference is the straggler/imbalance term. Zero new
-      kernels; one session.
+- [x] **D0 — measure the per-node floor directly; count the sync events per token.** ✅ 2026-09-02 —
+      (a) barrier primitive (ledger); (b)+(c) on build 10197 (`inf70/prof`, `-DGGML_CPU_PROF` with a third
+      thread-0 timestamp AFTER the graph barrier, a measured `ggml_barrier()` counter, per-path bytes and
+      the full node table; zero measurable overhead with the profiler off or on: 10.12 / 10.28 vs the 10.09
+      anchor), t48, uniform IQ4_XS, placement 23.5 GB × 4: **a 97.32 ms token = 73.75 ms thread-0 compute
+      + 22.52 ms barrier-and-straggler wait (23.4%)**; **5,410 measured sync events/token** = 4,409 graph
+      barriers + 797 `mul_mat` + 144 `mul_mat_id` + 36 `gated_delta_net` + 24 `flash_attn_ext` internal
+      barriers (offline census derives 5,410, residual 0) → **10.3 ms/token at 1.9 µs**, not the ~15 ms
+      estimate. **1,208 of 4,493 executed nodes (26.9%) run on one thread.** D2 candidates: 432
+      single-task pairs + 147 same-shape elementwise pairs = 579 barriers ≈ **1.1 ms** — D2 is demoted.
+      Σ per-node wall reconciles with `graph_compute` to +0.9% (C2). Top of the wall table: MUL_MAT 797
+      nodes 41.9 ms (7.2 wait), MUL_MAT_ID 144 / 21.0 (3.9 wait), **GET_ROWS 175 / 9.3 ms, all
+      single-task**, UNARY 510 / 5.8, CPY 162 / 3.7 (2.2 wait), GATED_DELTA_NET 36 / 3.0 (0.8 compute —
+      3.8× wait), ADD 689 / 1.7. Evidence `/mnt/raid0/llm/tmp/inf70/agents/prof/` (TABLES.md, node table,
+      per-node table).
 - [ ] **D1 — remove the internal `mul_mat` / `mul_mat_id` barrier at batch 1.** For `ne11 == 1` every
       thread quantizes the whole activation row redundantly into thread-local `wdata` (2560 elements,
       ~1 µs) instead of splitting it 48 ways and synchronizing; for `mul_mat_id` at `n_tokens == 1` the
@@ -261,7 +265,8 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       940 × 1.9 µs ≈ **1.8 ms/token at 48T** (measured primitive) — small on its own, larger if the
       internal barrier also carries imbalance from the 48-way split of a 2560-element quantization. Gate:
       greedy generation + logit diff vs the C5 build.
-- [ ] **D2 — barrier elision between nodes that do not need one.** Two safe classes, both decided at
+- [ ] **D2 — barrier elision between nodes that do not need one (demoted by D0: 579 eligible pairs ≈
+      1.1 ms/token).** Two safe classes, both decided at
       plan time (the standing TODO at `ggml-cpu.c:3244` to move fusion detection into `ggml_graph_plan`
       is the natural home — a per-node "barrier required" bitmap): (i) consecutive nodes that both run
       on thread 0 only; (ii) consecutive row-parallel elementwise nodes over the same shape with the
@@ -299,7 +304,19 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       one self-contained change; the 2026-05-28 record shows khugepaged alone (~26 MB/s) cannot
       coalesce a 98 GB buffer inside a bench window. Stake: page-walk overhead on a 4.16 GB/token stream
       through 4 KB pages, 0–8%; decisive either way in one run.
-- [ ] **D6 — the 797 small dense gemvs.** Bucket them by weight bytes from the D0-b node dump (the
+- [ ] **D8 — parallelise GET_ROWS (and the other single-task copy ops) — the cheapest large lever D0
+      found.** 175 GET_ROWS nodes cost **9.34 ms/token (9.7%) entirely on one thread**: `ggml_get_n_tasks`
+      gives GET_ROWS/SET_ROWS `n_tasks = 1` under a stale "hurts with GPU offload" comment; 36 of them gather
+      `[786432×1]` f32 PLE n-gram rows (~3 MB each, ~13 GB/s single-core). Give the op `n_threads` tasks
+      above a byte threshold, partitioned over disjoint output rows — bit-exact by construction; audit
+      SET_ROWS and the 73 single-task CPY nodes (3.65 ms wall) for the same pattern. Stake up to ~8 ms/token.
+      Gates: `test-backend-ops -o GET_ROWS -b CPU` (without `-b CPU` the suite passes vacuously), greedy
+      identity, ABA bench. (Running 2026-09-02, subagent `d8`.)
+- [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
+      B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
+      op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
+      is the F32 router `ffn_moe_logits` (48 × f32 2560×512: 4.20 ms wall for 2.10 ms compute; one at
+      1,118 µs wall for 32 µs compute) — B4's router requant now has 4.2 ms/token at stake. Bucket them by weight bytes from the D0-b node dump (the
       4-stream hyper-connection loras at 2560×320, the F32 router, indexer projections, shared expert).
       Levers in order: cap `nchunk0` so a thread never gets fewer than ~64 rows (idle threads still hit
       the graph barrier, so this only helps once D2 elides it); concatenate the per-stream lora weights
@@ -345,12 +362,15 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
 
 ## Axis B — the weight stream: bytes per token and achieved GB/s per path
 
-- [ ] **B1 — split the token by path and report achieved GB/s, not just ms — on the C5 build.** Use
-      the in-function timers (`[mm_prof]`/`[mmid_prof]`, `build-cpu-prof`) for dense `mul_mat` vs expert
-      `mul_mat_id` time, the tensor table for bytes per path (dense 2.344 / experts 1.296 / lm_head
-      0.521 GB), and the DRAM fill counters over a fixed token count for total traffic — the three must
-      reconcile (C2). Until this exists every other number in this axis is unanchored. This is INF-10's
-      prescribed profile, still never run on this model.
+- [x] **B1 — split the token by path and report achieved GB/s, not just ms — on the C5 build.** ✅
+      2026-09-02 (same run as D0): **dense `mul_mat` 796 calls / 38.29 ms / 2.338 GB → 61.1 GB/s (40.0% of
+      the measured 152.6); expert `mul_mat_id` 144 / 20.96 ms / 1.296 GB → 61.8 GB/s (40.5%); `lm_head`
+      (Q6_K 2560×248320) 1 call / 3.62 ms / 0.522 GB → 143.9 GB/s (94.3%).** Weight paths total 62.87 ms
+      for **4.1558 GB/token** (the live graph independently reproduces the tensor-table 4.16 GB); **3,468
+      non-weight nodes cost 33.39 ms — 35% of the token — and move no weights.** The retracted "5.6–17 GB/s"
+      and the pre-fix "100–130 GB/s" expert figures are both superseded by 61.8 GB/s at proven placement;
+      B2's N-sweep (64.8 GB/s marginal) agrees. **The one big gemv is not the problem; the 940 small ones
+      and the 3,468 non-weight nodes are.**
 - [x] **B2 — decide what binds the expert path: per-call fixed cost or bandwidth.** ✅ 2026-09-02 —
       **both hypotheses refuted; the path is bytes-proportional at ~43–54% of achievable bandwidth.**
       `--override-kv qwen4exp.expert_used_count=int:N` for N ∈ {10, 5, 2, 1} via `llama-server` (build
