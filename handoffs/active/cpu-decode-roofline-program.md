@@ -569,10 +569,17 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       effect on the trunk. Live hypothesis: qwen4exp's **multi-token verification forward is not equivalent
       to its single-token forward** (GDN chunked vs per-token kernel, PLE conv, QSA indexer) — which would
       make MTP's "verification is exact" premise false for this model independently of the port. The
-      discriminating control (running at audit close): `--spec-type ngram-mod` on the UNPATCHED build,
-      same prompt — if it flips too, it is a tree correctness finding and `36b101543` (#27941: indexer ext
-      restore, block position keying) is the first suspect; if not, the divergence stays in the MTP path.
-      No serving exposure until this is settled.
+      discriminating controls ran 2026-09-02: `ngram-mod` on the UNPATCHED build with real drafts
+      (`n-match 4`: acceptance 2/2 at positions 53–59) leaves greedy output **byte-identical**; the MTP
+      arm at `--spec-draft-n-max 1` (same 2-token verify depth) **still flips** at token 28, byte-identical
+      to the `n-max 2` run, with 31/31 drafts accepted. **Verdict: the divergence is in the MTP path, not
+      in batched verification per se** (caveat: the ngram control never batched at position 28, so it
+      proves a 2-token verify batch *can* be exact here, not that it always is; the default-`n-match 24`
+      ngram arm was vacuous — it never drafted). Bisect (running, two arms): the one target-side
+      difference between the arms is `cparams.embeddings_nextn = true, masked = false`, which disables the
+      layer-47 `inp_out_ids` gather through the ported `gather_now` predicate — force `masked = true` and
+      see whether the flip survives; second suspect, the acceptance comparison (31 of 31 accepted). No
+      serving exposure until this is settled; E-GATE's "output unchanged" claim depends on it.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
