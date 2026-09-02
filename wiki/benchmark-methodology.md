@@ -3325,3 +3325,47 @@ SEQ-B do-not-miscite rule from the 2026-08-16 compile travel forward unchanged.
 - [`handoffs/active/vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC37 row: write side built 2026-08-26 (`eval_tower_band.py`, one self-hashed `.band.json` per suite, 17/17 tests, instrument-resolution-only adapter scope, K recorded in the tuple), the 2026-08-28 attempt status, and the first-band → first-tuple trigger.
 - [`progress/2026-08/2026-08-28.md`](../progress/2026-08/2026-08-28.md) — session record: pre-run verification, run timeline (09:10Z→13:50Z), repeat-1 numbers, fail-closed refusal, the attribution table, the hold, and the SC37 no-tuple semantics.
 
+
+## Compiled Update — 2026-09-02 (incremental): a headline states a RUNG, not just a number — read the evidence record to find out which
+
+**Confidence: verified** (established by reading the published evidence record's own residency
+fields; the attenuation precedent is a measured pair, CH-6).
+
+A champion-vs-production headline is only meaningful alongside the **workload it was measured
+on**, and a bundle that omits that field is silently unreadable. Measured 2026-09-02: the
+AutoKernel headline for champion `732389d6` read **+27.363% on dec-b4** and had been quoted
+bare — but its evidence record carries `peak_vram_bytes` **1.49 GB** and throughput samples of
+536→684 t/s, while the production model on that same surface is ~29 GB and ~65 t/s. The number
+was a **screen-rung** measurement (a 1.5B distill), not a production claim.
+
+**The detection technique is general and costs nothing**: an A/B evidence record that carries
+residency and raw sample vectors identifies its own workload even when no `model` field exists.
+`peak_vram_bytes` discriminates model size directly; the throughput magnitude corroborates it.
+Any headline whose VRAM footprint is an order of magnitude below the production model's weights
+was not measured on production.
+
+**Why a screen-rung headline must never be promoted to a production claim**: the transfer can be
+almost total attenuation. CH-6 measured one mechanism at **+23.09% on a 0.5B and +0.50% on the
+27B** — a ~46x haircut — because the small model's dispatch path is not the production dispatch
+path. This is the entire reason a screen rung is cheap: it kills nulls fast, and it owes no
+promise about magnitude.
+
+**The structural fixes, in order of strength**:
+
+1. **Make the record self-describing.** The bundle now carries `model` off the comparison object
+   itself, not off a caller's parameter — "an off-production-shape headline must SAY so". A fact
+   passed in alongside a measurement is a second source of truth for one fact, and the one that
+   gets published is the one nobody measured.
+2. **Key the noise floor to the (surface, model) pair.** A screen-rung floor applied to a
+   production-rung measurement is a category error in both directions. The 27B's own dec-b4 A/A
+   floor measured **0.949%** at 20 pairs (1.142% at 5 pairs) against the 1.5B's 0.668% — same
+   surface, different instrument.
+3. **Move the headline to the confirm rung** once a two-rung screen/confirm design exists, so the
+   cheap rung owns null-killing and the production rung owns every claim that leaves the system.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-19
+  (the finding and its evidence), R23-20 (the first 27B keyed floor), R23-11 §5.2/§5.3 (floor
+  keying and the `model` provenance field).
+- [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
+  the session record: how the rung was identified and the correction.
