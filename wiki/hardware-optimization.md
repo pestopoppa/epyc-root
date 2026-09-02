@@ -3910,3 +3910,43 @@ Key findings:
 - [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the overnight triage record.
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the ASAN blind-spot
   finding, the trace-strip discriminator, and the llama-cli guard/patch.
+
+## Compiled Update — 2026-09-02 (incremental): fused-decoder feasibility measured — the gemv is the blocker, batched mul_mat is the go/no-go
+
+**Confidence: measured non-claims** (no protocol id, no attestation — feasibility numbers only), plus operator-review corrections recorded verbatim.
+
+The first end-to-end numbers for the INF-67 fused decode (branch `exp/cpu-fusion-qwen4exp-20260829`):
+fused tg1 = **0.86–0.88 t/s** (~1350 ms/token, single-threaded by construction) against the graph's
+8.00 t/s at t48 and — the honest control arm — **2.86 t/s (~350 ms/token) at t1**. The
+`GGML_FUSED_PROF` split: gemv ~1141 ms (84%), everything else ~215 ms.
+
+The operator's external review corrected the initial reading, all accepted:
+
+1. **The blocker is the 1141 ms gemv** (3.3× the graph's whole 1-thread decode), not the 215 ms
+   scratch churn.
+2. **The cause is the per-row unbatched `vec_dot` anti-pattern** in `FusedMM::dot`/`lora_mm` — the
+   exact mechanism the 2026-08-28 HC_MIX revert measured (785 vs 150 µs: the `mul_mat` kernel
+   batches rows / stays weight-stationary; unbatched quantized dots lose).
+3. **The thread-scaling extrapolation was optimistic**: the graph gains only ~4.7× from 1T→48T
+   (bandwidth-bound), so a ~5× fused improvement lands at ~445 ms/token (~2.2 t/s) vs the graph's
+   13.5 — still ~6× short.
+4. **The 84%-gemv split is non-discriminating** (a 1-thread graph would also show ~85–95% gemv);
+   the discriminating evidence is the control arm: graph-1T 350 ms vs fused-1T 1350 ms — the
+   megakernel does not currently deliver.
+
+**The go/no-go is answered YES structurally**: the batched `ggml_compute_forward_mul_mat` is
+exported and callable on staged tensors (the same staging pattern the fused path already uses for
+GDN/flash/silu kernels). The decisive next experiment is the staged batched `lora_mm`; if it
+delivers the ~5× the HC_MIX precedent predicts, the fused design is viable and the bit-exactness
+hunt resumes — if the fusion structurally requires per-row dots, the design is refuted on its own
+terms. Earlier in the same campaign: the per-k IQ4_NL rounding seed fixed (`2c09c1e9e`, layers
+0–11 bit-exact), the PLE/GDN silus moved onto the graph's SIMD kernels, and the SIMD-sigmoid/FMA
+hypotheses measured neutral.
+
+**Sources**
+- [`2026-09-01-inf67.md`](../progress/2026-09/2026-09-01-inf67.md) — the feasibility session:
+  measured numbers, the operator's four corrections, the go/no-go.
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the validation-round record feeding it
+  (already summarized in the 2026-09-01 update; cited here for the round-2/round-3 continuity).
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 owning
+  handoff.
