@@ -1294,7 +1294,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       rc=1, non-gating as designed: `llama-bench` cannot load
       `Qwen3.8-27B-DFlash2-Q8_0.gguf` standalone (2.06 GB drafter HEAD, present and readable —
       it is a companion artifact, not a self-contained model). Run 24 screens on the 1.5B rung.
-- [ ] **R23-17 — DFlash2 capability verification on the post-keep champion (OWNED here —
+- [x] **R23-17 — DFlash2 capability verification on the post-keep champion: PASS** ✅ 2026-09-02 (OWNED here —
       operator reassignment 2026-09-02: "I want you to own this"; "We can't afford having any
       issues with the DFlash2 performance boost. It is central to this champion's feature set").**
       Exposure: run 23's keeps were validated ONLY on the 1.5B dec-b4 surface; `db18f393` edits
@@ -1308,6 +1308,21 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
       re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
       (candidates in commit order), report with rollback options.
+      **RESULT 2026-09-02 ~12:00Z on anchor-gen-014 (champion `732389d6`): PASS.** acceptance
+      **0.6501** (bar 0.58; DF2-5 reference 0.6205); DFlash2 **72.65 t/s** vs non-speculative
+      **30.51 t/s** = boost **2.38x** (bar 1.5x). Verdict at
+      `/mnt/raid0/llm/tmp/boundary-20260901/dflash2-smoke/verdict.json`.
+      **Reading**: the three keeps did NOT damage the DFlash2 path — speculative throughput is up
+      on DF2-5's 70.0 t/s and acceptance is slightly up. The boost RATIO fell (2.6x -> 2.38x) only
+      because the non-speculative arm improved MORE (26.6 -> 30.51 t/s, +14.7%): the kernel keeps
+      helped plain decode more than the speculative path, compressing the ratio while making BOTH
+      arms faster. A falling ratio here is not a regression.
+      **Caveat**: DF2-5 came from a different binary and harness; the load-bearing comparison is
+      the same-binary internal control (none vs dflash), which is sound. Run-24 gate SATISFIED.
+      **Instrument defect fixed mid-flight**: the build-capability check used
+      `llama-server --help | grep -q`, and under `set -o pipefail` grep -q closes the pipe ->
+      SIGPIPE(141) -> a SUCCESSFUL match read as a failed pipeline -> false REFUSE (rc=2).
+      Capture-then-match now.
 - [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
       has never been measured.** Proven 2026-09-02 from the headline evidence record
       `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
