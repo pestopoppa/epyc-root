@@ -1,0 +1,27 @@
+ARM inf68-asis start 10:38:08 bin=/mnt/raid0/llm/tmp/inf68-baseline-tree/build-cpu/bin/llama-bench threads=48,64 env=[OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1]
+ARM inf68-asis end   10:44:48 exit=0 contam_hits=51
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           pp512 |        124.47 ± 1.73 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           tg128 |          7.65 ± 0.03 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           pp512 |        127.01 ± 2.29 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           tg128 |          7.22 ± 0.02 |
+ARM inf68-evicted start 10:47:04 bin=/mnt/raid0/llm/tmp/inf68-baseline-tree/build-cpu/bin/llama-bench threads=48,64 env=[OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1]
+ARM inf68-evicted end   10:50:04 exit=0 contam_hits=26
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           pp512 |        175.84 ± 3.00 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           tg128 |         10.14 ± 0.04 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           pp512 |        182.17 ± 3.03 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           tg128 |          9.73 ± 0.03 |
+ARM c5-omp-on start 10:52:16 bin=/mnt/raid0/llm/llama.cpp-cpu-fusion-20260829/build-cpu/bin/llama-bench threads=48,64,96 env=[OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1 GGML_FUSED_DECODE_OFF=1]
+ARM c5-omp-on end   11:08:50 exit=0 contam_hits=143
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           pp512 |       172.59 ± 15.24 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           tg128 |         10.09 ± 0.04 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           pp512 |       167.79 ± 10.09 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      64 |    0 |           tg128 |          9.69 ± 0.09 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      96 |    0 |           pp512 |        147.21 ± 8.62 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      96 |    0 |           tg128 |          9.67 ± 0.11 |
+ARM c5-omp-off start 11:11:23 bin=/mnt/raid0/llm/llama.cpp-cpu-fusion-20260829/build-cpu/bin/llama-bench threads=48 env=[GGML_IQK=1 GGML_FUSED_DECODE_OFF=1 OMP_PROC_BIND= OMP_PLACES= OMP_WAIT_POLICY=]
+ARM c5-omp-off end   11:13:03 exit=0 contam_hits=14
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           pp512 |        166.84 ± 3.10 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |      48 |    0 |           tg128 |          9.76 ± 0.09 |
+ARM c5-t1 start 11:14:55 bin=/mnt/raid0/llm/llama.cpp-cpu-fusion-20260829/build-cpu/bin/llama-bench threads=1 env=[OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1 GGML_FUSED_DECODE_OFF=1]
+ARM c5-t1 end   11:16:26 exit=0 contam_hits=10
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  91.63 GiB |   176.94 B | CPU        |       1 |    0 |            tg32 |          5.04 ± 0.01 |
