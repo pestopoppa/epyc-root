@@ -593,18 +593,26 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       also means the "verified" tokens are checked against slightly non-exact logits, and **acceptance rate
       is not evidence of exactness on this architecture** (p1 reported 1.00 and diverged). Options: (a) an
       extra single-token decode per round for the bonus token — correct, costs most of the win; **(b) make
-      qwen4exp's multi-token path row-exact vs the single-token path — the real fix, the subject of
-      upstream `36b101543` (#27941), being ported and re-tested now as E2b-1**; (c) accept non-exactness
-      and drop the "output unchanged" claim. If (b) via the port closes the flip, E2a closes; otherwise
-      (a)/(b)/(c) is the operator's decision. No serving exposure until then; E-GATE depends on it.
+      qwen4exp's multi-token path row-exact vs the single-token path — the real fix; **its cheapest shot,
+      upstream `36b101543` (#27941), was ported (`inf70/mtp-27941`, `7ab0a0fe4`, 444 lines of
+      `llama-memory-hybrid-idx` + kv-cache + 7/8 `qwen4exp.cpp` hunks; a provable no-op for
+      non-speculative output) and the flip survives byte for byte**; (c) accept non-exactness — MTP as
+      *approximate* speculation for research measurement, exactness claim dropped. **E2c (running, first
+      Fable-low agent): does the trunk's forward depend on batch size at all?** Same prompt through
+      `-b 1 -ub 1` vs default batching vs `-b 8 -ub 8` on the unpatched build, greedy ids and top-5
+      logprobs compared — if they differ, every prefill-vs-decode comparison in this campaign inherits
+      the finding, not just speculation. Then (a)/(b)/(c) is the operator's decision; the E2 agent's
+      recommendation is (c) with no serving exposure, and to keep `inf70/mtp-27941` as a correctness
+      rider regardless. E-GATE depends on it.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
       ~49 MiB/token**, on top of the weight stream; no re-prefill observed. Rollback itself works (p2/p3
-      stayed identical); it is paid with a copy instead of an in-place rewind. Port, in this order:
-      `36b101543` (#27941, qwen4exp correctness — also E2a's first suspect), then the rollback trio
-      `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a` (#28159) (upstream: 108 → 183 t/s with MTP
-      once landed). None of the four is in PR #144's history; E2 does not depend on them.
+      stayed identical); it is paid with a copy instead of an in-place rewind. **E2b-1 ✅ done 2026-09-02:
+      `36b101543` (#27941) ported on `inf70/mtp-27941` — no regression, checkpoints unchanged (31/2), not the
+      E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
+      (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
+      way (patch files, never a `--depth` fetch into the shared repo).
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
