@@ -1327,6 +1327,22 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       provenance mismatch (rc=2) and uncalibrated surface (rc=3, proven against dec-b8 while its
       calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
       SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
+- [x] **R23-19a — the confirm-rung headline instrument built and proven** ✅ 2026-09-02 —
+      `scripts/benchmark/headline_on_confirm_rung.py`: dry-run resolves the 27B keyed floor
+      (0.949% @20 pairs) and the dec-b4 shape (pp=512 tg=0 ub=4); BOTH fail-closed paths
+      mutation-tested rather than assumed — provenance mismatch rc=2, uncalibrated surface rc=3
+      (fired against dec-b8 live, while its calibration was still running). Cached
+      `v9v-build-base` reused, so no production rebuild. Measurement itself is R23-19.
+- [x] **R23-20 — the 27B dec-b4 keyed floor landed and was verified sane** ✅ 2026-09-02 (10:03Z)
+      — `calibration/dec-b4.Qwen3.8-27B-Q8_0.json`: floor 0.949% @20 pairs (1.142% at the pairs=5
+      confirm gate), A/A effect +0.576% sitting INSIDE its own derived floor as a clean A/A must,
+      drift 0.13/0.27% with no trend, residency 40/40 resident and clocks pinned 1700 MHz,
+      device_seconds 3282 per condition. First 27B floor the program has ever had.
+- [ ] **R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4
+      is the approved scope (operator 2026-09-02); dec-b8 would cost another ~1 h and is the other
+      confirm surface. NOT auto-run: it doubles the hold on run 24 for a second view of the same
+      question. Decide after R23-19's dec-b4 number is in hand — if dec-b4 shows heavy
+      attenuation, dec-b8 becomes informative rather than confirmatory.
 - [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
       keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
       before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
