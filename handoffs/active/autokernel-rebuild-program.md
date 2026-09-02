@@ -1171,6 +1171,22 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       `production-consolidated-v9`, so `-d`'s merged-into-HEAD check refuses despite full merge).
       Bundle into the same action: `ak-loop-tree-b`/`-c` (branches `…20260828b`/`c`, both still at
       base `0db32c06e`, zero commits — trivially disposable).
+- [ ] **R21-5 — evaluate the rescued HIP-graph capture-point experiment** (filed 2026-09-02 during
+      the OP-30 safety review). `artifacts/rescued-ak-loop-tree-c-mmvq-hip-graph-capture-20260902.patch`
+      (research `8405313b`): 82 uncommitted lines in `ggml/src/ggml-cuda/mmvq.cu` adding
+      `ggml_cuda_mmvq_capture_point` (HIP/CUDA stream-capture dependency probing). It existed in
+      **no commit on any ref** — `log --all -S` empty — and sat only in the working tree of
+      `ak-loop-tree-c`, which OP-30 retires; `worktree remove --force` would have destroyed it with
+      no reflog. Adjacent to the champion's kept `akm-q8-1-graph-tensor-cache-owned-pool`
+      (`c0d42d81c`), so it may be a live idea rather than a dead end. Evaluate or explicitly
+      decline — do NOT let it rot as an unreferenced patch.
+- [ ] **R21-6 — repoint `pool.CHAMPION_TREE` after OP-30 lands.** It defaults to
+      `/mnt/raid0/llm/tmp/ak-loop-tree` (`loop/pool.py:48`), which OP-30 deletes. Nothing live is
+      affected — the boundary driver and run 24 pass `--worktree /mnt/raid0/llm/tmp/champ2`
+      explicitly (`boundary_20260901.sh:96,533`) and the stale default would already fail run.py's
+      startup branch check — but after retirement the default becomes a dangling path whose failure
+      mode is a confusing "no such worktree" instead of a clear refusal. Point it at `champ2` or
+      make it refuse by name.
 - [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
       state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
       (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
