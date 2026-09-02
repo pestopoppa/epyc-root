@@ -1318,6 +1318,15 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
       smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
       bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
+      **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
+      `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
+      `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
+      R23-11's `model` provenance field (the absence of which made the screen-rung headline
+      unreadable in the first place). Floor re-keyed via `noise_floor_pct` to the 27B: **0.949%**
+      at 20 pairs, not the 1.5B's 0.668%. Dry-run green; BOTH refusals mutation-tested live —
+      provenance mismatch (rc=2) and uncalibrated surface (rc=3, proven against dec-b8 while its
+      calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
+      SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
 - [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
       keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
       before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
