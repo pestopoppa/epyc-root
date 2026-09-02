@@ -4012,3 +4012,74 @@ Key findings:
 - [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the overnight triage record.
 - [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the ASAN blind-spot
   finding, the trace-strip discriminator, and the llama-cli guard/patch.
+
+## Compiled Update — 2026-09-01 (incremental): the megakernel measured 3.9x SLOWER single-threaded; go/no-go answered YES
+
+**Confidence: verified** (in-situ profiler with a same-build control arm; the absolute numbers are
+labeled non-claim by their own source — no protocol id, no attestation — but the control-arm *ratio*
+is same-window and the corrections were accepted and recorded same-day).
+
+The INF-67 fused-decoder campaign produced its first measured feasibility numbers. The profiler
+(`GGML_FUSED_PROF`, commit `58c345093`) split the fused decode's single-threaded per-token cost:
+total ~1350 ms, gemv (the bracketed `vec_dot`s, including the expert dots) ~1141 ms (84%), other
+~215 ms (per-layer `ggml_init`/`free` scratch churn plus unoptimized single-threaded kernels). The
+operator's review reframed this: the 84%-gemv split is **non-discriminating** — a 1-thread *graph*
+would show a similarly high gemv share — so it does not by itself support the "machinery collapse"
+premise the campaign was testing.
+
+The control arm settles it instead. The ordinary graph at `-t 1` (`GGML_FUSED_DECODE_OFF`, same
+model, same prompt, **same debug build**) measured tg1 = 2.86 t/s (~350 ms/token) against the fused
+path's ~1350 ms/token: **the megakernel is ~3.9x SLOWER than the plain graph, single-threaded, not
+faster.**
+
+The root cause is the per-row unbatched `vec_dot` in `FusedMM::dot`/`lora_mm` — the same anti-pattern
+already recorded on this page from the 2026-08-28 HC_MIX revert (−8.7%), where unbatched quantized
+dots lose to the `mul_mat` kernel's row-batching/weight-stationary structure. The go/no-go came back
+**YES, structurally**: `ggml_compute_forward_mul_mat` is exported and callable on staged tensors —
+the pattern the fused path already uses for its GDN/flash/silu kernels — so a batched substitution
+is mechanically available. The first staged attempt (`c035bbf3d`) segfaulted on the kernel's
+`wdata`/threadpool/strides staging, recorded as a day's implementation work, not a structural
+blocker.
+
+**Baseline caution (load-bearing for anything quoting these numbers).** The widely-cited 74 ms/token
+(13.46 t/s) UD-IQ4_XS record **does not reproduce on the current box**; the INF-67 record states the
+arithmetic "needs re-anchoring before any perf claim (same-window ratios are safe)". The measured
+current-box baselines are **9.13 t/s (UD)** and **10.52 t/s (uniform IQ4_XS, +15.2%)**, and OP-32
+option B made the uniform artifact the required comparison baseline for INF-67 headlines. Ratios
+inside one build/one window are safe; absolute before/after claims are not admissible until a clean
+re-anchoring run lands.
+
+Key findings:
+
+- **The megakernel is currently 3.9x slower, single-threaded, than the graph it targets** — fused
+  ~1350 ms/token vs graph ~350 ms/token at `-t 1`, same debug build, same prompt (control arm)
+  [progress](../progress/2026-09/2026-09-01-inf67.md).
+- **The 84%-gemv profiler split is a non-claim and non-discriminating** — so labeled by the profiling
+  commit itself and by the operator's review; it does not distinguish the fused path from an ordinary
+  1-thread graph, both of which are gemv-dominated
+  [progress](../progress/2026-08/2026-08-31.md).
+- **Root cause: per-row unbatched `vec_dot` in `FusedMM::dot`/`lora_mm`**, not the ~215 ms
+  scratch/`ggml_init`-`free` churn — the same row-batching anti-pattern as the 2026-08-28 fused
+  `hc_mix` revert (−8.7%) already on this page [progress](../progress/2026-08/2026-08-31.md).
+- **Go/no-go: YES, structurally.** `ggml_compute_forward_mul_mat` is exported and callable on staged
+  tensors, matching the fused path's existing GDN/flash/silu staging; the first staged substitution
+  segfaulted on wdata/threadpool/strides handling — implementation work, not a structural refutation
+  [progress](../progress/2026-09/2026-09-01-inf67.md).
+- **Cross-build comparisons are invalid here, and the penalty's size is unmeasured.** The graph reads
+  8.00 t/s at `-t 48` in the instrumented build; the clean-build counterpart is unknown because the
+  documented 13.46 t/s figure does not reproduce. Any fused-vs-graph or before-vs-after number that
+  crosses a build boundary is not a measurement
+  [progress](../progress/2026-08/2026-08-31.md).
+- **Bit-exactness progress**: the IQ4_NL repacked-mirror seed fixed by rounding per-k instead of
+  per-block (layers 0–11 bit-exact); the layer-12 chain mapped (xn → hc_mixed → ffn, GDN body exact);
+  PLE/GDN-conv silus switched to the graph's SIMD kernel (logit 0.947 → 0.6335)
+  [progress](../progress/2026-09/2026-09-01-inf67.md).
+
+### Source References (2026-09-01, feasibility)
+
+- [`2026-09-01-inf67.md`](../progress/2026-09/2026-09-01-inf67.md) — the feasibility session: the
+  measured numbers, the operator's corrections, the go/no-go answer.
+- [`2026-08-31.md`](../progress/2026-08/2026-08-31.md) — the feasibility-profiler commit, the
+  control-arm measurement, the baseline re-anchoring caution, and the go/no-go commit record.
+- [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff,
+  current phase and bit-exactness state.

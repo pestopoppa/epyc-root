@@ -37,7 +37,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-26 | ParEval CPU/HIP trials — flagged tier-1 at Hawkeye Stage-2b close but never reached the approved plan: run, file, or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-27 | ~20 unselected Stage-2b sources from the Hawkeye batch — QiMeng-Xpiler `2505.02146` highest-value (only AMD/HIP-touching artifact in the line): select dives or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-30 | Retire ak/loop-champion-20260828 + ak-loop-tree (and idle -b/-c siblings)? Recommendation: RETIRE — tip 4925b208 is an ancestor of a2728701 (verified) AND pinned by tag ak/pre-reconcile-loop-20260831; commands in INF-66 R21-3 (branch needs -D: main tree HEAD is production-v9) | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) R21-3 | 2026-08-31 |
-| OP-31 | Push the staged A/B evidence promotion — the live bundle cites volatile tmp paths | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) R21-2 | 2026-08-31 |
 | OP-33 | Disk reclaim: minimal set + GLM-5.2 + the 22-artifact zero-consumer purge all EXECUTED (743 G free). REMAINING: 7 ambiguous artifacts (~128 G) needing a call — chiefly a 70 G Qwen3.5-122B copy the lean registry calls PRODUCTION while the served path points elsewhere (a registry defect, not a disk question); plus the 4 rollback-anchor holds. `opencode.db` ruled OFF LIMITS | [2026-08-31-disk-reclaim-menu.md](../../progress/2026-08/2026-08-31-disk-reclaim-menu.md) §EXECUTED | 2026-08-31 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
@@ -72,7 +71,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 56 | 528 | 13 | 2026-07-29 |
+| inference-research | 56 | 531 | 13 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 45 | 354 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 31 | 11 | 2026-07-29 |

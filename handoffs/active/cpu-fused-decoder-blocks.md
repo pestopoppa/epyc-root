@@ -191,15 +191,41 @@ Checklist (the dashboard gate — flipped as the phases land):
   staging's wdata (16 floats short of the kernel's 6976 need) and the GDN kernel's 3.2 MB
   state write past the ne-sized 24 KB scratch tensor. Current state: full-instrumentation
   runs exit 0, logit diff 0.684, greedy 13=13, layers 0-6 bit-exact, layer 7 at 1.6e-4.
-- Safety contract (audit item 3, before any serving exposure): the hook must become OPT-IN
-  (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
-  true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells) must
-  commit atomically at end-of-token — a mid-token fallback double-applies shift registers; the
-  t_logits write relies on allocation-ordering luck; repack-sensitive matmuls must guard on
-  `tensor->extra` + type, not just the IQ4_NL down-experts; committed debug I/O (getenv in the
-  expert inner loops, per-token fopen/fprintf, ~2.5 GB/token context churn) must be stripped
-  before any perf measurement.
+- THE SEED FIXED (2c09c1e9e): the IQ4_NL repacked mirror must round PER-K, not per-block —
+  the graph's ggml_gemv_iq4_nl_8x8_q8_0_generic accumulates sumf[j] += sumi_k * d * a per k;
+  the mirror accumulated the whole sumi and did ONE product per block (~1e-8 rounding).
+  With the per-k products: layers 0-11 are now EXACT (layer 7: 1.553e-4 -> 1.341e-7).
+- Layer-12 bisection (b494e1599): the GDN body is exact; the ffn diverges via the same
+  chain: the ffn-side xn 6.7e-6 (the norm's ~56x of the ~1.2e-7 res) -> the hc_mixed
+  4.05e-4 (~60x) -> the up/gate dots 1.3e-3 -> the ffn_out 1.25e-4.
+- Silu sites on the graph's SIMD kernels: the PLE conv silu (8f7bc6974 — logit 0.947 ->
+  0.6335) and the GDN conv silu (96ec5827a, neutral) use ggml_vec_silu_f32 (the graph's
+  ggml_v_silu/ggml_v_expf, 1.45-ulp). The ffn glu's SIMD-silu was NEGATIVE (reverted); the
+  PLE gate's SIMD sigmoid was NEGATIVE (c9b0cc488, reverted).
+- The ~1.2e-7 seed is still open — the PLE chain: the layer-0's l_last 1.49e-8 (the GDN)
+  -> the PLE query_n 4.8e-7 (the norm ~32x) -> the gate dot 8.2e-8 -> the norm_conv 1.9e-6
+  -> the padded 4.8e-6 -> the conv_out 1.34e-7 (unchanged by the SIMD silu) -> the l_last
+  1.27e-7. Current: logit 0.660, greedy 13=13, layers 0-6 exact; the remaining candidates:
+  the gate's dot (the key_n*query_n FMA vs the graph's mul+sum_rows), the query_n's norm,
+  or the layer-0's GDN.
 - Sequence: logit gate ≤1e-4 → Paris → arch suite stays; no perf claims before it passes.
   Then the honest baseline (uniform IQ4_XS requant control, ~12 min) + one symbol profile of
   the 46 ms non-gemv composition before Phase 4.
+- SESSION-OWNED operational note (2026-09-01, operator-ruled, owned by this session):
+  ~/.local/share/opencode/opencode.db is ~210 GB (the host's largest file, ~44% of the free
+  space after yesterday's 435 GB reclaim; churning tens of GB, not a steady trend — three
+  samples 186/224.9/210.3 GB). The plan, owned here: LEAVE ALONE while this session is live
+  (held open by pid 433986, actively written). At a natural boundary — the INF-67 ≤1e-4
+  gate or a /clear+close — run a maintenance window with the process stopped: back the DB
+  up, then VACUUM (needs ~2× transient, only with the free space confirmed), and prune
+  sessions only after the campaign's findings are committed, never mid-effort. The
+  mechanism hypothesis (tool outputs stored verbatim per message — this campaign moved
+  genuinely large artifacts) is worth knowing independently: every large tool output is
+  paid for twice. No action taken; not deferred — operator-ruled, tracked here.
+- SAFETY contract (audit item 3, before any serving exposure): the hook must become OPT-IN
+  (today `GGML_FUSED_DECODE_OFF` is an opt-out with `supports_fused_decode()` unconditionally
+  true and zero residency checks); all persistent state (PLE history, conv/ssm, KV cells)
+  must commit atomically at end-of-token; the t_logits write relies on allocation-ordering
+  luck; repack guards on tensor->extra + type; the debug I/O must be stripped before any
+  perf measurement.
 
