@@ -58,7 +58,7 @@ converter/importer from the exl3 safetensors into GGUF for the expert tensors on
 
 ## Plan — phases with gates
 
-- [ ] **X-DL — weights on disk.** Started 2026-09-02 11:50Z at the operator's direction
+- [x] **X-DL — weights on disk.** ✅ 2026-09-02 16:51Z — both branches complete, every LFS file `SHA-OK` against the repo oids (26 files; `download.log`), 101 GB + 80 GB under `models/turboderp/Qwen3.8-Flash-Next-exl3/`. Started 2026-09-02 11:50Z at the operator's direction
       (`/mnt/raid0/llm/tmp/inf70/download_exl3.sh`, one file at a time, resume-safe, sha256 against the LFS
       oids): `4.05bpw_h6_ng6` (100.1 GiB — 9 shards + 36.4 GiB `ngram_embedding.safetensors` + `vision_k6`)
       first, then `3.05bpw_h5_ng5` (79.3 GiB, includes `mtp_hyper_connection_mixer_patch.safetensors`), into

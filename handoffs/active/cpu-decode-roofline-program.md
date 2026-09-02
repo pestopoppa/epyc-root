@@ -323,14 +323,27 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       one self-contained change; the 2026-05-28 record shows khugepaged alone (~26 MB/s) cannot
       coalesce a 98 GB buffer inside a bench window. Stake: page-walk overhead on a 4.16 GB/token stream
       through 4 KB pages, 0–8%; decisive either way in one run.
-- [ ] **D8 — parallelise GET_ROWS (and the other single-task copy ops) — the cheapest large lever D0
-      found.** 175 GET_ROWS nodes cost **9.34 ms/token (9.7%) entirely on one thread**: `ggml_get_n_tasks`
-      gives GET_ROWS/SET_ROWS `n_tasks = 1` under a stale "hurts with GPU offload" comment; 36 of them gather
-      `[786432×1]` f32 PLE n-gram rows (~3 MB each, ~13 GB/s single-core). Give the op `n_threads` tasks
-      above a byte threshold, partitioned over disjoint output rows — bit-exact by construction; audit
-      SET_ROWS and the 73 single-task CPY nodes (3.65 ms wall) for the same pattern. Stake up to ~8 ms/token.
-      Gates: `test-backend-ops -o GET_ROWS -b CPU` (without `-b CPU` the suite passes vacuously), greedy
-      identity, ABA bench. (Running 2026-09-02, subagent `d8`.)
+- [x] **D8 — parallelise GET_ROWS (and the other single-task copy ops).** ✅ implemented 2026-09-02
+      (`inf70/d8`, `bc2834a9b`; subagent `d8`), **bit-identical** (198-case multi-thread memcmp verifier, 0
+      failures; `test-backend-ops -o GET_ROWS -b CPU` 111/111 with the threshold forced to 0 — without that
+      the suite is vacuous because every built-in case is under 64 KB; greedy identity 3 × 128) — **but the
+      lever was ~10× smaller than the profile said**: the four `get_rows` kernels already split by
+      `ith/nth` over ROWS and the hot nodes gather one row of 786,432 f32, so the kernels now split
+      (row, column-chunk) pairs, block-aligned, `n_tasks = n_threads` above 64 KB of dst
+      (`GGML_GET_ROWS_MIN_BYTES`). Same-binary ABA at t48: **+0.115 t/s (+0.97%), inside the 0.17 t/s
+      drift — neutral-to-slightly-positive, not a claim.** Why: GET_ROWS cost **2.59 ms/token in this
+      window, not the 9.34 ms the profiler saw 2.5 h earlier** — the 36 big PLE gathers took 37 µs each
+      (cache-served, ~162 GB/s) vs 233 µs then, same command, recipe, placement and THP: **a
+      state-dependent cost, not a structural one; D6's "start with GET_ROWS" ranking is retracted.**
+      SET_ROWS deliberately left serial (source rows can share a destination index — a write race, for
+      0.011 ms/token); CPY needs nothing (its single-task nodes are the empty `ne1 = 0` ones). A cold-source
+      probe shows the split does work when there is DRAM traffic (1T 105 µs → 48T 12–61 µs). **Side
+      finding under bisect (D8x, running): the anchor binary 10196 measures 10.37–10.47 t/s while the d8
+      tree's build measures 11.82–12.02 with the patch disabled — a reproducible +14% whose cause is not
+      the patch by the agent's protocol, with cmake cache, flags, gcc, stale objects, library resolution,
+      base delta, placement and THP ruled out; a fresh pristine build (d1-base) is NOT faster, so it is
+      something in the d8 tree or its arm protocol.** If real, the 10.09 anchor and every Δ against it are
+      understated ~14%.
 - [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
       B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
       op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
