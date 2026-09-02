@@ -343,7 +343,16 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       the patch by the agent's protocol, with cmake cache, flags, gcc, stale objects, library resolution,
       base delta, placement and THP ruled out; a fresh pristine build (d1-base) is NOT faster, so it is
       something in the d8 tree or its arm protocol.** If real, the 10.09 anchor and every Δ against it are
-      understated ~14%.
+      understated ~14%. **D8x static verdict (2026-09-02, bench arms pending): the +14% IS the GET_ROWS
+      patch.** `GGML_GET_ROWS_MIN_BYTES` only changes the *planned* `n_tasks`, which this tree's compute
+      loop never consults (`params.nth = n_threads` for every node; `n_tasks` only sizes the work buffer),
+      so D8's "OFF" arm ran the parallel kernel too — the A/B was on/on, and the "37 µs vs 233 µs,
+      state-dependent" reading was parallel-vs-serial. `nm -S` shows the only functions that differ between
+      the pristine and d8 libraries are `get_rows`, `get_rows_back`, `graph_plan` and the env cache; ISA
+      counts identical. The cross-binary greedy check (unpatched prof binary vs patched, 70 tokens) is
+      byte-identical. **So D8's real effect is ≈ 95.5 → 83.4 ms/token (10.4 → 12.0 t/s, −12%) at t48 —
+      the largest single gain of the day — and D6's GET_ROWS ranking stands; the "retracted" line above is
+      itself retracted.** Confirmation arms (anchor / pristine / prof-only / d8) running as D8x.
 - [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
       B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
       op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
