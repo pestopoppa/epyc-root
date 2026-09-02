@@ -1945,3 +1945,48 @@ Key findings:
 - [vidya-p5c-evaluation-and-decision.md](../research/deep-dives/vidya-p5c-evaluation-and-decision.md)
   §6 — the ratified decision record: the operator's machine-anchor admissibility call and the
   full evidence block behind the PROMOTE verdict.
+
+
+## Compiled Update — 2026-09-01 (incremental): a classification is evidence about a moment, not a property of a file
+
+**Confidence: verified** (22-artifact purge executed on a re-verified list; three prior classifications measured wrong).
+
+A ~476 GB "zero active consumer" model purge was approved from a reclaim menu. Re-verifying every
+path independently before deleting kept **~220 GB of that approved list** and deleted artifacts the
+menu never named. The executed set was 22 artifacts / +267 GB, all ledgered.
+
+Key findings:
+
+- **Never inherit a classification; re-derive it.** This is now the THIRD time an inherited
+  disk/model classification was wrong here, in both directions each time. The approved list called
+  safe: an 85 GB model whose tensors are the subject of an open kernel task, a 56 GB pair under an
+  explicit "retain this item open" row, a 27 GB model whose deletion is itself an operator-gated
+  task whose gate has not fired, and two arms of an open sweep. The same menu called *unsafe* a
+  6 GB artifact it claimed "live smoke scripts consume" — nothing references it at all.
+- **A tier label can be overloaded across documents, and the collision can be destructive.** In the
+  master registry `tier: D` is the DRAFT/EMBEDDER tier — live drafters and embedders bound to
+  active roles. A reclaim document independently used "Tier D" as its own ad-hoc label for
+  zero-consumer candidates. Executing "delete Tier D" as a literal registry query would have
+  destroyed the active drafting set. The tier meaning deprecated is `tier: X`.
+- **Registry tier is not evidence of disuse.** `gemma-4-26B-A4B-it-Q4_K_M` is marked `tier: X`
+  ("eval-only, not deployable") and is being SERVED right now by a live role. Tier records an
+  intention at authoring time; only the runtime registry and the process table record use.
+- **Retention language is a distinct keep-reason and needs its own sweep.** Artifacts with no role
+  and no open task can still be deliberate ROLLBACK ANCHORS. Grep for `rollback` / `retained` /
+  `REMAIN ON DISK` / `kept per` / `preserved` before deleting anything, in BOTH registries — four
+  artifacts survived this purge on that basis alone.
+- **Prose records a deletion; only a ledger row makes it findable.** Four historical deletions were
+  documented in `deprecated_reason` fields and handoff resolutions but had no machine-readable
+  ledger row, so an enumerable audit read their paths as unexplained dangling citations. Backfilled.
+  A record that cannot be enumerated does not function as a record.
+- **Audit-tool caveat, learned twice:** match ledger coverage by path PREFIX (shards under a
+  ledgered directory are covered — an exact-match check produced 30+ false positives), and run the
+  audit where the evidence physically lives: the repo's evidence-durability hook checks that cited
+  paths exist, and large evidence dirs are untracked artifacts absent from any fresh worktree.
+
+### Source References (2026-09-01)
+
+- [`2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the purge and audit record.
+- [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) — the
+  original menu, kept as the counter-example its own re-verification produced.
+- `epyc-inference-research/orchestration/model_registry.yaml` — `deprecated_models`, now 69 entries.

@@ -3963,7 +3963,7 @@ Key findings:
 
 ### Source References (2026-08-31)
 
-- [`qwen4exp-uniform-iq4xs-baseline-control.md`](../handoffs/active/qwen4exp-uniform-iq4xs-baseline-control.md) —
+- [`qwen4exp-uniform-iq4xs-baseline-control.md`](../handoffs/completed/qwen4exp-uniform-iq4xs-baseline-control.md) —
   INF-68: method, results table, operator decision OP-30 options.
 - [`2026-08-31-inf68-baseline-control.md`](../progress/2026-08/2026-08-31-inf68-baseline-control.md) —
   the audit + control session record (method detail, hygiene notes).
