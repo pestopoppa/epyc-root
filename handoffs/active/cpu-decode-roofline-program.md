@@ -24,8 +24,9 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 - [`../completed/cpu-decode-flops-roofline-audit.md`](../completed/cpu-decode-flops-roofline-audit.md) —
   the calibrated DRAM-traffic counters on this host (`ls_dmnd_fills_from_sys.dram_io_all` +
   `ls_hw_pf_dc_fills.dram_io_all`, ×64 B) that B1/C1 use
-- Axis E riders: [`qwen38-flash-next-fp8-evaluation.md`](qwen38-flash-next-fp8-evaluation.md) (INF-63, the
-  same FP8 re-acquisition), [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md) (INF-46),
+- Axis E riders: `unsloth/Qwen3.8-Flash-Next-GGUF` `MTP/` (the published heads, revision `5d16c055`),
+  [`qwen38-flash-next-fp8-evaluation.md`](qwen38-flash-next-fp8-evaluation.md) (INF-63 — its FP8
+  re-acquisition is no longer needed for MTP), [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md) (INF-46),
   [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) (INF-50),
   [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md) (INF-62, the
   alternative drafter — `--spec-type` takes one value)
@@ -51,9 +52,9 @@ head (Axis E).
 **OUT, by operator direction 2026-09-02**: **GPU / expert offload** — deferred, not refuted; do not spend
 on it. **Speculative decoding before Axes A–D have their first measured results** — the operator's
 position: *"We can always tack on the speculative drafter and get that performance bump. That's easy. I
-want the agent to tackle hard-to-get gains."* The one Axis E item permitted early is E1 (the source
-re-download), because it is I/O-only and gates E2–E5 by ~6 h of wall time — and it must not overlap a
-measurement window (a 185 GB download churns the page cache).
+want the agent to tackle hard-to-get gains."* The one Axis E item that ran early is E1, the download of
+the published MTP heads (I/O-only, ~6 GB, done 2026-09-02 at the operator's direction); nothing else in
+Axis E starts before A–D report.
 
 ## The gap — corrected ledger
 
@@ -66,7 +67,7 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | decode, UD-IQ4_XS (the served file) | 109.5 ms (9.13 ±0.04) t48 | measured | same run; uniform is +15.2% |
 | ~~74 ms / 13.46 t/s~~ | **retired — does not reproduce** (−32% on the same lineage and recipe) | retired | `2026-08-28.md:206` origin; `2026-08-31.md:228` and INF-68 Finding 2 retraction |
 | bytes streamed per token | **≈ 4.16 GB** = dense 2.344 + routed experts 1.296 (10/512 × 48 layers, avg 2.70 MB/expert) + `output.weight` 0.521 (Q6_K, 2560×248320) | computed 2026-09-02 from the artifact's tensor table (`gguf_dump`, 1224 tensors) | replaces the retired "2.8–3.4 GB", which was a different model's 2026-05-28 figure. Notable: `ffn_gate_inp` (router) is stored **F32** — 252 MB/token (6%) just to route; `ffn_down_exps` is **Q5_1** in the "uniform" file (640 % 256 ≠ 0, so IQ4_XS is impossible and llama-quantize fell back) |
-| DRAM bandwidth, theoretical | 460.8 GB/s (12 ch × 4800 MT/s × 8 B) | spec | DIMM speed is a consistent working assumption on the record (`2026-08-28.md:199`), never instrumented |
+| DRAM bandwidth, theoretical | **460.8 GB/s today** (12 ch × 4800 MT/s × 8 B); **537.6 GB/s at the DIMMs' rated 5600** | measured config (SMBIOS type 17, 2026-09-02) | Supermicro H13SSL-NT, 12 × Samsung M321RYGA0PB0-CWMCJ 96 GB 2R DDR5 RDIMMs, one per channel, **rated 5600 MT/s, configured 4800**. One DIMM per channel is the fast population on SP5 (the 4800 cap belonged to EPYC 9004; a 9655 supports 6000 at 1DPC). Operator: BIOS memory clock → 5600 at the next reboot; **re-run C0 and C5 after it** — every bandwidth-bound number scales by up to +17% |
 | DRAM bandwidth, measured **copy** | **212 GB/s, read+write already counted** | measured (conditions incomplete) | `bench_stream3.cpp` 2026-08-29: 2 GiB arrays, malloc + parallel first-touch, default 96 threads, NUMA mode and OMP placement unrecorded. The tool divides 4 GiB by the copy time of a 2 GiB array — standard STREAM convention |
 | ~~425 GB/s "traffic"~~ | **retired — a double count** | retired | the tool's "traffic" column multiplies the already-read+write copy figure by 2 again. Never measured on this box. Every "% of 425" in the pre-audit handoff, the ~8% fraction, the "1.3–4% expert path" and the DGX-Spark comparison inherited it |
 | DRAM bandwidth, **read-only, under the decode recipe** | **NOT MEASURED** | — | the only read-only figure (80–90 GB/s, `2026-08-28.md:181`) is the refuted single-node first-touch artifact. **C0 produces this number.** |
@@ -74,7 +75,7 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | achieved fraction | **21% → 11%** of the two bounds | computed | 19.6/95.1 and 10.4/95.1 |
 | graph nodes per token | **7,906** pre-fusion; **6,887** after `MEAN_D1` + `MOE_TOPK_NORM` (the baseline build) | measured | `2026-08-28.md:88,142` and round 1 (`7902 → 6887`, −13%). The "~5,850 / ~6,800" in INF-67 are in no record |
 | thread-0 compute per node | 5–8 µs | measured, **excludes barrier wait** | `GGML_CPU_PROF` times the compute call only; the graph barrier at `ggml-cpu.c:3274` is outside its window. Three measurements, round 5 |
-| barrier wait per node, and the count of sync events per token | **NOT MEASURED** | — | round 1 inferred "~53 ms barrier/dispatch" by subtraction at the 128 ms pre-NUMA-fix baseline; round 5 declared it "not barriers" from three failed *kernel* fusions. Neither is a measurement. **D0 produces both numbers.** |
+| barrier primitive, measured 2026-09-02 | **1.9 µs at 48 threads, 2.4 µs at 64, 3.2 µs at 96** (libgomp `omp barrier`, OMP stack on, threads 4 per CCD); ggml's flat atomic barrier 1.9 / 2.1 / 2.8 µs; a per-CCD hierarchical prototype 2.1 / 2.1 / 2.8 µs (**no gain**); barrier + 1 µs of private work = 2.8 µs at 48T | measured (`bench_barrier`, `results-20260902T102729Z/d0-barrier.txt`) | At ~7,800 sync events/token that is **~15 ms at 48T, ~25 ms at 96T** — real, but well under half of the 35–55 ms per-node budget. The remainder is dispatch, tiny-op compute and straggler wait, which the D0-b node census must split. The libomp-via-`LD_PRELOAD` arm **hung** (GOMP ABI shim) — D3a needs a real clang+libomp build. Sync events per token: still to be counted (D0-b) |
 | expert path (`mul_mat_id`), in-function per-call | 68–88 µs × 144 calls = **10–13 ms/token**; ≈ 100–130 GB/s aggregate on ~1.3 GB | measured (pre-NUMA-fix box state, UD artifact with IQ3_S experts) | `2026-08-28.md:170,190` — the `[mmid_prof]` in-function timer. **This retracts the "5.6–17 GB/s" figure in the same record**, which was the per-op profiler contaminated by cross-node waits |
 | dense path (`mul_mat`), 797 calls/token | in-function median ~20 µs (Q8_0 dense) → ~16 ms if representative; profiler-attributed 57 ms (72 µs/call) *including waits* | partly measured | `2026-08-28.md` rounds 2/3/6. The 40 ms between the two figures is wait time nobody has assigned. **B1 settles the split** |
 | fused decoder, same debug build, `-t 1` | fused 1350 ms vs graph 350 ms (**3.86×**); fused gemv 1141 / other 215 | measured (non-claim) | `2026-09-01-inf67.md`; safe only as a same-window ratio |
@@ -95,8 +96,7 @@ is left. No comparison to other hardware is admissible until C0 exists.
 3. **Levers by measured ROI**: Axis D (D1–D7) and Axis B (B2–B4) are independent of each other and of
    Axis A; run them in parallel sessions, each against the C5 anchor in the C5 build.
 4. **Axis A** continues in its own session against the same anchor (A-GATE).
-5. **Axis E** after A–D report their first measured results — except E1, which may run in any
-   non-measurement window.
+5. **Axis E** after A–D report their first measured results (E1, the head download, is already done).
 
 If this ordering is overruled, say so in this file with the reason; it is a recommendation with a reason,
 not a gate.
@@ -170,24 +170,33 @@ sprayed as 14 rows per thread with no small-matrix threshold. The only CPU-side 
 `RMS_NORM+MUL`. None of the older CPU1-track barrier work (`GGML_CCD_POOLS`, `BARRIER_LOCAL`) exists in
 this tree or in production. `tests/test-barrier.cpp` exists (2000 tiny mul_mats on the *internal*
 threadpool). Host THP is `enabled=[always] defrag=[always]`, but ggml allocates weights with
-`posix_memalign(64)` and never asks for huge pages.
+`posix_memalign(64)` and never asks for huge pages. **Measured 2026-09-02 (D0-a):** the barrier primitive is
+1.9 µs at 48 threads and 3.2 µs at 96 in the exact runtime the graph uses, and a hierarchical prototype does
+not beat it — so the 5–8 µs thread-0 compute per node plus the barrier is ~2 µs of synchronisation and the
+rest is dispatch, tiny-op work and waiting for the slowest thread. That moves the weight of this axis from
+D3 (the primitive) to D0-b/D2/D6 (how many sync points, and how unbalanced the work between them is).
 
 - [ ] **D0 — measure the per-node floor directly; count the sync events per token.** (a) Build
       `test-barrier` twice — the internal threadpool (as-is) and an OpenMP twin — plus a barrier-only
       variant (2000 × SCALE on 16 elements) and run each at t ∈ {1, 8, 16, 24, 48, 64, 96} under the OMP
-      stack: **µs per barrier vs thread count, per runtime**. (b) From `GGML_CPU_PROF_NODES` (extend it
+      stack: **µs per barrier vs thread count, per runtime** — ✅ (a) done 2026-09-02 for libgomp and the
+      flat/hierarchical atomics (ledger row); the libomp arm needs a clang build. (b) From `GGML_CPU_PROF_NODES` (extend it
       past 260 nodes) count, for one token on the C5 build: non-empty nodes, `mul_mat` internal barriers
       (797), `mul_mat_id` internal barriers (144), and the number of *consecutive thread-0-only* node
       pairs and *same-partition elementwise* node pairs (the D2 candidates). Deliverable: the dispatch
       floor in ms/token = Σ sync events × µs/barrier(t), and the ranked list of what D1–D3 can remove.
-      Zero new kernels; one session.
+      (c) **Add a per-node timestamp AFTER the graph barrier** to `GGML_CPU_PROF` so each node's wall cost
+      (compute + imbalance + barrier) is measured, not just thread-0 compute; report the distribution of
+      (wall − thread-0 compute) per op type — that difference is the straggler/imbalance term. Zero new
+      kernels; one session.
 - [ ] **D1 — remove the internal `mul_mat` / `mul_mat_id` barrier at batch 1.** For `ne11 == 1` every
       thread quantizes the whole activation row redundantly into thread-local `wdata` (2560 elements,
       ~1 µs) instead of splitting it 48 ways and synchronizing; for `mul_mat_id` at `n_tokens == 1` the
       row→expert map is trivial and can be built per thread, deleting the serial grouping, the barrier
       and the 512-entry scan. Removes ~940 sync events per token, bit-exact by construction. Expected:
-      940 × µs/barrier(48) from D0 — 3–6 ms/token if the barrier is 3–6 µs. Gate: greedy generation +
-      logit diff vs the C5 build.
+      940 × 1.9 µs ≈ **1.8 ms/token at 48T** (measured primitive) — small on its own, larger if the
+      internal barrier also carries imbalance from the 48-way split of a 2560-element quantization. Gate:
+      greedy generation + logit diff vs the C5 build.
 - [ ] **D2 — barrier elision between nodes that do not need one.** Two safe classes, both decided at
       plan time (the standing TODO at `ggml-cpu.c:3244` to move fusion detection into `ggml_graph_plan`
       is the natural home — a per-node "barrier required" bitmap): (i) consecutive nodes that both run
@@ -203,10 +212,10 @@ threadpool). Host THP is `enabled=[always] defrag=[always]`, but ggml allocates 
       libomp's barrier is hierarchical — `KMP_PLAIN_BARRIER_PATTERN` hyper/dist — where libgomp's is
       flat; `KMP_BLOCKTIME` set in `ggml_cpu_init` only applies there); (b) `GGML_OPENMP=OFF` — ggml's
       own spin barrier plus `--poll`/`--cpu-strict`, which then become live; (c) if neither reaches
-      ~1.5–2 µs at 48 threads, a **hierarchical barrier patch** (per-CCD counter on a CCD-local cache
-      line, then one top-level counter of 12) in `ggml_barrier` — ~100 lines. Stake: (µs/barrier(48) −
-      2 µs) × sync events per token from D0; at the round-1 inference of ~6.6 µs and ~7,800 events that
-      is up to ~35 ms/token, which is why D0 comes first.
+      ~1.5–2 µs at 48 threads, a **hierarchical barrier patch** in `ggml_barrier`. **Measured 2026-09-02:
+      libgomp is already at 1.9 µs at 48T and the hierarchical prototype does not beat it (2.1 µs); the
+      primitive only becomes a lever at 96+ threads (3.2 µs → ~2 µs ≈ 9 ms/token).** Demoted: run (a)
+      only if D4 moves the operating point to 96 threads or more.
 - [ ] **D4 — thread count × placement sweep, after D1–D3 change the floor.** t ∈ {48, 64, 96, 192} with
       `OMP_PLACES=cores OMP_PROC_BIND=spread` versus explicit masks (`--cpu-mask` works in OpenMP builds;
       4 threads per CCD across all 12 CCDs vs 8 per CCD on 6, which decides how many GMI links carry the
@@ -265,16 +274,26 @@ threadpool). Host THP is `enabled=[always] defrag=[always]`, but ggml allocates 
       artifact**: per the artifact rule a delta is measured with the artifact identical on both arms, so
       the comparison is new-artifact-vs-uniform in the same build and window, and any headline is the
       served artifact's number. Quality gate alongside speed (`feedback_pair_speed_with_correctness_check`).
-- [ ] **B5 — the from-source uniform artifact (with E1).** The OP-32 uniform file is a quant-from-quant
-      of the unsloth UD shards ("speed control only — not quality-representative", INF-68). The E1
-      re-download makes a from-source uniform IQ4_XS trunk possible in the same conversion that emits the
-      MTP head; it closes INF-68's caveat and gives Axis E its target. Same recipe, same window, both
-      files, before either becomes the served artifact.
+- [ ] **B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform
+      file is a quant-from-quant of the unsloth UD shards ("speed control only — not quality-representative",
+      INF-68). Operator direction 2026-09-02: skip the FP8 download and converter run. The route is the
+      unsloth `Q8_0/` GGUF (6 shards, ~175 GB) → `llama-quantize` to uniform IQ4_XS — the same Q8_0→IQ4_XS
+      path the destroyed 08-28 original took — or the `BF16/` GGUF (8 shards, ~330 GB) for a true
+      from-source quant. One download at a time, never inside a measurement window; apply the B4 tensor
+      overrides in the same pass so one artifact carries both. Same recipe, same window, old vs new, before
+      either becomes the served artifact.
 - [ ] **B6 — interleave striping vs expert-local placement (deprioritized).** Expert weights are
       per-expert contiguous slabs (expert is the outermost GGUF dimension) — the pre-audit
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
+- [ ] **B7 — EXL3 `mul1` trellis experts (filed as INF-71).** turboderp published EXL3 weights for this
+      model on 2026-08-31 (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, MTP head at 4 bits,
+      `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
+      fuses into the `vpdpbusd` the gemv already needs (~4 vector uops per 16 weights — IQ4_XS-class, unlike
+      ik_llama.cpp's slow 3INST trellis types). At 3.05 bpw the expert stream drops ~0.4 GB/token. Spec,
+      phases, gates and hazards: [`exl3-trellis-cpu-kernel.md`](exl3-trellis-cpu-kernel.md). Do not start it
+      before C0/C5/B1/D0 rank the levers.
 
 ## Axis A — finish the fused decoder's viability test (INF-67)
 
@@ -310,45 +329,51 @@ the honest interim metric; it is same-build and roughly stable across thread cou
 
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
-**Facts (audited 2026-09-02).** The HF release carries a ~4B-parameter MTP head; our converter module
-`conversion/qwen4exp.py:28-30` drops it by policy (`supports_mtp_export = False; no_mtp = True`), while the
-base converter already exports MTP heads for DeepSeek-V3, GLM4-MoE, Hunyuan, MiMo, EXAONE and Gemma4 as
-`blk.N.nextn.*` tensors with `nextn_predict_layers` metadata (`--mtp` / `--no-mtp`). Production v9 already
-has the complete speculative driver — `--spec-type draft-mtp` (`common/speculative.cpp:1702`), generic
-across architectures, needing only the target graph to export the pre-final-norm hidden state
-(`t_h_nextn`, precedent `src/models/qwen35moe.cpp:110-137`) and a sibling `mtp-*.gguf` head file. The gap
-is therefore: no source weights on disk, ~30 lines of converter mapping, and the `qwen4exp.cpp` graph
-export plus the head's decoder graph. Neither of the two GGUFs on disk contains the head, so **this
-strictly requires the HF source**; the OP-32 "Option C" disk blocker (90 GB free) is gone (736 GB free
-on 2026-09-02).
+**Facts (2026-09-02).** unsloth published the MTP heads on 2026-09-01 (repo revision `5d16c055`,
+`MTP/` folder of `unsloth/Qwen3.8-Flash-Next-GGUF`): `mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf` (2.60 GB,
+**their recommendation**), `shared-Q4_K_M` (1.78 GB, ~2 points less acceptance), `shared-BF16` (4.87 GB,
+slower), and self-contained `Q8_0` / `Q4_K_M` / `BF16` (3.85 / 2.60 / 7.24 GB). `shared-` heads borrow the
+token embedding and output projection from the running trunk; the self-contained files carry their own
+copies and are for builds without cross-model borrowing. **So no FP8 re-download and no converter run is
+needed for MTP** (our converter's `no_mtp` opt-out in `conversion/qwen4exp.py` is now moot unless a
+from-source conversion is ever run). Their README states the heads do **not** work on mainline
+`ggml-org/llama.cpp` (as of upstream `0eadefebd`: no MTP graph for `qwen4exp`, no cross-model tensor
+borrowing, no `--spec-type draft-mtp`); they run on `unslothai/llama.cpp` PR #144 (branch `mtp`, prebuilt
+tag `b10715-mix-86bd2d3`). Invocation: `-md <head> --spec-type draft-mtp --spec-draft-n-max 2`; the log line
+`draft acceptance = … mean len = …` is the proof it is live. Their measurement (B200, greedy, shared-Q8_0,
+concurrency 1): UD-Q4_K_XL 83.2 → 138.8 t/s (**1.67×**), UD-IQ1_S 1.34×; acceptance shared-BF16 66.5% /
+shared-Q8_0 66.1% / shared-Q4_K_M 64.4%; a net *loss* (0.81–0.87×) at concurrency 8. Our production v9
+already ships the generic `--spec-type draft-mtp` driver (`common/speculative.cpp:1702`, from INF-46); what
+it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the head's decoder graph, precedent
+`src/models/qwen35moe.cpp:110-137`) and tensor borrowing for the `shared-` heads.
 
-- [ ] **E1 — re-acquire the source.** `Qwen/Qwen3.8-Flash-Next-FP8` at the revision pinned in INF-63
-      (`f88480ebce48…`, ~173–185 GB, 131 shards). Fetch `config.json` and `model.safetensors.index.json`
-      **first** (small): they name the MTP tensors and the shards holding them, which decides full vs
-      partial download and gives the head's hyper-parameters (layer type, whether it re-runs the PLE
-      gather and the hc streams per draft token). Unauthenticated HF is ~9 MB/s (≈6 h full); one download
-      at a time on this host; **never during a measurement window**. Shared with INF-63 and B5.
-- [ ] **E2 — converter.** In `conversion/qwen4exp.py`: `supports_mtp_export = True`, drop `no_mtp`,
-      map the MTP block onto `MODEL_TENSOR.NEXTN_{EH_PROJ, EMBED_TOKENS, ENORM, HNORM, SHARED_HEAD_HEAD,
-      SHARED_HEAD_NORM}` (and whatever layer tensors the head carries), `add_nextn_predict_layers(1)`.
-      Emit trunk (`--no-mtp`) and head (`--mtp`) as two files; quantize the trunk uniform IQ4_XS from
-      source (B5) and the head Q8_0 (~4 GB). Keep the FP8-PLE dequant/scale patch this module already has.
-- [ ] **E3 — graph.** In `qwen4exp.cpp`: export `t_h_nextn` (qwen35moe precedent), load the nextn
-      tensors under `mparams.load_mtp`, and build the head's `LLM_GRAPH_TYPE_DECODER_MTP` graph from the
-      existing layer builders (GDN or attention block + MoE, `eh_proj` over `[enorm(embed); hnorm(h)]`,
-      shared head norm + lm_head). Validate with the arch test plus a greedy-agreement check between
-      draft and target on a fixed prompt set.
-- [ ] **E4 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
-      acceptance per draft position on the production prompt mix, `--draft-max` ∈ {1, 2, 3, 4}, on the
-      C5 recipe and the C5 build with the from-source trunk. Precedents: gemma4 MTP 58–95% acceptance;
-      Qwen native MTP 41.9 t/s vs 31 plain vs ~18 with an external drafter.
-- [ ] **E5 — the comparison arms, one `--spec-type` at a time**: plain, `ngram-mod` (free, no head —
-      but the recorded 2.8× n-gram win was a warm-context self-copy artifact, true gain ≤ +1.7%),
-      `draft-mtp`, and the INF-62 DFlash2 block drafter. Same build, same window, same trunk artifact.
+- [x] **E1 — download the heads.** ✅ 2026-09-02 — `mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf`
+      (2,786,568,256 B) and self-contained `mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B) in
+      `models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/` with the README; both `SHA-OK` against the repo's LFS
+      oids (`download.log` there, 10:21–10:35Z, at the operator's direction).
+- [ ] **E2 — port the `qwen4exp` MTP path into the experimental tree.** Source: `unslothai/llama.cpp#144`
+      (the `qwen4exp` MTP graph, the head-file tensor/metadata conventions, cross-model borrowing for the
+      `shared-` heads). Reconcile with our existing `draft-mtp` driver rather than importing theirs
+      wholesale; the self-contained `Q8_0` head is the fallback if borrowing is not ported first. Gate:
+      `llama-cli -m <trunk> -md <head> --spec-type draft-mtp --spec-draft-n-max 2` on CPU prints the
+      acceptance line, and greedy output is **identical** with and without the head (verification is exact
+      by construction — any difference is a bug).
+- [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
+      acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
+      production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
+      recipe and the C5 build with the C5 trunk. The B200 figures (66% acceptance, 1.67×) are the reference;
+      the CPU multiplier will differ because a dispatch-bound trunk verifies n+1 tokens for nearly the
+      cost of one — measure, do not extrapolate.
+- [ ] **E4 — the comparison arms, one `--spec-type` at a time**: plain, `ngram-mod` (free, no head — but
+      the recorded 2.8× n-gram win was a warm-context self-copy artifact, true gain ≤ +1.7%), `draft-mtp`
+      with each head. **No DFlash or DFlash2 drafter exists for this model as of 2026-09-02** (z-lab and
+      incoai inventories and a 320-repo HF search checked; the publishers shipped a GLM-5.3 DFlash2 on
+      08-27 but nothing for `qwen4_exp`), so the INF-62 arm is excluded until one appears. Same build,
+      same window, same trunk artifact. Concurrency 1 only, per unsloth's own loss at 8.
 - [ ] **E-GATE**: acceptance-weighted t/s against the non-speculative C5 number for the same trunk,
-      reported per the artifact rule. Note the PLE regime: under `--no-mmap` the 51B table is resident
-      and every draft token pays its own PLE gather and hc stream mixing; that cost is part of the
-      measured acceptance-weighted number, not something to subtract.
+      reported per the artifact rule and with the sampler named. Note the PLE regime: under `--no-mmap`
+      the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
+      cost is part of the measured number, not something to subtract.
 
 ## Reporting
 
@@ -384,7 +409,9 @@ Corrections applied in this file:
 7. **Axis D added** — the dispatch floor was the largest term in every accounting and had no tasks: the
    profiler that produced "5–8 µs/node" cannot see barrier wait, and the tree's barrier, internal
    matmul barriers, absent elision, THP and runtime choice were never examined.
-8. **Axis E added** (operator direction): MTP restoration as a rider on INF-46/50/62/63, sequenced last.
+8. **Axis E added** (operator direction): MTP restoration, sequenced last. Rewritten the same day once
+   unsloth's published heads were found (2026-09-01 upload): no FP8 download, no converter run; the work
+   is porting the `qwen4exp` MTP graph and borrowing from `unslothai/llama.cpp#144`.
 9. Recipe made explicit (the `canonical_recipe.py` prefix + OMP stack; INF-68 used it, the 08-28 bandwidth
    run did not), C5 gained the OMP on/off arm and the box-state capture, C6 wires the belief kernel.
 10. INF-68 path fixed (`../completed/`), INF-67 given a pointer to this task list, wiki

@@ -27,6 +27,7 @@
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision… | — |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | C0 read-only DRAM bandwidth under the recipe, then C5 clean-build re-anchor sweep (t1/t48/t64, uniform IQ4_XS, OMP on/off); then B1 + D0 | INF-67, INF-10, INF-63 |
+| INF-71 | exl3 trellis cpu kernel | [exl3-trellis-cpu-kernel.md](exl3-trellis-cpu-kernel.md) | X0: write the mul1 tile/Hadamard/scale spec from exllamav3 source into docs/design (no compute); gated behind INF-70 C0/C5/B1/D0 | INF-70 |
 | INF-69 | glm53 flash evaluation | [glm53-flash-evaluation.md](glm53-flash-evaluation.md) | T0: arch-support audit — does any tree load `glm5next`? (backport-or-wait decision, qwen4exp-bringup shape) | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
