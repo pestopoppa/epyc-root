@@ -379,10 +379,22 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       `create_tensor_gate_up_exps` (`llama-model.cpp:2874`, optional with fallback) which qwen4exp calls at
       `qwen4exp.cpp:203`, consumed by the merged branch of `build_moe_ffn` (`llama-graph.cpp:2095–2112`: one
       `mul_mat_id` then two views), passed at `qwen4exp.cpp:911`; landed upstream pre-fork (`b68d75165`,
-      #19139). **Concat order: gate rows first, then up, along ne[1].** Estimated −0.5…−1.5 ms/token from
-      the per-call fixed cost alone. One gate: the merged branch leaves `gate_exps` null and the SILU clamp
-      arm tests `if (gate_exps)` — harmless only because qwen4exp's `swiglu_clamp_exp` is 0. **No port
-      needed — only the artifact** (being produced 2026-09-02, subagent `b3`); gate on greedy equality.
+      #19139). **Concat order: gate rows first, then up, along ne[1].** One gate: the merged branch leaves
+      `gate_exps` null and the SILU clamp arm tests `if (gate_exps)` — harmless only because qwen4exp's
+      `swiglu_clamp_exp` is 0. **B3-a is DONE ✅ 2026-09-02** (subagent `b3`): artifact
+      `models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform-gateup/Qwen3.8-Flash-Next-IQ4_XS-uniform-gateup.gguf`,
+      98,392,908,896 B, SHA-256 `b991107bb72a496ad0aeb135e1bd62401aeccc7ff64e512a5ef684d961db891d`, 1,176
+      tensors, 48 × `ffn_gate_up_exps` IQ4_XS `[2560,1280,512]`, produced offline by
+      `tools/inf70/gguf_fuse_gate_up.py` (branch `inf70/b3`, `dd27ec3bb`) — no requant, no HF source; a
+      successful load proves the merged path (the fallback would demand the dropped tensors). Greedy output
+      **bit-identical** (token ids) to the uniform file on 3 prompts × 128 tokens. ABA on build 10196, clean
+      placement (~24 GB × 4), one window: t48 tg128 **10.44 ±0.04** vs uniform 10.33 / 10.27 → **−1.30
+      ms/token (+1.36%)**, B's ±1σ disjoint from both A arms; t96 9.91 vs 9.83 (−0.82 ms, weaker); pp512
+      unchanged within error. Inside D7's predicted −0.5…−1.5 ms band. **Recommendation adopted: the
+      gate-up file is the comparison baseline for Axis B/D decode work from here** (new artifact per the
+      artifact rule; the uniform file stays the era anchor); B4's `--tensor-type` overrides apply on top of
+      it in one `llama-quantize` pass since they touch none of the fused tensors. B3-k (the kernel half)
+      stays open.
 - [ ] **B4 — the bytes budget: requantize what is streamed for no reason.** From the tensor table, per
       token: `ffn_gate_inp` **F32 → F16 or Q8_0** (−126 to −190 MB, 3–4.5%, routing logits tolerate it —
       verify top-10 agreement on a fixed prompt set); `output.weight` **Q6_K → Q5_K or IQ4_XS** (−80 to
@@ -422,7 +434,7 @@ design record; this is the live task list.
 - [x] **A1 — batched `mul_mat` substitution in `lora_mm`/`FusedMM`.** ✅ implemented 2026-09-02
       (`380278b40`, branch `inf70/fused`, subagent `fused`) — every per-row `vec_dot` loop replaced by
       `ggml_compute_forward_mul_mat` (via `ggml_cpu_extra_compute_forward` first). **Measured at 1T, same
-      build (Release + OpenMP, build 1274 `740d0cfea`), same process, same window, uniform artifact,
+      build (Release + OpenMP, commit `740d0cfea`), same process, same window, uniform artifact,
       clean placement: fused gemv column = 232 ms after the census fix (810 ms before it — 598 ms was the
       un-migrated repacked-down-expert path), against a whole graph token of 195 ms.** The success criterion
       (→ ~300 ms) is met for the column; the census says the residual is structural (4.1× the calls, the
@@ -462,27 +474,32 @@ raise the rate) plus a fused-path overhead that has to be measured — **≈ 25�
 the honest interim metric; it is same-build and roughly stable across thread counts.
 
 - [x] **A-GATE**: fused ≤ graph at 1T on BOTH the gemv column and the other column, same build. ✅ run
-      2026-09-02 — **FAIL at 1.51×: fused 294.7 ms/token vs graph 195.2 ms at `-t 1`** (6 decode steps,
-      same process, same model load, same window, placement 23.55 GB × 4; build 1274 `d48029dd0`,
-      branch `inf70/fused`). The first reading was 923 ms (4.70×); the operator-directed **call census**
-      showed 598 ms of it was one un-migrated hand-rolled path (42 of 48 `ffn_down_exps` are CPU_REPACK
-      and A1 had excluded repacked down-experts, so 84 of 96 MoE invocations walked 2,560 rows × 10 experts
-      by hand — 2.15 M scalar dots/token, confirmed to the unit by the call count 2,040); routed through
-      the same dispatcher the graph uses, 923 → 294.7 ms. **What remains is structural and named:** the
-      fused path issues **3,893 `mul_mat` calls vs the graph's 941** and streams **5,555 vs ~4,260 MB**
-      — the excess entirely in routed experts (2,473 vs 1,296 MB) because the transcription **calls
-      `fused_moe` twice per layer** (attention side at `qwen4exp-fused.cpp:1058/:1675` and ffn side),
-      where the graph runs the MoE once (`build_layer_ffn` at `qwen4exp.cpp:356` is the only
-      `build_moe_ffn` call). That is ~105 ms and ~1.2 GB/token, and the extra MoE output was being added
-      into the residual — which also bears on the logit gate (max_abs 1.2–2.7, NMSE 4e-2–2.4e-1 per step;
-      greedy agreed 6/6). One more iteration authorized: remove the attention-side calls, re-run the same
-      1T arm with the logit diff (result to be appended here). **Decision for the operator after that
-      run:** (a) if fused ≤ graph at 1T on both columns, the 48-thread question requires multi-threading
-      the fused path (INF-67 Phase 4 scope — the current path is single-threaded by construction); (b) if
-      still slower, the axis closes with this report as the refutation. The branch keeps the safety
-      contract, the debug strip, the batched kernels and the three bug fixes either way; A4b (owned logits
-      buffer, call sites listed in the report) precedes any serving exposure. Lock discipline: every arm
-      held the bench lock 80–84 s.
+      2026-09-02, three iterations in one session, each driven by the call census naming a defect:
+      **4.70× → 1.51× → 1.10×.** Final: **fused 214.3 ms/token vs graph 195.1 ms at `-t 1`, steady state
+      (steps 2–6; step 1 is the arena first-touch outlier at 316 ms)**, same process, same model load, same
+      window, placement proven; commit `06f916224` on branch `inf70/fused` (self-reported build number 1274
+      is a shallow-clone artifact; hashes are the ids). Column split: gemv 170.5 ms, other 41.7 ms — both
+      inside the graph's own 1T band, but the side-by-side token is 10% slower, so **the gate is not met.**
+      What the census removed: (1) 598 ms of an un-migrated hand-rolled path for the 42 CPU_REPACK
+      `ffn_down_exps` (2.15 M scalar dots/token) — routed through the dispatcher; (2) a transcription
+      error that ran the routed MoE **twice per layer** (attention side and ffn side; the graph runs it
+      once at `qwen4exp.cpp:356`) — removed; after it the census matches the ledger exactly (1,440 expert
+      calls = 48 × 10 × 3, 1,236 MB vs the ledger's 1,296 MB). **What remains is structural: 2,213
+      `mul_mat` calls vs the graph's 941** (one call per expert per lora where the graph issues one
+      `mul_mat_id` per layer and fuses the hc streams), at an ordinary 76.9 µs mean — closing it means
+      rebuilding `mul_mat_id` inside the fused path. Logit gate still fails by four orders of magnitude
+      (max_abs 1.2–2.7, NMSE 4e-2–2.4e-1 per step; greedy agreed 6/6 on every run). **Operator decision
+      package** (report §6b): (a) read the columns as within noise of passing → the 48-thread question
+      is a project, not a measurement — the path is single-threaded by construction (`ith=0, nth=1` on a
+      private pool; arenas, staging and tensor headers assume one caller), so INF-67 Phase 4 threading is
+      one to two focused sessions before any 48T number exists; (b) the literal reading: given its batched
+      matmuls, its arena, clean instrumentation, a safety contract and two real defects removed, at one
+      thread where it has no dispatch disadvantage the design still costs 10% more than the graph while
+      failing numerics — close, with this report as the refutation. **Recommendation from the audit: (b)**;
+      the diagnosis is complete enough to choose knowingly, which is what the gate was for. The branch
+      keeps the safety contract (A4), the debug strip (A3), the batched kernels (A1), the arenas (A2), the
+      three bug fixes and the census instrument as the record; A4b (owned logits buffer, call sites in the
+      report) precedes any serving exposure if (a) is chosen. Every arm held the bench lock 80–84 s.
 
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
@@ -508,28 +525,42 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       (2,786,568,256 B) and self-contained `mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B) in
       `models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/` with the README; both `SHA-OK` against the repo's LFS
       oids (`download.log` there, 10:21–10:35Z, at the operator's direction).
-- [ ] **E2 — port the `qwen4exp` MTP path into the experimental tree.** *Port landed 2026-09-02 on branch
-      `inf70/mtp` (`d6d175d09`, 15 files, +401/−47; subagent `e2`): `t_h_nextn` export from the trunk graph,
-      MTP tensor loading under `mparams.load_mtp` (`n_layer_all` = 49, the head is `blk.48`), the qwen4exp
-      `LLM_GRAPH_TYPE_DECODER_MTP` graph, cross-model borrowing for the `shared-` head
-      (`model_shared` + `borrow_shared_tensor`, `{arch}.nextn_shared_target_tensors`), and one fix beyond
-      the PR: the INF-64 fused fast path exported logits only, so its gate now also requires
-      `!cparams.embeddings_nextn`. Head facts read from the files: the MTP block is an **attention** block
-      (not GDN) with its own hc mixing and a final `nextn.hc_head_{norm,down,up}` mixer, **no PLE tensors**
-      (no PLE gather per draft token), a **full 512-expert MoE and the 2560×248320 LM head** — a draft step
-      is one full layer plus the lm_head (~0.55 GB streamed), so expect ~5–6 ms per draft token against a
-      ~99 ms trunk token. Validation (acceptance line, identical greedy output, unchanged trunk-only path)
-      pending the bench lock at audit close; run it through `llama-server` + `/completion`, never
-      `llama-cli` (REPL spin).* Source: `unslothai/llama.cpp#144`
-      (the `qwen4exp` MTP graph, the head-file tensor/metadata conventions, cross-model borrowing for the
-      `shared-` heads). Reconcile with our existing `draft-mtp` driver rather than importing theirs
-      wholesale; the self-contained `Q8_0` head is the fallback if borrowing is not ported first. Gate:
-      `llama-cli -m <trunk> -md <head> --spec-type draft-mtp --spec-draft-n-max 2` on CPU prints the
-      acceptance line, and greedy output is **identical** with and without the head (verification is exact
-      by construction — any difference is a bug). **E2b (from D7):** port the recurrent-state rollback
-      chain `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a` (#28159) — without it the server
-      serializes the whole recurrent state every draft round (upstream: 108 → 183 t/s with MTP once it
-      landed) — and `36b101543` (#27941) qwen4exp correctness fixes, before any serving exposure.
+- [x] **E2 — port the `qwen4exp` MTP path into the experimental tree.** ✅ 2026-09-02 — branch `inf70/mtp`
+      (`d6d175d09`, 15 files, +401/−47; subagent `e2`): `t_h_nextn` export from the trunk graph, MTP tensor
+      loading under `mparams.load_mtp` (`n_layer_all` = 49, the head is `blk.48`), the qwen4exp
+      `LLM_GRAPH_TYPE_DECODER_MTP` graph, **cross-model borrowing for the `shared-` head** (`model_shared` +
+      `borrow_shared_tensor`; log: `tensor token_embd.weight taken from the target model`, 1.27 GB saved,
+      outputs identical to the self-contained head), and one fix beyond the PR (the fused fast path yields
+      when `cparams.embeddings_nextn` is set). Our tree already had the whole generic `draft-mtp` driver;
+      only the arch side was missing. **Proven live on CPU** (`llama-server` + `/completion`, uniform trunk,
+      canonical recipe, placement 24.6 GB × 4): `draft acceptance = 1.00000 / 0.90909 / 0.88889, mean len =
+      3.00 / 2.82 / 2.74` on three toy prompts, identical for both heads. Trunk-only path byte-identical to
+      the unpatched build on 3/3 prompts. **Non-claim speed, 64 tokens, greedy: 10.2–10.4 t/s without a
+      head → 14.3–17.7 t/s with one (1.39–1.70×)**, the same range unsloth measured on a B200. Head facts:
+      the MTP block is an attention block (not GDN) with its own hc mixing and `nextn.hc_head_*` final
+      mixer, no PLE tensors, a full 512-expert MoE and the LM head. Evidence
+      `/mnt/raid0/llm/tmp/inf70/agents/e2/`. (The build self-reports a small build number because the
+      fusion repo was briefly made shallow by a `--depth` fetch that afternoon, since repaired with
+      `--unshallow`; commit hashes are the ids for every branch built in that window.)
+- [ ] **E2a — the greedy-identity gate failed on 1 of 3 prompts; find out whether batched verification is
+      exact on this architecture.** Prompt 1 diverges at generated token 28: the MTP arm accepted
+      `' Lisbon'` where the trunk alone puts `'\n\n'` first by **0.79 nats** (not a rounding tie); both heads
+      diverge identically and the trunk-only path is unchanged, so it is neither the head nor the port's
+      effect on the trunk. Live hypothesis: qwen4exp's **multi-token verification forward is not equivalent
+      to its single-token forward** (GDN chunked vs per-token kernel, PLE conv, QSA indexer) — which would
+      make MTP's "verification is exact" premise false for this model independently of the port. The
+      discriminating control (running at audit close): `--spec-type ngram-mod` on the UNPATCHED build,
+      same prompt — if it flips too, it is a tree correctness finding and `36b101543` (#27941: indexer ext
+      restore, block position keying) is the first suspect; if not, the divergence stays in the MTP path.
+      No serving exposure until this is settled.
+- [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
+      **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
+      three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
+      ~49 MiB/token**, on top of the weight stream; no re-prefill observed. Rollback itself works (p2/p3
+      stayed identical); it is paid with a copy instead of an in-place rewind. Port, in this order:
+      `36b101543` (#27941, qwen4exp correctness — also E2a's first suspect), then the rollback trio
+      `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a` (#28159) (upstream: 108 → 183 t/s with MTP
+      once landed). None of the four is in PR #144's history; E2 does not depend on them.
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
