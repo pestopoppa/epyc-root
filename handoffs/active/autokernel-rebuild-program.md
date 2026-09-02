@@ -1162,31 +1162,18 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       stale after the commit landed without the flip (recurrence-check catch).
 - [ ] **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
       boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
-- [ ] **R21-3 — OPERATOR DECISION: retire `ak/loop-champion-20260828` + `ak-loop-tree`.**
-      Recommendation: **retire.** Safety proven: tip `4925b208` is an ancestor of `a2728701`
-      (`merge-base --is-ancestor` exit 0) AND pinned by tag `ak/pre-reconcile-loop-20260831`.
-      Commands (operator's, at a boundary of their choosing):
-      `git -C /mnt/raid0/llm/llama.cpp worktree remove /mnt/raid0/llm/tmp/ak-loop-tree` then
-      `branch -D ak/loop-champion-20260828` (`-D` required: the main tree's HEAD is
-      `production-consolidated-v9`, so `-d`'s merged-into-HEAD check refuses despite full merge).
-      Bundle into the same action: `ak-loop-tree-b`/`-c` (branches `…20260828b`/`c`, both still at
-      base `0db32c06e`, zero commits — trivially disposable).
-- [ ] **R21-5 — evaluate the rescued HIP-graph capture-point experiment** (filed 2026-09-02 during
-      the OP-30 safety review). `artifacts/rescued-ak-loop-tree-c-mmvq-hip-graph-capture-20260902.patch`
-      (research `8405313b`): 82 uncommitted lines in `ggml/src/ggml-cuda/mmvq.cu` adding
-      `ggml_cuda_mmvq_capture_point` (HIP/CUDA stream-capture dependency probing). It existed in
-      **no commit on any ref** — `log --all -S` empty — and sat only in the working tree of
-      `ak-loop-tree-c`, which OP-30 retires; `worktree remove --force` would have destroyed it with
-      no reflog. Adjacent to the champion's kept `akm-q8-1-graph-tensor-cache-owned-pool`
-      (`c0d42d81c`), so it may be a live idea rather than a dead end. Evaluate or explicitly
-      decline — do NOT let it rot as an unreferenced patch.
-- [ ] **R21-6 — repoint `pool.CHAMPION_TREE` after OP-30 lands.** It defaults to
-      `/mnt/raid0/llm/tmp/ak-loop-tree` (`loop/pool.py:48`), which OP-30 deletes. Nothing live is
-      affected — the boundary driver and run 24 pass `--worktree /mnt/raid0/llm/tmp/champ2`
-      explicitly (`boundary_20260901.sh:96,533`) and the stale default would already fail run.py's
-      startup branch check — but after retirement the default becomes a dangling path whose failure
-      mode is a confusing "no such worktree" instead of a clear refusal. Point it at `champ2` or
-      make it refuse by name.
+- [x] **R21-3 — RETIRED ✅ 2026-09-02 (operator executed).** `ak-loop-tree`, `-b`, `-c` worktrees
+      removed and branches `ak/loop-champion-20260828{,b,c}` deleted (`-D`); ~495 MB reclaimed.
+      Safety RE-VERIFIED same day rather than trusting the 2026-08-31 record: `4925b2084` is an
+      ancestor of the **current** champion tip `732389d6d` (not just the older `a2728701`) with
+      **zero** commits unique to the branch, tag `ak/pre-reconcile-loop-20260831` still resolves
+      and the object is intact, all three trees idle on two samples 48 s apart, and nothing live
+      depends on them (driver + run 24 pass `--worktree champ2` explicitly). Post-deletion checks:
+      0 worktrees, 0 branches, tag resolves, `4925b2084` still ancestor of the live champion,
+      `champ2` untouched on the canonical champion branch. **The review changed the command**:
+      `ak-loop-tree-c` held 82 uncommitted lines present in NO commit on any ref, so plain
+      `worktree remove` would have refused and a reflex `--force` would have destroyed them —
+      rescued first (R21-5), and only then was `--force` scoped to that one tree.
 - [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
       state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
       (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
