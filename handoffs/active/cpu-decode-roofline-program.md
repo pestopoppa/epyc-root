@@ -172,17 +172,19 @@ not a gate.
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): one `ClaimTuple` per
       `llama-bench` arm beside the run directory (artifact path + SHA, build id, full recipe, `-t`, n,
       reps, box-state capture) via the existing measurement ladder. Wire the write side with C5, not after.
-- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** **Operator "proceed" 2026-09-03 — in flight as agent `c7-finish`: adopt the forcing eviction (D8x) in the research branch, enable the orchestrator launch-path pre-evict + priors recompile, prepare both merges, record the durable form.** *(a) ✅ 2026-09-02 —
-      research branch `inf70/c7-placement` (6f7bdadb, pushed; merge to research `main` is the owning
-      session's/operator's step — the auto-mode classifier refuses a branch→main push from this session):
-      `scripts/utils/numa_evict.py`, `scripts/utils/numa_placement_check.sh` (exit 3 above 40% share),
-      `bench_canonical.sh --pre-evict-gib` (default 40) with the in-window placement proof as a REQUIRED row,
-      `canonical_recipe.py` constants + the eighth drift-class entry; 15 + 34 tests pass. Launch-path half
-      ✅ prepared, default OFF: orchestrator branch `inf70/c7-placement` (e9d4b817, pushed) adds
-      `numa_pre_evict_gib` (role field), pre-evict before `Popen` and a `[numa-placement]` log fold; 283 + 136
-      tests pass; enabling is a one-line `stack_topology.yaml` edit and the priors recompile must precede the
-      merge because the prior hashes pin `orchestrator_stack.py`/`stack_numa.py`. (b) audited — no CPU
-      server live (below). (c) still open — the durable form.* Measured 2026-09-02: when a
+- [x] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** ✅ 2026-09-03 *(a) ✅ ADOPTED-FORCING
+      2026-09-03 — research main `0458de88`: `numa_evict.py` allocates TARGET+2 whenever free < TARGET, verifies per
+      node, 2 passes (the 2026-09-02 `TARGET − free` sizing freed nothing — D8x); mutation-tested (weak form fails
+      14/20). (b) ✅ done — no CPU server was live; the fix is in the launch path. (c) ✅ durable form = launch-path
+      pre-evict, ENABLED: orchestrator main `5f20e23c` sets `numa_pre_evict_gib: 40` on frontdoor,
+      eval_batch_frontdoor, architect_critic, ingest_long_context, worker_general (never on gpu_host_lane roles —
+      refused in code), forcing form, `[numa-placement]` per-node fold logged after health; priors recompiled.
+      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **LIVE ONLY
+      AFTER the owning stack session fast-forwards `/mnt/raid0/llm/epyc-orchestrator` (at `510f5048`, 3 behind,
+      clean) at its boundary and runs `stack_change_pipeline.py check` — the running API serves from that clone, so
+      the pull + reload is the owner's, not the coordinator's (reload-ownership rule).** Operator "proceed"
+      2026-09-03; agent `c7-finish`, report `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`. Memory:
+      `feedback_page_cache_defeats_numa_interleave`.* Measured 2026-09-02: when a
       NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
       model lands wherever memory is free (57.7 GB of 96 on node 0), costing −25% decode / −30% prefill. The
       box is normally in that state (1,085 GB of page cache). Three deliverables: (a) `canonical_recipe.py`

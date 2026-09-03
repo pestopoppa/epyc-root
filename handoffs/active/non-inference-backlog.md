@@ -345,6 +345,17 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 
 ---
 
+## 2026-09-03 supplement — pre-existing orchestrator `main` failures surfaced by the C7 merge
+
+Found by the INF-70 `c7-finish` agent while merging the NUMA pre-evict enable (orchestrator `5f20e23c`); none
+attributable to C7 — reproduced identically on the pristine pre-merge base `510f5048`.
+
+- [ ] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
+      pre-existing unit failures** (49 manifest errors before the C7 priors regen reduced them to 39; the 33 unit
+      failures are identical on `510f5048`, plus 1 flaky on both bases). Triage by reason (not a bare count), fix
+      or explicitly retire each, and make `stack_change_pipeline.py check` gate on zero manifest errors so the
+      next merge cannot inherit them silently. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`.
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):
