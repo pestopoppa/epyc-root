@@ -730,6 +730,17 @@ named. MTP is not a serving option until that gate passes.
       E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
       (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
       way (patch files, never a `--depth` fetch into the shared repo).
+- [ ] **LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to
+      garbage on SINGLE-sequence prompts above ~23–42 tokens.** Found 2026-09-03 by the coordinator's long-prompt
+      check on the deployable tip `0d2af8194` (42/81/233-token prompts all degenerate, placement + linkage proven)
+      and independently by E3 on the old base — so it predates every merged lever and the MTP port. Same defect
+      family as GDN-ROWEXACT / X-CONC / E2c at a far lower bar: one sequence, no concurrency, no MTP. Clean repro
+      `/mnt/raid0/llm/tmp/inf70/longprompt/`. **First discriminator: the same 42-token prompt with `-ub 1 -b 1`**
+      (autoregressive-only prefill) — coherent ⇒ the chunked GDN kernel is the culprit, GDN-ROWEXACT is THE fix and a
+      P0 serving blocker (and `-ub 1` is a known-correct slow-prefill serving workaround today); garbage ⇒ QSA / PLE /
+      graph, bisect the stock path. Then pin the threshold (12…64 sweep; a 32 or ×16 boundary points at a sub-chunk).
+      Owner `gdn-rowexact` (routed 2026-09-03, now its primary gate G0). **Gate: p40/p90/p200 coherent AND
+      token-identical to the `-ub 1` output.** No serving or deployable-speed claim on this tree until it passes.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** Root cause, confirmed three ways
       2026-09-03 (`mtp-exact`, `mtp-conc`, `e2c`): `src/models/delta-net-base.cpp:435` routes
@@ -813,6 +824,16 @@ ggml-linkage + placement proven per arm:**
   `9e75132e3` measured uniform 12.00 / r16 12.38 in an earlier window — consistent with the slab-off
   control here (12.079). r16 vs uniform (both slab-on): +4.1% decode at ~equal GB/s, tracking the −3.0%
   bytes/token.
+
+**⚠ DEFECT 2026-09-03 — on real prompts these are the decode speed of GARBAGE.** Long-prompt coherence check on
+this exact tip/binary (placement 23.0 GB × 4 and linkage proven): prompts of **42, 81 and 233 tokens ALL degenerate**
+(`>> .> .> .>`, `The function l The function l`, `2222-2222-`) at 12.4–12.6 t/s; the 12-token prompt used by
+every gate in this campaign is coherent. E3 independently saw the same on the OLD base (`mtp-exact` =
+`c035bbf3d` + MTP port, none of D8/D7a/D1/B3-k, plain mode) above ~23–39 tokens, so it is the **stock fusion-tree
+qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never checks coherence, so no pp/tg number in
+this campaign ever tested it. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
+≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
+Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log).
 
 Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
 `/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
