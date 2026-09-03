@@ -830,15 +830,26 @@ named. MTP is not a serving option until that gate passes.
       every p200 "DEGENERATE" on the fixed build re-reads as **EARLY-EOS (1 token)**, and `g0j`'s 19-length sweep
       (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361
       tokens) through the chat template; one residual risk — a RAW un-templated greedy prompt whose exact top-2 gap
-      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts). ⚠ THAT RESIDUAL IS NOW DISPUTED and may be
-      withdrawn: `mtp-tip2` independently found (2026-09-03) that the p200 text on the raw `/completion` path
-      simply reads as COMPLETE without a continuation cue — appending `\n\nAnswer:` makes it generate — which is a
-      prompt-formatting artifact, not a marginal-token flip. Both explanations fit the chat-path coherence.
-      **RESULT 2026-09-03: raw+cue (b) AND chat-template (c) both generate coherently — my stated condition for
-      downgrading is met. But the agent declines to call it settled, correctly: its TX control independently shows a
-      long raw prompt's argmax IS batch-shape sensitive, so BOTH explanations may hold at once. Status:
-      UNRESOLVED-LEANING-DOWNGRADE** pending the EOSA/EOSX arms, which measure the top-2 gap directly instead of
-      inferring it.** Exact fallback `-ub 1` verified
+      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts). **MEASURED AND CONFIRMED 2026-09-03 (EOSA probe) — the residual STANDS, and its severity is RAISED,
+      not lowered. This reverses two earlier statements of mine (first "DISPUTED", then
+      "UNRESOLVED-LEANING-DOWNGRADE") and the agent's own recommendation.** The p200 first-token decision is a
+      **0.01695-nat tie** — `<EOS>` −0.7176 vs `\n\n` −0.7345 — which is **27× TIGHTER than the 0.457 nats
+      `gdn-fix-validate` reported**, i.e. two orders of magnitude inside the 0.3–1.4 nat batch-vs-sequential
+      envelope. That argmax is decided by numerical noise. **The "prompt-formatting" account was never a
+      competitor — it is the same fact from the other side**: adding `\n\nAnswer:` moves the gap 0.017 → 2.249
+      nats and the winner becomes token `271` (`\n\n`), *precisely the runner-up in the cue-free case*. The cue
+      works by BREAKING a tie that genuinely exists, so (b)/(c) generating coherently is evidence FOR the
+      marginal-flip account, not against it. **Accurate restatement, replacing the published one: not "a raw prompt
+      with a tight top-2 gap CAN flip" as a remote possibility, but — this prompt's first-token decision is a
+      0.017-nat tie, so ANY change in batch shape may flip it.** **This is NOT a defect of the iqk fix**: no kernel
+      fix can remove an inherent knife-edge argmax. ⚠ **Instrument caveat: `.eosprobe.log`'s gap column is
+      UNRELIABLE** — `eosprobe.py` read `probs`/`top_probs` while llama.cpp emits `top_logprobs`, so the live log
+      printed `top2_gap_nats=None`; the raw JSON carried the data and `regap.py` recovers it. **`regap.py` is
+      authoritative.** Had the agent trusted the log line it would have reported the gap unmeasurable and left the
+      question open — a vacuous-measurement trap avoided by re-reading the persisted JSON. `c_chat` returns no
+      `completion_probabilities` on the chat path, so no gap is available there; its coherent 128-token generation
+      stands on its own. EOSX (the same probe under `GGML_ROWEXACT_N=512`) tests the prediction directly: if the
+      raw probe GENERATES rather than EOS-ing, batch shape demonstrably decides this token. Exact fallback `-ub 1` verified
       byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
       `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
       transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so
