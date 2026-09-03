@@ -828,38 +828,29 @@ named. MTP is not a serving option until that gate passes.
       **keep them**. **Classifier defect fixed** (coordinator's): `client.py degeneracy()` scored n=1 as degenerate;
       new `classify.py` classifies by REASON (HTTP-ERROR/EMPTY/EARLY-EOS/SHORT/SALAD/COHERENT), stats only at n≥16 —
       every p200 "DEGENERATE" on the fixed build re-reads as **EARLY-EOS (1 token)**, and `g0j`'s 19-length sweep
-      (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361
-      tokens) through the chat template; one residual risk — a RAW un-templated greedy prompt whose exact top-2 gap
-      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts). **MEASURED AND CONFIRMED 2026-09-03 (EOSA probe) — the residual STANDS, and its severity is RAISED,
-      not lowered. This reverses two earlier statements of mine (first "DISPUTED", then
-      "UNRESOLVED-LEANING-DOWNGRADE") and the agent's own recommendation.** The p200 first-token decision is a
-      **0.01695-nat tie** — `<EOS>` −0.7176 vs `\n\n` −0.7345 — which is **27× TIGHTER than the 0.457 nats
-      `gdn-fix-validate` reported**, i.e. two orders of magnitude inside the 0.3–1.4 nat batch-vs-sequential
-      envelope. That argmax is decided by numerical noise. **The "prompt-formatting" account was never a
-      competitor — it is the same fact from the other side**: adding `\n\nAnswer:` moves the gap 0.017 → 2.249
-      nats and the winner becomes token `271` (`\n\n`), *precisely the runner-up in the cue-free case*. The cue
-      works by BREAKING a tie that genuinely exists, so (b)/(c) generating coherently is evidence FOR the
-      marginal-flip account, not against it. **Accurate restatement, replacing the published one: not "a raw prompt
-      with a tight top-2 gap CAN flip" as a remote possibility, but — this prompt's first-token decision is a
-      0.017-nat tie, so ANY change in batch shape may flip it.** **This is NOT a defect of the iqk fix**: no kernel
-      fix can remove an inherent knife-edge argmax. ⚠ **Instrument caveat: `.eosprobe.log`'s gap column is
-      UNRELIABLE** — `eosprobe.py` read `probs`/`top_probs` while llama.cpp emits `top_logprobs`, so the live log
-      printed `top2_gap_nats=None`; the raw JSON carried the data and `regap.py` recovers it. **`regap.py` is
-      authoritative.** Had the agent trusted the log line it would have reported the gap unmeasurable and left the
-      question open — a vacuous-measurement trap avoided by re-reading the persisted JSON. `c_chat` returns no
-      `completion_probabilities` on the chat path, so no gap is available there; its coherent 128-token generation
-      stands on its own. **EOSX RESULT (same probe under `GGML_ROWEXACT_N=512`) — the prediction is NOT confirmed, and this
-      REFINES the statement above.** The raw probe **still EOSes** (n_pred 1, stop eos); the gap widens
-      **0.01695 → 0.092 nats (~5.4×)** but does not cross. So: the near-tie is real and batch shape demonstrably
-      MOVES this decision — but on this prompt it does not FLIP it; EOS wins under both kernel paths. **Precise
-      statement, replacing "any change in batch shape may flip it": p200's first-token decision is a genuine
-      knife-edge (0.017–0.092 nats depending on path); its sensitivity to batch shape is confirmed, but its
-      OUTCOME is stable across the one substantial intervention available to us. It is therefore an example of a
-      knife-edge that stayed on the same side — not an example of a batch-induced wrong answer.** The risk class is
-      real; this instance is not a realisation of it. **And the chat path explains itself**: `c_chat`'s top-2 gap is
-      **4.74 nats** (4.28 under EOSX) — the template makes the decision unambiguous, which is why (c) generates
-      coherently and why production serving through the chat path is not exposed to this at all. (The gap IS present
-      in the raw JSON for `c_chat`; `regap.py` reports "no completion_probabilities" for it — use the JSON.)
+      (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361 tokens) through the chat template. The fix carries NO
+      residual defect — see the RECLASSIFICATION below; what was filed as its residual risk turned out to be a
+      property of one raw prompt, not of the fix. **RECLASSIFIED 2026-09-03 — a PROMPT-SHAPE caveat, NOT a fix caveat. This is the settled, final position;
+      two earlier ones of mine were wrong and are recorded rather than dropped.** Measured, not inferred:
+      | probe | path | n_pred | stop | top-2 gap |
+      |---|---|---|---|---|
+      | a_raw | default | 1 | eos | **0.01695 nats** |
+      | a_raw | `GGML_ROWEXACT_N=512` | 1 | eos | **0.092 nats** — still EOS, **no flip** |
+      | b_cue (`\n\nAnswer:`) | default / rowexact | 128 | limit | 2.249 / 2.971 |
+      | c_chat | default / rowexact | 128 | length | **4.74 / 4.28** |
+      **No argmax flip occurs under either kernel path**, so it is not a residual defect of the iqk fix — and no
+      kernel fix could remove an inherent knife-edge anyway. What IS true: p200's first token is a **0.017-nat
+      near-tie (27× tighter than the 0.457 originally published)**, and changing only the GEMM batching moves that
+      gap by 0.075 nats — about 4× the gap itself — so the decision is demonstrably batch-shape *sensitive* while
+      remaining batch-shape *stable* in outcome here. **Templating removes the fragility entirely** (0.017 → 2.25–4.74
+      nats), so **production serving through the chat path has no exposure to this at all.**
+      My two superseded positions, kept because I stated both: (1) "DISPUTED / leaning-downgrade" — wrong, because
+      (b)/(c) generating is evidence FOR a knife-edge, not against it (the cue's winner is exactly the cue-free
+      runner-up, i.e. it breaks a real tie); (2) "confirmed and severity RAISED" — wrong, because no flip actually
+      occurs. **⚠ Instrument caveat: `.eosprobe.log`'s gap column is UNRELIABLE** — `eosprobe.py` read
+      `probs`/`top_probs` where llama.cpp emits `top_logprobs`, so the live log printed `top2_gap_nats=None`;
+      `regap.py` recovers every gap from the persisted JSON and is authoritative (except `c_chat`, whose gap is in
+      the raw JSON only). Trusting the log line would have reported the question unmeasurable.
       **Gate B4 PASSES**: `test-llama-archs` `ARCHS_RC=0`, qwen4exp CPU MoE OK (0.00e+00), **0 FAIL rows**. Exact fallback `-ub 1` verified
       byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
       `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
