@@ -808,7 +808,12 @@ named. MTP is not a serving option until that gate passes.
       every p200 "DEGENERATE" on the fixed build re-reads as **EARLY-EOS (1 token)**, and `g0j`'s 19-length sweep
       (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361
       tokens) through the chat template; one residual risk — a RAW un-templated greedy prompt whose exact top-2 gap
-      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts).** Exact fallback `-ub 1` verified
+      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts). ⚠ THAT RESIDUAL IS NOW DISPUTED and may be
+      withdrawn: `mtp-tip2` independently found (2026-09-03) that the p200 text on the raw `/completion` path
+      simply reads as COMPLETE without a continuation cue — appending `\n\nAnswer:` makes it generate — which is a
+      prompt-formatting artifact, not a marginal-token flip. Both explanations fit the chat-path coherence.
+      `mtp-tip2` is running the discriminator (raw / raw+cue / chat-template on the corrected tip); if raw+cue
+      generates coherently the residual risk is downgraded and the fix is cleaner than currently credited.** Exact fallback `-ub 1` verified
       byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
       `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
       transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so

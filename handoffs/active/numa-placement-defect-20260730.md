@@ -1466,3 +1466,12 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
       is merged but inert and this handoff's roles keep skewing.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`; memory
       `feedback_page_cache_defeats_numa_interleave`.
+
+- [ ] **Is `numa_pre_evict_gib: 40` high enough under concurrent load?** Found 2026-09-03 by INF-70's `mtp-tip2`
+      while benchmarking: a 40 GiB eviction target left nodes at **23.03 / 23.03 / 11.77 / 34.28 GB — 48.9%
+      deviation from even** when other work was running on the box; raising the target to **60 GiB** fixed it. The
+      merged orchestrator default (`5f20e23c`) is **40** for all five CPU roles. If 40 is routinely insufficient
+      whenever anything else is active, the production default would silently reproduce the very skew the pre-evict
+      exists to prevent — and the `[numa-placement]` fold would be the only evidence. **Decide whether the target
+      should be raised, or scale with model size / concurrent activity rather than being a constant.** Evidence:
+      `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/REPORT.md`. Owner: the stack session, with the activation item above.
