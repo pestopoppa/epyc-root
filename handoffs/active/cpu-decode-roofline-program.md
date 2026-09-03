@@ -179,10 +179,12 @@ not a gate.
       pre-evict, ENABLED: orchestrator main `5f20e23c` sets `numa_pre_evict_gib: 40` on frontdoor,
       eval_batch_frontdoor, architect_critic, ingest_long_context, worker_general (never on gpu_host_lane roles —
       refused in code), forcing form, `[numa-placement]` per-node fold logged after health; priors recompiled.
-      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **LIVE ONLY
-      AFTER the owning stack session fast-forwards `/mnt/raid0/llm/epyc-orchestrator` (at `510f5048`, 3 behind,
-      clean) at its boundary and runs `stack_change_pipeline.py check` — the running API serves from that clone, so
-      the pull + reload is the owner's, not the coordinator's (reload-ownership rule).** Operator "proceed"
+      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **The orchestrator launch-path half is production-plane work and its ACTIVATION is NOT
+      INF-70's** — an experimental-kernel session had no business enabling it on a live stack (scope creep,
+      corrected 2026-09-03 on operator challenge). The merged-but-inert activation step is now filed where its
+      owner will see it: [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) → *The permanent
+      fix is MERGED and awaiting activation by the stack owner*. **INF-70's own half — the forcing eviction in the
+      measurement recipe — is DONE and is what every number in this campaign depends on.** Operator "proceed"
       2026-09-03; agent `c7-finish`, report `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`. Memory:
       `feedback_page_cache_defeats_numa_interleave`.* Measured 2026-09-02: when a
       NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
@@ -857,6 +859,40 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
+- [ ] **B8 — the head-to-head the campaign never did: qwen4exp (125B/A6B) vs the LIVE 122B/A10B, and where its
+      2.12x MTP multiplier comes from.** Filed 2026-09-03 on an operator challenge ("I'm surprised we're still
+      getting such low tok/s on a model with only 6B active weights ... the older 122B-10B Q4 ran 20+ t/s").
+      **First correction: that 20+ is a SPECULATIVE number.** The live `architect_critic` role
+      (Qwen3.5-122B-A10B UD-Q4_K_M, `orchestration/derived/stack_priors.yaml`) records `baseline_tps: 11.3`,
+      `optimized_tps: 24.0`, `speedup: 2.12x` under `spec_type: draft-mtp`, **`draft_max: 4`, `k: 4`**,
+      `optimized_tps_long_context: 15.76`, measured 2026-07-31, category OPTIMUM. **Plain vs plain, qwen4exp is
+      already ~12% AHEAD: 12.61 vs 11.3 t/s.** The honest counterpart to 24.0 is our MTP number (~18.1), not our
+      plain one.
+      **Two real gaps remain.** (a) **The MTP multiplier: 2.12x vs our 1.44x** — the largest unexplained lever in
+      the program. Production runs `draft_max: 4`; every qwen4exp MTP measurement so far used n-max 2. Relayed to
+      `e3-run` 2026-09-03 to sweep n-max 4 (and 5-6 if acceptance holds) — we may simply have been sampling below
+      the operating point a comparable model already uses in production. (b) **Bandwidth efficiency: ~64 vs
+      52.4 GB/s.** From the registry's 69 GB / 122B params (~4.5 bpw) the 122B streams ~5.65 GB/token and converts
+      it at ~64 GB/s; qwen4exp streams a MEASURED 4.16 GB/token at 52.4 GB/s. **At the 122B's efficiency qwen4exp
+      would run ~15.3 t/s, so ~20% is on the floor.** (The 122B's bytes/token is DERIVED, not measured like ours —
+      treat (b) as indicative until a like-for-like measurement is taken; that measurement is task (i) below.)
+      **The likely cause is the architecture itself, and this is the finding worth having.** Fewer active
+      parameters spread over MORE and SMALLER ops is worse on a bandwidth-bound CPU. Already measured here: 33.4 ms
+      of a 97.3 ms token in **3,468 nodes that move no weights**, out of ~7,000 nodes/token; small gemvs at 40% of
+      read bandwidth against 94% for the one big `lm_head`. Every layer pays GDN recurrence + QSA indexing + a PLE
+      gather + 4-stream hyper-connection mixing + a 10-of-512 expert gather. The 122B has 64 conventional attention
+      layers and a plainer MoE: 10B active in fewer, bigger GEMMs. It streams 36% more bytes and converts them far
+      better. **qwen4exp trades arithmetic efficiency for parameter efficiency, and on this machine that trade is
+      currently winning by only 12% on plain decode while costing most of a speculative multiplier** — a model-choice
+      finding, not merely an optimization gap.
+      Tasks: **(i)** measure the 122B's ACTUAL bytes/token and plain decode under our canonical recipe + coherence
+      gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** close or explain the MTP
+      multiplier gap (n-max first, then acceptance per position vs the 122B's, then whether native-MTP vs our
+      ported path differs); **(iii)** decide whether the dispatch floor is reducible enough to make the
+      architecture pay, or whether the honest conclusion is that this model class needs bigger fused ops (Axis A /
+      INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
+      qwen4exp's suitability as settled.
+
 - [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
       Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the

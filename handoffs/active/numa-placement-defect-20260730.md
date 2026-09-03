@@ -1439,3 +1439,30 @@ now known to be wrong and MUST NOT be actioned:
 block at the top of `epyc-inference-research/orchestration/model_registry.yaml`.
 It also carries the BASELINE / OPTIMUM / CANDIDATE grammar and the
 Qwen3-Next-80B `--spec-type none` = OPTIMUM (not baseline) exception.
+
+## The permanent fix is MERGED and awaiting activation by the stack owner (2026-09-03)
+
+**This handoff's mechanism is now root-caused and fixed upstream of it.** INF-70's C7 measured why
+`numactl --interleave=all` silently fails: it is a per-allocation *hint* the kernel abandons for any node with
+no free pages, and page cache counts as not-free — so a 98 GB model "interleaved" across 4 nodes landed
+57.7/10.7/8.0/17.7 GB and served at −25% decode / −30% prefill with an identical argv and nothing in any log.
+That is almost certainly the mechanism behind this handoff's two half-speed roles.
+
+**Merged, tested, NOT yet live:**
+- research `origin/main` `0458de88` — `scripts/utils/numa_evict.py` in the **forcing** form (allocate `TARGET+2`
+  whenever `free < TARGET`, verify per node, 2 passes). The earlier form allocated `TARGET − free` and therefore
+  reclaimed nothing when a node sat near TARGET; mutation-tested so the weak form fails 14/20 cases.
+- orchestrator `origin/main` `5f20e23c` — `numa_pre_evict_gib: 40` enabled on frontdoor, eval_batch_frontdoor,
+  architect_critic, ingest_long_context, worker_general; **never on `gpu_host_lane` roles (refused in code, not
+  just YAML)**; `[numa-placement]` per-node fold logged after health so placement is observable after the fact;
+  priors recompiled. Full suite 14,129 pass / 35 fail, **zero attributable to the change** (33 identical on the
+  pristine base, 1 flaky on both, 1 artefact).
+
+- [ ] **ACTIVATION — owned by the stack-owning session, not by INF-70.** At its own boundary:
+      `git -C /mnt/raid0/llm/epyc-orchestrator pull --ff-only` (clean, was 3 behind), then
+      `stack_change_pipeline.py check` there (expected: lean/descriptors/priors fresh). The running API serves
+      from that shared clone, so the pull + reload belongs to whoever owns the stack — an experimental-kernel
+      session must not pull code out from under a live process (reload-ownership rule). Until this runs, the fix
+      is merged but inert and this handoff's roles keep skewing.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`; memory
+      `feedback_page_cache_defeats_numa_interleave`.
