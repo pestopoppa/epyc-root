@@ -1484,6 +1484,27 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       can be reported per target, (ii) a future Q4_K path inherits them deliberately rather than by
       archaeology, (iii) the loop can be told which quant family to hunt. llama.cpp already templates
       per quant type and our keeps already gate correctly, so this is metadata, not restructuring.
+      **PROMOTION-TIME CONDITION (folded in 2026-09-03 at operator request).** These paths have
+      **zero performance validation on any Q4_K workload since they were written** — every
+      measurement since has run on Q8_0, where they cannot fire. Correctness coverage is probably
+      fine (the gate runs `test-backend-ops -o MUL_MAT`, which sweeps quant types by design, 1139/1139
+      passing) but is NOT provable from the stored record: the gate `detail` field is truncated to
+      **500 chars**, so grepping it for `type_a=q4_K` returns nothing and that absence proves nothing
+      (see [[feedback_verify_negatives_before_concluding_absence]]). Before any promotion ships these
+      into production they must EITHER be exercised against a real Q4_K workload OR be explicitly
+      marked carried-but-unvalidated-on-this-path in the freeze runbook — otherwise the first person
+      to serve Q4_K on the promoted kernel is the one who discovers the state of them.
+      **Q4_K targets available on disk for that check (inventoried 2026-09-03)**:
+      `gemma-4-26B-A4B-it-Q4_K_M.gguf` (16.8 GB, MoE, and **already an in-fleet production role
+      model** — the worker — so this is not a hypothetical future target),
+      `gemma-4-31B-it-Q4_K_M.gguf` (18.7 GB, dense), `MathSmith-...-Qwen3-8B.Q4_K_M.gguf` (5.0 GB).
+      All fit the MI210's 64 GB comfortably and carry production-scale GEMM dims, unlike the 1.5B.
+      **Cost warning — it is NOT a quick check as gated**: `headline_on_confirm_rung.py` REFUSES on an
+      uncalibrated (surface, model) pair (rc=3, mutation-tested), and no Q4_K floor exists; the A/A
+      bootstrap that produced the 27B floor took **3 h 11 m**. Cheap first step instead: an
+      UNGATED llama-bench A/B (champion vs production on a Q4_K model, ~15 min) as a signal only —
+      not claim-grade, but enough to decide whether the 3 h calibration is worth spending. Needs a
+      GPU window: run 25 holds the mi210_0 claim.
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
