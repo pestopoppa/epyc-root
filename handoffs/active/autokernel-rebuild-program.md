@@ -1568,6 +1568,22 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       real champion worktree in ~4s). **TRUST BOUNDARY**: opencode drives an EXTERNAL provider, so
       planner prompts egress off-host — operator-sanctioned as the backup, recorded in code+commit.
       Run 28 live pid 470013 with this planner + the dec-b8 confirm gate.
+- [ ] **R23-40 — INCIDENT: Run-18 build-non-determinism fault recurred on the 445e93a8 anchor
+      promotion; run 28 aborted.** After the second keep (`akm-cdna2-q8-b4-y-stream-amortize`
+      +10.098%, dec-b8-confirmed, champion `445e93a8`), the anchor guard found the promoted
+      anchor-gen-016 binary's code-section digest DIFFERS from a fresh champion rebuild even after
+      one heal (`d6d195bb...` vs `5e3ca1e7...`) — the Run-18 fault class — and raised RunAborted
+      ("proven with zero pairs spent"). The integrity system worked: it refused to seat a
+      non-reproducible anchor. Consequences: headline never republished for 445e93a8 (still shows
+      b0eb4fab +22.443%); run 28 is a ZOMBIE (pid 470013 alive but `run_aborted` recorded, step
+      None, GPU idle, 1 child, no measurement since 21:58); no anchor-gen-017 recovery. **BOTH
+      KEEPS ARE SAFE in git** (champion 445e93a8 = b0eb4fab +23.3% + 445e93a8 +10.1%, both
+      screen-decisive + dec-b8-confirmed). ROOT CAUSE to find: why champ2 builds are
+      non-deterministic (ccache? -j race? worktree state?) — same class as the 2026-08-31 anchor
+      attestation doctrine. **BLOCKS relaunch**: the next keep will hit the same guard abort until
+      the build is reproducible. Decision for operator: (a) kill the zombie + investigate build
+      determinism before relaunch; (b) relaunch anyway and accept aborts at each keep. Recommend
+      (a).
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
