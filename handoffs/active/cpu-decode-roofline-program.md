@@ -358,7 +358,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       across the 48 threads' caches, so its consumers stop pulling everything from one CCD. The node table's
       `n_tasks = 1` count for GET_ROWS is 175 in BOTH runs while its wall fell 3.6× — direct proof that the
       planned task count does not gate execution in this tree. Confirmation arms (anchor / pristine /
-      prof-only / d8, plus a cross-binary greedy pair) running as D8x.
+      prof-only / d8, plus a cross-binary greedy pair) running as D8x — the first four arms confirmed: anchor 10.43, pristine 10.15, committed d8 tip 11.87, d8 with the inert "off" knob 11.88. **`inf70/d8` merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `bb5bec310`, then `9e75132e3` with D7b), verification running.**
 - [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
       B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
       op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
@@ -403,7 +403,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       (`=0`/`false`/empty disables). `test-backend-ops test -o CONCAT -b CPU`: **210/210 OK with the new
       default and 210/210 with the stock kernels** (the 18 `concat_transpose_dim0` cases included; note
       that without `-b CPU` the suite skips the CPU device and passes vacuously with zero cases — the
-      0-vs-210 count is the non-vacuity check). Merge with the other Axis D branches. Rationale for default rather than
+      0-vs-210 count is the non-vacuity check). **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `9e75132e3`, no conflicts); build + test + bench verification of the merged tree running (`merge-verify`).** Rationale for default rather than
       `canonical_recipe.py`: the recipe governs our benches, not the served stack — an env-gated win would
       silently miss `llama-server` in production.
 
