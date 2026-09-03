@@ -39,6 +39,29 @@ before quoting anything from the old branch's commit messages. Enforcement: sing
 startup refusal (research `470378a9`) — the loop refuses to start off the canonical branch; run
 21 runs attached to it at `a2728701`.
 
+**STANDING UPDATED 2026-09-03 — the champion has advanced to `732389d6`, and its standing is
+THREE measured workloads, not one number.** The paragraph above records `a2728701`; run 23 then
+added three keeps (`7d2ea88b` MMVQ crossover, `db18f393` fattn eight-wave VKQ, `732389d6` Q4_K
+weight-block hoist), all ancestors of the current tip. Measured against frozen production-v9,
+resolved live:
+
+| workload | surface | result | evidence |
+|---|---|---|---|
+| `gemma-4-26B-A4B-it-Q4_K_M` (**in-fleet worker**) | dec-b4 | **+7.206% DECISIVE** (174.26→186.76 t/s, 20 pairs, floor 0.456% — 15.8× it) | `champion-vs-production.732389d6d9d0.gemma-4-26B-A4B-it-Q4_K_M.json` |
+| `Qwen3.8-27B-Q8_0` (production) | dec-b4 (prefill) | **−1.414% DECISIVE** (66.09→65.00 t/s, 20 pairs, floor 0.949%) | `champion-vs-production.732389d6d9d0.json` |
+| `Qwen3.8-27B-Q8_0` | speculative decode | **2.38× with DFlash2** (acceptance 0.6501) | `boundary-20260901/dflash2-smoke/verdict.json` |
+
+**Reading it.** The two decisive numbers point OPPOSITE directions and both are correct: the Q4_K
+keeps are hard-gated on `GGML_TYPE_Q4_K` and therefore fire on the worker and are inert on the
+Q8_0 production model, where the residual −1.4% is the aggregate's DFlash2/feature machinery
+measured on a prefill-only surface that cannot observe DFlash2's own 2.38× decode win. A single
+champion-vs-production headline cannot express this (INF-66 R23-26); quoting one without naming
+its workload is the defect that made the +27.363% screen-rung number misleading (R23-19).
+
+**Not superseded, still true:** the +12.618% tg128 standing above was measured on `a2728701` and
+has NOT been re-measured on the current tip — treat it as the last known value for that surface,
+not as the current champion's tg128 standing.
+
 ## The finding that reframes this
 
 **`champion.py` already implements composition, not best-of.** `compatible_groups` is documented as
