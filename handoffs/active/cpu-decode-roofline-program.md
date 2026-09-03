@@ -807,9 +807,18 @@ named. MTP is not a serving option until that gate passes.
       (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361
       tokens) through the chat template; one residual risk — a RAW un-templated greedy prompt whose exact top-2 gap
       is under ~0.5 nats can flip its argmax (1 of 33 raw prompts).** Exact fallback `-ub 1` verified
-      byte-identical. **Pre-merge fix in flight (`gdn-guard-lift`): `iqk_dequant_enabled()`'s guard sits inside the
-      `__AVX2__` arm only; the `#else` arm ignores the knob — lift it above the `#ifdef` (dead code on this Zen
-      host, latent correctness elsewhere).** No serving or deployable-speed
+      byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
+      `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
+      transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so
+      the `GGML_IQK_DEQUANT` kill-switch covers both SIMD arms) — **proved a no-op from the COMPILED OBJECT, not
+      asserted: 13 of 10,920 disassembly lines differ and every one is a `GGML_ASSERT` `__LINE__` operand shifted
+      +2 by the added comments; zero instruction-sequence differences.** G3 three-way byte-identity (lifted ≡
+      pre-lift ≡ control b3k 10203), `MUL_MAT` 1139/1139, `MUL_MAT_ID` 815/815, `test-llama-archs` 0 FAIL,
+      coherence classifications identical to pre-lift to the digit. **Task closed; the P0 no longer blocks
+      serving.** Deployable numbers are being RE-ANCHORED on the merged tip with PRODUCTION-LENGTH prompts (27
+      prompts, ~40–600 tokens, 8 coding / 8 reasoning / 8 general + the 3 P0 prompts, chat-completions path with
+      thinking disabled, coherence classified by REASON in the same window as the timing) — evidence
+      `/mnt/raid0/llm/tmp/inf70/reanchor2/`. **The old short-prompt figures are NOT being restored.** No serving or deployable-speed
       claim on this tree until it passes.
 - [ ] **BATCH-ENVELOPE — a batched forward deviates O(0.3–1.4 nats) from the sequential reference and flips ~5%
       of greedy argmaxes.** Surfaced 2026-09-03 by `gdn-fix-validate` while closing LONG-PROMPT-GARBAGE, and
