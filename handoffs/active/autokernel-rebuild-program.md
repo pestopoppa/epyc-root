@@ -1499,6 +1499,86 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       -1.414% (27B Q8_0 prefill, decisive) · **+7.206% (26B-A4B Q4_K prefill, decisive)** ·
       2.38x (27B speculative decode, DFlash2). R23-26's "the headline surface is wrong for this
       aggregate" is now backed by two decisive measurements pointing opposite directions.
+- [x] **R23-34 — planner/critic model split (operator directive 2026-09-03: "swap the models
+      used by planner/critic. Use Fable-5.1-medium for the planner and gpt-5.6-sol-high for
+      critic") — DONE, NOT launched** ✅ 2026-09-03. Research lane `f81bbeb6`.
+      **Before**: both roles ran one `codex exec` argv with NO model/effort flag — whatever
+      `~/.codex/config.toml` said (`gpt-5.6-sol`/`high`, so the critic target was already the
+      implicit default, but unpinned). **After**: `actors.Backend.argv` is the per-CLI contract;
+      `backend_for(model, effort)` routes `claude-*` to the `claude` CLI, else codex. Defaults =
+      the directive; `--planner-model/--planner-effort/--critic-model/--critic-effort` override;
+      the startup banner prints `actors    planner=claude:claude-fable-5-1@medium
+      critic=codex:gpt-5.6-sol@high` (dry-run verified) so a run records what drove it —
+      provenance R23-19 showed is not optional. Classes `CodexPlanner/CodexCritic` ->
+      `AgentPlanner/AgentCritic`. 390/390 loop tests, 5 new ones pin exact argv tokens.
+      **Measured constraints that shaped it (all live smokes, one call each):**
+      · codex `-c` is TOML — `model_reasoning_effort="high"` MUST be quoted (unquoted rejected).
+      · `claude -p --bare` would skip the worktree's CLAUDE.md but accepts ONLY
+        `ANTHROPIC_API_KEY`/apiKeyHelper — OAuth is never read; this host is claude.ai-OAuth-only,
+        so `--bare` and `CLAUDE_CODE_SIMPLE=1` both fail "Not logged in". Not used.
+      · The lane worktrees carry the llama-tree freeze overlay CLAUDE.md. A deliberately hostile
+        fake ("never create files") made Fable REFUSE ("The project's CLAUDE.md marks this
+        directory as frozen"); `--system-prompt` does not suppress it. **But the REAL overlay
+        scopes its freeze to `production-consolidated-*` and says to check the branch — in a real
+        detached champion worktree (probe `worktree add --detach` @732389d6, removed after) Fable
+        AUTHORED cleanly.** The fake was harsher than reality; the real artifact is what counts.
+      · Mitigation shipped: `_CLAUDE_SANDBOX_NOTE` via `--append-system-prompt` states that scoping
+        explicitly so authoring does not depend on the model re-deriving it. Residual risk: the
+        overlay IS loaded and the real-worktree proof is n=1 — watch the first iterations of the
+        next run for `planner_transient` refusals of the "frozen" shape.
+      **Regrowth guard** 2160 -> 2210 (+44 code lines, reason recorded in the guard per its own
+      doctrine). **Also fixed en route** (`078d9c3c`, separate commit): `test_bench`'s live-store
+      test asserted the 27B is uncalibrated (None) — true 09-01, false since the 09-02 keyed
+      floors; now asserts the actual intent (27B rows != 1.5B rows). R21-4 family.
+      **Cost note**: 2 of the 4 actor calls per iteration (propose, author) now run on Fable 5.1;
+      2 (both critic passes) stay on codex. **NO RUN WAS STARTED** — standing instruction; the
+      config is the default, so the run-25 launch shape restarts it unchanged when the operator
+      says so.
+      **RUN 26 LAUNCHED 2026-09-03T12:59Z, pid 24549** (operator: "start the run"). Preflight gated the
+      launch: GPU 0%, zero loops, champ2 tip == anchor-gen-014 provenance (732389d6). Banner confirms
+      `actors    planner=claude:claude-fable-5-1@medium  critic=codex:gpt-5.6-sol@high`, claim held,
+      27B production rung, floor 1.142% @5 pairs. Monitor armed for keeps/advances, measured rows,
+      transient counts, frozen-shaped refusals (the R23-34 residual risk) and death.
+      **Run 26 STOPPED 13:05->13:22Z and RUN 27 LAUNCHED 13:24Z, pid 2047396** — operator ("I have
+      no issue restarting") took the second-surface guard: `--confirm-model` = the same 27B,
+      `--confirm-surfaces dec-b8 --confirm-pairs 5` (floor 1.753%). Screen==confirm model, so
+      parity is EXACT (no waiver line). Every dec-b4 keep candidate must now clear dec-b8 before
+      touching the champion; the gate fires only on candidates (~14 min each). **Run 26's 25 min
+      delivered the end-to-end proof of the planner swap**: `akm-gdn-next-token-register-prefetch`
+      went propose->critic->author->critic->build->MEASURED (+0.305%, null) — a `gated_delta_net`
+      target the 1.5B could never have surfaced. Not guarded: decode. tg128 has no 27B floor
+      (each floor is per (surface, model) — see the operator Q&A in progress 2026-09-03); the
+      DFlash2 path is llama-server-only and is guarded by R23-18's smoke, still open.
+- [x] **R23-35 — first confirm-gate keep + the planner-backend evolution** ✅ 2026-09-03.
+      **Run 27 keep** `akm-cdna2-q8-b4-mmvq-route`: **+23.339% dec-b4** decisive (floor 1.142%),
+      **cleared the dec-b8 confirm gate** (+0.313%) — the FIRST time the two-rung gate fired. It is
+      a production number: headline **+22.443%** vs frozen production-v9 on the 27B, champion now
+      `b0eb4fab` / anchor-gen-015. Mechanism: Q8_0 ne11<=4 rerouted MMQ->MMVQ (the in-tree lever
+      around the vendor Tensile GEMM). Banked regardless of planner.
+- [x] **R23-36 — actor exit-1 storm made diagnosable** ✅ 2026-09-03 (`b5cd2817`). Run 27 logged 74
+      `actor exited 1:` with EMPTY detail because `claude -p` reports errors on STDOUT (empty stderr)
+      and `_run_agent` kept only the stderr tail. Fix: non-zero exits carry backend id + BOTH tails.
+      Storm was intermittent (~40% iters), cleared on its own; live repro ruled out auth/concurrency/
+      overlay/prompt-size. **NOT root-caused** — see R23-38.
+- [x] **R23-37 — planner backend is now DeepSeek V4 Flash @max via opencode** ✅ 2026-09-03
+      (`c2bfe916`). Third `Backend` kind wired: `opencode run --auto --dir <wt> -m
+      deepseek/deepseek-v4-flash --variant max <prompt>`; `backend_for` routes `provider/model`
+      (has `/`) to opencode. Path was Fable 5.1 @medium (`f81bbeb6`, ~75s/call, 54-71% GPU-idle) ->
+      Opus 5 @high (`1ffe4fdf`, default set but NEVER launched) -> DeepSeek (smoke: authored in a
+      real champion worktree in ~4s). **TRUST BOUNDARY**: opencode drives an EXTERNAL provider, so
+      planner prompts egress off-host — operator-sanctioned as the backup, recorded in code+commit.
+      Run 28 live pid 470013 with this planner + the dec-b8 confirm gate.
+- [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
+      again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
+      before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
+      the retry-backoff ladder each time. Only matters if a claude-CLI backend is reselected;
+      opencode/DeepSeek is the current planner, so this is NOT blocking. Re-open if the exit-1
+      pattern recurs with the new instrumented build.
+- [ ] **R23-39 — measure whether DeepSeek/opencode restores throughput.** Run 28's open question:
+      does the ~4s DeepSeek call latency close the 54-71% GPU-idle gap the Fable planner opened?
+      Read idle_fraction_while_claimed + iterations/hour after run 28 has a few hours, compare to
+      run 26 (all-codex) and run 27 (Fable). Decides whether the external-provider trust cost is
+      worth it or the planner should return to a local CLI.
 - [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
