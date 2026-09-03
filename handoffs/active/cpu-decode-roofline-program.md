@@ -458,7 +458,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       expert×row chunking + gate-up fusion) is the highest-ROI lever on this path; B4 pays proportionally
       and at ~1.5× its roofline value; D1's barrier removal has ≤ 0.6 ms at stake here and must earn itself
       on the 797 dense `mul_mat` calls; D4 is refuted as a decode lever.**
-- [ ] **B3 — restructure `mul_mat_id` for batch 1.** Beyond D1's barrier removal: chunk across
+- [x] **B3 — restructure `mul_mat_id` for batch 1.** ✅ 2026-09-03 (both halves). Beyond D1's barrier removal: chunk across
       (expert × rows) jointly so each thread streams ≥ ~100 KB of one contiguous expert slab instead of
       14 rows of each (B2 measured the cost of the current split: ~11 ms/token of overhead on a 19.7 ms
       path, saturated at 8 threads) — **B3-k, the kernel half**, to be built on top of D1's branch; and
@@ -495,7 +495,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       200.2)**. Greedy agreement 82.6% (p2/p3 identical; p1 diverges at a low-confidence branch —
       expected, the router precision changed; C9 is what would prove equivalence). **`IQ4_XS-uniform-gateup-r16`
       is the Axis B/D comparison baseline from here** (prefill equal within noise, decode and bytes better;
-      the uniform file stays the era anchor, UD stays the served file). B3-k (the kernel half) stays open.
+      the uniform file stays the era anchor, UD stays the served file). **B3-k DONE ✅ 2026-09-03** (subagent `b3k`, branch `inf70/b3k` `5eb7d5f05` on D1 `664096408`, build 10203): thread `ith` streams the contiguous range `[total·ith/nth, total·(ith+1)/nth)` of the flat (used-expert, row) space (~133 rows/181 KB of IQ4_XS gate-up, ~533 rows/256 KB of Q5_1 down, ≤ 2 adjacent slabs) instead of ten 14–54-row stripes; patches the iqk hooks (`iqk_dispatch.cpp`, `iqk_mul_mat.{cpp,h}`) that `GGML_IQK=1` actually runs, gated by `GGML_MMID_SLAB`. **Round-2 ABA, placement proven per arm, coherence-checked: slab-on 12.59/12.61 t/s (79.43/79.30 ms) vs merged tip 12.24/12.21 t/s (81.70/81.90 ms) = +3.07% decode (−2.43 ms/token), 12× the 0.25% baseline spread.** Same-binary flip attributes the whole gain to the slab partition (D1 alone −0.37%, null). Bit-identical logits on 3 prompts × 128 steps vs slab-off and the merged tip; `test-backend-ops -o MUL_MAT_ID -b CPU` 815/815 (six runs), `test-iqk-ser`, `test-llama-archs` pass. **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction — "merge b3k if the round 2 confirms"; `--no-ff` merge commit `0d2af8194`; merged tree SHA `9e43dcbc8` bit-identical to the gated `inf70/b3k` tree, so the gates transfer verbatim — no combined-tree reverification needed). Carries D1 (`664096408`, cherry-pick of `1ba448e74`) as its bit-exact, null-on-its-own base.** Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b3k/`.
 - [x] **B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,
       `/mnt/raid0/llm/tmp/inf70/agents/b4/`) — three artifacts vs the uniform control, build 10196, t48, r5,
       placement proven in-window on every arm. Full override set `IQ4_XS-uniform-b4` (router F16 +
@@ -789,7 +789,7 @@ env, forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `
 | `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.38 ±0.05 t/s** | 80.8 | 50.0 (32.7%) |
 
 The server is within 0.9% of the `llama-bench` proxy (12.11). r16 vs uniform is +3.1% decode at identical
-GB/s, exactly the −2.8% bytes/token. Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
+GB/s, exactly the −2.8% bytes/token. **Update 2026-09-03: `inf70/b3k` (the mul_mat_id slab partition) is now merged into the experimental tip (`0d2af8194`), adding a measured +3.07% decode on the `llama-bench` proxy (uniform 12.24 → 12.59 t/s). Projected server-tps on the merged tip: uniform ≈ 12.4 t/s, r16 ≈ 12.8 t/s (~78 ms/token) — a projection from the proxy delta, not a fresh server measurement; a server-tps re-anchor on `0d2af8194` is the confirming step and is a cheap single-window run.** Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
 not an opt-in; the graph path was confirmed (`graphs reused = 127`/request). Ceiling context: 32.7% of the
 recipe's 153 GB/s read bandwidth, i.e. ~70% of the token is still dispatch floor; the bandwidth third
 also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal), held for the reboot.
