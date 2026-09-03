@@ -1423,6 +1423,29 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       serving. Propose: the headline for an aggregate carrying decode features must include a
       decode/speculative surface (tg128 and/or a DFlash2-enabled arm) reported ALONGSIDE prefill,
       never replacing it. Until then quote the headline as "prefill-only".
+- [x] **R23-27 — run 24 STOPPED and reconfigured to hunt ON the confirm rung** ✅ 2026-09-03
+      (operator: *"do the third"*). **Why**: run 24 ran 14 h and produced **116 measurements, ZERO
+      keeps** — best effect +0.650% against a 0.668% floor, only 4 attempts above +0.468%: the 1.5B
+      screen surface is exhausted. Worse, R23-19/22/23 established that surface is anti-correlated
+      with production for exactly the size-dependent families the planner keeps proposing (R23-25),
+      so its verdicts were not worth the GPU claim. The confirm gate was NEVER exercised (no screen
+      keep -> no KEEP_CANDIDATE -> the 27B path never ran).
+      **Also degrading**: 161 planner transients, escalating 0-5/hr (evening) -> 23 at 01:00Z -> 21
+      at 04:00Z -> **64 at 05:00Z against 7 measurements**, all malformed structured output
+      (`hypothesis is missing [...]` 63+26, `authoring returned no changed paths` 26, `no parseable
+      JSON object` 25) — the same class as the v3-v27 planner-outage spin. A fresh process clears it.
+      **New configuration (dry-run PROVEN before launch)**: `--model Qwen3.8-27B-Q8_0` (was the 1.5B),
+      `--surface dec-b4 --pairs 5`, NO `--confirm-model` (redundant once the screen IS the confirm
+      rung). Dry-run reports `workload Qwen3.8-27B-Q8_0: n_embd=5120, dominant Q8_0`, floor
+      **1.142%** correctly keyed to the 27B, and — the tell that this is right — **no "screen parity
+      WAIVED" line**, because the hunting rung is now production-shaped by construction.
+      **Consequences, stated honestly**: throughput drops (a 5-pair 27B A/B is ~14 min of device vs
+      ~8 min for a 20-pair 1.5B run, so roughly 3/hr instead of 8/hr) and the keep bar rises to
+      1.142%. In exchange every verdict is a PRODUCTION verdict, false negatives from rung transfer
+      vanish by construction, and `headline_model` now equals the production model so the loop's own
+      headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
+      prefill-only, which R23-26 still owns).
+      Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
