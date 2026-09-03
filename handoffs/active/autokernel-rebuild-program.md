@@ -1467,7 +1467,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       | Qwen3.8-27B Q8_0, speculative decode | **2.38x** with DFlash2 (R23-17) |
       A single "champion vs production" headline cannot express this — which is R23-26's point,
       now with hard numbers behind it.
-- [ ] **R23-32 — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.**
+- [x] **R23-32 — DONE ✅ 2026-09-03 — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.**
       Approved shape (operator, 2026-09-03: cheap signal first, then calibrate only if promising —
       the signal is promising). Run the A/A bootstrap for
       (`dec-b4`, `gemma-4-26B-A4B-it-Q4_K_M`) to produce a keyed floor (~3 h, the 27B dec-b4
@@ -1477,6 +1477,37 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       If it holds, the promotion argument changes from "the champion is neutral-to-negative" to
       "the champion is +7% on the worker", which is a different conversation entirely.
       **Needs a GPU window** — no run is currently hunting, so the window is open now.
+      **RESULT 2026-09-03T12:1xZ — CLAIM-GRADE: `+7.206%`, `decisive: True`, `drifting: False`.**
+      Champion `732389d6` vs frozen production-v9 on `gemma-4-26B-A4B-it-Q4_K_M`, dec-b4, **20
+      pairs against the freshly calibrated 0.456% floor** — production **174.26 t/s** vs champion
+      **186.76 t/s**, i.e. **15.8x the floor**. Drift inside tolerance (-0.223/-0.061, rho
+      -0.311/-0.215), residency clean (40/40 resident, 1 KFD proc, clocks pinned 1700/1700).
+      It reproduces the 5-pair signal (+7.066%) within 0.14 pp — two independent measurements,
+      different pair counts, same answer.
+      **The calibration that made it claim-grade** (R23-32's prerequisite): floor curve
+      1.843/1.257/0.936/0.699/0.456 for k=1/3/5/9/20 — a 4.04x fall against the ideal sqrt(20)=4.47x,
+      i.e. textbook parametric scaling and structurally believable (contrast dec-b8's anomalous 45x,
+      which only the parametric guard caught). A/A effect **-0.061%**, `drifting: False`, despite a
+      peer running a 48-thread CPU bench concurrently — the flagged memory-bandwidth co-residency
+      did NOT contaminate it.
+      **Isolation held**: run in the scratch store, so the live `champion-vs-production.json` still
+      carries the 27B production headline (-1.414%, model field = Qwen3.8-27B-Q8_0) and was not
+      overwritten by a Q4_K number.
+      **What this establishes.** The champion is **+7.206% on a model the fleet already serves**
+      (the worker). The Q4_K-gated keeps are not merely dormant — they are worth ~7% where they
+      fire. The program's standing is now three measured workloads, not one number:
+      -1.414% (27B Q8_0 prefill, decisive) · **+7.206% (26B-A4B Q4_K prefill, decisive)** ·
+      2.38x (27B speculative decode, DFlash2). R23-26's "the headline surface is wrong for this
+      aggregate" is now backed by two decisive measurements pointing opposite directions.
+- [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
+      Before today the promotion argument was "the champion is neutral-to-negative on production".
+      It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
+      the 27B prefill surface, and 2.38x on speculative decode". That is a materially different
+      conversation and it is the operator's to have. Inputs: the freeze runbook
+      (`docs/reference/kernel-freeze-runbook.md`), R23-29's promotion-time condition (the Q4_K paths
+      are now performance-VALIDATED by this measurement, closing that gap for dec-b4), and R23-26
+      (a promotion headline must state its workload). **No run starts, and no promotion step is
+      taken, without explicit operator permission** (standing instruction 2026-09-03).
 - [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
       will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
       graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
