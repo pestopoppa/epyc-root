@@ -1492,6 +1492,13 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
       - [ ] Test whether a settle delay between reclaim and load removes the skew — the cheapest candidate fix,
             and it directly probes the stated mechanism.
       - [ ] If a constant is kept, scale it with the per-node share (23.03 GiB here), not a fixed absolute.
+      - [ ] **A principled target exists, from a second agent (`e3-run`, 2026-09-03): evict to ~2x the per-node
+            model share, i.e. >=58 GiB/node, not 40.** Mechanism: under `--no-mmap` the 92 GB read populates page
+            cache *under the same interleave policy*, so each node needs room for its model share PLUS the cache
+            that share generates. 40 GiB left a 42.1% skew that its gate refused despite `EVICT OK`; >=58 gave 0.1%
+            deviation first try and on every arm after. This is complementary to the reclaim-then-load hazard above,
+            not a replacement for it — the gate is still the primary recommendation, but this gives the constant a
+            derivation instead of a guess.
       **Evidence strength, stated honestly by the agent:** n=1 skew at 40, n=1 clean at 40, n≥4 clean at 60 — it can
       show 60 was never observed to fail, not that 60 is sufficient. Detail in
       `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/FINDING-numa.md`. Owner: the stack session, with the activation
