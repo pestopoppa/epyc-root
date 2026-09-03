@@ -1467,11 +1467,32 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`; memory
       `feedback_page_cache_defeats_numa_interleave`.
 
-- [ ] **Is `numa_pre_evict_gib: 40` high enough under concurrent load?** Found 2026-09-03 by INF-70's `mtp-tip2`
-      while benchmarking: a 40 GiB eviction target left nodes at **23.03 / 23.03 / 11.77 / 34.28 GB — 48.9%
-      deviation from even** when other work was running on the box; raising the target to **60 GiB** fixed it. The
-      merged orchestrator default (`5f20e23c`) is **40** for all five CPU roles. If 40 is routinely insufficient
-      whenever anything else is active, the production default would silently reproduce the very skew the pre-evict
-      exists to prevent — and the `[numa-placement]` fold would be the only evidence. **Decide whether the target
-      should be raised, or scale with model size / concurrent activity rather than being a constant.** Evidence:
-      `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/REPORT.md`. Owner: the stack session, with the activation item above.
+- [ ] **The pre-evict hazard is RECLAIM-THEN-LOAD, not the size of the constant — and C7's launch path does
+      exactly that sequence.** Found 2026-09-03 by INF-70's `mtp-tip2`; supersedes this item's first framing
+      ("is 40 GiB too low?"), which was mine and was wrong about the variable.
+      **The evidence.** Two consecutive loads of the SAME model by the SAME launcher, both at `EVICT_GIB=40`, 33 s
+      apart, with **identical post-evict free profiles** (119/51/46/81 vs 118/50/46/81 GiB) produced **opposite**
+      placements: one skewed 48.9% (23.03 / 23.03 / **11.77** / **34.28** GB), the other perfect (23.02 / 23.03 /
+      23.03 / 23.03). The discriminator is in the eviction logs, not the target: the skewed run's evict found
+      **node 2 at 0 GiB free** and had to force a 42 GiB membind alloc/release to reclaim it, **then loaded
+      immediately**; the clean run's evict did nothing at all, because the previous run had already left node 2
+      clean. **The one node that required reclaiming is the one that under-filled**, and its missing 11.26 GiB went
+      entirely to node 3 — 11.77 + 34.28 = 46.05 = exactly 2 × the 23.03 GiB per-node share.
+      **Why this is worse than a too-small constant:** C7's merged launch path performs precisely this
+      evict-then-load-at-once sequence, so the skew lands on exactly the launches the setting exists to protect — a
+      cold node, or one holding page cache from a previous model. A bigger constant lowers the odds of needing a
+      reclaim; it does not remove the reclaim-then-load hazard.
+      **Primary recommendation (the agent's, and it is the right one): VERIFY, do not just evict harder.**
+      Production currently has **no post-load placement check** — C7 logs a `[numa-placement]` fold, but logging is
+      not gating, so a skewed load is served silently and only surfaces later as an unexplained low-bandwidth
+      number. Every INF-70 bench arm gates on in-window `numastat -p` with a 15% deviation limit and REFUSES to
+      proceed otherwise; that is the check the launch path lacks. Make the launch path gate on it — re-evict and
+      relaunch, or at minimum alarm.
+      - [ ] Add a post-load placement gate to the launch path (deviation limit, action on breach).
+      - [ ] Test whether a settle delay between reclaim and load removes the skew — the cheapest candidate fix,
+            and it directly probes the stated mechanism.
+      - [ ] If a constant is kept, scale it with the per-node share (23.03 GiB here), not a fixed absolute.
+      **Evidence strength, stated honestly by the agent:** n=1 skew at 40, n=1 clean at 40, n≥4 clean at 60 — it can
+      show 60 was never observed to fail, not that 60 is sufficient. Detail in
+      `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/FINDING-numa.md`. Owner: the stack session, with the activation
+      item above. No orchestrator config was touched by INF-70.
