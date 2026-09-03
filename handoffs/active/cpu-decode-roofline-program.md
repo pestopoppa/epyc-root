@@ -656,8 +656,7 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       `/mnt/raid0/llm/tmp/inf70/agents/e2/`. (The build self-reports a small build number because the
       fusion repo was briefly made shallow by a `--depth` fetch that afternoon, since repaired with
       `--unshallow`; commit hashes are the ids for every branch built in that window.)
-- [ ] **E2a — the greedy-identity gate failed on 1 of 3 prompts; find out whether batched verification is
-      exact on this architecture.** Prompt 1 diverges at generated token 28: the MTP arm accepted
+- [x] **E2a — CLOSED negative 2026-09-03: the divergence is the batched target forward, not the bonus token; no driver-side fix exists.** Prompt 1 diverges at generated token 28: the MTP arm accepted
       `' Lisbon'` where the trunk alone puts `'\n\n'` first by **0.79 nats** (not a rounding tie); both heads
       diverge identically and the trunk-only path is unchanged, so it is neither the head nor the port's
       effect on the trunk. Live hypothesis: qwen4exp's **multi-token verification forward is not equivalent
@@ -721,6 +720,19 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
       (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
       way (patch files, never a `--depth` fetch into the shared repo).
+- [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
+      (the one fix that closes E2a-successor, E2c AND X-CONC).** Root cause, confirmed three ways
+      2026-09-03 (`mtp-exact`, `mtp-conc`, `e2c`): `src/models/delta-net-base.cpp:435` routes
+      `n_seq_tokens == 1` to the autoregressive GDN kernel and any 2+-token batch to the chunked kernel
+      (CS 64, padded), and the two are not row-exact, so a verification batch (MTP), a multi-sequence
+      prefill (concurrency), and any batched forward write a different recurrent state forward. `serial`
+      mode (`LLAMA_SPEC_EXACT=serial`, single-token decodes) is byte-identical 3/3 and is the exactness
+      oracle. Two shapes to scope: (i) unroll n ≤ 3 through the autoregressive kernel inside the graph;
+      (ii) make the chunked kernel bit-equal for small n. Plus iqk small-N parity (mechanism is
+      iqk-independent per E2c, so this is the CPU-graph kernel, not the iqk path). Gate: `serial` output ==
+      MTP output == concurrent-prefill output == plain, token-for-token. **This is the operator's "fund
+      option (b)?" decision — one kernel task turns MTP into a lossless 1.4–1.7× serving option and
+      unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
