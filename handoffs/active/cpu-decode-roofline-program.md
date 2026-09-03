@@ -892,8 +892,11 @@ named. MTP is not a serving option until that gate passes.
       finding, not merely an optimization gap.
       Tasks: **(i)** measure the 122B's ACTUAL bytes/token and plain decode under our canonical recipe + coherence
       gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** close or explain the MTP
-      multiplier gap (n-max first, then acceptance per position vs the 122B's, then whether native-MTP vs our
-      ported path differs); **(iii)** decide whether the dispatch floor is reducible enough to make the
+      multiplier gap — **and note the comparison is NOT yet like-for-like: `architect_critic`'s 2.12x uses `k: 4`
+      TREE drafting, while every qwen4exp MTP arm run so far is LINEAR (`e3-run`, 2026-09-03). Establish FIRST
+      whether our runtime supports tree drafting for `draft-mtp` at all; if it does not, the 1.44x-vs-2.12x gap is
+      STRUCTURAL rather than a tuning gap — a materially different conclusion.** Then n-max, then acceptance per
+      position vs the 122B's, then whether native-MTP vs our ported path differs; **(iii)** decide whether the dispatch floor is reducible enough to make the
       architecture pay, or whether the honest conclusion is that this model class needs bigger fused ops (Axis A /
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
