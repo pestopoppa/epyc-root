@@ -724,6 +724,23 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
       cost is part of the measured number, not something to subtract.
 
+## Deployable serving speed (claim-grade, 2026-09-03)
+
+Single-stream `llama-server` decode of qwen3.8-next-flash on the merged experimental kernel (build 10202
+`9e75132e3` = graph path + parallel GET_ROWS + CONCAT default), `-np 1 -c 4096 -t 48 --no-mmap`, canonical
+env, forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`):
+
+| artifact | decode | ms/token | GB/s (% of 153) |
+|---|---|---|---|
+| uniform IQ4_XS (era anchor) | **12.00 ±0.04 t/s** | 83.3 | 49.9 (32.6%) |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.38 ±0.05 t/s** | 80.8 | 50.0 (32.7%) |
+
+The server is within 0.9% of the `llama-bench` proxy (12.11). r16 vs uniform is +3.1% decode at identical
+GB/s, exactly the −2.8% bytes/token. Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
+not an opt-in; the graph path was confirmed (`graphs reused = 127`/request). Ceiling context: 32.7% of the
+recipe's 153 GB/s read bandwidth, i.e. ~70% of the token is still dispatch floor; the bandwidth third
+also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal), held for the reboot.
+
 ## Reporting
 
 Non-claims (no protocol id, no attestation) are welcome and expected while exploring — label them.
