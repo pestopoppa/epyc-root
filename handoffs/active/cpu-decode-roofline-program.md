@@ -407,7 +407,18 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       running (`merge-verify`).** **VERIFIED ✅ 2026-09-03: merged tree (build 10202, `9e75132e3`) 12.11
       ±0.03 t/s vs anchor 10.19 in the same window (+18.8%), placement even; `test-backend-ops -b CPU`
       GET_ROWS 111/111, CONCAT 210/210, MUL_MAT 1139/1139, MUL_MAT_ID 815/815, `test-llama-archs` rc=0;
-      anchor-server-vs-merged-server greedy IDENTICAL on 3 prompts (71/128/128 tokens). Safe to build on.** Rationale for default rather than
+      anchor-server-vs-merged-server greedy IDENTICAL on 3 prompts (71/128/128 tokens). Safe to build on.**
+      **Attribution resolved 2026-09-03 (merge-verify raised a counter-claim; refuted from the code):
+      the +18.8% decode is the parallel GET_ROWS (`bc2834a9b`), confirming D8x.** merge-verify read its
+      opt-out arm (12.05 t/s with `GGML_GET_ROWS_MIN_BYTES=1e12` + CONCAT off) as "GET_ROWS ≈ 0.5%, the
+      rest is the prof commit `e9d9d288a`" — both halves are wrong: (1) `GGML_GET_ROWS_MIN_BYTES` only
+      sets the *planned* `n_tasks`, which the compute loop ignores (D8x), so that arm still ran the
+      parallel gather — it disabled only CONCAT, which is why pp512 fell to anchor level while tg128 held;
+      (2) every line `e9d9d288a` touches is inside `#ifdef GGML_CPU_PROF` and the shipped build has no
+      `-DGGML_CPU_PROF`, so it compiles to nothing. Pristine (no GET_ROWS) 10.15 → merged tip 12.11 with
+      only GET_ROWS + CONCAT compiled-in and CONCAT worth ~0.5% decode ⇒ GET_ROWS ≈ +18%. Methodology
+      note carried to D8: the env knob is an inert A/B handle; isolating GET_ROWS needs a build without
+      `bc2834a9b`, not the knob. Rationale for default rather than
       `canonical_recipe.py`: the recipe governs our benches, not the served stack — an env-gated win would
       silently miss `llama-server` in production.
 
