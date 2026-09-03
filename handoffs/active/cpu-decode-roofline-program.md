@@ -794,6 +794,24 @@ named. MTP is not a serving option until that gate passes.
       **WITHDRAWN: the control's 231.4 t/s pp512 and its 135–140 t/s at p200 — they timed a salad-producing
       forward.** At 42 rows the broken repack requantised a whole tensor for 42 columns of reuse, so it was slower
       *and* wrong; the correct-repack crossover is between 42 and 512 rows.
+      **BLAST RADIUS AND REPAIR, measured on one prompt set (`mtp-tip2` PRE control) — the cleanest single piece
+      of evidence for this defect.** Same prompts, pre-fix `0d2af8194` vs fixed `42332502c`:
+      | prompt | prefill rows | PRE (pre-fix) | P (fixed) | PRE vs P |
+      |---|---|---|---|---|
+      | g1 / g2 / g3 | 5–11 | coherent | coherent | **SAME (byte-identical)** |
+      | L1_p40 | **42** | `">>\n.>\n.>\n.>…"` pure degeneracy | coherent | DIFF@0 |
+      | L2_p90 | **81** | `" The function would\nl\ne\nl\nl…"` | coherent | DIFF@0 |
+      | L3_p200 | **236** | degenerate loop, truncated at 39 tok | 128 tok coherent | DIFF@1 |
+      | L4_p600 | **429** | **HTTP 500** | 128 tok coherent | n/a |
+      **Every prompt below 32 prefill rows is byte-identical across the fix — the defect never touched them, and
+      the fix changed nothing it was not supposed to — while every prompt at or above 32 rows was degenerate,
+      truncated or fatal before and is coherent after.** The predicted `nrc_y >= 32` boundary confirmed end-to-end
+      rather than inferred. L4 is the defect at its worst: not merely wrong text but *unparseable* text
+      (`common_chat_peg_parse: full Content-only output triggering error` → a 500), i.e. an availability failure,
+      not only a quality one. **Scope: confined to the experimental fusion tree — production serves v9 from a
+      different tree that never carried the commit, so there is NO production availability implication.** It also
+      retro-justifies the re-run: every production-length measurement taken on the pre-fix build was on a binary
+      that could not generate valid text at those lengths.
       **The residual p200 failure is NOT a second kernel defect — it is PROMPT-SPECIFIC, not length-specific.**
       p200 truncated to 120/160/200/220/230 → all COHERENT; full 233 → EARLY-EOS deterministically (margin 0.0169
       nats, 3/3 runs); **9/9 different 107–181-token prompts COHERENT** (margins 2.2–8.0) where the control fails
