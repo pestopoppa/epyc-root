@@ -780,29 +780,48 @@ named. MTP is not a serving option until that gate passes.
       forward. **Serving workarounds today (unpatched tip): `-ub 1`** (coherent on 42/81/233; decode UNCHANGED
       12.5–12.7 t/s; prefill ~10× slower, 13.5 vs 68–140 t/s) **or `GGML_IQK=0`** (coherent; pp 118.9 vs 135–140).
       **Fix committed `99425578d` on `inf70/gdn-rowexact`**: IQ4_XS returns to its direct iqk kernel for every Ny
-      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX IS PARTIAL — validated 2026-09-03 (arms ran before the agent was rate-limited; read off disk by the
-      coordinator): p40 (42 tok) and p90 (81 tok) COHERENT on the fixed build, p200 (233 tok) STILL FAILS.**
-      | arm | p40 | p90 | p200 |
-      |---|---|---|---|
-      | fix, default | COHERENT (pp 75.5) | COHERENT (pp 105.2) | FAILS |
-      | fix, `GGML_IQK_DEQUANT=0` (ALL repacks off) | COHERENT (pp 76.3) | COHERENT (pp 95.6) | FAILS |
-      | fix, `GGML_ROWEXACT_N=256` | COHERENT (pp 69.9) | COHERENT (pp 92.9) | FAILS |
-      | fix, `-ub 1` | COHERENT | COHERENT | **COHERENT** |
-      The p200 failure MODE changed: the unpatched control produced 160 tokens of salad (`(1120-2222-…`), the fixed
-      build returns `predicted_n=1`, `content:""`, `stop=eos` — an **immediate EOS**. Because all repacks off still
-      fails p200, the coordinator's Q5_1(≥32)/Q6_K(≥64) coverage hypothesis is WEAKENED: either a second distinct
-      defect at ~233 rows or a prompt/template artifact. **Coordinator metric defect (own error): the degeneracy
-      classifier misreads a 1-token EOS as DEGENERATE** (uniq=1.0, top_share=1.0 trip the `top<0.25` rule), so
-      failures must be classified by REASON — COHERENT / SALAD / EARLY-EOS / EMPTY / HTTP-ERROR — not pass/fail.
-      Owner `gdn-fix-validate` (Opus, resumed): repair the classifier and re-classify all runs; discriminate
-      prompt-specific vs length-specific (other 100–260-token texts, p200 truncated to 120/160/200); verify the
-      `DEQUANT=0` knob really covers Q5_1/Q6_K (read the path, don't trust the name) with `GGML_IQK=0` as the
-      cross-check; node-trace the failing length if unresolved. Still owed: **G3 n=1 decode BYTE-identical to the
-      unpatched tip** (must not leak into batch-1; `MUL_MAT_ID -b CPU` must stay green for B3-k), G4 decode vs
-      12.55, and the honest fixed pp512 against the withdrawn wrong numbers (note fixed p40 pp 75.5 > control 68 —
-      the fix may be FASTER at short lengths; verify). **Serving today: `-ub 1` is the only config coherent at all
-      three lengths.** No serving or deployable-speed
+      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX VALIDATED 2026-09-03 — PARTIAL BUT SHIPPABLE (`gdn-fix-validate`).**
+      **G3 PASS (the gate protecting every merged lever): n=1 greedy decode BYTE-IDENTICAL to control 10203** on
+      3×128; `test-backend-ops -o MUL_MAT -b CPU` 1139/1139, `-o MUL_MAT_ID -b CPU` 815/815 (B3-k slab path
+      untouched), `test-llama-archs` zero FAIL. **G4: decode 12.69 t/s — no regression** (control 12.64, baseline
+      12.55). **pp512 189.3 t/s on the fixed build vs 135.6 for the correct `GGML_IQK=0` fallback (+39.6%).**
+      **WITHDRAWN: the control's 231.4 t/s pp512 and its 135–140 t/s at p200 — they timed a salad-producing
+      forward.** At 42 rows the broken repack requantised a whole tensor for 42 columns of reuse, so it was slower
+      *and* wrong; the correct-repack crossover is between 42 and 512 rows.
+      **The residual p200 failure is NOT a second kernel defect — it is PROMPT-SPECIFIC, not length-specific.**
+      p200 truncated to 120/160/200/220/230 → all COHERENT; full 233 → EARLY-EOS deterministically (margin 0.0169
+      nats, 3/3 runs); **9/9 different 107–181-token prompts COHERENT** (margins 2.2–8.0) where the control fails
+      0/9; **p200 through the chat template is COHERENT** (the control is broken even there). Node trace at the
+      failing shape: worst node deviation **0.949 vs 2.0e+3 pre-fix**, argmax agrees 221/233 rows — no gross error
+      remains. Mechanism: every batched 233-row forward deviates from the exact `-ub 1` reference by O(0.3–1.4
+      nats) **including stock ggml at `GGML_IQK=0` (+1.4)**; p200's exact top-2 gap is 0.457 nats, the only prompt
+      in the set below that envelope, so its argmax flips. **Coordinator's Q5_1/Q6_K + DEQUANT-knob hypothesis
+      REFUTED** (my error): `iqk_dequant_enabled()`'s `return type` is at `iqk_mul_mat.cpp:293`, **above** the
+      switch, so it covers Q5_1/Q6_K/Q5_K/Q4_K — every branch; empirically `g0m` (`DEQUANT=0`) and `g0k`
+      (`ROWEXACT_N=256`, an independent bypass that never calls the function) give identical p200 logprobs to 4
+      decimals. GGUF census: IQ4_XS 586, IQ4_NL 182, Q5_K 54, Q5_1 12 (`blk.0-5.ffn_down_exps/shexp`), Q6_K 1
+      (`output.weight`); their measured effect at 233 rows is ~0.04 nats — lossy-but-working, worth ~10% prefill,
+      **keep them**. **Classifier defect fixed** (coordinator's): `client.py degeneracy()` scored n=1 as degenerate;
+      new `classify.py` classifies by REASON (HTTP-ERROR/EMPTY/EARLY-EOS/SHORT/SALAD/COHERENT), stats only at n≥16 —
+      every p200 "DEGENERATE" on the fixed build re-reads as **EARLY-EOS (1 token)**, and `g0j`'s 19-length sweep
+      (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361
+      tokens) through the chat template; one residual risk — a RAW un-templated greedy prompt whose exact top-2 gap
+      is under ~0.5 nats can flip its argmax (1 of 33 raw prompts).** Exact fallback `-ub 1` verified
+      byte-identical. **Pre-merge fix in flight (`gdn-guard-lift`): `iqk_dequant_enabled()`'s guard sits inside the
+      `__AVX2__` arm only; the `#else` arm ignores the knob — lift it above the `#ifdef` (dead code on this Zen
+      host, latent correctness elsewhere).** No serving or deployable-speed
       claim on this tree until it passes.
+- [ ] **BATCH-ENVELOPE — a batched forward deviates O(0.3–1.4 nats) from the sequential reference and flips ~5%
+      of greedy argmaxes.** Surfaced 2026-09-03 by `gdn-fix-validate` while closing LONG-PROMPT-GARBAGE, and
+      explicitly NOT ruled out by it: after the iqk repack fix, a 233-row batch still differs from 233 single-token
+      decodes by up to 0.949 at the worst node, with argmax agreeing on 221/233 rows. **Present in stock ggml at
+      `GGML_IQK=0` too (+1.4 nats), so it is neither the fix nor iqk.** Consequence: any prompt whose exact top-2
+      gap is under ~0.5 nats can flip greedy argmax when prefilled as a batch (measured: 1 of 33 raw prompts;
+      0 of 9 through the chat template). Seed hypothesis: the ~1-ulp F32 `ffn_gate_inp` router GEMM identified in
+      GDN-ROWEXACT checkpoint 1, amplified through top-k selection. Scope: is this envelope larger than it should
+      be for this MoE, or is it the honest fp-order cost of batching? Instrument: `llama-rowexact`; the
+      `GGML_ROWEXACT_N` per-column mode on `inf70/gdn-rowexact` is the candidate mitigation. Gate: batched greedy
+      argmax == `-ub 1` argmax on the 33-prompt set. Successor to the E2a/E2c residual.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
@@ -937,8 +956,12 @@ qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never ch
 this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
 WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
 ≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
-Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause (13:27Z): the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE;
-workaround today `-ub 1` (decode unchanged, prefill ~10× slower) or `GGML_IQK=0`; targeted fix `99425578d` under validation.**
+Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause: the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE. FIX
+`99425578d` VALIDATED SHIPPABLE 2026-09-03** (G3 n=1 byte-identical to control, `MUL_MAT` 1139/1139, `MUL_MAT_ID`
+815/815, decode 12.69 t/s no regression, pp512 189.3 vs 135.6 for the correct `GGML_IQK=0` fallback): real prompts
+of 8–361 tokens are COHERENT through the chat template. **These withdrawn headline numbers are to be RE-ANCHORED on
+the merged fix with PRODUCTION-LENGTH prompts — not restored from the old short-prompt run.** Interim fallback
+`-ub 1` (decode unchanged, prefill ~10× slower) remains byte-identical-exact.**
 
 Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
 `/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
