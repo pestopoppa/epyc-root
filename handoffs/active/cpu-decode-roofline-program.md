@@ -738,7 +738,11 @@ named. MTP is not a serving option until that gate passes.
       `/mnt/raid0/llm/tmp/inf70/longprompt/`. **First discriminator: the same 42-token prompt with `-ub 1 -b 1`**
       (autoregressive-only prefill) — coherent ⇒ the chunked GDN kernel is the culprit, GDN-ROWEXACT is THE fix and a
       P0 serving blocker (and `-ub 1` is a known-correct slow-prefill serving workaround today); garbage ⇒ QSA / PLE /
-      graph, bisect the stock path. Then pin the threshold (12…64 sweep; a 32 or ×16 boundary points at a sub-chunk).
+      graph, bisect the stock path. **Threshold pinned by E3 (2026-09-03): 16 and 23 tokens coherent; 39, 58, 77, 96, 134, 167 garbage — the
+      break is in the 24–38 band (32 boundary = leading hypothesis; probe 24/28/31/32/33/36).** On the production
+      prompt mix the plain arm was **0/13 coherent** (12 token-salad, 1 HTTP 500 on a ~600-token prompt with no
+      server-log line at `-lv 4`). E3's `diag_probe.py` crosses canonical / `-ub 32` / `GGML_IQK=0` / pre-fusion
+      build 10128 — the 10128 arm decides upstream-bring-up vs fusion-lineage.
       Owner `gdn-rowexact` (routed 2026-09-03, now its primary gate G0). **Gate: p40/p90/p200 coherent AND
       token-identical to the `-ub 1` output.** No serving or deployable-speed claim on this tree until it passes.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
@@ -757,7 +761,15 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
-- [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
+- [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
+      `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
+      prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
+      `LLAMA_TRACE=1` for per-position acceptance, coherence classifier v3); no α reported because 0/13 plain
+      outputs were coherent and α against corrupted logits counts nothing; lock released after 349 s. Sampler
+      note: Flash-Next has no role in `model_registry.yaml`; served qwen roles carry only `temperature`
+      (frontdoor 0.3, coder 0.2) — production arm = the standing spec-dec methodology 0.6/0.95/20/seed 42 with
+      a 0.3 bracket. `shared-Q4_K_M` head absent. Coordinator decision: when the fix lands, run the REDUCED first
+      pass (plain + shared-Q8_0 n-max 1–3, ~1.2 h) as the go/no-go before the full 10-arm ~3.2 h sweep.** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
       recipe and the C5 build with the C5 trunk. The B200 figures (66% acceptance, 1.67×) are the reference;
@@ -831,7 +843,8 @@ this exact tip/binary (placement 23.0 GB × 4 and linkage proven): prompts of **
 every gate in this campaign is coherent. E3 independently saw the same on the OLD base (`mtp-exact` =
 `c035bbf3d` + MTP port, none of D8/D7a/D1/B3-k, plain mode) above ~23–39 tokens, so it is the **stock fusion-tree
 qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never checks coherence, so no pp/tg number in
-this campaign ever tested it. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
+this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
+WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
 ≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
 Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log).
 
