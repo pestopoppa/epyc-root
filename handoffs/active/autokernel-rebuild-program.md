@@ -1294,7 +1294,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       rc=1, non-gating as designed: `llama-bench` cannot load
       `Qwen3.8-27B-DFlash2-Q8_0.gguf` standalone (2.06 GB drafter HEAD, present and readable —
       it is a companion artifact, not a self-contained model). Run 24 screens on the 1.5B rung.
-- [ ] **R23-17 — DFlash2 capability verification on the post-keep champion (OWNED here —
+- [x] **R23-17 — DFlash2 capability verification on the post-keep champion: PASS** ✅ 2026-09-02 (OWNED here —
       operator reassignment 2026-09-02: "I want you to own this"; "We can't afford having any
       issues with the DFlash2 performance boost. It is central to this champion's feature set").**
       Exposure: run 23's keeps were validated ONLY on the 1.5B dec-b4 surface; `db18f393` edits
@@ -1308,7 +1308,22 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
       re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
       (candidates in commit order), report with rollback options.
-- [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
+      **RESULT 2026-09-02 ~12:00Z on anchor-gen-014 (champion `732389d6`): PASS.** acceptance
+      **0.6501** (bar 0.58; DF2-5 reference 0.6205); DFlash2 **72.65 t/s** vs non-speculative
+      **30.51 t/s** = boost **2.38x** (bar 1.5x). Verdict at
+      `/mnt/raid0/llm/tmp/boundary-20260901/dflash2-smoke/verdict.json`.
+      **Reading**: the three keeps did NOT damage the DFlash2 path — speculative throughput is up
+      on DF2-5's 70.0 t/s and acceptance is slightly up. The boost RATIO fell (2.6x -> 2.38x) only
+      because the non-speculative arm improved MORE (26.6 -> 30.51 t/s, +14.7%): the kernel keeps
+      helped plain decode more than the speculative path, compressing the ratio while making BOTH
+      arms faster. A falling ratio here is not a regression.
+      **Caveat**: DF2-5 came from a different binary and harness; the load-bearing comparison is
+      the same-binary internal control (none vs dflash), which is sound. Run-24 gate SATISFIED.
+      **Instrument defect fixed mid-flight**: the build-capability check used
+      `llama-server --help | grep -q`, and under `set -o pipefail` grep -q closes the pipe ->
+      SIGPIPE(141) -> a SUCCESSFUL match read as a failed pipeline -> false REFUSE (rc=2).
+      Capture-then-match now.
+- [x] **R23-19 — MEASURED ✅ 2026-09-02 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
       has never been measured.** Proven 2026-09-02 from the headline evidence record
       `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
       t/s — that is the 1.5B DeepSeek-R1-Distill screen rung, not Qwen3.8-27B-Q8_0 (~29 GB,
@@ -1321,6 +1336,208 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
       smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
       bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
+      **MEASURED 2026-09-02T12:49Z — the production-rung headline is `-1.600%`, and the run is
+      DRIFT-FLAGGED so it is INCONCLUSIVE, not a proven regression.**
+      champion `732389d6` vs frozen production-v9 on Qwen3.8-27B-Q8_0, dec-b4, 20 pairs, floor
+      0.949%: production median **66.09 t/s** vs champion **65.05 t/s**. Residency clean (40/40
+      resident, 1 KFD proc, 28.0 GB VRAM, clocks pinned 1700/1700, `clock_stable` true), so this
+      is NOT a placement or throttle artifact. BUT `drifting: True` — both arms declined together
+      (anchor -0.535%, candidate -0.654%; trend rho -0.481 / -0.668), and the instrument therefore
+      returns `decisive: False` despite |effect| > floor. Contrast the SAME surface at 06:52-10:03Z
+      (the A/A calibration): drift 0.13/0.27, rho 0.06/0.21, `drifting: False` — the machine was
+      steady this morning and is not now, after ~6 h of continuous GPU load.
+      **What is established**: the +27.363% figure does NOT transfer to production; the champion's
+      production-rung gain is at best flat and possibly negative. **What is NOT established**: that
+      it is a real -1.6% regression.
+      **Consequence**: run 24 stays HELD (pre-auth not restored). Next action is R23-22.
+- [x] **R23-22 — DONE ✅ 2026-09-02 — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is
+      drift-flagged and cannot carry a verdict either way. Let the GPU idle (no benches) before
+      re-running `headline_on_confirm_rung.py` with the same arguments, and check `drifting` is
+      False before believing the number. If the settled re-measure is inside the floor -> champion
+      is production-NEUTRAL (the keeps bought screen-rung speed that does not transfer); if it
+      reproduces beyond the floor -> the keeps are a real production REGRESSION and the lineage
+      needs a bisect (`7d2ea88b` / `db18f393` / `732389d6`) before any promotion. Either outcome is
+      a decision package for the operator, not an autonomous action.
+      **RESULT 2026-09-02T14:2xZ, 30 min idle settle, device verified 0% before start:
+      `-1.414%`, `drifting: False`, `decisive: True`.** production median **65.92 t/s** vs
+      champion **65.00 t/s**; drift 0.385/0.318, rho -0.307/-0.389 (inside tolerance), 40/40
+      resident, clocks pinned 1700/1700. It REPRODUCES the drift-flagged 12:49Z run (-1.600%),
+      two independent measurements agreeing within 0.19 pp.
+      **VERDICT: the champion is a REAL ~1.4% production REGRESSION on dec-b4** — while being
+      +27.363% on the 1.5B screen rung on THAT SAME SURFACE. The keeps are model-scale-specific
+      and actively harmful at production scale. This is the sharpest possible vindication of the
+      two-rung design (R23-10/R23-11) and of holding run 24.
+      **Note the workload split**: DFlash2 generation is FINE on this champion (R23-17: 72.65 t/s,
+      acceptance 0.6501). The regression is specific to the dec-b4 prefill-shaped surface — the
+      very surface the loop optimized on the 1.5B.
+- [x] **R23-23 — RESOLVED ✅ 2026-09-02 — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.**
+      Run 24 would launch WITH the confirm gate active, so it cannot repeat this defect going
+      forward — but it would start from a base that is already -1.4% on production. Options:
+      (a) **Bisect then repair** — first measure the pre-keep parent `9e18beb0` vs production
+      (~50 min, ONE measurement): if it is neutral, today's three keeps own the regression and the
+      culprit is isolated in 1-2 more runs; if it is already negative, the regression predates them
+      and the whole lineage is suspect. Most informative; tells us WHICH mechanism class hurts
+      production. (b) **Re-anchor to production-v9** — discard all three keeps, start run 24 clean
+      with the confirm gate on. Cheapest, zero measurement, loses only screen-rung work that is
+      worthless on production anyway. (c) **Launch run 24 as-is** — the confirm gate protects
+      future keeps but bakes in the -1.4%. NOT recommended.
+      **CORRECTED 2026-09-02 (before acting — two errors in the options above):**
+      **(i) Option (b) is BARRED by the ratified single-champion invariant.** "Seed Champion = frozen
+      production" is correct in exactly ONE moment: immediately after a promotion. We are MID-cycle,
+      so applying it would silently discard the accumulated research — the precise 2026-08-31
+      incident whose ruling reads *"I NEVER WANT TO SEE YOU MAKE THIS MISTAKE EVER AGAIN."*
+      Option (b) is withdrawn; it must never be recommended mid-cycle again.
+      **(ii) The -1.414% is the AGGREGATE's standing, NOT proven to be the three keeps' fault.**
+      The champion is **67 commits / +4720 -310** above v9 and contains the manual-admission
+      aggregate — DFlash2 loader + metadata, iqk fallbacks, speculative work (`5c278648a` verified
+      an ancestor) — as well as every autokernel keep. Attributing the regression to run 23's three
+      keeps was premature; R23-23's `9e18beb0` probe is exactly the test that attributes it.
+      **Revised options**: (a) probe `9e18beb0` (RUNNING, result ~15:55Z) — if it is neutral the
+      three keeps own the regression and a 3-commit revert cleans the base; if it is also ~-1.4%
+      the regression predates them and lives in the older aggregate. (c) **launch run 24 as-is with
+      the confirm gate already configured** — invariant-compliant, zero GPU cost, and every FUTURE
+      keep must clear the 27B, so the loop cannot deepen the hole.
+      **Recommendation: (a) then (c)** — the probe is already in flight and free, and run 24 cannot
+      start before it finishes anyway (a second GPU workload would contend and corrupt both).
+      **Recommendation (superseded): (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
+      whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
+      **RESOLVED 2026-09-02T16:15Z — probe (a) run, keeps EXONERATED, run 24 launched as-is (c).**
+      `9e18beb0` (the pre-keep parent) measures **-1.751%** vs production — `drifting: False`,
+      `decisive: True`, cleanest drift of any run yet (0.080/0.079, rho 0.081/0.090); production
+      66.10 t/s vs 64.91 t/s. Against the champion's -1.414%, the three run-23 keeps moved
+      production by **+0.337 pp — INSIDE the 0.949% floor** — so they are production-NEUTRAL, not
+      the cause. **The regression predates them and lives in the older aggregate.** A 3-commit
+      revert would have fixed nothing; none was made.
+      **Reframing: this is very likely a FEATURE COST, not a defect.** The aggregate's
+      -1.4/-1.75% is measured on dec-b4 = `pp=512, tg=0, ubatch=4` — a PREFILL-shaped surface that
+      by construction cannot see DFlash2, whose entire value is in DECODE. The same champion
+      delivers **2.38x speculative decode** at acceptance 0.6501 (R23-17). Paying ~1.7% of prefill
+      for 2.38x decode is a good trade for real serving, not a regression to repair.
+      Run 24 launched **pid 260751**, confirm gate ACTIVE (27B, 5 pairs, dec-b4 1.142% + dec-b8
+      1.753%), screen parity waived-and-recorded, claim held on mi210_0.
+- [ ] **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.**
+      Established by R23-22/R23-23: the headline is measured on dec-b4 (`pp512/tg0`), a
+      prefill-only shape, while the champion's largest asset (DFlash2, 2.38x) is a DECODE feature
+      that surface cannot observe. The published headline therefore systematically UNDERSTATES the
+      champion and reads as a regression while the aggregate may be strongly net-positive in real
+      serving. Propose: the headline for an aggregate carrying decode features must include a
+      decode/speculative surface (tg128 and/or a DFlash2-enabled arm) reported ALONGSIDE prefill,
+      never replacing it. Until then quote the headline as "prefill-only".
+- [x] **R23-27 — run 24 STOPPED and reconfigured to hunt ON the confirm rung** ✅ 2026-09-03
+      (operator: *"do the third"*). **Why**: run 24 ran 14 h and produced **116 measurements, ZERO
+      keeps** — best effect +0.650% against a 0.668% floor, only 4 attempts above +0.468%: the 1.5B
+      screen surface is exhausted. Worse, R23-19/22/23 established that surface is anti-correlated
+      with production for exactly the size-dependent families the planner keeps proposing (R23-25),
+      so its verdicts were not worth the GPU claim. The confirm gate was NEVER exercised (no screen
+      keep -> no KEEP_CANDIDATE -> the 27B path never ran).
+      **Also degrading**: 161 planner transients, escalating 0-5/hr (evening) -> 23 at 01:00Z -> 21
+      at 04:00Z -> **64 at 05:00Z against 7 measurements**, all malformed structured output
+      (`hypothesis is missing [...]` 63+26, `authoring returned no changed paths` 26, `no parseable
+      JSON object` 25) — the same class as the v3-v27 planner-outage spin. A fresh process clears it.
+      **New configuration (dry-run PROVEN before launch)**: `--model Qwen3.8-27B-Q8_0` (was the 1.5B),
+      `--surface dec-b4 --pairs 5`, NO `--confirm-model` (redundant once the screen IS the confirm
+      rung). Dry-run reports `workload Qwen3.8-27B-Q8_0: n_embd=5120, dominant Q8_0`, floor
+      **1.142%** correctly keyed to the 27B, and — the tell that this is right — **no "screen parity
+      WAIVED" line**, because the hunting rung is now production-shaped by construction.
+      **Consequences, stated honestly**: throughput drops (a 5-pair 27B A/B is ~14 min of device vs
+      ~8 min for a 20-pair 1.5B run, so roughly 3/hr instead of 8/hr) and the keep bar rises to
+      1.142%. In exchange every verdict is a PRODUCTION verdict, false negatives from rung transfer
+      vanish by construction, and `headline_model` now equals the production model so the loop's own
+      headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
+      prefill-only, which R23-26 still owns).
+      Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
+      (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
+      appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
+      **quant family**, **architecture**, and **GEMM dimensions**. The first two are cheap to match;
+      the third is not, and that is the trap: the winning tile (`MT128x96x64`, 23.89% of production
+      device time) is selected by rocBLAS/Tensile FROM THE MATRIX DIMENSIONS, which derive from
+      n_embd=5120. Any model small enough to be a cheap screen has different dims and therefore
+      dispatches different tiles — **the property that makes a screen cheap is the property that
+      destroys its fidelity for GEMM work.**
+      **Measured evidence** (run 25's first profile vs run 24's): production top hotspot
+      `MT128x96x64` (23.89%) then `MT64x64x64` (18.44%) then `gated_delta_net_cuda` (13.55%) then
+      `MT64x32x64` (11.97%) then `dequantize_block_q8_0_f16` (10.75%). The 1.5B Q4_K screen's top
+      was `MT64x64x64` and it dispatches NO Q8_0 dequant and NO gated_delta_net at all.
+      **So**: a same-quant same-architecture small model WOULD faithfully screen dequant kernels,
+      SSM/gated_delta_net work and attention geometry, but NOT GEMM tiling or occupancy. Those must
+      be hunted on production (which run 25 now does).
+      **Availability check (2026-09-03): no such screen exists on disk** — the Qwen3.8 (SSM-hybrid)
+      family has only the 27B. `Qwen3-1.7B-Q8_0.gguf` is a DENSE transformer and would not exercise
+      `gated_delta_net` at all. Filing rather than acting: sourcing or building a small
+      SSM-hybrid Q8_0 screen is a real piece of work with its own value question.
+- [ ] **R23-29 — the Q4_K keeps are BANKED for a future Q4_K GPU target, not wasted** (operator
+      question: *"could the gains obtained through the current screening model still be useful if we
+      were to one day choose a Q4_K target model on the GPU?"* — yes, and this CORRECTS my earlier
+      "worthless on production" framing, which was too strong).
+      **VERIFIED by reading the diffs**: `7d2ea88b` gates on `GGML_TYPE_Q4_K` and `732389d6` on
+      `type == GGML_TYPE_Q4_K` — both are hard-gated and **cannot execute on a Q8_0 model**. That is
+      precisely WHY the champion measures production-NEUTRAL (+0.337 pp, inside floor): the code
+      never fires. They are DORMANT, not harmful. `db18f393` (fattn) carries no quant gate and is
+      the only one of the three that runs on the current production model.
+      **Consequence**: on a Q4_K GPU serving path — the large-MoE-with-CPU-offload roadmap item is
+      exactly that class — these become live again. **Caveat against over-claiming**: the +5.097%
+      and +13.930% were measured on a 1.5B Q4_K; a large Q4_K model has different GEMM dims, so the
+      quant PATH transfers but the MAGNITUDE does not. Treat them as promising leads to re-measure
+      on the real target, never as banked numbers.
+      **Actionable**: record a `quant_family` / `applies_to` field on every keep so (i) the headline
+      can be reported per target, (ii) a future Q4_K path inherits them deliberately rather than by
+      archaeology, (iii) the loop can be told which quant family to hunt. llama.cpp already templates
+      per quant type and our keeps already gate correctly, so this is metadata, not restructuring.
+      **PROMOTION-TIME CONDITION (folded in 2026-09-03 at operator request).** These paths have
+      **zero performance validation on any Q4_K workload since they were written** — every
+      measurement since has run on Q8_0, where they cannot fire. Correctness coverage is probably
+      fine (the gate runs `test-backend-ops -o MUL_MAT`, which sweeps quant types by design, 1139/1139
+      passing) but is NOT provable from the stored record: the gate `detail` field is truncated to
+      **500 chars**, so grepping it for `type_a=q4_K` returns nothing and that absence proves nothing
+      (see [[feedback_verify_negatives_before_concluding_absence]]). Before any promotion ships these
+      into production they must EITHER be exercised against a real Q4_K workload OR be explicitly
+      marked carried-but-unvalidated-on-this-path in the freeze runbook — otherwise the first person
+      to serve Q4_K on the promoted kernel is the one who discovers the state of them.
+      **Q4_K targets available on disk for that check (inventoried 2026-09-03)**:
+      `gemma-4-26B-A4B-it-Q4_K_M.gguf` (16.8 GB, MoE, and **already an in-fleet production role
+      model** — the worker — so this is not a hypothetical future target),
+      `gemma-4-31B-it-Q4_K_M.gguf` (18.7 GB, dense), `MathSmith-...-Qwen3-8B.Q4_K_M.gguf` (5.0 GB).
+      All fit the MI210's 64 GB comfortably and carry production-scale GEMM dims, unlike the 1.5B.
+      **Cost warning — it is NOT a quick check as gated**: `headline_on_confirm_rung.py` REFUSES on an
+      uncalibrated (surface, model) pair (rc=3, mutation-tested), and no Q4_K floor exists; the A/A
+      bootstrap that produced the 27B floor took **3 h 11 m**. Cheap first step instead: an
+      UNGATED llama-bench A/B (champion vs production on a Q4_K model, ~15 min) as a signal only —
+      not claim-grade, but enough to decide whether the 3 h calibration is worth spending. Needs a
+      GPU window: run 25 holds the mi210_0 claim.
+- [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
+      (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
+      performed by autokernel could have actually been beneficial in production?"* — yes).
+      **Why today's result raises this, not just the false-positive risk**: the prior working
+      model was ATTENUATION (CH-6: +23.09% on the 0.5B -> +0.50% on the 27B). Attenuation is
+      monotone — it shrinks magnitude but preserves sign, so it can only manufacture false
+      POSITIVES. R23-22 measured a **sign INVERSION** (+27.363% screen -> -1.414% production on
+      the same surface). Once the transfer function can flip sign it can flip in BOTH directions,
+      so the same evidence that convicted the keeps also admits false negatives.
+      **Structurally they may be MORE likely than false positives**: an optimization with fixed
+      setup cost + size-scaling benefit looks NEGATIVE at n_embd=1536 (overhead dominates) and
+      POSITIVE at n_embd=5120 (benefit dominates). That is the textbook false negative.
+      **Bounded exposure, measured**: run 23 produced 80 `measured_null` rows, but **71 were
+      INSIDE the floor** — inconclusive on the screen rung, carrying no information about
+      production either way. Only **9 were decisive negatives**, and they are the candidates:
+      `akm-fattn-causal-tile-skip` -4.851% · `akm-cdna2-mmvq-256-thread-block` -1.885% ·
+      `akm-cdna2-b1-mmvq-eight-nwarps` -1.699% · `akm-mmvq-dense-256-thread-launch` -1.055% ·
+      `akm-mmvq-gfx90a-four-wave-launch` -1.020% · `akm-q4k-wave-scale-broadcast-rerun` -0.959% ·
+      `akm-mmvq-gfx90a-256-thread-launch` -0.928% · `akm-mmvq-cdna2-256-thread-launch` -0.830% ·
+      `akm-fattn-gfx90a-prefill-eight-wave-vkq` -0.720%.
+      **They cluster in exactly the size-dependent families** (MMVQ thread-block/wave-launch
+      geometry, fattn wave geometry) — the same families as the keeps whose sign just inverted.
+      **Nothing is lost**: every negative carries mechanism, statement, falsifier and full sample
+      vector in `experiments.db` (a rebuild design goal), so all 9 are re-testable on the confirm
+      rung at ~50 min each (~7.5 h for all). Do NOT chase all of them reflexively.
+- [ ] **R23-25 — route hypotheses to a rung by MECHANISM FAMILY, not uniformly.** Follows from
+      R23-24. A screen-rung verdict is only informative for mechanisms whose effect is
+      size-INDEPENDENT (removing redundant work, algebraic simplification, fewer dispatches).
+      For size-DEPENDENT families — launch geometry, occupancy, wave/thread-block counts, tiling —
+      the 1.5B verdict is uninformative and today's evidence suggests it can be anti-informative.
+      Proposal: mark those families to SKIP the screen and go straight to the confirm rung,
+      accepting the higher per-attempt cost in exchange for a verdict that means something.
+      Decide after R23-23's bisect names the culprit family.
       **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
       `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
       `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries
