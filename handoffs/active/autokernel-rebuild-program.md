@@ -1499,6 +1499,41 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       -1.414% (27B Q8_0 prefill, decisive) · **+7.206% (26B-A4B Q4_K prefill, decisive)** ·
       2.38x (27B speculative decode, DFlash2). R23-26's "the headline surface is wrong for this
       aggregate" is now backed by two decisive measurements pointing opposite directions.
+- [x] **R23-34 — planner/critic model split (operator directive 2026-09-03: "swap the models
+      used by planner/critic. Use Fable-5.1-medium for the planner and gpt-5.6-sol-high for
+      critic") — DONE, NOT launched** ✅ 2026-09-03. Research lane `f81bbeb6`.
+      **Before**: both roles ran one `codex exec` argv with NO model/effort flag — whatever
+      `~/.codex/config.toml` said (`gpt-5.6-sol`/`high`, so the critic target was already the
+      implicit default, but unpinned). **After**: `actors.Backend.argv` is the per-CLI contract;
+      `backend_for(model, effort)` routes `claude-*` to the `claude` CLI, else codex. Defaults =
+      the directive; `--planner-model/--planner-effort/--critic-model/--critic-effort` override;
+      the startup banner prints `actors    planner=claude:claude-fable-5-1@medium
+      critic=codex:gpt-5.6-sol@high` (dry-run verified) so a run records what drove it —
+      provenance R23-19 showed is not optional. Classes `CodexPlanner/CodexCritic` ->
+      `AgentPlanner/AgentCritic`. 390/390 loop tests, 5 new ones pin exact argv tokens.
+      **Measured constraints that shaped it (all live smokes, one call each):**
+      · codex `-c` is TOML — `model_reasoning_effort="high"` MUST be quoted (unquoted rejected).
+      · `claude -p --bare` would skip the worktree's CLAUDE.md but accepts ONLY
+        `ANTHROPIC_API_KEY`/apiKeyHelper — OAuth is never read; this host is claude.ai-OAuth-only,
+        so `--bare` and `CLAUDE_CODE_SIMPLE=1` both fail "Not logged in". Not used.
+      · The lane worktrees carry the llama-tree freeze overlay CLAUDE.md. A deliberately hostile
+        fake ("never create files") made Fable REFUSE ("The project's CLAUDE.md marks this
+        directory as frozen"); `--system-prompt` does not suppress it. **But the REAL overlay
+        scopes its freeze to `production-consolidated-*` and says to check the branch — in a real
+        detached champion worktree (probe `worktree add --detach` @732389d6, removed after) Fable
+        AUTHORED cleanly.** The fake was harsher than reality; the real artifact is what counts.
+      · Mitigation shipped: `_CLAUDE_SANDBOX_NOTE` via `--append-system-prompt` states that scoping
+        explicitly so authoring does not depend on the model re-deriving it. Residual risk: the
+        overlay IS loaded and the real-worktree proof is n=1 — watch the first iterations of the
+        next run for `planner_transient` refusals of the "frozen" shape.
+      **Regrowth guard** 2160 -> 2210 (+44 code lines, reason recorded in the guard per its own
+      doctrine). **Also fixed en route** (`078d9c3c`, separate commit): `test_bench`'s live-store
+      test asserted the 27B is uncalibrated (None) — true 09-01, false since the 09-02 keyed
+      floors; now asserts the actual intent (27B rows != 1.5B rows). R21-4 family.
+      **Cost note**: 2 of the 4 actor calls per iteration (propose, author) now run on Fable 5.1;
+      2 (both critic passes) stay on codex. **NO RUN WAS STARTED** — standing instruction; the
+      config is the default, so the run-25 launch shape restarts it unchanged when the operator
+      says so.
 - [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
