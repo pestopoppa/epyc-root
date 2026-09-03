@@ -1446,6 +1446,83 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
       prefill-only, which R23-26 still owns).
       Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [x] **R23-31 — Q4_K SIGNAL PROBE: +7.066%. The banked-gains thesis is CONFIRMED** ✅ 2026-09-03
+      (step 1 of the operator-approved two-step). Champion `732389d6` (anchor-gen-014) vs frozen
+      production-v9 on **`gemma-4-26B-A4B-it-Q4_K_M`** — an **in-fleet production role model** (the
+      worker), not a hypothetical target — `dec-b4`, 5 pairs:
+      **production 175.96 t/s -> champion 188.40 t/s = +7.066%**, `drifting: False`, residency clean
+      (10/10 resident, 17.4 GB VRAM, clocks pinned 1700/1700, `clock_stable` true).
+      **Status: SIGNAL, not a verdict** — no calibrated floor exists for this (surface, model), so
+      `decisive` is `None` by construction. For scale: the 27B's dec-b4 floor at 5 pairs is 1.142%,
+      so +7.07% is ~6x a comparable bar and very unlikely to be noise — but that reasoning borrows
+      another model's floor and is NOT a substitute for calibrating this one.
+      **What it establishes**: the Q4_K-gated keeps (`7d2ea88b`, `732389d6`) **do fire and do help**
+      on a real Q4_K workload. R23-29's "dormant, not dead" reading is correct, and my earlier
+      "worthless on production" framing was wrong in a way that mattered.
+      **The champion's real standing is workload-dependent, not a single number**:
+      | workload | champion vs production-v9 |
+      |---|---|
+      | Qwen3.8-27B Q8_0, dec-b4 (prefill) | **-1.414%** (decisive; Q4_K keeps inert, DFlash2 feature cost) |
+      | gemma-4-26B-A4B Q4_K_M, dec-b4 (prefill) | **+7.066%** (signal; Q4_K keeps active) |
+      | Qwen3.8-27B Q8_0, speculative decode | **2.38x** with DFlash2 (R23-17) |
+      A single "champion vs production" headline cannot express this — which is R23-26's point,
+      now with hard numbers behind it.
+- [x] **R23-32 — DONE ✅ 2026-09-03 — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.**
+      Approved shape (operator, 2026-09-03: cheap signal first, then calibrate only if promising —
+      the signal is promising). Run the A/A bootstrap for
+      (`dec-b4`, `gemma-4-26B-A4B-it-Q4_K_M`) to produce a keyed floor (~3 h, the 27B dec-b4
+      calibration took 3 h 11 m), then re-measure with `headline_on_confirm_rung.py`, which will
+      then pass its uncalibrated-surface refusal (rc=3) instead of tripping it.
+      **Why it is worth the 3 h**: this is a production win available on a model we ALREADY SERVE.
+      If it holds, the promotion argument changes from "the champion is neutral-to-negative" to
+      "the champion is +7% on the worker", which is a different conversation entirely.
+      **Needs a GPU window** — no run is currently hunting, so the window is open now.
+      **RESULT 2026-09-03T12:1xZ — CLAIM-GRADE: `+7.206%`, `decisive: True`, `drifting: False`.**
+      Champion `732389d6` vs frozen production-v9 on `gemma-4-26B-A4B-it-Q4_K_M`, dec-b4, **20
+      pairs against the freshly calibrated 0.456% floor** — production **174.26 t/s** vs champion
+      **186.76 t/s**, i.e. **15.8x the floor**. Drift inside tolerance (-0.223/-0.061, rho
+      -0.311/-0.215), residency clean (40/40 resident, 1 KFD proc, clocks pinned 1700/1700).
+      It reproduces the 5-pair signal (+7.066%) within 0.14 pp — two independent measurements,
+      different pair counts, same answer.
+      **The calibration that made it claim-grade** (R23-32's prerequisite): floor curve
+      1.843/1.257/0.936/0.699/0.456 for k=1/3/5/9/20 — a 4.04x fall against the ideal sqrt(20)=4.47x,
+      i.e. textbook parametric scaling and structurally believable (contrast dec-b8's anomalous 45x,
+      which only the parametric guard caught). A/A effect **-0.061%**, `drifting: False`, despite a
+      peer running a 48-thread CPU bench concurrently — the flagged memory-bandwidth co-residency
+      did NOT contaminate it.
+      **Isolation held**: run in the scratch store, so the live `champion-vs-production.json` still
+      carries the 27B production headline (-1.414%, model field = Qwen3.8-27B-Q8_0) and was not
+      overwritten by a Q4_K number.
+      **What this establishes.** The champion is **+7.206% on a model the fleet already serves**
+      (the worker). The Q4_K-gated keeps are not merely dormant — they are worth ~7% where they
+      fire. The program's standing is now three measured workloads, not one number:
+      -1.414% (27B Q8_0 prefill, decisive) · **+7.206% (26B-A4B Q4_K prefill, decisive)** ·
+      2.38x (27B speculative decode, DFlash2). R23-26's "the headline surface is wrong for this
+      aggregate" is now backed by two decisive measurements pointing opposite directions.
+- [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
+      Before today the promotion argument was "the champion is neutral-to-negative on production".
+      It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
+      the 27B prefill surface, and 2.38x on speculative decode". That is a materially different
+      conversation and it is the operator's to have. Inputs: the freeze runbook
+      (`docs/reference/kernel-freeze-runbook.md`), R23-29's promotion-time condition (the Q4_K paths
+      are now performance-VALIDATED by this measurement, closing that gap for dec-b4), and R23-26
+      (a promotion headline must state its workload). **No run starts, and no promotion step is
+      taken, without explicit operator permission** (standing instruction 2026-09-03).
+- [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
+      will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
+      graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
+      holding a measurement finishes it and lanes serialize on the claim. Publish cadence was
+      steady at **17.3 / 17.5 / 17.8 min** per lane; 2 lanes abandoned at formation, 5 completed.
+      `boundary_20260901.sh:98` sets `KILL_WAIT_S=900` with the comment *"drain-tier loop: <=5 min
+      historically"* — true for the 1.5B screen rung (run 23 drained in 15 min) and **false by ~6x
+      for the 27B rung**. As written the next boundary SIGKILLs mid-measurement every time,
+      discarding up to ~17 min of device work per in-flight lane and losing those verdicts.
+      **Fix**: scale the grace to `workers x per-measurement-time` for the configured rung (~2 h for
+      7 workers on the 27B), or make the driver poll for loop exit rather than use a fixed deadline.
+      **Diagnostic note for whoever reads a drain**: `loop-status.step` names only the ONE active
+      lane, never the queue — lanes serialize on the claim, so remaining work must be derived as
+      `workers - (abandoned + published)`, not inferred from the step field. Two ETAs were wrong in
+      this session for exactly that reason.
 - [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
       (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
       appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
