@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 (wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Last compiled**: 2026-09-03 (incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
 
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
@@ -1666,3 +1666,64 @@ artifact).
 - `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/REPORT.md` — the serial oracle and the failed driver-side fixes
 - `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — α harness; blocked on the kernel defect
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-03: MoE-Spec on live CPU verification batches is role-dependent, not universally positive — and the GPU decode arm was never capable of showing a result
+
+**Confidence: verified** — decision-grade record with run receipts and a pinned binary; the caveats below
+are the handoff's own, carried rather than smoothed over.
+
+### The "no live consumer" framing is now partly stale
+
+The 2026-06-12 portfolio verdict — "proven mechanism, NO live consumer; the REAP role was removed and the
+frontdoor runs zero spec-dec" — assumed there was nowhere left to measure this. On 2026-08-27 a B-sweep ran
+`--moe-spec-budget` against **actual current-role live-MTP verification batches** (region lock q0–q3, binary
+v10126 `c7c37a0d9` = MoE-Spec `6b2cbf539` on v9 `0db32c06e`, MTP posture, greedy, 3 reps/cell):
+
+| role | B | Δ t/s vs B=0 | Δ acceptance |
+|---|---|---|---|
+| architect_critic (122B Q4_K_M, `n_expert=256`) | 128 | **+10.7%** | −2.4 pp |
+| frontdoor (35B-A3B Q8, 256) | 128 | **−11.4%** | −6.0 pp |
+| worker (gemma4-26B Q4, 128) | ≤96 | −2.6% to −10.5% (noisy) | −2.2 to −10.9 pp |
+
+The shape is mechanism-consistent: **the heaviest DRAM-bound role wins and lighter roles regress** — the
+same memory-tier lever that governs plain CPU decode, now confirmed on live verification traffic rather than
+synthetic forward passes.
+
+Three caveats bound the win, and all three are load-bearing. n=3/cell, so the architect win is only ≈2.9σ
+and the operator declined the 5-rep confirm. Acceptance drops 2.4 pp on the winning arm. And a strict
+bit-exact guard is **not enforceable on the production arm at all**: budgeted arms differ from B=0 by
+construction, and cross-run MTP non-determinism means same-seed B=0 reps differ across runs on every role —
+so correctness is checkable only through the gate-skip control (worker at `B = n_expert` reproduced B=0
+bit-exactly, 3/3). The registry change is **proposed, not applied** (`architect_critic` →
+`moe_spec_budget: 128`, frontdoor and worker stay 0), gated behind the E8-reseed / OP-19 decision.
+
+### Two contemporaneous numbers do not conflict — and one arm was a null by design
+
+The same week produced an apparently contradictory result: Qwen3.8-27B-Q8_0 pp512 at `budget=32` on the GPU
+champion measured **−2.92%**, a regression. These do not disagree — a CPU verifier batch and a GPU
+`llama-bench` champion sweep are different serving surfaces. But the champion's paired `tg128` row (−0.06%,
+reported as "no regression") is **uninformative by construction rather than by measurement**: batch-1 decode
+never reaches `--moe-spec-min-batch 4`, so that arm executes the *identical code path* as B=0. Reporting it
+as a clean decode result mistakes a design gate for an empirical finding.
+
+**Transferable lesson:** a verification-budget mechanism's sign is not a property of the mechanism alone. It
+flips with which serving surface and role you measure against — DRAM-bound heavy role versus light role,
+live MTP batch versus synthetic `llama-bench` sweep — and with whether that role's batch shape ever crosses
+the kernel's own internal gate. Before quoting a batched-kernel number as "no regression" or "no effect",
+confirm the measured batch actually reaches the gate the flag is conditioned on; otherwise the flat number
+is a null *test*, not a null *finding*.
+
+(Related: the #27442 part-two boundary sweep recorded above as "blocked on G1" is no longer blocked — G1
+executed 2026-08-27 and returned a scoped negative on our CPU path; see
+[SSM & Hybrid](ssm-hybrid.md).)
+
+### Source References (2026-08-27 MoE-Spec B-sweep)
+
+- [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) — the
+  2026-08-27 B-sweep table with its three caveats, the surface-reconciliation table, and the proposed
+  registry patch (`registry_patch_proposal.yaml`).
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-4
+  (`c7c37a0d9`): the −2.92% pp512 regression and the `tg128` uninformative-by-construction finding
+  (2026-08-28).
+- `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` — `findings.md`, `summary.json` and
+  `summary_receipt.json`: the canonical run receipts and the pinned binary identity.

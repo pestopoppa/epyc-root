@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-08-30 (the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
 
 ## Compiled Update — 2026-08-30: a dashboard is a claim about a producer — and every defect found merging two kernel pages was the surface agreeing with itself instead of with the producer
@@ -3099,3 +3099,127 @@ differ by a flag that only becomes necessary once the tree has drifted dirty.
   retirement and its re-verification), R21-5 (the rescued patch pending evaluation).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record.
+
+## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
+
+**Confidence: verified** — the convention is ratified in a checked-in guide, and both motivating defects
+were located in shipped controller code with their event tallies counted across named campaigns.
+
+Ratified 2026-08-28 as a standing convention after the AutoKernel rebuild: agent-loop work now opens with a
+**pseudocode expression of the loop** — the actors, what each one reads, what gates it, where every
+rejection goes, and which single step is expensive — reviewed *before* any plan is written around it. One
+review round on that block surfaced three design corrections that months of prose had hidden: the critic
+needed two passes rather than one, every rejection needed an explicit loopback to the actor that could act
+on it, and hypotheses needed generating against a live profile instead of being drawn from a frozen list.
+
+### Why prose hides what a drawn arrow shows
+
+Two real AutoKernel defects have exactly the shape the convention exists to prevent, and both became
+obvious only once someone wrote the arrows down.
+
+- **A rejection with no visible destination is a bug.** `prior_authoring_refusals` — the channel that tells
+  the planner why its last diff was rejected — filtered on `status == "planner_refused"`. The status the
+  controller actually wrote was `authoring_refused`. The tally across campaigns v28–v34 is
+  **22 `authoring_refused` against 1 `planner_refused`**: for 22 of 23 authoring failures the planner
+  received no feedback at all and re-derived rejected work blind, driving two hypotheses to their 3-strike
+  retirement (v33, v34) without ever being told why the first attempt failed.
+- **Two failures with different causes must not share a counter.** `critic_revise` — a critic asking for a
+  revision, which is the *normal* mechanism by which a proposal improves — was charged to the same 3-strike
+  authoring-failure budget as a malformed diff. It supplied v33's third strike, retiring
+  `akh-v2-q5-type-specific-dequant` **for having been reviewed**, before the idea was ever tested. The fix
+  splits `CRITIC_REVISION_BUDGET` (6) from `AUTHORING_FAILURE_BUDGET` (3) with its own disposition
+  (`bounded_critic_revision_skip`). A critic *reject* still counts against the strike budget, because that
+  verdict says the idea was unsound rather than merely improvable.
+
+### Prefer verification by reproduction to verification by proof
+
+The reference loop block treats the champion git commit as the **only durable state**: no intermediate
+artifact has to be trusted, because anyone can check it out and re-measure. "Did we improve?" is answered by
+rebuilding and benching — a `llama-bench` re-run costs **90 seconds** — not by reading a receipt about a run
+that happened last week.
+
+The generalizable point is a cost argument. Proof requires every intermediate step to be sealed and to
+refuse on doubt, so its apparatus grows with the number of steps and has no natural stopping point;
+reproduction requires only that the recipe was kept, and costs one bounded re-run. AutoKernel had chosen
+proof where reproduction was available: guaranteeing the honesty of a single float cost **3,869 lines** in
+`gpu_source_evidence.py` to establish what a 90-second re-run would have shown directly.
+
+The A/A instrument noise floor that sizes the loop's `n ≥ 5` pairing requirement is itself measured rather
+than assumed: at a single pair (n=20 alternating pairs, 2026-08-28) p95 is **2.175%** on prefill and
+**3.452%** on decode — **4 of 20 pure-noise decode pairs already cleared the loop's 3% nomination bar at
+n=1** — falling to 0.75% / 1.85% at five pairs.
+
+### Addendum: an actor that reports errors on stdout makes its own failures undiagnosable
+
+Recorded in the 2026-09-03 rebuild session log and carried here as a debugging corollary of the same
+actor-observability theme (single-source, so treat the incident detail as attested rather than
+cross-verified). Run 27's planner threw an intermittent storm — **74 `actor exited 1:` events with an empty
+detail field**, roughly 40% of iterations at peak — that resisted diagnosis for hours; auth, 6-way
+concurrency, the freeze-overlay agent file and prompt size were each ruled out live and none explained it.
+The defect was in the instrumentation, not the actor: `claude -p` reports its own errors on **stdout** with
+a non-zero exit and an *empty stderr*, while the harness's `_run_agent` captured only the stderr tail. Every
+diagnostic being run was reading the one stream the failure never wrote to. Fixed by keeping both output
+tails and attaching the backend identity to the exit record (`b5cd2817`). **When a CLI-driven subprocess
+actor fails opaquely, confirm which stream it actually writes errors to before assuming your capture is
+complete.**
+
+**Transferable lesson:** a loop's design-review artifact should be the pseudocode block itself, not a
+description of it. Every rejection needs a drawn arrow to the actor that can act on it, every budget needs
+its own counter, and every claim of "verified" deserves the question of whether reproduction would have been
+cheaper than the proof apparatus built to avoid it.
+
+### Source References (2026-09-03 loop design)
+
+- [`docs/guides/agent-workflows/agent-loop-design.md`](../docs/guides/agent-workflows/agent-loop-design.md)
+  — the ratified convention, the reference loop block, the reproduction-over-proof cost argument with the
+  90-second / 3,869-line comparison, and the A/A noise-floor measurement.
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-VIS-1 and
+  AK-VIS-2 (2026-08-28): the `prior_authoring_refusals` status mismatch with its 22-vs-1 tally, and the
+  `critic_revise` budget split.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — P4.1 (2026-08-28),
+  where the loop block was adopted as the program's normative spec, with the ratification recorded inline.
+- [`progress/2026-09/2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md)
+  — the run-27 planner transient storm and the stdout/stderr capture fix in the addendum.
+
+## Compiled Update — 2026-09-03 (incremental): a stale untracked file at an authoritative path is indistinguishable from live uncommitted work — verify by content, not by tracked status
+
+**Confidence: verified** — the drift was measured on the served tree, and every passage of the stale draft
+was diffed against `origin/main` before it was displaced.
+
+The shared-tree custody hazards already compiled on this page cover three shapes: a pathspec commit sweeping
+a peer's hunks, `checkout`/`restore` reverting them silently, and `worktree remove --force` destroying a
+working tree the branch history never saw. The served dashboard tree produced a fourth on 2026-08-28.
+
+**The mechanism.** The dashboard hub's served `main` was **45 commits behind and 1 ahead** of
+`origin/main`. Because it predates the origin commit that added
+`handoffs/active/autokernel-champion-aggregate.md`, that path existed on the served tree only as an
+**untracked, superseded 144-line draft**, while origin/main's tracked version had grown to **465 lines**.
+Git's own status vocabulary offers no way to tell that apart from a session's genuine work-in-progress
+sitting uncommitted at the same path: both render identically as "untracked file present."
+
+**What made the resolution safe.** Every substantive passage of the 144-line draft was individually verified
+present in the 465-line origin version before the stale file was displaced, with a backup taken first and
+discarded only after the diff check passed. The general form: **`git status`'s tracked/untracked
+classification is a property of one clone's history, not of the content's currency.**
+
+**Why it generalizes past this one file.** Any served or long-lived clone that lags its origin will show
+*every* path added upstream after its local tip as untracked-if-locally-present rather than modified — so
+the failure mode recurs for each stale copy on a lagging tree, not just for handoffs. The provenance
+predicate already built for the dashboard's deployment sync (AK-DEPLOY-1: trust a blob only if it has
+existed on `origin/main`) is the right instrument; it simply was not yet being run over `handoffs/`.
+
+**Transferable lesson:** on a shared or served clone known to lag its origin, "untracked" is not a safety
+signal. Before deleting, overwriting or trusting an untracked file at a path origin also tracks, diff its
+content against the origin/main version — never infer disposability from which side of the git index a file
+happens to sit on.
+
+### Source References (2026-08-28 served-tree drift)
+
+- [`progress/2026-08/2026-08-28-champion-attest.md`](../progress/2026-08/2026-08-28-champion-attest.md) —
+  "Served-tree drift — AK-DEPLOY-2 got worse than 'lagging'": the 45-behind/1-ahead measurement, the
+  144-vs-465-line discrepancy, and the content-verification-then-backup resolution.
+- [`autokernel-restart-and-strip.md`](../handoffs/active/autokernel-restart-and-strip.md) — AK-DEPLOY-2,
+  filed open the same day, naming the AK-DEPLOY-1 provenance predicate as the existing pattern to extend.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+  cross-reference confirming AK-DEPLOY-2 as a live, separately-tracked item distinct from the champion
+  findings on that page.
