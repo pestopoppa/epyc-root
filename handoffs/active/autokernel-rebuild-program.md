@@ -1539,6 +1539,16 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       `actors    planner=claude:claude-fable-5-1@medium  critic=codex:gpt-5.6-sol@high`, claim held,
       27B production rung, floor 1.142% @5 pairs. Monitor armed for keeps/advances, measured rows,
       transient counts, frozen-shaped refusals (the R23-34 residual risk) and death.
+      **Run 26 STOPPED 13:05->13:22Z and RUN 27 LAUNCHED 13:24Z, pid 2047396** — operator ("I have
+      no issue restarting") took the second-surface guard: `--confirm-model` = the same 27B,
+      `--confirm-surfaces dec-b8 --confirm-pairs 5` (floor 1.753%). Screen==confirm model, so
+      parity is EXACT (no waiver line). Every dec-b4 keep candidate must now clear dec-b8 before
+      touching the champion; the gate fires only on candidates (~14 min each). **Run 26's 25 min
+      delivered the end-to-end proof of the planner swap**: `akm-gdn-next-token-register-prefetch`
+      went propose->critic->author->critic->build->MEASURED (+0.305%, null) — a `gated_delta_net`
+      target the 1.5B could never have surfaced. Not guarded: decode. tg128 has no 27B floor
+      (each floor is per (surface, model) — see the operator Q&A in progress 2026-09-03); the
+      DFlash2 path is llama-server-only and is guarded by R23-18's smoke, still open.
 - [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
