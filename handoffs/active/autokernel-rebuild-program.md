@@ -1584,6 +1584,21 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       the build is reproducible. Decision for operator: (a) kill the zombie + investigate build
       determinism before relaunch; (b) relaunch anyway and accept aborts at each keep. Recommend
       (a).
+      **ROOT-CAUSED 2026-09-03 (cheap, no rebuild): `libggml-hip.so` is non-reproducible; the
+      CPU executable is NOT.** champ2 clean at 445e93a8, ccache absent -> genuine non-determinism.
+      Hashing existing binaries' .text: `llama-bench` is BYTE-IDENTICAL across anchor-gen-016 +
+      champ2 + all 7 lanes (`7337b4bb`), but `libggml-hip.so` (`6bac92af` vs `55f783de`),
+      `libggml.so`, `libllama.so` all DIFFER. The guard (`anchor_integrity.build_digest`,
+      run.py:405/475) hashes `bin/libggml-hip.so` ALONE — the gfx90a HIP kernel lib, which is the
+      non-deterministic one. Cause class: hipcc gfx90a code-object generation is not reproducible
+      build-to-build (parallel-compile ordering / embedded metadata), plausibly aggravated by the
+      7-lane concurrent build load; contradicts the guard's R22-3/R21-10 determinism premise, so
+      something regressed. FIX (operator design call): (i) make the HIP build reproducible — hipcc
+      determinism flags / libggml-hip.so at -j1 / isolate the anchor build from lane builds;
+      (ii) hash a deterministic proxy (defeats purpose — the kernels ARE the artifact); (iii) widen
+      the guard to accept a hash mismatch when a functional A/A confirms equivalence (weakens the
+      R18/R21 doctrine). Recommend (i). Until fixed EVERY keep aborts at its anchor guard, so the
+      loop cannot advance past one keep. Both current keeps remain safe in git.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
