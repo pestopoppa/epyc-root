@@ -1534,6 +1534,11 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       2 (both critic passes) stay on codex. **NO RUN WAS STARTED** — standing instruction; the
       config is the default, so the run-25 launch shape restarts it unchanged when the operator
       says so.
+      **RUN 26 LAUNCHED 2026-09-03T12:59Z, pid 24549** (operator: "start the run"). Preflight gated the
+      launch: GPU 0%, zero loops, champ2 tip == anchor-gen-014 provenance (732389d6). Banner confirms
+      `actors    planner=claude:claude-fable-5-1@medium  critic=codex:gpt-5.6-sol@high`, claim held,
+      27B production rung, floor 1.142% @5 pairs. Monitor armed for keeps/advances, measured rows,
+      transient counts, frozen-shaped refusals (the R23-34 residual risk) and death.
 - [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
