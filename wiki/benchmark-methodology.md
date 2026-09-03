@@ -3688,3 +3688,66 @@ decode** win. Three workloads, three answers, one build.
 - [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-29
   (quant gating), R23-31 (the signal), R23-32 (the claim), R23-26 (headline surface).
 - [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+
+## Compiled Update — 2026-09-03 (INF-70): a coherence gate at 12 prompt tokens certified a kernel that produced garbage at 42
+
+The most expensive methodological failure of this program to date was not a wrong number. It was a **right number
+measured on the wrong regime**, and it survived every gate the campaign had because every gate used the same short
+prompt.
+
+### What happened
+
+A full day of INF-70 kernel work — parallel `GET_ROWS`, a `CONCAT` default, a batch-1 barrier removal, contiguous
+expert slabs — was validated with greedy bit-identity gates and a claim-grade `llama-server` re-anchor, and produced
+a published deployable figure of 12.55 / 13.06 t/s. **Every one of those gates used a 12-token prompt.** A later check
+with prompts of 42, 81 and 233 tokens found the same binary emitting deterministic garbage (`>> .> .>`,
+`The function l The function l`, `2222-2222-`) at full speed. The decode rate was real; it was the decode rate of
+garbage.
+
+Root cause was a **row-count-triggered kernel branch**: iqk's `is_dequant_better()` switched IQ4_XS to a requantised
+`Q8_K_R16` repack GEMM once a ubatch reached `nrc_y >= 32`, and that converter is wrong on this Zen host. The tree's
+own source comment already documented the converter family as producing "incorrect results for some large-Ny dense
+and MoE shapes on Zen 4" and excluded five IQ2/IQ3 families for exactly that reason — IQ4_XS had been left in.
+
+### Why a short-prompt gate is structurally vacuous
+
+The threshold was ~32 **rows**, which presents as ~32 **tokens** for a single sequence. A 12-token prompt never
+reaches the branch, so the gate could not fail no matter how broken the kernel was. The same mechanism explained a
+symptom filed separately for days as a concurrency bug: four simultaneous 12-token prompts form a 48-row ubatch and
+corrupt, while staggered starts stay under 32 rows and do not. One row-count threshold, three "different" defects.
+
+`llama-bench` cannot catch this class at all — it never inspects output, so every pp/tg number it produces is the
+throughput of whatever tokens emerged. On this lineage that meant **every pp512 prefill figure was timing a wrong
+forward**, and the pre-fix control's 231 t/s had to be withdrawn outright.
+
+### The rules this produces
+
+1. **Gate coherence at production prompt lengths, not toy lengths.** At minimum one prompt each at ~40, ~90 and
+   ~200+ tokens, real prose, with a degeneracy check *and* an eyeball of the output. Put a long prompt in the
+   greedy-identity gate, not only in the speed arm.
+2. **A `llama-bench` number is a kernel-throughput proxy and can never support a serving claim.**
+3. **When a length threshold appears, it is a row-count branch until proven otherwise.** Discriminate in this order:
+   flip the accelerated kernel off (`GGML_IQK=0`); then find the FIRST differing graph node with a per-node trace
+   (`cb_eval`, batch-of-n vs n singles); only then name a kernel.
+4. **Do not infer the culprit from `-ub 1` being coherent.** `-ub 1` also keeps every GEMM under the row threshold,
+   so it is a serving workaround (decode unchanged, prefill ~10× slower), not a discriminator. This inference was
+   made here and was wrong; the node trace refuted it.
+5. **Classify failures by reason, never pass/fail.** The first classifier used scored a 1-token EOS as "degenerate"
+   because unique-ratio and top-token-share are both 1.0 at n=1. Classes must separate COHERENT / SALAD / EARLY-EOS /
+   EMPTY / HTTP-ERROR, and statistics must only be computed above a minimum n (16 here). A fix that changes the
+   failure *mode* — salad becoming early-EOS — is evidence, and a pass/fail metric destroys it.
+
+### The corollary about withdrawal
+
+Retracting the deployable figure was not sufficient. The prefill numbers derived from the same forward had to be
+withdrawn too, and the replacement had to be a **fresh anchor on production-length prompts**, not a restoration of
+the old short-prompt figure under a new build. A number's scope is part of the number.
+
+### Source References (2026-09-03, INF-70 coherence gate)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — LONG-PROMPT-GARBAGE, GDN-ROWEXACT, BATCH-ENVELOPE task lines
+- `/mnt/raid0/llm/tmp/inf70/longprompt/` — the 42/81/233-token repro (prompts, harness, results, timeline)
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10: node-level localisation, the
+  `is_dequant_better` mechanism, `classify.py`, the object-level no-op proof of the guard lift
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — independent threshold bracket (16/23 coherent; 39+ garbage)
+- `progress/2026-09/2026-09-03-inf70-audit.md`

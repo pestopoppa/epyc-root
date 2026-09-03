@@ -1608,3 +1608,61 @@ Key findings:
 - sudoingX/qwen38-mtp PR #70 and `sweeps/instinct-cdna.md` — the public artifact and its caveats.
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
   — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.
+
+## Compiled Update — 2026-09-03 (INF-70 Axis E): eliminating the rollback checkpoint, and why acceptance rate is not evidence of exactness
+
+### E2b-2: 44.7 GiB of memcpy removed, +3.09% decode
+
+Qwen3.8-Flash-Next MTP on CPU was paying a **112.571 MiB speculative checkpoint per verification round**, created and
+restored to support rejection rollback: measured **407 created / 113 restored over 9 requests = 44.7 GiB, 4.97 GiB per
+request, ~39.8 MiB per token** — on a model that streams 4.16 GB/token. Porting upstream's in-place rewind trio
+(`1692f9e50` #26623 ggml `ssm_scan` snapshots, `0eadefebd` #28123 qwen4exp rollback, `9d817213a` #28159 hparam load
+order) took it to **0 / 0** and lifted MTP decode 17.582 → 18.125 t/s (+3.09%), multiplier over trunk 1.391× → 1.442×.
+
+The port needed a companion fix this tree could not do without: `n_layer_nextn` must load **before** `n_layer()` is
+called, or the per-layer arrays are read over 48 layers instead of 49 and `n_head_kv_arr[48] = 0` — which surfaces as
+two apparently unrelated failures, a NULL K/V allocation with a shared head and a `ggml_set_rows` shape assert in the
+server's no-alloc memory-measurement dry run. One defect, two symptoms, trunk-side perf-neutral once fixed.
+
+### Acceptance rate is not evidence of exactness on a hybrid
+
+The single most transferable finding. On this architecture MTP reported **acceptance 1.00 on a prompt whose greedy
+output nonetheless diverged from the trunk**. The reason: the target's logits at rows ≥ 1 of a multi-token decode
+differ from the same position decoded singly, so the "verified" tokens are being checked against slightly non-exact
+logits. Acceptance measures agreement with a reference that is itself wrong. **Never accept a high acceptance rate as
+a correctness argument** — construct an exactness oracle (here `LLAMA_SPEC_EXACT=serial`, re-decoding every token
+single-token) and compare byte-for-byte.
+
+Both driver-side attempts to recover exactness failed for the same reason: the divergence is at *verified* rows, not
+at the bonus token, so neither dropping nor re-decoding the bonus token helps. The oracle is byte-identical but runs
+at **11.69 t/s — slower than plain trunk decode at 12.57** — so at the time of writing **no exact-and-fast
+configuration exists** for this model.
+
+### Scope your multiplier to the regime you measured it in
+
+The 1.442× was measured entirely at a **12-token prompt**, because everything longer was corrupted by an unrelated
+kernel defect (see `hardware-optimization`, the iqk IQ4_XS repack). Speculative acceptance depends on how predictable
+the continuation is, which varies with context length and content, so the production-length multiplier is **unknown,
+not assumed**. State such a figure as "1.442× on short prompts, production-length pending" rather than as the model's
+speedup.
+
+A related trap, avoided here: after the fix, the MTP arm's long-prompt output *looked* better on a degeneracy metric
+than the plain arm's (unique-4gram 0.185 vs 0.038). It was not evidence MTP helps — both streams were degenerate, and
+speculation merely perturbs which attractor corrupt logits fall into. **A less-degenerate garbage stream is still
+garbage**, and the speed figure attached to it must not be quoted.
+
+### The model's own n-gram table is not a drafter
+
+Qwen3.8-Flash-Next carries a 51B-parameter PLE n-gram table, which invites the idea of drafting from it for free. It
+does not work: `per_layer_token_embd` maps an n-gram hash to a 160-wide **embedding** mixed into each layer, not a
+next-token distribution — there is nothing to read a continuation out of. llama.cpp's `ngram-mod` is unrelated (it
+mines the current context for repeats, which is why its once-recorded 2.8× turned out to be a warm-context self-copy
+artifact).
+
+### Source References (2026-09-03, Axis E)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis E (E2, E2a, E2b, E2b-2, E3, E4, E-GATE)
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip/REPORT.md` — the rebase, the trio port, checkpoint counts, all five gates
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/REPORT.md` — the serial oracle and the failed driver-side fixes
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — α harness; blocked on the kernel defect
+- `progress/2026-09/2026-09-03-inf70-audit.md`

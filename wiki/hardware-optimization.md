@@ -4211,3 +4211,68 @@ kernel site; branches merged/verified where stated).
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70: the
   deployable-speed table, the GDN-ROWEXACT task, the concurrency findings, X-CONC, E2a closure.
 - [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the two implementation waves.
+
+## Compiled Update — 2026-09-03 (INF-70 wave 3): the iqk IQ4_XS repack defect, contiguous expert slabs, and the NUMA eviction that was too weak to work
+
+### The kernel defect that invalidated a day of numbers
+
+`iqk_mul_mat.cpp`'s `is_dequant_better()` reroutes a quant type to a requantised Q8 repack GEMM once a ubatch is wide
+enough — for IQ4_XS at `nrc_y >= 32`. On this Zen host that converter is **wrong**, and the failure is gross rather
+than subtle: a node-level trace (batch-of-42 vs 42 single-token decodes) put the first gross error at
+`z-0 = mul_mat(blk.0.attn_gate, IQ4_XS [2560×6144], 42 rows)` with **every one of 6144 elements differing, max abs
+1.2e3, already at row 0**. Everything downstream is noise. The tree's own comment above that switch already recorded
+the family as producing "incorrect results for some large-Ny dense and MoE shapes on Zen 4" and excluded IQ2_XXS,
+IQ2_XS, IQ2_S, IQ3_XXS and IQ3_S — IQ4_XS had been left on the path.
+
+One threshold explained three separately-filed defects: single prompts above ~32 tokens degenerating; four
+simultaneous 12-token prompts corrupting (a 48-row ubatch) while staggered starts were fine; and `GGML_IQK=0` being
+clean throughout. It **predates the fusion lineage** — pre-fusion build 10128 degenerates identically.
+
+**Fix** (merged into `exp/cpu-fusion-qwen4exp-20260829` at `42332502c`): IQ4_XS returns to its direct iqk kernel at
+every Ny, plus a `GGML_IQK_DEQUANT` kill-switch and a `GGML_ROWEXACT_N` small-batch exact mode. Gates: n=1 decode
+byte-identical to the pre-fix control, `MUL_MAT` 1139/1139 and `MUL_MAT_ID` 815/815 on CPU, decode 12.69 t/s (no
+regression), **pp512 189.3 t/s against 135.6 for the only previously-correct configuration (`GGML_IQK=0`), +39.6%**.
+
+Two engineering notes worth carrying forward. The repack is a *real* win where it is correct — Q5_1 and Q6_K measure
+~0.04 nats at 233 rows, lossy-but-working, worth ~10% prefill — so the fix is a targeted exclusion, not a blanket
+disable. And at 42 rows the broken path was **slower as well as wrong** (it requantises a whole tensor to serve 42
+columns of reuse), so the correct-repack crossover sits somewhere between 42 and 512 rows.
+
+### The GDN kernel was never involved — and the reproducer that proved it
+
+The campaign spent days attributing batch-dependence to `build_delta_net_chunking` (CS=64) versus the autoregressive
+path. Code reading refuted the premise: `build_delta_net()` checks the fused-GDN cparams first, so n=1 **and** n>1
+both run the fused token-sequential op `ggml_compute_forward_gated_delta_net_one_chunk` — the chunked graph kernel is
+dead code on this build. A node-level reproducer (`llama-rowexact`, every graph node via `cb_eval`) then showed the
+GDN op bit-identical at n=3, and 4 sequences × 3 tokens packed into one ubatch reproducing each sequence's own
+forward **bit-for-bit (0 of 5450 nodes differ)**. Multi-sequence packing is exact; the row-count branch was the whole
+story. *Refute the stated mechanism before implementing against it.*
+
+### Contiguous expert slabs in the batch-1 `mul_mat_id` (B3-k): +3.07%
+
+Thread `ith` takes the contiguous range `[total·ith/nth, total·(ith+1)/nth)` of the flat (used-expert, row) space —
+~133 rows / 181 KB of IQ4_XS gate-up, ~533 rows / 256 KB of Q5_1 down, at most two adjacent slabs — instead of ten
+14–54-row (19–26 KB) stripes. Round-2 ABA with placement proven per arm: **12.59/12.61 vs 12.24/12.21 t/s = +3.07%
+(−2.43 ms/token), twelve times the baseline's round-to-round spread**, bit-identical logits. The gain is entirely the
+slab partition; the accompanying barrier removal is null on its own. Confirmed in the server path at +3.9%.
+
+### The NUMA eviction that reclaimed nothing (C7)
+
+`numactl --interleave=all` is a per-allocation *hint* the kernel abandons for any node with no free pages, and page
+cache counts as not-free. The helper written to fix this allocated `TARGET − free` GiB — which frees nothing when a
+node already sits near TARGET, and on this box allocated 1 GiB at exactly `free == TARGET`. That is why placement kept
+skewing "even after in-lock eviction" for days. The forcing form allocates `TARGET + 2` whenever `free < TARGET`,
+verifies per node, and retries once. Now merged and enabled in the launch path for the five CPU roles (never for
+`gpu_host_lane` roles, refused in code), mutation-tested so the old formula fails 14 of 20 cases.
+
+**An eviction helper that cannot fail loudly will fail silently.** Mutation-test the sizing rule, not just its
+outputs.
+
+### Source References (2026-09-03, wave 3)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — B3, B3-k, C7, LONG-PROMPT-GARBAGE, GDN-ROWEXACT, BATCH-ENVELOPE
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10
+- `/mnt/raid0/llm/tmp/inf70/agents/b3k/REPORT.md` — the slab A/B and its gates
+- `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md` — forcing eviction, mutation proof, launch-path enable
+- `/mnt/raid0/llm/tmp/inf70/{longprompt,reanchor2}/` — the repro and the production-length re-anchor
+- `progress/2026-09/2026-09-03-inf70-audit.md`
