@@ -740,7 +740,11 @@ named. MTP is not a serving option until that gate passes.
       bit-identical output). **Result: speculative checkpointing ELIMINATED — 407 created / 113 restored → 0/0 over
       the same workload** (112.571 MiB each = 44.7 GiB, 4.97 GiB/request, ~39.8 MiB/token of avoided traffic on a
       4.16 GB/token model); `n_rs_seq=2` survives instead of being clamped to 0. **MTP decode 17.582 → 18.125 t/s
-      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** **SCOPE OF THOSE
+      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** **SUPERSEDED 2026-09-03 by the production-length measurement: the multiplier is 1.380x, NOT 1.442x**
+      (`mtp-tip2` Task C, NON-CLAIM): 12.505 -> 17.254 t/s against the SAME-BUILD MTP-off control, **12/12 COHERENT
+      at 54-441 prompt tokens**, on the corrected kernel. **The 1.442x was a 12-token-prompt artefact and must not
+      be quoted as production.** The scope note below is retained because it is what forced this measurement.
+      **SCOPE OF THOSE
       NUMBERS (verified from the run JSONs 2026-09-03, after an operator challenge): the timed reps used a
       12-token prompt and their full 128-token output is COHERENT on 5/5 reps in every arm (word uniq 0.742, top
       share 0.086, max repeat run 1) — the speeds are NOT decode-of-garbage. The 101-token probe on the same builds
@@ -812,8 +816,11 @@ named. MTP is not a serving option until that gate passes.
       withdrawn: `mtp-tip2` independently found (2026-09-03) that the p200 text on the raw `/completion` path
       simply reads as COMPLETE without a continuation cue — appending `\n\nAnswer:` makes it generate — which is a
       prompt-formatting artifact, not a marginal-token flip. Both explanations fit the chat-path coherence.
-      `mtp-tip2` is running the discriminator (raw / raw+cue / chat-template on the corrected tip); if raw+cue
-      generates coherently the residual risk is downgraded and the fix is cleaner than currently credited.** Exact fallback `-ub 1` verified
+      **RESULT 2026-09-03: raw+cue (b) AND chat-template (c) both generate coherently — my stated condition for
+      downgrading is met. But the agent declines to call it settled, correctly: its TX control independently shows a
+      long raw prompt's argmax IS batch-shape sensitive, so BOTH explanations may hold at once. Status:
+      UNRESOLVED-LEANING-DOWNGRADE** pending the EOSA/EOSX arms, which measure the top-2 gap directly instead of
+      inferring it.** Exact fallback `-ub 1` verified
       byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
       `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
       transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so
@@ -844,10 +851,17 @@ named. MTP is not a serving option until that gate passes.
          **only how the verified rows are COMPUTED differs.**
       3. **NOT the batched mul_mat — this refutes the seed hypothesis I filed.** `GGML_ROWEXACT_N=512` forces every
          `1 < Ny ≤ 512` through the single-row kernels, and it covers **both** the tinyBLAS GEMM (`ggml-cpu.c:1379`
-         — so the F32 `ffn_gate_inp` router IS covered) **and** iqk (`iqk_mul_mat.cpp:88,209`). With it on, **4 of
-         the 6 flip points are bit-identical to M** (g1@28, g3@84, L3_p200@24, L4_p600@87); only L1_p40 and L2_p90
-         shift. Making the GEMM row-exact does NOT restore losslessness, so the ~1-ulp router fp-order I named as
-         the seed is not the carrier. Cost note: the knob is not free — 18.56 → 16.68 t/s (−10%) on the MTP arm.
+         — so the F32 `ffn_gate_inp` router IS covered) **and** iqk (`iqk_mul_mat.cpp:88,209`). With it on, MTP still diverges from
+         plain on the same 6 of 7 prompts. **⚠ CONFOUND, caught by the agent's own TX control and corrected here
+         (my first write-up of this overstated the evidence): the knob is NOT neutral — TX (trunk-only + the knob)
+         moves the TRUNK stream on all 4 production-length prompts while leaving the short ones untouched, so the
+         `MX vs P` comparison is confounded on long prompts.** The clean statement is confined to the SHORT prompts,
+         where `TX == P` proves the knob inert: there **MTP flips identically with and without rowexact** (g1@28 and
+         g3@84 bit-identical). That is sufficient to exonerate the GEMM — but it rests on the short-prompt arms, not
+         on all six flip points, and the long-prompt agreement must not be cited as evidence. So the ~1-ulp router
+         fp-order I named as the seed is not the carrier. Cost note: the knob is not free — 18.56 → 16.68 t/s
+         (−10%) on the MTP arm, and it perturbs the trunk stream at long prompt lengths, so it is a diagnostic
+         instrument, not a serving option.
       **Leading suspect, explicitly UNTESTED: the recurrent / GDN path.** `GGML_ROWEXACT_N` appears nowhere in
       `ops.cpp`, so `ggml_ssm_scan` and the fused GDN op are untouched by it. There a multi-row batch takes a
       **genuinely different code path (chunked recurrence)** rather than a differently-ordered reduction — the
