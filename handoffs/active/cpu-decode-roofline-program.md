@@ -959,8 +959,14 @@ named. MTP is not a serving option until that gate passes.
       currently winning by only 12% on plain decode while costing most of a speculative multiplier** — a model-choice
       finding, not merely an optimization gap.
       Tasks: **(i)** measure the 122B's ACTUAL bytes/token and plain decode under our canonical recipe + coherence
-      gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** close or explain the MTP
-      multiplier gap — **and note the comparison is NOT yet like-for-like: `architect_critic`'s 2.12x uses `k: 4`
+      gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** ✅ RESOLVED 2026-09-03 — **the gap is ARCHITECTURAL, not a tuning gap.** Confirmed from source
+      (`e3-run` Addendum A): `draft-mtp` and `draft-tree` are separate impl classes selected from an ordered
+      priority list and **do not compose**; the tree drafter's contract requires a STANDALONE draft model (vocab
+      check, own sampler on `ctx_dft`, drafts via `llama_decode(ctx_dft, batch)`), while the MTP head is a single
+      block with no independent forward and **no `k` parameter exists on the MTP path**. So the production 122B's
+      2.12× (`k: 4` tree) is **not a target our MTP path can be tuned toward**. Against the LINEAR ceiling, our
+      1.967× on coding is near the practical maximum. Original wording retained: **the comparison was NOT
+      like-for-like: `architect_critic`'s 2.12x uses `k: 4`
       TREE drafting, while every qwen4exp MTP arm run so far is LINEAR (`e3-run`, 2026-09-03). Establish FIRST
       whether our runtime supports tree drafting for `draft-mtp` at all; if it does not, the 1.44x-vs-2.12x gap is
       STRUCTURAL rather than a tuning gap — a materially different conclusion.** Then n-max, then acceptance per
@@ -998,15 +1004,27 @@ named. MTP is not a serving option until that gate passes.
       **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
       a matmul); it is bit-identical at n=3 in the node trace; and its one real cost — single-threaded `GET_ROWS` at
       9.34 ms/token, ~10% of the token — was fixed by D8 to 2.59 ms, the largest single gain of 2026-09-02.
-- [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
-      `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
-      prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
-      `LLAMA_TRACE=1` for per-position acceptance, coherence classifier v3); no α reported because 0/13 plain
-      outputs were coherent and α against corrupted logits counts nothing; lock released after 349 s. Sampler
-      note: Flash-Next has no role in `model_registry.yaml`; served qwen roles carry only `temperature`
-      (frontdoor 0.3, coder 0.2) — production arm = the standing spec-dec methodology 0.6/0.95/20/seed 42 with
-      a 0.3 bracket. `shared-Q4_K_M` head absent. Coordinator decision: when the fix lands, run the REDUCED first
-      pass (plain + shared-Q8_0 n-max 1–3, ~1.2 h) as the go/no-go before the full 10-arm ~3.2 h sweep.** (`feedback_measure_alpha_before_specdec_investment`):
+- [x] **E3 — measure α before tuning anything.** ✅ 2026-09-03 (`e3-run`, build 10217 `540b1e697`, shared-Q8_0,
+      24 production prompts 59–682 tok, chat path, linear drafting). **Both gating numbers delivered.**
+      | n-max | α | mean acc len | ×all | ×coding | ×reasoning | ×general | paired min |
+      |---|---|---|---|---|---|---|---|
+      | 1 | 0.924 | 1.92 | 1.307 | 1.321 | 1.318 | 1.267 | 1.218 |
+      | 2 | 0.870 | 2.74 | **1.607** | 1.660 | 1.649 | 1.471 | 1.265 |
+      | 3 | 0.812 | 3.42 | 1.786 | 1.880 | 1.865 | 1.556 | **1.271** |
+      | 4 | 0.752 | 3.99 | 1.799 | **1.967** | 1.900 | 1.467 | 1.136 |
+      Plain baseline **12.591 t/s**. **Position-1 acceptance is FLAT at ≈0.91 at every depth** — asking the head
+      for more does not degrade its first prediction; each further position costs ~0.10. **α differs sharply by
+      class and the spread widens with depth** (9pp at n-max 1 → 27pp at n-max 4): coding 0.846 / reasoning 0.805 /
+      general 0.572 at n-max 4. **Long prompts accept BETTER than short, monotone at every depth** (n-max 4: α
+      0.862 vs 0.707, 1.98× vs 1.72×) — **the 12-token measurements were sampling the worst case.** Speed knee
+      between n-max 3 and 4 (+0.7%). A-B-A closed at **−0.08% drift** with identical placement, so the ratios are
+      not drift artifacts; `plainB` vs `plain` **24/24 byte-identical** across instances 45 min apart, so the trunk
+      path is exactly reproducible and MTP divergence is attributable to MTP, not nondeterminism.
+      **RECOMMENDED OPERATING POINT: shared-Q8_0 head** (+0.75 GB/node; the self-contained head is 1.35 GB larger
+      and buys nothing), **n-max 3 as fleet default** (better tail — paired min 1.271 vs 1.136 — and better
+      general-class 1.556 vs 1.467, for 0.7% aggregate), **n-max 4 for coding-heavy roles** (1.967×). Since α by
+      class is now measured, this can be a static per-role setting. Evidence
+      `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md`. (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
       recipe and the C5 build with the C5 trunk. The B200 figures (66% acceptance, 1.67×) are the reference;
