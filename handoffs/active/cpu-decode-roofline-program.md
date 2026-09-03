@@ -848,8 +848,19 @@ named. MTP is not a serving option until that gate passes.
       authoritative.** Had the agent trusted the log line it would have reported the gap unmeasurable and left the
       question open — a vacuous-measurement trap avoided by re-reading the persisted JSON. `c_chat` returns no
       `completion_probabilities` on the chat path, so no gap is available there; its coherent 128-token generation
-      stands on its own. EOSX (the same probe under `GGML_ROWEXACT_N=512`) tests the prediction directly: if the
-      raw probe GENERATES rather than EOS-ing, batch shape demonstrably decides this token. Exact fallback `-ub 1` verified
+      stands on its own. **EOSX RESULT (same probe under `GGML_ROWEXACT_N=512`) — the prediction is NOT confirmed, and this
+      REFINES the statement above.** The raw probe **still EOSes** (n_pred 1, stop eos); the gap widens
+      **0.01695 → 0.092 nats (~5.4×)** but does not cross. So: the near-tie is real and batch shape demonstrably
+      MOVES this decision — but on this prompt it does not FLIP it; EOS wins under both kernel paths. **Precise
+      statement, replacing "any change in batch shape may flip it": p200's first-token decision is a genuine
+      knife-edge (0.017–0.092 nats depending on path); its sensitivity to batch shape is confirmed, but its
+      OUTCOME is stable across the one substantial intervention available to us. It is therefore an example of a
+      knife-edge that stayed on the same side — not an example of a batch-induced wrong answer.** The risk class is
+      real; this instance is not a realisation of it. **And the chat path explains itself**: `c_chat`'s top-2 gap is
+      **4.74 nats** (4.28 under EOSX) — the template makes the decision unambiguous, which is why (c) generates
+      coherently and why production serving through the chat path is not exposed to this at all. (The gap IS present
+      in the raw JSON for `c_chat`; `regap.py` reports "no completion_probabilities" for it — use the JSON.)
+      **Gate B4 PASSES**: `test-llama-archs` `ARCHS_RC=0`, qwen4exp CPU MoE OK (0.00e+00), **0 FAIL rows**. Exact fallback `-ub 1` verified
       byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
       `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
       transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so
