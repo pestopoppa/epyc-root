@@ -105,6 +105,35 @@ SKIP_FILENAMES = set(CONFIG["skip_filenames"])
 SKIP_PATTERNS = CONFIG["skip_patterns"]
 
 
+def in_linked_worktree() -> bool:
+    """True when running from a `git worktree add` checkout rather than the canonical clone.
+
+    In a linked worktree `.git` is a FILE containing a gitdir: pointer, not a directory.
+    """
+    try:
+        return (ROOT / ".git").is_file()
+    except OSError:
+        return False
+
+
+def warn_if_worktree_mtime_basis() -> None:
+    """Incremental scanning compares file mtime against the watermark. `git worktree add`
+    stamps EVERY checked-out file with the checkout instant, so from a linked worktree
+    every source looks newer than any watermark and `total_new` is meaningless.
+
+    Measured 2026-09-03: a real drift of 52 sources reported as 928 (18x), and 916 of the
+    928 carried one identical mtime. Use content-hash comparison (`--check-manifest`)
+    from a worktree; the mtime basis is only valid in the canonical clone.
+    """
+    if in_linked_worktree():
+        print(
+            "WARNING: running from a linked git worktree — every file carries the checkout "
+            "mtime, so the incremental (mtime) basis is INVALID and total_new is inflated. "
+            "Use --check-manifest (content-hash) here, or run from the canonical clone.",
+            file=sys.stderr,
+        )
+
+
 def should_skip(filename: str) -> bool:
     """Check if a filename should be skipped."""
     if filename in SKIP_FILENAMES:
@@ -115,24 +144,54 @@ def should_skip(filename: str) -> bool:
     return False
 
 
+def _manifest_last_compile_iso() -> str | None:
+    """The tracked manifest's own `last_compile`, or None.
+
+    `.last_compile` is GITIGNORED, so `git worktree add` never populates it and a
+    linked worktree reports an epoch watermark — which the scanner cannot tell apart
+    from "never compiled". Measured 2026-09-03: that made a real drift of 52 sources
+    report as 928, an 18x overstatement, and the fiction had persisted long enough to
+    be mistaken for a standing backlog. The manifest IS tracked and carries the
+    watermark of the compile that wrote it, so it is the correct fallback: strictly
+    monotone-improving, and it can never advance past a real watermark.
+    """
+    try:
+        with open(SOURCE_MANIFEST_PATH) as fh:
+            return (json.load(fh) or {}).get("last_compile") or None
+    except (OSError, ValueError):
+        return None
+
+
+def get_last_compile_source() -> str:
+    """Which basis get_last_compile() used: last_compile_file | source_manifest | none."""
+    if LAST_COMPILE_PATH.exists() and LAST_COMPILE_PATH.read_text().strip():
+        return "last_compile_file"
+    return "source_manifest" if _manifest_last_compile_iso() else "none"
+
+
 def get_last_compile() -> float:
-    """Read .last_compile timestamp. Returns 0.0 if missing."""
-    if not LAST_COMPILE_PATH.exists():
+    """Read .last_compile timestamp, falling back to the tracked manifest. 0.0 if neither."""
+    text = ""
+    try:
+        if LAST_COMPILE_PATH.exists():
+            text = LAST_COMPILE_PATH.read_text().strip()
+    except OSError:
+        text = ""
+    if not text:
+        text = _manifest_last_compile_iso() or ""
+    if not text:
         return 0.0
     try:
-        text = LAST_COMPILE_PATH.read_text().strip()
-        if not text:
-            return 0.0
         dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
         return dt.timestamp()
-    except (ValueError, OSError):
+    except ValueError:
         return 0.0
 
 
 def get_last_compile_iso() -> str | None:
-    """Read .last_compile as ISO string, or None if missing."""
+    """Read .last_compile as ISO string, falling back to the tracked manifest's."""
     if not LAST_COMPILE_PATH.exists():
-        return None
+        return _manifest_last_compile_iso()
     text = LAST_COMPILE_PATH.read_text().strip()
     return text if text else None
 
@@ -459,6 +518,9 @@ def main() -> int:
     )
 
     args = parser.parse_args()
+
+    # the mtime basis is invalid from a linked worktree — say so before reporting a count
+    warn_if_worktree_mtime_basis()
 
     if args.check_manifest is not None and args.changed_since_manifest is not None:
         print(
