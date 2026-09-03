@@ -747,10 +747,28 @@ named. MTP is not a serving option until that gate passes.
       forward. **Serving workarounds today (unpatched tip): `-ub 1`** (coherent on 42/81/233; decode UNCHANGED
       12.5–12.7 t/s; prefill ~10× slower, 13.5 vs 68–140 t/s) **or `GGML_IQK=0`** (coherent; pp 118.9 vs 135–140).
       **Fix committed `99425578d` on `inf70/gdn-rowexact`**: IQ4_XS returns to its direct iqk kernel for every Ny
-      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). Validation queued: p40/p90/p200 coherent on the fixed
-      build; IQ4_XS-only vs all-repacks-off on p200 (does the Q5_1/Q6_K repack share the bug?); **G3 n=1 decode
-      BYTE-identical to the unpatched tip** (the fix must not leak into batch-1); G4 decode within noise of 12.55;
-      the fixed (correct, slower) pp512 reported against the withdrawn wrong numbers. No serving or deployable-speed
+      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX IS PARTIAL — validated 2026-09-03 (arms ran before the agent was rate-limited; read off disk by the
+      coordinator): p40 (42 tok) and p90 (81 tok) COHERENT on the fixed build, p200 (233 tok) STILL FAILS.**
+      | arm | p40 | p90 | p200 |
+      |---|---|---|---|
+      | fix, default | COHERENT (pp 75.5) | COHERENT (pp 105.2) | FAILS |
+      | fix, `GGML_IQK_DEQUANT=0` (ALL repacks off) | COHERENT (pp 76.3) | COHERENT (pp 95.6) | FAILS |
+      | fix, `GGML_ROWEXACT_N=256` | COHERENT (pp 69.9) | COHERENT (pp 92.9) | FAILS |
+      | fix, `-ub 1` | COHERENT | COHERENT | **COHERENT** |
+      The p200 failure MODE changed: the unpatched control produced 160 tokens of salad (`(1120-2222-…`), the fixed
+      build returns `predicted_n=1`, `content:""`, `stop=eos` — an **immediate EOS**. Because all repacks off still
+      fails p200, the coordinator's Q5_1(≥32)/Q6_K(≥64) coverage hypothesis is WEAKENED: either a second distinct
+      defect at ~233 rows or a prompt/template artifact. **Coordinator metric defect (own error): the degeneracy
+      classifier misreads a 1-token EOS as DEGENERATE** (uniq=1.0, top_share=1.0 trip the `top<0.25` rule), so
+      failures must be classified by REASON — COHERENT / SALAD / EARLY-EOS / EMPTY / HTTP-ERROR — not pass/fail.
+      Owner `gdn-fix-validate` (Opus, resumed): repair the classifier and re-classify all runs; discriminate
+      prompt-specific vs length-specific (other 100–260-token texts, p200 truncated to 120/160/200); verify the
+      `DEQUANT=0` knob really covers Q5_1/Q6_K (read the path, don't trust the name) with `GGML_IQK=0` as the
+      cross-check; node-trace the failing length if unresolved. Still owed: **G3 n=1 decode BYTE-identical to the
+      unpatched tip** (must not leak into batch-1; `MUL_MAT_ID -b CPU` must stay green for B3-k), G4 decode vs
+      12.55, and the honest fixed pp512 against the withdrawn wrong numbers (note fixed p40 pp 75.5 > control 68 —
+      the fix may be FASTER at short lengths; verify). **Serving today: `-ub 1` is the only config coherent at all
+      three lengths.** No serving or deployable-speed
       claim on this tree until it passes.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
