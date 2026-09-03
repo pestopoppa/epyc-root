@@ -967,21 +967,29 @@ ggml-linkage + placement proven per arm:**
   control here (12.079). r16 vs uniform (both slab-on): +4.1% decode at ~equal GB/s, tracking the −3.0%
   bytes/token.
 
-**⚠ DEFECT 2026-09-03 — on real prompts these are the decode speed of GARBAGE.** Long-prompt coherence check on
-this exact tip/binary (placement 23.0 GB × 4 and linkage proven): prompts of **42, 81 and 233 tokens ALL degenerate**
-(`>> .> .> .>`, `The function l The function l`, `2222-2222-`) at 12.4–12.6 t/s; the 12-token prompt used by
-every gate in this campaign is coherent. E3 independently saw the same on the OLD base (`mtp-exact` =
-`c035bbf3d` + MTP port, none of D8/D7a/D1/B3-k, plain mode) above ~23–39 tokens, so it is the **stock fusion-tree
-qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never checks coherence, so no pp/tg number in
-this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
-WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
-≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
-Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause: the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE. FIX
-`99425578d` VALIDATED SHIPPABLE 2026-09-03** (G3 n=1 byte-identical to control, `MUL_MAT` 1139/1139, `MUL_MAT_ID`
-815/815, decode 12.69 t/s no regression, pp512 189.3 vs 135.6 for the correct `GGML_IQK=0` fallback): real prompts
-of 8–361 tokens are COHERENT through the chat template. **These withdrawn headline numbers are to be RE-ANCHORED on
-the merged fix with PRODUCTION-LENGTH prompts — not restored from the old short-prompt run.** Interim fallback
-`-ub 1` (decode unchanged, prefill ~10× slower) remains byte-identical-exact.**
+**RE-ANCHORED 2026-09-03 on the merged tip `42332502c` with PRODUCTION-LENGTH prompts — the gate the first
+anchor lacked.** The earlier 12.00/12.38 and 12.55/13.06 figures were withdrawn because every gate behind them used a
+12-token prompt while the tree produced garbage above ~32 (the iqk IQ4_XS ≥32-row repack defect, LONG-PROMPT-GARBAGE,
+now fixed and merged). They are **replaced, not restored** — the configuration differs (chat-completions path with
+thinking disabled, the production serving path, vs the raw `/completion` path before).
+
+| artifact | decode (n=23 timed) | prompt range | correct behaviour | coherence gate |
+|---|---|---|---|---|
+| uniform IQ4_XS (era anchor) | **12.61 ±0.10 t/s** (12.43–12.93) | 54–682 tok | **27/27** | 23 COHERENT + 4 correct SHORT, **0 SALAD, 0 EARLY-EOS** |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.73 ±0.10 t/s** (12.50–12.97) | 54–682 tok | **27/27** | 23 COHERENT + 4 correct SHORT, **0 SALAD, 0 EARLY-EOS** |
+
+27 production prompts — 8 coding / 8 reasoning / 8 general from `question_pool.jsonl` plus the three P0 prompts —
+greedy, `max_tokens` 200, `enable_thinking` false, `-np 1 -c 8192 -t 48 --no-mmap`, canonical env, forced eviction,
+**placement proven 23.0–23.1 GB × 4 and resident `libggml-cpu.so` proven to be the merged-tip build in-window on both
+arms**. Coherence classified by REASON in the same window as the timing (`classify.py`); the 4 SHORT rows are
+multiple-choice/short-answer items answering correctly (`E`, `B`, `<answer>English</answer>`, `B`) at n=2, where the
+classifier correctly declines to compute degeneracy statistics rather than mislabelling them. Evidence
+`/mnt/raid0/llm/tmp/inf70/reanchor2/`.
+
+**Finding worth carrying: r16's advantage over uniform SHRINKS at production context lengths — +0.9% here (12.73 vs
+12.61) against +3.1% at a 12-token prompt.** r16's edge is a bytes/token effect (−3.0%); as context grows, more of
+the token's time goes to attention/KV work that the smaller weight stream does not help, diluting it. An artifact
+advantage measured at toy prompt length overstates what production sees.
 
 Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
 `/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
