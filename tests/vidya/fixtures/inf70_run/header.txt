@@ -1,0 +1,8 @@
+# C5 v2  2026-09-02T10:38:08Z
+artifact: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf  size=98392912256
+inf68 tree: 7cdd7c97b (build 10151 per INF-68 record)
+fusion tree: c035bbf3d  version: 10196 (58c345093)
+THP: [always] madvise never governor: performance numa_balancing: 0
+MemFree:        39016412 kB
+Cached:         1085444928 kB
+AnonHugePages:  15435776 kB

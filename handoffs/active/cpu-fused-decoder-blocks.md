@@ -20,6 +20,14 @@ the program this work now belongs to are in [`cpu-decode-roofline-program.md`](c
 constants are in no committed profiler record, and the measured node count is 7,906 pre-fusion /
 ~6,890 on the baseline build, not ~5,850. Do not quote this section's numbers; quote INF-70's ledger.
 
+**Viability gate result 2026-09-02 (INF-70 Axis A, branch `inf70/fused`)**: with the batched `mul_mat`
+substitution (A1) and the scratch arena (A2) both in, a clean Release build at `-t 1` measures fused
+961 ms/token vs graph 196.9 ms in the same process and window — gemv column 810 ms, other column 150.6 ms;
+logit gate max_abs 1.311 / NMSE 6.07e-2. **A-GATE FAIL.** Three fused-path correctness bugs the campaign did
+not have were found and fixed on the way (GDN state byte/float offset, repacked IQ4_NL hc loras read as
+plain rows, F16 `ple_conv1d` read as F32), and the pre-A1 per-row path aborts with heap corruption on the
+pristine tree in Release. Details: `/mnt/raid0/llm/tmp/inf70/agents/fused/REPORT.md` and INF-70 Axis A.
+
 ## The measured problem (2026-08-29/30, qwen4exp IQ4_XS UD, interleave baseline)
 
 Batch-1 decode = ~74 ms/token (~13.5 t/s, t48; t64 sweet spot ~14). Breakdown, all in situ:

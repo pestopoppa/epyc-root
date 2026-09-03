@@ -478,6 +478,7 @@ def cmd_alias_emit(args) -> int:
 # ------------------------------------------------------------------ ingest
 
 AUTOKERNEL_CORPUS_ROOT = Path("/mnt/raid0/llm/autokernel")
+INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 
 
 def _ingest_autokernel(args) -> int:
@@ -512,9 +513,49 @@ def _ingest_autokernel(args) -> int:
     return _emit(report, args.json, "\n".join(human))
 
 
+def _ingest_inf70(args) -> int:
+    """Walk the INF-70 CPU decode roofline run directories (SC53).
+
+    Same lesson as `autokernel` above: the adapter was written, tested and
+    verified against the real corpus and could never have persisted a row,
+    because this command only accepted the adapters listed in its `choices`.
+    Wiring the name IS the write side.
+    """
+    from adapters.inf70_roofline_ledger import ingest_corpus, DEFAULT_CORPUS  # noqa: PLC0415
+
+    root = Path(args.root) if args.root else DEFAULT_CORPUS
+    if not root.is_dir():
+        print(f"no such INF-70 corpus root: {root}", file=sys.stderr)
+        return 2
+    led = _ledger(args)
+    report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
+                           dry_run=args.dry_run)
+    human = [
+        f"runs matched={report['runs_matched']}  rows projected={report['rows_projected']}  "
+        f"frames={'(dry run) ' if args.dry_run else ''}{report['frames_emitted']}",
+        f"by kind: {report['by_kind'] or '(none)'}",
+    ]
+    if report["runs_refused"]:
+        human.append("runs refused (not a run directory, or dateless):")
+        human.extend(f"  {r['run']}: {r['reason']}" for r in report["runs_refused"])
+    if report["arms_refused"]:
+        # The producer-gap channel: named, never silent. An arm listed here is a
+        # measurement that exists and cannot be cited until its producer is fixed.
+        human.append("arms refused (strict reader: the record does not rederive):")
+        human.extend(f"  {r['run']} {r['arm']}: {r['reason'][:110]}"
+                     for r in report["arms_refused"])
+    if report["rows_refused"]:
+        human.append("rows refused (native_rows and project() disagree -- a defect):")
+        human.extend(f"  {r['run']} {r['kind']}: {r['reason'][:110]}"
+                     for r in report["rows_refused"])
+    return _emit(report, args.json, "\n".join(human))
+
+
 def cmd_ingest(args) -> int:
     if args.adapter == "autokernel":
         return _ingest_autokernel(args)
+    if args.adapter == "inf70":
+        return _ingest_inf70(args)
     if args.adapter != "intake":
         print(f"unknown adapter {args.adapter!r}", file=sys.stderr)
         return 2
@@ -667,10 +708,11 @@ def build_parser() -> argparse.ArgumentParser:
     ae.set_defaults(func=cmd_alias_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake", "autokernel"])
+    i.add_argument("adapter", choices=["intake", "autokernel", "inf70"])
     i.add_argument("--index", help="path to intake_index.yaml")
     i.add_argument("--root", help="corpus root for the autokernel adapter "
-                                  f"(default {AUTOKERNEL_CORPUS_ROOT})")
+                                  f"(default {AUTOKERNEL_CORPUS_ROOT}) or for the "
+                                  f"inf70 adapter (default {INF70_CORPUS_ROOT})")
     i.add_argument("--limit", type=int, help="only the first N entries")
     i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
     i.add_argument("--dry-run", action="store_true", help="report without appending")

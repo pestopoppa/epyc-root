@@ -4084,3 +4084,81 @@ Key findings:
 - [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff,
   current phase and bit-exactness state.
 - [`2026-09-01-inf67.md`](../progress/2026-09/2026-09-01-inf67.md) — the INF-67 session shard: the measured numbers, the operator's four corrections verbatim, the go/no-go.
+
+## Compiled Update — 2026-09-02: the INF-70 implementation wave — placement, the parallel GET_ROWS unlock, the fused-decoder refutation, and the whole-token decomposition
+
+**Confidence: verified** (a ten-plus-subagent implementation wave, every arm region-locked with
+per-node eviction and in-window `numactl -p` placement proof, on the OP-32 uniform IQ4_XS artifact,
+build 10196 lineage; the merged branch numbers are on the merged tree).
+
+INF-70 reframed the qwen4exp (Qwen3.8-Flash-Next) CPU-decode problem as a roofline program and ran a
+parallel implementation wave. The corrected ledger and the durable findings:
+
+- **The roofline premise was numerically wrong and is now measured.** The prior "~425 GB/s DRAM
+  traffic" was a double count of a STREAM-convention copy figure (`bench_stream3.cpp` divides 4 GiB by
+  the copy time of a 2 GiB array — read+write already counted — then doubles again). Measured on this
+  box: 12 × Samsung 96 GB DDR5 RDIMMs rated 5600 MT/s running at **4800** (SMBIOS type 17); read-only
+  bandwidth under the decode recipe is **153 GB/s at 48 threads / 166 at 96** with free memory on every
+  node, and a **global ~170 GB/s aggregate cap** across four node-local readers (each node falls from
+  66 to ~40 GB/s) — an uncore ceiling no software placement lifts, ~37% of the 460.8 GB/s nominal.
+- **Page-cache-full NUMA nodes silently defeat `--interleave=all`.** With the nodes full of page cache
+  the kernel's zone fallback ignores the interleave policy: the 98 GB model landed 57.7 / 10.7 / 8.0 /
+  17.7 GB across nodes 0-3 and decode measured **7.65 t/s vs 10.14 with per-node eviction first —
+  −25%**. This is the mechanism behind the "unexplained" −32% between the 2026-08-28 and 2026-08-31
+  records. The fix is a pre-load allocate-and-touch eviction under `--membind` per node, plus an
+  in-window `numastat -p` proof as a required row; it is now enforced in `bench_canonical.sh` and
+  prepared (default-off) in the orchestrator CPU launch path. It can still skew under concurrent
+  page-cache growth, so the in-window proof is what makes a run valid, not the eviction alone.
+- **The whole token, decomposed by a post-barrier profiler.** Extending `GGML_CPU_PROF` to timestamp
+  each node *after* the graph barrier (not just thread-0 compute before it): a 97 ms token is **63 ms in
+  941 weight-path nodes averaging 40% of read bandwidth (the one big lm_head gemv reaches 94%; the 940
+  small dense/expert gemvs 40%), 33 ms in 3,468 nodes that move no weights, and 22 ms of barrier and
+  straggler wait** of which only ~10 ms is the 5,410 barrier primitives themselves (1.9 µs each at 48T).
+  The expert path is bytes-proportional at ~43-54% of bandwidth and saturates at 8 threads (B2).
+- **Parallel GET_ROWS is the session's real unlock: +14%, bit-identical, merged.** The four CPU
+  `get_rows` kernels already split by `ith/nth` over ROWS, and the hot decode nodes gather one row of
+  786,432 f32 (the PLE n-gram table) — so they ran single-threaded regardless of task count. Splitting
+  (row, column-chunk) pairs, block-aligned, takes the token **95.5 → 83.4 ms/token (10.4 → 12.0 t/s)**;
+  the gain exceeds GET_ROWS' own time because the parallel gather leaves each 3 MB row in all threads'
+  caches, so its consumers (CPY, GATED_DELTA_NET, MUL_MAT) also stop pulling from one CCD. Note the
+  planned `n_tasks` does not gate execution in this tree (the compute loop passes `nth = n_threads` to
+  every node), which is why a knob-gated "A/B" on it was on/on — the effect had to be isolated by a
+  fresh-build bisect.
+- **CONCAT dim-0 row partition: −1.1 to −1.4 ms decode, +23-28% prefill, bit-identical, merged.** The
+  GDN conv concat is `[4, 10240, 1]` and the stock kernel shards over `ne2 = 1`, so 40,960 copies ran
+  on thread 0 across 37 nodes/token. An existing default-off flag (`GGML_CPU_CONCAT_DIM0_ROWS`) fixes
+  it; it is now default-on.
+- **Bytes levers.** A fused `ffn_gate_up_exps` tensor (144 → 96 `mul_mat_id`/token, bit-identical,
+  −1.3 ms) and a router `ffn_gate_inp` F32→F16 (−1.5 ms, decode-neutral prefill) compose into
+  `IQ4_XS-uniform-gateup-r16`, the new Axis B/D comparison baseline; the `ffn_down_exps` Q5_1→IQ4_NL
+  override is a −21.7% prefill regression and is not taken. Stock `llama-quantize` silently ignores a
+  `--tensor-type` on `ffn_gate_inp` (rejected before the pattern list) — a one-line patch fixes it.
+- **The fused megakernel is refuted, not delivered.** With the batched `mul_mat`, a scratch arena
+  (churn measured at 3.52 GB/token, not the retired ~2.5 GB estimate), a debug strip and a safety
+  contract all in, and three genuine correctness bugs fixed, the fused decoder measures **1.10× SLOWER
+  than the graph at 1 thread** (214 vs 195 ms) after three census-driven iterations (4.70× → 1.51× →
+  1.10×). The residual is structural: 2,213 `mul_mat` calls vs the graph's 941 (one per expert per lora
+  where the graph fuses), at ordinary per-call speed. The logit gate still fails by four orders of
+  magnitude.
+- **Batched decode is not row-exact on this architecture.** MTP greedy output diverges from
+  single-token decode at the unverified bonus token; dense models are bitwise batch-invariant on this
+  build, every MoE model tried is not. `llama-perplexity` returns NaN for qwen4exp (the all-logits
+  path), so there is no PPL/KL quality gate for this model — a standing blocker for every quant
+  decision on it.
+- **EXL3 trellis weights, measured.** exllamav3's own `mul1` AVX-512 CPU kernel on the real downloaded
+  4.05 bpw expert tensors is compute-bound per core (~17 GB/s, the trellis extraction dominates the
+  dot) and memory-bound from ~10 threads (110-124 GB/s at 48T) — the same ceiling as everything else.
+  Bytes −9% (4.05) / −32% (3.05) on the expert stream give +2-7% end-to-end today, +15-18% at the
+  bandwidth ceiling; a full port is 3-5 sessions (an opaque-blob ggml type). Parked behind the
+  dispatch-floor work — the expert bytes are ~21% of the token.
+
+### Source References (2026-09-02)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70, the
+  corrected ledger, the axis results, and the operator decision packages.
+- [`exl3-trellis-cpu-kernel.md`](../handoffs/active/exl3-trellis-cpu-kernel.md) — INF-71, the EXL3
+  measurement and the parked port.
+- [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the EXL3 `mul1`
+  format spec (X0).
+- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the audit and the
+  ten-subagent implementation wave, per-task.
