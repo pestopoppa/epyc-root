@@ -727,9 +727,31 @@ named. MTP is not a serving option until that gate passes.
       ~49 MiB/token**, on top of the weight stream; no re-prefill observed. Rollback itself works (p2/p3
       stayed identical); it is paid with a copy instead of an in-place rewind. **E2b-1 ✅ done 2026-09-02:
       `36b101543` (#27941) ported on `inf70/mtp-27941` — no regression, checkpoints unchanged (31/2), not the
-      E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
-      (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
-      way (patch files, never a `--depth` fetch into the shared repo).
+      E2a fix.** **E2b-2 ✅ PORTED AND VALIDATED on the fast tip 2026-09-03** (agents `mtp-tip` + `mtp-tip-report`,
+      branch `inf70/mtp-tip` @ `08f087e87`, not merged/pushed): the rollback trio `b1c1c99c6` (upstream `1692f9e50`
+      #26623, ggml `ssm_scan` rollback snapshots) · `ea3f50dda` (`0eadefebd` #28123, qwen4exp rollback) ·
+      `3a00401d1` (`9d817213a` #28159, load `n_layer_nextn` before `n_layer()`) · plus companion fix `08f087e87`
+      (NextN/MTP layers inherit the trunk's per-layer head/ff counts — REQUIRED in this tree: without it, build
+      10211 read the per-layer arrays over 48 not 49 so `n_head_kv_arr[48]=0`, giving a NULL K/V alloc with the
+      shared head and a `ggml_set_rows` shape assert in the server's no-alloc dry run with the self-contained one —
+      one defect, both symptoms; provably trunk-side perf-neutral, T0b 12.509 on 10211 vs 12.570 on 10212,
+      bit-identical output). **Result: speculative checkpointing ELIMINATED — 407 created / 113 restored → 0/0 over
+      the same workload** (112.571 MiB each = 44.7 GiB, 4.97 GiB/request, ~39.8 MiB/token of avoided traffic on a
+      4.16 GB/token model); `n_rs_seq=2` survives instead of being clamped to 0. **MTP decode 17.582 → 18.125 t/s
+      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** Rebase itself was
+      trunk-invisible (REF 12.513 → T0 12.643). Gates: (a) trunk-only byte-identical to plain `0d2af8194` PASS short,
+      **BLOCKED long** — `T0b ≡ REFL` byte-for-byte, and REFL is the PLAIN tip with no MTP code, which proves the
+      long-prompt garbage is not ours; (b) MTP live PASS; (c) `LLAMA_SPEC_EXACT=serial` ≡ plain PASS short AND long;
+      (d) `ARCHS_RC=0`, `test-backend-ops -o SSM_SCAN` 6/6; (e) rollback correctness M1 ≡ M1b token-identical and
+      M1bself ≡ M1b. **Caveat recorded by the agent: M1b's better-looking long output is NOT evidence MTP fixes
+      anything — both streams are degenerate, MTP merely perturbs which attractor the corrupt logits fall into; the
+      long-probe 1.59× must not be quoted.** **No exact-and-fast configuration exists today: `serial` is byte-exact
+      but SLOWER than trunk (11.69 vs 12.57 t/s), and the approximate-mode flips sit on a build with a known-wrong
+      GEMM — exactness re-opens after the iqk fix, it is not settled.** Blocked only on LONG-PROMPT-GARBAGE
+      (`gdn-fix-validate`); then re-run the long probe, re-characterise exactness, and decide promotion of the trio.
+      **Pre-promotion check owed:** upstream `9d817213a` reads those arrays the same way, so either upstream fixed it
+      later or its MTP path never allocates that layer's K/V — one upstream-diff check before any promotion.
+      Evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip/{REPORT.md,runs/,compare_all.py}`.
 - [ ] **LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to
       garbage on SINGLE-sequence prompts above ~23–42 tokens.** Found 2026-09-03 by the coordinator's long-prompt
       check on the deployable tip `0d2af8194` (42/81/233-token prompts all degenerate, placement + linkage proven)
