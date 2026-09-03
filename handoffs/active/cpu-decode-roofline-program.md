@@ -172,7 +172,7 @@ not a gate.
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): one `ClaimTuple` per
       `llama-bench` arm beside the run directory (artifact path + SHA, build id, full recipe, `-t`, n,
       reps, box-state capture) via the existing measurement ladder. Wire the write side with C5, not after.
-- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** *(a) ✅ 2026-09-02 —
+- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** **Operator "proceed" 2026-09-03 — in flight as agent `c7-finish`: adopt the forcing eviction (D8x) in the research branch, enable the orchestrator launch-path pre-evict + priors recompile, prepare both merges, record the durable form.** *(a) ✅ 2026-09-02 —
       research branch `inf70/c7-placement` (6f7bdadb, pushed; merge to research `main` is the owning
       session's/operator's step — the auto-mode classifier refuses a branch→main push from this session):
       `scripts/utils/numa_evict.py`, `scripts/utils/numa_placement_check.sh` (exit 3 above 40% share),
@@ -635,6 +635,15 @@ already ships the generic `--spec-type draft-mtp` driver (`common/speculative.cp
 it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the head's decoder graph, precedent
 `src/models/qwen35moe.cpp:110-137`) and tensor borrowing for the `shared-` heads.
 
+**Sequencing after the operator's 2026-09-03 "proceed" (recorded by the coordinator):** every MTP branch
+(`inf70/mtp` → `mtp-27941` → `mtp-exact`) is based on the OLD `c035bbf3d`, eight commits behind the fast tip, so
+no MTP number has yet been measured on the 12.55 t/s kernel. In flight, disjoint: (1) `mtp-tip` — rebase the
+stack onto `0d2af8194` and port the E2b-2 rollback trio (the throughput lever); (2) `e3-alpha` — E3 on the
+existing build (α is head-vs-trunk, speed-independent, so it need not wait); (3) `gdn-rowexact` — the lossless
+gate. Integration order once they land: GDN fix onto the tip → MTP stack on top → **lossless gate**
+(`LLAMA_SPEC_EXACT=serial` ≡ MTP ≡ concurrent-prefill ≡ plain, token-for-token) → E-GATE with the sampler
+named. MTP is not a serving option until that gate passes.
+
 - [x] **E1 — download the heads.** ✅ 2026-09-02 — `mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf`
       (2,786,568,256 B) and self-contained `mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B) in
       `models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/` with the README; both `SHA-OK` against the repo's LFS
@@ -707,10 +716,9 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       cause of E2a, E2c AND X-CONC (concurrent prefill). **Lossless MTP is therefore impossible at the driver
       level; the only lossless path is option (b): make `build_delta_net_chunking` bit-equal to k
       autoregressive steps for small n — a kernel task that ALSO fixes X-CONC and E2c.** Branch
-      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. Operator decision: fund
-      option (b) (one kernel fix closes three defects and makes MTP a lossless 1.4–1.7× serving option), or
-      ship option (c) approximate MTP, or hold MTP. Until (b), MTP stays approximate; the merged non-MTP
-      kernel is the lossless serving path.
+      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. **Operator decision 2026-09-03: option (b) FUNDED (task GDN-ROWEXACT below, in flight).** Until it
+      lands, MTP stays approximate and the merged non-MTP kernel (`0d2af8194`, 12.55 / 13.06 t/s) is the
+      lossless serving path.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
@@ -730,9 +738,12 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       oracle. Two shapes to scope: (i) unroll n ≤ 3 through the autoregressive kernel inside the graph;
       (ii) make the chunked kernel bit-equal for small n. Plus iqk small-N parity (mechanism is
       iqk-independent per E2c, so this is the CPU-graph kernel, not the iqk path). Gate: `serial` output ==
-      MTP output == concurrent-prefill output == plain, token-for-token. **This is the operator's "fund
-      option (b)?" decision — one kernel task turns MTP into a lossless 1.4–1.7× serving option and
-      unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
+      MTP output == concurrent-prefill output == plain, token-for-token. **FUNDED by the operator 2026-09-03 ("proceed") — in flight as agent `gdn-rowexact`, branch
+      `inf70/gdn-rowexact` from the exp tip `0d2af8194` (this is a non-MTP kernel fix and lands on the tip
+      directly; MTP merges on top). Gates: G1 batch-invariance (`-ub 1` ≡ default ≡ `-ub 8`), G2 X-CONC
+      (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
+      G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
+      1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
