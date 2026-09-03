@@ -204,7 +204,12 @@ not a gate.
       node inside the lock (B4: 44.6/23.5/23.5/2.4 GB with node 3 at 41 GB free at eviction time) — the
       allocator still falls back under concurrent page-cache growth (a 180 GB download was writing all
       afternoon). Eviction reduces the odds; only the in-window `numastat` proof makes a run valid, and
-      only a durable form closes it.** (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
+      only a durable form closes it. **Root cause found 2026-09-03 (D8x): the `evict_nodes.sh` helper used
+      all session under-evicts — it allocates `TARGET − free` GiB, freeing nothing useful when a node's
+      free is near TARGET but the model needs more than that per node, so interleave still spills to node
+      0. The forcing form (`/mnt/raid0/llm/tmp/inf70/evict_nodes_force.sh`) allocates `TARGET + 2` GiB
+      whenever `free < TARGET` and verifies; C7(a) should adopt it. This is why placement kept skewing
+      "even after in-lock eviction" — the eviction was too weak.** (c) Decide the durable form with the operator: `vm.zone_reclaim_mode=1` (reclaim on
       the intended node before falling back — system-wide, hurts file-heavy work), a drop_caches hook in the
       stack's launch path, or BIOS NPS1 (hardware interleave makes the placement question disappear; C0-c
       says whether it also lifts the 153 GB/s). Memory note: `feedback_page_cache_defeats_numa_interleave`.
@@ -333,8 +338,10 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       (`GGML_GET_ROWS_MIN_BYTES`). Same-binary ABA at t48: **+0.115 t/s (+0.97%), inside the 0.17 t/s
       drift — neutral-to-slightly-positive, not a claim.** Why: GET_ROWS cost **2.59 ms/token in this
       window, not the 9.34 ms the profiler saw 2.5 h earlier** — the 36 big PLE gathers took 37 µs each
-      (cache-served, ~162 GB/s) vs 233 µs then, same command, recipe, placement and THP: **a
-      state-dependent cost, not a structural one; D6's "start with GET_ROWS" ranking is retracted.**
+      (cache-served, ~162 GB/s) vs 233 µs then, same command. **Correction 2026-09-03 (D8x): this "state-dependent" reading was itself wrong — D8's
+      "serial" arm was secretly parallel (the `GGML_GET_ROWS_MIN_BYTES` knob is inert at execution), so
+      the 2.59 ms it saw was the PARALLEL cost and the 9.34 ms is the genuine SERIAL cost; the
+      parallelization is real (9.34 → 2.59 ms) and D6's "start with GET_ROWS" ranking STANDS.**
       SET_ROWS deliberately left serial (source rows can share a destination index — a write race, for
       0.011 ms/token); CPY needs nothing (its single-task nodes are the empty `ne1 = 0` ones). A cold-source
       probe shows the split does work when there is DRAM traffic (1T 105 µs → 48T 12–61 µs). **Side
@@ -343,7 +350,10 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       the patch by the agent's protocol, with cmake cache, flags, gcc, stale objects, library resolution,
       base delta, placement and THP ruled out; a fresh pristine build (d1-base) is NOT faster, so it is
       something in the d8 tree or its arm protocol.** If real, the 10.09 anchor and every Δ against it are
-      understated ~14%. **D8x static verdict (2026-09-02, bench arms pending): the +14% IS the GET_ROWS
+      understated ~14%. **D8 follow-up (D8x): `GGML_GET_ROWS_MIN_BYTES` is dead at execution** — it gates
+      only the planned `n_tasks`, which the compute loop ignores; delete it or move the byte-threshold gate
+      into the kernel, and isolate GET_ROWS in future with a build lacking `bc2834a9b`, never the env var.
+      **D8x static verdict (2026-09-02, bench arms then confirmed): the +14% IS the GET_ROWS
       patch.** `GGML_GET_ROWS_MIN_BYTES` only changes the *planned* `n_tasks`, which this tree's compute
       loop never consults (`params.nth = n_threads` for every node; `n_tasks` only sizes the work buffer),
       so D8's "OFF" arm ran the parallel kernel too — the A/B was on/on, and the "37 µs vs 233 µs,
@@ -676,13 +686,18 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       upstream `36b101543` (#27941), was ported (`inf70/mtp-27941`, `7ab0a0fe4`, 444 lines of
       `llama-memory-hybrid-idx` + kv-cache + 7/8 `qwen4exp.cpp` hunks; a provable no-op for
       non-speculative output) and the flip survives byte for byte**; (c) accept non-exactness — MTP as
-      *approximate* speculation for research measurement, exactness claim dropped. **E2c (running, first
-      Fable-low agent): does the trunk's forward depend on batch size at all?** Same prompt through
+      *approximate* speculation for research measurement, exactness claim dropped. **E2c settled (2026-09-02, first Fable-low agent): the qwen4exp forward IS batch-size dependent, in the stock path — see E2a's E2c note above.** Same prompt through
       `-b 1 -ub 1` vs default batching vs `-b 8 -ub 8` on the unpatched build, greedy ids and top-5
       logprobs compared — if they differ, every prefill-vs-decode comparison in this campaign inherits
       the finding, not just speculation. Then (a)/(b)/(c) is the operator's decision; the E2 agent's
       recommendation is (c) with no serving exposure, and to keep `inf70/mtp-27941` as a correctness
-      rider regardless. E-GATE depends on it.
+      rider regardless. **E2c settled where the non-exactness lives (2026-09-02, report reconstructed
+      from its `runs/` data): it is in the STOCK qwen4exp path, not the iqk kernels** — with `GGML_IQK=0`
+      the ub512-vs-ub1 greedy streams still diverge, just later (byte ~2157 / ~token 400 instead of token
+      28); a dense Qwen3-32B is bitwise batch-invariant on the same build and every MoE tried is not. The
+      non-exactness is a property of the hybrid operators (GDN scan / PLE conv / QSA indexer); iqk only
+      brings the first flip earlier. **The fix belongs in the qwen4exp multi-token kernels (an
+      INF-67/kernel task), not the MTP driver.** E-GATE depends on it.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
