@@ -172,17 +172,19 @@ not a gate.
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md): one `ClaimTuple` per
       `llama-bench` arm beside the run directory (artifact path + SHA, build id, full recipe, `-t`, n,
       reps, box-state capture) via the existing measurement ladder. Wire the write side with C5, not after.
-- [ ] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** *(a) ✅ 2026-09-02 —
-      research branch `inf70/c7-placement` (6f7bdadb, pushed; merge to research `main` is the owning
-      session's/operator's step — the auto-mode classifier refuses a branch→main push from this session):
-      `scripts/utils/numa_evict.py`, `scripts/utils/numa_placement_check.sh` (exit 3 above 40% share),
-      `bench_canonical.sh --pre-evict-gib` (default 40) with the in-window placement proof as a REQUIRED row,
-      `canonical_recipe.py` constants + the eighth drift-class entry; 15 + 34 tests pass. Launch-path half
-      ✅ prepared, default OFF: orchestrator branch `inf70/c7-placement` (e9d4b817, pushed) adds
-      `numa_pre_evict_gib` (role field), pre-evict before `Popen` and a `[numa-placement]` log fold; 283 + 136
-      tests pass; enabling is a one-line `stack_topology.yaml` edit and the priors recompile must precede the
-      merge because the prior hashes pin `orchestrator_stack.py`/`stack_numa.py`. (b) audited — no CPU
-      server live (below). (c) still open — the durable form.* Measured 2026-09-02: when a
+- [x] **C7 — make the placement fix permanent, everywhere a CPU model is loaded.** ✅ 2026-09-03 *(a) ✅ ADOPTED-FORCING
+      2026-09-03 — research main `0458de88`: `numa_evict.py` allocates TARGET+2 whenever free < TARGET, verifies per
+      node, 2 passes (the 2026-09-02 `TARGET − free` sizing freed nothing — D8x); mutation-tested (weak form fails
+      14/20). (b) ✅ done — no CPU server was live; the fix is in the launch path. (c) ✅ durable form = launch-path
+      pre-evict, ENABLED: orchestrator main `5f20e23c` sets `numa_pre_evict_gib: 40` on frontdoor,
+      eval_batch_frontdoor, architect_critic, ingest_long_context, worker_general (never on gpu_host_lane roles —
+      refused in code), forcing form, `[numa-placement]` per-node fold logged after health; priors recompiled.
+      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **LIVE ONLY
+      AFTER the owning stack session fast-forwards `/mnt/raid0/llm/epyc-orchestrator` (at `510f5048`, 3 behind,
+      clean) at its boundary and runs `stack_change_pipeline.py check` — the running API serves from that clone, so
+      the pull + reload is the owner's, not the coordinator's (reload-ownership rule).** Operator "proceed"
+      2026-09-03; agent `c7-finish`, report `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`. Memory:
+      `feedback_page_cache_defeats_numa_interleave`.* Measured 2026-09-02: when a
       NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
       model lands wherever memory is free (57.7 GB of 96 on node 0), costing −25% decode / −30% prefill. The
       box is normally in that state (1,085 GB of page cache). Three deliverables: (a) `canonical_recipe.py`
@@ -635,6 +637,15 @@ already ships the generic `--spec-type draft-mtp` driver (`common/speculative.cp
 it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the head's decoder graph, precedent
 `src/models/qwen35moe.cpp:110-137`) and tensor borrowing for the `shared-` heads.
 
+**Sequencing after the operator's 2026-09-03 "proceed" (recorded by the coordinator):** every MTP branch
+(`inf70/mtp` → `mtp-27941` → `mtp-exact`) is based on the OLD `c035bbf3d`, eight commits behind the fast tip, so
+no MTP number has yet been measured on the 12.55 t/s kernel. In flight, disjoint: (1) `mtp-tip` — rebase the
+stack onto `0d2af8194` and port the E2b-2 rollback trio (the throughput lever); (2) `e3-alpha` — E3 on the
+existing build (α is head-vs-trunk, speed-independent, so it need not wait); (3) `gdn-rowexact` — the lossless
+gate. Integration order once they land: GDN fix onto the tip → MTP stack on top → **lossless gate**
+(`LLAMA_SPEC_EXACT=serial` ≡ MTP ≡ concurrent-prefill ≡ plain, token-for-token) → E-GATE with the sampler
+named. MTP is not a serving option until that gate passes.
+
 - [x] **E1 — download the heads.** ✅ 2026-09-02 — `mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf`
       (2,786,568,256 B) and self-contained `mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B) in
       `models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/` with the README; both `SHA-OK` against the repo's LFS
@@ -707,21 +718,92 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       cause of E2a, E2c AND X-CONC (concurrent prefill). **Lossless MTP is therefore impossible at the driver
       level; the only lossless path is option (b): make `build_delta_net_chunking` bit-equal to k
       autoregressive steps for small n — a kernel task that ALSO fixes X-CONC and E2c.** Branch
-      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. Operator decision: fund
-      option (b) (one kernel fix closes three defects and makes MTP a lossless 1.4–1.7× serving option), or
-      ship option (c) approximate MTP, or hold MTP. Until (b), MTP stays approximate; the merged non-MTP
-      kernel is the lossless serving path.
+      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. **Operator decision 2026-09-03: option (b) FUNDED (task GDN-ROWEXACT below, in flight).** Until it
+      lands, MTP stays approximate and the merged non-MTP kernel (`0d2af8194`, 12.55 / 13.06 t/s) is the
+      lossless serving path.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
       ~49 MiB/token**, on top of the weight stream; no re-prefill observed. Rollback itself works (p2/p3
       stayed identical); it is paid with a copy instead of an in-place rewind. **E2b-1 ✅ done 2026-09-02:
       `36b101543` (#27941) ported on `inf70/mtp-27941` — no regression, checkpoints unchanged (31/2), not the
-      E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
-      (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
-      way (patch files, never a `--depth` fetch into the shared repo).
+      E2a fix.** **E2b-2 ✅ PORTED AND VALIDATED on the fast tip 2026-09-03** (agents `mtp-tip` + `mtp-tip-report`,
+      branch `inf70/mtp-tip` @ `08f087e87`, not merged/pushed): the rollback trio `b1c1c99c6` (upstream `1692f9e50`
+      #26623, ggml `ssm_scan` rollback snapshots) · `ea3f50dda` (`0eadefebd` #28123, qwen4exp rollback) ·
+      `3a00401d1` (`9d817213a` #28159, load `n_layer_nextn` before `n_layer()`) · plus companion fix `08f087e87`
+      (NextN/MTP layers inherit the trunk's per-layer head/ff counts — REQUIRED in this tree: without it, build
+      10211 read the per-layer arrays over 48 not 49 so `n_head_kv_arr[48]=0`, giving a NULL K/V alloc with the
+      shared head and a `ggml_set_rows` shape assert in the server's no-alloc dry run with the self-contained one —
+      one defect, both symptoms; provably trunk-side perf-neutral, T0b 12.509 on 10211 vs 12.570 on 10212,
+      bit-identical output). **Result: speculative checkpointing ELIMINATED — 407 created / 113 restored → 0/0 over
+      the same workload** (112.571 MiB each = 44.7 GiB, 4.97 GiB/request, ~39.8 MiB/token of avoided traffic on a
+      4.16 GB/token model); `n_rs_seq=2` survives instead of being clamped to 0. **MTP decode 17.582 → 18.125 t/s
+      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** Rebase itself was
+      trunk-invisible (REF 12.513 → T0 12.643). Gates: (a) trunk-only byte-identical to plain `0d2af8194` PASS short,
+      **BLOCKED long** — `T0b ≡ REFL` byte-for-byte, and REFL is the PLAIN tip with no MTP code, which proves the
+      long-prompt garbage is not ours; (b) MTP live PASS; (c) `LLAMA_SPEC_EXACT=serial` ≡ plain PASS short AND long;
+      (d) `ARCHS_RC=0`, `test-backend-ops -o SSM_SCAN` 6/6; (e) rollback correctness M1 ≡ M1b token-identical and
+      M1bself ≡ M1b. **Caveat recorded by the agent: M1b's better-looking long output is NOT evidence MTP fixes
+      anything — both streams are degenerate, MTP merely perturbs which attractor the corrupt logits fall into; the
+      long-probe 1.59× must not be quoted.** **No exact-and-fast configuration exists today: `serial` is byte-exact
+      but SLOWER than trunk (11.69 vs 12.57 t/s), and the approximate-mode flips sit on a build with a known-wrong
+      GEMM — exactness re-opens after the iqk fix, it is not settled.** Blocked only on LONG-PROMPT-GARBAGE
+      (`gdn-fix-validate`); then re-run the long probe, re-characterise exactness, and decide promotion of the trio.
+      **Pre-promotion check owed:** upstream `9d817213a` reads those arrays the same way, so either upstream fixed it
+      later or its MTP path never allocates that layer's K/V — one upstream-diff check before any promotion.
+      Evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip/{REPORT.md,runs/,compare_all.py}`.
+- [ ] **LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to
+      garbage on SINGLE-sequence prompts above ~23–42 tokens.** Found 2026-09-03 by the coordinator's long-prompt
+      check on the deployable tip `0d2af8194` (42/81/233-token prompts all degenerate, placement + linkage proven)
+      and independently by E3 on the old base — so it predates every merged lever and the MTP port. Same defect
+      family as GDN-ROWEXACT / X-CONC / E2c at a far lower bar: one sequence, no concurrency, no MTP. Clean repro
+      `/mnt/raid0/llm/tmp/inf70/longprompt/`. **ROOT CAUSE FOUND 2026-09-03 (`gdn-rowexact`, node-level trace, evidence
+      `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/`): iqk's `is_dequant_better()` (`iqk_mul_mat.cpp`) switches
+      IQ4_XS to a requantised `Q8_K_R16` repack GEMM when `nrc_y >= 32 && npt >= 16`, and that converter/kernel is
+      WRONG on this host** — first gross error `z-0 = mul_mat(blk.0.attn_gate IQ4_XS [2560×6144], 42 rows)`, every
+      element off (max 1.2e3) already at row 0; the tree already excludes IQ2/IQ3 from the same path for the same
+      reason. **The GDN kernel is NOT involved** (see GDN-ROWEXACT below). This one mechanism explains all three
+      symptoms: single prompts ≥ ~32 tokens, X-CONC (4 simultaneous 12-token prompts = a 48-row ubatch; staggered
+      = < 32 rows), and `GGML_IQK=0` clean. **It PREDATES the fusion lineage**: pre-fusion build 10128 (which does
+      run iqk) is degenerate too — every iqk-build pp/coherence result on this model above ~32 rows was a wrong
+      forward. **Serving workarounds today (unpatched tip): `-ub 1`** (coherent on 42/81/233; decode UNCHANGED
+      12.5–12.7 t/s; prefill ~10× slower, 13.5 vs 68–140 t/s) **or `GGML_IQK=0`** (coherent; pp 118.9 vs 135–140).
+      **Fix committed `99425578d` on `inf70/gdn-rowexact`**: IQ4_XS returns to its direct iqk kernel for every Ny
+      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX IS PARTIAL — validated 2026-09-03 (arms ran before the agent was rate-limited; read off disk by the
+      coordinator): p40 (42 tok) and p90 (81 tok) COHERENT on the fixed build, p200 (233 tok) STILL FAILS.**
+      | arm | p40 | p90 | p200 |
+      |---|---|---|---|
+      | fix, default | COHERENT (pp 75.5) | COHERENT (pp 105.2) | FAILS |
+      | fix, `GGML_IQK_DEQUANT=0` (ALL repacks off) | COHERENT (pp 76.3) | COHERENT (pp 95.6) | FAILS |
+      | fix, `GGML_ROWEXACT_N=256` | COHERENT (pp 69.9) | COHERENT (pp 92.9) | FAILS |
+      | fix, `-ub 1` | COHERENT | COHERENT | **COHERENT** |
+      The p200 failure MODE changed: the unpatched control produced 160 tokens of salad (`(1120-2222-…`), the fixed
+      build returns `predicted_n=1`, `content:""`, `stop=eos` — an **immediate EOS**. Because all repacks off still
+      fails p200, the coordinator's Q5_1(≥32)/Q6_K(≥64) coverage hypothesis is WEAKENED: either a second distinct
+      defect at ~233 rows or a prompt/template artifact. **Coordinator metric defect (own error): the degeneracy
+      classifier misreads a 1-token EOS as DEGENERATE** (uniq=1.0, top_share=1.0 trip the `top<0.25` rule), so
+      failures must be classified by REASON — COHERENT / SALAD / EARLY-EOS / EMPTY / HTTP-ERROR — not pass/fail.
+      Owner `gdn-fix-validate` (Opus, resumed): repair the classifier and re-classify all runs; discriminate
+      prompt-specific vs length-specific (other 100–260-token texts, p200 truncated to 120/160/200); verify the
+      `DEQUANT=0` knob really covers Q5_1/Q6_K (read the path, don't trust the name) with `GGML_IQK=0` as the
+      cross-check; node-trace the failing length if unresolved. Still owed: **G3 n=1 decode BYTE-identical to the
+      unpatched tip** (must not leak into batch-1; `MUL_MAT_ID -b CPU` must stay green for B3-k), G4 decode vs
+      12.55, and the honest fixed pp512 against the withdrawn wrong numbers (note fixed p40 pp 75.5 > control 68 —
+      the fix may be FASTER at short lengths; verify). **Serving today: `-ub 1` is the only config coherent at all
+      three lengths.** No serving or deployable-speed
+      claim on this tree until it passes.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
-      (the one fix that closes E2a-successor, E2c AND X-CONC).** Root cause, confirmed three ways
+      (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
+      exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
+      token-sequential op `ggml_compute_forward_gated_delta_net_one_chunk` (`ops.cpp:11045`); the chunked graph kernel
+      at `delta-net-base.cpp:435` is dead code on this build. Reproducer `llama-rowexact` (every graph node via
+      `cb_eval`, n singles vs one n-token batch): at n=3 every node before layer 0's router — including the fused GDN
+      op — is bit-identical, IQK on and off; 4 seqs × 3 tokens in one ubatch reproduce each sequence's own forward
+      bit-for-bit (0/5450 nodes differ). The GROSS defect is the iqk IQ4_XS repack (LONG-PROMPT-GARBAGE above). The
+      RESIDUAL small-batch non-exactness behind E2a/E2c is the **F32 router GEMM `ffn_gate_inp` (stock ggml, not
+      iqk), ~1 ulp fp-order**, which perturbs top-k downstream — addressed on the same branch by `GGML_ROWEXACT_N`
+      (tinyBLAS per-column router + iqk GEMV-per-column for 1<Ny≤N), env-gated default OFF. **Lossless-MTP gate =
+      `LLAMA_SPEC_EXACT=serial` ≡ MTP on the fix + MTP-stack integration** (coordinator sequences after G0/G3). Root cause, confirmed three ways
       2026-09-03 (`mtp-exact`, `mtp-conc`, `e2c`): `src/models/delta-net-base.cpp:435` routes
       `n_seq_tokens == 1` to the autoregressive GDN kernel and any 2+-token batch to the chunked kernel
       (CS 64, padded), and the two are not row-exact, so a verification batch (MTP), a multi-sequence
@@ -730,10 +812,21 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       oracle. Two shapes to scope: (i) unroll n ≤ 3 through the autoregressive kernel inside the graph;
       (ii) make the chunked kernel bit-equal for small n. Plus iqk small-N parity (mechanism is
       iqk-independent per E2c, so this is the CPU-graph kernel, not the iqk path). Gate: `serial` output ==
-      MTP output == concurrent-prefill output == plain, token-for-token. **This is the operator's "fund
-      option (b)?" decision — one kernel task turns MTP into a lossless 1.4–1.7× serving option and
-      unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
-- [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
+      MTP output == concurrent-prefill output == plain, token-for-token. **FUNDED by the operator 2026-09-03 ("proceed") — in flight as agent `gdn-rowexact`, branch
+      `inf70/gdn-rowexact` from the exp tip `0d2af8194` (this is a non-MTP kernel fix and lands on the tip
+      directly; MTP merges on top). Gates: G1 batch-invariance (`-ub 1` ≡ default ≡ `-ub 8`), G2 X-CONC
+      (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
+      G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
+      1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
+- [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
+      `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
+      prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
+      `LLAMA_TRACE=1` for per-position acceptance, coherence classifier v3); no α reported because 0/13 plain
+      outputs were coherent and α against corrupted logits counts nothing; lock released after 349 s. Sampler
+      note: Flash-Next has no role in `model_registry.yaml`; served qwen roles carry only `temperature`
+      (frontdoor 0.3, coder 0.2) — production arm = the standing spec-dec methodology 0.6/0.95/20/seed 42 with
+      a 0.3 bracket. `shared-Q4_K_M` head absent. Coordinator decision: when the fix lands, run the REDUCED first
+      pass (plain + shared-Q8_0 n-max 1–3, ~1.2 h) as the go/no-go before the full 10-arm ~3.2 h sweep.** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
       recipe and the C5 build with the C5 trunk. The B200 figures (66% acceptance, 1.67×) are the reference;
@@ -751,6 +844,11 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       cost is part of the measured number, not something to subtract.
 
 ## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+**Root cause of the prefill-corruption defect found 2026-09-03 (`gdn-rowexact`): it is NOT a multi-sequence bug —
+packing 4 sequences in one ubatch is bit-exact (0/5450 nodes differ). Four simultaneous ~12-token prompts make a
+48-row ubatch, which crosses iqk's `nrc_y >= 32` IQ4_XS repack threshold (LONG-PROMPT-GARBAGE); staggered starts stay
+below it. The same fix (`99425578d`) unblocks simultaneous admission once validated.**
 
 Answering the operator's challenge to our own hardware rather than the unsloth GPU README (`mtp-conc`,
 coherence-checked every round):
@@ -779,20 +877,46 @@ coherence-checked every round):
 
 ## Deployable serving speed (claim-grade, 2026-09-03)
 
-Single-stream `llama-server` decode of qwen3.8-next-flash on the merged experimental kernel (build 10202
-`9e75132e3` = graph path + parallel GET_ROWS + CONCAT default), `-np 1 -c 4096 -t 48 --no-mmap`, canonical
-env, forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`):
+Single-stream `llama-server` decode of qwen3.8-next-flash, `-np 1 -c 4096 -t 48 --no-mmap`, canonical env,
+forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`),
+coherence-gated (all 5 reps' greedy text bit-identical).
 
-| artifact | decode | ms/token | GB/s (% of 153) |
-|---|---|---|---|
-| uniform IQ4_XS (era anchor) | **12.00 ±0.04 t/s** | 83.3 | 49.9 (32.6%) |
-| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.38 ±0.05 t/s** | 80.8 | 50.0 (32.7%) |
+**Re-anchored on the merged experimental tip `0d2af8194` (b3k slab merged; build 10203, tree-identical to
+`inf70/b3k`; slab default ON, `GGML_MMID_SLAB=0` = control), 2026-09-03, one lock hold, in-window
+ggml-linkage + placement proven per arm:**
 
-The server is within 0.9% of the `llama-bench` proxy (12.11). r16 vs uniform is +3.1% decode at identical
-GB/s, exactly the −2.8% bytes/token. **Update 2026-09-03: `inf70/b3k` (the mul_mat_id slab partition) is now merged into the experimental tip (`0d2af8194`), adding a measured +3.07% decode on the `llama-bench` proxy (uniform 12.24 → 12.59 t/s). Projected server-tps on the merged tip: uniform ≈ 12.4 t/s, r16 ≈ 12.8 t/s (~78 ms/token) — a projection from the proxy delta, not a fresh server measurement; a server-tps re-anchor on `0d2af8194` is the confirming step and is a cheap single-window run.** Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
-not an opt-in; the graph path was confirmed (`graphs reused = 127`/request). Ceiling context: 32.7% of the
-recipe's 153 GB/s read bandwidth, i.e. ~70% of the token is still dispatch floor; the bandwidth third
-also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal), held for the reboot.
+| artifact | slab | decode | ms/token | GB/s (% of 153) |
+|---|---|---|---|---|
+| uniform IQ4_XS (era anchor) | on (default) | **12.55 t/s** (ABA 12.589 / 12.516 ±0.05) | 79.7 | 52.3 (34.2%) |
+| uniform IQ4_XS | off (control) | 12.079 ±0.033 | 82.79 | 50.3 (32.9%) |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | on (default) | **13.06 ±0.01 t/s** | 76.59 | 52.7 (34.5%) |
+
+- **The slab gain reproduces in the server path**: same binary/window, slab on vs off on uniform =
+  **+3.9%** (12.55 vs 12.079, −3.35 ms/token) — confirming, and slightly stronger than, the +3.07%
+  `llama-bench` proxy delta. All four arms coherent (greedy text bit-identical across 5 reps).
+- **Both headlines beat the pre-measurement projection (12.4 / 12.8).** The prior (pre-b3k) merged tip
+  `9e75132e3` measured uniform 12.00 / r16 12.38 in an earlier window — consistent with the slab-off
+  control here (12.079). r16 vs uniform (both slab-on): +4.1% decode at ~equal GB/s, tracking the −3.0%
+  bytes/token.
+
+**⚠ DEFECT 2026-09-03 — on real prompts these are the decode speed of GARBAGE.** Long-prompt coherence check on
+this exact tip/binary (placement 23.0 GB × 4 and linkage proven): prompts of **42, 81 and 233 tokens ALL degenerate**
+(`>> .> .> .>`, `The function l The function l`, `2222-2222-`) at 12.4–12.6 t/s; the 12-token prompt used by
+every gate in this campaign is coherent. E3 independently saw the same on the OLD base (`mtp-exact` =
+`c035bbf3d` + MTP port, none of D8/D7a/D1/B3-k, plain mode) above ~23–39 tokens, so it is the **stock fusion-tree
+qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never checks coherence, so no pp/tg number in
+this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
+WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
+≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
+Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause (13:27Z): the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE;
+workaround today `-ub 1` (decode unchanged, prefill ~10× slower) or `GGML_IQK=0`; targeted fix `99425578d` under validation.**
+
+Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
+`/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
+**34.5% of the recipe's 153 GB/s** read bandwidth, i.e. ~65% of the token is still dispatch floor; the
+bandwidth third also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal),
+held for the reboot. Evidence: `/mnt/raid0/llm/tmp/inf70/reanchor/` (per-arm timelines, `numastat`,
+linkage proofs, `summary-*.txt`).
 
 ## Reporting
 
