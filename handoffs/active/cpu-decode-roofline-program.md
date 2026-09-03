@@ -458,7 +458,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       expert×row chunking + gate-up fusion) is the highest-ROI lever on this path; B4 pays proportionally
       and at ~1.5× its roofline value; D1's barrier removal has ≤ 0.6 ms at stake here and must earn itself
       on the 797 dense `mul_mat` calls; D4 is refuted as a decode lever.**
-- [ ] **B3 — restructure `mul_mat_id` for batch 1.** Beyond D1's barrier removal: chunk across
+- [x] **B3 — restructure `mul_mat_id` for batch 1.** ✅ 2026-09-03 (both halves). Beyond D1's barrier removal: chunk across
       (expert × rows) jointly so each thread streams ≥ ~100 KB of one contiguous expert slab instead of
       14 rows of each (B2 measured the cost of the current split: ~11 ms/token of overhead on a 19.7 ms
       path, saturated at 8 threads) — **B3-k, the kernel half**, to be built on top of D1's branch; and
@@ -495,7 +495,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       200.2)**. Greedy agreement 82.6% (p2/p3 identical; p1 diverges at a low-confidence branch —
       expected, the router precision changed; C9 is what would prove equivalence). **`IQ4_XS-uniform-gateup-r16`
       is the Axis B/D comparison baseline from here** (prefill equal within noise, decode and bytes better;
-      the uniform file stays the era anchor, UD stays the served file). B3-k (the kernel half) stays open.
+      the uniform file stays the era anchor, UD stays the served file). **B3-k DONE ✅ 2026-09-03** (subagent `b3k`, branch `inf70/b3k` `5eb7d5f05` on D1 `664096408`, build 10203): thread `ith` streams the contiguous range `[total·ith/nth, total·(ith+1)/nth)` of the flat (used-expert, row) space (~133 rows/181 KB of IQ4_XS gate-up, ~533 rows/256 KB of Q5_1 down, ≤ 2 adjacent slabs) instead of ten 14–54-row stripes; patches the iqk hooks (`iqk_dispatch.cpp`, `iqk_mul_mat.{cpp,h}`) that `GGML_IQK=1` actually runs, gated by `GGML_MMID_SLAB`. **Round-2 ABA, placement proven per arm, coherence-checked: slab-on 12.59/12.61 t/s (79.43/79.30 ms) vs merged tip 12.24/12.21 t/s (81.70/81.90 ms) = +3.07% decode (−2.43 ms/token), 12× the 0.25% baseline spread.** Same-binary flip attributes the whole gain to the slab partition (D1 alone −0.37%, null). Bit-identical logits on 3 prompts × 128 steps vs slab-off and the merged tip; `test-backend-ops -o MUL_MAT_ID -b CPU` 815/815 (six runs), `test-iqk-ser`, `test-llama-archs` pass. **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction — "merge b3k if the round 2 confirms"; `--no-ff` merge commit `0d2af8194`; merged tree SHA `9e43dcbc8` bit-identical to the gated `inf70/b3k` tree, so the gates transfer verbatim — no combined-tree reverification needed). Carries D1 (`664096408`, cherry-pick of `1ba448e74`) as its bit-exact, null-on-its-own base.** Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b3k/`.
 - [x] **B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,
       `/mnt/raid0/llm/tmp/inf70/agents/b4/`) — three artifacts vs the uniform control, build 10196, t48, r5,
       placement proven in-window on every arm. Full override set `IQ4_XS-uniform-b4` (router F16 +
@@ -656,8 +656,7 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       `/mnt/raid0/llm/tmp/inf70/agents/e2/`. (The build self-reports a small build number because the
       fusion repo was briefly made shallow by a `--depth` fetch that afternoon, since repaired with
       `--unshallow`; commit hashes are the ids for every branch built in that window.)
-- [ ] **E2a — the greedy-identity gate failed on 1 of 3 prompts; find out whether batched verification is
-      exact on this architecture.** Prompt 1 diverges at generated token 28: the MTP arm accepted
+- [x] **E2a — CLOSED negative 2026-09-03: the divergence is the batched target forward, not the bonus token; no driver-side fix exists.** Prompt 1 diverges at generated token 28: the MTP arm accepted
       `' Lisbon'` where the trunk alone puts `'\n\n'` first by **0.79 nats** (not a rounding tie); both heads
       diverge identically and the trunk-only path is unchanged, so it is neither the head nor the port's
       effect on the trunk. Live hypothesis: qwen4exp's **multi-token verification forward is not equivalent
@@ -697,7 +696,21 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       28); a dense Qwen3-32B is bitwise batch-invariant on the same build and every MoE tried is not. The
       non-exactness is a property of the hybrid operators (GDN scan / PLE conv / QSA indexer); iqk only
       brings the first flip earlier. **The fix belongs in the qwen4exp multi-token kernels (an
-      INF-67/kernel task), not the MTP driver.** E-GATE depends on it.
+      INF-67/kernel task), not the MTP driver.** E-GATE depends on it. **RESOLVED 2026-09-03 (mtp-exact, measured):
+      both driver-side option-(a) shapes FAIL the 3×128 greedy-identity gate — `drop` the bonus token 2/3
+      FAIL, `redecode` it single-token 0/3 FAIL — because every failure is at a VERIFIED row, not the bonus:
+      the verified tokens themselves ran the chunked GDN kernel and are already non-exact. The exact-by-
+      construction control `Mserial` (re-decode every token single-token, no batched verification) is
+      byte-identical 3/3 but runs at 9.8–10.1 t/s = plain-decode speed (no speedup). Root cause pinned to
+      `src/models/delta-net-base.cpp:435`: `n_seq_tokens == 1 → build_delta_net_autoregressive`, else
+      `build_delta_net_chunking` (CS=64) — the two are not row-exact, and this ONE divergence is the common
+      cause of E2a, E2c AND X-CONC (concurrent prefill). **Lossless MTP is therefore impossible at the driver
+      level; the only lossless path is option (b): make `build_delta_net_chunking` bit-equal to k
+      autoregressive steps for small n — a kernel task that ALSO fixes X-CONC and E2c.** Branch
+      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. Operator decision: fund
+      option (b) (one kernel fix closes three defects and makes MTP a lossless 1.4–1.7× serving option), or
+      ship option (c) approximate MTP, or hold MTP. Until (b), MTP stays approximate; the merged non-MTP
+      kernel is the lossless serving path.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
@@ -707,6 +720,19 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       E2a fix.** E2b-2 open: the rollback trio `1692f9e50` (#26623) + `0eadefebd` (#28123) + `9d817213a`
       (#28159) — the throughput lever (upstream: 108 → 183 t/s with MTP once landed), to be ported the same
       way (patch files, never a `--depth` fetch into the shared repo).
+- [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
+      (the one fix that closes E2a-successor, E2c AND X-CONC).** Root cause, confirmed three ways
+      2026-09-03 (`mtp-exact`, `mtp-conc`, `e2c`): `src/models/delta-net-base.cpp:435` routes
+      `n_seq_tokens == 1` to the autoregressive GDN kernel and any 2+-token batch to the chunked kernel
+      (CS 64, padded), and the two are not row-exact, so a verification batch (MTP), a multi-sequence
+      prefill (concurrency), and any batched forward write a different recurrent state forward. `serial`
+      mode (`LLAMA_SPEC_EXACT=serial`, single-token decodes) is byte-identical 3/3 and is the exactness
+      oracle. Two shapes to scope: (i) unroll n ≤ 3 through the autoregressive kernel inside the graph;
+      (ii) make the chunked kernel bit-equal for small n. Plus iqk small-N parity (mechanism is
+      iqk-independent per E2c, so this is the CPU-graph kernel, not the iqk path). Gate: `serial` output ==
+      MTP output == concurrent-prefill output == plain, token-for-token. **This is the operator's "fund
+      option (b)?" decision — one kernel task turns MTP into a lossless 1.4–1.7× serving option and
+      unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
 - [ ] **E3 — measure α before tuning anything** (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
@@ -723,6 +749,50 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       reported per the artifact rule and with the sampler named. Note the PLE regime: under `--no-mmap`
       the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
       cost is part of the measured number, not something to subtract.
+
+## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+Answering the operator's challenge to our own hardware rather than the unsloth GPU README (`mtp-conc`,
+coherence-checked every round):
+
+| concurrency | off agg t/s | MTP on agg t/s | multiplier | coherent |
+|---|---|---|---|---|
+| C=1 | 9.9 | 14.8 (acc 0.88) | 1.50× | yes |
+| C=4 staggered | 17.4 | 19.6 (acc 0.92) | 1.13× | 4/4 |
+| C=4 simultaneous | — | — | — | **0/4 — garbage** |
+
+- **MTP is a net win at concurrency, not a loss** (1.50× → 1.13× C=1→C=4); the GPU "net loss at
+  concurrency 8" does not apply to a dispatch-bound CPU. Corrects the earlier cited claim.
+- **Concurrency scales ~1.76× at C=4** (off, staggered) — the box is not one indivisible resource.
+- **NEW DEFECT (below) — concurrent prefill corrupts output.**
+
+- [ ] **X-CONC — qwen4exp multi-sequence prefill corruption (filed 2026-09-03, serving blocker).**
+      With `-np 4` and 4 requests that prefill in one batch (simultaneous starts), greedy output is
+      deterministic garbage (0/4 coherent; an 18-token early stop on prompt 3); staggering the starts by
+      ~0.7 s gives 4/4 coherent. **Reproduced on the plain merged binary (build 10202, no MTP/spec)**, so it
+      is the qwen4exp multi-sequence prefill path corrupting shared state when >1 full sequence shares a
+      prefill batch — the same non-row-exact batched forward E2c localized, here escalated from a logit
+      drift to garbage. Repro and evidence: `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`. Interim
+      mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the SAME kernel fix as E2a/E2c — make `build_delta_net_chunking` (delta-net-base.cpp:435) row-exact vs `_autoregressive` for small n; mtp-exact confirmed 2026-09-03 this one site is the common cause. **Blocks concurrent serving with
+      simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
+      check is inflated (the degenerate rounds ran faster per slot while producing garbage).
+
+## Deployable serving speed (claim-grade, 2026-09-03)
+
+Single-stream `llama-server` decode of qwen3.8-next-flash on the merged experimental kernel (build 10202
+`9e75132e3` = graph path + parallel GET_ROWS + CONCAT default), `-np 1 -c 4096 -t 48 --no-mmap`, canonical
+env, forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`):
+
+| artifact | decode | ms/token | GB/s (% of 153) |
+|---|---|---|---|
+| uniform IQ4_XS (era anchor) | **12.00 ±0.04 t/s** | 83.3 | 49.9 (32.6%) |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.38 ±0.05 t/s** | 80.8 | 50.0 (32.7%) |
+
+The server is within 0.9% of the `llama-bench` proxy (12.11). r16 vs uniform is +3.1% decode at identical
+GB/s, exactly the −2.8% bytes/token. **Update 2026-09-03: `inf70/b3k` (the mul_mat_id slab partition) is now merged into the experimental tip (`0d2af8194`), adding a measured +3.07% decode on the `llama-bench` proxy (uniform 12.24 → 12.59 t/s). Projected server-tps on the merged tip: uniform ≈ 12.4 t/s, r16 ≈ 12.8 t/s (~78 ms/token) — a projection from the proxy delta, not a fresh server measurement; a server-tps re-anchor on `0d2af8194` is the confirming step and is a cheap single-window run.** Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
+not an opt-in; the graph path was confirmed (`graphs reused = 127`/request). Ceiling context: 32.7% of the
+recipe's 153 GB/s read bandwidth, i.e. ~70% of the token is still dispatch floor; the bandwidth third
+also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal), held for the reboot.
 
 ## Reporting
 

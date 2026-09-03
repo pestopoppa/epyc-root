@@ -3589,3 +3589,58 @@ promise about magnitude.
   keying and the `model` provenance field).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record: how the rung was identified and the correction.
+
+## Compiled Update — 2026-09-03 (incremental): a cheap screening rung cannot be faithful for GEMM work — the tile follows the matrix dimensions
+
+**Confidence: verified** (both profiles measured on the same host, same recipe, one day apart;
+the quant-gating claims were read directly from the champion's diffs).
+
+The 2026-09-02 entry above established that a headline states a RUNG. This is the mechanism
+underneath it, and it generalises beyond one campaign: **a screening model small enough to be
+cheap dispatches different kernels than the production model it is standing in for.**
+
+Measured, profiling the same surface (`dec-b4`) on both rungs:
+
+| | 1.5B screen rung (Q4_K) | 27B production rung (Q8_0) |
+|---|---|---|
+| top hotspot | `MT64x64x64` GEMM | **`MT128x96x64` GEMM (23.89%)** |
+| also hot | — | `gated_delta_net_cuda` 13.55%, `dequantize_block_q8_0_f16` 10.75% |
+
+The production model's hottest kernel is a **different tile geometry**, and two of its top five
+kernels (the Q8_0 dequant, the SSM `gated_delta_net`) **do not execute on the screen model at
+all**. The screening rung was optimising code production either dispatches in a different shape or
+never dispatches.
+
+**Why this is structural, not a tuning error.** The tile is selected by rocBLAS/Tensile *from the
+GEMM dimensions*, which derive from `n_embd`. Matching it requires matching `n_embd`; matching
+`n_embd` means matching model size; and model size is exactly what made the screen cheap. **The
+property that makes a screening rung cheap is the property that destroys its fidelity for
+GEMM-shaped work.** No amount of care in choosing the small model fixes this.
+
+**What a screen CAN still do.** Fidelity is per-axis, so route by the axis a mechanism is sensitive
+to. A same-quant, same-architecture small model faithfully screens **quant-family** work (dequant
+kernels) and **architecture** work (SSM/attention blocks), because those depend on the type and the
+block structure rather than the matrix extent. It cannot screen **tiling or occupancy**. Send those
+straight to the production rung and pay the higher per-attempt cost for a verdict that means
+something.
+
+**Corollary — a rejection on the wrong rung is not evidence.** If the transfer function can invert
+sign (it did: +27.363% screen became −1.414% production), then screen-rung *negatives* are equally
+suspect. An optimisation with fixed setup cost and size-scaling benefit reads NEGATIVE at small
+`n_embd` and POSITIVE at large. Keep every negative's mechanism and sample vector so the suspect
+ones can be re-tested on the real rung later; discarding them makes the error permanent.
+
+**Corollary — quant-gated work is dormant, not dead.** Optimisations gated on a specific quant type
+(`GGML_TYPE_Q4_K`) cannot execute under a different-quant production model, which is why a
+Q4_K-tuned aggregate can measure production-NEUTRAL rather than harmful. They cost a branch and
+carry no risk on the inactive path, and they become live again if that quant is ever served — but
+their measured *magnitude* does not transfer, because a larger model of the same quant has
+different GEMM dimensions. Treat them as leads to re-measure, never as banked numbers. The
+promotion consequence: such paths ship **performance-unvalidated** unless deliberately exercised.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-27
+  (the reconfiguration and both profiles), R23-28 (screen fidelity axes), R23-29 (quant-gating and
+  the promotion condition).
+- [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md) —
+  session record.

@@ -4162,3 +4162,52 @@ parallel implementation wave. The corrected ledger and the durable findings:
   format spec (X0).
 - [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the audit and the
   ten-subagent implementation wave, per-task.
+
+## Compiled Update — 2026-09-03: INF-70 wave 2 — the deployable server speed, GDN batched-forward root cause, and CPU concurrency
+
+**Confidence: verified** (claim-grade server measurement + three independent diagnostics converging on one
+kernel site; branches merged/verified where stated).
+
+- **Deployable single-stream serving speed of qwen3.8-next-flash (claim-grade, `llama-server`, 5 reps,
+  placement-proven):** **12.0 t/s on the uniform IQ4_XS artifact, 12.4 t/s on `IQ4_XS-uniform-gateup-r16`**
+  (80.8 ms/token), on the merged experimental kernel (build 10202 `9e75132e3` = graph path + parallel
+  GET_ROWS + CONCAT default), t48, graph path confirmed. Server tracks `llama-bench` within 0.9%. That is
+  32.7% of the recipe's 153 GB/s read bandwidth — ~70% of the token is still dispatch floor.
+- **The +14% decode from D8 is confirmed to be parallel GET_ROWS, not a build artifact.** D8x settled a
+  dispute with merge-verify from the code: the prof-carry commit is entirely `#ifdef GGML_CPU_PROF` (no-op
+  in the shipped build), and the `GGML_GET_ROWS_MIN_BYTES` env knob is inert at execution (it only sets the
+  planned `n_tasks`, which the compute loop ignores), so a knob-gated "off" arm still ran the parallel
+  kernel. Per-op: the parallel gather also speeds its cache-warmed consumers (CPY, GATED_DELTA_NET,
+  MUL_MAT). The merged branch is verified safe: all `test-backend-ops` suites green, greedy identical to the
+  anchor.
+- **One kernel site is the root cause of THREE separate defects.** `src/models/delta-net-base.cpp:435`
+  routes `n_seq_tokens == 1` to `build_delta_net_autoregressive` and any 2+-token batch to
+  `build_delta_net_chunking` (CS 64, padded); the two are not row-exact, so any batched forward writes a
+  different recurrent state forward. This is the common cause of (a) MTP greedy divergence — E2a CLOSED
+  negative: both driver-side bonus-token fixes fail at *verified* rows, `LLAMA_SPEC_EXACT=serial`
+  (single-token decodes) is byte-identical 3/3 but at plain-decode speed, so MTP is lossless only without
+  batching; (b) E2c's batched-forward non-exactness (iqk-independent — persists with `GGML_IQK=0`); and (c)
+  a **concurrent-prefill corruption**: `-np 4` with simultaneous request starts produces 0/4 coherent
+  deterministic garbage in the plain merged binary (no MTP), staggered starts give 4/4 coherent. The single
+  fix — make the chunked GDN kernel row-exact for small n — closes all three and makes MTP lossless.
+- **CPU concurrency, measured on our hardware (refutes the GPU README claim):** MTP stays a NET WIN at
+  concurrency — 1.50× at C=1, 1.13× at C=4 (staggered, coherent) — it does NOT flip to a loss as the
+  unsloth B200 note claimed; a dispatch-bound CPU has different dynamics than a saturated GPU. Concurrency
+  itself scales ~1.76× at C=4 when starts are staggered. Caveat: the degenerate simultaneous-start rounds
+  run *faster* per slot while producing garbage, so a concurrency benchmark that does not check output
+  coherence reports inflated throughput — coherence must be checked every round.
+- **EXL3 trellis weights measured** (INF-71): exllamav3's own `mul1` AVX-512 CPU kernel on the real 4.05 bpw
+  expert tensors is compute-bound per core (~17 GB/s) and memory-bound from ~10 threads (110–124 GB/s),
+  the same ceiling as everything else; the bytes lever caps at +15–18% end-to-end and is parked behind the
+  dispatch-floor work. Spec: `docs/design/exl3-mul1-ggml-type.md`.
+- **Operational finding:** the `evict_nodes.sh` NUMA-eviction helper under-evicts (allocates `TARGET − free`,
+  freeing nothing when a node is cache-full but short of the model's per-node share); the forcing form
+  (`evict_nodes_force.sh`) allocates `TARGET + 2` and verifies — this is why placement kept skewing "even
+  after in-lock eviction". And a subagent's `arm.sh` bare `wait` on a backgrounded server hung the bench
+  lock ~65 min; the fix is to wait on the specific server pid with a `trap`-kill, never bare `wait`.
+
+### Source References (2026-09-03)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70: the
+  deployable-speed table, the GDN-ROWEXACT task, the concurrency findings, X-CONC, E2a closure.
+- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the two implementation waves.
