@@ -697,7 +697,21 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       28); a dense Qwen3-32B is bitwise batch-invariant on the same build and every MoE tried is not. The
       non-exactness is a property of the hybrid operators (GDN scan / PLE conv / QSA indexer); iqk only
       brings the first flip earlier. **The fix belongs in the qwen4exp multi-token kernels (an
-      INF-67/kernel task), not the MTP driver.** E-GATE depends on it.
+      INF-67/kernel task), not the MTP driver.** E-GATE depends on it. **RESOLVED 2026-09-03 (mtp-exact, measured):
+      both driver-side option-(a) shapes FAIL the 3×128 greedy-identity gate — `drop` the bonus token 2/3
+      FAIL, `redecode` it single-token 0/3 FAIL — because every failure is at a VERIFIED row, not the bonus:
+      the verified tokens themselves ran the chunked GDN kernel and are already non-exact. The exact-by-
+      construction control `Mserial` (re-decode every token single-token, no batched verification) is
+      byte-identical 3/3 but runs at 9.8–10.1 t/s = plain-decode speed (no speedup). Root cause pinned to
+      `src/models/delta-net-base.cpp:435`: `n_seq_tokens == 1 → build_delta_net_autoregressive`, else
+      `build_delta_net_chunking` (CS=64) — the two are not row-exact, and this ONE divergence is the common
+      cause of E2a, E2c AND X-CONC (concurrent prefill). **Lossless MTP is therefore impossible at the driver
+      level; the only lossless path is option (b): make `build_delta_net_chunking` bit-equal to k
+      autoregressive steps for small n — a kernel task that ALSO fixes X-CONC and E2c.** Branch
+      `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. Operator decision: fund
+      option (b) (one kernel fix closes three defects and makes MTP a lossless 1.4–1.7× serving option), or
+      ship option (c) approximate MTP, or hold MTP. Until (b), MTP stays approximate; the merged non-MTP
+      kernel is the lossless serving path.
 - [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
@@ -747,8 +761,7 @@ coherence-checked every round):
       is the qwen4exp multi-sequence prefill path corrupting shared state when >1 full sequence shares a
       prefill batch — the same non-row-exact batched forward E2c localized, here escalated from a logit
       drift to garbage. Repro and evidence: `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`. Interim
-      mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the same
-      kernel work as E2a (make the qwen4exp batched forward row-exact). **Blocks concurrent serving with
+      mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the SAME kernel fix as E2a/E2c — make `build_delta_net_chunking` (delta-net-base.cpp:435) row-exact vs `_autoregressive` for small n; mtp-exact confirmed 2026-09-03 this one site is the common cause. **Blocks concurrent serving with
       simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
       check is inflated (the degenerate rounds ran faster per slot while producing garbage).
 
