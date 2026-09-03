@@ -827,7 +827,7 @@ named. MTP is not a serving option until that gate passes.
       thinking disabled, coherence classified by REASON in the same window as the timing) — evidence
       `/mnt/raid0/llm/tmp/inf70/reanchor2/`. **The old short-prompt figures are NOT being restored.** No serving or deployable-speed
       claim on this tree until it passes.
-- [ ] **BATCH-ENVELOPE — a batched forward diverges from the sequential one, and it is NOT the mul_mat.
+- [ ] **BATCH-ENVELOPE (DEMOTED 2026-09-03 by operator ruling — correctness hygiene, NOT an MTP blocker; still governs concurrent prefill and all measurement A/Bs) — a batched forward diverges from the sequential one, and it is NOT the mul_mat.
       MEASURED AND NARROWED 2026-09-03 (`mtp-tip2`); my seed hypothesis is REFUTED.**
       **The lossless gate answered: MTP on qwen4exp is APPROXIMATE, not lossless, on the CORRECTED kernel.** Four
       arms, 3 short + 4 production-length prompts, greedy, token streams compared byte-for-byte: P (plain corrected
@@ -977,6 +977,25 @@ named. MTP is not a serving option until that gate passes.
       reported per the artifact rule and with the sampler named. Note the PLE regime: under `--no-mmap`
       the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
       cost is part of the measured number, not something to subtract.
+      **OPERATOR RULING 2026-09-03 — exactness is NOT a gate for MTP.** Verbatim: *"approximate MTP isn't an issue
+      as long as it has a decent acceptance rate and doesn't lead to garbage outputs."* This settles the
+      (a)/(b)/(c) fork left open in E2a: **ship (c), approximate MTP**, provided the two criteria below hold. The
+      consequence is a re-prioritisation, not just a note — **the exactness hunt no longer blocks MTP serving**:
+      - **Criterion 1 — no garbage. ALREADY MET on the evidence to hand**: all 12 production-length chat
+        generations on the MTP arm classified COHERENT (`mtp-tip2`), and the divergences are one greedy argmax
+        flip per prompt followed by ordinary drift, not corruption. Keep it as a standing gate on every MTP arm
+        (classify by REASON, production-length prompts), not a one-off.
+      - **Criterion 2 — decent acceptance. NOT YET MEASURED on real prompts; this is now the critical path.**
+        `e3-run` is measuring α per draft position on the 24-prompt production mix at n-max 1–4 against build
+        10217. Until it lands there is no basis to call MTP deployable, and no basis to quote a multiplier at
+        production length — the 1.44x is short-prompt-only.
+      **Two things exactness still governs, and they must not be quietly dropped:**
+      1. **Measurement discipline.** An MTP run is not token-comparable to a plain run, so **no A/B may have MTP on
+         one arm and off the other**, and no greedy-identity gate may be run through the MTP path. That is a
+         benchmarking constraint, not a serving one, and it now applies permanently.
+      2. **BATCH-ENVELOPE is demoted, not closed** — it is correctness hygiene and a real unknown in the forward
+         (it also governs concurrent prefill), but it is no longer a deployment blocker. Pursue it on its own
+         merits at the recurrent/GDN path; do not hold MTP for it.
 
 ## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
 
