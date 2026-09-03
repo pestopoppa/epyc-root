@@ -779,20 +779,34 @@ coherence-checked every round):
 
 ## Deployable serving speed (claim-grade, 2026-09-03)
 
-Single-stream `llama-server` decode of qwen3.8-next-flash on the merged experimental kernel (build 10202
-`9e75132e3` = graph path + parallel GET_ROWS + CONCAT default), `-np 1 -c 4096 -t 48 --no-mmap`, canonical
-env, forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`):
+Single-stream `llama-server` decode of qwen3.8-next-flash, `-np 1 -c 4096 -t 48 --no-mmap`, canonical env,
+forcing eviction, placement 23.0 GiB × 4, warmup + 5 × 128-token greedy `/completion` (`server-tps`),
+coherence-gated (all 5 reps' greedy text bit-identical).
 
-| artifact | decode | ms/token | GB/s (% of 153) |
-|---|---|---|---|
-| uniform IQ4_XS (era anchor) | **12.00 ±0.04 t/s** | 83.3 | 49.9 (32.6%) |
-| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.38 ±0.05 t/s** | 80.8 | 50.0 (32.7%) |
+**Re-anchored on the merged experimental tip `0d2af8194` (b3k slab merged; build 10203, tree-identical to
+`inf70/b3k`; slab default ON, `GGML_MMID_SLAB=0` = control), 2026-09-03, one lock hold, in-window
+ggml-linkage + placement proven per arm:**
 
-The server is within 0.9% of the `llama-bench` proxy (12.11). r16 vs uniform is +3.1% decode at identical
-GB/s, exactly the −2.8% bytes/token. **Update 2026-09-03: `inf70/b3k` (the mul_mat_id slab partition) is now merged into the experimental tip (`0d2af8194`), adding a measured +3.07% decode on the `llama-bench` proxy (uniform 12.24 → 12.59 t/s). Projected server-tps on the merged tip: uniform ≈ 12.4 t/s, r16 ≈ 12.8 t/s (~78 ms/token) — a projection from the proxy delta, not a fresh server measurement; a server-tps re-anchor on `0d2af8194` is the confirming step and is a cheap single-window run.** Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`),
-not an opt-in; the graph path was confirmed (`graphs reused = 127`/request). Ceiling context: 32.7% of the
-recipe's 153 GB/s read bandwidth, i.e. ~70% of the token is still dispatch floor; the bandwidth third
-also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal), held for the reboot.
+| artifact | slab | decode | ms/token | GB/s (% of 153) |
+|---|---|---|---|---|
+| uniform IQ4_XS (era anchor) | on (default) | **12.55 t/s** (ABA 12.589 / 12.516 ±0.05) | 79.7 | 52.3 (34.2%) |
+| uniform IQ4_XS | off (control) | 12.079 ±0.033 | 82.79 | 50.3 (32.9%) |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | on (default) | **13.06 ±0.01 t/s** | 76.59 | 52.7 (34.5%) |
+
+- **The slab gain reproduces in the server path**: same binary/window, slab on vs off on uniform =
+  **+3.9%** (12.55 vs 12.079, −3.35 ms/token) — confirming, and slightly stronger than, the +3.07%
+  `llama-bench` proxy delta. All four arms coherent (greedy text bit-identical across 5 reps).
+- **Both headlines beat the pre-measurement projection (12.4 / 12.8).** The prior (pre-b3k) merged tip
+  `9e75132e3` measured uniform 12.00 / r16 12.38 in an earlier window — consistent with the slab-off
+  control here (12.079). r16 vs uniform (both slab-on): +4.1% decode at ~equal GB/s, tracking the −3.0%
+  bytes/token.
+
+Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
+`/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
+**34.5% of the recipe's 153 GB/s** read bandwidth, i.e. ~65% of the token is still dispatch floor; the
+bandwidth third also carries the BIOS headroom (DIMMs at 4800 of 5600, uncore-capped at ~37% of nominal),
+held for the reboot. Evidence: `/mnt/raid0/llm/tmp/inf70/reanchor/` (per-arm timelines, `numastat`,
+linkage proofs, `summary-*.txt`).
 
 ## Reporting
 
