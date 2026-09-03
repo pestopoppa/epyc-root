@@ -1446,6 +1446,37 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
       prefill-only, which R23-26 still owns).
       Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [x] **R23-31 — Q4_K SIGNAL PROBE: +7.066%. The banked-gains thesis is CONFIRMED** ✅ 2026-09-03
+      (step 1 of the operator-approved two-step). Champion `732389d6` (anchor-gen-014) vs frozen
+      production-v9 on **`gemma-4-26B-A4B-it-Q4_K_M`** — an **in-fleet production role model** (the
+      worker), not a hypothetical target — `dec-b4`, 5 pairs:
+      **production 175.96 t/s -> champion 188.40 t/s = +7.066%**, `drifting: False`, residency clean
+      (10/10 resident, 17.4 GB VRAM, clocks pinned 1700/1700, `clock_stable` true).
+      **Status: SIGNAL, not a verdict** — no calibrated floor exists for this (surface, model), so
+      `decisive` is `None` by construction. For scale: the 27B's dec-b4 floor at 5 pairs is 1.142%,
+      so +7.07% is ~6x a comparable bar and very unlikely to be noise — but that reasoning borrows
+      another model's floor and is NOT a substitute for calibrating this one.
+      **What it establishes**: the Q4_K-gated keeps (`7d2ea88b`, `732389d6`) **do fire and do help**
+      on a real Q4_K workload. R23-29's "dormant, not dead" reading is correct, and my earlier
+      "worthless on production" framing was wrong in a way that mattered.
+      **The champion's real standing is workload-dependent, not a single number**:
+      | workload | champion vs production-v9 |
+      |---|---|
+      | Qwen3.8-27B Q8_0, dec-b4 (prefill) | **-1.414%** (decisive; Q4_K keeps inert, DFlash2 feature cost) |
+      | gemma-4-26B-A4B Q4_K_M, dec-b4 (prefill) | **+7.066%** (signal; Q4_K keeps active) |
+      | Qwen3.8-27B Q8_0, speculative decode | **2.38x** with DFlash2 (R23-17) |
+      A single "champion vs production" headline cannot express this — which is R23-26's point,
+      now with hard numbers behind it.
+- [ ] **R23-32 — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.**
+      Approved shape (operator, 2026-09-03: cheap signal first, then calibrate only if promising —
+      the signal is promising). Run the A/A bootstrap for
+      (`dec-b4`, `gemma-4-26B-A4B-it-Q4_K_M`) to produce a keyed floor (~3 h, the 27B dec-b4
+      calibration took 3 h 11 m), then re-measure with `headline_on_confirm_rung.py`, which will
+      then pass its uncalibrated-surface refusal (rc=3) instead of tripping it.
+      **Why it is worth the 3 h**: this is a production win available on a model we ALREADY SERVE.
+      If it holds, the promotion argument changes from "the champion is neutral-to-negative" to
+      "the champion is +7% on the worker", which is a different conversation entirely.
+      **Needs a GPU window** — no run is currently hunting, so the window is open now.
 - [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
       will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
       graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
