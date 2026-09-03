@@ -1446,6 +1446,44 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
       prefill-only, which R23-26 still owns).
       Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
+      (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
+      appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
+      **quant family**, **architecture**, and **GEMM dimensions**. The first two are cheap to match;
+      the third is not, and that is the trap: the winning tile (`MT128x96x64`, 23.89% of production
+      device time) is selected by rocBLAS/Tensile FROM THE MATRIX DIMENSIONS, which derive from
+      n_embd=5120. Any model small enough to be a cheap screen has different dims and therefore
+      dispatches different tiles — **the property that makes a screen cheap is the property that
+      destroys its fidelity for GEMM work.**
+      **Measured evidence** (run 25's first profile vs run 24's): production top hotspot
+      `MT128x96x64` (23.89%) then `MT64x64x64` (18.44%) then `gated_delta_net_cuda` (13.55%) then
+      `MT64x32x64` (11.97%) then `dequantize_block_q8_0_f16` (10.75%). The 1.5B Q4_K screen's top
+      was `MT64x64x64` and it dispatches NO Q8_0 dequant and NO gated_delta_net at all.
+      **So**: a same-quant same-architecture small model WOULD faithfully screen dequant kernels,
+      SSM/gated_delta_net work and attention geometry, but NOT GEMM tiling or occupancy. Those must
+      be hunted on production (which run 25 now does).
+      **Availability check (2026-09-03): no such screen exists on disk** — the Qwen3.8 (SSM-hybrid)
+      family has only the 27B. `Qwen3-1.7B-Q8_0.gguf` is a DENSE transformer and would not exercise
+      `gated_delta_net` at all. Filing rather than acting: sourcing or building a small
+      SSM-hybrid Q8_0 screen is a real piece of work with its own value question.
+- [ ] **R23-29 — the Q4_K keeps are BANKED for a future Q4_K GPU target, not wasted** (operator
+      question: *"could the gains obtained through the current screening model still be useful if we
+      were to one day choose a Q4_K target model on the GPU?"* — yes, and this CORRECTS my earlier
+      "worthless on production" framing, which was too strong).
+      **VERIFIED by reading the diffs**: `7d2ea88b` gates on `GGML_TYPE_Q4_K` and `732389d6` on
+      `type == GGML_TYPE_Q4_K` — both are hard-gated and **cannot execute on a Q8_0 model**. That is
+      precisely WHY the champion measures production-NEUTRAL (+0.337 pp, inside floor): the code
+      never fires. They are DORMANT, not harmful. `db18f393` (fattn) carries no quant gate and is
+      the only one of the three that runs on the current production model.
+      **Consequence**: on a Q4_K GPU serving path — the large-MoE-with-CPU-offload roadmap item is
+      exactly that class — these become live again. **Caveat against over-claiming**: the +5.097%
+      and +13.930% were measured on a 1.5B Q4_K; a large Q4_K model has different GEMM dims, so the
+      quant PATH transfers but the MAGNITUDE does not. Treat them as promising leads to re-measure
+      on the real target, never as banked numbers.
+      **Actionable**: record a `quant_family` / `applies_to` field on every keep so (i) the headline
+      can be reported per target, (ii) a future Q4_K path inherits them deliberately rather than by
+      archaeology, (iii) the loop can be told which quant family to hunt. llama.cpp already templates
+      per quant type and our keeps already gate correctly, so this is metadata, not restructuring.
 - [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
       (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
       performed by autokernel could have actually been beneficial in production?"* — yes).
