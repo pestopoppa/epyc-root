@@ -738,7 +738,18 @@ named. MTP is not a serving option until that gate passes.
       bit-identical output). **Result: speculative checkpointing ELIMINATED — 407 created / 113 restored → 0/0 over
       the same workload** (112.571 MiB each = 44.7 GiB, 4.97 GiB/request, ~39.8 MiB/token of avoided traffic on a
       4.16 GB/token model); `n_rs_seq=2` survives instead of being clamped to 0. **MTP decode 17.582 → 18.125 t/s
-      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** Rebase itself was
+      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** **SCOPE OF THOSE
+      NUMBERS (verified from the run JSONs 2026-09-03, after an operator challenge): the timed reps used a
+      12-token prompt and their full 128-token output is COHERENT on 5/5 reps in every arm (word uniq 0.742, top
+      share 0.086, max repeat run 1) — the speeds are NOT decode-of-garbage. The 101-token probe on the same builds
+      is degenerate (uniq 0.025, top 0.988, run 77), so the two regimes are cleanly separated. Two limits follow:
+      (i) MTP output still DIFFERS from plain at 12 tokens on 2 of 3 gate prompts (p1/p3 DIFF, p2 SAME — the E2a
+      flips, unchanged by rebase and by E2b-2): coherent, but not what the trunk alone would say; (ii) **the 1.442×
+      is demonstrated ONLY in the short-prompt regime, because every longer prompt is currently broken — speculative
+      acceptance varies with context length and content, so the multiplier at PRODUCTION prompt lengths is UNKNOWN,
+      not assumed.** State it as "1.442× on short prompts; production-length figure pending the iqk fix" (that
+      measurement is exactly the blocked E3). The +3.09% E2b-2 delta is the most robust number here: identical
+      coherent workload, checkpointing on vs off, mechanism independently visible as 407/113 → 0/0.** Rebase itself was
       trunk-invisible (REF 12.513 → T0 12.643). Gates: (a) trunk-only byte-identical to plain `0d2af8194` PASS short,
       **BLOCKED long** — `T0b ≡ REFL` byte-for-byte, and REFL is the PLAIN tip with no MTP code, which proves the
       long-prompt garbage is not ours; (b) MTP live PASS; (c) `LLAMA_SPEC_EXACT=serial` ≡ plain PASS short AND long;
