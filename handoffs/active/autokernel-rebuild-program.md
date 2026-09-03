@@ -1549,6 +1549,36 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       target the 1.5B could never have surfaced. Not guarded: decode. tg128 has no 27B floor
       (each floor is per (surface, model) — see the operator Q&A in progress 2026-09-03); the
       DFlash2 path is llama-server-only and is guarded by R23-18's smoke, still open.
+- [x] **R23-35 — first confirm-gate keep + the planner-backend evolution** ✅ 2026-09-03.
+      **Run 27 keep** `akm-cdna2-q8-b4-mmvq-route`: **+23.339% dec-b4** decisive (floor 1.142%),
+      **cleared the dec-b8 confirm gate** (+0.313%) — the FIRST time the two-rung gate fired. It is
+      a production number: headline **+22.443%** vs frozen production-v9 on the 27B, champion now
+      `b0eb4fab` / anchor-gen-015. Mechanism: Q8_0 ne11<=4 rerouted MMQ->MMVQ (the in-tree lever
+      around the vendor Tensile GEMM). Banked regardless of planner.
+- [x] **R23-36 — actor exit-1 storm made diagnosable** ✅ 2026-09-03 (`b5cd2817`). Run 27 logged 74
+      `actor exited 1:` with EMPTY detail because `claude -p` reports errors on STDOUT (empty stderr)
+      and `_run_agent` kept only the stderr tail. Fix: non-zero exits carry backend id + BOTH tails.
+      Storm was intermittent (~40% iters), cleared on its own; live repro ruled out auth/concurrency/
+      overlay/prompt-size. **NOT root-caused** — see R23-38.
+- [x] **R23-37 — planner backend is now DeepSeek V4 Flash @max via opencode** ✅ 2026-09-03
+      (`c2bfe916`). Third `Backend` kind wired: `opencode run --auto --dir <wt> -m
+      deepseek/deepseek-v4-flash --variant max <prompt>`; `backend_for` routes `provider/model`
+      (has `/`) to opencode. Path was Fable 5.1 @medium (`f81bbeb6`, ~75s/call, 54-71% GPU-idle) ->
+      Opus 5 @high (`1ffe4fdf`, default set but NEVER launched) -> DeepSeek (smoke: authored in a
+      real champion worktree in ~4s). **TRUST BOUNDARY**: opencode drives an EXTERNAL provider, so
+      planner prompts egress off-host — operator-sanctioned as the backup, recorded in code+commit.
+      Run 28 live pid 470013 with this planner + the dec-b8 confirm gate.
+- [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
+      again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
+      before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
+      the retry-backoff ladder each time. Only matters if a claude-CLI backend is reselected;
+      opencode/DeepSeek is the current planner, so this is NOT blocking. Re-open if the exit-1
+      pattern recurs with the new instrumented build.
+- [ ] **R23-39 — measure whether DeepSeek/opencode restores throughput.** Run 28's open question:
+      does the ~4s DeepSeek call latency close the 54-71% GPU-idle gap the Fable planner opened?
+      Read idle_fraction_while_claimed + iterations/hour after run 28 has a few hours, compare to
+      run 26 (all-codex) and run 27 (Fable). Decides whether the external-provider trust cost is
+      worth it or the planner should return to a local CLI.
 - [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
