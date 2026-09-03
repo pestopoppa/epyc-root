@@ -3644,3 +3644,47 @@ promotion consequence: such paths ship **performance-unvalidated** unless delibe
   the promotion condition).
 - [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md) —
   session record.
+
+## Compiled Update — 2026-09-03 (incremental): one kernel, two decisive results with OPPOSITE signs — a headline without its workload is not a claim
+
+**Confidence: verified** — both numbers are `decisive: True`, `drifting: False`, each measured at
+20 pairs against its own model-keyed A/A floor, residency proven on both.
+
+The strongest possible demonstration that a champion-vs-production number is meaningless without
+the workload attached. The *same* kernel build, measured against the *same* frozen production
+baseline, on the *same* surface (`dec-b4`), one day apart:
+
+| workload | floor | result |
+|---|---|---|
+| `Qwen3.8-27B-Q8_0` (the production model) | 0.949% | **−1.414% DECISIVE** |
+| `gemma-4-26B-A4B-it-Q4_K_M` (an in-fleet worker) | 0.456% | **+7.206% DECISIVE** |
+
+Both are correct. The mechanism is quant gating: the champion's two largest optimisations are
+hard-gated on `GGML_TYPE_Q4_K`, so they execute on the Q4_K model and are **inert** on the Q8_0
+one — where the residual −1.4% is the aggregate's feature machinery (a speculative-decode loader)
+measured on a *prefill-only* surface that structurally cannot observe that feature's own **2.38×
+decode** win. Three workloads, three answers, one build.
+
+**The practical rules this yields:**
+
+1. **Never publish a champion-vs-production figure without naming its workload.** A bare number
+   invites the reader to generalise it to the model they care about, which is exactly the error
+   that made a +27.363% screen-rung figure read as a production claim.
+2. **A decisive negative on one workload does not condemn a kernel.** Check whether the code even
+   *executes* on the workload that regressed — `git show <commit> | grep GGML_TYPE_` answers it in
+   seconds, and here it inverted the entire conclusion from "the champion is a regression" to "the
+   champion is +7.2% where its code runs".
+3. **Quant-gated work is dormant, not dead.** It costs a branch on the inactive path and becomes
+   live again if that quant is served. But its *magnitude* does not transfer across model sizes —
+   the same optimisations measured +5.097%/+13.930% on a 1.5B Q4_K and +7.206% on a 26B Q4_K.
+4. **Calibrate per (surface, model) and sanity-check the curve's shape.** A believable floor falls
+   ≈√n: this one went 1.843→0.456 across k=1→20 (4.04× vs the ideal 4.47×). A curve that collapses
+   far faster is the warning sign — one measured surface fell 45× and was only made safe by the
+   parametric σ/√n bound the floor lookup takes a max against.
+
+**Sources**
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+  champion's standing, now recorded as three measured workloads with evidence paths.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-29
+  (quant gating), R23-31 (the signal), R23-32 (the claim), R23-26 (headline surface).
+- [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
