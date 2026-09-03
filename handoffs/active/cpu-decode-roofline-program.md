@@ -829,6 +829,24 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
+- [ ] **B7 — is the PLE n-gram table earning its keep, and is it the one place to spend precision UP?**
+      Filed 2026-09-03 after an operator question ("are we using the n-gram corpus effectively?"); zero-inference
+      analysis is done, these two are the unmeasured remainder. **Established**: `per_layer_token_embd` (51B params,
+      IQ4_NL, ~27 GB) is read by `ggml_get_rows` (`qwen4exp.cpp:1115`), NOT a GEMM — so it contributes ~0 to the
+      4.16 GB/token stream (dense 2.344 + experts 1.296 + lm_head 0.521, no PLE term), costs DRAM *latency* only,
+      and is NOT on the broken iqk repack path despite IQ4_NL being listed there. Its cost was the single-threaded
+      `GET_ROWS`, 9.34 ms/token (~10% of the token), which **D8 already fixed to 2.59 ms (~3%)** — the largest
+      single gain of 2026-09-02. The node trace also shows the PLE conv bit-identical at n=3. **(a) Ablation, never
+      run**: what does the PLE contribute to output quality? Nothing has measured it, so its 27 GB + 2.6 ms/token
+      is unpriced against its benefit. Needs an eval, not a bench. **(b) Precision UP — the inversion this machine
+      uniquely enables**: B4 requantized what is *streamed*; the PLE is the opposite case — near-zero bandwidth, so
+      it is the cheapest tensor family on this box to spend precision on (RAM is abundant at 1.1 TB). NOT free —
+      IQ4_NL→Q8_0 roughly doubles the table (~54 GB) and the per-token gather bytes, so price the gather-latency
+      delta against any quality gain before recommending it. Do (a) first: if the PLE contributes little, (b) is moot.
+      **Do NOT pursue**: using the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+      *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
+      llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, which is why its recorded
+      2.8× was a self-copy artifact).
 - [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
       `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
       prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
