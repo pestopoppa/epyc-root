@@ -1446,6 +1446,21 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
       prefill-only, which R23-26 still owns).
       Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
+      will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
+      graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
+      holding a measurement finishes it and lanes serialize on the claim. Publish cadence was
+      steady at **17.3 / 17.5 / 17.8 min** per lane; 2 lanes abandoned at formation, 5 completed.
+      `boundary_20260901.sh:98` sets `KILL_WAIT_S=900` with the comment *"drain-tier loop: <=5 min
+      historically"* — true for the 1.5B screen rung (run 23 drained in 15 min) and **false by ~6x
+      for the 27B rung**. As written the next boundary SIGKILLs mid-measurement every time,
+      discarding up to ~17 min of device work per in-flight lane and losing those verdicts.
+      **Fix**: scale the grace to `workers x per-measurement-time` for the configured rung (~2 h for
+      7 workers on the 27B), or make the driver poll for loop exit rather than use a fixed deadline.
+      **Diagnostic note for whoever reads a drain**: `loop-status.step` names only the ONE active
+      lane, never the queue — lanes serialize on the claim, so remaining work must be derived as
+      `workers - (abandoned + published)`, not inferred from the step field. Two ETAs were wrong in
+      this session for exactly that reason.
 - [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
       (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
       appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
