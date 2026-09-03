@@ -724,6 +724,34 @@ it lacks for this model is the `qwen4exp` MTP graph (`t_h_nextn` export + the he
       the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
       cost is part of the measured number, not something to subtract.
 
+## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+Answering the operator's challenge to our own hardware rather than the unsloth GPU README (`mtp-conc`,
+coherence-checked every round):
+
+| concurrency | off agg t/s | MTP on agg t/s | multiplier | coherent |
+|---|---|---|---|---|
+| C=1 | 9.9 | 14.8 (acc 0.88) | 1.50× | yes |
+| C=4 staggered | 17.4 | 19.6 (acc 0.92) | 1.13× | 4/4 |
+| C=4 simultaneous | — | — | — | **0/4 — garbage** |
+
+- **MTP is a net win at concurrency, not a loss** (1.50× → 1.13× C=1→C=4); the GPU "net loss at
+  concurrency 8" does not apply to a dispatch-bound CPU. Corrects the earlier cited claim.
+- **Concurrency scales ~1.76× at C=4** (off, staggered) — the box is not one indivisible resource.
+- **NEW DEFECT (below) — concurrent prefill corrupts output.**
+
+- [ ] **X-CONC — qwen4exp multi-sequence prefill corruption (filed 2026-09-03, serving blocker).**
+      With `-np 4` and 4 requests that prefill in one batch (simultaneous starts), greedy output is
+      deterministic garbage (0/4 coherent; an 18-token early stop on prompt 3); staggering the starts by
+      ~0.7 s gives 4/4 coherent. **Reproduced on the plain merged binary (build 10202, no MTP/spec)**, so it
+      is the qwen4exp multi-sequence prefill path corrupting shared state when >1 full sequence shares a
+      prefill batch — the same non-row-exact batched forward E2c localized, here escalated from a logit
+      drift to garbage. Repro and evidence: `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`. Interim
+      mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the same
+      kernel work as E2a (make the qwen4exp batched forward row-exact). **Blocks concurrent serving with
+      simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
+      check is inflated (the degenerate rounds ran faster per slot while producing garbage).
+
 ## Deployable serving speed (claim-grade, 2026-09-03)
 
 Single-stream `llama-server` decode of qwen3.8-next-flash on the merged experimental kernel (build 10202
