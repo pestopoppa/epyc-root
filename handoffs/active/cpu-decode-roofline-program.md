@@ -403,7 +403,11 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       (`=0`/`false`/empty disables). `test-backend-ops test -o CONCAT -b CPU`: **210/210 OK with the new
       default and 210/210 with the stock kernels** (the 18 `concat_transpose_dim0` cases included; note
       that without `-b CPU` the suite skips the CPU device and passes vacuously with zero cases — the
-      0-vs-210 count is the non-vacuity check). **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `9e75132e3`, no conflicts); build + test + bench verification of the merged tree running (`merge-verify`).** Rationale for default rather than
+      0-vs-210 count is the non-vacuity check). **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `9e75132e3`, no conflicts); build + test + bench verification of the merged tree
+      running (`merge-verify`).** **VERIFIED ✅ 2026-09-03: merged tree (build 10202, `9e75132e3`) 12.11
+      ±0.03 t/s vs anchor 10.19 in the same window (+18.8%), placement even; `test-backend-ops -b CPU`
+      GET_ROWS 111/111, CONCAT 210/210, MUL_MAT 1139/1139, MUL_MAT_ID 815/815, `test-llama-archs` rc=0;
+      anchor-server-vs-merged-server greedy IDENTICAL on 3 prompts (71/128/128 tokens). Safe to build on.** Rationale for default rather than
       `canonical_recipe.py`: the recipe governs our benches, not the served stack — an env-gated win would
       silently miss `llama-server` in production.
 
