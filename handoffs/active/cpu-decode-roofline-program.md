@@ -735,18 +735,35 @@ named. MTP is not a serving option until that gate passes.
       check on the deployable tip `0d2af8194` (42/81/233-token prompts all degenerate, placement + linkage proven)
       and independently by E3 on the old base — so it predates every merged lever and the MTP port. Same defect
       family as GDN-ROWEXACT / X-CONC / E2c at a far lower bar: one sequence, no concurrency, no MTP. Clean repro
-      `/mnt/raid0/llm/tmp/inf70/longprompt/`. **First discriminator: the same 42-token prompt with `-ub 1 -b 1`**
-      (autoregressive-only prefill) — coherent ⇒ the chunked GDN kernel is the culprit, GDN-ROWEXACT is THE fix and a
-      P0 serving blocker (and `-ub 1` is a known-correct slow-prefill serving workaround today); garbage ⇒ QSA / PLE /
-      graph, bisect the stock path. **Threshold pinned by E3 (2026-09-03): 16 and 23 tokens coherent; 39, 58, 77, 96, 134, 167 garbage — the
-      break is in the 24–38 band (32 boundary = leading hypothesis; probe 24/28/31/32/33/36).** On the production
-      prompt mix the plain arm was **0/13 coherent** (12 token-salad, 1 HTTP 500 on a ~600-token prompt with no
-      server-log line at `-lv 4`). E3's `diag_probe.py` crosses canonical / `-ub 32` / `GGML_IQK=0` / pre-fusion
-      build 10128 — the 10128 arm decides upstream-bring-up vs fusion-lineage.
-      Owner `gdn-rowexact` (routed 2026-09-03, now its primary gate G0). **Gate: p40/p90/p200 coherent AND
-      token-identical to the `-ub 1` output.** No serving or deployable-speed claim on this tree until it passes.
+      `/mnt/raid0/llm/tmp/inf70/longprompt/`. **ROOT CAUSE FOUND 2026-09-03 (`gdn-rowexact`, node-level trace, evidence
+      `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/`): iqk's `is_dequant_better()` (`iqk_mul_mat.cpp`) switches
+      IQ4_XS to a requantised `Q8_K_R16` repack GEMM when `nrc_y >= 32 && npt >= 16`, and that converter/kernel is
+      WRONG on this host** — first gross error `z-0 = mul_mat(blk.0.attn_gate IQ4_XS [2560×6144], 42 rows)`, every
+      element off (max 1.2e3) already at row 0; the tree already excludes IQ2/IQ3 from the same path for the same
+      reason. **The GDN kernel is NOT involved** (see GDN-ROWEXACT below). This one mechanism explains all three
+      symptoms: single prompts ≥ ~32 tokens, X-CONC (4 simultaneous 12-token prompts = a 48-row ubatch; staggered
+      = < 32 rows), and `GGML_IQK=0` clean. **It PREDATES the fusion lineage**: pre-fusion build 10128 (which does
+      run iqk) is degenerate too — every iqk-build pp/coherence result on this model above ~32 rows was a wrong
+      forward. **Serving workarounds today (unpatched tip): `-ub 1`** (coherent on 42/81/233; decode UNCHANGED
+      12.5–12.7 t/s; prefill ~10× slower, 13.5 vs 68–140 t/s) **or `GGML_IQK=0`** (coherent; pp 118.9 vs 135–140).
+      **Fix committed `99425578d` on `inf70/gdn-rowexact`**: IQ4_XS returns to its direct iqk kernel for every Ny
+      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). Validation queued: p40/p90/p200 coherent on the fixed
+      build; IQ4_XS-only vs all-repacks-off on p200 (does the Q5_1/Q6_K repack share the bug?); **G3 n=1 decode
+      BYTE-identical to the unpatched tip** (the fix must not leak into batch-1); G4 decode within noise of 12.55;
+      the fixed (correct, slower) pp512 reported against the withdrawn wrong numbers. No serving or deployable-speed
+      claim on this tree until it passes.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
-      (the one fix that closes E2a-successor, E2c AND X-CONC).** Root cause, confirmed three ways
+      (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
+      exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
+      token-sequential op `ggml_compute_forward_gated_delta_net_one_chunk` (`ops.cpp:11045`); the chunked graph kernel
+      at `delta-net-base.cpp:435` is dead code on this build. Reproducer `llama-rowexact` (every graph node via
+      `cb_eval`, n singles vs one n-token batch): at n=3 every node before layer 0's router — including the fused GDN
+      op — is bit-identical, IQK on and off; 4 seqs × 3 tokens in one ubatch reproduce each sequence's own forward
+      bit-for-bit (0/5450 nodes differ). The GROSS defect is the iqk IQ4_XS repack (LONG-PROMPT-GARBAGE above). The
+      RESIDUAL small-batch non-exactness behind E2a/E2c is the **F32 router GEMM `ffn_gate_inp` (stock ggml, not
+      iqk), ~1 ulp fp-order**, which perturbs top-k downstream — addressed on the same branch by `GGML_ROWEXACT_N`
+      (tinyBLAS per-column router + iqk GEMV-per-column for 1<Ny≤N), env-gated default OFF. **Lossless-MTP gate =
+      `LLAMA_SPEC_EXACT=serial` ≡ MTP on the fix + MTP-stack integration** (coordinator sequences after G0/G3). Root cause, confirmed three ways
       2026-09-03 (`mtp-exact`, `mtp-conc`, `e2c`): `src/models/delta-net-base.cpp:435` routes
       `n_seq_tokens == 1` to the autoregressive GDN kernel and any 2+-token batch to the chunked kernel
       (CS 64, padded), and the two are not row-exact, so a verification batch (MTP), a multi-sequence
@@ -787,6 +804,11 @@ named. MTP is not a serving option until that gate passes.
       cost is part of the measured number, not something to subtract.
 
 ## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+**Root cause of the prefill-corruption defect found 2026-09-03 (`gdn-rowexact`): it is NOT a multi-sequence bug —
+packing 4 sequences in one ubatch is bit-exact (0/5450 nodes differ). Four simultaneous ~12-token prompts make a
+48-row ubatch, which crosses iqk's `nrc_y >= 32` IQ4_XS repack threshold (LONG-PROMPT-GARBAGE); staggered starts stay
+below it. The same fix (`99425578d`) unblocks simultaneous admission once validated.**
 
 Answering the operator's challenge to our own hardware rather than the unsloth GPU README (`mtp-conc`,
 coherence-checked every round):
@@ -846,7 +868,8 @@ qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never ch
 this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
 WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
 ≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
-Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log).
+Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause (13:27Z): the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE;
+workaround today `-ub 1` (decode unchanged, prefill ~10× slower) or `GGML_IQK=0`; targeted fix `99425578d` under validation.**
 
 Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
 `/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
