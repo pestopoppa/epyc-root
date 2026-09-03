@@ -848,24 +848,35 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
-- [ ] **B7 — is the PLE n-gram table earning its keep, and is it the one place to spend precision UP?**
-      Filed 2026-09-03 after an operator question ("are we using the n-gram corpus effectively?"); zero-inference
-      analysis is done, these two are the unmeasured remainder. **Established**: `per_layer_token_embd` (51B params,
-      IQ4_NL, ~27 GB) is read by `ggml_get_rows` (`qwen4exp.cpp:1115`), NOT a GEMM — so it contributes ~0 to the
-      4.16 GB/token stream (dense 2.344 + experts 1.296 + lm_head 0.521, no PLE term), costs DRAM *latency* only,
-      and is NOT on the broken iqk repack path despite IQ4_NL being listed there. Its cost was the single-threaded
-      `GET_ROWS`, 9.34 ms/token (~10% of the token), which **D8 already fixed to 2.59 ms (~3%)** — the largest
-      single gain of 2026-09-02. The node trace also shows the PLE conv bit-identical at n=3. **(a) Ablation, never
-      run**: what does the PLE contribute to output quality? Nothing has measured it, so its 27 GB + 2.6 ms/token
-      is unpriced against its benefit. Needs an eval, not a bench. **(b) Precision UP — the inversion this machine
-      uniquely enables**: B4 requantized what is *streamed*; the PLE is the opposite case — near-zero bandwidth, so
-      it is the cheapest tensor family on this box to spend precision on (RAM is abundant at 1.1 TB). NOT free —
-      IQ4_NL→Q8_0 roughly doubles the table (~54 GB) and the per-token gather bytes, so price the gather-latency
-      delta against any quality gain before recommending it. Do (a) first: if the PLE contributes little, (b) is moot.
-      **Do NOT pursue**: using the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+- [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
+      Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
+      premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
+      weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
+      and there is no shippable variant without it. The decision-relevant question is **precision, not presence**.
+      **The case.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
+      GPU rationale where 27 GB of VRAM is enormous. On this box 27 GB is a rounding error, so we may be inheriting a
+      decision whose justification does not apply to us. Mechanistically the stakes are higher than for ordinary
+      weights: a GEMM weight's quantization error averages out over hundreds of accumulated terms, whereas a PLE row
+      is gathered and mixed **directly into the residual stream** as a feature vector, so its noise enters undiluted —
+      a lookup table is plausibly MORE quant-sensitive than the tensors B4 optimised, and 4 bits is exactly where we
+      should least want to economise. It is also near-free on the axis that binds us: the PLE contributes ~0 to the
+      4.16 GB/token stream (it is a `ggml_get_rows` gather, `qwen4exp.cpp:1115`, not a GEMM), so precision costs RAM
+      and gather-latency, not bandwidth.
+      **Experiment**: `per_layer_token_embd` at Q8_0 (and BF16 if cheap) vs IQ4_NL, everything else held identical
+      (B4's `--tensor-type` override tooling already does this in one `llama-quantize` pass; the r16 artifact is the
+      baseline). Measure (i) quality on a real eval — NOT greedy-identity, which only proves they differ; (ii) the
+      per-token gather-latency delta (IQ4_NL→Q8_0 roughly doubles table and gathered bytes; D8 put GET_ROWS at
+      2.59 ms/token, so price the increase against it); (iii) bytes/token, expected ~unchanged — if it moves, the
+      PLE is being streamed and that is its own finding.
+      **PREREQUISITE, price it before committing**: precision cannot be recovered from IQ4_NL, so this needs a
+      higher-precision source for that tensor — check what unsloth published (the trunk in Q8_0/BF16, or the FP8
+      source) and the download cost FIRST; if it means a multi-hundred-GB pull, that is an operator decision, not an
+      assumed step. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
       *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
-      llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, which is why its recorded
-      2.8× was a self-copy artifact).
+      llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, hence its retracted 2.8×).
+      **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
+      a matmul); it is bit-identical at n=3 in the node trace; and its one real cost — single-threaded `GET_ROWS` at
+      9.34 ms/token, ~10% of the token — was fixed by D8 to 2.59 ms, the largest single gain of 2026-09-02.
 - [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
       `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
       prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
