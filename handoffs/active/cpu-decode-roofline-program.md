@@ -1210,7 +1210,13 @@ named. MTP is not a serving option until that gate passes.
       with shape unchanged and bytes == donor, offsets aligned — **and MUTATION-TESTED (one flipped byte in the
       spliced PLE is detected, so the PASS is not vacuous).** Loader checked: `get_rows` dispatches Q8_0/F16/BF16 and
       `qwen4exp.cpp` creates the PLE with no type constraint, so a spliced artifact loads unmodified.
-      **⚠ THE REAL CONSTRAINT IS DISK, AND IT IS AN OPERATOR DECISION** — see OP-36. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+      **DISK RESOLVED 2026-09-04 (operator): `IQ4_XS-uniform-b4r` deleted (98,267,083,136 B), freeing 92 GB →
+      **243 GB free**, enough for the 178 GB peak. It was the right one to drop: B4 is complete ✅ and its
+      `--tensor-type` recipe AND exact byte count are recorded, so it is regenerable in one `llama-quantize` pass —
+      a reversible deletion. `IQ4_XS-uniform` (era anchor, OP-32) and `-gateup-r16` (current baseline) protected.
+      **B7 dispatched as `b7-ple`**: download the Q8_0 PLE shard, splice into the era anchor with the mutation-tested
+      tool, delete the donor immediately, then measure — **quality is the deliverable, speed is the guard-rail**, and
+      an evidenced "no measurable difference" closes B7 rather than being a failure. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
       *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
       llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, hence its retracted 2.8×).
       **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
@@ -1338,6 +1344,32 @@ coherence-checked every round):
       mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the SAME kernel fix as E2a/E2c — make `build_delta_net_chunking` (delta-net-base.cpp:435) row-exact vs `_autoregressive` for small n; mtp-exact confirmed 2026-09-03 this one site is the common cause. **Blocks concurrent serving with
       simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
       check is inflated (the degenerate rounds ran faster per slot while producing garbage).
+
+## Disk: the artifact rule costs 92 GB per experiment on this model (measured 2026-09-04)
+
+Surfaced by an operator question — *"I'm surprised we only have 151 GB free, I cleaned up last week and freed
+~400 GB"*. The answer is that **this campaign consumed it, predictably and by design.** One model directory holds
+**547 GB**:
+
+| variant | size | origin |
+|---|---|---|
+| `IQ4_XS-uniform` | 92 GB | era anchor (pre-existing, OP-32 baseline) |
+| `IQ4_XS-uniform-gateup` | 92 GB | **B3, this campaign** |
+| `IQ4_XS-uniform-gateup-r16` | 92 GB | **B3-4, this campaign** (current Axis B/D baseline) |
+| `IQ4_XS-uniform-b4` | 91 GB | **B4, this campaign** |
+| ~~`IQ4_XS-uniform-b4r`~~ | ~~92 GB~~ | **B4** — deleted 2026-09-04 (regenerable) |
+| `UD-IQ4_XS` | 88 GB | served file |
+
+Plus 88 GB of worktrees (one build tree per subagent) and 163 GB of cache. **~367 GB of the ~590 GB consumed since
+the 2026-08-31 reclaim (743 GB free then) is this campaign's own artifacts.**
+
+**This is the direct cost of the OP-32 artifact rule**: a delta must be measured with the artifact held identical on
+both arms, so every quant experiment on a 125B model mints a new 92 GB file rather than mutating one. That is the
+right rule — it is what makes the deltas trustworthy — but on this model it means **~92 GB per experiment, and at
+~150–240 GB of working headroom we can hold roughly one experiment in flight at a time.**
+**Consequence to plan around, not a defect**: B7 will cost another ~92 GB for its output; any future quant
+experiment will too. Budget a deletion per experiment, and prefer artifacts whose recipe + byte count are recorded
+(hence regenerable, hence reversibly deletable) when choosing what to drop.
 
 ## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
 
