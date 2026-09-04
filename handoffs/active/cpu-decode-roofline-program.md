@@ -1422,7 +1422,29 @@ named. MTP is not a serving option until that gate passes.
       token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
       1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
       production context; adopt only if measured and if the MTP path stays clean.** Do not pursue q4_0.
-- [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
+- [x] **B7 — ANSWERED 2026-09-04: NO. Higher PLE precision does not buy quality — a null WITH a stated floor.** ✅
+      Pristine `c51e4dabf`, `GGML_IQK=1` (the production kernel — measurable only because C9 was stale-binary),
+      40 chunks, placement proven on both passes:
+
+      ```
+      Mean ln(PPL(Q)/PPL(base)) : 0.004707 ± 0.004380   t = +1.07σ   NOT significant
+      95% CI on PPL ratio       : [-0.39%, +1.34%]      MDE = 1.235% PPL
+      Mean KLD                  : 0.064860 ± 0.001713   t = 37.9σ
+      Same top-1                : 92.020 ± 0.268 %      RMS Δp 8.27%
+      ```
+
+      The sign runs slightly AGAINST higher precision. **The instrument is provably not blind**: it resolved the
+      distributional change at 38σ in the very same run, so the null is a real bound, not a failure to measure.
+      Pairing bought 18× tighter resolution than raw PPLs (Cor 98.06%).
+      **BF16 is not worth a second pass**: Q8_0 nearly doubled PLE precision for zero gain against a 1.235% floor;
+      BF16 would cost **+25.6 GB resident** for nothing. B7 closes without an INF-71-style successor.
+      **★ This CORRECTS the structural argument used to pre-judge B7 (mine, twice).** I argued the PLE row is
+      diluted (input to two GEMVs averaged over 2560 terms, `ple.layers=[1]`, projections themselves IQ4_XS).
+      But **~8% of top-1 tokens flip**: the `key` branch collapses to a SCALAR through a sigmoid gate that
+      multiplies the whole value vector, so PLE sensitivity is HIGH. The premise was wrong and the conclusion was
+      right for a different reason — sensitivity ≠ headroom. A greedy-identity gate here would have screamed
+      "different!" and told us nothing; only the paired KLD/PPL separates "changed" from "improved".
+      **Original brief, retained for the record:**
       Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
       weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
