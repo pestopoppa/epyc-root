@@ -1156,7 +1156,36 @@ named. MTP is not a serving option until that gate passes.
       variance 0.000, while every other harness has an MDE of 4–17 pp and the repo's own note is "neither sees
       1–2 pp". **Without it, B7, B9 and every future quant decision on this model can only produce unfalsifiable
       nulls** — and *a null is only worth reporting if the instrument could have seen a difference.*
-      **Live hypothesis (`b7-ple`, queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
+      **NAMED HYPOTHESIS with a specific type and constant (coordinator, 2026-09-04 — operator: "fix C9"):**
+      **`output.weight` is Q6_K** `[2560, 248320]`, and `iqk_mul_mat.cpp:319` reads
+      `case GGML_TYPE_Q6_K : return nrc_y >= 64 ? GGML_TYPE_Q8_0_R8 : type;` — **the output head repacks at
+      nrc_y >= 64.** Perplexity sets `batch.logits[idx] = pos >= n_ctx/2`, so **n_outputs = n_ctx/2**: at `-c 512`
+      that is **256 rows, 4× over the threshold.** Generation is `n_outputs == 1` (GEMV) and MTP verification is a
+      small `k` — **neither ever crosses it. Perplexity is the ONLY path in the stack that runs the output head
+      through the Q6_K repack**, which is exactly `b7-ple`'s "GEMV everywhere else, GEMM only here" with a type and
+      a constant attached. Same convicted family as BE-1's IQ4_XS fix (the tree's own comment: the native
+      iquant-to-repacked-Q8 converters "produce incorrect results for some large-Ny dense and MoE shapes on Zen 4").
+      Q6_K was left on the path because `gdn-fix-validate` measured ~0.04 nats at 233 rows — but that was a
+      coherence check on the served path, and **lossy is not nan**, so it does not exonerate it here.
+      **Decisive cheap probe: sweep `-c`, not `-ub`** — `-ub` moves the ubatch, but the variable that crosses the
+      threshold is n_outputs, which `-c` controls directly:
+      | `-c` | n_outputs | vs threshold 64 | prediction |
+      |---|---|---|---|
+      | 512 | 256 | 4× over | nan |
+      | 256 | 128 | 2× over | nan |
+      | 128 | 64 | at it | nan |
+      | 64 | 32 | **below** | **FINITE** |
+      A finite PPL at `-c 64` with nan at `-c 128` identifies the constant directly and makes the fix **a one-line
+      exclusion** (add `GGML_TYPE_Q6_K` to the excluded set exactly as BE-1 did for IQ4_XS) rather than a hunt.
+      `GGML_IQK_DEQUANT=0` at `-c 512` should agree. **Flagged to the agent as a HYPOTHESIS, not an instruction** —
+      the coordinator has been wrong three times today, twice on this same kind of "obvious" mechanism, and the
+      agent's static analysis has outperformed those guesses; if the `-c` sweep misbehaves that is a real result
+      meaning n_outputs is not the variable. **Keep the cross-build arm on the older bring-up tree regardless** — a
+      bisectable regression range is worth having even if the type hypothesis lands.
+      **Fix gate**: PPL finite and stable, `MUL_MAT`/`MUL_MAT_ID -b CPU` still pass, and serving speed unaffected
+      (the output head is a GEMV in generation, so excluding a repack it never takes should cost nothing — verify,
+      do not assume).
+      **Earlier hypothesis (`b7-ple`, still queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
       The output-head matmul only ever runs as a **GEMV** during generation; the all-logits path is the only thing
       that exercises it as a **GEMM** — exactly where `GGML_IQK=1` swaps in the ik_llama kernels. So the `nan` may be
       an iqk GEMM path that generation never touches. **Fallback already written** if that does not yield:
