@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-04T11:00:33Z",
   "mode": "full",
-  "scan_time": "2026-09-04T11:01:11Z",
+  "scan_time": "2026-09-04T13:42:43Z",
   "schema_version": 1,
-  "source_set_hash": "9d1ae440212f4f077ffeefd99c25d51493d153c49e96d17d8a082794d271d738",
+  "source_set_hash": "20b46cf4b58f9aaec0a6c8370db1ea1b70a47f5098a4991b34aa4b0e5dc2e270",
   "sources": [
     {
       "content_hash": "d55fe0f4e17eca0f3579cabc3cf67e97b2ac50c369a8c0d5a42fd43e80a01ff6",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c1e8ed81d0fce7be208bc46bb8231e1b401b28f7789e94a2fc7f1d5cff496ccc",
-      "modified": "2026-09-04T10:26:21Z",
+      "content_hash": "8000acd4b5720140d2cf3cb4ac200f7978b21d4f287c3630c4b45df8de9eeca8",
+      "modified": "2026-09-04T13:41:21Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 159293,
+      "size": 159935,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "84201d4ea37e0b3939eea6cae6802e54d9f1a62e5407fb7534300443ef79ee0c",
-      "modified": "2026-09-04T10:53:04Z",
+      "content_hash": "10db9245e79865dc7a602424b7930c58dd96bbea66f1ee59bb9c2e532f5e9043",
+      "modified": "2026-09-04T13:36:22Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 145114,
+      "size": 163317,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -6823,18 +6823,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "777b6449776a69b0b8c92e745c2dff0d1bd2158988568ddf28736eddd6aa5252",
-      "modified": "2026-09-04T10:53:04Z",
+      "content_hash": "844e881b3c292b1bb024027c67c939d07f3f39bdc8cbc7f39d71559af4cf1b67",
+      "modified": "2026-09-04T13:36:22Z",
       "path": "progress/2026-09/2026-09-03-inf70-audit.md",
-      "size": 80578,
+      "size": 101883,
       "title": "2026-09-03 \u2014 INF-70 (adhoc-inf70-audit)",
       "type": "progress"
     },
     {
-      "content_hash": "19238b92406895f05db737ff0428c7a96ba758f3041dcfd785eeab74ed2c13d5",
-      "modified": "2026-09-04T10:41:04Z",
+      "content_hash": "42f94de8f909c9aa2eb2432d379be16196133220a3573edde265f70db78079d0",
+      "modified": "2026-09-04T13:36:22Z",
       "path": "progress/2026-09/2026-09-04-ak-rebuild-20260828.md",
-      "size": 3578,
+      "size": 5540,
       "title": "2026-09-04-ak-rebuild-20260828",
       "type": "progress"
     },

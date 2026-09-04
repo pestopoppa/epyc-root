@@ -1692,6 +1692,11 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
         `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
         pass, guard exit 0, --help shows the flags.
+      - [x] **Accumulator observability** ✅ 2026-09-04: the loop status now carries the two-tier
+        bundle (`accumulator`: champion-of-record, keeps, compounded_bench_pct, fire_threshold_pct,
+        progress_fraction, fires_next) and the `/loop` dashboard renders an "Accumulator — compound-
+        then-gate" card with a progress bar toward the ~8.84% serving-gate threshold (research `ee0456fd`,
+        dashboard `6f630ecf`). Operator can watch keeps batch toward the gate.
       - [x] **RUN 29 LAUNCHED** ✅ 2026-09-04 (PID 3217060, continuous): tg128/27B calibrated (floor
         0.638%@20p), two-tier gate live (screen tg128 / keep-gate tg128 / serving np4-DFlash2 3.536%),
         DeepSeek planner + codex critic, champion 445e93a8. First end-to-end compound-then-gate run.
