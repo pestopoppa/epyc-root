@@ -865,47 +865,46 @@ named. MTP is not a serving option until that gate passes.
       thinking disabled, coherence classified by REASON in the same window as the timing) — evidence
       `/mnt/raid0/llm/tmp/inf70/reanchor2/`. **The old short-prompt figures are NOT being restored.** No serving or deployable-speed
       claim on this tree until it passes.
-- [ ] **BATCH-ENVELOPE (DEMOTED 2026-09-03 by operator ruling — correctness hygiene, NOT an MTP blocker; still governs concurrent prefill and all measurement A/Bs) — a batched forward diverges from the sequential one, and it is NOT the mul_mat.
-      MEASURED AND NARROWED 2026-09-03 (`mtp-tip2`); my seed hypothesis is REFUTED.**
-      **The lossless gate answered: MTP on qwen4exp is APPROXIMATE, not lossless, on the CORRECTED kernel.** Four
-      arms, 3 short + 4 production-length prompts, greedy, token streams compared byte-for-byte: P (plain corrected
-      tip 10210) ≡ T (MTP build, trunk-only) ≡ **S (`LLAMA_SPEC_EXACT=serial` oracle)** on all 7 prompts; **M (MTP,
-      n-max 2) diverges on 6 of 7**, one flip point each, then downstream drift (g2 has none at all).
-      **Three exonerations, each load-bearing:**
-      1. **NOT the iqk IQ4_XS defect.** The flips reproduce **bit-identically** across its repair — `mtp-tip` on the
-         DEFECTIVE tip recorded g1 #28 `271→77916` and g3 #84 `4016→303`; the corrected kernel produces the same
-         two flips at the same indices with the same token pairs. A defect that corrupted every ≥32-row forward
-         could not leave a divergence unchanged across its own fix.
-      2. **NOT the MTP machinery.** The serial oracle is byte-identical to plain on all 7 prompts including the
-         429-token one, with borrowing live (2 `taken from the target model`) and drafting live (7 acceptance
-         lines). Draft head, borrow path, rollback and accept/reject all reproduce the sequential stream exactly —
-         **only how the verified rows are COMPUTED differs.**
-      3. **NOT the batched mul_mat — this refutes the seed hypothesis I filed.** `GGML_ROWEXACT_N=512` forces every
-         `1 < Ny ≤ 512` through the single-row kernels, and it covers **both** the tinyBLAS GEMM (`ggml-cpu.c:1379`
-         — so the F32 `ffn_gate_inp` router IS covered) **and** iqk (`iqk_mul_mat.cpp:88,209`). With it on, MTP still diverges from
-         plain on the same 6 of 7 prompts. **⚠ CONFOUND, caught by the agent's own TX control and corrected here
-         (my first write-up of this overstated the evidence): the knob is NOT neutral — TX (trunk-only + the knob)
-         moves the TRUNK stream on all 4 production-length prompts while leaving the short ones untouched, so the
-         `MX vs P` comparison is confounded on long prompts.** The clean statement is confined to the SHORT prompts,
-         where `TX == P` proves the knob inert: there **MTP flips identically with and without rowexact** (g1@28 and
-         g3@84 bit-identical). That is sufficient to exonerate the GEMM — but it rests on the short-prompt arms, not
-         on all six flip points, and the long-prompt agreement must not be cited as evidence. So the ~1-ulp router
-         fp-order I named as the seed is not the carrier. Cost note: the knob is not free — 18.56 → 16.68 t/s
-         (−10%) on the MTP arm, and it perturbs the trunk stream at long prompt lengths, so it is a diagnostic
-         instrument, not a serving option.
-      **Leading suspect, explicitly UNTESTED: the recurrent / GDN path.** `GGML_ROWEXACT_N` appears nowhere in
-      `ops.cpp`, so `ggml_ssm_scan` and the fused GDN op are untouched by it. There a multi-row batch takes a
-      **genuinely different code path (chunked recurrence)** rather than a differently-ordered reduction — the
-      natural home for a batch-shape-dependent result a row-exact GEMM cannot fix. Note this does NOT contradict
-      GDN-ROWEXACT's finding that the fused GDN op is bit-exact at n=3: that test compared a 3-token batch against
-      3 singles and found the first difference in the router, so the GDN op is exact at THAT shape — the verified
-      batch and the prefill shapes here are larger and untested. **Next experiment: extend row-exactness (or a
-      node-level `llama-rowexact` trace) through `ggml_ssm_scan`/GDN at the shapes MTP actually verifies at.**
-      Gate unchanged: batched greedy argmax == `-ub 1` argmax on the 33-prompt set.
-      **Do NOT claim** MTP is lossless; **do NOT claim** the iqk fix failed to help (it fixed long-prompt coherence
-      completely and is orthogonal); **do NOT claim** MTP is broken — all 12 production-length chat generations on
-      the M arm classified COHERENT. The flips change WHICH valid continuation is produced, not whether it is valid.
-      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/FINDING-lossless.md`.
+- [x] **BATCH-ENVELOPE — SOLVED 2026-09-04 (`batch-envelope`). MTP on qwen4exp IS LOSSLESS; the divergence was
+      never MTP, it was TWO CPU kernels that are not row-exact under batching. Both named with node-level evidence.**
+      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode**.
+      **⚠ FIRST: retract the standing exclusion — it was a VACUOUS VERIFICATION, not a negative.** I published
+      "the flips are NOT the batched mul_mat" three times, resting on `GGML_ROWEXACT_N=512`. **That knob has never
+      had any effect on any tinyBLAS mul_mat.** `llamafile_sgemm` hard-refuses `n < 2`
+      (`ggml/src/ggml-cpu/llamafile/sgemm.cpp:3713`), so the per-column loop at `ggml-cpu.c:1379` failed on its
+      **first** column every call and fell straight through to the full-batch tinyBLAS GEMM immediately below it.
+      Proof of inertness (the mutation test I should have demanded before believing the exoneration): knob ON and
+      knob OFF produce a **byte-identical node trace** — same first differing node, same max|d|, same 85,390,493
+      differing state bytes. Every conclusion that rested on that knob is withdrawn.
+      **Carrier 1 — the F32 tinyBLAS `mul_mat`, i.e. the MoE router `ffn_gate_inp`.** It runs a tiled batched GEMM
+      at `ne11=3` and the generic `vec_dot` path at `ne11=1` — a 1-ulp difference that MoE top-k selection
+      amplifies. With it genuinely made row-exact, a 3-row batch is **bit-identical to 3 single decodes** (logits
+      0 of 248,320 differ; recurrent state 0 bytes differ). **That alone converts 5 of 7 prompts to lossless**, and
+      kills the two flips that had survived everything else (`g1@28`, `g3@84`).
+      **Carrier 2 — `ggml_flash_attn_ext` on CPU is not row-exact once `n_kv > 256`.** Bisected: n_kv **253 exact,
+      257 divergent**, and only the boundary-crossing row is wrong (`node_584 FLASH_ATTN_EXT [256,24,3]`). `--fa 0`
+      makes the identical shape bit-exact at prefix 254 and 300 while `--fa 1` diverges. **It predicted the two
+      remaining survivors before they were measured**: L3_p200's 236-token prompt diverges at generated token 24 —
+      position **260**. Next discriminator: `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at n_kv=257, n_q=3 vs n_q=1.
+      **Why carrier 2 was invisible for so long**: the tracer's default `n_ctx` capped every run at 256 tokens per
+      sequence — exactly below the boundary. Fixed in `332f9ef56`.
+      **The recurrent/GDN path is EXONERATED — do not fund it.** The fused GDN op is bit-exact at prefix 8, 230,
+      250, 254 and 300; nothing in `ggml_ssm_scan` needed changing. Origin is not prefill and not the
+      `embeddings_nextn` graph change either: SX (head loaded, same batched prefill, serial verify) is
+      byte-identical to TX on all 7.
+      **Cost**: trunk decode unaffected (TXF 12.74–12.91 vs P 12.60–12.86); **prefill −15…−20%** at 236/429 tokens.
+      Note the serial oracle costs −7% on DECODE, so **lossless MTP is +55% over the previously recommended
+      exactness path** — the exactness/speed trade we thought we faced does not exist.
+      **⚠ The kernel commit is a DIAGNOSTIC, NOT MERGE-READY**: `f7f2d4708` (`GGML_MM_TRACE` + `GGML_ROWEXACT_GENERIC`)
+      and `332f9ef56` on `inf70/batch-envelope`, not merged, not pushed, **no static tests**. A shipping version
+      should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
+      or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
+- [ ] **BE-1 — ship the row-exact fix in bounded form.** Bound `GGML_ROWEXACT_N` to ~8 (covers the n+1 verify batch,
+      zero prefill cost) or make tinyBLAS tiling row-invariant; add static tests (`test-backend-ops -o MUL_MAT
+      -b CPU`, and `-o FLASH_ATTN_EXT -b CPU` at n_kv=257 n_q=3 vs n_q=1 for carrier 2); gate on n=1 decode
+      byte-identity to `10acba0ab` so it cannot leak into the batch-1 path; then re-run the lossless gate and the
+      concurrency identity check. Successor to BATCH-ENVELOPE.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
@@ -1066,6 +1065,12 @@ named. MTP is not a serving option until that gate passes.
          merits at the recurrent/GDN path; do not hold MTP for it.
 
 ## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+**UPDATE 2026-09-04 (`batch-envelope`): simultaneous admission is COHERENT again 4/4 on `10acba0ab` — X-CONC's
+garbage is gone. But COHERENT ≠ CORRECT: 3 of 4 concurrent streams still DIFFER from the same prompt served alone,
+and staggering does not help — ROW COUNT, not admission pattern, is what matters. With the row-exact forward the
+streams are SAME 4/4, at ~5–8% per-slot decode cost. So concurrent serving today returns valid-but-different output
+per slot; that is a policy question, not a corruption one.**
 
 **Root cause of the prefill-corruption defect found 2026-09-03 (`gdn-rowexact`): it is NOT a multi-sequence bug —
 packing 4 sequences in one ubatch is bit-exact (0/5450 nodes differ). Four simultaneous ~12-token prompts make a
