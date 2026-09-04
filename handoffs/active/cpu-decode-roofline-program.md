@@ -927,17 +927,43 @@ named. MTP is not a serving option until that gate passes.
       bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
       decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
       books is that both earlier carriers also looked harmless until measured.
-- [ ] **BE-1 — ship carrier 1 (the tinyBLAS/router fix) in bounded, test-gated form.** The diagnostic branch
-      `inf70/batch-envelope` fixes the real bug but is not shippable as-is. Concretely missing:
-      (a) **bound the knob and give it a real default** — `GGML_ROWEXACT_DEFAULT_N` is currently `0`, so the fix is
-      inert unless an env var is set. Cap at **~8**: enough for the n+1 verify batch, and it never reaches prefill
-      shapes, so the measured **−15…−20% prefill cost at N=512 disappears**;
-      (b) **separate the diagnostic from the fix** — `f7f2d4708` bundles the genuine tinyBLAS repair with the
-      `GGML_MM_TRACE` branch tracer; the tracer is an investigation tool and must not ship in a serving kernel;
-      (c) **static tests** — `test-backend-ops -o MUL_MAT -b CPU` (and `-o MUL_MAT_ID -b CPU`, which must stay
-      815/815 so B3-k's slab path is untouched);
-      (d) **the n=1 byte-identity gate vs `10acba0ab`** — the check that protects every lever already merged; it has
-      not been run on this branch. Then re-run the lossless gate and the concurrency identity check.
+- [x] **BE-1 — carrier 1 made shippable, and MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
+      (`be1-ship`, commit **`db6b715c9`** on `inf70/be1-ship`, base `10acba0ab`; not merged, not pushed).
+      **The Gap-4 gate did exactly its job.** `G_fix0` (N=0) is **byte-identical to `10acba0ab` on 7/7 prompts** —
+      the refactor is provably inert, which is what the gate exists to prove. But **`G_fix` at the default N=8
+      DIVERGES on 6/7.** **Mechanism, found for free in `batch-envelope`'s saved dispatch trace: this model has 12
+      F32 `[128×64]` `mul_mat` nodes per graph whose `ne11` is `4·n_tokens`** (ne11=4 on a single-token decode,
+      ne11=12 on a 3-token batch; 456 dispatches = 19 decodes × 24 lines). **So N=8 is the worst of both worlds — it
+      catches `ne11=4` at BATCH 1, moving single-token decode numerics, while still missing the `ne11=20` of a 5-row
+      MTP verify batch, leaving the batch non-row-exact.** **The correct rule is `N >= 4·(n_max+1)`** — ≥20 for
+      n_max 4 — **not 8.** Prefill is untouched at any such value (a 512-row ubatch presents `ne11=2048` there), and
+      the cost claim did verify: prefill at N=8 was 165.5/183.0 vs baseline 167.4/180.3, inside the ±7% noise
+      `G_fix0` itself shows. **Default corrected back to 0** with the measured rule documented at the knob; a
+      falsification arm at N=3 (below the `ne11=4` nodes) is queued and predicts byte-identity with baseline.
+      Static gates green: `MUL_MAT` 1139/1139, `MUL_MAT_ID` **815/815**, `test-llama-archs` 0 FAIL; the
+      `GGML_MM_TRACE` tracer stays on the diagnostic branch.
+      **Lesson: a "safe" bound chosen from the verify-batch row count alone is wrong when a graph contains nodes
+      whose `ne11` is a MULTIPLE of `n_tokens`.** I proposed 8 from the n+1 verify shape; the gate caught it.
+- [x] **BE-1 Phase 2 — THE FASTEST DEPLOYABLE CONFIGURATION.** ✅ 2026-09-04, 24-prompt production mix,
+      token-weighted, `pred_n >= 16` floor, coherence by REASON. **All 8 arms: 20 COHERENT + 4 SHORT, zero SALAD,
+      zero EARLY-EOS.**
+      | arm | tw t/s | × plain | note |
+      |---|---|---|---|
+      | P0 plain | 12.484 | 1.000 | baseline |
+      | P8 plain + row-exact | 12.515 | 1.003 | **row-exactness is FREE on the trunk** |
+      | M2_0 / M2_8 | 20.140 / 19.892 | 1.613 / 1.593 | |
+      | M3_0 / M3_8 | 21.959 / 21.120 | 1.759 / 1.692 | |
+      | **M4_0 (n-max 4, approximate)** | **22.931** | **1.837** | **FASTEST** |
+      | M4_8 (n-max 4, lossless) | 21.559 | 1.727 | −6.0% for losslessness |
+      **Row-exactness costs −0.3% / −2.6% / −4.6% at n-max 2/3/4** — it buys losslessness and no speed. **Under the
+      operator's speed-first ruling the answer is M4_0: n-max 4, approximate, ~22.9 t/s (1.837×).** Note this is
+      carrier 1's knob only; carrier 2's (`GGML_FA_SPLIT_KV=0`) is separately **free** under MTP (`be2-fa`), so a
+      *partially* exact config costs nothing — full losslessness is what costs 6%.
+      **⚠ Tension with the adopted n-max ruling, for the operator**: aggregate throughput favours **n-max 4** here
+      (1.837× vs 1.759× at 3), while `e3-run`'s tail analysis favoured **n-max 3** (paired min 1.271 vs 1.136).
+      Both are measured on the same prompt mix. n-max 4 is the faster mean; n-max 3 is the safer worst case.
+      **Still running unattended**: the `p_min` sweep at the winning point (n-max 4, row-exact off) — which may move
+      this number — and a depth probe. Evidence `/mnt/raid0/llm/tmp/inf70/agents/be1-ship/`.
 - [x] **BE-2 — SOLVED 2026-09-04 (`be2-fa`). Carrier 2 is NOT A BUG: it is two algebraically-equal,
       numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
       keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at
