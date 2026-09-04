@@ -903,7 +903,28 @@ named. MTP is not a serving option until that gate passes.
       should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
       or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
-- [ ] **INSTR-1 — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from
+- [x] **INSTR-1 ✅ 2026-09-04 (`instr-b7`) — co-residency attribution shipped to 22 harness scripts** via one
+      shared helper `/mnt/raid0/llm/tmp/inf70/lib/coresidency.sh` (9-line additive block after `set -u`; log format
+      extended, not restructured; all pass `bash -n`). **Four refinements the live box forced, each of which would
+      otherwise have RECREATED the false alarm:**
+      1. **Thread-UNION affinity, not the main thread** — `llama-server`'s main thread reads `cpus_allowed=0` while
+         the union reads `0-94/n=48`; main-thread-only would misread a GPU-side server (main on cpu 0, workers on
+         184-191) as a CPU squatter — precisely today's error.
+      2. **`gpu_fd=yes/no`** (`/dev/kfd`, `/dev/dri`) — **this is what actually cleared today's process**: the
+         autokernel `llama-bench` runs with an UNCONSTRAINED `0-191` mask and self-places on the GPU host threads,
+         so affinity alone returns UNCLASSIFIED.
+      3. **`sched_in_region=k/n`** (`/proc/<tid>/stat` field 39) resolved by **majority, not "any"** — a GPU-side
+         `llama-bench` shows `1/2`, and an "any" rule would re-create the false alarm.
+      4. **Delta CPU, not `ps %CPU`** — `%CPU` is cumulative, so five idle `opencode` processes read a steady "45%"
+         and crowded out the real workload (`feedback_measurement_attribution_hygiene`).
+      **Live output positively identifies today's mystery process**: `exe=…/autokernel/loop-memory/anchor-gen-016/
+      bin/llama-bench … gpu_fd=yes cpus_allowed=0-191 verdict=UNCLASSIFIED effective=GPU-SIDE-by-fd`, and an earlier
+      sample caught the same binary pinned: `cpus_allowed=184-191 verdict=GPU-PEER`. **The operator's hypothesis is
+      confirmed by direct evidence: it was the autokernel session's GPU work, not a lock violation.** 0.27 s/sample
+      over 2317 processes; parent-death self-exit tested, no orphans. Deliberately NOT applied to
+      `agents/speed-claim/arm*.sh` — that agent is executing those files right now
+      (`feedback_never_edit_running_shell_script`); a 5-line patch is prepared for its next arm boundary.
+- [x] ~~INSTR-1 (original text)~~ — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from
       legitimate concurrent GPU work.** Filed 2026-09-04 after I mis-called exactly that. `be2-fa` flagged a foreign
       `llama-server` in 83 of 147 samples while it held all four CPU bench regions, and I recorded it as a
       coordination violation. **On the operator's challenge that it was probably the autokernel session — which is a
@@ -927,18 +948,82 @@ named. MTP is not a serving option until that gate passes.
       bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
       decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
       books is that both earlier carriers also looked harmless until measured.
-- [ ] **BE-1 — ship carrier 1 (the tinyBLAS/router fix) in bounded, test-gated form.** The diagnostic branch
-      `inf70/batch-envelope` fixes the real bug but is not shippable as-is. Concretely missing:
-      (a) **bound the knob and give it a real default** — `GGML_ROWEXACT_DEFAULT_N` is currently `0`, so the fix is
-      inert unless an env var is set. Cap at **~8**: enough for the n+1 verify batch, and it never reaches prefill
-      shapes, so the measured **−15…−20% prefill cost at N=512 disappears**;
-      (b) **separate the diagnostic from the fix** — `f7f2d4708` bundles the genuine tinyBLAS repair with the
-      `GGML_MM_TRACE` branch tracer; the tracer is an investigation tool and must not ship in a serving kernel;
-      (c) **static tests** — `test-backend-ops -o MUL_MAT -b CPU` (and `-o MUL_MAT_ID -b CPU`, which must stay
-      815/815 so B3-k's slab path is untouched);
-      (d) **the n=1 byte-identity gate vs `10acba0ab`** — the check that protects every lever already merged; it has
-      not been run on this branch. Then re-run the lossless gate and the concurrency identity check.
-- [x] **BE-2 — SOLVED 2026-09-04 (`be2-fa`). Carrier 2 is NOT A BUG: it is two algebraically-equal,
+- [x] **BE-1 — carrier 1 made shippable; MERGED 2026-09-04 into `exp/cpu-fusion-qwen4exp-20260829` at
+      `4d9cdf66f` (operator: proceed). MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
+      (`be1-ship`, commit **`db6b715c9`** on `inf70/be1-ship`, base `10acba0ab`; not merged, not pushed).
+      **The Gap-4 gate did exactly its job.** `G_fix0` (N=0) is **byte-identical to `10acba0ab` on 7/7 prompts** —
+      the refactor is provably inert, which is what the gate exists to prove. But **`G_fix` at the default N=8
+      DIVERGES on 6/7.** **Mechanism, found for free in `batch-envelope`'s saved dispatch trace: this model has 12
+      F32 `[128×64]` `mul_mat` nodes per graph whose `ne11` is `4·n_tokens`** (ne11=4 on a single-token decode,
+      ne11=12 on a 3-token batch; 456 dispatches = 19 decodes × 24 lines). **So N=8 is the worst of both worlds — it
+      catches `ne11=4` at BATCH 1, moving single-token decode numerics, while still missing the `ne11=20` of a 5-row
+      MTP verify batch, leaving the batch non-row-exact.** **The correct rule is `N >= 4·(n_max+1)`** — ≥20 for
+      n_max 4 — **not 8.** Prefill is untouched at any such value (a 512-row ubatch presents `ne11=2048` there), and
+      the cost claim did verify: prefill at N=8 was 165.5/183.0 vs baseline 167.4/180.3, inside the ±7% noise
+      `G_fix0` itself shows. **Falsified cleanly on three points: N=0 identical 7/7, N=3 identical 7/7, N=8 divergent 6/7** — the
+      N=3 arm sits below the `ne11=4` nodes and its predicted byte-identity held, so the mechanism is confirmed and
+      not merely consistent. **Default ships 0** with the rule documented at the knob. Gap 1's *cost* claim did
+      verify: prefill 167.4/180.3 → 165.5/183.0 pp t/s, the −15…−20% is gone. Every arm set `GGML_ROWEXACT_N`
+      explicitly, so **no measurement depended on the default**.
+      Static gates green: `MUL_MAT` 1139/1139, `MUL_MAT_ID` **815/815**, `test-llama-archs` 0 FAIL; the
+      `GGML_MM_TRACE` tracer stays on the diagnostic branch.
+      **Lesson: a "safe" bound chosen from the verify-batch row count alone is wrong when a graph contains nodes
+      whose `ne11` is a MULTIPLE of `n_tokens`.** I proposed 8 from the n+1 verify shape; the gate caught it.
+- [x] **BE-1 Phase 2 — THE FASTEST DEPLOYABLE CONFIGURATION.** ✅ 2026-09-04, 24-prompt production mix,
+      token-weighted, `pred_n >= 16` floor, coherence by REASON. **All 8 arms: 20 COHERENT + 4 SHORT, zero SALAD,
+      zero EARLY-EOS.**
+      | arm | tw t/s | × plain | note |
+      |---|---|---|---|
+      | P0 plain | 12.484 | 1.000 | baseline |
+      | P8 plain + row-exact | 12.515 | 1.003 | **row-exactness is FREE on the trunk** |
+      | M2_0 / M2_8 | 20.140 / 19.892 | 1.613 / 1.593 | |
+      | M3_0 / M3_8 | 21.959 / 21.120 | 1.759 / 1.692 | |
+      | **M4_0 (n-max 4, approximate)** | **22.931** | **1.837** | **FASTEST** |
+      | M4_8 (n-max 4, lossless) | 21.559 | 1.727 | −6.0% for losslessness |
+      **Row-exactness costs −0.3% / −2.6% / −4.6% at n-max 2/3/4** — it buys losslessness and no speed. **Under the
+      operator's speed-first ruling the answer is M4_0: n-max 4, approximate, ~22.9 t/s (1.837×).** Note this is
+      carrier 1's knob only; carrier 2's (`GGML_FA_SPLIT_KV=0`) is separately **free** under MTP (`be2-fa`), so a
+      *partially* exact config costs nothing — full losslessness is what costs 6%.
+      **⚠ The n-max tension LARGELY DISSOLVES once `p_min` is on — this is the operationally important refinement.**
+      Without p_min, aggregate favoured n-max 4 (1.837× vs 1.759×) while `e3-run`'s tail favoured n-max 3 (paired
+      min 1.271 vs 1.136). **With `p_min 0.5`, n-max 4–8 × p_min 0.5–0.6 is ONE INDISTINGUISHABLE BAND** —
+      coin-flip paired win rates across it. **The optimum is a plateau, not a peak: the confidence gate sets the
+      working depth, so n-max stops mattering.** n-max 4 was chosen for the lowest drafted-per-token, not because it
+      measured fastest. The adopted ruling (3 fleet / 4 coding) therefore remains sound; adding `p_min 0.5` makes
+      the choice between them largely moot rather than overturning it.
+      **`--spec-draft-p-min` RESULT — a free +3.0%, and the new best configuration:**
+      | arm | n-max | p_min | tw t/s | × plain | α | drafted/tok |
+      |---|---|---|---|---|---|---|
+      | M4_0 | 4 | 0 | 22.931 | 1.837 | 0.752 | 0.994 |
+      | **B_n4_p05** | **4** | **0.5** | **23.623** | **1.892** | 0.827 | 0.890 |
+      | B_n4_p075 | 4 | 0.75 | 23.023 | 1.844 | 0.920 | 0.763 |
+      | B_n4_p09 | 4 | 0.9 | 21.993 | 1.762 | 0.963 | 0.693 |
+      **Mechanism CONFIRMED, not inferred**: α rises monotonically (0.752 → 0.827 → 0.920 → 0.963) while
+      drafted-per-token falls monotonically (0.994 → 0.890 → 0.763 → 0.693) — the drafter bails out of
+      low-confidence blocks instead of paying to verify them — and throughput peaks *in between*, at 0.5. It wins on
+      **every** prompt class, most on `general` (+5.2%, 18.886 → 19.863), which is precisely the class with the
+      worst α and therefore the most wasted verification to recover. **This knob had never been set in any arm of
+      this campaign** (default 0.0).
+      **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
+      `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
+      paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
+      432 requests across the arm matrix with ZERO garbage outputs. By class: coding 25.36, reasoning
+      24.86, general 19.86 t/s.** Coherence 20 COHERENT + 4 SHORT on every arm.
+      **Depth beyond 4 without p_min is a dead end** (n-max 6: 22.281, n-max 8: 21.120, α collapsing to 0.620 /
+      0.537). Whether depth pays *with* p_min truncation is the one open arm (n-max 5/6/8 at p_min 0.5, then a p_min
+      bracket at the winner).
+      **The lossless question is settled without appeal to the ruling**: at EVERY n-max, approximate is faster than
+      lossless (−0.3% / −2.6% / −4.6% paired at 2/3/4). **Losslessness is not a trade here, it is simply a cost** —
+      worth buying only for the concurrency property it also brings (concurrent streams become bit-identical to
+      single-stream), and then at `N >= 4·(n_max+1)`, not 8.
+      **Process finding disclosed by the agent**: the first depth probe ran at p_min 0 rather than the winning p_min
+      because `pick.py` emitted the label `p5` where the driver writes `p05`, so the lookup **silently fell back to
+      the default**. The arms are still valid (they are the honest no-p_min n-max 6/8 points) but were not what was
+      intended. Recorded because the failure mode — *silent fallback to a default on a label mismatch* — is the same
+      shape as the `GGML_ROWEXACT_N` no-op and the `top_logprobs` parse miss: **a lookup that misses should fail
+      loudly, not default.** Evidence `/mnt/raid0/llm/tmp/inf70/agents/be1-ship/`.
+- [x] **BE-2 — SOLVED and MERGED 2026-09-04 (`be2-fa`; knob cherry-picked as `c51e4dabf` — the branch itself was
+      NOT merged, since it carried the superseded diagnostic fix and the `GGML_MM_TRACE` tracer). Carrier 2 is NOT A BUG: it is two algebraically-equal,
       numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
       keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at
       every depth measured.**
@@ -1064,6 +1149,20 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
+- [ ] **C9 — `llama-perplexity` returns `nan` on qwen4exp: PROMOTED to the critical path 2026-09-04, and it is
+      worth far more than B7.** Found by `b4`, confirmed by `b7-ple` to reproduce on the merged tip
+      (`qwen4exp.cpp` and `perplexity.cpp` are byte-identical between b4's build and ours). **Why it now gates
+      everything**: PPL/KL is the ONLY instrument in the stack that can resolve a small quality effect — run-to-run
+      variance 0.000, while every other harness has an MDE of 4–17 pp and the repo's own note is "neither sees
+      1–2 pp". **Without it, B7, B9 and every future quant decision on this model can only produce unfalsifiable
+      nulls** — and *a null is only worth reporting if the instrument could have seen a difference.*
+      **Live hypothesis (`b7-ple`, queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
+      The output-head matmul only ever runs as a **GEMV** during generation; the all-logits path is the only thing
+      that exercises it as a **GEMM** — exactly where `GGML_IQK=1` swaps in the ik_llama kernels. So the `nan` may be
+      an iqk GEMM path that generation never touches. **Fallback already written** if that does not yield:
+      teacher-forced top-K distributions over `llama-server`'s known-good generation path, giving paired top-1
+      agreement, truncated KL and a paired NLL. **Deliverable: a working quality instrument for qwen4exp**, which
+      unblocks B7, B9, B5 and every future artifact decision.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
@@ -1099,7 +1198,19 @@ named. MTP is not a serving option until that gate passes.
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
       weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
       and there is no shippable variant without it. The decision-relevant question is **precision, not presence**.
-      **The case.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
+      **⚠ MY MECHANISTIC PREMISE IS REFUTED — established from the graph 2026-09-04 (`b7-ple`), no compute spent.**
+      I argued the PLE row is "gathered straight into the residual stream, so its quantisation noise enters
+      undiluted". **That is wrong, three ways:**
+      1. **The gathered row never reaches the residual stream.** It is the *input vector* to two GEMVs — `ple_key`
+         (2560→10240) and `ple_value` (2560→2560) — so its noise **is** averaged over 2560 terms like any other
+         activation, then passed through a sigmoid gate. The "undiluted" argument was simply incorrect.
+      2. **`qwen4exp.ple.layers = [1]` — the PLE runs in exactly ONE layer of 48.** *(I dumped this key myself and
+         failed to draw the inference: whatever it does, it does in 1/48th of the network.)*
+      3. **The projections it feeds are themselves IQ4_XS**, so a Q8_0 PLE puts an 8-bit vector through 4-bit
+         matrices — it does not move the precision floor of that path.
+      The bandwidth half of the case is confirmed exactly (+1,280 B/token = **+3.1e-5%** of the 4.1656 GB/token
+      stream), but bandwidth was never the argument for doing it. **Net: the prior is firmly toward a NULL result.**
+      **The case as originally written.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
       GPU rationale where 27 GB of VRAM is enormous. On this box 27 GB is a rounding error, so we may be inheriting a
       decision whose justification does not apply to us. Mechanistically the stakes are higher than for ordinary
       weights: a GEMM weight's quantization error averages out over hundreds of accumulated terms, whereas a PLE row
@@ -1114,10 +1225,24 @@ named. MTP is not a serving option until that gate passes.
       per-token gather-latency delta (IQ4_NL→Q8_0 roughly doubles table and gathered bytes; D8 put GET_ROWS at
       2.59 ms/token, so price the increase against it); (iii) bytes/token, expected ~unchanged — if it moves, the
       PLE is being streamed and that is its own finding.
-      **PREREQUISITE, price it before committing**: precision cannot be recovered from IQ4_NL, so this needs a
-      higher-precision source for that tensor — check what unsloth published (the trunk in Q8_0/BF16, or the FP8
-      source) and the download cost FIRST; if it means a multi-hundred-GB pull, that is an operator decision, not an
-      assumed step. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+      **PREREQUISITE ANSWERED 2026-09-04 (`instr-b7`) — GO, and it is CHEAP. The blocking question dissolved.**
+      **The PLE ships as a DEDICATED SINGLE-TENSOR SHARD** (`tensors=1, offset=0`) in unsloth/bartowski/lmstudio, so
+      **no trunk pull is needed**: `unsloth/Qwen3.8-Flash-Next-GGUF → Q8_0/…-00003-of-00006.gguf`, **54.400 GB,
+      ~1.7 h** at this host's ~9 MB/s (vs 188 GB / 5.8 h for a trunk). BF16 PLE is `BF16/…-00003-of-00008.gguf`,
+      102.400 GB / 3.2 h — **BF16 is the highest precision published anywhere; no F16/F32 trunk exists.** Ours is
+      `per_layer_token_embd.weight IQ4_NL [160, 320001536] = 28.80 GB`.
+      **SPLICE VERDICT: WORKS.** `/mnt/raid0/llm/tmp/inf70/tools/gguf_swap_ple.py` written and tested, modelled on
+      `gguf_fuse_gate_up.py`: KV verbatim, tensor order preserved, other tensors byte-identical, PLE type swapped
+      with shape unchanged and bytes == donor, offsets aligned — **and MUTATION-TESTED (one flipped byte in the
+      spliced PLE is detected, so the PASS is not vacuous).** Loader checked: `get_rows` dispatches Q8_0/F16/BF16 and
+      `qwen4exp.cpp` creates the PLE with no type constraint, so a spliced artifact loads unmodified.
+      **DISK RESOLVED 2026-09-04 (operator): `IQ4_XS-uniform-b4r` deleted (98,267,083,136 B), freeing 92 GB →
+      **243 GB free**, enough for the 178 GB peak. It was the right one to drop: B4 is complete ✅ and its
+      `--tensor-type` recipe AND exact byte count are recorded, so it is regenerable in one `llama-quantize` pass —
+      a reversible deletion. `IQ4_XS-uniform` (era anchor, OP-32) and `-gateup-r16` (current baseline) protected.
+      **B7 dispatched as `b7-ple`**: download the Q8_0 PLE shard, splice into the era anchor with the mutation-tested
+      tool, delete the donor immediately, then measure — **quality is the deliverable, speed is the guard-rail**, and
+      an evidenced "no measurable difference" closes B7 rather than being a failure. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
       *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
       llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, hence its retracted 2.8×).
       **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
@@ -1245,6 +1370,75 @@ coherence-checked every round):
       mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the SAME kernel fix as E2a/E2c — make `build_delta_net_chunking` (delta-net-base.cpp:435) row-exact vs `_autoregressive` for small n; mtp-exact confirmed 2026-09-03 this one site is the common cause. **Blocks concurrent serving with
       simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
       check is inflated (the degenerate rounds ran faster per slot while producing garbage).
+
+## Disk: the artifact rule costs 92 GB per experiment on this model (measured 2026-09-04)
+
+Surfaced by an operator question — *"I'm surprised we only have 151 GB free, I cleaned up last week and freed
+~400 GB"*. The answer is that **this campaign consumed it, predictably and by design.** One model directory holds
+**547 GB**:
+
+| variant | size | origin |
+|---|---|---|
+| `IQ4_XS-uniform` | 92 GB | era anchor (pre-existing, OP-32 baseline) |
+| `IQ4_XS-uniform-gateup` | 92 GB | **B3, this campaign** |
+| `IQ4_XS-uniform-gateup-r16` | 92 GB | **B3-4, this campaign** (current Axis B/D baseline) |
+| `IQ4_XS-uniform-b4` | 91 GB | **B4, this campaign** |
+| ~~`IQ4_XS-uniform-b4r`~~ | ~~92 GB~~ | **B4** — deleted 2026-09-04 (regenerable) |
+| `UD-IQ4_XS` | 88 GB | served file |
+
+Plus 88 GB of worktrees (one build tree per subagent) and 163 GB of cache. **~367 GB of the ~590 GB consumed since
+the 2026-08-31 reclaim (743 GB free then) is this campaign's own artifacts.**
+
+**This is the direct cost of the OP-32 artifact rule**: a delta must be measured with the artifact held identical on
+both arms, so every quant experiment on a 125B model mints a new 92 GB file rather than mutating one. That is the
+right rule — it is what makes the deltas trustworthy — but on this model it means **~92 GB per experiment, and at
+~150–240 GB of working headroom we can hold roughly one experiment in flight at a time.**
+**Consequence to plan around, not a defect**: B7 will cost another ~92 GB for its output; any future quant
+experiment will too. Budget a deletion per experiment, and prefer artifacts whose recipe + byte count are recorded
+(hence regenerable, hence reversibly deletable) when choosing what to drop.
+
+## RECLAIM-1 — the post-convergence artifact reclaim (filed 2026-09-04 on operator prompt)
+
+Operator: *"aren't we now converging on the final kernel/model quant? Once we do, we could delete all the other
+unnecessary ones."* Correct, and here is the concrete plan so it happens deliberately rather than under pressure.
+
+**Are we converged?** Nearly, on two of three axes:
+- **Kernel — effectively settled**: `c51e4dabf` = D8 + D7a + D1 + B3-k + the iqk IQ4_XS repack fix + `ROWEXACT_N`
+  + `FA_SPLIT_KV`. Open only on BE-3 (a non-propagating carrier) and the claim-grade ABA.
+- **Serving config — settled pending the ABA**: n-max 4, `--spec-draft-p-min 0.5`, `--fa 1` + `GGML_FA_SPLIT_KV=0`,
+  row-exact off → 23.62 t/s.
+- **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
+  produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
+
+**What may be deleted once B7 reports — 183 GB, both reversibly:**
+| artifact | size | why deletable | how to regenerate |
+|---|---|---|---|
+| `IQ4_XS-uniform-gateup` | 92 GB | superseded by `-gateup-r16`, which was built from it | `tools/inf70/gguf_fuse_gate_up.py` from the era anchor (branch `inf70/b3`, `dd27ec3bb`) — one pass, no requant |
+| `IQ4_XS-uniform-b4` | 91 GB | B4 complete ✅, an experiment arm | B4's `--tensor-type` overrides, one `llama-quantize` pass |
+| B7's loser | ~92 GB | whichever of {IQ4_NL, Q8_0-PLE} B7 rejects | the splice tool, or it is the anchor and stays |
+
+**What must NOT be deleted — CORRECTED 2026-09-04 on operator challenge; my first version was wrong:**
+I wrote that deleting `IQ4_XS-uniform` "would invalidate the comparison basis for every future delta on this model."
+**That is false, and the operator is right: the comparison basis is TRANSITIVE, exactly as autokernel already
+operates it.** A champion that was properly benched against the anchor *inherits its provenance*, and future deltas
+are measured against the **champion**, not the anchor — that is the champion-of-record model
+(`feedback_one_champion_invariant`: one champion aggregates all work between promotions). The anchor's value lives
+in the **recorded delta**, not in the file. Ours is recorded: gate-up 10.33 → r16 10.49 ±0.02 (−1.48 ms) at build
+10196 with placement proven, and r16 12.73 vs uniform 12.61 on the production mix at the merged tip — same build,
+same window, same recipe, SHA-256 and byte counts on both sides. **So r16 can serve as the champion and the anchor
+becomes deletable.**
+**Three conditions make that sound, and they should be stated rather than assumed:**
+1. The champion was measured against the anchor **under the artifact rule** (same build/window/recipe) — r16 was.
+2. The chain is **recorded with enough provenance to reconstruct it** — SHA-256, byte counts, build ids, recipe: yes.
+3. The anchor is **re-obtainable** if a future re-validation ever needs it. `IQ4_XS-uniform` is an unsloth-published
+   quant, so it is a ~92 GB / ~2.8 h re-download rather than an unrecoverable loss. **Verify that specific file is
+   still published before deleting it** — that is the only real precondition, and it is a five-minute check.
+**Genuinely keep**: `-gateup-r16` (or whatever B7 promotes) as the champion; `UD-IQ4_XS` (88 GB, the served file);
+`MTP/` (6.5 GB, the heads earning the 1.89×).
+**Revised ceiling: with the anchor also releasable under a promoted champion, the reclaim is ~275 GB rather than
+~183 GB**, leaving champion + served + heads ≈ 187 GB.
+**Sequencing unchanged: do NOT reclaim before B7 reports** — it needs ~92 GB now, and deleting its comparison inputs
+mid-experiment would be self-defeating. **Trigger: B7's verdict.**
 
 ## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
 
