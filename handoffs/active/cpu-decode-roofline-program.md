@@ -939,6 +939,18 @@ named. MTP is not a serving option until that gate passes.
       "foreign process during my window" resolves immediately into "GPU peer on 184-191, ignore" or "CPU peer on
       0-95, real contention" — which is the difference between a shrug and an incident. Cheap: two extra reads per
       sample in the existing sampler loops (`agents/*/arm.sh`, `reanchor2/arm.sh`).
+- [ ] **HYG-1 — the stale shared build dir is a live trap; rebuild it or remove it.**
+      `cpu-fusion-20260829/build-cpu` (Sep 1) sat two days behind its source and cost a full investigation — four
+      hypotheses raised and retracted across two investigators, none of which source-level reasoning could have
+      caught, because the source was correct. The shared tree holds **five** build dirs spanning Aug 30 – Sep 3
+      (`build-asan`, `build-cpu-prof`, `build-cpu`, `build-merged-20260903`, `build-o1`), none version-named.
+      **Two options, both operator-adjacent because the tree is shared**: (a) **rebuild** `build-cpu` at the current
+      tip and keep it current, or (b) **remove** the stale dirs so nobody can reach into them — the per-agent
+      worktree pattern means no agent *needs* a shared build, and that pattern is exactly what contained today's
+      damage. **Recommend (b) for the stale ones plus (a) for `build-cpu` if anything still references it.** Do not
+      act while agents are live: `b7-ple` is probing `build-cpu` right now. **Guard to add regardless**: any brief
+      that names a build must require a freshness proof by CONTENT — a symbol introduced by the relevant fix, or
+      `--version` compared to `HEAD` — never a directory name or mtime.
 - [x] **BE-3 — carrier 3 CLOSED as a well-scoped negative ✅ 2026-09-04 (`be3-dsa`). It never propagates, and the
       source says it cannot. NO FIX WARRANTED — document it, do not repair it.**
       **What it is: a SEMANTIC carrier, not an arithmetic one** — unlike carriers 1 and 2, and **it is ours, not
@@ -1212,6 +1224,13 @@ named. MTP is not a serving option until that gate passes.
       `GGML_IQK=1`**, because an arm that passed only under `GGML_IQK=0` would be testing the workaround rather than
       the fix. **Unblocks B7, B9, B5 and every future quality or artifact decision on this model.** Coordinator
       contributed the type/threshold hypothesis; the agent confirmed it and found facts 1 and 4 independently.
+      **★ C10 (fleet exposure) — MEASURED NULL 2026-09-04. NO production exposure, NO escalation.** Probe 3:
+      DeepSeek-1.5B Q4_K_M, which carries **a Q6_K head AND 28 body Q6_K tensors**, at Ny=256 gives
+      **36.7101 (`GGML_IQK=1`) vs 36.7159 (`GGML_IQK=0`)** — agreement to 0.016%. **Q6_K is definitively fine at
+      large Ny**, so the four production-lineup files carrying body Q6_K (`ingest_long_context` 54,
+      `worker_vision` 48, `worker_general` 13, `architect_critic` 1) are **not exposed**. The measurement matched
+      the agent's own standing counter-evidence rather than overturning it — it declined to escalate on that
+      reasoning and was right. **C10 closed; no operator action.**
       **⚠ ATTRIBUTION NOT SETTLED — the agent doubts its own Q6_K call, and is right to.** Its blast-radius scan
       found **four production-lineup files carrying Q6_K on BODY tensors** (`attn_v`, `ffn_down_exps`), which run at
       `ne1` = prefill batch on **every prefill**, not at `ne1 = 1` like an output head: `ingest_long_context` (54),
