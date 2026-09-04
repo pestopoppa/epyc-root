@@ -927,7 +927,8 @@ named. MTP is not a serving option until that gate passes.
       bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
       decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
       books is that both earlier carriers also looked harmless until measured.
-- [x] **BE-1 — carrier 1 made shippable, and MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
+- [x] **BE-1 — carrier 1 made shippable; MERGED 2026-09-04 into `exp/cpu-fusion-qwen4exp-20260829` at
+      `4d9cdf66f` (operator: proceed). MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
       (`be1-ship`, commit **`db6b715c9`** on `inf70/be1-ship`, base `10acba0ab`; not merged, not pushed).
       **The Gap-4 gate did exactly its job.** `G_fix0` (N=0) is **byte-identical to `10acba0ab` on 7/7 prompts** —
       the refactor is provably inert, which is what the gate exists to prove. But **`G_fix` at the default N=8
@@ -1000,7 +1001,8 @@ named. MTP is not a serving option until that gate passes.
       intended. Recorded because the failure mode — *silent fallback to a default on a label mismatch* — is the same
       shape as the `GGML_ROWEXACT_N` no-op and the `top_logprobs` parse miss: **a lookup that misses should fail
       loudly, not default.** Evidence `/mnt/raid0/llm/tmp/inf70/agents/be1-ship/`.
-- [x] **BE-2 — SOLVED 2026-09-04 (`be2-fa`). Carrier 2 is NOT A BUG: it is two algebraically-equal,
+- [x] **BE-2 — SOLVED and MERGED 2026-09-04 (`be2-fa`; knob cherry-picked as `c51e4dabf` — the branch itself was
+      NOT merged, since it carried the superseded diagnostic fix and the `GGML_MM_TRACE` tracer). Carrier 2 is NOT A BUG: it is two algebraically-equal,
       numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
       keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at
       every depth measured.**
