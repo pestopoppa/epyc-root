@@ -1202,6 +1202,33 @@ named. MTP is not a serving option until that gate passes.
       **Decisive test, queued at no extra cost: does the Q6_K-only exclusion make PPL finite under `GGML_IQK=1`?**
       Finite ⇒ Q6_K implicated, probe 3 becomes a genuine production question. Still `nan` ⇒ Q6_K exonerated; then
       IQ4_NL alone, then both, to attribute cleanly rather than shotgunning. **No production claim until settled.**
+      **⚠ BOTH HYPOTHESES ARE NOW UNPROVEN, and the agent found the reason before the coordinator did.**
+      Its `GGML_IQK_DEQUANT=0` arm — the knob sits at the top of `is_dequant_better` (line 289) and **every** repack
+      decision routes through that function (618, 806, 888, 928) or through `iqk_dequant_type`, which calls it — was
+      **still `nan`**. If valid, that exonerates the repack path **wholesale**, killing the Q6_K *and* the IQ4_NL
+      story at once, and pointing at a **direct iqk kernel at Ny > 1** rather than a threshold or an exclusion-list
+      gap.
+      **But the agent refuses to assert it, because it cannot show the knob did anything**: per-pass timings
+      identical to the centisecond (2.90 s vs 2.90 s) and byte-identical `[iqk] ACTIVE` lines. A repack is a speed
+      optimisation; switching it off should move *something*. **That is the shape of a check passing for the wrong
+      reason, so its own exoneration is held as unproven.**
+      **Direct precedent, supplied by the coordinator**: `GGML_ROWEXACT_N` was exactly this failure — the coordinator
+      published "the flips are NOT the batched mul_mat" three times on a knob that had **never affected any tinyBLAS
+      mul_mat** (`llamafile_sgemm` refuses `n < 2`), and the proof of inertness was **byte-identical node traces with
+      it on and off**. Identical output under a flipped knob is not evidence the knob is irrelevant; it is evidence
+      the knob is **inert**, and the two are indistinguishable without instrumenting the dispatcher.
+      **Resolution — stop inferring, make the dispatcher speak.** The agent instrumented `is_dequant_better` to log
+      every `(type, Ny)` pair with the path actually chosen, deduped. Two arms: **dequant ON** yields the ground-truth
+      list of which types take which path at which Ny in the all-logits path (directly testing the IQ4_NL
+      prediction); **dequant OFF must show ZERO repacks** — if it does not, the probe-2 exoneration is withdrawn and
+      both repack hypotheses return. **This converts "which of three tensors" from a debate into an enumeration**,
+      for one small lock window.
+      **Coordinator addition**: BE-1 moved IQ4_XS **off** the repack and **onto its direct kernel**, so
+      `output_hc_down.weight` (IQ4_XS `[10240, 320]`) is now a **direct-kernel candidate at Ny=256** in the same
+      post-gather chain. The tracer should log the chosen path for every pair — direct vs repack vs generic — so one
+      dequant-ON arm enumerates all three candidates at once. The cross-build arm also turns "BE-1 cannot have
+      introduced this" (b4 found it first) into "did not", and yields a bisectable range if the older tree is also
+      `nan`.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
