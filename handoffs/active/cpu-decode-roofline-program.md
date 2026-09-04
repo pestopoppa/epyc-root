@@ -903,7 +903,28 @@ named. MTP is not a serving option until that gate passes.
       should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
       or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
-- [ ] **INSTR-1 — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from
+- [x] **INSTR-1 ✅ 2026-09-04 (`instr-b7`) — co-residency attribution shipped to 22 harness scripts** via one
+      shared helper `/mnt/raid0/llm/tmp/inf70/lib/coresidency.sh` (9-line additive block after `set -u`; log format
+      extended, not restructured; all pass `bash -n`). **Four refinements the live box forced, each of which would
+      otherwise have RECREATED the false alarm:**
+      1. **Thread-UNION affinity, not the main thread** — `llama-server`'s main thread reads `cpus_allowed=0` while
+         the union reads `0-94/n=48`; main-thread-only would misread a GPU-side server (main on cpu 0, workers on
+         184-191) as a CPU squatter — precisely today's error.
+      2. **`gpu_fd=yes/no`** (`/dev/kfd`, `/dev/dri`) — **this is what actually cleared today's process**: the
+         autokernel `llama-bench` runs with an UNCONSTRAINED `0-191` mask and self-places on the GPU host threads,
+         so affinity alone returns UNCLASSIFIED.
+      3. **`sched_in_region=k/n`** (`/proc/<tid>/stat` field 39) resolved by **majority, not "any"** — a GPU-side
+         `llama-bench` shows `1/2`, and an "any" rule would re-create the false alarm.
+      4. **Delta CPU, not `ps %CPU`** — `%CPU` is cumulative, so five idle `opencode` processes read a steady "45%"
+         and crowded out the real workload (`feedback_measurement_attribution_hygiene`).
+      **Live output positively identifies today's mystery process**: `exe=…/autokernel/loop-memory/anchor-gen-016/
+      bin/llama-bench … gpu_fd=yes cpus_allowed=0-191 verdict=UNCLASSIFIED effective=GPU-SIDE-by-fd`, and an earlier
+      sample caught the same binary pinned: `cpus_allowed=184-191 verdict=GPU-PEER`. **The operator's hypothesis is
+      confirmed by direct evidence: it was the autokernel session's GPU work, not a lock violation.** 0.27 s/sample
+      over 2317 processes; parent-death self-exit tested, no orphans. Deliberately NOT applied to
+      `agents/speed-claim/arm*.sh` — that agent is executing those files right now
+      (`feedback_never_edit_running_shell_script`); a 5-line patch is prepared for its next arm boundary.
+- [x] ~~INSTR-1 (original text)~~ — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from
       legitimate concurrent GPU work.** Filed 2026-09-04 after I mis-called exactly that. `be2-fa` flagged a foreign
       `llama-server` in 83 of 147 samples while it held all four CPU bench regions, and I recorded it as a
       coordination violation. **On the operator's challenge that it was probably the autokernel session — which is a
@@ -1178,10 +1199,18 @@ named. MTP is not a serving option until that gate passes.
       per-token gather-latency delta (IQ4_NL→Q8_0 roughly doubles table and gathered bytes; D8 put GET_ROWS at
       2.59 ms/token, so price the increase against it); (iii) bytes/token, expected ~unchanged — if it moves, the
       PLE is being streamed and that is its own finding.
-      **PREREQUISITE, price it before committing**: precision cannot be recovered from IQ4_NL, so this needs a
-      higher-precision source for that tensor — check what unsloth published (the trunk in Q8_0/BF16, or the FP8
-      source) and the download cost FIRST; if it means a multi-hundred-GB pull, that is an operator decision, not an
-      assumed step. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+      **PREREQUISITE ANSWERED 2026-09-04 (`instr-b7`) — GO, and it is CHEAP. The blocking question dissolved.**
+      **The PLE ships as a DEDICATED SINGLE-TENSOR SHARD** (`tensors=1, offset=0`) in unsloth/bartowski/lmstudio, so
+      **no trunk pull is needed**: `unsloth/Qwen3.8-Flash-Next-GGUF → Q8_0/…-00003-of-00006.gguf`, **54.400 GB,
+      ~1.7 h** at this host's ~9 MB/s (vs 188 GB / 5.8 h for a trunk). BF16 PLE is `BF16/…-00003-of-00008.gguf`,
+      102.400 GB / 3.2 h — **BF16 is the highest precision published anywhere; no F16/F32 trunk exists.** Ours is
+      `per_layer_token_embd.weight IQ4_NL [160, 320001536] = 28.80 GB`.
+      **SPLICE VERDICT: WORKS.** `/mnt/raid0/llm/tmp/inf70/tools/gguf_swap_ple.py` written and tested, modelled on
+      `gguf_fuse_gate_up.py`: KV verbatim, tensor order preserved, other tensors byte-identical, PLE type swapped
+      with shape unchanged and bytes == donor, offsets aligned — **and MUTATION-TESTED (one flipped byte in the
+      spliced PLE is detected, so the PASS is not vacuous).** Loader checked: `get_rows` dispatches Q8_0/F16/BF16 and
+      `qwen4exp.cpp` creates the PLE with no type constraint, so a spliced artifact loads unmodified.
+      **⚠ THE REAL CONSTRAINT IS DISK, AND IT IS AN OPERATOR DECISION** — see OP-36. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
       *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
       llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, hence its retracted 2.8×).
       **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
