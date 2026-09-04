@@ -1044,6 +1044,13 @@ named. MTP is not a serving option until that gate passes.
       **every** prompt class, most on `general` (+5.2%, 18.886 → 19.863), which is precisely the class with the
       worst α and therefore the most wasted verification to recover. **This knob had never been set in any arm of
       this campaign** (default 0.0).
+      **⚠ SUPERSEDED 2026-09-04 BY THE CLAIM-GRADE ABA — 23.623 DOES NOT REPRODUCE. Quote 23.16 t/s / 1.876×.**
+      ABA (A-plain → B-config, ×3) in ONE lock window: **B = 23.16 t/s (sd 0.14, spread 1.1%, range 23.01–23.26),
+      A = 12.35 t/s (sd 0.24), ratio 1.876×** (per-round 1.845 / 1.886 / 1.897; B faster on 20/20 prompts in every
+      round). The 23.623 below sits **2.0% above the ABA mean and 2.6 round-sd out**; no round reached 23.4.
+      **The CONFIGURATION is confirmed and the MECHANISM reproduces exactly** — α 0.8274 and drafted/token 0.8900,
+      identical to 4 dp across all seven n-max-4 arms — so what failed was the number, not the finding: 23.623 was
+      the optimistic edge of one unreplicated arm. Original text retained below.
       **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
       `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
       paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
@@ -1656,8 +1663,31 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
 **Are we converged?** Nearly, on two of three axes:
 - **Kernel — effectively settled**: `c51e4dabf` = D8 + D7a + D1 + B3-k + the iqk IQ4_XS repack fix + `ROWEXACT_N`
   + `FA_SPLIT_KV`. Open only on BE-3 (a non-propagating carrier) and the claim-grade ABA.
-- **Serving config — settled pending the ABA**: n-max 4, `--spec-draft-p-min 0.5`, `--fa 1` + `GGML_FA_SPLIT_KV=0`,
-  row-exact off → 23.62 t/s.
+- **Serving config — SETTLED, ABA-confirmed 2026-09-04**: MTP head `shared-Q8_0`, `--spec-type draft-mtp
+  --spec-draft-n-max 4 --spec-draft-p-min 0.5`, `GGML_ROWEXACT_N` unset, **KV f16 (do NOT quantise)**, `-t 48`,
+  `--fa 1` + `GGML_FA_SPLIT_KV=0`, canonical env + `taskset -c 0-95 numactl --interleave=all`
+  → **23.16 t/s, 1.876× plain** (23.62 superseded; see the ABA block).
+- **★ STANDING MEASUREMENT RULE earned by this batch — THE HOST DRIFTS ~3% OVER HOURS.** Same config measured
+  23.16 at 12:52 and 22.58–22.73 at 15:05–15:55, while repeating to **1.1% WITHIN a window**. Therefore **any
+  INF-70 comparison below ~5% must be SAME-WINDOW and ALTERNATING, or it is not evidence.** Both results
+  overturned on 2026-09-04 (the 23.62 headline and the depth-beyond-4 gain) were cross-window artefacts of
+  exactly this size, and be1-ship's 18 arms ran sequentially over ~4 hours. A sequential arm matrix measures
+  drift as if it were the treatment.
+- **Depth beyond n-max 4 — CLOSED, does not pay.** A same-window alternating n4-vs-n5 test returned **ratio
+  0.9987** (12/20 and 10/20 prompts — coin flips). The earlier cross-window sweep showing n5/n6/n8 ~3% ahead was
+  the drift artefact above. p_min 0.5 vs 0.6 is flat. The plateau is real and **no better operating point exists**.
+- **KV cache — SHIP f16, do NOT quantise (B9 CLOSED).** Size analysis was right and irrelevant: 12 of 48 layers
+  carry KV, 24.0 KiB/token = 2.42% of budget, 45–90 MiB saved. Sign was **wrong for MTP**: plain gains +0.7% to
+  +2.1% as predicted, but **MTP LOSES 2.5–3.5% because α falls 0.8274 → 0.8166.** `attn_rot_k/v` DID flip to 1
+  (head dim 256) on both the main and DSA indexer caches, and that never-exercised path is **clean** — 96
+  quantised-KV requests, zero incoherence, no assert. `LLAMA_ATTN_ROT_DISABLE=1` was not needed as a rescue but
+  was decisive as **attribution**: it recovers 1.9% and lifts α to **0.8329, ABOVE f16's 0.8274** — so the
+  **Hadamard rotation, not quantisation error, is what costs acceptance**. q8_0 still loses 1.4% with rotation
+  off. A KV-quant win on a plain decoder does not transfer to a speculative one.
+- **Bandwidth — MTP takes CPU decode OFF the bandwidth wall.** Plain 51.3 GB/s (33.5% of 153). MTP's
+  plain-equivalent 96.3 GB/s (62.9%) is not what it moves: the verify batch carries **3.79 tokens per forward**,
+  so actual traffic is **1.096 GB/token = 25.4 GB/s (16.6%)**. The roofline argument for CPU decode changes shape
+  under speculation — amortising the weight read across accepted tokens is the lever, not raising GB/s.
 - **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
   produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
 
