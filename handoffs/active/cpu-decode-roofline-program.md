@@ -1149,6 +1149,20 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
+- [ ] **C9 — `llama-perplexity` returns `nan` on qwen4exp: PROMOTED to the critical path 2026-09-04, and it is
+      worth far more than B7.** Found by `b4`, confirmed by `b7-ple` to reproduce on the merged tip
+      (`qwen4exp.cpp` and `perplexity.cpp` are byte-identical between b4's build and ours). **Why it now gates
+      everything**: PPL/KL is the ONLY instrument in the stack that can resolve a small quality effect — run-to-run
+      variance 0.000, while every other harness has an MDE of 4–17 pp and the repo's own note is "neither sees
+      1–2 pp". **Without it, B7, B9 and every future quant decision on this model can only produce unfalsifiable
+      nulls** — and *a null is only worth reporting if the instrument could have seen a difference.*
+      **Live hypothesis (`b7-ple`, queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
+      The output-head matmul only ever runs as a **GEMV** during generation; the all-logits path is the only thing
+      that exercises it as a **GEMM** — exactly where `GGML_IQK=1` swaps in the ik_llama kernels. So the `nan` may be
+      an iqk GEMM path that generation never touches. **Fallback already written** if that does not yield:
+      teacher-forced top-K distributions over `llama-server`'s known-good generation path, giving paired top-1
+      agreement, truncated KL and a paired NLL. **Deliverable: a working quality instrument for qwen4exp**, which
+      unblocks B7, B9, B5 and every future artifact decision.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
@@ -1184,7 +1198,19 @@ named. MTP is not a serving option until that gate passes.
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
       weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
       and there is no shippable variant without it. The decision-relevant question is **precision, not presence**.
-      **The case.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
+      **⚠ MY MECHANISTIC PREMISE IS REFUTED — established from the graph 2026-09-04 (`b7-ple`), no compute spent.**
+      I argued the PLE row is "gathered straight into the residual stream, so its quantisation noise enters
+      undiluted". **That is wrong, three ways:**
+      1. **The gathered row never reaches the residual stream.** It is the *input vector* to two GEMVs — `ple_key`
+         (2560→10240) and `ple_value` (2560→2560) — so its noise **is** averaged over 2560 terms like any other
+         activation, then passed through a sigmoid gate. The "undiluted" argument was simply incorrect.
+      2. **`qwen4exp.ple.layers = [1]` — the PLE runs in exactly ONE layer of 48.** *(I dumped this key myself and
+         failed to draw the inference: whatever it does, it does in 1/48th of the network.)*
+      3. **The projections it feeds are themselves IQ4_XS**, so a Q8_0 PLE puts an 8-bit vector through 4-bit
+         matrices — it does not move the precision floor of that path.
+      The bandwidth half of the case is confirmed exactly (+1,280 B/token = **+3.1e-5%** of the 4.1656 GB/token
+      stream), but bandwidth was never the argument for doing it. **Net: the prior is firmly toward a NULL result.**
+      **The case as originally written.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
       GPU rationale where 27 GB of VRAM is enormous. On this box 27 GB is a rounding error, so we may be inheriting a
       decision whose justification does not apply to us. Mechanistically the stakes are higher than for ordinary
       weights: a GEMM weight's quantization error averages out over hundreds of accumulated terms, whereas a PLE row
