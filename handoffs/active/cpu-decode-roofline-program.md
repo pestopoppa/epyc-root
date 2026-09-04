@@ -1029,6 +1029,36 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
+- [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
+      untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
+      Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
+      **The structural answer: only 12 of 48 layers have a KV cache at all** — the other 36 are recurrent
+      Gated-DeltaNet and carry none — and `head_count_kv = 2` with key/value length 256. Measured from the GGUF:
+      | | f16 | q8_0 |
+      |---|---|---|
+      | KV per token | **24.0 KiB** | ~12 KiB |
+      | KV at ctx 4096 | 0.094 GiB | 0.047 GiB |
+      | KV at ctx 8192 | 0.188 GiB | 0.094 GiB |
+      | KV read per generated token @ 4096 | 96 MiB = **2.42% of the 4.16 GB byte budget** | ~1.2% |
+      | @ 8192 | 192 MiB = **4.84%** | ~2.4% |
+      **So q8_0 buys ~1.2% of the per-token byte budget at 4k and ~2.4% at 8k — and the MEMORY saving is
+      irrelevant** (0.047 GiB saved on a 1.1 TB box). On a dense model KV is often the dominant term at depth; here
+      it is 2.4% at 4k **because the hybrid is 75% recurrent**. Note also that the measured decode drop d0→d4096 is
+      −7.8% while KV is only 2.42% of bytes there, so **most of that drop is attention compute and the FA split
+      path, not KV bandwidth** — quantising KV cannot recover it.
+      **⚠ The risk is specific and known**: quantised KV is exactly what **activates `attn_rot_k`/`attn_rot_v`**
+      (`llama-kv-cache.cpp:322-338` — they require `ggml_is_quantized(type_k/v)`). That path is **inert on our f16
+      arms and has never been exercised by us**, and a community Flash-Next MTP repo ships
+      `LLAMA_ATTN_ROT_DISABLE=1` as a "critical flag", which is strong circumstantial evidence that quantised-KV +
+      rotation misbehaves with the MTP draft head. Any KV-quant arm must therefore also run the MTP path and a
+      coherence check, not just a speed number.
+      **Quality evidence (external, KL-divergence benchmark)**: Qwen-family models tolerate **q8_0 well (KL < 0.04)**;
+      **q4_0 concentrates its damage in LONG DOCUMENTS (KL 0.581)** — which is precisely our workload — and the
+      asymmetric guidance is to spend bits on the **Key**, not the Value. **q4_0 is contraindicated here.**
+      **Recommended scope: ONE arm** — `-ctk q8_0 -ctv q8_0` vs f16 at ctx 4096 and 8192, plain AND with MTP,
+      token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
+      1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
+      production context; adopt only if measured and if the MTP path stays clean.** Do not pursue q4_0.
 - [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
       Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
