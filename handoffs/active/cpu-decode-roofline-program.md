@@ -1371,6 +1371,40 @@ right rule — it is what makes the deltas trustworthy — but on this model it 
 experiment will too. Budget a deletion per experiment, and prefer artifacts whose recipe + byte count are recorded
 (hence regenerable, hence reversibly deletable) when choosing what to drop.
 
+## RECLAIM-1 — the post-convergence artifact reclaim (filed 2026-09-04 on operator prompt)
+
+Operator: *"aren't we now converging on the final kernel/model quant? Once we do, we could delete all the other
+unnecessary ones."* Correct, and here is the concrete plan so it happens deliberately rather than under pressure.
+
+**Are we converged?** Nearly, on two of three axes:
+- **Kernel — effectively settled**: `c51e4dabf` = D8 + D7a + D1 + B3-k + the iqk IQ4_XS repack fix + `ROWEXACT_N`
+  + `FA_SPLIT_KV`. Open only on BE-3 (a non-propagating carrier) and the claim-grade ABA.
+- **Serving config — settled pending the ABA**: n-max 4, `--spec-draft-p-min 0.5`, `--fa 1` + `GGML_FA_SPLIT_KV=0`,
+  row-exact off → 23.62 t/s.
+- **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
+  produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
+
+**What may be deleted once B7 reports — 183 GB, both reversibly:**
+| artifact | size | why deletable | how to regenerate |
+|---|---|---|---|
+| `IQ4_XS-uniform-gateup` | 92 GB | superseded by `-gateup-r16`, which was built from it | `tools/inf70/gguf_fuse_gate_up.py` from the era anchor (branch `inf70/b3`, `dd27ec3bb`) — one pass, no requant |
+| `IQ4_XS-uniform-b4` | 91 GB | B4 complete ✅, an experiment arm | B4's `--tensor-type` overrides, one `llama-quantize` pass |
+| B7's loser | ~92 GB | whichever of {IQ4_NL, Q8_0-PLE} B7 rejects | the splice tool, or it is the anchor and stays |
+
+**What must NOT be deleted, and why:**
+- **`IQ4_XS-uniform` — the era anchor.** OP-32 ratified it as *the required comparison baseline for this model until
+  B5 replaces it by the same procedure*. Deleting it would invalidate the comparison basis for every future delta on
+  this model. **Not a size judgement — a measurement-integrity one.**
+- **`-gateup-r16`** — current best artifact and Axis B/D baseline (unless B7 supersedes it, in which case the loser
+  becomes the deletable one).
+- **`UD-IQ4_XS`** (88 GB) — the served file.
+- **`MTP/`** (6.5 GB) — the draft heads; small and load-bearing for the 1.89× multiplier.
+
+**Steady state after the reclaim**: ~280 GB (anchor + winner + served + heads) against 463 GB today — **freeing
+~183 GB**, restoring roughly one-experiment-in-flight headroom permanently rather than one deletion at a time.
+**Sequencing: do NOT reclaim before B7 reports** — it needs ~92 GB of headroom now, and deleting its comparison
+inputs mid-experiment would be self-defeating. **Trigger: B7's verdict.**
+
 ## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
 
 Verbatim. This **reorders the campaign's priorities** and is not just a restatement of intent:
