@@ -1149,49 +1149,41 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
-- [ ] **C9 — `llama-perplexity` returns `nan` on qwen4exp: PROMOTED to the critical path 2026-09-04, and it is
-      worth far more than B7.** Found by `b4`, confirmed by `b7-ple` to reproduce on the merged tip
-      (`qwen4exp.cpp` and `perplexity.cpp` are byte-identical between b4's build and ours). **Why it now gates
-      everything**: PPL/KL is the ONLY instrument in the stack that can resolve a small quality effect — run-to-run
-      variance 0.000, while every other harness has an MDE of 4–17 pp and the repo's own note is "neither sees
-      1–2 pp". **Without it, B7, B9 and every future quant decision on this model can only produce unfalsifiable
-      nulls** — and *a null is only worth reporting if the instrument could have seen a difference.*
-      **NAMED HYPOTHESIS with a specific type and constant (coordinator, 2026-09-04 — operator: "fix C9"):**
-      **`output.weight` is Q6_K** `[2560, 248320]`, and `iqk_mul_mat.cpp:319` reads
-      `case GGML_TYPE_Q6_K : return nrc_y >= 64 ? GGML_TYPE_Q8_0_R8 : type;` — **the output head repacks at
-      nrc_y >= 64.** Perplexity sets `batch.logits[idx] = pos >= n_ctx/2`, so **n_outputs = n_ctx/2**: at `-c 512`
-      that is **256 rows, 4× over the threshold.** Generation is `n_outputs == 1` (GEMV) and MTP verification is a
-      small `k` — **neither ever crosses it. Perplexity is the ONLY path in the stack that runs the output head
-      through the Q6_K repack**, which is exactly `b7-ple`'s "GEMV everywhere else, GEMM only here" with a type and
-      a constant attached. Same convicted family as BE-1's IQ4_XS fix (the tree's own comment: the native
-      iquant-to-repacked-Q8 converters "produce incorrect results for some large-Ny dense and MoE shapes on Zen 4").
-      Q6_K was left on the path because `gdn-fix-validate` measured ~0.04 nats at 233 rows — but that was a
-      coherence check on the served path, and **lossy is not nan**, so it does not exonerate it here.
-      **Decisive cheap probe: sweep `-c`, not `-ub`** — `-ub` moves the ubatch, but the variable that crosses the
-      threshold is n_outputs, which `-c` controls directly:
-      | `-c` | n_outputs | vs threshold 64 | prediction |
-      |---|---|---|---|
-      | 512 | 256 | 4× over | nan |
-      | 256 | 128 | 2× over | nan |
-      | 128 | 64 | at it | nan |
-      | 64 | 32 | **below** | **FINITE** |
-      A finite PPL at `-c 64` with nan at `-c 128` identifies the constant directly and makes the fix **a one-line
-      exclusion** (add `GGML_TYPE_Q6_K` to the excluded set exactly as BE-1 did for IQ4_XS) rather than a hunt.
-      `GGML_IQK_DEQUANT=0` at `-c 512` should agree. **Flagged to the agent as a HYPOTHESIS, not an instruction** —
-      the coordinator has been wrong three times today, twice on this same kind of "obvious" mechanism, and the
-      agent's static analysis has outperformed those guesses; if the `-c` sweep misbehaves that is a real result
-      meaning n_outputs is not the variable. **Keep the cross-build arm on the older bring-up tree regardless** — a
-      bisectable regression range is worth having even if the type hypothesis lands.
-      **Fix gate**: PPL finite and stable, `MUL_MAT`/`MUL_MAT_ID -b CPU` still pass, and serving speed unaffected
-      (the output head is a GEMV in generation, so excluding a repack it never takes should cost nothing — verify,
-      do not assume).
-      **Earlier hypothesis (`b7-ple`, still queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
-      The output-head matmul only ever runs as a **GEMV** during generation; the all-logits path is the only thing
-      that exercises it as a **GEMM** — exactly where `GGML_IQK=1` swaps in the ik_llama kernels. So the `nan` may be
-      an iqk GEMM path that generation never touches. **Fallback already written** if that does not yield:
-      teacher-forced top-K distributions over `llama-server`'s known-good generation path, giving paired top-1
-      agreement, truncated KL and a paired NLL. **Deliverable: a working quality instrument for qwen4exp**, which
-      unblocks B7, B9, B5 and every future artifact decision.
+- [x] **C9 — SOLVED 2026-09-04 (`b7-ple`). `llama-perplexity` returned `nan` on qwen4exp because the Q6_K output
+      head hit iqk's broken large-Ny repack — and perplexity is the ONLY caller that reaches it.**
+      **Result** (probe 1, region-locked, kernel env the sole variable):
+      | env | result |
+      |---|---|
+      | `GGML_IQK=1` | `nan` |
+      | **`GGML_IQK=0`** | **PPL = 4.9043 ± 0.59979** |
+      | `GGML_IQK=0` + `-fa 1` | 4.9043 ± 0.59979 (identical to the last digit) |
+      | `GGML_IQK=1` + `-fa 1` | `nan` |
+      **`GGML_IQK` is the sole determining variable**; `-fa` and `GGML_FUSED_DECODE_OFF` are irrelevant. **b4's
+      original probe matrix varied `-b`/`-c`/`-fa` and therefore could not have found this.**
+      **Mechanism, closed by four facts** (`iqk_mul_mat.cpp:319`,
+      `case GGML_TYPE_Q6_K : return nrc_y >= 64 ? GGML_TYPE_Q8_0_R8 : type;`):
+      1. Type histogram over all **1224 tensors: Q6_K appears exactly ONCE**, on `output.weight` — the Q6_K repack
+         has exactly one possible call site in this model.
+      2. That call site is a **GEMV in every served path** (generation `n_outputs == 1`; MTP verification a small `k`).
+      3. `perplexity.cpp:580` sets logits on `pos >= n_ctx/2`, so **`n_outputs == n_ctx/2` exactly** — 256 at `-c 512`.
+      4. **Q6_K is the only case in that switch using 64; every other type flips at 32.**
+      Already-convicted family: the comment above the switch says these converters "produce incorrect results for
+      some large-Ny dense and MoE shapes on Zen 4", and BE-1 excluded IQ4_XS for exactly this. Q6_K survived on a
+      `gdn-fix-validate` coherence check of the **served** path — and lossy is not nan.
+      **WHY IT SURVIVED — the generalisable lesson**: the defect is **unreachable from any serving workload**. It is
+      reachable only from the all-logits path, which is **the quality gate itself**. *The instrument was the one
+      caller its own bug disabled.* A defect that only breaks your measuring device is invisible to every test that
+      uses the device.
+      **Fix**: Q6_K moved into the excluded-families list in the AVX2 arm, mirroring BE-1 (1 file, +11/−1), on
+      worktree `inf70/b7-ple` off the merged tip. The **non-AVX2 arm was deliberately left alone and said so** — this
+      host takes the AVX2 path and there is no measurement on the other. Built on cores **96–175**, outside the
+      0-95 bench region and clear of the GPU host threads, so it contended with nothing and needed no lock.
+      **Two disciplines the agent held itself to, both worth keeping**: (a) the source comment asserts a
+      `-c 128`/`-c 126` bracket the bisect has not returned yet, so **it will not commit until that is confirmed** —
+      no claim written into a comment ahead of its measurement; (b) **every verification arm runs with
+      `GGML_IQK=1`**, because an arm that passed only under `GGML_IQK=0` would be testing the workaround rather than
+      the fix. **Unblocks B7, B9, B5 and every future quality or artifact decision on this model.** Coordinator
+      contributed the type/threshold hypothesis; the agent confirmed it and found facts 1 and 4 independently.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").

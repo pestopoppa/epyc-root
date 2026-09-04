@@ -3886,3 +3886,60 @@ output" and "the run is nondeterministic" are indistinguishable, and the former 
 - `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10, the node-level localisation
 - `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` — Addendum B, the identity control
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): when the defect is only reachable from the instrument
+
+`llama-perplexity` returned `nan` on this model for weeks. It was filed, probed, and left open. The cause turned out
+to be a kernel defect **that no serving workload can reach** — and the only caller that could reach it was the
+quality gate itself.
+
+### The mechanism, and why the shape mattered
+
+iqk reroutes a matmul to a requantised Q8 repack above a row-count threshold. For `GGML_TYPE_Q6_K` that threshold is
+**64** — and Q6_K appears exactly **once** in the model, on `output.weight`. In every served path the output head
+runs as a **GEMV**: generation emits one token (`n_outputs == 1`), and speculative verification emits a small `k`.
+Neither ever reaches 64 rows.
+
+Perplexity is different. It requests logits on `pos >= n_ctx/2`, so `n_outputs == n_ctx/2` exactly — **256 rows at
+`-c 512`, four times over the threshold.** It is the only caller in the entire stack that runs the output head as a
+GEMM. The repack converter is wrong on this host (the tree's own source comment says so, and a sibling type had
+already been excluded for it), so the one path that exercised it produced `nan`.
+
+**The instrument was the one caller its own bug disabled.** A defect that only breaks your measuring device is
+invisible to every test that uses the device — the tests all pass, and the device reports nothing, which reads as
+"no signal" rather than "broken probe".
+
+### What the earlier investigation missed, and why
+
+A prior pass had probed `-b`, `-c` and `-fa` and found nothing. That matrix could not have found it: **it never
+varied the kernel environment**, and the kernel was the only determining variable. When the probe finally ran,
+`GGML_IQK=0` produced a finite, reproducible `PPL = 4.9043 ± 0.59979` across three arms agreeing to the last digit,
+while every `GGML_IQK=1` arm was `nan`. `-fa` and the fused-decode gate were irrelevant.
+
+**Rule: when a tool fails on one architecture and works on others, vary the ACCELERATION PATH before varying the
+tool's own parameters.** A parameter sweep explores the space the tool author imagined; a kernel swap explores the
+space the kernel author imagined. The bug lives in whichever one you didn't sweep.
+
+### Two disciplines worth copying from the fix
+
+- **Do not write a claim into a source comment before it is measured.** The fix's comment asserted a specific
+  threshold bracket; the bisect confirming that bracket had not returned, so the commit was held. A comment is a
+  claim with a very long half-life and no attached evidence — it will be believed years later by someone who cannot
+  re-derive it.
+- **Verify the fix, not the workaround.** Every verification arm ran with the accelerated kernel **enabled**. An arm
+  that passes only with the accelerator disabled is testing the escape hatch, not the repair — and would have
+  "confirmed" a fix that changed nothing.
+
+### The corollary for quality gates generally
+
+If your quality instrument runs a code path that production never runs, then **the instrument's correctness is an
+independent thing to verify**, not something inherited from the fact that serving works. Here the two paths differed
+in exactly one property — the number of output rows — and that was enough to make one of them wrong while the other
+was fine for months.
+
+### Source References (2026-09-04, C9)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, and BE-1 for the sibling exclusion that convicted the family
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the kernel-env probe, the type histogram, the fix
+- `/mnt/raid0/llm/tmp/inf70/agents/b4/REPORT.md` — the original `nan` finding and its probe matrix
+- `progress/2026-09/2026-09-03-inf70-audit.md`
