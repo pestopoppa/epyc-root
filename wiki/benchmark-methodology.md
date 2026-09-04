@@ -3991,3 +3991,53 @@ Corollaries that fall out of the same failure:
   top-k measurement on this model
 - `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/MECHANISM.md`, `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md`
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): "the tip" names a source tree, not the binary you ran
+
+A quality instrument returned corrupt output for two days and drew four competing kernel hypotheses out of two
+investigators. The cause was that **the shared build directory was two days older than the source beside it**, and
+the commit in between was the very fix that would have prevented the corruption.
+
+    build-cpu/libggml-cpu.so   built  Sep 1 19:40
+    ggml/.../iqk_mul_mat.cpp   source Sep 3 19:36     <- the fix landed here
+
+Everyone — the agent running the probes and the coordinator directing them — said "the merged tip" and meant a
+source revision, while the binary under test predated it. The shared tree held **five** build directories spanning
+four days.
+
+### What the stale binary did to the investigation
+
+- A kill-switch flag (`GGML_IQK_DEQUANT=0`) appeared **inert**: identical timings, byte-identical logs. That was
+  read as "the knob is a no-op, so this path is exonerated" — the same signature as a genuinely inert knob earlier
+  in the campaign. **It was neither: the binary simply had no such symbol.** `strings` found zero occurrences.
+- A threshold was inferred from where corruption appeared and then refuted by a later arm — because the *real*
+  threshold belonged to a different quant type whose fix was missing from the binary. Both the original hypothesis
+  and its refutation were artefacts.
+- Two investigators produced four hypotheses, retracted all four, and each retraction was correct on the evidence
+  available. **No amount of reasoning about the source could have found it**, because the source was right.
+
+### The rule
+
+**Prove binary freshness by CONTENT before attributing behaviour to code you have read.** Directory names, mtimes
+and "I merged that commit" are not evidence. Cheap and decisive:
+
+- `strings <lib> | grep -c <symbol_introduced_by_the_fix>` — zero means the fix is not in there
+- `<binary> --version` and compare the reported commit to the tree's `HEAD`
+- resident-library check on a live process (`/proc/<pid>/maps`) rather than the path you *intended* to launch
+
+Make it a precondition of any kernel-attribution claim, in the same class as proving NUMA placement before quoting a
+bandwidth number. The failure is silent, survives every source-level review, and generates confident, well-argued,
+entirely wrong mechanisms.
+
+### The corollary that saved this investigation
+
+Per-agent worktrees with their **own** build directories were what contained the damage. Every result published
+that day came from an agent that built its own tree; the affected probes were the ones reaching into the *shared*
+build. **A shared build directory is a shared mutable dependency with no version in its name** — the same hazard as
+a shared index or a shared working tree, and it deserves the same treatment: don't reach into it, build your own.
+
+### Source References (2026-09-04, C9 root cause)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, BE-1 (`99425578d`, the fix that was already present in source)
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the probe series, the four retracted hypotheses, the `strings` proof
+- `progress/2026-09/2026-09-03-inf70-audit.md`

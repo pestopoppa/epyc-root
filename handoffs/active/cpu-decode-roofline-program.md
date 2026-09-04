@@ -1274,6 +1274,42 @@ named. MTP is not a serving option until that gate passes.
       One dequant-ON arm enumerates all three post-gather candidates and their paths at once; the dequant-OFF arm is
       **the knob's own integrity test** — zero `SERVED=REPACK` required, and any survivor withdraws probe 2 formally.
       **Both arms print the PPL, so a still-`nan` also proves the instrumentation is non-perturbing.**
+      **★ ROOT CAUSE, 2026-09-04: C9 WAS A STALE BINARY, NOT A LIVE KERNEL DEFECT. It needs a REBUILD, not a code
+      change.** `cpu-fusion-20260829/build-cpu/libggml-cpu.so` was built **Sep 1 19:40**; its source
+      `iqk_mul_mat.cpp` is **Sep 3 19:36** — **two days newer**. The commit between them is **`99425578d`**
+      (BE-1: *"IQ4_XS stays on its direct iqk kernel (Q8_K_R16 repack at Ny>=32 is wrong); … GGML_IQK_DEQUANT
+      knob"*). **Proven by content, not dates**: `strings` on the stale library finds **0 occurrences of
+      `GGML_IQK_DEQUANT`**; the fresh build has it.
+      **Everything resolves at once:**
+      1. **`GGML_IQK_DEQUANT=0` was inert because the binary has no such knob.** The identical timings and
+         byte-identical `[iqk] ACTIVE` lines were *telling the truth all along* — now proven by `strings` rather
+         than inferred. (The `GGML_ROWEXACT_N` precedent is what made the agent distrust its own arm.)
+      2. **The culprit is `output_hc_down.weight` (IQ4_XS `[10240, 320]`) on the Q8_K_R16 repack** — precisely the
+         path that commit calls wrong. **The coordinator's "convicted iquant family, post-gather chain" instinct was
+         right and the specific tensor guess was wrong**: it is the IQ4_XS one, not IQ4_NL (`output_hc_up`) and not
+         Q6_K (`output.weight`).
+      3. **Every threshold observation now fits**: IQ4_XS repacks at **32**, so `c64`(Ny 32), `c126`(63), `c128`(64),
+         `c256`, `c512` were *all* corrupt because all are ≥32. **There never was a 64 boundary** — the "graded
+         corruption" was severity scaling with Ny, not a second threshold.
+      4. **"Not a regression" was right for the wrong reason** — the 2026-08-28 tree also predates the fix.
+      5. **b4 filed C9 on 2026-09-02 against this same binary, one day before the fix landed. C9 was REAL when
+         filed and has been FIXED since — by BE-1's own commit, which nobody noticed also repaired the quality
+         gate.**
+      **Blast radius, checked**: `build-cpu` was *current* on Sep 2 and became stale on Sep 3 when B3-k, the merge
+      and the iqk fix landed with no rebuild. Agents that used it on Sep 2 (b2, b3, b34, b4, d7a, d8, d8x, e2, e2c,
+      mtp-conc, merge-verify) measured the tree state they intended. **Every agent whose results were published
+      today built its own worktree and has ZERO references to it** — `gdn-rowexact`, `mtp-tip2`, `be1-ship`,
+      `be2-fa`, `be3-dsa` all 0. `speed-claim`'s single reference is its **co-residency log observing** b7-ple's
+      process — the INSTR-1 sampler recording an exe path — and its own binary is dated after the source **and
+      contains all three post-fix symbols** (`GGML_IQK_DEQUANT`, `GGML_ROWEXACT_N`, `GGML_FA_SPLIT_KV`), verified by
+      `strings`. **Today's claim-grade work is unaffected.**
+      **NOT YET VERIFIED, correctly**: `4.4798` (fresh, IQK=1) vs `4.9043` (stale, IQK=0) is a **cross-binary**
+      comparison, and a 9% PPL gap between two supposedly-correct runs is too large to wave through. Probe 5 is
+      rewritten as a **same-binary** test — one binary, `GGML_IQK=1` vs `=0` at `--chunks 20`, plus a now-meaningful
+      `DEQUANT=0` arm and a cross-build agreement check.
+      **THE HYGIENE LESSON: "the merged tip" named a SOURCE TREE, and everyone — coordinator included — assumed the
+      build inside it matched. The shared tree holds FIVE build dirs aged Aug 30 to Sep 3.** Freshness must be
+      proven by **content** (symbol presence, `--version` commit) and never by directory name or mtime alone.
       **⚠ THE CORRUPTION IS GRADED, NOT A CLEAN `nan` — and that is worse.** Measured: **~3.3e5 at Ny 63,
       degrading to `nan` at Ny 256.** A `nan` announces itself; **a wrong-but-finite perplexity is quiet** and would
       be recorded as a result. **Consequence: any PPL ever taken on this model with `GGML_IQK=1` at moderate Ny is
