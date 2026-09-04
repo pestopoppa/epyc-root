@@ -1056,9 +1056,33 @@ named. MTP is not a serving option until that gate passes.
       cost of one — measure, do not extrapolate.
 - [ ] **E4 — the comparison arms, one `--spec-type` at a time**: plain, `ngram-mod` (free, no head — but
       the recorded 2.8× n-gram win was a warm-context self-copy artifact, true gain ≤ +1.7%), `draft-mtp`
-      with each head. **No DFlash or DFlash2 drafter exists for this model as of 2026-09-02** (z-lab and
-      incoai inventories and a 320-repo HF search checked; the publishers shipped a GLM-5.3 DFlash2 on
-      08-27 but nothing for `qwen4_exp`), so the INF-62 arm is excluded until one appears. Same build,
+      with each head. **No DFlash or DFlash2 drafter exists for this model — RE-CHECKED 2026-09-04, still none.** z-lab's `dflash`
+      repo lists DFlash2 targets as **Muse-Glimmer-30B and Qwen3.8-27B** — the 27B is a DIFFERENT model, not
+      Flash-Next/`qwen4exp` (125B/A6B, Gated DeltaNet + QSA + PLE); DFlash1 covers Qwen variants, Gemma 4, MiniMax
+      M2.5/M2.7, Kimi K2.5-2.7, GPT-OSS, Llama-3.1-8B, GLM 5.1, Alpamayo. **Nothing for `qwen4exp`.** The INF-62 arm
+      stays excluded. Note the 3.43× DFlash2 headline is on the **27B**, so it is not a like-for-like target for us —
+      and our MTP path cannot reach tree drafting anyway (B8(ii)).
+      **⚠ BUT the re-check found two knobs the community uses that we have NEVER set — both present in our tree:**
+      1. **`--spec-draft-p-min`** (`common/common.h:333`, default **`0.0f`**; live in the driver at
+         `common/speculative.cpp:343,644,718`, where it breaks out of drafting when the top candidate is
+         low-confidence). **Every arm we have ever run passed only `--spec-draft-n-max`**, so p_min has been 0.0
+         throughout: the drafter emits the full n-max tokens even when its own top candidate is weak, and we pay
+         verification on drafts that are then rejected. Our per-position acceptance falls 0.91 → 0.590 by position 4,
+         so this is measurable waste. **The n-max knee we found between 3 and 4 may be an artifact of drafting
+         unconditionally.** Community invocation uses `--spec-draft-p-min 0.75`. Relayed to `be1-ship` to sweep
+         p_min ∈ {0, 0.5, 0.75, 0.9} and re-test deeper n-max at the best value.
+      2. **`LLAMA_ATTN_ROT_DISABLE=1`** (`src/llama-kv-cache.cpp:316-319`, `llama-kv-cache.h:278`) — force-disables
+         **attention rotation in the KV cache**; a community Flash-Next MTP repo calls it a "critical flag required".
+         **Never set in any of our arms.** Relayed to `be2-fa` as a candidate mechanism for carrier 2: KV-cache
+         rotation is exactly what would treat a wrapped/rotated region differently at a block boundary, and 256 is
+         almost certainly a KV block-size constant. **If `LLAMA_ATTN_ROT_DISABLE=1` makes n_kv 257 exact under
+         `--fa 1`, the fix is one env var instead of a kernel repair or `-fa off`** — the best available outcome for
+         the speed goal.
+      **Corroboration, not a gap**: the community repo reports acceptance **0.90 code / 0.74 prose**, consistent with
+      our 0.846 coding / 0.572 general at n-max 4. Nobody is getting dramatically better acceptance on this model, so
+      the opportunity is in wasted work and kernel exactness, not in a better drafter. (An earlier search summary
+      claiming "0.93–0.99 acceptance" is NOT corroborated by the repo itself and is treated as marketing; the same
+      summary self-contradicted on the head size, 4B vs 2.6B.) Same build,
       same window, same trunk artifact. Concurrency 1 only, per unsloth's own loss at 8.
 - [ ] **E-GATE**: acceptance-weighted t/s against the non-speculative C5 number for the same trunk,
       reported per the artifact rule and with the sampler named. Note the PLE regime: under `--no-mmap`
