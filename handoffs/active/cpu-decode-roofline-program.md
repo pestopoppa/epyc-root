@@ -962,8 +962,36 @@ named. MTP is not a serving option until that gate passes.
       **⚠ Tension with the adopted n-max ruling, for the operator**: aggregate throughput favours **n-max 4** here
       (1.837× vs 1.759× at 3), while `e3-run`'s tail analysis favoured **n-max 3** (paired min 1.271 vs 1.136).
       Both are measured on the same prompt mix. n-max 4 is the faster mean; n-max 3 is the safer worst case.
-      **Still running unattended**: the `p_min` sweep at the winning point (n-max 4, row-exact off) — which may move
-      this number — and a depth probe. Evidence `/mnt/raid0/llm/tmp/inf70/agents/be1-ship/`.
+      **`--spec-draft-p-min` RESULT — a free +3.0%, and the new best configuration:**
+      | arm | n-max | p_min | tw t/s | × plain | α | drafted/tok |
+      |---|---|---|---|---|---|---|
+      | M4_0 | 4 | 0 | 22.931 | 1.837 | 0.752 | 0.994 |
+      | **B_n4_p05** | **4** | **0.5** | **23.623** | **1.892** | 0.827 | 0.890 |
+      | B_n4_p075 | 4 | 0.75 | 23.023 | 1.844 | 0.920 | 0.763 |
+      | B_n4_p09 | 4 | 0.9 | 21.993 | 1.762 | 0.963 | 0.693 |
+      **Mechanism CONFIRMED, not inferred**: α rises monotonically (0.752 → 0.827 → 0.920 → 0.963) while
+      drafted-per-token falls monotonically (0.994 → 0.890 → 0.763 → 0.693) — the drafter bails out of
+      low-confidence blocks instead of paying to verify them — and throughput peaks *in between*, at 0.5. It wins on
+      **every** prompt class, most on `general` (+5.2%, 18.886 → 19.863), which is precisely the class with the
+      worst α and therefore the most wasted verification to recover. **This knob had never been set in any arm of
+      this campaign** (default 0.0).
+      **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
+      `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
+      paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. By class: coding 25.36, reasoning
+      24.86, general 19.86 t/s.** Coherence 20 COHERENT + 4 SHORT on every arm.
+      **Depth beyond 4 without p_min is a dead end** (n-max 6: 22.281, n-max 8: 21.120, α collapsing to 0.620 /
+      0.537). Whether depth pays *with* p_min truncation is the one open arm (n-max 5/6/8 at p_min 0.5, then a p_min
+      bracket at the winner).
+      **The lossless question is settled without appeal to the ruling**: at EVERY n-max, approximate is faster than
+      lossless (−0.3% / −2.6% / −4.6% paired at 2/3/4). **Losslessness is not a trade here, it is simply a cost** —
+      worth buying only for the concurrency property it also brings (concurrent streams become bit-identical to
+      single-stream), and then at `N >= 4·(n_max+1)`, not 8.
+      **Process finding disclosed by the agent**: the first depth probe ran at p_min 0 rather than the winning p_min
+      because `pick.py` emitted the label `p5` where the driver writes `p05`, so the lookup **silently fell back to
+      the default**. The arms are still valid (they are the honest no-p_min n-max 6/8 points) but were not what was
+      intended. Recorded because the failure mode — *silent fallback to a default on a label mismatch* — is the same
+      shape as the `GGML_ROWEXACT_N` no-op and the `top_logprobs` parse miss: **a lookup that misses should fail
+      loudly, not default.** Evidence `/mnt/raid0/llm/tmp/inf70/agents/be1-ship/`.
 - [x] **BE-2 — SOLVED 2026-09-04 (`be2-fa`). Carrier 2 is NOT A BUG: it is two algebraically-equal,
       numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
       keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at

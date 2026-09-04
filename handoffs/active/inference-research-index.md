@@ -26,7 +26,7 @@
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision… | — |
-| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | FASTEST = n-max 4 approximate, 22.93 t/s (1.837x); lossless costs 6%; p_min sweep may still move it | INF-67, INF-10, INF-63 |
+| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | FASTEST: n-max 4 + p_min 0.5 = 23.62 t/s (1.892x, paired median 1.979x); depth-at-p_min is the last arm | INF-67, INF-10, INF-63 |
 | INF-71 | exl3 trellis cpu kernel | [exl3-trellis-cpu-kernel.md](exl3-trellis-cpu-kernel.md) | X0: write the mul1 tile/Hadamard/scale spec from exllamav3 source into docs/design (no compute); gated behind INF-70 C0/C5/B1/D0 | INF-70 |
 | INF-69 | glm53 flash evaluation | [glm53-flash-evaluation.md](glm53-flash-evaluation.md) | T0: arch-support audit — does any tree load `glm5next`? (backport-or-wait decision, qwen4exp-bringup shape) | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
