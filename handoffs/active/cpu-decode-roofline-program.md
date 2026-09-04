@@ -1229,6 +1229,23 @@ named. MTP is not a serving option until that gate passes.
       dequant-ON arm enumerates all three candidates at once. The cross-build arm also turns "BE-1 cannot have
       introduced this" (b4 found it first) into "did not", and yields a bisectable range if the older tree is also
       `nan`.
+      **CROSS-BUILD RESULT — one candidate ELIMINATED, and BE-1 cleared (measured, 2026-09-04).** The 2026-08-28
+      bring-up tree: (a) has **no `GGML_IQK_DEQUANT` knob at all** (`grep -c` = 0), so probe 2's dequant arm only
+      ever applied to the new tree; (b) still carries `IQ4_XS : nrc_y >= 32 ? q8_k_type : type` — **IQ4_XS ON the
+      repack path, BE-1's exclusion absent**; (c) returns **`nan` on the same command**.
+      **So IQ4_XS's repack status FLIPS between the two trees while the `nan` does NOT — the IQ4_XS repack is
+      eliminated as the cause, and BE-1 neither caused nor fixed C9.** "Cannot have introduced it" is now "did not",
+      measured, with no bisectable range. Still live: Q6_K repack, IQ4_NL repack, and any **direct** kernel at
+      Ny > 1 (including `output_hc_down`, which BE-1 moved onto its direct path).
+      **PROBE 2'S EXONERATION FORMALLY WITHDRAWN** by the agent: both integrity checks on `GGML_IQK_DEQUANT=0` came
+      back null (seconds-per-pass 2.90 vs 2.90; `[iqk] ACTIVE` lines byte-identical under `diff`) — the
+      `GGML_ROWEXACT_N` signature exactly. **Both hypotheses are unproven on identical grounds.**
+      **Probe 4 built and queued**, logging once per `(typeA, Ny, ne00)` the path actually served:
+      `[iqk-path] typeA=… Ny=… ne00=… dequant->… rowexact_n=… SERVED=…` with
+      `SERVED ∈ {REPACK | iqk-direct | iqk-direct(rowexact) | iqk-direct-smallNx | DECLINE(ggml-fallback)}`.
+      One dequant-ON arm enumerates all three post-gather candidates and their paths at once; the dequant-OFF arm is
+      **the knob's own integrity test** — zero `SERVED=REPACK` required, and any survivor withdraws probe 2 formally.
+      **Both arms print the PPL, so a still-`nan` also proves the instrumentation is non-perturbing.**
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
