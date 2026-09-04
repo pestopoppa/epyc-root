@@ -867,9 +867,10 @@ named. MTP is not a serving option until that gate passes.
       claim on this tree until it passes.
 - [x] **BATCH-ENVELOPE — SOLVED 2026-09-04 (`batch-envelope`). MTP on qwen4exp IS LOSSLESS; the divergence was
       never MTP, it was TWO CPU kernels that are not row-exact under batching. Both named with node-level evidence.**
-      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode** — **but note
-      the arms ran with `-fa off`: carrier 2 is AVOIDED, not fixed (`ops.cpp` unchanged), so the claim is "lossless
-      with `-fa off`" until BE-2 resolves it.**
+      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode** — **and note what BE-2 later established: the `-fa off` those arms
+      used was avoiding an upstream TG optimisation, not a bug. Exactness at depth requires `GGML_FA_SPLIT_KV=0`
+      (or `-fa off`) and costs ~5.7% decode at 4k; the DEFAULT split path is the fastest configuration. So the
+      accurate statement is "lossless is available at ~5.7% decode cost at depth, and is not the fast option".**
       **⚠ FIRST: retract the standing exclusion — it was a VACUOUS VERIFICATION, not a negative.** I published
       "the flips are NOT the batched mul_mat" three times, resting on `GGML_ROWEXACT_N=512`. **That knob has never
       had any effect on any tinyBLAS mul_mat.** `llamafile_sgemm` hard-refuses `n < 2`
@@ -913,18 +914,52 @@ named. MTP is not a serving option until that gate passes.
       815/815 so B3-k's slab path is untouched);
       (d) **the n=1 byte-identity gate vs `10acba0ab`** — the check that protects every lever already merged; it has
       not been run on this branch. Then re-run the lossless gate and the concurrency identity check.
-- [ ] **BE-2 — carrier 2 is NOT fixed, only AVOIDED, and the workaround's cost is unmeasured.** `ops.cpp` has **zero
-      added lines**: `ggml_flash_attn_ext` was diagnosed (not row-exact once `n_kv > 256`, only the boundary-crossing
-      row wrong, `node_584 FLASH_ATTN_EXT [256,24,3]`) but never repaired. **Every "MTP is lossless" arm was run with
-      `-fa off`**, so that claim currently carries an unstated configuration requirement, and the agent states it
-      never opened the kernel and does not know the sub-mechanism. Three things owed:
-      (i) **measure what `-fa off` actually costs** on decode and prefill at production context lengths — it is
-      quoted only as "within noise on the gate table", which is not a measurement at serving context;
-      (ii) **find the sub-mechanism** — cheap discriminator first: `llama-rowexact --fa 1` at prefix 254 against the
-      FA kernel's KV-block size, and `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at `n_kv=257, n_q=3` vs `n_q=1`;
-      (iii) **decide fix-vs-avoid on evidence**: repair the kernel, or adopt `-fa off` as a documented serving
-      requirement with its cost stated. **Until one of those lands, "MTP is lossless" must be quoted as "lossless
-      with `-fa off`".** Successors to BATCH-ENVELOPE.
+- [x] **BE-2 — SOLVED 2026-09-04 (`be2-fa`). Carrier 2 is NOT A BUG: it is two algebraically-equal,
+      numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
+      keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at
+      every depth measured.**
+      **The mechanism, named from source.** `ops.cpp:9424-9426`: `use_split_kv_path` requires **`neq1 == 1`** (one
+      query row) **and `nek1 >= 512`**. `llama-kv-cache.cpp:1270-1275`: **n_kv is padded to a multiple of 256**, so
+      `nek1` is 256 for real n_kv 1–256 and **512** for 257–512. The `nek1 >= 512` gate therefore flips at exactly
+      real n_kv = 257 — precisely the measured bisect. **The "256 boundary" is not an FA block size; it is the KV
+      padding quantum interacting with the split path's 512 gate.** Single-row decode splits KV across threads into
+      per-thread partials recombined by an online-softmax rescale; any batch with `neq1 > 1` takes one sequential
+      pass over the whole KV with rows split across threads instead. **Algebraically equal, numerically different —
+      so a 1-row decode and an n-row verify batch cannot be bit-identical at depth BY CONSTRUCTION. No bug exists.**
+      **Provenance: upstream and deliberate** — `9f682fb64` (Aman Gupta, 2026-02-03, "ggml-cpu: FA split across kv
+      for faster TG", #19209). It is a token-generation optimisation; "repairing" it means giving it up.
+      **Proof (`llama-rowexact`, build 10221, prefix 254, `--fa 1`, carrier 1 already removed):** default split ON →
+      `node_584 FLASH_ATTN_EXT [256,24,3]` row 2 only, 68,334,110 state bytes differ (reproduces batch-envelope's
+      `e7fa1p254` exactly); **`GGML_FA_SPLIT_KV=0` → ALL 3 ROWS IDENTICAL, 0/248320 logits, 0 state bytes.** One
+      boolean removes the entire carrier with FA still on.
+      **SPEED — and this is what decides it** (llama-bench, build 10221, depth sweep, t48):
+      | depth | `--fa 1` split ON (default) | `--fa 1` `SPLIT_KV=0` (exact) | `--fa 0` |
+      |---|---|---|---|
+      | tg32 @ d512 | **12.48** | 12.16 | 12.58 |
+      | tg32 @ d2048 | **12.01** | 11.78 | 11.85 |
+      | tg32 @ d4096 | **11.89** | 11.21 (−5.7%) | 11.19 (−5.9%) |
+      | pp512 @ d4096 | **188.12** | 180.39 (−4.1%) | 169.10 (−10.1%) |
+      **The default is the fastest configuration at every depth.** Exactness costs ~5.7% decode and ~4% prefill at
+      4k context; `-fa 0` costs about the same decode and **2.5× more prefill**. Under the operator's speed goal and
+      the standing ruling that approximate is acceptable, **keep the default**. `-fa off` is retired as a serving
+      option; `GGML_FA_SPLIT_KV=0` is retained as a **diagnostic** for exactness work.
+      **⚠ COROLLARY, a real measurement hazard: single-row CPU decode at n_kv > 256 is NOT thread-count invariant** —
+      the split path's chunk size depends on `nth`, so **changing `-t` changes the logits**. Any A/B that varies
+      thread count at depth is comparing different numerics, not different speeds.
+      **Coordinator's `LLAMA_ATTN_ROT_DISABLE` lead: FALSIFIED** (my error). `attn_rot_k/v` require a **quantised**
+      KV cache; our arms run f16, so both are already false and the flag is a no-op — confirmed from source AND
+      measured (arm x4 is byte-for-byte identical to the default arm; server logs `attn_rot_k = 0, attn_rot_v = 0`).
+      It matters only for quantised-KV serving.
+      **Upstream test coverage hole, measured and worth reporting**: `test-backend-ops -o FLASH_ATTN_EXT -b CPU`
+      passes **1302/1303, 0 FAIL**, *including* the exact shapes that straddle the two paths (`kv=512,nb=1` split vs
+      `kv=512,nb=3` one-chunk). It passes because **every case is compared only against `use_ref` within an NMSE
+      tolerance, never against another case** — there is no assertion that the op is invariant in the number of
+      query rows. That is why this reached production. The natural missing test is
+      `assert fa(q_rows=1..n)[i] == fa(q_row=i)` at `kv >= 512`.
+      **Third, weaker carrier NAMED not claimed**: at prefix 300 with the split path off, 98–100 *intermediate* nodes
+      in the DSA lightning-indexer path differ on 1–4 of 512 elements. They did **not** propagate — logits and the
+      full 128 MB recurrent state are identical on all three rows. It could in principle flip an indexer top-k at
+      some other prefix. Evidence `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/{MECHANISM.md,REPORT.md,runs/}`.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
@@ -994,6 +1029,36 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
+- [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
+      untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
+      Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
+      **The structural answer: only 12 of 48 layers have a KV cache at all** — the other 36 are recurrent
+      Gated-DeltaNet and carry none — and `head_count_kv = 2` with key/value length 256. Measured from the GGUF:
+      | | f16 | q8_0 |
+      |---|---|---|
+      | KV per token | **24.0 KiB** | ~12 KiB |
+      | KV at ctx 4096 | 0.094 GiB | 0.047 GiB |
+      | KV at ctx 8192 | 0.188 GiB | 0.094 GiB |
+      | KV read per generated token @ 4096 | 96 MiB = **2.42% of the 4.16 GB byte budget** | ~1.2% |
+      | @ 8192 | 192 MiB = **4.84%** | ~2.4% |
+      **So q8_0 buys ~1.2% of the per-token byte budget at 4k and ~2.4% at 8k — and the MEMORY saving is
+      irrelevant** (0.047 GiB saved on a 1.1 TB box). On a dense model KV is often the dominant term at depth; here
+      it is 2.4% at 4k **because the hybrid is 75% recurrent**. Note also that the measured decode drop d0→d4096 is
+      −7.8% while KV is only 2.42% of bytes there, so **most of that drop is attention compute and the FA split
+      path, not KV bandwidth** — quantising KV cannot recover it.
+      **⚠ The risk is specific and known**: quantised KV is exactly what **activates `attn_rot_k`/`attn_rot_v`**
+      (`llama-kv-cache.cpp:322-338` — they require `ggml_is_quantized(type_k/v)`). That path is **inert on our f16
+      arms and has never been exercised by us**, and a community Flash-Next MTP repo ships
+      `LLAMA_ATTN_ROT_DISABLE=1` as a "critical flag", which is strong circumstantial evidence that quantised-KV +
+      rotation misbehaves with the MTP draft head. Any KV-quant arm must therefore also run the MTP path and a
+      coherence check, not just a speed number.
+      **Quality evidence (external, KL-divergence benchmark)**: Qwen-family models tolerate **q8_0 well (KL < 0.04)**;
+      **q4_0 concentrates its damage in LONG DOCUMENTS (KL 0.581)** — which is precisely our workload — and the
+      asymmetric guidance is to spend bits on the **Key**, not the Value. **q4_0 is contraindicated here.**
+      **Recommended scope: ONE arm** — `-ctk q8_0 -ctv q8_0` vs f16 at ctx 4096 and 8192, plain AND with MTP,
+      token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
+      1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
+      production context; adopt only if measured and if the MTP path stays clean.** Do not pursue q4_0.
 - [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
       Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
