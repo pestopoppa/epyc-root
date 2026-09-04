@@ -1391,19 +1391,28 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
 | `IQ4_XS-uniform-b4` | 91 GB | B4 complete ✅, an experiment arm | B4's `--tensor-type` overrides, one `llama-quantize` pass |
 | B7's loser | ~92 GB | whichever of {IQ4_NL, Q8_0-PLE} B7 rejects | the splice tool, or it is the anchor and stays |
 
-**What must NOT be deleted, and why:**
-- **`IQ4_XS-uniform` — the era anchor.** OP-32 ratified it as *the required comparison baseline for this model until
-  B5 replaces it by the same procedure*. Deleting it would invalidate the comparison basis for every future delta on
-  this model. **Not a size judgement — a measurement-integrity one.**
-- **`-gateup-r16`** — current best artifact and Axis B/D baseline (unless B7 supersedes it, in which case the loser
-  becomes the deletable one).
-- **`UD-IQ4_XS`** (88 GB) — the served file.
-- **`MTP/`** (6.5 GB) — the draft heads; small and load-bearing for the 1.89× multiplier.
-
-**Steady state after the reclaim**: ~280 GB (anchor + winner + served + heads) against 463 GB today — **freeing
-~183 GB**, restoring roughly one-experiment-in-flight headroom permanently rather than one deletion at a time.
-**Sequencing: do NOT reclaim before B7 reports** — it needs ~92 GB of headroom now, and deleting its comparison
-inputs mid-experiment would be self-defeating. **Trigger: B7's verdict.**
+**What must NOT be deleted — CORRECTED 2026-09-04 on operator challenge; my first version was wrong:**
+I wrote that deleting `IQ4_XS-uniform` "would invalidate the comparison basis for every future delta on this model."
+**That is false, and the operator is right: the comparison basis is TRANSITIVE, exactly as autokernel already
+operates it.** A champion that was properly benched against the anchor *inherits its provenance*, and future deltas
+are measured against the **champion**, not the anchor — that is the champion-of-record model
+(`feedback_one_champion_invariant`: one champion aggregates all work between promotions). The anchor's value lives
+in the **recorded delta**, not in the file. Ours is recorded: gate-up 10.33 → r16 10.49 ±0.02 (−1.48 ms) at build
+10196 with placement proven, and r16 12.73 vs uniform 12.61 on the production mix at the merged tip — same build,
+same window, same recipe, SHA-256 and byte counts on both sides. **So r16 can serve as the champion and the anchor
+becomes deletable.**
+**Three conditions make that sound, and they should be stated rather than assumed:**
+1. The champion was measured against the anchor **under the artifact rule** (same build/window/recipe) — r16 was.
+2. The chain is **recorded with enough provenance to reconstruct it** — SHA-256, byte counts, build ids, recipe: yes.
+3. The anchor is **re-obtainable** if a future re-validation ever needs it. `IQ4_XS-uniform` is an unsloth-published
+   quant, so it is a ~92 GB / ~2.8 h re-download rather than an unrecoverable loss. **Verify that specific file is
+   still published before deleting it** — that is the only real precondition, and it is a five-minute check.
+**Genuinely keep**: `-gateup-r16` (or whatever B7 promotes) as the champion; `UD-IQ4_XS` (88 GB, the served file);
+`MTP/` (6.5 GB, the heads earning the 1.89×).
+**Revised ceiling: with the anchor also releasable under a promoted champion, the reclaim is ~275 GB rather than
+~183 GB**, leaving champion + served + heads ≈ 187 GB.
+**Sequencing unchanged: do NOT reclaim before B7 reports** — it needs ~92 GB now, and deleting its comparison inputs
+mid-experiment would be self-defeating. **Trigger: B7's verdict.**
 
 ## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
 
