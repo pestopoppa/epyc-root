@@ -5,6 +5,41 @@
 **Last compiled**: 2026-09-03 (incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
 
+## Compiled Update — 2026-09-04: DFlash2 serving decode is set by the drafter and acceptance, not the target verify — kernel keeps on the verify path do not move it
+
+**Confidence: verified** for the DFlash2 decode measurements and the np-concurrency aggregate;
+observation-grade under the serving recipe, not a promotion.
+
+The AutoKernel loop landed two kernel keeps that were decisively positive on batched-forward bench
+surfaces (`+23.3%` and `+10.1%` on `dec-b4`) and measured their effect on the live DFlash2 serving
+decode path: **71.22 t/s, acceptance 0.6427, 2.35× boost** on champion `445e93a8` — essentially
+unchanged from 72.65 t/s on the prior champion and the 70.0 t/s DF2-5 baseline. **The kernel wins
+on the target verify path did not move DFlash2 decode**, because DFlash2 decode throughput is set by
+the drafter model plus per-round acceptance, not by the target verify GEMM the keeps optimized. A
+speculative-decode gain must be measured on the spec-decode loop itself; a llama-bench surface
+cannot drive it.
+
+### np4 aggregate throughput is the champion's DFlash2 operating point
+
+The champion's canonical serving recipe pins DFlash2 on the 27B at **np4**, matching the DF2-5
+concurrency grid (DFlash2 beats MTP at every in-flight count — +28.4% / +48.9% / +47.0% / +47.8% at
+1/2/4/8, per-slot acceptance flat 0.62→0.66). Under the corrected per-request serving metric (sum of
+each slot's own `predicted_per_second`), np4 aggregate throughput is **~157.8 agg-tok/s** — the
+number that reproduces the DF2-5 np4 grid (~155) and that a serving keep must now beat. See
+[Benchmark Methodology](benchmark-methodology.md) for why wall-clock aggregate understated this by
+~30% and why the per-request metric is both tighter (A/A floor 3.5%) and accurate.
+
+### Source References (2026-09-04 DFlash2 serving decode)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — R23-42 (dec-b4
+  keeps do not move DFlash2 decode), R23-43 (the serving recipe pins DFlash2 at np4).
+- [DFlash2 decode measurement and the tg128 pivot](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+- [Per-request np4 serving metric](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the DF2-5
+  np-concurrency grid and the champion's DFlash2 serving standing (2.38× at acceptance 0.6501).
+- [DFlash2 block drafter build](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DF2-5/DF2-6 gate detail.
+
+
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
 
 **Confidence: verified** — read from the v9 qualification evidence map and the DFlash lineup-gate ratification, not from source-file presence. Where a field exists in the kernel source but is not reachable from a request, that is recorded as *unexposed*, not as available.

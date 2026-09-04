@@ -5,6 +5,92 @@
 **Last compiled**: 2026-08-30 (the rebuilt AutoKernel loop reached continuous unattended operation — run 17 delivered 464 iterations, 68 measurements and 30 champion commits with zero lanes lost, and the 30 were audited as a block at +3.942% rather than individually attributed; eight of fourteen defects across runs 11–18 shared one shape, a test proving a component EXISTED rather than that it was WIRED IN, and the remedy that worked was mutation testing; the guards' own CI had been red on 43 of 43 runs since its first commit on a missing pytest, hiding two real regressions, and a suite-floor guard now catches the partial-collapse case that exits 0; earlier: 2026-08-27 AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
 
+## Compiled Update — 2026-09-04: AutoKernel was re-architected around serving performance — because bench keeps did not transfer, and the champion is now (kernel commit + canonical recipe) advanced by a compound-then-gate two-tier rule
+
+**Confidence: verified** for the run-23→28 keep records, the five failure causes and their
+measured evidence, the `-j1` determinism result, and the two-tier champion's built/wired state;
+**verified as an operator-gated state** for run 29, which was standing up but not launched at
+compile time. Nothing here is a promotion — frozen production-v9 is untouched and every receipt is
+`promotion_claim: false`.
+
+Between the 2026-08-27 restart-loop fix and 2026-09-04 the loop ran continuously (runs 23–28) and,
+for the first time, produced production-shaped keeps — and in doing so it exposed that its own
+measurement layer was optimizing the wrong thing. The re-architecture that closed this run makes
+**serving throughput the sole keep gate**, on the operator's principle that *"the only performance
+that matters is serving performance."*
+
+### The five verified ways the loop was producing untransferable science
+
+Each was confirmed by measurement in this cluster, and each is a distinct failure mode of an
+autonomous kernel-search loop:
+
+1. **Recovery-by-restart (v3→v27).** Every failure class was terminal and recovery meant starting
+   over, resetting the counter that measures progress — the zero-science era, root-caused
+   2026-08-27 (carried in the 2026-08-27 update below).
+2. **Optimizing a shape production never runs.** The H1 falsifier (R23-5) swept the champion vs
+   frozen v9 across the verify-batch width `ne11 ∈ {1,2,4,8}`: the headline **+17.259% at ne11=1
+   (tg128)** decays to **+3.834% / +1.178%** at ne11=2/4 and **inverts to −1.462%** at ne11=8. The
+   gain lived in the MMVQ `ncols_dst=1` template — the one shape speculative-verify serving does
+   not occupy. The loop had been tuning a surface production doesn't use.
+3. **Screening on a cheap proxy model.** Run 23's published **+27.363%** headline was measured on
+   the **1.5B DeepSeek-R1-Distill screen rung**, not on the 27B production model (peak VRAM 1.49 GB
+   gave it away, R23-19); the CH-6 precedent is **+23.09% on a 0.5B → +0.50% on the 27B** (~46×
+   attenuation). Worse, a cheap screen *cannot* be made faithful for GEMM work: the winning tile is
+   selected by rocBLAS/Tensile from the matrix dims, which derive from `n_embd=5120`, so any model
+   small enough to be cheap dispatches different tiles (R23-28/29). **The property that makes a
+   screen cheap destroys its fidelity for GEMM.**
+4. **Trusting llama-bench to predict serving.** The sharpest contrast in the program: two keeps
+   measured **+23.3% and +10.1% on dec-b4** (batched prefill) moved DFlash2 serving decode to
+   **~0% — flat 71.22 t/s** (R23-42). dec-b4 keeps optimize a batched-forward path the DFlash2
+   decode loop is not bottlenecked on (its speed is set by the drafter + acceptance, not the target
+   verify). **Bench does not predict serving.**
+5. **Non-reproducible anchor builds.** After each keep the anchor guard rebuilds the champion and
+   compares code-section digests; the rebuild diverged (`d6d195bb…` vs `5e3ca1e7…`) and aborted the
+   promotion "with zero pairs spent." Root cause: `libggml-hip.so` (the gfx90a HIP kernel lib) is
+   non-reproducible at `-j64`, while the CPU `llama-bench` executable is byte-identical across all
+   trees. The guard hashes exactly the non-deterministic lib. Until this was fixed, **every keep
+   aborted at its anchor guard and the loop could not advance past one keep** (R23-40).
+
+### The serving re-architecture (R23-43) and the two-tier champion (R23-44)
+
+**The champion is now (kernel commit + canonical serving recipe).** The recipe is a general,
+spec-decode-agnostic artifact — model, quant, `spec_decode.type ∈ {none, draft-dflash, draft-mtp}`,
+drafter, concurrency (np), context, KV type, server flags, and the throughput metric — so a
+non-DFlash2 model carries `spec_decode: none`/`mtp` with its own optimal np and no DFlash2
+assumption. It doubles as the promotion recipe production needs anyway. **llama-bench is demoted to
+the screen/experiment layer and never decides a keep**; a keep is real only if it improves serving
+throughput on llama-server under the champion's own recipe.
+
+**A per-keep serving gate would veto every keep** — the serving floor is ~3.5% and a single bench
+keep is 1–3%. R23-44 resolves this with a two-tier champion: an **accumulator** advances on every
+cheap bench keep so keeps compound; a **champion-of-record** advances only when the accumulator's
+compounded bench gain clears `fire_multiple × floor` (default 2.5 → ~8.8%) **and** the single
+serving gate fired then is decisive-positive. On divergence — a bundle that clears bench but not
+serving (the proven dec-b4 case) — the champion-of-record **HOLDS**, the bundle is kept, and a
+`planner_evidence` record naming the bundled keeps is journaled so the planner can revise a specific
+keep or aim the next hypothesis at the serving gap. Divergence becomes a strategy signal, not a dead
+end. Built and wired into the pooled loop (`loop/accumulate.py`, `run.py`); 414 loop tests pass.
+
+**The `-j1` determinism fix (R23-40).** `build_champion` now builds the anchor at `-j1`: the
+determinism probe built `445e93a8`'s `libggml-hip.so` twice at `-j1` to byte-identical code digests
+(`1d04c67a…595bb4`, A=B). `-j64` parallelism was the root cause; serial build costs ~13 min per
+build and runs per-keep only, while lane builds stay `-j64`.
+
+### Source References (2026-09-04 AutoKernel serving re-architecture)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — INF-66; R23-40
+  (`-j1` fix), R23-42 (bench→serving non-transfer), R23-43 (serving re-architecture), R23-44
+  (compound-then-gate two-tier champion).
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the
+  one-champion invariant and the three-workload standing table.
+- [Run 23 launch and the H1 collapse](../progress/2026-09/2026-09-01-ak-rebuild-20260828.md) — the
+  `ne11` curve and the screen/confirm two-rung package.
+- [Run 23→24 boundary, R23-19 screen-rung headline](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md).
+- [Run 24→27, screen-fidelity and the planner backend evolution](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+- [Serving-floor noise reduction and the two-tier wiring](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+
 ## Compiled Update — 2026-08-30: the rebuilt AutoKernel loop ran 464 iterations without losing a lane — and every defect it exposed was a guard that could not go red
 
 **Confidence: verified** for the run counters, the champion lineage, the block audit, and the CI

@@ -5,6 +5,83 @@
 **Last compiled**: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
 
+## Compiled Update — 2026-09-02 (incremental): a retracted number is not retracted until its derivatives are chased, and in a shared clone every defect claim is verified against git first
+
+**Confidence: verified** — every correction below was found by the next mechanical step (a re-anchor, a wiki
+compile, an operator's "does it actually reflect §4?") on shipped audit records, not by review; the
+purge-misclassification counts are executed re-verification results.
+
+Two audit sessions (2026-09-01 / -02) produced a cluster of operational-hygiene findings distinct from the
+loop-design and reconciliation lessons already on this page. All share one root: **following a rule is a
+separate act from knowing it — the rules were not the scarce thing.**
+
+### Retracting a number is not done until you chase what was derived from it — and mark invalid, never rescale
+
+When a baseline (`74 ms/token`, later found not to reproduce on the current box) was retired, the retraction
+propagated wrongly **four times in one handoff**: a "1.7× debug-build penalty" that crossed both a build
+boundary and the dead anchor; a two-row `28 ms gemv / 46 ms non-gemv` split where the table itself said the
+46 ms was `74 − 28` (subtraction), which had already fed a "two multipliers" list, a throughput projection,
+and an index row. **A derived figure keeps the full apparent authority of a measurement precisely because it
+does not look like the thing that was retracted.** Disposition rules that came out of it, now standing:
+- Give each dependent quantity an **explicit disposition** (survives / invalid / relabeled), never a blanket
+  edit. The directly-profiled `28 ms gemv` survived with a re-measure caveat; the derived `46 ms` was marked
+  **INVALID**, *not* silently rescaled to ~67 ms — a rescaled number manufactures a second unmeasured value
+  wearing the authority of a correction.
+- This is the same class the qwen4exp OP-32 rule (hold the artifact identical across arms) was ratified to
+  prevent — here committed one level up, at the *build*: measuring a same-build fused number against a
+  clean-build graph number would have made a successful substitution look ~2× worse than it is.
+
+### In a shared clone, resolve every defect claim against git before reporting it
+
+Reading the working tree instead of `git` produced repeated **spurious defect reports** — a "dead link" that
+was a peer's uncommitted deletion, an "orphaned handoff in active/" that was correctly in `completed/` on
+`origin/main`, a "39 GB/day growth" trend asserted from two samples (a third read *lower*). A clean detached
+`origin/main` checkout passed `--check` at exit 0 in each case. In a shared clone this failure mode is
+constant: untracked, pre-merge, and peer-uncommitted copies are byte-indistinguishable from committed work.
+The rule (a reporting-direction corollary of the stale-untracked-file custody lesson already on this page):
+**a claim is resolved against `git`, not the filesystem; and a trend needs more than two samples before it
+is stated to anyone.**
+
+### A purge menu is a set of claims to re-verify per path, never a list to execute
+
+A disk-reclaim menu produced by one agent was wrong in **both directions** — it called load-bearing artifacts
+"safe" and called a referenced artifact "consumed." Per-path re-verification against both registries + a
+retention-language sweep + all active handoffs before deletion **kept ~220 GB of the approved menu** (open
+INF-/DR- dependencies) and **deleted artifacts the menu never listed**. Three destructive traps recorded:
+`tier: D` in the master registry is the live DRAFT/EMBEDDER tier (deprecated is `tier: X`) — executing
+"delete Tier D" as a registry query destroys the active drafting set; **registry tier is not evidence of
+disuse** (a `tier: X` "eval-only" model was being served by `worker_general` at the time); and an inherited
+classification was wrong for the third time. Rule: **verify per path against the authoritative registry;
+never inherit a classification, a tier label, or a "safe"/"consumed" verdict.** Execute named paths one at a
+time (no wildcard/`rm -rf`), ledger each model deletion in the MASTER registry, and use `git worktree remove`
+(never bare `rm`, never `prune`) for git-registered trees after confirming they are pushed.
+
+### Noting a footgun is not handling it — an unmanaged `llama-cli` burned 300 GB and held a region lock 11 h
+
+A `llama-cli` from a sanity check, left alive with `-no-cnv` and stdin from `/dev/null`, spun its REPL
+writing `"> "` for **11h15m**, wrote **~300 GB** to a log (silently undoing a fresh operator-approved disk
+reclaim), and held a q0–q3 CPU region lock the whole time — any peer's CPU bench in that window would have
+been blocked or skewed. The operator-visible defect is that the footgun *had already been documented that
+same day* in the hygiene notes; it was noticed, written down, and then not acted on. Standing corrections:
+**every `llama-cli` launch pairs with an explicit kill-by-captured-PID + `ps -p` verify** (the guards
+`-no-cnv` and closed stdin do not stop the REPL loop), and **every task boundary includes a `ps -o etime`
+sweep for one's own long-lived leftovers.** A PreToolUse hook now blocks unbounded `llama-cli` (passes
+`timeout … llama-cli` and an explicit ack), and a llama.cpp EOF patch (`read_input` discards the EOF signal;
+fixed to break the loop) is routed to the champion lineage — production v9 stays unpatched by freeze, which
+is why the hook exists.
+
+### Source References (2026-09-02 audit hygiene)
+
+- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) — the
+  four-step retraction-propagation record (§4–5), the C3 "chase the derivatives / mark invalid" rule, the
+  two disproved false-alarm defect reports (§3), and the worktree-unsafe wiki-watermark note (§6).
+- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the
+  zero-consumer purge (Task 13: 4 misclassifications, the Tier-D/Tier-X collision, tier-is-not-disuse), the
+  11 h runaway-`llama-cli` incident and its Layer-1/Layer-2 fix, and the two-sample trend self-correction.
+- [`progress/2026-08/2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md)
+  — the reclaim decision package and the execution record where pre-deletion re-verification caught 4
+  misclassifications in the agent's minimal set.
+
 ## Compiled Update — 2026-08-30: a dashboard is a claim about a producer — and every defect found merging two kernel pages was the surface agreeing with itself instead of with the producer
 
 **Confidence: verified** for the field-name mismatch, the mutation results, the route sweep, the

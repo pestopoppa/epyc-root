@@ -5,6 +5,79 @@
 **Last compiled**: 2026-08-30 (two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA)
 **Sources**: 128+ documents
 
+## Compiled Update — 2026-09-04: a bench win is not a serving win — the proxy-divergence finding, the per-request throughput metric, and the A/A serving floor
+
+**Confidence: verified** for the divergence measurement, the three-metric A/A floor comparison,
+and the surface definitions. This is a screening-loop methodology result, not a promotion.
+
+The AutoKernel loop produced its cleanest demonstration yet that **a llama-bench gain and a
+serving gain are different measurements**, and re-architected its keep gate around it.
+
+### The proxy-divergence finding: bench does not predict serving
+
+Two keeps measured **decisively positive on the bench proxy** — `+23.339%` and `+10.098%` on the
+`dec-b4` surface, each confirmed on the `dec-b8` shape — and together moved live DFlash2 serving
+decode to **~0%: a flat 71.22 t/s** (vs 72.65 on the prior champion and the 70.0 DF2-5 baseline).
+The bench surfaces optimize a batched-forward path the serving decode loop is not bottlenecked on;
+its throughput is set by the drafter and acceptance rate, not the target verify. **The rule: a
+llama-bench keep must be confirmed on llama-server under the production serving recipe before it is
+credited as a serving improvement.** llama-bench is a screen and a null-killer; it never decides a
+keep.
+
+### Note surface semantics — what each bench surface actually measures
+
+The confusion above is easy to make because the surface names hide their shapes. The two families
+are not interchangeable:
+
+| surface | shape | measures |
+|---|---|---|
+| `dec-b4` / `dec-b8` | prefill-shaped (`pp=512, tg=0`, small ubatch), verify-batch width `ne11=4`/`8` | batched-forward / speculative-verify throughput |
+| `tg128` | pure decode (`pp=0, tg=128`), `ne11=1` | single-token decode throughput |
+
+A keep on a prefill-shaped surface says nothing about a decode-bound serving path, and vice versa —
+this is the mechanism behind the proxy divergence and behind the H1 finding that the loop's
+`ne11=1` headline collapses on serving shapes.
+
+### The per-request serving throughput metric removes scheduling-tail variance
+
+A serving A/B under concurrency (np4) has to combine per-slot throughput into one number, and the
+choice is load-bearing. Measuring **wall-clock aggregate** (`sum tokens / max wall`) is
+tail-dominated — the slowest slot's scheduling jitter sets the denominator. Replacing it with the
+**sum of each concurrent slot's own `predicted_per_second`**, plus a discarded warmup round and a
+greedy recipe (temp 0, top_k 1), both tightens and corrects the metric:
+
+| metric | A/A floor (p95) | CV | median agg-tok/s |
+|---|---|---|---|
+| wall-clock, temp 0.6 | 10.375% | 5.79% | 115 |
+| wall-clock, greedy | 4.911% | 2.73% | 109 |
+| **per-request, greedy** | **3.536%** | **1.572%** | **157.8** (matches the DF2-5 np4 grid ~155) |
+
+The wall-clock median (108–115) was not just noisier but *wrong* — the per-request median of 157.8
+agg-tok/s reproduces the independently measured DF2-5 np4 grid, so the tighter metric is also the
+accurate one. **The rule: aggregate concurrent throughput by summing per-slot predicted rates, not
+by dividing total tokens by the tail wall-clock.**
+
+### The A/A serving floor is usable only via compound-then-gate
+
+A ~3.5% serving floor cannot demonstrate the typical 1–3% serving keep on its own — the inherent
+noise llama-bench was built to avoid. The loop therefore batches cheap bench keeps in an
+accumulator and fires the single serving gate only once the compounded bench gain clears ~2.5× the
+serving floor (~8.8%); see [Autonomous Research](autonomous-research.md) for the two-tier champion
+that consumes this floor.
+
+### Source References (2026-09-04 serving-vs-bench methodology)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — R23-42 (the
+  proxy divergence), R23-43 (serving re-architecture, the floor options and the chosen per-request
+  metric), R23-44 (compound-then-gate).
+- [Serving-floor noise reduction](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md) — the
+  three-metric A/A comparison table and the tg128 calibration blocker.
+- [DFlash2 decode non-transfer and the tg128 pivot](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the DF2-5
+  np-concurrency grid the per-request median reproduces.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+
 ## Compiled Update — 2026-08-30: a noise floor estimated from subsets of ONE sample cannot exceed that sample's own tail — and a fixed anchor turns every effect cumulative
 
 **Confidence: verified** for the bootstrap floor table, the anchor-drift arithmetic and the

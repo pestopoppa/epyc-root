@@ -5,6 +5,82 @@
 **Last compiled**: 2026-08-27 (official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
 **Sources**: 82 documents
 
+## Compiled Update — 2026-09-01: GLM-MoE-DSA is dense-mask on this fork, GLM-5.2 is KILLED, and a requant A/B fixed how a CPU headline is denominated
+
+**Confidence: verified** — the DSA classification and top-k semantics are executed-probe results on the
+current-source GLM wiring; the GLM-5.2 KILL and GLM-5.3-Flash retarget are operator rulings (OP-8);
+the qwen4exp A/B numbers are clean-window llama-bench observations (build 10151 @ `7cdd7c97b`), ratified
+as a baseline (OP-32) but not as a serving change.
+
+### The Lightning-Indexer DSA path engages but does not save compute — `DSA-DENSE-MASK`
+
+GLM-5.2 (754B `glm_moe_dsa`, UD-IQ2_M ~239 GB) was wired into the fork's generic DeepSeek32 DSA cache
+and graph (experimental-v7 `3dee86a5a`: `LLM_ARCH_GLM_DSA` → `llama_kv_cache_dsa`, DeepSeek32 DSA graph,
+forced indexer Hadamard tensors). Runtime classification is **`DSA-DENSE-MASK`**: the Lightning Indexer
+and top-k selection compute, and the caches engage, but `build_attn` constructs `kq_mask_top_k` over the
+**full** KV length and `build_attn_mha` runs over full cached K/V — no sparse gather. Prompt throughput
+still scales with KV (fixed `indexer_top_k=32`: 23.81 → 21.04 → 17.28 t/s as prompt grows 2.9K → 5.9K →
+11.9K). **`Lightning Indexer enabled` in a log is a backend-capability signal, not proof of sparse
+final-attention** — the vendor 1M-context claim carries no local sparse-compute value until a real
+top-k-gathered attention path lands and passes profiling. Long-context CPU throughput is BW-bound and low
+(true >64K probe: prefill ~6.8 t/s, decode ~1.2 t/s).
+
+### `indexer_top_k` is a correctness knob, not a quality dial — an under-sized cap corrupts output
+
+`indexer_top_k` is the final-attention KV-selection cap. Below the prompt length it silently corrupts
+generation: `top_k=2048` passes exact-output at ~2.05K prompt tokens but fails at 2168/3045/12043;
+dense-by-construction caps recover (`4096` through ~3K, `16384` at ~12K). The safe policy observed was
+**next-power-of-two ≥ prompt tokens**. Every GLM quality/throughput claim must be recorded with its
+`(prompt tokens, chosen indexer_top_k)` pair, or it is unattributable.
+
+### Disposition: GLM-5.2 KILLED; findings inherited by GLM-5.3-Flash (`glm5next`)
+
+The reviewer-capability evaluation never reached role admission: repaired synthetic GC-1/2/3 smokes passed
+as observations only, but the near-miss corpus stayed quality-blocked (parse 0%, FR 50–75% under a binary
+approve/reject schema) — the residual blocker is reviewer policy/calibration, not schema. Expert routing
+was near-uniform globally (top-32 = 17.1%, entropy 0.996) with only moderate layer-local hot sets, so
+hot-expert GPU offload / REAP is **not** justified. Operator ruled **KILL** 2026-08-31 (OP-8: "we have
+GLM-5.3-Flash to test"); the 223 GB artifact was deleted and ledgered. The transferable findings —
+DSA-DENSE-MASK, the `indexer_top_k` cap semantics, the inert NextN/MTP stub (native port ≈ Qwen-style
+tail-tensor load + a `DECODER_MTP` graph, not a flag flip), and the wiring precedent `3dee86a5a` — carry
+forward to **GLM-5.3-Flash**, a **new `glm5next` arch** (288×10B experts, same Lightning-Indexer DSA family
+plus a new `kpool` field, `nextn_predict_layers` present). Each inherited finding must be **re-verified
+against `glm5next`** — its `kpool`/top-k thresholds are not assumed to match 5.2 — and the first gate is an
+arch-support audit: production v9 is frozen pre-arch, so no tree here is yet known to load `glm5next`.
+
+### qwen4exp uniform-IQ4_XS baseline control: the type-mix, not the bit-width, sets the CPU decode rate
+
+An A/B on Qwen3.8-Flash-Next (qwen4exp) requantized the served **UD-IQ4_XS** file to a **uniform IQ4_XS**
+artifact and benched both on one binary/session (canonical NUMA recipe: `--interleave=all`, `-mmp 0`, OMP
+stack, t48/t64, r5). Uniform was materially faster — **+15.2% / +10.5% decode, +23–32% prefill** (t48 tg128
+10.52 vs 9.13 t/s) — because the UD mix's experts are a dequant-heavy IQ3_S×94 + IQ4_NL×43 + Q8_0×5 blend on
+the IQK decode path, while uniform IQ4_XS (type 14) is the fast path. A bonus finding: the documented UD
+13.46 t/s record does **not** reproduce on the current box (9.13 clean; `-fa 1` refuted as the cause).
+
+Operator ratified **OP-32 option B**: serving stays on UD (imatrix pedigree, quality-verified), and the
+uniform artifact becomes the **required comparison baseline** for qwen4exp CPU-kernel work — so any
+"UD → X t/s" fused-decoder headline must re-anchor to the uniform number, and a ~15% artifact-level gain can
+no longer be banked as kernel work. The generalizable rule this produced (now in `MEASUREMENT_POLICY.md`):
+**an absolute headline is the SERVED artifact's number** (a faster unserved artifact is named as *available
+headroom*, never the headline), **while a delta is measured with the artifact held identical on both arms**
+(quoting a delta against a needlessly slow artifact credits the artifact gap to the work). The uniform file
+is a labeled SPEED CONTROL — quant-from-quant off the imatrix UD source, valid for the type-mix speed
+comparison but not quality-representative.
+
+### Source References (2026-09-01 GLM + qwen4exp)
+
+- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — the `glm5next` artifact
+  identity, the five inherited GLM-MoE-DSA findings with the re-verify-before-relying contract, and the
+  T0 arch-support-audit gate (INF-69).
+- [`glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md) — the GLM-5.2
+  evidence record: DSA wiring `3dee86a5a`, the DSA-DENSE-MASK runtime classification, the `indexer_top_k`
+  cap sweep, the reviewer-capability probes, the near-uniform expert-routing signal, and the KILL ruling.
+- [`qwen4exp-uniform-iq4xs-baseline-control.md`](../handoffs/completed/qwen4exp-uniform-iq4xs-baseline-control.md)
+  — the A/B table, the UD type-mix decomposition, the 13.46 non-reproduction, and the OP-32 option-B
+  ratification (INF-68).
+- [`progress/2026-08/2026-08-31-inf68-baseline-control.md`](../progress/2026-08/2026-08-31-inf68-baseline-control.md)
+  — the clean-window measurement record for the qwen4exp A/B.
+
 ## Compiled Update — 2026-08-25: the overlap story is complete — re-place when possible, refuse when not — and the NUMA derived-priors regression from 2026-08-11 is closed
 
 **Confidence: verified** — the seam probe ran in an operator-granted clean window (2026-08-24); test
