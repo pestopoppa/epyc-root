@@ -1675,16 +1675,24 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       (Decision/Outcome/DivergenceAction, Bundle, decide_after_keep, classify_serving, resolve), 9
       tests, loop LOC budget 2400->2500 with reason (`9d139c5a`).
       - [x] policy core + tests + budget note ✅ 2026-09-04
-      - [ ] **OPERATOR DECISION — DivergenceAction**: when a bundle compounds past the threshold on
-        bench but the serving gate says flat/regression (the PROVEN dec-b4 +35%->serving 0% case),
-        does the accumulator ROLLBACK to the champion of record (discard the non-transferring bundle
-        — conservative, "only serving advances the champion") or HOLD the bundle and keep batching
-        (bet a later keep tips serving over)? Default coded = ROLLBACK. This is the one genuine fork;
-        the live-loop wiring depends on it.
-      - [ ] wire the two-tier advance into `commit_pooled`: second persistent champion-of-record build
-        (serving A-arm), compounded-bench re-measure after each keep, fire-threshold check, and the
-        DivergenceAction mechanics (git reset champion branch + anchor rebuild on ROLLBACK). Deferred
-        pending the DivergenceAction choice.
+      - [x] **DivergenceAction — RESOLVED, operator 2026-09-04** ✅: HOLD + planner evidence. On a
+        bundle that clears bench but not serving (the PROVEN dec-b4 +35%->serving 0% case), the
+        champion of record HOLDS, the bundle is KEPT, and `resolve()` emits a `planner_evidence`
+        record (kind serving_divergence) that NAMES the bundled keeps. The planner reads it next
+        iteration and may revert/revise a specific bundled keep or aim the next hypothesis at the
+        serving gap — divergence becomes a strategy signal, not a dead end or a blind pile-on.
+        DivergenceAction default flipped ROLLBACK->HOLD; ROLLBACK stays available. (research `a3838ec1`)
+      - [ ] **WIRE the two-tier advance into `commit_pooled`** (now unblocked): (i) a second persistent
+        champion-of-record build `cor_build` (the serving A-arm), initialized = start champion; (ii) a
+        `Bundle` tracking the accumulator; (iii) on a bench keep: advance_champion+promote_anchor
+        (accumulator advances, anchor tracks) as today, then re-measure compounded bench
+        `bench(cor_build vs anchor_build)`; (iv) `decide_after_keep` -> on FIRE_SERVING run
+        `serving.compare(cor_build, anchor_build)` and `resolve()`: PROMOTE advances cor_commit to the
+        tip + rebuilds cor_build + publishes the serving headline + resets the bundle; DIVERGED writes
+        the planner_evidence into the journal (`archive`) and keeps batching; (v) the HEADLINE follows
+        the champion OF RECORD (serving-demonstrated), not the accumulator. Replaces the per-keep
+        serving_confirm. Tests: promote path advances cor + resets bundle; divergence path holds cor +
+        journals evidence + keeps bundle; below-threshold keep only accumulates.
       - [ ] **RUN 29 HOLDS** until the wiring lands; champion 445e93a8 (anchor-gen-016), -j1 fix, and
         the serving floor (3.536%) are all ready.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
