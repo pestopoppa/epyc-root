@@ -1568,7 +1568,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       real champion worktree in ~4s). **TRUST BOUNDARY**: opencode drives an EXTERNAL provider, so
       planner prompts egress off-host — operator-sanctioned as the backup, recorded in code+commit.
       Run 28 live pid 470013 with this planner + the dec-b8 confirm gate.
-- [ ] **R23-40 — INCIDENT: Run-18 build-non-determinism fault recurred on the 445e93a8 anchor
+- [x] **R23-40 — FIXED+CONFIRMED ✅ 2026-09-04 — INCIDENT: Run-18 build-non-determinism fault recurred on the 445e93a8 anchor
       promotion; run 28 aborted.** After the second keep (`akm-cdna2-q8-b4-y-stream-amortize`
       +10.098%, dec-b8-confirmed, champion `445e93a8`), the anchor guard found the promoted
       anchor-gen-016 binary's code-section digest DIFFERS from a fresh champion rebuild even after
@@ -1599,6 +1599,14 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       the guard to accept a hash mismatch when a functional A/A confirms equivalence (weakens the
       R18/R21 doctrine). Recommend (i). Until fixed EVERY keep aborts at its anchor guard, so the
       loop cannot advance past one keep. Both current keeps remain safe in git.
+      **FIX CONFIRMED 2026-09-04**: `build_champion` -> `-j1` (research `f4f13116`). The
+      determinism probe built champion 445e93a8's `libggml-hip.so` twice at `-j1`: byte-identical
+      code digests (`1d04c67a...595bb4`, A=B), VERDICT DETERMINISTIC. So `-j64` parallelism was the
+      root cause and serial build fixes it; the promoted anchor and the guard's fresh build now
+      match. Measured cost: ~13 min per `-j1` build (786s/794s), per-KEEP only, lane builds stay
+      `-j64`. **RELAUNCH-READY** (operator-gated): run 29 = run 28's command on the current champion
+      445e93a8/anchor-gen-... rebuilt clean, DeepSeek planner + codex critic + dec-b8 confirm gate.
+      Follow-up R23-41: hipcc determinism flags to restore parallel anchor builds later (optional).
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
