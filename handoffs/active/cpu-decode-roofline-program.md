@@ -903,6 +903,15 @@ named. MTP is not a serving option until that gate passes.
       should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
       or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
+- [ ] **BE-3 — the third, unbisected carrier: the DSA lightning-indexer path.** At prefix 300 with the FA split
+      path off and carrier 1 removed, **98–100 intermediate nodes** in the DSA lightning-indexer chain
+      (`(reshaped)` → `UNARY` → `SUM_ROWS` → `indexer_score-3`) still differ between an n-row batch and n single
+      rows, on **1–4 of 512 elements**. They did **not** propagate — logits and the full 126 MB recurrent state are
+      identical on all rows — so this is NAMED, NOT CLAIMED. Risk: it could flip an indexer top-k selection at some
+      other prefix, which would surface as a rare divergence that looks like the carriers we just closed. Scope:
+      bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
+      decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
+      books is that both earlier carriers also looked harmless until measured.
 - [ ] **BE-1 — ship carrier 1 (the tinyBLAS/router fix) in bounded, test-gated form.** The diagnostic branch
       `inf70/batch-envelope` fixes the real bug but is not shippable as-is. Concretely missing:
       (a) **bound the knob and give it a real default** — `GGML_ROWEXACT_DEFAULT_N` is currently `0`, so the fix is
@@ -939,10 +948,21 @@ named. MTP is not a serving option until that gate passes.
       | tg32 @ d2048 | **12.01** | 11.78 | 11.85 |
       | tg32 @ d4096 | **11.89** | 11.21 (−5.7%) | 11.19 (−5.9%) |
       | pp512 @ d4096 | **188.12** | 180.39 (−4.1%) | 169.10 (−10.1%) |
-      **The default is the fastest configuration at every depth.** Exactness costs ~5.7% decode and ~4% prefill at
-      4k context; `-fa 0` costs about the same decode and **2.5× more prefill**. Under the operator's speed goal and
-      the standing ruling that approximate is acceptable, **keep the default**. `-fa off` is retired as a serving
-      option; `GGML_FA_SPLIT_KV=0` is retained as a **diagnostic** for exactness work.
+      **⚠ THAT READING WAS WRONG AND IS CORRECTED HERE — it came from a `llama-bench` tg32 sweep, which is
+      SINGLE-ROW decode, the only regime where the split path is even reachable.** The deciding measurement, in the
+      config we actually ship: **`use_split_kv_path` requires `neq1 == 1`, and an MTP verify batch is ≥ 2 rows — so
+      the split path is NEVER TAKEN under MTP.** Measured on the 24-prompt production mix with the MTP head:
+      **`GGML_FA_SPLIT_KV=0` is free EXACTLY, not approximately — 24/24 byte-identical outputs, 22.292 vs 22.048 t/s,
+      identical draft acceptance.**
+      **RECOMMENDATION (ranked, and it inverts the earlier note): (a) `--fa 1` + `GGML_FA_SPLIT_KV=0`** — the fastest
+      EXACT option, **zero cost in the shipping MTP config**, keeps FA's prefill advantage and its small compute
+      buffer, and cashes in the lossless-MTP result. **(c) FA-as-is is now STRICTLY DOMINATED** — same bytes, same
+      speed under MTP, but not lossless. **(b) `-fa off` is dominated too**, though it is a safe no-rebuild interim:
+      free at current serving lengths (12.730 vs 12.525 t/s on the production mix, coherence identical) but at depth
+      it costs decode −1.7% @2048 / **−3.5% @4096**, prefill **−5.2% / −8.7%**, and **+359 MiB compute buffer
+      (+175%)** at every context (KV itself unchanged at 264 MiB).
+      **So lossless MTP is available at ~22.3 t/s for free.** The exactness/speed trade does not exist in the
+      shipping configuration — it only appeared in a single-row microbenchmark.
       **⚠ COROLLARY, a real measurement hazard: single-row CPU decode at n_kv > 256 is NOT thread-count invariant** —
       the split path's chunk size depends on `nth`, so **changing `-t` changes the logits**. Any A/B that varies
       thread count at depth is comparing different numerics, not different speeds.
