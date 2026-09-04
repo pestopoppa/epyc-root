@@ -903,6 +903,21 @@ named. MTP is not a serving option until that gate passes.
       should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
       or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
+- [ ] **INSTR-1 — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from
+      legitimate concurrent GPU work.** Filed 2026-09-04 after I mis-called exactly that. `be2-fa` flagged a foreign
+      `llama-server` in 83 of 147 samples while it held all four CPU bench regions, and I recorded it as a
+      coordination violation. **On the operator's challenge that it was probably the autokernel session — which is a
+      HIP/MI210 campaign whose handoffs reference HIP graphs, `HIP_MMQ_MFMA` and GPU serving gates — that is the far
+      more likely explanation, and it is NOT a violation at all**: the region lock covers the CPU regions q0–q3, a
+      GPU-resident serving gate needs none of them, its weights live in VRAM rather than streaming from DRAM, and
+      GPU host threads pin to 184-191 rather than our 0-95. Concurrent GPU work alongside a CPU bench is
+      by-design (`feedback_concurrent_inference_is_bydesign`). **I could not prove it either way from what was
+      captured, and that is the actual defect**: the sampler logs only `comm(pid,etime)`.
+      **Fix**: record, per sampled process, the **binary path** (`/proc/<pid>/exe` or `cmdline`) and the **CPU
+      affinity mask** (`/proc/<pid>/status` `Cpus_allowed_list`), plus whether it holds any region lock. Then
+      "foreign process during my window" resolves immediately into "GPU peer on 184-191, ignore" or "CPU peer on
+      0-95, real contention" — which is the difference between a shrug and an incident. Cheap: two extra reads per
+      sample in the existing sampler loops (`agents/*/arm.sh`, `reanchor2/arm.sh`).
 - [ ] **BE-3 — the third, unbisected carrier: the DSA lightning-indexer path.** At prefix 300 with the FA split
       path off and carrier 1 removed, **98–100 intermediate nodes** in the DSA lightning-indexer chain
       (`(reshaped)` → `UNARY` → `SUM_ROWS` → `indexer_score-3`) still differ between an n-row batch and n single
