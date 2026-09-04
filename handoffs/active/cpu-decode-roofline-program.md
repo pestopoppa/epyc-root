@@ -230,7 +230,7 @@ not a gate.
       C0 microbench (`bench_readbw`, 2 min) — target ≥ 300 GB/s read at 96T on a 12-channel 5600 MT/s
       socket; then C5 (15 min) and record both in this ledger with the new build/BIOS state. Every
       bandwidth-bound number in the program moves with this; the dispatch floor (~70 ms) does not.
-- [ ] **C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.**
+- [x] **C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.** ✅ 2026-09-04 — stale binary; verified to the same-binary standard, see the C9 block below.
       Measured 2026-09-02 on build 10196 against the OP-32 uniform artifact: `nan` from chunk 1 under
       `-b 2048` / `-b 512` / `-fa 1` / `-c 2048`; the same binary returns `PPL = 17.29 ± 3.29` on
       Qwen3-1.7B-Q8_0, so the tool is sound and the defect is architecture-specific — suspect the
@@ -1391,6 +1391,17 @@ named. MTP is not a serving option until that gate passes.
       configuration nobody serves, and the result would not have transferred.
       **Queued, one lock hold**: C9 same-binary verification → B7 KLD A/B (both passes) → speed guard-rail on the
       24-prompt production mix for both artifacts.
+
+      **★ C9 CLOSED 2026-09-04 — VERIFIED TO THE SAME-BINARY STANDARD.** One binary, only the kernel flag
+      flipped: `fresh_iqk1` (production kernels) **PPL = 3.2317 ± 0.09736** vs `fresh_iqk0` (kernel-free path)
+      **PPL = 3.3038 ± 0.10011** — the two kernel paths agree within overlapping error bars, where the STALE
+      binary returned `nan` at these same settings and ~3e5 at smaller `Ny`. The accelerated path is not
+      corrupting; the remedy was a REBUILD, not a patch.
+      **Why this and not the earlier figure**: the cross-binary comparison (`4.4798` fresh vs `4.9043` stale)
+      confounds the kernel flag with every other difference between two builds, so it could not support the
+      claim and was correctly refused at the time. Only the one-binary form isolates the variable.
+      **Consequence**: the PPL/KL gate for qwen4exp EXISTS again, at `GGML_IQK=1`, so B7's KLD A/B runs in the
+      production kernel configuration rather than one nobody serves.
       **Recommended scope: ONE arm** — `-ctk q8_0 -ctv q8_0` vs f16 at ctx 4096 and 8192, plain AND with MTP,
       token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
       1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
