@@ -3751,3 +3751,65 @@ the old short-prompt figure under a new build. A number's scope is part of the n
   `is_dequant_better` mechanism, `classify.py`, the object-level no-op proof of the guard lift
 - `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — independent threshold bracket (16/23 coherent; 39+ garbage)
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70): a near-tie is not a defect — measure the quantity, don't infer it from a proxy
+
+A single claim moved through **four** states in one day: *disputed* → *leaning-downgrade* → *confirmed and severity
+raised* → *reclassified as not-a-fix-defect-at-all*. Every move came from evidence rather than argument, and the
+final version was narrower and more useful than any predecessor. The route there is the lesson.
+
+### The claim, and why three of the four positions were wrong
+
+A 233-token prompt returned a single EOS token on the raw completion path after a kernel fix. It was filed as the
+fix's *residual risk*: "a raw un-templated prompt whose top-2 gap is under ~0.5 nats can flip its argmax." Three
+things then happened, in order:
+
+1. A second agent found the prompt simply **reads as complete** without a continuation cue — appending
+   `\n\nAnswer:` makes it generate. This looked like a competing, more mundane explanation, and the claim was
+   downgraded.
+2. The gap was then **measured** rather than inferred: **0.01695 nats** — 27× tighter than the 0.457 that had been
+   reported. The "prompt formatting" story turned out not to be a competitor at all but *the same fact from the
+   other side*: the cue moves the gap to 2.249 nats and the winner becomes **exactly the runner-up of the cue-free
+   case**. The cue works by breaking a tie that genuinely exists. Severity was raised.
+3. The decisive arm then forced the GEMM row-exact and the token **still** did not flip — the gap merely widened
+   0.017 → 0.092 nats. **No flip occurs under either kernel path**, so it was never a defect of the fix.
+
+Final: a **prompt-shape caveat, not a fix caveat**. The decision is batch-shape *sensitive* (batching moves the gap
+by ~4× the gap itself) but batch-shape *stable* in outcome. Templating removes the fragility entirely (0.017 → 4.74
+nats), so the production serving path has no exposure at all.
+
+### The rules this produces
+
+- **A near-tie is not a defect.** When two candidates sit 0.017 nats apart, *something* must win and numerical
+  detail decides it. The correct output of such an investigation is "this decision is a knife-edge", not "the kernel
+  is broken". Distinguish the **risk class** (real) from **an instance** (which may never realise it).
+- **Measure the quantity; do not infer it from a proxy that merely correlates.** "The cued version generates
+  coherently" was treated as evidence *against* a marginal flip when it was evidence *for* one. Only the measured
+  top-2 gap separated the hypotheses, and it inverted the reading twice.
+- **A cheap intervention that removes the suspected mechanism is worth more than more observation.** Forcing
+  row-exactness answered in one arm what three rounds of argument had not.
+- **State superseded positions rather than overwriting them.** Both the agent and the coordinator recorded each
+  wrong position with its reason. A reader who only sees the final answer cannot tell which evidence is load-bearing.
+
+### The instrument bug that nearly returned "unmeasurable"
+
+The probe script read `probs`/`top_probs`; llama.cpp emits **`top_logprobs`**. The live log therefore printed
+`top2_gap_nats=None` — and had that been trusted, the whole question would have been reported unanswerable and left
+open indefinitely. The raw JSON carried the data the entire time; a recovery script extracted every gap from the
+persisted files. **A null from your own instrument is a hypothesis about your instrument, not a result.** Persist
+raw responses, not just parsed summaries, so a parser bug is recoverable after the fact rather than requiring a
+re-run under a contended lock.
+
+### A control that makes "X changes the output" falsifiable
+
+Before attributing a stream difference to a feature, prove the baseline is reproducible: a **repeat plain arm 45
+minutes later, on a fresh server instance, was 24/24 byte-identical**. Without that control, "MTP changes the
+output" and "the run is nondeterministic" are indistinguishable, and the former is unfalsifiable.
+
+### Source References (2026-09-04)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — LONG-PROMPT-GARBAGE (reclassification), BATCH-ENVELOPE, E3
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/` — `REPORT.md`, `FINDING-lossless.md`, `runs/EOS*.eosprobe.json`, `regap.py`
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10, the node-level localisation
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` — Addendum B, the identity control
+- `progress/2026-09/2026-09-03-inf70-audit.md`

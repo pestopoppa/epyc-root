@@ -1727,3 +1727,74 @@ executed 2026-08-27 and returned a scoped negative on our CPU path; see
   (2026-08-28).
 - `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` — `findings.md`, `summary.json` and
   `summary_receipt.json`: the canonical run receipts and the pinned binary identity.
+
+## Compiled Update — 2026-09-04 (INF-70 Axis E): α measured on real prompts, and three assumptions that inverted
+
+Qwen3.8-Flash-Next MTP, measured on 24 production prompts (59–682 tokens, chat path, greedy), shared-Q8_0 head,
+linear drafting, against a 12.591 t/s plain baseline:
+
+| n-max | α | mean accepted len | ×all | ×coding | ×reasoning | ×general | paired min |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.924 | 1.92 | 1.307 | 1.321 | 1.318 | 1.267 | 1.218 |
+| 2 | 0.870 | 2.74 | 1.607 | 1.660 | 1.649 | 1.471 | 1.265 |
+| 3 | 0.812 | 3.42 | 1.786 | 1.880 | 1.865 | 1.556 | **1.271** |
+| 4 | 0.752 | 3.99 | 1.799 | **1.967** | 1.900 | 1.467 | 1.136 |
+
+### Three findings that inverted the working assumptions
+
+**1. Toy-prompt measurements UNDERSTATED the deployable gain.** The multiplier measured at a 12-token prompt was
+1.44×; at production prompt length, in the very same n-max 2 configuration, it is **1.607×**. The team had spent
+effort warning that the short-prompt figure was optimistic. It was pessimistic.
+
+**2. Long prompts accept BETTER than short ones**, monotonically at every depth — at n-max 4, α 0.862 versus 0.707
+and 1.98× versus 1.72×. The intuition that a longer context makes the draft head's job harder is wrong here; more
+context evidently constrains the continuation. **A speculative multiplier measured on toy prompts is sampling the
+worst case, not a representative one.**
+
+**3. Position-1 acceptance is flat at ≈0.91 regardless of draft depth.** Asking the head for four tokens does not
+degrade its first prediction; each additional position simply costs ~0.10 of acceptance. So depth is a pure
+tail-versus-throughput trade, not a quality trade on the tokens you were getting anyway.
+
+### Choose the operating point from the tail, not the mean
+
+Aggregate speed peaks at n-max 4 (1.799×) but the **paired minimum** — the worst per-prompt ratio — peaks at n-max 3
+(1.271 versus 1.136), and the weakest prompt class does better there too (general 1.556 versus 1.467). The knee is
+between 3 and 4: +0.7% aggregate for a materially worse tail. Adopted: **n-max 3 fleet-wide, n-max 4 for
+coding-heavy roles**, which is viable precisely because α-by-class is measured and can be a static per-role setting.
+
+α spread by class widens sharply with depth — 9pp at n-max 1 to 27pp at n-max 4 (coding 0.846, reasoning 0.805,
+general 0.572). **Draft depth should follow the workload, not a single fleet constant.**
+
+### Tree drafting is not reachable from an MTP head — an architectural limit, not a tuning gap
+
+A production 122B on the same host achieves 2.12× with `k: 4` **tree** drafting, against 1.80× here. That gap is
+**not tunable**: `draft-mtp` and `draft-tree` are separate implementation classes selected from an ordered priority
+list and do not compose. The tree drafter's contract requires a *standalone draft model* — vocab compatibility
+check, its own sampler on `ctx_dft`, drafts produced via `llama_decode(ctx_dft, batch)`. An MTP head is a single
+block with no independent forward, and no `k`/tree-width parameter exists on the MTP path. Against the **linear**
+ceiling, 1.967× on coding is near the practical maximum. *Before treating a competitor's multiplier as a target,
+check that the mechanism producing it is reachable from your architecture.*
+
+### Approximate speculation is a policy choice, and it needs its own two gates
+
+MTP on this model is **not lossless**: it diverges from the trunk on the same 11 of 24 prompts at every depth,
+deterministically. The operator's ruling — *"approximate MTP isn't an issue as long as it has a decent acceptance
+rate and doesn't lead to garbage outputs"* — replaced exactness with two measurable criteria: **no garbage** (120/120
+coherent across five arms, classified by reason) and **decent acceptance** (α above). That is a better gate pair than
+bit-exactness for a serving decision, but it carries one permanent consequence: **an MTP run is not token-comparable
+to a plain run**, so no A/B may have MTP on one arm and off the other, and no greedy-identity gate may run through
+the MTP path.
+
+### Controls that make a multiplier trustworthy
+
+Two cheap controls turned these ratios from suggestive into usable: an **A-B-A that closed at −0.08% drift** with
+identical NUMA placement, and a **repeat plain arm 45 minutes later that was 24/24 byte-identical** to the first.
+The second is what licenses attributing MTP's divergence to MTP rather than to nondeterminism — without it, "MTP
+changes the output" is unfalsifiable.
+
+### Source References (2026-09-04, Axis E)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis E (E1–E4, E-GATE), B8, BATCH-ENVELOPE
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` + `tables.md` — the α sweep, six arms, Addenda A/B
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/{REPORT.md,FINDING-lossless.md}` — the lossless gate and its exonerations
+- `progress/2026-09/2026-09-03-inf70-audit.md`

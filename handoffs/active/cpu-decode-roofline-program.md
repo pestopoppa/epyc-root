@@ -1020,6 +1020,11 @@ named. MTP is not a serving option until that gate passes.
       between n-max 3 and 4 (+0.7%). A-B-A closed at **−0.08% drift** with identical placement, so the ratios are
       not drift artifacts; `plainB` vs `plain` **24/24 byte-identical** across instances 45 min apart, so the trunk
       path is exactly reproducible and MTP divergence is attributable to MTP, not nondeterminism.
+      **OPERATOR RULING 2026-09-04 — ADOPTED: n-max 3 as the fleet default, n-max 4 for coding roles.**
+      With `shared-Q8_0` as the head. This is the recommended point below, accepted as given; α-by-class is measured
+      so it is a static per-role setting, not a runtime decision. Expected: **1.786x fleet-wide** (α 0.812, mean
+      accepted length 3.42, paired min 1.271) and **1.967x on coding roles** (α 0.846). Remaining operator step is
+      whether/when this reaches production — the merge at `10acba0ab` is the experimental tree only.
       **RECOMMENDED OPERATING POINT: shared-Q8_0 head** (+0.75 GB/node; the self-contained head is 1.35 GB larger
       and buys nothing), **n-max 3 as fleet default** (better tail — paired min 1.271 vs 1.136 — and better
       general-class 1.556 vs 1.467, for 0.7% aggregate), **n-max 4 for coding-heavy roles** (1.967×). Since α by
