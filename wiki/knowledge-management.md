@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-08-27 (incremental: SC52 prospective write-side contract for INF-42 G1; earlier compiled findings remain below)
+**Last compiled**: 2026-09-03 (incremental: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below)
 **Sources**: 50+ documents
 
 ## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
@@ -1990,3 +1990,160 @@ Key findings:
 - [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) — the
   original menu, kept as the counter-example its own re-verification produced.
 - `epyc-inference-research/orchestration/model_registry.yaml` — `deprecated_models`, now 69 entries.
+
+
+## Compiled Update — 2026-09-01: killing a model does not close its handoff — it splits the handoff into what transfers and what does not
+
+**Confidence: verified** — the retarget note is in the handoff's own header, the kill ruling and artifact
+deletion are recorded independently in the same-week audit log, and the successor handoff records the same
+lineage from its own side.
+
+GLM-5.2 UD-IQ2_M (754B, ~239 GB) was ruled **KILL** by the operator (OP-8) after failing patch-review
+admission, and its artifact was deleted. The handoff that had carried 39 capability-gate tasks against it,
+`glm52-reviewer-capability-gates.md`, was not closed — it was **retargeted in place** to GLM-5.3-Flash,
+keeping its filename (and its ~19 inbound links) rather than forking a new handoff.
+
+### What the retarget kept, and what it discarded
+
+The header states the split explicitly, and that is the reusable part: **infrastructure survives a killed
+subject; measurements and serving constants do not.**
+
+| Kept (model-agnostic) | Discarded (a property of the deleted model) |
+|---|---|
+| The three capability questions (strict-IF/typed emission, rubric authoring, why-diagnosis) | Every GLM-5.2 measurement (`FA 41.7%` / `FR 25.0%` C-CRAB, JudgeBench-GPT `22/24`, SWE-bench-V `22/24`) |
+| The corpus/harness fixes: the representation-mixing guard that refuses `substring`/`exact_match` answer-fragment rows in a "balanced" slice, and the C-CRAB accept-control relabel that produced a decision-grade hard-accept pool | The serving constants: the `indexer_top_k` next-power-of-two schedule (`2048`/`4096`/`16384`) and the DSA-DENSE-MASK disposition |
+| The standing rule against rerunning unchanged slices | The `intake-836` IQ2-quant why-diagnosis hypothesis — explicitly **void**, because GLM-5.3-Flash is UD-Q4_K_XL, a different quant entirely |
+
+**Why the split had to be explicit rather than inferred.** GLM-5.3-Flash is architecture **`glm5next`**
+(288×10B), not `glm-dsa` — a different family, not a version bump — and it carries a *new* `indexer.kpool`
+field with no known-safe value. The handoff calls out by name that assuming the old `indexer_top_k` schedule
+transfers "is the fastest way to get a wrong quality verdict": an under-sized cap corrupted GLM-5.2's exact
+output above its prompt band, so a constant that gates **correctness**, not merely quality, can never be
+inherited from a sibling model on faith. A downstream GC-4 RAM-residency decision sized against GLM-5.2's
+239 GB footprint was voided the same day for the identical reason — the successor "has a different footprint
+entirely."
+
+### The general rule
+
+When a subject model is killed mid-evaluation, do not close the handoff and do not silently keep running it
+against the successor. **Split explicitly, in the header, before any task resumes**: name every asset that
+is model-agnostic (harness, scorer fixes, corpus, standing rules) as carried forward, and name every asset
+that is a property of the deleted model (measured numbers, tuned serving constants, quant-specific
+hypotheses) as void. A handoff that keeps its filename for link stability must say so loudly enough that a
+reader skimming the task list cannot mistake an old measurement for a claim about the new subject.
+
+### Source References (2026-09-01 subject retarget)
+
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — the
+  RETARGETED header (2026-09-01), its "What transfers" / "What does NOT transfer" split, the voided
+  `intake-836` hypothesis on GC-3a, and the GC-4 void note.
+- [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
+  execution record: GLM-5.2 ruled KILL, artifact deleted, as a merge-preserved deliberate deletion.
+- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — the successor handoff's own
+  header, "spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings", confirming the lineage from
+  the other side.
+## Compiled Update — 2026-09-03: the compile watermark failed again with no `git clean` in sight — the remedy was scoped to the wrong threat
+
+**Confidence: verified** — every count below is a re-run of the shipped scanner against two checkouts of
+the same commit; the mtime evidence is the scanner's own emitted manifest.
+
+### The 844-vs-51 failure recurred as 928-vs-52, and this time nothing was destroyed
+
+The 2026-08-18 entry above records `wiki/.last_compile` being destroyed by `git clean`, the next compile
+"confidently reporting **844 new sources (the whole repo) instead of 51**", and a standing rule ending
+"`git clean` never runs in the shared clone." That remedy was scoped to the wrong threat surface. On
+2026-09-03 a routine audit lane reproduced the identical failure — the scanner reported
+**`last_compile: None` and `total_new: 928`, the entire corpus** — with no `git clean` anywhere in its
+history. The lane was a linked `git worktree`, level with `origin/main`, created normally.
+
+The mechanism is one line of configuration: `.last_compile` is listed **twice** in `.gitignore` (lines 38
+and 44), and `git worktree add` populates a checkout from the index, so it never receives an ignored file.
+Every worktree, and every fresh clone, is therefore born reporting a fictional whole-repo backlog. This is
+not a hazard that discipline about `git clean` can reach, and it recurs on the *normal* path rather than an
+exceptional one.
+
+**The correction to carry: untracked-but-load-bearing state does not need to be destroyed to be lost — it
+only needs to be absent.** A rule that names the destroying command protects one path; the property that
+matters is that the state is absent from any checkout that did not personally create it.
+
+### The manifest that would have prevented it was sitting next to the scanner, unread
+
+The 2026-08-18 remedy offered three escapes — track the state, keep it off-tree, or list it "in a manifest
+a restorer can replay." The third is **already satisfied**: `wiki/source_manifest.json` is tracked, is
+schema-versioned (`project-wiki-source-manifest` v1), and carries `"last_compile": "2026-08-27T11:11:58Z"`
+in its own header. `compile_sources.py`'s `get_last_compile()` never consults it — it stats
+`wiki/.last_compile`, returns `0.0` when the file is missing, and the caller cannot distinguish that from
+an epoch watermark. The replayable manifest existed, in the same directory, and the recovery path was
+simply not wired to it.
+
+Reading the true drift from that manifest instead — `--check-manifest`, which compares **content hashes**
+rather than mtimes — put the real backlog at **34 added, 18 changed, 1 removed: 52 sources, not 928**, an
+18× overstatement. Recommended fix, not yet applied (the skill script is permission-protected in this
+lane): fall back to the tracked manifest's `last_compile` when the watermark file is absent, and emit a
+`last_compile_source` field so a consumer can see which one it got.
+
+### A restored watermark still would not have helped, because incremental mode is mtime-based
+
+The second defect is independent of the first and survives fixing it. `scan_sources()` selects work with
+`if mtime <= since: continue`, and `git worktree add` stamps every file it checks out with the checkout
+instant. In the manifest this lane emitted, **916 of the 928 sources carry one identical `modified`
+timestamp** — `2026-09-02T09:43:53Z`, the moment the worktree was created. Only 12 files, the ones edited
+afterwards, carry a meaningful time.
+
+So in a linked worktree the mtime basis conveys no information at all, and a correctly-restored watermark
+would merely move the fiction's boundary rather than remove it. Only the content-hash instruments —
+`--check-manifest` and `--changed-since-manifest` — report true drift there. **An incremental instrument
+keyed on mtime is only valid in the checkout that produced those mtimes; anywhere else it must key on
+content.**
+
+### Three distinct shapes, not three repeats — and half of this was already known one day earlier
+
+It would be wrong to file these as one recurring bug. The watermark has now failed in **three
+mechanically different ways**, and only the first was previously compiled:
+
+1. **Destroyed** (2026-08-16, `INC-20260816-git-clean-shared-clone`): `git clean` removed the file; the
+   scanner over-reported **844 instead of 51**.
+2. **Written to a tree that then vanished** (2026-09-02): a session ran `--touch` *inside a throwaway
+   worktree and then deleted it*, so the compiled pages landed on `main` while the watermark advanced only
+   in a directory that no longer existed. That session recorded the correct general rule — "**the wiki
+   compile step is not worktree-safe.** Page edits are ordinary tracked work and travel fine; the watermark
+   does not. Run `--touch` where `.last_compile` persists."
+3. **Never present at all** (2026-09-03, this entry): no destruction and no lost write — a normal worktree
+   simply never receives an ignored file, and the mtime basis collapses on top of it.
+
+Shape 2 is the important precedent, because it means the *write* side of the worktree hazard was already
+diagnosed and written down a day before the *read* side surfaced here. The two halves were filed in
+different places by different sessions, and neither reached the tooling. **A defect noted in a session log
+is not a fixed defect; the note and the fix are separate deliverables, and only the fix protects the next
+reader.**
+
+### Why this stayed a backlog, and what the honest output of the pass was
+
+The reported 928 is also what made the debt look unclearable, and the deferral was rational under the false
+number: `--touch` writes a single fleet-wide watermark at *now*, with no scoping by path, type, or date, so
+touching it after compiling a fraction marks the remainder compiled forever and loses their knowledge
+silently. Under a 928-source premise no session could finish, so every session deferred rather than
+half-do it — and the fiction preserved itself, because a partial compile that correctly declines to touch
+the watermark leaves the same 928 for the next reader.
+
+The pass that diagnosed this compiled its finding and **did not touch the watermark**, which remains
+correct while `--touch` has no scoped form: the tracked manifest, not the ignored file, is the artifact a
+successor should advance.
+
+### Source References (2026-09-03 watermark recurrence)
+
+- [`.claude/skills/project-wiki/scripts/compile_sources.py`](../.claude/skills/project-wiki/scripts/compile_sources.py)
+  — `get_last_compile()` returning `0.0` on a missing file, `scan_sources()`'s `mtime <= since` selection,
+  and `touch_last_compile()` writing an unscoped fleet-wide `now`.
+- `.gitignore` lines 38 and 44 — `.last_compile` ignored twice; the reason no worktree or fresh clone
+  receives it.
+- [`wiki/source_manifest.json`](source_manifest.json) — the tracked v1 manifest carrying
+  `last_compile: 2026-08-27T11:11:58Z`, the unread recovery path, and the content-hash baseline that put
+  the true drift at 52 sources.
+- [`wiki/knowledge-management.md` § 2026-08-18](knowledge-management.md) — the prior 844-vs-51 write-up and
+  the `git clean`-scoped rule this entry corrects.
+- [`docs/reference/agent-config/INCIDENT_LOG.md`](../docs/reference/agent-config/INCIDENT_LOG.md) —
+  `INC-20260816-git-clean-shared-clone`, the first occurrence of the same damage shape.
+- [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) § 6 — the
+  write-side half found one day earlier: `--touch` run inside a throwaway worktree, and the
+  "the wiki compile step is not worktree-safe" rule quoted above.

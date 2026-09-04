@@ -37,6 +37,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-26 | ParEval CPU/HIP trials — flagged tier-1 at Hawkeye Stage-2b close but never reached the approved plan: run, file, or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-27 | ~20 unselected Stage-2b sources from the Hawkeye batch — QiMeng-Xpiler `2505.02146` highest-value (only AMD/HIP-touching artifact in the line): select dives or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-33 | Disk reclaim: minimal set + GLM-5.2 + the 22-artifact zero-consumer purge all EXECUTED (743 G free). REMAINING: 7 ambiguous artifacts (~128 G) needing a call — chiefly a 70 G Qwen3.5-122B copy the lean registry calls PRODUCTION while the served path points elsewhere (a registry defect, not a disk question); plus the 4 rollback-anchor holds. `opencode.db` ruled OFF LIMITS | [2026-08-31-disk-reclaim-menu.md](../../progress/2026-08/2026-08-31-disk-reclaim-menu.md) §EXECUTED | 2026-08-31 |
+| OP-35 | MTP is merged to the experimental tree (`10acba0ab`) with n-max 3 / coding-4 adopted, both operator criteria met (α 0.87@n2, 120/120 no-garbage, 1.607–1.80x at production length). **Decide whether and when it reaches PRODUCTION** — a separate step from the experimental merge; production still serves v9 from an untouched tree | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) → Axis E / E-GATE | 2026-09-04 |
+| OP-34 | Wiki `--touch` has no SCOPED form: it writes a fleet-wide `now` regardless of what was actually compiled, so every partial compile is rationally deferred and the deferral looks like a backlog. Add a scoped touch (per-type / per-source-set), or accept all-or-nothing. Context: the "928-source backlog" was an INSTRUMENT ARTIFACT (real drift 52); the scanner fallback + linked-worktree warning are fixed, this is the remaining structural gap | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) → wiki tooling; `.claude/skills/project-wiki/scripts/compile_sources.py` | 2026-09-03 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
@@ -70,7 +72,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 57 | 548 | 13 | 2026-07-29 |
+| inference-research | 57 | 556 | 14 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 45 | 354 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 31 | 11 | 2026-07-29 |

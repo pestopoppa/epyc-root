@@ -2,7 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-23 (wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
+**Last compiled**: 2026-09-03 (incremental: G1 closes the #27442 cross-backend question — 10/10 greedy cold-prefill trials across five prompt lengths and two prompt classes, first sampled token `248068` every time, so the empty-completion defect does NOT reproduce on our frozen v9 CPU path; the "live unknown" framing below is superseded, and the HIP GDN kernel remains a distinct untested implementation; earlier: 2026-08-23 wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
 **Sources**: 20 documents
 
 ## Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
@@ -214,7 +214,7 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
 - [intake-699](https://huggingface.co/unsloth/GLM-5.2-GGUF) GLM-5.2-GGUF (unsloth dynamic quants of zai-org/GLM-5.2) -- 754B GLM-MoE-DSA, MIT, 1M context; DSA forward pass unimplemented in our fork (dense-MLA fallback, gated on PR #21149); new IndexShare (arXiv 2603.12201) reuses the sparse-attn indexer across every 4 layers for ~2.9x FLOP cut at 1M context
 - [llama.cpp DSA contribution handoff](../handoffs/active/llama-cpp-dsa-contribution.md) -- PR #21149 tracking; `LLM_ARCH_GLM_DSA` dense-MLA fallback; one forward-pass impl unlocks V3.2 + GLM-5.1 + GLM-5.2
-- [GLM-5.1 REAP CPU evaluation handoff](../handoffs/active/glm51-reap-cpu-evaluation.md) -- GLM-5.2 elevated to PRIMARY GLM-MoE-DSA target (supersedes 5.1); storage viable via UD-IQ2; gated on DSA forward pass
+- [GLM-5.1 REAP CPU evaluation handoff](../handoffs/completed/glm51-reap-cpu-evaluation.md) -- GLM-5.2 elevated to PRIMARY GLM-MoE-DSA target (supersedes 5.1); storage viable via UD-IQ2; gated on DSA forward pass
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
 - [findings-05c lever × model-category matrix (L20 GDN)](../handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md) -- GPU GDN levers: occupancy path NO-GO (theoretical occupancy already 100%; the ~42% is pure memory-latency), the one win is **bf16 recurrent-state** (+21.5% agg @B32, halves gather+scatter), generalizes across all GDN-hybrid sizes + qwen3next-80B
@@ -354,13 +354,13 @@ Sources: [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](..
 
 The sub-quadratic / sparse-attention family this page tracks (Multiscreen, IHA/MEA/KHA, and the GDN/Delta Net recurrent line) now has a concrete deployment-gated member: **GLM-MoE-DSA**, the architecture behind GLM-5.x and DeepSeek-V3.2. Unlike the linear/recurrent (Delta Net) mechanisms, DSA keeps the attention paradigm but selects a sparse top-k of keys via a learned Lightning Indexer — the same "preserve attention, cut cost" property that makes Multiscreen and IHA tracked here.
 
-- **DSA forward pass is a dense-MLA fallback in our fork (verified).** `LLM_ARCH_GLM_DSA` loads the indexer tensors but does NOT run the Lightning Indexer / sparse fattn — it dispatches to dense MLA. This works for <8K context but means the 1M-context / long-context value collapses to short-context dense behavior. Any GLM-5.x or V3.2 quality result obtained today must be labeled **short-context dense fallback only**, never used to claim 131K/1M viability. Tracked via upstream **PR #21149** (fairydreaming; CPU/CUDA/Vulkan backends, token-gen sparse path only, no prompt-processing speedup yet). One DSA forward-pass implementation unlocks DeepSeek-V3.2 + GLM-5.1 + GLM-5.2 (multi-model-for-1 leverage). [llama-cpp-dsa-contribution.md](../handoffs/active/llama-cpp-dsa-contribution.md), [glm51-reap-cpu-evaluation.md](../handoffs/active/glm51-reap-cpu-evaluation.md)
+- **DSA forward pass is a dense-MLA fallback in our fork (verified).** `LLM_ARCH_GLM_DSA` loads the indexer tensors but does NOT run the Lightning Indexer / sparse fattn — it dispatches to dense MLA. This works for <8K context but means the 1M-context / long-context value collapses to short-context dense behavior. Any GLM-5.x or V3.2 quality result obtained today must be labeled **short-context dense fallback only**, never used to claim 131K/1M viability. Tracked via upstream **PR #21149** (fairydreaming; CPU/CUDA/Vulkan backends, token-gen sparse path only, no prompt-processing speedup yet). One DSA forward-pass implementation unlocks DeepSeek-V3.2 + GLM-5.1 + GLM-5.2 (multi-model-for-1 leverage). [llama-cpp-dsa-contribution.md](../handoffs/active/llama-cpp-dsa-contribution.md), [glm51-reap-cpu-evaluation.md](../handoffs/completed/glm51-reap-cpu-evaluation.md)
 
 - **GLM-5.2 is the PRIMARY GLM-MoE-DSA target (intake-699), supersedes GLM-5.1.** 754B GLM-MoE-DSA, MIT, 1M context. Storage is NOT the blocker — the unsloth UD-IQ2 dynamic quant (~238 GB, vs Q4_K_M 466 GB) fits the ~633 GB raid0 free; DSA, not RAM/disk, gates deployment. GLM-5.1-REAP demoted to fallback comparison datapoint.
 
 - **IndexShare (arXiv 2603.12201) is the genuinely-new technique in the 5.2 point release.** It reuses the same sparse-attention indexer across every 4 sparse-attn layers, cutting per-token FLOPs ~2.9x at 1M context — an indexer-amortization lever on top of DSA. External/preprint confidence (vendor-reported, no CPU measurement). Relevant here as a sparse-attention efficiency mechanism distinct from the Delta Net recurrent family, and a future consideration once the base DSA forward pass lands. [intake-699]
 
-Sources: [`handoffs/active/llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) "Research Intake Update — 2026-06-20", [`handoffs/active/glm51-reap-cpu-evaluation.md`](../handoffs/active/glm51-reap-cpu-evaluation.md), intake-699, [deepseek-v32-dsa deep-dive](../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md).
+Sources: [`handoffs/active/llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) "Research Intake Update — 2026-06-20", [`handoffs/active/glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md), intake-699, [deepseek-v32-dsa deep-dive](../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md).
 
 ## Compiled Update — 2026-08-22: a fused chunked GDN kernel is a measured no-go on ceiling, not feasibility — and the ceiling survived the discovery that the kernel already existed upstream
 
@@ -421,7 +421,7 @@ Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action atta
 
 **A ratio-convention trap for the m-a-p hybrid-band checkpoints:** their "N:1" means *one attention layer every N layers* (attention fraction 1/N), not a literal linear:full count — `hybrid-3-1` is 8 attention layers of 24. Our production 30-GDN + 10-attention (10-of-40) is therefore **"4:1" in their convention**, which is not one of their five trained arms; it sits between 3-1 and 6-1, inside their recommended band under either reading.
 
-(The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record).)
+(The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record). **Superseded 2026-09-03**: the #27442 sweep is no longer open, and it is no longer a live unknown for our CPU path — G1 executed 2026-08-27 and returned a scoped negative (10/10 greedy trials, five prompt lengths, both prompt classes). See the 2026-09-03 entry at the foot of this page; the HIP path remains untested.)
 
 ### Source References
 
@@ -539,3 +539,54 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the 2026-08-12 gate firing and state-size inversion, the 2026-08-22 Gates 4/5 addendum and runnability blockers
 - The page's own 2026-08-12 `### RETRACTED` section — the live sections above are reconciled to it, not to the original claim
 - [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
+
+## Compiled Update — 2026-09-03: G1 closes the #27442 cross-backend question — NOT reproducible on our frozen v9 CPU path
+
+**Confidence: verified** — greedy, fixed-seed, cold-prefill trials with a self-hashed manifest; 10 of 10
+trials agree.
+
+### Correction to the 2026-08-23 wave-2 entry
+
+That entry called the #27442 empty-completion / hybrid-cache exposure a **live unknown** — "nobody anywhere
+has tested any backend but Metal" — and deliberately left G1 uncompiled as open, compute-gated work. G1
+executed on 2026-08-27 and the unknown is now a scoped negative result for our path. The earlier framing is
+**superseded, not merely extended**.
+
+### The sweep and its result
+
+Frozen v9 (`llama-completion` 10125 @ `0db32c06e`), frontdoor Qwen3.6-35B-A3B-MTP-Q8_0, greedy (`temp 0`,
+fixed seed 27442), `cache_prompt=false` so every trial cold-prefills (v9 has no client-side
+`--no-cache-prompt`), single sequence, no speculation. Five prompt lengths — **15,401 / 16,501 / 17,601 /
+19,801 / 23,981 tokens** — crossed with two prompt classes: seeded pangram filler, and a meaningful document
+ending in a real instruction.
+
+**10/10 trials: the first sampled token was `248068` (`<think>`) on both classes at all five lengths.** A
+valid EOS was never the first token, and no trial degenerated to an empty completion — the meaningful-prompt
+arm visibly engaged the instruction rather than producing the upstream failure signature.
+
+**Verdict: the #27442 empty-completion / hybrid-cache defect does not reproduce on our frozen v9 CPU serving
+path** at these lengths, on either prompt class. This is also the only *greedy* trial that exists anywhere
+against this defect; the upstream report and every prior discussion of it were sampler-`temp 0.3`,
+uninstrumented, or Metal-only.
+
+### What it does not settle
+
+The HIP GDN kernel is a **distinct implementation** still carrying a chunked-prefill TODO, so this CPU
+result does not transfer to the MI210 serving path. B1 (repeat on HIP) is unblocked by this, but it remains
+a choice rather than a requirement, and stays open.
+
+**Transferable lesson:** an upstream defect report that cannot distinguish "never reproduced" from "never
+tried the right test" is not evidence of safety. A small, deliberately designed boundary sweep — matched
+prompt classes, several lengths bracketing the reported onset, greedy and fixed-seed, cold prefill — is
+enough compute to convert a cross-backend correctness "live unknown" into a scoped, falsifiable verdict,
+cheaply, before it silently gates every downstream hybrid/GDN decision.
+
+### Source References (2026-08-27 G1 boundary sweep)
+
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) —
+  the G1 task result, trial design and manifest pointer (2026-08-27).
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) — the
+  #27442 part-one artifact analysis this sweep completes; part two was recorded there as blocked on G1.
+- `research/intake_index.yaml` `intake-1279#record` — the artifact-refuted upstream diagnosis (Metal-only,
+  `n_prompt_tokens_cache = 0` on every request) that motivated the sweep.
+- `data/g1-27442-20260827T1537Z/` — the self-hashed trial manifest; 10 claims ingested `Witnessed/Anchored`.

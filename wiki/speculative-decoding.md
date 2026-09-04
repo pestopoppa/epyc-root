@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-08-23 (wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Last compiled**: 2026-09-03 (incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
 
 ## Compiled Update — 2026-08-12: the per-request surface is one field wide, and a 2.458× lane can still be ineligible
@@ -1608,3 +1608,193 @@ Key findings:
 - sudoingX/qwen38-mtp PR #70 and `sweeps/instinct-cdna.md` — the public artifact and its caveats.
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
   — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.
+
+## Compiled Update — 2026-09-03 (INF-70 Axis E): eliminating the rollback checkpoint, and why acceptance rate is not evidence of exactness
+
+### E2b-2: 44.7 GiB of memcpy removed, +3.09% decode
+
+Qwen3.8-Flash-Next MTP on CPU was paying a **112.571 MiB speculative checkpoint per verification round**, created and
+restored to support rejection rollback: measured **407 created / 113 restored over 9 requests = 44.7 GiB, 4.97 GiB per
+request, ~39.8 MiB per token** — on a model that streams 4.16 GB/token. Porting upstream's in-place rewind trio
+(`1692f9e50` #26623 ggml `ssm_scan` snapshots, `0eadefebd` #28123 qwen4exp rollback, `9d817213a` #28159 hparam load
+order) took it to **0 / 0** and lifted MTP decode 17.582 → 18.125 t/s (+3.09%), multiplier over trunk 1.391× → 1.442×.
+
+The port needed a companion fix this tree could not do without: `n_layer_nextn` must load **before** `n_layer()` is
+called, or the per-layer arrays are read over 48 layers instead of 49 and `n_head_kv_arr[48] = 0` — which surfaces as
+two apparently unrelated failures, a NULL K/V allocation with a shared head and a `ggml_set_rows` shape assert in the
+server's no-alloc memory-measurement dry run. One defect, two symptoms, trunk-side perf-neutral once fixed.
+
+### Acceptance rate is not evidence of exactness on a hybrid
+
+The single most transferable finding. On this architecture MTP reported **acceptance 1.00 on a prompt whose greedy
+output nonetheless diverged from the trunk**. The reason: the target's logits at rows ≥ 1 of a multi-token decode
+differ from the same position decoded singly, so the "verified" tokens are being checked against slightly non-exact
+logits. Acceptance measures agreement with a reference that is itself wrong. **Never accept a high acceptance rate as
+a correctness argument** — construct an exactness oracle (here `LLAMA_SPEC_EXACT=serial`, re-decoding every token
+single-token) and compare byte-for-byte.
+
+Both driver-side attempts to recover exactness failed for the same reason: the divergence is at *verified* rows, not
+at the bonus token, so neither dropping nor re-decoding the bonus token helps. The oracle is byte-identical but runs
+at **11.69 t/s — slower than plain trunk decode at 12.57** — so at the time of writing **no exact-and-fast
+configuration exists** for this model.
+
+### Scope your multiplier to the regime you measured it in
+
+The 1.442× was measured entirely at a **12-token prompt**, because everything longer was corrupted by an unrelated
+kernel defect (see `hardware-optimization`, the iqk IQ4_XS repack). Speculative acceptance depends on how predictable
+the continuation is, which varies with context length and content, so the production-length multiplier is **unknown,
+not assumed**. State such a figure as "1.442× on short prompts, production-length pending" rather than as the model's
+speedup.
+
+A related trap, avoided here: after the fix, the MTP arm's long-prompt output *looked* better on a degeneracy metric
+than the plain arm's (unique-4gram 0.185 vs 0.038). It was not evidence MTP helps — both streams were degenerate, and
+speculation merely perturbs which attractor corrupt logits fall into. **A less-degenerate garbage stream is still
+garbage**, and the speed figure attached to it must not be quoted.
+
+### The model's own n-gram table is not a drafter
+
+Qwen3.8-Flash-Next carries a 51B-parameter PLE n-gram table, which invites the idea of drafting from it for free. It
+does not work: `per_layer_token_embd` maps an n-gram hash to a 160-wide **embedding** mixed into each layer, not a
+next-token distribution — there is nothing to read a continuation out of. llama.cpp's `ngram-mod` is unrelated (it
+mines the current context for repeats, which is why its once-recorded 2.8× turned out to be a warm-context self-copy
+artifact).
+
+### Source References (2026-09-03, Axis E)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis E (E2, E2a, E2b, E2b-2, E3, E4, E-GATE)
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip/REPORT.md` — the rebase, the trio port, checkpoint counts, all five gates
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/REPORT.md` — the serial oracle and the failed driver-side fixes
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — α harness; blocked on the kernel defect
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-03: MoE-Spec on live CPU verification batches is role-dependent, not universally positive — and the GPU decode arm was never capable of showing a result
+
+**Confidence: verified** — decision-grade record with run receipts and a pinned binary; the caveats below
+are the handoff's own, carried rather than smoothed over.
+
+### The "no live consumer" framing is now partly stale
+
+The 2026-06-12 portfolio verdict — "proven mechanism, NO live consumer; the REAP role was removed and the
+frontdoor runs zero spec-dec" — assumed there was nowhere left to measure this. On 2026-08-27 a B-sweep ran
+`--moe-spec-budget` against **actual current-role live-MTP verification batches** (region lock q0–q3, binary
+v10126 `c7c37a0d9` = MoE-Spec `6b2cbf539` on v9 `0db32c06e`, MTP posture, greedy, 3 reps/cell):
+
+| role | B | Δ t/s vs B=0 | Δ acceptance |
+|---|---|---|---|
+| architect_critic (122B Q4_K_M, `n_expert=256`) | 128 | **+10.7%** | −2.4 pp |
+| frontdoor (35B-A3B Q8, 256) | 128 | **−11.4%** | −6.0 pp |
+| worker (gemma4-26B Q4, 128) | ≤96 | −2.6% to −10.5% (noisy) | −2.2 to −10.9 pp |
+
+The shape is mechanism-consistent: **the heaviest DRAM-bound role wins and lighter roles regress** — the
+same memory-tier lever that governs plain CPU decode, now confirmed on live verification traffic rather than
+synthetic forward passes.
+
+Three caveats bound the win, and all three are load-bearing. n=3/cell, so the architect win is only ≈2.9σ
+and the operator declined the 5-rep confirm. Acceptance drops 2.4 pp on the winning arm. And a strict
+bit-exact guard is **not enforceable on the production arm at all**: budgeted arms differ from B=0 by
+construction, and cross-run MTP non-determinism means same-seed B=0 reps differ across runs on every role —
+so correctness is checkable only through the gate-skip control (worker at `B = n_expert` reproduced B=0
+bit-exactly, 3/3). The registry change is **proposed, not applied** (`architect_critic` →
+`moe_spec_budget: 128`, frontdoor and worker stay 0), gated behind the E8-reseed / OP-19 decision.
+
+### Two contemporaneous numbers do not conflict — and one arm was a null by design
+
+The same week produced an apparently contradictory result: Qwen3.8-27B-Q8_0 pp512 at `budget=32` on the GPU
+champion measured **−2.92%**, a regression. These do not disagree — a CPU verifier batch and a GPU
+`llama-bench` champion sweep are different serving surfaces. But the champion's paired `tg128` row (−0.06%,
+reported as "no regression") is **uninformative by construction rather than by measurement**: batch-1 decode
+never reaches `--moe-spec-min-batch 4`, so that arm executes the *identical code path* as B=0. Reporting it
+as a clean decode result mistakes a design gate for an empirical finding.
+
+**Transferable lesson:** a verification-budget mechanism's sign is not a property of the mechanism alone. It
+flips with which serving surface and role you measure against — DRAM-bound heavy role versus light role,
+live MTP batch versus synthetic `llama-bench` sweep — and with whether that role's batch shape ever crosses
+the kernel's own internal gate. Before quoting a batched-kernel number as "no regression" or "no effect",
+confirm the measured batch actually reaches the gate the flag is conditioned on; otherwise the flat number
+is a null *test*, not a null *finding*.
+
+(Related: the #27442 part-two boundary sweep recorded above as "blocked on G1" is no longer blocked — G1
+executed 2026-08-27 and returned a scoped negative on our CPU path; see
+[SSM & Hybrid](ssm-hybrid.md).)
+
+### Source References (2026-08-27 MoE-Spec B-sweep)
+
+- [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) — the
+  2026-08-27 B-sweep table with its three caveats, the surface-reconciliation table, and the proposed
+  registry patch (`registry_patch_proposal.yaml`).
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-4
+  (`c7c37a0d9`): the −2.92% pp512 regression and the `tg128` uninformative-by-construction finding
+  (2026-08-28).
+- `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` — `findings.md`, `summary.json` and
+  `summary_receipt.json`: the canonical run receipts and the pinned binary identity.
+
+## Compiled Update — 2026-09-04 (INF-70 Axis E): α measured on real prompts, and three assumptions that inverted
+
+Qwen3.8-Flash-Next MTP, measured on 24 production prompts (59–682 tokens, chat path, greedy), shared-Q8_0 head,
+linear drafting, against a 12.591 t/s plain baseline:
+
+| n-max | α | mean accepted len | ×all | ×coding | ×reasoning | ×general | paired min |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.924 | 1.92 | 1.307 | 1.321 | 1.318 | 1.267 | 1.218 |
+| 2 | 0.870 | 2.74 | 1.607 | 1.660 | 1.649 | 1.471 | 1.265 |
+| 3 | 0.812 | 3.42 | 1.786 | 1.880 | 1.865 | 1.556 | **1.271** |
+| 4 | 0.752 | 3.99 | 1.799 | **1.967** | 1.900 | 1.467 | 1.136 |
+
+### Three findings that inverted the working assumptions
+
+**1. Toy-prompt measurements UNDERSTATED the deployable gain.** The multiplier measured at a 12-token prompt was
+1.44×; at production prompt length, in the very same n-max 2 configuration, it is **1.607×**. The team had spent
+effort warning that the short-prompt figure was optimistic. It was pessimistic.
+
+**2. Long prompts accept BETTER than short ones**, monotonically at every depth — at n-max 4, α 0.862 versus 0.707
+and 1.98× versus 1.72×. The intuition that a longer context makes the draft head's job harder is wrong here; more
+context evidently constrains the continuation. **A speculative multiplier measured on toy prompts is sampling the
+worst case, not a representative one.**
+
+**3. Position-1 acceptance is flat at ≈0.91 regardless of draft depth.** Asking the head for four tokens does not
+degrade its first prediction; each additional position simply costs ~0.10 of acceptance. So depth is a pure
+tail-versus-throughput trade, not a quality trade on the tokens you were getting anyway.
+
+### Choose the operating point from the tail, not the mean
+
+Aggregate speed peaks at n-max 4 (1.799×) but the **paired minimum** — the worst per-prompt ratio — peaks at n-max 3
+(1.271 versus 1.136), and the weakest prompt class does better there too (general 1.556 versus 1.467). The knee is
+between 3 and 4: +0.7% aggregate for a materially worse tail. Adopted: **n-max 3 fleet-wide, n-max 4 for
+coding-heavy roles**, which is viable precisely because α-by-class is measured and can be a static per-role setting.
+
+α spread by class widens sharply with depth — 9pp at n-max 1 to 27pp at n-max 4 (coding 0.846, reasoning 0.805,
+general 0.572). **Draft depth should follow the workload, not a single fleet constant.**
+
+### Tree drafting is not reachable from an MTP head — an architectural limit, not a tuning gap
+
+A production 122B on the same host achieves 2.12× with `k: 4` **tree** drafting, against 1.80× here. That gap is
+**not tunable**: `draft-mtp` and `draft-tree` are separate implementation classes selected from an ordered priority
+list and do not compose. The tree drafter's contract requires a *standalone draft model* — vocab compatibility
+check, its own sampler on `ctx_dft`, drafts produced via `llama_decode(ctx_dft, batch)`. An MTP head is a single
+block with no independent forward, and no `k`/tree-width parameter exists on the MTP path. Against the **linear**
+ceiling, 1.967× on coding is near the practical maximum. *Before treating a competitor's multiplier as a target,
+check that the mechanism producing it is reachable from your architecture.*
+
+### Approximate speculation is a policy choice, and it needs its own two gates
+
+MTP on this model is **not lossless**: it diverges from the trunk on the same 11 of 24 prompts at every depth,
+deterministically. The operator's ruling — *"approximate MTP isn't an issue as long as it has a decent acceptance
+rate and doesn't lead to garbage outputs"* — replaced exactness with two measurable criteria: **no garbage** (120/120
+coherent across five arms, classified by reason) and **decent acceptance** (α above). That is a better gate pair than
+bit-exactness for a serving decision, but it carries one permanent consequence: **an MTP run is not token-comparable
+to a plain run**, so no A/B may have MTP on one arm and off the other, and no greedy-identity gate may run through
+the MTP path.
+
+### Controls that make a multiplier trustworthy
+
+Two cheap controls turned these ratios from suggestive into usable: an **A-B-A that closed at −0.08% drift** with
+identical NUMA placement, and a **repeat plain arm 45 minutes later that was 24/24 byte-identical** to the first.
+The second is what licenses attributing MTP's divergence to MTP rather than to nondeterminism — without it, "MTP
+changes the output" is unfalsifiable.
+
+### Source References (2026-09-04, Axis E)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis E (E1–E4, E-GATE), B8, BATCH-ENVELOPE
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` + `tables.md` — the α sweep, six arms, Addenda A/B
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/{REPORT.md,FINDING-lossless.md}` — the lossless gate and its exonerations
+- `progress/2026-09/2026-09-03-inf70-audit.md`

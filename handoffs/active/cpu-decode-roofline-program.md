@@ -179,10 +179,12 @@ not a gate.
       pre-evict, ENABLED: orchestrator main `5f20e23c` sets `numa_pre_evict_gib: 40` on frontdoor,
       eval_batch_frontdoor, architect_critic, ingest_long_context, worker_general (never on gpu_host_lane roles —
       refused in code), forcing form, `[numa-placement]` per-node fold logged after health; priors recompiled.
-      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **LIVE ONLY
-      AFTER the owning stack session fast-forwards `/mnt/raid0/llm/epyc-orchestrator` (at `510f5048`, 3 behind,
-      clean) at its boundary and runs `stack_change_pipeline.py check` — the running API serves from that clone, so
-      the pull + reload is the owner's, not the coordinator's (reload-ownership rule).** Operator "proceed"
+      `vm.zone_reclaim_mode=1` rejected (system-wide); BIOS NPS1 → C8 reboot session (C0-c decides). **The orchestrator launch-path half is production-plane work and its ACTIVATION is NOT
+      INF-70's** — an experimental-kernel session had no business enabling it on a live stack (scope creep,
+      corrected 2026-09-03 on operator challenge). The merged-but-inert activation step is now filed where its
+      owner will see it: [`numa-placement-defect-20260730.md`](numa-placement-defect-20260730.md) → *The permanent
+      fix is MERGED and awaiting activation by the stack owner*. **INF-70's own half — the forcing eviction in the
+      measurement recipe — is DONE and is what every number in this campaign depends on.** Operator "proceed"
       2026-09-03; agent `c7-finish`, report `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`. Memory:
       `feedback_page_cache_defeats_numa_interleave`.* Measured 2026-09-02: when a
       NUMA node has no free pages, `numactl --interleave=all` is silently ignored for that node's share and the
@@ -738,7 +740,22 @@ named. MTP is not a serving option until that gate passes.
       bit-identical output). **Result: speculative checkpointing ELIMINATED — 407 created / 113 restored → 0/0 over
       the same workload** (112.571 MiB each = 44.7 GiB, 4.97 GiB/request, ~39.8 MiB/token of avoided traffic on a
       4.16 GB/token model); `n_rs_seq=2` survives instead of being clamped to 0. **MTP decode 17.582 → 18.125 t/s
-      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** Rebase itself was
+      (+3.09%); multiplier over trunk 1.391× → 1.442× — NON-CLAIM, MTP remains APPROXIMATE.** **SUPERSEDED 2026-09-03 by the production-length measurement: the multiplier is 1.380x, NOT 1.442x**
+      (`mtp-tip2` Task C, NON-CLAIM): 12.505 -> 17.254 t/s against the SAME-BUILD MTP-off control, **12/12 COHERENT
+      at 54-441 prompt tokens**, on the corrected kernel. **The 1.442x was a 12-token-prompt artefact and must not
+      be quoted as production.** The scope note below is retained because it is what forced this measurement.
+      **SCOPE OF THOSE
+      NUMBERS (verified from the run JSONs 2026-09-03, after an operator challenge): the timed reps used a
+      12-token prompt and their full 128-token output is COHERENT on 5/5 reps in every arm (word uniq 0.742, top
+      share 0.086, max repeat run 1) — the speeds are NOT decode-of-garbage. The 101-token probe on the same builds
+      is degenerate (uniq 0.025, top 0.988, run 77), so the two regimes are cleanly separated. Two limits follow:
+      (i) MTP output still DIFFERS from plain at 12 tokens on 2 of 3 gate prompts (p1/p3 DIFF, p2 SAME — the E2a
+      flips, unchanged by rebase and by E2b-2): coherent, but not what the trunk alone would say; (ii) **the 1.442×
+      is demonstrated ONLY in the short-prompt regime, because every longer prompt is currently broken — speculative
+      acceptance varies with context length and content, so the multiplier at PRODUCTION prompt lengths is UNKNOWN,
+      not assumed.** State it as "1.442× on short prompts; production-length figure pending the iqk fix" (that
+      measurement is exactly the blocked E3). The +3.09% E2b-2 delta is the most robust number here: identical
+      coherent workload, checkpointing on vs off, mechanism independently visible as 407/113 → 0/0.** Rebase itself was
       trunk-invisible (REF 12.513 → T0 12.643). Gates: (a) trunk-only byte-identical to plain `0d2af8194` PASS short,
       **BLOCKED long** — `T0b ≡ REFL` byte-for-byte, and REFL is the PLAIN tip with no MTP code, which proves the
       long-prompt garbage is not ours; (b) MTP live PASS; (c) `LLAMA_SPEC_EXACT=serial` ≡ plain PASS short AND long;
@@ -769,29 +786,145 @@ named. MTP is not a serving option until that gate passes.
       forward. **Serving workarounds today (unpatched tip): `-ub 1`** (coherent on 42/81/233; decode UNCHANGED
       12.5–12.7 t/s; prefill ~10× slower, 13.5 vs 68–140 t/s) **or `GGML_IQK=0`** (coherent; pp 118.9 vs 135–140).
       **Fix committed `99425578d` on `inf70/gdn-rowexact`**: IQ4_XS returns to its direct iqk kernel for every Ny
-      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX IS PARTIAL — validated 2026-09-03 (arms ran before the agent was rate-limited; read off disk by the
-      coordinator): p40 (42 tok) and p90 (81 tok) COHERENT on the fixed build, p200 (233 tok) STILL FAILS.**
-      | arm | p40 | p90 | p200 |
-      |---|---|---|---|
-      | fix, default | COHERENT (pp 75.5) | COHERENT (pp 105.2) | FAILS |
-      | fix, `GGML_IQK_DEQUANT=0` (ALL repacks off) | COHERENT (pp 76.3) | COHERENT (pp 95.6) | FAILS |
-      | fix, `GGML_ROWEXACT_N=256` | COHERENT (pp 69.9) | COHERENT (pp 92.9) | FAILS |
-      | fix, `-ub 1` | COHERENT | COHERENT | **COHERENT** |
-      The p200 failure MODE changed: the unpatched control produced 160 tokens of salad (`(1120-2222-…`), the fixed
-      build returns `predicted_n=1`, `content:""`, `stop=eos` — an **immediate EOS**. Because all repacks off still
-      fails p200, the coordinator's Q5_1(≥32)/Q6_K(≥64) coverage hypothesis is WEAKENED: either a second distinct
-      defect at ~233 rows or a prompt/template artifact. **Coordinator metric defect (own error): the degeneracy
-      classifier misreads a 1-token EOS as DEGENERATE** (uniq=1.0, top_share=1.0 trip the `top<0.25` rule), so
-      failures must be classified by REASON — COHERENT / SALAD / EARLY-EOS / EMPTY / HTTP-ERROR — not pass/fail.
-      Owner `gdn-fix-validate` (Opus, resumed): repair the classifier and re-classify all runs; discriminate
-      prompt-specific vs length-specific (other 100–260-token texts, p200 truncated to 120/160/200); verify the
-      `DEQUANT=0` knob really covers Q5_1/Q6_K (read the path, don't trust the name) with `GGML_IQK=0` as the
-      cross-check; node-trace the failing length if unresolved. Still owed: **G3 n=1 decode BYTE-identical to the
-      unpatched tip** (must not leak into batch-1; `MUL_MAT_ID -b CPU` must stay green for B3-k), G4 decode vs
-      12.55, and the honest fixed pp512 against the withdrawn wrong numbers (note fixed p40 pp 75.5 > control 68 —
-      the fix may be FASTER at short lengths; verify). **Serving today: `-ub 1` is the only config coherent at all
-      three lengths.** No serving or deployable-speed
+      (+ `GGML_IQK_DEQUANT=0` knob disabling all Q8 repacks). **FIX VALIDATED 2026-09-03 — PARTIAL BUT SHIPPABLE (`gdn-fix-validate`).**
+      **G3 PASS (the gate protecting every merged lever): n=1 greedy decode BYTE-IDENTICAL to control 10203** on
+      3×128; `test-backend-ops -o MUL_MAT -b CPU` 1139/1139, `-o MUL_MAT_ID -b CPU` 815/815 (B3-k slab path
+      untouched), `test-llama-archs` zero FAIL. **G4: decode 12.69 t/s — no regression** (control 12.64, baseline
+      12.55). **pp512 189.3 t/s on the fixed build vs 135.6 for the correct `GGML_IQK=0` fallback (+39.6%).**
+      **WITHDRAWN: the control's 231.4 t/s pp512 and its 135–140 t/s at p200 — they timed a salad-producing
+      forward.** At 42 rows the broken repack requantised a whole tensor for 42 columns of reuse, so it was slower
+      *and* wrong; the correct-repack crossover is between 42 and 512 rows.
+      **BLAST RADIUS AND REPAIR, measured on one prompt set (`mtp-tip2` PRE control) — the cleanest single piece
+      of evidence for this defect.** Same prompts, pre-fix `0d2af8194` vs fixed `42332502c`:
+      | prompt | prefill rows | PRE (pre-fix) | P (fixed) | PRE vs P |
+      |---|---|---|---|---|
+      | g1 / g2 / g3 | 5–11 | coherent | coherent | **SAME (byte-identical)** |
+      | L1_p40 | **42** | `">>\n.>\n.>\n.>…"` pure degeneracy | coherent | DIFF@0 |
+      | L2_p90 | **81** | `" The function would\nl\ne\nl\nl…"` | coherent | DIFF@0 |
+      | L3_p200 | **236** | degenerate loop, truncated at 39 tok | 128 tok coherent | DIFF@1 |
+      | L4_p600 | **429** | **HTTP 500** | 128 tok coherent | n/a |
+      **Every prompt below 32 prefill rows is byte-identical across the fix — the defect never touched them, and
+      the fix changed nothing it was not supposed to — while every prompt at or above 32 rows was degenerate,
+      truncated or fatal before and is coherent after.** The predicted `nrc_y >= 32` boundary confirmed end-to-end
+      rather than inferred. L4 is the defect at its worst: not merely wrong text but *unparseable* text
+      (`common_chat_peg_parse: full Content-only output triggering error` → a 500), i.e. an availability failure,
+      not only a quality one. **Scope: confined to the experimental fusion tree — production serves v9 from a
+      different tree that never carried the commit, so there is NO production availability implication.** It also
+      retro-justifies the re-run: every production-length measurement taken on the pre-fix build was on a binary
+      that could not generate valid text at those lengths.
+      **The residual p200 failure is NOT a second kernel defect — it is PROMPT-SPECIFIC, not length-specific.**
+      p200 truncated to 120/160/200/220/230 → all COHERENT; full 233 → EARLY-EOS deterministically (margin 0.0169
+      nats, 3/3 runs); **9/9 different 107–181-token prompts COHERENT** (margins 2.2–8.0) where the control fails
+      0/9; **p200 through the chat template is COHERENT** (the control is broken even there). Node trace at the
+      failing shape: worst node deviation **0.949 vs 2.0e+3 pre-fix**, argmax agrees 221/233 rows — no gross error
+      remains. Mechanism: every batched 233-row forward deviates from the exact `-ub 1` reference by O(0.3–1.4
+      nats) **including stock ggml at `GGML_IQK=0` (+1.4)**; p200's exact top-2 gap is 0.457 nats, the only prompt
+      in the set below that envelope, so its argmax flips. **Coordinator's Q5_1/Q6_K + DEQUANT-knob hypothesis
+      REFUTED** (my error): `iqk_dequant_enabled()`'s `return type` is at `iqk_mul_mat.cpp:293`, **above** the
+      switch, so it covers Q5_1/Q6_K/Q5_K/Q4_K — every branch; empirically `g0m` (`DEQUANT=0`) and `g0k`
+      (`ROWEXACT_N=256`, an independent bypass that never calls the function) give identical p200 logprobs to 4
+      decimals. GGUF census: IQ4_XS 586, IQ4_NL 182, Q5_K 54, Q5_1 12 (`blk.0-5.ffn_down_exps/shexp`), Q6_K 1
+      (`output.weight`); their measured effect at 233 rows is ~0.04 nats — lossy-but-working, worth ~10% prefill,
+      **keep them**. **Classifier defect fixed** (coordinator's): `client.py degeneracy()` scored n=1 as degenerate;
+      new `classify.py` classifies by REASON (HTTP-ERROR/EMPTY/EARLY-EOS/SHORT/SALAD/COHERENT), stats only at n≥16 —
+      every p200 "DEGENERATE" on the fixed build re-reads as **EARLY-EOS (1 token)**, and `g0j`'s 19-length sweep
+      (k=8…361) is COHERENT or correct-SHORT at EVERY length. **Verdict: safe at every length measured (8–361 tokens) through the chat template. The fix carries NO
+      residual defect — see the RECLASSIFICATION below; what was filed as its residual risk turned out to be a
+      property of one raw prompt, not of the fix. **RECLASSIFIED 2026-09-03 — a PROMPT-SHAPE caveat, NOT a fix caveat. This is the settled, final position;
+      two earlier ones of mine were wrong and are recorded rather than dropped.** Measured, not inferred:
+      | probe | path | n_pred | stop | top-2 gap |
+      |---|---|---|---|---|
+      | a_raw | default | 1 | eos | **0.01695 nats** |
+      | a_raw | `GGML_ROWEXACT_N=512` | 1 | eos | **0.092 nats** — still EOS, **no flip** |
+      | b_cue (`\n\nAnswer:`) | default / rowexact | 128 | limit | 2.249 / 2.971 |
+      | c_chat | default / rowexact | 128 | length | **4.74 / 4.28** |
+      **No argmax flip occurs under either kernel path**, so it is not a residual defect of the iqk fix — and no
+      kernel fix could remove an inherent knife-edge anyway. What IS true: p200's first token is a **0.017-nat
+      near-tie (27× tighter than the 0.457 originally published)**, and changing only the GEMM batching moves that
+      gap by 0.075 nats — about 4× the gap itself — so the decision is demonstrably batch-shape *sensitive* while
+      remaining batch-shape *stable* in outcome here. **Templating removes the fragility entirely** (0.017 → 2.25–4.74
+      nats), so **production serving through the chat path has no exposure to this at all.**
+      My two superseded positions, kept because I stated both: (1) "DISPUTED / leaning-downgrade" — wrong, because
+      (b)/(c) generating is evidence FOR a knife-edge, not against it (the cue's winner is exactly the cue-free
+      runner-up, i.e. it breaks a real tie); (2) "confirmed and severity RAISED" — wrong, because no flip actually
+      occurs. **⚠ Instrument caveat: `.eosprobe.log`'s gap column is UNRELIABLE** — `eosprobe.py` read
+      `probs`/`top_probs` where llama.cpp emits `top_logprobs`, so the live log printed `top2_gap_nats=None`;
+      `regap.py` recovers every gap from the persisted JSON and is authoritative (except `c_chat`, whose gap is in
+      the raw JSON only). Trusting the log line would have reported the question unmeasurable.
+      **Gate B4 PASSES**: `test-llama-archs` `ARCHS_RC=0`, qwen4exp CPU MoE OK (0.00e+00), **0 FAIL rows**. Exact fallback `-ub 1` verified
+      byte-identical. **MERGED into `exp/cpu-fusion-qwen4exp-20260829` 2026-09-03 (operator direction) — merge commit
+      `42332502c`, merged tree SHA `6aaab89c1` bit-identical to the gated `inf70/gdn-rowexact`, so every gate above
+      transfers verbatim; production tree untouched.** Includes `aa2aef969` (guard lift above `#ifdef __AVX2__`, so
+      the `GGML_IQK_DEQUANT` kill-switch covers both SIMD arms) — **proved a no-op from the COMPILED OBJECT, not
+      asserted: 13 of 10,920 disassembly lines differ and every one is a `GGML_ASSERT` `__LINE__` operand shifted
+      +2 by the added comments; zero instruction-sequence differences.** G3 three-way byte-identity (lifted ≡
+      pre-lift ≡ control b3k 10203), `MUL_MAT` 1139/1139, `MUL_MAT_ID` 815/815, `test-llama-archs` 0 FAIL,
+      coherence classifications identical to pre-lift to the digit. **Task closed; the P0 no longer blocks
+      serving.** Deployable numbers are being RE-ANCHORED on the merged tip with PRODUCTION-LENGTH prompts (27
+      prompts, ~40–600 tokens, 8 coding / 8 reasoning / 8 general + the 3 P0 prompts, chat-completions path with
+      thinking disabled, coherence classified by REASON in the same window as the timing) — evidence
+      `/mnt/raid0/llm/tmp/inf70/reanchor2/`. **The old short-prompt figures are NOT being restored.** No serving or deployable-speed
       claim on this tree until it passes.
+- [x] **BATCH-ENVELOPE — SOLVED 2026-09-04 (`batch-envelope`). MTP on qwen4exp IS LOSSLESS; the divergence was
+      never MTP, it was TWO CPU kernels that are not row-exact under batching. Both named with node-level evidence.**
+      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode** — **but note
+      the arms ran with `-fa off`: carrier 2 is AVOIDED, not fixed (`ops.cpp` unchanged), so the claim is "lossless
+      with `-fa off`" until BE-2 resolves it.**
+      **⚠ FIRST: retract the standing exclusion — it was a VACUOUS VERIFICATION, not a negative.** I published
+      "the flips are NOT the batched mul_mat" three times, resting on `GGML_ROWEXACT_N=512`. **That knob has never
+      had any effect on any tinyBLAS mul_mat.** `llamafile_sgemm` hard-refuses `n < 2`
+      (`ggml/src/ggml-cpu/llamafile/sgemm.cpp:3713`), so the per-column loop at `ggml-cpu.c:1379` failed on its
+      **first** column every call and fell straight through to the full-batch tinyBLAS GEMM immediately below it.
+      Proof of inertness (the mutation test I should have demanded before believing the exoneration): knob ON and
+      knob OFF produce a **byte-identical node trace** — same first differing node, same max|d|, same 85,390,493
+      differing state bytes. Every conclusion that rested on that knob is withdrawn.
+      **Carrier 1 — the F32 tinyBLAS `mul_mat`, i.e. the MoE router `ffn_gate_inp`.** It runs a tiled batched GEMM
+      at `ne11=3` and the generic `vec_dot` path at `ne11=1` — a 1-ulp difference that MoE top-k selection
+      amplifies. With it genuinely made row-exact, a 3-row batch is **bit-identical to 3 single decodes** (logits
+      0 of 248,320 differ; recurrent state 0 bytes differ). **That alone converts 5 of 7 prompts to lossless**, and
+      kills the two flips that had survived everything else (`g1@28`, `g3@84`).
+      **Carrier 2 — `ggml_flash_attn_ext` on CPU is not row-exact once `n_kv > 256`.** Bisected: n_kv **253 exact,
+      257 divergent**, and only the boundary-crossing row is wrong (`node_584 FLASH_ATTN_EXT [256,24,3]`). `--fa 0`
+      makes the identical shape bit-exact at prefix 254 and 300 while `--fa 1` diverges. **It predicted the two
+      remaining survivors before they were measured**: L3_p200's 236-token prompt diverges at generated token 24 —
+      position **260**. Next discriminator: `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at n_kv=257, n_q=3 vs n_q=1.
+      **Why carrier 2 was invisible for so long**: the tracer's default `n_ctx` capped every run at 256 tokens per
+      sequence — exactly below the boundary. Fixed in `332f9ef56`.
+      **The recurrent/GDN path is EXONERATED — do not fund it.** The fused GDN op is bit-exact at prefix 8, 230,
+      250, 254 and 300; nothing in `ggml_ssm_scan` needed changing. Origin is not prefill and not the
+      `embeddings_nextn` graph change either: SX (head loaded, same batched prefill, serial verify) is
+      byte-identical to TX on all 7.
+      **Cost**: trunk decode unaffected (TXF 12.74–12.91 vs P 12.60–12.86); **prefill −15…−20%** at 236/429 tokens.
+      Note the serial oracle costs −7% on DECODE, so **lossless MTP is +55% over the previously recommended
+      exactness path** — the exactness/speed trade we thought we faced does not exist.
+      **⚠ The kernel commit is a DIAGNOSTIC, NOT MERGE-READY**: `f7f2d4708` (`GGML_MM_TRACE` + `GGML_ROWEXACT_GENERIC`)
+      and `332f9ef56` on `inf70/batch-envelope`, not merged, not pushed, **no static tests**. A shipping version
+      should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
+      or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
+- [ ] **BE-1 — ship carrier 1 (the tinyBLAS/router fix) in bounded, test-gated form.** The diagnostic branch
+      `inf70/batch-envelope` fixes the real bug but is not shippable as-is. Concretely missing:
+      (a) **bound the knob and give it a real default** — `GGML_ROWEXACT_DEFAULT_N` is currently `0`, so the fix is
+      inert unless an env var is set. Cap at **~8**: enough for the n+1 verify batch, and it never reaches prefill
+      shapes, so the measured **−15…−20% prefill cost at N=512 disappears**;
+      (b) **separate the diagnostic from the fix** — `f7f2d4708` bundles the genuine tinyBLAS repair with the
+      `GGML_MM_TRACE` branch tracer; the tracer is an investigation tool and must not ship in a serving kernel;
+      (c) **static tests** — `test-backend-ops -o MUL_MAT -b CPU` (and `-o MUL_MAT_ID -b CPU`, which must stay
+      815/815 so B3-k's slab path is untouched);
+      (d) **the n=1 byte-identity gate vs `10acba0ab`** — the check that protects every lever already merged; it has
+      not been run on this branch. Then re-run the lossless gate and the concurrency identity check.
+- [ ] **BE-2 — carrier 2 is NOT fixed, only AVOIDED, and the workaround's cost is unmeasured.** `ops.cpp` has **zero
+      added lines**: `ggml_flash_attn_ext` was diagnosed (not row-exact once `n_kv > 256`, only the boundary-crossing
+      row wrong, `node_584 FLASH_ATTN_EXT [256,24,3]`) but never repaired. **Every "MTP is lossless" arm was run with
+      `-fa off`**, so that claim currently carries an unstated configuration requirement, and the agent states it
+      never opened the kernel and does not know the sub-mechanism. Three things owed:
+      (i) **measure what `-fa off` actually costs** on decode and prefill at production context lengths — it is
+      quoted only as "within noise on the gate table", which is not a measurement at serving context;
+      (ii) **find the sub-mechanism** — cheap discriminator first: `llama-rowexact --fa 1` at prefix 254 against the
+      FA kernel's KV-block size, and `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at `n_kv=257, n_q=3` vs `n_q=1`;
+      (iii) **decide fix-vs-avoid on evidence**: repair the kernel, or adopt `-fa off` as a documented serving
+      requirement with its cost stated. **Until one of those lands, "MTP is lossless" must be quoted as "lossless
+      with `-fa off`".** Successors to BATCH-ENVELOPE.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
@@ -818,15 +951,104 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
-- [ ] **E3 — measure α before tuning anything** — **BLOCKED on LONG-PROMPT-GARBAGE (2026-09-03, agent
-      `e3-alpha`): harness complete and re-runnable (`/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/run_all.sh`, 24
-      prompts from `question_pool.jsonl` 8/8/8 coding/reasoning/general, no-think template, `-lv 4` +
-      `LLAMA_TRACE=1` for per-position acceptance, coherence classifier v3); no α reported because 0/13 plain
-      outputs were coherent and α against corrupted logits counts nothing; lock released after 349 s. Sampler
-      note: Flash-Next has no role in `model_registry.yaml`; served qwen roles carry only `temperature`
-      (frontdoor 0.3, coder 0.2) — production arm = the standing spec-dec methodology 0.6/0.95/20/seed 42 with
-      a 0.3 bracket. `shared-Q4_K_M` head absent. Coordinator decision: when the fix lands, run the REDUCED first
-      pass (plain + shared-Q8_0 n-max 1–3, ~1.2 h) as the go/no-go before the full 10-arm ~3.2 h sweep.** (`feedback_measure_alpha_before_specdec_investment`):
+- [ ] **B8 — the head-to-head the campaign never did: qwen4exp (125B/A6B) vs the LIVE 122B/A10B, and where its
+      2.12x MTP multiplier comes from.** Filed 2026-09-03 on an operator challenge ("I'm surprised we're still
+      getting such low tok/s on a model with only 6B active weights ... the older 122B-10B Q4 ran 20+ t/s").
+      **First correction: that 20+ is a SPECULATIVE number.** The live `architect_critic` role
+      (Qwen3.5-122B-A10B UD-Q4_K_M, `orchestration/derived/stack_priors.yaml`) records `baseline_tps: 11.3`,
+      `optimized_tps: 24.0`, `speedup: 2.12x` under `spec_type: draft-mtp`, **`draft_max: 4`, `k: 4`**,
+      `optimized_tps_long_context: 15.76`, measured 2026-07-31, category OPTIMUM. **Plain vs plain, qwen4exp is
+      already ~12% AHEAD: 12.61 vs 11.3 t/s.** The honest counterpart to 24.0 is our MTP number (~18.1), not our
+      plain one.
+      **Two real gaps remain.** (a) **The MTP multiplier: 2.12x vs our 1.44x** — the largest unexplained lever in
+      the program. Production runs `draft_max: 4`; every qwen4exp MTP measurement so far used n-max 2. Relayed to
+      `e3-run` 2026-09-03 to sweep n-max 4 (and 5-6 if acceptance holds) — we may simply have been sampling below
+      the operating point a comparable model already uses in production. (b) **Bandwidth efficiency: ~64 vs
+      52.4 GB/s.** From the registry's 69 GB / 122B params (~4.5 bpw) the 122B streams ~5.65 GB/token and converts
+      it at ~64 GB/s; qwen4exp streams a MEASURED 4.16 GB/token at 52.4 GB/s. **At the 122B's efficiency qwen4exp
+      would run ~15.3 t/s, so ~20% is on the floor.** (The 122B's bytes/token is DERIVED, not measured like ours —
+      treat (b) as indicative until a like-for-like measurement is taken; that measurement is task (i) below.)
+      **The likely cause is the architecture itself, and this is the finding worth having.** Fewer active
+      parameters spread over MORE and SMALLER ops is worse on a bandwidth-bound CPU. Already measured here: 33.4 ms
+      of a 97.3 ms token in **3,468 nodes that move no weights**, out of ~7,000 nodes/token; small gemvs at 40% of
+      read bandwidth against 94% for the one big `lm_head`. Every layer pays GDN recurrence + QSA indexing + a PLE
+      gather + 4-stream hyper-connection mixing + a 10-of-512 expert gather. The 122B has 64 conventional attention
+      layers and a plainer MoE: 10B active in fewer, bigger GEMMs. It streams 36% more bytes and converts them far
+      better. **qwen4exp trades arithmetic efficiency for parameter efficiency, and on this machine that trade is
+      currently winning by only 12% on plain decode while costing most of a speculative multiplier** — a model-choice
+      finding, not merely an optimization gap.
+      Tasks: **(i)** measure the 122B's ACTUAL bytes/token and plain decode under our canonical recipe + coherence
+      gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** ✅ RESOLVED 2026-09-03 — **the gap is ARCHITECTURAL, not a tuning gap.** Confirmed from source
+      (`e3-run` Addendum A): `draft-mtp` and `draft-tree` are separate impl classes selected from an ordered
+      priority list and **do not compose**; the tree drafter's contract requires a STANDALONE draft model (vocab
+      check, own sampler on `ctx_dft`, drafts via `llama_decode(ctx_dft, batch)`), while the MTP head is a single
+      block with no independent forward and **no `k` parameter exists on the MTP path**. So the production 122B's
+      2.12× (`k: 4` tree) is **not a target our MTP path can be tuned toward**. Against the LINEAR ceiling, our
+      1.967× on coding is near the practical maximum. Original wording retained: **the comparison was NOT
+      like-for-like: `architect_critic`'s 2.12x uses `k: 4`
+      TREE drafting, while every qwen4exp MTP arm run so far is LINEAR (`e3-run`, 2026-09-03). Establish FIRST
+      whether our runtime supports tree drafting for `draft-mtp` at all; if it does not, the 1.44x-vs-2.12x gap is
+      STRUCTURAL rather than a tuning gap — a materially different conclusion.** Then n-max, then acceptance per
+      position vs the 122B's, then whether native-MTP vs our ported path differs; **(iii)** decide whether the dispatch floor is reducible enough to make the
+      architecture pay, or whether the honest conclusion is that this model class needs bigger fused ops (Axis A /
+      INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
+      qwen4exp's suitability as settled.
+
+- [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
+      Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
+      premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
+      weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
+      and there is no shippable variant without it. The decision-relevant question is **precision, not presence**.
+      **The case.** `per_layer_token_embd` is IQ4_NL *in this artifact* — unsloth's quantization choice, made on a
+      GPU rationale where 27 GB of VRAM is enormous. On this box 27 GB is a rounding error, so we may be inheriting a
+      decision whose justification does not apply to us. Mechanistically the stakes are higher than for ordinary
+      weights: a GEMM weight's quantization error averages out over hundreds of accumulated terms, whereas a PLE row
+      is gathered and mixed **directly into the residual stream** as a feature vector, so its noise enters undiluted —
+      a lookup table is plausibly MORE quant-sensitive than the tensors B4 optimised, and 4 bits is exactly where we
+      should least want to economise. It is also near-free on the axis that binds us: the PLE contributes ~0 to the
+      4.16 GB/token stream (it is a `ggml_get_rows` gather, `qwen4exp.cpp:1115`, not a GEMM), so precision costs RAM
+      and gather-latency, not bandwidth.
+      **Experiment**: `per_layer_token_embd` at Q8_0 (and BF16 if cheap) vs IQ4_NL, everything else held identical
+      (B4's `--tensor-type` override tooling already does this in one `llama-quantize` pass; the r16 artifact is the
+      baseline). Measure (i) quality on a real eval — NOT greedy-identity, which only proves they differ; (ii) the
+      per-token gather-latency delta (IQ4_NL→Q8_0 roughly doubles table and gathered bytes; D8 put GET_ROWS at
+      2.59 ms/token, so price the increase against it); (iii) bytes/token, expected ~unchanged — if it moves, the
+      PLE is being streamed and that is its own finding.
+      **PREREQUISITE, price it before committing**: precision cannot be recovered from IQ4_NL, so this needs a
+      higher-precision source for that tensor — check what unsloth published (the trunk in Q8_0/BF16, or the FP8
+      source) and the download cost FIRST; if it means a multi-hundred-GB pull, that is an operator decision, not an
+      assumed step. **Do NOT pursue**: the PLE as a free speculative drafter — it maps an n-gram hash to a 160-wide
+      *embedding* mixed into each layer, not a next-token distribution, so there is nothing to draft from;
+      llama.cpp's `ngram-mod` is unrelated (it mines the current context for repeats, hence its retracted 2.8×).
+      **Already settled, do not re-derive**: the PLE gather is not on the broken iqk repack path (it is a gather, not
+      a matmul); it is bit-identical at n=3 in the node trace; and its one real cost — single-threaded `GET_ROWS` at
+      9.34 ms/token, ~10% of the token — was fixed by D8 to 2.59 ms, the largest single gain of 2026-09-02.
+- [x] **E3 — measure α before tuning anything.** ✅ 2026-09-03 (`e3-run`, build 10217 `540b1e697`, shared-Q8_0,
+      24 production prompts 59–682 tok, chat path, linear drafting). **Both gating numbers delivered.**
+      | n-max | α | mean acc len | ×all | ×coding | ×reasoning | ×general | paired min |
+      |---|---|---|---|---|---|---|---|
+      | 1 | 0.924 | 1.92 | 1.307 | 1.321 | 1.318 | 1.267 | 1.218 |
+      | 2 | 0.870 | 2.74 | **1.607** | 1.660 | 1.649 | 1.471 | 1.265 |
+      | 3 | 0.812 | 3.42 | 1.786 | 1.880 | 1.865 | 1.556 | **1.271** |
+      | 4 | 0.752 | 3.99 | 1.799 | **1.967** | 1.900 | 1.467 | 1.136 |
+      Plain baseline **12.591 t/s**. **Position-1 acceptance is FLAT at ≈0.91 at every depth** — asking the head
+      for more does not degrade its first prediction; each further position costs ~0.10. **α differs sharply by
+      class and the spread widens with depth** (9pp at n-max 1 → 27pp at n-max 4): coding 0.846 / reasoning 0.805 /
+      general 0.572 at n-max 4. **Long prompts accept BETTER than short, monotone at every depth** (n-max 4: α
+      0.862 vs 0.707, 1.98× vs 1.72×) — **the 12-token measurements were sampling the worst case.** Speed knee
+      between n-max 3 and 4 (+0.7%). A-B-A closed at **−0.08% drift** with identical placement, so the ratios are
+      not drift artifacts; `plainB` vs `plain` **24/24 byte-identical** across instances 45 min apart, so the trunk
+      path is exactly reproducible and MTP divergence is attributable to MTP, not nondeterminism.
+      **OPERATOR RULING 2026-09-04 — ADOPTED: n-max 3 as the fleet default, n-max 4 for coding roles.**
+      With `shared-Q8_0` as the head. This is the recommended point below, accepted as given; α-by-class is measured
+      so it is a static per-role setting, not a runtime decision. Expected: **1.786x fleet-wide** (α 0.812, mean
+      accepted length 3.42, paired min 1.271) and **1.967x on coding roles** (α 0.846). Remaining operator step is
+      whether/when this reaches production — the merge at `10acba0ab` is the experimental tree only.
+      **RECOMMENDED OPERATING POINT: shared-Q8_0 head** (+0.75 GB/node; the self-contained head is 1.35 GB larger
+      and buys nothing), **n-max 3 as fleet default** (better tail — paired min 1.271 vs 1.136 — and better
+      general-class 1.556 vs 1.467, for 0.7% aggregate), **n-max 4 for coding-heavy roles** (1.967×). Since α by
+      class is now measured, this can be a static per-role setting. Evidence
+      `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md`. (`feedback_measure_alpha_before_specdec_investment`):
       acceptance per draft position and mean accepted length on the production prompt mix, greedy AND the
       production sampler (temp + seed 42), `--spec-draft-n-max` ∈ {1, 2, 3, 4}, both heads, on the C5
       recipe and the C5 build with the C5 trunk. The B200 figures (66% acceptance, 1.67×) are the reference;
@@ -834,16 +1056,65 @@ named. MTP is not a serving option until that gate passes.
       cost of one — measure, do not extrapolate.
 - [ ] **E4 — the comparison arms, one `--spec-type` at a time**: plain, `ngram-mod` (free, no head — but
       the recorded 2.8× n-gram win was a warm-context self-copy artifact, true gain ≤ +1.7%), `draft-mtp`
-      with each head. **No DFlash or DFlash2 drafter exists for this model as of 2026-09-02** (z-lab and
-      incoai inventories and a 320-repo HF search checked; the publishers shipped a GLM-5.3 DFlash2 on
-      08-27 but nothing for `qwen4_exp`), so the INF-62 arm is excluded until one appears. Same build,
+      with each head. **No DFlash or DFlash2 drafter exists for this model — RE-CHECKED 2026-09-04, still none.** z-lab's `dflash`
+      repo lists DFlash2 targets as **Muse-Glimmer-30B and Qwen3.8-27B** — the 27B is a DIFFERENT model, not
+      Flash-Next/`qwen4exp` (125B/A6B, Gated DeltaNet + QSA + PLE); DFlash1 covers Qwen variants, Gemma 4, MiniMax
+      M2.5/M2.7, Kimi K2.5-2.7, GPT-OSS, Llama-3.1-8B, GLM 5.1, Alpamayo. **Nothing for `qwen4exp`.** The INF-62 arm
+      stays excluded. Note the 3.43× DFlash2 headline is on the **27B**, so it is not a like-for-like target for us —
+      and our MTP path cannot reach tree drafting anyway (B8(ii)).
+      **⚠ BUT the re-check found two knobs the community uses that we have NEVER set — both present in our tree:**
+      1. **`--spec-draft-p-min`** (`common/common.h:333`, default **`0.0f`**; live in the driver at
+         `common/speculative.cpp:343,644,718`, where it breaks out of drafting when the top candidate is
+         low-confidence). **Every arm we have ever run passed only `--spec-draft-n-max`**, so p_min has been 0.0
+         throughout: the drafter emits the full n-max tokens even when its own top candidate is weak, and we pay
+         verification on drafts that are then rejected. Our per-position acceptance falls 0.91 → 0.590 by position 4,
+         so this is measurable waste. **The n-max knee we found between 3 and 4 may be an artifact of drafting
+         unconditionally.** Community invocation uses `--spec-draft-p-min 0.75`. Relayed to `be1-ship` to sweep
+         p_min ∈ {0, 0.5, 0.75, 0.9} and re-test deeper n-max at the best value.
+      2. **`LLAMA_ATTN_ROT_DISABLE=1`** (`src/llama-kv-cache.cpp:316-319`, `llama-kv-cache.h:278`) — force-disables
+         **attention rotation in the KV cache**; a community Flash-Next MTP repo calls it a "critical flag required".
+         **Never set in any of our arms.** Relayed to `be2-fa` as a candidate mechanism for carrier 2: KV-cache
+         rotation is exactly what would treat a wrapped/rotated region differently at a block boundary, and 256 is
+         almost certainly a KV block-size constant. **If `LLAMA_ATTN_ROT_DISABLE=1` makes n_kv 257 exact under
+         `--fa 1`, the fix is one env var instead of a kernel repair or `-fa off`** — the best available outcome for
+         the speed goal.
+      **Corroboration, not a gap**: the community repo reports acceptance **0.90 code / 0.74 prose**, consistent with
+      our 0.846 coding / 0.572 general at n-max 4. Nobody is getting dramatically better acceptance on this model, so
+      the opportunity is in wasted work and kernel exactness, not in a better drafter. (An earlier search summary
+      claiming "0.93–0.99 acceptance" is NOT corroborated by the repo itself and is treated as marketing; the same
+      summary self-contradicted on the head size, 4B vs 2.6B.) Same build,
       same window, same trunk artifact. Concurrency 1 only, per unsloth's own loss at 8.
 - [ ] **E-GATE**: acceptance-weighted t/s against the non-speculative C5 number for the same trunk,
       reported per the artifact rule and with the sampler named. Note the PLE regime: under `--no-mmap`
       the 51B table is resident and every draft token pays its own PLE gather and hc stream mixing; that
       cost is part of the measured number, not something to subtract.
+      **OPERATOR RULING 2026-09-03 — exactness is NOT a gate for MTP.** Verbatim: *"approximate MTP isn't an issue
+      as long as it has a decent acceptance rate and doesn't lead to garbage outputs."* This settles the
+      (a)/(b)/(c) fork left open in E2a: **ship (c), approximate MTP**, provided the two criteria below hold. The
+      consequence is a re-prioritisation, not just a note — **the exactness hunt no longer blocks MTP serving**:
+      - **Criterion 1 — no garbage. ALREADY MET on the evidence to hand**: all 12 production-length chat
+        generations on the MTP arm classified COHERENT (`mtp-tip2`), and the divergences are one greedy argmax
+        flip per prompt followed by ordinary drift, not corruption. Keep it as a standing gate on every MTP arm
+        (classify by REASON, production-length prompts), not a one-off.
+      - **Criterion 2 — decent acceptance. NOT YET MEASURED on real prompts; this is now the critical path.**
+        `e3-run` is measuring α per draft position on the 24-prompt production mix at n-max 1–4 against build
+        10217. Until it lands there is no basis to call MTP deployable, and no basis to quote a multiplier at
+        production length — the 1.44x is short-prompt-only.
+      **Two things exactness still governs, and they must not be quietly dropped:**
+      1. **Measurement discipline.** An MTP run is not token-comparable to a plain run, so **no A/B may have MTP on
+         one arm and off the other**, and no greedy-identity gate may be run through the MTP path. That is a
+         benchmarking constraint, not a serving one, and it now applies permanently.
+      2. **BATCH-ENVELOPE is demoted, not closed** — it is correctness hygiene and a real unknown in the forward
+         (it also governs concurrent prefill), but it is no longer a deployment blocker. Pursue it on its own
+         merits at the recurrent/GDN path; do not hold MTP for it.
 
 ## Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+
+**UPDATE 2026-09-04 (`batch-envelope`): simultaneous admission is COHERENT again 4/4 on `10acba0ab` — X-CONC's
+garbage is gone. But COHERENT ≠ CORRECT: 3 of 4 concurrent streams still DIFFER from the same prompt served alone,
+and staggering does not help — ROW COUNT, not admission pattern, is what matters. With the row-exact forward the
+streams are SAME 4/4, at ~5–8% per-slot decode cost. So concurrent serving today returns valid-but-different output
+per slot; that is a policy question, not a corruption one.**
 
 **Root cause of the prefill-corruption defect found 2026-09-03 (`gdn-rowexact`): it is NOT a multi-sequence bug —
 packing 4 sequences in one ubatch is bit-exact (0/5450 nodes differ). Four simultaneous ~12-token prompts make a
@@ -875,6 +1146,24 @@ coherence-checked every round):
       simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
       check is inflated (the degenerate rounds ran faster per slot while producing garbage).
 
+## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
+
+Verbatim. This **reorders the campaign's priorities** and is not just a restatement of intent:
+- **Speed ranks above losslessness.** The operator already ruled approximate MTP acceptable (decent acceptance +
+  no garbage). So where a lossless and an approximate configuration differ in speed, **the faster one wins** —
+  losslessness is a bonus, not a requirement, and no task may treat it as a gate.
+- **The comparison that decides this has never been run**: lossless and approximate multipliers have only ever been
+  measured at DIFFERENT n-max on DIFFERENT prompt sets (approximate: n-max 2/3/4 on 24 production prompts;
+  lossless: n-max 2 on 7 gate prompts with `-fa off`). `be1-ship` Phase 2 runs the cross on one prompt set.
+- **`-fa off` is a cost, not a free win.** Every lossless result to date depends on it, and its cost has only been
+  characterised as "within noise on the gate table" — not measured at production or long context, where flash
+  attention actually earns its keep. `be2-fa` measures it; if it is free the decision is trivial, if it is not then
+  `-fa on` with accepted non-exactness is a legitimate answer under this goal.
+- **Standing ledger of what speed is still available**, so nothing is lost: BIOS 5600 MT/s + the C8 uncore checklist
+  (held for the operator's reboot — the DIMMs run at 4800 of 5600 and the uncore caps at ~37% of nominal); the
+  dispatch floor (~65% of the token at the best measured point, Axis A / INF-67 fused decoder); B7 PLE precision
+  (quality, not speed); and B8's finding that ~20% of the bandwidth gap to the 122B is architectural.
+
 ## Deployable serving speed (claim-grade, 2026-09-03)
 
 Single-stream `llama-server` decode of qwen3.8-next-flash, `-np 1 -c 4096 -t 48 --no-mmap`, canonical env,
@@ -899,17 +1188,29 @@ ggml-linkage + placement proven per arm:**
   control here (12.079). r16 vs uniform (both slab-on): +4.1% decode at ~equal GB/s, tracking the −3.0%
   bytes/token.
 
-**⚠ DEFECT 2026-09-03 — on real prompts these are the decode speed of GARBAGE.** Long-prompt coherence check on
-this exact tip/binary (placement 23.0 GB × 4 and linkage proven): prompts of **42, 81 and 233 tokens ALL degenerate**
-(`>> .> .> .>`, `The function l The function l`, `2222-2222-`) at 12.4–12.6 t/s; the 12-token prompt used by
-every gate in this campaign is coherent. E3 independently saw the same on the OLD base (`mtp-exact` =
-`c035bbf3d` + MTP port, none of D8/D7a/D1/B3-k, plain mode) above ~23–39 tokens, so it is the **stock fusion-tree
-qwen4exp path — not a merged lever, not the MTP port**. `llama-bench` never checks coherence, so no pp/tg number in
-this campaign ever tested it — **and every pp512 prefill number on this lineage is therefore the speed of a
-WRONG forward** (E3): prompts above ~32 tokens have never produced correct text here as far as anyone tested. **Until LONG-PROMPT-GARBAGE closes, this tree serves coherent output only for prompts
-≤ ~12–20 tokens; the headline is WITHDRAWN as a serving claim and retained only as a kernel-throughput proxy.**
-Evidence `/mnt/raid0/llm/tmp/inf70/longprompt/` (prompts.json, arm.sh, results.json, timeline.log). **Root cause (13:27Z): the iqk IQ4_XS ≥32-row repack GEMM, not the GDN kernel — see LONG-PROMPT-GARBAGE;
-workaround today `-ub 1` (decode unchanged, prefill ~10× slower) or `GGML_IQK=0`; targeted fix `99425578d` under validation.**
+**RE-ANCHORED 2026-09-03 on the merged tip `42332502c` with PRODUCTION-LENGTH prompts — the gate the first
+anchor lacked.** The earlier 12.00/12.38 and 12.55/13.06 figures were withdrawn because every gate behind them used a
+12-token prompt while the tree produced garbage above ~32 (the iqk IQ4_XS ≥32-row repack defect, LONG-PROMPT-GARBAGE,
+now fixed and merged). They are **replaced, not restored** — the configuration differs (chat-completions path with
+thinking disabled, the production serving path, vs the raw `/completion` path before).
+
+| artifact | decode (n=23 timed) | prompt range | correct behaviour | coherence gate |
+|---|---|---|---|---|
+| uniform IQ4_XS (era anchor) | **12.61 ±0.10 t/s** (12.43–12.93) | 54–682 tok | **27/27** | 23 COHERENT + 4 correct SHORT, **0 SALAD, 0 EARLY-EOS** |
+| `IQ4_XS-uniform-gateup-r16` (best artifact) | **12.73 ±0.10 t/s** (12.50–12.97) | 54–682 tok | **27/27** | 23 COHERENT + 4 correct SHORT, **0 SALAD, 0 EARLY-EOS** |
+
+27 production prompts — 8 coding / 8 reasoning / 8 general from `question_pool.jsonl` plus the three P0 prompts —
+greedy, `max_tokens` 200, `enable_thinking` false, `-np 1 -c 8192 -t 48 --no-mmap`, canonical env, forced eviction,
+**placement proven 23.0–23.1 GB × 4 and resident `libggml-cpu.so` proven to be the merged-tip build in-window on both
+arms**. Coherence classified by REASON in the same window as the timing (`classify.py`); the 4 SHORT rows are
+multiple-choice/short-answer items answering correctly (`E`, `B`, `<answer>English</answer>`, `B`) at n=2, where the
+classifier correctly declines to compute degeneracy statistics rather than mislabelling them. Evidence
+`/mnt/raid0/llm/tmp/inf70/reanchor2/`.
+
+**Finding worth carrying: r16's advantage over uniform SHRINKS at production context lengths — +0.9% here (12.73 vs
+12.61) against +3.1% at a 12-token prompt.** r16's edge is a bytes/token effect (−3.0%); as context grows, more of
+the token's time goes to attention/KV work that the smaller weight stream does not help, diluting it. An artifact
+advantage measured at toy prompt length overstates what production sees.
 
 Note the fused-decode gate is opt-**out** (`GGML_FUSED_DECODE_OFF`), confirmed set in every arm's
 `/proc/<pid>/environ`; the graph path is active. Ceiling context: the best served point (r16) reaches
