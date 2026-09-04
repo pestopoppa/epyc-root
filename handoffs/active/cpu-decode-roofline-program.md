@@ -938,8 +938,11 @@ named. MTP is not a serving option until that gate passes.
       MTP verify batch, leaving the batch non-row-exact.** **The correct rule is `N >= 4·(n_max+1)`** — ≥20 for
       n_max 4 — **not 8.** Prefill is untouched at any such value (a 512-row ubatch presents `ne11=2048` there), and
       the cost claim did verify: prefill at N=8 was 165.5/183.0 vs baseline 167.4/180.3, inside the ±7% noise
-      `G_fix0` itself shows. **Default corrected back to 0** with the measured rule documented at the knob; a
-      falsification arm at N=3 (below the `ne11=4` nodes) is queued and predicts byte-identity with baseline.
+      `G_fix0` itself shows. **Falsified cleanly on three points: N=0 identical 7/7, N=3 identical 7/7, N=8 divergent 6/7** — the
+      N=3 arm sits below the `ne11=4` nodes and its predicted byte-identity held, so the mechanism is confirmed and
+      not merely consistent. **Default ships 0** with the rule documented at the knob. Gap 1's *cost* claim did
+      verify: prefill 167.4/180.3 → 165.5/183.0 pp t/s, the −15…−20% is gone. Every arm set `GGML_ROWEXACT_N`
+      explicitly, so **no measurement depended on the default**.
       Static gates green: `MUL_MAT` 1139/1139, `MUL_MAT_ID` **815/815**, `test-llama-archs` 0 FAIL; the
       `GGML_MM_TRACE` tracer stays on the diagnostic branch.
       **Lesson: a "safe" bound chosen from the verify-batch row count alone is wrong when a graph contains nodes
@@ -959,9 +962,13 @@ named. MTP is not a serving option until that gate passes.
       operator's speed-first ruling the answer is M4_0: n-max 4, approximate, ~22.9 t/s (1.837×).** Note this is
       carrier 1's knob only; carrier 2's (`GGML_FA_SPLIT_KV=0`) is separately **free** under MTP (`be2-fa`), so a
       *partially* exact config costs nothing — full losslessness is what costs 6%.
-      **⚠ Tension with the adopted n-max ruling, for the operator**: aggregate throughput favours **n-max 4** here
-      (1.837× vs 1.759× at 3), while `e3-run`'s tail analysis favoured **n-max 3** (paired min 1.271 vs 1.136).
-      Both are measured on the same prompt mix. n-max 4 is the faster mean; n-max 3 is the safer worst case.
+      **⚠ The n-max tension LARGELY DISSOLVES once `p_min` is on — this is the operationally important refinement.**
+      Without p_min, aggregate favoured n-max 4 (1.837× vs 1.759×) while `e3-run`'s tail favoured n-max 3 (paired
+      min 1.271 vs 1.136). **With `p_min 0.5`, n-max 4–8 × p_min 0.5–0.6 is ONE INDISTINGUISHABLE BAND** —
+      coin-flip paired win rates across it. **The optimum is a plateau, not a peak: the confidence gate sets the
+      working depth, so n-max stops mattering.** n-max 4 was chosen for the lowest drafted-per-token, not because it
+      measured fastest. The adopted ruling (3 fleet / 4 coding) therefore remains sound; adding `p_min 0.5` makes
+      the choice between them largely moot rather than overturning it.
       **`--spec-draft-p-min` RESULT — a free +3.0%, and the new best configuration:**
       | arm | n-max | p_min | tw t/s | × plain | α | drafted/tok |
       |---|---|---|---|---|---|---|
@@ -977,7 +984,8 @@ named. MTP is not a serving option until that gate passes.
       this campaign** (default 0.0).
       **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
       `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
-      paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. By class: coding 25.36, reasoning
+      paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
+      432 requests across the arm matrix with ZERO garbage outputs. By class: coding 25.36, reasoning
       24.86, general 19.86 t/s.** Coherence 20 COHERENT + 4 SHORT on every arm.
       **Depth beyond 4 without p_min is a dead end** (n-max 6: 22.281, n-max 8: 21.120, α collapsing to 0.620 /
       0.537). Whether depth pays *with* p_min truncation is the one open arm (n-max 5/6/8 at p_min 0.5, then a p_min
