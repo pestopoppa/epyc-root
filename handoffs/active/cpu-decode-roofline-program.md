@@ -1184,6 +1184,24 @@ named. MTP is not a serving option until that gate passes.
       `GGML_IQK=1`**, because an arm that passed only under `GGML_IQK=0` would be testing the workaround rather than
       the fix. **Unblocks B7, B9, B5 and every future quality or artifact decision on this model.** Coordinator
       contributed the type/threshold hypothesis; the agent confirmed it and found facts 1 and 4 independently.
+      **⚠ ATTRIBUTION NOT SETTLED — the agent doubts its own Q6_K call, and is right to.** Its blast-radius scan
+      found **four production-lineup files carrying Q6_K on BODY tensors** (`attn_v`, `ffn_down_exps`), which run at
+      `ne1` = prefill batch on **every prefill**, not at `ne1 = 1` like an output head: `ingest_long_context` (54),
+      `worker_vision` (48), `worker_general` (13), `architect_critic` (1). **It declined to escalate, on sound
+      reasoning: those four serve coherently today, and a corrupt `attn_v` at `ne1 = 512` on every prefill could not
+      go unnoticed.** So Q6_K is probably NOT broken at large Ny and the defect is elsewhere in the post-gather chain.
+      **Coordinator's alternative, and the stronger suspect: `output_hc_up.weight` is IQ4_NL `[320, 10240]`,
+      repacking at `nrc_y >= 32` (`iqk_mul_mat.cpp:336`) — and BE-1 excluded IQ4_XS ONLY, leaving its sibling IQ4_NL
+      on the path.** Post-gather chain: `output.weight` Q6_K (64) · **`output_hc_up` IQ4_NL (32) — exposed, crossed
+      8× at n_outputs 256** · `output_hc_down` IQ4_XS (32) — excluded by BE-1 ✓ · `output_hc_norm` F32. IQ4_NL is
+      (a) an **iquant**, the family the source comment convicts, where Q6_K is a k-quant; (b) the nearest neighbour
+      to IQ4_XS, which BE-1 *measured* returning ~1e3 errors from that path; (c) lower-threshold, so crossed harder;
+      (d) also post-gather, so it sees `n_outputs` (1 in generation, 256 in perplexity) — the "only the instrument
+      reaches it" structure the diagnosis rests on. **If IQ4_NL is the culprit, those four production rows are NOT
+      exposed and there is no escalation** — where the agent's own evidence already pointed.
+      **Decisive test, queued at no extra cost: does the Q6_K-only exclusion make PPL finite under `GGML_IQK=1`?**
+      Finite ⇒ Q6_K implicated, probe 3 becomes a genuine production question. Still `nan` ⇒ Q6_K exonerated; then
+      IQ4_NL alone, then both, to attribute cleanly rather than shotgunning. **No production claim until settled.**
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
