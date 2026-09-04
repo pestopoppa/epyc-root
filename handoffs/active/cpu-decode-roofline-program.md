@@ -1122,6 +1122,24 @@ coherence-checked every round):
       simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
       check is inflated (the degenerate rounds ran faster per slot while producing garbage).
 
+## OPERATOR GOAL 2026-09-04 — "run qwen3.8-Next-Flash AS FAST AS POSSIBLE"
+
+Verbatim. This **reorders the campaign's priorities** and is not just a restatement of intent:
+- **Speed ranks above losslessness.** The operator already ruled approximate MTP acceptable (decent acceptance +
+  no garbage). So where a lossless and an approximate configuration differ in speed, **the faster one wins** —
+  losslessness is a bonus, not a requirement, and no task may treat it as a gate.
+- **The comparison that decides this has never been run**: lossless and approximate multipliers have only ever been
+  measured at DIFFERENT n-max on DIFFERENT prompt sets (approximate: n-max 2/3/4 on 24 production prompts;
+  lossless: n-max 2 on 7 gate prompts with `-fa off`). `be1-ship` Phase 2 runs the cross on one prompt set.
+- **`-fa off` is a cost, not a free win.** Every lossless result to date depends on it, and its cost has only been
+  characterised as "within noise on the gate table" — not measured at production or long context, where flash
+  attention actually earns its keep. `be2-fa` measures it; if it is free the decision is trivial, if it is not then
+  `-fa on` with accepted non-exactness is a legitimate answer under this goal.
+- **Standing ledger of what speed is still available**, so nothing is lost: BIOS 5600 MT/s + the C8 uncore checklist
+  (held for the operator's reboot — the DIMMs run at 4800 of 5600 and the uncore caps at ~37% of nominal); the
+  dispatch floor (~65% of the token at the best measured point, Axis A / INF-67 fused decoder); B7 PLE precision
+  (quality, not speed); and B8's finding that ~20% of the bandwidth gap to the 122B is architectural.
+
 ## Deployable serving speed (claim-grade, 2026-09-03)
 
 Single-stream `llama-server` decode of qwen3.8-next-flash, `-np 1 -c 4096 -t 48 --no-mmap`, canonical env,
