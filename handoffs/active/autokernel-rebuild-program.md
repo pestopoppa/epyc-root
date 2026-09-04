@@ -1692,8 +1692,9 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
         `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
         pass, guard exit 0, --help shows the flags.
-      - [ ] **RUN 29 HOLDS** until the wiring lands; champion 445e93a8 (anchor-gen-016), -j1 fix, and
-        the serving floor (3.536%) are all ready.
+      - [x] **RUN 29 LAUNCHED** ✅ 2026-09-04 (PID 3217060, continuous): tg128/27B calibrated (floor
+        0.638%@20p), two-tier gate live (screen tg128 / keep-gate tg128 / serving np4-DFlash2 3.536%),
+        DeepSeek planner + codex critic, champion 445e93a8. First end-to-end compound-then-gate run.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
