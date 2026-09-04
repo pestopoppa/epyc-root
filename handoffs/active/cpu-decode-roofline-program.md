@@ -1392,11 +1392,27 @@ named. MTP is not a serving option until that gate passes.
       **Queued, one lock hold**: C9 same-binary verification → B7 KLD A/B (both passes) → speed guard-rail on the
       24-prompt production mix for both artifacts.
 
-      **★ C9 CLOSED 2026-09-04 — VERIFIED TO THE SAME-BINARY STANDARD.** One binary, only the kernel flag
-      flipped: `fresh_iqk1` (production kernels) **PPL = 3.2317 ± 0.09736** vs `fresh_iqk0` (kernel-free path)
-      **PPL = 3.3038 ± 0.10011** — the two kernel paths agree within overlapping error bars, where the STALE
-      binary returned `nan` at these same settings and ~3e5 at smaller `Ny`. The accelerated path is not
-      corrupting; the remedy was a REBUILD, not a patch.
+      **★ C9 CLOSED 2026-09-04 — VERIFIED TO THE SAME-BINARY STANDARD.** Four arms, `-c 512 --chunks 20`,
+      same corpus and settings, only the BINARY and the kernel flag varying:
+
+      | arm | binary | env | PPL |
+      |---|---|---|---|
+      | `fresh_iqk1` | fresh `c51e4dabf` | `GGML_IQK=1` | 3.2317 ± 0.09736 |
+      | `fresh_iqk0` | fresh | `GGML_IQK=0` | 3.3038 ± 0.10011 |
+      | `stale_iqk0` | **stale** | `GGML_IQK=0` | **3.3038 ± 0.10011** ← identical to every digit |
+      | `stale_iqk1` | **stale** | `GGML_IQK=1` | **`nan`** |
+      | `fresh_c62` / `fresh_c64` (Ny=31/32) | fresh | `GGML_IQK=1` | 10.8592 / 10.4619, both sane |
+
+      **The `stale_iqk0` ≡ `fresh_iqk0` exact match is the load-bearing control**: two different binaries
+      reproducing to every digit rules out model, corpus, settings, build configuration and machine state
+      together, leaving the kernel flag × binary combination as the only live variable. Only that combination
+      produces `nan`. The accelerated path is not corrupting; the remedy was a REBUILD, not a patch.
+
+      **⚠ RESIDUAL — every PPL claim on this model MUST name its `GGML_IQK` state.** `IQK=1` sits 2.2% below
+      `IQK=0` (3.2317 vs 3.3038). That is NOT run noise: the exact-digit reproduction above proves these runs
+      are deterministic, so the ± is corpus-sampling uncertainty and the paired shift is real — the lossy Q8
+      repack at large Ny, behaving as designed. Reading the overlapping error bars as "the paths agree" would
+      understate a systematic, reproducible offset. Folded into the belief-kernel wiring note.
       **Why this and not the earlier figure**: the cross-binary comparison (`4.4798` fresh vs `4.9043` stale)
       confounds the kernel flag with every other difference between two builds, so it could not support the
       claim and was correctly refused at the time. Only the one-binary form isolates the variable.
