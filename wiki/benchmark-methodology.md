@@ -3943,3 +3943,51 @@ was fine for months.
 - `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the kernel-env probe, the type histogram, the fix
 - `/mnt/raid0/llm/tmp/inf70/agents/b4/REPORT.md` — the original `nan` finding and its probe matrix
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70): instrument defaults that sit below the phenomenon
+
+Twice in one investigation, a diagnostic tool's **default** silently placed the experiment below the threshold of
+the thing being hunted. Both times the tool reported a clean negative, and both times that negative was vacuous.
+
+1. A node-level row-exactness tracer defaulted to `n_ctx = 1024` with `n_seq_max = 4`, capping every run at **256
+   tokens per sequence** — exactly the boundary at which the flash-attention carrier being hunted switches paths.
+   The carrier was invisible for as long as the default stood.
+2. The same tool's tokeniser allocated a **fixed 512-token buffer**, hard-capping `prefix + n` at 512 — below the
+   model's top-k width of 2051. **Every run ever made on that model had a vacuous top-k selection** and could not
+   have detected a selection flip even had one existed. The first non-vacuous measurement came only after the
+   buffer was fixed.
+
+### Why this class is dangerous
+
+A tool that *crashes* below the phenomenon is harmless — you notice. A tool that quietly runs a smaller experiment
+returns **a clean result for a question you did not ask**, and a clean result is exactly what an investigator is
+hoping to see. It reads as "no effect here", not "this configuration cannot show an effect". Both instances above
+were found only because someone independently derived the phenomenon's scale and compared it to the tool's
+configuration — never because the tool complained.
+
+### The rule
+
+**Before trusting a negative, state the phenomenon's threshold and prove your instrument reaches past it.** Write
+the comparison down next to the result: *"the carrier switches at n_kv 257; this arm ran at n_kv 2304"*. If you
+cannot state the threshold, you cannot interpret the negative, and the honest report is *inconclusive* rather than
+*no effect*.
+
+Corollaries that fall out of the same failure:
+- **A knob that changes nothing may be inert rather than irrelevant.** Identical timings and byte-identical logs
+  under a flipped flag are the signature of a flag that never fired. Instrument the dispatcher rather than inferring
+  from the output — three published claims in this campaign rested on a kernel knob that had never had any effect.
+- **Prefer instruments that self-validate.** A probe designed so that a null result *also* demonstrates the probe
+  was live — e.g. printing the metric on both arms, or logging the code path actually taken — converts an ambiguous
+  negative into an interpretable one at near-zero cost.
+- **Defaults are claims.** A default `n_ctx`, buffer size, or batch width is an assertion about the regime that
+  matters, usually made by someone solving a different problem. Treat every default in a diagnostic path as
+  something to justify against the phenomenon, not to inherit.
+
+### Source References (2026-09-04)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — BE-2 (carrier 2, `--n-ctx` default), BE-3 (carrier 3, the
+  512-token tokeniser buffer), BE-1 (the inert `GGML_ROWEXACT_N`), C9
+- `/mnt/raid0/llm/tmp/inf70/agents/be3-dsa/{REPORT.md,MECHANISM.md}` — the fixed buffer and the first non-vacuous
+  top-k measurement on this model
+- `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/MECHANISM.md`, `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md`
+- `progress/2026-09/2026-09-03-inf70-audit.md`

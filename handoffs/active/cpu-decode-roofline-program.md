@@ -939,15 +939,43 @@ named. MTP is not a serving option until that gate passes.
       "foreign process during my window" resolves immediately into "GPU peer on 184-191, ignore" or "CPU peer on
       0-95, real contention" — which is the difference between a shrug and an incident. Cheap: two extra reads per
       sample in the existing sampler loops (`agents/*/arm.sh`, `reanchor2/arm.sh`).
-- [ ] **BE-3 — the third, unbisected carrier: the DSA lightning-indexer path.** At prefix 300 with the FA split
-      path off and carrier 1 removed, **98–100 intermediate nodes** in the DSA lightning-indexer chain
-      (`(reshaped)` → `UNARY` → `SUM_ROWS` → `indexer_score-3`) still differ between an n-row batch and n single
-      rows, on **1–4 of 512 elements**. They did **not** propagate — logits and the full 126 MB recurrent state are
-      identical on all rows — so this is NAMED, NOT CLAIMED. Risk: it could flip an indexer top-k selection at some
-      other prefix, which would surface as a rare divergence that looks like the carriers we just closed. Scope:
-      bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
-      decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
-      books is that both earlier carriers also looked harmless until measured.
+- [x] **BE-3 — carrier 3 CLOSED as a well-scoped negative ✅ 2026-09-04 (`be3-dsa`). It never propagates, and the
+      source says it cannot. NO FIX WARRANTED — document it, do not repair it.**
+      **What it is: a SEMANTIC carrier, not an arithmetic one** — unlike carriers 1 and 2, and **it is ours, not
+      upstream.** The DSA indexer pools each block's key as a **mean over the cells present in the cache**, and
+      `build_qsa_top_k` (`qwen4exp.cpp:730-812`) writes **all** of the ubatch's indexer keys (`cpy_k`) before reading
+      the whole cache back (`get_k`). So for the block containing a row's own position, an n-token batch pools over
+      sibling keys that a single-token decode has not yet written. Model facts: `indexer.head_count=4`,
+      `key_length=128`, `top_k=2048`, `compress_ratios=[0,0,0,4]×12`; the indexer `mul_mat` is `[128 × n_blocks]`
+      with **`ne11 = 4·n_tokens`** — i.e. **the very node family BE-1's bound `N >= 4·(n_max+1)` was derived from.**
+      `ROWEXACT_N=512` removes the arithmetic part and leaves this semantic residue.
+      **Why it CANNOT propagate**: every block whose membership can differ satisfies `b*r >= tail_start` (siblings
+      sit at positions > q), and `set_input_qsa` (`llama-memory-hybrid-idx.cpp:437-447`) gives exactly those blocks
+      **`+1e9`** — forced into the top-k whatever their score. `build_attn_qsa` then consumes `top_k` as a **SET**,
+      scattered into a `-INFINITY` mask via `ggml_set_rows`, so ordering is irrelevant. **The only propagation
+      channel is a changed selected set, and it is closed by construction.**
+      **Measured, 5 arms** (`GGML_ROWEXACT_N=512 GGML_FA_SPLIT_KV=0 --fa 1`): at prefix **64 / 300 / 2100 / 2600**,
+      `indexer_top_k` never differs and **logits and the FULL recurrent state (120–206 MB) are IDENTICAL**. The node
+      trace matches the prediction element for element (`first@525` = block `2100/4`; `SUM_ROWS diff 1/576`;
+      `max|d| = 1.000e+09` on cells 2100-2102 is the tail bias itself, killed by the KQ mask). **Control that rules
+      out any rounding/tile/thread story: the LAST row of every batch is `DIFFER 0`** — it has no siblings after it.
+      A 5-token batch pollutes exactly two blocks, as the mechanism predicts.
+      **⚠ THE POSITIVE RESULT — this completes the exactness picture: with `GGML_ROWEXACT_N >= 4·(n_max+1)` AND
+      `GGML_FA_SPLIT_KV=0`, an n-token batch is BIT-IDENTICAL to n single-token decodes — logits and full recurrent
+      state — verified at 300, 2100 and 2600 tokens.** Concurrent-stream identity and A/B measurement discipline are
+      intact. **All three carriers are now closed**: 1 fixed (BE-1), 2 flag-removable (BE-2), 3 non-propagating.
+      **The falsifier to guard**: containment rests **entirely** on the `+1e9` tail bias. Remove it, narrow it, or
+      make it finite-comparable against real scores and **carrier 3 becomes a live top-k flip risk immediately.**
+      Anyone touching `set_input_qsa` must re-run these arms.
+      **Also noted**: the fused decode path (`qwen4exp-fused.cpp:1121`) pools only `cell < n_visible` over an **f64**
+      accumulator — neither the pollution nor the graph path's f32 slice-sum, a third numeric variant contained by
+      the same argument.
+      **⚠ INSTRUMENT DEFECT FOUND AND FIXED (`1aceb684b`, not merged): `rowexact.cpp::tokenize` allocated a FIXED
+      512-token buffer**, hard-capping `prefix+n` at 512 — below this model's top-k width
+      `min(n_kv, indexer_top_k + r - 1) = 2051`. **So EVERY rowexact run ever made on this model had a vacuous
+      top-k and could not have detected a flip even if one existed.** `d_p2100_n3` is the first non-vacuous
+      selection ever measured here. **This is the SECOND time an instrument default sat below the phenomenon's
+      threshold** — the tool's `--n-ctx` default hid carrier 2 the same way.
 - [x] **BE-1 — carrier 1 made shippable; MERGED 2026-09-04 into `exp/cpu-fusion-qwen4exp-20260829` at
       `4d9cdf66f` (operator: proceed). MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
       (`be1-ship`, commit **`db6b715c9`** on `inf70/be1-ship`, base `10acba0ab`; not merged, not pushed).
