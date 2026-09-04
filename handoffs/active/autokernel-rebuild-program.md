@@ -1623,6 +1623,30 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       floor. Champion 445e93a8 = anchor-gen-016; -j1 build fix (R23-40) in place so keeps won't abort.
       Open sub-question: is there a surface that DIRECTLY tracks DFlash2 throughput? (would need a
       server-based spec-decode bench, not llama-bench.)
+- [ ] **R23-43 — RE-ARCHITECT: keeps demonstrated on llama-server under the champion's CANONICAL
+      RECIPE, not llama-bench (operator directive 2026-09-04, four messages).** Principle: "the only
+      performance that matters is serving performance; no point boosting llama-bench numbers not
+      reflective of a live environment." Proven necessary: dec-b4 keeps +23.3%/+10.1% (bench)
+      -> DFlash2 decode 71.22 t/s FLAT (R23-42). Design (operator's):
+      · **Champion = (kernel commit + canonical serving recipe).** The recipe is a GENERAL,
+        parameterized artifact describing the champion's optimal serving config on its hardware:
+        model, quant, `spec_decode.type` in {none, draft-dflash, draft-mtp, ...}, drafter (if any),
+        concurrency (np), ctx, ctk/ctv, server flags, and the metric (aggregate vs per-slot tok/s).
+        Flexible by construction: a non-DFlash2 model carries `spec_decode: none`/`mtp` + its own
+        optimal np -- NO DFlash2 assumption in the framework. It is also the PROMOTION recipe
+        (production needs it anyway), so it is not extra work.
+      · **llama-bench = experiment/screen layer** (fast, deterministic, planner hypothesis testing,
+        null-killing). NEVER decides a keep.
+      · **llama-server under the canonical recipe = keep gate + headline.** A keep is real only if it
+        improves SERVING throughput under the champion's own optimal recipe.
+      BUILD ORDER: (a) canonical-recipe schema + the current champion's recipe (27B/GPU/DFlash2 at
+      optimal np -- DF2-5 grid peaked np4-8 ~154 t/s aggregate; pin the optimal); (b) generalize
+      `dflash2_capability_smoke.sh` -> a recipe-driven serving A/B (champion vs candidate,
+      paired/alternating, reads the recipe); (c) calibrate the SERVING noise floor under the recipe
+      (A/A x~12, like dec-b4/b8) so a keep is decisive vs serving noise; (d) wire as the keep gate,
+      llama-bench demoted to screen. Supersedes the dec-b8-llama-bench confirm rung and subsumes
+      R23-18 (DFlash2 regression guard) and R23-26 (headline surface). Substantial -- a new
+      measurement core. Run 29 HOLDS until (a)-(d) exist; champion 445e93a8 + -j1 fix are ready.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
