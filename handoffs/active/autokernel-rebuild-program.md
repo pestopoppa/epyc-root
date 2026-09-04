@@ -1623,7 +1623,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       floor. Champion 445e93a8 = anchor-gen-016; -j1 build fix (R23-40) in place so keeps won't abort.
       Open sub-question: is there a surface that DIRECTLY tracks DFlash2 throughput? (would need a
       server-based spec-decode bench, not llama-bench.)
-- [ ] **R23-43 — RE-ARCHITECT: keeps demonstrated on llama-server under the champion's CANONICAL
+- [~] **R23-43 — RE-ARCHITECT (a-d BUILT; blocked on serving-floor noise): keeps demonstrated on llama-server under the champion's CANONICAL
       RECIPE, not llama-bench (operator directive 2026-09-04, four messages).** Principle: "the only
       performance that matters is serving performance; no point boosting llama-bench numbers not
       reflective of a live environment." Proven necessary: dec-b4 keeps +23.3%/+10.1% (bench)
@@ -1647,6 +1647,21 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       llama-bench demoted to screen. Supersedes the dec-b8-llama-bench confirm rung and subsumes
       R23-18 (DFlash2 regression guard) and R23-26 (headline surface). Substantial -- a new
       measurement core. Run 29 HOLDS until (a)-(d) exist; champion 445e93a8 + -j1 fix are ready.
+      **BUILT + committed 2026-09-04**: (a) `loop/serving.py` general canonical Recipe +
+      np-concurrent aggregate-tok/s measurement (research `8285d1bf`); (b) champion recipe
+      (27B/GPU/DFlash2 np4, matches DF2-5); (c) serving-floor calibration; (d) `--serving-recipe`
+      keep gate wired into commit_pooled, fail-closed, 400 tests (`a745a583`). Dry-run proves the
+      gate. **BLOCKER — serving noise floor too coarse**: np4 aggregate throughput A/A =
+      **10.375% at temp 0.6** (sampling->acceptance variance), **4.911% at temp 0/greedy** (still
+      ~8% run spread from np4 scheduling jitter; wall-clock aggregate is tail-dominated). A >5%
+      floor can only demonstrate LARGE serving keeps and would reject the typical small (1-3%) real
+      serving gain -- the inherent noise llama-bench existed to avoid. **OPTIONS for the operator**:
+      (1) accept the ~5% greedy floor (only substantial serving wins count -- defensible: we only
+      care about meaningful serving gains); (2) invest in noise reduction -- per-request summed
+      throughput (not wall-clock, removes scheduling tail), longer generation, warmup discard,
+      /metrics steady-state -- target <2%; (3) hybrid: bench screen decides the CANDIDATE, serving
+      gate requires only NON-REGRESSION + a positive trend (weaker). Recommend (2) then (1) as
+      fallback. **RUN 29 HOLDS** on this decision; measurement built and ready otherwise.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
