@@ -867,7 +867,9 @@ named. MTP is not a serving option until that gate passes.
       claim on this tree until it passes.
 - [x] **BATCH-ENVELOPE — SOLVED 2026-09-04 (`batch-envelope`). MTP on qwen4exp IS LOSSLESS; the divergence was
       never MTP, it was TWO CPU kernels that are not row-exact under batching. Both named with node-level evidence.**
-      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode**.
+      `TXF vs MXF: SAME on all 7 gate prompts` including the 429-token one, at **1.32–1.53× decode** — **but note
+      the arms ran with `-fa off`: carrier 2 is AVOIDED, not fixed (`ops.cpp` unchanged), so the claim is "lossless
+      with `-fa off`" until BE-2 resolves it.**
       **⚠ FIRST: retract the standing exclusion — it was a VACUOUS VERIFICATION, not a negative.** I published
       "the flips are NOT the batched mul_mat" three times, resting on `GGML_ROWEXACT_N=512`. **That knob has never
       had any effect on any tinyBLAS mul_mat.** `llamafile_sgemm` hard-refuses `n < 2`
@@ -900,11 +902,29 @@ named. MTP is not a serving option until that gate passes.
       should either **bound `GGML_ROWEXACT_N` to ~8** — enough for a 3-row verify batch at **zero prefill cost** —
       or make the tinyBLAS tiling row-invariant. That bounded form is the obvious next task.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/REPORT.md`.
-- [ ] **BE-1 — ship the row-exact fix in bounded form.** Bound `GGML_ROWEXACT_N` to ~8 (covers the n+1 verify batch,
-      zero prefill cost) or make tinyBLAS tiling row-invariant; add static tests (`test-backend-ops -o MUL_MAT
-      -b CPU`, and `-o FLASH_ATTN_EXT -b CPU` at n_kv=257 n_q=3 vs n_q=1 for carrier 2); gate on n=1 decode
-      byte-identity to `10acba0ab` so it cannot leak into the batch-1 path; then re-run the lossless gate and the
-      concurrency identity check. Successor to BATCH-ENVELOPE.
+- [ ] **BE-1 — ship carrier 1 (the tinyBLAS/router fix) in bounded, test-gated form.** The diagnostic branch
+      `inf70/batch-envelope` fixes the real bug but is not shippable as-is. Concretely missing:
+      (a) **bound the knob and give it a real default** — `GGML_ROWEXACT_DEFAULT_N` is currently `0`, so the fix is
+      inert unless an env var is set. Cap at **~8**: enough for the n+1 verify batch, and it never reaches prefill
+      shapes, so the measured **−15…−20% prefill cost at N=512 disappears**;
+      (b) **separate the diagnostic from the fix** — `f7f2d4708` bundles the genuine tinyBLAS repair with the
+      `GGML_MM_TRACE` branch tracer; the tracer is an investigation tool and must not ship in a serving kernel;
+      (c) **static tests** — `test-backend-ops -o MUL_MAT -b CPU` (and `-o MUL_MAT_ID -b CPU`, which must stay
+      815/815 so B3-k's slab path is untouched);
+      (d) **the n=1 byte-identity gate vs `10acba0ab`** — the check that protects every lever already merged; it has
+      not been run on this branch. Then re-run the lossless gate and the concurrency identity check.
+- [ ] **BE-2 — carrier 2 is NOT fixed, only AVOIDED, and the workaround's cost is unmeasured.** `ops.cpp` has **zero
+      added lines**: `ggml_flash_attn_ext` was diagnosed (not row-exact once `n_kv > 256`, only the boundary-crossing
+      row wrong, `node_584 FLASH_ATTN_EXT [256,24,3]`) but never repaired. **Every "MTP is lossless" arm was run with
+      `-fa off`**, so that claim currently carries an unstated configuration requirement, and the agent states it
+      never opened the kernel and does not know the sub-mechanism. Three things owed:
+      (i) **measure what `-fa off` actually costs** on decode and prefill at production context lengths — it is
+      quoted only as "within noise on the gate table", which is not a measurement at serving context;
+      (ii) **find the sub-mechanism** — cheap discriminator first: `llama-rowexact --fa 1` at prefix 254 against the
+      FA kernel's KV-block size, and `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at `n_kv=257, n_q=3` vs `n_q=1`;
+      (iii) **decide fix-vs-avoid on evidence**: repair the kernel, or adopt `-fa off` as a documented serving
+      requirement with its cost stated. **Until one of those lands, "MTP is lossless" must be quoted as "lossless
+      with `-fa off`".** Successors to BATCH-ENVELOPE.
 - [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
