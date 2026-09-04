@@ -1663,7 +1663,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       wall-clock's misleading 108 — the metric is both tighter AND more accurate (commit `e0b63239`).
       The 3.5% floor is inflated by one tail sample; typical run-to-run is ~1.5%. A ~3.5% floor is
       viable under R23-44 (batch keeps past 2-3x the floor before the serving gate).
-- [~] **R23-44 — COMPOUND-THEN-GATE: batch bench keeps until they compound past the serving floor, then gate once (operator directive 2026-09-04:
+- [x] **R23-44 — COMPOUND-THEN-GATE ✅ 2026-09-04 (BUILT+WIRED; run 29 operator-gated): batch bench keeps until they compound past the serving floor, then gate once (operator directive 2026-09-04:
       "collect llama-bench keeps until they compound to 2x-3x noise floor before the llama-server
       final champion advancement gate").** WHY: the serving floor is 3.5% (R23-43(2)) and a single
       bench keep is 1-3%, so a per-keep serving gate vetoes EVERY keep — the loop cannot advance. FIX
@@ -1682,17 +1682,16 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         iteration and may revert/revise a specific bundled keep or aim the next hypothesis at the
         serving gap — divergence becomes a strategy signal, not a dead end or a blind pile-on.
         DivergenceAction default flipped ROLLBACK->HOLD; ROLLBACK stays available. (research `a3838ec1`)
-      - [ ] **WIRE the two-tier advance into `commit_pooled`** (now unblocked): (i) a second persistent
-        champion-of-record build `cor_build` (the serving A-arm), initialized = start champion; (ii) a
-        `Bundle` tracking the accumulator; (iii) on a bench keep: advance_champion+promote_anchor
-        (accumulator advances, anchor tracks) as today, then re-measure compounded bench
-        `bench(cor_build vs anchor_build)`; (iv) `decide_after_keep` -> on FIRE_SERVING run
-        `serving.compare(cor_build, anchor_build)` and `resolve()`: PROMOTE advances cor_commit to the
-        tip + rebuilds cor_build + publishes the serving headline + resets the bundle; DIVERGED writes
-        the planner_evidence into the journal (`archive`) and keeps batching; (v) the HEADLINE follows
-        the champion OF RECORD (serving-demonstrated), not the accumulator. Replaces the per-keep
-        serving_confirm. Tests: promote path advances cor + resets bundle; divergence path holds cor +
-        journals evidence + keeps bundle; below-threshold keep only accumulates.
+      - [x] **WIRED into the live pooled loop** ✅ 2026-09-04 (research `91925166`): commit_pooled
+        inverted — the bench confirm rung is the keep gate, per-keep serving_confirm REMOVED;
+        `accumulate_after_keep` re-measures compounded bench (cor_build vs accumulator), fires
+        `serving.compare(cor_build, anchor_build)` once on FIRE_SERVING, PROMOTE advances the champion
+        of record + snapshots its build + publishes the headline + resets the bundle, DIVERGED journals
+        planner_evidence (measured_divergence) and keeps batching. cor_build lives in a protected
+        `cor-build` slot (prune only hits anchor-gen-*), snapshotted by copy at startup + each promote.
+        Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
+        `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
+        pass, guard exit 0, --help shows the flags.
       - [ ] **RUN 29 HOLDS** until the wiring lands; champion 445e93a8 (anchor-gen-016), -j1 fix, and
         the serving floor (3.536%) are all ready.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
