@@ -1246,6 +1246,24 @@ named. MTP is not a serving option until that gate passes.
       One dequant-ON arm enumerates all three post-gather candidates and their paths at once; the dequant-OFF arm is
       **the knob's own integrity test** — zero `SERVED=REPACK` required, and any survivor withdraws probe 2 formally.
       **Both arms print the PPL, so a still-`nan` also proves the instrumentation is non-perturbing.**
+      **⚠ THE CORRUPTION IS GRADED, NOT A CLEAN `nan` — and that is worse.** Measured: **~3.3e5 at Ny 63,
+      degrading to `nan` at Ny 256.** A `nan` announces itself; **a wrong-but-finite perplexity is quiet** and would
+      be recorded as a result. **Consequence: any PPL ever taken on this model with `GGML_IQK=1` at moderate Ny is
+      wrong-but-plausible, not obviously broken.** (We are fortunate here: C9 was open, so no PPL was ever recorded
+      on this model — but the same defect class on a model where the instrument *did* return a number would have
+      silently poisoned the record.)
+      **COORDINATOR'S `nrc_y >= 64` THRESHOLD HYPOTHESIS IS REFUTED** by the agent's own `c126`/`c64` arms:
+      corruption is present at **Ny 63, below the Q6_K threshold of 64**. The Q6_K-repack story is dead as stated.
+      The agent's patch is **reverted; nothing committed** — correct, since the source comment asserted the very
+      bracket the arms refuted.
+      **C9 IS FUNCTIONALLY SOLVED FOR OUR PURPOSES, INDEPENDENT OF ATTRIBUTION**: `GGML_IQK=0` yields
+      **PPL 4.9043 ± 0.59979**, four arms across two probes agreeing to the last digit. **The workaround is validated
+      and usable today, so B7, B9 and B5 are unblocked now** — attribution remains scientifically open but is not
+      gating. Establish it, then decide whether a fix is worth shipping over the flag.
+      **Belief-kernel wiring, flagged by the agent and adopted: `GGML_IQK` state MUST be part of the warrant of any
+      PPL claim tuple on this stack.** This defect proves the kernel flag is not incidental to the number — the same
+      command, same build, same artifact returns 4.9043 or garbage depending on it. A claim tuple that omits it
+      cannot be re-derived. Add to the adapter's projection alongside build id, thread count and recipe.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
