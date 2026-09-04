@@ -1373,6 +1373,24 @@ named. MTP is not a serving option until that gate passes.
       **Quality evidence (external, KL-divergence benchmark)**: Qwen-family models tolerate **q8_0 well (KL < 0.04)**;
       **q4_0 concentrates its damage in LONG DOCUMENTS (KL 0.581)** — which is precisely our workload — and the
       asymmetric guidance is to spend bits on the **Key**, not the Value. **q4_0 is contraindicated here.**
+      **★ ARTIFACT BUILT AND VERIFIED 2026-09-04.** `123,993,035,136 B`, spliced from the era anchor with a
+      **mutation-tested verifier run first**, then applied to the real 124 GB file (not a fixture):
+      **67 recipient KV fields verbatim · tensor order preserved, 1224 tensors · PLE `IQ4_NL → Q8_0`, shape
+      unchanged `[160, 320001536]` · PLE content byte-identical to the donor (blake2b `ae189b34…`) · 1223 non-PLE
+      tensors byte-identical to the recipient, 0 differ · all 1224 data offsets aligned.** Donor SHA-256 matched the
+      HF LFS oid before use, and **the donor was deleted only after verification returned 0** — deleting earlier
+      would have destroyed the comparison evidence. Disk: 242 → 192 (donor down) → **75 GB at splice peak** →
+      **126 GB after deletion**; era anchor and `-gateup-r16` untouched.
+      **Methodological cleanup worth copying**: the agent reverted its diagnostic instrumentation, rebuilt pristine
+      at `c51e4dabf`, and then **verified that structurally rather than by assertion** — `strings` shows **0
+      `iqk-path` symbols** (instrumentation gone) and **1 `GGML_IQK_DEQUANT`** (post-fix source present). That is
+      the stale-binary lesson applied to its own build within the hour.
+      **Consequence worth stating: B7's quality numbers will be measured at `GGML_IQK=1` — the actual production
+      kernel configuration — and that is only trustworthy BECAUSE C9 turned out to be a stale binary rather than a
+      live kernel defect.** Had C9 been real, B7 could only have been measured at `GGML_IQK=0`, i.e. in a
+      configuration nobody serves, and the result would not have transferred.
+      **Queued, one lock hold**: C9 same-binary verification → B7 KLD A/B (both passes) → speed guard-rail on the
+      24-prompt production mix for both artifacts.
       **Recommended scope: ONE arm** — `-ctk q8_0 -ctv q8_0` vs f16 at ctx 4096 and 8192, plain AND with MTP,
       token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
       1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
