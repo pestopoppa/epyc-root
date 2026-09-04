@@ -132,6 +132,34 @@
   .disp.neg .nm{color:var(--muted)} .disp.neg .bar{background:var(--amber);opacity:.8}
   .disp .tag{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-left:auto}
 
+  /* ACCUMULATOR (R23-44, two-tier champion): cheap bench keeps batch toward the
+     expensive serving gate. Its own `.acc-` prefix — like `.ch-`/`.og-` — so no
+     reader dates this card by another producer's styling. The card is a FOLD of
+     the loop-status `accumulator` object; it renders nothing measured when that
+     object is null (a run with no serving tier). */
+  .acc{display:flex;flex-direction:column;gap:14px}
+  .acc.fires{background:#0f1f14;border-radius:8px;margin:-2px;padding:14px 16px;
+    box-shadow:inset 0 0 0 1px #1f4d38}
+  .acc-fire{font-size:12px;font-weight:650;color:var(--good);text-transform:uppercase;
+    letter-spacing:.04em}
+  .acc-head{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .acc-stat .k{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .acc-stat .v{font-size:20px;font-weight:700;line-height:1.2;margin-top:2px}
+  .acc-stat .v.pos{color:var(--good)}
+  .acc-stat .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .acc-keeps .k{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    margin-bottom:6px}
+  .acc-keep{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:11px;color:var(--good);background:#0f1f14;border:1px solid #1f4d38;
+    border-radius:5px;padding:2px 7px;margin:0 6px 6px 0}
+  .acc-prlabel{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:6px;
+    flex-wrap:wrap}
+  .acc-prlabel > span:first-child{font-weight:650}
+  .acc-track{height:12px;border-radius:6px;background:var(--muted);opacity:.35;overflow:hidden}
+  .acc-fill{height:100%;background:var(--accent);border-radius:6px;min-width:2px;
+    transition:width .3s ease}
+  .acc-fill.hot{background:var(--good)}
+
   .eff.pos{color:var(--good)} .eff.neg{color:var(--bad)} .eff.nil{color:var(--muted)}
   .rowstat{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
   .rowstat.win{color:var(--good)} .rowstat.lose{color:var(--amber)}
@@ -303,6 +331,22 @@
   <section id="sec-tiles">
     <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
     <div class="tiles" id="tiles"></div>
+  </section>
+
+  <!-- ACCUMULATOR (R23-44 two-tier champion). The loop banks CHEAP llama-bench
+       keeps into a bundle against the last serving-demonstrated champion (the
+       "champion of record", what the headline shows). The EXPENSIVE llama-server
+       serving gate only fires once the bundle's compounded bench gain clears
+       fire_threshold_pct = fire_multiple (2.5x) x serving_floor_pct. This card
+       shows how many keeps are in the current bundle, which ones, the compounded
+       %, and a progress bar toward that fire threshold — highlighted once it will
+       fire next iteration. Rides the loop-status contract's `accumulator` object;
+       null (and this card says so) on a run with no serving tier. -->
+  <section id="sec-accumulator">
+    <h2>Accumulator &mdash; compound-then-gate
+      <span class="count">R23-44 &middot; cheap bench keeps batch toward the serving gate</span>
+    </h2>
+    <div id="accumulator"></div>
   </section>
 
   <section id="sec-disp">
@@ -767,6 +811,78 @@ function renderTiles(d){
                       : (gpu.unreported_reason || "no held/busy seconds available"),
          gpu.reported ? (num(gpu.busy_pct) && gpu.busy_pct < 25 ? "bad" : "") : "dim"),
   ].join("");
+}
+
+/* ACCUMULATOR (R23-44 two-tier champion). A FOLD of the loop-status
+   `accumulator` object — never a new claim. Two graceful empties, deliberately
+   distinct: no readable LOOP (see the banner), versus a loop that reports but
+   carries NO serving tier (accumulator === null). Neither is "0% progress": a
+   run with no second tier has no gate to march toward, and saying "0/8.8%" there
+   would fabricate a bundle that does not exist. compounded_bench_pct and
+   fire_threshold_pct are already PERCENTS (not fractions); progress_fraction is
+   the 0..1 ratio the producer capped, re-clamped here defensively. */
+function renderAccumulator(d){
+  const host = document.getElementById("accumulator");
+  const L = d.loop;
+  if(!L){
+    host.innerHTML = `<div class="empty">No readable loop report — see the banner ` +
+      `above. This is NOT “no accumulator”.</div>`;
+    return;
+  }
+  const a = L.accumulator || null;
+  if(!a){
+    host.innerHTML = `<div class="empty">This run has <strong>no serving tier</strong>, so ` +
+      `there is no bundle to accumulate. The two-tier champion (R23-44) exists only when the ` +
+      `loop carries a serving recipe; a single-tier run advances on cheap bench alone and its ` +
+      `champion is the headline above. A missing bundle is not “0% to the gate”.</div>`;
+    return;
+  }
+  const comp = num(a.compounded_bench_pct) ? a.compounded_bench_pct : 0;
+  const thr  = num(a.fire_threshold_pct) ? a.fire_threshold_pct : null;
+  const floor = num(a.serving_floor_pct) ? a.serving_floor_pct : null;
+  const mult = num(a.fire_multiple) ? a.fire_multiple : null;
+  const keeps = Array.isArray(a.keeps) ? a.keeps : [];
+  const nKeeps = num(a.n_keeps) ? a.n_keeps : keeps.length;
+  const fires = a.fires_next === true;
+  let frac = num(a.progress_fraction) ? a.progress_fraction : 0;
+  frac = Math.max(0, Math.min(1, frac));
+
+  const keepsHtml = keeps.length
+    ? keeps.map(k => `<span class="acc-keep">${esc(k)}</span>`).join("")
+    : `<span class="muted">none yet — the bundle is empty; the champion of record still stands</span>`;
+
+  const label = `${comp.toFixed(1)}% / ${thr != null ? thr.toFixed(1) : "—"}% to serving gate`;
+
+  host.innerHTML =
+    `<div class="acc ${fires ? "fires" : ""}">` +
+      (fires
+        ? `<div class="acc-fire">Fires next iteration — the compounded gain has cleared the ` +
+          `threshold; the expensive llama-server serving gate runs next.</div>`
+        : "") +
+      `<div class="acc-head">` +
+        `<div class="acc-stat"><div class="k">champion of record</div>` +
+          `<div class="v mono">${esc(short(a.champion_of_record))}</div>` +
+          `<div class="sub">last serving-demonstrated commit — what the headline shows</div></div>` +
+        `<div class="acc-stat"><div class="k">accumulator tip</div>` +
+          `<div class="v mono">${esc(short(a.accumulator_tip))}</div>` +
+          `<div class="sub">working champion, advancing on cheap bench keeps</div></div>` +
+        `<div class="acc-stat"><div class="k">keeps in bundle</div>` +
+          `<div class="v">${esc(nKeeps)}</div>` +
+          `<div class="sub">cheap llama-bench keeps batched</div></div>` +
+        `<div class="acc-stat"><div class="k">compounded bench</div>` +
+          `<div class="v ${comp > 0 ? "pos" : ""}">+${comp.toFixed(2)}%</div>` +
+          `<div class="sub">of the bundle vs champion of record</div></div>` +
+      `</div>` +
+      `<div class="acc-keeps"><div class="k">bench keeps batched (${esc(keeps.length)})</div>` +
+        keepsHtml + `</div>` +
+      `<div class="acc-prog">` +
+        `<div class="acc-prlabel"><span>${esc(label)}</span>` +
+          `<span class="muted">gate = ${mult != null ? mult.toFixed(1) : "—"}&times; serving floor` +
+            `${floor != null ? ` (${floor.toFixed(2)}%)` : ""}</span></div>` +
+        `<div class="acc-track"><div class="acc-fill ${fires ? "hot" : ""}" ` +
+          `style="width:${(frac * 100).toFixed(1)}%"></div></div>` +
+      `</div>` +
+    `</div>`;
 }
 
 function renderDispositions(d){
@@ -1501,6 +1617,9 @@ function render(d){
   // — which is the current state — must be drawn rather than hidden.
   renderChampion(d);
   renderTiles(d);
+  // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
+  // and drawing its own graceful empty when the run carries no serving tier.
+  renderAccumulator(d);
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);

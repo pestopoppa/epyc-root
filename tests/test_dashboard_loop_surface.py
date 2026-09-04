@@ -71,9 +71,30 @@ DASHBOARD_ID = "autokernel-loop"
 PANEL = "autokernel_loop"
 
 
+#: A well-formed R23-44 accumulator object (two-tier champion). Hand-built from
+#: the documented field list, NOT imported from the producer — the hub reads
+#: this contract without the producer's repo on disk.
+def accumulator(*, n_keeps: int = 2, compounded: float = 5.20,
+                fires_next: bool = False) -> dict:
+    keeps = [f"akm-{i}" for i in range(n_keeps)]
+    threshold = 8.84
+    return {
+        "champion_of_record": "d" * 40,
+        "accumulator_tip": "e" * 40,
+        "keeps": keeps,
+        "n_keeps": n_keeps,
+        "compounded_bench_pct": compounded,
+        "serving_floor_pct": 3.536,
+        "fire_multiple": 2.5,
+        "fire_threshold_pct": threshold,
+        "progress_fraction": min(1.0, compounded / threshold),
+        "fires_next": fires_next,
+    }
+
+
 def body(*, age_s: float = 45.0, state: str = "running",
          stale_after_s: int = 1800, gpu: dict | None = None,
-         dispositions: dict | None = None) -> dict:
+         dispositions: dict | None = None, accumulator: dict | None = None) -> dict:
     """A well-formed ``epyc.autokernel.loop_status.v1`` body.
 
     Hand-built from the documented field list, NOT imported from the producer:
@@ -99,6 +120,9 @@ def body(*, age_s: float = 45.0, state: str = "running",
             "compile_refused": 1, "kept": 1, "measured_null": 1,
             "planner_transient": 2, "refused_at_formation": 1},
         "champion_head": "c" * 40,
+        # R23-44 two-tier champion. `null` on a run with no serving tier — the
+        # producer writes null, and the page must render nothing measured for it.
+        "accumulator": accumulator,
         "gpu": {"held_s": 7200.0, "busy_s": 331.0} if gpu is None else gpu,
         "hotspots": [{"signature": "mul_mat_q4_K", "total_duration_ns": 9_000_000_000,
                       "calls": 4210, "share_of_device_time": 0.41}],
@@ -445,6 +469,21 @@ class Derived(_Fixture):
         self.write(body())
         self.assertEqual(S.loop_payload()["derived"]["iterations_remaining"], 4)
 
+    def test_the_accumulator_object_is_carried_through_verbatim(self):
+        """R23-44: the accumulator rides the loop-status body untouched — same
+        passthrough path as `hotspots`/`noise_floor_pct`. The hub folds nothing
+        and invents nothing; the page reads it off `loop.accumulator`."""
+        acc = accumulator(n_keeps=3, compounded=5.20, fires_next=False)
+        self.write(body(accumulator=acc))
+        got = S.loop_payload()["loop"]["accumulator"]
+        self.assertEqual(got, acc)
+
+    def test_a_run_with_no_serving_tier_carries_a_null_accumulator(self):
+        """`null`, not `{}` or a fabricated bundle: a run with no second tier has
+        no gate to march toward, and the page must be able to tell the two apart."""
+        self.write(body(accumulator=None))
+        self.assertIsNone(S.loop_payload()["loop"]["accumulator"])
+
 
 # --------------------------------------------------------------------------- #
 # The page actually renders — runtime JS, not a syntax check
@@ -604,6 +643,53 @@ class Rendering(_Fixture):
         self.assertNotIn("var(--good)", gpu, "an unreadable GPU map drew a meter")
         self.assertIn("READER defect", gpu)
         self.assertIn("gpu_seconds_of_something_new", gpu)
+
+    def test_the_accumulator_card_renders_the_bundle(self):
+        """R23-44: the operator asked to SEE keeps, the compounded %, and a
+        progress bar toward the serving gate. Assert the card carries them."""
+        acc = accumulator(n_keeps=3, compounded=5.20, fires_next=False)
+        self.write(body(accumulator=acc))
+        out = self._render(S.loop_payload())
+        self.assertEqual(out["threw"], [])
+        card = out["by_id"]["accumulator"]
+        # champion of record (short sha), the keeps, the compounded %, and the
+        # progress-bar label "X.X% / Y.Y% to serving gate".
+        self.assertIn("dddddddddddd", card)              # champion_of_record, truncated
+        for k in acc["keeps"]:
+            self.assertIn(k, card, f"keep {k!r} not on the card")
+        self.assertIn("+5.20%", card)                    # compounded_bench_pct
+        self.assertIn("5.2% / 8.8% to serving gate", card)
+        # a progress FILL was drawn, and it is not the fires-next colour yet.
+        self.assertIn("acc-fill", card)
+        self.assertNotIn("acc-fill hot", card)
+        self.assertNotIn("Fires next iteration", card)
+
+    def test_the_accumulator_card_highlights_when_it_fires_next(self):
+        """The mutation half: once the compounded gain clears the threshold the
+        card must say so and switch the bar to the fires-next state."""
+        acc = accumulator(n_keeps=4, compounded=9.10, fires_next=True)
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("Fires next iteration", card)
+        self.assertIn("acc-fill hot", card)
+        self.assertIn("acc fires", card)
+
+    def test_a_run_with_no_serving_tier_renders_a_graceful_accumulator_empty(self):
+        """`accumulator === null` must render nothing measured — not "0% to the
+        gate", which would fabricate a bundle. Distinct from an unreadable loop."""
+        self.write(body(accumulator=None))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("no serving tier", card)
+        self.assertNotIn("acc-fill", card, "a null accumulator drew a progress bar")
+        self.assertNotIn("to serving gate", card)
+
+    def test_an_absent_loop_does_not_claim_no_accumulator(self):
+        """No readable loop is a different fact from a run with no serving tier;
+        the card must not conflate the two."""
+        self.absent()
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("No readable loop report", card)
+        self.assertNotIn("no serving tier", card)
 
 
 # --------------------------------------------------------------------------- #
