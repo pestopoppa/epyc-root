@@ -1623,7 +1623,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       floor. Champion 445e93a8 = anchor-gen-016; -j1 build fix (R23-40) in place so keeps won't abort.
       Open sub-question: is there a surface that DIRECTLY tracks DFlash2 throughput? (would need a
       server-based spec-decode bench, not llama-bench.)
-- [~] **R23-43 — RE-ARCHITECT (a-d BUILT; blocked on serving-floor noise): keeps demonstrated on llama-server under the champion's CANONICAL
+- [x] **R23-43 — RE-ARCHITECT ✅ 2026-09-04 (a-d BUILT; serving floor tightened via option (2)): keeps demonstrated on llama-server under the champion's CANONICAL
       RECIPE, not llama-bench (operator directive 2026-09-04, four messages).** Principle: "the only
       performance that matters is serving performance; no point boosting llama-bench numbers not
       reflective of a live environment." Proven necessary: dec-b4 keeps +23.3%/+10.1% (bench)
@@ -1656,12 +1656,37 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       ~8% run spread from np4 scheduling jitter; wall-clock aggregate is tail-dominated). A >5%
       floor can only demonstrate LARGE serving keeps and would reject the typical small (1-3%) real
       serving gain -- the inherent noise llama-bench existed to avoid. **OPTIONS for the operator**:
-      (1) accept the ~5% greedy floor (only substantial serving wins count -- defensible: we only
-      care about meaningful serving gains); (2) invest in noise reduction -- per-request summed
-      throughput (not wall-clock, removes scheduling tail), longer generation, warmup discard,
-      /metrics steady-state -- target <2%; (3) hybrid: bench screen decides the CANDIDATE, serving
-      gate requires only NON-REGRESSION + a positive trend (weaker). Recommend (2) then (1) as
-      fallback. **RUN 29 HOLDS** on this decision; measurement built and ready otherwise.
+      **RESOLVED — operator chose (2) 2026-09-04**: `_measure_once` now returns the SUM of each
+      concurrent slot's OWN `predicted_per_second` (not wall-clock aggregate), plus a discarded
+      warmup round and a greedy recipe (temp 0, top_k 1, n_predict 384). Result: **floor 3.536%,
+      cv 1.572%**, and the median (157.8 agg-tok/s) now MATCHES DF2-5 np4 (~155) instead of the
+      wall-clock's misleading 108 — the metric is both tighter AND more accurate (commit `e0b63239`).
+      The 3.5% floor is inflated by one tail sample; typical run-to-run is ~1.5%. A ~3.5% floor is
+      viable under R23-44 (batch keeps past 2-3x the floor before the serving gate).
+- [~] **R23-44 — COMPOUND-THEN-GATE: batch bench keeps until they compound past the serving floor, then gate once (operator directive 2026-09-04:
+      "collect llama-bench keeps until they compound to 2x-3x noise floor before the llama-server
+      final champion advancement gate").** WHY: the serving floor is 3.5% (R23-43(2)) and a single
+      bench keep is 1-3%, so a per-keep serving gate vetoes EVERY keep — the loop cannot advance. FIX
+      is a TWO-TIER champion: an ACCUMULATOR (working champion) advances on every cheap bench keep and
+      the anchor tracks it so keeps compound; a CHAMPION OF RECORD (last serving-demonstrated commit)
+      advances only when the accumulator's compounded bench gain clears fire_multiple x floor (default
+      2.5 -> ~8.8%) AND the one serving gate fired then is decisive-positive. Serving gate runs ONCE
+      per bundle, not per keep. **BUILT + committed 2026-09-04**: `loop/accumulate.py` pure policy core
+      (Decision/Outcome/DivergenceAction, Bundle, decide_after_keep, classify_serving, resolve), 9
+      tests, loop LOC budget 2400->2500 with reason (`9d139c5a`).
+      - [x] policy core + tests + budget note ✅ 2026-09-04
+      - [ ] **OPERATOR DECISION — DivergenceAction**: when a bundle compounds past the threshold on
+        bench but the serving gate says flat/regression (the PROVEN dec-b4 +35%->serving 0% case),
+        does the accumulator ROLLBACK to the champion of record (discard the non-transferring bundle
+        — conservative, "only serving advances the champion") or HOLD the bundle and keep batching
+        (bet a later keep tips serving over)? Default coded = ROLLBACK. This is the one genuine fork;
+        the live-loop wiring depends on it.
+      - [ ] wire the two-tier advance into `commit_pooled`: second persistent champion-of-record build
+        (serving A-arm), compounded-bench re-measure after each keep, fire-threshold check, and the
+        DivergenceAction mechanics (git reset champion branch + anchor rebuild on ROLLBACK). Deferred
+        pending the DivergenceAction choice.
+      - [ ] **RUN 29 HOLDS** until the wiring lands; champion 445e93a8 (anchor-gen-016), -j1 fix, and
+        the serving floor (3.536%) are all ready.
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
