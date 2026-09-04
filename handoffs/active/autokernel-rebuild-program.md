@@ -1607,6 +1607,22 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       `-j64`. **RELAUNCH-READY** (operator-gated): run 29 = run 28's command on the current champion
       445e93a8/anchor-gen-... rebuilt clean, DeepSeek planner + codex critic + dec-b8 confirm gate.
       Follow-up R23-41: hipcc determinism flags to restore parallel anchor builds later (optional).
+- [ ] **R23-42 — the dec-b4 keeps do NOT move DFlash2 decode; run 29 pivoted to tg128 (operator
+      2026-09-04).** MEASURED the DFlash2 smoke on champion 445e93a8 (both new keeps): **71.22 t/s**
+      decode, acceptance 0.6427, 2.35x boost — vs 72.65 on the prior champion 732389d6 (R23-17) and
+      70.0 at the DF2-5 baseline. So the two keeps that measured **+23.3% and +10.1% on dec-b4**
+      (batched prefill) produce **~0% on DFlash2 decode** — the R23-26 non-transfer lesson, now with
+      the sharpest contrast yet (decisive +35% prefill -> flat decode). dec-b4 keeps optimize a
+      batched-forward path the DFlash2 decode loop is not bottlenecked on (its speed is set by the
+      draft model + acceptance, not the target verify). Operator corrected the arithmetic
+      `70*1.233*1.101=95` -> measured 71. **Run 29 pivots to hunt a decode-relevant surface**:
+      `--surface tg128` (target single-token decode — the "none"/fallback path, ~30 t/s; more
+      serving-relevant than dec-b4 prefill, though still not a DIRECT DFlash2 measure since
+      llama-bench can't drive the spec-decode loop), dec-b8 confirm gate retained. Needs a tg128 27B
+      floor first — **calibration RUNNING** pid 3807583 (~1h), run 29 launches once it writes a sane
+      floor. Champion 445e93a8 = anchor-gen-016; -j1 build fix (R23-40) in place so keeps won't abort.
+      Open sub-question: is there a surface that DIRECTLY tracks DFlash2 throughput? (would need a
+      server-based spec-decode bench, not llama-bench.)
 - [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
       again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
       before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
