@@ -563,7 +563,15 @@ structural one would show on all 97 siblings, not on exactly one.
 `wall_max ≈ 1,200 µs` with `spikes ≈ 69` ⇒ real. Anything in between (2–5 spikes) is still artefact, just
 multiple stalls. **Cross-node check added by the coordinator**: if the argmax eval indices of the two nodes
 coincide with each other and with a cluster of unrelated nodes, a host event is near-conclusive.
-**If confirmed: drop ~1.4 ms from the addressable envelope and MUL_MAT's dead from 7.19 → 6.10 ms** — and
+**★ DE-LUMPED 2026-09-05 (SYNC-1, offline — no lock needed): the contamination is WORSE than the two nodes
+and the barrier estimate SURVIVES it.** Sweeping the handed-over profile for the stall signature finds
+**4 contaminated nodes carrying 2.39 ms/token** — not the ~1.4 ms from the two I had spotted. After removing
+them, the **arrive-together node class shows 2.32 µs/node dead**, which matches BOTH barrier instruments (the
+2.16 µs OMP primitive and the 2.478 µs/node through the real threadpool) **to 8%**. So: the census was dirtier
+than assumed, and the congestion model's central constant is now confirmed from a **third** independent
+direction — on de-lumped in-situ data rather than a microbenchmark.
+**If the discriminator confirms: drop 2.39 ms from the addressable envelope** (and MUL_MAT's dead from
+7.19 → 6.10 ms for the two MUL_MAT-class nodes) — and
 note this contaminates SYNC-5's ~4.2 ms MUL_MAT imbalance figure, which contains that 1.09 ms, and one of the
 three pillars of this axis's original framing. **Treat every Sept-2 per-node number as an UPPER BOUND.** The
 tip census reports max / argmax-eval / spike count per node; the Sept-2 data cannot be cleaned retroactively.
