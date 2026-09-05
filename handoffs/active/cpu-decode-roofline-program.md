@@ -913,7 +913,29 @@ were what killed it. **Checking α was still correct** — it was the cheapest w
 **Consequence for PROD-1**: the settled recipe's use of the **shared** MTP head is now *understood*, not
 merely inherited — **lock it with the reason.** Any future change that gives the draft path a private copy of
 a large tensor is anti-cache by this mechanism and must clear the working-set arithmetic first.
-**Still running**: `Q4_K` (P3), now the interesting arm rather than a contingency — it is the one candidate
+**⚠ THE INSTRUMENT VALIDATION FAILED ITS OWN CRITERION — carry this with the 244.4 figure.** B12 set up a
+trunk-graph arm specifically to reproduce B10's **printed** 139 GB/s before any draft number was trusted. It
+measured **205.5 GB/s**. Two readings, not yet distinguished: either the configurations genuinely differ
+(B10's 139 is the trunk graph in PLAIN decode; B12's is the trunk graph inside an MTP run, where draft steps
+re-warm the head — under B12's own shared-slab mechanism those *should* differ, and in the direction
+observed, which would make the non-reproduction a **prediction of the finding** rather than a failure of it),
+or the instruments differ, in which case 244.4 inherits the doubt and its agreement with B10's derived 260 is
+coincidence. **The verdict does not depend on it**: the refutation rests on a WITHIN-ARM comparison (bytes
+−35.2%, wall per call +9.7%, α flat), which needs no external baseline. But no cross-agent rate comparison
+should be made until this is resolved. **Second time in one day a "before" number turned out to be measuring
+a different object than the "after" it was compared against.**
+**★ STRUCTURAL COROLLARY (B12) — this binds every future proposal in the family:** a private draft head is
+anti-cache regardless of quant, because it *adds* to the trunk's slab rather than replacing it. **The only
+way to shrink the resident head is to requantise the one the TRUNK uses — which is a CORRECTNESS change, not
+an α change**, and therefore gated on KLD/PPL rather than on acceptance.
+**DEFERRED, NOT DROPPED — 8 ABA arms**, resumable as their own window; the driver skips completed arms, both
+artifacts kept with digests. **Q4_K prediction recorded BEFORE its result was read**: it should lose too, but
+less and for a different reason — no Q8_K activations, so its compute-side rate should land near q6_K's 278
+GB/s rather than IQ4_XS's 201, while paying the footprint penalty *harder* (357.6 → 879.1 MB, **+68.6%**).
+**Falsifier, stated in advance: if Q4_K comes back FASTER than baseline, the footprint argument is wrong and
+reopens.** No t/s claim is made — the ABA did not run, so throughput is **NON-CLAIM**, stated rather than
+inferred; 9.7% slower per call with α flat is neutral-to-worse and could not have overturned the verdict.
+**Original text**: `Q4_K` (P3), the interesting arm rather than a contingency — it is the one candidate
 that does **not** use Q8_K activations, so it isolates mechanism 1 from mechanism 2. It still pays the +64.8%
 duplication, so it is expected to lose too, **but less, and for a different reason** — which is what makes it
 worth the arm.
