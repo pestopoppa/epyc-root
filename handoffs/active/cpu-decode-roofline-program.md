@@ -710,6 +710,41 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+- [x] **SYNC-10 COMPLETE 2026-09-05 — GO on the split, NO-GO on the vectorisation.** ✅ Lock released,
+      nothing orphaned, `/workspace` untouched. Two commits on `inf70/sync10`, **not pushed, not merged**.
+
+      | | verdict |
+      |---|---|
+      | **`GGML_ROWCOL_SPLIT`** (`2af8669ce`) | **GO** — **+3.05% ± 0.52 serving (MTP)**, +8.42% ± 0.80 plain. **Bit-identical.** One env flag, default OFF. |
+      | **`GGML_VEC_SIGMOID`** (`086b5b9c9`) | **NO-GO here** — +0.0 pp on top of the split, costs a top-1 flip at ~19 tokens. **No KLD window needed.** Keep as an **upstream PR** (UP-1). |
+
+      **LEAD WITH +3.05%, NOT +8.42%.** Quoting 9.9% / 7.79 ms / +8.4% as *serving* value overstates it ~2.8×.
+      **Threshold MEASURED, not guessed**: `MIN_ELEMS=4096` gives **+5.5% vs +8.42% at 512**, so **a third of
+      the win lives in rows under 4096 elements** — the threshold is a real tuning parameter, not a formality.
+      **Bit-identity proven FIVE ways**: 50-shape × 8-op digest (mutation-tested — and its first mutant was
+      benign by construction, which it declared rather than counted); greedy streams byte-identical at
+      40/90/200-token prompts; `test-backend-ops -b CPU` 8/8 × 4 arms; **`M1A ≡ M1S` under spec decoding**; and
+      `W ≡ V`, showing the split adds zero numerical change.
+      **⚠ THP CAVEAT THAT LIMITS D6-PLACE — the step is NOT localised to exactly 2 MB.** SYNC-10 corroborates
+      the effect (hc gemvs 1.74/1.84 MB at **33–39 GB/s** vs **124–147** for ≥2 MB, with a size-controlled
+      series at fixed inner dim ruling out shape) **but its shapes jump 1.84 → 5.24 MB, so it cannot place the
+      boundary.** SYNC-2's pair brackets it more tightly (1.741 MB → 28.0 GB/s; 2.253 MB → 41.6). **Together
+      they bracket the step between ~1.84 and ~2.25 MB — consistent with THP but NOT proof of the THP
+      mechanism.** D6-PLACE must sample that gap rather than assume it.
+      **Three of its own instruments were defective and each was fixed** (vacuous sha over a timing footer;
+      `rfind` mis-anchoring; a comparator racing its producer). **All three verified as its own alone** —
+      siblings redirect `> .out 2> .err` and are unaffected, no shared harness implicated — and **none changed
+      a timing number**, though mid-flight divergence-depth figures did move and §4.4 records that.
+      **Two self-inflicted costs, disclosed rather than buried**: a task-manager kill lost window 1 (contained
+      — it proved no process survived, so SYNC-2's concurrent window was uncontaminated), and the `--fa 1`
+      typo killed all seven MTP arms, costing half a lock turn.
+      Report: `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md`, **6,339 words against a 900-word brief —
+      flagged by the agent rather than hidden**; §6 carries ready-to-apply handoff rows.
+
+- [ ] **SYNC-16 — audit the MoE `partial_sort`.** Left open by SYNC-10; **read-only, no lock required.**
+
+**Superseded — the settled-serving-number block:**
+
 **★★★ SETTLED — THE SERVING NUMBER IS `+3.05% ± 0.52 pp`, REPLICATED, AND IT IS THE WHOLE EFFECT, NOT A
 FLOOR.** MTP R1 **+3.11%**, R2 **+2.98%**, pooled **+3.05% ± 0.52 pp, 10/10 prompts positive, −1.42
 ms/token**, base drift 0.1% between rounds.
