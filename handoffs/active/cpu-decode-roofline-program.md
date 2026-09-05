@@ -710,6 +710,22 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+**★★ METHODOLOGY RULE ADOPTED 2026-09-05 (SYNC-10) — A NUMERICS-CHANGING ARM CANNOT BE A/B'd ON ms/token
+UNDER SPECULATIVE DECODING.** A different token stream produces a different acceptance pattern, and
+acceptance dominates ms/token, so the arm measures **acceptance-rate luck confounded with kernel speed** — at
+five prompts the luck wins. **SYNC-10 declined to report ANY MTP number for its V and W arms on these
+grounds.** Requirements: a **fixed-token-stream harness** or **plain-decode measurement**, with quality judged
+separately. **Only bit-identical arms yield a clean paired MTP ratio** — which is a second reason, beyond
+shipping cost, to prefer them.
+**The precise form, so it is not over-applied**: for a numerics change the total MTP delta is still the right
+number for a **ship/don't-ship** decision, because an acceptance change is a *real consequence* and not an
+artefact. What cannot be done is **attributing that delta to kernel speed**. **B9's KV-quant work is the
+pattern to copy** — it measured α directly (0.8274 → 0.8166) and attributed through
+`LLAMA_ATTN_ROT_DISABLE`, which is what made its conclusion sound.
+**★ FOURTH INDEPENDENT BIT-IDENTITY CONFIRMATION**: `M1A ≡ M1S` **byte-for-byte on all five prompts, in the
+FULL SERVING CONFIG** — speculative decoding, f16 KV, flash attention, 192 tokens. The strongest of the four
+because it is the configuration that ships.
+
 **★★★ THE SERVING NUMBER — +3.11%, NOT +8.42%. QUOTE THIS ONE.** (round 1 of 2, MTP config, 5 prompts)
 
 | prompt | A base | S split | speedup |
