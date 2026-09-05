@@ -852,6 +852,24 @@ per-(node,thread) census measures the same quantity at tip with ~4,400 observati
       GPU? Must be answered from the code, not assumed. Design gate: if the entry point cannot trivially host
       the zero-node skip as a second consumer, it is the wrong design.
 
+**★★ `GGML_IQK=1` IS LOAD-BEARING FOR THE ENTIRE CACHE-RESIDENCY STORY (B12, 2026-09-05).** The per-CCX
+residency mechanism requires a **static per-thread row partition** — and that comes from **iqk, not ggml's
+chunker.** `ggml_is_numa()` is **false** on this host (we run `numactl --interleave=all` externally but never
+pass llama.cpp's own `--numa` flag), so the generic path would use **atomic work-stealing over 15,520
+chunks**, under which **no thread sees the same rows twice** and nothing can stay resident in its CCX's L3.
+**So every above-DRAM-ceiling rate this campaign has measured — the 260 GB/s draft head, SYNC-3's 234 GB/s
+GDN state — is contingent on `GGML_IQK=1` giving a stable partition.** All three candidate head types are
+iqk-supported, so B12's arms are not confounded by scheduling; but the finding generalises well beyond B12.
+
+- [ ] **SYNC-13 — what does `ggml_is_numa()` gate, and is `false` the right value for us?** Filed 2026-09-05
+      from B12. We run `numactl --interleave=all` externally but never pass llama.cpp's `--numa`, so ggml
+      believes it is on a non-NUMA box and takes the work-stealing chunker. That is currently **load-bearing
+      in our favour by accident** — static iqk partitioning is what makes L3 residency possible. Enumerate
+      every path `ggml_is_numa()` gates, and determine whether enabling ggml's NUMA awareness would help
+      (better placement) or **destroy the residency effect** (work-stealing partitions). **Do not flip it to
+      find out** — read the paths first. Interacts with D6 (placement) and B2, which are now the campaign's
+      largest remaining levers.
+
 - [ ] **SYNC-11 — full 48-value per-thread dump on `result_output`** (one line in the summariser, one arm;
       the instrument already collects it). **Three order statistics cannot show a GAP, and bimodality is a
       claim about a gap** — so the per-CCX residency hypothesis is currently unconfirmable. What is known:
