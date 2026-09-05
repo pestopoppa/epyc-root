@@ -710,6 +710,38 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+**★★★ SETTLED — THE SERVING NUMBER IS `+3.05% ± 0.52 pp`, REPLICATED, AND IT IS THE WHOLE EFFECT, NOT A
+FLOOR.** MTP R1 **+3.11%**, R2 **+2.98%**, pooled **+3.05% ± 0.52 pp, 10/10 prompts positive, −1.42
+ms/token**, base drift 0.1% between rounds.
+**SYNC-10's guard is `nr < nth`, NOT `nrows == 1`** (`common.h:162`), and its work unit is **already a
+(row, column-chunk) pair** — D8's exact shape. **The relaxed-guard follow-up SYNC-2 identified as the
+highest-value item is ALREADY IMPLEMENTED on `inf70/sync10`.** Occupancy at the real shapes:
+
+| graph | shape | nr | ncc | tasks over 48 thr |
+|---|---|---:|---:|---:|
+| plain decode | [10240,1] | 1 | 46 | 46 |
+| **MTP trunk (census)** | **[10240,2]** | 2 | 24 | **48** |
+| **MTP trunk (n_max=4)** | **[10240,4]** | 4 | 12 | **48** |
+| batch 47 | [10240,47] | 47 | 2 | 94 |
+| batch 48 | [10240,48] | 48 | 1 | row split already fills |
+
+**Full 48-thread occupancy on the trunk at every batch from 1 to 47.**
+**And the measurement settles it independently of the code**: the saving is **5.84 ms/eval** at ~4.1
+tokens/eval against a trunk seam of **6.04 ms/eval**. A draft-only effect is bounded at ~0.76 ms/token =
+**+1.6%** and cannot produce +3.05%. **So the ÷3 framing was right for this branch** — SYNC-10 said so
+plainly rather than letting the hopeful reading stand.
+**Two consequences, both actionable:**
+1. **Do NOT schedule the relaxed guard as new work — ADOPT SYNC-10's.** Its `nr < nth` supersedes SYNC-2's
+   `nrows == 1` `ELEM_COLSPLIT`; it is the cheap route to the batch-4 behaviour SYNC-2 wanted and it is
+   already measured, bit-identical and gated.
+2. **★ SYNC-2's `TINY_SOLO` HEADROOM IS REAL AND UNTOUCHED — a genuinely open lever on a different axis.**
+   It elides **barriers**, is gated `nrows == 1`, and therefore **still does not fire on the trunk**, while
+   SYNC-10's change removes **zero** barriers. **Trunk barrier headroom remains uncaptured by either branch**
+   — and at the measured 3.14 µs/barrier that is worth quantifying. **This is the next lever.**
+**`M2W` and `M1V` will produce NO MTP number**, per the numerics-under-speculation rule.
+
+**Superseded — the open question this resolves:**
+
 **★★★ THE ÷3 MAY BE THE WRONG CORRECTION — THE PREDICATES ARE GATED ON `nrows == 1`, WHICH IS THE BATCH-1
 CONDITION (SYNC-2, 2026-09-05).** Verified in its own code rather than inferred:
 `ggml_elem_colsplit_applies()` requires `ggml_nrows(src0) == 1` (`common.h:142`); `ggml_cpu_node_is_solo()`
