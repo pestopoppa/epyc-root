@@ -710,6 +710,29 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+**★★★ THE SERVING NUMBER — +3.11%, NOT +8.42%. QUOTE THIS ONE.** (round 1 of 2, MTP config, 5 prompts)
+
+| prompt | A base | S split | speedup |
+|---|---:|---:|---:|
+| p0 | 53.11 | 51.25 | +3.62% |
+| p1 | 39.13 | 38.21 | +2.41% |
+| p2 | 45.96 | 44.71 | +2.79% |
+| p3 | 52.12 | 50.42 | +3.38% |
+| p4 | 49.39 | 47.79 | +3.35% |
+| **mean** | **47.94** | **46.48** | **+3.11%** (sd 0.44 pp, **5/5 positive**) |
+
+**−1.47 ms/token.** Mechanism is the amortisation, exactly as pre-registered: the seam is **6.04 ms per
+EVAL**, and the trunk graph amortises over **~4.1 tokens/eval** here (the MTP census assumed 3.23), so the
+plain win does not carry across. The agent predicted ~4% before running it and measured 3.11%.
+**⚠ THE BRIEF'S NUMBER SHRANK TWICE UNDER MEASUREMENT: 7.79 ms → 6.59 ms addressable once ARGSORT was ruled
+unreachable, then +8.42% → +3.11% once priced against the config that SERVES rather than plain decode.
+ANYONE QUOTING 9.9%, 7.79 ms, OR +8.4% AS THE SERVING VALUE IS OVERSTATING IT BY 2.7–3×** — including this
+coordinator's own reports before the MTP arm existed.
+**Still clearly worth taking**: +3.11% ± 0.44 with every prompt positive, **bit-identical**, behind a single
+env flag. But it is a **3% lever, not a 9% one**, and the campaign's ranked envelope must be re-priced on
+that basis — the plain-decode figures in SYNC-1's table are all subject to the same ÷~3.
+**Round 1 of 2**; the `W` and `V` MTP arms and round 2 are still running.
+
 **★★★ SYNC-10 PLAIN PATH SETTLED — THREE COMPLETE PAIRED ROUNDS, ALL ARMS SAME BINARY.**
 
 | arm | R1 | R2 | R3 | **mean** | sd |
