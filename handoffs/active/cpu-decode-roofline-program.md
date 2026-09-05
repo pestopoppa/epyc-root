@@ -759,6 +759,29 @@ This axis was opened on a dead%-ranked table, so the ranking was a search heuris
       16.9 µs/token, not worth a lock turn.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md`.
 
+**★★ HYG-1 ESCALATED 2026-09-05 — EVERY BUILD DIR IN THE SHARED TREE IS STALE, NOT JUST ONE.**
+B12 reports that **none** of them contain `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or `GGML_IQK_DEQUANT`, and
+**all predate `99425578d`** (the IQ4_XS iqk repack fix that closed the long-prompt P0). **Setting any of those
+env vars against any shared build dir is a SILENT NO-OP.** This is C9's failure recurring at scale — the
+third time this class has bitten the campaign in a week — and it is why the standing rule is now doctrine in
+`CLAUDE.md`: **`strings <lib> | grep <KNOB>` before trusting a knob's null; an mtime check proves freshness
+against source, only `strings` proves the symbol is in the binary you are running.** Every agent has been
+warned; B12 built fresh at `c51e4dabf` (`build-b12`, `build-b12-prof`) and proved the knobs in.
+**Any INF-70 result measured against a shared build dir is VACUOUS, not merely wrong** — and a vacuous result
+is more dangerous, because it presents as a clean null.
+
+**★ L3 IS PER-CCX, NOT A SHARED POOL — 384 MiB across 12 instances, 32 MiB per CCX** (B12, 2026-09-05). This
+CORRECTS the coordinator's framing (I wrote "384 MiB ≈ 402 MB, the head doesn't fit"). The aggregate
+threshold still lands near 402 MB, because ggml partitions by row range across threads and each thread's
+slice stays in its own CCX — **but only if the partition is stable across steps.** Per-CCX at 48 threads over
+12 CCDs: the q6_K head is **~43.5 MB per CCX (over 32 MiB — thrashes)**, IQ4_XS is **~28.2 MB per CCX
+(under)**. So the B12 step-change hypothesis is **sharper, not weaker**: a real threshold crossing between
+exactly these two artifacts.
+**Consequence for the whole axis**: residency is per-CCX, so a tensor straddling the threshold is resident
+for some threads and not others — producing **systematic straggle that is neither barrier cost nor ordinary
+load imbalance**, and which a dead-time column cannot distinguish from either. **Signature to look for:
+bimodal thread times on a single node.** Routed to SYNC-1 and SYNC-2.
+
 **★ AXIS S RECONCILED 2026-09-05 — THE BARRIER BUDGET IS GROSS, NOT RECOVERABLE IN BULK.**
 The apparent contradiction (2,478 ns/node measured on two instruments, pricing 5,410 barriers at ~13 ms, vs
 D1 removing 940 barriers bit-exact for **−0.05 ± 0.5 ms** against a predicted 2.33 ms) resolves into one
