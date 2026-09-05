@@ -542,6 +542,8 @@ B10 (vocab slice) +3% ceiling, B11's premise dissolved entirely. That is not bad
 saying bytes are not the constraint. Decode runs at ~36% of the 152.6 GB/s ceiling, and the per-node census
 says where the rest goes.
 
+**⚠ DENOMINATOR CORRECTION 2026-09-05: the token is now ~84.2 ms post-D8, not 96.3 ms** (`agents/d8x/REPORT.md`); the census below is build 10197, PRE-D8. Price every lever against 84.2 ms.
+
 **Measured, plain decode, build 10197** (`agents/prof/results-20260902T135356Z/pernode.tsv`, 4,409 node
 evals): **22.516 ms dead of 96.267 ms wall = 23.4%.**
 
@@ -596,7 +598,60 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       Verify the single-task claim against the CURRENT tip before optimising — the tree has moved, and
       upstream may have fixed it already (adopting beats writing). Break the 9.0 ms down across the 175 nodes
       first: one hot node or a long tail changes the fix entirely.
-- [ ] **SYNC-5 — is there a COARSER graph? (design investigation, zero compute.)** Dispatched 2026-09-05.
+- [x] **SYNC-5 — ANSWERED 2026-09-05: DO NOT pursue the fused-decoder / megakernel axis. And INF-67 never
+      tested coarsening at all.** ✅
+      **★ INF-67's 4× regression was NOT intrinsic to coarsening — it was four implementation defects.**
+      1. A **per-row generic `vec_dot`** in `FusedMM::dot` (`src/models/qwen4exp-fused.cpp:66-104`) bypassed
+         the iqk hooks (`ggml-cpu.c:1296`, `:1575`) AND CPU_REPACK (`:1743`), and misread IQ4_NL 8×8-interleaved
+         rows as plain rows. Routing it through `ggml_compute_forward_mul_mat` (agent `fused`, branch
+         `inf70/fused` @ `06f916224`): **923 → 295 ms/token. That is the entire "4×".**
+      2. Scratch churn: 3,520 MB/token of `ggml_init/free` + 112.6 MB/token of state vectors — real, an
+         implementation property, now replaced by 12.2 MB of arenas.
+      3. A dead duplicated MoE (295 → 214 ms) and ~2.5M `getenv` calls per token inside the profiled window.
+      4. **Single-threaded by construction** (`ith=0, nth=1`, private pool, `qwen4exp-fused.cpp:629-675`), and
+         `ggml_barrier()` returns immediately at `n_threads==1` (`ggml-cpu.c:575-579`) — **so the 1T-vs-1T
+         control arm could not, even in principle, have measured the barrier-removal hypothesis it was cited
+         for.** With the artefacts removed, fused-1T is **×1.10 of the graph** (214.3 vs 195.1 ms, same
+         build/process/window). The residual is intrinsic to hand-rewriting a layer outside the graph: 2,213
+         `mul_mat` calls vs the graph's 941, loss of ggml's own fusions, and ≥10 correctness defects across
+         two campaigns with the ≤1e-4 gate still failing by four orders of magnitude.
+      **★ THE DEAD TIME SPLITS IN TWO, AND ONLY ONE HALF LOOKS RECOVERABLE.** ~**12 ms barrier primitives**
+      (5,410 × ~2.2 µs; the 375 single-task SCALE nodes cannot have imbalance and show exactly 2.3 µs dead
+      each — a clean estimator) and ~**10.5 ms imbalance** (MUL_MAT ~4.2, MUL_MAT_ID ~3.3, GDN 2.2, state CPY
+      ~1.7). The forced all-to-all sync floor is ~8 per GDN layer / ~9 per attention layer = **~400 syncs/token
+      against the 5,410 actually executed**, so a perfect per-layer fusion ceilings at **9–11 ms (11–13%)** and
+      **touches none of the imbalance**.
+      **⚠ BUT EVERY IN-SITU BARRIER-REMOVAL TEST TO DATE IS NULL.** **D1 removed 940 barriers, bit-exact, and
+      measured −0.05 ± 0.5 ms against a predicted ~0.9 ms.** INF-10 (−50 barriers): −2.1% / +0.25%. A
+      hierarchical-barrier prototype: no gain. A 2026-08-28 fused HC_MIX op: 785 µs vs 150 µs — per-row dots
+      again, the same defect as (1). **The marginal realised value of a removed barrier is bounded ≤ ~1 µs and
+      has not been shown positive.**
+      **The 1,631 "small ops" are two `build_hc_mix` chains** (`qwen4exp.cpp:245-284`, 16 × 2 sites × 48 =
+      1,536) plus the 9-ADD expert sum (432), ~3.6 ms dead — but their compute is two rank-320 gemvs per site
+      at **27–30 GB/s, i.e. D6's sub-2 MB NUMA placement effect, not coordination.**
+      **Ranked options against the corrected 84.2 ms token** (ceiling / realistic): (1) `HC_MIX` compound op
+      calling the BATCHED `mul_mat` kernels internally, 1,536 → 96 nodes — 3.0 / 1–2.5 ms, ~300 lines,
+      bit-exact by construction; (2) expert-sum op, 9 ADDs → 1 — 0.85 / 0.3–0.8, ~80 lines; (3)
+      dependency-aware barrier elision (579 pairs) — 1.1–2.2 / 0.5–1.5, silent-race risk; (4) one op per layer
+      DRIVING existing kernels with the real threadpool (~8 syncs) — 10–11 / 4–8, or **0 if D1's null is real**;
+      (5) INF-67 revisited — already killed on its own terms. Work-stealing and cross-layer wavefront are 0 at
+      batch-1: no independent work in the chain.
+      **★ RECOMMENDATION: the structural lever is COARSER MEMORY STREAMS, not coarser graph nodes.** D6's
+      placement-granularity fix (sub-2 MB tensors pinned to one NUMA node; `MADV_NOHUGEPAGE` / 4 KB interleave,
+      measured penalty-free for streaming) is worth **~15 ms** and B2's per-expert split ~11 ms — both larger
+      than the entire barrier budget. The SYNC siblings' options are **substitutes, not additive**, drawing on
+      the same ~11 ms.
+      **Close INF-67 Axis A on its own §6b(b).** Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync5/REPORT.md`.
+
+- [ ] **SYNC-6 — THE DECIDER for the whole coordination axis: re-measure the existing D1 arms to ±0.2 ms.**
+      Filed 2026-09-05 from SYNC-5. Zero new code, one bench window: `/mnt/raid0/llm/worktrees/inf70/d1` vs
+      `d1-base`, 940 barriers removed, bit-exact. **≥0.5 ms ⇒ the primitive model holds, green-light the
+      HC_MIX op (expect 1.5–3 ms) and let it decide option 4. ≤0.2 ms ⇒ barrier count is NOT the cost on this
+      box: stop D2/D3/SYNC-1/SYNC-2 and this axis, and spend the coordination budget on imbalance (the two
+      systematic stragglers `ffn_moe_logits-11` at 1,087 µs dead and `node_872` at 13× its siblings are
+      1.4 ms/token on their own) and on placement.** Routed to SYNC-1, which owns the barrier-cost baseline.
+
+- [ ] **SYNC-5-ORIGINAL (superseded, retained for the record) — is there a COARSER graph?** Dispatched 2026-09-05.
       The structural question the four seams above cannot answer. **Must start from INF-67, which already
       tried a fused decoder block and FAILED — control arm graph-1T 350 ms vs fused-1T 1350 ms, ~4× slower,
       with "scratch churn" the named liability.** The deliverable is a correct diagnosis of WHY it failed and
