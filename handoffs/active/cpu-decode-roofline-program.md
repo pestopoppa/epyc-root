@@ -770,7 +770,14 @@ ratio is clean.
 item on either denominator.
 
 **★★ METHODOLOGY RULE ADOPTED 2026-09-05 (SYNC-10) — A NUMERICS-CHANGING ARM CANNOT BE A/B'd ON ms/token
-UNDER SPECULATIVE DECODING.** A different token stream produces a different acceptance pattern, and
+UNDER SPECULATIVE DECODING.**
+**★ THE RULE IS NOW DEMONSTRATED, NOT JUST ARGUED (2026-09-05).** `M2W` reproduces `M1W` to **0.6% per
+prompt** (ratios 1.007, 1.006, 1.001, 1.009, 1.007) — while **W-vs-A scatters −9.7% to +19.4%.** So W is a
+**highly repeatable measurement of a DIFFERENT WORKLOAD**, not a noisy measurement of the same one. The
+scatter is entirely the changed token stream altering draft acceptance. **A numerics-changing arm under
+speculative decoding gives you PRECISION WITHOUT COMPARABILITY** — and precision is exactly what would
+otherwise make such a number look trustworthy. That is what makes the confound diagnosis airtight rather
+than merely plausible. A different token stream produces a different acceptance pattern, and
 acceptance dominates ms/token, so the arm measures **acceptance-rate luck confounded with kernel speed** — at
 five prompts the luck wins. **SYNC-10 declined to report ANY MTP number for its V and W arms on these
 grounds.** Requirements: a **fixed-token-stream harness** or **plain-decode measurement**, with quality judged
