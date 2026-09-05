@@ -4041,3 +4041,37 @@ a shared index or a shared working tree, and it deserves the same treatment: don
 - `handoffs/active/cpu-decode-roofline-program.md` — C9, BE-1 (`99425578d`, the fix that was already present in source)
 - `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the probe series, the four retracted hypotheses, the `strings` proof
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Host drift: the ~5% evidence floor for cross-window comparisons (2026-09-04)
+
+The EPYC 9655 **drifts ~3% over hours while repeating to ~1.1% within a single lock window.** Same
+configuration, same harness: 23.16 t/s at 12:52 versus 22.58–22.73 t/s at 15:05–15:55.
+
+**Therefore any comparison with an expected effect below ~5% must be SAME-WINDOW and ALTERNATING (A/B/A/B,
+≥3 rounds, one lock hold), reporting per-round ratios and a per-prompt win count — not just means.** A
+sequential arm matrix confounds arm order with time and measures drift as if it were the treatment.
+
+Two published INF-70 results were overturned on 2026-09-04 as cross-window artefacts of exactly this
+magnitude:
+
+- The **23.623 t/s MTP headline** did not reproduce. A 3-round ABA gave **23.16 t/s (sd 0.14, spread 1.1%),
+  ratio 1.876×**, with the old figure sitting 2.0% above the mean and **2.6 round-sd out**. Notably the
+  *mechanism* reproduced exactly — α 0.8274 and drafted/token 0.8900, identical to 4 dp across all seven
+  n-max-4 arms — so the configuration was confirmed and only the magnitude was noise. **A stable mechanism
+  with an unstable number means you picked the right config and quoted the wrong figure.**
+- **"Depth beyond n-max 4 pays ~3%"** was false. A same-window alternating n4-vs-n5 test returned ratio
+  **0.9987**, 12/20 and 10/20 prompts — coin flips.
+
+The 18-arm matrix behind both ran sequentially over ~4 hours. **Within-window repeatability is not the
+uncertainty of a cross-window comparison**; quoting the former as the error bar on the latter understates it
+roughly threefold.
+
+Corollary on attribution: `ps %CPU` is cumulative and read idle peer processes at 40–50%. A delta-based
+sampler plus `Cpus_allowed_list` separated a GPU-pinned peer (cores 184-191 — not contention) from a real
+one (`test-backend-ops` at `0-191` taking 1.7–3.3 live cores, which landed on a control arm).
+
+### Source References (2026-09-04, host drift)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the ABA supersession, the depth closure, the standing rule
+- `/mnt/raid0/llm/tmp/inf70/agents/speed-claim/REPORT.md` — 25 arms × 24 production prompts, 600 requests
+- `progress/2026-09/2026-09-04-inf70-audit.md`
