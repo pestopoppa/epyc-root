@@ -535,6 +535,74 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
+## Axis S — SYNCHRONIZATION. Opened 2026-09-05. The 23.4% of the token that is not compute.
+
+**Why this axis exists.** Three byte-shrinking levers in a row underdelivered — B7 (PLE precision) null,
+B10 (vocab slice) +3% ceiling, B11's premise dissolved entirely. That is not bad luck; it is the roofline
+saying bytes are not the constraint. Decode runs at ~36% of the 152.6 GB/s ceiling, and the per-node census
+says where the rest goes.
+
+**Measured, plain decode, build 10197** (`agents/prof/results-20260902T135356Z/pernode.tsv`, 4,409 node
+evals): **22.516 ms dead of 96.267 ms wall = 23.4%.**
+
+| op | wall ms | compute ms | dead ms | dead % | nodes |
+|---|---|---|---|---|---|
+| MUL_MAT | 41.911 | 34.723 | 7.188 | 17.2% | 797 |
+| MUL_MAT_ID | 20.962 | 17.116 | 3.846 | 18.3% | 144 |
+| **GATED_DELTA_NET** | 2.999 | 0.785 | **2.214** | **73.8%** | 36 |
+| **CPY** | 3.648 | 1.440 | **2.208** | **60.5%** | 162 |
+| **ADD** | 1.718 | 0.225 | **1.494** | **86.9%** | 689 |
+| **SCALE** | 0.918 | 0.037 | **0.881** | **96.0%** | 375 |
+| CONT | 0.843 | 0.106 | 0.737 | 87.5% | 166 |
+| MEAN_D1 | 0.470 | 0.032 | 0.438 | 93.2% | 97 |
+| RMS_NORM | 0.588 | 0.245 | 0.343 | 58.3% | 184 |
+| SET_ROWS | 0.278 | 0.011 | 0.266 | 95.9% | 48 |
+| L2_NORM | 0.201 | 0.023 | 0.179 | 88.7% | 72 |
+| **GET_ROWS** | 9.338 | 9.000 | 0.338 | **3.6%** | 175 |
+
+**Two readings that set the whole axis:**
+- **The small-op family is a BARRIER TAX** — ADD/SCALE/CONT/MEAN_D1/SET_ROWS/L2_NORM/RMS_NORM total
+  **~4.34 ms dead across 1,631 nodes at 87–96% dead**. They compute almost nothing and appear to pay a full
+  thread-pool barrier each.
+- **`GET_ROWS` is the exception and it is NOT a barrier problem — only 3.6% dead.** Its 9.0 ms is real
+  compute stuck on too few cores (prior D6 note: unconditionally single-task, 113 MB at **13.1 GB/s on one
+  core**). Against a 152.6 GB/s machine this is the largest single lever identified in the campaign.
+  **Correction to the framing used when this axis was opened: D6 is a serialization defect, not dead time.**
+- **Outlier**: `ffn_moe_logits-11` runs **1118.4 µs wall for 31.9 µs compute (35.1×)** — 1.09 ms in ONE node
+  — while the other 47 `ffn_moe_logits-*` nodes are unremarkable. Smells like first-touch / pool wake-up
+  rather than the router itself; must be discriminated, not assumed.
+
+**Amdahl bound, stated up front so nobody oversells this axis:** 22.5 ms of a 96 ms token. A clean sweep of
+every seam is ~10–15% realistically, ~23% at the theoretical limit — **not** the 2× that separates us from a
+DGX Spark GB10 running the same model. That gap is ~1.78× memory bandwidth (273 vs 153 GB/s) and the rest is
+a GPU paying no per-node barrier at all. Tuning does not close it; a coarser graph might (SYNC-5).
+
+- [ ] **SYNC-1 — authoritative census + outlier diagnosis + barrier-cost baseline.** Dispatched 2026-09-05.
+      Re-census on current tip `10221`/`c51e4dabf` in BOTH plain and **the MTP config, which has never been
+      profiled** (the draft graph is ~144 nodes and may look nothing like this). Discriminate the
+      `ffn_moe_logits-11` outlier: same node every run (real defect) or whichever node is first after an idle
+      gap (artefact)? **Measure what one barrier actually costs at `-t 48`** — every sibling's saving is
+      priced against that number, so it must be measured, not estimated. Also: is the dead time spin-wait,
+      futex sleep, or work imbalance? Different fixes.
+- [ ] **SYNC-2 — the tiny-op barrier tax** (~4.34 ms, 1,631 nodes). Dispatched 2026-09-05. Confirm from
+      `ggml_get_n_tasks` that a 32 µs SCALE is really handed to 48 threads. Levers, cheapest first: cap
+      `n_tasks` below a work threshold; fuse trivial chains; last resort the barrier primitive itself.
+      **Correctness is the risk, not speed** — bit-identical output required.
+- [ ] **SYNC-3 — the GDN path** (GATED_DELTA_NET 73.8% dead + `cache_s_l*` CPY 60.5% dead, ~4.4 ms).
+      Dispatched 2026-09-05. Name the mechanism from code. Is the recurrent-state copy structurally required,
+      or a defensive copy that could be an in-place update or buffer rotation? **State is carried across
+      tokens, so correctness must be gated over ≥256-token generations** — an error may not appear on token 1.
+- [ ] **SYNC-4 — GET_ROWS serialization** (9.0 ms compute, 13.1 GB/s on one core). Dispatched 2026-09-05.
+      Verify the single-task claim against the CURRENT tip before optimising — the tree has moved, and
+      upstream may have fixed it already (adopting beats writing). Break the 9.0 ms down across the 175 nodes
+      first: one hot node or a long tail changes the fix entirely.
+- [ ] **SYNC-5 — is there a COARSER graph? (design investigation, zero compute.)** Dispatched 2026-09-05.
+      The structural question the four seams above cannot answer. **Must start from INF-67, which already
+      tried a fused decoder block and FAILED — control arm graph-1T 350 ms vs fused-1T 1350 ms, ~4× slower,
+      with "scratch churn" the named liability.** The deliverable is a correct diagnosis of WHY it failed and
+      whether that cause is intrinsic to coarsening or an artefact of that implementation. "Do not pursue this
+      axis" is an acceptable and valuable verdict.
+
 - [x] **B10 — NO-GO 2026-09-05. Reduced-vocabulary drafting does not pay HERE, and the reason is L3.** ✅
       Measured with an own `-DGGML_CPU_PROF` build of `10221`/`c51e4dabf` (worktree `/mnt/raid0/llm/worktrees/
       inf70/b10`, knob proven compiled in), two region-locked arms, placement 0.1% dev, both COHERENT at a
