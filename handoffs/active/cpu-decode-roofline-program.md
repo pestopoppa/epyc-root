@@ -594,7 +594,53 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       Dispatched 2026-09-05. Name the mechanism from code. Is the recurrent-state copy structurally required,
       or a defensive copy that could be an in-place update or buffer rotation? **State is carried across
       tokens, so correctness must be gated over ≥256-token generations** — an error may not appear on token 1.
-- [ ] **SYNC-4 — GET_ROWS serialization** (9.0 ms compute, 13.1 GB/s on one core). Dispatched 2026-09-05.
+- [x] **SYNC-4 — CLOSED 2026-09-05. The premise was STALE: GET_ROWS was already parallelised at D8.** ✅
+      **★ THE CENSUS I BRIEFED FOUR AGENTS FROM IS OFF THE BASE'S HISTORY.**
+      `agents/prof/results-20260902T135356Z/` was taken on branch `inf70/prof` @ `8b578bc57`, which
+      `git merge-base --is-ancestor` proves is **NOT an ancestor** of `exp/cpu-fusion-qwen4exp-20260829`; the
+      base already carries `bc2834a9b` (D8, 2026-09-02 15:55Z — two hours AFTER that profile at 13:53Z).
+      **Every per-op ranking taken from it is pre-D8**: GET_ROWS **−7.40**, CPY **−1.31**, CONT **−1.07**,
+      GATED_DELTA_NET **−0.28** ms/token. D8 alone is the whole 95.9 → **84.2 ms/token** step. Upstream has no
+      fix to adopt — its newest ref (2026-07-04) still carries the `n_tasks = 1` FIXME and a row-only split.
+      **★ THE REAL DEFECT SYNC-4 FOUND AND FIXED: `ggml_get_n_tasks()` IS ADVISORY ON THIS BACKEND.**
+      `ggml_graph_compute_thread()` sets `params.nth = n_graph & N_THREADS_MASK` for **every** node, so
+      `n_tasks` only sizes the work buffer and never reaches the kernel. The `n_tasks = 1` branch and
+      `GGML_GET_ROWS_MIN_BYTES` were dead code — **which is why D8's own A/B ran parallel on BOTH arms and read
+      just +0.97%, and why `test-backend-ops -o GET_ROWS` could only ever exercise one path.** Corollary with
+      campaign-wide reach: **SET_ROWS, SCALE, ROPE and DIAG are NOT serialised at runtime** despite their
+      source saying `n_tasks = 1`. Any lever expressed as a `n_tasks` change is a **vacuous null**.
+      `inf70/sync4` @ `eeecb3745` moves the threshold into `ggml_get_rows_split_init()`; default 0 = today's
+      behaviour, so it is a **no-op unless the knob is set**.
+      **★ FIRST GENUINE SAME-BINARY VERIFICATION OF THE D8 WIN** (D8x could only compare different binaries):
+
+      | arm | knob | tg128 | ms/tok | GB/s (÷153) |
+      |---|---|---:|---:|---:|
+      | A1 | parallel | **12.78 ±0.36** | 78.2 | 53.1 (34.7%) |
+      | B1 | serial | 11.01 ±0.08 | 90.8 | 45.8 (29.9%) |
+      | A2 | parallel | **12.78 ±0.05** | 78.2 | 53.1 (34.7%) |
+      | B2 | serial | 11.14 ±0.03 | 89.8 | 46.3 (30.3%) |
+
+      **+15.4%, per-round 1.161 / 1.147, 2/2 rounds** — ~11× the 1.1% in-window repeat. Placement 23.52 GB × 4
+      every arm, THP 99.9%. On the 36 hot nodes: **13.9 → 85.1 GB/s**. Gates: `test-backend-ops` 111/111 on
+      both paths (serial reachable for the FIRST time), mutation evidence that the knob bites, and 3 prompts of
+      41/141/237 tokens × 255 greedy steps **all sha256-identical** — which IS the recurrent-state gate, since
+      the hot nodes are the GDN state reads.
+      **Byte breakdown, which reframes SYNC-3's seam**: 93% of the old 8.86 ms was **36 nodes each gathering
+      ONE row of 786,432 f32 = 3.145 MB → 113 MB/token of GDN recurrent state**. `nr = 1`, so row-sharding was
+      structurally impossible; the win came from splitting *within* a row. The PLE gather is **8.4 µs** — a
+      rounding error, as B11 predicted. Residual GET_ROWS: 1.46 ms compute / 2.60 ms wall, the 1.15 ms gap
+      being barrier (SYNC-2's seam). `MIN_BYTES=65536` deliberately not measured: the 91 small gathers carry
+      16.9 µs/token, not worth a lock turn.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md`.
+
+- [ ] **SYNC-7 — audit every `n_tasks`-based assumption in the campaign.** Filed 2026-09-05 from SYNC-4.
+      `ggml_get_n_tasks()` is advisory; `params.nth` is overwritten per node. Sweep the tree for ops whose
+      source implies serialisation (`SET_ROWS`, `SCALE`, `ROPE`, `DIAG`, and any others) and record what they
+      ACTUALLY do at runtime, then re-check every INF-70 conclusion that rested on a `n_tasks` reading —
+      including D8's own +0.97% and any null a sibling reports from a thread-count knob. Same failure shape as
+      C9's stale binary: **a knob that does not reach the code produces a null that looks like evidence.**
+
+- [ ] **SYNC-4-ORIGINAL (superseded, retained for the record) — GET_ROWS serialization.** Dispatched 2026-09-05.
       Verify the single-task claim against the CURRENT tip before optimising — the tree has moved, and
       upstream may have fixed it already (adopting beats writing). Break the 9.0 ms down across the 175 nodes
       first: one hot node or a long tail changes the fix entirely.
