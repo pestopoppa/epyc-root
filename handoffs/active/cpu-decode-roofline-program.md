@@ -544,11 +544,23 @@ include its mtp head."*
 Three things follow, and they change the END STATE of this campaign — it no longer terminates in an
 experimental branch:
 
+**⚠ RECIPE DEFECT FIXED 2026-09-05 — the campaign's documented `--fa 1` DOES NOT EXIST.** Verified against
+the binary: the option is **`-fa, --flash-attn [on|off|auto]`, default `auto`** (`LLAMA_ARG_FLASH_ATTN`).
+`--fa 1` is wrong in **both** the name and the value form, so any launcher using it **dies at startup before
+loading the model**. **Two agents lost arms to it in one session** (B12 lost its first preflight; SYNC-10 lost
+all seven MTP arms of a hard-won lock turn). The campaign's own arms therefore never passed an FA flag at all
+— they ran on `auto`, which resolves to enabled (`resolve_fused_ops: Flash Attention enabled`), so the
+MEASUREMENTS are unaffected; only the written recipe was wrong. **Corrected to `-fa on` throughout
+(10 occurrences).** This is precisely the failure PROD-1 exists to prevent: a recipe carried in prose that
+nobody had executed verbatim. **Codify it as constants that launchers import, and validate the string by
+dry-running against a nonexistent model** — the parse either reaches model load or reports an invalid
+argument, and it costs about a second.
+
 - [ ] **PROD-1 — the MTP head is part of the MODEL, not an experiment.** Write the canonical recipe for
       Qwen3.8-Flash-Next so that **every** serving path for this model carries its MTP head by default.
       Settled config: head `shared-Q8_0`, `--spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5`
       (fleet default n-max 3, **4 for coding roles**, per the 2026-09-04 operator ruling), `GGML_ROWEXACT_N`
-      unset, **KV f16 — do NOT quantise (B9)**, `-t 48`, `--fa 1` + `GGML_FA_SPLIT_KV=0`, canonical env +
+      unset, **KV f16 — do NOT quantise (B9)**, `-t 48`, `-fa on` + `GGML_FA_SPLIT_KV=0`, canonical env +
       `taskset -c 0-95 numactl --interleave=all`. Measured **23.16 t/s, 1.876× plain** (ABA-confirmed).
       Codify it per [MEASUREMENT_POLICY](../../agents/shared/MEASUREMENT_POLICY.md) so sessions import the
       constants instead of remembering them — the standing rule is *use codified recipes, not memory*.
@@ -697,6 +709,30 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       fresh configure, no shared build dir. `EMPTY_SKIP` r1 had unproven placement (19.3 GB resident) so the
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
+
+**SYNC-10 WINDOW 2 (2026-09-05) — everything except the MTP arms is now in.**
+
+| evidence | status |
+|---|---|
+| census confirmed on its own base | done |
+| plain wall-time, 2 paired rounds | done — **S +8.57%**, V +5.35%, W +8.08% |
+| pristine-base control | done — `PBase` **13.06 ± 0.04** vs knobs-off 13.19, **no OFF-path regression**, so the S-vs-A gap is not an artefact of a slowed baseline |
+| bit-identity: kernel digest + mutation test | done |
+| greedy gates, 3 prompt lengths | done — **S identical; V and W DIVERGE at ~19–68 tokens** |
+| `test-backend-ops test -b CPU` | done — **8/8 on all four arms** |
+| THP corroboration for D6-PLACE | done (bonus — **second independent confirmation**) |
+| **MTP serving arms** | **re-queued — still the one missing piece; no MTP claim will be made** |
+| plain round 3 + threshold probe | running |
+
+**★ THE GREEDY GATES SETTLE THE PROMOTION CHOICE INDEPENDENTLY OF SPEED.** `S` is byte-identical to base at
+all three prompt lengths; **`V` and `W` diverge within 19–68 tokens.** For a ~2.3 ulp change that is *early* —
+it is a real behavioural change on production-length output, not a theoretical one. Combined with W ≈ S on
+speed, there is **no configuration in which shipping the vectorisation is worth it here**: it buys nothing
+measurable and changes the output stream inside 20 tokens.
+**⚠ Seven MTP arms lost to the `--fa 1` recipe defect** (see the PROD-1 note above) — an agent flag error, not
+a code defect, and the second time this session that **instrumentation rather than kernel work** was the
+failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
+which parses through to model load or reports an invalid argument, and costs about a second.
 
 - [ ] **D6-PLACE — ★ THE LARGEST REMAINING LEVER: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
       **placement hypothesis CONFIRMED by SYNC-2 on its own nodes**: the 194 hc rank-320 gemvs run at
@@ -1947,7 +1983,7 @@ named. MTP is not a serving option until that gate passes.
       kills the two flips that had survived everything else (`g1@28`, `g3@84`).
       **Carrier 2 — `ggml_flash_attn_ext` on CPU is not row-exact once `n_kv > 256`.** Bisected: n_kv **253 exact,
       257 divergent**, and only the boundary-crossing row is wrong (`node_584 FLASH_ATTN_EXT [256,24,3]`). `--fa 0`
-      makes the identical shape bit-exact at prefix 254 and 300 while `--fa 1` diverges. **It predicted the two
+      makes the identical shape bit-exact at prefix 254 and 300 while `-fa on` diverges. **It predicted the two
       remaining survivors before they were measured**: L3_p200's 236-token prompt diverges at generated token 24 —
       position **260**. Next discriminator: `test-backend-ops -o FLASH_ATTN_EXT -b CPU` at n_kv=257, n_q=3 vs n_q=1.
       **Why carrier 2 was invisible for so long**: the tracer's default `n_ctx` capped every run at 256 tokens per
@@ -2112,7 +2148,7 @@ named. MTP is not a serving option until that gate passes.
       **The CONFIGURATION is confirmed and the MECHANISM reproduces exactly** — α 0.8274 and drafted/token 0.8900,
       identical to 4 dp across all seven n-max-4 arms — so what failed was the number, not the finding: 23.623 was
       the optimistic edge of one unreplicated arm. Original text retained below.
-      **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
+      **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `-fa on` +
       `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
       paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
       432 requests across the arm matrix with ZERO garbage outputs. By class: coding 25.36, reasoning
@@ -2133,7 +2169,7 @@ named. MTP is not a serving option until that gate passes.
 - [x] **BE-2 — SOLVED and MERGED 2026-09-04 (`be2-fa`; knob cherry-picked as `c51e4dabf` — the branch itself was
       NOT merged, since it carried the superseded diagnostic fix and the `GGML_MM_TRACE` tracer). Carrier 2 is NOT A BUG: it is two algebraically-equal,
       numerically-different parallelisations of flash attention, and the FAST one is the default. RECOMMENDATION:
-      keep `--fa 1` with the split path ON and accept the non-exactness — that is also the fastest configuration at
+      keep `-fa on` with the split path ON and accept the non-exactness — that is also the fastest configuration at
       every depth measured.**
       **The mechanism, named from source.** `ops.cpp:9424-9426`: `use_split_kv_path` requires **`neq1 == 1`** (one
       query row) **and `nek1 >= 512`**. `llama-kv-cache.cpp:1270-1275`: **n_kv is padded to a multiple of 256**, so
@@ -2145,12 +2181,12 @@ named. MTP is not a serving option until that gate passes.
       so a 1-row decode and an n-row verify batch cannot be bit-identical at depth BY CONSTRUCTION. No bug exists.**
       **Provenance: upstream and deliberate** — `9f682fb64` (Aman Gupta, 2026-02-03, "ggml-cpu: FA split across kv
       for faster TG", #19209). It is a token-generation optimisation; "repairing" it means giving it up.
-      **Proof (`llama-rowexact`, build 10221, prefix 254, `--fa 1`, carrier 1 already removed):** default split ON →
+      **Proof (`llama-rowexact`, build 10221, prefix 254, `-fa on`, carrier 1 already removed):** default split ON →
       `node_584 FLASH_ATTN_EXT [256,24,3]` row 2 only, 68,334,110 state bytes differ (reproduces batch-envelope's
       `e7fa1p254` exactly); **`GGML_FA_SPLIT_KV=0` → ALL 3 ROWS IDENTICAL, 0/248320 logits, 0 state bytes.** One
       boolean removes the entire carrier with FA still on.
       **SPEED — and this is what decides it** (llama-bench, build 10221, depth sweep, t48):
-      | depth | `--fa 1` split ON (default) | `--fa 1` `SPLIT_KV=0` (exact) | `--fa 0` |
+      | depth | `-fa on` split ON (default) | `-fa on` `SPLIT_KV=0` (exact) | `--fa 0` |
       |---|---|---|---|
       | tg32 @ d512 | **12.48** | 12.16 | 12.58 |
       | tg32 @ d2048 | **12.01** | 11.78 | 11.85 |
@@ -2162,7 +2198,7 @@ named. MTP is not a serving option until that gate passes.
       the split path is NEVER TAKEN under MTP.** Measured on the 24-prompt production mix with the MTP head:
       **`GGML_FA_SPLIT_KV=0` is free EXACTLY, not approximately — 24/24 byte-identical outputs, 22.292 vs 22.048 t/s,
       identical draft acceptance.**
-      **RECOMMENDATION (ranked, and it inverts the earlier note): (a) `--fa 1` + `GGML_FA_SPLIT_KV=0`** — the fastest
+      **RECOMMENDATION (ranked, and it inverts the earlier note): (a) `-fa on` + `GGML_FA_SPLIT_KV=0`** — the fastest
       EXACT option, **zero cost in the shipping MTP config**, keeps FA's prefill advantage and its small compute
       buffer, and cashes in the lossless-MTP result. **(c) FA-as-is is now STRICTLY DOMINATED** — same bytes, same
       speed under MTP, but not lossless. **(b) `-fa off` is dominated too**, though it is a safe no-rebuild interim:
@@ -2622,7 +2658,7 @@ named. MTP is not a serving option until that gate passes.
          **Never set in any of our arms.** Relayed to `be2-fa` as a candidate mechanism for carrier 2: KV-cache
          rotation is exactly what would treat a wrapped/rotated region differently at a block boundary, and 256 is
          almost certainly a KV block-size constant. **If `LLAMA_ATTN_ROT_DISABLE=1` makes n_kv 257 exact under
-         `--fa 1`, the fix is one env var instead of a kernel repair or `-fa off`** — the best available outcome for
+         `-fa on`, the fix is one env var instead of a kernel repair or `-fa off`** — the best available outcome for
          the speed goal.
       **Corroboration, not a gap**: the community repo reports acceptance **0.90 code / 0.74 prose**, consistent with
       our 0.846 coding / 0.572 general at n-max 4. Nobody is getting dramatically better acceptance on this model, so
@@ -2728,7 +2764,7 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
   + `FA_SPLIT_KV`. Open only on BE-3 (a non-propagating carrier) and the claim-grade ABA.
 - **Serving config — SETTLED, ABA-confirmed 2026-09-04**: MTP head `shared-Q8_0`, `--spec-type draft-mtp
   --spec-draft-n-max 4 --spec-draft-p-min 0.5`, `GGML_ROWEXACT_N` unset, **KV f16 (do NOT quantise)**, `-t 48`,
-  `--fa 1` + `GGML_FA_SPLIT_KV=0`, canonical env + `taskset -c 0-95 numactl --interleave=all`
+  `-fa on` + `GGML_FA_SPLIT_KV=0`, canonical env + `taskset -c 0-95 numactl --interleave=all`
   → **23.16 t/s, 1.876× plain** (23.62 superseded; see the ABA block).
 - **★ STANDING MEASUREMENT RULE earned by this batch — THE HOST DRIFTS ~3% OVER HOURS.** Same config measured
   23.16 at 12:52 and 22.58–22.73 at 15:05–15:55, while repeating to **1.1% WITHIN a window**. Therefore **any
