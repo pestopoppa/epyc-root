@@ -662,6 +662,60 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       `ggml_get_n_tasks` that a 32 µs SCALE is really handed to 48 threads. Levers, cheapest first: cap
       `n_tasks` below a work threshold; fuse trivial chains; last resort the barrier primitive itself.
       **Correctness is the risk, not speed** — bit-identical output required.
+- [x] **SYNC-3 — NO-GO 2026-09-05. The seam had already closed; the subsystem is 3.8% of the token.** ✅
+      **★ THE CENSUS IS WRONG BY 26%, MEASURED ON THE ACTUAL BASE.** Re-censused at `c51e4dabf`
+      (`agents/sync3/results-run1/pernode-off.tsv`):
+
+      | | my brief | **measured on base** |
+      |---|---|---|
+      | graph wall / token | 96.267 ms | **76.371 ms** |
+      | `GATED_DELTA_NET` wall / dead | 2.999 / 2.214 (73.8%) | **0.510 / 0.071 (14.0%)** |
+      | `CPY new_state→cache_s_l*` (36) | part of 2.208 dead | **0.171 wall / 0.050 compute** |
+      | `GET_ROWS` state read | 8.4 ms | **2.068 ms** |
+
+      The brief's "~4.4 ms dead in the two worst ops" is **0.19 ms** here. Note three different token figures
+      have now circulated (96.3 / 84.2 / 76.4) — **only a measurement on your own base is safe.**
+      **★ THE LOAD-BEARING FINDING — THE RECURRENT STATE IS CACHE-RESIDENT, so the byte ledger is moot.** The
+      state is moved three times (**678 MB/token**) in 2.922 ms = an effective **234 GB/s, 1.5× the 152.6 GB/s
+      DRAM ceiling**; individual 3.0 MiB `CPY` nodes run at **~1.2 TB/s aggregate**. The 113 MB state lives in
+      cache across tokens. **B11's "226 MB/token omitted from the ledger" is arithmetically true and
+      economically irrelevant** — and this is the THIRD cache-residency finding today (draft head 260 GB/s,
+      GDN state 234 GB/s, PLE table 1.44 KB/token). **A byte ledger is systematically wrong on this box for
+      anything re-read per token that fits in 384 MiB of L3.**
+      **Mechanism, named from `ops.cpp:ggml_compute_forward_gated_delta_net_f32`**: not single-tasked and not
+      serialized on state — `nr = H × n_seqs = 48` against `nth = 48`, so **exactly one head per thread,
+      `dr = 1`, work-stealing never steals, and the wall is the max of 48 tiles with zero slack.** Plus a
+      **redundant second 48-way barrier inside the op**, provably unnecessary when `nchunk ≤ nth`. Confirms
+      SYNC-5: the recurrence forces no barriers at batch-1.
+      **Is the state CPY required? NO — and this tree's CUDA backend already fuses it away**
+      (`ggml_cuda_try_gdn_cache_fusion`) but bails at `if (K <= 1) return 0;`, covering only the K>1 rollback
+      path. **CPU decode runs K == 1, where it is fused on no backend.**
+      **Result**: `GGML_GDN_STATE_DIRECT` (cache slot as GDN `src[6]`, CPY node never built) +
+      `GGML_GDN_NO_INNER_BARRIER`, both default OFF, both `strings`-verified in the right libs before any
+      result was read. Per-node **2.922 → 2.615 ms = −0.307 ms, −0.40% of the token**. ABA (tg128 r3, evict
+      per arm, one lock session): base 12.77/13.11/12.89, both 12.87/13.04/13.05 → **+0.49% mean, 2/3 wins,
+      while the three BASE arms alone span 2.6%. NON-CLAIM.**
+      **Bit-identity: all EIGHT streams byte-identical** — 288 greedy tokens, prompts ~40/90/200, arms base /
+      both / direct-only / nobar-only. Knob proven to fire (0 `copy of new_state-*` nodes on vs 36 off). QSA
+      layers untouched. `test-backend-ops -b CPU` 38/38 at 4 and 48 threads.
+      **⚠ IF EVER MERGED**: `src[6]` is CPU-only; CUDA/Metal/SYCL would ignore it and **silently skip the
+      state write-back**. Needs `GGML_ASSERT(dst->src[6] == nullptr)` in those three entry points, or better,
+      reshape as a backend-local `ggml_cpu_try_fuse_ops` fusion mirroring the CUDA one. Branch `inf70/sync3` @
+      `00d79415a`, **not merged**.
+      **Amdahl: this subsystem is CLOSED.** Perfect elimination of every copy leaves ~3.2% of the token, and
+      the traffic is cache-served, so even that is optimistic.
+
+- [ ] **SYNC-9 — 72 zero-sized `build_rs` nodes cost 0.173 ms/token for ZERO work** (98.8% dead, pure
+      barrier). `ggml_nelements(dst) == 0`, so a skip in the node loop removes them; a node producing no
+      elements cannot affect output, so there is no correctness surface. Same magnitude as the entire
+      write-side state copy SYNC-3 eliminated, for a one-line guard. **Routed to SYNC-2** — it is the purest
+      co-arrival case in the graph.
+
+**⚠ METHODOLOGICAL CORRECTION — dead% IS NOT A TARGET.** SYNC-3 removed a redundant internal barrier and the
+op's **dead% rose 14.0% → 38.3% while its wall FELL 0.510 → 0.373 ms**: the fix moved thread-0's wait out of
+`compute` and into `wall − compute`. **Judge every change on WALL TIME; use dead% only to locate candidates.**
+This axis was opened on a dead%-ranked table, so the ranking was a search heuristic, never a value estimate.
+
 - [ ] **SYNC-3 — the GDN path** (GATED_DELTA_NET 73.8% dead + `cache_s_l*` CPY 60.5% dead, ~4.4 ms).
       Dispatched 2026-09-05. Name the mechanism from code. Is the recurrent-state copy structurally required,
       or a defensive copy that could be an in-place update or buffer rotation? **State is carried across
