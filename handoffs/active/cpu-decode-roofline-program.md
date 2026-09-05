@@ -535,7 +535,52 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
-- [ ] **B10 — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
+- [x] **B10 — NO-GO 2026-09-05. Reduced-vocabulary drafting does not pay HERE, and the reason is L3.** ✅
+      Measured with an own `-DGGML_CPU_PROF` build of `10221`/`c51e4dabf` (worktree `/mnt/raid0/llm/worktrees/
+      inf70/b10`, knob proven compiled in), two region-locked arms, placement 0.1% dev, both COHERENT at a
+      72-token production prompt.
+      **★ THE FINDING THAT OUTLIVES THE TASK: the campaign's byte-based roofline OVER-PRICES DRAFT-SIDE WEIGHTS
+      BY ~2×.** The draft head is the TRUNK's `output.weight` q6_K `[2560, 248320]`, 521.472 MB (the shared MTP
+      GGUF carries no head of its own):
+
+      | | ms/call | effective GB/s |
+      |---|---|---|
+      | `lm_head`, trunk graph (plain arm) | 3.742 | 139 — 94% of the 153 ceiling |
+      | `lm_head`, MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** |
+
+      Derived two independent ways from the MTP arm (386 evals = 78 trunk + 308 MTP; 78 MTP evals are
+      `process()` catch-ups adding with `logits=0` and streaming no head bytes, confirmed by `dst ne[1]=0`).
+      **260 GB/s is impossible from DRAM** — the MTP graph is only 144 nodes / ~105 MB of other weights, so the
+      521 MB head substantially SURVIVES IN THIS BOX'S 384 MiB L3 between draft steps.
+      **Cost future "shrink the drafter" levers against the measured 260 GB/s, never against 153 GB/s.**
+      **Consequence for B10**: the head is **~4–5% of the settled 43.17 ms token**, not the 8.6% the byte model
+      predicts. A K=65,536 slice ceilings at **+3.0–3.9%**; even a FREE head is only +5%.
+      **α side (zero compute)**: rebuilt the model's BPE from the GGUF and tokenised all 97,858 tokens of
+      COHERENT output from `speed-claim`. A contiguous id-prefix 64k slice — the only variant needing no new
+      artifact and no remap — covers **97.95%**, because **Qwen's vocab is NOT frequency-ordered above 65k**
+      (`'```'` = 71093, `'.**'` = 159029). That is **Δα ≈ −0.017 ≈ −2.6 to −3.4% — exactly break-even.** A
+      frequency-ranked top-64k reaches 100% coverage on our mix but needs the offline builder, a new GGUF, a
+      loader shape relaxation and a draft→target id map, for ~+3%. Upstream `#25187` independently measured
+      **+1.4%** on a 5090.
+      **Sub-questions all answered, and none of them is what killed it:**
+      - **Correctness — output-lossless.** `server-context.cpp:3876` compares the TARGET's sampled id against
+        the draft, so an out-of-slice truth is a REJECTED DRAFT, never a wrongly accepted token. α is the only
+        currency at risk.
+      - **Shared-head safety — SAFE, not a no-go.** The trunk builds its own full `mul_mat` in a SEPARATE graph;
+        a `ggml_view_2d` row prefix used only in the MTP graph is a read-only alias.
+      - **q6_K alignment — exact.** `QK_K=256`, `sizeof(block_q6_K)=210 B`, row = 10 blocks = **2100 B**
+        (521,472,000 / 248,320 = 2100 ✓). A row slice is a contiguous byte prefix; no requantisation.
+      - **★ CORRECTS the coordinator's own break-even correction** (which was itself wrong): our config runs
+        `--spec-draft-n-max 4` AUTOREGRESSIVELY on the single head, so tokens/step is `Σα^i ≈ 3.79`, **not
+        `1+α`**. Sensitivity is ≈1.5–2.0% throughput per 0.01 α, and break-even for the 64k slice is
+        **α′ ≈ 0.79** — headroom exists, but the lever shrank to meet it.
+      **Cheapest remaining probe in this family, needing NO CODE** (candidate, not filed as committed work):
+      requantise the head to IQ4_XS into a new MTP GGUF's `blk.48.nextn.shared_head_head` — the graph already
+      prefers that slot — 521 → 338 MB, expected **+1.4–1.8%**.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md`. No code changed, worktree clean, no commits,
+      both servers verified dead.
+
+- [ ] **B10-ORIGINAL (superseded, retained for the record) — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
       ("how are people getting 2× this on a single DGX Spark?"). Source: `MiaAI-Lab/Qwen3.8-Flash-Next-Single-
       DGX-Spark`, which reports 46.3 tok/s single-stream on GB10 using vLLM + **MTP-3 with the draft head
       projecting over a REDUCED VOCABULARY of 65,536** instead of the model's full 248,320.
