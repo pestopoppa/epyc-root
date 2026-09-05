@@ -633,6 +633,48 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       16.9 µs/token, not worth a lock turn.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md`.
 
+**★ AXIS S RECONCILED 2026-09-05 — THE BARRIER BUDGET IS GROSS, NOT RECOVERABLE IN BULK.**
+The apparent contradiction (2,478 ns/node measured on two instruments, pricing 5,410 barriers at ~13 ms, vs
+D1 removing 940 barriers bit-exact for **−0.05 ± 0.5 ms** against a predicted 2.33 ms) resolves into one
+mechanism, stated by SYNC-1 as a falsifiable model:
+
+> The ~2.2–2.5 µs is **not a fixed toll per barrier**. It is the CONGESTION cost of 48 cores doing a
+> simultaneous atomic RMW on one cache line plus the release round-trip, and it is paid in full **only when
+> threads arrive at the barrier TOGETHER**. When arrival is staggered — which heavy, imbalanced matmul work
+> guarantees — the late arriver finds 47 threads already spinning and the marginal cost collapses toward
+> release latency alone (a few hundred ns). The straggler wait that remains is **not the barrier's, it is the
+> imbalance**, and it would persist if the barrier were deleted, because the consumer needs all the data.
+
+It predicts the entire record with no special pleading: D1's null (940 barriers sitting right after staggered
+work), INF-10's −50 barriers, and the hierarchical-barrier prototype's flatness — while predicting that
+**tiny-op chains DO pay**, because every thread arrives simultaneously with nothing to do.
+**Therefore the correct target is not 5,410 barriers but "barriers at nodes where threads arrive together"**
+≈ SYNC-2's tiny-op set (~3.6 ms) + D2(i)'s 579 consecutive-single-task elision candidates (~1.3 ms), against
+an 84.2 ms token. **Axis S as originally framed was too broad; the imbalance half plus placement is where the
+rest of the budget lives.**
+**The estimator survives, and for a reason worth recording**: `ggml_compute_forward_scale_f32` splits over
+ROWS (`dr = (nr+nth-1)/nth`), and every decode SCALE here is `ne = [2560,1,1,1]` ⇒ `nr = 1`, so only `ith=0`
+gets work while threads 1–47 enter, do nothing, and park. The 375 SCALE nodes are genuinely single-task **at
+the kernel, not the planner** — so the advisory-`n_tasks` finding does not invalidate them. Falsification
+test, one run of SYNC-1's per-(node,thread) instrument: residual ≈2.2 µs on tiny/single-task nodes and a few
+hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
+
+- [ ] **SYNC-8 — two latent HEAP OVERFLOWS in the `n_tasks`-is-advisory class (not on our critical path).**
+      Filed 2026-09-05 from SYNC-1. Neither is hit by qwen4exp decode; both are real for other graphs and
+      probably upstream, so they want reporting as well as fixing.
+      1. **`SET_ROWS`** — the planner sizes wdata as `ne0 * n_tasks` with `n_tasks = 1` (the "NOT parallelised"
+         case in `ggml-cpu.c`), but the kernel indexes `params->wdata + (nc + CACHE_LINE_SIZE_F32) * ith` for
+         `ith` up to 47 (`ops.cpp:5457`, F16-src → non-F16-dst branch). **Any quantised KV cache with an F16
+         source overruns the work buffer**, and the sizing also omits the `CACHE_LINE_SIZE_F32` padding the
+         kernel adds. That same `n_tasks = 1` carries a comment claiming serialisation prevents the
+         destination-index write race — **the guard is inert**, since the kernel row-splits with nth=48. Our
+         graph is safe only because `nr` is 1–4 there.
+      2. **`SOFT_MAX`** — planned `n_tasks = MIN(n_threads, nrows)`, so 1 at single-row decode, while the
+         kernel indexes wdata by `ith` up to 47 (`ops.cpp:5802`). qwen4exp uses FLASH_ATTN_EXT and has zero
+         SOFT_MAX nodes. `ROPE` is fine (`n_tasks = n_threads`).
+      **General rule this yields: every `n_tasks = 1` case that ALSO sizes wdata by `n_tasks` is a candidate.**
+      Sweep for the pattern rather than fixing these two in isolation.
+
 - [ ] **SYNC-7 — audit every `n_tasks`-based assumption in the campaign.** Filed 2026-09-05 from SYNC-4.
       `ggml_get_n_tasks()` is advisory; `params.nth` is overwritten per node. Sweep the tree for ops whose
       source implies serialisation (`SET_ROWS`, `SCALE`, `ROPE`, `DIAG`, and any others) and record what they
