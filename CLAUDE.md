@@ -119,6 +119,15 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 - **Kill only PIDs you captured yourself. NEVER `pkill`/`pgrep` on a name pattern on this host** — it is a shared box, so any name pattern is a wildcard over other sessions' processes, and a guard process's argv necessarily contains the names it guards (origin: INC-20260731-broad-process-pattern-kills — `llama-server -m` killed another agent's server twice, and `earlyoom` died because its command line contains `--ignore ^(llama-server|sd-server)$`).
 - After killing a process, **verify it is dead** (`ps -p <pid>`); escalate SIGTERM → SIGKILL; never report success until confirmed.
 - Before declaring a fix deployed to a long-lived process, check the running process isn't stale (`ps -o lstart -p <pid>` vs file mtimes); restart if needed.
+- **The same rule applies to BUILD ARTIFACTS, and this is the one that bites.** Before diagnosing any
+  kernel/GEMM/library bug, prove the binary you are running contains the fix you are reasoning about:
+  compare the `.so`/binary mtime against the relevant commit date, and confirm the env knob you intend to
+  reason from is actually compiled in (`strings <lib> | grep <KNOB>`) — **a null from a knob that is not in
+  the binary is not evidence about the knob.** After reverting diagnostic instrumentation, rebuild and verify
+  the revert structurally (`strings` shows zero instrumentation symbols), never by assertion. Origin:
+  INF-70 C9 (2026-09-04) — `libggml-cpu.so` predated its own fix by two days, so source inspection exonerated
+  code the running library never contained, and two agents spent two days diagnosing a live kernel defect
+  that did not exist. The remedy was a rebuild.
 - **API reload vs full stack**: orchestrator API (uvicorn :8000) restarts via `orchestrator_stack.py reload orchestrator` — do NOT reload the whole stack. API-only: do NOT stop autopilot (it reconnects). Full stack: stop autopilot first.
 - **Reload ownership**: HOW above ≠ WHO/WHEN — if a session owns the inference, all reloads are executed by that session at its own boundary. Full rule: `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks*.
 
