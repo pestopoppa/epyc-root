@@ -4,15 +4,15 @@
     "handoff-active": 172,
     "handoff-blocked": 2,
     "handoff-completed": 186,
-    "progress": 354,
+    "progress": 356,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-04T11:00:33Z",
   "mode": "full",
-  "scan_time": "2026-09-04T13:42:43Z",
+  "scan_time": "2026-09-05T19:39:20Z",
   "schema_version": 1,
-  "source_set_hash": "20b46cf4b58f9aaec0a6c8370db1ea1b70a47f5098a4991b34aa4b0e5dc2e270",
+  "source_set_hash": "aa30ecc7f4a08e8b8dfb742b3b2eab41ee944867c1b5f53bd875159a3df90b6d",
   "sources": [
     {
       "content_hash": "d55fe0f4e17eca0f3579cabc3cf67e97b2ac50c369a8c0d5a42fd43e80a01ff6",
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "10db9245e79865dc7a602424b7930c58dd96bbea66f1ee59bb9c2e532f5e9043",
-      "modified": "2026-09-04T13:36:22Z",
+      "content_hash": "8c9941f98e72bd09dbfd2e9b6cf091e07fefcd409efba397d958739a09d00bf7",
+      "modified": "2026-09-05T19:38:06Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 163317,
+      "size": 207372,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -319,10 +319,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "84807b2df7e36631fb4a2febb6565fe3508aa57ab7590583ed39827e2d61605b",
-      "modified": "2026-09-02T08:42:07Z",
+      "content_hash": "551722732fa6057856b5cb4f2bb0810da39b1bed0e8ebdbd5c4eb36e4d89df1c",
+      "modified": "2026-09-05T19:33:58Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 28551,
+      "size": 30615,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -1335,10 +1335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d8a819223f3b189bbe760934228c8e67353d397b75439ad97d0bb8d5edf7c29d",
-      "modified": "2026-09-03T08:39:34Z",
+      "content_hash": "dc9f5d6a6e2e009b4c3db9800d57ae140d7c96a1a73da7b00c381a8db7845130",
+      "modified": "2026-09-05T19:33:19Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 122639,
+      "size": 123754,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -6823,19 +6823,35 @@
       "type": "progress"
     },
     {
-      "content_hash": "844e881b3c292b1bb024027c67c939d07f3f39bdc8cbc7f39d71559af4cf1b67",
-      "modified": "2026-09-04T13:36:22Z",
+      "content_hash": "65b8c16884e78c9337338bca21a61de3e9d50276a9a39e0532fee6ed89d66c76",
+      "modified": "2026-09-05T19:33:19Z",
       "path": "progress/2026-09/2026-09-03-inf70-audit.md",
-      "size": 101883,
+      "size": 123434,
       "title": "2026-09-03 \u2014 INF-70 (adhoc-inf70-audit)",
       "type": "progress"
     },
     {
-      "content_hash": "42f94de8f909c9aa2eb2432d379be16196133220a3573edde265f70db78079d0",
-      "modified": "2026-09-04T13:36:22Z",
+      "content_hash": "0d69f8868fa7f85ba073fe1f7533ea2ae6d8af60e57a4e26efeb00c27d816177",
+      "modified": "2026-09-05T19:27:07Z",
       "path": "progress/2026-09/2026-09-04-ak-rebuild-20260828.md",
-      "size": 5540,
+      "size": 8899,
       "title": "2026-09-04-ak-rebuild-20260828",
+      "type": "progress"
+    },
+    {
+      "content_hash": "02ad9e8fe2f2d275f2a46ae525dc452fa47d8b72641dea1e85051bc9826101c4",
+      "modified": "2026-09-05T19:33:19Z",
+      "path": "progress/2026-09/2026-09-04-inf70-audit.md",
+      "size": 9959,
+      "title": "2026-09-04-inf70-audit",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b30d5fb9b2e3b0161b97c5ea52ec8737b7c746176520ec4ee66eb20a3e9413f6",
+      "modified": "2026-09-05T19:38:06Z",
+      "path": "progress/2026-09/2026-09-05-inf70-audit.md",
+      "size": 8774,
+      "title": "INF-70 audit \u2014 2026-09-05",
       "type": "progress"
     },
     {
@@ -7447,7 +7463,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 929,
+  "total_new": 931,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
