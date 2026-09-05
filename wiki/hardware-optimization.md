@@ -4355,3 +4355,51 @@ barrier. **Tuning does not close a structural gap.**
 - `/mnt/raid0/llm/tmp/inf70/agents/b11/REPORT.md` + `inv.json` — the per-token byte inventory and the PLE finding
 - `/mnt/raid0/llm/tmp/inf70/agents/prof/results-20260902T135356Z/pernode.tsv` — the per-node census
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Profile OCCUPANCY, not overhead — the instrument decides what you can find (2026-09-05)
+
+INF-70 spent most of a campaign ranking optimisation seams by **dead time** (`wall − compute`) and missed the
+largest defect in the graph, because **the instrument made it invisible by construction**.
+
+**The two failures, both structural:**
+
+1. **Per-node timings were recorded from thread 0.** In a node where only `ith = 0` has work, thread 0 *is*
+   the working thread — so 453 nodes with one thread busy and 47 idle looked like honest compute. The same
+   bias understated total coordination by roughly half: thread 0 computes 57.6 ms where the mean thread
+   computes 46.9, because it is the one thread with work on every single-task node. A campaign-wide "23.4%
+   dead" figure was really **40.6%**.
+2. **Dead% is an OVERHEAD metric and it deprioritised the winner.** `GET_ROWS` scored **3.6% dead** while
+   being the largest lever in the graph; `SCALE` scored **96% dead** while being worth ~0.5 ms. Ranking by
+   overhead systematically buries defects whose cost is *serial work*, which is the dominant defect class at
+   batch 1.
+
+**The right first question is occupancy: "what fraction of the machine is doing useful work during this
+node?"** One per-`(node, thread)` pass yields everything the campaign needed:
+
+| quantity | from | finds |
+|---|---|---|
+| `mean/max` across threads | per-thread compute | **idle threads** — `thr_mean/thr_max < 0.1` flags single-task nodes |
+| `max − mean` | per-thread compute | load imbalance |
+| `wall − max` | + thread-0 wall | true barrier residual |
+| max, argmax-eval, spike count | across evals | **host stalls** — 4 nodes hid 2.39 ms/token in their means |
+| bytes ÷ time per node | + tensor sizes | **effective rate**, which is how cache residency shows up |
+
+**Two supporting habits, each learned the same way:**
+
+- **Census the configuration you SERVE.** The MTP graph went uncensused for the whole campaign; when finally
+  measured it showed the barrier toll per token is **3.1× smaller** than in plain decode, because the trunk
+  graph amortises its barriers over 3.23 tokens. Every barrier-elision estimate had to be divided by ~3.
+- **Never report a per-node mean without dispersion.** A discrete host stall divided by the eval count looks
+  exactly like a systematic straggler — and did, for two nodes that were promoted to "the recoverable half of
+  the budget" before the spike counts arrived.
+
+**The payoff, measured:** the occupancy model predicted the wall-clock saving of its fix to within **1%,
+twice** (6.59 ms predicted vs 6.63 measured; 4.46 vs 4.54), on a machine where byte-based estimates had
+missed by factors five times in a week.
+
+### Source References (2026-09-05, occupancy profiling)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis S, SYNC-1's census, SYNC-10's arms, METH-1
+- `/mnt/raid0/llm/tmp/inf70/agents/sync1/REPORT.md` — the per-`(node,thread)` census and barrier baseline
+- `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md` — the row-split and sigmoid arms
+- `progress/2026-09/2026-09-05-inf70-audit.md`

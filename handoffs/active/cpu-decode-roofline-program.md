@@ -985,7 +985,13 @@ that does **not** use Q8_K activations, so it isolates mechanism 1 from mechanis
 duplication, so it is expected to lose too, **but less, and for a different reason** — which is what makes it
 worth the arm.
 
-**★★ OPERATOR DECISION REQUIRED — TWO DEFECTS IN THE D9 HOOK, ONE OF THEM A BYPASS. Fix prepared and
+**✅ OP-38 RESOLVED 2026-09-05 — operator acked, fix committed `1e4924b1`.** Both defects closed; policy
+untouched (guarded prefixes, ack mechanism and refusal text unchanged); 5-case regression test added,
+mutation-proven both directions. **⚠ Deployment: the hook that EXECUTES is the copy in `/workspace`'s working
+tree, which the commit does not update — it takes effect there on the next pull.** METH-1's blocked
+deliverable (committing SYNC-1's profiler patch from a llama.cpp worktree) unblocks once that lands.
+
+**Original decision request, retained — TWO DEFECTS IN THE D9 HOOK, ONE OF THEM A BYPASS. Fix prepared and
 mutation-proven; I did NOT commit it, because `scripts/hooks/` is itself D9-guarded and inventing an ack is
 exactly what the control exists to prevent.**
 
@@ -1228,6 +1234,52 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       (better placement) or **destroy the residency effect** (work-stealing partitions). **Do not flip it to
       find out** — read the paths first. Interacts with D6 (placement) and B2, which are now the campaign's
       largest remaining levers.
+
+- [ ] **METH-1 — make the per-`(node,thread)` OCCUPANCY census the standing FIRST step for kernel work.**
+      Filed 2026-09-05 from the campaign retrospective. **The instrument we used all campaign made the winning
+      defect invisible by construction**: per-node `wall`/`compute` was recorded **from thread 0**, and in a
+      node where only `ith = 0` has work, thread 0 *is* the working thread — so 453 single-task nodes looked
+      like honest compute. And the **ranking metric actively deprioritised the winner**: we ranked by dead%
+      (`wall − compute`, an OVERHEAD metric), under which `GET_ROWS` scored **3.6% dead** while being the
+      largest lever in the graph, and SCALE scored 96% while being worth ~0.5 ms.
+      **The right first question is OCCUPANCY — "what fraction of the machine is doing useful work during this
+      node?" — not overhead.** One per-`(node,thread)` pass yields all of it: `mean/max` across threads finds
+      **idle threads** (the row-split defect, `thr_mean/thr_max < 0.1`); `max − mean` gives imbalance;
+      `wall − max` gives the true barrier residual; variance across evals catches **host stalls** (2.39 ms of
+      ours hid in 4 nodes' means); and bytes ÷ time per node gives the **effective rate**, which is what
+      exposed cache residency after five byte-model failures. Every correction this campaign made falls out of
+      that single instrument; we assembled it piecemeal across four investigations.
+      Deliverables: fold SYNC-1's `sync1_profiler_instrumentation.patch` into the tree so it is a one-flag run
+      (**three agents rebuilt it independently this session** — SYNC-1, SYNC-10, B12); a wiki page stating the
+      occupancy-not-overhead rule; and two supporting habits — **census the config you SERVE** (the MTP graph
+      was uncensused until 2026-09-05 and gave the ÷3 rule) and **never report a per-node mean without
+      dispersion**. **Blocked on OP-38** for the patch commit.
+
+- [ ] **UP-1 — upstream the two ggml contributions this campaign produced.** Filed 2026-09-05.
+      (a) **`ggml-cpu: vectorise sigmoid`** — `ggml_vec_sigmoid_f32` existed in `vec.h` as a **dead scalar loop
+      with zero callers** while `ggml_compute_forward_sigmoid` went per-element, and `ggml_v_sigmoid` is
+      `ggml_v_silu` with the numerator `1`. A **12.5× gap on identically shaped nodes** from a function written
+      and never wired. SYNC-10's §7.1 is already drafted as a liftable PR description, with the accuracy table
+      (74.2% bitwise exact, 92.1% within 1 ulp, max ~2.3 ulp) and a note that the PR must **NOT** carry the
+      `GGML_VEC_SIGMOID` gate — that knob exists only for our attribution; upstream should take the fast path
+      unconditionally, as silu does.
+      (b) **the (row, column-chunk) split for elementwise kernels at batch 1** — `apply_unary_op`,
+      `apply_unary_op_functor`, `apply_binary_op`, `ggml_compute_forward_repeat_f32` (which was
+      `if (ith != 0) return;` outright). Bit-identical, and worth **+8.57% measured** on this stack.
+      Note upstream value differs from ours: (a) helps anyone lacking a 48-thread split; (b) helps anyone
+      running batch-1 decode on many cores.
+
+- [ ] **HYG-1b — rebuild or remove EVERY stale build dir in the shared tree.** Escalated 2026-09-05: it is not
+      one directory. **None** contain `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or `GGML_IQK_DEQUANT`, and **all
+      predate `99425578d`**, so setting any of those against them is a **silent no-op** and any result measured
+      there is **vacuous rather than wrong** — the more dangerous kind. Cost B12 a rebuild and is the third
+      incident of this class in a week. Either refresh them at tip or delete them so nobody can reach for one.
+
+- [ ] **HYG-2 — `check_commit_hygiene.py` parses the COMMIT MESSAGE as shell text.** Filed 2026-09-05 (was
+      "noted, not filed" — filing it). It splits the command string on newlines and reads message lines as
+      commands, so a message that merely **quotes** a git invocation is misread as a pathspec commit and
+      refused. Cost three attempts in this session; worked around with `-F <file>`. Same family as OP-38 —
+      a hook whose parser is wrong about which text is a command. Low severity, trivially reproducible.
 
 - [ ] **SYNC-11 — full 48-value per-thread dump on `result_output`** (one line in the summariser, one arm;
       the instrument already collects it). **Three order statistics cannot show a GAP, and bimodality is a
