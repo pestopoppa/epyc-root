@@ -814,6 +814,89 @@ Both arms share every defect and differ by exactly the barrier commit, so the A/
 only the absolutes are non-comparable to tip. D1 is now **corroboration, not the decider** — the in-situ
 per-(node,thread) census measures the same quantity at tip with ~4,400 observations per token.
 
+**★★★ SYNC-1 COMPLETE 2026-09-05 — THE GAP WAS NEVER A GAP, AND THE AXIS HAS A RANKED ENVELOPE.**
+
+**(a) THE D1 PUZZLE DISSOLVES: TWO DISJOINT BARRIER POPULATIONS.** Counted separately in
+`agents/prof/.../census.txt`:
+
+| population | count/token | in the 12.00 ms residual? |
+|---|---:|---|
+| **graph** barriers — one per executed node | **4,409** | **yes, all of it** |
+| **internal** — inside `mul_mat` (797), `mul_mat_id` (144), GDN (36), FA (24) | **1,001** | **no** |
+
+**D1 removed 940 of the INTERNAL ones** — its own report says "940 sync events", and 797 + 144 = 941 is
+exactly the `mul_mat` + `mul_mat_id` internal population. A thread waiting at an internal barrier is still
+inside its own `ggml_compute_forward`, so that wait lands in `thr_max` — **inside compute, not in the
+residual.** Disjoint domains. **The 2.72 µs was never a prediction about what D1 removed; D1's null means
+only that INTERNAL barriers are cheap.** No congestion story survives, and none is needed.
+**(b) THE COORDINATOR'S DISPATCH MECHANISM IS RULED OUT — right conclusion, wrong reason.** There is **no
+per-node dispatch** in ggml's OpenMP path: the whole graph runs inside a single `#pragma omp parallel`
+(`ggml-cpu.c:4357`) and each thread walks the node loop itself, so per-node non-barrier overhead is loop
+bookkeeping — tens of ns. Decisive evidence: **SCALE nodes, where 47 of 48 threads have literally zero work
+to distribute, still pay the full 2.44 µs residual.** The 2.72 µs is the barrier, essentially all of it.
+**But the conclusion stands and is now an IDENTITY, not a model**: there is exactly **one graph barrier per
+executed node**, so graph-barrier count **≡ node count** — **you cannot remove a graph barrier without
+removing a node.** Re-pricing the axis on node count is correct *by construction*.
+**(c) OUTLIER: ARTEFACT, CONFIRMED.** `spikes = 1`, `wall_max` 9,300–49,163 µs at a **single eval index**,
+and **different nodes every run** — whichever node is executing when a host stall lands, divided by the eval
+count. **~0 ms recoverable.** The pre-registered discriminator returned the pre-registered answer.
+**(d) BARRIER COST, FOUR INSTRUMENTS AGREEING**: 2.16 µs (`active`) / 23.83 µs (`passive`) / 2.478 µs per
+trivial node through the real threadpool / **2.72 µs in situ**. **Spin, not futex**, confirmed twice
+including `voluntary_ctxt_switches = 231` across 48 threads over minutes. **Hierarchical barrier: no win at
+48T. No implementation win exists** — do not spend a window looking for one.
+
+**★ RANKED ENVELOPE — MTP ms/token, the config that serves (wall 48.08; mean-thread compute 33.52
++ imbalance 10.67 + barrier 3.89 = 48.08, closes exactly):**
+
+| rank | seam | MTP ms | recoverable | confidence | owner |
+|---|---|---:|---|---|---|
+| 1 | **single-threaded row-split kernels** | **2.84** | **~2.3** | **HIGH** | SYNC-10 |
+| 2 | **matmul imbalance** | **4.83** | ? | **LOW — no mechanism** | **SYNC-14 (new)** |
+| 3 | tiny-op barrier toll | 1.97 | ~0.5–0.7 | MEDIUM | SYNC-2 |
+| 4 | GDN + CPY | 1.70 | ~0.1 | closed | SYNC-3 |
+| 5 | GET_ROWS | 0.33 | 0 | **closed by D8** | — |
+
+**★★ OPERATOR DECISION REQUIRED — TWO DEFECTS IN THE D9 HOOK, ONE OF THEM A BYPASS. Fix prepared and
+mutation-proven; I did NOT commit it, because `scripts/hooks/` is itself D9-guarded and inventing an ack is
+exactly what the control exists to prevent.**
+
+1. **FALSE POSITIVES — the hook probes the wrong repository.** `_run()` invokes git with no `cwd`, so it
+   inherits `$CLAUDE_PROJECT_DIR` (`/workspace`) regardless of which repo the commit targets. It therefore
+   refuses legitimate commits in `/mnt/raid0/llm/**` worktrees on the strength of **a peer session's** dirty
+   `scripts/coordination/**`. **Hit independently by SYNC-1 and SYNC-10 on 2026-09-05; both correctly
+   declined to invent a `D9-ack` to get past it.** It will refuse every llama.cpp-worktree commit for as long
+   as `/workspace` carries dirty coordination files — which is most of the time.
+2. **★ FALSE NEGATIVE — `git commit -a` BYPASSES D9 ENTIRELY.** Found while testing (1). `-a` stages tracked
+   files *itself*, so with nothing staged `git diff --cached` returns empty and `commit_targets()` reports no
+   guarded paths. **Measured: `git commit -am` on a dirty `scripts/coordination/` file passes cleanly, rc=0.**
+   Only a staged-then-plain commit is caught. The hook's own refusal text reads *"a control with an unguarded
+   path is not a control"* — and it has one. **This is the more serious of the two: D9 has been advisory
+   against anyone using the most common commit idiom since it was ratified 2026-08-15.**
+
+**The fix** (`/mnt/raid0/llm/tmp/inf70/operator/d9_hook_two_defects.patch`, 112 lines, + a 5-case regression
+test `test_d9_hook_probes_target_repo.py`, 85 lines): run the probes in the commit's own `cwd` from the hook
+payload; skip only where the target repo does not CONTAIN the guarded tree (`git cat-file -e HEAD:<prefix>`,
+**failing closed** if git cannot answer, so it can only ever exempt repos lacking the prefix and never weakens
+enforcement where it exists); and treat `-a`/`--all` as recording the working tree.
+**Mutation-proven, both directions**: reverting the `-a` fix fails exactly the two enforcement tests;
+reverting the `cwd` fix fails exactly the two false-positive tests; restored, all five pass. Policy is
+untouched — guarded prefixes, ack mechanism and refusal text are unchanged.
+**To apply** (from a clean `/workspace`, operator ack required by the control itself):
+`git apply /mnt/raid0/llm/tmp/inf70/operator/d9_hook_two_defects.patch && cp
+/mnt/raid0/llm/tmp/inf70/operator/test_d9_hook_probes_target_repo.py tests/` then commit with a
+`D9-ack:` line. **Note the patch tightens the control more than it loosens it.**
+
+- [ ] **SYNC-14 — diagnose matmul imbalance (4.83 MTP ms/token, the LARGEST single item, and nobody knows
+      why).** Filed 2026-09-05 from SYNC-1's envelope. It is ranked second only because its confidence is LOW:
+      **there is no named mechanism.** Candidates to discriminate, not assume: per-CCX residency straddling
+      (SYNC-11's 48-value dump on `result_output` bears directly — that node has the graph's largest absolute
+      imbalance at 359 µs, 1.48× fast-to-slow); NUMA placement of specific tensors; expert-gather row-count
+      variance under `mul_mat_id`; iqk's static partition dividing unevenly for particular shapes.
+      **⚠ Note the measurement caveat that applies to exactly this seam**: `thr_max` absorbs intra-op barrier
+      waits, so the imbalance/barrier split is **approximate for MUL_MAT and MUL_MAT_ID** — the 32.0 ms total
+      is robust but this 4.83 ms is the least certain number in the table. **Establish the mechanism before
+      anyone proposes a fix.**
+
 **★★ D1 A/B RESULT 2026-09-05 — AND THE HYPOTHESIS THAT RECONCILES IT WITH THE 2.72 µs RESIDUAL.**
 ABABAB round 1, `-p 0 -n 128 -r 25`, placement 25.5 GB × 4, same window:
 
