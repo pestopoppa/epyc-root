@@ -710,6 +710,27 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+**★★★ SYNC-10 PLAIN PATH SETTLED — THREE COMPLETE PAIRED ROUNDS, ALL ARMS SAME BINARY.**
+
+| arm | R1 | R2 | R3 | **mean** | sd |
+|---|---:|---:|---:|---:|---:|
+| **S** `GGML_ROWCOL_SPLIT` (bit-identical) | +9.53% | +7.60% | +8.12% | **+8.42%** | 0.80 pp |
+| V `GGML_VEC_SIGMOID` | +6.33% | +4.37% | +5.54% | +5.41% | 0.80 pp |
+| W both | +9.53% | +6.63% | +8.66% | +8.27% | 1.22 pp |
+| **W/S ratio** | 1.000 | 0.991 | 1.005 | **0.999** | ±0.007 |
+
+**★ INDEPENDENTLY CORROBORATED: SYNC-2's separately written implementation measured +8.19% ± 1.12% over four
+paired rounds. The two agree to 0.23 pp.** Seven paired rounds across two implementations, on a host that
+drifts 3% over hours, converging inside a quarter of a percentage point.
+**★ PROMOTION SETTLED ON THE PLAIN PATH: ship `GGML_ROWCOL_SPLIT` ALONE.** `W/S = 0.999 ± 0.007` — the
+vectorisation contributes **nothing** on top of the split, three times over, and S is if anything marginally
+the fastest. **Do NOT ship `GGML_VEC_SIGMOID` here**: it buys **0.0 pp** and costs a **top-1 flip at ~19
+tokens**. **No KLD window is needed** — the accuracy question never has to be answered, because we never have
+to ship the ulp change to get the win. Its value is **upstream only** (UP-1), where a 48-thread split is not
+available to hide the scalar `expf`.
+**Remaining**: the `MIN_ELEMS=4096` threshold probe closes this window; **the MTP serving arms are queued
+behind it and remain the ONLY missing evidence.** No MTP claim until they land.
+
 **SYNC-10 WINDOW 2 (2026-09-05) — everything except the MTP arms is now in.**
 
 | evidence | status |
