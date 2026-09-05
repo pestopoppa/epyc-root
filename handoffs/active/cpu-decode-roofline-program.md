@@ -660,6 +660,57 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       gap (artefact)? **Measure what one barrier actually costs at `-t 48`** — every sibling's saving is
       priced against that number, so it must be measured, not estimated. Also: is the dead time spin-wait,
       futex sleep, or work imbalance? Different fixes.
+- [x] **SYNC-2 — GO on all three levers. ★ GRAPH BARRIERS DO CONVERT TO WALL TIME — AXIS S IS ALIVE.** ✅
+      2026-09-05. 4 paired same-window rounds, **4/4 wins each**, bit-identical. Base **12.922 t/s / 77.384
+      ms/token** measured on its own `c51e4dabf` (not 96.267, not 84.2), base spread 1.86%.
+
+      | lever | removes | end-to-end | ms/token | barriers |
+      |---|---|---:|---:|---:|
+      | `GGML_ELEM_COLSPLIT` | nothing — redistributes work | **+8.19% ± 1.12%** | −5.86 | 0 |
+      | `GGML_TINY_SOLO` | **915 barriers, 0 nodes, 0 compute** | **+3.86% ± 1.20%** | −2.87 | −915 |
+      | `GGML_EMPTY_SKIP` | 217 zero-element nodes + their barriers | +0.87% (r2–r4) | −0.67 | −217 |
+      | **all three** | | | **77.374 → 69.750 (−9.85%)** | |
+
+      **★ THE DECIDER, AND IT OVERTURNS THE COORDINATOR'S WORKING CONCLUSION.** `TINY_SOLO` **breaks the
+      "one graph barrier per node" identity**: it elides **915 graph barriers while removing zero nodes and
+      changing zero arithmetic**, recovering **3.14 µs per barrier**. `EMPTY_SKIP` recovers **3.09 µs per
+      barrier** over a **disjoint** population. **Two independent levers agreeing to 2%, both just above
+      SYNC-1's 2.72 µs in-situ residual.** So the ~12 ms barrier budget is **not** a gross unrecoverable
+      number, Axis S is **not** economically dead, and **SYNC-5's fusion pricing should be REDONE at
+      3.1 µs/barrier rather than written off.**
+      **D1's null is not in tension**: it removed *internal* `mul_mat` barriers, whose waits land inside
+      compute — exactly SYNC-1's disjoint-populations result.
+      **Mechanism, both halves of the brief refuted**: `ggml_get_n_tasks()` is advisory
+      (`ggml-cpu.c:3861` sets `params.nth` to the full count for every node), so **lever (a) as briefed could
+      not have removed a single barrier**. SCALE *is* single-threaded, but because
+      `ggml_compute_forward_scale_f32` splits over rows and every decode SCALE is `[2560,1,1,1]`.
+      **⚠ DUPLICATE EFFORT — MY COORDINATION FAILURE, but it bought corroboration.** SYNC-2's census
+      independently found **the same row-split defect as SYNC-10**: 7.375 ms/token of row-partitioned
+      elementwise work on ONE thread of 48 because `ggml_nrows(dst) == 1` at batch 1, of which 4.665 ms is
+      134 `UNARY [10240,1]` nodes — the hyper-connection sigmoids, scalar libm `expf`, 10,240 per node.
+      `ELEM_COLSPLIT` is D8's shape; UNARY wall **6.644 → 1.589 ms**. **Two independent implementations, two
+      independent measurements: +8.19% vs SYNC-10's +8.57%, agreeing within 0.4 pp.** I should have caught the
+      overlap when I told SYNC-2 its nodes were `hc_mix` chains.
+      **Correctness**: full-logit fnv1a over all **248,320** logits, 83- and 186-token prompts × 48 greedy
+      steps — **bit-identical on all 96 step lines** with all three on; 1.7B smoke bit-identical per lever.
+      Knobs `strings`-proven in both binaries before any arm (the harness hard-fails otherwise); own worktree,
+      fresh configure, no shared build dir. `EMPTY_SKIP` r1 had unproven placement (19.3 GB resident) so the
+      **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
+      `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
+
+- [ ] **D6-PLACE — ★ THE LARGEST REMAINING LEVER: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
+      **placement hypothesis CONFIRMED by SYNC-2 on its own nodes**: the 194 hc rank-320 gemvs run at
+      **29.0 GB/s against 109.1 GB/s for ≥2 MB weights**, and the rate **steps exactly at the 2 MB THP
+      boundary** — `iq4_xs` at 1.741 MB → 28.0 GB/s, `q5_K` at 2.253 MB → 41.6. **Larger than all three
+      SYNC-2 levers combined.** Next window goes here: D6's `MADV_NOHUGEPAGE` / 4 KB interleave, measured
+      penalty-free for streaming. Interacts with **SYNC-13** (`ggml_is_numa()` is false, so iqk's static
+      partition — not ggml's chunker — is what makes residency possible; do not disturb it blindly).
+
+- [ ] **SYNC-15 — `hc_inject` `MUL_MAT [10240,4]` moves 21,760 bytes in 19.0 µs = 1.1 GB/s, 1.83 ms/token**,
+      because **only 4 of 48 threads get a row**. Filed 2026-09-05 from SYNC-2, unclaimed. Same defect family
+      as the row-split (degenerate row partition at batch 1) but a different shape — 4 rows, not 1 — so
+      `ELEM_COLSPLIT` does not cover it.
+
 - [ ] **SYNC-2 — the tiny-op barrier tax** (~4.34 ms, 1,631 nodes). Dispatched 2026-09-05. Confirm from
       `ggml_get_n_tasks` that a 32 µs SCALE is really handed to 48 threads. Levers, cheapest first: cap
       `n_tasks` below a work threshold; fuse trivial chains; last resort the barrier primitive itself.
