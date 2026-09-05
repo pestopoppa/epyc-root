@@ -948,6 +948,17 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `created_at` entirely (it is publication metadata, and `as_of` ranges over the evidence
       frontier) or refuse future frames at append time. What is NOT defensible is the current
       accident of neither. Pick one; an append-time refusal is the cheaper guard
+- [ ] **SC54 — wire the qwen4exp `llama-perplexity` / KLD quality gate as a measurement source, write side
+      FIRST.** Filed 2026-09-04 by INF-70 the moment the gate was restored (C9: it returned `nan` on this model
+      until a rebuild fixed it). This is the ONLY PPL/KL instrument for qwen4exp, so every quant-quality decision
+      on the model routes through it — B7's PLE-Q8_0 A/B is its first consumer and is running now. **Project, not
+      grade.** Four caveats are mandatory in every tuple and are the whole reason to wire the write side now:
+      `GGML_IQK` state (a real 2.2% systematic offset between kernel paths), determinism (the ± is corpus
+      sampling, not run noise — two binaries reproduced to every digit, so overlapping bars are NOT agreement),
+      Ny regime (perplexity runs Ny>=32, serving runs Ny=1 — a PPL observation says nothing about the serving
+      path), and BINARY attestation by `.so` hash + mtime rather than commit alone, because C9 was a stale
+      artifact whose library predated its own fix. Source-table row added to `scripts/vidya/adapters/README.md`.
+
 - [ ] SC18 **Wire the `test-backend-ops` property layer as a measurement source — write side FIRST**
       (filed 2026-08-10 per CLAUDE.md's belief-kernel rule, at the layer's *design* time rather than
       after it ships). The property layer specified as `RVP-C2-2` in

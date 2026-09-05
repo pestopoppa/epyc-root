@@ -230,7 +230,7 @@ not a gate.
       C0 microbench (`bench_readbw`, 2 min) — target ≥ 300 GB/s read at 96T on a 12-channel 5600 MT/s
       socket; then C5 (15 min) and record both in this ledger with the new build/BIOS state. Every
       bandwidth-bound number in the program moves with this; the dispatch floor (~70 ms) does not.
-- [ ] **C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.**
+- [x] **C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.** ✅ 2026-09-04 — stale binary; verified to the same-binary standard, see the C9 block below.
       Measured 2026-09-02 on build 10196 against the OP-32 uniform artifact: `nan` from chunk 1 under
       `-b 2048` / `-b 512` / `-fa 1` / `-c 2048`; the same binary returns `PPL = 17.29 ± 3.29` on
       Qwen3-1.7B-Q8_0, so the tool is sound and the defect is architecture-specific — suspect the
@@ -535,6 +535,113 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
+- [x] **B10 — NO-GO 2026-09-05. Reduced-vocabulary drafting does not pay HERE, and the reason is L3.** ✅
+      Measured with an own `-DGGML_CPU_PROF` build of `10221`/`c51e4dabf` (worktree `/mnt/raid0/llm/worktrees/
+      inf70/b10`, knob proven compiled in), two region-locked arms, placement 0.1% dev, both COHERENT at a
+      72-token production prompt.
+      **★ THE FINDING THAT OUTLIVES THE TASK: the campaign's byte-based roofline OVER-PRICES DRAFT-SIDE WEIGHTS
+      BY ~2×.** The draft head is the TRUNK's `output.weight` q6_K `[2560, 248320]`, 521.472 MB (the shared MTP
+      GGUF carries no head of its own):
+
+      | | ms/call | effective GB/s |
+      |---|---|---|
+      | `lm_head`, trunk graph (plain arm) | 3.742 | 139 — 94% of the 153 ceiling |
+      | `lm_head`, MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** |
+
+      Derived two independent ways from the MTP arm (386 evals = 78 trunk + 308 MTP; 78 MTP evals are
+      `process()` catch-ups adding with `logits=0` and streaming no head bytes, confirmed by `dst ne[1]=0`).
+      **260 GB/s is impossible from DRAM** — the MTP graph is only 144 nodes / ~105 MB of other weights, so the
+      521 MB head substantially SURVIVES IN THIS BOX'S 384 MiB L3 between draft steps.
+      **Cost future "shrink the drafter" levers against the measured 260 GB/s, never against 153 GB/s.**
+      **Consequence for B10**: the head is **~4–5% of the settled 43.17 ms token**, not the 8.6% the byte model
+      predicts. A K=65,536 slice ceilings at **+3.0–3.9%**; even a FREE head is only +5%.
+      **α side (zero compute)**: rebuilt the model's BPE from the GGUF and tokenised all 97,858 tokens of
+      COHERENT output from `speed-claim`. A contiguous id-prefix 64k slice — the only variant needing no new
+      artifact and no remap — covers **97.95%**, because **Qwen's vocab is NOT frequency-ordered above 65k**
+      (`'```'` = 71093, `'.**'` = 159029). That is **Δα ≈ −0.017 ≈ −2.6 to −3.4% — exactly break-even.** A
+      frequency-ranked top-64k reaches 100% coverage on our mix but needs the offline builder, a new GGUF, a
+      loader shape relaxation and a draft→target id map, for ~+3%. Upstream `#25187` independently measured
+      **+1.4%** on a 5090.
+      **Sub-questions all answered, and none of them is what killed it:**
+      - **Correctness — output-lossless.** `server-context.cpp:3876` compares the TARGET's sampled id against
+        the draft, so an out-of-slice truth is a REJECTED DRAFT, never a wrongly accepted token. α is the only
+        currency at risk.
+      - **Shared-head safety — SAFE, not a no-go.** The trunk builds its own full `mul_mat` in a SEPARATE graph;
+        a `ggml_view_2d` row prefix used only in the MTP graph is a read-only alias.
+      - **q6_K alignment — exact.** `QK_K=256`, `sizeof(block_q6_K)=210 B`, row = 10 blocks = **2100 B**
+        (521,472,000 / 248,320 = 2100 ✓). A row slice is a contiguous byte prefix; no requantisation.
+      - **★ CORRECTS the coordinator's own break-even correction** (which was itself wrong): our config runs
+        `--spec-draft-n-max 4` AUTOREGRESSIVELY on the single head, so tokens/step is `Σα^i ≈ 3.79`, **not
+        `1+α`**. Sensitivity is ≈1.5–2.0% throughput per 0.01 α, and break-even for the 64k slice is
+        **α′ ≈ 0.79** — headroom exists, but the lever shrank to meet it.
+      **Cheapest remaining probe in this family, needing NO CODE** (candidate, not filed as committed work):
+      requantise the head to IQ4_XS into a new MTP GGUF's `blk.48.nextn.shared_head_head` — the graph already
+      prefers that slot — 521 → 338 MB, expected **+1.4–1.8%**.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md`. No code changed, worktree clean, no commits,
+      both servers verified dead.
+
+- [ ] **B10-ORIGINAL (superseded, retained for the record) — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
+      ("how are people getting 2× this on a single DGX Spark?"). Source: `MiaAI-Lab/Qwen3.8-Flash-Next-Single-
+      DGX-Spark`, which reports 46.3 tok/s single-stream on GB10 using vLLM + **MTP-3 with the draft head
+      projecting over a REDUCED VOCABULARY of 65,536** instead of the model's full 248,320.
+      **Why this is the one transferable item in that repo** (NVFP4 needs Blackwell; FP8 KV loses on our stack
+      per B9; PLE offload is a GPU-memory concern and we have 1.1 TB): the draft head's output projection is a
+      248,320-row GEMV on EVERY draft step, and **we are no longer bandwidth-bound under MTP** — 25.4 GB/s
+      actual, 16.6% of the 153 ceiling — so we are dispatch/compute-bound, precisely the regime where cutting
+      that matrix ~3.8× should pay. Cheap to falsify: restrict the draft head's logits to a top-K vocabulary
+      slice and measure α plus decode t/s. **The gate is α**: a smaller vocab that costs acceptance is a loss
+      (B9's lesson — the metric that pays under speculation is α, not bytes).
+      **Scope note:** the 2.00× headline gap is NOT evidence we are leaving 2× on the table — GB10 has 273 GB/s
+      unified vs our 153 GB/s achievable (1.78×) plus far more compute, so the gap is close to the hardware
+      null. File this on its own merits, not as a chase.
+
+- [x] **B11 — CLOSED 2026-09-05 AS A NON-QUESTION. There is no missing 38%; the premise was wrong.** ✅
+      The coordinator's arithmetic used two wrong inputs. Ground truth from a from-scratch GGUF reader (no
+      binary involved, so build-freshness does not bind it): **4.1656 GB/token**, agreeing with the live-graph
+      ledger to **+0.24%**.
+      - **6.671 B active params, not 6.0** (+11.2%)
+      - **4.995 effective bpw, not 4.0** (+24.9%) — **`IQ4_XS-uniform` IS NOT UNIFORM**: lm_head q6_K,
+        `attn_qkv` q5_K, `ffn_down_exps`/`hc_*_up` iq4_nl, and the router `ffn_gate_inp` is **F32**.
+      - **1.112 × 1.249 = 1.389** — the "missing 38%", exactly and entirely.
+      **Provenance of the original number is clean**: 51.3 GB/s was DERIVED as `12.349 t/s × 4.156 GB/token`
+      (`agents/speed-claim/REPORT.md:87`), and the 4.156 came from `agents/prof/` instrumenting the LIVE decode
+      graph (`GGML_CPU_PROF`) — summing `ggml_nbytes(src0)` per MUL_MAT and `n_expert_used × nb02` per
+      MUL_MAT_ID, re-derived independently from `pernode.tsv` at 4.1558 GB. Not file-size division (that would
+      have given 98.4 GB). **So the number was right and the interpretation was mine.**
+      **★ Three structural findings worth more than the question was:**
+      1. **The GatedDeltaNet stack is 30.3% of the token (1.261 GB) — as large as ALL expert traffic**, and
+         `attn_qkv` alone (648.8 MB) exceeds lm_head. **"6B active, mostly experts" is the wrong mental model**;
+         experts are under a third of the bytes.
+      2. **The F32 router costs 251.7 MB/token — 6.0% of the budget for 0.25% of the active params.**
+      3. The ledger is weights-only and omits **~226 MB/token of GDN recurrent state** (113 MB `GET_ROWS` +
+         113 MB `CPY`) plus ≤100 MB KV. Honest total **~4.40 GB/token → 54.3 GB/s = 35.6% of the 152.6 ceiling**
+         (not 33.5%). **This strengthens the campaign's thesis**: still only ~36% of ceiling, so the deficit is
+         latency/sync, not bytes. (NON-CLAIM — arithmetic, not a counter.)
+      **Hypotheses refuted, both structurally rather than by measurement:** `GGML_MMID_SLAB` partitions
+      `n_groups × ne01` rows where `n_groups` is the distinct-used-expert count, and only when `cne1 == 1`
+      (`ggml-cpu.c:1840-1900`) — it changes which thread reads which run, not the row set; both methods give
+      1.2964 GB identically. The **PLE table is off by three orders of magnitude**: one gather site
+      (`ple.layers=[1]`), 16 rows × 90 B = **1.44 KB/token**; even charging a full 2 MB THP per row gives 32 MB,
+      and DRAM is 64 B-line granular so the real cost is ~2 KB. **The 28.8 GB PLE table is a TLB/latency object,
+      not a bandwidth object** — which retrospectively explains B7's null from a second direction.
+      **Levers this hands us (both already on the board):** quantising the F32 router (**B4**) saves 251.7 → 62.9
+      MB = 4.5% of the token AND hits the worst straggler in the graph (those 48 nodes: 4.197 ms wall for 2.102
+      ms compute, containing the token's single worst node at 1118 µs wall / 32 µs compute) — bytes and
+      imbalance in one change. Runner-up on ms/effort is **D6**: `GET_ROWS` is unconditionally single-task,
+      moving 113 MB at 13.1 GB/s on one core for **8.4 ms = 8.7% of the token**.
+      **Optional hardware confirmation** (not run, not needed for the verdict): one locked `llama-bench tg128`
+      under `perf stat` on the DF/UMC read counters; predicted delta 6% vs the 1.1% in-window repeat.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b11/` (`REPORT.md`, `gguf_inv.py`, `inv.json`).
+
+- [ ] **B11-ORIGINAL (superseded, retained for the record) — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
+      model with ~6B active parameters at ~4 bits (~3 GB). That is ~38% more traffic per token than the active
+      weights account for. Candidates: expert-gather read amplification (we touch whole slabs, not just used
+      rows), the PLE table gather, or a scope error in the bandwidth accounting itself. **Rule out the
+      measurement first** — confirm what the 51.3 GB/s counter includes before attributing it to the kernel
+      ([[feedback_verify_test_method_before_calling_it_a_bug]]). If real, it is a larger lever than anything
+      remaining on Axis B: a 38% traffic reduction on the plain path is worth more than every merged kernel
+      change in this campaign combined.
+
 - [ ] **B7 — EXL3 `mul1` trellis experts (filed as INF-71).** turboderp published EXL3 weights for this
       model on 2026-08-31 (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, MTP head at 4 bits,
       `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
@@ -939,15 +1046,55 @@ named. MTP is not a serving option until that gate passes.
       "foreign process during my window" resolves immediately into "GPU peer on 184-191, ignore" or "CPU peer on
       0-95, real contention" — which is the difference between a shrug and an incident. Cheap: two extra reads per
       sample in the existing sampler loops (`agents/*/arm.sh`, `reanchor2/arm.sh`).
-- [ ] **BE-3 — the third, unbisected carrier: the DSA lightning-indexer path.** At prefix 300 with the FA split
-      path off and carrier 1 removed, **98–100 intermediate nodes** in the DSA lightning-indexer chain
-      (`(reshaped)` → `UNARY` → `SUM_ROWS` → `indexer_score-3`) still differ between an n-row batch and n single
-      rows, on **1–4 of 512 elements**. They did **not** propagate — logits and the full 126 MB recurrent state are
-      identical on all rows — so this is NAMED, NOT CLAIMED. Risk: it could flip an indexer top-k selection at some
-      other prefix, which would surface as a rare divergence that looks like the carriers we just closed. Scope:
-      bisect it with `llama-rowexact` across prefixes, determine whether any selection actually flips, and only then
-      decide whether it needs fixing. Low priority while it stays non-propagating; the reason to keep it on the
-      books is that both earlier carriers also looked harmless until measured.
+- [ ] **HYG-1 — the stale shared build dir is a live trap; rebuild it or remove it.**
+      `cpu-fusion-20260829/build-cpu` (Sep 1) sat two days behind its source and cost a full investigation — four
+      hypotheses raised and retracted across two investigators, none of which source-level reasoning could have
+      caught, because the source was correct. The shared tree holds **five** build dirs spanning Aug 30 – Sep 3
+      (`build-asan`, `build-cpu-prof`, `build-cpu`, `build-merged-20260903`, `build-o1`), none version-named.
+      **Two options, both operator-adjacent because the tree is shared**: (a) **rebuild** `build-cpu` at the current
+      tip and keep it current, or (b) **remove** the stale dirs so nobody can reach into them — the per-agent
+      worktree pattern means no agent *needs* a shared build, and that pattern is exactly what contained today's
+      damage. **Recommend (b) for the stale ones plus (a) for `build-cpu` if anything still references it.** Do not
+      act while agents are live: `b7-ple` is probing `build-cpu` right now. **Guard to add regardless**: any brief
+      that names a build must require a freshness proof by CONTENT — a symbol introduced by the relevant fix, or
+      `--version` compared to `HEAD` — never a directory name or mtime.
+- [x] **BE-3 — carrier 3 CLOSED as a well-scoped negative ✅ 2026-09-04 (`be3-dsa`). It never propagates, and the
+      source says it cannot. NO FIX WARRANTED — document it, do not repair it.**
+      **What it is: a SEMANTIC carrier, not an arithmetic one** — unlike carriers 1 and 2, and **it is ours, not
+      upstream.** The DSA indexer pools each block's key as a **mean over the cells present in the cache**, and
+      `build_qsa_top_k` (`qwen4exp.cpp:730-812`) writes **all** of the ubatch's indexer keys (`cpy_k`) before reading
+      the whole cache back (`get_k`). So for the block containing a row's own position, an n-token batch pools over
+      sibling keys that a single-token decode has not yet written. Model facts: `indexer.head_count=4`,
+      `key_length=128`, `top_k=2048`, `compress_ratios=[0,0,0,4]×12`; the indexer `mul_mat` is `[128 × n_blocks]`
+      with **`ne11 = 4·n_tokens`** — i.e. **the very node family BE-1's bound `N >= 4·(n_max+1)` was derived from.**
+      `ROWEXACT_N=512` removes the arithmetic part and leaves this semantic residue.
+      **Why it CANNOT propagate**: every block whose membership can differ satisfies `b*r >= tail_start` (siblings
+      sit at positions > q), and `set_input_qsa` (`llama-memory-hybrid-idx.cpp:437-447`) gives exactly those blocks
+      **`+1e9`** — forced into the top-k whatever their score. `build_attn_qsa` then consumes `top_k` as a **SET**,
+      scattered into a `-INFINITY` mask via `ggml_set_rows`, so ordering is irrelevant. **The only propagation
+      channel is a changed selected set, and it is closed by construction.**
+      **Measured, 5 arms** (`GGML_ROWEXACT_N=512 GGML_FA_SPLIT_KV=0 --fa 1`): at prefix **64 / 300 / 2100 / 2600**,
+      `indexer_top_k` never differs and **logits and the FULL recurrent state (120–206 MB) are IDENTICAL**. The node
+      trace matches the prediction element for element (`first@525` = block `2100/4`; `SUM_ROWS diff 1/576`;
+      `max|d| = 1.000e+09` on cells 2100-2102 is the tail bias itself, killed by the KQ mask). **Control that rules
+      out any rounding/tile/thread story: the LAST row of every batch is `DIFFER 0`** — it has no siblings after it.
+      A 5-token batch pollutes exactly two blocks, as the mechanism predicts.
+      **⚠ THE POSITIVE RESULT — this completes the exactness picture: with `GGML_ROWEXACT_N >= 4·(n_max+1)` AND
+      `GGML_FA_SPLIT_KV=0`, an n-token batch is BIT-IDENTICAL to n single-token decodes — logits and full recurrent
+      state — verified at 300, 2100 and 2600 tokens.** Concurrent-stream identity and A/B measurement discipline are
+      intact. **All three carriers are now closed**: 1 fixed (BE-1), 2 flag-removable (BE-2), 3 non-propagating.
+      **The falsifier to guard**: containment rests **entirely** on the `+1e9` tail bias. Remove it, narrow it, or
+      make it finite-comparable against real scores and **carrier 3 becomes a live top-k flip risk immediately.**
+      Anyone touching `set_input_qsa` must re-run these arms.
+      **Also noted**: the fused decode path (`qwen4exp-fused.cpp:1121`) pools only `cell < n_visible` over an **f64**
+      accumulator — neither the pollution nor the graph path's f32 slice-sum, a third numeric variant contained by
+      the same argument.
+      **⚠ INSTRUMENT DEFECT FOUND AND FIXED (`1aceb684b`, not merged): `rowexact.cpp::tokenize` allocated a FIXED
+      512-token buffer**, hard-capping `prefix+n` at 512 — below this model's top-k width
+      `min(n_kv, indexer_top_k + r - 1) = 2051`. **So EVERY rowexact run ever made on this model had a vacuous
+      top-k and could not have detected a flip even if one existed.** `d_p2100_n3` is the first non-vacuous
+      selection ever measured here. **This is the SECOND time an instrument default sat below the phenomenon's
+      threshold** — the tool's `--n-ctx` default hid carrier 2 the same way.
 - [x] **BE-1 — carrier 1 made shippable; MERGED 2026-09-04 into `exp/cpu-fusion-qwen4exp-20260829` at
       `4d9cdf66f` (operator: proceed). MY SUGGESTED BOUND OF 8 WAS REFUTED BY THE GATE.** ✅ 2026-09-04
       (`be1-ship`, commit **`db6b715c9`** on `inf70/be1-ship`, base `10acba0ab`; not merged, not pushed).
@@ -1004,6 +1151,13 @@ named. MTP is not a serving option until that gate passes.
       **every** prompt class, most on `general` (+5.2%, 18.886 → 19.863), which is precisely the class with the
       worst α and therefore the most wasted verification to recover. **This knob had never been set in any arm of
       this campaign** (default 0.0).
+      **⚠ SUPERSEDED 2026-09-04 BY THE CLAIM-GRADE ABA — 23.623 DOES NOT REPRODUCE. Quote 23.16 t/s / 1.876×.**
+      ABA (A-plain → B-config, ×3) in ONE lock window: **B = 23.16 t/s (sd 0.14, spread 1.1%, range 23.01–23.26),
+      A = 12.35 t/s (sd 0.24), ratio 1.876×** (per-round 1.845 / 1.886 / 1.897; B faster on 20/20 prompts in every
+      round). The 23.623 below sits **2.0% above the ABA mean and 2.6 round-sd out**; no round reached 23.4.
+      **The CONFIGURATION is confirmed and the MECHANISM reproduces exactly** — α 0.8274 and drafted/token 0.8900,
+      identical to 4 dp across all seven n-max-4 arms — so what failed was the number, not the finding: 23.623 was
+      the optimistic edge of one unreplicated arm. Original text retained below.
       **FINAL RECOMMENDED CONFIGURATION: n-max 4, `--spec-draft-p-min 0.5`, row-exact off, `--fa 1` +
       `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
       paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
@@ -1149,20 +1303,164 @@ named. MTP is not a serving option until that gate passes.
       INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
       qwen4exp's suitability as settled.
 
-- [ ] **C9 — `llama-perplexity` returns `nan` on qwen4exp: PROMOTED to the critical path 2026-09-04, and it is
-      worth far more than B7.** Found by `b4`, confirmed by `b7-ple` to reproduce on the merged tip
-      (`qwen4exp.cpp` and `perplexity.cpp` are byte-identical between b4's build and ours). **Why it now gates
-      everything**: PPL/KL is the ONLY instrument in the stack that can resolve a small quality effect — run-to-run
-      variance 0.000, while every other harness has an MDE of 4–17 pp and the repo's own note is "neither sees
-      1–2 pp". **Without it, B7, B9 and every future quant decision on this model can only produce unfalsifiable
-      nulls** — and *a null is only worth reporting if the instrument could have seen a difference.*
-      **Live hypothesis (`b7-ple`, queued)**: b4's probe matrix varied `-b`/`-c`/`-fa` but **never the kernel env**.
-      The output-head matmul only ever runs as a **GEMV** during generation; the all-logits path is the only thing
-      that exercises it as a **GEMM** — exactly where `GGML_IQK=1` swaps in the ik_llama kernels. So the `nan` may be
-      an iqk GEMM path that generation never touches. **Fallback already written** if that does not yield:
-      teacher-forced top-K distributions over `llama-server`'s known-good generation path, giving paired top-1
-      agreement, truncated KL and a paired NLL. **Deliverable: a working quality instrument for qwen4exp**, which
-      unblocks B7, B9, B5 and every future artifact decision.
+- [x] **C9 — SOLVED 2026-09-04 (`b7-ple`). `llama-perplexity` returned `nan` on qwen4exp because the Q6_K output
+      head hit iqk's broken large-Ny repack — and perplexity is the ONLY caller that reaches it.**
+      **Result** (probe 1, region-locked, kernel env the sole variable):
+      | env | result |
+      |---|---|
+      | `GGML_IQK=1` | `nan` |
+      | **`GGML_IQK=0`** | **PPL = 4.9043 ± 0.59979** |
+      | `GGML_IQK=0` + `-fa 1` | 4.9043 ± 0.59979 (identical to the last digit) |
+      | `GGML_IQK=1` + `-fa 1` | `nan` |
+      **`GGML_IQK` is the sole determining variable**; `-fa` and `GGML_FUSED_DECODE_OFF` are irrelevant. **b4's
+      original probe matrix varied `-b`/`-c`/`-fa` and therefore could not have found this.**
+      **Mechanism, closed by four facts** (`iqk_mul_mat.cpp:319`,
+      `case GGML_TYPE_Q6_K : return nrc_y >= 64 ? GGML_TYPE_Q8_0_R8 : type;`):
+      1. Type histogram over all **1224 tensors: Q6_K appears exactly ONCE**, on `output.weight` — the Q6_K repack
+         has exactly one possible call site in this model.
+      2. That call site is a **GEMV in every served path** (generation `n_outputs == 1`; MTP verification a small `k`).
+      3. `perplexity.cpp:580` sets logits on `pos >= n_ctx/2`, so **`n_outputs == n_ctx/2` exactly** — 256 at `-c 512`.
+      4. **Q6_K is the only case in that switch using 64; every other type flips at 32.**
+      Already-convicted family: the comment above the switch says these converters "produce incorrect results for
+      some large-Ny dense and MoE shapes on Zen 4", and BE-1 excluded IQ4_XS for exactly this. Q6_K survived on a
+      `gdn-fix-validate` coherence check of the **served** path — and lossy is not nan.
+      **WHY IT SURVIVED — the generalisable lesson**: the defect is **unreachable from any serving workload**. It is
+      reachable only from the all-logits path, which is **the quality gate itself**. *The instrument was the one
+      caller its own bug disabled.* A defect that only breaks your measuring device is invisible to every test that
+      uses the device.
+      **Fix**: Q6_K moved into the excluded-families list in the AVX2 arm, mirroring BE-1 (1 file, +11/−1), on
+      worktree `inf70/b7-ple` off the merged tip. The **non-AVX2 arm was deliberately left alone and said so** — this
+      host takes the AVX2 path and there is no measurement on the other. Built on cores **96–175**, outside the
+      0-95 bench region and clear of the GPU host threads, so it contended with nothing and needed no lock.
+      **Two disciplines the agent held itself to, both worth keeping**: (a) the source comment asserts a
+      `-c 128`/`-c 126` bracket the bisect has not returned yet, so **it will not commit until that is confirmed** —
+      no claim written into a comment ahead of its measurement; (b) **every verification arm runs with
+      `GGML_IQK=1`**, because an arm that passed only under `GGML_IQK=0` would be testing the workaround rather than
+      the fix. **Unblocks B7, B9, B5 and every future quality or artifact decision on this model.** Coordinator
+      contributed the type/threshold hypothesis; the agent confirmed it and found facts 1 and 4 independently.
+      **★ C10 (fleet exposure) — MEASURED NULL 2026-09-04. NO production exposure, NO escalation.** Probe 3:
+      DeepSeek-1.5B Q4_K_M, which carries **a Q6_K head AND 28 body Q6_K tensors**, at Ny=256 gives
+      **36.7101 (`GGML_IQK=1`) vs 36.7159 (`GGML_IQK=0`)** — agreement to 0.016%. **Q6_K is definitively fine at
+      large Ny**, so the four production-lineup files carrying body Q6_K (`ingest_long_context` 54,
+      `worker_vision` 48, `worker_general` 13, `architect_critic` 1) are **not exposed**. The measurement matched
+      the agent's own standing counter-evidence rather than overturning it — it declined to escalate on that
+      reasoning and was right. **C10 closed; no operator action.**
+      **⚠ ATTRIBUTION NOT SETTLED — the agent doubts its own Q6_K call, and is right to.** Its blast-radius scan
+      found **four production-lineup files carrying Q6_K on BODY tensors** (`attn_v`, `ffn_down_exps`), which run at
+      `ne1` = prefill batch on **every prefill**, not at `ne1 = 1` like an output head: `ingest_long_context` (54),
+      `worker_vision` (48), `worker_general` (13), `architect_critic` (1). **It declined to escalate, on sound
+      reasoning: those four serve coherently today, and a corrupt `attn_v` at `ne1 = 512` on every prefill could not
+      go unnoticed.** So Q6_K is probably NOT broken at large Ny and the defect is elsewhere in the post-gather chain.
+      **Coordinator's alternative, and the stronger suspect: `output_hc_up.weight` is IQ4_NL `[320, 10240]`,
+      repacking at `nrc_y >= 32` (`iqk_mul_mat.cpp:336`) — and BE-1 excluded IQ4_XS ONLY, leaving its sibling IQ4_NL
+      on the path.** Post-gather chain: `output.weight` Q6_K (64) · **`output_hc_up` IQ4_NL (32) — exposed, crossed
+      8× at n_outputs 256** · `output_hc_down` IQ4_XS (32) — excluded by BE-1 ✓ · `output_hc_norm` F32. IQ4_NL is
+      (a) an **iquant**, the family the source comment convicts, where Q6_K is a k-quant; (b) the nearest neighbour
+      to IQ4_XS, which BE-1 *measured* returning ~1e3 errors from that path; (c) lower-threshold, so crossed harder;
+      (d) also post-gather, so it sees `n_outputs` (1 in generation, 256 in perplexity) — the "only the instrument
+      reaches it" structure the diagnosis rests on. **If IQ4_NL is the culprit, those four production rows are NOT
+      exposed and there is no escalation** — where the agent's own evidence already pointed.
+      **Decisive test, queued at no extra cost: does the Q6_K-only exclusion make PPL finite under `GGML_IQK=1`?**
+      Finite ⇒ Q6_K implicated, probe 3 becomes a genuine production question. Still `nan` ⇒ Q6_K exonerated; then
+      IQ4_NL alone, then both, to attribute cleanly rather than shotgunning. **No production claim until settled.**
+      **⚠ BOTH HYPOTHESES ARE NOW UNPROVEN, and the agent found the reason before the coordinator did.**
+      Its `GGML_IQK_DEQUANT=0` arm — the knob sits at the top of `is_dequant_better` (line 289) and **every** repack
+      decision routes through that function (618, 806, 888, 928) or through `iqk_dequant_type`, which calls it — was
+      **still `nan`**. If valid, that exonerates the repack path **wholesale**, killing the Q6_K *and* the IQ4_NL
+      story at once, and pointing at a **direct iqk kernel at Ny > 1** rather than a threshold or an exclusion-list
+      gap.
+      **But the agent refuses to assert it, because it cannot show the knob did anything**: per-pass timings
+      identical to the centisecond (2.90 s vs 2.90 s) and byte-identical `[iqk] ACTIVE` lines. A repack is a speed
+      optimisation; switching it off should move *something*. **That is the shape of a check passing for the wrong
+      reason, so its own exoneration is held as unproven.**
+      **Direct precedent, supplied by the coordinator**: `GGML_ROWEXACT_N` was exactly this failure — the coordinator
+      published "the flips are NOT the batched mul_mat" three times on a knob that had **never affected any tinyBLAS
+      mul_mat** (`llamafile_sgemm` refuses `n < 2`), and the proof of inertness was **byte-identical node traces with
+      it on and off**. Identical output under a flipped knob is not evidence the knob is irrelevant; it is evidence
+      the knob is **inert**, and the two are indistinguishable without instrumenting the dispatcher.
+      **Resolution — stop inferring, make the dispatcher speak.** The agent instrumented `is_dequant_better` to log
+      every `(type, Ny)` pair with the path actually chosen, deduped. Two arms: **dequant ON** yields the ground-truth
+      list of which types take which path at which Ny in the all-logits path (directly testing the IQ4_NL
+      prediction); **dequant OFF must show ZERO repacks** — if it does not, the probe-2 exoneration is withdrawn and
+      both repack hypotheses return. **This converts "which of three tensors" from a debate into an enumeration**,
+      for one small lock window.
+      **Coordinator addition**: BE-1 moved IQ4_XS **off** the repack and **onto its direct kernel**, so
+      `output_hc_down.weight` (IQ4_XS `[10240, 320]`) is now a **direct-kernel candidate at Ny=256** in the same
+      post-gather chain. The tracer should log the chosen path for every pair — direct vs repack vs generic — so one
+      dequant-ON arm enumerates all three candidates at once. The cross-build arm also turns "BE-1 cannot have
+      introduced this" (b4 found it first) into "did not", and yields a bisectable range if the older tree is also
+      `nan`.
+      **CROSS-BUILD RESULT — one candidate ELIMINATED, and BE-1 cleared (measured, 2026-09-04).** The 2026-08-28
+      bring-up tree: (a) has **no `GGML_IQK_DEQUANT` knob at all** (`grep -c` = 0), so probe 2's dequant arm only
+      ever applied to the new tree; (b) still carries `IQ4_XS : nrc_y >= 32 ? q8_k_type : type` — **IQ4_XS ON the
+      repack path, BE-1's exclusion absent**; (c) returns **`nan` on the same command**.
+      **So IQ4_XS's repack status FLIPS between the two trees while the `nan` does NOT — the IQ4_XS repack is
+      eliminated as the cause, and BE-1 neither caused nor fixed C9.** "Cannot have introduced it" is now "did not",
+      measured, with no bisectable range. Still live: Q6_K repack, IQ4_NL repack, and any **direct** kernel at
+      Ny > 1 (including `output_hc_down`, which BE-1 moved onto its direct path).
+      **PROBE 2'S EXONERATION FORMALLY WITHDRAWN** by the agent: both integrity checks on `GGML_IQK_DEQUANT=0` came
+      back null (seconds-per-pass 2.90 vs 2.90; `[iqk] ACTIVE` lines byte-identical under `diff`) — the
+      `GGML_ROWEXACT_N` signature exactly. **Both hypotheses are unproven on identical grounds.**
+      **Probe 4 built and queued**, logging once per `(typeA, Ny, ne00)` the path actually served:
+      `[iqk-path] typeA=… Ny=… ne00=… dequant->… rowexact_n=… SERVED=…` with
+      `SERVED ∈ {REPACK | iqk-direct | iqk-direct(rowexact) | iqk-direct-smallNx | DECLINE(ggml-fallback)}`.
+      One dequant-ON arm enumerates all three post-gather candidates and their paths at once; the dequant-OFF arm is
+      **the knob's own integrity test** — zero `SERVED=REPACK` required, and any survivor withdraws probe 2 formally.
+      **Both arms print the PPL, so a still-`nan` also proves the instrumentation is non-perturbing.**
+      **★ ROOT CAUSE, 2026-09-04: C9 WAS A STALE BINARY, NOT A LIVE KERNEL DEFECT. It needs a REBUILD, not a code
+      change.** `cpu-fusion-20260829/build-cpu/libggml-cpu.so` was built **Sep 1 19:40**; its source
+      `iqk_mul_mat.cpp` is **Sep 3 19:36** — **two days newer**. The commit between them is **`99425578d`**
+      (BE-1: *"IQ4_XS stays on its direct iqk kernel (Q8_K_R16 repack at Ny>=32 is wrong); … GGML_IQK_DEQUANT
+      knob"*). **Proven by content, not dates**: `strings` on the stale library finds **0 occurrences of
+      `GGML_IQK_DEQUANT`**; the fresh build has it.
+      **Everything resolves at once:**
+      1. **`GGML_IQK_DEQUANT=0` was inert because the binary has no such knob.** The identical timings and
+         byte-identical `[iqk] ACTIVE` lines were *telling the truth all along* — now proven by `strings` rather
+         than inferred. (The `GGML_ROWEXACT_N` precedent is what made the agent distrust its own arm.)
+      2. **The culprit is `output_hc_down.weight` (IQ4_XS `[10240, 320]`) on the Q8_K_R16 repack** — precisely the
+         path that commit calls wrong. **The coordinator's "convicted iquant family, post-gather chain" instinct was
+         right and the specific tensor guess was wrong**: it is the IQ4_XS one, not IQ4_NL (`output_hc_up`) and not
+         Q6_K (`output.weight`).
+      3. **Every threshold observation now fits**: IQ4_XS repacks at **32**, so `c64`(Ny 32), `c126`(63), `c128`(64),
+         `c256`, `c512` were *all* corrupt because all are ≥32. **There never was a 64 boundary** — the "graded
+         corruption" was severity scaling with Ny, not a second threshold.
+      4. **"Not a regression" was right for the wrong reason** — the 2026-08-28 tree also predates the fix.
+      5. **b4 filed C9 on 2026-09-02 against this same binary, one day before the fix landed. C9 was REAL when
+         filed and has been FIXED since — by BE-1's own commit, which nobody noticed also repaired the quality
+         gate.**
+      **Blast radius, checked**: `build-cpu` was *current* on Sep 2 and became stale on Sep 3 when B3-k, the merge
+      and the iqk fix landed with no rebuild. Agents that used it on Sep 2 (b2, b3, b34, b4, d7a, d8, d8x, e2, e2c,
+      mtp-conc, merge-verify) measured the tree state they intended. **Every agent whose results were published
+      today built its own worktree and has ZERO references to it** — `gdn-rowexact`, `mtp-tip2`, `be1-ship`,
+      `be2-fa`, `be3-dsa` all 0. `speed-claim`'s single reference is its **co-residency log observing** b7-ple's
+      process — the INSTR-1 sampler recording an exe path — and its own binary is dated after the source **and
+      contains all three post-fix symbols** (`GGML_IQK_DEQUANT`, `GGML_ROWEXACT_N`, `GGML_FA_SPLIT_KV`), verified by
+      `strings`. **Today's claim-grade work is unaffected.**
+      **NOT YET VERIFIED, correctly**: `4.4798` (fresh, IQK=1) vs `4.9043` (stale, IQK=0) is a **cross-binary**
+      comparison, and a 9% PPL gap between two supposedly-correct runs is too large to wave through. Probe 5 is
+      rewritten as a **same-binary** test — one binary, `GGML_IQK=1` vs `=0` at `--chunks 20`, plus a now-meaningful
+      `DEQUANT=0` arm and a cross-build agreement check.
+      **THE HYGIENE LESSON: "the merged tip" named a SOURCE TREE, and everyone — coordinator included — assumed the
+      build inside it matched. The shared tree holds FIVE build dirs aged Aug 30 to Sep 3.** Freshness must be
+      proven by **content** (symbol presence, `--version` commit) and never by directory name or mtime alone.
+      **⚠ THE CORRUPTION IS GRADED, NOT A CLEAN `nan` — and that is worse.** Measured: **~3.3e5 at Ny 63,
+      degrading to `nan` at Ny 256.** A `nan` announces itself; **a wrong-but-finite perplexity is quiet** and would
+      be recorded as a result. **Consequence: any PPL ever taken on this model with `GGML_IQK=1` at moderate Ny is
+      wrong-but-plausible, not obviously broken.** (We are fortunate here: C9 was open, so no PPL was ever recorded
+      on this model — but the same defect class on a model where the instrument *did* return a number would have
+      silently poisoned the record.)
+      **COORDINATOR'S `nrc_y >= 64` THRESHOLD HYPOTHESIS IS REFUTED** by the agent's own `c126`/`c64` arms:
+      corruption is present at **Ny 63, below the Q6_K threshold of 64**. The Q6_K-repack story is dead as stated.
+      The agent's patch is **reverted; nothing committed** — correct, since the source comment asserted the very
+      bracket the arms refuted.
+      **C9 IS FUNCTIONALLY SOLVED FOR OUR PURPOSES, INDEPENDENT OF ATTRIBUTION**: `GGML_IQK=0` yields
+      **PPL 4.9043 ± 0.59979**, four arms across two probes agreeing to the last digit. **The workaround is validated
+      and usable today, so B7, B9 and B5 are unblocked now** — attribution remains scientifically open but is not
+      gating. Establish it, then decide whether a fix is worth shipping over the flag.
+      **Belief-kernel wiring, flagged by the agent and adopted: `GGML_IQK` state MUST be part of the warrant of any
+      PPL claim tuple on this stack.** This defect proves the kernel flag is not incidental to the number — the same
+      command, same build, same artifact returns 4.9043 or garbage depending on it. A claim tuple that omits it
+      cannot be re-derived. Add to the adapter's projection alongside build id, thread count and recipe.
 - [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
@@ -1189,11 +1487,80 @@ named. MTP is not a serving option until that gate passes.
       **Quality evidence (external, KL-divergence benchmark)**: Qwen-family models tolerate **q8_0 well (KL < 0.04)**;
       **q4_0 concentrates its damage in LONG DOCUMENTS (KL 0.581)** — which is precisely our workload — and the
       asymmetric guidance is to spend bits on the **Key**, not the Value. **q4_0 is contraindicated here.**
+      **★ ARTIFACT BUILT AND VERIFIED 2026-09-04.** `123,993,035,136 B`, spliced from the era anchor with a
+      **mutation-tested verifier run first**, then applied to the real 124 GB file (not a fixture):
+      **67 recipient KV fields verbatim · tensor order preserved, 1224 tensors · PLE `IQ4_NL → Q8_0`, shape
+      unchanged `[160, 320001536]` · PLE content byte-identical to the donor (blake2b `ae189b34…`) · 1223 non-PLE
+      tensors byte-identical to the recipient, 0 differ · all 1224 data offsets aligned.** Donor SHA-256 matched the
+      HF LFS oid before use, and **the donor was deleted only after verification returned 0** — deleting earlier
+      would have destroyed the comparison evidence. Disk: 242 → 192 (donor down) → **75 GB at splice peak** →
+      **126 GB after deletion**; era anchor and `-gateup-r16` untouched.
+      **Methodological cleanup worth copying**: the agent reverted its diagnostic instrumentation, rebuilt pristine
+      at `c51e4dabf`, and then **verified that structurally rather than by assertion** — `strings` shows **0
+      `iqk-path` symbols** (instrumentation gone) and **1 `GGML_IQK_DEQUANT`** (post-fix source present). That is
+      the stale-binary lesson applied to its own build within the hour.
+      **Consequence worth stating: B7's quality numbers will be measured at `GGML_IQK=1` — the actual production
+      kernel configuration — and that is only trustworthy BECAUSE C9 turned out to be a stale binary rather than a
+      live kernel defect.** Had C9 been real, B7 could only have been measured at `GGML_IQK=0`, i.e. in a
+      configuration nobody serves, and the result would not have transferred.
+      **★ B7 SPEED GUARD-RAIL COMPLETE 2026-09-04** — 24 production prompts per arm: `b7-anchor` **12.4086 t/s**
+      vs `b7-pleq8` **12.3606 t/s** token-weighted, both 20 COHERENT + 4 SHORT. The −0.39% comes from two
+      SEQUENTIAL lock acquisitions and is therefore **not evidence** under the same-window rule; predicted
+      bandwidth cost was +3.1e-5%. B7 closes on both axes: no quality gain, no measurable speed change.
+
+      **★ C9 CLOSED 2026-09-04 — VERIFIED TO THE SAME-BINARY STANDARD.** Four arms, `-c 512 --chunks 20`,
+      same corpus and settings, only the BINARY and the kernel flag varying:
+
+      | arm | binary | env | PPL |
+      |---|---|---|---|
+      | `fresh_iqk1` | fresh `c51e4dabf` | `GGML_IQK=1` | 3.2317 ± 0.09736 |
+      | `fresh_iqk0` | fresh | `GGML_IQK=0` | 3.3038 ± 0.10011 |
+      | `stale_iqk0` | **stale** | `GGML_IQK=0` | **3.3038 ± 0.10011** ← identical to every digit |
+      | `stale_iqk1` | **stale** | `GGML_IQK=1` | **`nan`** |
+      | `fresh_c62` / `fresh_c64` (Ny=31/32) | fresh | `GGML_IQK=1` | 10.8592 / 10.4619, both sane |
+
+      **The `stale_iqk0` ≡ `fresh_iqk0` exact match is the load-bearing control**: two different binaries
+      reproducing to every digit rules out model, corpus, settings, build configuration and machine state
+      together, leaving the kernel flag × binary combination as the only live variable. Only that combination
+      produces `nan`. The accelerated path is not corrupting; the remedy was a REBUILD, not a patch.
+
+      **⚠ RESIDUAL — every PPL claim on this model MUST name its `GGML_IQK` state.** `IQK=1` sits 2.2% below
+      `IQK=0` (3.2317 vs 3.3038). That is NOT run noise: the exact-digit reproduction above proves these runs
+      are deterministic, so the ± is corpus-sampling uncertainty and the paired shift is real — the lossy Q8
+      repack at large Ny, behaving as designed. Reading the overlapping error bars as "the paths agree" would
+      understate a systematic, reproducible offset. Folded into the belief-kernel wiring note.
+      **Why this and not the earlier figure**: the cross-binary comparison (`4.4798` fresh vs `4.9043` stale)
+      confounds the kernel flag with every other difference between two builds, so it could not support the
+      claim and was correctly refused at the time. Only the one-binary form isolates the variable.
+      **Consequence**: the PPL/KL gate for qwen4exp EXISTS again, at `GGML_IQK=1`, so B7's KLD A/B runs in the
+      production kernel configuration rather than one nobody serves.
       **Recommended scope: ONE arm** — `-ctk q8_0 -ctv q8_0` vs f16 at ctx 4096 and 8192, plain AND with MTP,
       token-weighted decode + prefill + coherence by REASON, plus an explicit check of whether `attn_rot_k/v` flip to
       1 in the server log and whether output stays coherent when they do. **Predicted gain ~1–2% decode at
       production context; adopt only if measured and if the MTP path stays clean.** Do not pursue q4_0.
-- [ ] **B7 — is the PLE table under-quantized FOR THIS MACHINE? (precision UP, the inversion of B4)**
+- [x] **B7 — ANSWERED 2026-09-04: NO. Higher PLE precision does not buy quality — a null WITH a stated floor.** ✅
+      Pristine `c51e4dabf`, `GGML_IQK=1` (the production kernel — measurable only because C9 was stale-binary),
+      40 chunks, placement proven on both passes:
+
+      ```
+      Mean ln(PPL(Q)/PPL(base)) : 0.004707 ± 0.004380   t = +1.07σ   NOT significant
+      95% CI on PPL ratio       : [-0.39%, +1.34%]      MDE = 1.235% PPL
+      Mean KLD                  : 0.064860 ± 0.001713   t = 37.9σ
+      Same top-1                : 92.020 ± 0.268 %      RMS Δp 8.27%
+      ```
+
+      The sign runs slightly AGAINST higher precision. **The instrument is provably not blind**: it resolved the
+      distributional change at 38σ in the very same run, so the null is a real bound, not a failure to measure.
+      Pairing bought 18× tighter resolution than raw PPLs (Cor 98.06%).
+      **BF16 is not worth a second pass**: Q8_0 nearly doubled PLE precision for zero gain against a 1.235% floor;
+      BF16 would cost **+25.6 GB resident** for nothing. B7 closes without an INF-71-style successor.
+      **★ This CORRECTS the structural argument used to pre-judge B7 (mine, twice).** I argued the PLE row is
+      diluted (input to two GEMVs averaged over 2560 terms, `ple.layers=[1]`, projections themselves IQ4_XS).
+      But **~8% of top-1 tokens flip**: the `key` branch collapses to a SCALAR through a sigmoid gate that
+      multiplies the whole value vector, so PLE sensitivity is HIGH. The premise was wrong and the conclusion was
+      right for a different reason — sensitivity ≠ headroom. A greedy-identity gate here would have screamed
+      "different!" and told us nothing; only the paired KLD/PPL separates "changed" from "improved".
+      **Original brief, retained for the record:**
       Filed 2026-09-03 from an operator question, **reframed the same day after operator pushback that corrected the
       premise**: the first draft proposed an *ablation* ("does the PLE earn its keep"). That is a non-question — the
       weights were TRAINED with the PLE, so removing it does not measure its contribution, it just breaks the model,
@@ -1405,11 +1772,44 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
 **Are we converged?** Nearly, on two of three axes:
 - **Kernel — effectively settled**: `c51e4dabf` = D8 + D7a + D1 + B3-k + the iqk IQ4_XS repack fix + `ROWEXACT_N`
   + `FA_SPLIT_KV`. Open only on BE-3 (a non-propagating carrier) and the claim-grade ABA.
-- **Serving config — settled pending the ABA**: n-max 4, `--spec-draft-p-min 0.5`, `--fa 1` + `GGML_FA_SPLIT_KV=0`,
-  row-exact off → 23.62 t/s.
+- **Serving config — SETTLED, ABA-confirmed 2026-09-04**: MTP head `shared-Q8_0`, `--spec-type draft-mtp
+  --spec-draft-n-max 4 --spec-draft-p-min 0.5`, `GGML_ROWEXACT_N` unset, **KV f16 (do NOT quantise)**, `-t 48`,
+  `--fa 1` + `GGML_FA_SPLIT_KV=0`, canonical env + `taskset -c 0-95 numactl --interleave=all`
+  → **23.16 t/s, 1.876× plain** (23.62 superseded; see the ABA block).
+- **★ STANDING MEASUREMENT RULE earned by this batch — THE HOST DRIFTS ~3% OVER HOURS.** Same config measured
+  23.16 at 12:52 and 22.58–22.73 at 15:05–15:55, while repeating to **1.1% WITHIN a window**. Therefore **any
+  INF-70 comparison below ~5% must be SAME-WINDOW and ALTERNATING, or it is not evidence.** Both results
+  overturned on 2026-09-04 (the 23.62 headline and the depth-beyond-4 gain) were cross-window artefacts of
+  exactly this size, and be1-ship's 18 arms ran sequentially over ~4 hours. A sequential arm matrix measures
+  drift as if it were the treatment.
+- **Depth beyond n-max 4 — CLOSED, does not pay.** A same-window alternating n4-vs-n5 test returned **ratio
+  0.9987** (12/20 and 10/20 prompts — coin flips). The earlier cross-window sweep showing n5/n6/n8 ~3% ahead was
+  the drift artefact above. p_min 0.5 vs 0.6 is flat. The plateau is real and **no better operating point exists**.
+- **KV cache — SHIP f16, do NOT quantise (B9 CLOSED).** Size analysis was right and irrelevant: 12 of 48 layers
+  carry KV, 24.0 KiB/token = 2.42% of budget, 45–90 MiB saved. Sign was **wrong for MTP**: plain gains +0.7% to
+  +2.1% as predicted, but **MTP LOSES 2.5–3.5% because α falls 0.8274 → 0.8166.** `attn_rot_k/v` DID flip to 1
+  (head dim 256) on both the main and DSA indexer caches, and that never-exercised path is **clean** — 96
+  quantised-KV requests, zero incoherence, no assert. `LLAMA_ATTN_ROT_DISABLE=1` was not needed as a rescue but
+  was decisive as **attribution**: it recovers 1.9% and lifts α to **0.8329, ABOVE f16's 0.8274** — so the
+  **Hadamard rotation, not quantisation error, is what costs acceptance**. q8_0 still loses 1.4% with rotation
+  off. A KV-quant win on a plain decoder does not transfer to a speculative one.
+- **Bandwidth — MTP takes CPU decode OFF the bandwidth wall.** Plain 51.3 GB/s (33.5% of 153). MTP's
+  plain-equivalent 96.3 GB/s (62.9%) is not what it moves: the verify batch carries **3.79 tokens per forward**,
+  so actual traffic is **1.096 GB/token = 25.4 GB/s (16.6%)**. The roofline argument for CPU decode changes shape
+  under speculation — amortising the weight read across accepted tokens is the lever, not raising GB/s.
 - **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
   produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
 
+**✅ RECLAIM-1 / OP-37 EXECUTED 2026-09-04 (operator: "proceed") — 123 GB → 421 GB free.** Deleted, all
+reversibly: `IQ4_XS-uniform-gateup` (92 GB), `IQ4_XS-uniform-b4` (91 GB), `IQ4_XS-uniform-pleQ8` (116 GB —
+B7's measured loser). Protected and verified present afterwards: `IQ4_XS-uniform` (era anchor),
+`-gateup-r16` (current baseline), `UD-IQ4_XS` (served file), `MTP` (head, in the serving config).
+**Precondition satisfied first**: `gguf_swap_ple.py`, the pleQ8 artifact's ONLY regeneration recipe, lived
+solely in `/mnt/raid0/llm/tmp/` — a scratch path — so it was committed to `scripts/inf70/` BEFORE the
+deletion. `gguf_fuse_gate_up.py` was already in git (`inf70/b3` `dd27ec3bb`). A deletion is only reversible
+if its recipe is in git; on the filesystem it is not a recipe, it is a coincidence.
+
+**Original plan, retained:**
 **What may be deleted once B7 reports — 183 GB, both reversibly:**
 | artifact | size | why deletable | how to regenerate |
 |---|---|---|---|

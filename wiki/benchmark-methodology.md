@@ -3886,3 +3886,158 @@ output" and "the run is nondeterministic" are indistinguishable, and the former 
 - `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10, the node-level localisation
 - `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` — Addendum B, the identity control
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): when the defect is only reachable from the instrument
+
+`llama-perplexity` returned `nan` on this model for weeks. It was filed, probed, and left open. The cause turned out
+to be a kernel defect **that no serving workload can reach** — and the only caller that could reach it was the
+quality gate itself.
+
+### The mechanism, and why the shape mattered
+
+iqk reroutes a matmul to a requantised Q8 repack above a row-count threshold. For `GGML_TYPE_Q6_K` that threshold is
+**64** — and Q6_K appears exactly **once** in the model, on `output.weight`. In every served path the output head
+runs as a **GEMV**: generation emits one token (`n_outputs == 1`), and speculative verification emits a small `k`.
+Neither ever reaches 64 rows.
+
+Perplexity is different. It requests logits on `pos >= n_ctx/2`, so `n_outputs == n_ctx/2` exactly — **256 rows at
+`-c 512`, four times over the threshold.** It is the only caller in the entire stack that runs the output head as a
+GEMM. The repack converter is wrong on this host (the tree's own source comment says so, and a sibling type had
+already been excluded for it), so the one path that exercised it produced `nan`.
+
+**The instrument was the one caller its own bug disabled.** A defect that only breaks your measuring device is
+invisible to every test that uses the device — the tests all pass, and the device reports nothing, which reads as
+"no signal" rather than "broken probe".
+
+### What the earlier investigation missed, and why
+
+A prior pass had probed `-b`, `-c` and `-fa` and found nothing. That matrix could not have found it: **it never
+varied the kernel environment**, and the kernel was the only determining variable. When the probe finally ran,
+`GGML_IQK=0` produced a finite, reproducible `PPL = 4.9043 ± 0.59979` across three arms agreeing to the last digit,
+while every `GGML_IQK=1` arm was `nan`. `-fa` and the fused-decode gate were irrelevant.
+
+**Rule: when a tool fails on one architecture and works on others, vary the ACCELERATION PATH before varying the
+tool's own parameters.** A parameter sweep explores the space the tool author imagined; a kernel swap explores the
+space the kernel author imagined. The bug lives in whichever one you didn't sweep.
+
+### Two disciplines worth copying from the fix
+
+- **Do not write a claim into a source comment before it is measured.** The fix's comment asserted a specific
+  threshold bracket; the bisect confirming that bracket had not returned, so the commit was held. A comment is a
+  claim with a very long half-life and no attached evidence — it will be believed years later by someone who cannot
+  re-derive it.
+- **Verify the fix, not the workaround.** Every verification arm ran with the accelerated kernel **enabled**. An arm
+  that passes only with the accelerator disabled is testing the escape hatch, not the repair — and would have
+  "confirmed" a fix that changed nothing.
+
+### The corollary for quality gates generally
+
+If your quality instrument runs a code path that production never runs, then **the instrument's correctness is an
+independent thing to verify**, not something inherited from the fact that serving works. Here the two paths differed
+in exactly one property — the number of output rows — and that was enough to make one of them wrong while the other
+was fine for months.
+
+### Source References (2026-09-04, C9)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, and BE-1 for the sibling exclusion that convicted the family
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the kernel-env probe, the type histogram, the fix
+- `/mnt/raid0/llm/tmp/inf70/agents/b4/REPORT.md` — the original `nan` finding and its probe matrix
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70): instrument defaults that sit below the phenomenon
+
+Twice in one investigation, a diagnostic tool's **default** silently placed the experiment below the threshold of
+the thing being hunted. Both times the tool reported a clean negative, and both times that negative was vacuous.
+
+1. A node-level row-exactness tracer defaulted to `n_ctx = 1024` with `n_seq_max = 4`, capping every run at **256
+   tokens per sequence** — exactly the boundary at which the flash-attention carrier being hunted switches paths.
+   The carrier was invisible for as long as the default stood.
+2. The same tool's tokeniser allocated a **fixed 512-token buffer**, hard-capping `prefix + n` at 512 — below the
+   model's top-k width of 2051. **Every run ever made on that model had a vacuous top-k selection** and could not
+   have detected a selection flip even had one existed. The first non-vacuous measurement came only after the
+   buffer was fixed.
+
+### Why this class is dangerous
+
+A tool that *crashes* below the phenomenon is harmless — you notice. A tool that quietly runs a smaller experiment
+returns **a clean result for a question you did not ask**, and a clean result is exactly what an investigator is
+hoping to see. It reads as "no effect here", not "this configuration cannot show an effect". Both instances above
+were found only because someone independently derived the phenomenon's scale and compared it to the tool's
+configuration — never because the tool complained.
+
+### The rule
+
+**Before trusting a negative, state the phenomenon's threshold and prove your instrument reaches past it.** Write
+the comparison down next to the result: *"the carrier switches at n_kv 257; this arm ran at n_kv 2304"*. If you
+cannot state the threshold, you cannot interpret the negative, and the honest report is *inconclusive* rather than
+*no effect*.
+
+Corollaries that fall out of the same failure:
+- **A knob that changes nothing may be inert rather than irrelevant.** Identical timings and byte-identical logs
+  under a flipped flag are the signature of a flag that never fired. Instrument the dispatcher rather than inferring
+  from the output — three published claims in this campaign rested on a kernel knob that had never had any effect.
+- **Prefer instruments that self-validate.** A probe designed so that a null result *also* demonstrates the probe
+  was live — e.g. printing the metric on both arms, or logging the code path actually taken — converts an ambiguous
+  negative into an interpretable one at near-zero cost.
+- **Defaults are claims.** A default `n_ctx`, buffer size, or batch width is an assertion about the regime that
+  matters, usually made by someone solving a different problem. Treat every default in a diagnostic path as
+  something to justify against the phenomenon, not to inherit.
+
+### Source References (2026-09-04)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — BE-2 (carrier 2, `--n-ctx` default), BE-3 (carrier 3, the
+  512-token tokeniser buffer), BE-1 (the inert `GGML_ROWEXACT_N`), C9
+- `/mnt/raid0/llm/tmp/inf70/agents/be3-dsa/{REPORT.md,MECHANISM.md}` — the fixed buffer and the first non-vacuous
+  top-k measurement on this model
+- `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/MECHANISM.md`, `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md`
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): "the tip" names a source tree, not the binary you ran
+
+A quality instrument returned corrupt output for two days and drew four competing kernel hypotheses out of two
+investigators. The cause was that **the shared build directory was two days older than the source beside it**, and
+the commit in between was the very fix that would have prevented the corruption.
+
+    build-cpu/libggml-cpu.so   built  Sep 1 19:40
+    ggml/.../iqk_mul_mat.cpp   source Sep 3 19:36     <- the fix landed here
+
+Everyone — the agent running the probes and the coordinator directing them — said "the merged tip" and meant a
+source revision, while the binary under test predated it. The shared tree held **five** build directories spanning
+four days.
+
+### What the stale binary did to the investigation
+
+- A kill-switch flag (`GGML_IQK_DEQUANT=0`) appeared **inert**: identical timings, byte-identical logs. That was
+  read as "the knob is a no-op, so this path is exonerated" — the same signature as a genuinely inert knob earlier
+  in the campaign. **It was neither: the binary simply had no such symbol.** `strings` found zero occurrences.
+- A threshold was inferred from where corruption appeared and then refuted by a later arm — because the *real*
+  threshold belonged to a different quant type whose fix was missing from the binary. Both the original hypothesis
+  and its refutation were artefacts.
+- Two investigators produced four hypotheses, retracted all four, and each retraction was correct on the evidence
+  available. **No amount of reasoning about the source could have found it**, because the source was right.
+
+### The rule
+
+**Prove binary freshness by CONTENT before attributing behaviour to code you have read.** Directory names, mtimes
+and "I merged that commit" are not evidence. Cheap and decisive:
+
+- `strings <lib> | grep -c <symbol_introduced_by_the_fix>` — zero means the fix is not in there
+- `<binary> --version` and compare the reported commit to the tree's `HEAD`
+- resident-library check on a live process (`/proc/<pid>/maps`) rather than the path you *intended* to launch
+
+Make it a precondition of any kernel-attribution claim, in the same class as proving NUMA placement before quoting a
+bandwidth number. The failure is silent, survives every source-level review, and generates confident, well-argued,
+entirely wrong mechanisms.
+
+### The corollary that saved this investigation
+
+Per-agent worktrees with their **own** build directories were what contained the damage. Every result published
+that day came from an agent that built its own tree; the affected probes were the ones reaching into the *shared*
+build. **A shared build directory is a shared mutable dependency with no version in its name** — the same hazard as
+a shared index or a shared working tree, and it deserves the same treatment: don't reach into it, build your own.
+
+### Source References (2026-09-04, C9 root cause)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, BE-1 (`99425578d`, the fix that was already present in source)
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the probe series, the four retracted hypotheses, the `strings` proof
+- `progress/2026-09/2026-09-03-inf70-audit.md`
