@@ -535,6 +535,44 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
+## ★ OPERATOR DECISION 2026-09-05 — OP-35 RESOLVED: MTP GOES TO PRODUCTION, AND THE RECIPE OWNS IT
+
+Operator, verbatim in substance: *"yes, of course it would. Ultimately we will fold this cpu kernel work into
+the autokernel champion when we're done, and establish a canonical recipe for this qwen3.8 model to always
+include its mtp head."*
+
+Three things follow, and they change the END STATE of this campaign — it no longer terminates in an
+experimental branch:
+
+- [ ] **PROD-1 — the MTP head is part of the MODEL, not an experiment.** Write the canonical recipe for
+      Qwen3.8-Flash-Next so that **every** serving path for this model carries its MTP head by default.
+      Settled config: head `shared-Q8_0`, `--spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5`
+      (fleet default n-max 3, **4 for coding roles**, per the 2026-09-04 operator ruling), `GGML_ROWEXACT_N`
+      unset, **KV f16 — do NOT quantise (B9)**, `-t 48`, `--fa 1` + `GGML_FA_SPLIT_KV=0`, canonical env +
+      `taskset -c 0-95 numactl --interleave=all`. Measured **23.16 t/s, 1.876× plain** (ABA-confirmed).
+      Codify it per [MEASUREMENT_POLICY](../../agents/shared/MEASUREMENT_POLICY.md) so sessions import the
+      constants instead of remembering them — the standing rule is *use codified recipes, not memory*.
+      **Dependency**: B12 may change the head artifact (IQ4_XS requant); do not freeze the recipe's head
+      choice until B12 reports.
+- [ ] **PROD-2 — fold the INF-70 CPU kernel work into the AUTOKERNEL CHAMPION.** The merged-and-validated
+      levers on `exp/cpu-fusion-qwen4exp-20260829` (b3k expert slabs +3.07%, the iqk IQ4_XS repack fix that
+      closed the long-prompt P0, D8's GET_ROWS parallelisation +15.4% same-binary-verified, the MTP stack with
+      E2b-2, BE-1/BE-2) become champion input rather than a branch. **The single-champion invariant applies**:
+      ONE champion aggregates ALL work between promotions, and anchor == champion tip is enforced. Sequence
+      against the four-step kernel workflow in `CLAUDE.md` — pull fresh production → build → validate no
+      regressions (GPU + CPU) → deploy as a NEW production version, with the full candidate benched as a
+      whole, never reconciled by cherry-pick at promotion time.
+- [ ] **PROD-3 — promote a CHAMPION artifact and retire the anchor** (this is what remains of OP-37).
+      `-gateup-r16` is the best measured (12.73 vs 12.61). Once a champion exists the comparison basis is
+      transitive — future deltas bench against the champion, exactly as autokernel already operates — and
+      `IQ4_XS-uniform` (92 GB) becomes deletable. Precondition: confirm unsloth still publishes it (~2.8 h
+      re-download, recoverable, not a one-way door).
+
+**Consequence for sequencing that is easy to miss:** production promotion is gated on the *whole* candidate
+passing GPU **and** CPU regression validation, so Axis S work that is still in flight (SYNC-2/3, B12) either
+lands before the promotion window or waits for the next version. **Do not hold the promotion open for a
+~1–3 ms lever.** Ship what is validated; version past it.
+
 ## Axis S — SYNCHRONIZATION. Opened 2026-09-05. The 23.4% of the token that is not compute.
 
 **Why this axis exists.** Three byte-shrinking levers in a row underdelivered — B7 (PLE precision) null,
