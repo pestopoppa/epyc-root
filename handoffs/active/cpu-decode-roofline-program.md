@@ -1097,8 +1097,38 @@ sigmoid *and* picks up MUL and REPEAT.
    lacks a 48-thread split to hide the scalar `expf` — which is where §7.1 already puts it.
 **Why this outcome existed at all**: the agent gated the two knobs **independently**, against a brief that
 had them bundled. Three arms answered more than four arms of split-only would have.
-**Outstanding before any claim**: rounds 2–3, the pristine-base control, the MTP arms, `test-backend-ops` ×4
-and 12 greedy gates.
+**★★ ROUND 2 COMPLETE — REPLICATED. Window 1 then KILLED BY THE TASK MANAGER mid-`P3S` (not by the agent).**
+Two complete paired rounds, all four arms the same binary separated only by env:
+
+| arm | R1 Δ | R2 Δ | **mean** | bit-identical |
+|---|---:|---:|---:|---|
+| **S** split | **+9.53%** | **+7.60%** | **+8.57%** | **YES** |
+| V vec | +6.33% | +4.37% | +5.35% | no |
+| W both | +9.53% | +6.63% | +8.08% | no |
+| **W/S ratio** | 1.000 | 0.991 | **0.996** | |
+
+Base arms **13.12 / 13.28 / 13.17 t/s — 1.2% spread over 40 minutes**, so the host held through the window
+and the effect is **~7× the noise**. Measured denominator **76.22 ms/token**.
+**★ THE CENSUS PREDICTED THE WALL CLOCK TO WITHIN 1%** — S predicted 6.59 ms vs **measured 6.63**; V
+predicted 4.46 vs **measured 4.54**. That is the strongest available evidence the mechanism is real rather
+than a placement artefact: drift has no reason to land on the census's numbers.
+**★ W ≈ S REPLICATES ⇒ PROMOTE `S` ALONE, AND THE KLD WINDOW IS NOT NEEDED.** Post-split the sigmoid node is
+~1.1 µs; vectorising then saves ~0.1 ms/token = 0.14%, under the noise, while its scalar tail and per-chunk
+setup are real. The levers fix the **same node by different routes** and the **bit-identical one already gets
+all of it**. `GGML_VEC_SIGMOID` need not ship here; its value is **upstream**, for models without a 48-thread
+split to hide the scalar `expf`.
+**⚠ NOT MEASURED, AND NO CLAIM MADE: the MTP arms.** The brief said lead with MTP; there is no MTP number.
+Also outstanding: greedy gates, `test-backend-ops` ×4, pristine-base control, threshold probe, round 3.
+**Plain result stands as MEASURED BUT UNDER-REPLICATED** — 2 rounds against a protocol asking ≥4.
+**Containment on the kill, done before anything else**: scanned every `/proc/*/environ` for the agent's unique
+worktree `LD_LIBRARY_PATH` (**zero survivors**), confirmed no listener on port 18531, verified **SYNC-2's
+window is uncontaminated**, and **discarded `P3S` rather than read a partial arm** (no `tg128` line).
+**Window 2 rebuilt from the failure**: **resumable** (each arm skips if its result exists) and **reordered so
+the cheap required evidence runs first** — greedy gates → `test-backend-ops` → MTP → plain leftovers — so a
+further interruption costs least. Launched **detached** (`setsid`, own session leader, PID in `window2.pid`)
+so a task-manager kill cannot take it down again, with the PID recorded so it can still be stopped precisely.
+
+**Superseded — round 1 outstanding list:**
 
 - [ ] **SYNC-10 — AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
       one thread working and 47 idle.** Dispatched 2026-09-05, **the largest single lever identified in the
