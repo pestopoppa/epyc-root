@@ -23,6 +23,34 @@ proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source ch
 > `draft-dflash` is a capability, not a conflict. Program handoff:
 > [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
 
+## ⭐ OPEN — DRAFTER-PER-MODEL: a served model without a DFlash2 head serves slow (Qwopus3.8-27B, 2026-09-05)
+
+**Why this matters (operator-flagged):** DFlash2 is the champion's serving edge (2.38× on Qwen3.8-27B).
+The operator's own ruling above — *"Not all models have dflash2 drafter heads"* — got its first concrete
+measurement: **Qwopus3.8-27B-Flash** (a Qwen3.8-27B fine-tune, same `qwen35` arch) benched on the champion
+build at **identical raw speed** (30.3 t/s, coherent) but its serving spec-decode is capped by drafter quality:
+
+| spec-decode path | decode t/s | speedup | acceptance |
+|---|---|---|---|
+| its own native MTP head | 45.5 | 1.50× | 0.590 |
+| our DFlash2 drafter (base-trained) | 45.7 | 1.51× | **0.356 — does NOT transfer** |
+| (ref) Qwen3.8-27B + its DFlash2 | ~72 | 2.38× | high |
+
+**The lesson generalizes:** a base-trained DFlash2 drafter does not transfer to a fine-tune (distribution
+shift), so **each model we want to serve at champion speed needs its own DFlash2-class drafter.** Qwopus's
+shipped MTP (1.5×) is a floor, not the ceiling.
+
+- [ ] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days).
+      DFlash2/EAGLE-style drafters are distillation of a small (~2 GB) head from the frozen target — NOT a
+      pretrain — so tractable: capture Qwopus hidden states + outputs over a corpus (teacher-forcing), train
+      the draft head, validate acceptance. Rough recon: **~2–5 days on the single MI210** (inference-bound
+      feature gen + light head training), pending the exact DFlash2 recipe/data volume — which this scoping
+      pass must nail. Weigh against: (a) the native MTP already gives 1.5× for free; (b) GPU contention — the
+      one MI210 also runs AutoKernel/serving, so training days compete with everything else on the card.
+- [ ] **DF2-DRAFTER-CAPABILITY — generalize:** treat "train a DFlash2 drafter for target model X" as a
+      reusable capability (the pipeline, not a one-off), since every new serving candidate will need one.
+
+
 The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
 `matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
 build/model/protocol identities, predecessor hash, and (for GPU stages) the claim window. A stopped
