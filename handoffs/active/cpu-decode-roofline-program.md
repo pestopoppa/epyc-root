@@ -542,6 +542,32 @@ B10 (vocab slice) +3% ceiling, B11's premise dissolved entirely. That is not bad
 saying bytes are not the constraint. Decode runs at ~36% of the 152.6 GB/s ceiling, and the per-node census
 says where the rest goes.
 
+**⚠⚠ TWO CORRECTIONS THAT DEGRADE THE TABLE BELOW — READ BEFORE CITING ANY NUMBER IN IT.**
+
+**(1) The profile is PRE-D8 and off the base's history** (`inf70/prof` @ `8b578bc57` is not an ancestor of
+`exp/cpu-fusion-qwen4exp-20260829`). Pre/post-D8: GET_ROWS −7.40, CPY −1.31, CONT −1.07, GDN −0.28 ms/token.
+
+**(2) It has UNQUANTIFIED STALL CONTAMINATION throughout.** Every per-node figure is a **mean over 69 evals
+with no dispersion reported**, so any node may be carrying a discrete host stall divided by 69.
+**Pre-registered 2026-09-05 by SYNC-1, before the confirming run**: the two "systematic stragglers" this axis
+was partly opened on are very likely artefacts, and the arithmetic nearly settles it without new data —
+`node_872` (MUL_MAT `iq4_nl [320,10240]`) has **97 same-shape siblings that compute in 47–59 µs** while it
+computes **772 µs, 15×**, and *thread-0 compute cannot be inflated by a barrier or by imbalance* — whatever
+hit it hit it INSIDE the kernel. `ffn_moe_logits-11` has the **opposite** signature: compute normal at
+31.9 µs, only the wait exploded. Two unrelated mechanisms — yet both land **within 1 µs of each other in
+total wall** (1117.0 / 1118.4) and each sits ~1,055 µs over its sibling median, which over 69 evals is
+**~73 ms each, on a token of 96 ms.** That is two discrete multi-tens-of-ms host stalls (THP compaction,
+reclaim, a scheduler event) landing on whichever node was executing, not a structural straggler — a
+structural one would show on all 97 siblings, not on exactly one.
+**Discriminator, pre-registered**: `wall_max ≈ 73,000 µs` at a single eval index with `spikes = 1` ⇒ artefact;
+`wall_max ≈ 1,200 µs` with `spikes ≈ 69` ⇒ real. Anything in between (2–5 spikes) is still artefact, just
+multiple stalls. **Cross-node check added by the coordinator**: if the argmax eval indices of the two nodes
+coincide with each other and with a cluster of unrelated nodes, a host event is near-conclusive.
+**If confirmed: drop ~1.4 ms from the addressable envelope and MUL_MAT's dead from 7.19 → 6.10 ms** — and
+note this contaminates SYNC-5's ~4.2 ms MUL_MAT imbalance figure, which contains that 1.09 ms, and one of the
+three pillars of this axis's original framing. **Treat every Sept-2 per-node number as an UPPER BOUND.** The
+tip census reports max / argmax-eval / spike count per node; the Sept-2 data cannot be cleaned retroactively.
+
 **⚠ DENOMINATOR CORRECTION 2026-09-05: the token is now ~84.2 ms post-D8, not 96.3 ms** (`agents/d8x/REPORT.md`); the census below is build 10197, PRE-D8. Price every lever against 84.2 ms.
 
 **Measured, plain decode, build 10197** (`agents/prof/results-20260902T135356Z/pernode.tsv`, 4,409 node
