@@ -550,7 +550,45 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       unified vs our 153 GB/s achievable (1.78×) plus far more compute, so the gap is close to the hardware
       null. File this on its own merits, not as a chase.
 
-- [ ] **B11 — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
+- [x] **B11 — CLOSED 2026-09-05 AS A NON-QUESTION. There is no missing 38%; the premise was wrong.** ✅
+      The coordinator's arithmetic used two wrong inputs. Ground truth from a from-scratch GGUF reader (no
+      binary involved, so build-freshness does not bind it): **4.1656 GB/token**, agreeing with the live-graph
+      ledger to **+0.24%**.
+      - **6.671 B active params, not 6.0** (+11.2%)
+      - **4.995 effective bpw, not 4.0** (+24.9%) — **`IQ4_XS-uniform` IS NOT UNIFORM**: lm_head q6_K,
+        `attn_qkv` q5_K, `ffn_down_exps`/`hc_*_up` iq4_nl, and the router `ffn_gate_inp` is **F32**.
+      - **1.112 × 1.249 = 1.389** — the "missing 38%", exactly and entirely.
+      **Provenance of the original number is clean**: 51.3 GB/s was DERIVED as `12.349 t/s × 4.156 GB/token`
+      (`agents/speed-claim/REPORT.md:87`), and the 4.156 came from `agents/prof/` instrumenting the LIVE decode
+      graph (`GGML_CPU_PROF`) — summing `ggml_nbytes(src0)` per MUL_MAT and `n_expert_used × nb02` per
+      MUL_MAT_ID, re-derived independently from `pernode.tsv` at 4.1558 GB. Not file-size division (that would
+      have given 98.4 GB). **So the number was right and the interpretation was mine.**
+      **★ Three structural findings worth more than the question was:**
+      1. **The GatedDeltaNet stack is 30.3% of the token (1.261 GB) — as large as ALL expert traffic**, and
+         `attn_qkv` alone (648.8 MB) exceeds lm_head. **"6B active, mostly experts" is the wrong mental model**;
+         experts are under a third of the bytes.
+      2. **The F32 router costs 251.7 MB/token — 6.0% of the budget for 0.25% of the active params.**
+      3. The ledger is weights-only and omits **~226 MB/token of GDN recurrent state** (113 MB `GET_ROWS` +
+         113 MB `CPY`) plus ≤100 MB KV. Honest total **~4.40 GB/token → 54.3 GB/s = 35.6% of the 152.6 ceiling**
+         (not 33.5%). **This strengthens the campaign's thesis**: still only ~36% of ceiling, so the deficit is
+         latency/sync, not bytes. (NON-CLAIM — arithmetic, not a counter.)
+      **Hypotheses refuted, both structurally rather than by measurement:** `GGML_MMID_SLAB` partitions
+      `n_groups × ne01` rows where `n_groups` is the distinct-used-expert count, and only when `cne1 == 1`
+      (`ggml-cpu.c:1840-1900`) — it changes which thread reads which run, not the row set; both methods give
+      1.2964 GB identically. The **PLE table is off by three orders of magnitude**: one gather site
+      (`ple.layers=[1]`), 16 rows × 90 B = **1.44 KB/token**; even charging a full 2 MB THP per row gives 32 MB,
+      and DRAM is 64 B-line granular so the real cost is ~2 KB. **The 28.8 GB PLE table is a TLB/latency object,
+      not a bandwidth object** — which retrospectively explains B7's null from a second direction.
+      **Levers this hands us (both already on the board):** quantising the F32 router (**B4**) saves 251.7 → 62.9
+      MB = 4.5% of the token AND hits the worst straggler in the graph (those 48 nodes: 4.197 ms wall for 2.102
+      ms compute, containing the token's single worst node at 1118 µs wall / 32 µs compute) — bytes and
+      imbalance in one change. Runner-up on ms/effort is **D6**: `GET_ROWS` is unconditionally single-task,
+      moving 113 MB at 13.1 GB/s on one core for **8.4 ms = 8.7% of the token**.
+      **Optional hardware confirmation** (not run, not needed for the verdict): one locked `llama-bench tg128`
+      under `perf stat` on the DF/UMC read counters; predicted delta 6% vs the 1.1% in-window repeat.
+      Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b11/` (`REPORT.md`, `gguf_inv.py`, `inv.json`).
+
+- [ ] **B11-ORIGINAL (superseded, retained for the record) — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
       model with ~6B active parameters at ~4 bits (~3 GB). That is ~38% more traffic per token than the active
       weights account for. Candidates: expert-gather read amplification (we touch whole slabs, not just used
       rows), the PLE table gather, or a scope error in the bandwidth accounting itself. **Rule out the
