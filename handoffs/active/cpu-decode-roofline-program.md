@@ -535,6 +535,30 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       "interleaved rows / page-scatter" hypothesis is dead on arrival. The residual question is whether
       `--interleave=all` page-striping *inside* a 2.7 MB slab costs anything versus node-local
       placement. Only worth a run if B2 says the path is bandwidth-bound.
+- [ ] **B10 — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
+      ("how are people getting 2× this on a single DGX Spark?"). Source: `MiaAI-Lab/Qwen3.8-Flash-Next-Single-
+      DGX-Spark`, which reports 46.3 tok/s single-stream on GB10 using vLLM + **MTP-3 with the draft head
+      projecting over a REDUCED VOCABULARY of 65,536** instead of the model's full 248,320.
+      **Why this is the one transferable item in that repo** (NVFP4 needs Blackwell; FP8 KV loses on our stack
+      per B9; PLE offload is a GPU-memory concern and we have 1.1 TB): the draft head's output projection is a
+      248,320-row GEMV on EVERY draft step, and **we are no longer bandwidth-bound under MTP** — 25.4 GB/s
+      actual, 16.6% of the 153 ceiling — so we are dispatch/compute-bound, precisely the regime where cutting
+      that matrix ~3.8× should pay. Cheap to falsify: restrict the draft head's logits to a top-K vocabulary
+      slice and measure α plus decode t/s. **The gate is α**: a smaller vocab that costs acceptance is a loss
+      (B9's lesson — the metric that pays under speculation is α, not bytes).
+      **Scope note:** the 2.00× headline gap is NOT evidence we are leaving 2× on the table — GB10 has 273 GB/s
+      unified vs our 153 GB/s achievable (1.78×) plus far more compute, so the gap is close to the hardware
+      null. File this on its own merits, not as a chase.
+
+- [ ] **B11 — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
+      model with ~6B active parameters at ~4 bits (~3 GB). That is ~38% more traffic per token than the active
+      weights account for. Candidates: expert-gather read amplification (we touch whole slabs, not just used
+      rows), the PLE table gather, or a scope error in the bandwidth accounting itself. **Rule out the
+      measurement first** — confirm what the 51.3 GB/s counter includes before attributing it to the kernel
+      ([[feedback_verify_test_method_before_calling_it_a_bug]]). If real, it is a larger lever than anything
+      remaining on Axis B: a 38% traffic reduction on the plain path is worth more than every merged kernel
+      change in this campaign combined.
+
 - [ ] **B7 — EXL3 `mul1` trellis experts (filed as INF-71).** turboderp published EXL3 weights for this
       model on 2026-08-31 (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, MTP head at 4 bits,
       `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
