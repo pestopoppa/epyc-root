@@ -1087,7 +1087,50 @@ and Axis S is finished** — including the fusion, before a week is spent buildi
       in the MTP trunk graph** (UNARY 4.11 + REPEAT 1.62). ARGSORT is not elementwise and may be unreachable —
       triage honestly rather than forcing it.
 
-- [ ] **SYNC-12 — port `ggml_cuda_try_gdn_cache_fusion` to a proper CPU fusion ENTRY POINT.** Dispatched
+- [x] **SYNC-12 — DONE 2026-09-05. Entry point built; CUDA's `K<=1` bail is SCOPE, not soundness.** ✅
+      Branch `inf70/sync12` @ `f5908e76c`, **not merged**. Lock released 21:19Z.
+      **★ THE SAFETY QUESTION ANSWERED FROM THE CODE — SYNC-3's behaviour is SAFE, not lucky.** The CUDA
+      *kernel* at K==1 is already the fused form; only the *matcher* refuses. Three proofs:
+      `gated_delta_net.cu:329` — `if (cache != nullptr) { state_d = cache->data; }` is **unconditional on K**;
+      `gated_delta_net.cu:170-178` — the `if constexpr (!keep_rs_t)` epilogue writes `state[col*S_v + i]` after
+      the token loop at an offset already advanced by `(sequence*H + h_idx)*S_v*S_v`, so with `cache` set and
+      K==1 it **writes the final state straight into the cache slot, correctly**, using code exercised on every
+      non-rollback GPU decode. Two tells the author considered K==1 and dropped it: `gated_delta_net.cuh:8`
+      documents `slot_stride` as *"0 when K==1"*, and `ggml-cuda.cu:2762`'s `K > 1 ? … : 0` ternary is **dead
+      code** under the early return above it. **Why gated off**: the K==1 destination is a `ggml_view_2d`
+      (`delta-net-base.cpp:551`) vs the K>1 `ggml_view_3d` the matcher's shape checks assume — a second shape
+      to validate for **zero GPU payoff** (one 3 MiB D2D copy per layer on HBM).
+      **The real soundness question is ALIASING, and it resolves identically at both K**: `src[5]` comes from a
+      `GET_ROWS` gather, never the cache tensor, so read source and write target are disjoint. The pass checks
+      that explicitly — **one check more than CUDA's own matcher makes.**
+      **★ `ggml_cpu_try_fuse_ops()` ALREADY EXISTED** (`ggml-cpu.c:3812`) with CUDA's exact shape and one
+      hardcoded RMS_NORM+MUL clause; turned into a registry. **Backend safety is STRUCTURAL, not defensive** —
+      the pass lives only in `ggml-cpu.c` and the graph is never mutated, so CUDA/Metal/SYCL see a
+      byte-identical *unfused* graph. Of the three options offered this is the third and best: **the fused form
+      is UNREPRESENTABLE for a backend that cannot execute it** — no asserts to remember in three files, no
+      capability check to get wrong, no ABI change. Contract: `run` returns handled/not-handled plus `n_extra`
+      (nodes consumed) and **`skip_barrier`** — splitting those is what lets the entry point host node
+      **DELETION** as well as merging. Load-bearing invariant of five in the source header: **matchers must be
+      pure functions of the graph**, since all `nth` threads decide independently and a disagreement unmatches
+      the barriers.
+      **Correctness: all EIGHT streams byte-identical** — 288 greedy tokens at ~40/~90/~200, base vs both at
+      each length plus gdn-only and empty-only at 200. **Hit counts prove firing: `gdn_state_cache` = 10368 =
+      36 layers × 288 tokens exactly**; `rms_norm_mul` = 24192 in all eight arms (refactor behaviour-neutral).
+      `test-backend-ops -b CPU` OK on `GATED_DELTA_NET`/`RMS_NORM` at nth 4 and 48 both ways; `EXP`/`EXPM1`
+      fail **pre-existing** (they also fail under `GGML_CPU_DISABLE_FUSION=1`, so no pass can reach them).
+      **OWED and not claimed**: the full `test-backend-ops -b CPU` sweep — started, then **killed (PID 441478,
+      death verified) because it was running UNLOCKED while siblings were timing 1% effects.**
+      **★ SECOND CONSUMER IMPLEMENTED, NOT SKETCHED — and it found the trap in SYNC-9.** Nine lines,
+      bit-identical over 288 tokens, **62,999 elisions per process**. The insight: those nodes'
+      `ggml_compute_forward` is **already a no-op**, so their 0.173 ms is **pure barrier** — **eliding the node
+      WITHOUT the barrier recovers nothing.** A naive early-return would have measured zero and been read as
+      "node removal does not convert", when no barrier had been removed at all. Measurement and disposition
+      routed to SYNC-2/SYNC-9.
+      **No speed claim, by design.** An encoding change cannot make a kernel faster; value is that SYNC-3's
+      `src[6]` **cannot ship** (silent write-back skip on three backends) and this can, and that the next lever
+      writes a matcher and adds a row instead of another `GGML_*` flag.
+
+- [ ] **SYNC-12-ORIGINAL (superseded, retained for the record)** — port the CUDA GDN fusion. Dispatched
       2026-09-05 from an operator question ("can't we reverse engineer it and adapt it to our hardware?").
       **Framed deliberately as INFRASTRUCTURE, not a speed lever** — SYNC-3 already achieved the functional
       outcome and measured it honestly at −0.307 ms plain / **~0.1 ms per token in serving** (the copy is in
