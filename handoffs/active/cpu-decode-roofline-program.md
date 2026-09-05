@@ -856,6 +856,28 @@ including `voluntary_ctxt_switches = 231` across 48 threads over minutes. **Hier
 | 4 | GDN + CPY | 1.70 | ~0.1 | closed | SYNC-3 |
 | 5 | GET_ROWS | 0.33 | 0 | **closed by D8** | — |
 
+**⚠ CORRECTION 2026-09-05 — `hc_gate` DOES NOT COLLAPSE TO A SCALAR. The coordinator's stated mechanism was
+wrong and was propagated to SYNC-10.** Read from `src/models/qwen4exp.cpp:246-278`:
+
+```
+xn    = mul(rms_norm(x), w_norm)                        // [hc_dim = 4*2560 = 10240, T]
+gate  = sigmoid(w_up @ silu(scale(w_down @ xn, 1/hc)))  // [10240, T]  <- hc_gate
+gated = mul(xn, gate)                                   // ELEMENTWISE over all 10240
+mixed = mean_d1(reshape(gated, n_embd, hc, T))          // [2560, T]
+```
+
+It is a **full 10240-element vector gate**, one multiplier per (stream, channel), applied elementwise to the
+whole hyper-connection state. **The collapse happens in `mean_d1` AFTER the gate, not in it.** Two
+consequences pulling opposite ways — which is exactly why precedent cannot settle the vectorisation question:
+**worse** than the scalar picture (not one perturbed multiplier but **10240 independently perturbed ones**,
+each scaling a residual channel feeding the rest of the layer), and **better** (the following `mean_d1`
+averages `hc=4` streams, attenuating independent errors by ~1/√4 = 0.5 into `hc_mixed`). Net ~1.4e-07
+relative perturbation, 48 layers deep, on a quantity with measured top-1 leverage. **The conclusion — gate on
+KLD, not on the silu precedent — survives; the reasoning behind it does not.** It matters because **a probe
+designed around "one scalar per layer" would measure the wrong object**; the right one is per-channel gate
+perturbation into `hc_mixed`, which a paired full-distribution KLD already captures. (B7's ~8% top-1 figure
+is NOT re-verified by SYNC-10 and is not restated as its finding.)
+
 **★★★ B12 IQ4_XS DRAFT HEAD — HYPOTHESIS REFUTED AND INVERTED 2026-09-05. THE SHARED HEAD WAS ALREADY THE
 CACHE-EFFICIENT DESIGN, AND THIS EXPLAINS B10's 1.6× PHENOMENON.**
 Bytes fell to **0.648×** but time per head call **ROSE to 1.097×**; effective bandwidth went
