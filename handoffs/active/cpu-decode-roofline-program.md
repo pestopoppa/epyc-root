@@ -856,6 +856,46 @@ including `voluntary_ctxt_switches = 231` across 48 threads over minutes. **Hier
 | 4 | GDN + CPY | 1.70 | ~0.1 | closed | SYNC-3 |
 | 5 | GET_ROWS | 0.33 | 0 | **closed by D8** | — |
 
+**★★★ B12 IQ4_XS DRAFT HEAD — HYPOTHESIS REFUTED AND INVERTED 2026-09-05. THE SHARED HEAD WAS ALREADY THE
+CACHE-EFFICIENT DESIGN, AND THIS EXPLAINS B10's 1.6× PHENOMENON.**
+Bytes fell to **0.648×** but time per head call **ROSE to 1.097×**; effective bandwidth went
+**244.4 → 144.3 GB/s**. The baseline reproduces B10 independently (**244.4 GB/s measured off a printed
+`PATHROW`** vs their derived 260), so this is not an instrument artefact.
+
+| | measured |
+|---|---|
+| bytes | 0.648× |
+| compute | 1876 → 1682 µs (**−10.3% for −35.2% of bytes**) |
+| dead time | 258 → **658 µs (2.5×)** — exceeds the entire compute saving |
+| effective rate | **244.4 → 144.3 GB/s** |
+| **α** | **0.8209 → 0.8249 (+0.0040)** — coherence identical |
+
+**Mechanism 1 — the head is not bandwidth-bound at this size.** Cutting 35.2% of bytes bought 10.3% of
+compute; on compute alone the rate *drops* 278 → 201 GB/s, because **IQ4_XS is the only one of the three
+candidate quants requiring Q8_K activations**, so its kernel is less efficient per byte.
+**Mechanism 2 — dead time rose 2.5×**, more than erasing the compute win.
+**★ THE STRUCTURAL FINDING, AND IT REVERSES THE PREMISE: the shared head is a FEATURE.** The draft graph
+reuses **the trunk's** `output.weight` — **one 521.5 MB slab, two consumers**, where each verification step
+re-warms exactly the bytes the next draft step reads. **That mutual re-warming is very likely WHY B10
+measured 1.6× the DRAM ceiling in the first place.** Giving the draft its own head does not replace the slab,
+it **ADDS** to it: 521.5 (trunk) + 337.7 (draft) = **859.2 MB, +64.8%** against ~402 MB of L3.
+**★ THE COORDINATOR'S ERROR, NAMED: my per-CCX arithmetic counted the head ONCE when the change makes it
+count TWICE.** I was right about the slab and wrong about the *working set*. **Generalisable rule: when
+evaluating a change that gives a consumer its OWN copy of a shared tensor, cost the WORKING SET, not the
+tensor.** This is the fourth time this week byte-based reasoning has erred in the same direction
+(B7 dilution, B10 byte model, B11's premise, now this) — and every correction has come from measuring a rate
+rather than counting bytes.
+**α was NOT the binding constraint.** The B9-shaped risk was real to check and did not bite: a 7.85%-RMSE
+head with no imatrix cost **nothing** in acceptance (it gained 0.004). The kernel and the footprint arithmetic
+were what killed it. **Checking α was still correct** — it was the cheapest way to be wrong safely.
+**Consequence for PROD-1**: the settled recipe's use of the **shared** MTP head is now *understood*, not
+merely inherited — **lock it with the reason.** Any future change that gives the draft path a private copy of
+a large tensor is anti-cache by this mechanism and must clear the working-set arithmetic first.
+**Still running**: `Q4_K` (P3), now the interesting arm rather than a contingency — it is the one candidate
+that does **not** use Q8_K activations, so it isolates mechanism 1 from mechanism 2. It still pays the +64.8%
+duplication, so it is expected to lose too, **but less, and for a different reason** — which is what makes it
+worth the arm.
+
 **★★ OPERATOR DECISION REQUIRED — TWO DEFECTS IN THE D9 HOOK, ONE OF THEM A BYPASS. Fix prepared and
 mutation-proven; I did NOT commit it, because `scripts/hooks/` is itself D9-guarded and inventing an ack is
 exactly what the control exists to prevent.**
