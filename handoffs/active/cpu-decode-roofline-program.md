@@ -883,7 +883,17 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       | | ms/call | effective GB/s |
       |---|---|---|
       | `lm_head`, trunk graph (plain arm) | 3.742 | 139 — 94% of the 153 ceiling |
-      | `lm_head`, MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** |
+      | `lm_head`, MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** (DERIVED) |
+
+      **⚠ PROVENANCE, recorded 2026-09-05 before this hardens into a measured fact: only the 139 GB/s trunk
+      figure is a printed `PATHROW` value. The 260 GB/s is B10's DERIVATION** from the MTP arm (386 evals =
+      78 trunk + 308 MTP, with the 78 `process()` catch-ups excluded because they add with `logits=0` and
+      stream no head bytes — `dst ne[1]=0` in the meta). B10 derived it two independent ways and the
+      conclusion is corroborated from a second direction by SYNC-3's GDN state at 234 GB/s (also above the
+      DRAM ceiling, also cache-resident), so the L3-residency finding does not rest on this one number. But
+      **a derived rate is not an instrument reading**, and B12 is currently being asked to test a residency
+      step change against it — so B12 must report the head node's rate from its OWN measurement rather than
+      inheriting 260.
 
       Derived two independent ways from the MTP arm (386 evals = 78 trunk + 308 MTP; 78 MTP evals are
       `process()` catch-ups adding with `logits=0` and streaming no head bytes, confirmed by `dst ne[1]=0`).
