@@ -710,6 +710,33 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+**★★★ THE ÷3 MAY BE THE WRONG CORRECTION — THE PREDICATES ARE GATED ON `nrows == 1`, WHICH IS THE BATCH-1
+CONDITION (SYNC-2, 2026-09-05).** Verified in its own code rather than inferred:
+`ggml_elem_colsplit_applies()` requires `ggml_nrows(src0) == 1` (`common.h:142`); `ggml_cpu_node_is_solo()`
+requires `ggml_nrows(node) == 1` **and** `ggml_nrows(src[0]) == 1` (`ggml-cpu.c:2688`, `:2691`);
+`GGML_EMPTY_SKIP` is `ggml_nelements(node) == 0` and batch-independent.
+**On an MTP verify pass the trunk graph carries ~4 tokens**, so those tensors are `[n_embd, 4]` and
+**neither `ELEM_COLSPLIT` nor `TINY_SOLO` fires on the trunk at all — yet the trunk is where the 6 ms lives.**
+They fire fully on the draft model's batch-1 steps. **SYNC-2 therefore refused to publish a scaled
++3.02% / +1.42% and says its two large levers must be MEASURED, not divided.** Only `EMPTY_SKIP` scales
+cleanly: **~+0.32% served.**
+**⚠ OPEN QUESTION THIS RAISES ABOUT THE HEADLINE, routed to SYNC-10**: if `GGML_ROWCOL_SPLIT` carries the same
+`nrows == 1` guard, then its **+3.11% comes ENTIRELY from the draft model's batch-1 steps** (~4.27 draft evals
+per trunk eval — plenty to explain it), and **the trunk's 6 ms is untouched, meaning the serving number is a
+FLOOR, not a ceiling.** If instead its guard already handles `nrows < nth`, +3.11% is the whole effect.
+SYNC-10's graph-shape filter already separates the 144-node draft graph from the 7481-node trunk, so this
+should be answerable from data in hand rather than a new arm.
+**★ THE HIGHEST-VALUE FOLLOW-UP ON EITHER BRANCH — relax `nrows == 1` to `nrows < nth` and split by
+(row, column-chunk) PAIRS instead of column-only.** D8's exact shape; bit-identity holds for the same reason.
+It makes the lever fire at **every batch below 48**, not only at 1 — which is where the trunk's 6 ms becomes
+reachable. The defect is milder at batch 4 but far from gone: **the hyper-connection sigmoids would still run
+4-way on a 48-thread box.** Filed as item 5 of SYNC-2's go/no-go, to be measured under MTP where the paired
+ratio is clean.
+**The barrier finding is unaffected by any of this**: 3.14 µs/barrier (`TINY_SOLO`) and 3.09 µs/barrier
+(`EMPTY_SKIP`) are **per-eval structural measurements**, and Axis S's re-pricing should use that rate.
+**THP hand-off re-labelled**: ~9.1 ms is plain decode, expect nearer 3 ms served — still the largest single
+item on either denominator.
+
 **★★ METHODOLOGY RULE ADOPTED 2026-09-05 (SYNC-10) — A NUMERICS-CHANGING ARM CANNOT BE A/B'd ON ms/token
 UNDER SPECULATIVE DECODING.** A different token stream produces a different acceptance pattern, and
 acceptance dominates ms/token, so the arm measures **acceptance-rate luck confounded with kernel speed** — at
