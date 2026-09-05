@@ -1396,8 +1396,10 @@ named. MTP is not a serving option until that gate passes.
       kernel configuration — and that is only trustworthy BECAUSE C9 turned out to be a stale binary rather than a
       live kernel defect.** Had C9 been real, B7 could only have been measured at `GGML_IQK=0`, i.e. in a
       configuration nobody serves, and the result would not have transferred.
-      **Queued, one lock hold**: C9 same-binary verification → B7 KLD A/B (both passes) → speed guard-rail on the
-      24-prompt production mix for both artifacts.
+      **★ B7 SPEED GUARD-RAIL COMPLETE 2026-09-04** — 24 production prompts per arm: `b7-anchor` **12.4086 t/s**
+      vs `b7-pleq8` **12.3606 t/s** token-weighted, both 20 COHERENT + 4 SHORT. The −0.39% comes from two
+      SEQUENTIAL lock acquisitions and is therefore **not evidence** under the same-window rule; predicted
+      bandwidth cost was +3.1e-5%. B7 closes on both axes: no quality gain, no measurable speed change.
 
       **★ C9 CLOSED 2026-09-04 — VERIFIED TO THE SAME-BINARY STANDARD.** Four arms, `-c 512 --chunks 20`,
       same corpus and settings, only the BINARY and the kernel flag varying:
@@ -1691,6 +1693,16 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
 - **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
   produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
 
+**✅ RECLAIM-1 / OP-37 EXECUTED 2026-09-04 (operator: "proceed") — 123 GB → 421 GB free.** Deleted, all
+reversibly: `IQ4_XS-uniform-gateup` (92 GB), `IQ4_XS-uniform-b4` (91 GB), `IQ4_XS-uniform-pleQ8` (116 GB —
+B7's measured loser). Protected and verified present afterwards: `IQ4_XS-uniform` (era anchor),
+`-gateup-r16` (current baseline), `UD-IQ4_XS` (served file), `MTP` (head, in the serving config).
+**Precondition satisfied first**: `gguf_swap_ple.py`, the pleQ8 artifact's ONLY regeneration recipe, lived
+solely in `/mnt/raid0/llm/tmp/` — a scratch path — so it was committed to `scripts/inf70/` BEFORE the
+deletion. `gguf_fuse_gate_up.py` was already in git (`inf70/b3` `dd27ec3bb`). A deletion is only reversible
+if its recipe is in git; on the filesystem it is not a recipe, it is a coincidence.
+
+**Original plan, retained:**
 **What may be deleted once B7 reports — 183 GB, both reversibly:**
 | artifact | size | why deletable | how to regenerate |
 |---|---|---|---|
