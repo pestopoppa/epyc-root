@@ -5,6 +5,32 @@
 **Last compiled**: 2026-09-03 (incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
 
+## Compiled Update — 2026-09-05: a spec-decode drafter is model-specific — a base-trained DFlash2 head does NOT transfer to a fine-tune
+
+**Confidence: verified** — single-stream llama-server measurements on the champion build (Q8_0, GPU),
+draft acceptance read from the server's own slot timing.
+
+Benchmarking **Qwopus3.8-27B-Flash** (a Qwen3.8-27B fine-tune, same `qwen35` arch, multimodal, ships a
+native MTP head `blk.64.nextn.*`) against our champion's DFlash2 drafter produced a clean, generalizable
+spec-decode lesson: **the drafter is bound to the target's output distribution, so a drafter trained on the
+BASE model loses most of its acceptance on a FINE-TUNE of that base.**
+
+| target + drafter | decode t/s | speedup | draft acceptance |
+|---|---|---|---|
+| Qwopus + its own native MTP | 45.5 | 1.50× | 0.590 |
+| Qwopus + our base-trained DFlash2 drafter | 45.7 | 1.51× | **0.356 (does not transfer)** |
+| (ref) Qwen3.8-27B + its DFlash2 | ~72 | 2.38× | high |
+
+The DFlash2 drafter only matched MTP's throughput because a deeper draft (n-max 8) offset the higher miss
+rate — the acceptance itself collapsed (0.356 vs the base's high). **Implication for production:** every
+model we want to serve at champion speed needs its OWN DFlash2-class drafter; a base drafter is not a
+shortcut for its fine-tunes. Raw (no-drafter) speed and coherence were identical to the champion, so the
+gap is purely drafter quality, not the kernel. DFlash2/EAGLE drafters are trainable by distillation of a
+small (~2 GB) head from the frozen target (tractable, ~card-days), tracked as DF2-QWOPUS in the DFlash2
+handoff.
+
+**Source**: [dflash2 block drafter experimental build](../handoffs/active/dflash2-block-drafter-experimental-build.md) (DF2-QWOPUS), [ak-rebuild progress 2026-09-04](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+
 ## Compiled Update — 2026-09-04: DFlash2 serving decode is set by the drafter and acceptance, not the target verify — kernel keeps on the verify path do not move it
 
 **Confidence: verified** for the DFlash2 decode measurements and the np-concurrency aggregate;
