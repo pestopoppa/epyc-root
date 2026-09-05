@@ -1065,6 +1065,41 @@ and Axis S is finished** — including the fusion, before a week is spent buildi
 `voluntary_ctxt_switches = 231` across all 48 threads over minutes of decode; a futex pool would show
 ~5,400 × 48 per token. Costs nothing and forecloses an entire branch of speculation.
 
+**★★★ SYNC-10 ROUND 1 (2026-09-05) — NON-CLAIM, one round, but the arms agree with the census to <2% and
+the composition result CANCELS a planned KLD window.** Base measured on its own tip: **13.12 ± 0.06 t/s =
+76.22 ms/token** (±0.5%) — near SYNC-1's 78.87 and nowhere near the 96.3 / 84.2 figures from the pre-D8
+profile that was never on this base's history.
+
+| arm | t/s | ms/token | Δ vs A | vs S | bit-identical |
+|---|---:|---:|---:|---:|---|
+| A base | 13.12 | 76.22 | — | | — |
+| **S** split | **14.37 ± 0.10** | **69.59** | **+9.5% (−6.63 ms)** | — | **YES** |
+| V vec-sigmoid | 13.95 ± 0.10 | 71.68 | +6.3% (−4.54 ms) | −2.9% | no |
+| **W** vec+split | **14.37 ± 0.07** | **69.59** | **+9.5%** | **±0.0%** | no |
+
+**Predictions matched**: S saved 6.63 ms against a census prediction of **6.59** (0.6%); V saved 4.54 against
+**4.46** (<2%). A placement artefact or drift excursion has no reason to land on the census's numbers, so the
+mechanism is confirmed, not just the effect.
+**★ THE COMPOSITION RESULT: W ≡ S. The vectorisation contributes NOTHING once the split exists.** Mechanism
+exactly: the split threads the sigmoid 48 ways, 50 µs → ~1.1 µs; vectorising then takes 4 µs → ~0.1 µs, worth
+~1 µs × 97 nodes = **0.1 ms on a 70 ms token (0.14%)** — below the noise floor. **The two levers fix the SAME
+node by different routes and do not add**, and the cheaper-to-justify one captures nearly all of it. Note
+this **inverts the coordinator's framing**, which flagged the vectorisation as "possibly a larger and much
+cheaper lever": the magnitude estimate (~4.5 ms) was right, "larger" was wrong — the split also fixes the
+sigmoid *and* picks up MUL and REPEAT.
+**★ CONSEQUENCES IF IT REPLICATES:**
+1. **Promote S ALONE** — `GGML_ROWCOL_SPLIT=1`, **bit-identical**, gated by a digest match that already
+   passes. No accuracy argument, no correctness debate.
+2. **NO KLD TURN NEEDED FOR THIS STACK.** The `hc_gate` leverage question stays real but becomes **moot
+   here**, because we never have to ship the ulp change to get the win. *(A window the coordinator had
+   already committed to funding is cancelled by an experimental design choice, not by an argument.)*
+3. The sigmoid vectorisation remains valuable as an **upstream contribution** — it helps every model that
+   lacks a 48-thread split to hide the scalar `expf` — which is where §7.1 already puts it.
+**Why this outcome existed at all**: the agent gated the two knobs **independently**, against a brief that
+had them bundled. Three arms answered more than four arms of split-only would have.
+**Outstanding before any claim**: rounds 2–3, the pristine-base control, the MTP arms, `test-backend-ops` ×4
+and 12 greedy gates.
+
 - [ ] **SYNC-10 — AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
       one thread working and 47 idle.** Dispatched 2026-09-05, **the largest single lever identified in the
       campaign.** Nodes with `thr_mean/thr_max < 0.1`, tip plain:
