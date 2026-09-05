@@ -814,6 +814,45 @@ Both arms share every defect and differ by exactly the barrier commit, so the A/
 only the absolutes are non-comparable to tip. D1 is now **corroboration, not the decider** — the in-situ
 per-(node,thread) census measures the same quantity at tip with ~4,400 observations per token.
 
+**★★ D1 A/B RESULT 2026-09-05 — AND THE HYPOTHESIS THAT RECONCILES IT WITH THE 2.72 µs RESIDUAL.**
+ABABAB round 1, `-p 0 -n 128 -r 25`, placement 25.5 GB × 4, same window:
+
+| arm | tg128 | ms/token |
+|---|---:|---:|
+| `G1_base` (`c035bbf3d`, unpatched) | **10.28 ± 0.16** | 97.28 |
+| `G1_d1` (`1ba448e74`, 940 barriers removed) | **10.10 ± 0.39** | 99.01 |
+
+**The patched arm is 1.73 ms/token SLOWER against a primitive-model prediction of ~2.56 ms FASTER** — wrong
+sign, comparable magnitude. Second in-situ null for barrier elision after INF-10. **Cut after round 1
+(coordinator's call) and reported single-round NON-CLAIM**: the instrument cannot reach ±0.2 ms (SEM of the
+difference is 0.81 ms at one round, ~0.47 ms at three, bound by the d1 arm's own 2.4× dispersion), and the
+binary predates `99425578d`, D8 and b3k while taking **21.2 min against base's 5.5 for the same 25 reps** —
+a 4× wall anomaly outside the timed decode. **50 min of a contended lock could not change any decision.**
+
+**★ THE RECONCILING HYPOTHESIS (coordinator, from SYNC-1's own label — testable, not yet confirmed):** the
+measured quantity is "**barrier + dispatch**", and the two are NOT equally removable.
+
+> **Removing a barrier between two nodes does not remove either NODE.** Each node still has its work
+> distributed to 48 threads, and **dispatch is paid per node, not per barrier.** If dispatch dominates the
+> 2.72 µs, D1 eliminated 940 barriers while leaving all 4,409 dispatches intact — buying nothing, as measured
+> — while the in-situ per-node residual remains a genuine 2.72 µs, also as measured. **Both facts hold with
+> no congestion story required.**
+
+It predicts the live seams diverge sharply, which is what makes it worth testing rather than believing:
+**SYNC-2's fusion removes NODES** ⇒ recovers dispatch *and* barrier; **D1-style elision removes barriers but
+no nodes** ⇒ recovers only the barrier part ⇒ null, observed twice; **SYNC-10 removes neither** ⇒ its win
+comes wholly from the 7.79 ms idle-thread critical path, independent of both. **If it holds, the axis must be
+re-priced on NODE COUNT, not barrier count.**
+**★ SYNC-9 IS NOW THE DECISIVE EXPERIMENT, NOT A FREEBIE** (routed to SYNC-2, to be run FIRST). The 72
+zero-sized `build_rs` nodes do **literally zero work**, so removing them has **no compute confound** and the
+entire saving must be dispatch + barrier. 72 × 2.72 µs = **0.196 ms** against the profile's **0.173 ms** —
+close enough to discriminate. **Recovers ~0.173 ms ⇒ dispatch is recoverable by node removal, SYNC-2's
+fusion seam is real, re-price the axis on node count. Recovers ~nothing ⇒ even node removal does not convert,
+and Axis S is finished** — including the fusion, before a week is spent building it.
+**Also settled, with a second independent instrument: the pool SPINS, it does not sleep.**
+`voluntary_ctxt_switches = 231` across all 48 threads over minutes of decode; a futex pool would show
+~5,400 × 48 per token. Costs nothing and forecloses an entire branch of speculation.
+
 - [ ] **SYNC-10 — AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
       one thread working and 47 idle.** Dispatched 2026-09-05, **the largest single lever identified in the
       campaign.** Nodes with `thr_mean/thr_max < 0.1`, tip plain:
