@@ -568,10 +568,12 @@ experimental branch:
       `IQ4_XS-uniform` (92 GB) becomes deletable. Precondition: confirm unsloth still publishes it (~2.8 h
       re-download, recoverable, not a one-way door).
 
-**Consequence for sequencing that is easy to miss:** production promotion is gated on the *whole* candidate
-passing GPU **and** CPU regression validation, so Axis S work that is still in flight (SYNC-2/3, B12) either
-lands before the promotion window or waits for the next version. **Do not hold the promotion open for a
-~1–3 ms lever.** Ship what is validated; version past it.
+**★ SEQUENCING SETTLED BY THE OPERATOR 2026-09-05: "I'm not promoting to production any time soon —
+certainly not before we finish this optimization study thoroughly."** So there is **no promotion window to
+race**, and the earlier worry (that in-flight levers would miss it) is void. The consequence runs the other
+way: levers accumulate into ONE properly-validated candidate, which is what the four-step kernel workflow
+wants anyway — the full candidate benched as a whole, never reconciled by cherry-pick at promotion time.
+**Do not re-raise promotion timing as a constraint on any Axis S or B-axis work.**
 
 ## Axis S — SYNCHRONIZATION. Opened 2026-09-05. The 23.4% of the token that is not compute.
 
@@ -833,6 +835,22 @@ per-(node,thread) census measures the same quantity at tip with ~4,400 observati
       **★ It survives the ÷3 rule**, which is why it outranks every barrier lever: **6.04 ms is still wasted
       in the MTP trunk graph** (UNARY 4.11 + REPEAT 1.62). ARGSORT is not elementwise and may be unreachable —
       triage honestly rather than forcing it.
+
+- [ ] **SYNC-12 — port `ggml_cuda_try_gdn_cache_fusion` to a proper CPU fusion ENTRY POINT.** Dispatched
+      2026-09-05 from an operator question ("can't we reverse engineer it and adapt it to our hardware?").
+      **Framed deliberately as INFRASTRUCTURE, not a speed lever** — SYNC-3 already achieved the functional
+      outcome and measured it honestly at −0.307 ms plain / **~0.1 ms per token in serving** (the copy is in
+      the trunk graph, which amortises over 3.23 tokens), which is below the noise floor. Two reasons it is
+      still worth doing:
+      1. **SYNC-3's version cannot ship.** `src[6]` is CPU-only; CUDA/Metal/SYCL would ignore it and
+         **silently skip the state write-back** — a silent wrong-answer path on three backends.
+      2. **The campaign needs a fusion MECHANISM, not more env knobs.** Every fusion here is currently a
+         bespoke `GGML_*` flag. A `ggml_cpu_try_fuse_ops` mirroring the CUDA pass is the entry point that
+         SYNC-2's HC_MIX compound op and the 72 zero-sized `build_rs` skip (SYNC-9) both need.
+      **The question that decides safety**: CUDA bails at `if (K <= 1) return 0;`, and CPU decode runs K == 1
+      — is that guard there because the fusion is UNSOUND at K==1, or merely because it was not worth it on a
+      GPU? Must be answered from the code, not assumed. Design gate: if the entry point cannot trivially host
+      the zero-node skip as a second consumer, it is the wrong design.
 
 - [ ] **SYNC-11 — full 48-value per-thread dump on `result_output`** (one line in the summariser, one arm;
       the instrument already collects it). **Three order statistics cannot show a GAP, and bimodality is a
