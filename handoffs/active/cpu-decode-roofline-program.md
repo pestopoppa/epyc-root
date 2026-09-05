@@ -759,6 +759,92 @@ This axis was opened on a dead%-ranked table, so the ranking was a search heuris
       16.9 µs/token, not worth a lock turn.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md`.
 
+**★★★ THE TIP CENSUS LANDED 2026-09-05 (SYNC-1) — AND IT REFUTES THE CONGESTION MODEL, RESTATES THE BUDGET,
+AND DEFLATES THE WHOLE AXIS. Read this before any other number on this page.**
+
+**(a) The congestion/arrival model is REFUTED.** It predicted the barrier residual would collapse after
+heavy staggered nodes. It does not: **MUL_MAT's residual is 2.25 µs/node, statistically level with SCALE's
+2.44 and ADD's 2.39.** The toll is paid roughly **uniformly** — 12.00 ms / 4,409 barriers = **2.72 µs**,
+right on the 2.16/2.48 µs primitives. *(The model was the coordinator's, propagated into this handoff, the
+wiki and four sibling briefs. It is dead. **D1's null therefore still wants an explanation.**)*
+
+**(b) "23.4% dead" UNDERSTATES COORDINATION BY ABOUT HALF — it is a THREAD-0 artefact.** Thread 0 does
+**57.6 ms** where the mean thread does **46.9 ms**, because it is the one thread that works on every
+single-task node. Tip 10221, plain, `-t 48`, 128 evals, placement 23.9 GB × 4:
+
+| | ms/token | % |
+|---|---:|---:|
+| mean-thread compute (useful work) | 46.87 | 59.4 |
+| **IMBALANCE** (Σ per-node max−mean over 48 threads) | **20.00** | **25.4** |
+| **BARRIER + dispatch** (Σ wall − max) | **12.00** | **15.2** |
+| total wall | 78.87 | |
+
+**True coordination at tip is 32.0 ms of 78.9 = 40.6%, not 23.4%.** Every dead-time figure this campaign has
+quoted — including the table Axis S was opened on — is a thread-0 measurement.
+**Caveat that must travel with the split**: `thr_max` absorbs *intra-op* barrier waits, so the
+imbalance/barrier division is exact only for ops with no internal barrier. For **MUL_MAT, MUL_MAT_ID, GDN and
+FLASH_ATTN_EXT** it blurs (MUL_MAT even shows a small negative residual). **The 32.0 ms total is robust; its
+two halves are approximate for those four ops.**
+
+**(c) ★ THE ÷3 RULE — THE MTP CONFIG WE ACTUALLY SERVE HAS A DIFFERENT PROFILE, AND IT PRICES AXIS S DOWN.**
+Graph shapes: 508 draft evals @144 nodes, 119 trunk evals @7,481, for 384 tokens = **3.23 tokens per trunk
+eval**, 4.27 draft evals per trunk eval.
+
+| per token | plain | **MTP (settled config)** |
+|---|---:|---:|
+| wall | 78.87 ms | **48.03 ms** |
+| imbalance | 20.00 | **10.66** |
+| barrier + dispatch | **12.00** | **3.89** |
+| coordination total | 40.6% | **30.3%** |
+
+**The barrier toll is 3.1× smaller in serving** — the trunk graph amortises its 4,400 barriers over 3.23
+tokens and the 144-node draft graph is nearly barrier-free (0.315 ms). **EVERY barrier-elision estimate in
+this campaign must be divided by ~3 before being priced as serving value**: SYNC-2's ~4.3 ms → **~1.4 ms**;
+SYNC-5's ~11 ms ceiling → **~3.5 ms**; the D2(i) 579-barrier candidate likewise. **This may end Axis S on
+economics alone.**
+
+**(d) D1's arms are STALE — confirmed by `strings`, not mtime** (`GGML_FA_SPLIT_KV=0 GGML_ROWEXACT_N=0
+GGML_IQK_DEQUANT=0 GGML_MMID_SLAB=0 GGML_GET_ROWS_MIN_BYTES=0`; `git merge-base --is-ancestor 99425578d` =
+NO for both `1ba448e74` and `c035bbf3d`; both also predate D8 and b3k, decoding at ~96 ms vs tip's 77).
+**Deliberately NOT rebuilt, and the reasoning is the important part: rebuilding would mean RE-INSERTING a
+barrier that b3k has since rewritten around — a new code change on the critical path, not a re-measure.**
+Both arms share every defect and differ by exactly the barrier commit, so the A/B stays **internally valid**;
+only the absolutes are non-comparable to tip. D1 is now **corroboration, not the decider** — the in-situ
+per-(node,thread) census measures the same quantity at tip with ~4,400 observations per token.
+
+- [ ] **SYNC-10 — AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
+      one thread working and 47 idle.** Dispatched 2026-09-05, **the largest single lever identified in the
+      campaign.** Nodes with `thr_mean/thr_max < 0.1`, tip plain:
+
+      | op | n | critical path | mean work | wasted |
+      |---|---:|---:|---:|---:|
+      | UNARY | 145 | 5.170 ms | 0.131 | **5.039** |
+      | MUL | 144 | 1.116 | 0.065 | 1.051 |
+      | ARGSORT | 48 | 0.985 | 0.026 | 0.958 |
+      | REPEAT | 95 | 0.528 | 0.026 | 0.502 |
+      | **total** | **453** | | | **7.790 ms/token** |
+
+      **Mechanism verified at the kernel**: `ggml_compute_forward_silu_f32` and siblings split over ROWS
+      (`dr = (nr+nth-1)/nth`), and every one of these tensors is `[10240,1,1]` ⇒ `nr = 1`, so only `ith = 0`
+      gets a range while 47 threads enter, do nothing, and park. **Not a barrier problem and not imbalance — a
+      missing parallelisation.** Precisely the defect **D8 fixed for GET_ROWS** with a (row, column-chunk)
+      split, bit-identical, +13.8% (re-verified same-binary at +15.4% by SYNC-4) — so the template exists
+      (`bc2834a9b`, `inf70/sync4`'s `ggml_get_rows_split_init`).
+      **★ It survives the ÷3 rule**, which is why it outranks every barrier lever: **6.04 ms is still wasted
+      in the MTP trunk graph** (UNARY 4.11 + REPEAT 1.62). ARGSORT is not elementwise and may be unreachable —
+      triage honestly rather than forcing it.
+
+- [ ] **SYNC-11 — full 48-value per-thread dump on `result_output`** (one line in the summariser, one arm;
+      the instrument already collects it). **Three order statistics cannot show a GAP, and bimodality is a
+      claim about a gap** — so the per-CCX residency hypothesis is currently unconfirmable. What is known:
+      `result_output` (the q6_K head, the one tensor the per-CCX arithmetic puts over the 32 MiB threshold)
+      has **the largest absolute imbalance in the graph** — 359 µs, `thr_max` 2653 / `thr_min` 1789, 1.48×.
+      **But 18 MB q5_K nodes at 1.5 MB per CCX — far under threshold — reach 3.5×, so spread alone does NOT
+      require a residency explanation**, a caution that applies to the coordinator's per-CCX arithmetic as
+      much as to anyone's. Decision-relevant because **B12 is testing a per-CCX step change on that exact
+      tensor**: a real 48-value distribution would corroborate or kill its mechanism independently of its own
+      before/after.
+
 **★★ HYG-1 ESCALATED 2026-09-05 — EVERY BUILD DIR IN THE SHARED TREE IS STALE, NOT JUST ONE.**
 B12 reports that **none** of them contain `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or `GGML_IQK_DEQUANT`, and
 **all predate `99425578d`** (the IQ4_XS iqk repack fix that closed the long-prompt P0). **Setting any of those
