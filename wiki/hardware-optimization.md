@@ -4295,3 +4295,63 @@ The campaign had attributed qwen4exp's batched-vs-single-token divergence to the
 
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70: the BATCH-ENVELOPE / BE-1 / BE-2 tasks, the carrier isolation, and the shipping-config recommendation.
 - [`2026-09-03-inf70-audit.md`](../progress/2026-09/2026-09-03-inf70-audit.md) — the batch-envelope solve, the BE-2 flash-attention mechanism and speed table, the vacuous-verification retraction, and the coverage-hole finding.
+
+## A byte roofline over-prices anything that fits in L3 (2026-09-05)
+
+**The same tensor costs different amounts in different graphs.** Measured on the EPYC 9655 (384 MiB L3,
+152.6 GB/s achievable DRAM), the model's q6_K `output.weight` `[2560, 248320]`, 521.472 MB:
+
+| context | ms/call | effective GB/s |
+|---|---|---|
+| `lm_head` in the trunk decode graph | 3.742 | 139 — 94% of the DRAM ceiling |
+| `lm_head` in the MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** |
+
+260 GB/s is impossible from DRAM. The MTP draft graph is only ~144 nodes and ~105 MB of other weights, so
+the 521 MB head **substantially survives in L3 between draft steps**.
+
+**Rule: cost any "shrink this tensor" lever against the MEASURED effective rate of the graph that reads it,
+not against the DRAM ceiling.** A byte roofline assumes every byte comes from DRAM — true for a full forward
+pass that streams far more than L3, false for any *small graph* re-executed back-to-back over the same
+tensor (draft heads, verify batches, anything speculative). The error is always in the same direction: it
+makes shrinking levers look bigger than they are. This killed INF-70's B10 (reduced-vocabulary drafting): the
+byte model priced the draft head at 8.6% of the token, the measurement said 4–5%, and the lever's ceiling
+fell to +3.0–3.9%.
+
+**Second instance the same week.** The 28.8 GB IQ4_NL PLE n-gram table costs **1.44 KB/token** — one gather
+site (`ple.layers=[1]`), 16 rows × 90 B. Even charging a full 2 MB transparent huge page per row gives 32 MB,
+and DRAM is 64 B-line granular, so the real cost is ~2 KB. **It is a TLB/latency object, not a bandwidth
+object**, mispriced by three orders of magnitude.
+
+## Where CPU decode time actually goes: 23.4% is coordination (2026-09-05)
+
+Per-node census of plain decode, 4,409 node evaluations: **22.516 ms dead of 96.267 ms wall.** Decode runs at
+**~36% of the 152.6 GB/s ceiling**, so the deficit is not bandwidth.
+
+| op | wall ms | compute ms | dead ms | dead % | nodes |
+|---|---|---|---|---|---|
+| MUL_MAT | 41.911 | 34.723 | 7.188 | 17.2% | 797 |
+| MUL_MAT_ID | 20.962 | 17.116 | 3.846 | 18.3% | 144 |
+| GATED_DELTA_NET | 2.999 | 0.785 | 2.214 | **73.8%** | 36 |
+| CPY (recurrent state) | 3.648 | 1.440 | 2.208 | **60.5%** | 162 |
+| ADD | 1.718 | 0.225 | 1.494 | **86.9%** | 689 |
+| SCALE | 0.918 | 0.037 | 0.881 | **96.0%** | 375 |
+| GET_ROWS | 9.338 | 9.000 | 0.338 | **3.6%** | 175 |
+
+Two readings matter. The **small-op family** (ADD/SCALE/CONT/MEAN_D1/SET_ROWS/L2_NORM/RMS_NORM) is a
+**barrier tax** — ~4.34 ms dead across 1,631 nodes at 87–96% dead, computing almost nothing while paying a
+full thread-pool barrier each. And **`GET_ROWS` is the exception at 3.6% dead**: its 9.0 ms is *real compute
+stuck on one core* at 13.1 GB/s — a serialization defect, not dead time. **Read the dead fraction, not the
+wall time, before choosing a fix: the two failure modes need opposite remedies.**
+
+Amdahl bound: 22.5 ms of 96 ms. A clean sweep of every seam is ~10–15% realistically. A comparable DGX Spark
+GB10 deployment runs the same model ~2× faster per forward, of which only ~1.78× is memory bandwidth (273 vs
+153 GB/s); the remainder is that a GPU dispatches one kernel over thousands of threads and pays no per-node
+barrier. **Tuning does not close a structural gap.**
+
+### Source References (2026-09-05)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis S, B10, B11
+- `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md` — the 260 GB/s L3 measurement and the B10 no-go
+- `/mnt/raid0/llm/tmp/inf70/agents/b11/REPORT.md` + `inv.json` — the per-token byte inventory and the PLE finding
+- `/mnt/raid0/llm/tmp/inf70/agents/prof/results-20260902T135356Z/pernode.tsv` — the per-node census
+- `progress/2026-09/2026-09-05-inf70-audit.md`

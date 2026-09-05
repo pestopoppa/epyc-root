@@ -1833,3 +1833,43 @@ changes the output" is unfalsifiable.
 - `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` + `tables.md` — the α sweep, six arms, Addenda A/B
 - `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/{REPORT.md,FINDING-lossless.md}` — the lossless gate and its exonerations
 - `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Under speculation the metric that pays is α, not bytes (2026-09-04/05)
+
+Two INF-70 levers that saved memory both lost throughput, for the same reason: they were priced in bytes
+while the speculative loop is priced in acceptance.
+
+**KV-cache quantisation — do NOT quantise under MTP (B9).** The size analysis was correct and irrelevant: 12
+of 48 layers carry KV, 24.0 KiB/token = 2.42% of budget, 45–90 MiB saved. The sign was wrong for MTP — plain
+decode gains +0.7% to +2.1% as predicted, but **MTP loses 2.5–3.5% because α falls 0.8274 → 0.8166.**
+`attn_rot_k/v` flipped to 1 (head dim 256) on both the main and DSA indexer caches, and that never-exercised
+path proved clean (96 quantised-KV requests, zero incoherence, no assert). `LLAMA_ATTN_ROT_DISABLE=1` was not
+needed as a rescue but was decisive as **attribution**: it recovers 1.9% and lifts α to **0.8329, above
+f16's own 0.8274** — so the **Hadamard rotation, not quantisation error, costs the acceptance**. q8_0 still
+loses 1.4% with rotation off. **A KV-quant win on a plain decoder does not transfer to a speculative one.**
+
+**Reduced-vocabulary drafting — no-go on this hardware (B10).** Trimming the draft head's output projection
+from a 248,320 vocab to 65,536 is an established technique (FR-Spec measures 64k at −2.3% acceptance length;
+EAGLE-3 ships a 32k draft vocab against a 128k target by default) and is **output-lossless by construction**:
+draft sampling is greedy and verification compares the target's sampled id, so an out-of-slice truth is a
+*rejected draft*, never a wrongly accepted token. α is the entire risk surface. It still failed here, because
+the draft head runs out of L3 at 260 GB/s and is only ~4–5% of the token, capping the lever at +3.0–3.9%;
+and because **Qwen's vocab is not frequency-ordered above 65k** (`'```'` = 71093), a contiguous id-prefix
+slice covers only 97.95% of real output, giving Δα ≈ −0.017 — exactly break-even.
+
+**Getting the break-even arithmetic right matters.** With `--spec-draft-n-max N` running autoregressively on
+a single head, tokens per step is `Σαⁱ` (≈3.79 at n=4, α=0.827), **not** `1+α`. Sensitivity is ~1.5–2.0%
+throughput per 0.01 α.
+
+**And speculation changes the roofline itself.** MTP's plain-equivalent 96.3 GB/s is not what it moves: the
+verify batch carries **3.79 tokens per forward**, so real traffic is **1.096 GB/token = 25.4 GB/s, 16.6% of
+ceiling**. Speculation takes CPU decode *off* the bandwidth wall, which means the lever is amortising the
+weight read across accepted tokens — not raising GB/s.
+
+### Source References (2026-09-05, α economics)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — B9, B10, the ABA and depth closures
+- `/mnt/raid0/llm/tmp/inf70/agents/speed-claim/REPORT.md` — the KV-quant arms and the `attn_rot` attribution
+- `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md` — the L3 measurement, coverage analysis, break-even correction
+- `/mnt/raid0/llm/tmp/inf70/agents/b10-survey/REPORT.md` — FR-Spec, VocabTrim, NanoSpec, EAGLE-3, llama.cpp #25187
+- `progress/2026-09/2026-09-05-inf70-audit.md`
