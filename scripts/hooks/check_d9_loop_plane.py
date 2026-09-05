@@ -84,10 +84,20 @@ def is_guarded(path: str) -> bool:
     return path.startswith(GUARDED_PREFIXES) or path in GUARDED_EXACT
 
 
+# The directory the guarded `git commit` actually runs in. A hook process inherits
+# CLAUDE_PROJECT_DIR as its cwd, which is NOT necessarily the repository being committed
+# to: every INF-70 subagent commits from a worktree under /mnt/raid0/llm/**. Running the
+# probes in the wrong repo made this hook refuse unrelated commits on the strength of a
+# peer's dirty scripts/coordination/** in /workspace (measured 2026-09-05, two independent
+# agents blocked). Set once from the hook payload.
+_GIT_CWD: str | None = None
+
+
 def _run(args: list[str]) -> list[str] | None:
     """Run a git command; None on failure so callers can tell empty from broken."""
     try:
-        out = subprocess.run(args, capture_output=True, text=True, timeout=15)
+        out = subprocess.run(args, capture_output=True, text=True, timeout=15,
+                             cwd=_GIT_CWD)
     except (OSError, subprocess.SubprocessError):
         return None
     if out.returncode != 0:
@@ -102,6 +112,24 @@ def staged_paths() -> list[str]:
 def dirty_paths() -> list[str]:
     """Everything modified vs HEAD, staged or not. A commit can only ever record a subset."""
     return _run(["git", "diff", "HEAD", "--name-only"]) or []
+
+
+def _repo_has_guarded_tree() -> bool:
+    """Does the target repository contain the loop plane at all?
+
+    True when any GUARDED_PREFIXES directory or GUARDED_EXACT file exists in HEAD.
+    Fails CLOSED (True) when git cannot answer, so a broken probe never silently
+    disables the control.
+    """
+    for prefix in GUARDED_PREFIXES:
+        if _run(["git", "cat-file", "-e", f"HEAD:{prefix.rstrip('/')}"]) is not None:
+            return True
+    for exact in GUARDED_EXACT:
+        if _run(["git", "cat-file", "-e", f"HEAD:{exact}"]) is not None:
+            return True
+    # Distinguish "no loop plane here" from "git is unavailable": if HEAD itself does not
+    # resolve we cannot tell, so keep the control on.
+    return _run(["git", "rev-parse", "--verify", "HEAD"]) is None
 
 
 # Shell separators that END a command. `shlex.split` keeps these as standalone tokens while
@@ -153,6 +181,28 @@ def commit_pathspec(cmd: str):
     return None
 
 
+def _uses_commit_all(cmd: str) -> bool:
+    """Does this invocation carry -a/--all (including inside a bundle like -am)?
+
+    Conservative by construction: it inspects only tokens BEFORE a `--` pathspec separator,
+    and treats an unparseable command as using -a, so a command we cannot read is inspected
+    over-broadly rather than allowed.
+    """
+    try:
+        toks = shlex.split(cmd)
+    except ValueError:
+        return True
+    for t in toks:
+        if t == "--":
+            break
+        if t == "--all":
+            return True
+        # a short-option bundle: -a, -am, -sam ... but never a long option or a value
+        if len(t) > 1 and t[0] == "-" and t[1] != "-" and "a" in t[1:]:
+            return True
+    return False
+
+
 def commit_targets(cmd: str):
     """What this commit will actually record, ACCORDING TO GIT — never parsed path text.
 
@@ -166,6 +216,13 @@ def commit_targets(cmd: str):
     On any git failure the fallback is deliberately over-broad — staged plus every dirty path
     — so a malformed pathspec produces a refusal to inspect rather than a silent allow.
     """
+    # `-a` / `--all` stages every tracked modified file before committing, so the recorded
+    # set is the WORKING TREE, not the index — and with nothing staged the index is empty.
+    # Reading `git diff --cached` here returned nothing and ALLOWED the commit: measured
+    # 2026-09-05, `git commit -am` on a dirty scripts/coordination/ file passed D9 cleanly.
+    # The hook's own refusal text says "a control with an unguarded path is not a control".
+    if _uses_commit_all(cmd):
+        return sorted(set(staged_paths()) | set(dirty_paths()))
     spec = commit_pathspec(cmd)
     if spec is None:
         return staged_paths()
@@ -192,6 +249,17 @@ def main() -> int:
     if os.environ.get("EPYC_D9_ACK", "").strip():
         return 0
     if ACK_RE.search(cmd):
+        return 0
+
+    # Probe the repository the commit actually targets, not the hook's inherited cwd.
+    global _GIT_CWD
+    _GIT_CWD = (payload.get("cwd") or "").strip() or None
+
+    # D9 governs one repository's loop plane. A repo that does not CONTAIN the guarded
+    # tree cannot carry a loop-plane change, so the hook does not apply there. This is
+    # the load-bearing check: it can only ever exempt repositories where the guarded
+    # prefix does not exist, and never weakens enforcement where it does.
+    if not _repo_has_guarded_tree():
         return 0
 
     # Cheap exit first: if no guarded file is modified vs HEAD at all, no commit of any
