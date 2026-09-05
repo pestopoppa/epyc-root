@@ -913,7 +913,52 @@ were what killed it. **Checking α was still correct** — it was the cheapest w
 **Consequence for PROD-1**: the settled recipe's use of the **shared** MTP head is now *understood*, not
 merely inherited — **lock it with the reason.** Any future change that gives the draft path a private copy of
 a large tensor is anti-cache by this mechanism and must clear the working-set arithmetic first.
-**⚠ THE INSTRUMENT VALIDATION FAILED ITS OWN CRITERION — carry this with the 244.4 figure.** B12 set up a
+**★ RESOLVED 2026-09-05 — CONFIGURATION, NOT INSTRUMENT. The non-reproduction is EVIDENCE FOR the finding.**
+Settled from B10's own on-disk artifacts with no lock time: B10's plain arm ran **the same commit**
+(`10221 / c51e4dabf`), same `n_threads = 48`, same profiler accumulate site, and its `lm_head` PATHROW shows
+`compute 3.7422 / wall 3.7423` — no barrier component, and plain decode has no speculative catch-ups, so the
+empty-eval hazard never touched it either. **B10's 139.35 is sound for what it measured.** What it measured
+is a different object: B10's headline varied **two** things at once, graph shape *and* the presence of MTP.
+Ordered by how recently the 521.5 MB slab was last touched:
+
+| configuration | between two head calls | µs/call | GB/s | ×ceiling |
+|---|---|---:|---:|---:|
+| trunk head, **plain** (B10) | a whole trunk token; slab fully evicted | 3742.2 | 139.4 | **0.91×** |
+| trunk head, **in MTP** (B12 P0) | ~4.45 draft steps just re-read the slab | 2537.7 | 205.5 | 1.35× |
+| draft head, **in MTP** (B12 P1) | ~144-node graph, ~105 MB of other weights | 2133.6 | 244.4 | 1.60× |
+
+**Monotone, with the endpoints behaving correctly** — plain sits *below* the DRAM ceiling at 0.91×, which is
+what a fully evicted slab must do. **The shared-slab mechanism PREDICTS that adding MTP speeds up the trunk's
+own head call, and 139 → 205.5 is exactly that.** So 244.4 does not inherit doubt.
+**But it RETIRES the framing**: holding MTP constant, the draft head's advantage is **1.19×, not 1.87×**.
+Residual uncertainty stated in-report: B10 used one prompt, B12 used 24 — cannot explain a 47% gap, but is
+the one thing not eliminable from existing data.
+
+**★★ Q4_K REFUTED B12's OWN MECHANISM — the most useful result of the run.**
+
+| arm | slab | compute µs | dead µs | wall µs | vs base |
+|---|---|---:|---:|---:|---:|
+| q6_K | 521.5 MB | 1875.6 | 258 | 2133.6 | 1.000× |
+| **Q4_K** | 357.6 MB (−31.4%) | **1867.8 (−0.4%)** | 430 | 2298.1 | 1.077× |
+| IQ4_XS | 337.7 MB (−35.2%) | 1681.9 (−10.3%) | 658 | 2340.1 | 1.097× |
+
+B12 predicted Q4_K near 278 GB/s on compute because it alone avoids **Q8_K activations**; it came in at
+**191.4 — the worst of the three** — while IQ4_XS, the quant it blamed, saved the *most* compute.
+**The Q8_K story is WITHDRAWN.** Two of three predictions right (loses, loses less); the one it got wrong
+carried the mechanism, and it said so.
+**★ WHAT REPLACES IT IS STRONGER AND GENERALISES: cutting 31.4% of the head's bytes changed its compute time
+by 0.4%.** The head is **not bandwidth-bound at batch 1** — it is bound by something paid **per call**
+regardless of slab size, which corroborates the per-node/per-call picture from an independent direction.
+**This is the FIFTH byte-model failure this week and the sharpest statement of it: on this machine a byte
+estimate is a hypothesis awaiting a rate measurement, not an estimate.**
+**Honest residual**: the falsifier did not trigger (Q4_K was not faster), so the footprint argument stands —
+but **dead time does NOT order by footprint** (IQ4_XS has the smaller footprint *and* the worse dead time),
+so §8b explains why both lose without explaining their ordering, and that cannot be separated from this data.
+**Verdict unchanged: NO-GO.** α cleared in both candidates (+0.0040 IQ4_XS, +0.0018 Q4_K, coherence identical
+across all three) — **B9 does not generalise to head precision.** t/s remains NON-CLAIM. Both artifacts kept
+with digests so the deferred ABA needs no rebuild. Lock released 21:15:05, never held past the yield.
+
+**Superseded note — the validation criterion as originally flagged:** B12 set up a
 trunk-graph arm specifically to reproduce B10's **printed** 139 GB/s before any draft number was trusted. It
 measured **205.5 GB/s**. Two readings, not yet distinguished: either the configurations genuinely differ
 (B10's 139 is the trunk graph in PLAIN decode; B12's is the trunk graph inside an MTP run, where draft steps
