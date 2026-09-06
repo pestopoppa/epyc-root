@@ -907,6 +907,67 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+# ★★★★★ THE CHAMPION KERNEL — `35.407 t/s` SERVED, `1.4834×`, BIT-IDENTICAL. 2026-09-06.
+
+**Branch `inf70/champion` @ `6f032c48d`** (build **10234**), `/mnt/raid0/llm/worktrees/inf70/champion`.
+`inf70/d6place` merged cleanly at `77b704e5d`. **Committed, not pushed.** Production `/mnt/raid0/llm/llama.cpp`
+untouched at `0db32c06e`; no branch switched in a shared clone.
+
+**Claim-grade ABA — 24-prompt production harness, 3 rounds, same-window alternating, 3 arms:**
+
+| | pristine `c51e4dabf` | **CHAMPION** | ratio | wins |
+|---|---:|---:|---:|---|
+| **MTP served** | 23.870 t/s · 41.90 ms (sd 0.13, spread 1.22%) | **35.407 t/s · 28.24 ms** (sd 0.17, spread 1.14%) | **1.4834** | **60/60** |
+| plain decode | 12.778 t/s · 78.26 ms | **21.638 t/s · 46.22 ms** | **1.6934** | **60/60** |
+| prefill (MTP) | 137.8 pp t/s | 179.9 pp t/s | 1.305 | |
+
+**What is ON by default**: `GGML_NOHUGEPAGE`, `GGML_ROWCOL_SPLIT`, `GGML_TINY_SOLO`, `GGML_EMPTY_SKIP`.
+`GGML_VEC_SIGMOID` stays **OFF** (not bit-identical, +0.0 pp, upstream only). Idiom on all four:
+**unset or empty = ON, explicit `0` = OFF** — and for `TINY_SOLO`/`EMPTY_SKIP` both the static initialiser
+*and* the `ggml_cpu_init()` parse were flipped, so a process that never reaches init still gets champion
+behaviour. Two `__attribute__((used))` markers make the defaults auditable with `strings`.
+
+**CORRECTNESS — the combination is bit-identical, proven.** **1,457 greedy tokens, 7 of 7 comparisons
+byte-identical**: 5 production prompts (59–329 prompt tokens) plus 3 engineered full-256-token streams at
+41/109/240, sha256-compared across pristine / champion / champion-all-hatches-engaged, in **plain and MTP**.
+Corroborated without hashes: **α = 0.8209 and drafted/token = 0.8961 in all 15 MTP arms of BOTH binaries**.
+Coherence 20 COHERENT + 4 SHORT in all 28 arms.
+**`test-backend-ops -b CPU`**: champion **16704/16762**, pristine **16704/16762**, same classes (the HYG-3 set).
+`LIGHTNING_INDEXER` membership churns, so a **third pristine sweep was run as a seeded control**:
+pristine-vs-pristine differs by **13 lines** (count moving 47→48) while pristine-vs-champion differs by
+**14 lines** with the count unchanged — **the champion sits inside the instrument's own churn.**
+**Escape hatches verified**: all four set to `0` lands on pristine (1.007× served, 1.009× plain) and THP
+backing returns to **99.83% from 0.10%**, measured in every one of the 28 arms. Placement within 0.1% across
+four nodes on every arm.
+
+**★ SUPER-ADDITIVE, AND THE VALUE IS CONCENTRATED IN TWO LEVERS.** Product of the four individually measured
+plain gains = **1.5017**; measured combination = **1.6934** (**×1.128 excess**). Served: 1.3933 predicted vs
+**1.4834** measured. Leave-one-out (2 rounds, MTP), marginal contribution *in the presence of the other
+three*:
+
+| lever | marginal | ms/token | share of log-gain |
+|---|---:|---:|---:|
+| **`GGML_NOHUGEPAGE`** | **×1.4315 (+43.2%), 40/40 wins** | **11.89** | **86.4%** |
+| **`GGML_ROWCOL_SPLIT`** | ×1.0532 (+5.3%), 40/40 wins | 1.47 | 12.5% |
+| `GGML_TINY_SOLO` | ×1.0053 | 0.15 | 1.3% |
+| `GGML_EMPTY_SKIP` | ×0.9992 | −0.02 | −0.2% |
+
+**Two levers are 99% of the win.** `TINY_SOLO` and `EMPTY_SKIP` fall **below the 1.1% in-window noise floor
+once placement is fixed** — their +3.86% / +0.87% were measured against a base whose small tensors sat on one
+memory controller. **They stay ON (bit-identical, free, may matter at other shapes) but MUST NOT be quoted in
+the headline.**
+**★ COROLLARY THAT SUPERSEDES THE ÷3 RULE ENTIRELY: the plain→served haircut is a property of a lever IN A
+GIVEN KERNEL, not of the lever.** `ROWCOL_SPLIT` measured +3.05% served alone and **+5.3% served here.**
+A lever's value is not portable across kernels; re-measure, never re-scale.
+
+- [ ] **CHAMP-1 — decide promotion.** `inf70/champion` is forked from `exp/cpu-fusion-qwen4exp-20260829`, **not
+      the production tip**, so the four-step kernel workflow **starts over from fresh production**: pull fresh
+      production → build → validate no regressions (GPU + CPU) → deploy as a NEW production version, full
+      candidate benched as a whole. **Operator-gated** (PROD-2 is deferred).
+- [ ] **CHAMP-2 — extend `MADV_NOHUGEPAGE` past `ggml_aligned_malloc` to KV/compute buffers.** d6place's
+      whole-process shim still beats the knob by **+0.90 pp served**, and this is **the same lever class that
+      just paid 86% of the result** — the highest-confidence remaining item on the board.
+
 **★★★★ D6-PLACE MEASURED 2026-09-06 — `+35.21%` SERVED. THE LARGEST RESULT OF THE CAMPAIGN BY AN ORDER OF
 MAGNITUDE, AND IT IS BIT-IDENTICAL.**
 
@@ -936,7 +997,7 @@ CPU-only); extending `MADV_NOHUGEPAGE` to non-`ggml_aligned_malloc` buffers is a
    `GGML_ROWCOL_SPLIT` at "+3.05% served" — the 1.42 ms/token it saves is real, but the percentage was taken
    against a crippled denominator.
 
-- [ ] **PLACE-1 — merge `GGML_NOHUGEPAGE` and re-price the merged levers against the corrected base.**
+- [x] **PLACE-1 — DONE by CHAMPION-1 2026-09-06.** ✅ Knob merged (`77b704e5d`) and the merged levers re-priced on the corrected base via leave-one-out: `ROWCOL_SPLIT` +5.3% (not +3.05%), `TINY_SOLO` +0.5%, `EMPTY_SKIP` −0.1% — the last two now below the noise floor. **Original scope:** merge `GGML_NOHUGEPAGE` and re-price the merged levers against the corrected base.
       Filed 2026-09-06. Branch `inf70/d6place` @ `29a5857ac`, not merged. Two parts: (a) merge the knob —
       bit-identical, default OFF, 97% of the available win; (b) **re-measure `GGML_ROWCOL_SPLIT` and SYNC-2's
       `TINY_SOLO`/`EMPTY_SKIP` with `GGML_NOHUGEPAGE=1` as the base**, because their percentages are currently

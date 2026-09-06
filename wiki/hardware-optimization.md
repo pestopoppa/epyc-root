@@ -4447,3 +4447,50 @@ shape of a curve you have not sampled.**
 - `handoffs/active/cpu-decode-roofline-program.md` — D6-PLACE, SYNC-2 §8, SYNC-10's backlog note
 - `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the 37-point sweep, `move_pages` and fit evidence
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## The champion kernel: 1.4834× from two levers, and what the other two taught us (2026-09-06)
+
+INF-70 closed with a bit-identical CPU decode kernel measured at **35.407 t/s / 28.24 ms per token** in the
+serving configuration against a pristine baseline of **23.870 t/s / 41.90 ms** — **1.4834×, 60/60 paired
+prompt wins**, over three same-window alternating rounds on a 24-prompt production harness. Plain decode:
+**1.6934×**. Prefill: 1.305×.
+
+**The value is concentrated, and the concentration is the lesson.** Leave-one-out, marginal contribution in
+the presence of the other three:
+
+| lever | marginal | ms/token | share of log-gain |
+|---|---:|---:|---:|
+| `MADV_NOHUGEPAGE` (restore 4 KiB interleave) | ×1.4315 | **11.89** | **86.4%** |
+| row/column-chunk split of elementwise kernels | ×1.0532 | 1.47 | 12.5% |
+| barrier elision on single-task nodes | ×1.0053 | 0.15 | 1.3% |
+| zero-element node skip | ×0.9992 | −0.02 | −0.2% |
+
+**Two findings that generalise beyond this model:**
+
+**1. A lever's measured value is a property of the KERNEL it is measured in, not of the lever.** The row-split
+measured **+3.05% served alone** and **+5.3% served in the champion**. The two barrier levers measured +3.86%
+and +0.87% alone and fall **below the 1.1% noise floor** in the champion — because their original baseline
+was running its sub-2 MiB tensors on **one memory controller of four**, and fixing placement removed the
+stall they were partly hiding. **Re-measure levers in combination; never scale a solo number into a stack.**
+
+**2. Combinations can be super-additive.** The product of the four solo gains predicted 1.5017 plain; the
+measured combination was **1.6934** — a **12.8% excess**. Levers that remove different classes of stall
+(bandwidth vs occupancy vs synchronisation) can unmask each other, so a stack's value is not derivable from
+its parts in either direction.
+
+**On proving bit-identity for a combination**: individually bit-identical levers are not jointly proven.
+This used 1,457 greedy tokens across 7 comparisons (pristine / champion / champion-with-every-escape-hatch,
+in plain and MTP) — **and corroborated it without hashes** by showing acceptance α and drafted-per-token
+identical to 4 dp across all 15 MTP arms of both binaries. Two independent witnesses beat one.
+
+**On reporting a noisy correctness gate**: `test-backend-ops` counts matched exactly, but one op family's
+failure membership churns run to run. The right move was a **third sweep of the pristine build as a seeded
+control** — pristine-vs-pristine differed by *more* lines than pristine-vs-champion, which places the
+candidate inside the instrument's own variance rather than asking the reader to trust an equal count.
+
+### Source References (2026-09-06, champion kernel)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the champion block, CHAMP-1/CHAMP-2
+- `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the ABA, leave-one-out and identity evidence
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the placement mechanism
+- `progress/2026-09/2026-09-05-inf70-audit.md`
