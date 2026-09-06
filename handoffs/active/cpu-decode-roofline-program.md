@@ -546,8 +546,12 @@ experimental branch:
 
 **⚠ RECIPE DEFECT FIXED 2026-09-05 — the campaign's documented `--fa 1` DOES NOT EXIST.** Verified against
 the binary: the option is **`-fa, --flash-attn [on|off|auto]`, default `auto`** (`LLAMA_ARG_FLASH_ATTN`).
-`--fa 1` is wrong in **both** the name and the value form, so any launcher using it **dies at startup before
-loading the model**. **Two agents lost arms to it in one session** (B12 lost its first preflight; SYNC-10 lost
+**⚠ CORRECTED 2026-09-06 — I OVER-CLAIMED THIS.** Tested against the binary with the dry-run trick:
+**`-fa 1` is VALID** (the short form accepts `1`), `-fa on` is valid, `--flash-attn on` is valid, and **only
+`--fa 1` is invalid** — the *long* form must be spelled `--flash-attn`. So it was the **name alone**, not the
+value form. **`MEASUREMENT_POLICY.md:37`'s "`-fa 1` explicit" is CORRECT** and I was one step from "fixing" a
+correct governance doc on a false premise; the dry-run trick caught it in about a second, which is the whole
+argument for the trick. Any launcher using `--fa 1` **dies at startup before loading the model**. **Two agents lost arms to it in one session** (B12 lost its first preflight; SYNC-10 lost
 all seven MTP arms of a hard-won lock turn). The campaign's own arms therefore never passed an FA flag at all
 — they ran on `auto`, which resolves to enabled (`resolve_fused_ops: Flash Attention enabled`), so the
 MEASUREMENTS are unaffected; only the written recipe was wrong. **Corrected to `-fa on` throughout
@@ -556,7 +560,8 @@ nobody had executed verbatim. **Codify it as constants that launchers import, an
 dry-running against a nonexistent model** — the parse either reaches model load or reports an invalid
 argument, and it costs about a second.
 
-- [ ] **PROD-1 — the MTP head is part of the MODEL, not an experiment.** Write the canonical recipe for
+- [ ] **★ PROD-1 — THE CANONICAL RECIPE. Operator-flagged 2026-09-06 as the thing not to forget; with PROD-2
+      deferred it is the ONLY live PROD task.** The MTP head is part of the MODEL, not an experiment. Write the canonical recipe for
       Qwen3.8-Flash-Next so that **every** serving path for this model carries its MTP head by default.
       Settled config: head `shared-Q8_0`, `--spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5`
       (fleet default n-max 3, **4 for coding roles**, per the 2026-09-04 operator ruling), `GGML_ROWEXACT_N`
@@ -566,7 +571,14 @@ argument, and it costs about a second.
       constants instead of remembering them — the standing rule is *use codified recipes, not memory*.
       **Dependency**: B12 may change the head artifact (IQ4_XS requant); do not freeze the recipe's head
       choice until B12 reports.
-- [ ] **PROD-2 — fold the INF-70 CPU kernel work into the AUTOKERNEL CHAMPION.** The merged-and-validated
+- [ ] **PROD-2 — DEFERRED BY THE OPERATOR 2026-09-06: "we're not folding into autokernel champion just yet."**
+      **Do not start it, and do not let a later session infer that it is ready** because the levers are
+      merged. The merge into `exp/cpu-fusion-qwen4exp-20260829` is EXPERIMENTAL integration; the champion fold
+      is a separate operator-gated step. Original scope retained below for when it is called.
+      **★ PROD-1 IS THE LIVE ITEM AND MUST NOT BE LOST BEHIND THIS DEFERRAL** — operator, same message:
+      *"make sure we don't forget the canonical recipe."* See PROD-1 above; it is now the only PROD task in
+      flight.
+      **Original scope — fold the INF-70 CPU kernel work into the AUTOKERNEL CHAMPION.** The merged-and-validated
       levers on `exp/cpu-fusion-qwen4exp-20260829` (b3k expert slabs +3.07%, the iqk IQ4_XS repack fix that
       closed the long-prompt P0, D8's GET_ROWS parallelisation +15.4% same-binary-verified, the MTP stack with
       E2b-2, BE-1/BE-2) become champion input rather than a branch. **The single-champion invariant applies**:
