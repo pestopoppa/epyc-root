@@ -943,6 +943,46 @@ which parses through to model load or reports an invalid argument, and costs abo
       **Process note**: the agent **aborted its own first window** after rebuilding the shared library mid-run
       (mixed binaries, indefensible pairing) — all PIDs verified dead, lock released.
 
+- [x] **MERGE-1 DONE 2026-09-06 — `exp/cpu-fusion-qwen4exp-20260829` advanced `c51e4dabf` → `13907877d`.** ✅
+      Both merges real `--no-ff`, **neither conflicted**; fast-forwarded in place by the coordinator after
+      verifying the tree clean and `c51e4dabf` an ancestor. **Production `/mnt/raid0/llm/llama.cpp` untouched
+      at `0db32c06e`.** Nothing pushed to `origin`.
+      **The duplicate split, resolved cleanly**: SYNC-10's `GGML_ROWCOL_SPLIT` ships; SYNC-2's
+      `GGML_ELEM_COLSPLIT` is **reverted** (`1402d348b`) on a throwaway branch off `inf70/sync2` — **sync2's
+      own branch is untouched so UP-1's history survives.** Removal proven **at the binary**
+      (`strings … | grep -x GGML_ELEM_COLSPLIT` absent in both builds), not by reading the diff. One
+      deliberate exception, documented in the revert message: `ggml_cpu_tiny_solo_max` stays at **4096** rather
+      than reverting to 65536, because that cap's purpose — stopping `TINY_SOLO` swallowing large single-row
+      nodes the column split wants — is unchanged; only the consumer's name changed.
+      **`TINY_SOLO` / `EMPTY_SKIP` untouched**, their `nrows == 1` gate left as **known headroom, deliberately
+      not widened** in a merge.
+      **`086b5b9c9` (vec-sigmoid) carried with its knob default OFF** — reachable only via
+      `getenv("GGML_VEC_SIGMOID")`, no CMake option, and a grep across orchestrator/research/scripts finds **no
+      launcher or recipe setting it** (same for the other new knobs). Flagged must-not-enable in the merge
+      message.
+      **★ KNOBS-OFF BIT-IDENTITY PROVEN — the load-bearing check.** Three fresh builds (merged plain, merged
+      `-DGGML_CPU_PROF`, pristine `c51e4dabf`); greedy 256-token streams at 40/90/200-token prompts give
+      **identical sha256 at all three lengths** for base, merged-knobs-off **and**
+      merged-`GGML_ROWCOL_SPLIT=1`. **The merge is inert until switched on, and the split is bit-identical when
+      on.** Knobs proven present/absent by `strings`.
+      **`test-backend-ops test -b CPU`: 1950/1950** across three knob states over every op family the merge
+      touches. **Speed sanity**: MTP ABAB with `-fa on`, merged binary, knob toggled — **+2.86%** (per-prompt
+      +2.35% to +3.63%, split wins all ten pairings). Reproduces ~+3%; a sanity check, not a claim.
+      **★ PROFILER PATCH LANDED** as `13907877d` — **the D9 hook refused nothing across all three commits and
+      no `D9-ack` was invented.** METH-1's blocked deliverable is now closed: three agents will not rebuild it
+      a fourth time.
+      **Process note**: the agent killed its own first lock window after ~25 min on measuring that the
+      unfiltered single-threaded `test-backend-ops` was multi-hour, relaunched with `-j 12` and cheap checks
+      first, and ran the final 20-second controls **outside** the lock at `nice -n 19` on 8 cores. All kills by
+      captured PID, verified with `ps -p`.
+
+- [ ] **HYG-3 — PRE-EXISTING test failures in the fusion branch, NOT merge-induced.** Filed 2026-09-06 from
+      MERGE-1. The unfiltered `test-backend-ops` sweep gives **16703/16762, rc=1**; the 59 failures are only
+      `EXP`, `EXPM1`, `DIAG_MASK_INF`, `LIGHTNING_INDEXER`. A seeded control (`--suite-seed 42`) on the
+      **pristine `c51e4dabf`** build versus merged in both knob states yields an **identical 62-case failure
+      set in all three** — so this predates all INF-70 work on the branch. **Anyone running the unfiltered
+      sweep will see rc=1 and must not read it as a regression.** Diagnose or document as accepted.
+
 **⚠ LANGUAGE CORRECTION REQUIRED ELSEWHERE — "the 2 MB THP boundary" is wrong and I propagated it.**
 SYNC-2 §8 and SYNC-10's backlog note both assert a boundary at 2 MB, as did this handoff and my reports.
 **There is no threshold. There is a smooth ramp, and a granularity effect that makes sub-2 MiB tensors
