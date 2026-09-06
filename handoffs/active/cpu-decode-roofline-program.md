@@ -907,7 +907,48 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
-- [ ] **D6-PLACE — ★ THE LARGEST REMAINING LEVER: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
+- [x] **D6-PLACE — ★★ THE "2 MB THP BOUNDARY" DOES NOT EXIST. The mechanism is real and BIGGER than the
+      seam it came from. 2026-09-06.** Branch `inf70/d6place` @ `29a5857ac`, not merged, not pushed.
+      **★ THERE IS NO STEP.** A 37-point ABA sweep (3 rounds, THP backing proven per arm at 100.0% vs 0.0%)
+      shows effective bandwidth under THP is a **smooth monotone ramp** — 10 GB/s at 0.25 MB to 161 GB/s at
+      64 MB, **no discontinuity anywhere.** Through the exact 1.84–2.25 MB gap SYNC-10 could not localise, the
+      numbers run **36.2 → 35.6 → 38.3 → 38.7 GB/s: continuation, not a step.** Both prior agents'
+      *magnitudes* reproduce (microbench predicts 34.8 GB/s at 1.75 MB; SYNC-2 measured 28.0–29.0, SYNC-10
+      33–39) — **the measurements were right, the interpretation was wrong, and the interpretation was
+      mine.**
+      **★ THE MECHANISM, ESTABLISHED NOT INFERRED — it IS THP, but not promotion cost.** THP is `always` here
+      and llama.cpp runs `--no-mmap`, so the weight buffer is anonymous and — measured on the real 92 GB
+      process — **99.8% THP-backed. That raises `numactl --interleave=all` granularity from 4 KiB to 2 MiB, so
+      a sub-2 MiB tensor is served by ONE memory controller.** Three confirmations: `move_pages(2)` gives
+      `maxfrac` **1.00 at ≤2 MB decaying to 0.25 by 8 MB**, tracking the bandwidth ratio; fitted marginal
+      bandwidth below 2.25 MB is **53 GB/s against one node's 57 GB/s share (R²=0.98)** versus **362 GB/s on
+      4 KiB pages**; and the lever restores exactly **0.250** at every size. **Ruled out**: promotion cost,
+      tensor shape, L3, first-touch, TLB (which runs the *other* way), and the agent's own
+      per-thread-binding hypothesis.
+      **★ TWO FINDINGS THAT CHANGE THE FRAMING — in opposite directions.** **4 KiB wins at EVERY size up to
+      64 MB** (1.38× residual at 8–64 MB with placement already balanced), so **this is WHOLE-MODEL placement,
+      not 194 small gemvs** — much larger scope than filed. But **at 1.75 MB placement recovers only ~14% of
+      the gap to peak**, so the ceiling is well short of "small gemvs at peak".
+      **Lever follows from the mechanism**: restore 4 KiB interleave. Implemented two ways, mutation-verified —
+      `GGML_NOHUGEPAGE=1` (29 lines, default OFF, 99.8% → 0.0% → 99.8%) and a **zero-code
+      `PR_SET_THP_DISABLE` shim**. **Bit-identity is structural**: `madvise`/`prctl` move pages, never
+      contents.
+      **⚠ SERVED PRICING NOT DELIVERED — NON-CLAIM.** MERGE-1 held all four regions continuously from when
+      this window was ready; **the coordinator told D6-PLACE to yield to a window described as short, and it
+      was not** (coordination error, mine). §4 is a **pre-registered prediction — ~+7.8% plain / ~+2.9% served
+      from the gemv seam alone, possibly more whole-model — explicitly not a result.** The three-arm window
+      (B/K/P × 3 rounds, plain + MTP, immutable binary snapshot, per-arm `numastat` / AnonHugePages /
+      `content_sha`) is **queued as PID 2860235, tag `inf70-d6place-arms2`, and starts itself when the lock
+      frees**; then `python3 analyze2.py`. It holds nothing while waiting.
+      **Process note**: the agent **aborted its own first window** after rebuilding the shared library mid-run
+      (mixed binaries, indefensible pairing) — all PIDs verified dead, lock released.
+
+**⚠ LANGUAGE CORRECTION REQUIRED ELSEWHERE — "the 2 MB THP boundary" is wrong and I propagated it.**
+SYNC-2 §8 and SYNC-10's backlog note both assert a boundary at 2 MB, as did this handoff and my reports.
+**There is no threshold. There is a smooth ramp, and a granularity effect that makes sub-2 MiB tensors
+single-controller.** Anyone inheriting the old phrasing will hunt a step that does not exist.
+
+- [ ] **D6-PLACE-ORIGINAL (superseded, retained for the record) — the largest remaining lever: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
       **placement hypothesis CONFIRMED by SYNC-2 on its own nodes**: the 194 hc rank-320 gemvs run at
       **29.0 GB/s against 109.1 GB/s for ≥2 MB weights**, and the rate **steps exactly at the 2 MB THP
       boundary** — `iq4_xs` at 1.741 MB → 28.0 GB/s, `q5_K` at 2.253 MB → 41.6. **Larger than all three
