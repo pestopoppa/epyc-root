@@ -907,6 +907,42 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★★ D6-PLACE MEASURED 2026-09-06 — `+35.21%` SERVED. THE LARGEST RESULT OF THE CAMPAIGN BY AN ORDER OF
+MAGNITUDE, AND IT IS BIT-IDENTICAL.**
+
+| | plain | **MTP served** |
+|---|---:|---:|
+| **`GGML_NOHUGEPAGE=1`** (in-tree knob) | **+32.21%** · 3/3 | **+35.21% ± 0.0205** · **15/15** |
+| `thpoff` shim (zero-code) | +34.97% · 3/3 | +36.11% ± 0.0226 · 15/15 |
+
+**Served 49.11 → 36.32 ms/token = 12.79 ms/token saved. Bit-identical in all 9 arm pairs.** Base spread
+1.82%, so the effect is **~18× the spread**. THP verified per arm (99.8% → 0.1%); placement verified
+24/24/24/24 GB. **The knob captures 97% of the shim's win** — ship the knob (one env var, default OFF,
+CPU-only); extending `MADV_NOHUGEPAGE` to non-`ggml_aligned_malloc` buffers is a ~0.9 pp follow-up.
+
+**★ THREE THINGS THAT CHANGE HOW THE WHOLE CAMPAIGN IS PRICED:**
+
+1. **It is WHOLE-MODEL, not the 194 gemvs.** The agent's own pre-registered seam-only prediction (+2.9%
+   served) was **low by 12×**, and it scored that miss explicitly: the microbenchmark established *what* was
+   happening but was a poor instrument for *how much*.
+2. **★ THE ÷2.71 PLAIN→SERVED HAIRCUT MUST NOT BE APPLIED HERE — served (+35.2%) EXCEEDS plain (+32.2%).**
+   That calibration is a property of **barrier-class** levers, which MTP amortises over ~4.1 tokens/eval;
+   **a bandwidth lever has nothing to amortise away.** Applying ÷2.71 would have understated this by ~2.7×.
+   **The coordinator propagated the ÷3 rule to every agent as though it were universal. It is not — it is
+   lever-class-dependent, and the class must be named before the correction is applied.**
+3. **★ RE-PRICE EVERY OTHER INF-70 LEVER BEFORE MERGING ANY MORE.** They were all measured against a base
+   **running at quarter memory bandwidth on its small tensors.** Their **absolute ms/token savings should
+   survive; their PERCENTAGES are against the wrong base.** That includes the already-merged
+   `GGML_ROWCOL_SPLIT` at "+3.05% served" — the 1.42 ms/token it saves is real, but the percentage was taken
+   against a crippled denominator.
+
+- [ ] **PLACE-1 — merge `GGML_NOHUGEPAGE` and re-price the merged levers against the corrected base.**
+      Filed 2026-09-06. Branch `inf70/d6place` @ `29a5857ac`, not merged. Two parts: (a) merge the knob —
+      bit-identical, default OFF, 97% of the available win; (b) **re-measure `GGML_ROWCOL_SPLIT` and SYNC-2's
+      `TINY_SOLO`/`EMPTY_SKIP` with `GGML_NOHUGEPAGE=1` as the base**, because their percentages are currently
+      quoted against a memory-starved denominator and their interaction is unmeasured — a barrier lever and a
+      bandwidth lever need not compose additively.
+
 - [x] **D6-PLACE — ★★ THE "2 MB THP BOUNDARY" DOES NOT EXIST. The mechanism is real and BIGGER than the
       seam it came from. 2026-09-06.** Branch `inf70/d6place` @ `29a5857ac`, not merged, not pushed.
       **★ THERE IS NO STEP.** A 37-point ABA sweep (3 rounds, THP backing proven per arm at 100.0% vs 0.0%)
