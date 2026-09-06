@@ -4403,3 +4403,47 @@ missed by factors five times in a week.
 - `/mnt/raid0/llm/tmp/inf70/agents/sync1/REPORT.md` — the per-`(node,thread)` census and barrier baseline
 - `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md` — the row-split and sigmoid arms
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## THP raises NUMA interleave granularity to 2 MiB — there is no "2 MB boundary" (2026-09-06)
+
+A widely repeated claim inside INF-70 — that memory bandwidth "steps at the 2 MB THP boundary" — is **false,
+and it was an interpretation laid over correct measurements.** Two agents observed small tensors running at
+28–39 GB/s against 109–147 GB/s for ≥2 MB tensors, and a third was told to localise the step.
+
+**There is no step.** A 37-point sweep with THP backing proven per arm (100.0% vs 0.0%) shows a **smooth
+monotone ramp**: 10 GB/s at 0.25 MB to 161 GB/s at 64 MB, no discontinuity anywhere. Across the 1.84–2.25 MB
+window where the "boundary" was assumed, the readings run **36.2 → 35.6 → 38.3 → 38.7 GB/s** — continuation.
+
+**The real mechanism is granularity, not a threshold.** THP is `always` on this host and llama.cpp runs
+`--no-mmap`, so the weight buffer is anonymous and — measured on the live 92 GB process — **99.8%
+THP-backed. That raises `numactl --interleave=all` granularity from 4 KiB to 2 MiB, so any tensor smaller
+than 2 MiB is served by a single memory controller.** The apparent "step" is just the point at which a tensor
+becomes large enough to span several 2 MiB pages and therefore several controllers — a continuous effect that
+*looks* like a threshold when sampled at two points.
+
+Three independent confirmations:
+- `move_pages(2)` gives `maxfrac` **1.00 at ≤2 MB decaying to 0.25 by 8 MB**, tracking the bandwidth ratio.
+- Fitted marginal bandwidth below 2.25 MB is **53 GB/s against one node's 57 GB/s share** (R²=0.98), versus
+  **362 GB/s on 4 KiB pages**.
+- Restoring 4 KiB interleave returns `maxfrac` to exactly **0.250** at every size.
+
+Ruled out by measurement: THP *promotion* cost, tensor shape, L3 residency, first-touch placement, TLB reach
+(which runs the other way), and per-thread binding.
+
+**Scope is larger than the observation that prompted it: 4 KiB wins at every size up to 64 MB**, with a 1.38×
+residual at 8–64 MB even when placement is already balanced. This is **whole-model placement**, not a
+small-tensor problem. But at 1.75 MB, placement recovers only ~14% of the gap to peak — so it is not a
+licence to expect small tensors at peak bandwidth either.
+
+**Lever**: restore 4 KiB interleave via `madvise(MADV_NOHUGEPAGE)` or a zero-code `PR_SET_THP_DISABLE` shim.
+**Bit-identity is structural** — `madvise`/`prctl` move pages, never contents.
+
+**The methodological point**: two correct magnitude measurements, taken at two tensor sizes, supported a
+threshold hypothesis that a dense sweep destroyed. **A step inferred from a bracket is a hypothesis about the
+shape of a curve you have not sampled.**
+
+### Source References (2026-09-06, THP granularity)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — D6-PLACE, SYNC-2 §8, SYNC-10's backlog note
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the 37-point sweep, `move_pages` and fit evidence
+- `progress/2026-09/2026-09-05-inf70-audit.md`
