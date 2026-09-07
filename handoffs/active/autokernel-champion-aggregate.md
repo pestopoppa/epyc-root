@@ -604,3 +604,23 @@ nothing in `mmq.*`.
       Owned by INF-66 as **R18-C**; listed here because this page is where someone comes to ask
       what the champion is worth. **Blocked on run 19 finishing** — `ak-loop-tree` is off limits
       while it runs.
+
+## FOLD — INF-70 CPU kernel work into THE champion (operator request 2026-09-07)
+
+Plan: [`docs/design/inf70-cpu-fold-into-champion-20260907.md`](../../docs/design/inf70-cpu-fold-into-champion-20260907.md).
+Same lineage (fork `270b48ed6` on this branch), merge-tree **0 conflicts**; two default-ON blockers on
+the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's request reverses it.
+
+- [ ] **FOLD-OP — operator confirms**: (a) PROD-2 deferral reversed (fold IS wanted now); (b) fold
+      timing — now (loses the live 2-keep / +3.01% bundle) or after the serving gate fires.
+- [ ] **FOLD-0 (`inf70-audit`, own branch)**: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
+      opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
+      define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
+      INF-70 ledger; **push** `inf70/champion` (private clone today).
+- [ ] **FOLD-1 (champion owner)**: at a run boundary — STOP run 29 (verified dead) → tag pre-fold →
+      fetch + `git merge --no-ff inf70/champion-fold` in champ2 → house-recipe HIP build + CPU-only build.
+- [ ] **FOLD-2 gates, SAME merged tree**: GPU (test-backend-ops ROCm0 incl. SSM_SCAN, tg128 vs gen-020,
+      serving compare, DF2-10, **one GPU MoE model** for the fused op) + CPU (canonical recipe vs v9 AND
+      vs `6f032c48d`, served ABA plain+MTP with merged DEFAULTS, coherence by reason).
+- [ ] **FOLD-3**: relaunch the loop on the merged champion (`--allow-unverified-anchor`); PROD-1 codifies
+      the CPU launch recipe before any promotion headline.
