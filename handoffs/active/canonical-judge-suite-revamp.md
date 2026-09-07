@@ -378,12 +378,19 @@ import.
       it — but the judges swallow the exception before the harness can see it, so the fix has to be
       in the judge. That collides with a per-file `upstream_judge_sha256` byte-identity attestation
       in `manifest.json`: editing them breaks the provenance claim the transcription exists to make.
-      **Options:** (1) amend the transcription contract to permit an exception-reporting wrapper
-      while keeping the judgment logic byte-identical, re-attesting against the wrapper; (2) leave
-      the judges frozen and accept that judge crashes stay invisible; (3) fork attested-vs-adapted
-      copies and pin both. Recommendation: (1) — it preserves what the attestation is *for* (the
-      judgment is upstream's) while removing what it costs (a crash reads as a verdict). This is a
-      trust-boundary decision, not an executor's.
+      **Options put to the operator:** (1) amend the transcription contract to permit an
+      exception-reporting wrapper while keeping the judgment logic byte-identical, re-attesting
+      against the wrapper; (2) leave the judges frozen and accept that judge crashes stay
+      invisible; (3) fork attested-vs-adapted copies and pin both.
+
+      **RULED 2026-09-07 — OPTION 1, operator.** Implementation in flight. The binding constraint
+      is that the amendment must preserve what the attestation is *for*: upstream judgment bytes
+      stay byte-identical and SEPARATELY attestable. Inlining upstream code into a wrapper and
+      re-hashing the mixture would satisfy the letter and destroy the property — `manifest.json`
+      must record the upstream digest and the wrapper's identity as two distinct facts, so a reader
+      can still tell which bytes are upstream's and which are ours. A judge exception must surface
+      as the harness's existing `JudgeFailure`/`OutcomeType.JUDGE`, never as a "no" verdict and
+      never as a pass, and the attestation validator must still fail if judgment logic changes.
 
 - [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one**
       (intake-1337#record, supersedes the "patch the judge prompt" framing intake-1330 filed). It is
