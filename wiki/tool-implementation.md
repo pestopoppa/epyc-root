@@ -764,6 +764,14 @@ lock (the loser dies `database is locked` after the busy timeout) and a `Ctrl-Z`
 transaction open indefinitely, which reads as a hang. Back up only the small content tables; a `.dump` of the
 event table is the problem, not the backup.
 
+**A reclaim's last trap: the recipe itself was scratch-only.** The pruner that recovered 225 GB lived in
+`/mnt/raid0/llm/tmp/` alongside the 11 GB of backups it produced, so the obvious cleanup — delete the scratch
+directory once the operator confirms the app still renders — would have destroyed the only copy of the method
+while keeping none of its output. The standing rule (*verify the regeneration recipe is in git before deleting
+the artifacts*) exists for model files and benchmark outputs, but it binds hardest on **one-off maintenance
+scripts**, which are precisely the artifacts nobody thinks of as deliverables. It now lives at
+`scripts/system/prune_agent_event_store.py` with the executed result and preconditions in its header.
+
 **Cross-reference:** this is the store-side twin of the guard-side rule in
 [Benchmark Methodology](benchmark-methodology.md) — an instrument that cannot report its own state gets read
 as healthy. A 236 GB store on a 3.7 TB array is 6% of capacity and drew no alarm until a disk-reclaim pass
