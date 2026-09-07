@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 76,
+    "docs": 77,
     "handoff-active": 172,
     "handoff-blocked": 2,
     "handoff-completed": 186,
@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-04T11:00:33Z",
   "mode": "full",
-  "scan_time": "2026-09-05T19:39:20Z",
+  "scan_time": "2026-09-07T09:28:15Z",
   "schema_version": 1,
-  "source_set_hash": "aa30ecc7f4a08e8b8dfb742b3b2eab41ee944867c1b5f53bd875159a3df90b6d",
+  "source_set_hash": "3a3a2a3288449d22b718e95dad0de222eda2901dcae6d4851d07a5d2fb9c02b1",
   "sources": [
     {
       "content_hash": "d55fe0f4e17eca0f3579cabc3cf67e97b2ac50c369a8c0d5a42fd43e80a01ff6",
@@ -79,10 +79,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "155df442055b7494498ad7bd97688af6acd0de00bca45af34dfc57f82e4ed4d1",
-      "modified": "2026-09-03T12:21:09Z",
+      "content_hash": "1faf88766cc16b999efedba1108b7d9342f0f6bff55d119d98b5381bd81acc7d",
+      "modified": "2026-09-07T09:22:35Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 44590,
+      "size": 46774,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8c9941f98e72bd09dbfd2e9b6cf091e07fefcd409efba397d958739a09d00bf7",
-      "modified": "2026-09-05T19:38:06Z",
+      "content_hash": "94aeb55dfba9051fbe9ebdddddf6bf04e846ca099a1f947727b66a561010ca00",
+      "modified": "2026-09-07T09:27:17Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 207372,
+      "size": 335408,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -1335,10 +1335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dc9f5d6a6e2e009b4c3db9800d57ae140d7c96a1a73da7b00c381a8db7845130",
-      "modified": "2026-09-05T19:33:19Z",
+      "content_hash": "5751824229ae64de0b184668028c807083408cbec5bbc8ea53e9afff70e7454a",
+      "modified": "2026-09-07T09:27:17Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 123754,
+      "size": 125431,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -6831,10 +6831,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "0d69f8868fa7f85ba073fe1f7533ea2ae6d8af60e57a4e26efeb00c27d816177",
-      "modified": "2026-09-05T19:27:07Z",
+      "content_hash": "327013835039d2b5b37356d5fd070b0fd592208548b29e9e523a94a911b95a0f",
+      "modified": "2026-09-07T09:27:17Z",
       "path": "progress/2026-09/2026-09-04-ak-rebuild-20260828.md",
-      "size": 8899,
+      "size": 13570,
       "title": "2026-09-04-ak-rebuild-20260828",
       "type": "progress"
     },
@@ -6847,10 +6847,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b30d5fb9b2e3b0161b97c5ea52ec8737b7c746176520ec4ee66eb20a3e9413f6",
-      "modified": "2026-09-05T19:38:06Z",
+      "content_hash": "0fdf65a321616ba908ecf189340df2153f7820105004114d6423034e12e7f8ba",
+      "modified": "2026-09-07T09:27:17Z",
       "path": "progress/2026-09/2026-09-05-inf70-audit.md",
-      "size": 8774,
+      "size": 113865,
       "title": "INF-70 audit \u2014 2026-09-05",
       "type": "progress"
     },
@@ -6876,6 +6876,14 @@
       "path": "docs/design/exl3-mul1-ggml-type.md",
       "size": 10393,
       "title": "EXL3 `mul1` trellis weights as a ggml tensor type \u2014 format spec (X0 draft)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "bfacb60ed1aa18c257b44632a0dd803ce7ebba7ebb5def85b603873954367265",
+      "modified": "2026-09-07T08:24:17Z",
+      "path": "docs/design/inf70-cpu-fold-into-champion-20260907.md",
+      "size": 8404,
+      "title": "Fold plan: INF-70 CPU kernel work \u2192 the AutoKernel champion aggregate (2026-09-07)",
       "type": "docs"
     },
     {
@@ -7463,7 +7471,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 931,
+  "total_new": 932,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
