@@ -1692,6 +1692,12 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
         `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
         pass, guard exit 0, --help shows the flags.
+      - [x] **Headline freeze (R23-44 defect) fixed** ✅ 2026-09-07: moving `publish_headline()` to the
+        serving-PROMOTE branch froze the champion-vs-production headline for the whole accumulation phase
+        (operator saw a 3.8-day-old SUPERSEDED number, 2 champion gens back, on the OLD dec-b4 surface).
+        Restored per-keep publish in `promote_anchor` after the guard (research `f3282204`; activates at
+        next relaunch, run 29 not restarted) and the dashboard now renders a superseded headline during
+        accumulation as "ACCUMULATION IN PROGRESS — tip, keeps, +X%, % to gate" (`d0d11065`).
       - [x] **Accumulator observability** ✅ 2026-09-04: the loop status now carries the two-tier
         bundle (`accumulator`: champion-of-record, keeps, compounded_bench_pct, fire_threshold_pct,
         progress_fraction, fires_next) and the `/loop` dashboard renders an "Accumulator — compound-
