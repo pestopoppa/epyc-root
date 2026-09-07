@@ -179,6 +179,28 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   error. Report answer quality, evidence recall, gist omission/contradiction, hit/reuse rate, complete
   inference and retrieval tokens, communication, peak memory, and wall time. Hold the final planner and
   judge fixed. Do not adopt ActiveMem's comparison-set-relative ACT score or unreleased runtime.
+- [ ] **CF-EI-1 — File the tiered eviction index as a mechanism DISTINCT from the CF-3c masking
+      anchor** (intake-1316#record): a resident, address-anchored map of *what left the view*,
+      separate from spill pointers — which are followable but never announce that a span existed.
+      Verified parameters: k=10 blocks/tier, unbounded tiers, newest block retained with 9 collapsed
+      to one line each, lossless seq spans. **Required design input — the undisclosed third
+      regime**: any adopted index must state what it does when its OWN char budget binds, because
+      the source silently degrades to one global span with zero anchors. Cost the −1.8 as the
+      authors' unreproduced number, **never as a measured cost** — no released flag can re-run that
+      arm.
+- [ ] **CF-3c evidence — independent corroboration for the masking anchor, from a different group**
+      (intake-1330#record). BEAM Table 8: removing working memory **BEATS** the full system at 100K
+      (0.327 vs 0.311), at 500K and at 1M; only at 10M is every component positive. The paper's own
+      abstract contradicts it, which makes this a self-published negative result and therefore
+      strong evidence for the anchor CF-3c already mandates at :166.
+- **CF-SA-1 (record, no work)** — semantic-anchor recurrent-state checkpointing is currently
+  **INEXPRESSIBLE** here. Three prerequisites, in order: emit real structural boundaries
+  (multi-message rendering or in-band special tokens); move the live edit path off
+  `int(len*0.8)` character offsets onto `session_log_records`; make compaction suffix-only.
+  `intake-1318#02`. Zero compute.
+- [ ] **CF-HF-1 — Mine the 11 shipped `HarnessFactory` implementations as a same-interface
+      reference set** (AgentFold `intake-155`, ReSum `intake-157` already local). MIT source
+      reading only; no claims carried. `intake-1320#record`. Zero compute.
 
 ## 2026-08-09 — per-operator context budgets (research-intake Stage-2b)
 

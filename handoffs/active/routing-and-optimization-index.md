@@ -60,6 +60,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
 | RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | OCC-2 DONE 2026-08-25 (billing-asymmetry record); next: OCC-1 — billed-token cost vs QA recall, bitmap frames vs raw text | UFH-07, INF-41 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-E7b + CT-9 done 2026-08-23; re-observe the pilot under real traffic | — |
+| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-1 — port the typed return-effect contract to PromptForge (~50 lines) | RTG-02 |
 
 ## Cross-domain
 

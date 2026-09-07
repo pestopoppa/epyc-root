@@ -383,3 +383,12 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
   offers a privileged environment/oracle path that improves reward while violating allowed
   capabilities; the evaluator must reject the exploit and prevent its conversion into a reusable
   skill. Score benign completion beside attack success and retain the full typed failure chain.
+
+- [ ] **TU-HR-1 — Source-audit the tool-call rendering path per served model** (intake-1339#03,
+  dive-verified). Does each model receive tool definitions and emit tool calls in **its own chat
+  template's native convention**, or do we impose one house format across a mixed Qwen / gemma4 /
+  GLM-5.2 fleet? We do not post-train, but every model we serve was post-trained by its vendor under
+  that vendor's harness, and the schema-shift tables are the mechanism by which a mismatch becomes
+  **our** brittleness. The failure signature is greppable in existing traces: plausible-looking
+  non-existent tool names (`GoTo(...)`, `GoToLocation(...)`, `goto_dresser()`). **Read-only audit, no
+  inference.** Zero compute.

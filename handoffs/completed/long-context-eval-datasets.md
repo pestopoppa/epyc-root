@@ -106,3 +106,12 @@ HF `datasets` v4.8+ dropped support for custom loading scripts. Workarounds:
 2. Run YaRN quality degradation curve: 256K → 512K → 1M with YaRN extension
 3. Measure speed impact of YaRN extension at extended contexts
 4. Use Qwen2.5-7B-Instruct (128K native context) as primary eval model
+
+## Known roster gap (recorded 2026-09-07, research-intake; superseding work lives elsewhere)
+
+All five suites here are single-step (multiple-choice QA, synthetic NIAH, reading comprehension).
+GAIA (`dataset_adapters.py:949`) is our only tool-use suite and has no context-growth axis, so **no
+first-party instrument measures degradation under agent-driven context growth**. LOCA-bench was
+surveyed as the candidate and **declined** (intake-1342#record). Conversational/episodic instruments
+(BEAM, Tulving 200ch) are owned by
+[`conversational-memory-eval-instrument.md`](../active/conversational-memory-eval-instrument.md).

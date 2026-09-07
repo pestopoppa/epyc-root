@@ -22,9 +22,14 @@ Expected Attention is already the production path. Do not reopen S1/S4/S5/S6/S7 
 ## Outstanding Tasks
 
 - [ ] **S8 autopilot exploration**: sweep `keep_ratio` and `layer_weights` per production role; persist Pareto profiles with quality, speed, cost, and reliability axes.
+- [ ] **S8-c recency reservation (third S8 axis)**: add keep_recent / recency_ratio to llama_kv_compress_params, protect the last N positions the way n_sink protects the first, plumb through slot_action, sweep alongside keep_ratio and layer_weights. Today src/llama-kv-compress.h has n_sink but no recency field and src/llama-kv-compress.cpp:326/334 ranks every position from n_sink to n_kv purely on score (server keep_first defaults to 8) — the configuration a direct experiment says improves recall and STILL FAILS on reasoning, fixed by reserving ~25% of the kept budget for recent positions. ~20 lines, no kernel work. Experimental branch only — v9 is FROZEN. intake-1334#02
+- [ ] **S8-d (record, no work)**: our Expected Attention path is already cross-head/cross-layer UNIFIED — llama_kv_compress_score returns one per-position score vector aggregated across attention layers with layer_weights — the property the LessIsMore argument says is essential for reasoning; independent corroboration of a choice we made for other reasons. Two transfer limits: we evict irrecoverably at a slot boundary while selection re-selects from a complete cache every step (so a bad recency reservation costs us more), and selection buys ZERO KV memory while eviction buys 8×. intake-1334#01, intake-1334#04
+- [ ] **PS-5 unclaimed design (log only)**: prefix + heavy-hitter hybrid — proposed in Appendix G.3 and explicitly not run there; we ship both halves. intake-1315#record
 - [ ] **S9 orchestrator auto-trigger**: blocked until S8 produces stable role profiles. Wire learned profiles, not hardcoded defaults.
 - [ ] **S2 TriAttention concentration validation**: optional comparator only; no longer blocks Expected Attention deployment.
 - [ ] **S3 selection plus quantization stacking**: reopen after S8 only if stacked compression is a production need. Otherwise evaluate Attention Matching or another high-compression path first.
+
+*Research-context pointer (2026-09-07 intake expansion, stage1-unverified, no claims):* query-aware SELECTION-based sparse attention — TidalDecode (arxiv:2410.05076), Quest (arxiv:2406.10774), SeerAttention-r (arxiv:2506.08889). Structural coverage gap for this cluster; see also `streaming-llm-baseline.md` § Research Context. `intake-1334#record`
 
 ## Minimal S8 Artifact
 
@@ -50,6 +55,8 @@ Reliability notes:
 | Production needs higher compression than Expected Attention provides | Reopen S3 stacking or compare Attention Matching before adding more kernel complexity. |
 
 ## Completed Scope
+
+*2026-09-07*: the cross-head/cross-layer unification landed under S4/S7 has independent external corroboration — recorded as **S8-d** in § Outstanding Tasks, not re-opened here. `intake-1334#01`, `intake-1334#04`.
 
 | Scope | Result | Ledger |
 |---|---|---|

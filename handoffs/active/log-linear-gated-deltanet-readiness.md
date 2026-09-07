@@ -498,3 +498,28 @@ What is new here, and what determines what G16 must actually add, is the 50-case
 → 0 before committing. For **G16**, a run that reports only `test-backend-ops` at the shipped shapes is
 **not** this row: the new 2048/4096/8192 cases at H=32 d=128 are the row, and a pass at the shipped
 shapes alone is a vacuous verification of the exact kind the coverage gap above describes.
+
+## Research Intake Update — 2026-09-07
+
+### SWA-beats-linear (arXiv 2608.28444) is NOT evidence against our ρ = 4 topology — non-applicability record
+
+arXiv 2608.28444 is NOT evidence against our ρ = 4 topology: it **excludes hybrids with full-attention
+layers by construction** (Section 4), lists them as future work (Section 5), concedes from-scratch
+training is out of scope (abstract), and its only Gated DeltaNet arms sit at **MMLU chance** after a
+0.1B-token Alpaca conversion (Table 5). It points the **same** way as arXiv 2606.15378 (full attention
+carries long-range retrieval). Its title invites exactly the citation this refutes — the value of the
+record is preventing work. `intake-1340#04`.
+
+This record also belongs in `wiki/ssm-hybrid.md` beside the 2026-08-23 wave-2 ρ = 4 addendum; that
+edit rides the wiki compilation sweep, not this session.
+
+**Declines recorded with the same one reason** (our instrument cannot apply a prefill mask, so the
+correct output is this non-applicability record, not an investigation):
+
+- **1340#6 — reproduce SWA(64,4)**: DECLINED. Frozen v9 evicts only inside the context-shift branch;
+  it cannot mask at prefill, so a reproduction would measure a different method.
+- **1340#7 — implement a true runtime `n_swa` override**: DECLINED. No runtime override exists
+  (`common/arg.cpp:1491/:1501/:1512`); building one is kernel work on a FROZEN production tree and buys
+  only the ability to reproduce a result that does not bear on ρ = 4.
+- **1340#8 — treat 2608.28444 as evidence for/against the GDN hybrid topology**: DECLINED. It excludes
+  full-attention hybrids by construction; see the record above.

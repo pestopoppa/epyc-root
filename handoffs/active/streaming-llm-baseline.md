@@ -51,6 +51,9 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 | intake-552 | LU-KV (arxiv:2602.08585) — global combinatorial per-head budget | medium | frozen-weights compatible; needs the floor to be meaningful |
 | intake-553 | ForesightKV (arxiv:2602.03203) — oracle distillation + GRPO | high | needs floor + requires FT infra (deferred) |
 | intake-554 | PBKV (arxiv:2605.06472) — workflow-aware residency | high | orchestrator-layer; composes with sink+window |
+| intake-1327 | StreamingLLM (arxiv:2309.17453) | anchor | Anchor paper for this handoff finally has an entry: `intake-1327#record`. Stage-1 only — the SL-1…SL-4 amendments in its notes are unverified and are NOT filed. |
+| 2026-09-07 expansion (stage1-unverified) | SWA window floor: SWAA (arxiv:2512.10411); Cabannes et al., ICLR 2026, *Short window attention enables long-term memorization* | high | Pointer only, no claims — both bear on the PS-1 window floor. `intake-1340#record` |
+| 2026-09-07 expansion (stage1-unverified) | Query-aware SELECTION-based sparse attention: TidalDecode (arxiv:2410.05076), Quest (arxiv:2406.10774), SeerAttention-r (arxiv:2506.08889) | medium | Pointer only, no claims — structural coverage gap for the KV cluster; see also `triattention-kv-selection.md`. `intake-1334#record` |
 
 ## Spike Plan (single phase)
 
@@ -70,6 +73,16 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 **Success criteria**:
 - StreamingLLM at 50% budget loses ≤10% accuracy vs full-KV on long-context reasoning
 - StreamingLLM at 25% budget loses ≤25% on the same — establishes the noisy floor
+
+**Binding design constraints — rewritten 2026-09-07 (the criteria above have no power statement and no eviction-regime statement):**
+
+- **Generation length is the independent variable.** Every arm must GENERATE ≫ W (target **≥ 4×W**) or it does not test the mask; state each cell's eviction regime explicitly. Priced at the measured **~31 t/s** for Qwen3-1.7B Q8 CPU (2026-07-20 sweep): one 4×W generation is ~9 min @W=4096, ~18 min @W=8192, ~35 min @W=16384. **Run W ∈ {2048, 4096, 8192}; W=16384 is GPU-only or dropped.** `intake-1334#00`
+- **Context sizing rule.** `server-context.cpp` computes `n_discard = n_left − window` with `n_left ≈ n_ctx − n_keep`, so `-c = prefix + W` collapses the discard to one token per shift. Use **`-c = prefix + W + chunk`** and sweep `chunk`. `intake-1315#record` (local finding, verified in our tree).
+- **Benchmark + power, tension resolved.** MATH500 is power-adequate (stderr ~1.0) but its traces average ~5K generated tokens, so at W=4096 it evicts almost nothing; AIME (15–17K generated) stresses the mask but has 30 problems (avg@64 stderr 6.7–7.8 pp). **Resolution: pool AIME-24 + AIME-25 with avg@k and a stated detectable effect size, and RETAIN W=2048** — it is the only MATH500 arm actually in the eviction regime, i.e. the most informative point on the power-adequate benchmark, not the least. This **reverses** the earlier "DROP W=2048". `intake-1315#02`, `intake-1334#02`.
+- **Falsifiable workload split.** Short-context/dialogue arms pass the ≤10% floor at every K_win ∈ {1024, 2048, 4096}; long-context retrieval arms fail it. **A split result IS the finding, not an inconclusive sweep.** Add a training-free sink+window control arm. `intake-1340#00`.
+- **Instrument mismatch — do not compare across it.** The literature masks at every position including prefill; frozen v9 evicts only inside the context-shift branch and rejects a prompt of `n_ctx` or more outright (`server-context.cpp:3227-3235`); no runtime `n_swa` override exists (`common/arg.cpp:1491/:1501/:1512`). The long-INPUT retrieval arm therefore measures **full-attention prefill + streaming decode** — a different and strictly stronger method than SWA — and its numbers must never be set against a published S-NIAH table. `intake-1340#04`.
+- **Reporting rule (sweep-local convention, NOT a policy amendment).** Paired recovery ratio = student score / the **same** teacher, reported per model per workload, **never pooled** across differing model sets. Promoting this convention to `agents/shared/MEASUREMENT_POLICY.md` would be an operator decision package, not a session write. `intake-1340#record`.
+- **Accuracy first, speed second**: a speed null is not a refutation on weight-bandwidth-bound CPU decode.
 
 **Gate criteria for cluster prioritization**:
 - If StreamingLLM at 50% budget already preserves ≥95% accuracy on our representative workloads, **demote LU-KV / KVP / ForesightKV** — their incremental gain over the floor is too small to justify the kernel work.
@@ -105,6 +118,12 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - Steele falsification (sink+window beats learned scoring): `https://arxiv.org/abs/2601.14279`
 - Related handoffs: `attention-matching-kv-compaction.md`, `triattention-kv-selection.md`, `summary-token-attention-readiness.md`, `multiscreen-attention-evaluation.md`, `../completed/llama-cpp-fork-rebase.md`
 
+## Research Intake Update — 2026-09-07
+
+- **Table-4 efficiency ruling for the whole KV-reduction cluster**: at a 2K budget / 16K context, sink+window matches the best selection method on FLOPs (1.05M), global-to-shared transfer (1.04MB) and kernel latency (20.1 µs) at **1/8th** the on-device memory (1.04MB vs 8.38MB) — and every selection-class method holds the FULL cache. This reduces the PS-1 question to a single axis (accuracy) and removes selection-class methods from `attention-matching-kv-compaction.md`'s candidate set, whose objective is 10× KV **memory** reduction. `intake-1334#05`.
+- **PS-2 CLOSED, no task filed**: our context-shift path is Reset-PE (`seq_rm` + `seq_add -n_discard`); the source reports the difference insignificant and recovered Figure 14 puts Reset PE ahead at 4 of 5 budgets within one SE. intake-1327's closure confirmed. `intake-1315#record`.
+- **Three numeric corrections carried against the source**, so the sweep session does not re-quote them: Table 1's 128K cell is the vanilla-SWA value (11.26×, not 11.7×); W=16384 does **not** match full attention (28.74 vs 31.14, first match at W=32768); the "seconds" axis is **derived**, nothing was timed. `intake-1315#record`.
+
 ## Progress checklist
 
 - [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅
@@ -112,6 +131,7 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - [x] CPU mechanical smoke completed for baseline and StreamingLLM lanes; both passed mechanics but failed prompt-quality, so no admission/performance claim ✅ 2026-07-18
 - [x] Pre-v7 floor/admission sweep completed on Qwen3-1.7B Q8 CPU-only: all arms exited cleanly, no sink/window cluster passed quality+speed floor, and no KV cluster is admitted before v7 promotion ✅ 2026-07-20
 - [ ] Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models — *(2026-08-25: 72-cell design + daemon built and launched by the INF-51 churn session — 3 workloads × 3 budgets × 3 K_win {1024,2048,4096} × 2 models + 6 full-KV baselines + 12 gemma4 F16 controls; harness extended from streamingllm_floor_sweep.py; SWA finding: gemma4 needs `--swa-full` on v9 or context-shift silently disables. Zero cells completed — lease/region held by inf42-g1; daemon reconciled 2026-08-27, relaunch gated on q0-q3 release.)*
+  - Sweep design REWRITTEN 2026-09-07 — before any cell runs, re-read § Spike Plan → *Binding design constraints* (generation ≥4×W, `-c = prefix + W + chunk`, W ∈ {2048,4096,8192} with W=2048 RETAINED, AIME-24+25 pooling, workload-split hypothesis + sink+window control arm, instrument-mismatch rule, paired-recovery reporting) and § Research Intake Update — 2026-09-07. Box unchanged; the design under it is not.
 - [ ] Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
 - [ ] Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor
 - [x] Resolve user questions: K_sink/K_win sweep values, F16 KV scope, PBKV order-of-operations ✅ 2026-08-25 — **operator decisions**: (1) full K_win sweep {1024, 2048, 4096} — 54 streaming cells; (2) F16 KV control on gemma4 only (smallest model); (3) PBKV runs in parallel — no sequential gate (lease/region serialization prevents concurrency poisoning; no PBKV spike currently in flight, so the floor still lands first de facto)

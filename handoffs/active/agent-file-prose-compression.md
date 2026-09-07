@@ -46,6 +46,13 @@ Exactly two things remain:
   **The genuinely anomalous figure is structural, not volumetric: `CLAUDE.md` carries 22 H2
   headings against a corpus average of 2.7 categorised L1/L2 headings.** Retarget the work at
   heading proliferation rather than word count, and stop quoting the exceeds-the-maximum line.
+- [ ] **AFC-P5.E7 — Cross-model artifact reuse rule for shared agent files** (intake-1317#record,
+      dive-verified): before reusing an agent-file artifact across a **capability gap**, strip
+      model-specific error WORKAROUNDS and keep the PROCEDURE. Both directions are measured in the
+      source: the same shared artifact drops Gemini SpreadSheet 50.5 → 18.1 under Qwen-3.5-4B
+      skills, while lifting Gemma LiveMath 33.9 → 73.1. Applies to
+      `agents/shared/*.compressed-*.md` reuse across the four-model roster; state the rule in the
+      compression rider, not only here. Zero compute.
 
 **Decision forks (for E4)**:
 

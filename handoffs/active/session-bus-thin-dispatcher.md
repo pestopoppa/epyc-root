@@ -2890,6 +2890,17 @@ from that seat.
   shared behavioural battery runs against it. The three-valued fold is already the file's internal
   discipline (`fw_classify_liveness` / `fw_classify_compute` return `unknown` and never collapse it
   to idle); what is missing is the `observe` surface and the battery.
+  - **Second channel, named (2026-09-07, research-intake): hook-sourced semantic liveness — SIX
+    events, not four.** The obvious four-event set (`SessionStart`, `UserPromptSubmit`, `Stop`,
+    `SessionEnd`) must be extended with **`PreCompact` and `PostCompact`**, and `unknown` is **never**
+    promoted to a live state by this channel. Also record `Stop.background_tasks` and
+    `UserPromptSubmit.source`. **The reason is the whole point of the row**: a four-event channel
+    cannot distinguish *compacting* from *idle*, so it would have shipped a second channel that
+    reproduces `INC-20260812-compacting-read-as-idle` — the exact incident the three-valued fold
+    exists to prevent — while the fix costs **two hook registrations**. Note for whoever greps for
+    this later: the original misroute of this finding was caused by a **colliding OBS-11/OBS-12
+    series** at `non-inference-backlog.md:251-252`; this file's OBS-11 is the correct owner.
+    `intake-1325#record`, `intake-1335#record`.
 - [ ] **FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**
   An empty Codex composer *renders text* — a greyed placeholder (`› Write tests for @filename`).
   Measured 2026-08-12, neither available discriminator separates it from real queued input: the
@@ -2911,6 +2922,11 @@ from that seat.
   *"may be compacting"*. This is the same gap as M5/C36's unwired signal #3
   (`claude agents --json`); landing it upgrades this detector from heuristic to authoritative for
   the whole fleet, and is the single highest-value change available to it.
+  - **Annotation (2026-09-07):** the hook-sourced semantic channel added under **OBS-11** above is
+    the cheapest available fix for exactly these five `claude`-backend mains — it is backend-agnostic
+    and does not wait on `claude agents --json`. It must carry the same six-event set, and it must
+    keep `unknown` unpromoted: a channel that reads *compacting* as *idle* would make `IDLE-CANDIDATE`
+    confidently wrong rather than honestly heuristic. `intake-1325#record`.
 - [ ] **FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts
   it and — worse — nothing notices: the coordinator's Monitor on the log simply goes quiet, and a
   quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
@@ -3106,3 +3122,52 @@ something else, which is exactly how 3 of them became uncountable.
   `evidence`) so a screening verdict has somewhere to live other than prose in `failure_reason`.
 
 - [ ] **Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.
+
+## Lost-wake backstop and the wake spike (research-intake 2026-09-07)
+
+_Filed via `/research-intake`. Four rows plus one design input. Zero compute. **WS-3 is a decision
+gate on WS-2**; **WS-4 is independent of the other three.**_
+
+- [ ] **WS-1 — Artifact reconciliation at the drain boundary.** Compare **worker-written completion
+  artifacts** against the handled set, **independent of whether a bus row exists** — that
+  independence is the whole value, because the lost-wake case is precisely the one where no row was
+  seen. One-shot and receipted. **Notifier, no standing obligation**: it tells someone once and then
+  stops, so it cannot become a background source of noise. This is the mechanism referenced from
+  [`coordinator-role-failure-modes-and-refactor.md`](coordinator-role-failure-modes-and-refactor.md)
+  → the F-33(a) evidence note. `intake-1331#record`.
+- [ ] **WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in
+  the **owner-write-only** `cursors/<agent>.json`, advanced **only** by a sequence-naming disposition
+  — replacing the O(history) `routed_view` recomputation. **Unlike WS-1, this one creates a standing
+  obligation**, so it carries a hard precondition, recorded here so it cannot be skipped: any
+  persistent re-presentation must **first** carry C39's spent-receipt lookup and its *"annotate,
+  never suppress"* polarity (`:1937-1946`), and must satisfy C49's ruling that *"an escalation that
+  fires on a well-run night trains everyone to ignore it"* (`:2463`). The external precedent is safe
+  only because its backstop is **one-shot and byte-capped**; ours would not be. `intake-1331#record`.
+- [ ] **WS-3 — RAISE AS AN EXPLICIT DECISION, not an implementation detail: store-before-deliver.**
+  Store-before-deliver **inverts the deliberate house ordering** at
+  `session_bus_coordinator.py:1626` (*"the save happens AFTER the relay pass, so a crash loses at
+  most one tick of ledger updates, never a delivery"*) and the fail-safe cursor default at
+  `session_bus.py:1790-1815`. Both of ours bias toward **duplicate delivery over loss**; so does the
+  external migration path, so the biases **agree** — which is exactly why the flip could happen
+  silently. It **must be argued, never silently flipped**. Decision gate on **WS-2**.
+  `intake-1331#record`.
+- [ ] **WS-4 — asyncRewake wake spike (merged).** Spike a **Stop `asyncRewake` hook that exits 2** to
+  wake an idle main, replacing doorbell keystroke injection — the mechanism that closes RC-4's
+  *"between turns nothing runs"*. Four facts ride in this row and must not be separated from it:
+  **(a)** the timeout is **unenforced** on async hooks; **(b)** backgrounding requires
+  interactive-or-streaming, so **headless `claude -p` actors are excluded** — the spike cannot cover
+  them; **(c)** the **"zero-token waiting" contract** — durable suspension resumed on an ingress
+  event instead of polling turns, with write-ahead journaling and generation fencing; the source's
+  Table 1 scores Claude Code **"no"** on zero-token waits, which is the design-level statement of the
+  same gap this spike closes empirically; **(d)** **build pin: "verified against Claude Code
+  2.1.263"** wherever `asyncRewake`, `additionalContext` or `PreCompact` are relied on — note the
+  **stale npm-global 2.1.241 on this host**, which is not the version these facts were verified
+  against. `intake-1325#record`, `intake-1331#record`, `intake-1333#record`.
+
+**Design input, UNMEASURED — gates nothing (2026-09-07).** Shared-transcript in-thread coordination is
+a **token multiplier by construction**: each participant re-reads the growing conversation and carries
+its own preamble, so cost grows with participants × turns without anyone deciding it should. Our bus
+drain puts coordination rows into a main's **paying** context, which is the same shape. A
+**firewalled side-loop with a capped return summary** is the cheaper structure. **File as a design
+input, NOT as evidence**: this is backed only by a citation to intake-1113, nothing here was measured
+on this host, and no row above depends on it. `intake-1333#record`, `intake-1113#record`.

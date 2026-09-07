@@ -1,6 +1,6 @@
 # Unified Trace / Memory Service
 
-**Status**: T1-T6 LANDED 2026-05-06 — `epyc-orchestrator/src/trace/` package: SQLite store with FTS5 + 5 indices, agent_audit parser (JSON + legacy text dual-format), autopilot parser (no-op-when-absent for hosts without journals), progress markdown parser, query CLI (`python -m src.trace.cli {ingest,query,stats}`), 13 unit tests. Live ingest of 3477 events from `/workspace/logs` + `/workspace/progress` in <1s; idempotent re-ingest verified. T6 received a first-class trial-context API/CLI refresh on 2026-06-28 (`epyc-orchestrator` `d20f85b7`) via `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N`, returning exact trial rows plus nearby cross-source timeline context. T7 Hermes ingest deferred until Hermes graduates to daily use.
+**Status**: T1-T6 LANDED 2026-05-06 — `epyc-orchestrator/src/trace/` package: SQLite store with FTS5 + 5 indices, agent_audit parser (JSON + legacy text dual-format), autopilot parser (no-op-when-absent for hosts without journals), progress markdown parser, query CLI (`python -m src.trace.cli {ingest,query,stats}`), 13 unit tests. Live ingest of 11,963 events (re-counted 2026-09-07) from `/workspace/logs` + `/workspace/progress` in <1s; idempotent re-ingest verified. Note that the append-only property covers the `event` table and its ledgers (INSERT OR IGNORE) but NOT the co-located `working_state` table (`harness_schema.py:570`, `:755` `UPDATE … SET superseded = 1`). T6 received a first-class trial-context API/CLI refresh on 2026-06-28 (`epyc-orchestrator` `d20f85b7`) via `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N`, returning exact trial rows plus nearby cross-source timeline context. T7 Hermes ingest deferred until Hermes graduates to daily use.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack — "Trace / Memory Service" box)
 **Categories**: agent_architecture, knowledge_management, autonomous_research
 **Priority**: MEDIUM
@@ -108,6 +108,7 @@ existing writers (unchanged):
 - [x] **T5: CLI + Python API** — `python -m epyc.trace query [--from TS] [--to TS] [--session ID] [--trial N] [--role R] [--category C] [--text "..."] [--limit N]` returning ranked event rows. Python module exports `query(...)` returning dicts. ~2 h.
 - [x] **T6: Cross-source join recipes** — Document 3–4 high-value recipes in the handoff body or a `docs/` page: (a) "all events for trial N" (autopilot + agent_audit by time range), (b) "session timeline for date D" (progress + agent_audit), (c) "all failures + their preceding 5 actions". ~1 h. **2026-06-28 refresh**: `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N` now provide the primary trial recipe directly, with exact trial events and configurable nearby agent/progress/autopilot context.
 - [ ] **T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize into events. Gated on whether Hermes goes into production use (currently CLI-only validation). ~2 h. Defer until Hermes outer-shell graduates from validation to daily use.
+- [ ] **UTM-P1 — Add pairing keys to the unified trace event schema**: harness identity, seed, and a horizon/turn ordinal, at `src/trace/store.py:94-197`. Today **two runs cannot be paired on the same task across harnesses at all**, and `EventSource.HERMES_SESSION` (`store.py:36`) is a declared constant with **no ingester and no producer** — the dead constant is T7's stub. This blocks ANY cross-harness comparison, not just one metric, and it bites the moment HS-4 closes and a second harness goes live (soft-blocks HS-4 follow-through). **Schema-only change, no inference.** `intake-1341#04`. Zero compute.
 
 ## Open Questions
 
@@ -273,3 +274,30 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
   erasure, rollback, and raw-evidence recovery. Account for extraction, write, embedding, retrieval,
   answer, verifier, training (if later permitted), tokens, latency, wall time, and storage separately.
   Use conversation-level splits and repeated end-to-end seeds; judge repeats alone are not uncertainty.
+
+## 2026-09-07 — memory-service surface + the BEAM/Tulving retrieval arm (research-intake)
+
+- [ ] **UTM-B1 — Register the already-built read surface as a model-facing `ms.search` / `ms.expand`
+      tool** (`intake-1316#record`). `src/trace/navigation.py` already IS an ms-shaped read surface
+      (`search_records`, `search_conversation`, `get_records`, `get_conversation`, allowlisted
+      `read_file`, pure RRF k=60) with no ingest, no schema mutation and no embedding call. **The
+      gap is registration, not construction.** Correction to the bearing dive text: it is not
+      "zero consumers" — re-grepped 2026-09-07, it has exactly **one non-test consumer,
+      `src/trace/cli.py:22`**, and **no MCP registration and no orchestrator wiring**. That is the
+      gap.
+- [ ] **UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a
+      BEAM 128K run** (`intake-1330#record`) — the cheapest first-party test of the append-only-log
+      thesis. BEAM's driver reuses one retriever/prefix across all 20 questions of a conversation
+      with no cross-question accumulation, so the arm is embarrassingly parallel and
+      order-independent. COMPUTE-GATED: filed, not run.
+- [ ] **UTM-B3 — Record the ingest FILTER in the run artifact as a first-class experimental
+      parameter, not plumbing** (`intake-1337#record`). Record exactly which turns were indexed and at
+      what granularity: a silent role filter or chunking choice moves the score more than the
+      retrieval algorithm does. COMPUTE-GATED rider on UTM-B2.
+- [ ] **UTM-B4 — Route the Tulving `retrieved` arm through this surface** — the backend half of
+      CME-4 in [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md)
+      (`intake-408#record`). Zero compute to write.
+
+**Note on UTM-M9** (mandatory no-memory control arm for every memory A/B, above): it is already
+flagged in-file as an operator-gated MEASUREMENT.md trust-boundary ask. M-12a/M-12b satisfy its
+intent; **do not tick UTM-M9** — the eval-tower registration is the operator's.

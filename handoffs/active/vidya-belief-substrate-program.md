@@ -1419,6 +1419,67 @@ audit-envelope fix for claims reused outside the context that vetted them (alrea
 grade travels with the claim, and the `intake-NNN` / `#NN` / `#record` citation forms already encode
 that relying on a whole entry inherits every defect of every claim in it).
 
+## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07)
+
+Source: the 2026-09-07 `/research-intake` wave (`intake-1311`…`1345` + the `intake-408` re-dive).
+Four measurement sources are specified by this wave, and all four are filed **now, before any of
+them produces a row** — the standing rule: wiring the write side is cheap and permanent, retrofitting
+the read side is impossible, and `benchmarks/results` is the standing proof. Source rows added to
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+*Id note: the plan allocated SC63/SC64 for the first two rows; both ids were claimed in this file
+between plan and apply, so this wave takes the next free block, SC65–SC68.*
+
+| Source | Owning handoff | Emits |
+|---|---|---|
+| **PS-1** sink+window floor sweep | `streaming-llm-baseline.md` (INF-51) | per arm×workload cell: `K_sink`/`K_win`/budget, `-c` sizing + chunk, tokens generated + eviction regime, benchmark id + scored-n, paired teacher identity |
+| **MoE routing tap** | `moe-routing-tap-and-locality-measurement.md` (INF-72) | per (model, layer, domain, m): SRP, SCH(m), EOR/IR_t + the chance baseline |
+| **`tulving_episodic`** scored runs | `episodic-memory-integrity.md` (M-12) | per run: `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style`, arm, scorer version, n scored |
+| **BEAM** benchmark runs | `episodic-memory-integrity.md` (M-12) | per run: the BEAM-fold headline, with the rubric-item micro-average and binarised pass count as recorded context |
+
+- [ ] **SC65 — build the adapter that projects the PS-1 floor-sweep cells into ClaimTuples.**
+      Project, not grade — the carrier is shared, each source class has exactly one ladder, and the
+      registry refuses a second (`docs/design/vidya-pilot-spec.md` §4.7). Three caveats are
+      load-bearing and must ride in every tuple: the recovery ratio is **paired to the SAME teacher,
+      per model per workload, never pooled**; the **long-INPUT retrieval arm measures a different
+      method** (full-attention prefill + streaming decode) and must never be graded against a
+      published SWA table; **accuracy is the primary axis** — a speed null on weight-bandwidth-bound
+      CPU decode is not a refutation. A cell that never evicts did not test the mask and must be
+      labelled, not silently pooled. Trigger: the first sweep cell, which is compute-gated.
+      Pre-hook artifacts (the 2026-07-20 Qwen3-1.7B sweep, the 2026-08-25 zero-cell 72-cell daemon)
+      emit zero rows and are never reconstructed on read.
+      Sources: `intake-1315#record`, `intake-1334#record`, `intake-1340#record`.
+
+- [ ] **SC66 — build the adapter that projects SRP/SCH/EOR tap output into ClaimTuples.**
+      Filed at stub creation, not at first trace, per the standing rule. Four caveats ride in every
+      tuple: **SCH is a diagnostic, never a throughput claim**; a **stride-hazard signature** (every
+      expert appearing exactly k times, sub-chance reuse) **refuses the row fail-closed** — it is a
+      broken read, not a negative result; **domains are never pooled** (mixing manufactures
+      uniformity); and **v9 does not cover `qwen4exp`/`glm5next`**, so a qwen4exp tuple cannot exist
+      yet. The chance baseline (3.13% = 8/256 qwen35moe; 1.95% = 10/512 qwen4exp) rides in the same
+      tuple, because an EOR figure is uninterpretable without it. The derived +1.58–2.03%
+      end-to-end ceiling is a **CLAIM ON THIS ROW, never a second source** — it is an arithmetic
+      consequence of two existing first-party measurements, and a second source row for a derived
+      quantity would put one measurement behind two ladders. Trigger: the tap port, which is
+      compute-gated. Sources: `intake-1328#record`, `intake-1336#record`, `intake-1338#03`.
+
+- [ ] **SC67 — wire `tulving_episodic` on the WRITE side before M-12a runs** (`intake-408#record`).
+      It produces verified measurements today — `score_tulving_run.py` emits a structured
+      per-question artifact with `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style` — and has
+      **no write-side hook**. Emit producer-authored, self-hashed claim-tuple rows carrying run id,
+      variant + chapter count, arm (`none`/`retrieved`/`full`), scorer version (post-M-12e), n
+      scored, and metric direction. **Locator = the run, never the per-question file.** Do NOT write
+      a new grading rule — project into a `ClaimTuple` and let `claim_tuple.grade()` decide.
+      Pre-hook runs (incl. `20260619_141212`) emit zero rows and are never reconstructed on read.
+
+- [ ] **SC68 — wire the BEAM adapter on the write side AT AUTHORING TIME, and record BOTH folds**
+      (`intake-1337#record`). File at adapter-authoring time (CME-1), not after the first run. The
+      **BEAM-fold headline is the claim**; the rubric-item micro-average and the binarised pass count
+      are **recorded context in the same tuple**. A claim tuple that does not record WHICH fold
+      produced the number cannot be compared to any external BEAM figure later — this wave's dive is
+      the proof (49.0 vs 55.7 on the same run). Source-table row in
+      `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
+
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 
 Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the

@@ -33,14 +33,15 @@ Stage-2 dive D1 (2026-07-27) reading both codebases. D-a/D-b/D-e require **no in
 Dive D1 **overturned** the Stage-1 hypothesis that our checkpointing loses variables silently. It
 does not. Existing surface in `epyc-orchestrator`:
 
-- `checkpoint()` / `restore()` — `src/repl_environment/state.py:254,346`
+- `checkpoint()` / `restore()` — `src/repl_environment/state.py:391` / `:519` (re-resolved 2026-09-07)
 - `SessionPersister` + SQLite store — `src/session/persister.py`, `src/session/sqlite_store.py`
-- Non-serializable globals are collected into `skipped_user_globals` (`state.py:320`) **and reported
+- Non-serializable globals are collected into `skipped_user_globals` (declared `state.py:445`, appended `:478` — re-resolved 2026-09-07) **and reported
   to the model**, not just the logger — `src/session/models.py:462-465` renders
   `"Skipped non-serializable variables: ..."` into the resume summary, alongside a restored-variable
   inventory at `models.py:452-461`.
 - `variable_lineage` already records role, execution count, timestamp and value type per variable
-  (`state.py:313-318`).
+  (`state.py:444-476`; `_lineage()` defined at `:450-462` — re-resolved 2026-09-07). It records no
+  shape field of any kind.
 
 **Design boundary, not a gap:** fast-rlm documents *one live query per session directory — concurrent
 queries race*. We must not inherit that. We run NUMA-concurrent by design and our session state is
@@ -328,3 +329,16 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   external state or require an explicit retry/skip resolution, append the reconciliation outcome, and
   retain the original uncertain row. Test crashes before dispatch, after dispatch, after effect but
   before confirmation, duplicate callback, and non-idempotent tool behavior.
+- [ ] **D-h — The namespace digest is NOT a rendering job; shape capture must be ADDED first**
+  (intake-1316#record). `variable_lineage` records name, type, provenance and tier but **never
+  shape** (`state.py:450-462`, re-verified 2026-09-07), so a digest built from lineage alone
+  would silently lie about shape. Worse, lineage is written only for variables surviving the
+  checkpoint filter, so such a digest would omit exactly the un-picklable variables most worth
+  naming. Note that the source's own digest is weaker than its paper claims (name/type/SIZE, a
+  delta appended to the cell result, not a full listing prepended to every call) — we are not
+  copying a validated design, we are building the thing the paper describes.
+- [ ] **D-i — Enumerate and BOUND every kernel-to-context channel; make auto-rendering of the cell
+  final expression opt-IN** (intake-1316#record). Do **not** adopt "make `print` the sole
+  kernel-to-context egress": the source does not implement it (seven channels; the final
+  expression is auto-printed by default and the model must opt OUT). The reframed version is
+  strictly stronger than the source and equally cheap.

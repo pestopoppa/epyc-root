@@ -389,3 +389,7 @@ Corrections applied in this file:
    run did not), C5 gained the OMP on/off arm and the box-state capture, C6 wires the belief kernel.
 10. INF-68 path fixed (`../completed/`), INF-67 given a pointer to this task list, wiki
     `benchmark-methodology.md` correction 1 rewritten as the fifth correction.
+
+### Open follow-up filed 2026-09-07 (research intake)
+
+- [ ] **Reconcile INF-70 main vs lane/inf70-audit-20260902 (bd6eec92) — live wrong-answer hazard.** main's :78 and :375 still read "≈ 100–130 GB/s" for the expert path (pre-NUMA-fix box state); the lane copy supersedes both with 61.8 GB/s at proven placement (mul_mat_id 144 calls / 20.96 ms / 1.296 GB = 40.5% of ceiling). Until the lane lands, no session may cite a CPU MoE bandwidth from main or HEAD. Surfaced by intake-1318#record.

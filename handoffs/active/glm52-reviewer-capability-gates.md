@@ -244,6 +244,8 @@ Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-
 
 intake-836 quant why-diagnosis caveat · intake-834 authoring-capability dominance · intake-837/838 format/bias fragility of judges · audit doc 2026-07-16 (GLM-dsa arch exists in-tree; reconciliation smoke later passed on experimental-v7 `3dee86a5a`; sparse final-attention and reviewer quality remain open).
 
+2026-09-07 reference rows (NOT targets, NOT residency inputs — GC-4 is VOID and the UD-IQ2_M artifact is deleted). (1) Closest published analogue to a 753B-A40B-class reviewer: 433 GB NVFP4 at 14.9 tok/s on one RTX PRO 6000 vs llama.cpp 7.3. Non-transferable on four axes: quant (NVFP4 vs UD-IQ2_M with 2.0625 bpw routed experts), GPU class (96 GB Blackwell vs 64 GB gfx90a), 178 vs 61.8 GB/s host expert bandwidth, one workload. intake-1318#record. (2) Shared-expert corroboration for GLM routing locality is a SECOND but WEAK leg — shared experts are sufficient-not-necessary for poor local consistency and GLM's shared fraction sits far below any measured model. Do NOT present it as independent confirmation of "no cacheable hot set". intake-1328#03.
+
 ## Deep-Dive Correction — 2026-07-21 (The selective-precision hypothesis is FALSIFIED in our own GGUF)
 
 Two independently-indexed practitioners (intake-870 vLLM-Moet, intake-871 GLM-5.2-NVFP4-TR3) converged on holding attention + shared experts + the DSA indexer + early-layer MLPs above 4-bit while pushing routed experts low. The intake proposed testing whether our Unsloth UD-IQ2_M omits that carve-out. **It does not — Unsloth already implements all four, more aggressively than either practitioner described.** Per-tensor map parsed from the six GGUF shard headers (header bytes only; no weights read, no inference):

@@ -346,6 +346,23 @@ import.
       winner accuracy was 0.96 where the resolved mass dominated and **0.20** where it did not —
       the same judge, the same protocol, a 4.8× swing driven only by coverage. This is our standing
       gate-scope rule (a gate's scope must match the measured subset) given a computable statistic.
+- [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one**
+      (intake-1337#record, supersedes the "patch the judge prompt" framing intake-1330 filed). It is
+      already written and diffable: transcribe from `beam_100k_bench.py:204-274` at `475d3fbd24`
+      and the substitution at `:329-333`, then diff against BEAM `src/prompts.py:11547` at
+      `b2da22ea` to confirm **only the three intended deltas**. Carry the parse-failure hazard in
+      the row: `judge_rubric` returns **0.0** on any JSON decode error, so a judge model that does
+      not honour `response_format json_object` silently zeroes rubric items rather than erroring —
+      a first-party risk precisely because our judge is a served local model, not an OpenAI
+      endpoint. Pairs with CJ-8's three-valued verdict rule: a decode failure is
+      `out-of-coverage`, never `fail`.
+- [ ] **CJ-11 — Repoint the judge before running anything** (intake-1330#record). One edit at
+      `src/llm.py:61-64` (`model_url` + `model_name`) fixes the judge AND the LIGHT scratchpad path
+      together. Then check agreement on a stratified sample against the `gpt-4.1-mini` verdicts and
+      against a human pass. Also pass `probing_question` through in all ten `evaluate_*` functions —
+      the prompt already demands a responsiveness check it cannot perform. **The plumbing/prompt
+      half is zero-compute and is a prerequisite for any citable local BEAM number; the
+      agreement measurement is COMPUTE-GATED — filed, not run.**
 
 ## Decision gate (OPERATOR)
 
