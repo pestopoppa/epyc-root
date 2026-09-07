@@ -34,8 +34,13 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
 - [ ] **Derive per-node `ready` / `blocked` in the graph builder** — blocked ⟺ some `dep` target
   still has `open > 0`. Bump the schema to `index_graph.v2` and render blocked nodes distinctly on
   the `:8100` backlog graph. Do **not** add a hand-authored field: this is derived, exactly like
-  `open` and `last_advanced`. **Measured baseline 2026-09-07: 24 of 160 open rows gated, 136 ready**,
-  over 41 `dep` edges across 170 nodes. **Priced honestly:** 85% of rows are already ready, so this
+  `open` and `last_advanced`. **Measured baseline 2026-09-07: 24 of 160 open rows gated, 136 ready,
+  10 with no open work**, over **42** `dep` edges across 170 nodes.
+  *(Edge count corrected 2026-09-07: this row first said 41. That figure was read off a
+  `.index-graph.json` stamped `generated_at: 2026-09-01` — a six-day-old sidecar — without
+  regenerating first. The gated/ready counts happened to survive the staleness; the edge count did
+  not. Regenerate before measuring off a generated artifact; `generated_at` exists to be checked.)*
+  **Priced honestly:** 85% of rows are already ready, so this
   buys little dispatch discrimination on its own — its value is that it makes cycle-class defects
   like the two rows above visible on the hub instead of requiring someone to run the computation by
   hand. Adapted from Prove2Me's `open-leaves` endpoint (intake-1299#record), with the caveat that

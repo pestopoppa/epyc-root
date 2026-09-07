@@ -443,6 +443,66 @@ def write_block(state: dict) -> bool:
     return False
 
 
+def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
+    """Stamp `readiness` + `blocked_by` on every node IN PLACE; return the tally.
+
+    THE RULE, and only this rule: a node is **blocked** iff at least one of its `dep` edge
+    targets still has `open > 0`. Otherwise it is **ready**. A node with `open == 0` of its own
+    is neither — it is `no_open`.
+
+    THREE VALUES, NOT TWO. `no_open` is deliberately not called "closed" or "done": `open` here
+    is the count of DISPATCHABLE boxes from `scan_handoff`, so `open == 0` also covers a handoff
+    whose remaining boxes are all guarded (DO-NOT-DISPATCH / reusable checklist) or refused by
+    `backlog_row_check.classify`. Calling that "closed" would assert a completion the counts do
+    not support, and folding it into "ready" would put ten undispatchable rows on the dispatch
+    frontier. It is the absence of a question, not an answer to one. Same ruling as this module's
+    header ("WHY `open == 0` IS NOT 'COMPLETE'"), applied one level down.
+
+    DERIVED, NEVER AUTHORED — exactly like `open` and `last_advanced`. There is no readiness
+    column in the thin-row contract and there must not be one: the contract's ratified rule is
+    that a row carries a pointer and a next step, and status never goes in a row. Readiness is
+    status, and a hand-written one would be wrong within a day of the row it depends on moving.
+
+    UNKNOWN DEP IDS ARE SKIPPED, not treated as blocking. `--check`'s `BAD DEP` already owns
+    that error; making a dangling id also gate its source would report one bad cell twice and,
+    worse, would silently park a dispatchable row behind a typo.
+
+    NOT the same word as `node["state"]`, which is `active`/`blocked` meaning WHICH DIRECTORY
+    the handoff file sits in (`handoffs/blocked/`). That is a filing decision a human made about
+    the whole handoff; this is a computed property of the dep graph. A node can be
+    `state="active"` + `readiness="blocked"`, or `state="blocked"` + `readiness="ready"` — both
+    are meaningful and neither is a defect. They are never merged.
+
+    Cycles are NOT special-cased here: every row on a dep cycle whose members have open work
+    comes out `blocked`, which is the honest answer (none of them can ever become ready).
+    `dep_cycles()` in `--check` is what names the cycle as a defect; this function only reports
+    the consequence.
+    """
+    open_by_id = {n["id"]: n.get("open", 0) for n in nodes}
+    gates: dict[str, set[str]] = {}
+    for e in edges:
+        if e.get("kind") != "dep":
+            continue
+        target_open = open_by_id.get(e["to"])
+        if target_open is None:
+            continue                       # unknown id — BAD DEP owns it; never gate on a typo
+        if target_open > 0:
+            gates.setdefault(e["from"], set()).add(e["to"])
+
+    counts = {"ready": 0, "blocked": 0, "no_open": 0}
+    for n in nodes:
+        blockers = sorted(gates.get(n["id"], ()))
+        n["blocked_by"] = blockers
+        if n.get("open", 0) == 0:
+            n["readiness"] = "no_open"
+        elif blockers:
+            n["readiness"] = "blocked"
+        else:
+            n["readiness"] = "ready"
+        counts[n["readiness"]] += 1
+    return counts
+
+
 def build_graph(state: dict) -> dict:
     """Node/edge view of the backlog for the dashboard's graph panel.
 
@@ -466,6 +526,18 @@ def build_graph(state: dict) -> dict:
 
     The other day-one signal is the LIVENESS MAP — colour by how long since a
     checkbox moved, size by open count — which the indices never carried.
+
+    SCHEMA v2 (2026-09-07) adds a THIRD derived channel: per-node `readiness`
+    (`ready` / `blocked` / `no_open`) plus the `blocked_by` ids that produced it,
+    from `derive_readiness` — see that function for the rule and for why there are
+    three values rather than two. Additive only; every v1 field keeps its name and
+    meaning, which is why a v1 reader stays correct against a v2 file.
+
+    PRICED HONESTLY: 136 of 160 open rows are already ready, so readiness buys
+    little dispatch discrimination on its own. Its value is that a cycle-class
+    defect — a row that can never become ready — now shows on the hub instead of
+    requiring someone to run the computation by hand, which is how the INF-06 /
+    INF-64 cycle was found at all.
     """
     now = datetime.now(timezone.utc)
     nodes, edges = [], []
@@ -518,8 +590,10 @@ def build_graph(state: dict) -> dict:
     for (src, dst), weight in sorted(seen.items()):
         edges.append({"from": src, "to": dst, "kind": "ref", "weight": weight})
 
+    readiness = derive_readiness(nodes, edges)
+
     return {
-        "schema": "index_graph.v1",
+        "schema": "index_graph.v2",
         "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "nodes": nodes,
         "edges": edges,
@@ -528,6 +602,15 @@ def build_graph(state: dict) -> dict:
             "dep": "hand-authored Deps column — semantic: blocked on",
             "ref": "derived: this handoff's markdown links to that one — no dependency claim",
         },
+        "readiness_values": {
+            "ready": "open work and no `dep` target that still has open work — dispatchable now",
+            "blocked": "open work, but at least one `dep` target still has open > 0",
+            "no_open": "open == 0, so there is nothing to dispatch and nothing to gate. NOT "
+                       "'closed': open == 0 also covers a handoff whose remaining boxes are all "
+                       "guarded (DO-NOT-DISPATCH) or refused by backlog_row_check, and naming "
+                       "that 'done' would assert a completion the counts do not support",
+        },
+        "readiness_counts": readiness,
     }
 
 
@@ -783,8 +866,11 @@ def main(argv: list[str] | None = None) -> int:
     GRAPH.write_text(json.dumps(graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     changed = write_block(state)
     print(f"wrote {SIDECAR.relative_to(REPO_ROOT)}")
+    rc = graph["readiness_counts"]
+    deps = sum(1 for e in graph["edges"] if e["kind"] == "dep")
     print(f"wrote {GRAPH.relative_to(REPO_ROOT)} "
-          f"({len(graph['nodes'])} nodes, {len(graph['edges'])} edges)")
+          f"({len(graph['nodes'])} nodes, {len(graph['edges'])} edges, {deps} dep) — "
+          f"{rc['ready']} ready, {rc['blocked']} blocked, {rc['no_open']} no-open")
     print(f"master index block: {'updated' if changed else 'unchanged'}")
     print(render_block(state))
     return 0
