@@ -907,6 +907,33 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+# ★ STANDING RULE — THE CHAMPION IS ALWAYS CURRENT (operator, 2026-09-07)
+
+**Operator, verbatim:** *"always build on top of the latest champion and rebuild the champion when new
+performance unlocks are achieved. It's what guarantees we always have the best kernel for our machine."*
+And: *"as performance keys are unlocked, upgrade the champion and update the performance numbers. I don't
+want to ask you about it. It should just be part of the results you report."*
+
+**The loop, which is not optional and does not wait for a decision:**
+1. **Every lever is based on the CURRENT champion**, never on pristine and never on the experimental tip.
+   A brief that names an older base is stale and must be corrected before dispatch.
+2. **Every lever is measured AGAINST the champion's current headline**, not against pristine. A delta over a
+   superseded base is not a result.
+3. **When a lever validates, it is folded into the champion immediately and the champion's headline is
+   re-measured** — claim-grade, 24-prompt production harness, ABA ≥3 rounds, plain and MTP, leading with MTP.
+4. **The new headline is reported as part of the result.** Not held for a decision, not reported as a delta
+   awaiting integration.
+5. **Promotion to PRODUCTION remains separately operator-gated** (PROD-2 deferred, CHAMP-1) — *champion*
+   currency and *production* promotion are different things and must not be conflated.
+
+**Why this rule exists, measured:** four validated bit-identical levers sat default-OFF on two branches and
+were never measured together. Combining them was **super-additive (1.5017 predicted, 1.6934 measured)** and
+the campaign spent a day quoting solo numbers that were wrong in both directions — `ROWCOL_SPLIT` understated
+(+3.05% → +5.3%), `TINY_SOLO` and `EMPTY_SKIP` overstated (+3.86%/+0.87% → below the noise floor).
+**A lever's value is a property of the kernel it is measured in. Re-measure, never re-scale.**
+
+**CURRENT CHAMPION: `inf70/champion` @ `6f032c48d` — 35.407 t/s / 28.24 ms served, 1.4834×, bit-identical.**
+
 # ★★★★★ THE CHAMPION KERNEL — `35.407 t/s` SERVED, `1.4834×`, BIT-IDENTICAL. 2026-09-06.
 
 **Branch `inf70/champion` @ `6f032c48d`** (build **10234**), `/mnt/raid0/llm/worktrees/inf70/champion`.
