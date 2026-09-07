@@ -1156,6 +1156,28 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       direction, tamper refusal, pre-hook refusal, and absence of private grading logic. The adapter
       PROJECTS; `claim_tuple.grade()` decides.
 
+- [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by
+      HARNESS-1; distinct producer from the already-wired `inf70_roofline_ledger.py`). Each arm emits a
+      token-weighted rate with a `pred_n>=16` floor, per-node placement, build id, artifact SHA,
+      coherence classified by REASON, and — since 2026-09-07 — a per-arm **CONTENTION verdict**
+      (`foreign_cpu_max`, `foreign_cpu_mean`, DIRECT vs SMT-SIBLING).
+      **The contention verdict is the write-side hook that matters, and it is unrecoverable after the
+      fact**: it decides whether an arm can support a claim at all. The measured argument is this
+      campaign's own — pair p95 moved **19.89% → 6.25%** purely by dropping one contended arm, and that
+      was only possible because the sampler recorded contention *during* the arm, not before it (a
+      `loadavg` pre-gate provably cannot: one arm passed at load 11.61 and then ran through 23.9 → 32.0
+      → 55.7).
+      **Pre-2026-09-07 arms are PRE-HOOK and are worse than absent**: the sampler compared
+      `Cpus_allowed_list` literally against `0-95`, so work pinned to `184-191` — the SMT siblings of
+      bench cores 88-95 — was labelled `disjoint-from-0-95`. Their labels are **WRONG, not missing**.
+      They emit zero rows and must never be reconstructed on read (the DF2-4 precedent).
+      **Locator/support key = the ARM, never the per-prompt row.** 20 per-prompt wins inside one
+      pairing are not 20 independent witnesses — a quiet moment lifts all 20 (SC6-HAZARD class).
+      The adapter PROJECTS into `ClaimTuple`; **do not write a new grading rule** —
+      `claim_tuple.grade()` decides (`docs/design/vidya-pilot-spec.md` §4.7).
+      Source-table row added to `scripts/vidya/adapters/README.md` the same day.
+
+
 ## Dependency notes
 
 V2 blocks P1 (the pilot spec must exist before the engine). P0 can run in parallel with V2 (it is
