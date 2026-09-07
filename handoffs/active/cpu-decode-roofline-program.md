@@ -1117,6 +1117,72 @@ the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.1
   applies only to the single-row case, where the split must buy back the barrier D1 avoids.
 - **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
 
+**★★★ SYNC-7 / SYNC-8 / SYNC-13 COMPLETE 2026-09-07 — zero compute. Three champion-relevant findings, one
+invalidated result, two upstream bugs, and one of my premises inverted.**
+
+**★ CHAMPION-RELEVANT #1 — `GGML_ROWCOL_SPLIT` DOES NOT REACH `SCALE`.** `scale_f32` does **not** route
+through `get_rowcol_split`, so its **375 nodes/token stay thread-0-only EVEN UNDER `GGML_ROWCOL_SPLIT=1`.**
+The census reading of SCALE was correct, and *stronger* than assumed — but it means a live gap remains in the
+shipped champion. **Candidate for the next rebuild.**
+**★ CHAMPION-RELEVANT #2 — `TINY_SOLO` whitelists `GGML_OP_CLAMP` on a FALSE PREMISE** (`ggml-cpu.c:2705`):
+the justification is that thread 0 already owns the whole row, but `clamp_f32` strides **columns**
+(`ops.cpp:6059`), so thread 0 owns **1/48**. Still bit-identical, but it **serialises parallel work.** Zero
+CLAMP nodes in the qwen4exp census, so **no measured result is affected** — drop the case anyway.
+**★ CHAMPION-RELEVANT #3 — `TINY_SOLO` and `ROWCOL_SPLIT` COLLIDE.** With `ROWCOL_SPLIT=1` the same
+"thread 0 owns the row" premise fails for **the whole whitelist** in the **512–4096-element band, where both
+levers claim the same node.** Both ship ON in the champion. **Audit before the next rebuild.**
+**★ INVALIDATED: D8's +0.97%.** `ggml_get_rows_min_bytes()` is referenced at **exactly one line — the
+planner** (`ggml-cpu.c:2872`), while the three kernels (`ops.cpp:5246/5290/5334`) unconditionally build
+`ggml_get_rows_split_init(...)`. **Both arms ran the identical parallel kernel; the number is noise, and
+"small gathers should stay single-task" is UNTESTED.** *(D8's real win is unaffected — SYNC-4 re-measured it
+same-binary at +15.4%.)* Nothing else rested on an `n_tasks` reading; SYNC-2's TINY_SOLO argument rests on
+`ggml_nrows(dst)==1`, not the planner.
+**Classification (b) — planner says 1, kernel actually splits**: `SUB`, `SQR/SQRT/LOG/SIN/COS`, the **17
+scalar `UNARY` cases (376 nodes/token)**, `MEAN`, `SET`, `CLAMP`, `SET_ROWS`. And
+**`WIN_PART`/`WIN_UNPART`/`GET_REL_POS` ignore `ith`/`nth` outright — all 48 threads write the same
+destination.** `ROPE` and `DIAG_MASK_INF` were a **false alarm**: both return `n_threads` and were never
+capped.
+
+**SYNC-8 — the rule is sharper than the brief's.** The governing condition is not "does the plan use
+`n_tasks`" but **`n_tasks >= D`, where `D` is the count of threads that actually dereference `wdata`.**
+Sweeping all 16 `n_tasks`-sized sites: **exactly one real hit.**
+- **`SET_ROWS` — REAL.** Plan `4*ne00*1` vs kernel `wdata + (nc+CACHE_LINE_SIZE_F32)*ith` with
+  `D = min(nr,nth)`; **`nr >= nth` overflows for any `nc`, and `nr=2, nc=1024` already does.** Reached on the
+  F16-src → non-F16-dst branch — a **quantised KV cache written from F16**, so any prefill of N tokens gives
+  `nr=N`. Not reachable from qwen4exp decode. **Fix is to size by `n_threads`, NOT to clamp `ith`** — clamping
+  would drop rows that threads `ith>=1` genuinely own, **turning an overflow into wrong output.**
+- **`SOFT_MAX` — FALSE POSITIVE**, provably in-bounds for every shape; the pointer is merely *formed* out of
+  range on work-less threads. **`TOP_K` is safe with exactly zero slack** — it breaks first if the global pad
+  ever goes.
+- **NEW HIT — `MAP_CUSTOM1/2/3` and `CUSTOM`**: they honour the caller's `n_tasks` in the planner
+  (`:2960-2993`) but pass `params->ith, params->nth` **verbatim** to the kernel (`ops.cpp:11819`, `:11862`).
+  **A custom op registered `n_tasks=1` — the documented way to ask for serial — runs on all 48 threads.**
+  Public-API contract violation. §2.6 of the report has ready-to-lift upstream issue text for all four.
+
+**SYNC-13 — MY PREMISE WAS INVERTED, and the flag is disqualified for a different reason than I gave.**
+Sites 1–5 are `disable_chunking = ggml_is_numa()`: **`false` gives fine chunks plus atomic stealing; `true`
+gives STATIC one-chunk-per-thread.** So enabling NUMA would make those paths **MORE static, not less** — the
+opposite of what I briefed. **And the residency claim is safe either way**: `iqk_mul_mat` partitions
+statically as `first_x = ith*nrc_x` and there is **no reference to `ggml_is_numa()` anywhere under `iqk/`**,
+so the 244 GB/s draft head is **structurally immune to the flag.**
+**What actually disqualifies it is the AFFINITY family**: `set_numa_thread_affinity` (`:2553`, called per
+worker at `:4052`) issues `pthread_setaffinity_np` that **overwrites the external `taskset`/`numactl` mask the
+entire placement result rests on.** Plus the loader's `MADV_RANDOM`, which suppresses THP as a side effect —
+the same end as `GGML_NOHUGEPAGE` but bundled with losing prefetch.
+**Recommendation: keep it false, never pass `--numa`.** But **the chunker subset IS cleanly separable** — a
+`GGML_STATIC_CHUNKS` knob at `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), **two lines, no
+affinity, no loader change.** That is the single arm worth running if anyone wants it.
+
+- [ ] **SYNC-17 — three champion-relevant fixes for the NEXT rebuild** (not folded into CHAMPION-3, which is
+      mid-flight): extend `ROWCOL_SPLIT` to reach `scale_f32` (**375 nodes/token currently thread-0-only in
+      the shipped champion**); drop `CLAMP` from the `TINY_SOLO` whitelist; and **audit the TINY_SOLO ×
+      ROWCOL_SPLIT collision in the 512–4096-element band, where both shipped levers claim the same node.**
+- [ ] **SYNC-18 — re-test "small gathers should stay single-task."** D8's +0.97% was measured with both arms
+      running the identical parallel kernel, so the hypothesis is **untested**, not refuted. Cheap now that
+      `GGML_GET_ROWS_MIN_BYTES` is known inert at the kernel.
+- [ ] **UP-2 — upstream the two ggml contract bugs**: the `SET_ROWS` `wdata` overflow (size by `n_threads`)
+      and the `MAP_CUSTOM*`/`CUSTOM` `n_tasks` violation. Issue text ready in `sync7-8-13/REPORT.md` §2.6.
+
 **★ CROSS-CAMPAIGN EXCHANGE WITH AUTOKERNEL 2026-09-07 — the leave-one-out gap is CONFIRMED and filed there
 as R23-48.** Autokernel's own answer, verbatim in substance: *"no — autokernel never re-tests an accumulated
 lever."* Each **new** keep is paired-A/B'd against the accumulated tip, so it is measured on top of everything
