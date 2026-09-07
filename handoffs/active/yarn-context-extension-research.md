@@ -67,13 +67,22 @@ The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tests entity
 
 **Why this benchmark matters for YaRN**: RULER and NIAH test retrieval ("find the needle"). Tulving tests episodic memory ("track this entity across 200 chapters and order events chronologically"). YaRN quality degradation at extended contexts may manifest differently across these axes — a model could pass NIAH at 512K but fail temporal ordering.
 
-**Scaling data from the benchmark** (across 24 models at 100K tokens):
+**Scaling data from the benchmark** (across 21 models at 100K tokens):
 - Sharp performance cliff between 10K and 100K for most models. Only Gemini-2.5 survives with <2% recall loss.
 - Chronological awareness degrades faster than simple recall at every scale transition
 - At 1M tokens (Gemini-2.5-Pro only): recall 0.968→0.654, chronological 0.796→0.320
 - **Prediction for YaRN**: Expect steeper degradation on chronological awareness than on RULER/NIAH at equivalent context lengths. If YaRN-extended Qwen3.5 passes RULER at 512K but fails Tulving chronological awareness, it signals attention distribution problems that YaRN's RoPE scaling doesn't fully compensate.
 
 **Integration**: The 200ch dataset (Figshare download, MIT license) is queued as P3b in [research-evaluation-index.md](research-evaluation-index.md). Add to P4 YaRN eval alongside RULER quality degradation curve.
+
+**Rescoped 2026-09-07 (intake-408#record, dive-verified).** The Tulving-as-YaRN-gate hypothesis is
+retained and is sound in principle — a YaRN-extended model that passes NIAH but fails Tulving
+temporal ordering signals an attention-distribution problem RoPE scaling does not compensate — but
+it is now **downstream of M-12, not a competitor for the same inference window**, and it must use
+the **200ch/100K** split and the **fixed tau** (M-12e). "24 models" corrected to 21. The archived
+"P3b" pointer above is historical: P3b is retired to
+`../archived/research-evaluation-index-history-through-2026-06-19.md:114`; the live owner is
+[episodic-memory-integrity.md](episodic-memory-integrity.md) M-12.
 
 **EM-LLM alternative (intake-409)**: EM-LLM (arXiv 2407.09450) extends context to 10M tokens via episodic memory retrieval with no fine-tuning. Outperforms InfLLM +4.3% on LongBench. Complementary to YaRN (YaRN extends native window; EM-LLM retrieves beyond it). However, full integration requires deep llama.cpp modifications (per-layer KV access, unified softmax) — estimated 4-8 weeks. **Not viable for our stack without major surgery.** YaRN remains the preferred context extension path.
 

@@ -16,6 +16,53 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
 
 ## Open
 
+- [x] **Break the INF-06 ⇄ INF-64 dep cycle.** ✅ 2026-09-07 — found by running the readiness
+  computation over `.index-graph.json` for the first time. `inference-research-index.md:17` listed
+  INF-64 among INF-06's deps and `:18` listed INF-06 as INF-64's only dep, so under any readiness
+  rule **neither row could ever become ready**, while both rendered as ordinary dispatchable rows
+  everywhere. The back-edge was expressing RIDER-OF — `autokernel-restart-and-strip.md` says in its
+  own header "This is a rider on `autokernel-research-loop.md` … Owning index row: **INF-06**" — in a
+  column whose only semantic is BLOCKED-ON. Deleted; the relationship survives untouched as the
+  derived `ref` edge the graph builder already generates from the markdown link, so nothing was lost.
+- [x] **`index_state.py --check`: dep-graph cycle detection.** ✅ 2026-09-07 — `dep_cycles()`,
+  iterative DFS emitting one error per elementary cycle with the path as the message; unknown ids
+  are left to `BAD DEP` so one bad cell cannot produce two errors. 12 tests in
+  `tests/test_index_state_dep_cycles.py`, including each-cycle-reported-once, self-loops,
+  diamonds-are-not-cycles, and the real INF-06/INF-64 shape plus its fixed form. **Why this was
+  invisible before:** `BAD DEP` validates that a dep points at a *known* row, which every edge in a
+  cycle does — each individual edge is well-formed, and only the closure is broken.
+- [ ] **Derive per-node `ready` / `blocked` in the graph builder** — blocked ⟺ some `dep` target
+  still has `open > 0`. Bump the schema to `index_graph.v2` and render blocked nodes distinctly on
+  the `:8100` backlog graph. Do **not** add a hand-authored field: this is derived, exactly like
+  `open` and `last_advanced`. **Measured baseline 2026-09-07: 24 of 160 open rows gated, 136 ready,
+  10 with no open work**, over **42** `dep` edges across 170 nodes.
+  *(Edge count corrected 2026-09-07: this row first said 41. That figure was read off a
+  `.index-graph.json` stamped `generated_at: 2026-09-01` — a six-day-old sidecar — without
+  regenerating first. The gated/ready counts happened to survive the staleness; the edge count did
+  not. Regenerate before measuring off a generated artifact; `generated_at` exists to be checked.)*
+  **Priced honestly:** 85% of rows are already ready, so this
+  buys little dispatch discrimination on its own — its value is that it makes cycle-class defects
+  like the two rows above visible on the hub instead of requiring someone to run the computation by
+  hand. Adapted from Prove2Me's `open-leaves` endpoint (intake-1299#record), with the caveat that
+  their readiness is *free* from a decomposition invariant (a leaf has no children, therefore no
+  unsatisfied prerequisites) while ours must actually be computed.
+- [ ] **Preserve the reason when a row's `Next action` is re-pointed.** The cell is overwritten with
+  no trace, so *why the previous target was abandoned* is destroyed and the next session can re-walk
+  a rejected path at full price. First check whether `build_handoff_timeline.py` already captures
+  enough; if not, the `reason` belongs in the timeline sidecar — **never in the row**, because status
+  and history never go in a row (`docs/guides/agent-workflows/handoff-index-authoring.md`). Precedent:
+  Prove2Me requires a `reason` on every milestone re-link precisely so solvers avoid rejected paths,
+  and exposes the history publicly as its highest-signal governance artifact (intake-1299#record).
+- [ ] **Derive an EPYC promote-vs-inline rule for backlog rows**, on the *shape* of intake-1309's
+  table: (i) a mechanical size metric, (ii) a named promotion-signal list for the ambiguous band,
+  (iii) an explicit tie-break under uncertainty, (iv) a failure-isolation criterion independent of
+  reuse. **Measure our own row-size distribution FIRST — do not import their 10/40 line constants.**
+  They are self-declared "tunable defaults", never measured, and derived from Lean proof lines.
+  More importantly **their tie-break inverts for us**: their default is *inline when unsure* because
+  an uploaded theorem is immutable while an inlined lemma can still be promoted later. Our rows are
+  freely editable and deletable, so that reasoning points the opposite way and the tie-break must be
+  re-derived rather than copied.
+
 - [x] **Decide whether `.index-state.json` / `.index-graph.json` should be git-ignored.**
   ✅ 2026-08-11 — `mainD` (A19). **Ignored**, matching `data/handoff_timeline.json`, which is the
   same class of artifact from the same producer at the same cadence; the two are no longer
@@ -170,6 +217,17 @@ current rows by TASK TEXT; the old queue's `file:line` anchors were ~60% rotted.
   first open box — honest but uncurated. The 39 live rows were hand-written; the rest improve as
   sessions touch them. Filing 133 copy-edits as tasks would be busywork, and their staleness is a
   backlog-hygiene question (are these handoffs still wanted?) rather than a wording one.
+
+- **Checkbox-level dependency edges** (considered and declined 2026-09-07, intake-1299). Prove2Me's
+  unit of work is the leaf, not the file, which is what makes its frontier meaningful; our `dep`
+  edges are handoff-to-handoff (170 files) while dispatch actually happens on ~1,528 checkbox rows,
+  so the granularities do not line up. Adding per-row deps is a schema change to the thin-row
+  contract, whose ratified rule is that a row carries "a pointer and a next step; **status, evidence
+  and history never go in a row**" — and a per-row dependency is closer to status than to pointer.
+  That is an operator decision about the contract, not a session's. Note the checkbox plane already
+  has a *separate* mechanism at that granularity: `backlog_row_check.py` blocks a task on the owning
+  handoff's own `## Dependency Graph` block (12 of 2,177 open boxes live). The two are complementary
+  and deliberately not merged.
 
 ## Reporting
 

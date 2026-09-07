@@ -59,6 +59,73 @@ FT_DEPENDS = "epyc.vidya/frame/claim_depends_on/v1"
 # nondeterminism space includes sampling state and hardware numerics.
 _REQUIRED_DECODER_KEYS = {"prompt", "seed", "model_version", "temperature", "tool_output_hash"}
 
+# SC58 — the statement-binding half of judge discipline, and it is a DIGEST, never a label.
+#
+# Until 2026-09-07 `_check_judgment` asked only whether `read_set` and `tool_output_hash` were
+# PRESENT. `read_set: ["a"]` folded cleanly, and so did `tool_output_hash: "sha256:aa"`. That is a
+# contract on the NAME of a field, not on its content, so a judgment could testify about a version
+# of an artifact that no longer exists -- indefinitely and undetectably, because nothing anywhere
+# re-checked the label against anything. `intake-1308#03`: "a read-back of an older version of the
+# code is worse than none, because it testifies about the wrong artifact", and the platform that
+# finding came from enforces the rule only as prose and stores no hash of the audited text -- which
+# is exactly why it cannot detect its own violation. We were in the identical position.
+#
+# So `read_set` entries are in-toto SUBJECTS: `{"name": <artifact>, "digest": {"sha256": <hex>}}`.
+# The name is not decoration -- a digest with no name is pinned but anonymous, and a move in an
+# anonymous artifact is undetectable, which would leave the second half of the property (going
+# dirty when the digest MOVES) unimplementable. This is a fail-closed, prospective requirement:
+# the live ledger contains zero judgment frames, so nothing existing is invalidated by it.
+_DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
+_PREFIXED_DIGEST_RE = re.compile(r"^(?:sha256:)?[0-9a-f]{64}$")
+
+
+def _digest_of(value: object) -> str | None:
+    """Normalize a content digest to `sha256:<hex>`, or None when it is not one."""
+    if isinstance(value, str):
+        v = value.strip().lower()
+        if _PREFIXED_DIGEST_RE.match(v):
+            return v if v.startswith("sha256:") else f"sha256:{v}"
+        return None
+    if isinstance(value, dict) and len(value) == 1:
+        (alg, hexdigest), = value.items()
+        if (isinstance(alg, str) and isinstance(hexdigest, str)
+                and alg.strip().lower() == "sha256"
+                and _DIGEST_RE.match(hexdigest.strip().lower())):
+            return f"sha256:{hexdigest.strip().lower()}"
+    return None
+
+
+def _judged_subjects(frame: dict) -> list[tuple[str, str]]:
+    """(artifact name, digest) pairs a judgment frame pinned itself to."""
+    key = frame.get("provenance", {}).get("replay_key")
+    if not isinstance(key, dict):
+        return []
+    out: list[tuple[str, str]] = []
+    for entry in key.get("read_set") or []:
+        if isinstance(entry, dict):
+            name, digest = entry.get("name"), _digest_of(entry.get("digest"))
+            if isinstance(name, str) and name and digest:
+                out.append((name, digest))
+    return out
+
+
+def _pinned_subjects(frame: dict) -> list[tuple[str, str]]:
+    """Every (artifact, digest) this frame OBSERVES, from either pinning slot.
+
+    Two slots, because two kinds of frame legitimately observe an artifact: the in-toto `subjects`
+    list any frame may carry (`frames.validate_frame` already validates its shape and had no
+    producer), and a judgment's own `read_set`. Ledger order decides which observation is current;
+    that is well-defined because `fold` requires its input in ledger order.
+    """
+    out = list(_judged_subjects(frame))
+    for subj in frame.get("subjects") or []:
+        if not isinstance(subj, dict):
+            continue
+        name, digest = subj.get("name"), _digest_of(subj.get("digest"))
+        if isinstance(name, str) and name and digest:
+            out.append((name, digest))
+    return out
+
 
 class FoldError(Exception):
     """The frame set cannot be folded deterministically."""
@@ -98,10 +165,31 @@ class Belief:
     # source was corrected" and "something it rests on was withdrawn" are different problems and
     # get cleared by different people.
     dependency_alerts: list[str] = field(default_factory=list)
+    # SC59. Free-text reasons recorded ON the frames that superseded or retracted this claim's
+    # frames -- "why the ground moved", in the author's own words. Deliberately INERT: no grade, no
+    # witness, no verdict, and not part of `review_required`. It exists because a citer who is told
+    # only THAT a frame was superseded re-walks the rejected reasoning at full price, and the person
+    # who superseded it already knew why. Same rule as `corrections`, for the same reason: we know
+    # the ground shifted, not by how much, and guessing the magnitude is the failure mode.
+    supersession_reasons: list[str] = field(default_factory=list)
+    # SC58. Artifacts a judgment on this claim was pinned to whose digest has since MOVED, with no
+    # later judgment having seen the current one. This is the spec §7.2 `dirty` state -- "a
+    # registered input changed and recomputation has not completed" -- and it maps to `aging` in
+    # THE ONE CLASSIFIER (§8.1), not to `stale`. Kept apart from `corrections` and
+    # `dependency_alerts` for the reason those two are kept apart from each other: "its own source
+    # was corrected", "something it rests on was withdrawn" and "the artifact it was judged against
+    # is no longer that artifact" are three different problems and get cleared by three different
+    # people. It is NOT a one-way ratchet: a later judgment that saw the current digest clears it.
+    dirty_inputs: list[str] = field(default_factory=list)
+
+    @property
+    def dirty(self) -> bool:
+        """Spec §7.2 `dirty` -> §8.1 `aging`. Beliefs go dirty; projections go stale."""
+        return bool(self.dirty_inputs)
 
     @property
     def review_required(self) -> bool:
-        return bool(self.corrections or self.dependency_alerts)
+        return bool(self.corrections or self.dependency_alerts or self.dirty_inputs)
 
     @property
     def flagged(self) -> bool:
@@ -144,6 +232,14 @@ class Belief:
             "corrections": self.corrections,
             "review_required": self.review_required,
         }
+        # Included only when present. The determinism anchor (`FoldResult.state_hash`) is pinned by
+        # a golden fixture, and an always-present empty list would move every hash in the corpus to
+        # record the absence of a field nobody wrote. Deterministic either way: the key is a pure
+        # function of the folded frames.
+        if self.supersession_reasons:
+            out["supersession_reasons"] = self.supersession_reasons
+        if self.dirty_inputs:
+            out["dirty_inputs"] = self.dirty_inputs
         if floor is not None:
             out["verdict"] = self.verdict(floor)
         return out
@@ -201,6 +297,37 @@ def _check_judgment(frame: dict) -> None:
         raise FoldError(
             f"judgment frame {frame.get('frame_id', '<unsaved>')} replay_key missing 'read_set'"
         )
+    fid = frame.get("frame_id", "<unsaved>")
+    # SC58a: the read set must be DIGESTS OF NAMED ARTIFACTS, not labels for them.
+    read_set = key["read_set"]
+    if not isinstance(read_set, list) or not read_set:
+        raise FoldError(
+            f"judgment frame {fid} replay_key.read_set must be a non-empty list -- a judgment that "
+            "read nothing has nothing to be replayed against")
+    for i, entry in enumerate(read_set):
+        if not isinstance(entry, dict) or not isinstance(entry.get("name"), str) \
+                or not entry.get("name"):
+            raise FoldError(
+                f"judgment frame {fid} replay_key.read_set[{i}] is not a named artifact: expected "
+                '{"name": <artifact>, "digest": {"sha256": <hex>}}. A bare label testifies about '
+                "whatever that name happens to mean later, which is the defect this pins")
+        if _digest_of(entry.get("digest")) is None:
+            raise FoldError(
+                f"judgment frame {fid} replay_key.read_set[{i}] ({entry.get('name')!r}) carries no "
+                'sha256 content digest: expected {"sha256": <64 hex>}. A judgment pinned to a name '
+                "instead of a digest cannot detect that it now testifies about the wrong artifact")
+    if _digest_of(key.get("tool_output_hash")) is None:
+        raise FoldError(
+            f"judgment frame {fid} replay_key.tool_output_hash is not a sha256 content digest "
+            f"({key.get('tool_output_hash')!r}) -- a field named 'hash' that holds a label is a "
+            "contract on the name of the field, not on its content")
+    # SC58b: and it must say WHOSE belief it judged, or a dirty judgment has no surface to appear
+    # on. Judgments were previously folded into a vote tally that nothing joined to a claim.
+    if not isinstance(frame.get("assertion", {}).get("claim_id"), str) \
+            or not frame["assertion"]["claim_id"]:
+        raise FoldError(
+            f"judgment frame {fid} has no assertion.claim_id: a judgment nothing can attribute to "
+            "a belief can never be reported stale on that belief's review path")
 
 
 def _normalize_locator(url: str) -> str:
@@ -249,12 +376,34 @@ def fold(
     # human said the two records are one source or one derived from the other.
     dependent_group: dict[str, str] = {}   # claim_id -> group key
     judgment_votes: dict[str, str] = {}   # replay-key hash -> first frame_id that voted
+    # (claim_id, artifact) -> every digest a COUNTED judgment on that claim actually saw. The set,
+    # not the latest: a re-judgement at the current digest is what clears `dirty`, and keeping only
+    # the newest would make the state depend on which judgment happened to be last rather than on
+    # whether the current artifact has been judged at all.
+    judgment_reads: dict[tuple[str, str], set[str]] = {}
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
 
     # Pass 1: collect retractions first, so a retracted support frame never enters the fold at
     # all. Zero-substitution on this carrier is exactly "the token is not there".
+    # The frame -> claim index is built in the same walk: a retraction names the FRAME it removes,
+    # so without it there is no way to say WHICH belief a retraction reason belongs to when the
+    # retraction does not repeat the claim id itself (SC59).
+    frame_claim: dict[str, str] = {}
+    # SC58: the CURRENT digest of every named artifact anything in this ledger pinned itself to.
+    # Last observation in ledger order wins -- `fold` requires its input in ledger order, so this
+    # is total and deterministic, and the fold still reads no file and no clock to compute it.
+    artifact_digest: dict[str, str] = {}
     for frame in frames:
+        for _name, _digest in _pinned_subjects(frame):
+            artifact_digest[_name] = _digest
+    for frame in frames:
+        assertion = frame.get("assertion")
+        fid = frame.get("frame_id")
+        if isinstance(assertion, dict) and isinstance(fid, str):
+            cid = assertion.get("claim_id")
+            if isinstance(cid, str) and cid:
+                frame_claim.setdefault(fid, cid)
         if frame.get("frame_type") == FT_RETRACT:
             target = frame.get("assertion", {}).get("retracts")
             if isinstance(target, str):
@@ -397,6 +546,10 @@ def fold(
                 superseded_judgments.append(fid)
                 continue
             judgment_votes[key_hash] = fid
+            judged_claim = frame["assertion"]["claim_id"]
+            for name, digest in _judged_subjects(frame):
+                judgment_reads.setdefault(
+                    (_canonical(judged_claim), name), set()).add(digest)
 
         else:
             ignored[str(ftype)] = ignored.get(str(ftype), 0) + 1
@@ -421,6 +574,60 @@ def fold(
     for v in dependency_alerts.values():
         v.sort()
 
+    # SC58 STRATUM: a judgment is dirty when the artifact it was pinned to has moved and NO
+    # judgment on that claim has yet seen the artifact's current digest. Computed after the frames
+    # are read, from digests alone -- the fold never opens the artifact, so this stays a pure
+    # function of the ledger. The "no judgment has seen the current digest" form is what keeps this
+    # from becoming the one-way ratchet the correction rule already had to be rescued from (spec
+    # risk §19.7): re-judge against the new artifact and the belief clears itself.
+    dirty_inputs: dict[str, list[str]] = {}
+    for (cid, name), seen in sorted(judgment_reads.items()):
+        current = artifact_digest.get(name)
+        if current is not None and current not in seen and cid in claims:
+            dirty_inputs.setdefault(cid, []).append(
+                f"{name}: judged at {', '.join(sorted(seen))}, now {current}")
+    for v in dirty_inputs.values():
+        v.sort()
+
+    # SC59: WHY the ground moved, carried from the frame that moved it to the belief a citer reads.
+    #
+    # Two carriers, one rule. A retraction is a first-class claim frame, so its reason is part of
+    # what it ASSERTS (`assertion.reason`); a supersession is a statement about the superseding
+    # frame, so its reason rides in `pubinfo.supersedes_reason` beside `supersedes` (spec §3.5).
+    #
+    # The reason is INERT by construction and this is the whole point of the field. It is collected
+    # AFTER the support/oppose buckets are closed, it is never a witness, it never enters
+    # `pro`/`con`/`pro_paths`/`con_paths`, it is not part of `review_required`, and the gate may
+    # only append it to what a refusal SAYS -- never to what a refusal DECIDES. Same rule as
+    # corrections, for the same reason: we know the ground shifted, not by how much, and a system
+    # that guessed the magnitude from prose would be manufacturing exactly the confidence this
+    # substrate exists to refuse.
+    supersession_reasons: dict[str, list[str]] = {}
+    for frame in frames:
+        assertion = frame.get("assertion") if isinstance(frame.get("assertion"), dict) else {}
+        pubinfo = frame.get("pubinfo") if isinstance(frame.get("pubinfo"), dict) else {}
+        moves: list[tuple[str, object, object]] = []
+        if frame.get("frame_type") == FT_RETRACT:
+            moves.append(("retraction of", assertion.get("retracts"), assertion.get("reason")))
+        if pubinfo.get("supersedes"):
+            moves.append(("supersession of", pubinfo.get("supersedes"),
+                          pubinfo.get("supersedes_reason")))
+        for verb, target, text in moves:
+            if not isinstance(text, str) or not text.strip():
+                continue   # absence is recorded as absence; a reason is never invented on read
+            raw = assertion.get("claim_id")
+            if not isinstance(raw, str) or not raw:
+                raw = frame_claim.get(target) if isinstance(target, str) else None
+            if not isinstance(raw, str) or not raw:
+                continue
+            cid = _canonical(raw)
+            if cid not in claims:
+                continue   # a reason never CREATES a belief -- it only annotates one that exists
+            supersession_reasons.setdefault(cid, []).append(
+                f"{verb} {target}: {text.strip()}")
+    for v in supersession_reasons.values():
+        v.sort()
+
     iterations = 0
     while True:
         changed = False
@@ -442,6 +649,8 @@ def fold(
                 or prev.con != con
                 or prev.corrections != corrections
                 or prev.dependency_alerts != dependency_alerts.get(claim_id, [])
+                or prev.supersession_reasons != supersession_reasons.get(claim_id, [])
+                or prev.dirty_inputs != dirty_inputs.get(claim_id, [])
             ):
                 beliefs[claim_id] = Belief(
                     claim_id=claim_id,
@@ -456,6 +665,8 @@ def fold(
                     pro_sources=sorted(set(pro_sources.get(claim_id, []))),
                     con_sources=sorted(set(con_sources.get(claim_id, []))),
                     dependency_alerts=dependency_alerts.get(claim_id, []),
+                    supersession_reasons=list(supersession_reasons.get(claim_id, [])),
+                    dirty_inputs=list(dirty_inputs.get(claim_id, [])),
                 )
                 changed = True
         if not changed:

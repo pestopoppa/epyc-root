@@ -52,6 +52,95 @@ Related existing work (do NOT duplicate):
   between subagent outputs (OrchBench's own weak proxy for this) — our Task/SendMessage records carry
   real parent→child edges; use those. Output should be joinable against `queue.jsonl` task IDs for a
   fleet-level view.
+- [x] **FM-5 — Per-subagent OUTCOME accounting (intake-1304; 2026-09-07).** ✅ 2026-09-07 — see the RESULT block below the FM-6 row; read the bounds before quoting any number. Extend the FM-1
+  collector with an outcome bucket per subagent — `produced-and-used` / `produced-and-discarded` /
+  `no-output` / `blocked` / `aborted` — and a token total per bucket, over the existing
+  `data/fanout_timing/` corpus (2428 workflows, 4727 subagents). **Target metric: the share of
+  fan-out tokens spent on subagents whose work was never used.** Comparator, from the only published
+  per-outcome accounting of a large agent swarm: 80.2% of tokens went to non-merged runs and 51.6%
+  to Aborted alone, and that paper's own remediation list projects a 3–10× cost reduction from
+  fixing orchestration without better models. **This is a strictly WEAKER oracle than FM-4 and does
+  NOT block on it** — "was the output used" is derivable from the parent's subsequent tool calls and
+  git diff, and needs no task-success verdict. That is the whole reason to do it first.
+- [x] **FM-6 — Reconnection requirement (intake-1299; 2026-09-07).** ✅ 2026-09-07 — orphan rate 35.0%; declared width 1,187 -> measured 928 (-21.8%). A fan-out record counts only if
+  each subagent's output is linked to a backlog row or an artifact path; unlinked output is reported
+  as `orphan` and excluded from the measured fan-out width. Adapted from Prove2Me's rule that work
+  which does not reconnect to the mission decomposition earns no credit at all. Note the direct
+  bearing on this handoff's own premise: an orphan-blind width count cannot distinguish a main that
+  dispatched five subagents usefully from one that dispatched five and used none.
+
+### FM-5 / FM-6 RESULT — 2026-09-07, and the bounds are part of the result
+
+`scripts/coordination/fanout_timing.py` at schema `fanout_timing.v2` (a strict superset of v1;
+v1 rows are counted as `schema_v1_no_outcome` and never folded into a bucket). Tests:
+`tests/coordination/test_fanout_timing.py`, 14 -> 58, every positive paired with a mutation that
+removes exactly the signal under test. Corpus: `data/fanout_timing/*.v2.jsonl` +
+`outcome-report.v2.json`, **4,278 subagents over 14,004 workflows**.
+
+| bucket | n | share of known | share of tokens |
+|---|---|---|---|
+| produced-and-used | 2,265 | 60.0% | 13.5% |
+| produced-and-discarded | 1,281 | 33.9% | 79.7% |
+| no-output | 122 | 3.2% | ~0% |
+| aborted | 109 | 2.9% | 6.8% |
+| blocked | 0 | 0.0% | 0.0% |
+| *unknown* | *501* | *excluded* | *excluded* |
+
+**HEADLINE — BANDS, NOT POINTS. Revised 2026-09-07 by SC62.** A point estimate here is a
+different and stronger claim than the one that was made, so the projection into the belief kernel
+(`scripts/vidya/adapters/fanout_outcome.py`) refuses to yield a scalar at all: `.point`, `float()`
+and `int()` on the value raise. Over the **3,777 subagents whose outcome is known**:
+
+| quantity | band |
+|---|---|
+| head-count waste | **40.0% – 95.5%** |
+| token waste (`total` basis) | **86.5% – 99.7%** |
+| token waste (`new` basis) | **83.8% – 99.6%** |
+| blocked share | **>= 0.0%, NO upper bound** |
+| unclassifiable | **exactly 501** (census, held out of every denominator) |
+
+**The two ends rest on different EVIDENCE, not different confidence** — this is not a confidence
+interval and must never be rendered as one. Low end: 2,265 `produced-and-used`, an upper bound on
+usefulness because 2,094 of those verdicts are `parent-reference` substring hits (evidence the
+parent *saw* the output, not that it *used* it). High end: 171 `git-landed`, the only proven floor.
+
+**The familiar 86.5% is the LOW END of one band, never the finding.** On the proven-floor reading
+the token ceiling is **99.7%**, because those 171 subagents account for just 2.85B of 1,110.7B
+tokens. Anything citing a single number off this measurement is citing something we did not measure.
+
+**Why the two units disagree by 46 points, which is itself the finding:** discarded subagents are
+the token-heavy ones. Cost does not track head count here, so a width-based cost argument measures
+the wrong thing — which is exactly what the ratified discarded-work clause says.
+
+**Bounds you must carry when citing this:**
+- **`produced-and-used` is an UPPER bound.** 2,094 of its 2,265 verdicts rest on `parent-reference`
+  (a substring hit in a later parent record), which over-fires for a subagent citing a hot path.
+  The **strict floor of PROVEN reuse is `git-landed` = 171 = 4.5% of known subagents.** So
+  head-count waste is the band **40.0% – 95.5%**, and the token bands are above.
+- **`blocked` = 0 is a floor, not a finding.** Neither transcript format carries a blocked marker;
+  only a narrow API-error tail is detectable. A subagent that reported a blocker in prose is
+  sitting in `produced-and-discarded`.
+- **Token totals are provider-cumulative and skewed** (Codex p50 1.27 M, p90 1.68 B): the token
+  share is a statement about a handful of very long threads. The head-count figure is not.
+- **501 `unknown`** (all Codex, parent rollout exceeded the 512 MB reuse-index cap) are reported
+  separately and folded into nothing. They hold 0.1% of tokens.
+- **Codex `written_paths` is a lower bound** (only `apply_patch` headers parsed), so the 38.0%
+  Codex orphan rate is an upper bound.
+- **The corpus is NOT reproducible.** Claude transcripts have been pruned since the v1 snapshot
+  (1,546 -> 1,078 subagents) and the Codex corpus grew (2,344 -> 13,942 workflows). The v2 artifacts
+  are committed *because* of this: a measurement whose corpus no longer exists is unfalsifiable.
+
+**Comparator, for context only:** the external swarm reported 80.2% of tokens to non-merged runs
+and 51.6% to aborted alone. **Our aborted share is 6.8% — an order of magnitude lower — and our
+loss is concentrated in DISCARDED, not aborted.** Different failure, different remedy: their fix is
+crash-loop repair, ours would be reconnection.
+
+**Do NOT read this wave as an argument to narrow the 3–5 fan-out width.** The evidence points the
+other way: in the one study that varied workers-per-task (1/3/5, intake-1305), the 3- and 5-worker
+arms beat 1 worker on **both** wall-clock and token cost at matched completion, and the central
+coordination tier was only ~11% of compute. The cost driver these sources identify is discarded
+work, not width — which is what FM-5 measures.
+
 - [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** Stage 1 (now): `adamast judge --taxonomy
   adamast/core/mast.json` over a stratified sample of Codex rollouts and Claude transcripts, one LLM
   call per trace, no oracle required — the pipeline is deliberately outcome-blind

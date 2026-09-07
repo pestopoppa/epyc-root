@@ -30,18 +30,84 @@ The carrier is shared. The grading rule is **not**, and pretending otherwise is 
 |---|---|---|---|
 | `measurement` | the claim rule: protocol / n / date / attestation | `Witnessed` | `claim_tuple.py` |
 | `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `research_intake.py` |
+| `verifier` | **projection precondition, not a ladder** — see below | (graded by `claim_tuple.grade()`) | *none, deliberately* |
 
 The literature ceiling is **structural, not a limitation to lift**. An intake entry records what
 someone else reported; no amount of careful reading turns it into a protocol-admissible measurement.
 
-Dependency evidence is not a third carrier class yet. A producer may write an integrity-bound
+Dependency evidence is **not a carrier class at all**. A producer may write an integrity-bound
 dependency record and an adapter may classify it, but until a shared dependency warrant rule is
 declared it MUST NOT register a `ClaimTuple` projection or emit `evidence_supports_claim`. In
 particular, verification legs from one rehearsal retain their native identities but share one
 run-level support key; they are not independent corroborating witnesses.
 
-Each class has **exactly one** ladder. `register_ladder()` refuses a second. A genuinely new kind of
-warrant is a new class — declare it deliberately, never by accident.
+Each class that grades has **exactly one** ladder. `register_ladder()` refuses a second. A genuinely
+new kind of warrant is a new class — declare it deliberately, never by accident. `verifier` is the
+one class that adds a **projection** precondition without adding a ladder, which is why its row
+above names no module.
+
+### The `verifier` class — record what the check ASSERTED, not that it passed (SC57)
+
+A verifier — a prover, a property checker, a schema validator, a contract test — answers a question,
+and the answer is a boolean. **The boolean is not the finding.** A machine-checked verdict certifies
+*the proposition the checker decided*, and nothing binds that proposition to the claim someone later
+cites it for. `intake-1307#05`: such a certificate "does not certify individual mathematical truth".
+`intake-1307#00` is the existence proof that the resulting gap is large — an automated check labelled
+73.6% of proved artifacts non-trivial-and-correct where a manual audit put faithfulness far lower.
+(That number is a reweighted projection from a 45-example single-annotator audit: cite it as an
+existence proof that the gap exists, **never as a rate**.)
+
+So a verifier-class adapter MUST project `ClaimTuple.decided_proposition`, and the registry refuses
+one that emits pass/fail alone:
+
+```python
+@claim_tuple.register("my-prover", source_class="verifier",
+                      decided_proposition_field="theorem_statement")
+def project(native):
+    return ClaimTuple(..., decided_proposition=native["theorem_statement"])
+```
+
+Two refusals, because there are two ways to emit pass/fail alone:
+
+| what you did | refused | when |
+|---|---|---|
+| registered as `verifier` without `decided_proposition_field` | at **import** | the adapter never reaches the registry |
+| declared the field, projected it empty (or as `"pass"` / `"true"` / `"ok"` / any bare verdict) | at **projection** | before the tuple can be graded |
+
+**This is a projection rule, never a grading rule.** No verifier ladder is registered and none may
+be added: `claim_tuple.grade()` still decides (§4.7), and `test_verifier_decided_proposition.py`
+fails if a second ladder appears. What the recorded proposition should *license* — the
+statement-binding precondition that would cap an unbound verifier tuple at `Judged` — is **SC56**,
+which changes grading semantics and is not implemented. Until it lands, a verifier tuple is graded
+exactly like a measurement one; recording the proposition now is what makes SC56 possible later,
+because a proposition invented on read claims warrant the original check never captured.
+
+### Producing a judgment frame — pin the DIGEST, not the name (SC58)
+
+If your producer writes `judgment_recorded` frames, `provenance.replay_key.read_set` must be a
+non-empty list of **named, digest-pinned artifacts**, `tool_output_hash` must be a real sha256, and
+`assertion.claim_id` must say whose belief was judged:
+
+```python
+"replay_key": {"read_set": [{"name": "wiki/page.md", "digest": {"sha256": "<64 hex>"}}],
+               "prompt": ..., "seed": ..., "model_version": ..., "temperature": ...,
+               "tool_output_hash": "sha256:<64 hex>"}
+```
+
+Until 2026-09-07 the fold checked only that those fields were *present*, so `read_set: ["a"]` folded
+cleanly — a contract on the name of a field, not on its content. `intake-1308#03`: "a read-back of an
+older version of the code is worse than none, because it testifies about the wrong artifact." A
+belief now goes **`dirty`** (spec §7.2, mapping to `aging` in THE ONE CLASSIFIER, §8.1) when a judged
+artifact's digest moves and no judgment has yet seen the current one; re-judging clears it. Any frame
+may report an artifact's current digest through the in-toto `subjects` slot.
+
+### Superseding or retracting a frame — say why (SC59)
+
+Optional and free-text, and it carries **no grade**: `pubinfo.supersedes_reason` beside
+`pubinfo.supersedes`, or `assertion.reason` on a retraction frame. It is surfaced verbatim on the
+belief's review path so a citer learns *why* a frame was superseded instead of re-walking the
+rejected reasoning at full price. Same rule as corrections, for the same reason — we know the ground
+shifted, not by how much, so the text is carried and never weighed.
 
 ## Writing one
 
@@ -111,6 +177,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | source | class | state | adapter |
 |---|---|---|---|
 | `research/intake_index.yaml` | literature | **live** — 1,068 entries | `research_intake.py` |
+| `data/fanout_timing/*.v2.jsonl` (FM-5 outcome accounting) | measurement | **live 2026-09-07 (SC62), and CAPPED AT `Judged/Located` — every tuple is an OBSERVATION, never decision-gating.** Read side only; the collector is D9-gated and is never invoked or modified. Five claims per corpus, one per bounded quantity, over the committed 14,004-workflow / 4,278-subagent corpus: head-count waste, token waste on the `total` basis, token waste on the `new` basis, the blocked floor, and the unknown census. **No `Witnessed` route exists and none was manufactured**: n (4,278 scored), date and attestation (the corpus is committed, hashed, and `collector_sha256` pins the classifier) are all real, but there is no codified protocol — `measurement/protocols/` covers no transcript forensics, and `fanout_timing.v2` is an OUTPUT SCHEMA VERSION, not a replayable procedure. The SC19 precedent does not reach here: the collector is deterministic over a FIXED corpus, but its inputs are live session transcripts outside any git tree that grow, rotate and vanish, so no third party can re-derive the walk. The digest is carried anyway, so a codified protocol would lift the same corpus with no re-projection. **Every value is a `Bound`, never a scalar** — the row's hard requirement, enforced three ways: `ClaimTuple.value` is a `Bound` whose `.point`, `float()` and unpacking all RAISE; the claim text is generated from `Bound.render()` and a post-condition refuses any tuple whose text omits it (load-bearing, because `to_frames` emits `claim` as `display_text` and never emits `value`, so the text is the only path a figure takes into the ledger); and `extra` carries the same bounds checked against the same object. Measured bands on the committed corpus: head-count waste **40.0%–95.5%** of 3,777 known subagents (low end = 2,265 `produced-and-used`, an UPPER bound on usefulness since 2,094 rest on a `parent-reference` substring hit; high end = 171 `git-landed`, the only PROVEN floor), token waste **86.5%–99.7%** `total` and **83.8%–99.6%** `new`. The familiar 86.5% is the LOW END of one band, never the finding. `blocked = 0` projects as a FLOOR with NO upper bound (neither transcript format carries a blocked marker; prose is never read as a signal). 501 `unknown` are held OUT of every denominator and get their own census claim — never folded. Head-count and token shares are SEPARATE claims with separate ids, because token totals are provider-cumulative and corpus-skewed (median subagent ~2.0M tokens against a p90 of ~1.23B). Deliberately NOT projected, named rather than skipped in silence: the FM-6 orphan rate (35.0%, itself an upper bound on Codex since shell redirects are not parsed) — a different phenomenon, file it before projecting it | `fanout_outcome.py` |
 | sealed measurement manifests | measurement | **live** — 6 sealed, all `Witnessed/Attested` | `sealed_manifest.py` |
 | autopilot trial journal | measurement | **wired**, awaiting first post-hook trial — **parked since 2026-08-09 (v9 freeze)**, last journal trial 1505 @ 2026-08-09T19:29Z; awaiting first post-hook trial after autopilot restart — still 0 measured rows, correctly reported | `autopilot_journal.py` |
 | AutoKernel `evaluation_event` performance estimates | measurement | **write/read path wired prospectively; awaiting the first real post-hook event** — the live campaign journals complete v5 events with producer-written `belief_capture`; the reader re-derives paired raw vectors and exact claim/source/binary/model/resource identities. Historical events, null T0 estimates, and void records emit zero rows | `autokernel_evaluation_event.py` |
@@ -160,6 +227,10 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | headless audit verdicts (`scripts/coordination/headless_audit.py`, P2-7) | measurement — **rates only**; a single verdict is categorical and is never coerced | **candidate — filed before the producer exists** (2026-08-16, P2-10; the module is unwritten, which is the cheapest possible moment). The auditor consumes the pointer-only packet, re-derives the diff from git independently, runs one mutation probe and writes a typed verdict per completion: `accept \| accept-with-followups \| needs-rework \| blocked-evidence`. **One verdict has no metric and no direction and MUST NOT be forced through `ClaimTuple`** — the SC21 preflight call, one level up. What *is* a measurement is a RATE over a declared window: verdict-mix share, and above all the operator-vs-auditor disagreement rate, which the plan's own kill criterion reads at a 20% threshold over any 7-day window (plus the pilot's overturn count over 3 spot-reviewed rows). Those are lower-is-better fractions whose scored denominator is the audits actually adjudicated, not the audits emitted. **Locator: the audit window (or the batch, for a per-batch rate), never the verdict** — the same trap as the completion report it reviews. Independence is the entire warrant here and the adapter must not quietly spend it: the packet is a pointer whitelist precisely so the audit is not anchored on the worker's own summary, so a projection that folded worker-reported outcomes into the verdict rate would destroy the property being measured. Module exists (`headless_audit.py`, P2-7 wired); no verdict stream since pool OFF; project RATES over a window, never single verdicts | — |
 | loop-owned-fleet plan metrics (duty cycle, delivery interventions, self-repair share, alarm fidelity) | measurement | **candidate — wire the write side BEFORE the first unattended night is scored** (filed 2026-08-16, P2-10). Four producers, each gating a real decision (the Phase-4 gate check and the plan's kill criteria) and each computed nowhere today: compute duty cycle on unattended nights (higher-better fraction, 8–9% baseline → >40% target), operator delivery interventions (lower-better count, ~daily → 0), coordination self-repair share (lower-better fraction, ~50% → <10%, computed by **commit-path classification over `scripts/coordination/`** — D9 states it is *never* self-reported), and alarm fidelity (drill alarms delivered / drill alarms fired, plus false alarms on well-run nights). Each needs a protocol id naming the classifier and its version, an explicit window, and a durable artifact: a share recomputed later against a moved classifier is not the same measurement. **Locator: the WINDOW (a night, a 7-day span), never the sample** — a 60s duty-cycle poller would otherwise read one night as 1,440 independent witnesses, the same-harness trap in its purest form. **Scope limits to carry into the adapter, not just the docs:** duty cycle attests HARDWARE OCCUPANCY, never useful work; and the self-repair share is a ratio over commits classified by path, so it moves when the path taxonomy moves — pin the classifier version inside the tuple. `fleet_metrics.py` computed derived set 2026-08-16 (self-repair 11.1%); Phase-4 P4-1 gate not started; pool OFF by policy | — |
 | Reviewer verifier/selector measurement (RM-11a cross-family verifier gain, RM-11b reviewer solve-accuracy, RC-10 confidence-construction A/B) | measurement | **not wired; filed at design time, before the first run** — producers must emit the raw K-vector over score tokens plus `retained_mass`, `K`, read-out method and aggregation timing, not just the scalar, because the scalar cannot be reconstructed later. **Locator: key on the run / selection episode, never the individual score** — a C×K×N verification emits C·K·N scores from one run, so a per-score key would manufacture its own corroboration (SC6-HAZARD in a new costume). Until RC-6a merges these are observations and the tuple must not be graded as decision-gating. RM-11a/b unrun; RC-6a (operator PR) still open — observations until then. Task row: SC43 | none (planned) |
+| PS-1 sink+window floor sweep (`streaming-llm-baseline.md` INF-51, 4-axis / K_win grid) | measurement | **candidate — write-side hook required BEFORE the first cell runs (SC65, filed 2026-09-07).** One self-hashed ClaimTuple per arm×workload cell carrying: model+GGUF digest, kernel commit + binary version (frozen v9, never guessed), `K_sink`/`K_win`/budget, **`-c` sizing (`prefix + W + chunk`) and the chunk value**, **tokens GENERATED and the cell's eviction regime** (`≥4×W` or not — a cell that never evicts did not test the mask and must be labelled, not silently pooled), benchmark id + item count + scored-n, and the paired teacher identity. **Three caveats ride in every tuple**: (a) recovery ratio is **paired to the SAME teacher, per model per workload, never pooled**; (b) the long-INPUT retrieval arm measures **full-attention prefill + streaming decode**, a different method from a published SWA mask, and its value must never be graded against one; (c) accuracy is the primary axis — a speed null on weight-bandwidth-bound CPU decode is not a refutation. Pre-hook: the 2026-07-20 Qwen3-1.7B sweep and the 2026-08-25 launched-but-zero-cell 72-cell daemon emit **zero rows** and are never reconstructed on read | — |
+| MoE per-token routing tap (INF-72, `moe-routing-tap-and-locality-measurement.md`) — SRP, SCH, EOR/IR_t | measurement | **candidate — write-side hook required at TAP-STUB CREATION, not when traces land (SC66, filed 2026-09-07).** One ClaimTuple per (model, layer, domain, m) carrying: model + expert topology (`256/8+1`, `512/10+1`), branch commit of the llama.cpp-experimental tap, **`int16` index dtype** (int8 overflows this fleet), `-b 512` chunk geometry, sample count and per-domain token budget, metric id (SRP \| SCH(m) \| EOR) with explicit direction (all higher-better), and **the chance baseline in the same tuple** — 3.13% (8/256, qwen35moe), 1.95% (10/512, qwen4exp) — because an EOR figure is uninterpretable without it. **Four caveats ride**: (a) **SCH is a diagnostic, never a throughput claim** (the source's own Appendix F declines the link); (b) a **stride-hazard signature** — every expert appearing exactly k times, sub-chance reuse — **refuses the row fail-closed**, it is a broken read, not a negative result; (c) domain must never be pooled — mixing four domains moved entropy 0.79–0.85 → 0.9453 and Gini 0.62–0.71 → 0.3889, i.e. mixing manufactures uniformity; (d) v9 covers `qwen35moe`/`qwen3next` but **not** `qwen4exp`/`glm5next`, so a qwen4exp tuple cannot exist yet. **Carries as a CLAIM on this row, not a second source**: the derived +1.58–2.03% end-to-end ceiling (ReMoE µMiss 7.34%@C=6 / 9.41%@C=12 × the 20.96/99.1 ms expert path) — derived from two existing first-party measurements, `intake-1338#03` | — |
+| `tulving_episodic` scored runs (`scripts/benchmark/score_tulving_run.py`, episodic-memory-integrity M-12) | measurement | **candidate — write-side hook required BEFORE M-12a runs (SC67, filed 2026-09-07).** The producer already emits a structured per-question artifact with `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style` — verified measurements today, with **no write-side hook**. Emit producer-authored, self-hashed claim-tuple rows carrying run id, variant + chapter count, arm (`none` \| `retrieved` \| `full`), scorer version (post-M-12e), n scored, and explicit metric direction. **Locator = the run, never the per-question file** (SC6-HAZARD class: scored samples from one harness execution are not N independent witnesses). Do NOT write a new grading rule — project into a `ClaimTuple` and let `claim_tuple.grade()` decide. Pre-hook runs (incl. `20260619_141212`) emit **zero rows** and are never reconstructed on read. `intake-408#record` | — |
+| BEAM episodic-memory benchmark runs (episodic-memory-integrity M-12 instrument) | measurement | **candidate — wire the write side AT ADAPTER-AUTHORING TIME (CME-1), not after the first run (SC68, filed 2026-09-07).** The **BEAM-fold headline is the claim**; the rubric-item micro-average and the binarised pass count are **recorded context in the same tuple**, never separate claims. A tuple that does not record WHICH fold produced the number cannot be compared to any external BEAM figure later — this wave's dive is the proof (49.0 vs 55.7 on the same run). Project, do not grade. `intake-1337#record` | — |
 
 **Before adding a bulk adapter, price it** (the P2 discipline): sample ~50 records and count how many
 carry the full tuple. If the answer is near zero, the gap is upstream and an adapter adds volume

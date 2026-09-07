@@ -150,7 +150,14 @@ is_timestamp_or_log_line() {
   # free at campaign open`). Both forms remain keyed to an explicit byte unit.
   # Keyed on the field NAME rather than the value's shape, so it cannot be widened
   # into "long numbers in JSON are fine" — the key has to assert the semantics.
-  echo "$line" | grep -qE '"[a-z0-9_]*(bytes(_[a-z0-9_]+)?|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' && return 0
+  # `tokens` ADDED 2026-09-07, same rule and same rationale as the byte keys above: a key
+  # named `total_tokens` asserts its own semantics exactly as `total_shard_bytes` does. Added
+  # after a real over-block -- fan-out token sums (`"total_tokens": 1098574444625`) blocked a
+  # commit of measurement evidence. Fixture coverage for this and the four sibling branches
+  # landed in the same change; before it, the account_number rule's ONLY must-not-block row
+  # was 10 digits and could not reach this regex at all.
+  echo "$line" | grep -qE '"[a-z0-9_]*(bytes(_[a-z0-9_]+)?|tokens|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' \
+    && ! echo "$line" | grep -qiE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' && return 0
   echo "$line" | grep -qE '\b[0-9]{12,19}[[:space:]]+bytes([[:space:]]+(free|used|total))?\b' && return 0
   return 1
 }
@@ -165,8 +172,14 @@ is_decimal_float_line() {
   # If the line has `key: <number>` shape AND the number context is purely numeric
   # (no surrounding text), it's a config value, not an account number.
   # Do not exempt explicit account/card/customer identifiers.
+  # BOUNDARY FIX 2026-09-07. This guard used `\b(account|card|...)\b`, and `\b` does not
+  # separate on `_` -- so `\baccount\b` did NOT match `account_number`, the single most
+  # obvious field name for an account number, and the config exemption below swallowed it.
+  # Found by adding a negative-control fixture row for the exemption itself.
+  # `[^a-z]` treats `_` as a separator while still refusing mid-word hits: `discard`,
+  # `wildcard` and `shard` do not match `card`, because there the letter before is [a-z].
   echo "$line" | grep -qE '^\s*[A-Za-z_][A-Za-z0-9_]*\s*:' \
-    && echo "$line" | grep -qiE '\b(account|card|customer|iban|routing|ssn)\b' \
+    && echo "$line" | grep -qiE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' \
     && return 1
   echo "$line" | grep -qE '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' && return 0
   return 1

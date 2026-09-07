@@ -294,6 +294,35 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
       fine); duty-cycle target sustained; no MUST-ACT bus item aging past SLA while the console is
       closed ≥12h/day; critical alarms still reaching the operator with it closed.
 
+## Trust-boundary follow-ups (research-intake 2026-09-07)
+
+- [ ] **P5-1 Trust-boundary analysis of the coordination-plane hook surface**, with a specific
+      newly-found item: PostToolUse `hookSpecificOutput.classifierContext` — the classifier may weigh
+      a user statement relayed here as user intent (it can satisfy a consent bar a user turn would
+      satisfy, never a hard boundary). **Declare it out of bounds for any coordination-plane hook and
+      say so in the design.** This is a concrete write path into a main's CONSENT state available to
+      any hook script. `intake-1325#05`. Zero compute.
+      **Scope note**: this row covers the handoff/design half only. The corresponding
+      `agents/shared/INVARIANTS.md` text (invariants 1 and 4) is a **human-amendment-only** path
+      (`coordination/session-bus/human_only_paths.yaml`, enforced by
+      `scripts/hooks/check_trust_boundary_edit.sh` + the `.sha256` pin) and is filed here as an
+      **operator token-request**, never an agent edit.
+- [ ] **P5-2 The NL-only rule lands in `coordination/evals/examples/` beside C23, NOT in
+      `BUS_PROTOCOL`.** This file's standing constraint is verbatim in force: *"prose-rule moratorium
+      — from Phase 0 onward, a new incident appends a labeled example to the eval fixtures, never a
+      new rule/conjunct to BUS_PROTOCOL or agent files"*, and P0-9 (which declared it) is ticked
+      above. A new BUS_PROTOCOL rule would violate the moratorium this file declared, so the rule
+      ships as a labeled fixture example instead. `intake-1325#03`. Zero compute.
+- [ ] **P5-3 Per-turn PURPOSE LABEL at write time** — add a purpose label to bus rows, delegated-task
+      envelopes and orchestrator turn telemetry, so the Eq.-2 split (system / replayed history / tool
+      schemas / retrieval / coordination) becomes computable. **Do not attempt post-hoc
+      classification of transcripts**: a 32-author team with full trace-shim control published no
+      share number because their meter recorded totals, not purposes. Lands beside OBS-11's channel
+      work in [`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) — it is the same
+      write-side surface — and is cross-referenced from
+      [`delegation-context-preassembly.md`](delegation-context-preassembly.md) (DCP-9b depends on it;
+      blocks the coordination-share half). `intake-1333#01`. Zero compute.
+
 ## Metrics (targets) and kill criteria
 
 - Compute duty cycle on unattended nights: 8–9% baseline → **>40%** within two weeks of Phase 3.

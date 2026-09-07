@@ -422,8 +422,14 @@ class TestFold:
             fold([partial], as_of=NOW)
 
     def test_first_committed_vote_wins_per_key(self):
-        key = {"read_set": ["a"], "prompt": "p", "seed": 1,
-               "model_version": "m", "temperature": 0, "tool_output_hash": "sha256:aa"}
+        # read_set/tool_output_hash updated 2026-09-07 (SC58) from the bare label `["a"]` and the
+        # two-hex stub `"sha256:aa"` this fixture used to carry. Those were accepted by a
+        # presence-only check, which is exactly the defect SC58 closed: a judgment pinned to a
+        # NAME testifies about whatever that name means later. Nothing about vote counting -- what
+        # this test is actually for -- changed.
+        key = {"read_set": [{"name": "doc.md", "digest": {"sha256": "a" * 64}}], "prompt": "p",
+               "seed": 1, "model_version": "m", "temperature": 0,
+               "tool_output_hash": "sha256:" + "b" * 64}
         def judgment(verdict):
             return frames.make_frame(
                 frame_type="epyc.vidya/frame/judgment_recorded/v1",
@@ -445,8 +451,9 @@ class TestFold:
                 frame_type="epyc.vidya/frame/judgment_recorded/v1",
                 assertion={"claim_id": "clm-1", "verdict": "equivalent"},
                 provenance={"method": "llm", "replay_key": {
-                    "read_set": ["a"], "prompt": "p", "seed": seed,
-                    "model_version": "m", "temperature": 0, "tool_output_hash": "sha256:aa"}},
+                    "read_set": [{"name": "doc.md", "digest": {"sha256": "a" * 64}}],
+                    "prompt": "p", "seed": seed, "model_version": "m", "temperature": 0,
+                    "tool_output_hash": "sha256:" + "b" * 64}},
                 actor="model:x", authority_scope="research-verification", created_at=NOW)
         res = fold([judgment(1), judgment(2)], as_of=NOW)
         assert len(res.counted_judgments) == 2 and res.superseded_judgments == []

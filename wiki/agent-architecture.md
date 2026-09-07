@@ -3177,6 +3177,83 @@ differ by a flag that only becomes necessary once the tree has drifted dirty.
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record.
 
+## Compiled Update — 2026-09-07 (incremental): the "30,000 agents" everyone quotes is 30,046 agent RUNS, and the measured cost driver is discarded work, not width
+
+**Confidence: verified** (both swarm papers dived at primary source 2026-09-07; all figures below
+are the producers' own, with the token-share percentages computed on their published tables).
+
+The fan-out question this project keeps returning to — *is our ratified width of 3–5 subagents too
+narrow?* — finally has outside measurement attached to it. It does not say what the headline says.
+
+**The headline number is a run count, and no concurrency figure exists.** "30,000 agents" is
+**30,046 agent runs** across eight role types over about seven days, each run carrying an outcome:
+**3,490 merged (11.6%)**, and **13,602 of the runs (45%) are review passes** rather than authoring
+work (`intake-1304#00`). The paper states **no concurrency figure anywhere**; its only hardware
+number is eight machines. So nothing in it licenses "30,000 concurrent agents", and the citing
+paper that popularised the figure mis-types it — defining the column as a population while its own
+prose says "agent runs" (`intake-1297#record`). Cost in that work is normalised by **corpus size**
+($200 per page, $300 per target), never by agent count; no cost-versus-agent-count relation exists
+in it at all (`intake-1304#04`). Its dollar total is also modelled rather than billed — the logs
+lack token-caching statistics, so ~$100K is a closed-form estimate against a $430K no-caching bound
+(`intake-1304#01`).
+
+**What the same tables do measure is waste.** By the paper's own per-outcome accounting,
+**80.2% of all tokens went to non-merged outcomes and 51.6% to runs aborted outright**, and the
+authors project a 3–10× cost reduction from fixing orchestration alone, without better models
+(`intake-1304#02`). That is the cost term — an order of magnitude larger than anything width
+controls.
+
+**The follow-up system's ablations defend a narrow fan-out rather than attacking it**
+(`intake-1305#record`):
+
+- The entire **central coordination tier is ~11% of compute** (orchestrator 4.01% + supervisor
+  5.72% + analyzers 1.28%) against workers at 76.35%. Coordination is not where the money goes.
+- **3–5 concurrent workers beat 1** on both wall-clock and token cost at matched completion: at four
+  hours wall-clock the 3- and 5-worker configurations reach ~62–68% versus 44% single-worker.
+- **Central re-planning pays only at longer budgets.** The no-orchestrator variant is the *most*
+  token-efficient early, outperforming the full system until ~100M tokens, then plateauing at 64%
+  against 77%.
+
+Carry the limits with the result: 3 and 5 are reported as one undifferentiated band, so **no
+saturation knee is shown** and nothing there licenses "thousands"; the racing multiplier (N workers
+per task, losers cancelled) is folded *into* the worker share, so the agent-count component of cost
+is invisible in that split; every ablation and the sole human audit run on the **same single book**,
+which is also the second-highest-scoring of 26; and the two papers share six of eight authors, so
+the second is not an independent check on the first. The same paper's agent count is internally
+self-contradictory ("thousands" / "dozens or hundreds" / "hundreds"), with maximum *validated*
+parallelism of 5.
+
+**The serial control arm nobody ran.** A single-agent loop — one CLI agent, one constant prompt
+re-fed by a 20-line watchdog, no version control, no PRs, no reviewers, no merge queue — produced a
+comparable output scale, and its bottleneck was neither merging nor checking but **LLM credits**;
+whole-artifact verification of the 169,122-line result takes 32 seconds (`intake-1306#record`). The
+multi-agent papers' claim that single-agent formalization "does not scale" is asserted against it
+with no measurement, no shared corpus and no controlled comparison. Coordination machinery is
+routinely justified against an unmeasured baseline.
+
+**This is now doctrine.** [`OPERATING_CONSTRAINTS.md` → *Parallel Subagent
+Fan-Out*](../agents/shared/OPERATING_CONSTRAINTS.md) carries the ratified clause: **"A fan-out's
+cost is its discarded work, not its width."** Width 3–5 is unchanged — the evidence above defends
+it — and what the clause adds is a **diagnosis order**: when a fan-out looks expensive, first
+measure the share of subagents whose output was never used, and only then consider the number of
+subagents. Narrowing width to control cost is treating the cheap term. Our own instance of the
+measurement is FM-5 (discarded-work accounting) in
+[`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md).
+
+**Sources**
+- [intake-1304#record](https://arxiv.org/abs/2604.03071) *Automatic Textbook Formalization*, credibility
+  4/6, dive-verified 2026-09-07 — the run-versus-agent correction, the per-outcome token
+  accounting, the modelled cost. An independent adverse audit of its released output puts ~18% of
+  statements semantically different, so its completeness claim survives and its faithfulness claim
+  does not.
+- [intake-1305#record](https://arxiv.org/abs/2605.29955) *Formalizing Mathematics at Scale*, credibility
+  2/6, dive-verified 2026-09-07 — the compute split, the 1/3/5-worker arm sitting exactly at our
+  ratified width, and the ablation caveats.
+- [intake-1306#record](https://arxiv.org/abs/2601.03298) — the single-agent serial arm and its actual
+  bottleneck.
+- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — FM-5, FM-6.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record and the ratification (`fb755192`).
 ## Compiled Update — 2026-09-03: an agent loop is designed in pseudocode first — every rejection needs a visible destination, and budgets must not share a counter
 
 **Confidence: verified** — the convention is ratified in a checked-in guide, and both motivating defects

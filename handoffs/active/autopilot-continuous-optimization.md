@@ -3167,3 +3167,33 @@ that a warrant requirement is unnecessary — nobody has tested one.
       tree is a standing misreading hazard.
 
 > **Owner note (2026-08-15).** SG-W1/W2/W3 were filed against `safetygate-rlvr-provenance-audit-2026-07-22.md` per the approved Stage-3 plan, then relocated here when that handoff was found already archived to `completed/` on `origin/main` (`3615bdc3`) — filing live tasks inside `completed/` would have been the result. Content unchanged.
+
+## Research Intake Update — 2026-09-07
+
+Source entries: intake-1320 (dive-verified), intake-1323 (dive-verified), intake-1317 (dive-verified).
+Four rows, all zero-compute to write; one carries a compute-gated arm that is filed and never run.
+
+- [ ] **AP-51 — Diff THREE JIT admission rules against `ParetoArchive`.** Eq. 4 (reward strict AND one
+      efficiency dimension strict); Stage-III bank retention (reward ≥ frontier AND one dimension
+      strict); Eq. 6's `I[r ≥ b_r]` gating. Pure design comparison over published equations,
+      independent of that source's adverse empirical findings. `intake-1320#02`. Zero compute.
+- [ ] **AP-52 — STANDING CAUTION against the frozen-frontier-proposer contract.** Two prompted
+      frontier editors reading real failure traces produced **net negative** deltas over 1,270
+      held-out tasks (−4.3 ± 2.5 and −0.4 ± 3.6), with 1/9 and 3/9 failing validation outright.
+      **PromptForge is that loop.** SafetyGate scores the same suite the mutation was proposed from;
+      nothing measures out-of-sample transfer of an accepted mutation. Negative deltas concentrate in
+      `rewrite_action` / `force_action` patches, which ties this directly to **MHS-4** in
+      [`promptforge-mutation-safety-contract.md`](promptforge-mutation-safety-contract.md).
+      The caution itself is zero-compute and lands with this row. **The held-out arm on accepted
+      mutations is COMPUTE-GATED: filed, never run here** — it needs eval compute and belongs to
+      another session. `intake-1323#03`. Dependency: MHS-4.
+- [ ] **AP-53 — Harness-written rejected-mutation ledger.** Record
+      `{target, mutation_type, unified diff, per-suite deltas, rejecting gate, timestamp}` on
+      **every** reject path in `actions.py`, and feed it into `_build_mutation_prompt`.
+      **Harness-written, never LLM-written.** `intake-1317#01`. Zero compute.
+- [ ] **AP-54 — Asymmetric-access rule, executor half.** Answer **zero-compute first**: does the agent
+      under evaluation read our compiled wiki during the same rollouts that feed the mutation
+      proposer? If yes, this is a context-assembly fix. Only an ambiguous answer becomes a
+      compute-gated A/B (filed, not run). Cross-referenced from EV-10a in
+      [`eval-tower-verification.md`](eval-tower-verification.md). `intake-1317#02`. Zero compute for
+      the question.

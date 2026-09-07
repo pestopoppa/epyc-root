@@ -2340,3 +2340,68 @@ gates live in code (cf. the single-champion startup refusal).
   runbook, claim-held).
 - [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R21-L6, R21-5 (pilot sub-items), R21-6.
 - [`progress/2026-08/2026-08-31-ak-rebuild-20260828.md`](../progress/2026-08/2026-08-31-ak-rebuild-20260828.md) — §9, §10, §14.
+
+---
+
+## Compiled Update — 2026-09-07 (incremental): blind read-back — an auditor given the artifact and never the intent, emitting a description and never a verdict
+
+**Confidence: external, mechanism only** (protocol read at a pinned repository commit and verified
+byte-identical to that commit's tarball, 2026-09-07). **The source carries NO efficacy measurement
+of any kind** — see the citation bound below before using this anywhere.
+
+Our recorded failure mode is an agent that verifies its own edit and confirms what it expected. The
+most transferable artifact in the 2026-09-07 intake wave is a written protocol aimed at exactly
+that, and its interest is that it is **information hiding, not role decomposition** — the shape our
+own doctrine has ratified *against*.
+
+**The mechanism.** An auditing sub-agent is launched with a **fresh context** and handed a positive
+whitelist: the artifact itself (the formal statement plus its preamble) and the read-back spec.
+It is never given the informal statement, the source material, the mission pitch, or the author's
+intent, because "an auditor who knows what the code is *supposed to say* will read that meaning
+into it — and the discrepancies the human needs to see disappear" (`intake-1308#01`). It then
+writes a **description of what the artifact actually says**, and is explicitly forbidden to
+adjudicate: "No judgment, no advocacy" — discrepancies are found by a **human** comparing the
+read-back against the stated intent (`intake-1308#02`). A read-back written against a superseded
+artifact is "worse than none, because it testifies about the wrong artifact", so any edit to the
+statement mandates a **fresh re-run of a freshly instantiated auditor** (`intake-1308#03`). A
+companion anti-vacuity checklist forces the description to state degenerate cases and vacuously
+satisfiable hypotheses explicitly, which is where a plausible-looking formalization usually fails.
+
+**Why this is not the role pipeline we ratified against, and the three properties that keep it
+that way.** No authority is transferred — the auditor cannot reach a verdict, so no decision moves
+to a second agent. The split is an **information whitelist over the same task**, not a skill or
+work-stage boundary. And blinding is **re-established from a fresh context on every revision**
+rather than held by a long-lived role. Remove any one of the three and it degenerates into
+decomposition-by-role, which is a measured anti-pattern here.
+
+**Citation bound — state it before the rationale, not after.** This source may be cited for
+**mechanism and rationale only**. It may **not** be cited as evidence that blind read-back reduces
+false self-verification, at any strength: the whole repository at the pinned commit contains no hit
+rate, no caught-error count, no false-agreement rate, no A/B against unblinded self-review, and no
+sample size (`intake-1308#record`). The protocol is also unqualified about its own envelope — it
+names no failure mode for blinding itself, and is silent on correlated failure when auditor and
+author share a base model (blinding removes shared **context**, not shared **priors**), on fluent
+and confidently wrong read-backs, and on human comparison fatigue at scale. It is roughly four
+weeks old, not settled practice, and the copy served on the web has already drifted from the
+repository copy, so it must be cited at the pinned raw path with a retrieval timestamp.
+
+**What our deployment has to add, and why the additions are the interesting part.** The stored
+record cannot evidence its own central claim: nothing attests that the sub-agent was actually
+denied the intent, so a captain who skipped the blinding produces a **byte-identical** record, and
+the only provenance kept is the model name — no spec version, no hash of the audited text. Any
+adoption here therefore carries three things the source lacks: a **blinding attestation**, a
+**hash of the audited artifact** in the record, and the **hit-rate instrumentation** that would let
+the pattern earn an efficacy claim instead of borrowing one. Those are filed as RA-13a (the blind
+read-back), RA-13b (its write-time instrumentation) and RA-13c (its record format) in
+[`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-typed-artifacts.md).
+
+### Source References (2026-09-07)
+
+- [intake-1308#record](https://raw.githubusercontent.com/prove2me/prove2me_workspace/main/references/mission_auditor.md)
+  — *Mission Auditor: Writing Read-backs*, pinned at `prove2me_workspace @ 58332c69`, dive-verified
+  2026-09-07. Prescriptive only; no measurement anywhere in the tree.
+- [`reviewer-typed-artifacts.md`](../handoffs/active/reviewer-typed-artifacts.md) — RA-13a/b/c.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
+  SC58, the judgment-frame-pinned-to-artifact-digest row this pattern's staleness rule funded.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record.

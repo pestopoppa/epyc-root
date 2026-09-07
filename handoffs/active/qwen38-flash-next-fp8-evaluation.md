@@ -18,6 +18,10 @@ Production llama.cpp support is not a prerequisite. The frozen production kernel
 registries remain untouched; an experimental llama.cpp branch is only one optional backend alongside
 Transformers, vLLM, SGLang, TokenSpeed, or a justified CPU/hybrid path.
 
+## Model architecture facts (2026-09-07)
+
+Stage-1's premise that Qwen is "group 1" (no shared experts) is FALSE. All three carry a gated shared expert: Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks), Qwen3-Next-80B (qwen3next, 512/10 + 1) — metadata keys and tensor patterns recorded in intake-1328#record. Consequence: the offload/caching question for this fleet is OPEN because nothing in it has been measured on this axis, NOT because Qwen sits in the architecturally-favourable group. The shared expert is resident by definition and does not enter any ρ budget. intake-1328#03. Cross-ref [gpu-acceleration-path.md](gpu-acceleration-path.md).
+
 ## Artifact identity
 
 | Field | Value |

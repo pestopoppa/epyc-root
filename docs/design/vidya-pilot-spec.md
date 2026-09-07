@@ -185,6 +185,19 @@ one word denoting two different things, with a standing invitation for an implem
 apparent gap by adding a count-the-paths rule inside the fold — silently voiding the Deletion
 Property's hypotheses.
 
+**External corroboration, added 2026-09-07 (`intake-1300`, `intake-1297#record`).** The argument
+above is internal and algebraic. It now has an independent instantiation by a system with every
+commercial incentive to decide otherwise: the Prove2Me formalization platform runs the same
+two-plane split. Its correctness plane is idempotent — one theorem "can collect many independent
+proofs, and once accepted, nothing about it ever changes", so extra proofs never raise a status —
+while its *accruing* trust score (+1 per first proof, +1 per upvote) gates nothing anywhere in a
+62-endpoint API; every authority there is role-based, and its designers list a gating reputation
+system as unbuilt future work. Their §4.4 derives the same requirement pair this carrier provides,
+in their own words: a target must be **idempotent**, so independent attempts converge on one
+statement, and **authoritative**, so downstream may build on it without re-auditing. The corollary
+is the useful part: accrual is safe there *because* it is severed from the correctness plane, and
+it would stop being safe the moment the score gated anything.
+
 ### 4.2 The carrier
 
 ```text
@@ -378,10 +391,26 @@ be its own category error:
 |---|---|---|---|
 | `measurement` | the constitution's claim rule (protocol / n / date / attestation) | `Witnessed` | `claim_tuple.py` |
 | `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `adapters/research_intake.py` |
+| `verifier` | the measurement ladder, capped by statement binding (SC56) | `Verified` (`Judged` when unbound) | `claim_tuple.py` — post-step, no ladder entry |
 
 The literature ceiling is structural, not a limitation to be lifted: an intake entry records what
 someone else reported, and no amount of careful reading turns it into a protocol-admissible
 measurement.
+
+**A third class, `verifier`, added 2026-09-07 (SC57).** It adds a projection precondition **without
+adding a ladder**: a verifier-class adapter MUST record `decided_proposition` — what the check
+actually asserted — and the registry refuses one that emits pass/fail alone. It is graded by the
+measurement ladder, so `register_ladder` gains no entry and *each class has exactly one ladder*
+still holds. The reason it is a class at all rather than a field: a verifier result and a
+measurement fail differently, and the failure this guards is the one §4.5 already names when it caps
+verifiers at `Q3` — *a verifier confirms, it does not measure*. What that decided proposition
+licenses about the claim it is cited for is **SC56, landed 2026-09-07** as
+`_apply_statement_binding_cap` — a post-step on the measurement ladder, not a second ladder. A
+verifier tuple whose `binding_kind` is empty caps at `Judged`; a bound one caps at `Verified`,
+which is §4.5's already-ratified verifier ceiling finally enforced in code rather than merely
+written down. **Both caps move Q only:** T is computed by the ladder and passed through, because an
+unbound receipt can still be perfectly located and hashed — "we cannot find it" and "it does not say
+what you think it says" are different failures on different axes.
 
 **Dependency-evidence boundary.** Dependency evidence is deliberately not forced through this
 carrier. The current tuple structurally requires a metric, direction and measurement category, and

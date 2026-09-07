@@ -119,6 +119,17 @@ cursors, and the entire pre-08:20:31Z advisory history. The surviving coordinato
 | F-35 | **`doorbell` delivery to the auditor failed twice in one session; the composer buffer would not consume the Enter and the rollback failed.** `doorbell --agent auditor` returned `NOT DELIVERED … the composer BUFFER was not consumed: it holds '' instead of returning to '›'` and then `ROLLBACK FAILED … TEXT IS STILL PENDING`. Same shape as the C55/H-2 composer-keystroke class this file's RC-5 already lists as **uncommitted** — the C51 fix that would have addressed it still sits unlanded | `tmux_adapter.py doorbell --agent auditor` outputs ~17:42Z and ~19:20Z (post-Enter buffer check + failed Ctrl-U rollback); `pending` read clean immediately after, so the failure is the delivery path, not the pane | — (live, unresolved) | **≥2 this session**; class recurrence of C51/C55 | `MECH-UC` — C51 fix uncommitted per RC-5 |
 | F-36 | **Filed a defect the operator had to decline — effort spent on a non-worthwhile suggestion.** Filed `fleet-watch-ghost-prompt-false-positive` as an `action_required` finding to `mainD` (`msg-20260813T181200Z-86`); the operator replied *"you can ignore it… unless you think the suggestion is worthwhile (in this case it clearly isn't)"* and it was withdrawn (`msg-…T181236Z-87`). F-08's class — *"real effort spent refuting me"* — this time one operator turn instead of a peer's test | `outbox/coordinator-agent.jsonl` 86 (filed) → 87 (withdrawn); operator `conv.` 2026-08-13 | operator (`conv.`, 2026-08-13) | **recurrence of F-08 class** | `RECALL` |
 
+**F-33(a) evidence note (2026-09-07, research-intake).** F-33(a) — the lost-track-of-the-mains row at
+`:117` (suffix per R-25) — is marked `RECALL` with **no mechanism**. An independent project reached
+**the same doctrine we already run** — a boundary check that executes on **every** drain, including the
+empty one — and extended it in one direction we have not: **reconcile against worker-written
+artifacts**. That extension is precisely the one that would have surfaced the four unread
+task-completes (`msg-20260813T175934Z-35-mainD` and siblings), because it does not depend on a bus row
+existing. Two honest limits, both load-bearing: it does **not** shorten a gap in which no boundary
+occurred, and it does **not route** — sibling **F-34(a)** (completed main work never reaching the
+`auditor`) is untouched by it. Implementation lives at
+[`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) → `WS-1`. `intake-1331#record`.
+
 ### Still pending verification
 
 Four evidence sweeps have run. Two ⏳ cells remain: **F-20** and **F-30** recurrence counts, both of
@@ -355,6 +366,11 @@ apply to that task."* A prompt-driven role can only carry state in the last thin
 **This group has the clearest fix and the least of it landed.** `fleet_watch.sh` *is* the loop — and
 it is untracked, so it does not survive the session that wrote it.
 
+**Cross-pointer (2026-09-07).** The mechanism that closes RC-4's *"between turns nothing runs"* is now
+settled — a Stop `asyncRewake` hook that exits 2 to wake an idle main, replacing doorbell keystroke
+injection. Implementation, and the four facts that must ride with it, live at
+[`session-bus-thin-dispatcher.md`](session-bus-thin-dispatcher.md) → `WS-4`. `intake-1325#record`.
+
 ### RC-5 — Execution work lands in the coordinator's tree unreviewed and uncommitted
 
 **⚠ This group was proposed as "the main thread executes instead of directing" and that framing did
@@ -467,6 +483,21 @@ The `Mech` column is the role's first pass at that and is a claim under review, 
       recoverable by adding mechanisms, or is the **prompt-driven, single-threaded, message-only**
       shape (RC-3 + RC-4 + RC-5 together) the defect — in which case the refactor is structural and
       the mechanism list is a distraction? Recommend one.
+  - **Evidence for the AFFIRMATIVE — leg (i), 2026-09-07: the shape is UNCATEGORISED.** The widest
+    published harness census contains **no supervision-branch design point and no
+    external-reach-into-a-loop dimension at all**. The shape this role runs is not a recognised point
+    in the surveyed design space, which is evidence that the **shape** is the defect rather than a
+    missing mechanism list. **Mandatory qualifier**: that same census cannot see hooks either, so the
+    finding is that the shape is **uncategorised** — never that the **mechanisms are unavailable**.
+    `intake-1325#record` already proved they are available on the installed 2.1.263.
+    `intake-1335#record`.
+  - **Evidence for the AFFIRMATIVE — leg (ii), 2026-09-07: re-frame `prior_coverage_found`'s "no
+    analogue: push-into-history".** Our bus is pull-only **by design**; the **harness is not**. A push
+    mechanism must therefore be costed as *"wire to an existing harness primitive"*, not as *"build a
+    primitive"*. Direct evidence for the affirmative: the prompt-driven shape was **never forced by
+    the harness** — it was chosen, and can be unchosen. `intake-1325#record`.
+  - *A-6 remains unticked: the above is evidence, not the answer. The recommendation this row asks
+    for is still owed.*
 - [ ] **A-7 — Rule on the durability gap, which gates this entire table.** The operator writes to no
       bus file; the corrections that matter most exist only in conversation; the bus was wiped at
       08:20Z. **Half the recurrence counts in this file are the coordinator's own tally of its own
@@ -527,6 +558,7 @@ Nothing is checked off without a commit hash or a receipt path.
       F-22's catch happened 43 minutes later. Closes F-32.
 - [ ] **R-7 — Renumber the second `C49`.** Second same-day collision after `C45`. The C-series is
       `mainD`'s namespace — route it. Closes F-31.
+- [ ] **R-25 — Disambiguate the F-33/F-34/F-35/F-36 dual-numbering by SUFFIX at every citation site; do NOT renumber.** `F-33`, `F-34`, `F-35` and `F-36` each name **two different defects** — the rows at `:117-120` and the rows at `:999-1002` — created by the second table asserting at `:995` that *"nothing above is renumbered"*. `F-31` (`:115`) records the `C45`/`C49` collisions; **nothing records this larger one**, and `R-7` (`:528`) covers only the second `C49`. Every cross-reference to F-33/34/35/36 is therefore ambiguous today — **including intake-1325's own `relevance_justification`, which cites "F-35" for the doorbell failure at `:119`**. Remedy: suffix at the citation site (`F-33(a)` / `F-33(b)`), **never renumber** — renumbering breaks every existing citation and fixes nothing. `intake-1331#record`.
 
 ### Authority
 
