@@ -907,6 +907,35 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★ SYNC-15 INTERIM 2026-09-07 — THE "4 OF 48 THREADS" MODEL IS REFUTED, AND THE REAL DEFECT IS A MISSING
+SIMD KERNEL.** Levers committed at `56fe8ef0a`, all default OFF, `strings`-proven; measurement queued.
+
+**Seam 1 — `hc_inject` is NOT thread starvation.** Read with the occupancy predicate, SYNC-1's own
+per-`(node,thread)` table gives **`thr_mean/thr_max = 0.92`** on `MUL_MAT hc_inject [10240,4]` (15.11 / 16.48
+µs, `thr_min` 13.84). **Every thread is busy.** What all 48 are doing is quantizing the **same** 10,240-element
+activation row into private copies — D1's batch-1 fast path — and **on x86 `quantize_row_q8_K` IS THE SCALAR
+REFERENCE IMPLEMENTATION**: measured standalone at **12.27 µs/row (1.20 ns/element)** against **2.18 µs
+(0.21 ns)** for the SIMD `quantize_row_q8_2_x4` **one type away**. **IQ4_XS maps to Q8_K, so this model pays
+the scalar path on every wide-reduction node.** In the MTP trunk it appears as `thr_min ≈ thr_mean ≈ 18 µs` —
+the whole team parked in an intra-op barrier while two threads quantize.
+*(The "4 of 48 threads" characterisation came from SYNC-2's report and was propagated by the coordinator into
+SYNC-15's brief. It was wrong; the per-thread data always said otherwise.)*
+**Seam 2 — `TINY_SOLO` widening is real but marginal.** Offline reconstruction, **validated by reproducing
+SYNC-2's measured 915 elided barriers on plain decode exactly**: widening `nrows == 1` → `nrows <= 2` takes
+the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.11 ms/eval ≈ 0.35 ms/token ≈
+1.2% gross**, before netting off serialization `ROWCOL_SPLIT` already avoids.
+
+**Three levers built:**
+- **`GGML_VEC_Q8K`** — AVX-512 `quantize_row_q8_K`, **bit-identical, 6.3× (12.27 → 1.96 µs)**.
+  **★ `-ffp-contract=off` is LOAD-BEARING**: with contraction GCC fuses the `iscale` multiply into
+  `nearest_int`'s magic-number add, **rounding once instead of twice** — 4 mismatching rows in 140×10240 with
+  it on, **0 with it off.** Verified byte-identical against the library reference at 256/2560/6144/10240 over
+  **1,400 seeded trials** including tie and all-zero classes.
+- **`GGML_QSPLIT` / `GGML_QSPLIT_MIN`** — split activation quantization over the (row, block) space when
+  rows < threads; **block-local for both Q8_K and Q8_2_X4, so bit-identical by construction.** The threshold
+  applies only to the single-row case, where the split must buy back the barrier D1 avoids.
+- **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
+
 # ★ STANDING RULE — THE CHAMPION IS ALWAYS CURRENT (operator, 2026-09-07)
 
 **Operator, verbatim:** *"always build on top of the latest champion and rebuild the champion when new
