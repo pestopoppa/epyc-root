@@ -799,7 +799,45 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       Report: `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md`, **6,339 words against a 900-word brief —
       flagged by the agent rather than hidden**; §6 carries ready-to-apply handoff rows.
 
-- [ ] **SYNC-16 — audit the MoE `partial_sort`.** Left open by SYNC-10; **read-only, no lock required.**
+- [x] **SYNC-16 — COMPLETE ✅ 2026-09-07: the lever WORKS and does NOT PAY. NO-GO.** Branch
+      `inf70/sync16` @ `6d8592fb8`, default OFF, not merged; report
+      `/mnt/raid0/llm/tmp/inf70/agents/sync16/REPORT.md`.
+      Kernel row loop **10.36× faster** (20.28 → 2.01 µs/row), bit-identical. But knob-isolated on a
+      SINGLE binary, plain decode is **0.9968×, 95% CI [0.9945, 1.0004], 24/60 pairs faster — no gain,
+      bounded at ≤ +0.04%.** The projected +1.5% / +0.8% did not materialise. The 10.36× is
+      **mechanism sizing, a NON-CLAIM**, and was not scaled into a served number.
+      **★ BOTH APPARENT WINS WERE ARTEFACTS, AND THE PRE-REGISTERED A/A CONTROL CAUGHT ONE.**
+      The **+2.91% plain** was **the BINARY, not the knob**: plain arms cluster cleanly by binary
+      (`bin-base` 18.99–19.34, `bin-s16` 19.61–19.86) *regardless of knob state*, with no overlap and
+      no position ordering — and knob-OFF on the sync16 binary was the FASTEST arm in the block. The
+      A/A rule (written 16:03Z, 21 min before the window opened) said "C must match A, or any delta is
+      a build artefact." It didn't.
+      The **+4.9% MTP** was **CO-RESIDENCY**: r(foreign %CPU, tw_tps) = **−0.825**, A arms carried 63%
+      more foreign load than B. It also exceeded the lever's entire ~1.02% MTP budget by 5×, so it was
+      physically impossible regardless.
+      Gates that stand as claims: bit-identity 16/16 stream digests (plain + MTP, full 256-token
+      streams at 41/109/240 prompt tokens), 24/24 production rows, α = 0.8209 identical across all MTP
+      arms, `test-backend-ops -b CPU` failure sets unchanged. Coherence {COHERENT 20, SHORT 4} in all
+      14 arms; the 4 SHORT rows are the same four every time and are **exactly** the `pred_n < 16` set,
+      so the pre-registered floor excludes them consistently — prompt set behaving as designed.
+      **Caveat the agent flagged rather than buried:** it named a profiler-overhead hypothesis for the
+      null but did NOT prove it → SYNC-21.
+
+- [ ] **★★ MEAS-1 — EVERY ABA IN THIS CAMPAIGN RAN WITH UNFENCED TOOLING INSIDE THE MEASURED REGION.**
+      Filed 2026-09-07 from SYNC-16. `claude`, `codex` and `python3` processes, all with
+      `cpus_allowed=0-191`, ran at **100–600 summed %CPU inside cores 0-95 in every arm**.
+      `region-lock` excludes other bench ROLES but does not fence unpinned tooling. The co-residency
+      logger's `27 of 11` is not a broken counter — it is 27 foreign-process OBSERVATIONS over 11
+      SAMPLES, a label bug; the co-residency itself is genuine. **The same defect sits in
+      `champion1/arm.sh`, the copy source for the campaign's harness** — flagged by SYNC-16, not
+      silently patched. Decide whether to fence (cgroup/cpuset the tooling out of 0-95) or to log and
+      regress on it; until then every sub-5% delta in this campaign carries an uncontrolled variable.
+- [ ] **SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a
+      profiled A/B on a NON-prof build in one window. If the nodes shrink while the token does not,
+      the lever is dead for good. Also tests the wider risk SYNC-16 raised: **the per-node census may
+      systematically overprice cheap single-threaded nodes** — SYNC-16 is the first lever to test a
+      census line item end-to-end and find nothing there, and every lever sized off `*_pernode.tsv`
+      inherits that risk.
 
 **Superseded — the settled-serving-number block:**
 
@@ -1240,10 +1278,43 @@ the same end as `GGML_NOHUGEPAGE` but bundled with losing prefetch.
 `GGML_STATIC_CHUNKS` knob at `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), **two lines, no
 affinity, no loader change.** That is the single arm worth running if anyone wants it.
 
-- [ ] **SYNC-17 — three champion-relevant fixes for the NEXT rebuild** (not folded into CHAMPION-3, which is
-      mid-flight): extend `ROWCOL_SPLIT` to reach `scale_f32` (**375 nodes/token currently thread-0-only in
-      the shipped champion**); drop `CLAMP` from the `TINY_SOLO` whitelist; and **audit the TINY_SOLO ×
-      ROWCOL_SPLIT collision in the 512–4096-element band, where both shipped levers claim the same node.**
+- [x] **SYNC-17 — COMPLETE ✅ 2026-09-07: three fixes built and measured as ONE combined lever vs
+      champion-3. NO-GO on a CHAMPION-4 fold; headline NON-CLAIM. The collision is real and the
+      champion was resolving it the RIGHT way by accident.** Branch `inf70/sync17` @ `10ff9be0d`;
+      report `/mnt/raid0/llm/tmp/inf70/agents/sync17/REPORT.md`.
+      **★ THE COLLISION ANSWER — `TINY_SOLO` wins UNCONDITIONALLY, and `ROWCOL_SPLIT` does not run
+      at all in the 512–4096 band.** The contest is in the DISPATCH, not the kernels: the solo path
+      (`ggml-cpu.c:4177`) re-dispatches with `sp.nth = 1`, so `get_rowcol_split` fails both its
+      guards (`nth > 1`, `nr < nth`), returns `ncc = 1`, and degenerates to the identity.
+      **~469 nodes/token in plain decode** (census: 426 ADD ne0=2560 + 42.6 MUL) get nothing from a
+      lever adopted at +8.42%. **Invisible to speed measurement** — both levers ship ON and no arm
+      ever existed where they disagreed; only reading the dispatch found it.
+      **★ BUT FIXING IT COSTS −3.08% plain**, predicted to 0.05 pp by barrier count alone (468.6
+      nodes × 3.14 µs / 48.46 ms). At 2560 elements a barrier-eliding solo run beats a 48-way split
+      handing each thread 213 bytes. **The fix is to raise `GGML_ROWCOL_MIN_ELEMS`, not to flip the
+      winner.** Bit-identity PASSED at production prompt length (6/6 full 256-token streams, plain
+      + MTP, plus 20/20 per speed arm). Knobs, auditable via `strings`: `GGML_SCALE_SPLIT`,
+      `GGML_SOLO_YIELD_ROWCOL`, `GGML_TINY_SOLO_CLAMP`.
+      **★ CORRECTION to SYNC-7's premise:** of the "375 SCALE nodes/token thread-0-only", ~323 are
+      below the 512 floor and correctly solo, 67 are zero-element and already elided; only **~6.3
+      genuinely lose parallelism — but they carry ~20 MB/token on one thread of 48.**
+      **FIX-2 is provably inert here (zero CLAMP nodes) but correct — ship it.** FIX-1 is untested
+      in isolation, its value masked by bundling with FIX-3 → SYNC-19.
+- [ ] **SYNC-19 — measure FIX-1 alone, unbundled from the −3% lever.**
+      `GGML_SCALE_SPLIT=1 GGML_SOLO_YIELD_ROWCOL=0 GGML_TINY_SOLO_CLAMP=0` on
+      `/mnt/raid0/llm/tmp/inf70/agents/sync17/bin-s17` — NO REBUILD, that binary carries every knob.
+      Targets the ~6.3 SCALE nodes/token at 30 720 / 786 432 elements, which exceed
+      `GGML_TINY_SOLO_MAX` and so are reachable WITHOUT FIX-3. If neutral-or-better, the CHAMPION-4
+      candidate is FIX-1 + FIX-2 with FIX-3 shipped INERT (`GGML_SOLO_YIELD_ROWCOL` default 0).
+- [ ] **SYNC-20 — sweep the yield floor.** `GGML_SOLO_YIELD_ROWCOL=1` ×
+      `GGML_ROWCOL_MIN_ELEMS ∈ {4096, 16384, 65536}`: find where a column split starts to out-earn
+      a barrier-eliding solo run. SYNC-17 proves 512 is far too low. Same binary, no rebuild.
+- [ ] **METH-2 — register the A/A control as two A arms run BACK-TO-BACK.** SYNC-17's pre-registered
+      G3/G4 compared NON-adjacent arms (A1 vs A3 ≈ 20 min, A1 vs C1 ≈ 45 min), which measure host
+      DRIFT rather than measurement error and are guaranteed to blow out on a drifting host — they
+      did, in BOTH directions in one session (MTP −4.9%, plain +11.3%), tracked by a lever-insensitive
+      prefill probe. SYNC-17 applied the rule as written rather than revising it post-hoc, which is
+      why its headline is NON-CLAIM. Adopt back-to-back A/A campaign-wide.
 - [ ] **SYNC-18 — re-test "small gathers should stay single-task."** D8's +0.97% was measured with both arms
       running the identical parallel kernel, so the hypothesis is **untested**, not refuted. Cheap now that
       `GGML_GET_ROWS_MIN_BYTES` is known inert at the kernel.
