@@ -2,8 +2,48 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 99+ documents
+
+## Compiled Update — 2026-09-07: a frozen served model is structurally immune to tool-environment shift — and one engineer update costs a full eval sweep
+
+**Confidence: observation-grade** — external, one benchmark, n=1 per cell; the numbers below are
+carried as posture, not as a gate, and nothing on this host was measured to produce them. The cost
+yardstick at the end is **DERIVED-FROM-CONFIG, never a measurement**.
+
+### Freezing the weights is what buys the robustness
+
+A post-trained agent is trained *against a particular tool environment*, and the training is what
+makes it brittle to that environment changing. The benchmark separation is stark: the **untrained
+Qwen2.5-7B goes UP** under a strong tool-schema shift — **7.4 → 13.5** — while **the same model
+post-trained under h-low falls to 2.7**, i.e. *below* its own untrained baseline, and a **GiGPO**-
+trained arm collapses **81.0 → 33.2**. The capability that the training added is the capability
+that the shift removes, and then some.
+
+We serve **frozen** weights. That makes this failure mode **structurally unavailable to us** rather
+than merely unlikely — there is no trained-in tool schema to invalidate.
+
+**Why this matters operationally, and it is not abstract:** every **MCP tool rename**, every
+**parameter-key change**, and every **consolidation of several tools behind one dispatcher with an
+`action` parameter** *is* that shift in the source's exact sense. On a post-trained agent each of
+those is a potential collapse of the kind above; on our frozen fleet each costs approximately
+nothing. Tool-surface refactors are therefore a **design decision**, not a stability risk to be
+hedged against — and conversely, any proposal that would post-train an agent against our current
+tool surface is buying a standing veto over ever refactoring it.
+
+Scope discipline: this is **one benchmark**, external, OBSERVATION-grade. It supports a *posture*
+(refactor the tool surface freely; treat trainability as downstream of harness selection) and gates
+nothing.
+
+### The cost yardstick for any outcome-grounded editor loop
+
+**One engineer update ≈ one full sweep of your eval suite.** That is the price of a single step of
+any outcome-grounded editor loop — the editor must observe the outcome, and observing the outcome
+*is* running the suite. It is a rule of thumb for pricing this whole class of proposal before a
+design doc exists, and it is **DERIVED-FROM-CONFIG, never a measurement**: it falls out of what such
+a loop must do per step, not out of anything timed on this host.
+
+_Sources: `intake-1339#record`, `intake-1323#record`, `intake-1344#record`._
 
 ## Compiled Update — 2026-09-02 (incremental): a retracted number is not retracted until its derivatives are chased, and in a shared clone every defect claim is verified against git first
 
@@ -2238,11 +2278,26 @@ which are n=1 per cell on closed frontier models and gate nothing.
 Two independent taxonomies converge on making the scaffold an auditable object
 rather than an implementation detail. A six-dimension decomposition — **context
 assembly / tool interaction / generation control / orchestration / memory
-management / output processing** — is extended by a seven-layer variant that adds
-**Observability** and **Governance**, and both propose a **Harness Card** as a
-disclosure schema. The adopted action is an audit table recording, per dimension,
-which parts of our Layer-B surface are **editable** versus **hard-coded** — a
-table, not a code change.
+management / output processing** — sits alongside a seven-layer variant,
+**ETCSOVG** = **Execution, Tool, Context, Scheduling, Observability,
+Verification, Governance**. The adopted action is an audit table recording, per
+dimension, which parts of our Layer-B surface are **editable** versus
+**hard-coded** — a table, not a code change.
+
+> ~~is extended by a seven-layer variant that adds **Observability** and
+> **Governance**, and both propose a **Harness Card** as a disclosure
+> schema.~~ **CORRECTED 2026-09-07** — two errors in the struck clause.
+> (a) ETCSOVG is a **different partition**, not a superset: it *adds four* and
+> *drops two* — **generation control**, and **memory management**, which is
+> folded into **Context**. Reading it as "the six plus Observability and
+> Governance" invents a containment that does not hold, and any per-dimension
+> mapping built on that reading is wrong at the row level.
+> (b) Only **arXiv 2605.23950** proposes a **Harness Card** as a disclosure
+> schema. The six-dimension decomposition is `intake-921` (MemoHarness), which
+> describes a *six-dimensional editable harness space* and **no card at all** —
+> so "both propose a Harness Card" is a misattribution, and a misattribution in
+> the compiled KB is what a future reader will cite. `intake-1344#record`
+
 [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) §HS-6
 
 ### Re-targetability outranks per-model tuning (operator, 2026-07-29)

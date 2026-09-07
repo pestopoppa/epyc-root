@@ -5,6 +5,113 @@
 **Last compiled**: 2026-08-30 (two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA)
 **Sources**: 128+ documents
 
+## Compiled Update — 2026-09-07: cross-model rows are inadmissible without a locked harness — the citation gate, the two-sided aggregation-identity check, and four benchmark-reading rules
+
+**Confidence: verified** for the external figures below — each traces to a dive-verified
+research-intake entry read against its primary source; **inferred** for the admissibility and
+reporting rules generalised from them. Nothing here was measured on our hardware. All of it is
+**compiled knowledge**: none of these rules is a measurement-constitution amendment, and none may
+be cited as one.
+
+### The two-regime admissibility rule, adopted as a CITATION GATE (`intake-1344`)
+
+Model quality and harness quality are two regimes, and a benchmark row that varies both measures
+neither. **Adopted as a citation gate:** any cross-model row entering a wiki page or a handoff must
+either **name a locked harness** or carry an explicit **"harness-confounded, within-harness only"**
+label. A row that does neither does not enter.
+
+Worked example: LOCA Table 3 shows a **22.6-pp scaffold-only swing at fixed Claude-4.5-Opus** — the
+weights are held constant and the scaffold alone moves the score by more than the gap most
+cross-model tables are drawn to argue about. A table that does not say which scaffold produced each
+row cannot distinguish a better model from a better harness.
+
+Apply the gate **first** to the two citation families landing in this wave: the BEAM citations
+(`intake-1330`) and the LOCA-bench citations (`intake-1342`; the plan item that filed this rule
+mistyped the id as `intake-1331`, which is the firstmate outcome-store entry — corrected here).
+
+**Filed as compiled knowledge, NOT as a `MEASUREMENT_POLICY` amendment.** The measurement trust
+boundary is human-amendment-only, and an intake dive cannot propose edits into it. This section is
+the gate's home; promoting it to policy grammar would be an operator action, not a session write.
+
+### The standing budget-matching gap on the harness-vs-weights axis (`intake-1339`)
+
+Three papers now sit on the harness-versus-weights axis — Harness-R1 (`intake-1323`),
+`intake-1339`'s source, and the arXiv:2607.12227 critique carried via `intake-921` — and **none of
+them is budget-matched**. `intake-1339`'s source indicts prior work *twice* for hiding
+harness-design cost and then prices only its own training side (~1,800 H200 GPU-hours).
+
+**Standing rule: any future proposal on this axis must state both costs — the harness-design cost
+and the weights/training cost — or be declined.** A one-sided budget cannot support a claim that
+one regime beats the other.
+
+### The interaction-protocol rule and the resolution rule (`intake-1330`)
+
+A benchmark that publishes **no admissible-protocol rule** — no statement of what an evaluated
+system is and is not allowed to do while answering — cannot arbitrate cross-system comparisons.
+Whatever it measures, it is not "the same task" across two systems that read the environment
+differently. **BEAM is the worked example.**
+
+**Resolution rule.** BEAM asks **2 questions per ability per conversation**, so a single question is
+worth **5 pp at 10M** and **2.5 pp at 100K**. Any BEAM delta below that granularity is one
+question's worth of noise and must not be reported as an ability difference. The same arithmetic is
+the general check: divide 100 by the per-cell question count before quoting a per-cell delta.
+Pair it with the confounded-ability test — an ability whose score moves only together with another
+is not independently measured.
+
+### The aggregation-identity check is TWO-SIDED (`intake-1337`)
+
+- **Positive case:** four external BEAM_10M headlines **reproduce the unweighted ten-ability mean to
+  the decimal**. The published headline is that mean; the identity holds.
+- **Negative case:** a run using the benchmark's **own rubric files** lands **4–7 pp off** the
+  published headline, via a **micro-average** over items plus **`≥0.5` binarisation** of rubric
+  scores. Same data, different fold, different number.
+
+**Rule: reproduce a quoted headline from its own per-category table before comparing it to
+anything.** If the headline does not fall out of the table by a stated fold, you do not yet know
+what the number is, and any delta you compute against it is undefined.
+
+### BEAM / LongMemEval protocol asymmetry (`intake-1316#record`)
+
+Worded exactly: **"BEAM specifies a single-inference-step protocol and neither permits nor forbids
+multi-turn agentic retrieval; at least one baseline vendor measured that agentic retrieval raises
+the score and voluntarily withheld it."**
+
+Two consequences. First, the withholding is the evidence — a vendor measured the uplift and did not
+publish it, so the published table understates what the protocol tolerates. Second, **no
+one-shot-versus-iterative argument may be attributed to Cognee**: that attribution was a Stage-1
+reconstruction, not a quote from any source, and it does not survive the dive.
+
+### Answer-cardinality rule and the k/n granularity check (`intake-1342`)
+
+**A benchmark that scales difficulty by scaling an environment must hold ground-truth answer
+cardinality fixed.** If the environment grows and the number of correct answers grows with it, the
+difficulty axis and the scoring axis are the same axis, and a score curve across scales measures
+the construction, not the system.
+
+Paired with it, the **k/n granularity check**: before quoting a delta, compute the smallest score
+step the k-of-n scoring can express. A difference smaller than one unit of `1/n` is not a result.
+
+### Per-row provenance: resolve the row, never the caption (`intake-1342`)
+
+**Resolve the PER-ROW citation, never the table caption.** A caption naming a source does not
+establish that every row came from it; mixed tables are normal and the rows carry their own
+provenance.
+
+And: **a benchmark's public leaderboard is a separate artifact from its paper**, with its own date
+and its own revision history. A leaderboard number and a paper number for the same system and the
+same benchmark are two different measurements, and neither substitutes for the other in a citation.
+
+### Reporting convention: the paired recovery ratio (`intake-1340#record`)
+
+**Recovery ratio = student score / the SAME teacher**, reported **per model per workload**, and
+**never pooled** across differing model sets. Pooling recovery ratios computed against different
+teachers produces a number with no referent: the denominator changes between the terms being
+averaged.
+
+**Filed here as compiled knowledge.** Promoting this convention to
+`agents/shared/MEASUREMENT_POLICY.md` is an **operator decision package**, not a session write —
+the measurement trust boundary is human-amendment-only.
+
 ## Compiled Update — 2026-09-04: a bench win is not a serving win — the proxy-divergence finding, the per-request throughput metric, and the A/A serving floor
 
 **Confidence: verified** for the divergence measurement, the three-metric A/A floor comparison,
