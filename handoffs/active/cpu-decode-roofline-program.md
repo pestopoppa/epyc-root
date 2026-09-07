@@ -1206,6 +1206,56 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+# ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
+
+Committed, not pushed. Frozen tree untouched at `0db32c06e`.
+
+| MTP served | value |
+|---|---|
+| **in-window (shipped binary, window 3)** | **33.370 t/s · 29.967 ms/token** — and **34.433 t/s · 29.042 ms** in window 1, same config via the hatch |
+| **vs champion-1, paired same-window** | **1.0427 (+4.27%), 117/120 per-prompt wins** |
+| **vs pristine `c51e4dabf`** | **1.4993, 120/120 wins** |
+| referred to the 35.407 anchor | ≈36.9 t/s · ≈27.1 ms — **A PROJECTION, NOT A MEASUREMENT** |
+
+Plain: **20.589 t/s · 48.569 ms**, 1.0568 over champion-1, **1.7151** over pristine. **α = 0.8209 and
+drafted/token 0.8961 in EVERY MTP arm of every binary**; coherence 20 COHERENT + 4 SHORT in **all 48 arms**.
+**No round and no arm excluded anywhere.**
+
+**★ CHAMP-2 WAS NOT SHIPPED, AND THE EVIDENCE IS STRONGER THAN THE HYPOTHESIS.** Two independent same-window
+ABAs **disagree in sign** on the shim: window 1 says shim-off **+1.48%** (CI [1.0104, 1.0191], 48/60), window
+3 says shim-off **−1.15%** (CI [0.9816, 0.9952], 25/60). **Pooled over 120 paired observations: +0.16%,
+73/120 — zero.** So CHAMP-2's +1.0% does not merely shrink after V+Q, **it does not survive.**
+**★ THE MECHANISM ARM IS THE CLEAN CONFIRMATION OF SYNC-15's FALSIFIABLE PREDICTION.** Same binary with
+`GGML_VEC_Q8K=0 GGML_QSPLIT=0`, the shim the only difference: **+0.94%, CI [1.0043, 1.0149], 42/60** —
+**CHAMP-2's original claim reproduced exactly, in a different agent's window.** **The shim's value scales with
+`wdata` traffic; V and Q remove the traffic, and what remains is a TLB-reach cost that cancels it. CHAMP-2 was
+never wrong — just not additive.** Code and evidence stay in the tree; polarity inverted so
+`GGML_NOHUGEPAGE_PROCESS=1` now opts **in**.
+**⚠ THE DISTINCTION THAT MATTERS: `GGML_NOHUGEPAGE` (the `ggml_aligned_malloc` madvise in `libggml-base`)
+STAYS ON** — proven live, champion-3 runs at **AnonHugePages 0.057% against pristine's 99.888%**. Only the
+process-wide `PR_SET_THP_DISABLE` in `libllama-common` went default-OFF. Conflating the two would discard
+**86.4% of the champion**.
+
+**Gates, and note how each was proven rather than asserted:**
+- **`GGML_QSPLIT_MIN` = `INT64_MAX`** (multi-row branch only) — **verified in MACHINE CODE**: `movabs
+  0x7fffffffffffffff` present in champion-3's `ggml_iqk_try_mul_mat`, **absent from champion-1's**.
+- **`-ffp-contract=off` carried** — **0 FMA, 16 `vmulps` + 16 `vaddps`** in the AVX-512 quantizer. Default-ON
+  proven by **timing the dispatch entry point**: 7.72× unset, 7.43× empty, **1.00× at `=0`**. 1200 adversarial
+  row trials, 0 mismatches.
+- **Bit-identity**: **16 arm-pairs, 5/5 sha256 identical over 689 tokens each**, plain and MTP; all-hatches-off
+  reproduces pristine **in tokens AND throughput**.
+- **`test-backend-ops -b CPU`**: comparable failure sets **identical** across pristine / champion-1 /
+  champion-3 (7 signatures), churn confined to `LIGHTNING_INDEXER` (49/50/50), per HYG-3.
+
+**Two things for the record:**
+1. **Quote its RATIOS, never its absolutes.** The GPU lane was live throughout — champion-1 read 32.930 /
+   32.115 against its own 35.407 anchor. **And the lane STOPPED mid-way through window 3's plain phase**
+   (`R_P` 17/52 samples, `R_C1`/`R_C3` zero), so **those plain rounds straddle a contention change**; window
+   1's plain arms are better conditioned.
+2. **★ THE CO-RESIDENCY SAMPLER MISLABELS 184-191 AS "disjoint-from-0-95". They are SMT SIBLINGS of 88-95.**
+   The label is inherited from `champion1/arm.sh` and is **wrong in every report that used it.** One-line fix,
+   routed to HARNESS-1 so the new harness does not inherit it.
+
 **★★ COORDINATION BUG FOUND 2026-09-07 (SYNC-16) — POLLING FOR A FREE LOCK IS NOT QUEUEING FOR IT, AND CAN
 STARVE FOREVER.** Its first chain used a **30-second polling loop** to detect a free region. The holder
 **released and immediately re-took the region under a new tag** (`champion3-confirm` → `champion3-mech`) —
@@ -1403,7 +1453,9 @@ the campaign spent a day quoting solo numbers that were wrong in both directions
 (+3.05% → +5.3%), `TINY_SOLO` and `EMPTY_SKIP` overstated (+3.86%/+0.87% → below the noise floor).
 **A lever's value is a property of the kernel it is measured in. Re-measure, never re-scale.**
 
-**CURRENT CHAMPION: `inf70/champion` @ `6f032c48d` — 35.407 t/s / 28.24 ms served, 1.4834×, bit-identical.**
+**CURRENT CHAMPION: `inf70/champion3` @ `9c4f73e29` (build 10241) — +4.27% over champion-1 (117/120 wins),
+1.4993× over pristine, bit-identical. In-window 33.370 t/s; ~36.9 t/s referred to the 35.407 anchor is a
+PROJECTION, not a measurement.** *(Superseded: `inf70/champion` @ `6f032c48d`, 35.407 t/s / 28.24 ms, 1.4834×.)*
 
 # ★★★★★ THE CHAMPION KERNEL — `35.407 t/s` SERVED, `1.4834×`, BIT-IDENTICAL. 2026-09-06.
 
