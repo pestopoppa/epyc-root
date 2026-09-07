@@ -343,6 +343,19 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
   `compile_sources.py` refuse to run outside the main clone. Until fixed: run scanner and
   `--touch` from `/workspace` only.
 
+  **2026-09-07 addendum — the same failure fires from `/workspace` itself, no lane involved.**
+  Run correctly from the shared clone (not a lane), `total_new` still read **942** against a
+  genuinely-real 2026-09-03 local `.last_compile` — not a checkout-time mtime artifact, but a
+  4-day gap dominated by a ~300-commit campaign merge. `--touch` was withheld rather than run
+  (would have falsely marked all 942 compiled); a small, real subset (4 sources, this session's
+  own CJ-8/9/11/12 and vidya SC69-73 findings) was compiled by hand into `wiki/benchmark-
+  methodology.md` and `wiki/formal-verification.md` instead (`95c7e46d`). This confirms the row's
+  own diagnosis generalizes past the lane-mtime case: mtime-since-watermark is unreliable **from
+  any single checkout**, lane or shared clone, whenever a different clone (this fleet's, or a
+  peer session's independently-touched local watermark) has already compiled part of the delta.
+  The content-hash-against-`source_manifest.json` fix already proposed here is the correct fix
+  for both mechanisms at once — no separate row needed.
+
 ---
 
 ## 2026-09-03 supplement — pre-existing orchestrator `main` failures surfaced by the C7 merge
