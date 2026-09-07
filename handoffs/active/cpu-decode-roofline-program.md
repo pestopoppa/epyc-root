@@ -1117,6 +1117,32 @@ the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.1
   applies only to the single-row case, where the split must buy back the barrier D1 avoids.
 - **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
 
+- [ ] **HARNESS-1 — make the measurement harness 3–5× faster and tighten its noise floor.** Dispatched
+      2026-09-07 from an operator question ("why load and reload the same model over and over?").
+      **Measured: every arm costs ~370 s, of which ~170 s is SETUP** — `evict_nodes_force.sh` **140 s**
+      (it allocates ~58 GiB **per node** to pressure page cache out), server start → health 30 s, actual
+      measurement ~200 s. **Across a 41-arm window that is ~95 minutes of pure eviction.**
+      **Part 1 — targeted eviction**: replace the allocation pressure with
+      `posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED)` on the GGUF. **The eviction is LOAD-BEARING, not
+      hygiene** — page-cache-full NUMA nodes silently defeat `--interleave=all`, and the current harness
+      demonstrably delivers **23.04 / 23.05 / 23.04 / 23.04 GB** placement. The replacement must reproduce
+      that, and must **prove the pages dropped via `mincore()` or the file's `Cached` contribution — NOT by
+      the syscall's return**, since `DONTNEED` is advisory and only evicts clean pages.
+      **Part 2 — hot-server arm switching**: compute-path knobs (`VEC_Q8K`, `QSPLIT`, `ROWCOL_SPLIT`,
+      `TINY_SOLO`, `EMPTY_SKIP`) need no fresh process; only **allocation-time** ones (`NOHUGEPAGE`, the shim)
+      do. Read them **once per `graph_compute`** — not cached at init, and **not per node**, since a knob
+      changing mid-graph breaks barrier pairing (SYNC-12: matchers must be pure functions of the graph).
+      **This is a BETTER experiment, not just a faster one: it removes load-to-load variance from the pairing,
+      because arms are compared within one process instead of across two 92 GB loads.**
+      **★ The deliverable is the A/A NOISE FLOOR, old harness vs new** — borrowing autokernel's discipline of
+      deriving arm counts from a measured floor rather than a convention (its `n≥5` comes from a measured p95
+      of 2.175% prefill / 3.452% decode at n=20 pairs). This campaign has repeatedly spent rounds it did not
+      need and reported effects it could not resolve.
+      **Note what autokernel does NOT do**: it does not hot-switch either — it beats noise with repetition.
+      Its models sit in VRAM, so reload was never its bottleneck. This lever is specific to a 92 GB CPU model.
+      **Failure mode to respect: if targeted eviction cannot reproduce even placement, keep the slow path.**
+      A fast harness that measures the wrong thing would poison every result after it.
+
 # ★ STANDING RULE — RECLAIM A NO-GO ARTIFACT AS SOON AS IT IS PROVEN (operator, 2026-09-07)
 
 **Operator: "keep reclaiming space when artifacts are proven as NO-GO."** Do not accumulate multi-GB
