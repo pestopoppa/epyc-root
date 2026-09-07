@@ -1117,6 +1117,24 @@ the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.1
   applies only to the single-row case, where the split must buy back the barrier D1 avoids.
 - **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
 
+# ★ STANDING RULE — RECLAIM A NO-GO ARTIFACT AS SOON AS IT IS PROVEN (operator, 2026-09-07)
+
+**Operator: "keep reclaiming space when artifacts are proven as NO-GO."** Do not accumulate multi-GB
+artifacts behind closed investigations, and do not wait to be asked.
+
+**The precondition, which is the whole safety of it: the REGENERATION RECIPE MUST BE IN GIT before the
+artifact is deleted.** A tool sitting in `/mnt/raid0/llm/tmp/` is not a recipe, it is a coincidence — scratch
+is exactly what a container cleanup removes. Verify with `git cat-file -s <ref>:<path>`, against the **branch**
+rather than a possibly-lagging working tree.
+**Applied 2026-09-07**: B12's two spliced 3 GB head artifacts plus their 665 MB of intermediates deleted
+(**6.6 GB, 354 → 361 GB free**) — its verdict is NO-GO with the mechanism understood, and the finding *"a
+private draft head is anti-cache regardless of quant, because it ADDS to the trunk's slab rather than
+replacing it"* **binds the whole family**, so no successor needs them. Recipe verified present:
+`scripts/inf70/gguf_swap_ple.py` on `origin/main` @ `34cf1022`, 6,679 B.
+**Still retained deliberately, and why**: `IQ4_XS-uniform` (era anchor), `-gateup-r16` (Axis B artifact, **not
+yet re-measured on the champion**), `-r16` (B4's GO), `UD-IQ4_XS` (the served file), `MTP/` (in the serving
+config). None of these is a closed NO-GO.
+
 # ★ STANDING RULE — THE CHAMPION IS ALWAYS CURRENT (operator, 2026-09-07)
 
 **Operator, verbatim:** *"always build on top of the latest champion and rebuild the champion when new

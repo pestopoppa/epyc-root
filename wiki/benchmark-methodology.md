@@ -4104,3 +4104,45 @@ that would detect it** — so "never seen in production" is not evidence of abse
 - `handoffs/active/cpu-decode-roofline-program.md` — C9, SYNC-4, SYNC-7, HYG-1b
 - `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md` — the advisory-`n_tasks` finding
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Measure the stack, not the parts — levers do not compose predictably (2026-09-07)
+
+INF-70 measured seven bit-identical CPU-decode levers individually and then in combination. **In no case did
+the solo numbers predict the stack**, and the errors ran in both directions:
+
+| lever | measured ALONE | measured IN THE STACK |
+|---|---|---|
+| row/column-chunk elementwise split | +3.05% served | **+5.3%** |
+| barrier elision on single-task nodes | +3.86% plain | **below the 1.1% noise floor** |
+| zero-element node skip | +0.87% plain | **−0.2%** |
+| vectorised Q8_K quantizer | +3.12% served | **+0.86% marginal** |
+| activation-quant grain split | +3.04% served | **+1.13% marginal** |
+| whole-process `PR_SET_THP_DISABLE` | **+1.0% served** | **−1.39% — NEGATIVE, and dropped** |
+
+The first champion was **super-additive**: the product of four solo gains predicted 1.5017 plain, the measured
+combination was **1.6934** (a 12.8% excess). The second stack was **sub**-additive and one member turned
+negative outright.
+
+**The mechanism, in both directions, is that levers interact through what they remove.** Two barrier levers
+looked valuable only because their baseline was starved by a placement defect a sibling lever later fixed —
+remove the starvation and the barriers stop mattering. Conversely the process-wide THP shim won by making a
+shared work buffer cheaper to touch; once two other levers reduced traffic to that buffer, its remaining
+benefit no longer covered the TLB reach it costs. **A lever that removes a stall can delete another lever's
+entire justification, and a lever that reduces traffic can invert a locality optimisation.**
+
+**Rules that follow:**
+- **A lever's value is a property of the kernel it is measured in, not of the lever.** Re-measure in
+  combination; never scale a solo number into a stack, in either direction.
+- **Measure the stack in its own A/B window** rather than multiplying components. Both stacks above were
+  measured directly, and both would have been misreported from arithmetic.
+- **Run leave-one-out on the assembled stack.** It is the only thing that finds a member which has gone
+  negative, and it costs one arm per lever. Here it caught a lever that had passed a 26-arm study of its own.
+- **Do not delete a lever that measures negative in one stack** — gate it OFF and keep the evidence. Its win
+  was real in the kernel it was measured in, and a future stack with different traffic may want it back.
+
+### Source References (2026-09-07, stack composition)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the champion blocks, CHAMP-2, SYNC-15, CHAMPION-3
+- `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the first stack's leave-one-out
+- `/mnt/raid0/llm/tmp/inf70/agents/champ2/REPORT.md` · `sync15/REPORT.md` — the solo measurements
+- `progress/2026-09/2026-09-05-inf70-audit.md`
