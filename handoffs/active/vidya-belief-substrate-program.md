@@ -1333,7 +1333,7 @@ that a machine-checked verdict certifies *the proposition the checker decided*, 
 that proposition to the claim someone cites it for. The convergence is that a platform with every
 commercial incentive to accrue reputation arrived independently at this program's two-plane split.
 
-- [ ] **SC56 — statement-binding precondition for any grade above `Judged`.** A verifier-derived
+- [x] **SC56 — statement-binding precondition for any grade above `Judged`.** ✅ 2026-09-07 (`51f9ef61`) — unbound verifier caps at `Judged`, bound at `Verified`; T passed through untouched; a FALSE identity binding is refused, never downgraded. 51 tests, 14 mutants, 0 survivors. A verifier-derived
       tuple may be graded above `Judged` only when the adapter records **what proposition the
       verifier actually decided** AND that proposition is bound to the claim being asserted. Absent
       the binding, cap at `Judged`. Evidence: `intake-1307#00` — in one real pipeline an automated
@@ -1342,19 +1342,19 @@ commercial incentive to accrue reputation arrived independently at this program'
       mathematical truth". **Cite the precise `#NN` forms, never the whole entry**: that entry's
       headline number is a reweighted projection from a 45-example single-annotator audit and is
       admissible as an existence proof that the gap is large, never as a rate.
-- [ ] **SC57 — `decided_proposition` on the verifier-class adapter contract.** Extend the source
+- [x] **SC57 — `decided_proposition` on the verifier-class adapter contract.** ✅ 2026-09-07 (`fe91818d`) — Extend the source
       table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) so a
       verifier adapter must emit *what the check asserted*, not only a boolean, and refuse
       registration of one that emits pass/fail alone. **Project, not grade** — no new ladder
       (`docs/design/vidya-pilot-spec.md` §4.7). Retrofit is impossible for the usual reason: a
       proposition invented on read claims warrant the original check never captured.
-- [ ] **SC58 — verify judgment frames are pinned to the digest of the artifact they judged**, and
+- [x] **SC58 — verify judgment frames are pinned to the digest of the artifact they judged** ✅ 2026-09-07 (`fe91818d`) — **the check FAILED: this was a P1 defect, not a passing property.**, and
       transition dirty when that digest moves. §5.2 plausibly covers this already, so this is a
       check, not a build; a negative result is a P1 defect. Source: `intake-1308#03` — "a read-back
       of an older version of the code is worse than none, because it testifies about the wrong
       artifact." Note that the source platform enforces this only as prose, and stores no hash of
       the audited text — which is exactly why it cannot detect its own violation.
-- [ ] **SC59 — optional free-text `reason` on `supersedes`/`retracts` frames**, surfaced on the
+- [x] **SC59 — optional free-text `reason` on `supersedes`/`retracts` frames** ✅ 2026-09-07 (`fe91818d`) — zero grade effect is structural, not asserted., surfaced on the
       belief's review path. **No grade effect**, deliberately — same rule as corrections, for the
       same reason (we know the ground shifted, not by how much). The consumer is a citer told a
       frame was superseded who currently learns nothing about *why*, and so repeats the rejected
@@ -1366,6 +1366,20 @@ commercial incentive to accrue reputation arrived independently at this program'
       would be 0 for roughly 85% of nodes, because their graph is a dense proof tree and ours is a
       sparse hand-authored annotation. Copying the metric without the density copies the ceremony,
       not the signal. File it; do not start it.
+
+- [ ] **SC62 — wire FM-5 fan-out outcome accounting into the belief kernel.** FM-5 landed
+      2026-09-07 (`5f1c4ba4`) and **produces measurements**: per-subagent outcome buckets with token
+      totals over a committed, non-reproducible corpus. Filed here the same day per CLAUDE.md —
+      wiring the WRITE side is cheap and permanent, retrofitting the READ side is impossible, and
+      `benchmarks/results` (4,562 files, no write-side hook, 0 of 200 sampled carrying a usable
+      tuple) is the standing proof. **Project, never grade** — no new ladder (§4.7).
+      **The bounds must ride in the tuple or the projection is a lie:** `produced-and-used` is an
+      UPPER bound (2,094 of 2,265 verdicts rest on a substring hit; the proven floor is
+      `git-landed` = 171), `blocked = 0` is a floor not a finding, token totals are
+      provider-cumulative and dominated by a handful of very long threads, and 501 `unknown` must
+      stay unfolded. A tuple that reports 86.5% without its band is not a projection of this
+      measurement — it is a different, stronger claim than the one that was made.
+      Source-table row added to `scripts/vidya/adapters/README.md` (state: UNWIRED).
 
 - [ ] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
       (below/adjacent) accepts two binding kinds: `identity`, machine-checkable by normalized string

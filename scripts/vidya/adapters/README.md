@@ -177,6 +177,7 @@ Keep this table current. It is the answer to "has anyone already looked at this?
 | source | class | state | adapter |
 |---|---|---|---|
 | `research/intake_index.yaml` | literature | **live** — 1,068 entries | `research_intake.py` |
+| `data/fanout_timing/*.v2.jsonl` (FM-5 outcome accounting) | measurement | **UNWIRED** — corpus landed 2026-09-07 (`5f1c4ba4`), no adapter yet; see SC62 | *(none)* |
 | sealed measurement manifests | measurement | **live** — 6 sealed, all `Witnessed/Attested` | `sealed_manifest.py` |
 | autopilot trial journal | measurement | **wired**, awaiting first post-hook trial — **parked since 2026-08-09 (v9 freeze)**, last journal trial 1505 @ 2026-08-09T19:29Z; awaiting first post-hook trial after autopilot restart — still 0 measured rows, correctly reported | `autopilot_journal.py` |
 | AutoKernel `evaluation_event` performance estimates | measurement | **write/read path wired prospectively; awaiting the first real post-hook event** — the live campaign journals complete v5 events with producer-written `belief_capture`; the reader re-derives paired raw vectors and exact claim/source/binary/model/resource identities. Historical events, null T0 estimates, and void records emit zero rows | `autokernel_evaluation_event.py` |
