@@ -1692,6 +1692,18 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
         `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
         pass, guard exit 0, --help shows the flags.
+      - [ ] **R23-46 (rtx6kpro intake) — does the in-window residency sampler perturb the measured
+        process?** External production runbook forbids `nvidia-smi dmon` during qualification (NVML polling
+        "reproduced a persistent target-cycle reduction on an unchanged control process"). Ours polls
+        rocm-smi/hwmon DURING every window by doctrine. A/A on the canonical tg128 anchor: current rate vs
+        1 Hz vs off (residency proven once before the window), 20 pairs. If >0.638% floor, lower the
+        cadence — "sample DURING" stays, the rate changes.
+      - [ ] **R23-47 — P-KLD: distil `rtx6kpro/kld/README.md` into a divergence-protocol annex** (we have
+        NO ratified KLD/PPL/coherence protocol — MEASUREMENT.md §2 has zero divergence terms): full-vocab
+        only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed
+        runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
+        **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
+        edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
       - [x] **Headline freeze (R23-44 defect) fixed** ✅ 2026-09-07: moving `publish_headline()` to the
         serving-PROMOTE branch froze the champion-vs-production headline for the whole accumulation phase
         (operator saw a 3.8-day-old SUPERSEDED number, 2 champion gens back, on the OLD dec-b4 surface).

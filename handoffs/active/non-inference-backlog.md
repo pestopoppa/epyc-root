@@ -365,3 +365,7 @@ Canonical sources (always verify status in these files first):
 - [`pipeline-integration-index.md`](pipeline-integration-index.md) — vision, ODL, Lean, TTS series
 - [`user-facing-harness-index.md`](user-facing-harness-index.md) — user-facing harness work (formerly Hermes B-series)
 - [`master-handoff-index.md`](master-handoff-index.md) — cross-domain priorities
+
+- [ ] **NI-IO (rtx6kpro intake 2026-09-07)** — NVMe/md-RAID0 I/O scheduler check: `cat /sys/block/nvme*/queue/scheduler`
+      should be `none` (external: 91.8k vs 48.6k IOPS under BFQ); md `group_thread_cnt=8` for RAID5/6 only;
+      Docker overlay2 `syncfs` stall fix only if inference containers exist here. 2-minute check.
