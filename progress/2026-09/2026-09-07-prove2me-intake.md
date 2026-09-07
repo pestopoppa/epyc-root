@@ -497,6 +497,19 @@ derived-actionables gate and given its own `- [ ]` line during this wrap-up.
 - Prune candidates (`index_state.py` generated `prune.candidate` signal): **0**. Nothing
   archived this cycle.
 - README freshness check: clean, nothing flagged.
-- Wiki compilation sweep: 76 new sources pending; dispatched to a subagent under the wrap-up
-  lease (Step 5 is operator-cadence-only, and this is an operator-invoked `/wrap-up`) rather
-  than done inline, to keep main-thread token spend on review rather than synthesis.
+- Wiki compilation sweep: dispatched to a subagent (76 sources against the then-stale local
+  view); the process was interrupted by a session restart before it committed anything — no
+  data lost (confirmed clean `git status -- wiki/`), but no progress persisted either. On
+  resume, re-scanning against a fully synced `origin/main` read **942** pending sources, not
+  76 — a ~300-commit campaign merge landed on `main` between the original scan and the resume.
+  942 is not this session's backlog to absorb; filed the mechanism as an addendum to the
+  already-open **NIB2-68** (`handoffs/active/non-inference-backlog.md`) rather than a new row,
+  since it's the same root cause (mtime-since-watermark, gitignored, per-checkout) that row
+  already diagnoses and already proposes the correct fix for (content-hash against the tracked
+  `source_manifest.json`). Compiled by hand, instead, the small slice that genuinely belongs to
+  this session: CJ-8/9/11/12 into `wiki/benchmark-methodology.md`, SC69-73 into
+  `wiki/formal-verification.md` (commit `95c7e46d`) — both pass `lint_wiki.py` structural lint
+  and the manifest's `writer_evidence_policy`. Also fixed 4 pre-existing dangling links
+  (`glm51-reap-cpu-evaluation.md` moved to `completed/`, four wiki pages hadn't followed) caught
+  by the same lint run. Deliberately did **not** run `--touch` — that would have falsely marked
+  all 942 sources compiled.
