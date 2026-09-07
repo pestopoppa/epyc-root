@@ -57,6 +57,32 @@ production does not deliver. **Name both artifacts, always.**
 - **A/B**: N ≥ 100/arm for production-role decisions; classify every failure by reason (infra vs model) and report the infra rate next to the effect.
 - **Registry writes**: throughput/quality fields carry structured `measured: {date, protocol}` provenance (free-text comments are the legacy witness — do not destroy them in reformats).
 
+## Naming the unit, the instrument, and the caveat (ratified 2026-09-07)
+
+Three rules, one origin: the 2026-09-07 Prove2Me/FLT intake wave, where a producer's own artifacts
+supplied the counterexample to each.
+
+- **A speed claim MUST name its unit of work.** A per-unit speed-up that inflates the whole artifact
+  is reported as **both numbers or neither**. The two are not in tension and can be causally linked:
+  in the worked example, per-card compilation was genuinely sped up by compiling each unit against
+  only its children's statements, and the same isolation required generated preambles amounting to
+  31% of the artifact's bytes, contributing to a whole-artifact build ~25× slower than the reference
+  library. "Compilation was sped up" and "it compiles 20× slower" were both true, differing only in
+  the unit measured. This extends the existing gate-scope rule from *which subset* to *which unit*.
+- **An instrument modified by the party making the claim requires a control run.** The claim must
+  either cite a run on the **unmodified** instrument, or state which direction the modification's
+  failure mode runs and why that direction cannot manufacture the result. **A bare assertion that
+  the modification is behaviour-preserving is not evidence.** Worked example: an independent second
+  proof-checker was patched by the producer in four places — one of them adding a memo of negative
+  decision results, a real change to the decision procedure — and its soundness was asserted in a
+  single sentence with no argument, no differential test, and no unpatched control. The check that
+  the modification was safe was never run; only the claim that it was.
+- **Caveat placement must not be inversely correlated with caveat severity.** A self-limiting
+  statement belongs in the artifact's **primary** document, not only in a generated view of it.
+  Worked example: the sharpest limitations of that artifact lived in generated HTML inside a large
+  folder while the headline sat in the README, and the producers' own `limitations.md` was written,
+  fed to the doc generator, and withheld from publication.
+
 ## Deterministic replay before regeneration (operator-ratified 2026-07-27)
 
 **If a result can be obtained without running inference — by deterministically rescoring or

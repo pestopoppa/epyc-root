@@ -51,7 +51,7 @@
 | RTG-43 | wp12 fleet layer design | [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) | Post-soak §5 cleanup (code + tests as ONE change): retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegation… | — |
 | RTG-44 | wp9 wp10 lineup event prep | [wp9-wp10-lineup-event-prep.md](wp9-wp10-lineup-event-prep.md) | Declare this ready-to-run WP9/WP10 runbook do-not-dispatch, or execute it — it is PREPARED, NOT EXECUTED | — |
 | RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable live telemetry for unexpected domain regressions, latency regressions, or guard bypasses; rollback is xmas_routing.mode… | — |
-| RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | OPERATOR: rule on hub_supervisor.sh cron decision package (handoff §Open); all other items done or cosmetic | — |
+| RTG-46 | handoff index and backlog graph | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | Work the 3 Prove2Me rows (2026-09-07); OPERATOR still owes the hub_supervisor.sh cron ruling | — |
 | RTG-47 | dashboard architecture restructure | [dashboard-architecture-restructure.md](dashboard-architecture-restructure.md) | Take the Phase 1b call — fix-10 retention and the view-plane consolidation both landed 2026-08-10; parallel-run evidence is in hand | — |
 | RTG-48 | coordinator role failure modes | [coordinator-role-failure-modes-and-refactor.md](coordinator-role-failure-modes-and-refactor.md) | Auditor: audit the Mech column — a MECH claim holds only if the mechanism would have REFUSED that specific failure; mutation-test it | RTG-34 |
 | RTG-49 | fleet fanout measurement | [fleet-fanout-measurement.md](fleet-fanout-measurement.md) | FM-1 — collect per-subagent start/finish timestamps from Claude Code and Codex transcripts into a durable record | RTG-34, RTG-48 |
@@ -60,6 +60,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
 | RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | OCC-2 DONE 2026-08-25 (billing-asymmetry record); next: OCC-1 — billed-token cost vs QA recall, bitmap frames vs raw text | UFH-07, INF-41 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-E7b + CT-9 done 2026-08-23; re-observe the pilot under real traffic | — |
+| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-1 — port the typed return-effect contract to PromptForge (~50 lines) | RTG-02 |
 
 ## Cross-domain
 

@@ -446,6 +446,26 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
 _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch). ACM (intake-914) and PRO-LONG (intake-919) both argue for a verbatim append-only trajectory log read back by `grep`/Python in place of threshold-triggered summarize-and-compact. Every arm in both papers is a closed frontier model, so the transfer question is ours to answer. Sibling filings in [`context-folding-progressive.md`](context-folding-progressive.md) (CF-3c masking anchor, ACM Base arm, non-termination counter)._
 
 - [ ] **First-party A/B: verbatim-append trajectory log + grep/Python read, vs current summarize-and-compact.** Run on OUR models (frontdoor Qwen3.6-35B-A3B, architect Qwen3.5-122B). This is the transfer test neither PRO-LONG nor its antecedent offers — every arm in both is a closed frontier model. MUST report **WALL-CLOCK** (neither paper reports latency) and MUST include a **log-growth / grep-latency curve** — the axis both papers assert ("tractable for logs over 100k+ lines") and neither measures. Deterministic-replay-eligible on the scoring axis.
+  - [ ] **A/B-CTRL — the nominal control arm may not exist. Resolve before scheduling any compute**
+        (intake-1316#record). `context-folding-progressive.md:84` states the live path does
+        deterministic type-aware stubbing only and *"no caller invokes an LLM summarizer"*. Decide
+        what "current summarize-and-compact" means as a **runnable** arm, or the comparison has no
+        control. Zero compute; blocks the A/B independently of any source.
+  - [ ] **A/B-C — hold the context budget C explicitly EQUAL across backbones and record it in the
+        artifact** (intake-1316#record). Scroll's sweep is unauditable in exactly this way, and that
+        is the specific defect our A/B should be built not to have. LOCA Table 4 may be cited as a
+        prior for **GLM-5.2 only** (66.7 / 62.7 at LOCA 128K/256K) with the harness caveat stated
+        inline; **do NOT cite the Qwen3.6-35B-A3B row as same-harness evidence about our frontdoor
+        class.** COMPUTE-GATED as a citation-bearing arm; the requirement itself is zero-compute
+        design text.
+  - [ ] **A/B-INSTR — LOCA-bench evaluated as a candidate suite and DECLINED** (intake-1342#record),
+        five reasons: n=75 with no repetitions, so SE 4.6–5.8 pp exceeds the effect sought; answer
+        cardinality confounded with the length knob; no latency axis, which this A/B requires as
+        its binding output; 7 mock MCP servers / 280 tools / Docker as cost of entry;
+        ground-truth-adjacency in the verifier harness. Three requirements LOCA nonetheless earns
+        for OUR arms: hold C equal across arms and record it; hold ground-truth answer cardinality
+        fixed while scaling the log; log trajectory length, tool-call count and tool-output tokens
+        alongside accuracy so premature termination is visible as itself rather than as a wash.
 - [ ] **Prerequisite: produce a single chronological, grep-able trajectory artifact per task** — and audit which `peek`/`grep` implementation is live.
   **AUDIT HALF DONE 2026-08-12 (`auditor`) — box stays open for the build half.** The live
   implementation is the FILE-CAPABLE one: standard `REPLEnvironment` → `_FileToolsMixin`

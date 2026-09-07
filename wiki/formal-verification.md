@@ -216,3 +216,72 @@ inconsistently applied technique, not a missing one — which makes the fix smal
 - `progress/2026-07/2026-07-31.md` — session 18:00–20:00Z, measured reproductions
 - `/mnt/raid0/llm/tmp/guard-audit/` — six runnable proof scripts (`prove_failopen.py`, `prove2-5.py`)
 - epyc-root `13383c49` — repair of the torn `MEASUREMENT.md` bullet whose verification passed
+
+## Compiled Update — 2026-09-07 (incremental): a machine-checked artifact certifies the proposition the CHECKER decided, not the claim it is cited for
+
+**Confidence: verified** (primary-source dive of arXiv:2605.28365 v1, 2026-09-07; the headline
+number is a projection and is scoped as such below).
+
+A kernel-checked proof is the strongest evidence a pipeline can emit, and it still says nothing
+about the question a reader is asking. The certificate covers **the proposition the checker
+decided**; nothing in the machinery binds that proposition to the informal claim someone later
+cites the artifact for. The source states its own limit explicitly — the risk certificate "does not
+certify individual mathematical truth, does not assign a label to unresolved answer classes, and
+does not extend to fallback predictions" (`intake-1307#05`), and statement faithfulness is outside
+it entirely.
+
+**The gap is measured, in one pipeline, and it is large.** Of 314 proved artifacts, an automated
+rational-evaluation check classes 40.1% genuine / 33.4% structural / 22.9% trivial / 2.5%
+spurious — so **73.6% "non-trivial and correct"**. A manual faithfulness audit reweighted by those
+same population frequencies puts faithfulness at **~43%** (`intake-1307#00`, `intake-1307#01`). A
+wrong answer class is proved in 8% of problems.
+
+**How that 43% may and may not be used.** It is a **reweighted projection, not a count**: the
+per-category rates come from a **45-example, single-annotator** audit whose only reported cells are
+6/6 and 0/6, and the source itself labels it "diagnostic error analysis, not benchmark-grade
+annotation". Its denominator is ambiguous in the source and never reconciled — 105 proved problems,
+140 proved classes and 314 proved artifacts are all reachable from the phrase "proved statements"
+(our record pins the 314). An independent measurement on a different population, domain and
+formalizer strength puts the compile-versus-faithfulness gap at 3.0–29.0 points. So: **admissible as
+an existence proof that the gap between "the checker said yes" and "the statement means what was
+intended" is large in at least one real pipeline — never as a rate**, and never as a general
+autoformalization faithfulness number.
+
+**There is no LLM judge in that paper.** Despite "Lean-as-judge" in the title, **the judge is
+Lean**; the human comparison runs against a symbolic rational-arithmetic checker measuring a
+different construct, and the work yields no judge-versus-human agreement rate at all
+(`intake-1307#02`). Filing it as evidence about LLM-as-judge reliability is a category error.
+
+Two further findings transfer directly to any verifier-gated pipeline:
+
+- **Formal-judge reliability is coverage-dependent — a cliff, not a slope.** The top proved answer
+  class matches the reference **96%** of the time at high proved coverage and **20%** at low
+  coverage (`intake-1307#03`). A reliability figure quoted without its coverage regime is
+  unreadable.
+- **Absence of proof is a heterogeneous event, not a negative label.** Of 1,403 answer-class
+  observations: 741 never formalized, 251 ill-typed, 271 typechecked-but-unproved, 140 proved, 0
+  timed out (`intake-1307#04`). The bottleneck sits entirely **before** proof search, so treating
+  "unproved" as "false" collapses four different failure causes into one wrong label.
+
+**The rule for our records.** A verifier verdict must be stored next to **the proposition it
+decided**, not next to the claim it was run in support of; anything else lets a green check migrate
+onto a claim nobody checked. This is the same two-plane split the belief substrate already
+enforces — machine-checked correctness on one axis, an accruing trust score that gates nothing on
+the other — and it is why `decided_proposition` is filed (SC57) as a field of the verifier-class
+adapter contract rather than an optional provenance nicety, with SC56 making the binding a
+precondition for any grade above `Judged`. The number entered our corpus through a one-hop
+citation that transcribed it accurately but stripped every scope qualifier (`intake-1297#record`),
+which is exactly the failure the storage rule prevents.
+
+### Sources
+
+- [intake-1307#record](https://arxiv.org/abs/2605.28365) — *Risk-Controlled Lean-as-Judge for
+  Natural-Language Mathematical Reasoning*, credibility 6/6, dive-verified 2026-09-07: the
+  certificate-scope limitation, the 73.6%/43% pair with its audit caveats, the coverage cliff, and
+  the unformalized/ill-typed/unproved status split.
+- [intake-1297#record](https://arxiv.org/abs/2608.28433) — the citing paper through which the 43% reached
+  our records, quoted verbatim and stripped of scope.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
+  SC56–SC60, the statement-binding rows this finding funded.
+- [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.1/§4.7 — the two-plane
+  split and the one-ladder-per-source-class adapter contract.

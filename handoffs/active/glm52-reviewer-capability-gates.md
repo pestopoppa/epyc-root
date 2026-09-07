@@ -185,6 +185,14 @@ Concrete dataset pick + runner wiring being finalized; see [`../../docs/referenc
 - [x] **GC-external-1e — Reviewer repair-or-route verdict ✅ 2026-07-19**: synthesized failed C-CRAB hard-negative evidence, positive JudgeBench pairwise evidence, positive SWE accept-only evidence, and RM-2 alternatives. Verdict: GLM is not admitted as production patch reviewer; scope it to research/judge-preference/accept-control diagnostics unless a concrete new repair hypothesis exists. Route production reviewer selection to RM-3 screening, Ref external judge-of-judge, or a named repair hypothesis instead of rerunning unchanged GLM C-CRAB/SWE policies; A0/A1/A3 and RM-2.fast are closed negative/partial evidence.
 - [x] **GC-4 — RAM-residency policy decision** (operator, OP bundle): 239GB reviewer + ~70GB architect + frontdoor/workers co-residency vs swap-in-on-demand vs review-windows. Determines whether A4 is an interactive reviewer or a batch/offline judicial gate. Operator decision remains open. **VOID 2026-09-01** — the 239 GB figure was GLM-5.2 UD-IQ2_M, now deleted. GLM-5.3-Flash (UD-Q4_K_XL) has a different footprint entirely; if a residency question arises it is a NEW decision sized against the real artifact, not this one. ✅ 2026-09-01
   - [x] **GC-4.input — Memory-budget table prepared ✅ 2026-07-18**: decision memo at [`docs/reference/glm52-ram-residency-decision-input-2026-07-18.md`](../../docs/reference/glm52-ram-residency-decision-input-2026-07-18.md). Current sizing says always-resident GLM is physically feasible on the 1.1TiB host, but review-window/batch use is the better policy input until GC-shadow-repair4b.2b and P-REV-1 clear. Treat "swap-in-on-demand" as cold mmap/page-cache faulting, not real swap service, because swap is only 8Gi.
+- [ ] **GC-6 — Evaluate the two-axis reviewer split** (intake-1304, intake-1305; 2026-09-07). Split
+  review into two independent reviewers — one checks that the artifact *says what was asked*
+  (faithfulness), the other checks *quality* — with both required to approve, against our current
+  single-reviewer gate. The source ran this at scale: reviewers were 13,602 of its 30,046 agent runs,
+  i.e. 45% of all runs were review passes, which is a real cost this evaluation must price. **Weigh
+  it against the counter-evidence in the follow-up system:** stricter review there produced an
+  adversarial dynamic in which workers "hide axioms in increasingly subtle ways", so the question to
+  answer is whether a second axis buys fidelity or merely displaces evasion into a subtler form.
 - [x] **GC-5 — Registry reviewer-capability fields ✅ 2026-07-19**: structured `measured:` entries now record GLM C-CRAB P-REV-1 FA/FR, native-MTP repair, external JudgeBench-GPT and SWE-bench-Verified P-REV-1 rows, plus GC-1r typed-emission, GC-2r rubric-authoring, and GC-3r why-diagnosis smoke metrics in the research model registry. These fields remain role-disposition metadata, not production reviewer admission.
 
 ## Dependency Graph
@@ -235,6 +243,8 @@ Flip checkboxes `✅ YYYY-MM-DD`; GC-1/2/3 numbers recorded here + registry (GC-
 ## Evidence Base (intake)
 
 intake-836 quant why-diagnosis caveat · intake-834 authoring-capability dominance · intake-837/838 format/bias fragility of judges · audit doc 2026-07-16 (GLM-dsa arch exists in-tree; reconciliation smoke later passed on experimental-v7 `3dee86a5a`; sparse final-attention and reviewer quality remain open).
+
+2026-09-07 reference rows (NOT targets, NOT residency inputs — GC-4 is VOID and the UD-IQ2_M artifact is deleted). (1) Closest published analogue to a 753B-A40B-class reviewer: 433 GB NVFP4 at 14.9 tok/s on one RTX PRO 6000 vs llama.cpp 7.3. Non-transferable on four axes: quant (NVFP4 vs UD-IQ2_M with 2.0625 bpw routed experts), GPU class (96 GB Blackwell vs 64 GB gfx90a), 178 vs 61.8 GB/s host expert bandwidth, one workload. intake-1318#record. (2) Shared-expert corroboration for GLM routing locality is a SECOND but WEAK leg — shared experts are sufficient-not-necessary for poor local consistency and GLM's shared fraction sits far below any measured model. Do NOT present it as independent confirmation of "no cacheable hot set". intake-1328#03.
 
 ## Deep-Dive Correction — 2026-07-21 (The selective-precision hypothesis is FALSIFIED in our own GGUF)
 

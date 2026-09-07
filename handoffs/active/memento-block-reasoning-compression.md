@@ -205,6 +205,10 @@ Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test
 2. **Sliding-window incompatibility**: Models with sliding-window attention (Olmo-3) see minimal KV savings (0.85-0.93x). Our Qwen2.5/Qwen3 models use full attention — not affected.
 3. **SFT quality risk**: Fine-tuning already-trained reasoning models always risks degradation. Memento control runs (SFT on OpenThoughts without block annotations) show 2-5pp drops.
 
+## Research Intake Update — 2026-09-07
+
+Sawtooth / duplicate-processing argument, banked for the summarize-family cluster — WITH the correction that inverts the naive reading. The axis on which prefix+sliding beats a summarize/last-k family is accuracy-per-second and GPU utilisation, NOT raw throughput: last-k is 1.54× FASTER in tok/s at 32K. Filing this without the correction would propagate an error into a GPU-gated decision. Relevant to Failure Mode 1 (excessive generation) and to the `reasoning-compression.md` Tier-3+ comparison. `intake-1315#04`.
+
 ## Progress checklist
 
 - [x] S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅

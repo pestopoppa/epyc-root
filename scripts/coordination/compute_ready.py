@@ -302,6 +302,15 @@ def fold_candidates(checkpoints: list[dict], intake: list[dict]) -> dict[str, di
     return folded
 
 
+#: Graph artifact schemas this projection accepts. `index_graph.v2` (2026-09-07) only ADDS
+#: derived per-node fields (`readiness`, `blocked_by`) and two documentation keys to v1 — every
+#: field this module reads (`schema`, `nodes[].id`, `nodes[].state`, `nodes[].open`, `edges[]`
+#: with `kind`/`from`/`to`) keeps its name and meaning, so a v1-era pinned graph and a v2 graph
+#: are both correct inputs here. Widened rather than moved: a hash-pinned older artifact must
+#: not become unreadable because the producer moved on.
+SUPPORTED_GRAPH_SCHEMAS = frozenset({"index_graph.v1", "index_graph.v2"})
+
+
 def validate_graph(graph: dict, expected_hash: str, actual_hash: str) -> dict:
     if (len(expected_hash) != 64
             or any(char not in "0123456789abcdef" for char in expected_hash.lower())):
@@ -309,8 +318,9 @@ def validate_graph(graph: dict, expected_hash: str, actual_hash: str) -> dict:
     if actual_hash != expected_hash:
         raise ContractError("graph_hash_mismatch",
                             f"pinned graph {expected_hash} != actual {actual_hash}")
-    if graph.get("schema") != "index_graph.v1":
-        raise ContractError("wrong_graph_schema", "graph must be index_graph.v1")
+    if graph.get("schema") not in SUPPORTED_GRAPH_SCHEMAS:
+        raise ContractError("wrong_graph_schema",
+                            "graph must be one of " + ", ".join(sorted(SUPPORTED_GRAPH_SCHEMAS)))
     nodes = graph.get("nodes")
     edges = graph.get("edges")
     if not isinstance(nodes, list) or not isinstance(edges, list):

@@ -1,0 +1,38 @@
+diff --git a/orchestration/verification_report.schema.json b/orchestration/verification_report.schema.json
+index f2d56b2b..707c458e 100644
+--- a/orchestration/verification_report.schema.json
++++ b/orchestration/verification_report.schema.json
+@@ -142,9 +142,11 @@
+         },
+         "certificate": { "$ref": "#/$defs/certificate" },
+         "inconclusive_reason": {
+-          "type": "string",
+-          "description": "Why the verifier could not conclude (timeout, unsupported construct, formalization gap)."
+-        },
++            "type": "string",
++            "enum": ["absent", "empty", "unparsed", "no_reference", "unsupported",
++                     "abstained", "checker_error", "timeout", "skipped", "insufficient_coverage"],
++            "description": "Why the verifier could not conclude. CLOSED vocabulary, ratified 2026-09-07: free text here meant every producer invented its own reason and no one could count them. Each code names the subsystem to fix -- absent/empty (generation or transport), unparsed (the extractor; a parse-failure rate read as a quality gap is a scoring artifact), no_reference (the corpus join, not the subject), unsupported (build the substrate or exclude the slice), abstained (the checker declined -- not a negative label), checker_error/timeout (the instrument), skipped (outside the declared slice), insufficient_coverage (the suite decided too little to report a headline). Registry of record: epyc-root scripts/benchmark/gate_verdict.py CAUSE_MEANINGS."
++          },
+         "logical_status": {
+           "type": "string",
+           "enum": ["pass", "fail", "unknown", "conflict"],
+diff --git a/scripts/benchmark/gate_verdict.py b/scripts/benchmark/gate_verdict.py
+index 26205beb..7e346dbe 100644
+--- a/scripts/benchmark/gate_verdict.py
++++ b/scripts/benchmark/gate_verdict.py
+@@ -197,6 +197,14 @@ VERDICT_FAIL = "fail"
+ #: apart.
+ VERDICT_OUT_OF_COVERAGE = "out-of-coverage"
+ 
++#: WIRE SPELLING, ratified 2026-09-07 (scripts/operator/ratify_three_valued_verdict_naming_20260907.sh).
++#: `inconclusive` -- the spelling already ratified in epyc-orchestrator's
++#: orchestration/verification_report.schema.json -- is CANONICAL for anything that crosses a
++#: repo or plane boundary or lands in a stored artifact. `out-of-coverage` stays as this
++#: module's IN-CODE vocabulary, because at the gate plane the useful thing to say is which
++#: items the checker never reached; `to_verification_outcome()` is the MANDATORY translator at
++#: the boundary and is not optional politeness. Two spellings for one state is only safe while
++#: exactly one of them is on the wire.
+ VERDICTS = (VERDICT_PASS, VERDICT_FAIL, VERDICT_OUT_OF_COVERAGE)
+ #: The verdicts that constitute a DECISION. The resolved-coverage numerator.
+ DECIDED_VERDICTS = frozenset({VERDICT_PASS, VERDICT_FAIL})

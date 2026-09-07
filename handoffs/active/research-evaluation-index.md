@@ -18,7 +18,7 @@
 | EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | K-LCM-1 — LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite) | — |
 | EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-3a/b/c DONE 2026-08-27 (BFCL-V3 acquired, split recorded); next: CJ-1d wire + CJ-1e discrimination run | — |
 | EVL-09 | design backlog triage 2026 07 23 | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | OPERATOR: rule on each item in the 2026-07-23 design triage; the doc carries no boxes, so nothing can be dispatched | — |
-| EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-11a — first re-distil; INFERENCE-gated, do not run without an approved window | — |
+| EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-12e — fix score_tulving_run.py :121 and chronological_tau, then re-score offline; M-12 run stays inference-gated | — |
 | EVL-11 | eval benchmark cost reduction | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies | — |
 | EVL-12 | eval tower architecture audit 2026 07 20 | [eval-tower-architecture-audit-2026-07-20.md](eval-tower-architecture-audit-2026-07-20.md) | A2 agent SCORE-02/XREPO-1/PATH-1 — make module identity deterministic. (PARTIAL ✅ 2026-07-20: the debug_scorer leg landed in 2a41c0bc — see… | — |
 | EVL-13 | eval tower loop robustness audit 2026 07 20 | [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) | H2.v9 — remeasure the contention matrix under frozen v9 after E8 quality collection — live dashboard topology and region-lock payloads alre… | — |
@@ -52,9 +52,10 @@
 | EVL-44 | stale open audit 2026 07 18 | [stale-open-audit-2026-07-18.md](stale-open-audit-2026-07-18.md) | Re-anchor GEMV to its 2 live graph-fusion tasks; move the deprioritized SIMD Phase 0–5 plan to a closed appendix | — |
 | EVL-45 | strand rust coder rustevo2 verification | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential | — |
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | TU-DTAP-1 import DONE 2026-08-25 (orchestrator scripts/autopilot/evals/dtap/, 66 tests green); next: live model run under an inference grant | — |
-| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | Implement SC52's prospective INF-42 producer hook and strict adapter before the next G1 run | — |
+| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | SC67 — wire tulving_episodic on the write side before M-12a runs | EVL-50 |
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L14 — KV-quant single-stream long-ctx: dense-Q8 and GDN full-global layers at 64k | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-01 — re-pin the 25 uptime-capped inference-batch entries to the v9 era and the live topology hash | INF-06, INF-07, RTG-46 |
+| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-1 — author the BEAM 128K/100K adapter and register it at the five documented points | EVL-10 |
 
 ## Cross-domain
 
