@@ -4146,3 +4146,25 @@ entire justification, and a lever that reduces traffic can invert a locality opt
 - `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the first stack's leave-one-out
 - `/mnt/raid0/llm/tmp/inf70/agents/champ2/REPORT.md` · `sync15/REPORT.md` — the solo measurements
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+### GPU-side corollary (2026-09-07): an accumulating champion never re-tests its own members
+
+The finding above was relayed to the autokernel GPU loop, whose architecture is the exact structure it
+describes: **one champion aggregates all work between promotions**, so a lever accepted once is carried
+indefinitely. Verified by inspection — the loop A/Bs each *new* keep against the accumulated tip, but nothing
+re-measures a *prior* keep after later keeps land (`grep` for leave-one-out / re-test / ablation in the loop
+package returns nothing). The interaction classes differ on a GPU (occupancy, bandwidth, launch overhead
+rather than barrier/placement/quantization) but the failure shape is identical: *levers interact through what
+they remove*, so a lever that paid for a stall another lever later eliminated goes silently negative.
+
+Filed as **R23-48**: on every champion-of-record promotion, build one arm per accumulated keep with that keep
+reverted, paired-A/B it against the champion at the calibrated floor, and record a keep whose removal is
+neutral-or-better as `retracted_by_loo` with both sample vectors. Cost is bounded at n_keeps arms **per
+promotion**, not per iteration — cheap because the object-digest incremental build recompiles only the
+translation units a revert touches.
+
+One distinction worth preserving, because it rescues a number the rule above would otherwise condemn: the
+loop's accumulator carries a `compounded_bench_pct` that *is* a product of solo deltas. That is legitimate
+**only** because it schedules the gate rather than claiming a result — it decides when the assembled bundle is
+worth an expensive serving A/B, and the serving A/B is what actually moves the champion. **A product of solos
+is a scheduling heuristic, never a result**, and it must stay labelled as an estimate wherever it is displayed.

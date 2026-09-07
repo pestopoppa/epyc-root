@@ -723,3 +723,56 @@ The family rule, now with four more instances on file: **a guard whose failure m
 ### Source References (2026-08-23 evening)
 
 - [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — OBS-3/4/5/7 closures with their three-state semantics and truth-table counts, OBS-3a follow-up, NIB2-57a reader audit and NIB2-58a build-path wiring (cross-listed with [Benchmark Methodology](benchmark-methodology.md))
+
+## Compiled Update — 2026-09-07: an agent tool's event log is not its data, and deleting it costs a full rewrite of what you delete
+
+The coding-agent CLI backing four autokernel lanes grew its SQLite store to **236 GB in ~5 months**, 210 GB
+of it in a single `event` table, while the content it renders occupied under 11 GB. The store is an
+outbox-style change feed: each streamed update writes a *fresh snapshot of the object as it stood at that
+instant*, so a tool output arriving in N chunks is retained N times. Measured globally: **416,980
+`message.part.updated` events for 131,394 actual parts — 3.2 retained copies**, weighted toward the largest
+payloads (largest single row: 93.5 MB). The current state lives in the `session`/`message`/`part` tables;
+the log is pure redundancy once a stream ends.
+
+**The generalisable shape.** Any agent runtime that streams tool output into an event-sourced store has this
+growth curve, and it is invisible until the volume forces a look: the store sits in a dotfile directory, not
+in the repo, and no dashboard watches it. The bill scales with *tool-output verbosity*, which is exactly what
+long-horizon agent lanes maximise.
+
+**Three findings that make a prune safe, cheap, and reversible:**
+
+1. **Prove the log is not load-bearing before deleting any of it.** The binary was a minified bundle with
+   runtime-generated SQL, so static reading could not settle whether the app replays events to rebuild state.
+   The empirical gate costs two minutes and is decisive: export one old session, delete *that session's*
+   events, re-export, diff. Byte-identical (357,641,061 B, 1,458 messages, 6,035 parts) → the log is a
+   notification channel, not a source of truth. Absence of `replay*` symbols was suggestive; the diff was
+   proof.
+2. **`SQLITE_SECURE_DELETE` turns a mass delete into a full-size write.** Debian/Ubuntu's libsqlite3 (3.46.1)
+   compiles it in, so every freed page is zero-filled *through the WAL*: deleting ~200 GB **wrote ~270 GB** at
+   ~4.5 MB/s and grew the WAL to 66 GB. The same work with `PRAGMA secure_delete=OFF` on the deleting
+   connection: **277 s**, versus 98 minutes for a smaller batch with it on. `VACUUM` then reclaimed 54.85 M
+   freelist pages in 133 s. Final: 236.1 GB → **11.4 GB**, `quick_check` ok.
+3. **VACUUM alone is a no-op on a store like this** — `freelist_count` was 0, so it would have rewritten
+   220 GB to return nothing. Rows must be deleted first; VACUUM is only the step that hands pages back to the
+   filesystem.
+
+**Operational rules that fell out.** Delete by *whole aggregate* (session), never partially — a retained
+aggregate with sequence gaps is a corrupted cursor. Checkpoint `wal_checkpoint(TRUNCATE)` between batches, and
+keep every reader off the DB while doing it: a read snapshot blocks the truncation and the WAL balloons
+unboundedly. Run exactly one instance in one foreground terminal — two concurrent instances race the write
+lock (the loser dies `database is locked` after the busy timeout) and a `Ctrl-Z`'d instance holds its
+transaction open indefinitely, which reads as a hang. Back up only the small content tables; a `.dump` of the
+event table is the problem, not the backup.
+
+**Cross-reference:** this is the store-side twin of the guard-side rule in
+[Benchmark Methodology](benchmark-methodology.md) — an instrument that cannot report its own state gets read
+as healthy. A 236 GB store on a 3.7 TB array is 6% of capacity and drew no alarm until a disk-reclaim pass
+went looking.
+
+### Source References (2026-09-07)
+
+- `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` — the prune record: gate result, secure_delete
+  measurement, before/after sizes
+- `/mnt/raid0/llm/tmp/opencode-prune-20260907/prune.py` — the batch pruner (whole-aggregate deletes,
+  `secure_delete=OFF`, per-batch checkpoint, dry-run default)
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NI-IO and the disk-reclaim lineage
