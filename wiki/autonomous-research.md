@@ -5,6 +5,44 @@
 **Last compiled**: 2026-08-30 (the rebuilt AutoKernel loop reached continuous unattended operation — run 17 delivered 464 iterations, 68 measurements and 30 champion commits with zero lanes lost, and the 30 were audited as a block at +3.942% rather than individually attributed; eight of fourteen defects across runs 11–18 shared one shape, a test proving a component EXISTED rather than that it was WIRED IN, and the remedy that worked was mutation testing; the guards' own CI had been red on 43 of 43 runs since its first commit on a missing pytest, hiding two real regressions, and a suite-floor guard now catches the partial-collapse case that exits 0; earlier: 2026-08-27 AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
 **Sources**: 121+ documents
 
+## Compiled Update — 2026-09-07: folding parallel kernel work into the one champion — same-lineage merges are cheap, default-ON ops are the hidden risk
+
+**Confidence: verified** for the lineage/conflict analysis (`git merge-base`, `git merge-tree` dry run) and
+the two blockers (read from source: emit site, missing backend kernel, default gate); the fold itself is
+planned, not executed.
+
+The one-champion doctrine says every kernel effort aggregates into a single champion so promotion ships
+ONE full candidate build. Its first real test came when a parallel session's CPU kernel work
+(INF-70, Qwen3.8-Flash-Next: **MTP-served 23.9→35.4 t/s, 1.48×**, twelve validated levers led by
+`GGML_NOHUGEPAGE` at +35% served) had to be folded into the GPU-optimising AutoKernel champion. Three
+lessons generalize:
+
+- **Fork from the champion lineage and the fold is free.** The CPU branch forked from `270b48ed6`, a
+  commit *on* the champion branch — so merge-base is a champion commit, not the frozen production base,
+  and `git merge-tree` against the live tip found **0 conflicts** despite 86 CPU commits / ~101 files vs
+  24 GPU commits. GPU work lives in `ggml-cuda/*`, CPU work in `ggml-cpu/*`; the one shared file had
+  disjoint hunks. This is the payoff of CLAUDE.md's "never accumulate on a long-lived branch forked from
+  an old tip." Mechanism: `git merge --no-ff` INTO the champion (never rebase — the ledger cites the
+  hashes; never the reverse — it would make the side branch the aggregate).
+- **A default-ON op with no backend kernel is invisible to a gate that measures a different model.**
+  `GGML_OP_MOE_TOPK_NORM` was emitted fleet-wide for every MoE model yet had **no CUDA/HIP kernel and no
+  `test-backend-ops` case**; on the merged GPU build every GPU-served MoE model would silently fall back
+  to CPU per layer and defeat HIP-graph capture — and the loop's gates (a dense 27B) would never see it.
+  Likewise a fused decoder shipped **default-ON** while its own ledger classed it NO-GO and every
+  measurement had been taken with it OFF. Rule: before folding, every new op/path must be opt-in unless
+  it has a kernel on every backend the champion serves AND a backend-ops test; and a validation plan for
+  an aggregate must include **one model per production role class** the loop itself doesn't measure.
+- **A copied CMake build directory is not relocatable — its binaries carry an absolute RUNPATH into the
+  source dir.** The two-tier accumulator's champion-of-record was a `copytree` of an anchor build; when
+  the loop pruned that source gen, the copy's `llama-bench` could no longer load `libggml-hip.so` and the
+  bookkeeping died silently. Fix: reference the real build and *protect it from pruning*; never snapshot
+  a CMake tree by copying. (Companion to the object-digest finding: the compiler is reproducible, the
+  linker and the layout are not.)
+
+**Sources**: [fold plan](../docs/design/inf70-cpu-fold-into-champion-20260907.md); [champion aggregate
+handoff](../handoffs/active/autokernel-champion-aggregate.md) (FOLD-0..3); [ak-rebuild progress
+2026-09-04→07](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md).
+
 ## Compiled Update — 2026-09-04: AutoKernel was re-architected around serving performance — because bench keeps did not transfer, and the champion is now (kernel commit + canonical recipe) advanced by a compound-then-gate two-tier rule
 
 **Confidence: verified** for the run-23→28 keep records, the five failure causes and their
