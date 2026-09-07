@@ -4370,3 +4370,9 @@ Corrections applied in this file:
 14. Follow-up arms: UD under clean placement 9.18 t/s (13.46 retired for good); C0-c four node-local
     streams total 171 GB/s with each node dropping from 66 to ~40 → a global uncore cap → task C8 (BIOS
     checklist for the operator's reboot: 5600 MT/s, UCLK 1:1, APBDIS/DF P0, DF C-states, power-down).
+
+### Research-intake follow-up 2026-09-07 — CLOSED on arrival
+
+- [x] **Reconcile INF-70 main vs `lane/inf70-audit-20260902`** ✅ 2026-09-07 — closed by this merge: main now
+  carries the audited copy, so the superseded ≈ 100–130 GB/s expert-path figures are gone and 61.8 GB/s at
+  proven placement is the only number here. Filed by the 2026-09-07 research-intake wave (`intake-1318#record`).

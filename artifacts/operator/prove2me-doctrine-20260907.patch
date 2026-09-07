@@ -1,0 +1,58 @@
+diff --git a/agents/shared/MEASUREMENT_POLICY.md b/agents/shared/MEASUREMENT_POLICY.md
+index 329dea6b..b5270657 100644
+--- a/agents/shared/MEASUREMENT_POLICY.md
++++ b/agents/shared/MEASUREMENT_POLICY.md
+@@ -40,6 +40,32 @@ draft path exists at all. If none does, that row is an OPTIMUM and belongs in th
+ - **A/B**: N ≥ 100/arm for production-role decisions; classify every failure by reason (infra vs model) and report the infra rate next to the effect.
+ - **Registry writes**: throughput/quality fields carry structured `measured: {date, protocol}` provenance (free-text comments are the legacy witness — do not destroy them in reformats).
+ 
++## Naming the unit, the instrument, and the caveat (ratified 2026-09-07)
++
++Three rules, one origin: the 2026-09-07 Prove2Me/FLT intake wave, where a producer's own artifacts
++supplied the counterexample to each.
++
++- **A speed claim MUST name its unit of work.** A per-unit speed-up that inflates the whole artifact
++  is reported as **both numbers or neither**. The two are not in tension and can be causally linked:
++  in the worked example, per-card compilation was genuinely sped up by compiling each unit against
++  only its children's statements, and the same isolation required generated preambles amounting to
++  31% of the artifact's bytes, contributing to a whole-artifact build ~25× slower than the reference
++  library. "Compilation was sped up" and "it compiles 20× slower" were both true, differing only in
++  the unit measured. This extends the existing gate-scope rule from *which subset* to *which unit*.
++- **An instrument modified by the party making the claim requires a control run.** The claim must
++  either cite a run on the **unmodified** instrument, or state which direction the modification's
++  failure mode runs and why that direction cannot manufacture the result. **A bare assertion that
++  the modification is behaviour-preserving is not evidence.** Worked example: an independent second
++  proof-checker was patched by the producer in four places — one of them adding a memo of negative
++  decision results, a real change to the decision procedure — and its soundness was asserted in a
++  single sentence with no argument, no differential test, and no unpatched control. The check that
++  the modification was safe was never run; only the claim that it was.
++- **Caveat placement must not be inversely correlated with caveat severity.** A self-limiting
++  statement belongs in the artifact's **primary** document, not only in a generated view of it.
++  Worked example: the sharpest limitations of that artifact lived in generated HTML inside a large
++  folder while the headline sat in the README, and the producers' own `limitations.md` was written,
++  fed to the doc generator, and withheld from publication.
++
+ ## Deterministic replay before regeneration (operator-ratified 2026-07-27)
+ 
+ **If a result can be obtained without running inference — by deterministically rescoring or
+diff --git a/agents/shared/OPERATING_CONSTRAINTS.md b/agents/shared/OPERATING_CONSTRAINTS.md
+index 584abf4f..a71f7be3 100644
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -299,6 +299,16 @@ Coordinator-side strict form (its main thread spends NO time on execution work):
+ `agents/coordinator-agent.md` → Guardrails. That form is the **tightest instance of this rule and
+ never an exemption from it** — no role is excused from fan-out by being the coordinator.
+ 
++**A fan-out's cost is its discarded work, not its width** (ratified 2026-09-07). Width 3–5 is
++unchanged and this clause proposes no change to it; what it adds is where to look when a fan-out
++looks expensive. In the only published per-outcome accounting of a large agent swarm, **80% of all
++tokens went to runs that produced no merged output and 52% to runs aborted outright**, while in the
++follow-up system the entire central coordination tier was **~11% of compute** and 3–5 concurrent
++workers beat a single worker on *both* wall-clock and token cost at matched completion. So the
++diagnosis order is: first measure the share of subagents whose output was never used, and only then
++consider the number of subagents. Narrowing width to control cost is treating the cheap term.
++(sources: `intake-1304`, `intake-1305`; our own instance is `fleet-fanout-measurement.md` FM-5.)
++
+ (origins: 2026-08-12, 1,070 open backlog items while five mains worked serially;
+ INC-20260728-idle-mains for the coordinator-side half. Appendix.)
+ 

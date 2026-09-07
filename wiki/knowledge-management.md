@@ -1991,6 +1991,74 @@ Key findings:
   original menu, kept as the counter-example its own re-verification produced.
 - `epyc-inference-research/orchestration/model_registry.yaml` — `deprecated_models`, now 69 entries.
 
+## Compiled Update — 2026-09-07 (incremental): a citation's defects are invisible from the citing document — the only detector is reading the cited source
+
+**Confidence: verified** (three defects found in one published paper during the 2026-09-07 intake
+wave, each by diving a source that paper cites; none was visible in the citing text).
+
+We already treat an intake entry as a graded object and gate its use (`cite-check`, the
+`intake-NNN` / `#NN` / `#record` grammar). This wave measured the limit of that machinery. A
+gate can prove a citation **resolves**, that its entry is not refuted, and that the citing prose
+uses the right form. It cannot prove the cited source **says what the sentence built on it
+claims** — and three separate failures of exactly that kind were found inside one carefully
+written, conspicuously honest paper (`intake-1297#record`), all of them only by fetching and
+reading what it cited.
+
+**Three defects, three different shapes:**
+
+- **Attribution error in a body sentence.** The paper describes a single-agent formalization as
+  "roughly 130k lines of **Lean**". The checker is **Megalodon**, a higher-order set-theory system
+  with no mathlib (`intake-1306#record`). The bibliography carries the correct title, so the error
+  is confined to one body sentence — a bibliography audit, the cheap check, passes.
+- **A half-unsupported joint citation.** A claim of "five-figure budgets per project" is attributed
+  to two papers. The second contains **no dollar figure of any kind** — zero occurrences of USD,
+  dollar or any currency amount (`intake-1305#record`) — so the claim rests on one source, whose
+  own figure is modelled from token logs missing the caching field rather than billed
+  (`intake-1304#01`). Two citations look like corroboration; here one of them is decoration.
+- **A table caption contradicting its own source on the unit.** The caption defines an "Agents"
+  column as a population ("including subagents launched by the same user"); the cited source counts
+  agent **runs**, each with an outcome (`intake-1304#00`), and the citing paper's own later prose
+  says "agent runs". Any per-agent arithmetic across those rows is unit-incoherent — and that cell
+  was precisely the one our own fan-out question was aimed at.
+
+A fourth shape appeared in the same wave and is worth naming separately because nothing about it is
+an error: **an accurate quote can still lose its scope in transit.** The ~43%-faithful figure is
+transcribed verbatim and correctly attributed, but stripped of every qualifier that made it
+readable — a reweighted projection from a 45-example single-annotator audit, on one dataset, with
+one formalizer (`intake-1307#record`). Nothing in the citing sentence is false; the number simply
+arrives general when it was never general.
+
+**The compiled rule.** *A citation's defects are invisible from the citing document.* In all four
+cases the citing text is internally well-formed: correct bibliography, plausible unit, faithful
+quotation. The only detector is reading the cited source — which means **dive breadth is citation
+hygiene**, not a nice-to-have. Four cited sources were expanded and dived in this wave and three
+carried a defect. Two consequences for how this KB is maintained:
+
+1. **Record the defect on the citing entry, not only on the cited one.** All three are filed under
+   the citing entry's `contradicting_evidence`, because that is where a future reader who cites the
+   paper will look. None changed its verdict — the mechanisms it describes are unaffected — but
+   each is a claim we would otherwise have inherited unexamined.
+2. **Prefer the precise citation form for anything single-sourced.** An entry-level citation
+   inherits every defect of every claim in the entry, by design. Where figures exist in exactly one
+   document and in no supporting artifact — four such figures were identified in this wave, and two
+   more are contradicted by the producer's own released repository — the record now mandates the
+   `intake-NNNN#NN` form so a later correction lands on the one claim that carried the weight
+   (`intake-1298#record`, `intake-1310#record`).
+
+### Sources
+
+- [intake-1297#record](https://arxiv.org/abs/2608.28433) — the citing paper; its three citation defects are
+  recorded under `contradicting_evidence`, verdict unchanged.
+- [intake-1304#record](https://arxiv.org/abs/2604.03071) — the agent-runs-versus-agents unit and the
+  modelled (not billed) cost figure.
+- [intake-1305#record](https://arxiv.org/abs/2605.29955) — the cited paper carrying no budget figure at
+  all, and no merge-queue measurement either.
+- [intake-1306#record](https://arxiv.org/abs/2601.03298) — Megalodon, not Lean; the misattributed
+  proof assistant.
+- [intake-1307#record](https://arxiv.org/abs/2605.28365) — the accurately quoted number that lost its
+  scope; see [Formal Verification](formal-verification.md) for how it may be used.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record: 14 entries, 42 claim anchors, 20 claim corrections.
 
 ## Compiled Update — 2026-09-01: killing a model does not close its handoff — it splits the handoff into what transfers and what does not
 

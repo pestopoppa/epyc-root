@@ -1,302 +1,1505 @@
 {
- "session_id": "13e02952-5150-4fdc-b00f-f0b549e6dac4",
- "started_at": "2026-08-21T13:50:00Z",
- "last_checkpoint": "2026-08-22T14:05:00Z",
- "phase": 5,
- "stage": "wave2-stage3-gate",
- "session_kind": "research-intake (10 operator-submitted sources: 8 URLs + 2 pasted inline write-ups)",
- "previous_session": {
-  "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
-  "stage": "stage4-complete",
-  "mandate": "Ingest 4 operator-submitted URLs: openreview.net/pdf?id=e3pxJbBRBk, alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1, github.com/Zanatticus/Hawkeye/, arxiv.org/html/2603.12440v1",
-  "note": "Hawkeye batch, stage4-complete; unrelated mandate. Not resumed - this is a fresh session."
- },
- "mandate": "Ingest 10 operator-submitted sources: arxiv 2608.12875, github spiritbuun/buun-llama-cpp, INLINE-A dual-loop context/memory write-up, arxiv 2602.11865, INLINE-B Qwen3.8-27B campaign write-up, hf analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF, arxiv 2608.17896, ornith.ai/ornith_1_5.html, hf Audio8/Audio8-TTS-Preview-0.1b, arxiv 2608.17981",
- "submitted_url_count": 10,
- "max_existing_intake_id_at_start": 1236,
- "next_intake_id": 1280,
- "expansion_cap": 10,
- "expansion_count": 10,
- "processed_urls": [
-  "https://arxiv.org/html/2608.12875v1",
-  "https://github.com/spiritbuun/buun-llama-cpp",
-  "INLINE-A dual-loop-context-memory (sha256 0c153ab3dbe0...)",
-  "https://arxiv.org/html/2602.11865v1",
-  "INLINE-B qwen38-27b-not-one-number (sha256 692dd8583830...)",
-  "https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF",
-  "https://arxiv.org/html/2608.17896v1",
-  "https://ornith.ai/ornith_1_5.html",
-  "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.1b",
-  "https://arxiv.org/html/2608.17981v1"
- ],
- "entries_processed": {
-  "submitted": {
-   "intake-1252": "2608.12875 Embedder's Dilemma",
-   "intake-1253": "INLINE-A dual-loop",
-   "intake-1254": "2602.11865 Intelligent AI Delegation",
-   "intake-1255": "INLINE-B Qwen3.8 campaign",
-   "intake-1256": "analogalok DFlash2 Q2_K",
-   "intake-1257": "2608.17896 Dynamic Compression",
-   "intake-1258": "ornith 1.5",
-   "intake-1259": "Audio8 TTS 0.1b",
-   "intake-1260": "2608.17981 Recirculation"
+  "session_id": "f0c4b0c3-2192-41e9-98a5-ae47b9c12c27",
+  "started_at": "2026-09-07T00:00:00Z",
+  "last_checkpoint": "2026-09-07T14:20:00Z",
+  "phase": 5,
+  "stage": "complete",
+  "session_kind": "research-intake (11 operator-submitted sources: 9 URLs + 2 pasted inline write-ups)",
+  "previous_session": {
+    "session_id": "13e02952-5150-4fdc-b00f-f0b549e6dac4",
+    "stage": "wave2-stage3-gate",
+    "last_checkpoint": "2026-08-22T14:05:00Z",
+    "note": "16 days stale (>7d) and an unrelated mandate (Qwen3.8/DFlash2 batch). NOT resumed. It left a wave-2 Stage-3 gate OPEN for 15 Stage-2b entries (intake-1271..1279 + wave-2) whose actionables never received a Stage-3 plan; that is an outstanding operator item independent of this session, surfaced in the Stage-1 report."
   },
-  "expansion": {
-   "intake-1261": "vLLM #40831/#40880/#40914",
-   "intake-1262": "llama.cpp #25725/#25823",
-   "intake-1263": "Blackwellboy evidence repo",
-   "intake-1264": "llama.cpp PR #27342",
-   "intake-1265": "incoai DFlash2 GGUF",
-   "intake-1266": "embedders-dilemma repo",
-   "intake-1267": "2407.05483 Just Read Twice",
-   "intake-1268": "2607.02303 HOLA",
-   "intake-1269": "2605.23872 Training-Free Looped Transformers",
-   "intake-1270": "2506.05176 Qwen3 Embedding"
-  },
-  "duplicates_not_minted": {
-   "https://github.com/spiritbuun/buun-llama-cpp": "EXACT url collision with intake-194; re-encounter recorded on that entry per Phase-1 step 2b, no new id minted"
-  }
- },
- "steering_ledger": [
-  {
-   "seq": 1,
-   "stage": 2,
-   "verbatim": "Proceed with Ranked dive recommendations",
-   "disposition": "planned",
-   "plan_ref": "Stage-2 dives on the 8 ranked intakes: 1260, 1268, 1264, 1269, 1266, 1252, 1258, 1256",
-   "note": "Operator selected the ranked dive list as presented. The 11 explicitly-declined intakes stay declined; declines were presented with reasons and were not contested."
-  },
-  {
-   "seq": 2,
-   "stage": "2b",
-   "verbatim": "process all of them please",
-   "disposition": "planned",
-   "plan_ref": "Stage-2b ingest-and-dive on all 9 presented dive-surfaced sources: 2510.20787 (LTE), 2602.14759 (Lys), 2502.10424 (QuantSpec), llama.cpp #27442, llama.cpp #27117, m-a-p/340M-20B-GatedDeltaNet-pure-baseline, 2604.21100, 2510.07019, answerai-colbert-small-v1",
-   "note": "Operator selected the full presented shortlist. Stage-2b is UNCAPPED and does not draw from the Stage-1 expansion budget. These land already dive-verified/dive-overturned with dive_corrections, which is what makes them quotable in the Stage-3 plan."
-  },
-  {
-   "seq": 3,
-   "stage": "2b",
-   "verbatim": "\"Three of eight sources carry licence blockers\" - nonsense, this is a non-commercial project",
-   "disposition": "planned",
-   "plan_ref": "CORR-1",
-   "note": "Applied immediately to intake-1271..1278: 23 edits stripping licence-as-blocker framing from verdict_justification, contradicting_evidence, reader_should_conclude and unverifiable_from_stage2. Licence now appears only as a factual detail, per feedback_sourcing_and_licensing_policy. Committed in 402519e4. Stage-3 plan must not reintroduce it."
-  },
-  {
-   "seq": 4,
-   "stage": "2b",
-   "verbatim": "\"whether to commit the 5-hunk YAML repair, and whether to test frontdoor exposure to #27442.\" - yes to both",
-   "disposition": "planned",
-   "plan_ref": "CORR-2 / P-27442",
-   "note": "(a) YAML repair COMMITTED 402519e4 via a private GIT_INDEX_FILE so the shared index and 17 files of other sessions' staged deletions were not swept; HEAD now parses (1275 entries). (b) The #27442 test is APPROVED AS A PLAN ITEM, not as self-authorization to run inference - see seq 5."
-  },
-  {
-   "seq": 5,
-   "stage": "2b",
-   "verbatim": "why do you need inference compute? You're a research-intake session",
-   "disposition": "planned",
-   "plan_ref": "SCOPE-1",
-   "note": "Correction accepted and acted on: no server was started. A research-intake session files inference tasks, it does not execute them. Operator 'yes' to a proposed experiment approves the ITEM for the plan, never self-authorization to take compute. Saved as memory feedback_research_intake_never_takes_compute. Stage-3 plan must route every inference task to an owning handoff for someone else to run."
-  },
-  {
-   "seq": 6,
-   "stage": "3",
-   "verbatim": "if tasks are gated by analysis/verifications which depend on compute, bake that into your final handoff strategy",
-   "disposition": "planned",
-   "plan_ref": "PLAN-STRUCTURE",
-   "note": "BINDING ON THE STAGE-3 PLAN SHAPE: every task is classified by compute dependency - zero-compute (do now, in-session), compute-gated (name the gate, the owning handoff, and the measurement that opens it), and blocked-on-a-gated-result (name the upstream task). No task may be listed without stating which class it is and what unblocks it."
-  },
-  {
-   "seq": 7,
-   "stage": "3",
-   "verbatim": "follow the research-intake script",
-   "disposition": "planned",
-   "plan_ref": "PROCESS",
-   "note": "Resume the staged workflow: close the Stage-2 close-out gate by presenting the dive-surfaced sources for operator selection, THEN enter plan mode for Stage 3. No handoff, stub or index-row writes before the plan is approved."
-  },
-  {
-   "seq": 8,
-   "stage": "2-closeout",
-   "verbatim": "Deep dive all recommended material",
-   "disposition": "planned",
-   "plan_ref": "wave-2: all 15 close-out dive candidates launched as Stage-2b (combined Stage-1+Stage-2). Operator selected the WHOLE list, so the expansion cap of 10/run does not apply - these are operator-selected, not auto-expanded. Entries land as dive-verified/dive-overturned."
-  },
-  {
-   "seq": 9,
-   "stage": "3",
-   "verbatim": "and proceed with stage 3",
-   "disposition": "planned",
-   "plan_ref": "wave-1 Stage-3 plan approved and applied (stage4-complete, commits 402519e4..b7d6aaa7). Per skill amendment 6faa32bc this approval does NOT extend to wave-2 actionables - they get their own Stage-3 gate."
-  },
-  {
-   "seq": 10,
-   "stage": "2b",
-   "verbatim": "status update?",
-   "disposition": "context-only",
-   "plan_ref": null
-  },
-  {
-   "seq": 11,
-   "stage": "2b",
-   "verbatim": "recuperate them now",
-   "disposition": "planned",
-   "plan_ref": "re-launched the 6 wave-2 dives that died at the concurrency cap and resumed 4 partial ones via SendMessage rather than re-forking, preserving their partial findings. All 15 dives now complete."
-  },
-  {
-   "seq": 12,
-   "stage": "3",
-   "verbatim": "proceed with next stage",
-   "disposition": "planned",
-   "plan_ref": "wave-2 Stage-3 gate: present the audited action plan for the 15 Stage-2b entries. Per skill amendment 6faa32bc this wave does NOT inherit the wave-1 approval."
-  }
- ],
- "open_gates": [
-  "STAGE-2 CLOSE-OUT GATE OPEN: consolidated dive-surfaced source list presented to operator; awaiting selection for a Stage-2b ingest-and-dive round (uncapped). Stage 3 MAY NOT BEGIN until every dive-surfaced source is either ingested-and-dived or explicitly declined and recorded in the bearing entry dive_corrections.",
-  "Stage 3 plan mode not entered; no handoff, stub or index-row writes made in any stage so far.",
-  "UNRELATED TO THE PIPELINE: HEAD carries an unparseable research/intake_index.yaml; the 5-hunk YAML repair is uncommitted in the working tree. Operator decision pending."
- ],
- "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit was made. handoffs/ carries only pre-existing peer modifications, none intake-caused.",
- "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1266 entries (baseline before append: 1247)",
- "incident_concurrent_writer": {
-  "what": "A parallel session performed a whole-file read-modify-write on research/intake_index.yaml and CLOBBERED a completed 263KB 19-entry append.",
-  "detected": "Post-append verification: validator reported 1247 entries and grep for intake-1252/1260/1270 returned 0. File mtime 14:48:09 was ~1 min after my write.",
-  "peer_write_was_stale_by": "minutes - my earlier intake-194 targeted edit SURVIVED, so the peer's read snapshot postdated that edit but predated the append.",
-  "recovery": "Re-derived max id from the CURRENT file, remapped all 19 ids and their expanded_from cross-refs, re-appended, verified immediately.",
-  "note": "No lock convention exists for this file and flock would not bind an uncooperative peer. The append block is retained at scratchpad/APPEND_BLOCK.yaml so a further clobber is recoverable."
- },
- "yaml_hazards_fixed_in_block": [
-  "plain-scalar ' #' parsed as a YAML comment (authors item, techniques item)",
-  "flow sequence containing ' #' (authors: [...])",
-  "flow sequence containing nested {} (techniques)",
-  "flow sequence containing nested [] ([EOS] in techniques)"
- ],
- "owner_corrections_to_analyst_output": "scratchpad/OWNER_CORRECTIONS.md - C1 coder_escalation vs frontdoor incumbent (registry-verified), C2 cross-reference-map omits handoffs/archived/, C3 intake-401 stale framing, C4 intake-158/417 stale DFlash posture",
- "stage2_selected": [
-  "intake-1260",
-  "intake-1268",
-  "intake-1264",
-  "intake-1269",
-  "intake-1266",
-  "intake-1252",
-  "intake-1258",
-  "intake-1256"
- ],
- "stage2_not_selected_declined": [
-  "intake-1253",
-  "intake-1254",
-  "intake-1255",
-  "intake-1257",
-  "intake-1259",
-  "intake-1261",
-  "intake-1262",
-  "intake-1263",
-  "intake-1265",
-  "intake-1267",
-  "intake-1270"
- ],
- "stage2_results": {
-  "intake-1252": "dive-verified",
-  "intake-1256": "dive-overturned",
-  "intake-1258": "dive-overturned",
-  "intake-1260": "dive-overturned",
-  "intake-1264": "dive-overturned",
-  "intake-1266": "dive-overturned",
-  "intake-1268": "dive-overturned",
-  "intake-1269": "dive-verified"
- },
- "production_risk_surfaced": {
-  "what": "llama.cpp issue #27442 (open, 2026-08-20, no maintainer reply): qwen35moe hybrid-recurrent models return EMPTY GENERATION above ~16K context via llama-server, localized to the prompt-cache / context-checkpoint restore path for recurrent layers.",
-  "our_exposure": "Frontdoor (port 8070, Root LM) serves Qwen3.6-35B-A3B-MTP-Q8_0.gguf = general.architecture qwen35moe, 753 tensors, block_count 41, full_attention_interval 4, context_length 262144, configured n_ctx 262144. Verified directly from the GGUF header by the owning session.",
-  "status": "Reproduced on Metal only. CPU status UNKNOWN. NOT an Ornith question - Ornith GGUF is merely the reporter test case.",
-  "action_taken": "Surfaced to operator only. No probes, no restarts, no config changes - inference is owned elsewhere."
- },
- "kb_rag_defect_surfaced": {
-  "what": "markdown_chunker.py DEFAULT_MAX_CHARS = 4000 vs kb_rag.py _DOC_MAX_TOKENS = 256 (~1024 chars): up to ~75% of a full-size chunk is never embedded in the live KB-RAG index (577 files / 18,010 chunks).",
-  "verified_by": "owning session, read directly 2026-08-21",
-  "status": "Stage-3 candidate; measurement task drafted by the intake-1266 dive (zero-inference, CPU-only tokenization sweep)."
- },
- "stage2b_selected": [
-  "2510.20787",
-  "2602.14759",
-  "2502.10424",
-  "llamacpp-27442",
-  "llamacpp-27117",
-  "m-a-p/340M-20B-GatedDeltaNet-pure-baseline",
-  "2604.21100",
-  "2510.07019",
-  "answerai-colbert-small-v1"
- ],
- "stage2b_results": {
-  "entries_landed": "intake-1271..1279",
-  "verification": "8 dive-verified, 1 dive-overturned (1279)",
-  "validator": "exit 0, 1275 entries",
-  "commit": "402519e4"
- },
- "stage3_plan": {
-  "file": "/home/node/.claude/plans/rippling-exploring-castle.md",
-  "approved": true,
-  "structure": "Z zero-compute / G compute-gated / B blocked-on",
-  "ledger_rows_closed": 7
- },
- "stage4_applied": {
-  "commit": "a55f44e8",
-  "files": 16,
-  "record_corrections": [
-   "C3 intake-1258 cache localization STRUCK",
-   "C4a-d intake-1268 x4",
-   "C5 intake-1264 flag correlation + scoped depends_on:intake-1277",
-   "C6 intake-430 denominator",
-   "C8 tq3 PR#21089 re-verified closed unmerged 2026-06-02"
-  ],
-  "task_rows": [
-   "G1 #27442 greedy boundary sweep",
-   "G2 DF2-5 redesigned + DF2-6 control + DF2-7 guard",
-   "G3 MI210 VEC verify probe",
-   "G4 post-restore reuse",
-   "G5 HOLA retrofit",
-   "G6 ROCm 6.2 torch/triton floor",
-   "B1-B5 blocked chains",
-   "SC49 belief-kernel write-side hook"
-  ],
-  "not_done": "Stage-2b wave 2 (15 dives) ALL FAILED on a session API limit; nothing landed; needs its own Stage-3 gate per skill amendment 6faa32bc",
-  "validators": "validate_intake.sh exit 0 (1275 entries); index_state.py --check 0 problems"
- },
- "wave2": {
-  "trigger": "steering_ledger seq 8 - operator: 'Deep dive all recommended material'",
-  "dive_count": 15,
-  "dives_complete": 15,
-  "entries_to_mint": 15,
-  "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval.",
-  "entries_minted": "intake-1280..1294 (commit 22650200)"
- },
- "wave_20260901_m4prefill": {
-  "owner": "adhoc-audit (workspace-62)",
-  "date": "2026-09-01",
-  "stage": "stage1-complete",
+  "mandate": "Ingest 11 operator-submitted sources: github stevibe/SparklingKit, alexzhang13 spec-ptc blog, arxiv 2608.26070, 2608.27454, 2608.25593, github LMCache/LMCache, arxiv 2608.23552, 2608.21690, INLINE multi-brain harness write-up, INLINE dual-loop context/memory write-up (RE-ENCOUNTER of intake-1253), arxiv 2608.16157",
+  "submitted_url_count": 11,
+  "max_existing_intake_id_at_start": 1303,
+  "existing_entry_count_at_start": 1299,
+  "next_intake_id": 1346,
+  "expansion_cap": 10,
+  "expansion_count": 10,
+  "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned /research-intake). check_lane_worktree.py --strict exit 3. Stage-1 writes are research/intake_index.yaml + .research-session.json ONLY; stage hunk-selectively and inspect git diff -- <file> before any commit. research/intake_index.yaml already carried a peer's uncommitted modification at session start (see peer_uncommitted_state).",
+  "subagent_model": "opus (operator instruction seq 1)",
   "processed_urls": [
-   "https://mohamedhossammohamed.github.io/m4-prefill-engine/",
-   "https://github.com/mohamedhossammohamed/m4-prefill-engine"
+    "https://github.com/stevibe/SparklingKit",
+    "https://alexzhang13.github.io/blog/2026/spec-ptc/",
+    "https://arxiv.org/html/2608.26070v1",
+    "https://arxiv.org/html/2608.27454v1",
+    "https://arxiv.org/html/2608.25593v1",
+    "https://github.com/LMCache/LMCache",
+    "https://arxiv.org/html/2608.23552v1",
+    "https://arxiv.org/html/2608.21690v1",
+    "INLINE multi-brain harness (sha256 3e6ece8f3e17..., 6688 bytes, scratchpad/INLINE-multibrain.md)",
+    "https://arxiv.org/html/2608.16157v1"
   ],
-  "entries": [
-   "intake-1295",
-   "intake-1296"
-  ],
-  "next_intake_id": 1297,
+  "duplicates_not_minted": {
+    "INLINE dual-loop context/memory write-up (sha256 85707d8b22ec..., 8160 bytes)": "CONTENT RE-ENCOUNTER of intake-1253 (same title, same self-attribution to marfin @marfinxx 14 Aug 2026, same five invariants and section structure; byte hash differs from the 2026-08-21 copy 0c153ab3dbe0... only by whitespace/size 8067 vs 8160). Per Phase-1 step 2b no new id minted; re-encounter to be recorded on intake-1253 at persist time."
+  },
   "steering_ledger": [
-   {
-    "seq": 1,
-    "stage": 1,
-    "verbatim": "Is there anythign that we could learn from this report concerning kernel optimization on apple silicon?",
-    "disposition": "context-only",
-    "plan_ref": null
-   },
-   {
-    "seq": 2,
-    "stage": 1,
-    "verbatim": "yes, run it through intake and fold the boundary-matrix into the relay. Also, there's a parallel claude agent session managing autokernel work on the gpu kernels, distill any insights it may need and relay them to it directly. I imagine much of what you said could be formatted as planner hypotheses",
-    "disposition": "planned",
-    "plan_ref": "relay+AK-distillation executed as operator-directed communication (not handoff writes); boundary-matrix HANDOFF filing remains Stage-3-gated if a dive is later selected"
-   }
-  ]
- }
+    {
+      "seq": 1,
+      "stage": 1,
+      "ts": "2026-09-07",
+      "verbatim": "use opus high subagents to churn through work",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Process instruction applied immediately: all Stage-1 analyst subagents dispatched with model=opus; same for later dives."
+    },
+    {
+      "seq": 2,
+      "stage": 2,
+      "ts": "2026-09-07",
+      "verbatim": "proceed with recommended deep dives",
+      "disposition": "done",
+      "plan_ref": "Stage-2 dives on the 9 ranked intakes: 1315, 1328, 1318, 1325, 1320, 1323, 1330, 1316, 1317. The 10 explicit declines stand (presented with reasons, not contested)."
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "1-12 + 14 and 15",
+      "disposition": "done",
+      "plan_ref": "stage2b-selection",
+      "note": "Operator selected Stage-2b sources 1-12, 14, 15 from the close-out gate list; declined 13 (flashlib slot_cache), 16 (Zhu et al. 2026 Codex decode median), 17 (mem0.ai 2026 benchmarks blog), 18 (OpenReview 2XMAUP74ig)."
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "\"1. arXiv 2605.23950 Stop Comparing LLM Agents Without Disclosing the Harness ... 2. FreeToken issue #350 ...\" - both please. Then proceed to Stage 3",
+      "disposition": "done",
+      "plan_ref": "stage2c-selection + stage3-entry",
+      "note": "Operator selected the two recommended Stage-2c sources; all other Stage-2b-surfaced sources deferred to the Stage-3 expansion queue (recorded on bearing entries); Stage 3 authorised to begin after these two land."
+    },
+    {
+      "seq": 5,
+      "stage": 4,
+      "verbatim": "Use opus low subagents to churn through the handoff/index updates as quickly and efficiently as possible",
+      "disposition": "done",
+      "plan_ref": "Stage-4 execution: opus low-effort subagents apply handoff riders per disjoint file sets; owning session applies stubs/index rows/intake edits/commits"
+    }
+  ],
+  "pre_existing_validator_errors_at_start": [
+    "intake-920: cross-ref handoff 'granite-97m-r2-bench-plan.md' not found",
+    "intake-1140/1160/1184: cross-ref handoff 'benchmark-results-dashboard.md' not found",
+    "cause: both handoffs renamed in 6130d5d58 (2026-08-23) to handoffs/completed/<name>-completed-through-2026-08-23.md; fix = repoint the four refs in-place at persist time",
+    "RESOLVED by the peer session before this session persisted anything - no action here."
+  ],
+  "open_gates": [
+    "Stage 2 in progress: 9 dive subagents dispatched (Opus). Writes permitted: intake entry verification/correction fields only."
+  ],
+  "peer_uncommitted_state": {
+    "detected": "2026-09-07T13:28Z",
+    "what": "A PARALLEL research-intake session is appending to research/intake_index.yaml right now (uncommitted): intake-1297..1303 (Prove2Me platform batch + MPAC 2608.28433 lineage), ingested_date 2026-09-07, file mtime 13:27:55. It also repointed the four stale handoff refs (granite-97m-r2-bench-plan / benchmark-results-dashboard -> *-completed-through-2026-08-23.md), so the validator is green (1299 entries) and that fix is DROPPED from this session's scope.",
+    "mitigation": "Re-derive max id immediately before persist; append-only text write (cat >>), never a whole-file read-modify-write; verify entry count and grep own ids immediately after; keep APPEND_BLOCK.yaml in scratchpad so a clobber is recoverable. Hunk-selective staging only.",
+    "note": "NOTE: .research-session.json is a single repo-root file shared by both sessions; the peer may overwrite it. This session's authoritative state is also mirrored at scratchpad/session-mirror.json."
+  },
+  "archived_waves": {
+    "wave_20260821_hawkeye_wave2": {
+      "session_id": "13e02952-5150-4fdc-b00f-f0b549e6dac4",
+      "started_at": "2026-08-21T13:50:00Z",
+      "last_checkpoint": "2026-08-22T14:05:00Z",
+      "phase": 5,
+      "stage": "wave2-stage3-gate",
+      "session_kind": "research-intake (10 operator-submitted sources: 8 URLs + 2 pasted inline write-ups)",
+      "previous_session": {
+        "session_id": "9bbed0e5-c9a3-42d4-a74a-3a893190d082",
+        "stage": "stage4-complete",
+        "mandate": "Ingest 4 operator-submitted URLs: openreview.net/pdf?id=e3pxJbBRBk, alphaxiv.org/pdf/2608.hawkeye-hardware-aware-gpu-kernel-optimizationv1, github.com/Zanatticus/Hawkeye/, arxiv.org/html/2603.12440v1",
+        "note": "Hawkeye batch, stage4-complete; unrelated mandate. Not resumed - this is a fresh session."
+      },
+      "mandate": "Ingest 10 operator-submitted sources: arxiv 2608.12875, github spiritbuun/buun-llama-cpp, INLINE-A dual-loop context/memory write-up, arxiv 2602.11865, INLINE-B Qwen3.8-27B campaign write-up, hf analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF, arxiv 2608.17896, ornith.ai/ornith_1_5.html, hf Audio8/Audio8-TTS-Preview-0.1b, arxiv 2608.17981",
+      "submitted_url_count": 10,
+      "max_existing_intake_id_at_start": 1236,
+      "next_intake_id": 1280,
+      "expansion_cap": 10,
+      "expansion_count": 10,
+      "processed_urls": [
+        "https://arxiv.org/html/2608.12875v1",
+        "https://github.com/spiritbuun/buun-llama-cpp",
+        "INLINE-A dual-loop-context-memory (sha256 0c153ab3dbe0...)",
+        "https://arxiv.org/html/2602.11865v1",
+        "INLINE-B qwen38-27b-not-one-number (sha256 692dd8583830...)",
+        "https://huggingface.co/analogalok/Qwen3.8-27B-DFlash2-Q2_K-GGUF",
+        "https://arxiv.org/html/2608.17896v1",
+        "https://ornith.ai/ornith_1_5.html",
+        "https://huggingface.co/Audio8/Audio8-TTS-Preview-0.1b",
+        "https://arxiv.org/html/2608.17981v1"
+      ],
+      "entries_processed": {
+        "submitted": {
+          "intake-1252": "2608.12875 Embedder's Dilemma",
+          "intake-1253": "INLINE-A dual-loop",
+          "intake-1254": "2602.11865 Intelligent AI Delegation",
+          "intake-1255": "INLINE-B Qwen3.8 campaign",
+          "intake-1256": "analogalok DFlash2 Q2_K",
+          "intake-1257": "2608.17896 Dynamic Compression",
+          "intake-1258": "ornith 1.5",
+          "intake-1259": "Audio8 TTS 0.1b",
+          "intake-1260": "2608.17981 Recirculation"
+        },
+        "expansion": {
+          "intake-1261": "vLLM #40831/#40880/#40914",
+          "intake-1262": "llama.cpp #25725/#25823",
+          "intake-1263": "Blackwellboy evidence repo",
+          "intake-1264": "llama.cpp PR #27342",
+          "intake-1265": "incoai DFlash2 GGUF",
+          "intake-1266": "embedders-dilemma repo",
+          "intake-1267": "2407.05483 Just Read Twice",
+          "intake-1268": "2607.02303 HOLA",
+          "intake-1269": "2605.23872 Training-Free Looped Transformers",
+          "intake-1270": "2506.05176 Qwen3 Embedding"
+        },
+        "duplicates_not_minted": {
+          "https://github.com/spiritbuun/buun-llama-cpp": "EXACT url collision with intake-194; re-encounter recorded on that entry per Phase-1 step 2b, no new id minted"
+        }
+      },
+      "steering_ledger": [
+        {
+          "seq": 1,
+          "stage": 2,
+          "verbatim": "Proceed with Ranked dive recommendations",
+          "disposition": "planned",
+          "plan_ref": "Stage-2 dives on the 8 ranked intakes: 1260, 1268, 1264, 1269, 1266, 1252, 1258, 1256",
+          "note": "Operator selected the ranked dive list as presented. The 11 explicitly-declined intakes stay declined; declines were presented with reasons and were not contested."
+        },
+        {
+          "seq": 2,
+          "stage": "2b",
+          "verbatim": "process all of them please",
+          "disposition": "planned",
+          "plan_ref": "Stage-2b ingest-and-dive on all 9 presented dive-surfaced sources: 2510.20787 (LTE), 2602.14759 (Lys), 2502.10424 (QuantSpec), llama.cpp #27442, llama.cpp #27117, m-a-p/340M-20B-GatedDeltaNet-pure-baseline, 2604.21100, 2510.07019, answerai-colbert-small-v1",
+          "note": "Operator selected the full presented shortlist. Stage-2b is UNCAPPED and does not draw from the Stage-1 expansion budget. These land already dive-verified/dive-overturned with dive_corrections, which is what makes them quotable in the Stage-3 plan."
+        },
+        {
+          "seq": 3,
+          "stage": "2b",
+          "verbatim": "\"Three of eight sources carry licence blockers\" - nonsense, this is a non-commercial project",
+          "disposition": "planned",
+          "plan_ref": "CORR-1",
+          "note": "Applied immediately to intake-1271..1278: 23 edits stripping licence-as-blocker framing from verdict_justification, contradicting_evidence, reader_should_conclude and unverifiable_from_stage2. Licence now appears only as a factual detail, per feedback_sourcing_and_licensing_policy. Committed in 402519e4. Stage-3 plan must not reintroduce it."
+        },
+        {
+          "seq": 4,
+          "stage": "2b",
+          "verbatim": "\"whether to commit the 5-hunk YAML repair, and whether to test frontdoor exposure to #27442.\" - yes to both",
+          "disposition": "planned",
+          "plan_ref": "CORR-2 / P-27442",
+          "note": "(a) YAML repair COMMITTED 402519e4 via a private GIT_INDEX_FILE so the shared index and 17 files of other sessions' staged deletions were not swept; HEAD now parses (1275 entries). (b) The #27442 test is APPROVED AS A PLAN ITEM, not as self-authorization to run inference - see seq 5."
+        },
+        {
+          "seq": 5,
+          "stage": "2b",
+          "verbatim": "why do you need inference compute? You're a research-intake session",
+          "disposition": "planned",
+          "plan_ref": "SCOPE-1",
+          "note": "Correction accepted and acted on: no server was started. A research-intake session files inference tasks, it does not execute them. Operator 'yes' to a proposed experiment approves the ITEM for the plan, never self-authorization to take compute. Saved as memory feedback_research_intake_never_takes_compute. Stage-3 plan must route every inference task to an owning handoff for someone else to run."
+        },
+        {
+          "seq": 6,
+          "stage": "3",
+          "verbatim": "if tasks are gated by analysis/verifications which depend on compute, bake that into your final handoff strategy",
+          "disposition": "planned",
+          "plan_ref": "PLAN-STRUCTURE",
+          "note": "BINDING ON THE STAGE-3 PLAN SHAPE: every task is classified by compute dependency - zero-compute (do now, in-session), compute-gated (name the gate, the owning handoff, and the measurement that opens it), and blocked-on-a-gated-result (name the upstream task). No task may be listed without stating which class it is and what unblocks it."
+        },
+        {
+          "seq": 7,
+          "stage": "3",
+          "verbatim": "follow the research-intake script",
+          "disposition": "planned",
+          "plan_ref": "PROCESS",
+          "note": "Resume the staged workflow: close the Stage-2 close-out gate by presenting the dive-surfaced sources for operator selection, THEN enter plan mode for Stage 3. No handoff, stub or index-row writes before the plan is approved."
+        },
+        {
+          "seq": 8,
+          "stage": "2-closeout",
+          "verbatim": "Deep dive all recommended material",
+          "disposition": "planned",
+          "plan_ref": "wave-2: all 15 close-out dive candidates launched as Stage-2b (combined Stage-1+Stage-2). Operator selected the WHOLE list, so the expansion cap of 10/run does not apply - these are operator-selected, not auto-expanded. Entries land as dive-verified/dive-overturned."
+        },
+        {
+          "seq": 9,
+          "stage": "3",
+          "verbatim": "and proceed with stage 3",
+          "disposition": "planned",
+          "plan_ref": "wave-1 Stage-3 plan approved and applied (stage4-complete, commits 402519e4..b7d6aaa7). Per skill amendment 6faa32bc this approval does NOT extend to wave-2 actionables - they get their own Stage-3 gate."
+        },
+        {
+          "seq": 10,
+          "stage": "2b",
+          "verbatim": "status update?",
+          "disposition": "context-only",
+          "plan_ref": null
+        },
+        {
+          "seq": 11,
+          "stage": "2b",
+          "verbatim": "recuperate them now",
+          "disposition": "planned",
+          "plan_ref": "re-launched the 6 wave-2 dives that died at the concurrency cap and resumed 4 partial ones via SendMessage rather than re-forking, preserving their partial findings. All 15 dives now complete."
+        },
+        {
+          "seq": 12,
+          "stage": "3",
+          "verbatim": "proceed with next stage",
+          "disposition": "planned",
+          "plan_ref": "wave-2 Stage-3 gate: present the audited action plan for the 15 Stage-2b entries. Per skill amendment 6faa32bc this wave does NOT inherit the wave-1 approval."
+        }
+      ],
+      "open_gates": [
+        "STAGE-2 CLOSE-OUT GATE OPEN: consolidated dive-surfaced source list presented to operator; awaiting selection for a Stage-2b ingest-and-dive round (uncapped). Stage 3 MAY NOT BEGIN until every dive-surfaced source is either ingested-and-dived or explicitly declined and recorded in the bearing entry dive_corrections.",
+        "Stage 3 plan mode not entered; no handoff, stub or index-row writes made in any stage so far.",
+        "UNRELATED TO THE PIPELINE: HEAD carries an unparseable research/intake_index.yaml; the 5-hunk YAML repair is uncommitted in the working tree. Operator decision pending."
+      ],
+      "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned). Stage-1 writes were research/intake_index.yaml + .research-session.json ONLY. NO commit was made. handoffs/ carries only pre-existing peer modifications, none intake-caused.",
+      "validator": "bash scripts/validate/validate_intake.sh -> exit 0, 1266 entries (baseline before append: 1247)",
+      "incident_concurrent_writer": {
+        "what": "A parallel session performed a whole-file read-modify-write on research/intake_index.yaml and CLOBBERED a completed 263KB 19-entry append.",
+        "detected": "Post-append verification: validator reported 1247 entries and grep for intake-1252/1260/1270 returned 0. File mtime 14:48:09 was ~1 min after my write.",
+        "peer_write_was_stale_by": "minutes - my earlier intake-194 targeted edit SURVIVED, so the peer's read snapshot postdated that edit but predated the append.",
+        "recovery": "Re-derived max id from the CURRENT file, remapped all 19 ids and their expanded_from cross-refs, re-appended, verified immediately.",
+        "note": "No lock convention exists for this file and flock would not bind an uncooperative peer. The append block is retained at scratchpad/APPEND_BLOCK.yaml so a further clobber is recoverable."
+      },
+      "yaml_hazards_fixed_in_block": [
+        "plain-scalar ' #' parsed as a YAML comment (authors item, techniques item)",
+        "flow sequence containing ' #' (authors: [...])",
+        "flow sequence containing nested {} (techniques)",
+        "flow sequence containing nested [] ([EOS] in techniques)"
+      ],
+      "owner_corrections_to_analyst_output": "scratchpad/OWNER_CORRECTIONS.md - C1 coder_escalation vs frontdoor incumbent (registry-verified), C2 cross-reference-map omits handoffs/archived/, C3 intake-401 stale framing, C4 intake-158/417 stale DFlash posture",
+      "stage2_selected": [
+        "intake-1260",
+        "intake-1268",
+        "intake-1264",
+        "intake-1269",
+        "intake-1266",
+        "intake-1252",
+        "intake-1258",
+        "intake-1256"
+      ],
+      "stage2_not_selected_declined": [
+        "intake-1253",
+        "intake-1254",
+        "intake-1255",
+        "intake-1257",
+        "intake-1259",
+        "intake-1261",
+        "intake-1262",
+        "intake-1263",
+        "intake-1265",
+        "intake-1267",
+        "intake-1270"
+      ],
+      "stage2_results": {
+        "intake-1252": "dive-verified",
+        "intake-1256": "dive-overturned",
+        "intake-1258": "dive-overturned",
+        "intake-1260": "dive-overturned",
+        "intake-1264": "dive-overturned",
+        "intake-1266": "dive-overturned",
+        "intake-1268": "dive-overturned",
+        "intake-1269": "dive-verified"
+      },
+      "production_risk_surfaced": {
+        "what": "llama.cpp issue #27442 (open, 2026-08-20, no maintainer reply): qwen35moe hybrid-recurrent models return EMPTY GENERATION above ~16K context via llama-server, localized to the prompt-cache / context-checkpoint restore path for recurrent layers.",
+        "our_exposure": "Frontdoor (port 8070, Root LM) serves Qwen3.6-35B-A3B-MTP-Q8_0.gguf = general.architecture qwen35moe, 753 tensors, block_count 41, full_attention_interval 4, context_length 262144, configured n_ctx 262144. Verified directly from the GGUF header by the owning session.",
+        "status": "Reproduced on Metal only. CPU status UNKNOWN. NOT an Ornith question - Ornith GGUF is merely the reporter test case.",
+        "action_taken": "Surfaced to operator only. No probes, no restarts, no config changes - inference is owned elsewhere."
+      },
+      "kb_rag_defect_surfaced": {
+        "what": "markdown_chunker.py DEFAULT_MAX_CHARS = 4000 vs kb_rag.py _DOC_MAX_TOKENS = 256 (~1024 chars): up to ~75% of a full-size chunk is never embedded in the live KB-RAG index (577 files / 18,010 chunks).",
+        "verified_by": "owning session, read directly 2026-08-21",
+        "status": "Stage-3 candidate; measurement task drafted by the intake-1266 dive (zero-inference, CPU-only tokenization sweep)."
+      },
+      "stage2b_selected": [
+        "2510.20787",
+        "2602.14759",
+        "2502.10424",
+        "llamacpp-27442",
+        "llamacpp-27117",
+        "m-a-p/340M-20B-GatedDeltaNet-pure-baseline",
+        "2604.21100",
+        "2510.07019",
+        "answerai-colbert-small-v1"
+      ],
+      "stage2b_results": {
+        "entries_landed": "intake-1271..1279",
+        "verification": "8 dive-verified, 1 dive-overturned (1279)",
+        "validator": "exit 0, 1275 entries",
+        "commit": "402519e4"
+      },
+      "stage3_plan": {
+        "file": "/home/node/.claude/plans/rippling-exploring-castle.md",
+        "approved": true,
+        "structure": "Z zero-compute / G compute-gated / B blocked-on",
+        "ledger_rows_closed": 7
+      },
+      "stage4_applied": {
+        "commit": "a55f44e8",
+        "files": 16,
+        "record_corrections": [
+          "C3 intake-1258 cache localization STRUCK",
+          "C4a-d intake-1268 x4",
+          "C5 intake-1264 flag correlation + scoped depends_on:intake-1277",
+          "C6 intake-430 denominator",
+          "C8 tq3 PR#21089 re-verified closed unmerged 2026-06-02"
+        ],
+        "task_rows": [
+          "G1 #27442 greedy boundary sweep",
+          "G2 DF2-5 redesigned + DF2-6 control + DF2-7 guard",
+          "G3 MI210 VEC verify probe",
+          "G4 post-restore reuse",
+          "G5 HOLA retrofit",
+          "G6 ROCm 6.2 torch/triton floor",
+          "B1-B5 blocked chains",
+          "SC49 belief-kernel write-side hook"
+        ],
+        "not_done": "Stage-2b wave 2 (15 dives) ALL FAILED on a session API limit; nothing landed; needs its own Stage-3 gate per skill amendment 6faa32bc",
+        "validators": "validate_intake.sh exit 0 (1275 entries); index_state.py --check 0 problems"
+      },
+      "wave2": {
+        "trigger": "steering_ledger seq 8 - operator: 'Deep dive all recommended material'",
+        "dive_count": 15,
+        "dives_complete": 15,
+        "entries_to_mint": 15,
+        "note": "Stage-2b entries prepared by 5 preparation subagents (PREPARE only); the owning session applies. Per skill amendment 6faa32bc wave-2 actionables need their OWN Stage-3 gate and do not inherit the wave-1 plan approval.",
+        "entries_minted": "intake-1280..1294 (commit 22650200)"
+      }
+    },
+    "wave_20260901_m4prefill": {
+      "owner": "adhoc-audit (workspace-62)",
+      "date": "2026-09-01",
+      "stage": "stage1-complete",
+      "processed_urls": [
+        "https://mohamedhossammohamed.github.io/m4-prefill-engine/",
+        "https://github.com/mohamedhossammohamed/m4-prefill-engine"
+      ],
+      "entries": [
+        "intake-1295",
+        "intake-1296"
+      ],
+      "next_intake_id": 1297,
+      "steering_ledger": [
+        {
+          "seq": 1,
+          "stage": 1,
+          "verbatim": "Is there anythign that we could learn from this report concerning kernel optimization on apple silicon?",
+          "disposition": "context-only",
+          "plan_ref": null
+        },
+        {
+          "seq": 2,
+          "stage": 1,
+          "verbatim": "yes, run it through intake and fold the boundary-matrix into the relay. Also, there's a parallel claude agent session managing autokernel work on the gpu kernels, distill any insights it may need and relay them to it directly. I imagine much of what you said could be formatted as planner hypotheses",
+          "disposition": "planned",
+          "plan_ref": "relay+AK-distillation executed as operator-directed communication (not handoff writes); boundary-matrix HANDOFF filing remains Stage-3-gated if a dive is later selected"
+        }
+      ]
+    }
+  },
+  "wave_20260907_prove2me": {
+    "owner": "adhoc-session (shared clone, no lane)",
+    "date": "2026-09-07",
+    "stage": "stage2b-complete-ready-for-stage3",
+    "mandate": "Prove2Me coordination harness (NOT the FLT proof result); test three operator-stated 'worth stealing' hypotheses",
+    "entries": {
+      "submitted": [
+        "intake-1297",
+        "intake-1298"
+      ],
+      "expansion": [
+        "intake-1299",
+        "intake-1300",
+        "intake-1301",
+        "intake-1302",
+        "intake-1303"
+      ]
+    },
+    "id_range": "1297-1303 (peer session f0c4b0c3 correctly resumed at 1304 \u2014 no collision)",
+    "expansion_count": 5,
+    "expansion_cap": 10,
+    "dives": {
+      "count": 4,
+      "targets": "1297 / 1298+1301 / 1299 / 1300+1302",
+      "not_dived": "intake-1303 stays stage1-unverified"
+    },
+    "stage2_writes": {
+      "promoted_to_dive_verified": 6,
+      "claim_anchors": 16,
+      "claim_corrections": 20,
+      "overturns": [
+        "intake-1300 claim 1: deprecate does NOT cascade \u2014 importers keep working, status unchanged",
+        "intake-1299 claim 2: a ranking signal DOES exist (`closability`), missed at Stage 1",
+        "intake-1297/1298: the paper DOES argue compile cost (S2, S4.1, S4.2) \u2014 it just never measures it"
+      ],
+      "validator": "exit 0, 1299 entries"
+    },
+    "incidental_index_repairs": [
+      "intake-920 + intake-1140/1160/1184: repointed 4 dangling handoff refs (rename fallout, commit 6130d5d5)",
+      "validate_intake.sh baseline was RED (4 errors) before this wave; restored to exit 0"
+    ],
+    "repo_defects_found": [
+      "LIVE: dep cycle INF-06 <-> INF-64 (inference-research-index.md:17-18); index_state.py --check has no cycle detection",
+      "LIVE: scripts/vidya/gate.py:219-224 reports 'N unreviewed correction(s)' when blocking on a dependency_alert, erasing the distinction fold.py:96-100 exists to preserve; 118 claim_depends_on frames live"
+    ],
+    "incident_session_file_clobber": {
+      "detected": "2026-09-07T13:5xZ",
+      "what": "Peer session f0c4b0c3 rewrote .research-session.json wholesale at 13:29Z, dropping every historical wave key including wave_20260901_m4prefill and this session's own record.",
+      "fix": "History restored under archived_waves/ additively; no peer key touched. Durable copy kept in the session scratchpad.",
+      "lesson": "A repo-root JSON shared by two concurrent sessions needs append-only or per-wave files; whole-file read-modify-write loses the other session's record with no conflict and no reflog."
+    },
+    "steering_ledger": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "verbatim": "Yes, please run it through research-intake and deep dive it. [three 'worth stealing' hypotheses quoted: DAG-derived work frontier; statement/proof separation ~ claim identity vs evidence payload; NL description per node for semantic reuse] - lets see if this holds up or if we find more nuggets to poach",
+        "disposition": "planned",
+        "plan_ref": "H1/H2/H3 adjudicated in Stage 2; all derived actionables route to the Stage-3 gate"
+      }
+    ],
+    "stage2b": {
+      "selected": "operator chose items 1-7; declined 8-11",
+      "entries": "intake-1304..1310 (Gloeckle 2604.03071, Rammal 2605.29955, Urban 2601.03298, Bourigault 2605.28365, mission_auditor.md, upload_full_project.md, anthropics/fermats-last-theorem)",
+      "id_race": "re-derived max id immediately before append (was 1303); peer session f0c4b0c3 had not landed 1304+ at write time",
+      "all_dive_verified": true,
+      "wave_totals": {
+        "entries": 14,
+        "claim_anchors": 42,
+        "claim_corrections": 20
+      },
+      "validator": "exit 0, 1306 entries"
+    },
+    "prove2me_citation_defects_found": [
+      "Section 2 calls Urban 2026 '130k lines of Lean' \u2014 it is Megalodon, not Lean (intake-1306)",
+      "Section 2's 'five-figure budgets (Gloeckle; Rammal)' \u2014 Rammal contains NO dollar figure at all (intake-1305)",
+      "Table 1 caption defines Agents as a population; the cell is 30,046 agent RUNS, and Prove2Me's own Section 5 says 'agent runs' (intake-1304)"
+    ],
+    "defects_fixed_in_session": [
+      "INF-06 <-> INF-64 dep cycle deleted (rider-of edge in a blocked-on column; relation preserved as a ref edge)",
+      "index_state.py --check: dep_cycles() added, 12 regression tests",
+      "scripts/vidya/gate.py: dependency_alerts no longer reported as '0 unreviewed correction(s)', 7 regression tests, mutation-proven against pre-fix code"
+    ]
+  },
+  "stage1_analyst_results": {
+    "held_at": "scratchpad/entries/01..10 (placeholder ids intake-XXX1..XX10; substituted at persist time after re-deriving max id)",
+    "summary": {
+      "01 SparklingKit repo": "adopt_patterns, novelty low, relevance medium, cred null; NO dive",
+      "02 spec-ptc blog": "adopt_patterns, medium/high, cred 3; dive YES (companion repo)",
+      "03 Prime Agent 2608.23552": "adopt_patterns, medium/high, cred 1; NO dive (system dived twice already; arc-agi-3 repo is the follow-up)",
+      "04 multi-brain inline": "adopt_patterns, high/high, cred null; attribution 2/3 LOCATED; dive YES (primary firstmate docs)",
+      "05 Prefix Sliding 2608.26070": "worth_investigating, medium/high, cred 2; dive YES",
+      "06 Scroll 2608.21690": "adopt_patterns, medium/high, cred 2; dive YES",
+      "07 WikiSkill 2608.27454": "adopt_patterns, high/high, cred 3; dive YES",
+      "08 FreeToken 2608.16157": "adopt_patterns, high/high, cred 1; dive YES",
+      "09 LMCache repo": "adopt_patterns, high/medium, cred 2; NO dive (dive CacheBlend instead)",
+      "10 JIT-Agent 2608.25593": "worth_investigating, high/high, cred 3; dive YES (cost-accounting hole)"
+    }
+  },
+  "expansion_dispatched": [
+    "github.com/kunchenguid/firstmate docs (expansion, from multibrain)",
+    "2405.16444 CacheBlend (expansion, from LMCache repo)",
+    "2510.09665 LMCache paper (expansion, from LMCache repo)",
+    "2309.17453 StreamingLLM (expansion, from Prefix Sliding; standing gap: anchor of an active handoff with no entry)",
+    "2608.02276 Harness-R1 (expansion, from JIT-Agent)",
+    "2607.22520 Regression Tax (search, from WikiSkill)",
+    "github.com/alexzhang13/spec-ptc (expansion, companion of spec-ptc blog)",
+    "2510.27246 BEAM (expansion, from Scroll)",
+    "2505.16056 Local Routing Consistency (expansion, from FreeToken)",
+    "github.com/PrimeIntellect-ai/arc-agi-3-prime-agent (search, from Prime Agent)"
+  ],
+  "expansion_declined_at_cap": [
+    "2605.13360 Speculative Interaction Agents",
+    "2602.07962 LOCA-bench",
+    "2607.08124 TTHE",
+    "2512.10411 SWAA",
+    "2606.30560 TraceLab",
+    "2310.07240 CacheGen",
+    "2606.14249 HarnessX",
+    "2604.09852 MEMENTO id backfill",
+    "nvidia/LocateAnything-3B la_flash runtime",
+    "2607.01237 KARA"
+  ],
+  "entries_processed": {
+    "submitted": {
+      "intake-1311": "stevibe/SparklingKit repo",
+      "intake-1312": "spec-ptc blog",
+      "intake-1313": "2608.23552 Prime Agent",
+      "intake-1314": "INLINE multi-brain harness",
+      "intake-1315": "2608.26070 Prefix Sliding",
+      "intake-1316": "2608.21690 Scroll",
+      "intake-1317": "2608.27454 WikiSkill",
+      "intake-1318": "2608.16157 FreeToken",
+      "intake-1319": "LMCache/LMCache repo",
+      "intake-1320": "2608.25593 JIT-Agent"
+    },
+    "expansion": {
+      "intake-1321": "2607.22520 Regression Tax (search, from 1317)",
+      "intake-1322": "2405.16444 CacheBlend (from 1319)",
+      "intake-1323": "2608.02276 Harness-R1 (from 1320)",
+      "intake-1324": "2510.09665 LMCache paper (from 1319)",
+      "intake-1325": "kunchenguid/firstmate repo (from 1314)",
+      "intake-1326": "alexzhang13/spec-ptc repo (from 1312)",
+      "intake-1327": "2309.17453 StreamingLLM (from 1315)",
+      "intake-1328": "2505.16056 Local Routing Consistency (from 1318)",
+      "intake-1329": "PrimeIntellect-ai/arc-agi-3-prime-agent (search, from 1313)",
+      "intake-1330": "2510.27246 BEAM (from 1316)"
+    },
+    "duplicates_not_minted": {
+      "INLINE dual-loop context/memory write-up": "content re-encounter of intake-1253; re-encounter note appended to intake-1253 notes 2026-09-07"
+    }
+  },
+  "persist": {
+    "method": "append-only cat>> via scratchpad/persist.py; max id re-derived at write time (1310 -> 1330); APPEND_BLOCK.yaml retained at scratchpad (sha256 830f663dbe7d, 393,269 B) for clobber recovery",
+    "validator": "bash scripts/validate/validate_intake.sh -> see report; 1326 entries",
+    "commit": "NOT committed: a peer /research-intake session holds uncommitted entries 1297-1310 in the same file; a whole-file commit would publish their in-progress hunks. Left for the operator / for Stage 4 with a hunk-selective private index."
+  },
+  "corrections_applied_to_own_drafts": [
+    "04 multi-brain: \"multi-brain\" IS firstmate vocabulary (poster alt text); fleet_watch.sh is NOT a pane-glyph scraper at HEAD (compute-idle + queue-aging) - the gap is stage two",
+    "02 spec-ptc blog: orchestrator already has a Kahn dependency-wave path (ORCHESTRATOR_TOOL_CHAIN_MODE=dep, off by default); sPTC delta = streaming-time launch + forked-namespace arg resolution",
+    "1327 StreamingLLM: disposition integrated -> knowledge_only (validator: integrated requires handoffs_updated, which Stage 1 leaves empty)"
+  ],
+  "stage2_selected": [
+    "intake-1315",
+    "intake-1328",
+    "intake-1318",
+    "intake-1325",
+    "intake-1320",
+    "intake-1323",
+    "intake-1330",
+    "intake-1316",
+    "intake-1317"
+  ],
+  "stage2_not_selected_declined": [
+    "intake-1311",
+    "intake-1312",
+    "intake-1313",
+    "intake-1319",
+    "intake-1321",
+    "intake-1322",
+    "intake-1324",
+    "intake-1326",
+    "intake-1327",
+    "intake-1329"
+  ],
+  "stage2_results": {
+    "intake-1315": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same - worth_investigating, relevance high, novelty medium. Nothing overturns the mechanism, the prior-art ruling, or the knobs in frozen v9; what changed is that the accuracy evidence is much weaker ",
+      "ledger_rows": 11,
+      "surfaced": 6,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1315.yaml"
+    },
+    "intake-1316": {
+      "verification": "dive-overturned",
+      "verdict_after_dive": "same: adopt_patterns - but the pattern LIST is the thing that changed, and it shrank from four to one-and-a-half. Of Stage-1's four separable patterns, exactly ONE survives verification intact (the ti",
+      "ledger_rows": 11,
+      "surfaced": 4,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1316.yaml"
+    },
+    "intake-1317": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same - adopt_patterns; novelty narrowed to medium-high in dive_corrections; relevance stays high (the proposer-side asymmetric-access question was resolved zero-compute in our own tree during this div",
+      "ledger_rows": 8,
+      "surfaced": 3,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1317.yaml"
+    },
+    "intake-1318": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same \u2014 adopt_patterns, but with the patterns re-ranked and the expected payoff cut hard. The q* split moves from \"the portable core\" to \"an arithmetic identity that buys zero latency and whose only va",
+      "ledger_rows": 10,
+      "surfaced": 4,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1318.yaml"
+    },
+    "intake-1320": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "changed: adopt_patterns because the two things that justified worth_investigating both resolved negatively - the headline cost result is not like-for-like (token column excludes the meta-model; no cos",
+      "ledger_rows": 7,
+      "surfaced": 3,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1320.yaml"
+    },
+    "intake-1323": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same: adopt_patterns. Nothing falsified the mechanism, the ablation or the held-out result, and pricing the loop from the release CONFIRMS rather than weakens the adopt_patterns / not-adopt_component ",
+      "ledger_rows": 12,
+      "surfaced": 4,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1323.yaml"
+    },
+    "intake-1325": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same: adopt_patterns - but the ADOPTABLE SET IS LARGER AND BETTER-SPECIFIED: the two things the house most wanted (tokenless exit-2 Stop rewake; turnless context append) are both confirmed available o",
+      "ledger_rows": 11,
+      "surfaced": 6,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1325.yaml"
+    },
+    "intake-1328": {
+      "verification": "dive-overturned",
+      "verdict_after_dive": "same: adopt_patterns - the portable artifact is still a measurement definition plus an offline replay procedure. Relevance stays high but its DIRECTION flips: the entry valued this paper largely as a ",
+      "ledger_rows": 8,
+      "surfaced": 4,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1328.yaml"
+    },
+    "intake-1330": {
+      "verification": "dive-verified",
+      "verdict_after_dive": "same \u2014 adopt_component (the benchmark; LIGHT explicitly not adopted). Relevance narrows from high to high-with-a-named-companion: BEAM is adopted as the CONVERSATIONAL memory instrument, but tulving_e",
+      "ledger_rows": 9,
+      "surfaced": 5,
+      "result_file": "/tmp/claude-1000/-workspace/f0c4b0c3-2192-41e9-98a5-ae47b9c12c27/scratchpad/dive_results/intake-1330.yaml"
+    }
+  },
+  "stage2_applied_at": "2026-09-07T14:52:10.986946Z",
+  "stage2_closeout": {
+    "status": "awaiting operator selection of Stage-2b sources",
+    "presented_at": "2026-09-07T14:52:10.986946Z"
+  },
+  "stage2b": {
+    "selected": [
+      "2608.18261",
+      "2605.27922",
+      "2602.07962",
+      "firstmate fm-branch-outcome.sh+backstop test @d4eb2280",
+      "2501.13121 (= existing intake-408, re-dive)",
+      "FreeToken issue #122 + ROCm forks",
+      "2508.07101",
+      "2608.28444",
+      "2606.25447",
+      "2605.27081",
+      "MemPalace issue #125",
+      "2607.06906",
+      "2607.04528",
+      "2604.18071"
+    ],
+    "declined": {
+      "intake-1318": [
+        "flashlib slot_cache",
+        "Zhu et al. 2026 (Codex 33 tok/s median)"
+      ],
+      "intake-1330": [
+        "mem0.ai/blog/ai-memory-benchmarks-in-2026"
+      ],
+      "intake-1328": [
+        "OpenReview 2XMAUP74ig reviews"
+      ]
+    },
+    "dispatched_at": "2026-09-07T15:58:56.004062Z",
+    "model": "opus",
+    "results": {
+      "belief-divergence": {
+        "entry": "intake-1341",
+        "existing": null,
+        "verification": "dive-overturned",
+        "bearing_effect": "independent",
+        "bearing": "intake-1320",
+        "verdict_after": "changed: adopt_patterns because both things that would have justified worth_investigating resolved negatively in the sam"
+      },
+      "cacheable-by-design": {
+        "entry": "intake-1336",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1328",
+        "verdict_after": "same: adopt_component. The dive strengthened rather than changed it. The component to adopt is a 4.6 KB MIT-licensed cal"
+      },
+      "firstmate-backstop": {
+        "entry": "intake-1331",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1325",
+        "verdict_after": "same: adopt_patterns - but BETTER-TARGETED AND SMALLER THAN THE ENTRY IMPLIES. The premise of the filed actionable is no"
+      },
+      "harness-bench": {
+        "entry": "intake-1332",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1320",
+        "verdict_after": "same: adopt_patterns. The dive did not move the verdict because it confirmed both halves of what set it - the method is "
+      },
+      "harness-design-decisions": {
+        "entry": "intake-1335",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1325",
+        "verdict_after": "same as authored: superseded (the entry was born from this dive, so there is no prior verdict to change). Named successo"
+      },
+      "harness-effect": {
+        "entry": "intake-1333",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1325",
+        "verdict_after": "same: adopt_patterns - but the adoptable set is sharply bounded and now precisely named. ADOPT: the accounting model (Eq"
+      },
+      "harness-x-posttraining": {
+        "entry": "intake-1339",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1323",
+        "verdict_after": "same: adopt_patterns. Nothing was falsified. The load-bearing claims (Obs. 3's post-hoc gap and Obs. 4's post-training b"
+      },
+      "less-is-more": {
+        "entry": "intake-1334",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1315",
+        "verdict_after": "same - adopt_patterns, relevance high, novelty medium, credibility 4. The venue check upgraded credibility from an assum"
+      },
+      "mempalace-125": {
+        "entry": "intake-1337",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1330",
+        "verdict_after": "same \u2014 adopt_patterns. Relevance stays high and sharpens: this is not a number we cite, it is a harness we copy the shap"
+      },
+      "remoe": {
+        "entry": "intake-1338",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1328",
+        "verdict_after": "same: adopt_patterns \u2014 and the dive sharpens which patterns and, more importantly, which results are refused. Relevance "
+      },
+      "swa-beats-linear": {
+        "entry": "intake-1340",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "corroborates",
+        "bearing": "intake-1315",
+        "verdict_after": "same - adopt_patterns, relevance high, novelty medium, credibility 3. The dive did not move the verdict but it moved wha"
+      },
+      "tulving-408": {
+        "entry": "intake-408",
+        "existing": "intake-408",
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1330",
+        "verdict_after": "changed: worth_investigating -> adopt_component (the benchmark and its already-shipped local adapter, as the PRIMARY M-1"
+      },
+      "loca-bench": {
+        "entry": "intake-1342",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1316",
+        "verdict_after": "same: adopt_patterns - the verdict was assigned after the verification, not before it. What the dive changes is not this"
+      },
+      "freetoken-issue-122": {
+        "entry": "intake-1343",
+        "existing": null,
+        "verification": "dive-verified",
+        "bearing_effect": "narrows",
+        "bearing": "intake-1318",
+        "verdict_after": "same - adopt_patterns, with the DECLINE on porting hardened rather than softened. The one genuinely favourable new fact "
+      }
+    },
+    "persisted_at": "2026-09-07T16:18:16.773094Z",
+    "pending": [],
+    "completed_at": "2026-09-07T16:23:01.615090Z"
+  },
+  "incidents": [
+    {
+      "when": "2026-09-07T16:23:01.615090Z",
+      "what": "intake-1316 tail truncated during the LOCA-bench Stage-2b in-place correction (cause not isolated; string surgery on a folded quoted scalar); reconstructed from entries/06 draft + dive_results/intake-1316.yaml; validator OK; all 33 touched entries audited for missing tail fields - none missing."
+    }
+  ],
+  "stage2c": {
+    "selected": [
+      "2605.23950 (bearing intake-1341; also cited by 1332/1335)",
+      "FreeToken issue #350 (bearing intake-1343)"
+    ],
+    "dispatched_at": "2026-09-07T16:32:25.221179Z",
+    "results": {
+      "harness-disclosure": {
+        "entry": "intake-1344",
+        "verification": "dive-verified",
+        "bearing": "intake-1341",
+        "effect": "corroborates"
+      },
+      "freetoken-issue-350": {
+        "entry": "intake-1345",
+        "verification": "dive-verified",
+        "bearing": "intake-1343",
+        "effect": "narrows"
+      }
+    },
+    "completed_at": "2026-09-07T19:09:17.148960Z"
+  },
+  "plan_file": "/home/node/.claude/plans/steady-kindling-summit.md",
+  "stage3_approved": "2026-09-07",
+  "expansion_queue": {
+    "recorded": "2026-09-07",
+    "note": "H-10: Stage-1 ingest only, no dives, no compute; drained by a future /research-intake wave",
+    "dive_surfaced_deferred": [
+      {
+        "ref": "huggingface.co/datasets/prefixsliding/evals @ e2f4e6d9ae68b579db31f7afe39138660013de55 (59 files)",
+        "kind": null,
+        "why": "It IS the numeric substrate behind Figures 1/6/7/9/11-15 and Table 1; every number recovered came from here.",
+        "bearing": "intake-1315.yaml"
+      },
+      {
+        "ref": "guangxuanx.com/blog/stacking-swa.html",
+        "kind": null,
+        "why": "The 1.5xW constant - settled: no measurements, analytic model, internally inconsistent.",
+        "bearing": "intake-1315.yaml"
+      },
+      {
+        "ref": "Muennighoff/vllm @ st29 22abbc6c and Muennighoff/flash-attention @ st29 bd2d1519",
+        "kind": null,
+        "why": "What the forks change - settled: SWF env-var switch + two-block-range restructure; kernel contributes nothing over ordinary SWA.",
+        "bearing": "intake-1315.yaml"
+      },
+      {
+        "ref": "Muennighoff/LiveCodeBench @ ps; trl-ps @ tool-effc; prime-rl @ s; open-r1-ps @ g; simpleverify (named in the README)",
+        "kind": null,
+        "why": "The eval/RL harnesses, including how budget forcing and the LCB single-sample protocol were implemented.",
+        "bearing": "intake-1315.yaml"
+      },
+      {
+        "ref": "github.com/niceIrene/QwenPaw AgentZero companion repo - the private repo holding the benchmark adapters, task definitions, verifiers and run artifacts (README.md:17-18, :56-57 \"currently private and will be open sourced very soon\"), pinned via QwenPaw @ 3db60c5975187fc7c549e16573567a7cd21fd51f",
+        "kind": null,
+        "why": "Everything this dive could not: whether max_input_length was normalised across the six Table-4 backbones (the 7.6x C spread), whether the Appendix C rubrics were developed on the eval sets, which sand",
+        "bearing": "intake-1316.yaml"
+      },
+      {
+        "ref": "QwenPaw scroll-research blog post - website/public/blog/qwenpaw-scroll-executable-memory.en.md:211-216 @ 3db60c5975187fc7c549e16573567a7cd21fd51f (dated 2026-08-05), reporting BEAM_10M 68.9% and LOCA-bench 57.3% for Qwen3.8-Max",
+        "kind": null,
+        "why": "Whether Scroll's headline numbers moved between the blog and the paper, and if so what changed - the blog's 68.9 on BEAM_10M would NOT clear Exabase M-1's 68.0 by any meaningful margin, so the \"+5.1\" ",
+        "bearing": "intake-1316.yaml"
+      },
+      {
+        "ref": "hindsight.vectorize.io/blog/2026/04/02/beam-sota (Hindsight 64.1 @ BEAM 10M, retrieved 2026-09-07T14:27:58Z) and exabase.io/blog/exabase-m1-achieves-state-of-the-art-on-beam-benchmark + prnewswire 302835412 (Exabase M-1 76.9@100K / 75.0@1M / 68.0@10M, 96.4 LongMemEval, on Gemini 3 Flash)",
+        "kind": null,
+        "why": "Already settled by this dive - both are genuine 10M-tier numbers, refuting the corpus-size hypothesis and confirming the +5.1 arithmetic. They also supplied the new backbone confound (Exabase delibera",
+        "bearing": "intake-1316.yaml"
+      },
+      {
+        "ref": "https://github.com/kenhuangus/wikiskill",
+        "kind": null,
+        "why": "Whether an independent implementation reproduces any Table 1/3 number and what optimizer model it needs.",
+        "bearing": "intake-1317.yaml"
+      },
+      {
+        "ref": "https://github.com/poweredbyGEN/wikiskill and https://github.com/ashutoshsinghpr7/wikiskill",
+        "kind": null,
+        "why": "Same as above.",
+        "bearing": "intake-1317.yaml"
+      },
+      {
+        "ref": "gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+        "kind": null,
+        "why": "The LLM-Wiki lineage - already settled.",
+        "bearing": "intake-1317.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/FreeToken issue #122 (open, 2026-08-24/27) + the fork github.com/PialGhosh2233/FreeToken-rocm-gfx1200, descending from github.com/Maxritz/FreeToken-rocm-test (issue #82)",
+        "kind": null,
+        "why": "The only independent same-machine, same-GGUF ROCm head-to-head in existence: FreeToken MoE decode 61 vs llama.cpp ROCm 83.5 / Vulkan 88.8; dense 93.6 vs 89.9 / 113.0. Also root-causes the RDNA4 offloa",
+        "bearing": "intake-1318.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/flashlib (PyPI flashlib 0.3.0, Apache-2.0, py3-none-any), specifically flashlib/kernels/slot_cache/{__init__.py,cost.py,triton/lru_ensure.py}",
+        "kind": null,
+        "why": "Whether a graph-capturable device-side LRU admission kernel is available to us as a standalone, reusable, Apache-2.0 Triton component independent of FreeToken entirely \u2014 441 lines, payload-agnostic (\"",
+        "bearing": "intake-1318.yaml"
+      },
+      {
+        "ref": "Zhu et al. 2026, cited by FreeToken for the 33 tok/s median production decode speed of Codex (paper \u00a71 and Figure 1 caption)",
+        "kind": null,
+        "why": "What a production coding-agent decode rate actually is, measured from real traces \u2014 the reference line FreeToken uses to argue an 8 GB laptop at 39.3 tok/s is interactively adequate. If sound, it is a",
+        "bearing": "intake-1318.yaml"
+      },
+      {
+        "ref": "FreeToken issue #141 (surfaced in search, not read in this dive)",
+        "kind": null,
+        "why": "Unknown \u2014 it appeared in a search for reproduction/criticism alongside #122 and may carry further independent benchmarks or contradicting reports.",
+        "bearing": "intake-1318.yaml"
+      },
+      {
+        "ref": "huggingface.co/JIT-Agent/jit-27b model card",
+        "kind": null,
+        "why": "Already settled here (Stage-I distillation disclosure).",
+        "bearing": "intake-1320.yaml"
+      },
+      {
+        "ref": "arXiv:2607.12227 v2 (revised 2026-08-27) - \"Rethinking the Evaluation of Harness Evolution for Agents\"",
+        "kind": null,
+        "why": "Whether the version already carried via intake-921 is the pre-revision one. The v2 revision postdates Harness-R1 and still does not cite it, which is itself evidence about how the field is reading thi",
+        "bearing": "intake-1323.yaml"
+      },
+      {
+        "ref": "github.com/redai-infra/Relax (upstream of the vendored code/Relax RL framework, Megatron-LM + SGLang backends, Ray orchestration, GRPO/DAPO/GenRM, fully-async rollout with staleness control)",
+        "kind": null,
+        "why": "Whether there is a reusable async-RL training substrate worth knowing about independently of Harness-R1.",
+        "bearing": "intake-1323.yaml"
+      },
+      {
+        "ref": "huggingface.co/ShaoShuai0605/Harness-R1 (two Qwen3.5-9B subfolders, Apache-2.0, trust_remote_code=True, 13 likes, downloads not tracked, minimal card, no limitations section)",
+        "kind": null,
+        "why": "Nothing further - the checkpoints are target-specific by the authors' own README warning and none of our targets is Qwen3.5-9B on WebShop/ALFWorld/DBBench.",
+        "bearing": "intake-1323.yaml"
+      },
+      {
+        "ref": "https://code.claude.com/docs/en/hooks (canonical since docs.claude.com/en/docs/claude-code/hooks began 301-redirecting)",
+        "kind": null,
+        "why": "IS the settlement for the headline question; the durable reference for any future harness-capability claim.",
+        "bearing": "intake-1325.yaml"
+      },
+      {
+        "ref": "firstmate bin/fm-branch-outcome.sh + tests/fm-wake-drain-outcome-backstop.test.sh @ d4eb2280",
+        "kind": null,
+        "why": "key_claims[1] - the lost-wake outcome backstop, the PORTABLE half the entry wants adopted and no pass has verified.",
+        "bearing": "intake-1325.yaml"
+      },
+      {
+        "ref": "thepromptshelf.dev / hidekazu-konishi.com hooks references",
+        "kind": null,
+        "why": "Third-party corroboration that asyncRewake is a known field.",
+        "bearing": "intake-1325.yaml"
+      },
+      {
+        "ref": "sudoall.com firstmate write-up",
+        "kind": null,
+        "why": "Nothing evidential.",
+        "bearing": "intake-1325.yaml"
+      },
+      {
+        "ref": "arXiv:2607.16427 - MCF-MOE",
+        "kind": null,
+        "why": "Whether routing inconsistency is a router-INPUT problem rather than architectural.",
+        "bearing": "intake-1328.yaml"
+      },
+      {
+        "ref": "OpenReview forum 2XMAUP74ig (ICLR 2026 reviews) via an authenticated session or mirror",
+        "kind": null,
+        "why": "The largest remaining gap: reviewer weaknesses unread after five refused routes.",
+        "bearing": "intake-1328.yaml"
+      },
+      {
+        "ref": "https://mem0.ai/blog/ai-memory-benchmarks-in-2026 (AI Memory Benchmarks 2026: LoCoMo, LongMemEval & BEAM)",
+        "kind": null,
+        "why": "Whether a fourth party states a BEAM interaction protocol or reports which judge/harness they used for the 48.6 figure Scroll attributes to Mem0 \u2014 the last open route to a published protocol statement",
+        "bearing": "intake-1330.yaml"
+      },
+      {
+        "ref": "https://agentmemorybenchmark.ai/ (Agent Memory Benchmark, operated by Hindsight/Vectorize per its analytics endpoint)",
+        "kind": null,
+        "why": "RESOLVED BY THIS DIVE, listing only to close the entry's open item \u2014 the JS bundle contains zero occurrences of BEAM, so there is no BEAM leaderboard to render-fetch, and the site is a competitor's ow",
+        "bearing": "intake-1330.yaml"
+      },
+      {
+        "ref": "https://mnemoverse.com/docs/technology/benchmarks/beam",
+        "kind": null,
+        "why": "A fifth-party restatement of BEAM; might carry another protocol claim.",
+        "bearing": "intake-1330.yaml"
+      },
+      {
+        "ref": "arXiv:2603.19328 - Sah et al., The verifier tax: horizon dependent safety success tradeoffs in tool using LLM agents",
+        "kind": null,
+        "why": "The exact thing 2607.04528 asserts in its Abstract and never measures: whether risk gating / selective verification preserve terminal success, and how that tradeoff moves with horizon. Cited by 2607.0",
+        "bearing": "belief-divergence.yaml"
+      },
+      {
+        "ref": "arXiv:2608.23953 - The Empire, Long Divided, Must Unite: Architectural Convergence in Three LLM Agent Harnesses",
+        "kind": null,
+        "why": "Whether HS-6's convergence finding generalises. HS-6 currently rests on our own observation of two sibling pi-ai forks independently growing the same top-level body-key primitive; this is an independe",
+        "bearing": "belief-divergence.yaml"
+      },
+      {
+        "ref": "arXiv:2606.11211 - Hiremath & Hiremath, Calibration drift under reasoning: how chain-of-thought budgets induce overconfidence in LLMs",
+        "kind": null,
+        "why": "The confound 2607.04528 never controls: whether horizon-dependent numeric drift (D_num 0.044 -> 0.136) is a harness effect at all, or ordinary calibration drift under a longer reasoning budget. Also b",
+        "bearing": "belief-divergence.yaml"
+      },
+      {
+        "ref": "arXiv:2607.05458 - Learning to Control LLM Agent Harnesses with Offline Reinforcement Learning",
+        "kind": null,
+        "why": "Whether a harness can be treated as a controllable object with a learned offline policy rather than a discrete selection \u2014 the control-theoretic complement to HS-4's one-shot choice.",
+        "bearing": "belief-divergence.yaml"
+      },
+      {
+        "ref": "github.com/Hik289/Harness-induce-bias @ 902d17d4f83247b62d9128ab4d171e11f9864a39",
+        "kind": null,
+        "why": "Already settled here \u2014 it is the source of every finding in this dive.",
+        "bearing": "belief-divergence.yaml"
+      },
+      {
+        "ref": "arXiv:2412.00099 - Mixture of Cache-Conditional Experts for Efficient Mobile Device Inference (Skliar et al., Qualcomm AI Research, TMLR 2025)",
+        "kind": null,
+        "why": "Whether TRAINING-FREE cache-aware routing - the only lever class available on a serving-only stack - actually buys hit rate at acceptable quality. Cited here as cutting mobile cache misses >50% at 0.1",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "Oracle-MoE - Locality-preserving Routing in the Oracle Space for Memory-constrained LLM Inference (ICML 2025, PMLR v267, proceedings.mlr.press/v267/zhou25b.html)",
+        "kind": null,
+        "why": "Whether this paper's negative is a small-scale artifact. Cited here as training for locality across a 200M-2B ladder \"without task-performance loss\" - i.e. clearing at 2B the bar that failed at 137M/3",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "arXiv:2607.08780 - Sticky Routing / StickyMoE (Ali Kayyam, BrainChip Inc., 2026-06-12)",
+        "kind": null,
+        "why": "The one open discrepancy this dive could not close from primary sources: 2608.18261 describes StickyMoE as quality-IMPROVING (-4.1% PPL at 22M) while StickyMoE's own abstract headlines \"less than 4% p",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "arXiv:2607.00466 - ELDR: Expert-Locality-Aware Decode Routing for PD-Disaggregated MoE Serving (Choi, Cho, Xiong, Yang, Kwon, Cheng)",
+        "kind": null,
+        "why": "Whether routing locality can be exploited at SERVING time rather than training time, which is the only time we control. Cited here alongside cache-conditional routing as the serving-side member of thi",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "github.com/JustVugg/colibri (reached via routing-lab/05_export_coli_usage.py @ 03366ef1)",
+        "kind": null,
+        "why": "Whether an independent serving engine already consumes exactly the trace format this tap produces. The script's README claims a verified line-for-line mapping to Colibri's PIN=<file> cache-priming for",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "arXiv:2602.11192 - MELINOE (Raje, Nayak, Joshi)",
+        "kind": null,
+        "why": "Post-hoc router fine-tuning for reuse, reported here as up to 3x fewer transfers.",
+        "bearing": "cacheable-by-design.yaml"
+      },
+      {
+        "ref": "IETF draft-abak-agent-control-delivery-evidence-00, \"Evidence Requirements for Agent Control Delivery and Outcome Reconciliation\" (Abak, 2026-08-30) - 0 index hits",
+        "kind": null,
+        "why": "Whether a formal vocabulary already exists for the state machine we would be building - it defines seven per-instruction dispositions (CONFIRMED / EXPLICIT_FAILURE / UNCONFIRMED / SUBSTITUTION / CONFL",
+        "bearing": "dive-intake-1331.yaml"
+      },
+      {
+        "ref": "firstmate .pi/extensions/fm-branch-supervision.ts + tests/fm-pi-branch-extension.test.sh @ d4eb2280",
+        "kind": null,
+        "why": "The RE-PRESENTATION BUDGET - \"the first two presentations of a given sequence set open a turn of their own; after that the request rides the captain's next prompt so an ignored request cannot become a",
+        "bearing": "dive-intake-1331.yaml"
+      },
+      {
+        "ref": "firstmate docs/watcher-continuity.md @ d4eb2280",
+        "kind": null,
+        "why": "The per-actor acknowledgement contract that keeps queue-row consumption independent of episode retirement - the invariant that makes the backstop's queue-independence sound rather than accidental.",
+        "bearing": "dive-intake-1331.yaml"
+      },
+      {
+        "ref": "deepwiki.com/kunchenguid/firstmate",
+        "kind": null,
+        "why": "Nothing evidential.",
+        "bearing": "dive-intake-1331.yaml"
+      },
+      {
+        "ref": "arXiv:2606.12344 - Claw-SWE-Bench: A Benchmark for Evaluating OpenClaw-style Agent Harnesses on Coding Tasks (v1, 10 Jun 2026)",
+        "kind": null,
+        "why": "The question this source could NOT answer. It publishes what Harness-Bench withholds: a per-(harness x backbone) table (Table 3, 5 claws x 2 models) including an OPEN Qwen backbone - OpenClaw 73.4% / ",
+        "bearing": "dive-intake-1332.yaml"
+      },
+      {
+        "ref": "https://github.com/reacher-z/HarnessBench",
+        "kind": null,
+        "why": "Whether a third harness-comparison instrument covers any HS-4 candidate the other two miss (notably OpenCode), and disambiguation of a name that collides with this entry's companion repo.",
+        "bearing": "dive-intake-1332.yaml"
+      },
+      {
+        "ref": "arXiv:2604.08523 (ClawBench) and arXiv:2604.23781 (ClawMark)",
+        "kind": null,
+        "why": "The two axes this source explicitly declines - live production websites (ClawBench) and multi-turn/multi-day drifting-state coworker workflows (ClawMark) - both of which bear on whether a sandboxed of",
+        "bearing": "dive-intake-1332.yaml"
+      },
+      {
+        "ref": "github.com/Qihoo360/harness-bench @ 1025086a446653702b80cfb48babbeec35db6b2c",
+        "kind": null,
+        "why": "Already settled here - the adapter protocol, the usage proxy, the timeout-precedence contradiction, the 106/106/106 artifact verification, the missing model-selection configs and the missing LICENSE.",
+        "bearing": "dive-intake-1332.yaml"
+      },
+      {
+        "ref": "arXiv:2605.26112 \"From model scaling to system scaling: Scaling the harness in agentic AI\" (ref [27]; 0 index entries)",
+        "kind": null,
+        "why": "Whether the harness-as-first-class-object framing that 2607.06906, intake-1320 and intake-1323 all assume has a primary statement worth citing directly, and whether it already contains a token/system-",
+        "bearing": "dive-intake-1333.yaml"
+      },
+      {
+        "ref": "https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus (ref [30]; 0 index hits)",
+        "kind": null,
+        "why": "The provenance of the widely-cited ~100:1 input:output ratio and of practitioner cache-hit discipline. Our own journals measure 350.5:1, so the circulating number is workload-specific; pinning it at o",
+        "bearing": "dive-intake-1333.yaml"
+      },
+      {
+        "ref": "digitalapplied.com / VentureBeat / DevX / Welcome.AI / Cryptopond / PhantomByte coverage of this paper",
+        "kind": null,
+        "why": "Nothing evidential. The most critical of them supplies a usable framing sentence (\"self-reported by the vendor's own research team ... a preprint, not a proof\") and no data.",
+        "bearing": "dive-intake-1333.yaml"
+      },
+      {
+        "ref": "Writer Appendix D release artifacts (per-turn traces for both arms and all six models)",
+        "kind": null,
+        "why": "Would let an outside party compute the orchestration/task decomposition the paper omits and settle the helper-model / sub-agent accounting question directly.",
+        "bearing": "dive-intake-1333.yaml"
+      },
+      {
+        "ref": "arXiv 2410.05076 - TidalDecode: Fast and Accurate LLM Decoding with Position Persistent Sparse Attention",
+        "kind": null,
+        "why": "The base method LessIsMore modifies - the two-full-layers + one-re-selection-layer structure, the position-persistent index reuse, and the layer-selection procedure. Also the strongest published claim",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "arXiv 2406.10774 - Quest: Query-Aware Sparsity for Efficient Long-Context LLM Inference",
+        "kind": null,
+        "why": "The page-level query-aware baseline that fails hardest on reasoning here (18.2% AIME-24 at 2K budget, generation inflated 103% to 30.0K tokens). Its block-granular design is the closest published anal",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "arXiv 2506.08889 - SeerAttention-R: Sparse Attention Adaptation for Long Reasoning (ICLR 2026 poster)",
+        "kind": null,
+        "why": "The training-required reasoning-focused arm of the comparison, and the independent origin of the generation-length-inflation finding this paper corroborates. Claims near-lossless AIME at a 4K budget w",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "arXiv 2603.12201 - IndexCache: Accelerating Sparse Attention via Cross-Layer Index Reuse",
+        "kind": null,
+        "why": "Attacks the exact mechanism LessIsMore's efficiency rests on - reuse of one token index set across layers - and is recent enough to have evaluated it. Would be the closest available independent check ",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "github.com/DerrickYLJ/LessIsMore @ fa3d23a45fde680ac220394e7c569f5e98ca144e",
+        "kind": null,
+        "why": "It settles the budget decomposition the paper never states (4 sink + 3072 selected + 1020 recent at K=4096, r=0.25) and it settles that no StreamingLLM baseline was released.",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "icml.cc/virtual/2026/poster/61079",
+        "kind": null,
+        "why": "Venue - settled: ICML 2026 Poster, exact v2 title and author list, independently listed.",
+        "bearing": "dive-intake-1334.yaml"
+      },
+      {
+        "ref": "arXiv:2609.00006 \"Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents \u2014 A Source-Code Study of Eleven Systems\" (Barbaste, Darrigol, Vu, Wiltberger); 0 index hits as an entry, named only inside intake-1320's expansion list",
+        "kind": null,
+        "why": "Everything this source could not: whether hook-based wake, turnless context injection, steering and lifecycle events are recognised design points (they are \u2014 42/33/5/6 mentions, with verbatim event vo",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "Rombaut, \"Inside the Scaffold\" \u2014 source-code taxonomy of 13 open-source coding-agent scaffolds, 12 dimensions in 3 layers, at PINNED COMMITS (title from 2609.00006's related-work; canonical id not yet located); 0 index hits",
+        "kind": null,
+        "why": "The third independent taxonomy of the same object, and the only one that pins commits \u2014 the right instrument for asking whether \"communication boundary\" between agent components is coded anywhere in t",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "Preprints 202604.0428 \"Agent Harness for LLM Agents: A Survey\" \u2014 github.com/Gloriaameng/Awesome-Agent-Harness (110+ papers, 23 systems), dataset at huggingface.co/datasets/GloriaaaM/LLM-Agent-Harness-Survey; named inside intake-607 but never ingested",
+        "kind": null,
+        "why": "Whether the released coded corpus contains any coordination/wake/injection dimension, and it supplies the reusable dataset this paper withholds.",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "arXiv:2604.11378 \"From Agent Loops to Structured Graphs: A Scheduler-Theoretic Framework for LLM Agent Execution\"; 0 index hits",
+        "kind": null,
+        "why": "The probable target of this paper's one broken citation [wei2026agentloops]; separately, a scheduler-theoretic framing of the agent loop is the closest published vocabulary to the heterogeneous-slot-f",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "arXiv:2606.20631 \"Harnessing Agent Skills: Architectural Patterns and a Reference Architecture for Skill-Mediated LLM Agents\"; 0 index hits",
+        "kind": null,
+        "why": "Whether the skills layer \u2014 which 2609.00006 calls a converging capability-bundle standard and which this repo uses heavily (.claude/skills/) \u2014 has a published reference architecture worth conforming t",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "futureagi.com/blog/agent-harness-architecture (\"Agent Harness Architecture: The 70% of Performance That Lives Outside the Model\") and blakecrosley.com/guides/agent-architecture",
+        "kind": null,
+        "why": "Nothing evidential.",
+        "bearing": "dive-intake-1335.yaml"
+      },
+      {
+        "ref": "https://github.com/AxDSan/mnemosyne/blob/main/docs/beam-benchmark.md (Mnemosyne BEAM Benchmark v3.0.0, 2026-05-18)",
+        "kind": null,
+        "why": "Whether a THIRD fold and a FOURTH judge produce yet another incomparable BEAM 100K axis, and how far the abstention confound goes at the top of the range (it reports ABS 100.0%). It also republishes a",
+        "bearing": "dive-intake-1337.yaml"
+      },
+      {
+        "ref": "https://github.com/rohithzr/karta (the author's own Rust memory system, and the standing reason he benchmarks others)",
+        "kind": null,
+        "why": "Whether the same harness has since been pointed at Karta itself \u2014 which would be the same fold and the same judge with the competitive interest reversed, and therefore the cleanest available test of w",
+        "bearing": "dive-intake-1337.yaml"
+      },
+      {
+        "ref": "arXiv 2605.25869 (Mitigating Provenance-Role Collapse in Long-Term Agents via Typed Memory Representation), arXiv 2607.03726 (SelfMem: Self-Optimizing Memory for AI Agents), arXiv 2605.30771 (Eywa: Provenance-Grounded Long-Term Memory for AI Agents)",
+        "kind": null,
+        "why": "Three 2026 preprints that surfaced alongside BEAM in the same search and appear to report BEAM numbers. Each is a chance to run the two-sided aggregation-identity check on a peer-reviewed-track artifa",
+        "bearing": "dive-intake-1337.yaml"
+      },
+      {
+        "ref": "https://vectorize.io/articles/mempalace-benchmarks (2026-04-12, unattributed, Vectorize)",
+        "kind": null,
+        "why": "Nothing this dive needs \u2014 checked and closed. It does NOT mention issue #125, rohithzr or Karta; its only BEAM content is a link to Vectorize's own hindsight.vectorize.io/blog/2026/04/02/beam-sota pos",
+        "bearing": "dive-intake-1337.yaml"
+      },
+      {
+        "ref": "https://github.com/MemPalace/mempalace/issues/875 (\"The MemPalace README.md and official website (mempalaceofficial.com) still contain misrepresentations and false benchmark claims\")",
+        "kind": null,
+        "why": "The later state of the MemPalace benchmark-claims dispute, and whether the corrections bensig promised in this thread were actually made. Bears on intake-326's credibility_score and integration_dispos",
+        "bearing": "dive-intake-1337.yaml"
+      },
+      {
+        "ref": "Skliar et al. 2025, \"Mixture of Cache-Conditional Experts for Efficient Mobile Device Inference\", TMLR, ISSN 2835-8856",
+        "kind": null,
+        "why": "Whether the ONLY training-free member of this family is worth anything here. It biases router scores toward cache-resident experts at decode time \u2014 no fine-tuning, no checkpoint change \u2014 reported at >",
+        "bearing": "dive-intake-1338.yaml"
+      },
+      {
+        "ref": "arXiv:2607.08780 \u2014 \"Sticky Routing: Training MoE Models for Memory-Efficient Inference\" (StickyMoE, Kayyam 2026)",
+        "kind": null,
+        "why": "The third vertex: it introduces the adjacent-token routing-consistency loss ReMoE uses and reports it near-free (up to -4.1% PPL) on sub-25M single-domain models, and it is the explicit and only targe",
+        "bearing": "dive-intake-1338.yaml"
+      },
+      {
+        "ref": "Zhou et al. 2025, \"Oracle-MoE: Locality-Preserving Routing in the Oracle Space for Memory-Constrained LLM Inference\", ICML 2025 (PMLR v267, proceedings.mlr.press/v267/zhou25b.html)",
+        "kind": null,
+        "why": "The strongest standing claim that the locality tax is avoidable at non-trivial scale \u2014 2608.18261 characterises it as reporting \"gains across a 200M-2B size ladder without task-performance loss\", whic",
+        "bearing": "dive-intake-1338.yaml"
+      },
+      {
+        "ref": "arXiv:2602.11192 \u2014 MELINOE (Raje et al., 2026)",
+        "kind": null,
+        "why": "The other post-hoc router adaptation, at a LARGER claimed effect than ReMoE (\"up to 3x fewer transfers\" per 2608.18261's related work) \u2014 whether a stronger post-hoc intervention exists and what it pay",
+        "bearing": "dive-intake-1338.yaml"
+      },
+      {
+        "ref": "github.com/vllm-project/vllm/pull/37190 \u2014 \"[MoE][Offload] Run MoE models exceeding VRAM via expert CPU offloading with GPU cache (--moe-expert-cache-size)\"",
+        "kind": null,
+        "why": "The implementation in which the paper's only clean expert-cache measurement was taken \u2014 its eviction policy, its cache granularity, and whether the +8.4% is attributable to the design or to the operat",
+        "bearing": "dive-intake-1338.yaml"
+      },
+      {
+        "ref": "arXiv:2607.22688 - \"Co-Harness: Co-Evolving Harnesses and Model Weights for LLM Agents\" (Zhengyu Chen, Teng Xiao, Huaisheng Zhu, Yige Yuan, Luan Zhang, Jingang Wang; v1 17 Jul 2026, cs.AI/cs.CL)",
+        "kind": null,
+        "why": "The remaining half of the dispatch question. This paper settles the ORDERING (harness before weights) and intake-1323 settles the EDITING case (learned editor over a frozen target); Co-Harness is the ",
+        "bearing": "dive-intake-1339.yaml"
+      },
+      {
+        "ref": "arXiv:2605.08741 - \"Training with Harnesses: On-Policy Harness Self-Distillation for Complex Reasoning\" (Zhengyang Zhao, Lu Ma, Wentao Zhang; v1 9 May 2026, cs.CL; code and training data released)",
+        "kind": null,
+        "why": "Whether the harness-binding effect is a tool-agent artifact or a general property of post-training. It PREDATES 2606.25447 and reports the mirror finding in a different domain and by a different mecha",
+        "bearing": "dive-intake-1339.yaml"
+      },
+      {
+        "ref": "arXiv:2603.05910 - Li et al. 2026, \"The world won't stay still: programmable evolution for agent benchmarks\" (ProEvolve)",
+        "kind": null,
+        "why": "Whether there is a reusable, principled generator for the tool-environment shifts this paper hand-rolls (rename, then consolidate). Cited in Appendix A.3 as representing \"data, tools, and schema of an",
+        "bearing": "dive-intake-1339.yaml"
+      },
+      {
+        "ref": "blog.pebblous.ai/report/agent-harness-policy-learning-2026-08/en/ - \"Learning the Teacher's Harness Habits Cost 8.2 Points in Unseen Rooms\" (Pebblous, promoting EvoHarness-RL)",
+        "kind": null,
+        "why": "Nothing. It cites 2606.25447 in its references and paraphrases Obs. 4 as an \"independently confirmed direction\" for its own system; it runs no experiment on this paper.",
+        "bearing": "dive-intake-1339.yaml"
+      },
+      {
+        "ref": "github.com/Gloriaameng/Awesome-Agent-Harness (self-described as \"110+ papers, 23 systems analyzed\") and preprints.org \"Harness Engineering for LLM Agents: A Survey\"",
+        "kind": null,
+        "why": "Possibly a great deal of future intake effort - the index has assembled 11+ harness entries one paper at a time, and a taxonomy could dedup whole waves.",
+        "bearing": "dive-intake-1339.yaml"
+      },
+      {
+        "ref": "arXiv 2512.10411 - SWAA: Sliding Window Attention Adaptation for Efficient and Quality Preserving Long Context Processing (Yu et al. 2025)",
+        "kind": null,
+        "why": "Whether post-training repairs the long-context collapse both this paper (S-NIAH 9-23% of full attention at 4K) and intake-1315 (LiveCodeBench at W=4096) exhibit - i.e. whether the bounded-window floor",
+        "bearing": "dive-intake-1340.yaml"
+      },
+      {
+        "ref": "Cabannes, Beck, Lomeli, Szilvasy, Douze, Copet, Mazare, Synnaeve, Jegou - \"Short window attention enables long-term memorization\", ICLR 2026, pp. 79759-79774",
+        "kind": null,
+        "why": "The mechanistic warrant this paper leans on in Sections 1 and 2.2 - that SWA IMPROVES long-term memorization and length extrapolation, which is the counterintuitive claim underneath the whole SWA-over",
+        "bearing": "dive-intake-1340.yaml"
+      },
+      {
+        "ref": "arXiv 2505.03005 - RADLADS (Goldstein et al. 2025)",
+        "kind": null,
+        "why": "Where the QRWKV6 92.4 (2.7) MMLU-recovery figure actually comes from - it is the one Table-1 row that reproduces from no subset of this paper's own Table 2, and it is the number the headline is compar",
+        "bearing": "dive-intake-1340.yaml"
+      },
+      {
+        "ref": "arXiv 2502.04507 - Fast Video Generation with Sliding Tile Attention (Zhang et al. 2025b)",
+        "kind": null,
+        "why": "The paper's only cross-modality corroboration that training-free SWA is a strong baseline (97% VBench on HunyuanVideo at 3.53x).",
+        "bearing": "dive-intake-1340.yaml"
+      },
+      {
+        "ref": "kenashe.ai/blog/2026-08-31-sliding-window-attention-vs-linear-attention-what-the-baseline-test-actually/",
+        "kind": null,
+        "why": "Whether independent critique of the paper exists.",
+        "bearing": "dive-intake-1340.yaml"
+      },
+      {
+        "ref": "arXiv 2510.25726 - \"The Tool Decathlon: Benchmarking Language Agents for Diverse, Realistic, and Long-Horizon Task Execution\" (Toolathlon), Li, Zhao, Zhao, Zeng, Wu, Wang, Ge, Cao, Huang, Liu et al., 2025",
+        "kind": null,
+        "why": "All 15 of LOCA's seed tasks, its mock-server design and its verifier style are inherited from Toolathlon, and two of LOCA's three authors are on its author list - so every task-quality property this d",
+        "bearing": "dive-intake-1342.yaml"
+      },
+      {
+        "ref": "arXiv 2510.01051 - \"GEM: A Gym for Agentic LLMs\", Liu, Sims, Duan, Chen, Yu, Zhou, Xu, Xiong, Liu, Tan et al., 2025",
+        "kind": null,
+        "why": "The framework LOCA is built on (\u00a72.3: \"Built on GEM (Liu et al., 2025), LOCA-bench is implemented in a highly compatible and extensible manner. This design decouples the environment, models, and agent",
+        "bearing": "dive-intake-1342.yaml"
+      },
+      {
+        "ref": "github.com/hkust-nlp/LOCA-bench branch loca-sandbox @ 2b4a1c77bd65d83750372ee079a2e5c5d13cb27c - server/client refactor with Docker/Podman isolation, --execution-mode sandbox as default",
+        "kind": null,
+        "why": "Whether the ground-truth-adjacency hole is closed anywhere. It is not: at that SHA the environments still place agent_workspace and groundtruth_workspace as siblings under task_dir (canvas_arrange_exa",
+        "bearing": "dive-intake-1342.yaml"
+      },
+      {
+        "ref": "https://www.minimax.io/blog/minimax-m3 (MiniMax M3 launch blog, LOCA-Bench (256k) row: M3 49.3 / M2.7 0 / Claude Opus 4.7 57) and https://llm-stats.com/benchmarks/loca-bench-256k (\"0 verified results and 1 self-reported results\")",
+        "kind": null,
+        "why": "Already settled by this dive - they are jointly the provenance of the one number behind intake-1316's \"+37.4\", and they establish it as vendor self-reported, unverified, and not the best value even on",
+        "bearing": "dive-intake-1342.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/FreeToken pull/316 (ErikBPF, open, 2026-09-01) plus its PoC github.com/ErikBPF/FreeToken/pull/2 and the artifact benchmarks/results/qwen36-graph-stream-overlap-gfx1201.json",
+        "kind": null,
+        "why": "Exactly which part of the offload expert-copy path is HIP-graph-capture-unsafe and what the minimal fix costs. It replaces the fused multi-bank copy (which reads pinned-host source addresses indirectl",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "github.com/Headmaster218/infr (surfaced in issue #122's first comment, 2026-08-24)",
+        "kind": null,
+        "why": "Whether a VULKAN-first MoE runtime with a three-tier SSD/RAM/VRAM expert hierarchy is a live alternative to the pinned-full-pool design, and whether its self-reported figures hold: RX 7900 XTX 24 GB /",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "github.com/UnsignedChad/windows-freetoken-mtp - \"MTP (nextn) self-speculative decode over FreeToken's expert-offload backend, measured on an RTX 3090 (alpha=0.894, ~1.8x)\"",
+        "kind": null,
+        "why": "What acceptance rate and speedup an MTP head achieves when the target's experts are OFFLOADED rather than resident - i.e. whether speculative decoding and expert offload compose or fight. Every produc",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "zenn.dev/holy_fox/articles/53b82eed45f956 - \"Trying FreeToken on the RTX 5090: Not Needed for 35B, but a Different Story for 120B-Class MoEs\"",
+        "kind": null,
+        "why": "The regime boundary the paper never draws and this source implies: whether FreeToken's advantage exists only when the model does NOT fit in VRAM. Both AMD comparisons here show llama.cpp winning when ",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "github.com/parsapp/rx9060xt-llm-benchmarks (Linux llama.cpp Vulkan-vs-ROCm on the identical RX 9060 XT, build c4ae9a88f8 (9957), ROCm 7.2.4, RADV 26.1.4)",
+        "kind": null,
+        "why": "Already settled inline: it narrows this source's Vulkan-over-ROCm tg gap from +25.7% to +1.6%/+8.8% with error bars, implicating the Windows ROCm stack rather than ROCm on gfx1200.",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "github.com/samuelishida/FreeToken tree feat/amd-rocm-gfx1100-support, and github.com/rba/FreeToken-ROCm",
+        "kind": null,
+        "why": "Unknown - both surfaced in search and neither was read. They would at most further evidence how exclusively the community ROCm effort targets RDNA.",
+        "bearing": "dive-intake-1343.yaml"
+      },
+      {
+        "ref": "arXiv:2604.00594 - \"Agent psychometrics: task-level performance prediction in agentic coding benchmarks\", Ge, Kryvosheieva, Fried, Girit, Hariharan (2026)",
+        "kind": null,
+        "why": "Whether the harness-over-model ordering survives a NON-CONSTRUCTED design. This is the one source the paper itself nominates as able to falsify its thesis: an item-response-theory decomposition of age",
+        "bearing": "dive-intake-1344.yaml"
+      },
+      {
+        "ref": "arXiv:2510.11977 - \"Holistic Agent Leaderboard: the missing infrastructure for AI agent evaluation\" (HAL), Kapoor, Stroebl, Kirgis, Nadgir, Siegel, Wei, Xue, Chen, Chen, Utpala et al. (2025)",
+        "kind": null,
+        "why": "Two things we currently carry secondhand: the largest cross-scaffold swing in the literature (\"nearly 48 percentage points\" for o4-mini on SWE-bench Verified Mini, plus 34 pp for Claude Sonnet 4.5 and",
+        "bearing": "dive-intake-1344.yaml"
+      },
+      {
+        "ref": "arXiv:2601.14242 - \"APEX-agents\", Vidgen, Mann, Fennelly, Stanly, Rothman, Burstein, Benchek, Ostrofsky, Ravichandran, Sur et al. (2026)",
+        "kind": null,
+        "why": "Whether the harness effect is a SWE-bench artifact. 480 real professional tasks across banking, consulting and law, with zero-score rates of 40-62% ACROSS CONFIGURATIONS USING THE SAME UNDERLYING MODE",
+        "bearing": "dive-intake-1344.yaml"
+      },
+      {
+        "ref": "arXiv:2606.12344 - Claw-SWE-Bench",
+        "kind": null,
+        "why": "Harness-ordering portability - already the decisive adversarial finding above.",
+        "bearing": "dive-intake-1344.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/FreeToken pull/378 - \"fix(rocm): make CPU/Hybrid MoE graph replay safe\" (zihaomu, created 2026-09-04T07:32:51Z, DRAFT, open, unmerged, mergeable:false, 0 comments, 28 files, +1659/-158, head e67f08eacbfa, stacked on unmerged #132)",
+        "kind": null,
+        "why": "Already settled inline, and it is the most decision-relevant artifact found: it accepts the #350 diagnosis, fixes it by failing closed (raise at capture, engine disables CUDA Graph), and gates its nat",
+        "bearing": "dive-intake-1345.yaml"
+      },
+      {
+        "ref": "github.com/ROCm/hip issue #3887 - \"HIP Graph replay reads stale device-pointer values when graph has ~200+ kernel nodes (gfx1201 / RDNA 4)\" (maeddesg, closed 2026-05-04, retracted by its own author)",
+        "kind": null,
+        "why": "Already settled inline: it is the precedent showing that \"captured graph replays capture-time values on gfx1201\" has previously turned out to be a user-side capture-setup bug, with an AMD engineer una",
+        "bearing": "dive-intake-1345.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/FreeToken pull/132 (with siblings #133 and #134, all zihaomu, all open since 2026-08-24)",
+        "kind": null,
+        "why": "What a ROCm port of a CUDA-coupled Python serving engine actually costs at the build/compat layer, and exactly which AMD targets the community effort covers. hip_compat.h (162 lines) maps the CUDA run",
+        "bearing": "dive-intake-1345.yaml"
+      },
+      {
+        "ref": "github.com/FlashML-org/FreeToken pull/217 (samuelishida, \"feat(rocm): AMD ROCm runtime for RDNA3/4 with native Qwen3.5-MoE GGUF decode parity\", open, 3 comments) and pull/400 (\"Help/pr 132\", 2026-09-06)",
+        "kind": null,
+        "why": "The gfx1100 kernel-suite failure list that #350 cross-references for its 16 dsv4_sparse_attn Triton lowering failures - i.e. whether that bucket is architecture-independent (a Triton lowering gap acro",
+        "bearing": "dive-intake-1345.yaml"
+      },
+      {
+        "ref": "https://arxiv.org/abs/2603.12572 \u2014 \"LMEB: Long-horizon Memory Embedding Benchmark\"",
+        "kind": null,
+        "why": "The only independent third-party use of epbench found in this pass, and it states it uses \"three datasets from epbench... default short Claude, sci-fi short Claude and news short Claude\" \u2014 i.e. only t",
+        "bearing": "dive-intake-408.yaml"
+      },
+      {
+        "ref": "https://arxiv.org/abs/2511.07587 \u2014 \"Beyond Fact Retrieval: Episodic Memory for RAG with Generative Semantic Workspaces\"",
+        "kind": null,
+        "why": "Whether a published episodic-memory-for-RAG architecture evaluates on epbench or on conversational benchmarks, and whether its workspace construction is a candidate memory-ON arm for M-12 alongside ou",
+        "bearing": "dive-intake-408.yaml"
+      },
+      {
+        "ref": "https://arxiv.org/abs/2602.06051 \u2014 \"CAST: Character-and-Scene Episodic Memory for Agents\"",
+        "kind": null,
+        "why": "Whether entity/scene-structured episodic memory (which is precisely Tulving's (time, space, entity, content) decomposition applied as a STORE rather than as a probe) outperforms flat retrieval \u2014 the d",
+        "bearing": "dive-intake-408.yaml"
+      },
+      {
+        "ref": "https://arxiv.org/abs/2601.21714 \u2014 \"E-mem: Multi-agent based Episodic Context Reconstruction for LLM Agent Memory\"",
+        "kind": null,
+        "why": "A third architecture on the same axis; would show whether multi-agent context reconstruction is priced anywhere against single-pass retrieval. 0 index hits.",
+        "bearing": "dive-intake-408.yaml"
+      }
+    ],
+    "kv_sources_A_P_19": [
+      "arXiv 2410.05076 TidalDecode",
+      "arXiv 2406.10774 Quest",
+      "arXiv 2506.08889 SeerAttention-r",
+      "arXiv 2512.10411 SWAA",
+      "Cabannes et al. ICLR 2026 Short window attention enables long-term memorization"
+    ],
+    "harness_B_R1": [
+      "arXiv 2609.00006 Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents"
+    ],
+    "part2_dive_queue": [
+      "intake-1312+intake-1326 (pair)",
+      "intake-1319",
+      "intake-1322 (after 1319)"
+    ],
+    "count": 104,
+    "caveat": "ref-string dedup only; a future Stage-1 sweep re-runs the unbounded normalised dedup against the index"
+  },
+  "stage4_completed": "2026-09-07",
+  "stage4": {
+    "plan": "/home/node/.claude/plans/steady-kindling-summit.md",
+    "progress_note": "progress/2026-09/2026-09-07-research-intake-wave.md",
+    "stubs": [
+      "moe-routing-tap-and-locality-measurement.md (INF-72)",
+      "promptforge-mutation-safety-contract.md (RTG-55)",
+      "conversational-memory-eval-instrument.md (EVL-50)"
+    ],
+    "operator_queue_row": "OP-42 (plan said OP-34; origin had advanced to OP-41)",
+    "vidya_ids": "SC65 PS-1 sweep, SC66 routing tap, SC67 Tulving, SC68 BEAM (plan said SC63/64; claimed between plan and apply)",
+    "h3_skipped": "intake-289 url is github.com/microsoft/memento, not the 2604.09852 paper; arxiv_id left null",
+    "wiki_prose_queued_for_wrapup_sweep": [
+      "A-P-16",
+      "A-P-17",
+      "B-O1..O4",
+      "C-M2",
+      "X ssm-hybrid record"
+    ],
+    "operator_token_requests": [
+      "HARNESS_RUN_POLICY.md:93",
+      "INVARIANTS.md 1/4 classifierContext",
+      "MEASUREMENT_POLICY paired-recovery + harness admissibility (decision package)",
+      "HS-5/HS-6 id reuse remedy"
+    ]
+  }
 }

@@ -26,7 +26,7 @@ from typing import Iterable, Sequence
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from fold import Belief, FoldResult, fold  # noqa: E402
-from lattice import Grade  # noqa: E402
+from lattice import Grade, T_LEVELS  # noqa: E402
 
 __all__ = [
     "Coverage", "ImpactItem", "ImpactReport", "impact_of_retracting",
@@ -57,7 +57,17 @@ def coverage_of(belief: Belief) -> str:
     """
     if not belief.pro_paths and not belief.con_paths:
         return Coverage.UNMAPPED
-    anchored = [g for _, g in belief.pro_paths + belief.con_paths if g.t >= 2]
+    # Compare the NAMED level, never a literal ordinal. This line read `g.t >= 2` from its
+    # authoring until 2026-09-07, when `2` still meant `Anchored`. Commit 29173208 inserted
+    # `MachineLocated` at ordinal 2 (T_LEVELS is now T0/Located/MachineLocated/Anchored/Attested),
+    # so the check silently began admitting machine-located spans while this variable, and the
+    # docstring above it, still said "anchored". The pilot spec's amendment argued the insertion
+    # was ordinal-safe because grades SERIALIZE AS NAMES -- true for stored frames, false for a
+    # comparison written against a number. It failed in the dangerous direction: CLAIM_COMPLETE is
+    # what licenses asserting UNAFFECTED, and this module's own header calls a wrong UNAFFECTED
+    # "the single most dangerous output this system could produce".
+    _ANCHORED = T_LEVELS.index("Anchored")
+    anchored = [g for _, g in belief.pro_paths + belief.con_paths if g.t >= _ANCHORED]
     if anchored and len(anchored) == len(belief.pro_paths) + len(belief.con_paths):
         return Coverage.CLAIM_COMPLETE
     if anchored:

@@ -239,7 +239,7 @@ DAR-4 (model-feature-conditioned)  ──independently developable in parallel w
 
 ### Episodic Memory Benchmark: Routing Intelligence Signal (intake-408/409 deep-dive)
 
-The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tested 24 models on 100K-token narratives requiring entity tracking and temporal ordering. Two metrics: Simple Recall (F1) and Chronological Awareness (Kendall τ). Key routing-relevant findings:
+The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tested 21 models on 100K-token narratives requiring entity tracking and temporal ordering. Two metrics: Simple Recall (F1) and Chronological Awareness (Kendall τ). Key routing-relevant findings:
 
 **Reasoning models catastrophically fail at long-context episodic memory:**
 
@@ -258,6 +258,14 @@ The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tested 24 mo
 - **RAG chunk granularity matters**: chapter-level RAG matches in-context (0.82 vs 0.81 F1), paragraph-level RAG degrades to 0.60. Event-boundary-aligned chunking is critical.
 
 **Actionable for DAR-4**: The `is_moe` binary feature in the bilinear scorer model features is less informative than a `reasoning_model` binary flag. Consider adding `is_reasoning_model` to `ModelFeatures` — it strongly predicts long-context episodic performance.
+
+**Provenance pin (2026-09-07, `intake-408#06`, dive-verified).** Corrected "24 models" to **21** above.
+The per-model 10K→100K deltas in the table are correct and are now pinned to
+`epbench/experiments/additional_o1_o3_gemini_deepseek_ranking.ipynb` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`.
+The routing signal stands and is now citable rather than asserted: **chronological awareness spans
+0.033–0.817 across 21 models (10×) against recall's 0.300–0.968 (3×)**, and reasoning models invert
+between scales (deepseek-reasoner 0.988 short → 0.572 long; o1 0.978 → 0.384). Record this as the
+justification for the `is_reasoning_model` feature, with the notebook provenance attached.
 
 ## Cross-Cutting Concerns
 
@@ -642,3 +650,11 @@ The rescore surfaced a second defect of the same shape as the `role`/`producer_r
 - [x] Blast-radius verified by call-site analysis (gitnexus segfaulted): every production `force_role` value survives, including legacy aliases `reviewer`/`reviewer_agent`/`architect_coding`. One documented behaviour change — `memrl.should_skip_background_scoring` is `bool(force_role) and bool(real_mode)`, so an invalid `force_role` rewritten to `""` no longer suppresses background scoring; pinned by test in both directions. ✅ 2026-07-21
 - [x] Confirmed `architect_coding` is genuinely deprecated (rows stop 2026-06-13), so its post-fix `+1.0000` is historical replay, not a live scoring gap; allow-listed alongside `mock`/`plan_review` to keep rescores quiet. ✅ 2026-07-21
 - [ ] Consider splitting a separate `stage` field out of `producer_role`: the same field currently carries real roles AND pipeline sentinels (`plan`, `stream_init`, `proactive_delegation`, `mock`). Harmless today, but overloading the key that prices the reward is how this class of bug recurs.
+
+## Research Intake Update — 2026-09-07
+
+**Risk note — orchestration features carry a capability floor** (`intake-1333#06`, dive-verified).
+Richer orchestration **REGRESSED** quality on all three smaller models, concentrated in
+orchestration-heavy capabilities (Qwen 3.6 MCP .65 → .50), and sub-agent delegation scored 0.42–0.45
+on the fast tier. Directional and vendor-internal, so it **cannot gate a decision** — but it suggests
+routing on **feature demand** rather than prompt difficulty. Zero compute.

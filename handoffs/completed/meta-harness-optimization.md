@@ -1,6 +1,6 @@
 # Meta-Harness: Automated Harness Optimization
 
-> Historical ledger only; the retained active compatibility pointer is [`../active/meta-harness-optimization.md`](../active/meta-harness-optimization.md). Current validation work lives in the owning active handoffs named below.
+> Historical ledger only; the active successor is [`../active/promptforge-mutation-safety-contract.md`](../active/promptforge-mutation-safety-contract.md) (re-pointed 2026-09-07 — the former `../active/meta-harness-optimization.md` pointer was dangling). Current validation work lives in the owning active handoffs named below.
 
 **Status**: COMPACTED 2026-05-28; J9 validation closed 2026-06-12; Meta-Harness implementation/coordination queue closed 2026-07-11. Remaining EV-10 validation lives in Package K/operator-run inference work.
 **Created**: 2026-04-01

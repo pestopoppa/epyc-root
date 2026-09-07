@@ -299,6 +299,16 @@ Coordinator-side strict form (its main thread spends NO time on execution work):
 `agents/coordinator-agent.md` → Guardrails. That form is the **tightest instance of this rule and
 never an exemption from it** — no role is excused from fan-out by being the coordinator.
 
+**A fan-out's cost is its discarded work, not its width** (ratified 2026-09-07). Width 3–5 is
+unchanged and this clause proposes no change to it; what it adds is where to look when a fan-out
+looks expensive. In the only published per-outcome accounting of a large agent swarm, **80% of all
+tokens went to runs that produced no merged output and 52% to runs aborted outright**, while in the
+follow-up system the entire central coordination tier was **~11% of compute** and 3–5 concurrent
+workers beat a single worker on *both* wall-clock and token cost at matched completion. So the
+diagnosis order is: first measure the share of subagents whose output was never used, and only then
+consider the number of subagents. Narrowing width to control cost is treating the cheap term.
+(sources: `intake-1304`, `intake-1305`; our own instance is `fleet-fanout-measurement.md` FM-5.)
+
 (origins: 2026-08-12, 1,070 open backlog items while five mains worked serially;
 INC-20260728-idle-mains for the coordinator-side half. Appendix.)
 

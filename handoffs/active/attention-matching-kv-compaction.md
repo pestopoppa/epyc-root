@@ -338,6 +338,15 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
   **discards everything past char 256**. It has NEVER been measured: grepping both prefix-cache
   files for timing primitives returns 3 hits, all docstring prose, zero code. Cheap to instrument,
   and it may dominate the routing cost the rest of this section is trying to improve.
+- [ ] **KV-7 — Price the prefix-cache interaction BEFORE adopting any prefix+sliding mask.** The
+  intake-864 long-OUTPUT ruling applies; vLLM disables prefix caching under this mask, and
+  Appendix A confirms prefill is NOT reduced — so the mask's saving is decode-side only while the
+  cost is a disabled prefix cache. Gated on KV-1 and KV-6 (a working-set count and a
+  `canonicalize_prompt` measurement are both inputs to the price). intake-1315#00, intake-1315#record.
+  - *Selection-class note (2026-09-07)*: selection-class KV methods buy **zero** KV memory (8.38MB
+    on-device, identical to full attention, because they hold the FULL cache) and therefore cannot
+    serve this handoff's 10× KV-**memory** objective at all — they leave the candidate set.
+    `intake-1334#05`.
 - [x] **KV-5 — Correct `wiki/kv-cache.md`** ✅ 2026-08-20 (done in the wrap-up wiki sweep) so KVFlow is named as the ORIGIN of workflow-aware KV
   residency, with its own venue (NeurIPS 2025), its own 1.11× ablation and its Apache-2.0
   implementation — not solely as the denominator of PBKV's self-reported 1.26×. Note also that 1.26×

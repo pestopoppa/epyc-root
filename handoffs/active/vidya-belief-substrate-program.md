@@ -1156,6 +1156,28 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       direction, tamper refusal, pre-hook refusal, and absence of private grading logic. The adapter
       PROJECTS; `claim_tuple.grade()` decides.
 
+- [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by
+      HARNESS-1; distinct producer from the already-wired `inf70_roofline_ledger.py`). Each arm emits a
+      token-weighted rate with a `pred_n>=16` floor, per-node placement, build id, artifact SHA,
+      coherence classified by REASON, and — since 2026-09-07 — a per-arm **CONTENTION verdict**
+      (`foreign_cpu_max`, `foreign_cpu_mean`, DIRECT vs SMT-SIBLING).
+      **The contention verdict is the write-side hook that matters, and it is unrecoverable after the
+      fact**: it decides whether an arm can support a claim at all. The measured argument is this
+      campaign's own — pair p95 moved **19.89% → 6.25%** purely by dropping one contended arm, and that
+      was only possible because the sampler recorded contention *during* the arm, not before it (a
+      `loadavg` pre-gate provably cannot: one arm passed at load 11.61 and then ran through 23.9 → 32.0
+      → 55.7).
+      **Pre-2026-09-07 arms are PRE-HOOK and are worse than absent**: the sampler compared
+      `Cpus_allowed_list` literally against `0-95`, so work pinned to `184-191` — the SMT siblings of
+      bench cores 88-95 — was labelled `disjoint-from-0-95`. Their labels are **WRONG, not missing**.
+      They emit zero rows and must never be reconstructed on read (the DF2-4 precedent).
+      **Locator/support key = the ARM, never the per-prompt row.** 20 per-prompt wins inside one
+      pairing are not 20 independent witnesses — a quiet moment lifts all 20 (SC6-HAZARD class).
+      The adapter PROJECTS into `ClaimTuple`; **do not write a new grading rule** —
+      `claim_tuple.grade()` decides (`docs/design/vidya-pilot-spec.md` §4.7).
+      Source-table row added to `scripts/vidya/adapters/README.md` the same day.
+
+
 ## Dependency notes
 
 V2 blocks P1 (the pilot spec must exist before the engine). P0 can run in parallel with V2 (it is
@@ -1357,6 +1379,161 @@ runs**, same rule and same reason as SC49. Source row added to
       dynamic range per-layer/per-head K and V separately) — the first run in any class is the
       trigger, and it is compute-gated
       **EVENING 2026-08-26: unchanged — no sweep has run (verified)**
+
+## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07)
+
+Source: `intake-1297`…`1310` (Prove2Me coordination harness + the sources behind its claims), all
+`dive-verified`. The wave's relevance here is **one finding and one convergence**. The finding is
+that a machine-checked verdict certifies *the proposition the checker decided*, and nothing binds
+that proposition to the claim someone cites it for. The convergence is that a platform with every
+commercial incentive to accrue reputation arrived independently at this program's two-plane split.
+
+- [x] **SC56 — statement-binding precondition for any grade above `Judged`.** ✅ 2026-09-07 (`51f9ef61`) — unbound verifier caps at `Judged`, bound at `Verified`; T passed through untouched; a FALSE identity binding is refused, never downgraded. 51 tests, 14 mutants, 0 survivors. A verifier-derived
+      tuple may be graded above `Judged` only when the adapter records **what proposition the
+      verifier actually decided** AND that proposition is bound to the claim being asserted. Absent
+      the binding, cap at `Judged`. Evidence: `intake-1307#00` — in one real pipeline an automated
+      check labelled 73.6% of proved artifacts non-trivial-and-correct while a manual audit put
+      faithfulness at ~43% — and `intake-1307#05`, the certificate "does not certify individual
+      mathematical truth". **Cite the precise `#NN` forms, never the whole entry**: that entry's
+      headline number is a reweighted projection from a 45-example single-annotator audit and is
+      admissible as an existence proof that the gap is large, never as a rate.
+- [x] **SC57 — `decided_proposition` on the verifier-class adapter contract.** ✅ 2026-09-07 (`fe91818d`) — Extend the source
+      table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) so a
+      verifier adapter must emit *what the check asserted*, not only a boolean, and refuse
+      registration of one that emits pass/fail alone. **Project, not grade** — no new ladder
+      (`docs/design/vidya-pilot-spec.md` §4.7). Retrofit is impossible for the usual reason: a
+      proposition invented on read claims warrant the original check never captured.
+- [x] **SC58 — verify judgment frames are pinned to the digest of the artifact they judged** ✅ 2026-09-07 (`fe91818d`) — **the check FAILED: this was a P1 defect, not a passing property.**, and
+      transition dirty when that digest moves. §5.2 plausibly covers this already, so this is a
+      check, not a build; a negative result is a P1 defect. Source: `intake-1308#03` — "a read-back
+      of an older version of the code is worse than none, because it testifies about the wrong
+      artifact." Note that the source platform enforces this only as prose, and stores no hash of
+      the audited text — which is exactly why it cannot detect its own violation.
+- [x] **SC59 — optional free-text `reason` on `supersedes`/`retracts` frames** ✅ 2026-09-07 (`fe91818d`) — zero grade effect is structural, not asserted., surfaced on the
+      belief's review path. **No grade effect**, deliberately — same rule as corrections, for the
+      same reason (we know the ground shifted, not by how much). The consumer is a citer told a
+      frame was superseded who currently learns nothing about *why*, and so repeats the rejected
+      reasoning at full price. Precedent: Prove2Me makes `reason` mandatory on every milestone
+      re-link specifically so solvers do not re-walk rejected paths (`intake-1299#record`).
+- [ ] **SC60 — rank open obligations by discharge leverage** (how many beliefs' gate outcomes would
+      change if this obligation were discharged), modelled on Prove2Me's `closability`. **LOW
+      priority, and filed with its own deflation:** measured on our dependency graph the metric
+      would be 0 for roughly 85% of nodes, because their graph is a dense proof tree and ours is a
+      sparse hand-authored annotation. Copying the metric without the density copies the ceremony,
+      not the signal. File it; do not start it.
+
+- [x] **SC62 — wire FM-5 fan-out outcome accounting into the belief kernel.** ✅ 2026-09-07 — `scripts/vidya/adapters/fanout_outcome.py`, 5 tuples, all **`Judged/Located`**: no protocol id exists for transcript forensics and none was invented, so the ladder caps it as an OBSERVATION. The bounds are structurally non-optional — `value` is a `Bound` whose `.point`/`float()`/`int()` RAISE, and because `to_frames` emits only the generated claim TEXT and never `value`, the guard is on the text (a guard on `value` alone would be inert exactly where it matters). **86.5% is the LOW end of a band whose high end is 99.7%**, the two ends resting on different evidence, not different confidence. FM-5 landed
+      2026-09-07 (`5f1c4ba4`) and **produces measurements**: per-subagent outcome buckets with token
+      totals over a committed, non-reproducible corpus. Filed here the same day per CLAUDE.md —
+      wiring the WRITE side is cheap and permanent, retrofitting the READ side is impossible, and
+      `benchmarks/results` (4,562 files, no write-side hook, 0 of 200 sampled carrying a usable
+      tuple) is the standing proof. **Project, never grade** — no new ladder (§4.7).
+      **The bounds must ride in the tuple or the projection is a lie:** `produced-and-used` is an
+      UPPER bound (2,094 of 2,265 verdicts rest on a substring hit; the proven floor is
+      `git-landed` = 171), `blocked = 0` is a floor not a finding, token totals are
+      provider-cumulative and dominated by a handful of very long threads, and 501 `unknown` must
+      stay unfolded. A tuple that reports 86.5% without its band is not a projection of this
+      measurement — it is a different, stronger claim than the one that was made.
+      Source-table row added to `scripts/vidya/adapters/README.md` (state: UNWIRED).
+
+- [ ] **SC64 — a sequential certification that cannot fail.**
+      `scripts/vidya/adapters/autokernel_aux_receipt.py:584-585` pins an anytime-valid sequential
+      test's STOPPING TIME to the value it happened to take (`first_crossing_block != 9` and
+      `signs != [1.0]*20` are both treated as malformed). A genuine re-run that crosses at block 8
+      or 10 is rejected. The check therefore certifies *this run's transcript*, not the procedure —
+      the opposite of what an anytime-valid test is for. Found 2026-09-07 by the RC-12 audit.
+      Not fixed inline: choosing what the admissible stopping-time envelope IS is a judgment about
+      the test's design, not a typo.
+
+- [ ] **SC63 — wire blind read-back outcomes into the belief kernel.** RA-13b (landed 2026-09-07)
+      is a NEW WRITE-TIME MEASUREMENT SOURCE: caught-discrepancy / false-discrepancy /
+      agreement-with-author counts over a partitioned denominator. Filed the same day per CLAUDE.md.
+      **It has no rows yet** — the N=20 pilot is operator-gated and unrun — so this is the write-side
+      hook going in BEFORE the first measurement, which is the whole point (retrofitting the read
+      side is impossible). **Project, never grade**; no new ladder. The citability threshold is
+      part of the claim, not a convention: a read-back result below n=20 must not project at all,
+      and `citable_summary()` already refuses it. Source-table row to be added to
+      `scripts/vidya/adapters/README.md` when the adapter lands.
+
+- [ ] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
+      (below/adjacent) accepts two binding kinds: `identity`, machine-checkable by normalized string
+      equality, and `attested`, a human judgment that a claim follows from a proposition the checker
+      decided. **`attested` has no producer**, so only `identity` is reachable in practice and the
+      more useful half is inert. Build the frame type parallel to `claim_alias/v1` — human-authored,
+      with the fold only *applying* it, never deriving it — plus the review worksheet and the fold
+      pass. Filed separately on purpose: this is a **build**, and letting it ride inside SC56 would
+      have turned a one-function cap into a new frame type, a worksheet and a fold pass under one
+      checkbox. Surfaced by the SC56 design pass, 2026-09-07.
+
+**Declined from this wave, recorded so they are not re-derived.** A dead-end/negative-evidence
+ledger (real problem, but a coordination artifact rather than a claim-level belief — it would widen
+this program past its ratified three gaps); a guard against deleting retraction records (already
+structurally impossible under append-only JSONL §11.0 — worth stating as a defended property, since
+the source platform's own milestone delete cascades its edit history with no undo); and an
+audit-envelope fix for claims reused outside the context that vetted them (already solved — the
+grade travels with the claim, and the `intake-NNN` / `#NN` / `#record` citation forms already encode
+that relying on a whole entry inherits every defect of every claim in it).
+
+## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07)
+
+Source: the 2026-09-07 `/research-intake` wave (`intake-1311`…`1345` + the `intake-408` re-dive).
+Four measurement sources are specified by this wave, and all four are filed **now, before any of
+them produces a row** — the standing rule: wiring the write side is cheap and permanent, retrofitting
+the read side is impossible, and `benchmarks/results` is the standing proof. Source rows added to
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+*Id note: the plan allocated SC63/SC64 for the first two rows; both ids were claimed in this file
+between plan and apply, so this wave takes the next free block, SC65–SC68.*
+
+| Source | Owning handoff | Emits |
+|---|---|---|
+| **PS-1** sink+window floor sweep | `streaming-llm-baseline.md` (INF-51) | per arm×workload cell: `K_sink`/`K_win`/budget, `-c` sizing + chunk, tokens generated + eviction regime, benchmark id + scored-n, paired teacher identity |
+| **MoE routing tap** | `moe-routing-tap-and-locality-measurement.md` (INF-72) | per (model, layer, domain, m): SRP, SCH(m), EOR/IR_t + the chance baseline |
+| **`tulving_episodic`** scored runs | `episodic-memory-integrity.md` (M-12) | per run: `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style`, arm, scorer version, n scored |
+| **BEAM** benchmark runs | `episodic-memory-integrity.md` (M-12) | per run: the BEAM-fold headline, with the rubric-item micro-average and binarised pass count as recorded context |
+
+- [ ] **SC65 — build the adapter that projects the PS-1 floor-sweep cells into ClaimTuples.**
+      Project, not grade — the carrier is shared, each source class has exactly one ladder, and the
+      registry refuses a second (`docs/design/vidya-pilot-spec.md` §4.7). Three caveats are
+      load-bearing and must ride in every tuple: the recovery ratio is **paired to the SAME teacher,
+      per model per workload, never pooled**; the **long-INPUT retrieval arm measures a different
+      method** (full-attention prefill + streaming decode) and must never be graded against a
+      published SWA table; **accuracy is the primary axis** — a speed null on weight-bandwidth-bound
+      CPU decode is not a refutation. A cell that never evicts did not test the mask and must be
+      labelled, not silently pooled. Trigger: the first sweep cell, which is compute-gated.
+      Pre-hook artifacts (the 2026-07-20 Qwen3-1.7B sweep, the 2026-08-25 zero-cell 72-cell daemon)
+      emit zero rows and are never reconstructed on read.
+      Sources: `intake-1315#record`, `intake-1334#record`, `intake-1340#record`.
+
+- [ ] **SC66 — build the adapter that projects SRP/SCH/EOR tap output into ClaimTuples.**
+      Filed at stub creation, not at first trace, per the standing rule. Four caveats ride in every
+      tuple: **SCH is a diagnostic, never a throughput claim**; a **stride-hazard signature** (every
+      expert appearing exactly k times, sub-chance reuse) **refuses the row fail-closed** — it is a
+      broken read, not a negative result; **domains are never pooled** (mixing manufactures
+      uniformity); and **v9 does not cover `qwen4exp`/`glm5next`**, so a qwen4exp tuple cannot exist
+      yet. The chance baseline (3.13% = 8/256 qwen35moe; 1.95% = 10/512 qwen4exp) rides in the same
+      tuple, because an EOR figure is uninterpretable without it. The derived +1.58–2.03%
+      end-to-end ceiling is a **CLAIM ON THIS ROW, never a second source** — it is an arithmetic
+      consequence of two existing first-party measurements, and a second source row for a derived
+      quantity would put one measurement behind two ladders. Trigger: the tap port, which is
+      compute-gated. Sources: `intake-1328#record`, `intake-1336#record`, `intake-1338#03`.
+
+- [ ] **SC67 — wire `tulving_episodic` on the WRITE side before M-12a runs** (`intake-408#record`).
+      It produces verified measurements today — `score_tulving_run.py` emits a structured
+      per-question artifact with `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style` — and has
+      **no write-side hook**. Emit producer-authored, self-hashed claim-tuple rows carrying run id,
+      variant + chapter count, arm (`none`/`retrieved`/`full`), scorer version (post-M-12e), n
+      scored, and metric direction. **Locator = the run, never the per-question file.** Do NOT write
+      a new grading rule — project into a `ClaimTuple` and let `claim_tuple.grade()` decide.
+      Pre-hook runs (incl. `20260619_141212`) emit zero rows and are never reconstructed on read.
+
+- [ ] **SC68 — wire the BEAM adapter on the write side AT AUTHORING TIME, and record BOTH folds**
+      (`intake-1337#record`). File at adapter-authoring time (CME-1), not after the first run. The
+      **BEAM-fold headline is the claim**; the rubric-item micro-average and the binarised pass count
+      are **recorded context in the same tuple**. A claim tuple that does not record WHICH fold
+      produced the number cannot be compared to any external BEAM figure later — this wave's dive is
+      the proof (49.0 vs 55.7 on the same run). Source-table row in
+      `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

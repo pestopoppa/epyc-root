@@ -363,6 +363,50 @@ failure caught in amber.
         does not change the production lineup or the episodic-store acceptance result.
 - [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
+  - **M-12 protocol (filed 2026-09-07 via research-intake; the run itself stays compute-gated).**
+    Two instruments, run in this order, judge/scorer held fixed across every arm.
+  - [ ] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
+        chapters=200 (`tulving_episodic_adapter.py:_select_target_qa_files` at :463 already resolves
+        this to the 196ch parquet on disk). Three prompt-matched arms: memory-OFF (question +
+        answer contract, no book), memory-ON (`src/trace` retrieval fills the context), CEILING
+        (full book, what the adapter does today at :637). **Headline on the five-bin Simple Recall
+        Score WITH bin 0 included** — the hallucination bin is the point. Report Chronological
+        Awareness separately as a diagnostic until the tau fix (M-12d) lands; report
+        Entities/Times/Spaces separately from Event-contents/Full-details; identical list-only +
+        "If none, say 'None'" contract on every arm. Deterministic scorer, no LLM judge.
+  - [ ] **M-12b — BEAM 128K second, abstention EXCLUDED from the headline** (intake-1330#record).
+        BEAM's Vanilla column = memory-off, its `pair_chunk` RAG column = naive-memory control,
+        our trace/navigation surface = the only new arm. Report instruction_following,
+        preference_following and event_ordering separately; headline on the five-ability
+        discriminating core. Prompt-match all arms — do NOT give the memory arm a closed-book
+        instruction the memory-off arm lacks.
+  - [ ] **M-12c — pre-run do-not-copy checklist, seven items** (intake-1337#record, each traceable to
+        a site in MemPalace issue #125): (1) report BEAM's own fold, never a binarised
+        micro-average; (2) ingest BOTH roles, never user turns only; (3) no synthesis
+        `max_tokens` below what the highest-nugget ability needs; (4) judge model != reader model,
+        held FIXED across arms; (5) no SSL bypass — stage the dataset under
+        `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget and
+        identical chunking for the control and the arm under test; (7) prompt-match all arms,
+        including the closed-book instruction.
+  - [ ] **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
+        (a) Tulving: the authors' shipped 12-arm results at
+        `/mnt/raid0/llm/data/eval/tulving_episodic/episodic-memory-benchmark/epbench/data/result_lenient_all_book_200.csv`
+        (548 per-question rows × 12 arms) plus the 17 raw answer directories under
+        `Udefault_Sdefault_seed0/answers/…nbchapters_196…` — chapter-chunk RAG beats full 100K
+        in-context for all four published models (intake-408#record). (b) BEAM: issue #125's Raw
+        ChromaDB arm (49.0% author fold / 55.7% BEAM fold, BEAM 100K, configuration fully
+        specified) is a **sanity floor** — far below it means a configuration bug, not a finding.
+        It is NOT a target: that run discarded assistant turns and capped answers at 512 tokens
+        (intake-1337#record).
+  - [ ] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
+        In `epyc-inference-research/scripts/benchmark/score_tulving_run.py`: (i) the unconditional
+        `simple_inputs.append(scored)` (**verified at :121 this session; the dive ledger recorded
+        :120**) must append only when `get_style == "all"`, so Simple Recall is computed over
+        recall questions as the paper defines it; (ii) `chronological_tau` (def at **:51**, returns
+        `_kendall_tau(matched_indices)` at **:80**) must return 0.0 unless the matched set covers
+        the FULL ground truth. Then re-score the existing run artifacts offline — the scorer reads
+        stored responses, no model is loaded — and refresh the four wiki paragraphs quoting
+        SRS 0.5530 / CAS 0.1593.
 
 ## Why the reseed is necessary (and what it will NOT fix)
 
