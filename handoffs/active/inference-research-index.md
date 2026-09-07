@@ -66,6 +66,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
+| INF-71 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | P1: execute FOLD-0..3 at run 30's next boundary with R23-51a seed + R23-49 recal in the same window | OP-41, INF-65, OP-34 |
 
 ## Cross-domain
 
