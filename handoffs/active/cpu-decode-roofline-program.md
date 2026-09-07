@@ -907,6 +907,52 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★ SYNC-15 COMPLETE 2026-09-07 — TWO GOs, ONE NO-GO, AND THE STACK MEASURED IN ITS OWN WINDOW.**
+Branch `inf70/sync15` @ `56fe8ef0a`, not merged.
+
+| lever | knob | **MTP served** (3 rounds, 60 paired) | plain | bit-identical | verdict |
+|---|---|---|---|---|---|
+| **V** vectorised Q8_K quantizer | `GGML_VEC_Q8K` | **+3.12%** CI[+2.50,+3.67], **57/60** | +4.39%, 20/20 | YES | **GO** |
+| **Q** activation-quant grain split | `GGML_QSPLIT` | **+3.04%** CI[+2.64,+3.42], **58/60** | +6.95%, 20/20 | YES | **GO** |
+| **S** solo predicate widened | `GGML_TINY_SOLO_ROWS` | −0.16% CI[−0.60,+0.27], 28/60 | −1.04%, 3/20 | YES | **NO-GO** |
+| **V + Q (multi-row only), S off** | — | **+5.24%** CI[+4.82,+5.67], **59/60** | +4.87%, 20/20 | YES | **SHIP** |
+
+**The stack figure is its OWN ABA window (`inf70-sync15-aba2`) — measured, not inferred.** α = 0.8209 / dpt
+0.8961 in all 21 MTP arms.
+**★ THE MECHANISM, and the brief's premise was wrong**: `hc_inject` is **not** thread starvation
+(`thr_mean/thr_max = 0.92`). All 48 threads are busy **quantizing the SAME activation row**, because on x86
+`quantize_row_q8_K` **is the scalar reference** (12.27 µs/row vs 2.18 for its SIMD `q8_2_x4` sibling) and D1's
+batch-1 path **replicates it `nth` times**. New `GGML_IQK_PROF` instrumentation times the phase in situ:
+**activation quantization was 3.93 ms of a 48.47 ms plain token (8.1%)**, and on the skinny nodes
+**quantization is 6× the entire GEMM** (1.28 vs 0.21 ms/token). The brief's 1.83 ms resolves to 1.28
+replicated-quant + 0.21 GEMM — **there was never idle capacity there.**
+**S survives but is 4.5× smaller than the agent's own offline model predicted** — measured −79.6
+barriers/trunk eval, not ~355, = 0.27% gross, under the noise floor. **It reported its model's failure rather
+than only its output.**
+**Bit-identity four ways**: unit test vs the reference (1,400 seeded rows, 7 input classes, poisoned buffers)
+**0 mismatches** — and it **caught a real bug**, FMA contraction fusing the `iscale` multiply into
+`nearest_int`'s magic add (4 bad rows/140×10240), so **`-ffp-contract=off` is load-bearing**. Greedy
+256-token streams **5/5 sha256** per arm, plain + MTP. **384 + 72 ABA completions, zero divergence.** HYG-3
+failure sets **byte-identical to the seeded control** once `LIGHTNING_INDEXER` churn is excluded.
+**⚠ CONFIG DECISION THAT IS EASY TO GET WRONG: once V ships, `GGML_QSPLIT_MIN` must default ABOVE every
+`ne00`** — Q's single-row branch buys a 3.1 µs barrier (+241/plain eval) that only pays at 12 µs/row, **not at
+2**; its multi-row branch buys nothing extra and stays profitable.
+**Caveat flagged rather than smoothed**: window 1's **plain** phase ran one round, sequential not alternating,
+and its arms **do not reconcile** (+8.05% stack-with-S vs +4.87% adjacent-pair vs −1.04% S alone). **MTP
+reconciles cleanly. Take +4.87% as the plain figure**; a 3-round alternating plain ABA would close it.
+**Co-residency checked per arm**: window 1 had the GPU lane present **7/7 in every arm** (uniform, nothing to
+exclude on); window 2's one asymmetry favoured the **control**, so it can only understate — **no round
+dropped.** Consequence: **its champion arm reads 32.8 t/s against the 35.407 anchor** because CHAMP-1's window
+had that GPU session stopped — **quote its ratios, never its absolutes.**
+**★ FALSIFIABLE PREDICTION LEFT FOR THE REBUILD, at no extra arm cost**: CHAMP-2 and V+Q should be **partly,
+not fully, additive** — CHAMP-2 makes `wdata` cheaper while V and Q make there be **less `wdata` traffic**
+(Q at batch 1 cuts the footprint from `nth × row_size` to `row_size`). **If CHAMP-2's +1.0% holds
+undiminished after V+Q, its win is mostly non-`wdata`.**
+
+**→ CHAMPION-3 DISPATCHED 2026-09-07**: fold CHAMP-2 + V + Q into `inf70/champion2` off `6f032c48d`, S kept
+inert at default 1, `VEC_SIGMOID` off, and **re-measure the headline claim-grade**. Per the standing rule the
+new number is the deliverable, not arithmetic on the parts.
+
 **★★★ CHAMP-2 — GO, BIT-IDENTICAL, FOLD IT IN. 2026-09-07.** Branch `inf70/champ2` @ `df0f37c62` (base
 champion `6f032c48d`, build 10235). Committed, not pushed, not merged. Frozen tree untouched.
 
