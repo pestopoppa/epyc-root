@@ -25,8 +25,12 @@ that is what gets dated. A handoff whose prose churns weekly but whose boxes hav
 since May is exactly the thing this column exists to expose.
 
 DELIBERATELY NOT INFERRED: whether the work is still WANTED. Form-screening cannot see that —
-`backlog_queue_gen.py` measured read-certified liveness at 47% (n=19) and 29% (n=45) on rows
-that all passed form checks. So `open` counts here are an upper bound on real work, and quoting
+the 2026-07-29 read-certification audit measured liveness at 47% (n=19) and 29% (n=45) on
+rows that all passed form checks (`handoffs/active/stale-open-audit-2026-07-18.md:211-250`;
+attribution corrected 2026-09-07 — `backlog_queue_gen.py` QUOTES that audit at its own :32-35,
+it never performed it). Note also what those rates are NOT: the non-live remainder is dominated
+by parked-with-unfired-trigger, phase, operator-gated and standing-policy rows, so they are
+LIVENESS rates and must never be read as an already-satisfied rate. So `open` counts here are an upper bound on real work, and quoting
 them as a backlog size would restate that same over-count. This tool reports form and recency;
 a human still certifies want.
 

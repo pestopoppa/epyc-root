@@ -3046,7 +3046,7 @@ Flip milestone boxes with `✅ YYYY-MM-DD` + evidence refs (M4 cites the hub sat
 artifact). Progress-file entry per milestone. Note the single-writer audit outcome per bus
 file at M1 and M4. Any deviation from §Skeleton is recorded inline here with rationale.
 
-- [ ] **AIR-11 — measure the blocked-on-dispatch rate BEFORE building anything against it**
+- [x] **AIR-11 — measure the blocked-on-dispatch rate BEFORE building anything against it** ✅ 2026-09-07 — MEASURED; see the result note below this row.
   (intake-1304; 2026-09-07). What fraction of dispatched backlog rows are found already-satisfied,
   or blocked on another row, at subagent start? Comparator from the one published per-outcome
   accounting of a large agent swarm: **4,668 of 30,046 runs (15.5%) ended blocked**, and "lack of
@@ -3056,5 +3056,53 @@ file at M1 and M4. Any deviation from §Skeleton is recorded inline here with ra
   (47% at n=19, 29% at n=45). **Measure first.** The queue schema has no dependency-edge field at
   all today, and the right response to that may be a screening change rather than a schema change —
   which is exactly what this measurement decides.
+
+### AIR-11 RESULT — 2026-09-07: the answer is a SCREENING change, not a dependency-edge subsystem
+
+**Censuses, not samples.** n=38 = every `task_id` ever queued; n=25 = every row ever screened by
+`backlog_row_check.py` and queued; n=9 = every `premise_screener` verdict ever persisted.
+
+- **Already-satisfied at dispatch: >=1 and <=4 of 25 (4-16%).** One hard case — `AK-RUN-3` carries
+  a completion note dated **2026-08-12** and was screened `DISPATCHABLE` at **2026-08-13T18:10Z**.
+  It was done the day before it was dispatched, and the checkbox could not see it. Three more are
+  **INDETERMINATE** (closed 1.5-4h after the screen; a timestamp cannot separate "already true" from
+  "done in the next 90 minutes") and are reported as a count, folded nowhere.
+- **Blocked-on-another-row: 3 of 25 (12%)** — all three sit in a node `.index-graph.json` already
+  marks `readiness: blocked`. **`backlog_row_check.py` never reads that file, or the `Deps` column.**
+- **The modal fate of a queued row is that no subagent ever starts**: only 9 of 38 were ever
+  `CLAIMED`/`RUNNING`; 29 died at `ASSIGNED` on lease expiry.
+- **The instrument built for this question has answered it zero times.** `premise_screener` has 9
+  verdicts in its whole life: 4 `still-needed`, **0 `stale`**, 5 `unknown` — every `unknown` because
+  the probe bundle lacked the artifact that would settle the premise. Its ladder has no `blocked`
+  verdict at all.
+- **NOT DETERMINABLE fleet-wide**, and this is a real instrumentation gap: 0 of 4,278 subagent
+  records carry a task identity, and 0 of 280 queue events carry an already-satisfied field. The
+  external comparator's 15.5% has no local counterpart and cannot be computed. Do NOT repurpose the
+  fan-out `blocked` bucket for this — it means an *external* blocker (API error / stream error) and
+  its own docstring calls it a lower bound.
+
+**Verdict.** Already-satisfied is a screening failure, not a missing edge: all 25 rows were
+correctly `[ ]` at screen time, and no dependency field would have caught the one hard miss. Fix the
+probe bundle and make premise screening non-optional on the dispatch path. Blocked-on-row is also a
+screening failure — having the screener consult the owning handoff's readiness would have flagged
+3 of 25 at **zero schema cost**. **Flag, do not hard-refuse:** 2 of those 3 were legitimately
+completed while their handoff was marked blocked, so handoff-granular blocking is over-broad at row
+level.
+
+**Do NOT build a dependency-edge graph inside the queue.** Our own data says row-level dep-blocking
+is ~12-13% and is a *minority* of all gating — operator gates and inference-window gates dominate,
+and no edge field touches either. The one genuine schema need is a place to WRITE what screening
+found: today already-satisfied verdicts ride as prose inside `failure_reason` on statuses that mean
+something else, which is exactly how 3 of them became uncountable.
+
+- [ ] **AIR-12 — make premise screening non-optional on the dispatch path, and fix its probe
+  bundle.** 5 of 9 lifetime verdicts were `unknown` solely because the bundle lacked the settling
+  artifact. Add a `blocked` verdict to the ladder (today it is forced-choice
+  `still-needed|stale|unknown`). Filed from the AIR-11 measurement, 2026-09-07.
+- [ ] **AIR-13 — have the row screener consult `.index-graph.json` readiness, advisory only.**
+  Zero schema cost; would have flagged 3 of 25. Flag, never hard-refuse — handoff-granular
+  readiness is over-broad at row level and 2 of those 3 rows were legitimately completed anyway.
+- [ ] **AIR-14 — add a nullable `screen_result` to the queue row** (`premise`, `blocked_by`,
+  `evidence`) so a screening verdict has somewhere to live other than prose in `failure_reason`.
 
 - [ ] **Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.
