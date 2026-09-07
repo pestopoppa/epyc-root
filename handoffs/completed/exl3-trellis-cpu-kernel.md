@@ -22,10 +22,10 @@ experimental CPU kernel"). Feasibility established from source; no code written 
 multi-session port; sequenced after INF-70's C0/C5/B1/D0 measurements rank the levers
 **Categories**: hardware_optimization, local_inference, moe_optimization, kernel_architecture, quantization
 **Workstream**: Inference Acceleration
-**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-71)
-**Related**: [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (INF-70 — this is its lever, renamed INF-71 on
-2026-09-07; "B7" in INF-70 now means the closed PLE-precision item), [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md) (the IQK dequant path this would sit beside),
-[`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md) (the quant-ladder evaluation discipline)
+**Parent index**: [`inference-research-index.md`](../active/inference-research-index.md) (row INF-71)
+**Related**: [`cpu-decode-roofline-program.md`](../active/cpu-decode-roofline-program.md) (INF-70 — this is its lever, renamed INF-71 on
+2026-09-07; "B7" in INF-70 now means the closed PLE-precision item), [`iqk-iquant-enablement.md`](../active/iqk-iquant-enablement.md) (the IQK dequant path this would sit beside),
+[`tq3-quantization-evaluation.md`](../active/tq3-quantization-evaluation.md) (the quant-ladder evaluation discipline)
 
 ## What exists (verified 2026-09-02, URLs in the audit record)
 

@@ -2989,7 +2989,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
       fuses into the `vpdpbusd` the gemv already needs (~4 vector uops per 16 weights — IQ4_XS-class, unlike
       ik_llama.cpp's slow 3INST trellis types). At 3.05 bpw the expert stream drops ~0.4 GB/token. Spec,
-      phases, gates and hazards: [`exl3-trellis-cpu-kernel.md`](exl3-trellis-cpu-kernel.md). Do not start it
+      phases, gates and hazards: [`exl3-trellis-cpu-kernel.md`](../completed/exl3-trellis-cpu-kernel.md). Do not start it
       before C0/C5/B1/D0 rank the levers.
       **❌ NO-GO 2026-09-07, OPERATOR-CONFIRMED. Artifacts reclaimed (180 GB).** Report:
       `/mnt/raid0/llm/tmp/inf70/agents/inf71/REPORT.md`. Phase 1 as briefed **had already been executed
@@ -3000,7 +3000,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       from bytes-bound**. The written reopen trigger ("reopen when Axis D has moved the floor enough that the
       expert stream binds") has moved **away**, not toward.
       **★★ FOUR FACTUAL CORRECTIONS TO OUR RECORD THAT MUST SURVIVE THE NO-GO** (all applied in
-      [`exl3-trellis-cpu-kernel.md`](exl3-trellis-cpu-kernel.md)):
+      [`exl3-trellis-cpu-kernel.md`](../completed/exl3-trellis-cpu-kernel.md)):
       1. **There is NO separate MTP head in the EXL3 weights** — zero `mtp.*head*` tensors. **X5's premise is
          VOID**, and Axis E would inherit **MORE** head bytes, not fewer.
       2. **The 3.05 branch is `mtp_bits: 3`, not 4.**
