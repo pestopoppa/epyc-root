@@ -1140,7 +1140,30 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+**★★ BINDING RULE FROM AUTOKERNEL 2026-09-07 — DIGEST THE OBJECTS, NEVER THE LINKED `.so`.** Measured on
+this host: the **compiler is byte-reproducible** (**0 of 379 objects** ever differed across rebuilds) but the
+**LINKER is not** — **one commit produced four distinct `libggml-hip.so` digests.** So build identity must be
+asserted on **object files**.
+**Our exposure, checked**: several INF-70 harnesses hash `.so` files. CHAMPION-1's *"`libggml-cpu.so.0.16.0`
+sha matches the build tree's byte for byte"* **is sound** — it compares a copied binary against the same
+build's output, a *substitution* check. **What is unsound is any "rebuild and confirm the `.so` still matches"
+check**, which will false-fail on linker non-determinism alone. Relayed to HARNESS-1 as binding.
+**Verified pointer**: `epyc-inference-research` @ **`b808e2d6`** (2026-09-06), *"Anchor guard: digest the
+OBJECTS, not the linked .so — resolves the recurring keep aborts"*. Two dependency-free Python functions over
+`pathlib`/`hashlib`, **liftable as-is** (read via `git show b808e2d6:<path>`; the shared checkout is behind):
+`controller/anchor_integrity.py::object_digest(build_dir)` — sha256 over the sha256s of every **library** `.o`
+under the CMake build dir (`tools/`/`examples/`/`tests/`/`pocs/` excluded via `_IDENTITY_EXCLUDE`) — plus
+`object_diff()`, returning differing objects, one-side-only objects, and a **`linker_only`** flag; and
+`loop/anchor.py::verify()`, whose scratch build is **incremental with no clean at start**, so a change
+touching one TU recompiles one object and **arm cost becomes proportional to touched TUs, not to the tree.**
+
 - [ ] **HARNESS-2 — object-digest incremental builds, so leave-one-out is cheap enough to run every time.**
+      **Offered to HARNESS-1 as an optional third part** (it is already in the build/arm machinery, and two
+      agents editing it concurrently is the larger risk); dispatch separately only if it declines.
+      **Their recipe for our case, and the last clause is the part worth having**: `git revert --no-commit
+      <lever>` in a detached worktree sharing the champion's build-dir layout, incremental build, then
+      `object_diff` against the champion **tells you exactly which TUs the revert touched — and the sanity
+      check is that it should be ONLY the lever's.** That turns an ablation arm into a self-verifying one.
       Filed 2026-09-07 from autokernel's R23-48 exchange. Our per-lever ablation currently needs a full rebuild
       per arm; autokernel reports an object-digest path that makes each arm cheap. **This is the enabler for
       the standing rule**: "fold in a validated lever and re-measure the champion" is only sustainable if
