@@ -1736,6 +1736,35 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
           a loop hold is a run-lifecycle action.** Folded into OP-39 as the bounded form of option (A).
           Default if unruled: INF-70 measures contended and labels the result non-claim.
+      - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
+        Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
+        branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
+        (+4.849%), `akm-q8-1-fourlane-dual-fragment` (+1.846%), one chain on `quantize.cu` branching off
+        `042cb2e41`. The loop forked that day: the other branch off the same parent became the lineage the
+        2026-08-31 reconcile (`a27287015`, "38 keeps") merged; this chain was never merged and was
+        **unreachable** until tagged `ak/orphan-keeps-quantize-20260829` (nothing gc's here, but unreachable
+        is one `git gc` from gone). NOT lost to run-29/30 relaunches — this predates them.
+        **Do NOT trust the +12.5% compounded these imply.** Same day, `akm-q4k-q8-sum-sidecar` measured
+        +6.723%, +2.978%, +2.374%, +1.952%, +1.595% AND four nulls (0.477/0.993/0.999/0.112%) against a
+        0.668% floor — a 6.6 pp spread on one mechanism in one day — and every re-measurement since
+        (~80 attempts through 2026-09-02) came back null or negative, ending at −0.449%/−0.091%.
+        2026-08-29 is also the retraction day (correctness gate ran `test-backend-ops` with an unsupported
+        `--suite-seed`, so verdicts were never really measured). Corroborates INF-70's contention finding.
+      - [ ] **R23-50a — re-measure the three orphan keeps as fresh hypotheses** at the current calibrated
+        floor, never by trusting the 08-29 numbers. Not mechanical: `quantize.cu` has diverged 95/57 lines
+        since, so they are re-derivations, not cherry-picks. Seed them into the inbox as design_priors.
+      - [x] **R23-51 — THE BUNDLE IS NOW DURABLE; the serving gate had NEVER fired** ✅ 2026-09-07
+        (research `706e6894` → main `2de94d08`). `run.py` built `Bundle(champion_of_record=anchor_commit)`
+        fresh at every startup, so each restart reset the keeps AND advanced the champion of record to the
+        accumulated tip — **laundering bench-only keeps into the serving-demonstrated slot**. Verified: no
+        `epyc.autokernel.serving_ab.v1` record exists anywhere on disk, i.e. the R23-44 gate has never once
+        run. Trajectory: bundle reached +5.19% (4 keeps, the ~5% the operator remembered), peaked at +6.13%
+        (5 keeps), reset to 0 by the run-30 launch — against an +8.84% threshold it was never allowed to
+        reach. `load_bundle()` now restores it and refuses state the tree no longer contains.
+      - [ ] **R23-51a — seed the true champion of record at the next launch.** cor should be `445e93a8`
+        (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
+        **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
+        the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
       - [ ] **R23-48 — LEAVE-ONE-OUT ARM PER ACCUMULATED LEVER, run whenever the champion changes**
         (INF-70 finding relayed 2026-09-07 while run 29 was down). Verified: the loop A/Bs each NEW keep
         against the accumulated tip but never re-measures a PRIOR keep (`grep -rn "leave.one.out|re-?test|
