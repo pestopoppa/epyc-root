@@ -1206,6 +1206,28 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+**★★ COORDINATION BUG FOUND 2026-09-07 (SYNC-16) — POLLING FOR A FREE LOCK IS NOT QUEUEING FOR IT, AND CAN
+STARVE FOREVER.** Its first chain used a **30-second polling loop** to detect a free region. The holder
+**released and immediately re-took the region under a new tag** (`champion3-confirm` → `champion3-mech`) —
+a pattern a poller can starve behind **indefinitely**, because it only ever samples the gaps. **`region-lock
+run` already blocks in a FAIR QUEUE by default (`--timeout-s 0`)**; the poller was killed and the work
+re-queued properly. **Anyone writing a chain that waits for the bench region must queue, never poll** — and
+this is not hypothetical, it happened while four agents contended for one region.
+**★ THE HOT-SERVER MECHANISM IS FREE (HARNESS-1, measured off-lock)**: per-graph knob refresh costs **under
+2 ns/graph** — 199.3 ns with the control page vs **201.2 ns without**, min of 7 on a tiny-graph loop that
+isolates per-graph cost. **The sign is negative** because the refactor also replaced C++ guard-variable checks
+with plain global loads in the per-node path. Against a ~99 ms token that is nothing, so **the design carries
+no runtime cost to weigh against its benefit.** Proof table (all without bench time): the knob page reaches
+`ggml_cpu_knobs_cur` in both env modes; refresh is **per-`graph_compute`, not per-process and not per-node**
+(one refresh site, before dispatch); values are stable across graphs when unchanged; **an absent key reverts
+to the ENV baseline, not a hardcoded default**; switching is reversible exactly; ADD checksum correct in all
+six knob states.
+**Disclosed perturbation, and the distinction it drew is worth adopting**: HARNESS-1 ran two microsecond-scale
+unit tests on **core 2** during CHAMPION-3's hold — ~4 core-seconds of 96 — and **disclosed it rather than
+letting the sampler surface it**. It explicitly **did not touch the page cache**, noting that is the shared
+state which would actually corrupt an arm. **A few core-seconds perturbs a SAMPLER; page-cache state perturbs
+a MEASUREMENT.** Relayed to CHAMPION-3 so it does not mis-exclude a round.
+
 **★★★ SYNC-16 INTERIM 2026-09-07 — built at `inf70/sync16` @ `6d8592fb8`; measurement blocked on the lock.
 It caught a real correctness bug in its own first version, before any measurement.**
 
