@@ -907,6 +907,56 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★ CHAMP-2 — GO, BIT-IDENTICAL, FOLD IT IN. 2026-09-07.** Branch `inf70/champ2` @ `df0f37c62` (base
+champion `6f032c48d`, build 10235). Committed, not pushed, not merged. Frozen tree untouched.
+
+**★ THE COORDINATOR'S ATTRIBUTION WAS WRONG: the champion's knob was NOT missing the KV cache or compute
+buffers.** Both are allocated by `ggml_backend_cpu_buffer_type_alloc_buffer()`
+(`ggml/src/ggml-backend.cpp:2315`), whose body **is** `ggml_aligned_malloc(size)` — already madvised.
+Measured per-VMA on the live 92 GB server, the residual is **the glibc brk heap**: **100% `[heap]`, 41 brk
+VMAs, 0.0996 GiB AnonHugePages**, with all 99.7 GB of anon mmaps (weights + KV + compute) at **0**. That heap
+holds **the CPU backend graph work buffer** (`new uint8_t[cplan.work_size]`, `ggml-cpu.cpp:177` — `wdata`,
+**touched by every `mul_mat`/`mul_mat_id`**), llama.cpp's `std::vector` state, and server slot/JSON
+allocations. `numa_maps` confirms at page level: THP heap VMAs sit at `maxfrac` **0.274–0.407**, and with the
+shim **every heap VMA is at 0.250–0.255**. *The same table explains why the prize is small* — D6-PLACE's
+penalised weight tensors were at `maxfrac` **0.97**; these 13–84 MB heap regions already average out.
+
+**The change**: `common/common.cpp`, **+44 lines, one file** — an `__attribute__((constructor))` calling
+`prctl(PR_SET_THP_DISABLE)`. It lives in `libllama-common`, **which only the tools link**, so no external
+`libllama`/`libggml` embedder inherits it — the condition the brief set. You **cannot** madvise the brk heap
+per-allocation without hooking malloc, so the process shim is genuinely the narrowest fix. Champion idiom
+kept: `GGML_NOHUGEPAGE=0` master off, `GGML_NOHUGEPAGE_PROCESS=0` disables only the shim, so **every
+comparison is same-binary**. Gate **mutation-tested 7/7** via `LD_PRELOAD` into `sleep`, zero inference,
+before any timing.
+
+| vs champion (26 arms, 3 lock windows) | plain | **MTP served** |
+|---|---:|---:|
+| paired per-prompt ratio | **1.0108** CI95 [1.0074, 1.0141] | **1.0100** CI95 [1.0061, 1.0141] |
+| wins | **86/120**, sign p = 2.3e-6 | **71/100**, p = 3.2e-5 |
+| round medians ≥ 1 | **6/6** | 3/5 (others 0.9995, 0.9999) |
+| ms/token | 50.715 → 50.146 (−0.569) | 29.472 → **29.229 (−0.243)** |
+
+**★ THE GAP CLOSES AS THE SAME ABSOLUTE QUANTITY**: D6-PLACE's knob-vs-shim residual was **0.225 ms/token**;
+here it reproduces at **0.243 ms/token**. It reads as +0.83% rather than +0.90 pp only because the champion
+base is faster. **Nothing measurable remains** — the shim arm shows **0** AnonHugePages process-wide.
+**Two caveats the agent refused to bury.** (a) MTP **excludes round 3**, whose outlier arm was the only one
+in 26 whose co-residency sampler saw the GPU lane in **7/7 samples vs 3/7** for its paired control —
+**★ those `llama-bench` processes are pinned 184-191, the SMT SIBLINGS of physical cores 88-95, which are
+INSIDE our 0-95 bench region. They are NOT disjoint from us, contrary to this campaign's earlier
+conclusion.** *Including* r3 the MTP pooled ratio is **0.9903**. Plain needs no exclusion. (b) A single
+cross-check on the champion's own binary **DISSENTS** — `M_V_champ` 36.5795 vs d6place's `thpoff` 36.4002,
+shim **0.49% slower**, 2/20. n=1, NON-CLAIM, but an honest warning about effect size.
+Host drifted **~7% between windows** (MTP C 36.1 → 32.5); all comparisons are within-round/within-window and
+**no absolute headline is quoted.**
+**Bit-identity**: 3 prompts at 41/109/240 tokens × 256 greedy, sha256 — champion = champ2-X = champ2-C,
+**3/3 plain, 3/3 MTP**. 24-prompt harness `content_sha` **identical across all 26 arms** in both modes;
+α 0.8209 / drafted-per-token 0.8961 in every MTP arm, **matching CHAMPION-1 to 4 dp**. Coherence 20+4 in all
+26; placement within 0.1% in all 26. `test-backend-ops -b CPU` paired: identical `EXP`/`EXPM1`/`DIAG_MASK_INF`,
+`LIGHTNING_INDEXER` 52 vs 50 churning across `type_K` — **pure HYG-3 signature, no new failure class**.
+**Verdict: GO, fold it in, do not re-order the campaign for it** — a ~1% / 0.24 ms lever, not a champion-class
+one. **Implied re-measure target 28.24 → ~28.00 ms/token is ARITHMETIC on the measured −0.243, NOT a claim:
+re-measure inside the rebuilt champion.**
+
 **★★★ B4 — GO, BUT AS AN ARTIFACT CHANGE, NOT A CHAMPION KERNEL LEVER. 2026-09-07.** Branch `inf70/b4r2` @
 `a0907a8bc` = champion `6f032c48d` + B4's quantizer patch `49a1255` (**still required**:
 `tensor_allows_quantization()` hard-excludes `ffn_gate_inp`, so stock `llama-quantize` **accepts the override
