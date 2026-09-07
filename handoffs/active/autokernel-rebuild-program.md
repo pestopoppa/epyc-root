@@ -1779,7 +1779,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
         **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
         the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
-      - [ ] **R23-52 — status heartbeat during keep post-processing.** Observed run 30, 2026-09-07: after the first
+      - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,
         headline bench, reprofile, accumulate. The dashboard's freshness envelope reads that as a dead loop and the
