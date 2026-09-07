@@ -53052,7 +53052,7 @@
     handoffs:
     - internal-kb-rag.md
     - colbert-reranker-web-research.md
-    - granite-97m-r2-bench-plan.md
+    - granite-97m-r2-bench-plan-completed-through-2026-08-23.md
     experiments: []
     intake_entries:
     - intake-650
@@ -80419,7 +80419,7 @@
   - 'No independent replication exists (9 days old at dive). Evo-Bench (arXiv:2608.09096) appeared three days later on an overlapping task and is NOT cited here — it is the obvious missing corroboration and was recorded as a decline rather than chased.'
   cross_references:
     chapters: []
-    handoffs: [eval-tower-verification.md, autopilot-continuous-optimization.md, routing-intelligence.md, benchmark-results-dashboard.md]
+    handoffs: [eval-tower-verification.md, autopilot-continuous-optimization.md, routing-intelligence.md, benchmark-results-dashboard-completed-through-2026-08-23.md]
     experiments: []
     intake_entries: [intake-1134, intake-1129, intake-1130, intake-244]
     intake_entry_notes:
@@ -83247,7 +83247,7 @@
     not the system.
   cross_references:
     chapters: [06-benchmarking-framework.md]
-    handoffs: [benchmark-results-dashboard.md, scoring-infra-standardization.md, eval-tower-verification.md, fleet-fanout-measurement.md]
+    handoffs: [benchmark-results-dashboard-completed-through-2026-08-23.md, scoring-infra-standardization.md, eval-tower-verification.md, fleet-fanout-measurement.md]
     experiments: []
     intake_entries: [intake-1148, intake-1159, intake-1150]
     intake_entry_notes:
@@ -87073,7 +87073,7 @@
     handoffs:
     - internal-kb-rag.md
     - dashboard-architecture-restructure.md
-    - benchmark-results-dashboard.md
+    - benchmark-results-dashboard-completed-through-2026-08-23.md
     - loops-and-dashboards-audit-2026-07-05.md
     - autopilot-dashboard-fidelity-audit-2026-07-22.md
     experiments: []
@@ -118978,3 +118978,1225 @@
     Companion of intake-1295 (distinct artifact per intake policy, not a duplicate). Community
     simdgroup-matmul suggestion mentioned in operator-supplied text: unverified-in-stage1, not
     located in a bounded search.
+- id: intake-1297
+  arxiv_id: '2608.28433'
+  url: https://arxiv.org/abs/2608.28433
+  source_type: paper
+  title: 'Prove2Me: An Open Collaborative Platform for Scaling Math Formalization'
+  authors:
+  - Shuze Chen
+  - Kunal Marwaha
+  - Xiaoyang Lu
+  - Henry Yuen
+  - Tianyi Peng
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - knowledge_management
+  - autonomous_research
+  key_claims:
+  - A proof may import other platform theorems INCLUDING OPEN (unproved) ones; such a proof-sketch is itself sorry-free and establishes the target conditional on the imports, deferring their proofs to separate submissions
+  - Auto-resolve is COMPOSITIONAL BY CONSTRUCTION, not a rebuild — each artifact is compiled once in isolation at submission time and immutability is what licenses a once-verified type-match to stay valid, so a parent resolving is a status recomputation over the decomposition DAG
+  - Statements are separated from proofs and each theorem is a standalone immutable object stated once that may carry multiple proofs
+  - Human audit is BOUNDED TO THE MISSION CORE by design (goal, definitions, milestone lemmas); every intermediate lemma is introduced without audit, and a mission usually involves hundreds or thousands of them
+  - Statement fidelity uses a BLIND sub-agent read-back — the auditor agent gets the Lean declaration and its dependent definitions but NOT the original source reference, and the human then compares two mathematical statements rather than reading Lean
+  - Decentralized coordination policy is explicitly an OPEN QUESTION; in its place the paper offers a discussion channel, milestones as consensus anchors, a search-before-submit instruction, and a citation-shaped credit incentive
+  techniques:
+  - theorem DAG over immutable statements with import edges
+  - proof-sketch reduction via import of open theorems
+  - statement/proof separation with independently maintained links
+  - standardized natural-language description as the search index key
+  - blind sub-agent read-back audit (source withheld from the auditor)
+  - non-delegable per-statement human confirmation click
+  - citation-as-credit incentive (a statement earns credit when later imported)
+  - refutation as a first-class symmetric submission type
+  - pinned, mutually isolated verification environments
+  reported_results:
+  - 'Table 1, Prove2Me rows (consumer subscriptions): Exact Matrix Completion 81K LOC / $600 / 9 agents / 16 days; Sipser-Gacs-Lautemann 55K / $400 / 3 agents / 8 days; Bandit Algorithms 151K / $400 / 6 agents / 13 days; Introduction to Linear Optimization 17K / $200 / 4 agents / 7 days'
+  - 'Table 1, contrast row under the group header "Centralized agent swarm, API billing": Algebraic Combinatorics 130K LOC / $100,000 / 30,000 agents / Opus 4.5 / 7 days, taken from Gloeckle et al. 2026 and NOT measured by these authors'
+  - 'NO timing measurement of any kind appears in the paper — no compile time, no wall-clock, no speedup, no ablation; the words speedup/faster/latency/throughput/benchmark/ablation do not occur'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  contradicting_evidence:
+  - "Paper Section 4.5 undercuts the press framing of the DAG as a scheduler: 'How best to coordinate the decentralized, asynchronous agents on Prove2Me remains an open question.' The DAG is a dependency structure; the coordination POLICY is explicitly unsolved."
+  - "The Anthropic FLT write-up (intake-1298) is NOT independent corroboration: senior author Tianyi Peng is described in that post as an Anthropic researcher, so the two documents share an author. First-party restatement, not a second witness."
+  - "Table 1 is disclaimed by its own authors THREE times: the caption warns 'costs are not on a common basis', and Section 5 states 'Table 1 reports case studies, not a controlled experiment' and 'Two explanations are confounded in every row: a stronger model generation, and a harness built for multi-agent proving... which we leave to future work.' No cost-per-line comparison across those rows is defensible."
+  - "The paper's own Section 2 carries the ceiling on its whole audit design: 'a recent Lean-as-judge audit finds only about 43% of proved statements faithful (Bourigault et al., 2026)'."
+  - "ATTRIBUTION ERROR (found 2026-09-07 by diving the cited source, intake-1306): Section 2 describes Urban 2026 as formalizing point-set topology in 'roughly 130k lines of Lean'. It is NOT Lean — the system is Megalodon, a higher-order set theory checker with no mathlib. Prove2Me's own bibliography carries the correct title, so the error is confined to the body sentence."
+  - "HALF-UNSUPPORTED CITATION (found 2026-09-07, intake-1305): Section 2's 'five-figure budgets per project (Gloeckle et al., 2026; Rammal et al., 2026)' rests on Gloeckle alone. Rammal et al. contains NO dollar figure of any kind — zero occurrences of USD, dollar or any currency amount — and the Gloeckle figure is itself modelled from token logs missing the caching field, not billed."
+  - "TABLE 1 CONTRADICTS SECTION 5 ON ITS OWN CELL: the caption defines 'Agents counts the agents involved, including subagents launched by the same user' (a population), while the cited source counts 30,046 agent RUNS with an outcome each, only 11.6% of which merged and 45% of which are review passes. Prove2Me's Section 5 prose says 'agent runs'. Any per-agent arithmetic across those rows is unit-incoherent."
+  - "The 43% is accurately transcribed but stripped of every scope qualifier; the primary source (intake-1307) shows it is a reweighted projection from a 45-example single-annotator audit over 314 artifacts on one dataset with one 7B formalizer, and that the paper it comes from contains NO LLM JUDGE — the judge is Lean."
+  discovered_via: input
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
+  - handoff-index-and-backlog-graph.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-171
+    - intake-172
+    - intake-233
+    - intake-235
+    - intake-1117
+    - intake-253
+    handoffs:
+    - lean-proving-pipeline.md
+    - handoff-index-and-backlog-graph.md
+    - vidya-belief-substrate-program.md
+    - session-bus-thin-dispatcher.md
+    research:
+    - deep-dives/opengauss-architecture-analysis.md
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Section 4.2, first paragraph'
+    quote: 'Our solution is to let a proof import other theorems already on the platform, including open theorems that have not yet been proved. We call a proof that imports other theorems a proof-sketch: it establishes the target conditional on the imported statements, deferring their proofs to separate submissions.'
+    quote_sha256: '521ae8fd02edcdd9a322fb8852e948c60331174eb5373953322a95947871d1e0'
+    source_revision: 'arXiv:2608.28433v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'Section 3.3'
+    quote: 'Humans audit this core before the mission is released, checking that each of its formal statements faithfully captures the intended mathematics, and audit nothing beyond it.'
+    quote_sha256: '1ee58bad874238a35ccd23fd27c1d3370a50f7c8c87d6238413f3f157f3f8a45'
+    source_revision: 'arXiv:2608.28433v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Section 3.3, "Sub-agent read-back"'
+    quote: 'For each candidate statement, an independent auditor agent is given the Lean declaration and its dependent definitions, but not the original source reference.'
+    quote_sha256: '50838437263d8e531c75aff1b25bf086e1f3450ca95afccf96b58c91cde9ebb6'
+    source_revision: 'arXiv:2608.28433v2'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: 'Section 4.5, final paragraph'
+    quote: 'How best to coordinate the decentralized, asynchronous agents on Prove2Me remains an open question.'
+    quote_sha256: '367fa2069d23de70a7cb56109cafd95392f699e2f85cb30bfaecc06db5bc2cd6'
+    source_revision: 'arXiv:2608.28433v2'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Mechanism CONFIRMED verbatim in Section 4.2. But the Stage-1 record''s locator was wrong twice: there is NO "Definition 4.1" (Theorem 4.1 is Huang''s Sensitivity Conjecture, the running example), and Property 1 as printed is one sentence — "Theorem 4.1 is verified if all imported child lemmas are verified" — SCOPED TO THAT ONE EXAMPLE and carrying NO PROOF. The general claim that local correctness composes into global correctness appears only as unformalized prose in the following paragraph.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Auto-resolve semantics examined and confirmed: Section 3.2 compiles each submission once against the target statement; Section 4.2 says an agent proves a child "without ever downloading or compiling Theorem 4.1"; immutability is what makes the once-verified type-match permanent. No recompilation of the parent anywhere.'
+  - claim_index: 2
+    effect: reattributed
+    note: 'CONFIRMED but the design-decision sentence is in the Section 3 PREAMBLE, not Section 3.1. Also v1 said Prove2Me "guarantees" immutability; v2 (read here) says "enforces" — a weakening of a logical guarantee to a mechanism claim, which matters because Property 1 rests on that word.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'CONFIRMED verbatim, and the unaudited surface is large by design — Section 3.3: "A mission usually involves hundreds or even thousands of supporting theorems and lemmas."'
+  - claim_index: 4
+    effect: unaffected
+    note: 'CONFIRMED verbatim. The blinding is the mechanism, not a detail: the auditor is denied the source reference so it cannot accidentally agree with the author.'
+  - claim_index: 5
+    effect: unaffected
+    note: 'CONFIRMED verbatim, Section 4.5 final paragraph.'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE (primary source read in full: arXiv:2608.28433 HTML v2, 262,172 B, AND v1 diffed locally). VERSION: dived v2 (2026-08-31); v1 (2026-08-28) differs in seven hunks, all minor — a new Section 2 passage on the Tau Ceti Project, one citation addition, "guarantees"->"enforces" immutability in Section 4.2, and two float moves. NO claim, number, table, property or limitation changed between versions, and nothing in v2 responds to any methodological criticism.
+
+    FIVE STAGE-1 DEFECTS CORRECTED. (a) LOCATOR: the statement/proof design decision is in the Section 3 preamble, not Section 3.1. (b) LOCATOR: there is no Definition 4.1; Property 1 is example-scoped and unproved (see claim_corrections). (c) THE BIG ONE — the Stage-1 framing that "the paper motivates the separation by immutability and reuse and claims no compile benefit" is WRONG. The paper claims a compile/resource benefit in THREE places: Section 2 ("Because Lean recompiles the entire downstream cone whenever a module changes, even for a proof-only edit, integration is serialized through a single merge queue that becomes the empirical bottleneck of large swarms"), Section 4.1 ("it is computationally expensive: whenever a downstream lemma changes, every upstream file that depends on it must be recompiled"), and Section 4.2 ("without ever downloading or compiling Theorem 4.1"). What is TRUE and stronger is that it NEVER MEASURES ANY OF THEM — zero timing numbers in the whole paper — and both compile-cost claims are about the ALTERNATIVE and are cited to third parties (Gloeckle et al. 2026, Rammal et al. 2026, mathlib Community 2020). Note also an internal inconsistency: Section 2 says the "downstream cone" is recompiled, Section 4.1 says every "upstream file" — the same dependent set named with opposite words, so neither sentence can be quoted as a precise mechanism claim. (d) NO MEASURED DUPLICATE-WORK CLAIM EXISTS in the paper: "duplicate/duplicated" occurs once and "conflict" once, both as asserted hazards in motivating prose (Section 4.4), with no rate, no count and no before/after. (e) THE TRUST SCORE IS NOT IN THIS PAPER — the string "score" does not appear anywhere in it; Section 7 lists a reputation system only as unbuilt future work. Trust score, contribution leaderboard, first-solver priority, upvote-weighted credit, orphan-subtree exclusion and captain reputation penalty are ALL platform/harness artifacts with no paper backing (see intake-1299, intake-1300).
+
+    TABLE 1 ROW-LABEL CORRECTION: there is no row named "Algebraic Combinatorics (centralized)". "Centralized agent swarm, API billing" is a GROUP-HEADER row above the "Algebraic Combinatorics" data row. The Stage-1 record conflated them.
+
+    TABLE 1 MUST NOT BE USED AS A COST RESULT. The tempting arithmetic ($100,000/130K = $0.77/line vs $400/151K = $0.0026/line, ~290x) is forbidden by the authors themselves and by five independent defeaters: the cost denominators are different physical quantities (metered inference actually consumed, itself "estimated in Gloeckle et al." at second hand, versus a flat subscription seat-price that is INVARIANT to compute used); "Agents" is not one unit (30,000 agent RUNS versus 6 concurrent agents); model generation differs; LOC is not difficulty-normalized and the platform''s own incentives inflate it (the harness warns against "over-decomposing into many trivial, non-reusable lemmas"); and n=1 on the baseline side from a different group on a different corpus with no error bars.
+
+    UNSOLVED IN THE PAPER, AND LOAD-BEARING FOR US: (i) what happens to a proof-sketch when an imported child is later DISPROVED. Section 4.5 documents exactly this event (gotsman_linial disproved after import) and says nothing about the parent''s fate; Section 4.4 names the hazard — "a formalization that silently deviates from the source contaminates everything above it, since every proof-sketch that imports the flawed statement inherits its error" — and offers no invalidation cascade. (ii) Axiom hygiene under sketch imports: Section 3.2 requires "no sorry or any other new axioms" while Section 4.2 concedes an imported open theorem "still ends in sorry", and neither paper nor docs mention #print axioms. Any EPYC adaptation of parent-auto-resolve MUST define the reopen/invalidate direction or it inherits (i).
+
+    2026-09-07 STAGE-2b ADDENDUM — the three sources behind Section 2 and Table 1 were dived (intake-1304 Gloeckle, intake-1305 Rammal, intake-1306 Urban, plus intake-1307 Bourigault). THREE CITATION DEFECTS FOUND IN THIS PAPER, recorded in contradicting_evidence: Urban 2026 is Megalodon and not Lean; the five-figure-budget claim is supported by only one of its two citations; and Table 1''s caption defines its Agents column in a way its own Section 5 prose contradicts. NONE of these changes this entry''s verdict — the mechanisms it describes are unaffected — but every one of them is a claim we would otherwise have inherited unexamined, and the Table 1 cell is precisely the one our own fan-out question was aimed at.'
+
+  notes: 'Operator-submitted 2026-09-07 to test three transferable mechanisms: (a) DAG-derived work frontier vs our hand-written thin backlog rows, (b) statement/proof separation as an analogue of separating claim identity from evidence payload, (c) natural-language index over CLAIMS rather than prose. Dived 2026-09-07 — see dive_corrections for five record defects fixed. Prior EPYC coverage of the Lean-agent domain exists (intake-171/172/233/235, lean-proving-pipeline.md merged into pipeline-integration-index P2) but is entirely about PROVING MODELS AND HARNESSES; nothing in the corpus covered the coordination substrate.
+
+    THE PAPER IS CONSPICUOUSLY HONEST: it disclaims its own headline table twice, names its confound, and defers the ablation. The overstatement is not in the paper — it is in the Anthropic post that cites it (intake-1298), which asserts a compile-speed and resource benefit the paper never measures and which shares a senior author with it.
+
+    STRUCTURAL CONTRAST WITH VIDYA, restated after the dive. Prove2Me PRESERVES a dependency on an unestablished statement as explicit structure (the open import). Vidya''s spec would annihilate it (0 = (Q0,T0) is the annihilator for the meet) — but the SHIPPED fold does neither: chain_grade at scripts/vidya/fold.py:530 has exactly one occurrence in the tree, its own definition, so there is no claim-to-claim grade propagation at all, and what exists instead is claim_depends_on -> dependency_alerts -> review_required -> a gate BLOCK. Three different designs for one problem; theirs is the only one that keeps the conditional as structure.
+
+    '
+- id: intake-1298
+  arxiv_id: null
+  url: https://www.anthropic.com/research/formalizing-fermats-last-theorem
+  source_type: blog
+  title: Formalizing Fermat's Last Theorem (Anthropic research write-up, with linked technical PDF)
+  authors:
+  - Anthropic
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - autonomous_research
+  key_claims:
+  - The initial multi-agent attempt failed; the effort succeeded only after switching to Prove2Me
+  - Prove2Me maintained a DAG of theorem statements 'that agents used to decide what proofs they should attempt next', credited with mitigating memory degradation and enabling parallel agents
+  - The post attributes compile speed-up and reduced resource consumption to separating statements and proofs into different files, with NO number attached anywhere in the post or the technical PDF
+  - 'THE MECHANISM BEHIND THAT CLAIM, stated in the PDF: Prove2Me compiles each card''s proof separately against only the STATEMENTS of its children, so the saving is PER-CARD and the whole-artifact build is a separate, very expensive thing'
+  - 'MEASURED FAILURE OF THE REUSE MECHANISM, published by Anthropic and absent from the post: roughly two in five theorem statements repeat another proof file word for word, about a fifth of all proof-file lines are verbatim copies, and one basic lemma is re-declared in over 300 files'
+  - Human mathematical input was limited to occasional high-level instructions, though the PDF's own narration records a human reviewer supplying a substantive mathematical correction on Day 6
+  techniques:
+  - Claude Code-based multi-agent harness over Prove2Me (the harness itself is described in no public artifact)
+  - per-card compilation against children's statements only
+  reported_results:
+  - 11 days, largely autonomous, first end-to-end computer-checked proof of FLT in Lean
+  - 13 million lines of Lean; over 5x the size of Mathlib (the PDF elsewhere quotes 13.5M and 'six times', and Buzzard reports 13.4M)
+  - 30,300 theorems proved, 29,511 used in the final proof (the post rounds this to 29,500)
+  - approximately 6 billion output tokens - POST-ONLY, absent from the PDF and README
+  - failed attempts contributed roughly 7% of non-boilerplate lines - POST-ONLY, absent from the PDF
+  - 'Whole-artifact build cost, from Anthropic''s own artifacts: 5 h 32 min at 96 jobs with a peak of 153 GB (README) / 5 h 52 min on 96 cores (PDF), against about 13 minutes at 96 jobs for Mathlib from source — a ratio of roughly 25x'
+  - '31% of the bytes are generated preambles that switch off instances and simp lemmas so each proof environment holds still'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  contradicting_evidence:
+  - "ADJUDICATED 2026-09-07: the apparent conflict with Kevin Buzzard's 20x-slower-than-Mathlib claim DISSOLVES. Anthropic's speed-up is PER-CARD (PDF section 4: 'Prove2Me compiles each card's proof separately, against only the statements of its children'); Buzzard's 20x is WHOLE-ARTIFACT. Both true. Anthropic's own published build times give ~25x, so Buzzard UNDERSTATES the ratio."
+  - "The per-card saving and the whole-artifact cost are CAUSALLY LINKED and Anthropic says so: per-card isolation requires generated preambles that are 31% of the bytes, which is part of why the whole build is ~25x Mathlib. An optimization that speeds the inner loop and inflates the artifact."
+  - "The Stage-1 claim that the Prove2Me paper (intake-1297) makes no compile-cost argument was WRONG and is corrected there: the paper argues it in Section 2, Section 4.1 and Section 4.2 but never measures it. The post is faithful to the paper's rationale; what neither supplies is a number."
+  - "First-party throughout: the platform's senior author is described in this post as an Anthropic researcher, so this is not an independent evaluation of Prove2Me."
+  - "FOUR FIGURES ARE SINGLE-SOURCED to this post and appear in no supporting artifact: the ~6 billion output tokens, the ~7% salvage rate, 'the largest Lean proof ever constructed', and the three-day Vinogradov side-experiment (which is also absent from Prove2Me's Table 1). Cite these with the precise intake-1298#NN form, never by relying on the whole entry."
+  discovered_via: input
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1301
+  claim_anchors:
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'anthropic.com post, bullet 2 of 3 under "Prove2Me helped by:"'
+    quote: 'Speeding up Lean compilation and minimizing resource consumption by separating theorem statements and proofs into different files, with the links between them maintained independently.'
+    quote_sha256: '89f676dae51a4ded77c0ab642a7bf54ab3141487b2399e5ce6cbc35d6eebf2fe'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'linked technical PDF, p.14, section 4 "How the proof was checked"'
+    quote: 'A "Proved" mark on the platform is not yet an end-to-end check, because Prove2Me compiles each card''s proof separately, against only the statements of its children.'
+    quote_sha256: '07f87d14efa369b4ba26f5acd72070046db40299a8d2621eee178ed41077e213'
+    source_revision: 'www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'linked technical PDF, p.15, section 5 "Claude''s own assessment", bullet "Duplicated, not shared"'
+    quote: 'Duplicated, not shared. Each card was proved in isolation. Roughly two in five theorem statements inside the proof files repeat, word for word, a statement already made in another proof file. About a fifth of all proof-file lines are verbatim copies of declarations found elsewhere in the tree, and one basic lemma is re-declared in over 300 files.'
+    quote_sha256: 'f6740e676b8d25b8564acd8ab1bd1fa5ea05537c4844ef18b1c8f23a4de44cad'
+    source_revision: 'www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 6
+    kind: page-and-quote
+    locator: 'linked technical PDF, p.15, section 5, bullet "Fragile and expensive"'
+    quote: 'A clean build takes 5 h 52 min on 96 cores and 512 GiB of memory.'
+    quote_sha256: '1c98d3f5a8d5ac593c5f08709b6d6db99c2a16f8cbf780482e2bbe4be19f2e5e'
+    source_revision: 'www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The post says the early agents "quickly lost track of the project''s state and stopped collaborating effectively". The Stage-1 note paraphrased this as "context accumulation", which is NOT the post''s words and is NOT reported anywhere — the PDF contains no occurrence of "degrad" or "lost track" and no account of the pre-Prove2Me failures at all. Corrected to the post''s actual wording; the whole failure narrative is post-only and single-sourced.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'The sentence is verbatim, but no number attaches to the speed-up anywhere in the post, the PDF or the README, and no baseline is named — as phrased it is unfalsifiable. The PDF DOES carry resource measurements (clean-build time, memory, comparator cost); what is absent is any measurement of the speed-up itself.'
+  - claim_index: 5
+    effect: narrowed
+    note: 'The letter of "humans wrote no mathematics" survives, but the PDF narrates a human reviewer making a substantive mathematical correction on Day 6 ("The passage starts from a remark by a human reviewer" ... "So [the reviewer] is right, and it''s the 1977 torsion theorem argument (III.5)"). Verification was also entirely human-run and post-hoc: "the team recompiled all 29,511 cards from source outside the platform".'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE (primary sources read: the post in full, the linked 17pp technical PDF, the anthropics/fermats-last-theorem README, plus Buzzard''s post and all 30 comments). THE CENTRAL CONTRADICTION IS RESOLVED AND ALL THREE SOURCES ARE CONSISTENT: the compile speed-up is PER-CARD (each card compiles against only its children''s STATEMENTS), Buzzard''s 20x is WHOLE-ARTIFACT, and Anthropic''s own numbers make the whole-artifact ratio ~25x (332 min or 352 min against ~13 min for Mathlib at 96 jobs), so Buzzard is if anything charitable. Crucially the two are CAUSALLY LINKED: per-card isolation is what requires the generated preambles that are 31% of the bytes.
+
+    THE BURIED FINDING, and the most useful fact in this batch: PDF p.15 measures ~40% verbatim statement duplication and ~20% duplicated proof-file lines, with one lemma re-declared in over 300 files. Reuse via the natural-language search index was the platform''s headline benefit in BOTH the post and the paper; the delivered artifact measures it as substantially failed. Anthropic published this and did not mention it in the post. This is the direct empirical answer to the operator''s hypothesis (c) — a mandatory NL description keyed to a search API did NOT produce reuse at scale.
+
+    TWO INTERNAL INCONSISTENCIES inside Anthropic''s own material, recorded so a later reader does not treat either as authoritative: the PDF says 5 h 52 min / 512 GiB while the README says 5 h 32 min / peak 153 GB for what both call a clean build; and the PDF says 60,474 files while the README says 60,475 modules. Line counts appear as 13M (post), 13.5M (PDF quoting Claude, with "six times" Mathlib) and 13.4M (Buzzard), against the post''s "over 5x".
+
+    ELEVEN DAYS IS TO THE PLATFORM''S PROVED MARK, NOT TO END-TO-END VERIFICATION: PDF Figure 1''s x-axis runs to Day 13 with the trailing segment labelled "Recheck passes".
+
+    THE FLT RUN IS A VARIANT OF THE PUBLISHED SYSTEM AND THE VARIANT IS DOCUMENTED NOWHERE. The paper (Section 3.3) requires a human captain to click each mission-core statement individually including milestone lemmas; here the audited surface was "the one-line statement of the goal theorem". Separately, "Prove2Me" and "a Claude Code-based multi-agent harness" are two different things in Anthropic''s own phrasing, and the harness is described in no public artifact.'
+  notes: 'Operator-supplied companion context, filed as a distinct source per the companion-artifact rule, and dived 2026-09-07. Its value to EPYC is not the FLT result but three things: the failure-then-fix narrative (an unstructured multi-agent run lost track of project state; a shared structured artifact fixed it), the measured duplication that deflates the reuse story, and the per-unit-versus-whole-artifact measurement trap. Every headline number here is first-party and unreplicated.
+
+    CITATION FORM REQUIRED (2026-09-07). FOUR FIGURES ARE SINGLE-SOURCED TO THIS POST and appear in no supporting artifact — not in the linked technical PDF, not in the released repository (intake-1310), not anywhere else: the approximately 6 billion output tokens; the ~7% of non-boilerplate lines contributed by failed attempts; the claim that this is the largest Lean proof ever constructed; and the three-day Vinogradov side-experiment on three personal subscriptions, which is also absent from the Prove2Me paper''s own mission table. Anything relying on one of these MUST cite the precise `intake-1298#NN` form, never the whole entry - relying on the entry inherits every defect of every claim in it. Two further figures are CONTRADICTED by the artifact itself and must be attributed to the post, never to the repository: the 5 h 52 min / 96 cores / 512 GiB build (the repo says 5 h 32 min at 96 jobs with a 153 GB peak), and the two self-limiting sentences about refereeing and citation scope, neither of which exists in the published repository at all.
+
+    '
+- id: intake-1299
+  arxiv_id: null
+  url: https://github.com/prove2me/prove2me_workspace
+  source_type: repo
+  title: prove2me/prove2me_workspace — agent workspace, SKILL.md and API reference for Prove2Me
+  authors:
+  - Prove2Me
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - swarm_techniques
+  key_claims:
+  - 'The platform exposes a work frontier as an API: GET /api/v1/theorems/:theorem_id/open-leaves returns the open leaf theorems of a decomposition tree, traversing only through still-open nodes'
+  - 'READINESS IS NOT COMPUTED — it is a free consequence of the decomposition invariant: a leaf has no children, therefore no unsatisfied prerequisites, therefore every open leaf is trivially attemptable. Nobody implemented a readiness check'
+  - 'Leaves ARE ranked, by `closability` — how many ancestor theorems would auto-resolve if this leaf were proved. A closability of 0 is still a valid target, so it is leverage, not eligibility'
+  - 'There is NO claiming, locking, leasing or reservation primitive anywhere in the 62-endpoint surface; a first-to-prove race is REWARDED (+1 trust for the first user to prove a theorem), so racing IS the coordination model'
+  - 'The verdict taxonomy distinguishes ACCEPTED (a direct leaf proof, or a reduction whose imports are all Proved) from SKETCH_ACCEPTED (verified, but imports one or more Open theorems) — a third state between done and blocked'
+  - 'Orphan work earns nothing: only work that connects to the mission decomposition counts, and subtrees that do not reconnect earn no leaderboard score'
+  - 'open-leaves and closability appear NOWHERE in the paper — they are artifacts of the agent-skill harness (v0.9.7) that the paper does not claim, evaluate or measure'
+  techniques:
+  - open-leaves frontier endpoint
+  - closability leverage ranking
+  - captain-curated milestones scoping the subtree, machine frontier selecting within it
+  - ACCEPTED vs SKETCH_ACCEPTED verdict taxonomy
+  - orphan-subtree exclusion from credit
+  - anti-over-decomposition norm
+  - blind read-back auditor protocol (references/mission_auditor.md)
+  - idempotent uploader with a state file recording every action before and after its API call
+  reported_results:
+  - 'Live API probe 2026-09-07: GET /api/v1/health returns version 0.9.7, matching SKILL.md metadata.version, so the docs read were the current release'
+  - 'Per-user throttle: at most 100 submissions in PENDING at once, 429 beyond that'
+  novelty: high
+  relevance: high
+  credibility_score: null
+  contradicting_evidence:
+  - "EVIDENCE-GRADE CEILING: the github.com/prove2me org has exactly ONE public repo — this agent skill. The paper and SKILL.md both call Prove2Me open-source, but NO SERVER SOURCE IS PUBLIC, so open-leaves semantics, closability's exact definition and the absence of claiming can be verified only from documentation plus black-box probes, never from code."
+  - "The paper cannot be cited for the frontier endpoint or for closability; both are harness-only (see key_claims)."
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - handoff-index-and-backlog-graph.md
+  - fleet-fanout-measurement.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1117
+    handoffs:
+    - handoff-index-and-backlog-graph.md
+    - session-bus-thin-dispatcher.md
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'references/missions.md, section "Find the frontier (which open leaves to attack)"'
+    quote: 'The frontier is the set of open leaf theorems in that tree — the atomic sub-goals that have not been decomposed further and are the concrete things you can prove right now.'
+    quote_sha256: 'a15c3ada9eac6ea938aa55b300700bbc037bd6d6b9218a312b72635ed2135b0a'
+    source_revision: 'prove2me_workspace @ main, API v0.9.7, retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'references/missions.md, same section'
+    quote: 'Leaves are ranked by `closability` — how many ancestor theorems would auto-resolve if you proved this leaf'
+    quote_sha256: 'ee9461caebb6e83ef98beff1f00907b0e3ff4aa1e38adaaa805c6530b7d541ea'
+    source_revision: 'prove2me_workspace @ main, API v0.9.7, retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 2
+    effect: overturned
+    note: 'The Stage-1 record implied selection guidance was milestones-then-frontier with no ranking signal. There IS a ranking key, `closability`, documented in references/missions.md but not in SKILL.md, which is why the first pass missed it.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Absence of claiming CONFIRMED three independent ways (doc grep over SKILL.md plus 14 reference files; enumeration of all 62 endpoints; live 401-vs-404 probes against claim/reserve/lease/lock/assign/working-on, all 404 while controls /submissions and /decompositions returned 401). But the Stage-1 rationale was wrong: the submissions endpoint is documented for LEARNING FROM ATTEMPTS, not for detecting concurrent work. The actual advisory dedup mechanisms are dead-end attempt comments, /mentions backlinks and milestone history.'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE (full repo tree pulled via raw.githubusercontent: SKILL.md 19,076 B plus all 14 files under references/; live unauthenticated API probes; paper Section 4 cross-checked).
+
+    HYPOTHESIS H1 ("Prove2Me derives what-to-do-next from the dependency graph, and that transfers to the EPYC backlog plane") IS OVERTURNED AS STATED; a narrower version survives. It derives ELIGIBILITY from the graph only because the decomposition invariant makes eligibility free — leaf implies no dependencies — and it derives RANKING via closability. It derives nothing else: no priority, no critical path, no remaining-effort. The genuine "what to do next" answer is the CAPTAIN''S ORDERED MILESTONE LIST, which is hand-authored prose, not graph-derived; paper Section 4.4 says the milestone list "becomes the entry point to a mission rather than the raw decomposition graph".
+
+    THE TRANSFER FAILS FOR A STRUCTURAL REASON, and this is the finding. Prove2Me can skip claiming, locking and readiness computation because (a) every unit of work is atomized and immutable, so two agents solving one leaf produce two valid independent artifacts and the loser wastes only tokens, and (b) correctness is machine-adjudicated by the Lean kernel, so a race has an objective winner and no merge. EPYC backlog rows are none of those: they mutate shared files, there is no kernel, and duplicated work is a merge conflict plus two contradictory edits. THE REASON PROVE2ME NEEDS NO LOCK IS EXACTLY THE REASON EPYC CANNOT DROP ONE — and coordination/session-bus/queue.jsonl already carries owner, claim_ts and lease_expires_ts, so there is nothing to import in that direction anyway.
+
+    NO SCHEDULING METADATA OF ANY KIND: no duration, estimate, effort, eta, deadline, points or size field on any of the 62 endpoints. The complete set of per-node numeric signals is vote_count, an optional subjective rating 0-10, the derived closability, and per-user trust. The scheduler is estimate-free by construction.
+
+    NEGATIVE RESULTS RECORDED SO THEY ARE NOT RE-DERIVED: no critical-path computation exists; topological order appears only in the UPLOAD pipeline, never for scheduling work; milestone sort_order is explicitly "the captain''s intended reading/attack order, not a strict dependency graph (there''s no dependency tracking yet)"; and remaining work is reported as a COUNT of open leaves, never an estimate.
+
+    HIGHEST-VALUE UNREAD-AT-STAGE-1 FILES, both now read: references/mission_auditor.md carries the complete BLIND read-back protocol (independence rule, information-exclusion list, six authoring principles, a staleness rule — "a read-back of an older version of the code is worse than none, because it testifies about the wrong artifact" — and readback_model provenance); references/upload_full_project.md carries skeleton subtraction, an idempotent uploader contract, and a codified anti-over-decomposition threshold table.'
+  notes: 'This repo, not the paper, is where the transferable mechanisms actually live, and the dive confirmed that split sharply: the paper says coordination is an open question, while the harness nonetheless ships a frontier endpoint and a leverage rank that the paper never mentions. Read from raw.githubusercontent at main on 2026-09-07 (repo showed 47 commits, 31 stars, 14 forks, pushed 2026-09-05); no commit SHA was captured, so tree-level claims here are pinned by retrieval date and by the live API version 0.9.7. SHA RECOVERED 2026-09-07 by the Stage-2b dive of this repo''s reference files: main was at 58332c69693c59d948b2546b78baf348ce2f0c2e (2026-09-05, ''Bump to 0.9.7''), which is the commit intake-1308 and intake-1309 are pinned to and is therefore the citable revision for tree-level claims here too.
+
+    2026-09-07 STAGE-2b CLOSE-OUT DECLINES (operator selected items 1-7, declined 8-11), recorded so a later session does not re-derive them. (8) prove2.me/skill.md and the wider references/ set - DECLINED as a separate entry; its load-bearing content (open-leaves, closability, the ACCEPTED vs SKETCH_ACCEPTED taxonomy, the orphan-subtree rule, and the 62-endpoint enumeration establishing the absence of any claiming primitive) is already quoted and anchored in this entry and in intake-1300, and its two highest-value files were ingested separately as intake-1308 and intake-1309. (9) github.com/TauCetiProject/TauCeti - DECLINED; the only substantive v1-to-v2 addition to the Prove2Me paper, peripheral to the coordination question. (10) the superpowerdaily aggregator, sorryax.com, and the comparator/nanoda checker repos - DECLINED as low authority, or as trust-chain rigor in a project we have no stake in. (11) the leanprover-community queueboard - CLOSED rather than declined: both figures were independently re-verified in-session on 2026-09-07 (3,070 open PRs; 696 on the review dashboard).
+
+    '
+- id: intake-1300
+  arxiv_id: null
+  url: https://prove2.me/faq
+  source_type: blog
+  title: Prove2Me FAQ and platform reference — immutability, deprecation, trust score, audit scope
+  authors:
+  - Prove2Me
+  categories:
+  - knowledge_management
+  - agent_architecture
+  key_claims:
+  - 'IMMUTABILITY IS HALF-SCOPED: the Lean statement and the proof are immutable, but everything else about a theorem — including the natural-language statement the human audit compares against — is freely editable by its submitter, and moderators may edit any theorem''s natural_language_statement'
+  - 'DEPRECATE IS ADVISORY, NOT AN INVALIDATION CASCADE: deprecating a node hides it from discovery but anything that already imports it keeps working and its proof status is unchanged; the flag is reversible and is itself a PATCH onto the supposedly immutable object'
+  - 'The trust score GATES NOTHING — its only consumer in the entire API is a sort key (GET /api/v1/users?sort=trust); every actual authority is role-based (submitter, captain, moderator, admin) and enforced with a 403'
+  - Statement fidelity uses a double audit — captains review every mission core statement against the source and an independent agent back-translates each Lean statement to natural language for comparison
+  - 'The audit envelope does not travel: intermediate lemmas are never audited, yet the import mechanism reaches across missions, so an unaudited lemma exits its guard on reuse'
+  techniques:
+  - immutable Lean statement plus versioned mutable prose statement
+  - reversible deprecation flag with discovery-hiding only
+  - citation-count trust score severed from every authority
+  - blind back-translation audit bounded to the mission core
+  reported_results:
+  - 'Platform is free; example mission costs given as two weeks of a Claude Max subscription (151K lines) or one week of a Codex subscription (81K lines)'
+  - 'Three pinned Lean environments supported: v4.33.1 (default), v4.30.0, v4.29.0-rc3; cross-environment reuse is refused outright'
+  novelty: high
+  relevance: high
+  credibility_score: null
+  contradicting_evidence:
+  - "The FAQ's own wording ('flags the item as deprecated everywhere it appears so nobody builds on it by mistake') invites a cascade reading that references/contribute.md flatly refutes: 'anything that already imports it keeps working, and its proof status is unchanged'. The FAQ oversells its own mechanism."
+  - "The word 'deprecate' does not appear anywhere in the paper (intake-1297). It is an operations affordance, not a designed governance mechanism, and must not be cited as one."
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1299
+    handoffs:
+    - vidya-belief-substrate-program.md
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'prove2.me/faq, section Contribute, "Can I edit the title, natural language statement, source, and tags of my theorem?"'
+    quote: 'Yes. Everything about a theorem or definition except the Lean statement can be freely edited by its submitter.'
+    quote_sha256: '2ffd89db6e4d46d4e597d820f1e99550e02f7d0f73028262f330f7bcfb99ef1b'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'prove2.me/references/contribute.md, section "Deprecate (Retire) Junk Theorems, Definitions, and Submissions"'
+    quote: 'Deprecating a node hides it from discovery (browse, mission views) but never deletes it — anything that already imports it keeps working, and its proof status is unchanged.'
+    quote_sha256: 'bc92357d5eddc4ca7c4395d5621a405d6409f63d9adb3cc60927a2dd0bab3e43'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'prove2.me/about, section "Four ideas to know" -> Mission'
+    quote: "every intermediate lemma below it needs no audit at all, because a wrong lemma simply can't help prove a correctly-stated goal. Audit the top, unleash the agents below."
+    quote_sha256: '6069650046a4f83568dae3e22064ccef46968af8a820091dc909d0bf990f7f3a'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Stage-1 recorded immutability as total. It is not: only the Lean statement and the proof are frozen. The prose statement — the very half the human audit compares against the source — is editable by the submitter AND by any moderator, mitigated only by a description-version history. The audited artifact is a PAIR and half of it is mutable.'
+  - claim_index: 1
+    effect: overturned
+    note: 'Stage-1 called deprecation "retraction as a first-class propagating action, shipped" and read it as landing on Vidya frame discipline. OVERTURNED. It propagates nothing to importers: they keep working, unmarked and unchanged. It is reversible by three role-holders, it hides the node from discovery, and the one real state change is that deprecating a PROOF drops that submission from the decomposition graph and reopens the theorem it proved — one edge up, never transitively. Vidya''s fold already does strictly more (dependency_alerts -> review_required -> gate BLOCK), so the lesson runs the other way.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED and strengthened. Trust accrues (+1 first-to-prove, +1 upvote, -1 downvote) and is consumed by exactly one thing, a user sort key. The paper''s Section 7 lists a reputation system as unbuilt future work, which is only coherent if the existing integer is not one.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'CONFIRMED, and the blinding protocol is richer than the FAQ states — the auditor is launched with a fresh context and given only the Lean code plus its preamble, never the informal statement, source, pitch or intent.'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE (prove2.me/faq, /about, /tour/mission-captain, /skill.md and references/{contribute,curate,missions,mission_captain,communicate,mission_auditor}.md all fetched by raw curl and read; no summarizer in the loop).
+
+    TWO STAGE-1 CLAIMS CORRECTED, one of them an outright overturn — see claim_corrections. The deprecation overturn matters because the Stage-1 entry presented it as external validation of Vidya''s retraction design; it is the opposite. Prove2Me does not mark dependents at all. Vidya''s OP-11 rule already does more, and Prove2Me''s deprecate is a mutable status field bolted onto an object it calls immutable — direct external evidence FOR Vidya Section 3.5''s choice of retraction-as-a-separate-frame, not a parallel to it.
+
+    WHY THEIR DESIGN IS NONETHELESS DEFENSIBLE, recorded so the finding is not misread as a defect: an import is a pinned Lean term, so deprecating a statement cannot change whether an already-compiled proof typechecks — a SOUNDNESS cascade is unnecessary. A FAITHFULNESS cascade is structurally impossible, because nothing on the platform can machine-decide faithfulness. Deprecation is the only move available to them.
+
+    THE ACCRUAL FINDING IS CONFIRMED AND IS THE STRONGEST TRANSFERABLE RESULT IN THIS ENTRY. Prove2Me runs the same two-plane split Vidya adopted in Section 4.1, under every commercial incentive to accrue: machine-checked correctness is idempotent (their own /about says one theorem "can collect many independent proofs, and once accepted, nothing about it ever changes" — independent proofs never raise a status), while an accruing trust score decides nothing anywhere in the API. Their Section 4.4 independently derives the same requirement pair Vidya''s carrier provides — idempotent so independent attempts converge, authoritative so downstream may build without re-auditing. This is an independent instantiation of the decision, not a citation of it.
+
+    DEFECT FOUND IN THEIR AUDIT ARGUMENT: "a wrong lemma simply can''t help prove a correctly-stated goal" holds only INSIDE a mission, but the reuse surface is platform-global — /about says a proof-sketch "can build on any theorem already proved anywhere on the platform, not just within its own mission". An unaudited intermediate lemma therefore exits its audit envelope on reuse, where no correctly-stated goal guards it. The paper names the contamination direction (Section 4.4) and never reconciles the two. Vidya already solves this: the grade travels with the claim, and the intake-NNN / #NN / #record citation forms encode that relying on a whole entry inherits every defect of every claim in it.
+
+    NO DISPUTE OBJECT EXISTS. All ~60 endpoints enumerated; there is no dispute, flag, report, challenge, appeal or contest object. Disagreement resolves through disproof (machine-decided, covers falsity only, never unfaithfulness), deprecation (advisory), captain relink, an unstructured discussion thread, and votes. A solver who believes a captain''s attested formalization is unfaithful has no structured recourse at all — references/missions.md concedes "There''s no propose-and-accept flow yet."
+
+    ANTI-PATTERN NOT TO IMPORT: DELETE /milestones/:id cascades and deletes the milestone''s own edit history, with no undo — a mutable governance layer above an immutable evidence layer, with a destructive op that erases its own audit trail. Vidya''s append-only JSONL ledger makes this structurally impossible; worth stating as a defended property rather than an accident.'
+  notes: 'Retrieved and dived 2026-09-07. The FAQ plus the references/ set, not the paper, states the governance model. After the dive the picture is mixed rather than the clean parallel Stage-1 recorded: immutability is half-scoped, deprecation does not cascade, but the trust-score severance and the blinded bounded audit are both genuinely instructive. The single most transferable artifact found anywhere in this batch is the blind read-back protocol in references/mission_auditor.md — an independent auditor given ONLY the artifact, never the intent, so that it cannot accidentally agree with the author.
+
+    '
+- id: intake-1301
+  arxiv_id: null
+  url: https://xenaproject.wordpress.com/2026/09/04/flt-anthropic-has-beaten-me-to-it/
+  source_type: blog
+  title: 'FLT: Anthropic has beaten me to it (Kevin Buzzard, Xena Project)'
+  authors:
+  - Kevin Buzzard
+  categories:
+  - benchmark_methodology
+  - knowledge_management
+  key_claims:
+  - 'The formalization is mathematically uninformative — it faithfully follows the early literature and adds nothing, and the author was already 99.9% sure FLT was correct. THE SCOPE OF THIS DISCLAIMER IS STRICTLY MATHEMATICAL CONTENT'
+  - 'He is emphatic in the opposite direction on the engineering: "What this work does tell us, however, is what is possible in the field of autoformalization", and he opens with "Congratulations to Anthropic!"'
+  - The artifact compiles nearly 20 times as long as Mathlib on a 96-core machine, and Lean is sluggish jumping between files at that repo size
+  - Integration is blocked by human review capacity, not machine verification — about 3000 open PRs with over 600 on the active review queue, and maintainers are reluctant to review AI-generated code
+  - He manually inspected every line of the code base that was not a mathematical definition or proof, to verify none of it was doing anything malicious
+  techniques: []
+  reported_results:
+  - 'over 13.4 million lines of code; ~20x Mathlib compile time on 96 cores; Mathlib review queue ~3000 open PRs, 600+ active'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  contradicting_evidence:
+  - "His 20x is CHARITABLE, not exaggerated: Anthropic's own README (5 h 32 min at 96 jobs) and PDF (5 h 52 min) against ~13 min for Mathlib from source give ~25x. He states no measurement method for the ratio."
+  discovered_via: search
+  expanded_from: intake-1298
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1298
+  claim_anchors:
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'section "The code base", first paragraph'
+    quote: "takes nearly 20 times as long to compile as Lean's mathematics library (on a machine with 96 cores!)"
+    quote_sha256: 'e4bca5d09c03cfb216c754080196056bcfa2a876c02c203cee22d9b2642d59f4'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'comment reply to "S M", 2026-09-05 13:14'
+    quote: 'Reviewer time (and in particular human time) is a massive bottleneck here — you can see this from the 3000 open PRs against the repo currently of which over 600 are active and on the review queue'
+    quote_sha256: 'b380cec8f07425f7db3830fe4fa52da486026c5941b8dbe687599fedab04e8ad'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The Stage-1 record carried the disclaimer without the praise, which misrepresents him. He is dismissive ONLY about mathematical novelty and explicitly enthusiastic about the autoformalization capability and about the artifact being robust enough to build on. Both halves must travel together.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'INDEPENDENTLY VERIFIED 2026-09-07 by the dive, not merely quoted: GitHub API for leanprover-community/mathlib4 open PRs returned 3,070, and the cited queueboard review dashboard (stamp 2026-09-07 13:28 UTC) contained 696 unique mathlib4 PR links. Both of his figures hold. He attributes the backlog to human reviewer time plus a no-AI-review policy and a quality prior, NOT to Anthropic''s work.'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE (post plus all 30 comments read; both cited figures independently re-verified against the GitHub API and the queueboard dashboard on the same day). Ingested as the Tier-2b contradiction pass on intake-1298 and it is the only source in this batch not authored by a participant.
+
+    THE TRANSFERABLE FINDING IS NOT ABOUT LEAN: a verification substrate that scales GENERATION without scaling REVIEW relocates the bottleneck rather than removing it, and here the bottleneck is measured — ~3,070 open PRs, 696 on the active queue, with an explicit policy that AI reviews are not accepted. That is the same shape as our own T-axis problem (the vidya-pilot-spec T2 amendment records 667 cited entries against 5 hand-anchored) and is the strongest argument in this batch AGAINST assuming a machine-checkable frontier removes human load.
+
+    STAGE-1 UNDER-REPRESENTED HIM. Correcting the record: he opens with "Congratulations to Anthropic!", calls it an "extraordinary autoformalization achievement", says "we learn that AI autoformalization artefacts are now robust enough to be built upon", predicts autoformalization "will ultimately make the review process for mathematics papers far less painful", and twice defends the artifact''s soundness against skeptical commenters. His only cost remark is a question, not an assertion.'
+  notes: 'Retrieved and dived 2026-09-07. Kevin Buzzard leads the competing multi-year FLT formalization project and was given access by Anthropic to check the artifact, so he is expert and adversarially motivated but not disinterested about the tooling''s significance. Both of his quantitative claims survived independent re-verification the same day.
+
+    '
+- id: intake-1302
+  arxiv_id: null
+  url: https://beta.prove2.me/blog/intro-to-prove2me-i
+  source_type: blog
+  title: 'Intro to Prove2Me I: Formalizing a textbook in a week'
+  authors:
+  - Prove2Me
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - An import becomes a new self-contained problem and an agent can close any one of them without ever downloading or compiling the parent, with the parent resolving automatically when all children close
+  - 'Humans audit a small core, not the output: everything agents generate underneath is checked by the kernel alone'
+  - Immutable self-contained statements are what let decentralized contributions compose without later proofs affecting existing correctness
+  techniques:
+  - parent-free child compilation
+  - audit-the-core-not-the-output
+  reported_results:
+  - 'Markov Chains textbook: 79K lines of Lean, one user, a $200 Claude Code subscription, over a weekend'
+  - 'Bandit Algorithms: 151K lines, 13 days, 6 agents, $400'
+  - 'Matrix Multiplication: 2 days, 2 agents, by reusing prior results'
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence:
+  - "The mission set and figures here do not match Table 1 of the paper (intake-1297) — this post names Markov Chains and Matrix Multiplication missions absent from Table 1, whose four Prove2Me rows cover mid-June to end-July 2026. Do not merge the two result sets; they describe overlapping but different mission populations."
+  - "This post contains NO account of what went wrong in early multi-agent runs. The failure narrative lives in the paper (Sections 4.1 and 4.4) and in the Anthropic post, not here; any citation of this entry for that claim would be dangling."
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1300
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'section "How the harness works" -> "Proof-sketches split a large proof into independent problems"'
+    quote: 'An agent can close any one of them without ever downloading or compiling the parent, and when all children close, the parent resolves automatically.'
+    quote_sha256: '550edb569e2b78c3846840620d2c83fecbf763e85ddb97dfb8358aeb42fcc3a4'
+    source_revision: 'retrieved 2026-09-07'
+    verified_by: 'research-intake/stage2'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED as a platform property, not a convenience: it is formalized as Property 1 in the paper, licensed by immutability, and mechanically enforced by the anti-self-import rule (importing your own target would prove the goal from itself and is rejected).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED verbatim against prove2.me/about.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED. Also confirmed that cross-environment reuse is refused outright rather than warned about — a structural refusal of the same kind instrument_eras.yaml encodes.'
+  dive_corrections: '2026-09-07 STAGE-2 DIVE. beta.prove2.me/blog/intro-to-prove2me-i and prove2.me/blog/intro-to-prove2me-i are BYTE-IDENTICAL, and beta.prove2.me/blog lists exactly one post — there are no sibling posts, so this entry is the whole blog.
+
+    All three recorded claims CONFIRMED. The load-bearing one for EPYC is the first: a child problem is closable without downloading or compiling the parent, which means the decomposition ITSELF is what bounds each agent''s context, not a context-management technique. That is the opposite of how our subagent dispatches bound context today, where the bound comes from writing a narrow prompt.
+
+    RECORDED AS NOT-FOUND-IN-SOURCE so a later reader does not go looking: this post carries no early-failure retrospective. The duplicated-work and incompatible-parallel-formalization failures are in the paper Section 4.4; context accumulation and "losing track of proved results" are reported NOWHERE in the paper or on these pages — the only adjacent sentence is future work ("How such agents can exchange harnesses, lessons, and context to learn continually remains open"). The Anthropic post is the sole source for the lost-track-of-state narrative.'
+  notes: 'Retrieved and dived 2026-09-07. Carries the most transferable operational claim in the batch: a child problem is closable without compiling the parent. Stated in our terms, that is a context bound obtained from the artifact''s structure rather than from prompt engineering.
+
+    '
+- id: intake-1303
+  arxiv_id: '2604.09744'
+  url: https://arxiv.org/abs/2604.09744
+  source_type: paper
+  title: 'MPAC: A Multi-Principal Agent Coordination Protocol for Interoperable Multi-Agent Collaboration'
+  authors:
+  - Kaiyang Qian
+  - Xinmin Fang
+  - Zhengxiong Li
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - MCP and A2A both assume a single controlling principal, so neither covers agents from independent principals coordinating over shared state
+  - MPAC makes INTENT DECLARATION A PRECONDITION FOR ACTION across five layers (Session, Intent, Operation, Conflict, Governance)
+  - Conflicts are represented as first-class structured objects rather than resolved by silent overwrite or manual merge
+  - 'Specification defines 21 message types, three state machines with normative transition tables, Lamport-clock causal watermarking, two execution models, three security profiles, and optimistic concurrency control on shared state'
+  techniques:
+  - intent declaration as an action precondition
+  - conflicts as first-class objects
+  - Lamport-clock causal watermarking
+  - pluggable governance layer for human-in-the-loop arbitration
+  reported_results:
+  - 'three-agent code review benchmark: 95% reduction in coordination overhead, 4.8x wall-clock speedup vs a serialized human-mediated baseline, per-agent decision time preserved'
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Self-reported benchmark only; a three-agent code-review task is far narrower than the shared-repo scenario the abstract motivates, and no independent replication was found in a bounded search (provisional).'
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    handoffs:
+    - session-bus-thin-dispatcher.md
+  notes: 'Tier-2 search expansion from the Prove2Me coordination question. NOT DIVED — remains stage1-unverified, so no number or mechanism here may be quoted in a plan or handoff task. Directly adjacent to our session bus and the shared-clone hazard: the motivating example in the abstract is engineers coding agents editing the same repository, which is literally the failure our lane-worktree discipline exists for. Its intent-declaration-before-action primitive is what our claim mechanism already does; its conflicts-as-objects primitive is what Vidya''s disputes frame does. Filed to establish whether an existing external protocol subsumes any of our home-grown coordination surface, not because the 4.8x number is credible.
+
+    '
+- id: intake-1304
+  arxiv_id: '2604.03071'
+  url: https://arxiv.org/abs/2604.03071
+  source_type: paper
+  title: Automatic Textbook Formalization
+  authors:
+  - Fabian Gloeckle
+  - Ahmad Rammal
+  - Charles Arnal
+  - Remi Munos
+  - Vivien Cabannes
+  - Gabriel Synnaeve
+  - Amaury Hayat
+  categories:
+  - swarm_techniques
+  - agent_architecture
+  - formal_verification
+  - benchmark_methodology
+  key_claims:
+  - The widely-cited '30,000 agents' is 30,046 agent RUNS across eight role types over about seven days, not 30,000 concurrent agents; only ~3,300 succeeded, 3,490 runs reached Merged (11.6%), and 13,602 of the 30,046 are review passes. The paper states NO concurrency figure anywhere; the only hardware number is eight machines.
+  - 'The $100K cost is MODELLED, not measured: token counts are logged but ''our logs unfortunately do not contain token caching statistics'', so the dollar figure is a closed-form heuristic assuming identical dialogs and fixed vendor cache price ratios. $430K is the no-caching bound.'
+  - 'Waste dominates the token budget: by the paper''s own Table 3, non-merged outcomes consume 80.2% of all tokens and Aborted alone 51.6%. The paper states ''around half of the input tokens are spent on aborted agents'' and projects a 3-10x cost reduction from fixing orchestration alone, without better models.'
+  - 'The merge queue is named as a choke point twice in prose and once as one of THREE co-mingled causes of a measured quantity, but is never isolated: no queue depth, wait time, requeue rate, merge-failure count, or throughput-vs-parallelism curve exists.'
+  - 'Cost is normalized by CORPUS SIZE, never by agent count: about $200 per page and $300 per target, and the scaling thesis is near-constant cost per page rather than scaling with the unformalized dependency tree.'
+  - The claim that single-agent formalization 'does not scale' (aimed at Urban 2026) is asserted with no measurement, no shared corpus, and no controlled comparison.
+  techniques:
+  - trunk-based development with short-lived per-agent git worktrees sharing one mathlib install
+  - eight-role decomposition (sketcher / prover / two reviewers / maintainer / triage / scan / progress)
+  - split review into independent mathematical-faithfulness and engineering-quality reviewers
+  - filesystem issue tracker as the inter-agent protocol, itself under PR review
+  - single-threaded merge queue WITHOUT bors-style batching
+  - agent-run outcome taxonomy with per-bucket token accounting
+  reported_results:
+  - 130K lines of Lean, ~5,900 declarations, 340/340 targets, one week, Claude 4.5 Opus, eight machines + NFS
+  - 'Table 2 by role: 30,046 runs, 83,176M input tokens, 561.2M output, 1,645,274 turns'
+  - 'Table 3 by outcome: Merged 3,490 (16,574M tok); Aborted 6,120 (43,182M); No PR 14,192; No PR blocked 4,668; Max Revisions 976; Approved 589; Max Iterations 11'
+  - 'Cost: $430K without caching; ~$100K estimated with caching; derived unit costs ~$200/page and ~$300/target'
+  - 'DEFECT: Table 3 outcome rows sum to 30,046 runs / 83,736M tokens but Table 3 states its own Total as 29,691 / 81,228M. The stated total is not the sum of its own rows.'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - fleet-fanout-measurement.md
+  - session-bus-thin-dispatcher.md
+  - glm52-reviewer-capability-gates.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1305
+    - intake-1306
+    - intake-1310
+    handoffs:
+    - fleet-fanout-measurement.md
+    - session-bus-thin-dispatcher.md
+  contradicting_evidence:
+  - 'INDEPENDENT ADVERSE AUDIT — arXiv:2606.14000 (Meek et al.; no author overlap) audited this paper''s released output: ~18% (253 of 1,433) of statements semantically Different, thesis ''compilation-based metrics substantially overstate formalization quality''. The completeness claim (5 sorries, all intentional exercises; 0 axioms) SURVIVES; the faithfulness claim does not. Caveat: the audit is LLM-as-judge, not human review, and notes its headline rate ''slightly over-counts genuine divergence''.'
+  - 'The same audit REFUTES the mathlib-duplication objection: only 4% (278/6,960) of proofs overlap Mathlib.'
+  - 'Prove2Me (intake-1297) Table 1 mis-types this paper''s agent number: its caption defines Agents as a POPULATION while the cell holds agent RUNS, and Prove2Me''s own section 5 says ''agent runs''. Any per-agent or cost-per-line arithmetic across those rows is unit-incoherent.'
+  - 'LOC is not comparable across proof assistants: arXiv:2604.07455 reports an Isabelle/HOL formalization of the same Munkres material is ''roughly half the length'' because of base-library strength — a ~2x factor forbidding a 130K-vs-130K reading against intake-1306.'
+  - 'No community technical scrutiny exists: the one HN thread (44 points, 18 comments) contains zero technical criticism of the formalization.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.4, first paragraph
+    quote: 'We classify the possible outcomes of an agent run as follows: Overall success means that a pull requests is filed, approved and merged (Merged).'
+    quote_sha256: 0be046b922fd94aed1f41a071dd0731b45618aaaa3ad4b9cd02af267309b4cc6
+    source_revision: arXiv:2604.03071v1
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 3.5, first paragraph
+    quote: The full formalization required a total of 83B input tokens (with multiple counting in multi-turn dialogs) and 561M output tokens. Without token caching, this would correspond to a total cost of $430K. While our logs unfortunately do not contain token caching statistics, a back-of-the-envelope calculation (App. A) suggests an approximate price of $100K overall, $14K out of which for output tokens in both cases.
+    quote_sha256: f415e6d648b9ee226d6070f4e9d71398c00c26b768008fe26c3512e0c23eb580
+    source_revision: arXiv:2604.03071v1
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 4.2, third paragraph
+    quote: Likewise, the single merge queue without merge batching turned into a bottleneck during phases of the run with high degree of parallelism. Agents would repeatedly be asked to update their code due to merge conflicts, giving up eventually and creating additional issues on the tracker. This would in turn spawn additional maintainer agents, further increasing the resource contention.
+    quote_sha256: c5a2f485985273b1d305452d1fee21f5aa012415d04fd282cb471d33444495ef
+    source_revision: arXiv:2604.03071v1
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 6.1, first paragraph
+    quote: To realize the vision of routine formalization in research mathematics, the effort required per new publication must drop to a near-constant cost per page, rather than scaling with the size of its unformalized dependency tree.
+    quote_sha256: 714e834950e30173f64ad3f41ae466fa68016c8e5d8cb0639b128e58657cb93f
+    source_revision: arXiv:2604.03071v1
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE (arXiv HTML v1, the only version). THE CRUX QUESTION RESOLVES AGAINST THE SWARM READING: ''30,000 agents'' is 30,046 agent RUNS with an outcome each, 11.6% merged, 45% of them review passes, and NO concurrency figure exists in the paper. Cost scales with corpus size in this paper''s own normalization ($200/page, $300/target); there is no cost-vs-agent-count relation anywhere. THE REAL COST STORY IS DISCARDED WORK: 80.2% of tokens went to non-merged outcomes and 51.6% to Aborted alone (arithmetic on the paper''s Table 3, row-sum denominator). The merge-queue bottleneck is a real observation, correctly labelled as such by the authors, but co-mingled with NFS and worktree-timeout causes and never isolated.'
+  notes: 'Tier-2 expansion from intake-1297, whose Table 1 uses this paper as its ONLY quantitative contrast. Read at v1 2026-09-07. Note the authorship: Fabian Gloeckle is also first author of the multi-token-prediction paper at intake-623, and the group is Meta FAIR — the 30,000-run swarm is a FAIR artifact.
+
+    '
+- id: intake-1305
+  arxiv_id: '2605.29955'
+  url: https://arxiv.org/abs/2605.29955
+  source_type: paper
+  title: Formalizing Mathematics at Scale
+  authors:
+  - Ahmad Rammal
+  - Niket Patel
+  - Fabian Gloeckle
+  - Amaury Hayat
+  - Julia Kempe
+  - Remi Munos
+  - Charles Arnal
+  - Vivien Cabannes
+  categories:
+  - swarm_techniques
+  - agent_architecture
+  - formal_verification
+  - benchmark_methodology
+  key_claims:
+  - This paper states NO dollar figure anywhere — zero occurrences of USD, dollar, or any currency amount — yet its abstract concludes autoformalization is 'economically ... feasible'. Its entire economic argument is one unquantified sentence with no number on either side.
+  - 'The ''Tokens (M)'' column is a MODELLED PRICE INDEX, not a token count: 1x regular input / 0.1x cache-read / 1.25x cache-write / 5x output multipliers plus a 0.1 discount for the smaller model. Raw splits and cache-hit rate are never reported, so its token figures are NOT comparable with intake-1304''s.'
+  - The merge-queue 'cascading failures' claim appears once, in the Introduction, and is measured nowhere; 'conflict' and 'contention' occur zero times. The Limitations section lists no coordination, merging, parallelism or scaling limitation at all.
+  - 'Agent count is undefined and self-contradictory: ''thousands'' in the abstract, ''dozens or hundreds'' in section 1, ''hundreds'' in the conclusion, with no definition and no measured count. Maximum VALIDATED parallelism is 5 workers on one 39-target book.'
+  - 'The no-orchestrator ablation partly cuts AGAINST central re-planning: most token-efficient early, outperforming the full system until ~100M tokens, then plateauing at 64% versus 77% at a matched 600M-token budget.'
+  - Coordination overhead is a small roughly-constant share (orchestrator 4.01%, supervisor 5.72%, analyzers 1.28%) against workers at 76.35% — BUT the racing multiplier (3-5 workers per task, losers cancelled) is folded INTO the worker share and never separated, so the agent-count component of cost is invisible in this split.
+  techniques:
+  - three-tier management hierarchy (orchestrator / supervisor / workers)
+  - batched merge queue with bisect-and-reject, modelled on bors-ng
+  - 'concurrent racing: N workers per task, first past all gates wins, remainder cancelled'
+  - persistent trace-analyzer retaining full history across a failed task's attempts
+  - six-category anti-cheating rubric plus three 0-5 LLM-judge rubrics
+  - inherited-failure filtering so an upstream sorry does not cascade downstream
+  reported_results:
+  - 26 textbooks; Table 1 totals 2,855/4,007 target statements (71.3%), 483,918 LoC, 183,157M weighted token-units; ~1 week per book; Opus 4.6
+  - 'Ablations, all on ONE book (39 targets), matched 600M-token budget: full 77%; no-orchestrator 64%; no-supervisor 51%; no-trace-analyzer 57%'
+  - 'Parallelism arm: at 4 hours wall-clock, 3- and 5-worker configs reach ~62-68% vs single-worker 44%; 3 and 5 are NOT distinguished, so no diminishing-returns knee is shown'
+  - 'Compute split by role (% of total): Workers 76.35+/-5.71, Reviewers 6.86, Supervisor 5.72, Orchestrator 4.01, Full Eval 3.80, Readers 2.00, Analyzers 1.28'
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  handoffs_updated:
+  - fleet-fanout-measurement.md
+  - glm52-reviewer-capability-gates.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1304
+    handoffs:
+    - fleet-fanout-measurement.md
+  contradicting_evidence:
+  - Prove2Me (intake-1297) section 2 cites this paper for 'five-figure budgets per project (Gloeckle et al., 2026; Rammal et al., 2026)'. THIS PAPER CONTAINS NO BUDGET FIGURE, no dollar amount, and no currency of any kind. The second half of that citation is unsupported.
+  - 'Prove2Me also cites it as joint evidence that a merge queue ''becomes the empirical bottleneck of large swarms''. This paper measures nothing about merging: no queue depth, latency, batch size, bisection rate, rejection rate or build time.'
+  - 'SELF-UNDERCUTTING: the human expert audit covers 1 of 26 books — the same book used for all three ablations and the 2nd-highest scoring — and still found the formalization ''does not compile in Lean 4.30'', ''uses two explicit axioms ... placeholders for results that are not formalized'', and that ''the hardest statements are not formalized faithfully''.'
+  - The public repo now states 630,999 LoC / 46,203 declarations / 92.7% proved — past the paper's figures, and 92.7% proved implies ~7.3% NOT proved, so the library is not sorry-free.
+  - 'NOT INDEPENDENT of intake-1304: six of eight authors overlap. Its claim to supersede that architecture is asserted with no A/B and no shared corpus. No independent audit of this artifact exists.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 5, Results and Analysis
+    quote: Though exact numbers depend on the chosen API and the provider's pricing, we estimate that our pipeline is already cheaper per line of code than expert human annotators, while being faster and more scalable.
+    quote_sha256: 6a170bccea0d78f30acd93da676c986d4782875322236839f8c421bbfb3454f2
+    source_revision: arXiv:2605.29955v1
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 1, Introduction
+    quote: 'Scaling from a single coding agent to thousands working on a shared repository raises hard coordination problems: agents make incompatible design decisions, generate duplicate work, pursue tangential goals, and create cascading failures through a shared merge queue.'
+    quote_sha256: 1d9b983aaa34a10797088c0f838a4856fed49d0dcad860c88456aa156b9cbd82
+    source_revision: arXiv:2605.29955v1
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 5.3, ablations
+    quote: The no-orchestrator variant is the most token-efficient early on, outperforming the full system until ~100M tokens, but plateaus at 64%
+    quote_sha256: 8859acc5471b687dfd64ed2ff9964c80b83a13aa4d197b6d10f067d88e236392
+    source_revision: arXiv:2605.29955v1
+    verified_by: research-intake/stage2b
+    source_form_note: LaTeX source renders '~100M' from $\sim$100M; normalize before hashing
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Section 4.2, worker racing
+    quote: Optionally, multiple workers can race on the same target, each in its own worktree; the first to clear all quality gates wins and the remaining attempts are cancelled.
+    quote_sha256: 41e535626a07be6b8a5d82597d830770415dc35d4f48dc7c724fc4bf47b3b885
+    source_revision: arXiv:2605.29955v1
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE (arXiv HTML v1, only version). TWO PROVE2ME CITATIONS OVERTURNED AGAINST THIS SOURCE — it carries neither a budget figure nor any merge-queue measurement, so intake-1297''s ''five-figure budgets'' and ''empirical bottleneck of large swarms'' both rest on intake-1304 alone. THE MOST TRANSFERABLE DATUM IS THE ABLATION SET, and it is favourable to a 3-5 fan-out width: the central coordination tier is ~11% of compute, and 3-5 racing workers beat 1 worker on BOTH wall-clock and token cost at matched completion. The counterweight is that 3 and 5 are reported as one undifferentiated band, so the paper shows no saturation point and cannot license ''thousands''. Every ablation and the sole human audit run on the SAME single book, which is also the 2nd-highest-scoring of 26.'
+  notes: 'Tier-2 expansion from intake-1297. Same lab as intake-1304 (six of eight authors overlap) — not an independent check. Its 1/3/5 workers-per-task arm sits exactly at our ratified fan-out width, which makes it the most directly relevant measurement in this batch and also the thinnest: n=1 book, three points.
+
+    '
+- id: intake-1306
+  arxiv_id: '2601.03298'
+  url: https://arxiv.org/abs/2601.03298
+  source_type: paper
+  title: '130k Lines of Formal Topology in Two Weeks: Simple and Cheap Autoformalization for Everyone?'
+  authors:
+  - Josef Urban
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - formal_verification
+  - tool_implementation
+  key_claims:
+  - NOT LEAN. The checker is Megalodon (Chad Brown's higher-order set theory system) over a set-theory/surreals core library with no mathlib. Prove2Me's description of this work as 'roughly 130k lines of Lean' is factually wrong.
+  - 'Strictly single-agent and sequential: one Codex CLI in bubblewrap in one tmux session, driven by ONE constant prompt re-fed about 1000-2000 times over two weeks by a 20-line bash watcher that resends whenever the pane is unchanged for 60 seconds. No version control merging, no PRs, no reviewers, no merge queue.'
+  - 'The ''$100'' is a SUBSCRIPTION SEAT PRICE, not a compute cost — and the author instruments the gap himself: hourly ccusage reports over three days reach ~2,576 before a restart reset, and he states plainly these numbers are much higher than the $100 spent over two weeks.'
+  - 'The bottleneck of a single-agent loop is neither merging nor checking: whole-artifact verification of the 169,122-line file takes 32 seconds, and the constraint is LLM usage limits and available credits.'
+  - 'Context compactification is the operational failure mode, not coordination: a hard per-session limit was hit twice (session files at 252MB and 351MB), recovered only by overwriting the session file with an older snapshot — ''likely an unsupported and dangerous trick''.'
+  - The corpus is NOT admit-free ('admit' is Megalodon's sorry); only the headline theorems are certified free of admits and recursive admits.
+  techniques:
+  - long-running feedback loop between one CLI coding agent and a fast checker with a small core library
+  - tmux-pane-diff watchdog re-injecting a constant prompt on 60s of inactivity (idle detection as the scheduling primitive)
+  - authoritative rules file re-read every cycle
+  - bubblewrap sandbox granting dangerous tools while isolating the host
+  - per-theorem dependency/admit-status tracker regenerated each iteration
+  - session-file rollback to escape a context-compactification hard limit
+  reported_results:
+  - ~160k lines of formalized topology as of 2026-01-04, ~130k of them in two weeks; over 1.5k lemmas/theorems
+  - 'Named results: 3k-line Urysohn''s lemma, 2k-line Urysohn Metrization, over-10k-line Tietze extension'
+  - 'Cost: ~$100 subscription for two weeks (ChatGPT Pro $200/month, GPT 5.2 high reasoning); earlier ~30k lines in a month on a $20/month plan'
+  - 'Instrumented metered-equivalent (ccusage, hourly, 72h): cumulative reports rise to 2,576 before a restart reset'
+  - 'Checker cost: 32.25s to verify a 169,122-line / 7.8MB single file'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1304
+  contradicting_evidence:
+  - 'Prove2Me (intake-1297) section 2 misattributes the proof assistant: ''a single coding agent formalizes point-set topology in roughly 130k lines of Lean (Urban, 2026)''. It is Megalodon, not Lean. Prove2Me''s own bibliography carries the correct title, so the error is confined to the body sentence.'
+  - THE LOC FIGURE IS INFLATED BY BASE-LIBRARY WEAKNESS. arXiv:2604.07455 (Urban is fourth author, so not independent but adverse to his own interest) reports an Isabelle/HOL formalization of the same Munkres material is 'roughly half the length' because Isabelle supplies infrastructure Megalodon must build from scratch. A ~2x factor invalidating any 130k-vs-130K reading in BOTH directions.
+  - THE COST FIGURE IS A SEAT PRICE. The paper's own ccusage instrumentation puts three days at roughly $2.5-3.3K against a $100 fourteen-day subscription allocation; arXiv:2604.07455 independently reports the same shape (~$160 subscription vs $8,895 at list prices). Placing this '$100' beside a metered figure understates compute value by roughly 30-50x.
+  - intake-1304 asserts of this work that 'single-agent formalization ... does not scale and a multi-agent approach is needed' with no measurement, no shared corpus, and no controlled comparison.
+  - 'NO independent verification exists: no third-party audit, replication, admit census, or faithfulness check. The only comparative analysis is co-authored by Urban.'
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 3, Current Prompt
+    quote: With only a few exceptions, since December 22, the following short constant prompt has been repeatedly given to Codex each time it reports finishing its work (i.e., each time Codex CLI passes the control back to the user, asking for another prompt)
+    quote_sha256: 2e3bfade601fabb6cdc451ee63c420ded497fccf3872df903c9ea315583a3a19
+    source_revision: arXiv:2601.03298v1
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 8, Resources Used
+    quote: While the Pro subscription is indeed only $200/month, I have tried to use independent tools to measure the USD cost of calling the LLM. In particular, I call the ccusage tool every hour. Table 2 shows the reported costs for three days of running, including a compactification related restart. Note that these numbers are much higher than the $100 spent over the two weeks.
+    quote_sha256: 761955e319dcfa273902d76e0c4a7cfa39be5f5c00e3e829a166b6eae4afbdaa
+    source_revision: arXiv:2601.03298v1
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 9.2, Running Megalodon
+    quote: 'An obvious solution is to start to split the file or to start admitting (the @proof pragma in Mizar) the finished theorems. So far, I haven''t done that because: (i) I prefer the proofs to be possibly refactored by the LLMs, (ii) running Megalodon doesn''t seem to be the bottleneck compared to the LLM usage and available credits.'
+    quote_sha256: 4c41627fbfdb44d121dfe2db12b6b040dd0d8fc28d133ba98a105a1945ec1edc
+    source_revision: arXiv:2601.03298v1
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 9.1, Context Compactification
+    quote: 'Even worse, there seems to be a hard limit on how much compactification can be done for a continuous session. I have reached this hard limit already twice: once (December 26) when the ChatGPT session file reached about 252MB, and another time (January 2) when the session file reached 351MB.'
+    quote_sha256: b0fccc2d54935dba9be54e422bf460c173ba367be8c9ba9c8582e7d81f192bef
+    source_revision: arXiv:2601.03298v1
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE. SOURCE IDENTIFIED from the Prove2Me v2 bibliography (cited only as ''Urban, 2026'' in the body) and read at v1, the only version. TWO HEADLINE FIGURES DO NOT MEAN WHAT A TABLE ROW WOULD IMPLY: the proof assistant is Megalodon, not Lean, so its line count is not commensurable with any Lean project (a ~2x base-library factor is documented in arXiv:2604.07455); and the $100 is a subscription seat price whose metered equivalent the author himself measures at roughly 30x higher. This entry exists mainly as the SERIAL CONTROL ARM nobody ran: comparable output scale with zero coordination machinery, bottlenecked on account credits rather than on integration.'
+  notes: 'Tier-2 expansion from intake-1297, identified from its bibliography. The most useful single passage for us is section 9.2: in a single-agent loop the proof checker is NOT the bottleneck (32s for the whole 8MB artifact) — LLM credits are. Prove2Me and intake-1304/1305 all build their motivation on recompilation cost; this paper sidesteps the entire problem class by not having a repository.
+
+    '
+- id: intake-1307
+  arxiv_id: '2605.28365'
+  url: https://arxiv.org/abs/2605.28365
+  source_type: paper
+  title: Risk-Controlled Lean-as-Judge for Natural-Language Mathematical Reasoning
+  authors:
+  - Pauline Bourigault
+  - Xiaotong Ji
+  - Matthieu Zimmer
+  - Rasul Tutunov
+  - Haitham Bou-Ammar
+  categories:
+  - formal_verification
+  - benchmark_methodology
+  key_claims:
+  - A kernel-checked proof certifies the generated STATEMENT, not the informal problem. In one MATH-500 pipeline only ~43% of proved Lean statements are faithful, against 73.6% that an automated symbolic check labels non-trivial-and-correct.
+  - 'THE 43% IS A REWEIGHTED PROJECTION, NOT A COUNT: per-category rates from a 45-example single-annotator audit reweighted by the automated classifier''s population frequencies over 314 proved artifacts. The only reported audit cells are 6/6 (genuine) and 0/6 (structural).'
+  - THERE IS NO LLM JUDGE IN THIS PAPER. Despite 'Lean-as-judge' in the title the judge is Lean, and the human comparison is against a symbolic rational-arithmetic checker measuring a different construct. It yields no judge-vs-human agreement rate.
+  - 'Formal-judge reliability is sharply coverage-dependent (a ''coverage cliff''): the top proved answer class matches the reference 96% of the time at high proved coverage but 20% at low coverage.'
+  - 'Absence of proof is a heterogeneous event, not a negative label: of 1403 answer-class observations, 741 were never formalized, 251 ill-typed, 271 typechecked-unproved, 140 proved, 0 timed out — the bottleneck sits entirely BEFORE proof search.'
+  - The risk certificate covers ACCEPTED formal predictions only and explicitly does not certify individual mathematical truth, unresolved classes, fallback predictions, or statement faithfulness.
+  techniques:
+  - selective prediction with distribution-free finite-sample risk control
+  - one-sided Clopper-Pearson selective-risk upper bounds
+  - Bonferroni union-bound correction over a preregistered threshold grid
+  - dev-then-cal threshold selection (threshold chosen on an independent split, certified once on cal)
+  - coverage diagnostics over answer classes
+  - stratified manual faithfulness audit reweighted by automated-classifier category frequency
+  reported_results:
+  - 'Faithfulness: 314 proved artifacts classified genuine 40.1% / structural 33.4% / trivial 22.9% / spurious 2.5% => 73.6% non-trivial-and-correct; manual audit n=45 single annotator; reweighted => ~43% faithful; a wrong answer class is proved in 8% of problems'
+  - 'Coverage cliff: winner accuracy 0.96 at high proved coverage (n=85) vs 0.20 at low (n=283)'
+  - 'Status counts: 1403 answer classes — unformalized 741, typechecked 271, illtyped 251, proved 140, timeout 0'
+  - 'Compute: 1x H100 80GB, ~15-20 GPU-hours total'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  discovered_via: search
+  expanded_from: intake-1297
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
+  - canonical-judge-suite-revamp.md
+  - reviewer-calibration-accounting.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    handoffs:
+    - vidya-belief-substrate-program.md
+    - canonical-judge-suite-revamp.md
+    - reviewer-calibration-accounting.md
+  contradicting_evidence:
+  - 'INDEPENDENT COUNTERWEIGHT — arXiv:2606.31002 measures a related quantity on a different population and reaches much higher faithfulness: across eight systems on 400 graduate statements the compile-faithfulness gap is 3.0-29.0 points, worst case 89.5% compile / 60.5% faithful. Does NOT refute 43% (different denominator, domain and formalizer strength) but refutes any reading of 43% as a general autoformalization faithfulness rate.'
+  - 'DENOMINATOR AMBIGUITY IN THE SOURCE ITSELF: 105 proved problems, 140 proved classes and 314 proved artifacts are all reachable from the phrase ''proved statements'', and the paper never reconciles them. Our record pins the 314 artifacts.'
+  - 'The audit was never resampled: the paper''s own bootstrap captures partition variance but not candidate sampling or autoformalization stochasticity.'
+  - Prove2Me (intake-1297) quotes the 43% verbatim with no independent measurement — one hop, accurately transcribed, but stripped of every scope qualifier. This is the citation via which the number entered our records.
+  - No independent replication of the ~43% figure was found in a bounded search as of 2026-09-07 (provisional).
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 8.2, Faithfulness Audit, body paragraph 1
+    quote: Reweighting the audited per-category rates by population frequency, only ≈43% of proved statements are faithful, about half the 73.6% that typecheck and hold.
+    quote_sha256: fea5246fd09c6cba4377aef20deea82442691dcbc296750e55e1daf1954b04b5
+    source_revision: arXiv:2605.28365v1
+    verified_by: research-intake/stage2b
+    source_form_note: '''≈43%'' renders from $\approx\!43\%$'
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 8.2, opening sentence
+    quote: An automated rational-evaluation check classifies the 314 proved artifacts as genuine (40.1%, a ℚ-true arithmetic identity), structural (33.4%, a true gcd/divisor/quantified statement), trivial (22.9%, an X=X identity), or spurious (2.5%, ℚ-false), so 73.6% are non-trivial and correct.
+    quote_sha256: af0618fb96ffd6635f6e59a48878be268bd335f88bbe5365af9f1a8c42df6dfd
+    source_revision: arXiv:2605.28365v1
+    verified_by: research-intake/stage2b
+    source_form_note: ℚ renders from $\mathbb{Q}$; X=X from $\mathtt{X}=\mathtt{X}$
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Limitations, 'Faithfulness of proved statements', final sentence
+    quote: This audit is diagnostic error analysis, not benchmark-grade annotation (e.g., it uses a single annotator and small per-category samples) and the automated diagnostics alone do not flag a faithful-looking but semantically drifted statement.
+    quote_sha256: cb637e76df63f5ff62cc95b5e49536ef07d33c7a65a7979ccd49472238b3c540
+    source_revision: arXiv:2605.28365v1
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: Limitations, 'Scope of the certificate', sentence 2
+    quote: It does not certify individual mathematical truth, does not assign a label to unresolved answer classes, and does not extend to fallback predictions made when A_τ̂(x)=0.
+    quote_sha256: f5c2beeb7eac6f86a98a1354587a5963ea61c307a84cb4ad8c1c54e9a5e6bc4d
+    source_revision: arXiv:2605.28365v1
+    verified_by: research-intake/stage2b
+    source_form_note: A_τ̂(x)=0 renders from $A_{\hat{\tau}}(x)\!=\!0$
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE (arXiv HTML v1, only version; MathML alttext preserved because a naive HTML-to-text pass drops every number). THE NUMBER SURVIVES AS THE AUTHORS'' OWN ONE-HOP MEASUREMENT AND PROVE2ME TRANSCRIBED IT ACCURATELY; what does not survive is the generality it acquired in transit. Three findings change how we may hold it. (1) It is a PROJECTION, not a count — 40.1% genuine + 2.5% audited-false-positive spurious = 42.6%, so the figure is mostly the automated classifier''s category frequency wearing a human audit''s label, with the human contribution being two cells of size six. (2) The denominator is ambiguous in the source itself and never reconciled. (3) THE PAPER CONTAINS NO LLM JUDGE — the judge is Lean. Any filing of this as evidence about LLM-as-judge reliability is wrong. THE LOAD-BEARING TAKEAWAY IS NOT THE 43% but the Limitations ''Scope of the certificate'' plus Proposition 1: a machine-checked artifact certifies the proposition it decided, and nothing binds that proposition to the claim someone cites it for.'
+  notes: 'Surfaced independently by three of the four Stage-2 dives as the source of the 43%-faithful figure Prove2Me leans on. Its direct bearing on us is the Vidya grade carrier: this is a measured demonstration that a verifier result certifies the STATEMENT CHECKED, not the CLAIM ASSERTED, with a ~30-point gap in a real pipeline. Cite as an existence proof that the gap is large in at least one pipeline; NOT as a rate.
+
+    '
+- id: intake-1308
+  arxiv_id: null
+  url: https://raw.githubusercontent.com/prove2me/prove2me_workspace/main/references/mission_auditor.md
+  source_type: repo
+  title: Mission Auditor - Writing Read-backs (Prove2Me agent workspace, references/mission_auditor.md)
+  authors:
+  - Prove2Me (shuzechen, Columbia)
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - swarm_techniques
+  key_claims:
+  - 'Self-review of a formalization is structurally non-independent: an agent that knows what the code is supposed to say will read that meaning into it, so the discrepancies an auditor needs disappear.'
+  - 'The countermeasure is a CONTEXT WHITELIST, not a role split: the auditing sub-agent is launched with a fresh context and given ONLY the artifact (the formal statement plus its preamble) and the read-back spec file.'
+  - The blinded agent must emit DESCRIPTION, NEVER VERDICT — 'No judgment, no advocacy' — and discrepancies are adjudicated by a human comparing the read-back against the stated intent.
+  - A read-back written against a superseded artifact is 'worse than none, because it testifies about the wrong artifact'; any edit to the statement mandates a fresh re-run.
+  - 'Only the model name is recorded as provenance for the judge: no attestation that the blinding actually held, no version of the spec the auditor ran under, no hash of the audited text.'
+  techniques:
+  - blind read-back / independent testimony from a fresh-context sub-agent
+  - positive context whitelist plus explicit contaminant blacklist
+  - testimony/verdict separation (the describing agent is forbidden to adjudicate)
+  - 'under-claiming rule: if the code says less than the intent, the read-back must say less'
+  - anti-vacuity checklist forcing explicit statement of degenerate cases and vacuously satisfiable hypotheses
+  - staleness invalidation on artifact edit; re-instantiate the blind agent per revision
+  reported_results:
+  - NONE. The document is prescriptive only. No hit rate, caught-error count, false-agreement rate, A/B against unblinded self-review, or sample size appears in this file or anywhere in the repository (whole tree grepped at the pinned SHA).
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-1299
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - reviewer-typed-artifacts.md
+  - vidya-belief-substrate-program.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1299
+    - intake-1307
+    handoffs:
+    - reviewer-control-plane-index.md
+    - vidya-belief-substrate-program.md
+  contradicting_evidence:
+  - 'THE PROTOCOL IS UNQUALIFIED: it states no failure mode, limitation or efficacy envelope for blinding itself. The only failure modes named concern writing a read-back badly. It is silent on correlated failure when auditor and author share a base model (blinding removes shared CONTEXT but not shared PRIORS), on fluent-and-wrong read-backs, and on human comparison fatigue at scale.'
+  - 'THE STORED ARTIFACT CANNOT EVIDENCE ITS OWN CENTRAL CLAIM: nothing records that the sub-agent was actually denied the intent, so a captain who skipped the blinding produces a byte-identical record.'
+  - The captain iterates against auditor output in a closed agent-to-agent loop, which is saved from being role decomposition only by the fresh-context requirement.
+  - 'PROVENANCE DRIFT OBSERVED AT RETRIEVAL: the copy served at prove2.me differs from the repo copy at the pinned SHA (a section heading corrupted to ''Format of read-bck'' and a dropped period) and is NEWER, so the spec an auditor is handed is itself unversioned and drifting. Cite the raw.githubusercontent path, never the served path without a retrieval timestamp.'
+  - The protocol is ~4 weeks old (introduced 2026-08-11), not settled practice.
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: section 'Independence is the point'
+    quote: Never give the auditor the informal statement, the source material, the mission pitch, or your own intent. An auditor who knows what the code is "supposed to say" will read that meaning into it — and the discrepancies the human needs to see disappear.
+    quote_sha256: 51a32edddfab4725d925f0bb24884db934ee8712999bb0a5fdc5b39925a5d8c8
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: section 'The principles', principle 7
+    quote: '**No judgment, no advocacy.** Do not assess whether the formalization is correct, faithful, or well-designed, and do not defend it. Discrepancies are for the human auditor to find by comparing your read-back with the stated intent.'
+    quote_sha256: be07fb714b39eed97a679d8cf82f9ed5b90365933f42965c58ef62073dde3ea7
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: section 'Attaching the read-back', final line
+    quote: 'Re-run the auditor after any edit to the Lean statement: a read-back of an older version of the code is worse than none, because it testifies about the wrong artifact.'
+    quote_sha256: 04c8026e1931308b527b861a8f4435ae1480c76fc652f8316d55293a476e5272
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE. Pinned to repo commit 58332c69693c59d948b2546b78baf348ce2f0c2e (main, 2026-09-05); fetched copy verified byte-identical to the tarball of that commit. CITATION BOUND, and it is the most important line in this entry: this source may be cited for MECHANISM AND RATIONALE ONLY. It may NOT be cited as evidence that blind read-back reduces false self-verification, at any strength, because the repository contains no efficacy measurement of any kind. THE ROLE-VS-INFORMATION-HIDING DISTINCTION HOLDS, but only on three specific properties: no authority is transferred (the auditor is forbidden to reach a verdict), the split is an information whitelist over the SAME task rather than a skill or work-stage boundary, and blinding is re-established with a fresh context every revision. Remove any one and it degenerates into the role pipeline our doctrine ratified against.'
+  notes: 'The liftable artifact behind the strongest transferable idea in this whole batch. Directly targets our recorded failure mode in which an agent verifies its own edit and confirms what it expected. If adopted, our deployment must carry the hit-rate measurement the source lacks, plus a blinding attestation and an audited-text hash that the source also lacks.
+
+    '
+- id: intake-1309
+  arxiv_id: null
+  url: https://raw.githubusercontent.com/prove2me/prove2me_workspace/main/references/upload_full_project.md
+  source_type: repo
+  title: Upload a full Lean project (Prove2Me agent workspace, references/upload_full_project.md)
+  authors:
+  - Prove2Me (shuzechen, Columbia)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - knowledge_management
+  - swarm_techniques
+  key_claims:
+  - Decomposition must be planned from a mechanically extracted dependency graph and executed by DELETION from the original sources ('skeleton subtraction'), never by hand-splitting - subtraction preserves scopes, notations and instance context byte-for-byte.
+  - 'Promote-vs-inline is a CODIFIED THRESHOLD, not a judgement call: proof over 40 lines becomes a node; 10 lines or fewer is inlined and duplicated freely even when shared; 11-40 lines is promoted only on a named promotion signal (used by 2+ nodes'' proofs, used across files, carries a docstring, or named in the source paper).'
+  - 'Under uncertainty the default is INLINE, justified by REVERSIBILITY ASYMMETRY: an inlined lemma can still be published later, but an uploaded theorem is immutable. A second independent promotion force is failure isolation, since each unit is verified as one all-or-nothing job.'
+  - Positions for every text edit come from the elaborator, never from regex ('never search the text for :='), and edits are applied by rewriting extractor-reported ranges right-to-left, followed by re-elaboration to catch the reference kinds the extractor cannot see.
+  - Transplant correctness is proved by diffing the pretty-printed ELABORATED TYPE of every node before and after, with an exhaustive pre-declared allowed-difference set (universe display names only).
+  - An idempotent uploader writes a state file BEFORE AND AFTER every API call, so an interrupted run resumes with no duplicates.
+  techniques:
+  - skeleton subtraction (generate by deleting unselected declaration spans)
+  - 'two-stage meta-program extraction: declaration graph plus positional oracle'
+  - typeDeps vs valueDeps split separating importable-interface deps from proof-only deps
+  - codified promote-vs-inline thresholds with a named promotion-signal list and inline-when-unsure default
+  - cheap-iteration gate immediately before the irreversible step
+  - elaborated-type diff with a named allowed-difference set
+  - write-ahead state file plus record-id-then-poll async upload; leaves-first publish order
+  - wrap-don't-rename namespace collision avoidance
+  reported_results:
+  - NONE quantitative. No timings, node counts or defect counts. The 40/10-line boundaries are stated and immediately self-labelled 'tunable defaults'. The only verifiable artifact is one small worked example, which is an existence proof of runnability, not evidence for the thresholds.
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-1299
+  ingested_date: '2026-09-07'
+  verdict: adopt_patterns
+  verification: dive-verified
+  handoffs_updated:
+  - handoff-index-and-backlog-graph.md
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1299
+    handoffs:
+    - handoff-index-and-backlog-graph.md
+    - session-bus-thin-dispatcher.md
+  contradicting_evidence:
+  - The thresholds carry NO empirical support and the document concedes it ('The thresholds are tunable defaults'), so importing 10/40 as literal numbers would be cargo-culting a boundary that was never measured.
+  - THE TIE-BREAK INVERTS FOR US. The inline-when-unsure default is set by immutability of the published unit and an all-or-nothing verification job. Our handoff rows are freely editable and deletable, so the reversibility asymmetry that sets their default points the OPPOSITE way for us; the tie-break must be re-derived, not copied.
+  - Dependency-graph extraction here is possible because a Lean elaborator can be asked. Our backlog has no equivalent oracle, so the 'never pattern-match' rule is aspirational for us until one exists.
+  - The two promotion forces (reuse signals vs inline-when-unsure) can conflict, and the document resolves it only by prose ordering, not by a rule.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: preamble
+    quote: Hand-splitting loses `variable` scopes, local notations, and instance context; subtraction preserves them byte-for-byte, which is why statements survive unchanged.
+    quote_sha256: 7f6750ad57a9b9d8ae70253355cf78fa5a0f8ccdeb8ebd95ec87abcbfad07465
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: section 'Phase 2 - Plan the node set'
+    quote: 'The thresholds are tunable defaults. When unsure, inline: an inlined lemma can still be published later, but an uploaded theorem is immutable'
+    quote_sha256: 7022fcf7e8b9a8498c4017869a379a82c1b2aef77a7531827e0044cb1d373f9e
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: section 'Phase 7 - Upload, strictly ordered'
+    quote: 'Write an **idempotent uploader**: a state file records every action before and after its API call, so an interrupted run (server load, token expiry, killed processes — all of these will happen) resumes with no duplicates.'
+    quote_sha256: a2ee55679fd585f947b0495f5d9180d83d48324e1bb9fd0ba18dc773de36e2c0
+    source_revision: prove2me_workspace @ 58332c69693c59d948b2546b78baf348ce2f0c2e
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE. Pinned to commit 58332c69693c59d948b2546b78baf348ce2f0c2e; fetched copy verified byte-identical BOTH to the tarball of that commit AND to the copy served at prove2.me - no divergence for this file, unlike its companion intake-1308. VERDICT IS ADOPT-THE-DECISION-SHAPE, NOT THE CONSTANTS: the shape (a mechanical size metric, a named promotion-signal list for the ambiguous band, an explicit tie-break under uncertainty, and a failure-isolation criterion independent of reuse) transfers to our backlog rows; the 10/40 numbers are Lean-proof-specific, self-declared tunable, and their tie-break rationale inverts for freely-editable rows.'
+  notes: 'The promote-vs-inline threshold table is the rule our backlog lacks: we split work into thin rows across six domain indices and over-count open items with no codified test for when a unit deserves its own row. Measure our own row-size distribution before importing any number.
+
+    '
+- id: intake-1310
+  arxiv_id: null
+  url: https://github.com/anthropics/fermats-last-theorem
+  source_type: repo
+  title: Fermat's Last Theorem in Lean 4 (Anthropic research artifact)
+  authors:
+  - Anthropic, PBC
+  categories:
+  - formal_verification
+  - autonomous_research
+  - knowledge_management
+  - tool_implementation
+  key_claims:
+  - A machine-generated Lean development of 60,475 modules builds with the final theorem depending on exactly the three standard axioms, and the axiom list is PINNED BY A GUARD IN THE DEFAULT BUILD TARGET, so the build fails if it degrades.
+  - The 'second independent kernel' check was run ONLY on a build carrying four Anthropic-authored patches, one of which adds a per-declaration memo of NEGATIVE definitional-equality answers. The soundness of the patches is asserted in one sentence with no argument and no unpatched control run, and the comparator's own built-in second-kernel pass is disabled in config.
+  - 'NEITHER of the two self-limiting sentences our records attribute to this artifact is in it: ''has not been refereed as mathematics'' and ''should be cited as a formalisation of the general classical theorem'' are both NOT-FOUND at the pinned SHA. The nearest in-repo equivalent is a machine-readable review block declaring self-assessed status with an empty reviewer list.'
+  - 'The producers'' own limitations document was WRITTEN, FED TO THE DOC GENERATOR, AND WITHHELD: there is no docs/ directory, while the generator''s own README names limitations.md and verification.md as inputs.'
+  - 'Human-written mathematics is materially present and documented by the producer: 106 files carry third-party project material, 23 reproduce Mathlib text, two load-bearing files were ported ''by hand'', and 28 theorem STATEMENT files were hand-edited during a toolchain port.'
+  - 'Reproduction is fully pinned and scripted with an exit-code oracle, at roughly 21 hours wall: build 5h32m at 96 jobs / 153 GB peak, comparator 14h46m / 230 GB, second-kernel export and check ~1.5h.'
+  techniques:
+  - claim-as-failing-build-target (a guard pinning the printed axiom list in the default target)
+  - statement/proof module separation so the dependency graph is readable from imports alone
+  - challenge/solution protocol matched binder-for-binder plus whole-environment kernel replay
+  - second-kernel differential check via export into an independent implementation
+  - post-hoc attribution recovery by line-level diff with published detection thresholds
+  - per-datum provenance stamps distinguishing quoted source text from generated prose
+  reported_results:
+  - Build 5 h 32 min at 96 jobs, 153 GB peak; Mathlib from source about 13 minutes at 96 jobs
+  - 'comparator 14 h 46 min, ~13 h single-core kernel replay, 230 GB peak; second kernel: 37.8 GB export ~1 h, check ~30 min at 16 threads'
+  - 60,475 modules built; 29,511 theorems; 1,450 definition modules; 106,853 citation edges
+  - 'Self-measured defects: 2,890 of 106,853 citation edges (2.7%) where the cited name does not occur textually in the importing proof; 22 of 29,511 theorems outside the final closure'
+  - 'OUR OWN measurement, not a repository figure: in a 150-file random sample of statement files, generated attribute-disabling preamble lines are 48.4% of bytes and imports a further 8.6%'
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  discovered_via: search
+  expanded_from: intake-1298
+  ingested_date: '2026-09-07'
+  verdict: worth_investigating
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  cross_references:
+    intake:
+    - intake-1297
+    - intake-1298
+    - intake-1301
+  contradicting_evidence:
+  - The PDF-quoted 'has not been refereed as mathematics' is NOT-FOUND-IN-SOURCE at the pinned SHA (zero hits for referee/refereed/peer/review across the tree).
+  - The PDF-quoted 'should be cited as a formalisation of the general classical theorem' is NOT-FOUND-IN-SOURCE.
+  - The PDF's build figure of 5 h 52 min on 96 cores / 512 GiB is CONTRADICTED by the repository's own 5 h 32 min at 96 jobs with 153 GB peak. The strings '512' and '96 core' do not occur anywhere in the repository, and it offers no reconciliation.
+  - 'The PDF file count 60,474 vs the README''s 60,475 is NOT a discrepancy: 60,474 is the import closure of the build target, 60,475 adds the target itself. Both figures appear in the repository.'
+  - 'The blog framing ''humans wrote no mathematics'' is complicated by the producer''s own attribution files: two files ported by hand, 28 statement files hand-edited, and 106+23 files of documented third-party human-written material.'
+  - The ~40% duplication and 31% generated-preamble figures are NOT acknowledged anywhere in the repository; the preamble mechanism is named only in the two documents that describe STRIPPING IT FROM THE READER'S VIEW.
+  - Elaborator limits are raised 20x repo-wide in the build config and mentioned in no document.
+  - 'Single squashed root commit with no parent: no development history, no agent transcripts, no failed-attempt record. For an artifact whose central claim is about the process that produced it, the process is the one thing not published.'
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README.md, 'How it was verified', second-kernel bullet, final sentence
+    quote: None of the patches adds, removes or weakens a typing rule.
+    quote_sha256: 77a3949cc47fda15c44a5f22765b7d05cecd7e6fe93bb8c843f2f2725ca056f7
+    source_revision: anthropics/fermats-last-theorem @ aa2d8b34692b16c70f699536de0d8e75b9a3e9ef
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md, 'How it was verified', build bullet
+    quote: All 60,475 modules of this repository built
+    quote_sha256: 7407f170f82295d37eb6f487796efe595adfc1a05d7e64f294c7e03eaa1aaa93
+    source_revision: anthropics/fermats-last-theorem @ aa2d8b34692b16c70f699536de0d8e75b9a3e9ef
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: README.md, 'Check it yourself', second bullet
+    quote: Ours took 5 h 32 min at 96 jobs, with a peak of 153 GB of memory.
+    quote_sha256: a77b447ebebfdbacf0777d8bc3ee052a03b239f2bc4548cccce2bc4c787fbd26
+    source_revision: anthropics/fermats-last-theorem @ aa2d8b34692b16c70f699536de0d8e75b9a3e9ef
+    verified_by: research-intake/stage2b
+    source_form_note: spans a source line wrap between 'with a' and 'peak of'; normalize whitespace before hashing
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: ATTRIBUTION.md, section 2, opening paragraph
+    quote: In May 2026 we ported the upstream Frey-package file and the torsion Galois-module file by hand into our working tree, restructuring them and adding material of our own
+    quote_sha256: 73d94e97297e77fa252340eb30996af2420cff2e7578bb0fd44f9fe6260a1106
+    source_revision: anthropics/fermats-last-theorem @ aa2d8b34692b16c70f699536de0d8e75b9a3e9ef
+    verified_by: research-intake/stage2b
+  dive_corrections: '2026-09-07 STAGE-2b COMBINED INGEST+DIVE. Pinned to commit aa2d8b34692b16c70f699536de0d8e75b9a3e9ef (single root commit, no parent, 2026-09-03). THE STRUCTURAL FINDING FIRST: there is NO docs/ directory. docs/verification.md and docs/limitations.md do not exist in the published repository, though the doc generator''s own README names them as inputs - the producers'' limitations document was written, fed to the generator, and withheld. CONSEQUENCE FOR OUR RECORDS: neither self-limiting sentence our records attribute to this artifact is verifiable in it, and both must be attributed to the PDF, never to the repository. The 5h52/96-cores/512-GiB figure is contradicted by the repo''s own 5h32/96-jobs/153-GB. The 60,474-vs-60,475 apparent discrepancy is resolved (closure vs closure-plus-target) and should no longer be recorded as one. THE ARTIFACT IS NONETHELESS A GOOD REPRODUCTION PACKAGE - fully pinned, scripted, with an exit-code oracle and a failing-build claim guard - and its self-documented defects are more candid than most. The one unverified link in its trust chain is that the producer patched the independent checker and asserted the patch was safe, with no control run.'
+  notes: 'Ingested to check Anthropic''s blog claims against the artifact itself. Zero bearing on the inference stack; high bearing on measurement and documentation discipline. The most transferable pattern is claim-as-failing-build-target; the most transferable ANTI-pattern is caveat placement inversely correlated with caveat severity - the sharpest limitations live in generated HTML inside a large folder while the README carries the headline.
+
+    '

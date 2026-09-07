@@ -531,6 +531,51 @@ def build_graph(state: dict) -> dict:
     }
 
 
+def dep_cycles(state: dict) -> list[str]:
+    """One error per elementary cycle in the hand-authored `Deps` graph.
+
+    Iterative DFS with an explicit stack -- the graph is tiny, but recursion depth is not the
+    reason to avoid recursion here: the path stack IS the error message, and reconstructing it
+    from a recursive traversal is fiddlier than carrying it.
+
+    Unknown dep ids are skipped rather than reported; BAD DEP already owns that error, and
+    emitting both for one bad cell would double-count a single defect.
+    """
+    rows = state["rows"]
+    errs: list[str] = []
+    seen_cycles: set[frozenset] = set()
+    colour: dict[str, int] = {}          # 0/absent = unvisited, 1 = on stack, 2 = done
+
+    for root in sorted(rows):
+        if colour.get(root):
+            continue
+        # stack entries: (node, path-to-node, iterator over its deps)
+        stack = [(root, [root], iter(sorted(d for d in rows[root].get("deps", []) if d in rows)))]
+        colour[root] = 1
+        while stack:
+            node, path, it = stack[-1]
+            nxt = next(it, None)
+            if nxt is None:
+                colour[node] = 2
+                stack.pop()
+                continue
+            if colour.get(nxt) == 1:                      # back edge -> cycle
+                cycle = path[path.index(nxt):] + [nxt]
+                key = frozenset(cycle)
+                if key not in seen_cycles:
+                    seen_cycles.add(key)
+                    errs.append(
+                        "DEP CYCLE: " + " -> ".join(cycle) + " — every row on this cycle is "
+                        "permanently unreachable; one of these edges is expressing something "
+                        "other than 'blocked on' and must be deleted")
+            elif not colour.get(nxt):
+                colour[nxt] = 1
+                stack.append(
+                    (nxt, path + [nxt],
+                     iter(sorted(d for d in rows[nxt].get("deps", []) if d in rows))))
+    return errs
+
+
 def check(state: dict) -> list[str]:
     errs = []
     paths = handoff_paths()
@@ -562,6 +607,21 @@ def check(state: dict) -> list[str]:
         for d in r["deps"]:
             if d not in state["rows"]:
                 errs.append(f"BAD DEP: row {rid} depends on unknown id {d}")
+
+    # DEP CYCLES (added 2026-09-07).
+    #
+    # BAD DEP above catches a dep pointing at nothing. It cannot catch a dep pointing at
+    # something that points back, and a cycle is strictly worse than a dangling id: every row
+    # on it is permanently unreachable under any readiness rule, while still rendering as an
+    # ordinary dispatchable row in its index, in the master rollup and on the hub graph. It is
+    # invisible precisely because each individual edge is well-formed.
+    #
+    # Found by running the readiness computation for the first time: INF-06 and INF-64 each
+    # listed the other, because the back-edge was expressing RIDER-OF ("this handoff is a rider
+    # on that one") in a column whose only semantic is BLOCKED-ON. That is the same direction
+    # ambiguity that got the 253-candidate heuristic edge import rejected in build_graph; here
+    # it had already landed as a hand-authored edge.
+    errs.extend(dep_cycles(state))
 
     # SAME FILENAME IN BOTH active/ AND completed/ (added 2026-08-16).
     #

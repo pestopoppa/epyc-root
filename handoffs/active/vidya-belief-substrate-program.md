@@ -1325,6 +1325,57 @@ runs**, same rule and same reason as SC49. Source row added to
       trigger, and it is compute-gated
       **EVENING 2026-08-26: unchanged — no sweep has run (verified)**
 
+## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07)
+
+Source: `intake-1297`…`1310` (Prove2Me coordination harness + the sources behind its claims), all
+`dive-verified`. The wave's relevance here is **one finding and one convergence**. The finding is
+that a machine-checked verdict certifies *the proposition the checker decided*, and nothing binds
+that proposition to the claim someone cites it for. The convergence is that a platform with every
+commercial incentive to accrue reputation arrived independently at this program's two-plane split.
+
+- [ ] **SC56 — statement-binding precondition for any grade above `Judged`.** A verifier-derived
+      tuple may be graded above `Judged` only when the adapter records **what proposition the
+      verifier actually decided** AND that proposition is bound to the claim being asserted. Absent
+      the binding, cap at `Judged`. Evidence: `intake-1307#00` — in one real pipeline an automated
+      check labelled 73.6% of proved artifacts non-trivial-and-correct while a manual audit put
+      faithfulness at ~43% — and `intake-1307#05`, the certificate "does not certify individual
+      mathematical truth". **Cite the precise `#NN` forms, never the whole entry**: that entry's
+      headline number is a reweighted projection from a 45-example single-annotator audit and is
+      admissible as an existence proof that the gap is large, never as a rate.
+- [ ] **SC57 — `decided_proposition` on the verifier-class adapter contract.** Extend the source
+      table in [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) so a
+      verifier adapter must emit *what the check asserted*, not only a boolean, and refuse
+      registration of one that emits pass/fail alone. **Project, not grade** — no new ladder
+      (`docs/design/vidya-pilot-spec.md` §4.7). Retrofit is impossible for the usual reason: a
+      proposition invented on read claims warrant the original check never captured.
+- [ ] **SC58 — verify judgment frames are pinned to the digest of the artifact they judged**, and
+      transition dirty when that digest moves. §5.2 plausibly covers this already, so this is a
+      check, not a build; a negative result is a P1 defect. Source: `intake-1308#03` — "a read-back
+      of an older version of the code is worse than none, because it testifies about the wrong
+      artifact." Note that the source platform enforces this only as prose, and stores no hash of
+      the audited text — which is exactly why it cannot detect its own violation.
+- [ ] **SC59 — optional free-text `reason` on `supersedes`/`retracts` frames**, surfaced on the
+      belief's review path. **No grade effect**, deliberately — same rule as corrections, for the
+      same reason (we know the ground shifted, not by how much). The consumer is a citer told a
+      frame was superseded who currently learns nothing about *why*, and so repeats the rejected
+      reasoning at full price. Precedent: Prove2Me makes `reason` mandatory on every milestone
+      re-link specifically so solvers do not re-walk rejected paths (`intake-1299#record`).
+- [ ] **SC60 — rank open obligations by discharge leverage** (how many beliefs' gate outcomes would
+      change if this obligation were discharged), modelled on Prove2Me's `closability`. **LOW
+      priority, and filed with its own deflation:** measured on our dependency graph the metric
+      would be 0 for roughly 85% of nodes, because their graph is a dense proof tree and ours is a
+      sparse hand-authored annotation. Copying the metric without the density copies the ceremony,
+      not the signal. File it; do not start it.
+
+**Declined from this wave, recorded so they are not re-derived.** A dead-end/negative-evidence
+ledger (real problem, but a coordination artifact rather than a claim-level belief — it would widen
+this program past its ratified three gaps); a guard against deleting retraction records (already
+structurally impossible under append-only JSONL §11.0 — worth stating as a defended property, since
+the source platform's own milestone delete cascades its edit history with no undo); and an
+audit-envelope fix for claims reused outside the context that vetted them (already solved — the
+grade travels with the claim, and the `intake-NNN` / `#NN` / `#record` citation forms already encode
+that relying on a whole entry inherits every defect of every claim in it).
+
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 
 Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the

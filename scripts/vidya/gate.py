@@ -217,15 +217,32 @@ def evaluate(
         else (belief.con.dominates(policy.floor), [])
 
     if belief.review_required and not policy.allow_review_required:
+        # `review_required` is the OR of two conditions that `fold.Belief` deliberately keeps
+        # apart -- "its own source was corrected" and "something it rests on was withdrawn"
+        # (fold.py: they "get cleared by different people"). Reporting only the correction count
+        # collapsed exactly that distinction, and did it worst in the case the split exists for:
+        # a belief blocked purely by a dependency alert was refused with "0 unreviewed
+        # correction(s)", naming a cause it did not have and a remedy that does not apply.
+        block_reasons: list[str] = []
+        block_actions: list[str] = []
+        if belief.corrections:
+            block_reasons.append(
+                f"{len(belief.corrections)} unreviewed correction(s) recorded against this claim")
+            block_actions.append(
+                "review the recorded correction and record its effect on this claim, "
+                "or use a policy that accepts review-required beliefs")
+        if belief.dependency_alerts:
+            block_reasons.append(
+                f"{len(belief.dependency_alerts)} entr(y/ies) this claim declared a depends_on "
+                f"edge into have lost all support: "
+                f"{', '.join(sorted(belief.dependency_alerts))}")
+            block_actions.append(
+                "re-verify this claim against the withdrawn dependenc(y/ies), or retract the "
+                "depends_on edge if it was never evidential, "
+                "or use a policy that accepts review-required beliefs")
         return GateResult(
             outcome=Outcome.BLOCK, claim_id=claim_id,
-            reasons=[
-                f"{len(belief.corrections)} unreviewed correction(s) recorded against this claim"
-            ],
-            required_next_actions=[
-                "review the recorded correction and record its effect on this claim, "
-                "or use a policy that accepts review-required beliefs"
-            ],
+            reasons=block_reasons, required_next_actions=block_actions,
         )
 
     if con_ok and not policy.allow_conflicted:
