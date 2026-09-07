@@ -59,8 +59,8 @@ inherits this fix for free; a hand-kept CPU ledger cannot.
 ### 2.2 Numbers from a contended instrument are not banked value — R23-50, INF-70 HARNESS-1
 Same day, same mechanism (`akm-q4k-q8-sum-sidecar`): +6.723/+2.978/+2.374/+1.952/+1.595% and four nulls,
 against a 0.668% floor — a 6.6 pp spread; ~80 re-measurements since are null-to-negative. INF-70's cold-arm
-A/A: ~5% clean, **pair_p95 19.89% contended**, one arm carrying 3218% foreign CPU. Their +4.27% champion
-headline is at or below its instrument's floor (sign survives on 60/60 paired wins; magnitude does not).
+A/A: ~5% clean, **pair_p95 19.89% contended**, one arm carrying 3218% foreign CPU. Their +4.50% champion
+headline (supersedes the +4.27% quoted earlier that day; 1.5149× vs pristine on 0 s-eviction rounds) is at or below its instrument's floor (sign survives on 60/60 paired wins; magnitude does not).
 Historical arms cannot be retro-screened: the sampler read `184-191` as disjoint until today, so labels are
 wrong, not missing. Three of our 31 `kept` rows never reached the champion (tagged
 `ak/orphan-keeps-quantize-20260829`), and the pass they touch is ≤3.6% of tg128, so their +12.5% was noise.
@@ -119,7 +119,13 @@ each iteration (lane picks a surface by budget share, not round-robin):
         → anchor guard → bundle[surface].add_keep(MEASURED tip-vs-cor) → bundle.save()
   if any bundle[surface] clears fire_multiple × floors[surface.serving]:
         serving gate for THAT surface (its own recipe, its own llama-server)
-        PROMOTE surface → cor advances (shared) → LOO: one reverted arm per accumulated keep, ALL surfaces
+        PROMOTE surface → cor advances (shared)
+                        → RE-BASELINE: every OTHER surface re-measures tip-vs-NEW-cor on its OWN harness before
+                          any compounded_bench_pct is quoted again — never carried, never rescaled ("a baseline's
+                          value is a property of the tip it was taken at", INF-70 review 2026-09-07)
+                        → LOO: one reverted arm per accumulated keep, ALL surfaces, as a HARD GATE on the
+                          promotion record (no LOO receipt → promotion refused: LOO skipped once is
+                          indistinguishable from LOO never built). Cost n_keeps × n_surfaces arms — budgeted §3.4.
                           (a CPU keep can change a GPU number: shared ggml graph code — measure, don't assume)
         DIVERGE → hold, journal, planner evidence
 promotion to production: ONE full candidate build of the champion tip, all surfaces' gates demonstrated,
@@ -147,6 +153,14 @@ tg128 pairs, INF-70's is ~5% clean / 19.89% contended on a 24-prompt served harn
 serving gate fires per surface. The headline card shows per-surface gain over the shared cor, never a
 sum or product across surfaces.
 
+**Re-baselining rule (INF-70 review, 2026-09-07).** The cor is SHARED, so when any surface's promotion
+advances it, every other surface's `compounded_bench_pct` is momentarily stated against a baseline its own
+harness never measured. That number is INVALID until that surface re-measures tip-vs-new-cor on its own
+harness: the bundle marks every non-promoting surface `stale_baseline` at PROMOTE and clears the flag only on
+that measurement; a quote while flagged is refused. Carrying or rescaling it forward is the same laundering
+class as pre-hook seeding. Per-surface cor was considered and rejected — it recreates two lineages inside one
+branch; if the re-baseline arm ever proves too expensive, revisit that choice explicitly rather than skip the arm.
+
 ### 3.3 Track U3 — RUNTIME_CONFIG arm type
 D3 gave us build-recipe arms (cmake defines). Most CPU wins are *runtime*: placement, NUMA mode, thread
 topology, env knobs, launch flags. A RUNTIME_CONFIG hypothesis mutates a **codified recipe**, needs no
@@ -163,6 +177,18 @@ A CPU arm and a build never overlap; a GPU arm and a build may (GPU-bound, host 
 the sampled foreign load on the GPU host threads' siblings stays under a declared bound. Budgets: a CPU
 arm costs ~10× a GPU arm (reload + eviction), so surface share is by *arm-seconds*, not iterations, and the
 CPU surface gets fewer, larger windows. This is the structural resolution of OP-41 (option A, built in).
+**LOO budget, stated so it cannot be quietly skipped:** per promotion, `n_keeps × n_surfaces` arms plus one
+re-baseline arm per non-promoting surface — at 5 keeps and two surfaces, 5 GPU arms (minutes) plus 5 CPU
+arms (~30 min of arm time before builds) plus re-baselines. The broker reserves that window when the fire
+decision is made; the promotion record carries LOO and re-baseline receipts as REQUIRED fields and a
+promotion without them is refused, not warned.
+**Precondition for P4 (INF-70 review):** `foreign.py` lives in scratch (`/mnt/raid0/llm/tmp/inf70/agents/
+sync19-20/`) under a retention note, and a retention note is not a home — promote it into
+`epyc-inference-research` (beside the recipe module PROD-1 is producing) with a test BEFORE the broker depends
+on it. Owner `ak-rebuild-20260828` unless INF-70 takes it.
+**§3.3 oracle, sharpened by the review:** INF-70's fall-through knob passed 18/18 output identity precisely
+BECAUSE outputs were bit-identical — an output-diffing oracle cannot see the class; op-coverage diffing is
+necessary, not nice-to-have.
 
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
@@ -203,6 +229,8 @@ sequencing: measurement first, authoring later).
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
 - [ ] CPU A/A calibration: screen floor + serving floor, n=20 pairs, host-state hash recorded
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
+- [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
+      a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
 - [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
 ### P3 — RUNTIME_CONFIG arm (U3)  · exit: a config keep committed to a codified recipe and re-measurable from a fresh checkout
@@ -214,7 +242,9 @@ sequencing: measurement first, authoring later).
 ### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
 - [ ] Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
 - [ ] CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
+- [ ] **P4-0 precondition**: promote `sync19-20/foreign.py` out of scratch into `epyc-inference-research` with a test
 - [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
+- [ ] LOO + re-baseline receipts are REQUIRED fields of the promotion record; promote refuses without them
 - [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
 - [ ] Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
 
