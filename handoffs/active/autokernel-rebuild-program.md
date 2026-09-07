@@ -1730,7 +1730,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
           resolves foreign processes via `/proc/*/exe` and compares `cpus_allowed` against the
           SIBLING-EXPANDED bench set (the literal-range compare is what made `184-191` read as disjoint).
-          Source: `/mnt/raid0/llm/tmp/inf70/agents/sync16/`. Wire into the serving gate's residency check.
+          Source: `/mnt/raid0/llm/tmp/inf70/agents/sync19-20/foreign.py` — **NOT `sync16/`, which INF-70
+          RETRACTED 2026-09-07: its `arm.sh:45` carries the same literal `Cpus_allowed_list` vs `0-95`
+          compare, so it is the bug, not the fix.** `foreign.py` reads sibling lists from the kernel AND
+          samples live `/proc/<pid>/stat` deltas instead of `ps %CPU` — a process-lifetime average
+          structurally cannot see a burst, which is what undid INF-70's slowest arm (lowest median foreign
+          load, killed by one 3218% spike). Same trap as our own `ps %CPU is cumulative not live` note.
+          Wire into the serving gate's residency check.
         - [ ] **Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those
           arms acquire the region and ask us to hold at the next task boundary. Their levers measure 1-3%
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
