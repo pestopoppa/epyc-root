@@ -1206,6 +1206,32 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+**★★ HARNESS-1 INTERIM 2026-09-07 — implementation complete at `inf70/harness1` @ `eae02f2dc`; measurement
+queued.** Three things worth recording before its results land.
+
+**★ ENV VARS CANNOT SWITCH A LIVE PROCESS — the hot-server design needed a different mechanism than I
+specified.** A running process's `environ` cannot be rewritten from outside, so "read the knob once per
+`graph_compute`" is necessary but **not sufficient**. It moved all compute-path knobs from first-use latches
+to a **snapshot refreshed once per `ggml_graph_compute` on the calling thread**, fed by an **mmapped control
+page (`GGML_KNOB_FILE`)** rather than the environment. `GGML_NOHUGEPAGE` and the THP shim untouched.
+**★ CORRECTION TO MY BRIEF: `GGML_VEC_Q8K` and `GGML_QSPLIT` DO NOT EXIST at `6f032c48d`.** I named five
+compute-path knobs and told it to base on the champion; two of them exist only on **CHAMPION-3's tip,
+`9c4f73e29`** (build 10241). It branched from `6f032c48d`, then fast-forwarded to `9c4f73e29` with
+`6f032c48d` still in ancestry — the right call, and it flagged rather than silently retargeting.
+**★ THE FADVISE PREMISE IS PROVEN, with the right instrument**: `tools/pagecache` does an fadvise drop with
+**`mincore`-based re-measurement**, and has already established that the **91.636 GiB GGUF is 100% resident,
+measured in 1.4 s** — versus the 140 s the allocation-pressure path costs. Verified by page residency, **not
+by the syscall's return**, as required.
+**Object-digest work taken**: `object_digest`/`object_manifest`/`object_diff` lifted from `b808e2d6` into
+`tools/objidentity.py`, with `post_build.sh` recording the object digest alongside the substitution record.
+Its own exposure was the **sound** kind — `binaries.sha256` compares a copied binary against the same build's
+output — and it had no rebuild-and-compare-`.so` check anywhere.
+**★ AND IT IMPROVED THE ABLATION RECIPE**: `ablate.sh` mutates, builds incrementally, `object_diff`s against
+the champion manifest, and checks the diff names **only the lever's TUs** — plus a new **`diffm` mode**,
+because *"an ablation compares champion-state to mutated-state across TIME in one incremental build dir, not
+two dirs."* Autokernel's `object_diff` compares two directories; ablation in a single incremental dir needs a
+**temporal** comparison. That distinction is the agent's, not autokernel's or mine.
+
 **★★ BINDING RULE FROM AUTOKERNEL 2026-09-07 — DIGEST THE OBJECTS, NEVER THE LINKED `.so`.** Measured on
 this host: the **compiler is byte-reproducible** (**0 of 379 objects** ever differed across rebuilds) but the
 **LINKER is not** — **one commit produced four distinct `libggml-hip.so` digests.** So build identity must be
