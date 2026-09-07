@@ -1756,9 +1756,17 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         (~80 attempts through 2026-09-02) came back null or negative, ending at −0.449%/−0.091%.
         2026-08-29 is also the retraction day (correctness gate ran `test-backend-ops` with an unsupported
         `--suite-seed`, so verdicts were never really measured). Corroborates INF-70's contention finding.
-      - [ ] **R23-50a — re-measure the three orphan keeps as fresh hypotheses** at the current calibrated
-        floor, never by trusting the 08-29 numbers. Not mechanical: `quantize.cu` has diverged 95/57 lines
-        since, so they are re-derivations, not cherry-picks. Seed them into the inbox as design_priors.
+      - [x] **R23-50a — RECOVERY SEEDED (operator directive: "we must ABSOLUTELY recover them")** ✅ 2026-09-07:
+        inbox `23-recover-q8-1-quantize-cdna2-wave-vectorized.md` = `AK-H-RQ-1`, diffs saved under
+        `loop-memory/patches/orphan-keeps-20260829/` (3 per-step + combined). Re-DERIVATION, not cherry-pick:
+        the champion's `quantize_q8_1_1d` is verified still the upstream scalar kernel (no CDNA2 branch), but
+        five later keeps rewrote the batched reductions in the same file. **Ceiling finding that bounds the
+        prize: `quantize_q8_1_1d` is ≤3.6% of tg128 in the live profile, so +12.5% from this one pass was
+        never physically possible — the 08-29 numbers were noise; the recoverable mechanism is worth 1–3%.**
+        Mutually exclusive with `AK-H-AQ-1` (deletes the pass) — seed says which supersedes which. Run 30
+        picks it up on its next planner call (live inbox re-read, no restart).
+      - [ ] **R23-50b — step 3 (`fourlane-dual-fragment`, batched `quantize_q8_1`)** re-derive only after
+        RQ-1 lands and only if the five later reduction keeps left that kernel's loads scalar.
       - [x] **R23-51 — THE BUNDLE IS NOW DURABLE; the serving gate had NEVER fired** ✅ 2026-09-07
         (research `706e6894` → main `2de94d08`). `run.py` built `Bundle(champion_of_record=anchor_commit)`
         fresh at every startup, so each restart reset the keeps AND advanced the champion of record to the
