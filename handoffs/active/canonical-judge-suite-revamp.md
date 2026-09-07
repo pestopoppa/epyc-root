@@ -331,7 +331,7 @@ import.
 - [ ] **CJ-7d — suite-construction principle** (intake-1154): build the suite to *provoke* the specific
       failure mode under study rather than sampling generic tasks. Aider's laziness benchmark is the
       worked example. A design note governing CJ-7a-c, not separate work.
-- [ ] **CJ-8 — three-valued gate verdicts** (intake-1307; 2026-09-07). Every gate returns
+- [x] **CJ-8 — three-valued gate verdicts** (intake-1307; 2026-09-07). Every gate returns
       `pass` / `fail` / `out-of-coverage`, with a **mandatory cause code** on the third; a
       two-valued verdict is non-compliant. Audit existing suites for gates that silently count
       out-of-coverage as fail. Reuse the vocabulary already ratified for the dashboard plane
@@ -340,12 +340,51 @@ import.
       of 1,403 observations 741 were never formalized at all and **zero** timed out — the entire
       bottleneck sat *before* the check ever ran. "No signal" and "failed the check" are different
       events with different remedies, and folding them together makes the common case invisible.
-- [ ] **CJ-9 — resolved coverage alongside every verdict** (intake-1307; 2026-09-07). Each suite
+- [x] **CJ-9 — resolved coverage alongside every verdict** (intake-1307; 2026-09-07). Each suite
       emits the fraction of the asserted surface the judge actually decided, and **suppresses a
       headline when coverage falls below a declared per-suite threshold**. Evidence: in the source,
       winner accuracy was 0.96 where the resolved mass dominated and **0.20** where it did not —
       the same judge, the same protocol, a 4.8× swing driven only by coverage. This is our standing
       gate-scope rule (a gate's scope must match the measured subset) given a computable statistic.
+      **DONE 2026-09-07.** Vocabulary + contract: `scripts/benchmark/gate_verdict.py` (epyc-root),
+      vendored into both child repos as `gate_verdict_vocab.py` with a conformance test that loads
+      the canonical module BY PATH and skips — never passes vacuously — when it is absent. Twelve
+      conversion sites landed (epyc-orchestrator `9cfe731f`, epyc-inference-research `11e5ec75`).
+      The safety rule held everywhere: no undecidable outcome that blocked before promotes now, and
+      `GateResult.__post_init__` REFUSES `passed=True` on an out-of-coverage verdict, so it is
+      structural rather than conventional. Two findings worth more than the conversion itself:
+      (a) `general.py:155` was **fabricating** a GPQA reference (`expected="A"`) when gold was
+      missing — not a mislabelled verdict but an invented oracle, against which every model
+      answering B/C/D scored wrong; (b) the `gate_runner → progress_logger → q_reward` chain
+      charged −0.1 of *learning signal* per timeout, i.e. taught the router that a model it never
+      checked was bad. Ratified naming (2026-09-07): `inconclusive` is the canonical WIRE spelling,
+      `out-of-coverage` is gate-plane in-code vocabulary, `to_verification_outcome()` is the
+      mandatory translator.
+
+- [ ] **CJ-11 — `score_response` needs a three-valued sibling, and it cannot be widened in place.**
+      Deferred out of CJ-8 for a specific reason, not left undone: live callers wrap it as
+      `bool(resp) and score_response(...)` (`architect_sequential_runner.py:255`,
+      `architect_bench_rescore.py:49`), so ANY truthy third value coerces to a **PASS** — the
+      blocking→promoting flip CJ-8 forbids, and it would inflate quality rather than deflate it.
+      `answer_scoring.py` is also sha256-pinned in three places and its vendored copy is
+      byte-identical below a 39-line header. Shape of the fix: add `score_response_or_error`
+      alongside (precedent: `seeding_scoring.score_answer_or_error`), migrate callers **one at a
+      time**, re-pin the digests last. Do not widen the return type of the existing function.
+
+- [ ] **CJ-12 — OPERATOR RULING NEEDED: may a verbatim-transcribed judge be edited to report its
+      own failure?** The 18 DTAP judges (`scripts/autopilot/evals/dtap/judges/*/judge.py`) swallow
+      exceptions at 42 sites, so a judge that crashed is indistinguishable from one that judged
+      "no". The harness boundary already has `JudgeFailure`/`OutcomeType.JUDGE` and could classify
+      it — but the judges swallow the exception before the harness can see it, so the fix has to be
+      in the judge. That collides with a per-file `upstream_judge_sha256` byte-identity attestation
+      in `manifest.json`: editing them breaks the provenance claim the transcription exists to make.
+      **Options:** (1) amend the transcription contract to permit an exception-reporting wrapper
+      while keeping the judgment logic byte-identical, re-attesting against the wrapper; (2) leave
+      the judges frozen and accept that judge crashes stay invisible; (3) fork attested-vs-adapted
+      copies and pin both. Recommendation: (1) — it preserves what the attestation is *for* (the
+      judgment is upstream's) while removing what it costs (a crash reads as a verdict). This is a
+      trust-boundary decision, not an executor's.
+
 - [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one**
       (intake-1337#record, supersedes the "patch the judge prompt" framing intake-1330 filed). It is
       already written and diffable: transcribe from `beam_100k_bench.py:204-274` at `475d3fbd24`
