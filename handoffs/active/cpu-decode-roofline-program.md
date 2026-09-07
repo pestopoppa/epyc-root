@@ -1206,6 +1206,42 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+**★★★ SYNC-16 INTERIM 2026-09-07 — built at `inf70/sync16` @ `6d8592fb8`; measurement blocked on the lock.
+It caught a real correctness bug in its own first version, before any measurement.**
+
+**The lever**: `ggml_argsort_top_k` now records `k` in the ARGSORT node's `op_params[1]` as a **hint**; the CPU
+kernel satisfies it with `std::partial_sort` over a **k+1** prefix plus a per-row tie guard falling back to the
+full `std::sort`. Op contract, DESC ordering, the view, `n_tasks` and all other backends untouched.
+`GGML_ARGSORT_K=1`, **default OFF**. `nth_element` avoided (unordered top-k would permute experts);
+`ggml_top_k` avoided (its deliberate `swap(dst[0],dst[1])`).
+
+**★ THE BUG IT CAUGHT IN ITSELF — a guard that claimed uniqueness while ties hid where it could not see.** The
+first version sorted a **k-wide** prefix, but **`partial_sort` does not make `dst[k]` the (k+1)-th largest**,
+so a tie against the k-th element **can hide anywhere in the 502-element tail** and the guard misses it. An
+adversarial unit test found **2,363 of 200,000 tie-rich rows diverging from `std::sort` while the guard
+claimed uniqueness.** With a **k+1** prefix: **0 divergences in 1.26 M rows** across six distributions from
+continuous to all-tied, plus ASC edge shapes at k=1/10/511. **Bit-identity is now a contract, not an
+observation** — and a spot-check would have shipped the broken version, since ties are rare in real data
+(b4r2 measured 0 in 40.9 M pairs) and the defect only surfaces under adversarial construction.
+**Activation proven three ways, not assumed**: `strings` shows the marker in `bin-s16` only; a real-graph probe
+on the full 512-wide ARGSORT node shows knob-unset → full sort, knob-set → partial selection, and **champion
+binary with the knob set → `op_params[1]=0, inert**; the k-prefix is identical in all three.
+**★ THE OBJECT-DIGEST MACHINERY PAID FOR ITSELF WITHIN HOURS OF BEING LIFTED.** First identity attempt was
+confounded — **two worktrees embed different paths, so all 291 objects differed.** Rebuilt both arms from the
+**same directory**: exactly **2 of 291** differ (`ggml.c.o`, `ops.cpp.o`), 289 byte-identical. And separately,
+**an index-vs-HEAD trap made one rebuild silently produce the BASE binary under the s16 name — caught only by
+the object diff showing 0 differences.** That is precisely the class of error `.so` hashing cannot see.
+**Mechanism sizing (off-lock microbenchmark)**: the champion arm **independently reproduces the in-situ
+census** (20.3–20.9 µs/row here vs `thr_max` 19.33 µs/node in-model), and partial selection runs at **2.01
+µs/row — 10.4×, above the 4–7× projection** — saving ~907 µs of the 928.5 µs ARGSORT budget. **Caps the
+plain-token prize at ~1.8–2.0%.**
+**All four `ggml_argsort_top_k` call sites audited**: every one consumes only the returned k-wide view, so the
+hint is **safe tree-wide**, not merely for this router.
+**Blocked on one named external event**: the bench lock, held by `inf70-champion3-confirm`. `test-backend-ops`
+is running off-lock on cores 96-183; the bit-identity window and the claim-grade ABA (3 rounds × {champion,
+sync16+knob}, MTP first, **plus a knob-off control on the sync16 binary to separate the knob from the
+binary**) are queued. **No go/no-go — the measured delta is the deliverable and it does not exist yet.**
+
 **★★ HARNESS-1 INTERIM 2026-09-07 — implementation complete at `inf70/harness1` @ `eae02f2dc`; measurement
 queued.** Three things worth recording before its results land.
 
