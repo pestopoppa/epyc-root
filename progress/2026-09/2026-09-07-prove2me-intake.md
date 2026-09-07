@@ -240,3 +240,164 @@ ledger holds zero judgment frames.
 `premise_screener` has 9 lifetime verdicts, 0 of them `stale`, 5 `unknown` because the probe bundle
 lacked the settling artifact. Its verdict — a screening fix, not a dependency-edge subsystem — is
 recorded in `session-bus-thin-dispatcher.md` with AIR-12/13/14 filed from it.
+
+## Wave 3 — RA-13b/c, RC-11/RC-12, CJ-8/CJ-9, and the cross-repo naming ratification
+
+Continuation of the same subagent-dispatch pattern, same day, after AIR-11 landed.
+
+| Row | Commit | Result |
+|---|---|---|
+| RA-13b/c | `495de160` | blind read-back write-time meter + record format; 48 tests, 9/9 mutants killed |
+| RC-11/RC-12 | `ae8ab82b` | PII eval sides split; **`impact.py` ordinal off-by-one fixed**; SC64 filed |
+| PII `account_number` fixture | `0c788932` | vacuous negative case given a real side; **`\b`-vs-`_` guard defect fixed** |
+| CJ-8/CJ-9 | `9c86adb8` | three-valued gate-verdict contract + per-suite resolved coverage; one worked conversion |
+| naming ratification | `10098820`, `3adbd63d` (root) / `8b740065` (orchestrator) | `inconclusive` fixed as the canonical wire spelling |
+| rollup refresh | `ecbdc917` | `index_state.py --check` regenerated post-wave |
+
+**RA-13b/c** builds the write-time meter and record format for blind read-back (the reviewer
+sub-agent receiving only the artifact, never the task statement). The three counts must partition
+the denominator — an undercounted one silently inflates every rate, so it is refused — and
+`citable_summary()` raises below n=20, naming n, the threshold, and the bound it failed. RA-13c
+closes the source paper's own defect: `verify_brief_binding()` re-derives the sha256 of the
+rendered brief, so a run whose context leaked the task statement produces a different hash and
+cannot pass as blinded. RA-13a (the actual N=20 pilot) stays open — it needs live model calls and
+is operator-gated; only its harness is built.
+
+**RC-11/RC-12 turned up two live defects while auditing, neither of which the row was written to
+find:**
+
+1. **`scripts/vidya/impact.py` classified `CLAIM_COMPLETE` on the literal `g.t >= 2`.** That
+   ordinal was correct when written — `Anchored` was grade ordinal 2 — but commit `29173208`
+   inserted `MachineLocated` at ordinal 2 and pushed `Anchored` up, so the check silently began
+   admitting machine-located spans while the local variable and its own docstring still said
+   "anchored". It failed in the dangerous direction: `CLAIM_COMPLETE` is what licenses asserting
+   `UNAFFECTED`, and the module's own header calls a wrong `UNAFFECTED` "the single most
+   dangerous output this system could produce" — machine-located spans are by construction spans
+   no person has read. Mutation-confirmed: under the old literal, a belief supported entirely by
+   machine-located spans returned claim-complete. Fixed to read the named level; 95 new tests.
+2. **`pii_fixture_eval.py` reported one `passed/42`** over 20 must-block and 22 must-not-block
+   rows with no side split. Now two counters, own denominators, cause histograms, and an explicit
+   statement of the non-computable side (false-reject has no ground truth to convert to a rate).
+   The payoff: the account_number rule — the most false-reject-prone rule in the hook, five
+   documented over-block repairs — had exactly **one** must-not-block row, at 10 digits, below the
+   rule's 12-digit floor. Its entire false-reject surface was untested and the suite was green
+   about it.
+
+**The PII fixture follow-up (`0c788932`) turned that vacuity into a live guard defect.** Negative
+coverage for `account_number` went 1 → 9 rows, each pinning one named exemption branch. The new
+negative control caught it immediately: the config-exemption guard read
+`\b(account|card|customer|iban|routing|ssn)\b`, and `\b` does not treat `_` as a word boundary
+separator the way the rule assumed — so `\baccount\b` never matched `account_number`, and
+`account_number: <16 digits>` sailed through the branch built to refuse it. (The literal
+digits live in the fixture, which the hook allow-lists; quoting them here would trip the very
+hook this paragraph describes — as they did, on the first attempt to commit this note.) Both guards
+now match on non-alpha boundaries (so `_` separates, but a mid-word hit still doesn't fire); two
+trap rows (`discarded_bytes`, `wildcard_shard_size`) pin that legitimate exemptions keep working.
+Eval after the fix: false-accept 0/21, false-reject 0/30, sides reported separately, a real
+account number verified still blocking end-to-end. `tokens` was also added to the
+self-describing-key exemption alternation, closing the over-block that hit `5f1c4ba4` earlier the
+same day.
+
+**CJ-8/CJ-9 ship the contract, not the migration.** `gate_verdict.py` (829 new lines) enforces:
+verdicts are `pass`/`fail`/`out-of-coverage`; any bool, `0`/`1`, or other non-member is refused;
+`out-of-coverage` without a cause is refused; a cause outside a closed 9-code registry is refused;
+a cause attached to a *decided* verdict is refused; `refuse_two_valued()` refuses a suite that
+declares only two values at all; `min_resolved_coverage` is mandatory per suite (never defaulted —
+one global number would be a threshold nobody derived), and a suite under its own floor reports
+`out-of-coverage/insufficient_coverage`, never `fail`. One conversion was done as the worked
+example — `granite_embedder_conversion_preflight.py`, where "tree not downloaded" and "staged
+weight wrong size" both used to produce `blocked`/exit-1 and now report `out_of_coverage` with a
+cause code. The commit message is explicit that **CJ-8/CJ-9 stay open**: roughly 94 more
+call sites across two child clones were surveyed and left unconverted, several deliberately —
+`v7_quality_gate_compare.py` must become exit-2 rather than pass, or a thin candidate promotes,
+and that blast radius is not a mid-pass unilateral call.
+
+**Cross-repo naming ratification.** Two three-valued contracts existed for the same state:
+epyc-orchestrator's `verification_report.schema.json` (already ratified) spells it `inconclusive`;
+this session's CJ-8 module, one day old, spelled it `out-of-coverage`. Ratified rather than
+picking a winner by fiat: `inconclusive` is canonical **on the wire** (already-ratified, and
+renaming a cross-repo schema to match a one-day-old module would run backwards); `out-of-coverage`
+survives as CJ-8's in-code vocabulary, because at the gate plane the useful thing to say is which
+items the checker never reached; `to_verification_outcome()` is the mandatory boundary translator.
+The schema's own `inconclusive_reason` field was widened from free text to the closed 9/10-code
+registry (root vs. orchestrator side each name their own count) so reasons are countable instead of
+each producer inventing its own string. Landed via
+`scripts/operator/ratify_three_valued_verdict_naming_20260907.sh`: `3adbd63d` in epyc-root
+(comment-only, +8/-0, no rename/test/behaviour change), `8b740065` in epyc-orchestrator.
+
+## Rows filed BY today's work, not planned in advance
+
+Seven rows exist only because executing the original 19 surfaced them, not because Stage-3 planned
+them: **SC61** (`claim_statement_binding/v1`, the producer SC56's `attested` binding is missing),
+**SC62** (wire FM-5 into the belief kernel — filed and closed same day), **SC63** (wire RA-13b's
+blind read-back outcomes into the belief kernel), **SC64** (the sequential-certification-that-
+cannot-fail gap `impact.py`'s fix exposed), **AIR-12/AIR-13/AIR-14** (probe-bundle repair,
+advisory `.index-graph.json` consult, and a nullable `screen_result` field — all filed from the
+single AIR-11 measurement). Counting only rows still open at end of session against this wave:
+SC60, SC61, SC63, SC64, RA-13a, CJ-8, CJ-9, RC-11, RC-12, GC-6, AIR-12, AIR-13, AIR-14 — 13 open
+rows carried forward, against 6 closed same-day (SC56, SC57, SC58 [closed as a found defect,
+not a pass], SC59, SC62, AIR-11).
+
+## A peer session's status update, superseding the note below
+
+The "Open" item below about a concurrent research-intake session holding `intake-1311`…`1330`
+uncommitted describes a state that **no longer holds**. That peer (session
+`session_01R5dfS8fW7GueW8AMHxsvWm`, Fable 5.1, same shared clone) committed its own work directly
+to `main` between 19:37 and 19:41: `660203a1` (`intake-1311`…`1345` + an `intake-408` re-dive, 26
+entries), `38af710b` (Vidya source rows SC65–SC68, Tulving provenance fixes in the wiki), `e3880ef6`
+(Stage-4: 224 ledger rows routed, 3 new stubs INF-72/RTG-55/EVL-50, riders in 37 handoffs, OP-42),
+and `10daa1c8` (its own progress note on merge posture). None of those four commits carry this
+session's `Claude-Session` trailer and none is reviewed or claimed by this wrap-up — they are
+reported here only so the open item above is not read as still-true.
+
+## This wrap-up is PARTIAL — two subagents still running, not reported here
+
+1. **A presence-vs-integrity audit of `scripts/vidya/`** (row Q.1) — result not in.
+2. **The CJ-8/CJ-9 gate-conversion batch across three repos** — continuation of the ~94-call-site
+   conversion the `9c86adb8` commit message left explicitly unconverted. Result not in.
+
+Neither is guessed at here. The next wrap-up must fold their results in once they land.
+
+## Also true at close of this wrap-up, neither is this session's to resolve
+
+- `main` is **~233 commits behind `origin/main`** (own-session commits are 2 ahead of the same
+  merge-base check the earlier note ran; this is a large merge, not a fast-forward — standing OP-11
+  posture applies before any promotion).
+- Current `git status` in `/workspace` carries live coordination/dashboard churn
+  (`coordination/session-bus/advisory.jsonl`, `alarm_state.json`, `relay_state.json`,
+  `dashboard/static/loop.html`, `scripts/vidya/fold.py`, `scripts/vidya/projection.py`, plus several
+  `.bak-*` files and untracked coordination lock/state files) that this session did not stage and
+  this wrap-up does not touch — consistent with the two subagents above still being in flight and
+  with this being a shared, multi-session working tree.
+
+## Index-state check (read-only, run for this wrap-up)
+
+`.../epyc-orchestrator/.venv/bin/python scripts/handoffs/index_state.py --check` → **`0 problem(s)`**,
+exit 0. No prune candidates surfaced by the check itself. Per the standing caveat, `open == 0` on a
+row is **not** proof of completion by itself — compatibility pointers, prose-stated work, and
+notes-only files are known false positives for that signal, and none of today's newly-closed rows
+(SC56/57/59/62, AIR-11) were verified via `open == 0` alone; each closure above is backed by a named
+commit and diff-stat, not the generated rollup.
+
+## One-line status per remaining open row from this wave
+
+- **SC60** (obligation discharge-leverage ranking) — filed, unworked; no subagent dispatched against it yet.
+- **SC61** (`claim_statement_binding/v1` producer) — filed as a dependency of SC56 the same day SC56 landed; not started.
+- **SC63** (wire RA-13b outcomes into the belief kernel) — filed the moment RA-13b landed (same-day-as-producer rule); not started.
+- **SC64** (sequential certification that cannot fail) — filed from the `impact.py` fix's own audit trail; design question flagged as not fixable inline, not started.
+- **RA-13a** (blind read-back N=20 pilot) — harness built and tested; the pilot run itself needs live model calls and is operator-gated, so it cannot self-execute.
+- **CJ-8 / CJ-9** (three-valued gate verdicts / resolved coverage) — contract shipped and one call site converted as the worked example; ~94 more call sites surveyed and left unconverted, several deliberately (blast-radius risk to live promotion/safety gates in two child clones) — this is the batch the still-running subagent is continuing.
+- **RC-11 / RC-12** (false-accept/false-reject split / threshold-selection audit) — one worked example fixed (the PII fixture); the wider ~110-threshold audit is recorded in a subagent report, not yet actioned into fixes.
+- **GC-6** (two-axis reviewer split evaluation) — filed from intake-1304/1305; no work started, no subagent dispatched.
+- **AIR-12 / AIR-13 / AIR-14** (probe-bundle repair, advisory readiness consult, nullable `screen_result`) — all three filed from the single AIR-11 measurement the same day; none started.
+
+## Contract compliance note
+
+Per `agents/commands/wrap-up.md` and the *Wrap-up cadence* section of `SESSION_LIFECYCLE.md`: this
+extension is the progress-report and checkbox-sync step for the rows closed this wave; the checkbox
+edits themselves were already applied inline by the commits above (`fe91818d`, `51f9ef61`,
+`85d27f53`, `5a630e2a`, `157f075d`), not by this file. Index **pruning** and the **wiki compilation
+sweep** are the two steps that stay on operator cadence — nothing here performs either; the
+`index_state.py --check` run above is read-only and found nothing to prune. No git commit, `git
+add`, `git checkout`, checkbox flip, or index-row edit was made in preparing this note — per ruling
+(b), those are the owning session's to apply.

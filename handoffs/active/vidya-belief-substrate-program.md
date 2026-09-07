@@ -1480,6 +1480,52 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       the proof (49.0 vs 55.7 on the same run). Source-table row in
       `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
 
+## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
+
+*Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
+introduced, **32 survived**. Two P1s were fixed in that pass (`fold.py:409` retraction wildcard,
+`projection.py:124`/`:288` review-cause disjunction) and are not rows. The five below are the
+defects the audit REPORTED but did not fix; each is a place where the kernel grants standing that
+its own spec says must be earned. They share one shape — **a presence check standing in for a
+verification** — which is SC58's shape and SC56's, so treat the block as one theme, not five chores.*
+
+- [ ] **SC69 (P1) — `Attested` never verifies the digest it is named after.** `claim_tuple.py:189`
+      length-checks `attestation_sha256` (64 chars) and `:350` branches on its mere presence;
+      `hashlib` does not appear in the file at all. Demonstrated: `attestation_path="MEASUREMENT.md"`
+      with `attestation_sha256="0"*64` grades **`Witnessed/Attested`** — the top of BOTH axes, on a
+      digest of nothing. The T ladder's own contract is that `Attested` means the artifact was
+      re-read and matched; today it means a 64-character string was typed. Fix is not merely "call
+      `hashlib`": `grade()` is a **pure function** and hashing is I/O, so the digest check belongs at
+      the adapter/write boundary with the result carried in the tuple — decide that placement first,
+      because putting I/O inside `grade()` would make grading unreproducible from a stored frame.
+      Pair every fix with the mutation that reverts it (`"0"*64` must not reach `Attested`).
+- [ ] **SC70 — `fold.py:530` `claim_depends_on` never calls `claims.add`.** A `depends_on` edge into
+      an id the ledger has never otherwise seen registers no claim, so the dependent silently has no
+      belief to alert on. This is the same file whose `chain_grade` the wave already found to be a
+      single unreferenced definition — the claim→claim plane is thinner than it reads.
+- [ ] **SC71 — vacuous obligation satisfaction in `impact.py:352` and `:318-329`.** An obligation
+      with an empty required-set is reported satisfied, which fills an absence the pilot spec says
+      must be *recorded* (§4.7, "absence is recorded, never filled"). Same class as the `blocked = 0`
+      uncountability found in the fan-out corpus this week: nothing to check reads identically to
+      everything checked.
+- [ ] **SC72 — `gate.py:121` manufactured corroboration + `frames.py:139-142`/`:90` presence-only
+      subject validation.** The gate can count a single source twice as corroboration; `frames.py`
+      validates that a subject is *present*, not that it is *well-formed*, so `sha256:aa` passes one
+      layer below where SC69 bites. Filed together because the digest-shaped-string-is-not-a-digest
+      defect appears at both layers and a fix at one alone leaves the other reachable.
+- [ ] **SC73 — `ledger.verify()` returns clean on an empty or deleted ledger.** A verifier that
+      passes on the absence of the thing it verifies is the fail-open shape
+      (`feedback_fail_open_defaults_conceal_their_own_corruption`): the strongest possible reading of
+      "chain=OK" is produced by having no chain. Require a non-empty frontier and a declared expected
+      count before reporting OK.
+
+**Audit coverage bound — do not read this block as exhaustive.** Q.1 did **not** reach
+`scripts/vidya/adapters/`, `canonical.py`, `checkpoint.py`, `evaluate.py`, `cli.py`,
+`citation_gate.py`, `correction_queue.py`, `machine_anchor.py`, or ~29 adapter test files. 32
+surviving mutations over the portion it *did* reach is the measured rate; the unreached portion has
+no rate at all. A later session may extend the audit but may not report these five as "the defects".
+
+
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 
 Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the
