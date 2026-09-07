@@ -2,8 +2,33 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-09-03 (incremental: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below)
+**Last compiled**: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below)
 **Sources**: 50+ documents
+
+## Compiled Update — 2026-09-07: WikiSkill corroborates the clean-window compile rule — its window never overlaps the phenomenon
+
+**Confidence: verified** — the concession and the observation window are read from the source itself; the
+degradation phenomenon they are being weighed against is the one already compiled from
+`intake-899` and `intake-1129`.
+
+### WikiSkill concedes no pruning, and its window is too short to see the thing it would be cited against
+
+WikiSkill **concedes that it performs no wiki pruning**. Its observation window is at most **8 iterations**
+and **6.3–8.9 patterns** — a window that **does not overlap the degradation phenomenon** that `intake-899`
+and `intake-1129` describe. A knowledge layer that is never pruned degrades on a horizon longer than the one
+WikiSkill ever observed, so its clean result is not a licence for an unbounded layer; it is a measurement
+taken before the failure mode has anywhere to appear.
+
+**The reading, therefore, is the opposite of the obvious one.** WikiSkill **corroborates our clean-window
+compile rule** — compile into a bounded, pruned window — rather than licensing an unbounded knowledge layer.
+Cited the other way it would be the standing observation-window error: a measurement whose window does not
+overlap the phenomenon is not evidence of its absence. `intake-1317#record`.
+
+### Source References (2026-09-07)
+
+- `research/intake_index.yaml` `intake-1317#record` — the WikiSkill record this entry discusses.
+- `research/intake_index.yaml` `intake-899`, `intake-1129` — the degradation phenomenon the window fails to
+  reach.
 
 ## Compiled Update — 2026-08-23: skill-documented commands must name an interpreter that has the imports
 

@@ -2,8 +2,34 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-27 (incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-07 (a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
+
+## Compiled Update — 2026-09-07: a capability probe that asks the wrong runtime can only answer NO
+
+**Confidence: `verified`** — the probe's symbol names, source lines and the documented ROCm 6.2 surface are exact reads; the accuracy consequence (rel. err. 1.36) is as reported in the cited entry, not measured here. One defect family, **four independent instances in the same project**: three in the host-pointer contract, one in the probe itself.
+
+### The host-pointer capability contract
+
+Never GPU-dereference host memory without a **demonstrated nonzero mapped device pointer**. Three rules, each of which one of the instances broke:
+
+- **Probe identity with the same allocator the consumer uses.** An `mmap` + `hipHostRegister` probe does not establish that a `pin_memory` tensor is device-addressable, and vice versa. The probe must allocate the way the consumer allocates, or it answers a question nobody asked.
+- **Fail closed to a plain H2D copy.** The absence of a mapped pointer is a routine outcome, not an error path to be papered over; the safe branch is the ordinary copy, always available.
+- **Never convert a missing native extension into a silent no-op.** A build without the extension must take the slow path visibly, not skip the work.
+
+Three independent instances in one project: `pinned.py`, `offload_cache.py` (PR #316), and `CpuMoeExecutor` (issue #350). `intake-1343#04`.
+
+### The fourth instance: the probe asked CUDA about an AMD card
+
+The probe `dlopen`s `libcuda.so.1` / `libcuda.so` and `dlsym`s `cuStreamWriteValue64_v2` / `cuStreamWaitValue64_v2` (`cpu_moe_ext.cpp:579-604`) and **never reaches HIP** — so on this host it can only ever answer NO, and its negative says nothing whatsoever about the hardware. ROCm 6.2 documents all four of `hipStreamWriteValue32` / `hipStreamWriteValue64` / `hipStreamWaitValue32` / `hipStreamWaitValue64`; the capability was present the entire time. **A probe that resolves another vendor's driver symbols is not a hardware measurement.**
+
+The damage came from the fallback, not the probe. Three rules follow, and they are the transferable part:
+
+- **The fallback a probe selects must be validated in every execution mode the fast path was validated in.** Here it was not: the `cudaLaunchHostFunc` fallback is **not capture-safe**, so captured host nodes never re-read the freshly written pinned routing buffers — **rel. err. 1.36, with no warning**. A fallback validated only in eager mode is an unvalidated fallback.
+- **Attach the health guard to the branch that actually runs.** A guard on the fast path is inert precisely when the probe has sent execution down the slow one — which is the only situation in which it was needed.
+- **Report *why* a probe failed, in terms of the platform actually running.** "Capability unavailable" hides a wrong-runtime lookup indefinitely; "libcuda.so not found on a ROCm host" is self-diagnosing on the first read of the log.
+
+`intake-1345#01`.
 
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
 
