@@ -1381,6 +1381,15 @@ commercial incentive to accrue reputation arrived independently at this program'
       measurement — it is a different, stronger claim than the one that was made.
       Source-table row added to `scripts/vidya/adapters/README.md` (state: UNWIRED).
 
+- [ ] **SC64 — a sequential certification that cannot fail.**
+      `scripts/vidya/adapters/autokernel_aux_receipt.py:584-585` pins an anytime-valid sequential
+      test's STOPPING TIME to the value it happened to take (`first_crossing_block != 9` and
+      `signs != [1.0]*20` are both treated as malformed). A genuine re-run that crosses at block 8
+      or 10 is rejected. The check therefore certifies *this run's transcript*, not the procedure —
+      the opposite of what an anytime-valid test is for. Found 2026-09-07 by the RC-12 audit.
+      Not fixed inline: choosing what the admissible stopping-time envelope IS is a judgment about
+      the test's design, not a typo.
+
 - [ ] **SC63 — wire blind read-back outcomes into the belief kernel.** RA-13b (landed 2026-09-07)
       is a NEW WRITE-TIME MEASUREMENT SOURCE: caught-discrepancy / false-discrepancy /
       agreement-with-author counts over a partitioned denominator. Filed the same day per CLAUDE.md.
