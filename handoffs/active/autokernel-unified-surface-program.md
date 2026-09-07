@@ -205,7 +205,8 @@ sequencing: measurement first, authoring later).
 - [x] This handoff + index row ✅ 2026-09-07
 
 ### P1 — the fold at run 30's next boundary (U1)  · exit: ONE champion tip carrying both lineages, GPU floors unchanged
-- [ ] **UD-0 first**: operator confirms the fold DIRECTLY to `workspace-1c` (they hold a contrary direct instruction)
+- [x] **UD-0**: operator confirmed the fold DIRECTLY to `workspace-1c` ✅ 2026-09-07 — gate 1 (their windows clear) is theirs to signal; gate 2 (run 30 boundary) is ours
+- [ ] INF-70 stages levers on a lane branch off the champion tip, merge-tree disjointness proven, FOLD-0 re-based onto `inf70/champion3` (or their champion at the boundary) — they do this unprompted once gate 1 clears
 - [ ] FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.
       **FOLD-0 as written targets `6f032c48d`, two CPU champions old — re-base onto the CPU champion at the
       boundary (today `inf70/champion3` @ `9c4f73e29`, build 10241, `experimental-inf70-champion3` on the `fork`
@@ -222,6 +223,12 @@ sequencing: measurement first, authoring later).
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
       instrument's floor (sign solid, magnitude not). A bundle must never launder a non-claim into a settled number.
+      **Further caveats (INF-70, 2026-09-07 ~20:20Z):** (i) SYNC-19/20 independently corroborates the ~5% floor — seven
+      identical A arms, sd 1.79%, range 4.91%; (ii) **a harness-wide statistical defect**: 20 prompts inside one arm are ONE
+      observation, and a sign test over pairings double-counts the shared treatment arm, so every INF-70 significance
+      computed the old way is inflated — the corrected statistic is an arm-level permutation test; any magnitude the
+      bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
+      +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
 - [ ] Relaunch (operator-gated) with `python3 -u`; verify `accum restored …` line and anchor == tip
 
 ### P2 — surface dimension (U2)  · exit: two bundle files, two floors, a CPU serving A/B record on disk
@@ -260,7 +267,7 @@ sequencing: measurement first, authoring later).
 
 | ID | Decision | Recommendation |
 |---|---|---|
-| **UD-0 (BLOCKING P1)** | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
+| **UD-0 — RESOLVED ✅ 2026-09-07 (~20:20Z)**: operator ruled DIRECTLY to `workspace-1c`: *"yes, fold onto the champion once the measurement windows clear."* Two gates remain, neither side controls both: (1) INF-70's windows clear (SYNC-19/20 w1 MTP block → w2 `AP` controls + 3 F1 arms → HARNESS-1 Phase B + hot session) — **they message us; do not schedule on an estimate**; (2) run 30's next boundary — ours. | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
 | OP-41 (open) | serialize / schedule / regress on CPU co-tenancy | **serialize, structurally** — P4 builds it; until then accept INF-70's bounded-hold requests |
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
