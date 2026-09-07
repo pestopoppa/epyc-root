@@ -1206,6 +1206,36 @@ per lever. **An object-digest incremental build would make per-lever ablation ch
 champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
 to be affordable. Filed below.
 
+**★★★ THE SAMPLER DEFECT IS MUCH WIDER THAN REPORTED — IT MISLABELLED THE ENTIRE SMT HALF (HARNESS-1,
+2026-09-07, FIXED).** I reported it as "184-191 mislabelled as disjoint". Wrong scope: **the predicate tests
+logical CPU ids against `<= 95`, so ALL of 96-191 was reported `disjoint-from-0-95`.** **Any agent that pinned
+a background job anywhere on 96-191 and consulted the sampler was told the bench window was clean.**
+
+**⚠ CONCRETE CONSEQUENCE FOR CHAMPION-3, and it is not hypothetical.** SYNC-16 ran `test-backend-ops`
+**off-lock on cores 96-183** while `inf70-champion3-confirm` held the region. **96-183 are the SMT siblings of
+physical cores 0-87 — inside CHAMPION-3's 0-95 bench region — and its sampler would have reported them
+disjoint.** CHAMPION-3's **ratios survive**: every comparison is same-window paired, so contention common to
+both arms cancels. Its **absolutes do not**, and it already flagged them as GPU-lane-depressed — the true
+depression had **at least two sources, only one of which it could see.** This strengthens rather than weakens
+its own instruction to **quote its ratios and never its absolutes.**
+**The fix** (`tools/cpuoverlap.py`): **three-valued** — `DIRECT-OVERLAP` / `SMT-SIBLING-CONTENTION` /
+`DISJOINT-FROM-BENCH-CORES`, where *disjoint* now means disjoint **in physical cores**. The sibling relation is
+**read from `/sys/.../thread_siblings_list`, not assumed to be `+96`** — the agent's reasoning being that
+**"an assumed offset would be the same class of error as the label it replaces."** Verified `cpu184
+siblings=88,184`, `cpu191 siblings=95,191`. Six-case selftest **plus an end-to-end positive control**: it
+started a process pinned to 184-191, sampled it live, and got `SMT-SIBLING-CONTENTION: 184-191 are the SMT
+siblings of bench cores 88-95`. Control and sampler both confirmed dead with `ps -p`.
+**Landed before any arm ran, so no arm in the HARNESS-1 campaign inherits the wrong label.**
+**Two of its own bugs caught by a smoke test before any arm**: `grep -c` **exits 1 on zero matches**, so
+`|| echo 0` emitted a second line and corrupted the summary arithmetic; and the cold sampler ran **in a
+function subshell**, so the captured PID was the subshell — **the inner `bash` would have been orphaned to
+append forever across 10+ arms.**
+**Two structural consequences worth keeping**: the sampler is now **one shared implementation** used by both
+`arm_cold.sh` and `arm_hot.sh`, **so they cannot drift the way champion1 → champion3 did** — which is how this
+defect propagated in the first place. And **`arm_hot.sh` samples PER ARM, not per session**: the agent had
+originally omitted the sampler from the hot script entirely, and with 10 arms inside one process that was a
+real gap, since **knowing WHICH arm was contended is exactly what a hot session buys.**
+
 # ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
 Committed, not pushed. Frozen tree untouched at `0db32c06e`.
