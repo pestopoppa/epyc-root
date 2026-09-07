@@ -1704,6 +1704,38 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
         **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
         edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
+      - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
+        INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
+        bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
+        (`/sys/.../thread_siblings_list`): logical `c` and `c+96` share one physical core, so
+        **our build region `96-183` (run.py:338,458,481, `jobs=64`) covers 88 of their 96 bench cores**, our
+        bench covers the other 8, and **no logical CPU on this box lacks a sibling in 0-95**. Measured live
+        during run 30: 9 × `cc1plus` at 100% CPU pinned to 96-183, and with `--workers 7` several lanes can
+        build at `jobs=64` at once. Third finding, ours alone: **`serving.py` pins nothing** — `llama-server`
+        at the serving gate is unpinned and free to land directly on 0-95.
+        Consequences: (a) "fence tooling out of 0-95" is IMPOSSIBLE here — there is nowhere to fence to;
+        the only real options are SERIALIZE (region lock) or accept-and-regress. (b) INF-70's 16.8% A/A
+        spread on a bit-identical binary is plausibly OUR compile load, not their kernel. (c) Our own
+        serving numbers inherit the same hazard from the unpinned server.
+        Tasks: pin `llama-server` in `serving.py` (ours to fix, no decision needed); take the orchestrator
+        `region-lock` role `bench` around bench AND build, or publish a schedule. Blocked on the operator
+        decision below because serializing builds against CPU arms costs autokernel throughput directly.
+        → **operator decision queued as OP-39**; INF-70 files the same tradeoff as MEAS-1.
+        - [x] `llama-server` is now PINNABLE ✅ 2026-09-07 (research `da3b0368` → main `7996467f`):
+          `Recipe.cpu_list`, default `None` = unchanged behaviour because setting it invalidates the
+          3.536% serving floor until re-calibrated; `describe()` records the condition; +3 tests (419).
+        - [ ] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate
+          the serving floor under the pin, in the SAME window. Blocked on GPU time (run 30 holds the claim)
+          and on OP-39, which may mandate the region lock instead.
+        - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
+          resolves foreign processes via `/proc/*/exe` and compares `cpus_allowed` against the
+          SIBLING-EXPANDED bench set (the literal-range compare is what made `184-191` read as disjoint).
+          Source: `/mnt/raid0/llm/tmp/inf70/agents/sync16/`. Wire into the serving gate's residency check.
+        - [ ] **Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those
+          arms acquire the region and ask us to hold at the next task boundary. Their levers measure 1-3%
+          effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
+          a loop hold is a run-lifecycle action.** Folded into OP-39 as the bounded form of option (A).
+          Default if unruled: INF-70 measures contended and labels the result non-claim.
       - [ ] **R23-48 — LEAVE-ONE-OUT ARM PER ACCUMULATED LEVER, run whenever the champion changes**
         (INF-70 finding relayed 2026-09-07 while run 29 was down). Verified: the loop A/Bs each NEW keep
         against the accumulated tip but never re-measures a PRIOR keep (`grep -rn "leave.one.out|re-?test|
