@@ -2695,6 +2695,23 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       a hook whose parser is wrong about which text is a command. Low severity, trivially reproducible.
       **✅ COMPLETE 2026-09-07 — fix committed at `29d340ad` with a MUTATION-PROVEN regression test** (the
       mutation was made visible AND counted, not merely asserted absent).
+- [ ] **★ HYG-2b — THE COMMIT-HYGIENE HOOK DOES NOT SEGMENT A COMPOUND SHELL COMMAND, AND IT BLOCKS ITS OWN
+      PRESCRIBED IDIOM.** Found and **reproduced deliberately** at the 2026-09-07 operator wrap-up, with
+      `29d340ad` (HYG-2's fix) present in the tree — so this is a **second, residual defect, not a
+      regression of the first.**
+      **Repro (2 arms, one variable):** `git diff --stat -- <file> && git commit --dry-run -m "probe"` is
+      **BLOCKED** as *"`git commit -- <pathspec>` on a shared repo"*; the identical `git commit` issued
+      **alone** succeeds. The `--` belongs to the sibling `git diff`, not to the commit.
+      **Proof it is reading the whole line as one command**: the block message renders the offending path as
+      `git diff -- 2>&1` — it has taken the LAST token of the entire shell line as the "race" path.
+      **Why it matters more than a nuisance**: the pattern it blocks — `git add -- <my files> && git commit
+      -m "..."` with **no pathspec on the commit** — is *exactly the safe idiom the hook's own remediation
+      text prescribes*. A guard that forbids its own idiom trains sessions to bypass it
+      (`EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1`), which is strictly worse than the defect it prevents.
+      **Fix**: split the command string on `&&`/`||`/`;`/newline and evaluate each segment independently;
+      only a `--` appearing **after** `git commit` within the SAME segment is a pathspec commit. Extend the
+      regression test with a compound-command arm — the existing test passes because it only ever feeds one
+      command at a time, which is the same vacuity class HYG-2 itself was filed for.
 
 - [x] **SYNC-11 — CLOSED ✅ 2026-09-07: ANSWERED, not run. Both of its justifications are gone.** Its
       question — is `result_output`'s 1.48× spread a per-CCX residency effect? — was answered by a better
