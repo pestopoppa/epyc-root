@@ -52,6 +52,29 @@ Related existing work (do NOT duplicate):
   between subagent outputs (OrchBench's own weak proxy for this) — our Task/SendMessage records carry
   real parent→child edges; use those. Output should be joinable against `queue.jsonl` task IDs for a
   fleet-level view.
+- [ ] **FM-5 — Per-subagent OUTCOME accounting (intake-1304; 2026-09-07).** Extend the FM-1
+  collector with an outcome bucket per subagent — `produced-and-used` / `produced-and-discarded` /
+  `no-output` / `blocked` / `aborted` — and a token total per bucket, over the existing
+  `data/fanout_timing/` corpus (2428 workflows, 4727 subagents). **Target metric: the share of
+  fan-out tokens spent on subagents whose work was never used.** Comparator, from the only published
+  per-outcome accounting of a large agent swarm: 80.2% of tokens went to non-merged runs and 51.6%
+  to Aborted alone, and that paper's own remediation list projects a 3–10× cost reduction from
+  fixing orchestration without better models. **This is a strictly WEAKER oracle than FM-4 and does
+  NOT block on it** — "was the output used" is derivable from the parent's subsequent tool calls and
+  git diff, and needs no task-success verdict. That is the whole reason to do it first.
+- [ ] **FM-6 — Reconnection requirement (intake-1299; 2026-09-07).** A fan-out record counts only if
+  each subagent's output is linked to a backlog row or an artifact path; unlinked output is reported
+  as `orphan` and excluded from the measured fan-out width. Adapted from Prove2Me's rule that work
+  which does not reconnect to the mission decomposition earns no credit at all. Note the direct
+  bearing on this handoff's own premise: an orphan-blind width count cannot distinguish a main that
+  dispatched five subagents usefully from one that dispatched five and used none.
+
+**Do NOT read this wave as an argument to narrow the 3–5 fan-out width.** The evidence points the
+other way: in the one study that varied workers-per-task (1/3/5, intake-1305), the 3- and 5-worker
+arms beat 1 worker on **both** wall-clock and token cost at matched completion, and the central
+coordination tier was only ~11% of compute. The cost driver these sources identify is discarded
+work, not width — which is what FM-5 measures.
+
 - [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** Stage 1 (now): `adamast judge --taxonomy
   adamast/core/mast.json` over a stratified sample of Codex rollouts and Claude transcripts, one LLM
   call per trace, no oracle required — the pipeline is deliberately outcome-blind

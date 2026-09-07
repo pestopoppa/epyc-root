@@ -3045,3 +3045,16 @@ M4 `51/51`; tmux and routing `173 passed`; fleet watcher `87/87`; mutation harne
 Flip milestone boxes with `✅ YYYY-MM-DD` + evidence refs (M4 cites the hub saturation-history
 artifact). Progress-file entry per milestone. Note the single-writer audit outcome per bus
 file at M1 and M4. Any deviation from §Skeleton is recorded inline here with rationale.
+
+- [ ] **AIR-11 — measure the blocked-on-dispatch rate BEFORE building anything against it**
+  (intake-1304; 2026-09-07). What fraction of dispatched backlog rows are found already-satisfied,
+  or blocked on another row, at subagent start? Comparator from the one published per-outcome
+  accounting of a large agent swarm: **4,668 of 30,046 runs (15.5%) ended blocked**, and "lack of
+  dependency tracking" is named there as a top-three cost driver. Cross-check against our own
+  measured 4-of-8 already-satisfied rate in INC-20260812-dispatch-by-line-number, and against the
+  read-certified liveness rates `backlog_queue_gen.py` measured on rows that all passed form checks
+  (47% at n=19, 29% at n=45). **Measure first.** The queue schema has no dependency-edge field at
+  all today, and the right response to that may be a screening change rather than a schema change —
+  which is exactly what this measurement decides.
+
+- [ ] **Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.

@@ -331,6 +331,22 @@ import.
 - [ ] **CJ-7d — suite-construction principle** (intake-1154): build the suite to *provoke* the specific
       failure mode under study rather than sampling generic tasks. Aider's laziness benchmark is the
       worked example. A design note governing CJ-7a-c, not separate work.
+- [ ] **CJ-8 — three-valued gate verdicts** (intake-1307; 2026-09-07). Every gate returns
+      `pass` / `fail` / `out-of-coverage`, with a **mandatory cause code** on the third; a
+      two-valued verdict is non-compliant. Audit existing suites for gates that silently count
+      out-of-coverage as fail. Reuse the vocabulary already ratified for the dashboard plane
+      (`dashboard/README.md`: `/health` is transport-only, `/api/health` is the three-valued fold)
+      rather than inventing a second one. **Why this is not pedantry:** in the source's own corpus,
+      of 1,403 observations 741 were never formalized at all and **zero** timed out — the entire
+      bottleneck sat *before* the check ever ran. "No signal" and "failed the check" are different
+      events with different remedies, and folding them together makes the common case invisible.
+- [ ] **CJ-9 — resolved coverage alongside every verdict** (intake-1307; 2026-09-07). Each suite
+      emits the fraction of the asserted surface the judge actually decided, and **suppresses a
+      headline when coverage falls below a declared per-suite threshold**. Evidence: in the source,
+      winner accuracy was 0.96 where the resolved mass dominated and **0.20** where it did not —
+      the same judge, the same protocol, a 4.8× swing driven only by coverage. This is our standing
+      gate-scope rule (a gate's scope must match the measured subset) given a computable statistic.
+
 ## Decision gate (OPERATOR)
 
 - [ ] **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4

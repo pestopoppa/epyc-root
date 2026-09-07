@@ -185,6 +185,19 @@ one word denoting two different things, with a standing invitation for an implem
 apparent gap by adding a count-the-paths rule inside the fold — silently voiding the Deletion
 Property's hypotheses.
 
+**External corroboration, added 2026-09-07 (`intake-1300`, `intake-1297#record`).** The argument
+above is internal and algebraic. It now has an independent instantiation by a system with every
+commercial incentive to decide otherwise: the Prove2Me formalization platform runs the same
+two-plane split. Its correctness plane is idempotent — one theorem "can collect many independent
+proofs, and once accepted, nothing about it ever changes", so extra proofs never raise a status —
+while its *accruing* trust score (+1 per first proof, +1 per upvote) gates nothing anywhere in a
+62-endpoint API; every authority there is role-based, and its designers list a gating reputation
+system as unbuilt future work. Their §4.4 derives the same requirement pair this carrier provides,
+in their own words: a target must be **idempotent**, so independent attempts converge on one
+statement, and **authoritative**, so downstream may build on it without re-auditing. The corollary
+is the useful part: accrual is safe there *because* it is severed from the correctness plane, and
+it would stop being safe the moment the score gated anything.
+
 ### 4.2 The carrier
 
 ```text

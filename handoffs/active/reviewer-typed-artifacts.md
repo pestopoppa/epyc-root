@@ -83,3 +83,43 @@ the pipeline-ordering half lives in [`security-review-skill.md`](security-review
   until a current primary artifact or objective verifier resolves them and are never counted as independent
   corroboration. Add a regression fixture that combines a current source abstract with an old signed review
   body and prove that validation refuses a current binding.
+
+## RA-13 — blind read-back (intake-1308, intake-1299; 2026-09-07)
+
+The countermeasure to a reviewer that confirms what it expected rather than what is there. An
+auditing sub-agent is given the **artifact only** and never the intent, so it *cannot* accidentally
+agree with the author; it emits a description, and a human compares that description against the
+original ask. Adapted from Prove2Me's mission-auditor protocol.
+
+**Three properties are load-bearing, and all three must survive implementation** — remove any one
+and this degenerates into the role-based decomposition our doctrine ratified against
+(`OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*, *When NOT to fan out*): **(i)** no
+authority is transferred — the auditor is forbidden to reach a verdict, it describes and a human
+adjudicates; **(ii)** the split is an **information whitelist over the same task**, not a skill or
+work-stage boundary, which is what makes it information-hiding rather than role decomposition;
+**(iii)** blinding is re-established with a **fresh context on every artifact revision**, so the
+auditor cannot be progressively contaminated across iterations.
+
+**Citation bound, non-negotiable.** `intake-1308` is citable for **mechanism and rationale only**.
+Its source repository contains **no efficacy measurement of any kind** — no hit rate, no caught-error
+count, no false-agreement rate, no A/B against unblinded self-review (whole tree grepped at the
+pinned commit). RA-13b exists because of that gap, and RA-13b gates RA-13a's citability.
+
+- [ ] **RA-13a — blind read-back pilot.** The reviewer sub-agent receives the artifact ONLY (a diff,
+  a gate script, or a handoff row) plus a read-back spec — never the task statement, the request, or
+  the author's intent — and emits a literal description of what the artifact does and asserts. The
+  main compares that description against the original ask. Fresh context per revision. Pilot N=20
+  completed edits. Authoring rules worth lifting verbatim from the source: account for every binder
+  and precondition (omitting one is the worst failure mode); expand non-standard names rather than
+  restating them; surface degenerate cases and conditions that could be vacuously satisfied; and if
+  the artifact says less than the intent, the read-back must say less.
+- [ ] **RA-13b — instrument it at WRITE time.** Per run, record caught-discrepancy count,
+  false-discrepancy count, and agreement-with-author rate. **No read-back result may be cited as
+  evidence until n>=20 with a stated denominator.** Retrofitting this is impossible for the standing
+  reason (write-side/read-side asymmetry), and adopting an unmeasured control and then citing it
+  would reproduce exactly the warrant inflation this plane exists to prevent.
+- [ ] **RA-13c — read-back record format.** Every record carries: judge model id, spec version or
+  commit, a hash of the exact artifact text shown, and a context manifest attesting the blinding
+  actually held. A record lacking these is not evidence. This closes a defect in the source, which
+  stores only the model name — so a captain who skipped the blinding entirely produces a
+  byte-identical record — and which enforces read-back staleness as prose rather than mechanically.
