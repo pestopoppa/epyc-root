@@ -361,7 +361,7 @@ import.
       `out-of-coverage` is gate-plane in-code vocabulary, `to_verification_outcome()` is the
       mandatory translator.
 
-- [ ] **CJ-11 — `score_response` needs a three-valued sibling, and it cannot be widened in place.**
+- [x] **CJ-11 — `score_response` needs a three-valued sibling, and it cannot be widened in place.**
       Deferred out of CJ-8 for a specific reason, not left undone: live callers wrap it as
       `bool(resp) and score_response(...)` (`architect_sequential_runner.py:255`,
       `architect_bench_rescore.py:49`), so ANY truthy third value coerces to a **PASS** — the
@@ -371,7 +371,18 @@ import.
       alongside (precedent: `seeding_scoring.score_answer_or_error`), migrate callers **one at a
       time**, re-pin the digests last. Do not widen the return type of the existing function.
 
-- [ ] **CJ-12 — OPERATOR RULING NEEDED: may a verbatim-transcribed judge be edited to report its
+      **DONE 2026-09-07** (epyc-inference-research `1d2fe2a3`, epyc-orchestrator `ca21b754`). The
+      canonical library is in epyc-inference-research, not the orchestrator — the orchestrator
+      carries only the vendored copy. Layering inverted from the obvious one on purpose: the new
+      function wraps `score_response` rather than the reverse, so the diff is **158 insertions and
+      0 deletions** and "the original did not move" is a diff anyone can check rather than a claim
+      anyone must trust. 2 of 3 callers migrated (rescue records, sequential runner excludes);
+      `v7_quality_gate_runner` deliberately not migrated — it is the sealed-capture instrument, so
+      what enters its denominator is a measurement-parameter decision for the suite owner.
+      De-inflation disclosed: MC scoring with blank gold returned **True** (a free pass on a row
+      with no reference) and now returns `no_reference`.
+
+- [x] **CJ-12 — OPERATOR RULING NEEDED: may a verbatim-transcribed judge be edited to report its
       own failure?** The 18 DTAP judges (`scripts/autopilot/evals/dtap/judges/*/judge.py`) swallow
       exceptions at 42 sites, so a judge that crashed is indistinguishable from one that judged
       "no". The harness boundary already has `JudgeFailure`/`OutcomeType.JUDGE` and could classify
@@ -391,6 +402,17 @@ import.
       can still tell which bytes are upstream's and which are ours. A judge exception must surface
       as the harness's existing `JudgeFailure`/`OutcomeType.JUDGE`, never as a "no" verdict and
       never as a pass, and the attestation validator must still fail if judgment logic changes.
+
+      **DONE 2026-09-07** (epyc-orchestrator `626bdb78`). External
+      `harness/judge_guard.py`: a read-only AST pass classifies all 46 handlers (5 narrow, 8 pure
+      suppression, **33 escalating** — the shape where a crash becomes a verdict), then a
+      `sys.settrace` pass over judge frames only resolves the handler Python will actually run and
+      raises `JudgeFailure` *after* the method returns, so upstream's judgment executes exactly as
+      written. No judge byte modified; every `upstream_judge_sha256` still verifies.
+      **The finding that outranks the task: there was no validator at all.** `tools/transcribe.py`
+      wrote the digests once against a disposable clone and nothing ever recomputed them, so the
+      byte-identity attestation was unfalsifiable on this host — it could not have caught an edited
+      judge. `python3 -m harness attest` now can, verified by mutation. 88 tests.
 
 - [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one**
       (intake-1337#record, supersedes the "patch the judge prompt" framing intake-1330 filed). It is
