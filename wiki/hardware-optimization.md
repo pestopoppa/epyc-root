@@ -4520,3 +4520,31 @@ candidate inside the instrument's own variance rather than asking the reader to 
 - `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the ABA, leave-one-out and identity evidence
 - `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the placement mechanism
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+
+## Compiled Update — 2026-09-07 (wrap-up): SMT siblings make core-range fencing impossible; the build is the contention
+
+### SMT sibling topology makes CPU core-range "fencing" between concurrent workloads structurally impossible, and the real contention is builds, not the benchmark itself
+
+**Two sessions assigned disjoint-looking CPU core ranges (`0-95` vs. `184-191`) were not
+actually isolated, because every logical CPU in a 192-thread SMT topology has a sibling in the
+*other* session's range** — full enumeration showed none of cores 96-191 lacks a
+`thread_siblings_list` partner in 0-95 (96↔0 … 191↔95), so a "fenced" range still contends for
+shared per-core execution resources. The bigger finding, though, was that the CPU-list overlap
+was the smaller of three contention sources: the actual heavy contention was the *build* step,
+not the benchmark — `run.py` compiled at `jobs=64` on `cpu_list="96-183"`, covering 88 of the
+other session's 96 bench cores, with up to `--workers 7` allowing several concurrent `cc1plus`
+processes measured live at 100% each during a running benchmark. A third defect compounded it:
+the benchmark server process (`llama-server`) had no `taskset` in its `Popen` call at all, so
+with no explicit pin it could land directly on the other session's core range by scheduler
+choice alone. None of these three is visible from "check the assigned core ranges look
+disjoint" — the topology check (thread_siblings_list) catches the first, a live process sample
+(`cc1plus`@100%, matched against `cpus_allowed`) catches the second, and a source read of the
+server launch path catches the third. Fix applied: made the server's CPU list pinnable with
+`default=None` (unchanged behavior) so pinning is a deliberate, re-calibration-triggering
+opt-in rather than a silent side effect. Generalizes: "disjoint core ranges" is not evidence of
+isolation on any SMT host without checking siblings; and co-tenancy audits should look for
+*build/compile* contention as a first-class candidate, not just the benchmark process itself.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"CPU co-tenancy with INF-70"),
+`handoffs/active/autokernel-rebuild-program.md` (R23-49), research commit `da3b0368` →
+main `7996467f`.

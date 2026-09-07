@@ -4353,3 +4353,54 @@ loop's accumulator carries a `compounded_bench_pct` that *is* a product of solo 
 **only** because it schedules the gate rather than claiming a result — it decides when the assembled bundle is
 worth an expensive serving A/B, and the serving A/B is what actually moves the champion. **A product of solos
 is a scheduling heuristic, never a result**, and it must stay labelled as an estimate wherever it is displayed.
+
+
+## Compiled Update — 2026-09-07 (wrap-up): confirmation state that is re-derived on restart, and orphaned numbers that are not prizes
+
+### a restart-rebuilt bundle silently launders unconfirmed keeps into the champion of record
+
+**A loop that rebuilds its confirmation state from the champion tip on every restart cannot
+tell "bench-measured" from "serving-confirmed" across a restart.** The autokernel loop's
+`Bundle(champion_of_record=anchor_commit)` was reconstructed at every startup from the current
+anchor, so a SIGTERM/SIGKILL restart reset the accumulated keep list **and simultaneously
+promoted the champion of record to the accumulated tip** — marking every bench-only keep as
+serving-demonstrated with no serving measurement having occurred. Verified directly: zero
+`epyc.autokernel.serving_ab.v1` records exist anywhere on disk, meaning the serving-throughput
+keep gate (a hard promotion gate) had **never once fired** despite the accumulator trajectory
+showing +5.19% at 4 keeps and +6.13% at 5 — both below the +8.84% threshold the gate was
+supposed to enforce before those keeps could count. The state loss was invisible in the
+accumulator's own numbers; it only surfaced by asking "does the confirmation record this
+depends on actually exist" and finding none. Fix: persist the bundle to disk and reload it,
+refusing to accept a champion-of-record claim the current tree cannot substantiate.
+Generalizes: any two-tier promotion state (bench-passed vs. serving-confirmed,
+staged-vs-published, draft-vs-reviewed) that is *derived* from a mutable pointer on every
+process start will re-derive the wrong answer across a restart unless the confirmation state
+is itself persisted and validated against — never rebuilt from — the pointer.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"Did relaunches lose keeps?"),
+`handoffs/active/autokernel-rebuild-program.md` (R23-51), research commit `706e6894` →
+main `2de94d08`.
+
+### a same-day multi-percent measurement spread is instrument noise, not a lost prize, until re-measured at the current floor
+
+**Three commits that once measured a combined +12.5% turned out to be unreachable (orphaned
+off a fork the reconcile never merged), and recovering the *code* is not the same claim as
+recovering the *number*.** Auditing all 31 historical `kept` rows against the champion tree
+found 28 present and 3 absent — a `quantize.cu` chain (`float2-halfwave` +5.353% →
+`float4-eighthwave` +4.849% → `fourlane-dual-fragment` +1.846%) that forked on 2026-08-29 and
+was never carried forward when a sibling branch became the lineage the 2026-08-31 reconcile
+merged. The operator's instinct ("recover them, that's massive") was right about the
+*mechanism* and wrong about the *number*: the same day, on the same kernel, a **sibling**
+measurement swung 6.6 percentage points across five re-runs (+6.723% down to a null −0.449% by
+2026-09-02, roughly 80 re-measurements later), and 2026-08-29 is independently the day a
+correctness gate was found to have run with an unsupported flag (retraction day). A live
+roofline check bounded the *physically possible* prize at ≤3.6% of tg128 for that kernel — so
+"+12.5% compounded" was never achievable regardless of measurement noise. The corrective action
+is not "restore the historical commits and credit their historical numbers" — it is "recover
+the mechanism as a fresh hypothesis and MEASURE it once at the current floor," which is exactly
+how it was seeded (tag `ak/orphan-keeps-quantize-20260829`, task `AK-H-RQ-1`, prize bounded and
+stated plainly). Generalizes: an unreachable/orphaned artifact's *historical* measurement is
+evidence the mechanism once existed, never evidence of the gain it will produce on re-measurement
+— re-verify at the current floor before compounding anything into a live total.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"orphan-keep recovery seeded",
+§"Did relaunches lose keeps?" second half), `handoffs/active/autokernel-rebuild-program.md`
+(R23-50, R23-50a), tag `ak/orphan-keeps-quantize-20260829`.
