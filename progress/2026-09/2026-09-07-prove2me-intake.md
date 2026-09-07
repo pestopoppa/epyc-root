@@ -401,3 +401,102 @@ sweep** are the two steps that stay on operator cadence — nothing here perform
 `index_state.py --check` run above is read-only and found nothing to prune. No git commit, `git
 add`, `git checkout`, checkbox flip, or index-row edit was made in preparing this note — per ruling
 (b), those are the owning session's to apply.
+
+## 2026-09-07 (continued) — Q.1 audit fixes + CJ-8/9/11/12 gate-verdict conversion, reviewed and landed
+
+**No lane worktree this session** (`check_lane_worktree.py --strict` exits 3, shared clone,
+no roster id set) — every commit below was staged hunk-selectively with `git diff -- <file>`
+inspected first, per the documented no-lane exception.
+
+### Q.1 mutation-audit fixes (epyc-root `6ebb8878`)
+- Fixed the two P1s the audit reported: `fold.py:409` (`retracts: ""` matched every id-less
+  frame — the same type-check-for-value-check shape as SC58), `projection.py:124`/`:288`
+  (`_review_cause` reported only the first true disjunct of two).
+- Hardened my own `test_impact_coverage_anchor_level.py` against three weaknesses the audit
+  found in it (a duplicate assertion, a negation four values satisfied, a whitespace-brittle
+  grep).
+- Filed the five reported-not-fixed survivors as **SC69–SC73**, led by SC69: `Attested` grades
+  on a digest never verified (`hashlib` appears 0 times in `claim_tuple.py`).
+- Recorded the audit's own coverage bound so the block is never read as exhaustive: it never
+  reached `adapters/`, `canonical.py`, `checkpoint.py`, `evaluate.py`, `cli.py`,
+  `citation_gate.py`, `correction_queue.py`, `machine_anchor.py`, ~29 adapter test files.
+
+### CJ-8/CJ-9 — three-valued gate verdicts (epyc-orchestrator `9cfe731f`, epyc-inference-research `11e5ec75`)
+Dispatched agent verified myself against actual committed code (not the report) before
+committing. Twelve conversion sites; the safety invariant (`GateResult.__post_init__` REFUSES
+`passed=True` on `out-of-coverage`) checked structurally, and 119 targeted tests + set -e
+caller confirmation re-run in review.
+
+- `general.py:155` **fabricated** a GPQA gold reference (`expected="A"`) on missing gold —
+  confirmed fixed: `expected_letter = None`, no `else 0` fallback.
+- `gate_runner → progress_logger → q_reward`: a timeout charged −0.1 of RL learning signal —
+  confirmed fixed: `q_reward.py` sums only `GATE_FAILED`, `GATE_INCONCLUSIVE` excluded.
+- `v7_quality_gate_compare`: missing baseline accuracy read as `0.0`, silently **passing** the
+  suite — confirmed fixed: `_opt_float` returns `None`, old fallback survives only in a
+  docstring. Caller `run_v9_quality_gate.sh` is `set -euo pipefail`, so the new exit 2 still
+  aborts promotion — checked directly, not assumed.
+- Not converted, correctly: `answer_scoring` (would coerce to a PASS through `bool(resp) and
+  ...` callers), the 18 DTAP judges (byte-identity attestation collision), five pinned
+  `debug_scorer` sites.
+- Filed the two deferred items as CJ-11 / CJ-12 rather than losing them.
+
+### CJ-12 — DTAP judge crash/verdict conflation (epyc-orchestrator `626bdb78`)
+Operator ruled option 1 (wrapper permitted, upstream judgment bytes stay separately
+attestable) — recorded at `ecee74ad` before dispatch.
+
+- External `harness/judge_guard.py`: AST pass classifies 46 handlers (33 escalating — a crash
+  becomes a verdict); `sys.settrace` over judge frames raises `JudgeFailure` *after* the judge
+  method returns, so upstream's judgment runs exactly as written. Confirmed no judge byte
+  touched (`git status` under `judges/` empty) and all 18 `upstream_judge_sha256` still verify.
+- **The finding that outranks the task**: there was no validator. `transcribe.py` wrote
+  digests once at authoring time and nothing ever recomputed them — the attestation was
+  unfalsifiable on this host. `python3 -m harness attest [--update]` added; mutation-tested in
+  review (flip one token of judgment logic → exit 1 naming the case; restore → exit 0).
+- **Fixed in review**: the tracer's `_global` callback returned `None` for non-judge frames
+  instead of delegating to whatever tracer it displaced, so `coverage.py` would have been
+  blinded for every other frame while a judge ran. Now delegates; wrapper digest re-attested
+  (`b911cc4f9787`), 88/88 tests still pass.
+
+### CJ-11 — `score_response_or_error` (epyc-inference-research `1d2fe2a3`, epyc-orchestrator `ca21b754`)
+Originally deferred out of CJ-8 as a follow-up; done same-session rather than left filed, per
+"why not do it now?" — the deferral reason (unsafe to widen in place) was real, not a reason
+to defer the *work*, just the *shortcut*.
+
+- New sibling function, not a widening: `answer_scoring.py` diff is **158 insertions, 0
+  deletions** — confirmed by `git diff --numstat` myself, so "the original didn't move" is a
+  diff, not a claim.
+- 2 of 3 callers migrated (rescore records, sequential runner excludes); the sealed-capture
+  instrument (`v7_quality_gate_runner`) deliberately left alone.
+- Disclosed de-inflation: MC scoring with blank gold returned `True` (free pass, no
+  reference) — now `no_reference`.
+- Digests re-pinned last, in review: replaced the `@UNCOMMITTED` placeholder with the real
+  promoting commit hash in the vendored header, which changed the vendored file's own bytes —
+  re-pinned that digest too (`3eb8d6ab` → `3b59d04e`), verified 18/18 tests still pass.
+
+### New finding filed, not fixed: laguna's provenance pins are stale in committed history
+While re-pinning CJ-11's digest I checked laguna's other two sibling pins independently
+(`sha256sum` against the pinned constants, not trusted from any report):
+`EXPECTED_RAW_EVALUATOR_SHA256` and `EXPECTED_CODE_EXEC_SCORER_SHA256` do not match their
+files, and have not since 2026-08-26 and 2026-07-29 respectively (both clean in the working
+tree — committed drift, not local edits). `file_identity()` raises on mismatch, so this
+blocks laguna's provenance block rather than warning. Filed in
+`scoring-infra-standardization.md` with an explicit instruction not to just re-pin — same
+root shape as CJ-12's finding, twice in one afternoon. A derived generalization ("one checker
+for every declared pin in the benchmark tree") was in the row as unfiled prose; caught by the
+derived-actionables gate and given its own `- [ ]` line during this wrap-up.
+
+### Wrap-up execution
+- Lane check: shared clone, no roster id (`check_lane_worktree.py --strict` → exit 3).
+  Continued per the documented no-lane exception; every commit this stretch staged
+  hunk-selectively with `git diff -- <file>` checked first.
+- Checkbox flip count this stretch (`5a630e2a..9489cd19`, handoffs/ only): **8** (CJ-8, CJ-9,
+  CJ-11, CJ-12 flipped `[x]` this stretch; the other 4 in range are from earlier commits in
+  the same session window).
+- Derived-actionables gate: 1 bare suggestion found in prose with no checkbox (the
+  pin-staleness-checker generalization above) — filed, not declined.
+- Prune candidates (`index_state.py` generated `prune.candidate` signal): **0**. Nothing
+  archived this cycle.
+- README freshness check: clean, nothing flagged.
+- Wiki compilation sweep: 76 new sources pending; dispatched to a subagent under the wrap-up
+  lease (Step 5 is operator-cadence-only, and this is an operator-invoked `/wrap-up`) rather
+  than done inline, to keep main-thread token spend on review rather than synthesis.

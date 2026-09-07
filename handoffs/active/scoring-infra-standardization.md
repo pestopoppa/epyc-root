@@ -393,6 +393,11 @@ quarantine entries and its issue #124.
       **The general defect is the same one CJ-12 found in the DTAP judges**: a digest written once
       at authoring time with nothing that recomputes it on a schedule will silently fall out of
       date, and the failure surfaces at the worst moment — when someone finally runs the thing.
-      DTAP's answer was `python3 -m harness attest`; this pin set has no equivalent. Consider one
-      check that walks every declared pin in the benchmark tree and reports staleness as its own
-      condition, rather than each site discovering it at execution time.
+      DTAP's answer was `python3 -m harness attest`; this pin set has no equivalent.
+
+- [ ] **Generalize a pin-staleness checker across the benchmark tree.** One script walks every
+      `EXPECTED_*_SHA256` / `file_identity()`-style declared pin under `scripts/benchmark/` and
+      reports staleness as its OWN reportable condition (like `python3 -m harness attest`),
+      instead of each call site discovering it as a `RuntimeError` at execution time. LOW
+      priority — the row above is the one instance known to be actively blocking; this is the
+      preventive generalization, not itself urgent.
