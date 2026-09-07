@@ -50,3 +50,18 @@ Stage 2c (2 more: arXiv 2605.23950 → intake-1344, FreeToken #350 → intake-13
 Recorded in `.research-session.json` → `expansion_queue`: 104 dive-surfaced refs deferred by the operator, five KV
 sources (TidalDecode, Quest, SeerAttention-R, SWAA, Cabannes et al.), arXiv 2609.00006, and the Part-2 dive
 queue (1312+1326, 1319, 1322 after 1319).
+
+## Commit / merge posture (shared clone, no lane)
+- Four local commits on `main` (index+session `660203a1`, handoffs `e3880ef6`, wiki+Vidya `38af710b`, and a
+  follow-up for this section); research repo `7dd01da3` (chapters only). Staged-index commits, whole files
+  verified wave-only. NOT pushed.
+- `git merge origin/main` ABORTS: three peer-uncommitted files (`dashboard/static/loop.html`,
+  `scripts/hooks/check_commit_hygiene.py`, its test) would be overwritten — not this session's to stash or commit.
+  Local `main` also carries ~10 unpushed peer commits (CJ-8/9, SC62–SC64, RA-13 …), so the promotion is the
+  wrap-up owner's merge, not this session's.
+- `git merge-tree HEAD origin/main` (read-only) predicts 6 conflicts. Resolution for the three this wave caused:
+  `cpu-decode-roofline-program.md` → take origin (it IS the lane/inf70-audit version; the A-P-12 "reconcile
+  main vs lane" row is closed by the merge itself — replace it with a one-line resolved note);
+  `inference-research-index.md` → keep both (origin's rows + INF-72); `master-handoff-index.md` → keep both
+  (OP-42 after origin's OP-41). `wiki/benchmark-methodology.md` → keep both hunks. `wiki/agent-architecture.md`
+  and `wiki/knowledge-management.md` conflicts come from the unpushed peer commits, not this wave.
