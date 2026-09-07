@@ -718,6 +718,24 @@ function renderChampion(d){
   if(c.supersession){
     h += `<div class="ch-sup"><b>SUPERSEDED CHAMPION</b> — ` +
          `${esc(c.supersession.detail)}</div>`;
+    // 2026-09-07: a superseded headline during ACCUMULATION is the expected state, not a
+    // fault -- the champion-vs-production number refreshes per keep, but between keeps
+    // (and before this fix, for the whole accumulation phase) it can lag the tip by days.
+    // Say so, and point at the live number: the accumulator card is the progress.
+    const acc = (d.loop && d.loop.accumulator) || null;
+    if (acc && num(acc.n_keeps)) {
+      const comp = num(acc.compounded_bench_pct) ? acc.compounded_bench_pct : 0;
+      const thr  = num(acc.fire_threshold_pct) ? acc.fire_threshold_pct : null;
+      h += `<div class="ch-sup"><b>ACCUMULATION IN PROGRESS</b> — the current champion ` +
+        `<span class="mono">${esc(short(acc.accumulator_tip))}</span> carries ` +
+        `<b>${esc(acc.n_keeps)}</b> guard-verified keep(s) in the live bundle, ` +
+        `<b>+${comp.toFixed(2)}%</b> compounded bench vs the champion of record ` +
+        `<span class="mono">${esc(short(acc.champion_of_record))}</span>` +
+        (thr != null ? ` — ${(100*Math.min(1, comp/thr)).toFixed(0)}% of the way to the ` +
+                       `${thr.toFixed(2)}% serving gate` : ``) +
+        `. That is the live progress (Accumulator card below); this headline is the last ` +
+        `tip-vs-production A/B and refreshes on the next keep.</div>`;
+    }
   }
 
   if(!showNum){
