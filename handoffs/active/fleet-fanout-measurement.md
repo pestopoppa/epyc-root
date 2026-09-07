@@ -86,11 +86,27 @@ removes exactly the signal under test. Corpus: `data/fanout_timing/*.v2.jsonl` +
 | blocked | 0 | 0.0% | 0.0% |
 | *unknown* | *501* | *excluded* | *excluded* |
 
-**HEADLINE, stated with its unit and its direction of error** (per the unit-of-work amendment
-ratified today in `MEASUREMENT_POLICY.md`): over the **3,777 subagents whose outcome is known**,
-**>= 86.5% of processed tokens and >= 83.8% of new tokens went to work never used**; by **head
-count** the same figure is **>= 40.0%**. These are LOWER bounds on waste, because the `used` side
-is the loose side of the oracle.
+**HEADLINE — BANDS, NOT POINTS. Revised 2026-09-07 by SC62.** A point estimate here is a
+different and stronger claim than the one that was made, so the projection into the belief kernel
+(`scripts/vidya/adapters/fanout_outcome.py`) refuses to yield a scalar at all: `.point`, `float()`
+and `int()` on the value raise. Over the **3,777 subagents whose outcome is known**:
+
+| quantity | band |
+|---|---|
+| head-count waste | **40.0% – 95.5%** |
+| token waste (`total` basis) | **86.5% – 99.7%** |
+| token waste (`new` basis) | **83.8% – 99.6%** |
+| blocked share | **>= 0.0%, NO upper bound** |
+| unclassifiable | **exactly 501** (census, held out of every denominator) |
+
+**The two ends rest on different EVIDENCE, not different confidence** — this is not a confidence
+interval and must never be rendered as one. Low end: 2,265 `produced-and-used`, an upper bound on
+usefulness because 2,094 of those verdicts are `parent-reference` substring hits (evidence the
+parent *saw* the output, not that it *used* it). High end: 171 `git-landed`, the only proven floor.
+
+**The familiar 86.5% is the LOW END of one band, never the finding.** On the proven-floor reading
+the token ceiling is **99.7%**, because those 171 subagents account for just 2.85B of 1,110.7B
+tokens. Anything citing a single number off this measurement is citing something we did not measure.
 
 **Why the two units disagree by 46 points, which is itself the finding:** discarded subagents are
 the token-heavy ones. Cost does not track head count here, so a width-based cost argument measures
@@ -100,7 +116,7 @@ the wrong thing — which is exactly what the ratified discarded-work clause say
 - **`produced-and-used` is an UPPER bound.** 2,094 of its 2,265 verdicts rest on `parent-reference`
   (a substring hit in a later parent record), which over-fires for a subagent citing a hot path.
   The **strict floor of PROVEN reuse is `git-landed` = 171 = 4.5% of known subagents.** So
-  head-count waste sits in a wide band: **>= 40.0%, and <= 95.5%** if only proof counts.
+  head-count waste is the band **40.0% – 95.5%**, and the token bands are above.
 - **`blocked` = 0 is a floor, not a finding.** Neither transcript format carries a blocked marker;
   only a narrow API-error tail is detectable. A subagent that reported a blocker in prose is
   sitting in `produced-and-discarded`.

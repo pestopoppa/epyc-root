@@ -183,3 +183,60 @@ alone would have dropped 31 committed lines.
       `research/intake_index.yaml`, plus its own `.research-session.json` state. Deliberately excluded
       from `6491eccf` and left intact for that session to commit. `.research-session.json` is likewise
       left uncommitted — both sessions write it, and committing either version misrepresents the other.
+
+---
+
+## Execution — the filed rows, worked the same day
+
+Waves 1–2 of the 19 filed rows, run as Opus subagents with the main thread reviewing and applying.
+
+| Row | Commit | Result |
+|---|---|---|
+| wiki compilation | `18cfd5fa` | 5 pages, 360 lines, 0 deletions |
+| ready/blocked derivation (`index_graph.v2`) | `457abd40` | 136 ready / 24 blocked / 10 no_open |
+| SC57/58/59 | `fe91818d` | **SC58 was a P1 defect, not a passing check** |
+| FM-5 / FM-6 | `5f1c4ba4` | fan-out outcome accounting; orphan rate 35.0% |
+| SC56 | `51f9ef61` | statement-binding cap; SC61 filed for its producer |
+| SC62 | `5a630e2a` | FM-5 projected into the belief kernel, bounds enforced |
+| AIR-11 | `85d27f53` | measured; AIR-12/13/14 filed from the result |
+
+### The fan-out numbers are BANDS, and the first form we published was one-sided
+
+FM-5 first reported *"≥86.5% of tokens went to work never used"*. SC62, projecting it into the
+belief kernel, established that this is the **low end of a band whose ceiling is 99.7%**:
+
+| quantity | band |
+|---|---|
+| head-count waste | 40.0% – 95.5% |
+| token waste (`total`) | 86.5% – 99.7% |
+| token waste (`new`) | 83.8% – 99.6% |
+| blocked share | ≥ 0.0%, no upper bound |
+| unclassifiable | exactly 501, held out of every denominator |
+
+**The ends rest on different evidence, not different confidence.** The low end counts 2,265
+`produced-and-used`, of which 2,094 are `parent-reference` substring hits — evidence the parent
+*saw* the output, not that it *used* it. The high end counts 171 `git-landed`, the only proven
+floor, and those 171 hold just 2.85B of 1,110.7B tokens.
+
+The projection makes the band non-optional rather than documented: `value` is a `Bound` whose
+`.point`, `float()` and `int()` raise, and the guard sits on the generated claim **text**, because
+`to_frames` emits the text and never the value — a guard on the number alone would be inert exactly
+where it matters. All five tuples grade `Judged/Located`: there is no codified protocol for
+transcript forensics and none was invented to clear the bar.
+
+**Correction of record:** commit messages `5f1c4ba4` and earlier session reporting quote the
+one-sided `≥86.5%`. That is true as a lower bound but incomplete, and the band form above
+supersedes it everywhere.
+
+### Two defects found by doing the work, not by looking for them
+
+**SC58** was specified as a check that might already pass. It failed on three counts: the judgment
+check validated field *presence* and never content, no `dirty` state existed, and the branch
+discarded `claim_id` so a judgment could not reach a belief at all. The shipped fixtures used
+`["a"]` and `"sha256:aa"` — **the suite asserted the bug**. Fail-closed and prospective; the live
+ledger holds zero judgment frames.
+
+**AIR-11** found that the instrument built to answer it has answered it zero times:
+`premise_screener` has 9 lifetime verdicts, 0 of them `stale`, 5 `unknown` because the probe bundle
+lacked the settling artifact. Its verdict — a screening fix, not a dependency-edge subsystem — is
+recorded in `session-bus-thin-dispatcher.md` with AIR-12/13/14 filed from it.
