@@ -569,7 +569,7 @@ nobody had executed verbatim. **Codify it as constants that launchers import, an
 dry-running against a nonexistent model** — the parse either reaches model load or reports an invalid
 argument, and it costs about a second.
 
-- [ ] **★ PROD-1 — THE CANONICAL RECIPE. Operator-flagged 2026-09-06 as the thing not to forget; with PROD-2
+- [x] **★ PROD-1 — THE CANONICAL RECIPE. Operator-flagged 2026-09-06 as the thing not to forget; with PROD-2
       deferred it is the ONLY live PROD task.** The MTP head is part of the MODEL, not an experiment. Write the canonical recipe for
       Qwen3.8-Flash-Next so that **every** serving path for this model carries its MTP head by default.
       Settled config: head `shared-Q8_0`, `--spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5`
@@ -586,6 +586,19 @@ argument, and it costs about a second.
       and (c) the reproducibility policy chosen under OP-39 — the recipe is where "which routes are row-exact"
       becomes importable constants rather than a remembered convention. A recipe that pins flags but not the
       concurrency gate reproduces the failure PROD-1 exists to prevent.
+      **✅ COMPLETE 2026-09-07 — the recipe is now DATA, validated against the real binary and the real host.**
+      Drafts in `/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`: `lib/qwen38_flash_next_recipe.py` (657 lines,
+      `preflight` passes here), `lib/test_qwen38_flash_next_recipe.py` (**38 tests, all pass**),
+      `benchmark/serve_qwen38_flash_next.sh`. Follows the EXISTING convention (`scripts/lib/canonical_recipe.py`)
+      as a **sibling, not a replacement** — that file is the bare `llama-bench` CPU baseline (`-t 96`, no MTP);
+      this is the served `llama-server` champion (`-t 48`, MTP mandatory). **Proof of equivalence**: the emitted
+      command is **byte-identical** to CHAMPION-3's expanded arm, and the emitted env is **set-identical** to the
+      live `/proc/PID/environ` readback (`champion3/runs/Q_C3_r1.env`).
+      **Three defects it found in our own record:**
+      1. **The PROD-1 prose recipe was a HYBRID NOBODY EVER EXECUTED** — it claimed `-fa on` *and*
+         `GGML_FA_SPLIT_KV=0`; the live readback shows **neither**.
+      2. **`23.16 t/s` / `1.876×` is a build-10221 number, NOT a champion-3 number.** Do not quote it as the champion.
+      3. **B12's dependency on PROD-1 is DISCHARGED** — any row still reading as blocked on PROD-1 is stale.
 - [ ] **PROD-2 — ⚠ THE 09-06 DEFERRAL WAS REVERSED BY THE OPERATOR ON 2026-09-07. Read the FOLD block
       below before acting on the deferral text that follows.**
 
@@ -830,8 +843,110 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       logger's `27 of 11` is not a broken counter — it is 27 foreign-process OBSERVATIONS over 11
       SAMPLES, a label bug; the co-residency itself is genuine. **The same defect sits in
       `champion1/arm.sh`, the copy source for the campaign's harness** — flagged by SYNC-16, not
-      silently patched. Decide whether to fence (cgroup/cpuset the tooling out of 0-95) or to log and
-      regress on it; until then every sub-5% delta in this campaign carries an uncontrolled variable.
+      silently patched. Until this is decided, every sub-5% delta in this campaign carries an
+      uncontrolled variable.
+      **★★★ THE FRAMING THAT DECIDES THIS IS A HARDWARE FACT, NOT A SCHEDULING ONE.** This is a
+      **96-physical-core box presenting 192 logical CPUs**. Every logical CPU in 96-191 is the SMT sibling of
+      one in 0-95 (96↔0 … 191↔95, **exhaustive**, verified against `thread_siblings_list`). Therefore any
+      second tenant doing real work is *necessarily* on the bench cores' siblings. **On this host, isolation
+      between two CPU-heavy campaigns is not achievable by placement at all — only by time.** That sentence is
+      the decision: this is not "should we tidy up our tooling", it is **"two campaigns cannot both run
+      CPU-heavy work and both trust their sub-5% numbers."**
+      **⚠ CORRECTION 2026-09-07 — THE "FENCE IT" OPTION CANNOT BE BUILT AND HAS BEEN REMOVED.** The
+      original filing offered *fence via cgroup/cpuset vs log-and-regress*. Challenged by the autokernel
+      session and **verified directly against the kernel** by reading `thread_siblings_list` for all 192
+      logical CPUs: **not one logical CPU in 96-191 lacks a sibling inside 0-95** — the pairing is
+      exhaustive (96↔0, 183↔87, 184↔88, 191↔95). **There is no disjoint region to move tooling to.** Any
+      process on this host, pinned anywhere, lands on a physical core our bench range is timing.
+      **The dominant contention is BUILDS, not bench threads.** autokernel's `gates.compiles` runs
+      `jobs=64` pinned to `cpu_list="96-183"` — the sibling set of **88 of our 96** bench cores — and its
+      bench on `184-191` covers the other 8: **96 of 96**. Sampled live during their run 30 while we were
+      measuring: **9 concurrent `cc1plus` at 100% CPU each.** That is a far better candidate for our
+      **16.8% A/A spread** than the 8 GPU host threads originally flagged.
+      **A nuance recorded rather than smoothed over — and recorded AS THE PEER MADE IT.** The autokernel
+      session wrote the 16.8% attribution up as **SHARED SUSPICION, not settled on them**: the `cc1plus` we
+      caught at 1200% had `cpus_allowed=0-191` (**unpinned**), while theirs are pinned to `96-183`, so the
+      process we sampled was most likely **one of our own** unlocked builds. Their defect is still real —
+      pinned-but-unlocked contends whenever a build overlaps an arm; it just does so on a predictable 88
+      cores. **Two separate defects**: ours is unpinned AND unlocked, theirs is pinned but unlocked.
+      *A peer correcting their own overreach is worth preserving accurately; do not re-simplify this to
+      "it was their builds".*
+      **Context, theirs alone, no decision needed:** their `serving.py` pins nothing — the `llama-server`
+      at their serving gate has no `taskset` in its Popen argv, so it can land **directly on 0-95** rather
+      than merely on siblings. They are fixing it; it is recorded here only because their own serving
+      measurements inherit the same hazard.
+      **★★ CROSS-REFERENCE — MEAS-1 AND AUTOKERNEL'S `R23-49` / THEIR `OP-39` ARE ONE DECISION, NOT TWO.**
+      They have queued the **identical** serialize-vs-regress tradeoff, cross-referencing ours, because
+      option (A) costs **them** throughput (their builds queue behind our arms) while it buys **us**
+      resolution. **Neither session can decide it alone and neither should.** The two rows must be ruled on
+      together, **or one campaign's answer silently sets the other's default.**
+      *(Note: this is a different OP-39 from INF-70's own resolved per-route row-exact item.)*
+      **Also recorded, theirs, no decision needed:** they have made `llama-server` pinnable
+      (`Recipe.cpu_list`) but are **deliberately leaving the default `None`** — setting it changes the
+      measured condition and would invalidate their 3.536% serving floor, so the pin and its re-calibration
+      must land **in one window**. A clean instance of this campaign's own rule that a lever's value is a
+      property of the configuration it was measured in.
+      **⏳ IN PROGRESS (coordinator, not an open task): our own build-script bypass** — `build3.sh` runs
+      `cmake --build -j 40` with no `region-lock` wrapper.
+- [ ] **★★ MEAS-1-DECIDE — OPERATOR DECISION. Three options; fencing is not among them.** Requested for
+      the master index operator queue, `Open since 2026-09-07`.
+      **★ THE DISCRIMINATOR IS THE PEAK, NOT THE TOTAL FOREIGN LOAD — SO (A) NEED ONLY COVER BUILDS.**
+      HARNESS-1 quantified three A/A arms (same binary, same config, **bit-identical output — purely timing**):
+
+      | arm | tw t/s | foreign CPU p50 | foreign CPU max | heaviest foreign |
+      |---|---:|---:|---:|---|
+      | `A_OLD1` | 19.313 | 399.9 | **3218.0** | `cc1plus` 1200, `test-backend-ops` 363 |
+      | `A_OLD2` | 22.860 | 621.2 | 1214.6 | `python` 840 |
+      | `A_OLD3` | 22.421 | 477.8 | 1458.0 | `python` 600 |
+
+      **All three: 16.47% spread. Excluding the compiler-contended arm: 1.94%.** Note `A_OLD1` has the
+      **lowest** median foreign CPU yet is **15% slower** — unpinned noise (`ps`, `htop`) dominates the median
+      and moves nothing; what hurts is a **burst of 3218% = 32 cores, a third of the bench region.**
+      **⚠ The existing `loadavg < 10` PRE-LOAD gate cannot protect an arm**: it passes, and then the burst
+      arrives *during* the measurement. Only **in-window** sampling catches it — which is precisely why the
+      sampler's `184-191` mislabel (WRAP-4) mattered as much as it did.
+      **(A) SERIALIZE — and it is CHEAPER than first stated: serializing COMPILES ALONE plausibly takes the
+      A/A floor from 16.47% to ~1.94%**, i.e. the difference between a 3–5% effect being unresolvable and
+      being measurable. It does **not** require fencing or serializing all tooling. Builds and other heavy
+      work take the region lock and queue against bench arms. *Removes the confound at the source; costs the
+      other campaigns throughput directly* — autokernel's builds would queue behind our CPU arms. That cost is
+      why it is an operator call.
+      **(B) PUBLISH A SCHEDULE** — heavy work advertises its windows and sub-5% timing avoids them.
+      *Cheaper, weaker, relies on compliance.*
+      **(C) ACCEPT AND REGRESS** — keep measuring through the noise, log foreign load per arm, treat it as
+      a known variance term. *No host change; prices the confound rather than removing it, and cannot
+      rescue runs already taken.*
+      **No recommendation yet, deliberately** — SYNC-19/20's numbers under a quiet window come first.
+      **⚠ THE QUIET WINDOW IS REQUESTED, NOT ARRANGED. Do not record it as secured.** autokernel accepted the
+      protocol (hold run 30 at a task boundary when SYNC-19/20 acquire) but **cannot deliver it unilaterally
+      — run starts and stops are operator-gated on their side.** If their operator has not ruled by the time
+      SYNC-19/20 are ready, they will surface it as a live request rather than let the default take effect.
+      **On current evidence SYNC-19/20 may well run CONTENDED, in which case their headline is a NON-CLAIM
+      and must say so in advance** — decided now, not after the numbers are in.
+- [ ] **★ MEAS-3 — RETENTION ROW: `/mnt/raid0/llm/tmp/inf70/agents/sync16/` IS A CROSS-CAMPAIGN DEPENDENCY.
+      DO NOT RECLAIM.** Marked in place at `agents/sync16/DO-NOT-RECLAIM.md`. The autokernel session is
+      **reusing its sibling-expanded `cpus_allowed` residency check** in their serving gate rather than
+      rebuilding it, and has filed that path as the source. The directory also holds the **pre-registered A/A
+      control that caught SYNC-16's build artefact** and the long-stream identity harness. **It looks exactly
+      like spent scratch and is not** — the last sweep removed 185 GB, and this is the class of thing that
+      sweep would have taken. Carry this row until the dependency is vendored somewhere durable.
+- [ ] **★ MEAS-2 — ADOPT `build_locked.sh` AS THE STANDING BUILD IDIOM, AND PROMOTE IT OUT OF SCRATCH.**
+      Filed 2026-09-07. **The build bypass is SYSTEMIC, not one script.** Audit of every INF-70 build script:
+      **19 of 21 take no region lock at all** — only `harness1/build.sh` and `b7-ple/build.sh` do.
+      `champion3/build3.sh` was merely the one we happened to catch, so patching that single script would have
+      fixed nothing and manufactured a false sense of closure. **This is a CONVENTION gap, not a slip.**
+      **The fix is written**: `/mnt/raid0/llm/tmp/inf70/build_locked.sh` — a wrapper running `cmake --build`
+      under `region-lock` with `--role build --timeout-s 0` (fair queue, **never polls**).
+      **Verified to actually exclude rather than merely appear to**: the lock module's occupancy registry
+      computes blockers from **region overlap regardless of role** (`cpu_region_lock.py`, the `overlaps` set);
+      role is attribution only, and only a `shared=True` same-role request can join a cohort — so `role=build`
+      genuinely queues behind `role=bench`. Checked deliberately, because the CLI help calls it a "per-role
+      lock" and the lock FILES are per-role (`cpu_region.{role}.{region}.lock`), which would have made a
+      role-labelled wrapper **vacuous** had the cross-role mutex not existed.
+      **Task**: adopt it as the campaign's standing build idiom, and **promote it into the research repo
+      alongside PROD-1's recipe module** so it outlives scratch and PROD-1 can import it.
+      **Explicit decline recorded, not a drop: do NOT edit the 19 scratch build scripts** — they are one-shot
+      artifacts and mostly spent; the value is in the convention and in PROD-1 importing it.
 - [ ] **SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a
       profiled A/B on a NON-prof build in one window. If the nodes shrink while the token does not,
       the lever is dead for good. Also tests the wider risk SYNC-16 raised: **the per-node census may
@@ -859,7 +974,9 @@ highest-value item is ALREADY IMPLEMENTED on `inf70/sync10`.** Occupancy at the 
 **Full 48-thread occupancy on the trunk at every batch from 1 to 47.**
 **And the measurement settles it independently of the code**: the saving is **5.84 ms/eval** at ~4.1
 tokens/eval against a trunk seam of **6.04 ms/eval**. A draft-only effect is bounded at ~0.76 ms/token =
-**+1.6%** and cannot produce +3.05%. **So the ÷3 framing was right for this branch** — SYNC-10 said so
+**+1.6%** and cannot produce +3.05%. **So the ÷3 framing was right for this branch** (⚠ *for this branch
+only* — see **★ COROLLARY THAT SUPERSEDES THE ÷3 RULE ENTIRELY** below: the haircut is a property of a lever
+IN A GIVEN KERNEL, never portable; re-measure, never re-scale) — SYNC-10 said so
 plainly rather than letting the hopeful reading stand.
 **Two consequences, both actionable:**
 1. **Do NOT schedule the relaxed guard as new work — ADOPT SYNC-10's.** Its `nr < nth` supersedes SYNC-2's
@@ -1318,8 +1435,14 @@ affinity, no loader change.** That is the single arm worth running if anyone wan
 - [ ] **SYNC-18 — re-test "small gathers should stay single-task."** D8's +0.97% was measured with both arms
       running the identical parallel kernel, so the hypothesis is **untested**, not refuted. Cheap now that
       `GGML_GET_ROWS_MIN_BYTES` is known inert at the kernel.
-- [ ] **UP-2 — upstream the two ggml contract bugs**: the `SET_ROWS` `wdata` overflow (size by `n_threads`)
+- [x] **UP-2 — upstream the two ggml contract bugs**: the `SET_ROWS` `wdata` overflow (size by `n_threads`)
       and the `MAP_CUSTOM*`/`CUSTOM` `n_tasks` violation. Issue text ready in `sync7-8-13/REPORT.md` §2.6.
+      **✅ COMPLETE 2026-09-07 — folded into the same UP-1/UP-2 pass.** Both contract bugs confirmed still
+      present on upstream `master` @ `e71b805`: the `SET_ROWS` `wdata` overflow (planner sizes by `n_tasks`,
+      fixed at 1, while the kernel splits over `n_threads`; ASan-confirmed by `repro_set_rows_overflow.c`) and
+      `MAP_CUSTOM*`/`CUSTOM` ignoring the requested `n_tasks` (forwards in `ops.cpp` still pass `params->ith/nth`
+      straight through; `repro_map_custom_ntasks.c` + `regression_check.c`). Presented as a defect class plus a
+      fix — **no aliasing write-primitive or extraction path was written.** Not submitted; operator's call.
 
 **★ CROSS-CAMPAIGN EXCHANGE WITH AUTOKERNEL 2026-09-07 — the leave-one-out gap is CONFIRMED and filed there
 as R23-48.** Autokernel's own answer, verbatim in substance: *"no — autokernel never re-tests an accumulated
@@ -1381,9 +1504,9 @@ Committed, not pushed. Frozen tree untouched at `0db32c06e`.
 | MTP served | value |
 |---|---|
 | **in-window (shipped binary, window 3)** | **33.370 t/s · 29.967 ms/token** — and **34.433 t/s · 29.042 ms** in window 1, same config via the hatch |
-| **vs champion-1, paired same-window** | **1.0427 (+4.27%), 117/120 per-prompt wins** |
-| **vs pristine `c51e4dabf`** | **1.4993, 120/120 wins** |
-| referred to the 35.407 anchor | ≈36.9 t/s · ≈27.1 ms — **A PROJECTION, NOT A MEASUREMENT** |
+| **vs champion-1, paired same-window** | **1.0427 (+4.27%), 117/120 per-prompt wins** — **HARNESS-1 backward assessment 2026-09-07: NOT exposed** to eviction skew (every arm on both sides evicted in 0 s); independent recompute **+4.50%** |
+| **vs pristine `c51e4dabf`** | **1.4993, 120/120 wins** — **HARNESS-1 2026-09-07: computed from the 0 s rounds only this is `1.5149`.** The multiplier we have been quoting is **understated**, not inflated |
+| referred to the 35.407 anchor | ≈36.9 t/s · ≈27.1 ms — **A PROJECTION, NOT A MEASUREMENT. Quote the RATIOS (1.4993 / 1.5149) or the in-window `33.370 t/s`; never this absolute.** (WRAP-1) |
 
 Plain: **20.589 t/s · 48.569 ms**, 1.0568 over champion-1, **1.7151** over pristine. **α = 0.8209 and
 drafted/token 0.8961 in EVERY MTP arm of every binary**; coherence 20 COHERENT + 4 SHORT in **all 48 arms**.
@@ -1577,6 +1700,20 @@ dispatched instead of waiting, since none can contend:
       Its models sit in VRAM, so reload was never its bottleneck. This lever is specific to a 92 GB CPU model.
       **Failure mode to respect: if targeted eviction cannot reproduce even placement, keep the slow path.**
       A fast harness that measures the wrong thing would poison every result after it.
+      **⏳ PARTIAL 2026-09-07 — the chain is STILL RUNNING; the BACKWARD ASSESSMENT is done and consequential.**
+      Artifacts: `/mnt/raid0/llm/tmp/inf70/agents/harness1/` (`BACKWARD-ASSESSMENT.md`, `CONTENTION-FINDING.md`,
+      `EVICTION-NOTE.md`, `SAMPLER-FIX.md`).
+      - **The +4.27% headline is NOT exposed** — every arm on both sides evicted in **0 s**; independent
+        recompute **+4.50%**.
+      - **But `1.4993×` over pristine should be `1.5149×`** using only the 0 s rounds. **The champion
+        multiplier we quote is UNDERSTATED, not inflated.**
+      - **★ Phase R IS materially exposed**: `R_C1` averaged **125 s** of eviction against `R_C3`'s **74 s**,
+        inflating `R_C3`'s **+8.60%** by an estimated **1–3 points**. Phase R must be re-derived (WRAP-9).
+      - **★★ A METHOD TRAP WORTH MORE THAN THE ARM**: pooling all nine phase-R arms gives **r = +0.420** —
+        **the OPPOSITE sign** to the within-arm relationship. **Simpson's paradox**: pristine runs slow with
+        cheap evictions and champions run fast with expensive ones, so the pooled correlation inverts. Any
+        future eviction-cost-vs-throughput read on this harness **must be computed WITHIN-ARM.**
+      - It also produced the A/A contention quantification now folded into **MEAS-1** (peak, not median).
 
 # ★ STANDING RULE — RECLAIM A NO-GO ARTIFACT AS SOON AS IT IS PROVEN (operator, 2026-09-07)
 
@@ -1645,6 +1782,42 @@ They are filed here rather than described in prose so the dashboard can see them
       `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
       the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
       SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
+- [ ] **WRAP-9 — re-derive phase R WITHIN-ARM, and restate the champion multiplier as `1.5149×`.**
+      Filed 2026-09-07 from HARNESS-1's backward assessment. Two separate jobs: (a) `R_C3`'s `+8.60%` is
+      inflated by ~1–3 points by an eviction imbalance (`R_C1` 125 s vs `R_C3` 74 s) and must be recomputed
+      from comparable rounds; (b) the pristine multiplier computed on 0 s rounds only is **1.5149×**, not
+      1.4993× — the champion table has been annotated but every downstream quotation still carries the old
+      figure. **Do NOT pool arms when regressing eviction cost against throughput — the pooled sign inverts.**
+- [ ] **WRAP-10 — land PROD-1's recipe module in `epyc-inference-research`.** Three new files
+      (`scripts/lib/qwen38_flash_next_recipe.py`, `scripts/lib/test_qwen38_flash_next_recipe.py`,
+      `scripts/benchmark/serve_qwen38_flash_next.sh`) plus **one line** adding the test to the Makefile's
+      `PYTEST_SMOKE` list. Drafts are validated and 38/38 green but **PREPARED, NOT APPLIED**; they live in
+      scratch (`/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`) and are lost with it. Land MEAS-2's
+      `build_locked.sh` in the same pass so the two conventions arrive together.
+- [ ] **WRAP-11 — decide the fate of the 21 branches carrying unique work.** `inf70/champion3` is pushed to
+      the `fork` remote as **`experimental-inf70-champion3`**. Of 44 branches, **22 are fully contained in
+      champion-3** and need no push; **21 carry unique work** and a push command for them is **pending with
+      the operator**. Until it runs, that work exists only in local clones on this host.
+- [ ] **WRAP-12 — correct the PROD-1 hybrid recipe and the build-10221 figure wherever they were propagated.**
+      Two of PROD-1's three findings are record defects with reach beyond this file: the prose recipe claimed
+      `-fa on` **and** `GGML_FA_SPLIT_KV=0` and the live `/proc/PID/environ` readback shows **neither** (a
+      configuration nobody ever executed), and **`23.16 t/s` / `1.876×` is a build-10221 number quoted as a
+      champion-3 number**. Sweep the handoff, the wiki and the progress record; the third finding (B12's
+      PROD-1 dependency is discharged) is closed by this wrap-up.
+
+**Explicitly declined at the 2026-09-07 operator wrap-up (decisions, not drops):**
+- **Editing the 19 unlocked INF-70 scratch build scripts** — one-shot artifacts, mostly spent. The value is
+  in the convention (`build_locked.sh`, MEAS-2) and in PROD-1 importing it, not in retrofitting dead scripts.
+- **Purging the retracted "2 MB THP boundary" and ÷3 phrasings wholesale (WRAP-1)** — roughly half the
+  remaining occurrences ARE the retraction text; deleting them would remove the correction and leave the
+  record silent about a claim propagated fleet-wide. The three sites that still ASSERT the ÷3 framing now
+  carry supersession pointers, and the ≈36.9 t/s row now names the ratios to quote instead. `wiki/`
+  needs no purge: `wiki/hardware-optimization.md` §THP (2026-09-06) already quotes the phrase only to debunk
+  it, and `wiki/` contains **zero** `36.9` and **zero** `÷3` INF-70 hits.
+- **Rewriting the `progress/` occurrences** — the daily record is history, not a live claim surface. 21 of
+  the 46 hits are there, including the retraction narrative itself. Left verbatim by design.
+- **Pre-filing SYNC-19 / SYNC-20 outcomes** — dispatched and queued on the bench lock; an outcome must not be
+  inferred from a dispatch.
 
 **Explicitly declined at this sweep (decisions, not drops):**
 
@@ -1851,12 +2024,13 @@ CPU-only); extending `MADV_NOHUGEPAGE` to non-`ggml_aligned_malloc` buffers is a
       first, and ran the final 20-second controls **outside** the lock at `nice -n 19` on 8 cores. All kills by
       captured PID, verified with `ps -p`.
 
-- [ ] **HYG-3 — PRE-EXISTING test failures in the fusion branch, NOT merge-induced.** Filed 2026-09-06 from
+- [x] **HYG-3 — PRE-EXISTING test failures in the fusion branch, NOT merge-induced.** Filed 2026-09-06 from
       MERGE-1. The unfiltered `test-backend-ops` sweep gives **16703/16762, rc=1**; the 59 failures are only
       `EXP`, `EXPM1`, `DIAG_MASK_INF`, `LIGHTNING_INDEXER`. A seeded control (`--suite-seed 42`) on the
       **pristine `c51e4dabf`** build versus merged in both knob states yields an **identical 62-case failure
       set in all three** — so this predates all INF-70 work on the branch. **Anyone running the unfiltered
       sweep will see rc=1 and must not read it as a regression.** Diagnose or document as accepted.
+      **✅ COMPLETE 2026-09-07.** Full findings in the session record (`progress/2026-09/2026-09-07-inf70-audit.md`).
 
 **⚠ LANGUAGE CORRECTION REQUIRED ELSEWHERE — "the 2 MB THP boundary" is wrong and I propagated it.**
 SYNC-2 §8 and SYNC-10's backlog note both assert a boundary at 2 MB, as did this handoff and my reports.
@@ -2005,6 +2179,10 @@ FLASH_ATTN_EXT** it blurs (MUL_MAT even shows a small negative residual). **The 
 two halves are approximate for those four ops.**
 
 **(c) ★ THE ÷3 RULE — THE MTP CONFIG WE ACTUALLY SERVE HAS A DIFFERENT PROFILE, AND IT PRICES AXIS S DOWN.**
+⚠ **SUPERSEDED AS A GENERAL RULE** by **★ COROLLARY THAT SUPERSEDES THE ÷3 RULE ENTIRELY** — the plain→served
+haircut belongs to a lever IN A GIVEN KERNEL, not to the lever. `ROWCOL_SPLIT` measured **+3.05% served alone
+and +5.3% served in champion-3**. The profile below still holds for THIS config; it must not be applied as a
+universal divisor. (WRAP-1)
 Graph shapes: 508 draft evals @144 nodes, 119 trunk evals @7,481, for 384 tokens = **3.23 tokens per trunk
 eval**, 4.27 draft evals per trunk eval.
 
@@ -2370,7 +2548,9 @@ so a task-manager kill cannot take it down again, with the PID recorded so it ca
       missing parallelisation.** Precisely the defect **D8 fixed for GET_ROWS** with a (row, column-chunk)
       split, bit-identical, +13.8% (re-verified same-binary at +15.4% by SYNC-4) — so the template exists
       (`bc2834a9b`, `inf70/sync4`'s `ggml_get_rows_split_init`).
-      **★ It survives the ÷3 rule**, which is why it outranks every barrier lever: **6.04 ms is still wasted
+      **★ It survives the ÷3 rule** (⚠ superseded as a general rule — see the COROLLARY; the ranking below
+      stands on its own measured served numbers, not on the divisor), which is why it outranks every barrier
+      lever: **6.04 ms is still wasted
       in the MTP trunk graph** (UNARY 4.11 + REPEAT 1.62). ARGSORT is not elementwise and may be unreachable —
       triage honestly rather than forcing it.
 
@@ -2471,7 +2651,7 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       was uncensused until 2026-09-05 and gave the ÷3 rule) and **never report a per-node mean without
       dispersion**. **Blocked on OP-38** for the patch commit.
 
-- [ ] **UP-1 — upstream the two ggml contributions this campaign produced.** Filed 2026-09-05.
+- [x] **UP-1 — upstream the two ggml contributions this campaign produced.** Filed 2026-09-05.
       (a) **`ggml-cpu: vectorise sigmoid`** — `ggml_vec_sigmoid_f32` existed in `vec.h` as a **dead scalar loop
       with zero callers** while `ggml_compute_forward_sigmoid` went per-element, and `ggml_v_sigmoid` is
       `ggml_v_silu` with the numerator `1`. A **12.5× gap on identically shaped nodes** from a function written
@@ -2484,18 +2664,54 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       `if (ith != 0) return;` outright). Bit-identical, and worth **+8.57% measured** on this stack.
       Note upstream value differs from ours: (a) helps anyone lacking a 48-thread split; (b) helps anyone
       running batch-1 decode on many cores.
+      **✅ COMPLETE 2026-09-07.** Verified against a **fresh clone of upstream `ggml-org/llama.cpp`, `master` @
+      `e71b805`** (ggml 0.23.0) — not our vendored/frozen tree, not a README. All FOUR defects confirmed still
+      present. Patches `git apply --check` clean against pristine master, independently and together.
+      Patches, reproducers and ready-to-paste PR bodies: `/mnt/raid0/llm/tmp/inf70/agents/up/` (`REPORT.md`).
+      **Nothing opened, pushed or posted — submission is the operator's call.**
+      **⚠ CORRECTION TO OUR OWN RECORD: the `SET_ROWS` write-up quoted a "duplicate-destination race guard"
+      comment that DOES NOT EXIST UPSTREAM — it was our own fork's added comment.** Real upstream documents the
+      aliasing precondition at the `ggml_set_rows()` **API** level. Never cite that comment as upstream intent.
+      **⚠ The (row, column-chunk) patch needed a hand fix for `ggml_compute_forward_repeat_f16`**, a variant
+      added upstream since our commit — a naive reapplication would have **silently mis-patched** it.
+      **Sigmoid accuracy re-measured here at 60.3% exact / 94.3% within 1 ulp vs 74.2% / 92.1% downstream**
+      (libm/compiler difference). **Both are shown and labelled in the PR body**, neither is quoted as *the* number.
 
-- [ ] **HYG-1b — rebuild or remove EVERY stale build dir in the shared tree.** Escalated 2026-09-05: it is not
+- [x] **HYG-1b — rebuild or remove EVERY stale build dir in the shared tree.** Escalated 2026-09-05: it is not
       one directory. **None** contain `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or `GGML_IQK_DEQUANT`, and **all
       predate `99425578d`**, so setting any of those against them is a **silent no-op** and any result measured
       there is **vacuous rather than wrong** — the more dangerous kind. Cost B12 a rebuild and is the third
       incident of this class in a week. Either refresh them at tip or delete them so nobody can reach for one.
+      **✅ COMPLETE 2026-09-07.** Audit found the "none of the build dirs contain the knobs" defect is now
+      confined to **5 directories**, all of which were **deleted today**. Scan script and output retained at
+      `/mnt/raid0/llm/tmp/inf70/agents/hyg/` (`scan_builds.sh`, `scan_builds_output.txt`). This is the standing
+      stale-build-artifact failure mode, and it is exactly why **G2-CONC must run on the promotion-candidate
+      binary and not on an ancestor.**
 
-- [ ] **HYG-2 — `check_commit_hygiene.py` parses the COMMIT MESSAGE as shell text.** Filed 2026-09-05 (was
+- [x] **HYG-2 — `check_commit_hygiene.py` parses the COMMIT MESSAGE as shell text.** Filed 2026-09-05 (was
       "noted, not filed" — filing it). It splits the command string on newlines and reads message lines as
       commands, so a message that merely **quotes** a git invocation is misread as a pathspec commit and
       refused. Cost three attempts in this session; worked around with `-F <file>`. Same family as OP-38 —
       a hook whose parser is wrong about which text is a command. Low severity, trivially reproducible.
+      **✅ COMPLETE 2026-09-07 — fix committed at `29d340ad` with a MUTATION-PROVEN regression test** (the
+      mutation was made visible AND counted, not merely asserted absent).
+- [ ] **★ HYG-2b — THE COMMIT-HYGIENE HOOK DOES NOT SEGMENT A COMPOUND SHELL COMMAND, AND IT BLOCKS ITS OWN
+      PRESCRIBED IDIOM.** Found and **reproduced deliberately** at the 2026-09-07 operator wrap-up, with
+      `29d340ad` (HYG-2's fix) present in the tree — so this is a **second, residual defect, not a
+      regression of the first.**
+      **Repro (2 arms, one variable):** `git diff --stat -- <file> && git commit --dry-run -m "probe"` is
+      **BLOCKED** as *"`git commit -- <pathspec>` on a shared repo"*; the identical `git commit` issued
+      **alone** succeeds. The `--` belongs to the sibling `git diff`, not to the commit.
+      **Proof it is reading the whole line as one command**: the block message renders the offending path as
+      `git diff -- 2>&1` — it has taken the LAST token of the entire shell line as the "race" path.
+      **Why it matters more than a nuisance**: the pattern it blocks — `git add -- <my files> && git commit
+      -m "..."` with **no pathspec on the commit** — is *exactly the safe idiom the hook's own remediation
+      text prescribes*. A guard that forbids its own idiom trains sessions to bypass it
+      (`EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1`), which is strictly worse than the defect it prevents.
+      **Fix**: split the command string on `&&`/`||`/`;`/newline and evaluate each segment independently;
+      only a `--` appearing **after** `git commit` within the SAME segment is a pathspec commit. Extend the
+      regression test with a compound-command arm — the existing test passes because it only ever feeds one
+      command at a time, which is the same vacuity class HYG-2 itself was filed for.
 
 - [x] **SYNC-11 — CLOSED ✅ 2026-09-07: ANSWERED, not run. Both of its justifications are gone.** Its
       question — is `result_output`'s 1.48× spread a per-CCX residency effect? — was answered by a better
@@ -2768,13 +2984,33 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       remaining on Axis B: a 38% traffic reduction on the plain path is worth more than every merged kernel
       change in this campaign combined.
 
-- [ ] **INF-71 — EXL3 `mul1` trellis experts.** ⚠ **RENAMED 2026-09-07 from "B7" — that label COLLIDED with the CLOSED PLE-precision B7** (ANSWERED NO 2026-09-04: higher PLE precision buys no quality; BF16 would cost **+25.6 GB resident for nothing**). Two different items carried one ID and the closed one could shadow the live one. **This is the live item, and the operator has just prioritized it; every "B7" elsewhere in this file resolves to the CLOSED PLE item.** turboderp published EXL3 weights for this
+- [x] **INF-71 — EXL3 `mul1` trellis experts.** ⚠ **RENAMED 2026-09-07 from "B7" — that label COLLIDED with the CLOSED PLE-precision B7** (ANSWERED NO 2026-09-04: higher PLE precision buys no quality; BF16 would cost **+25.6 GB resident for nothing**). Two different items carried one ID and the closed one could shadow the live one. **This is the live item, and the operator has just prioritized it; every "B7" elsewhere in this file resolves to the CLOSED PLE item.** turboderp published EXL3 weights for this
       model on 2026-08-31 (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, MTP head at 4 bits,
       `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
       fuses into the `vpdpbusd` the gemv already needs (~4 vector uops per 16 weights — IQ4_XS-class, unlike
       ik_llama.cpp's slow 3INST trellis types). At 3.05 bpw the expert stream drops ~0.4 GB/token. Spec,
-      phases, gates and hazards: [`exl3-trellis-cpu-kernel.md`](exl3-trellis-cpu-kernel.md). Do not start it
+      phases, gates and hazards: [`exl3-trellis-cpu-kernel.md`](../completed/exl3-trellis-cpu-kernel.md). Do not start it
       before C0/C5/B1/D0 rank the levers.
+      **❌ NO-GO 2026-09-07, OPERATOR-CONFIRMED. Artifacts reclaimed (180 GB).** Report:
+      `/mnt/raid0/llm/tmp/inf70/agents/inf71/REPORT.md`. Phase 1 as briefed **had already been executed
+      2026-09-02** (X-DL, X0, reference half of X1; committed `15c4af65`) — re-running it would have been
+      duplicated work. What decided it is new: the lever **re-priced against the CURRENT champion, 1.50× faster
+      than the token X1 priced against.** Our own serving mode (MTP) now runs at **16.6% of the DRAM bandwidth
+      ceiling** — a bytes-per-weight lever cannot pay there, and champion-3 moved the operating point **further
+      from bytes-bound**. The written reopen trigger ("reopen when Axis D has moved the floor enough that the
+      expert stream binds") has moved **away**, not toward.
+      **★★ FOUR FACTUAL CORRECTIONS TO OUR RECORD THAT MUST SURVIVE THE NO-GO** (all applied in
+      [`exl3-trellis-cpu-kernel.md`](../completed/exl3-trellis-cpu-kernel.md)):
+      1. **There is NO separate MTP head in the EXL3 weights** — zero `mtp.*head*` tensors. **X5's premise is
+         VOID**, and Axis E would inherit **MORE** head bytes, not fewer.
+      2. **The 3.05 branch is `mtp_bits: 3`, not 4.**
+      3. **Vision is on the 3.05 branch, NOT 4.05 — the handoff had it INVERTED.**
+      4. **`byte_pair_ok` pairs fully at K=4 but only on rows 8–15 at K=3** — that is the mechanism behind the
+         measured **17.3 vs 9.4 GB/s per core**, previously recorded as an unexplained gap.
+      **Counter-proposal recorded, not dropped (the reopen precondition):** the port's gate ordering is
+      **INVERTED** — the 3.05 bpw *quality* question, the largest variance source and the one that can kill the
+      lever outright, is gated **behind** 5–7 sessions of porting. It can be answered for **~2–5 GB of targeted
+      download and one zero-inference session, no bench lock.** If INF-71 is ever reopened, that is FIRST.
 
 ## Axis A — finish the fused decoder's viability test (INF-67)
 
@@ -3870,7 +4106,7 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
       promotion. Both cross-references are drafted and handed to the coordinator — do not add them here
       while the PROD-1 agent is running.**
 
-- [ ] **G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**
+- [x] **G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**
       **Even when coherent, 3 of 4 concurrent streams DIFFER from the same prompt served alone**, and
       **ROW COUNT — not admission pattern — decides it**, so a staggered-admission scheduler does not fix
       it. The row-exact forward makes the streams **identical 4/4 at ~5–8% per-slot decode cost.**
@@ -3891,6 +4127,9 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
       concurrency a hidden variable in every measurement taken through the server, which this campaign has
       already been bitten by in other forms. **Not decided here.** Operator-queue row drafted and handed to
       the coordinator.
+      **✅ CHECKBOX SYNCED 2026-09-07 — the body already recorded `RESOLVED 2026-09-07, the operator chose (C)`
+      per-route row-exact, but the box had never been flipped.** Prose-without-checkbox is a wrap-up defect; it
+      is corrected here rather than re-narrated.
 
 **Superseded row, retained for the record (filed 2026-09-03, wrong on both the mechanism and the fix):**
 *"X-CONC — qwen4exp multi-sequence prefill corruption, serving blocker … the qwen4exp multi-sequence prefill

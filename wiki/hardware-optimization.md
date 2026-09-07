@@ -4156,7 +4156,7 @@ parallel implementation wave. The corrected ledger and the durable findings:
 
 - [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70, the
   corrected ledger, the axis results, and the operator decision packages.
-- [`exl3-trellis-cpu-kernel.md`](../handoffs/active/exl3-trellis-cpu-kernel.md) — INF-71, the EXL3
+- [`exl3-trellis-cpu-kernel.md`](../handoffs/completed/exl3-trellis-cpu-kernel.md) — INF-71, the EXL3
   measurement and the parked port.
 - [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the EXL3 `mul1`
   format spec (X0).
