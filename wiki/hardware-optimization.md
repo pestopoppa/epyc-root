@@ -4355,3 +4355,142 @@ barrier. **Tuning does not close a structural gap.**
 - `/mnt/raid0/llm/tmp/inf70/agents/b11/REPORT.md` + `inv.json` — the per-token byte inventory and the PLE finding
 - `/mnt/raid0/llm/tmp/inf70/agents/prof/results-20260902T135356Z/pernode.tsv` — the per-node census
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Profile OCCUPANCY, not overhead — the instrument decides what you can find (2026-09-05)
+
+INF-70 spent most of a campaign ranking optimisation seams by **dead time** (`wall − compute`) and missed the
+largest defect in the graph, because **the instrument made it invisible by construction**.
+
+**The two failures, both structural:**
+
+1. **Per-node timings were recorded from thread 0.** In a node where only `ith = 0` has work, thread 0 *is*
+   the working thread — so 453 nodes with one thread busy and 47 idle looked like honest compute. The same
+   bias understated total coordination by roughly half: thread 0 computes 57.6 ms where the mean thread
+   computes 46.9, because it is the one thread with work on every single-task node. A campaign-wide "23.4%
+   dead" figure was really **40.6%**.
+2. **Dead% is an OVERHEAD metric and it deprioritised the winner.** `GET_ROWS` scored **3.6% dead** while
+   being the largest lever in the graph; `SCALE` scored **96% dead** while being worth ~0.5 ms. Ranking by
+   overhead systematically buries defects whose cost is *serial work*, which is the dominant defect class at
+   batch 1.
+
+**The right first question is occupancy: "what fraction of the machine is doing useful work during this
+node?"** One per-`(node, thread)` pass yields everything the campaign needed:
+
+| quantity | from | finds |
+|---|---|---|
+| `mean/max` across threads | per-thread compute | **idle threads** — `thr_mean/thr_max < 0.1` flags single-task nodes |
+| `max − mean` | per-thread compute | load imbalance |
+| `wall − max` | + thread-0 wall | true barrier residual |
+| max, argmax-eval, spike count | across evals | **host stalls** — 4 nodes hid 2.39 ms/token in their means |
+| bytes ÷ time per node | + tensor sizes | **effective rate**, which is how cache residency shows up |
+
+**Two supporting habits, each learned the same way:**
+
+- **Census the configuration you SERVE.** The MTP graph went uncensused for the whole campaign; when finally
+  measured it showed the barrier toll per token is **3.1× smaller** than in plain decode, because the trunk
+  graph amortises its barriers over 3.23 tokens. Every barrier-elision estimate had to be divided by ~3.
+- **Never report a per-node mean without dispersion.** A discrete host stall divided by the eval count looks
+  exactly like a systematic straggler — and did, for two nodes that were promoted to "the recoverable half of
+  the budget" before the spike counts arrived.
+
+**The payoff, measured:** the occupancy model predicted the wall-clock saving of its fix to within **1%,
+twice** (6.59 ms predicted vs 6.63 measured; 4.46 vs 4.54), on a machine where byte-based estimates had
+missed by factors five times in a week.
+
+### Source References (2026-09-05, occupancy profiling)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis S, SYNC-1's census, SYNC-10's arms, METH-1
+- `/mnt/raid0/llm/tmp/inf70/agents/sync1/REPORT.md` — the per-`(node,thread)` census and barrier baseline
+- `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md` — the row-split and sigmoid arms
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## THP raises NUMA interleave granularity to 2 MiB — there is no "2 MB boundary" (2026-09-06)
+
+A widely repeated claim inside INF-70 — that memory bandwidth "steps at the 2 MB THP boundary" — is **false,
+and it was an interpretation laid over correct measurements.** Two agents observed small tensors running at
+28–39 GB/s against 109–147 GB/s for ≥2 MB tensors, and a third was told to localise the step.
+
+**There is no step.** A 37-point sweep with THP backing proven per arm (100.0% vs 0.0%) shows a **smooth
+monotone ramp**: 10 GB/s at 0.25 MB to 161 GB/s at 64 MB, no discontinuity anywhere. Across the 1.84–2.25 MB
+window where the "boundary" was assumed, the readings run **36.2 → 35.6 → 38.3 → 38.7 GB/s** — continuation.
+
+**The real mechanism is granularity, not a threshold.** THP is `always` on this host and llama.cpp runs
+`--no-mmap`, so the weight buffer is anonymous and — measured on the live 92 GB process — **99.8%
+THP-backed. That raises `numactl --interleave=all` granularity from 4 KiB to 2 MiB, so any tensor smaller
+than 2 MiB is served by a single memory controller.** The apparent "step" is just the point at which a tensor
+becomes large enough to span several 2 MiB pages and therefore several controllers — a continuous effect that
+*looks* like a threshold when sampled at two points.
+
+Three independent confirmations:
+- `move_pages(2)` gives `maxfrac` **1.00 at ≤2 MB decaying to 0.25 by 8 MB**, tracking the bandwidth ratio.
+- Fitted marginal bandwidth below 2.25 MB is **53 GB/s against one node's 57 GB/s share** (R²=0.98), versus
+  **362 GB/s on 4 KiB pages**.
+- Restoring 4 KiB interleave returns `maxfrac` to exactly **0.250** at every size.
+
+Ruled out by measurement: THP *promotion* cost, tensor shape, L3 residency, first-touch placement, TLB reach
+(which runs the other way), and per-thread binding.
+
+**Scope is larger than the observation that prompted it: 4 KiB wins at every size up to 64 MB**, with a 1.38×
+residual at 8–64 MB even when placement is already balanced. This is **whole-model placement**, not a
+small-tensor problem. But at 1.75 MB, placement recovers only ~14% of the gap to peak — so it is not a
+licence to expect small tensors at peak bandwidth either.
+
+**Lever**: restore 4 KiB interleave via `madvise(MADV_NOHUGEPAGE)` or a zero-code `PR_SET_THP_DISABLE` shim.
+**Bit-identity is structural** — `madvise`/`prctl` move pages, never contents.
+
+**The methodological point**: two correct magnitude measurements, taken at two tensor sizes, supported a
+threshold hypothesis that a dense sweep destroyed. **A step inferred from a bracket is a hypothesis about the
+shape of a curve you have not sampled.**
+
+### Source References (2026-09-06, THP granularity)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — D6-PLACE, SYNC-2 §8, SYNC-10's backlog note
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the 37-point sweep, `move_pages` and fit evidence
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## The champion kernel: 1.4834× from two levers, and what the other two taught us (2026-09-06)
+
+INF-70 closed with a bit-identical CPU decode kernel measured at **35.407 t/s / 28.24 ms per token** in the
+serving configuration against a pristine baseline of **23.870 t/s / 41.90 ms** — **1.4834×, 60/60 paired
+prompt wins**, over three same-window alternating rounds on a 24-prompt production harness. Plain decode:
+**1.6934×**. Prefill: 1.305×.
+
+**The value is concentrated, and the concentration is the lesson.** Leave-one-out, marginal contribution in
+the presence of the other three:
+
+| lever | marginal | ms/token | share of log-gain |
+|---|---:|---:|---:|
+| `MADV_NOHUGEPAGE` (restore 4 KiB interleave) | ×1.4315 | **11.89** | **86.4%** |
+| row/column-chunk split of elementwise kernels | ×1.0532 | 1.47 | 12.5% |
+| barrier elision on single-task nodes | ×1.0053 | 0.15 | 1.3% |
+| zero-element node skip | ×0.9992 | −0.02 | −0.2% |
+
+**Two findings that generalise beyond this model:**
+
+**1. A lever's measured value is a property of the KERNEL it is measured in, not of the lever.** The row-split
+measured **+3.05% served alone** and **+5.3% served in the champion**. The two barrier levers measured +3.86%
+and +0.87% alone and fall **below the 1.1% noise floor** in the champion — because their original baseline
+was running its sub-2 MiB tensors on **one memory controller of four**, and fixing placement removed the
+stall they were partly hiding. **Re-measure levers in combination; never scale a solo number into a stack.**
+
+**2. Combinations can be super-additive.** The product of the four solo gains predicted 1.5017 plain; the
+measured combination was **1.6934** — a **12.8% excess**. Levers that remove different classes of stall
+(bandwidth vs occupancy vs synchronisation) can unmask each other, so a stack's value is not derivable from
+its parts in either direction.
+
+**On proving bit-identity for a combination**: individually bit-identical levers are not jointly proven.
+This used 1,457 greedy tokens across 7 comparisons (pristine / champion / champion-with-every-escape-hatch,
+in plain and MTP) — **and corroborated it without hashes** by showing acceptance α and drafted-per-token
+identical to 4 dp across all 15 MTP arms of both binaries. Two independent witnesses beat one.
+
+**On reporting a noisy correctness gate**: `test-backend-ops` counts matched exactly, but one op family's
+failure membership churns run to run. The right move was a **third sweep of the pristine build as a seeded
+control** — pristine-vs-pristine differed by *more* lines than pristine-vs-champion, which places the
+candidate inside the instrument's own variance rather than asking the reader to trust an equal count.
+
+### Source References (2026-09-06, champion kernel)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the champion block, CHAMP-1/CHAMP-2
+- `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the ABA, leave-one-out and identity evidence
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the placement mechanism
+- `progress/2026-09/2026-09-05-inf70-audit.md`

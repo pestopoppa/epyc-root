@@ -4075,3 +4075,32 @@ one (`test-backend-ops` at `0-191` taking 1.7–3.3 live cores, which landed on 
 - `handoffs/active/cpu-decode-roofline-program.md` — the ABA supersession, the depth closure, the standing rule
 - `/mnt/raid0/llm/tmp/inf70/agents/speed-claim/REPORT.md` — 25 arms × 24 production prompts, 600 requests
 - `progress/2026-09/2026-09-04-inf70-audit.md`
+
+## A knob that is not in the binary returns a null that looks like evidence (2026-09-05)
+
+Three separate incidents in one week, one root shape: **a control was reasoned from without first proving it
+reaches the running code.**
+
+- **C9** — `llama-perplexity` returned `nan` on qwen4exp and two agents spent two days diagnosing a live
+  kernel defect. The library predated its own fix by two days and contained **zero** `GGML_IQK_DEQUANT`
+  symbols, so the kill-switch they reasoned from was inert. The remedy was a rebuild.
+- **Every build dir in the shared tree was stale** — none contained `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or
+  `GGML_IQK_DEQUANT`; setting any of them there was a silent no-op.
+- **`ggml_get_n_tasks()` is advisory on the CPU backend** — `ggml_graph_compute_thread()` overwrites
+  `params.nth` per node, so `n_tasks` only sizes the work buffer. `GGML_GET_ROWS_MIN_BYTES` was dead code,
+  which is why one A/B ran parallel on *both* arms and read a meaningless +0.97%.
+
+**The rule: before trusting any null from a knob, prove the symbol is in the binary you are running** —
+`strings <lib> | grep <KNOB>` — and compare the artifact's mtime against the fixing commit's date. An mtime
+check proves freshness against source; only `strings` proves the code is present. After reverting diagnostic
+instrumentation, verify the revert **structurally** rather than by assertion.
+
+A vacuous null is more dangerous than a wrong number: it presents as a clean negative result and is acted on
+with confidence. The corollary is that a defect reachable from only one code path can **disable the sole gate
+that would detect it** — so "never seen in production" is not evidence of absence.
+
+### Source References (2026-09-05, vacuous knobs)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, SYNC-4, SYNC-7, HYG-1b
+- `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md` — the advisory-`n_tasks` finding
+- `progress/2026-09/2026-09-05-inf70-audit.md`

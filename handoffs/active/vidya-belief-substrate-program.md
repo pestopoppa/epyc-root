@@ -948,6 +948,23 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `created_at` entirely (it is publication metadata, and `as_of` ranges over the evidence
       frontier) or refuse future frames at append time. What is NOT defensible is the current
       accident of neither. Pick one; an append-time refusal is the cheaper guard
+- [ ] **SC55 — wire the INF-70 per-node / per-thread graph profiler as a measurement source, write side
+      FIRST.** Filed 2026-09-05 by INF-70 as its arms began producing them. This instrument
+      (`GGML_CPU_PROF` + SYNC-1's per-(node,thread) extension: `wall_max`, `argmax_ev`, `spikes`, per-thread
+      compute, `NNODES_EQ/MIN/MAX` graph-shape filters, `PATHROW` with `ne_calls`/`GBs_per_ne_call`) now
+      produces the campaign's primary evidence and has already overturned four published figures.
+      **Project, not grade.** Caveats that MUST ride in every tuple, each one a measured way these numbers
+      have already been misread: (a) **thread-0 vs mean-thread** — a dead-time figure from thread 0
+      understates coordination by ~half (57.6 vs 46.9 ms), so the measuring thread must be recorded;
+      (b) **graph identity** — plain and MTP configs differ by 3.1× on barrier cost, so `nnodes` / graph shape
+      is part of the key, not metadata; (c) **eval-count semantics** — empty catch-up evals (`logits=0`,
+      `dst ne[1]=0`) are charged full weight bytes unless excluded, which is what forced one derived rate;
+      (d) **dispersion** — a per-node mean over N evals with no max/spike count can hide a discrete host stall
+      (4 nodes, 2.39 ms/token, measured), so a tuple without dispersion is an upper bound, not a value;
+      (e) **binary attestation** by `.so` hash AND `strings` proof of the knobs, since every shared build dir
+      in the tree was found stale; (f) **`GGML_IQK` state**, which is load-bearing for cache-residency rates.
+      Source-table row to be added to `scripts/vidya/adapters/README.md` alongside SC54's.
+
 - [ ] **SC54 — wire the qwen4exp `llama-perplexity` / KLD quality gate as a measurement source, write side
       FIRST.** Filed 2026-09-04 by INF-70 the moment the gate was restored (C9: it returned `nan` on this model
       until a rebuild fixed it). This is the ONLY PPL/KL instrument for qwen4exp, so every quant-quality decision
