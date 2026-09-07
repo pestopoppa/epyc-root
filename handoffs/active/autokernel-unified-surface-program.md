@@ -254,6 +254,11 @@ sequencing: measurement first, authoring later).
       conflicts, 7 tests green). Importable `sample_once()` / `bench_logical_cpus()`; `--out`/`--bench-cpus`; fails CLOSED on
       unreadable sysfs; foreignness by `cpus_allowed` intersection (permissive by design, `on_bench_core` per row for the strict
       reading); the sibling test is mutation-isolated. Scratch copy stays until SYNC-19/20 + HARNESS-1 finish in-flight arms.
+- [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
+      `/mnt/raid0/llm/epyc-inference-research` is **187 commits behind `origin/main` with 9 dirty tracked
+      files** left by other sessions (a merge there failed on `ort`). Surfaced merging P4-0 in; no owner,
+      so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
+      an operator-assigned owner or a scheduled sweep session before it grows further.
 - [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
 - [ ] LOO + re-baseline receipts are REQUIRED fields of the promotion record; promote refuses without them
 - [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
