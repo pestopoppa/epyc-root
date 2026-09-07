@@ -1,6 +1,20 @@
 # EXL3 trellis weights on the CPU kernel — Qwen3.8-Flash-Next
 
-**Status**: **PARKED 2026-09-02 behind INF-70 Axis D** — X0 and the reference half of X1 done the same day (below); the measured ceiling of the lever does not justify X2–X4 while the token is dispatch-bound. Filed 2026-09-02 from the INF-70 audit at the operator's request ("EXL3 weights are all
+**Status**: **❌ NO-GO 2026-09-07, OPERATOR-CONFIRMED — the PARK of 2026-09-02 is CONFIRMED CLOSED on
+stronger evidence than the park was taken with. Artifacts reclaimed (180 GB).** Report:
+`/mnt/raid0/llm/tmp/inf70/agents/inf71/REPORT.md`.
+The deciding fact is new: the lever re-priced against the **CURRENT champion, 1.50× faster than the token X1
+priced against**. Our own serving mode (MTP) now runs at **16.6% of the DRAM bandwidth ceiling** — a
+bytes-per-weight lever cannot pay in that regime, and champion-3 moved the operating point **further from
+bytes-bound**, not closer. The written reopen trigger ("reopen when Axis D has moved the floor enough that
+the expert stream binds") has moved **away**. All five pre-stated kill shots fired.
+**⚠ THE REOPEN PRECONDITION — THE GATE ORDERING IN THE PLAN BELOW IS INVERTED.** The 3.05 bpw *quality*
+question is the largest source of variance and the one thing that can kill the lever outright, yet it is
+gated **behind** 5–7 sessions of porting (X2→X4). It can be answered instead for **~2–5 GB of targeted
+download and one zero-inference session, with no bench lock.** If INF-71 is ever reopened, **that is the
+first thing done, not the last.**
+
+*Superseded status line, retained:* **PARKED 2026-09-02 behind INF-70 Axis D** — X0 and the reference half of X1 done the same day (below); the measured ceiling of the lever does not justify X2–X4 while the token is dispatch-bound. Filed 2026-09-02 from the INF-70 audit at the operator's request ("EXL3 weights are all
 the rage; if they exist for this model, explore using them and building the supporting feature into the
 experimental CPU kernel"). Feasibility established from source; no code written yet.
 **Created**: 2026-09-02
@@ -18,8 +32,11 @@ multi-session port; sequenced after INF-70's C0/C5/B1/D0 measurements rank the l
 - **Weights**: `turboderp/Qwen3.8-Flash-Next-exl3` (created 2026-08-31, updated 2026-09-01), five branches:
   `2.05bpw_h4_ng4` 62.8 GB · `3.05bpw_h5_ng5` 85.1 GB · `4.05bpw_h6_ng6` 107.5 GB · `5.05bpw_h6_ng6`
   123.3 GB · `6.05bpw_h6_ng6` 139.0 GB. The 4.05 branch's `quantization_config`: `quant_method: exl3`,
-  `version 1.4.4`, `bits 4.05`, `head_bits 6`, `out_scales: always`, **`codebook: "mul1"`**, **`mtp_bits: 4`
-  — the MTP head is quantized and shipped.** Tensor inventory: `trellis` / `suh` / `svh` / `mul1` ×75,587
+  `version 1.4.4`, `bits 4.05`, `head_bits 6`, `out_scales: always`, **`codebook: "mul1"`**, `mtp_bits: 4`.
+  **⚠⚠ CORRECTED 2026-09-07 (INF-71 verification, read from the safetensors headers on disk): there is NO
+  SEPARATE MTP HEAD IN THESE WEIGHTS — zero `mtp.*head*` tensors.** The earlier reading "the MTP head is
+  quantized and shipped" was wrong. Two consequences: **X5's premise is VOID** (see X5), and **Axis E would
+  inherit MORE head bytes, not fewer.** Also corrected: **the 3.05 branch is `mtp_bits: 3`, not 4.** Tensor inventory: `trellis` / `suh` / `svh` / `mul1` ×75,587
   each, plus `A_log` / `dt_bias` (the Gated-DeltaNet params). Quality evidence in the repo is plots only
   (KLD, PPL); no numeric table, so any quality claim has to be measured here.
 - **Format** (`exllamav3/doc/exl3.md`): a streamlined QTIP — procedural codebook, tail-biting trellis,
@@ -60,9 +77,11 @@ converter/importer from the exl3 safetensors into GGUF for the expert tensors on
 
 - [x] **X-DL — weights on disk.** ✅ 2026-09-02 16:51Z — both branches complete, every LFS file `SHA-OK` against the repo oids (26 files; `download.log`), 101 GB + 80 GB under `models/turboderp/Qwen3.8-Flash-Next-exl3/`. Started 2026-09-02 11:50Z at the operator's direction
       (`/mnt/raid0/llm/tmp/inf70/download_exl3.sh`, one file at a time, resume-safe, sha256 against the LFS
-      oids): `4.05bpw_h6_ng6` (100.1 GiB — 9 shards + 36.4 GiB `ngram_embedding.safetensors` + `vision_k6`)
-      first, then `3.05bpw_h5_ng5` (79.3 GiB, includes `mtp_hyper_connection_mixer_patch.safetensors`), into
-      `models/turboderp/Qwen3.8-Flash-Next-exl3/<branch>/`. ~10 MB/s → ~3 h and ~2.3 h. Tick when
+      oids): `4.05bpw_h6_ng6` (100.1 GiB — 9 shards + 36.4 GiB `ngram_embedding.safetensors`) first, then
+      `3.05bpw_h5_ng5` (79.3 GiB, includes `mtp_hyper_connection_mixer_patch.safetensors` **and `vision_k6`**),
+      into
+      `models/turboderp/Qwen3.8-Flash-Next-exl3/<branch>/`. ~10 MB/s → ~3 h and ~2.3 h.
+      **⚠ CORRECTED 2026-09-07: VISION IS ON THE 3.05 BRANCH, NOT 4.05 — this line had it INVERTED.** Tick when
       `download.log` shows `SHA-OK` for every LFS file of both branches. Not a measurement-window concern
       (I/O only), but do not start a second download while it runs.
 *(Gate satisfied 2026-09-02: INF-70 C0/C5/B1/D0 have ranked the levers — the weight paths run at ~40% of read
@@ -90,7 +109,11 @@ ROCm support, and its CPU code covers only the MoE expert GEMV.)*
       experts, 10 experts × gate/up/down (24.6 MB at K4), `g++ -O3 -march=native`, region-locked, placement
       recorded; VBMI-swizzled ≡ VNNI-native bit-for-bit, ≤ 1.3e-7 vs a double reference, Q8-vs-fp32 output
       RMS 0.66–0.98%. **Per core the fused path is compute-bound** (K4: 1418 µs/call = 17.3 GB/s in cache
-      and 16 GB/s from DRAM — extraction dominates; decode-only is 1.5–1.7× faster); **from ~10 threads it
+      and 16 GB/s from DRAM — extraction dominates; decode-only is 1.5–1.7× faster)
+      **★ MECHANISM IDENTIFIED 2026-09-07 for the 17.3 (K4) vs 9.4 (K3) GB/s per-core gap, previously
+      unexplained: `byte_pair_ok` pairs FULLY at K=4, but only on rows 8–15 at K=3.** The K3 penalty is a
+      pairing-coverage property of the extraction path, not noise — and it is what makes the bimodal K3
+      1T/8T DRAM arms below legible.; **from ~10 threads it
       is memory-bound: at 48T 110–124 GB/s on random experts (K4), 91–105 (K3), 160–172 on sequential sets**
       — i.e. the same 153 GB/s ceiling as everything else, and t64/t96 do not help. Bytes/token for the
       expert stream: IQ4_XS 1.296 GB → **K4 1.180 (−9%), K3 0.885 (−32%)**. Honest end-to-end arithmetic
@@ -104,24 +127,27 @@ ROCm support, and its CPU code covers only the MoE expert GEMV.)*
       unmeasured and C9 blocks measuring it. **Decision taken with the recommendation: park** — the bytes are
       not where this token goes; reopen when Axis D has moved the floor enough that the expert stream binds,
       or when C9 lets the K3 quality claim be tested.
-- [ ] **X2 — importer.** `gguf-py` tool that reads the exl3 safetensors branch and writes a GGUF whose
+- [x] **X2 — importer. ❌ NOT RUN — NO-GO 2026-09-07.** `gguf-py` tool that reads the exl3 safetensors branch and writes a GGUF whose
       expert tensors (`ffn_{up,gate,down}_exps`) are the new type and whose remaining tensors are copied
       from the uniform IQ4_XS trunk (INF-70 B4/B5 artifact) — a mixed artifact. Handle the per-expert
       slab layout (expert is the outermost dim), the Hadamard sign vectors, and the scales. Verify with a
       round-trip: dequantize one expert on the CPU path and compare against exllamav3's own dequant of the
       same tensor (their `dequant` utility; numerical identity is the gate).
-- [ ] **X3 — ggml type + `mul_mat_id` path in the experimental tree.** New `GGML_TYPE_EXL3_MUL1_K{3,4}`,
+- [x] **X3 — ggml type + `mul_mat_id` path in the experimental tree. ❌ NOT RUN — NO-GO 2026-09-07.** New `GGML_TYPE_EXL3_MUL1_K{3,4}`,
       `type_traits`, `from_float` = Q8 activation quant, `vec_dot`/gemv for the type, and the
       `mul_mat_id` expert path; **the activation transform (`suh` ⊙ x then Hadamard-128) is per expert-projection, and `svh` ⊙ H128 on the output — see X0; it does not reduce to once per op.** Gates: greedy
       generation identical in *meaning* (not bit-exact — different weights), logit KLD vs the IQ4_XS-uniform
       trunk on a fixed 64-prompt set, `test-backend-ops` for the new type, arch test.
-- [ ] **X4 — the measured comparison per INF-70's artifact rule.** Mixed EXL3-experts artifact vs the
+- [x] **X4 — the measured comparison per INF-70's artifact rule. ❌ NOT RUN — NO-GO 2026-09-07.** Mixed EXL3-experts artifact vs the
       uniform IQ4_XS artifact, same build, same window, C5 recipe, at 3.05 and 4.05 bpw experts: ms/token,
       achieved GB/s, KLD/PPL. Keep only if it beats the B4-optimised IQ4_XS/IQ4_NL artifact at equal or
       better KLD. Report to INF-70's ledger.
-- [ ] **X5 (optional) — dense projections and the head.** exllamav3 has no CPU path for these; if X4 wins
-      on experts, extend the type to the dense `[n × 2560]` shapes and the 4-bit MTP head (`mtp_bits: 4`)
-      so Axis E can draft from the same format.
+- [x] **X5 (optional) — dense projections and the head. ❌ VOID PREMISE, NOT MERELY DECLINED — 2026-09-07.**
+      The item read: *"if X4 wins on experts, extend the type to the dense `[n × 2560]` shapes and the 4-bit
+      MTP head (`mtp_bits: 4`) so Axis E can draft from the same format."* **There is no separate MTP head in
+      these weights** (zero `mtp.*head*` tensors), so the object X5 proposed to extend the type to **does not
+      exist**. This is not a NO-GO on a real option; the option was never there. **Axis E would inherit MORE
+      head bytes, not fewer** — record that before anyone re-derives X5 from the same wrong premise.
 
 ## Non-goals and hazards
 
