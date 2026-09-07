@@ -611,8 +611,13 @@ Plan: [`docs/design/inf70-cpu-fold-into-champion-20260907.md`](../../docs/design
 Same lineage (fork `270b48ed6` on this branch), merge-tree **0 conflicts**; two default-ON blockers on
 the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's request reverses it.
 
-- [ ] **FOLD-OP — operator confirms**: (a) PROD-2 deferral reversed (fold IS wanted now); (b) fold
-      timing — now (loses the live 2-keep / +3.01% bundle) or after the serving gate fires.
+- [x] **FOLD-OP — operator decided 2026-09-07** ✅: (a) fold IS wanted — no reversal ceremony needed,
+      folding at the right time is fine (NOTE: the CPU work is NOT yet in the champion; it sits on
+      `inf70/champion @ 6f032c48d`, forked from this lineage but unmerged); (b) **timing: fold as soon as
+      run 29 ends — the operator will stop it to reboot the machine; that reboot boundary is the fold
+      trigger.** Do not stop run 29 for the fold; do not hand FOLD-0 to `inf70-audit` yet — this was a
+      preliminary investigation for clarity on blockers. Surface FOLD-0 to `inf70-audit` when the
+      run-29 / reboot boundary approaches, so the fold-ready commit is prepared in time.
 - [ ] **FOLD-0 (`inf70-audit`, own branch)**: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
       opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
       define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
