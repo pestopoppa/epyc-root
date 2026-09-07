@@ -105,7 +105,7 @@ Its source repository contains **no efficacy measurement of any kind** — no hi
 count, no false-agreement rate, no A/B against unblinded self-review (whole tree grepped at the
 pinned commit). RA-13b exists because of that gap, and RA-13b gates RA-13a's citability.
 
-- [ ] **RA-13a — blind read-back pilot.** The reviewer sub-agent receives the artifact ONLY (a diff,
+- [ ] **RA-13a — blind read-back pilot.** HARNESS BUILT 2026-09-07 (`scripts/reviewer/blind_readback.py`, 48 tests, 9/9 mutants killed); **the N=20 pilot itself is NOT run** — it needs live model calls and is operator-gated. Row stays open for the pilot. Structural notes: the field whitelist is POSITIVE (a key is refused because it is not named, not because it was recognised as intent), `AuditorBrief` is a frozen 2-field dataclass so there is no attribute to smuggle intent through, and three independent routes to adding a verdict field each fail a test. **Known limit, not fixable structurally:** the whitelist is over field NAMES, so a caller who pastes the task statement into the artifact text still contaminates the brief — the artifact hash makes that visible after the fact, but does not prevent it. The reviewer sub-agent receives the artifact ONLY (a diff,
   a gate script, or a handoff row) plus a read-back spec — never the task statement, the request, or
   the author's intent — and emits a literal description of what the artifact does and asserts. The
   main compares that description against the original ask. Fresh context per revision. Pilot N=20
@@ -113,12 +113,12 @@ pinned commit). RA-13b exists because of that gap, and RA-13b gates RA-13a's cit
   and precondition (omitting one is the worst failure mode); expand non-standard names rather than
   restating them; surface degenerate cases and conditions that could be vacuously satisfied; and if
   the artifact says less than the intent, the read-back must say less.
-- [ ] **RA-13b — instrument it at WRITE time.** Per run, record caught-discrepancy count,
+- [x] **RA-13b — instrument it at WRITE time.** ✅ 2026-09-07 — `scripts/reviewer/blind_readback.py`; the three counts must PARTITION the denominator (an undercounted denominator inflates every rate, so it is refused), `adjudicator` is required because a description nobody compared produced no result, and `citable_summary()` raises below n=20 naming n, the threshold and the bound. `provisional_summary()` is deliberately a different type so the two cannot be duck-typed together. Per run, record caught-discrepancy count,
   false-discrepancy count, and agreement-with-author rate. **No read-back result may be cited as
   evidence until n>=20 with a stated denominator.** Retrofitting this is impossible for the standing
   reason (write-side/read-side asymmetry), and adopting an unmeasured control and then citing it
   would reproduce exactly the warrant inflation this plane exists to prevent.
-- [ ] **RA-13c — read-back record format.** Every record carries: judge model id, spec version or
+- [x] **RA-13c — read-back record format.** ✅ 2026-09-07 — missing judge model id, spec version, artifact hash or context manifest RAISES (never warns — a warned record still gets counted). The manifest pins the sha256 of the exact rendered brief, so `verify_brief_binding()` re-derives it: a run whose context carried the task produces a different hash and cannot pass. That closes the source's defect, where model-name-only records are byte-identical whether or not blinding happened. Every record carries: judge model id, spec version or
   commit, a hash of the exact artifact text shown, and a context manifest attesting the blinding
   actually held. A record lacking these is not evidence. This closes a defect in the source, which
   stores only the model name — so a captain who skipped the blinding entirely produces a

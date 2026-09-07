@@ -1381,6 +1381,16 @@ commercial incentive to accrue reputation arrived independently at this program'
       measurement — it is a different, stronger claim than the one that was made.
       Source-table row added to `scripts/vidya/adapters/README.md` (state: UNWIRED).
 
+- [ ] **SC63 — wire blind read-back outcomes into the belief kernel.** RA-13b (landed 2026-09-07)
+      is a NEW WRITE-TIME MEASUREMENT SOURCE: caught-discrepancy / false-discrepancy /
+      agreement-with-author counts over a partitioned denominator. Filed the same day per CLAUDE.md.
+      **It has no rows yet** — the N=20 pilot is operator-gated and unrun — so this is the write-side
+      hook going in BEFORE the first measurement, which is the whole point (retrofitting the read
+      side is impossible). **Project, never grade**; no new ladder. The citability threshold is
+      part of the claim, not a convention: a read-back result below n=20 must not project at all,
+      and `citable_summary()` already refuses it. Source-table row to be added to
+      `scripts/vidya/adapters/README.md` when the adapter lands.
+
 - [ ] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
       (below/adjacent) accepts two binding kinds: `identity`, machine-checkable by normalized string
       equality, and `attested`, a human judgment that a claim follows from a proposition the checker
