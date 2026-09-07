@@ -907,6 +907,40 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★ SYNC-14 CLOSED 2026-09-07 — IMBALANCE ON A MEMORY-BOUND MATMUL IS NOT RECOVERABLE CAPACITY. Axis
+closed at ~0.** Branch `inf70/sync14` @ `f91c49a9e`, committed, not merged. Production untouched.
+
+**Re-census on the champion**: MUL_MAT + MUL_MAT_ID imbalance is **2.86 ms/token MTP** (trunk 2.39 + draft
+0.47) against SYNC-1's 4.83; plain **5.57** against 9.20. **It did NOT largely close** — as a share of the
+token it went 10.0% → 8.7% (MTP) and **11.7% → 12.2% (plain)**. *The absolute drop is almost entirely the
+token getting shorter around it.*
+**The entanglement hypothesis is CONFIRMED AND QUANTIFIED**: toggling the champion's own placement lever back
+off (`GGML_NOHUGEPAGE=0`, AnonHugePages 0.1 → 99.9 GB) restores the seam to **4.16 ms/token** and the trunk
+eval to 127.9 ms, reproducing SYNC-1's era exactly. **Placement owns ~1.4 ms/token of this seam, and that is
+the whole of the reduction.**
+**Mechanism, from per-(node,thread) data — two components:** **static partition 0.51 ms/token** + **rate skew
+1.88 ms/token** (trunk).
+- **Static partition**: iqk's `nrc_x = ceil(U/nth); first_x = ith*nrc_x`. At the dominant expert shape
+  (U=640, nth=48) threads 0–44 take 14 rows, thread 45 takes 10, and **threads 46 and 47 take NONE** — on 96
+  `MUL_MAT_ID` nodes per token, visible directly in the 48-value dump.
+- **★ RATE SKEW — SYNC-11's PER-CCX RESIDENCY HYPOTHESIS IS REFUTED.** Equal rows, up to **2.1× unequal
+  time**, but **88–96% of the per-thread variance lies BETWEEN NUMA NODES and only 3–11% between the three
+  32 MiB L3 CCXs inside a node.** It is reproducible across process restarts (Pearson **r = 0.79**;
+  slowest-group agreement 56% vs 25% chance), its direction **varies per graph node**, and it **survives
+  4 KiB interleaving with placement uniform to 0.1%**. **No named cause — that needs a PMU, not this
+  profiler.**
+**Lever built, bit-exact, and a MEASURED NULL.** `GGML_IQK_EVENSPLIT` (default OFF) replaces the ceiling with
+`[U*ith/nth, U*(ith+1)/nth)` at all six sites. **It works structurally — starved (thread,node) pairs
+249 → 12.** ABA ×3 on the 24-prompt production harness: **35.697 → 35.613 t/s, −0.24%**, against a **±1.2%
+A/A control** whose win counts (18/20, 3/20) **track the round, not the lever**. Token stream bit-identical,
+24/24 SHA matches every round; α 0.8209 and coherence unchanged; **the A arms reproduce the champion baseline
+(35.70 vs 35.407).**
+**★ THE CAMPAIGN CONCLUSION, AND IT RE-PRICES SYNC-1's WHOLE IMBALANCE COLUMN: `max − mean` on a matmul is
+NOT recoverable capacity here — these nodes are MEMORY-BOUND, so handing two cores back buys nothing.**
+Seam 2 goes from "~1.0–1.9 ms recoverable, LOW confidence" to **~0, axis closed.** By extension, the 10.66 ms
+of MTP "imbalance" in SYNC-1's census should not be read as a lever pool without first asking whether each
+node is compute- or memory-bound.
+
 **★★★ SYNC-15 INTERIM 2026-09-07 — THE "4 OF 48 THREADS" MODEL IS REFUTED, AND THE REAL DEFECT IS A MISSING
 SIMD KERNEL.** Levers committed at `56fe8ef0a`, all default OFF, `strings`-proven; measurement queued.
 
