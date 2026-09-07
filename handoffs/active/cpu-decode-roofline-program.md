@@ -1117,6 +1117,19 @@ the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.1
   applies only to the single-row case, where the split must buy back the barrier D1 avoids.
 - **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
 
+**DISPATCH NOTE 2026-09-07 — the bench lock is the campaign's bottleneck, so the zero-compute queue was
+opened in parallel.** CHAMPION-3 holds it and HARNESS-1 queues behind it; every remaining read-only item was
+dispatched instead of waiting, since none can contend:
+- **`b4b-sync16`**: B4-b (sweep every artifact's F32 tensors for exact-BF16 padding, ranked by **bytes/token**
+  not tensor size, each carrying the caveat that `vec_dot_type = F16` rounds the **hidden state** so no
+  candidate is free) + SYNC-16 (MoE `partial_sort`, starting from SYNC-14's measured "unreachable" rather than
+  re-deriving it).
+- **`sync7-8-13`**: SYNC-7 (classify every op as genuinely single-task at the KERNEL vs falsely believed so
+  from the PLANNER — and re-check which INF-70 conclusions rested on the difference), SYNC-8 (sweep for the
+  bug **shape**: any op that caps `n_tasks` *and* sizes `wdata` by it — upstream-reportable), SYNC-13
+  (enumerate what `ggml_is_numa()` gates without flipping it, since `false` is load-bearing in our favour by
+  accident).
+
 - [ ] **HARNESS-1 — make the measurement harness 3–5× faster and tighten its noise floor.** Dispatched
       2026-09-07 from an operator question ("why load and reload the same model over and over?").
       **Measured: every arm costs ~370 s, of which ~170 s is SETUP** — `evict_nodes_force.sh` **140 s**
