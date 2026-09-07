@@ -947,6 +947,32 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       alongside PROD-1's recipe module** so it outlives scratch and PROD-1 can import it.
       **Explicit decline recorded, not a drop: do NOT edit the 19 scratch build scripts** — they are one-shot
       artifacts and mostly spent; the value is in the convention and in PROD-1 importing it.
+- [ ] **★ MEAS-4 — THE INSTRUMENT RESERVES 96 CORES TO USE 48, AND BLOCKS A SECOND AGENT WHILE
+      DOING IT.** Filed 2026-09-07 from an operator observation ("I see cpu resources idle") that was
+      correct and that nobody in the campaign had raised. Four effects stack:
+      1. **`-t 48` on a 96-core bench region** — half the reserved cores idle during decode *by design*,
+         because 48 threads is the canonical recipe and is load-bearing for comparability with every
+         number already measured.
+      2. **One arm at a time**, serialized by `region-lock`, holding **all four** regions q0-q3 throughout.
+      3. **~45% of each arm is not measurement**: HARNESS-1's Phase A breakdown is mean **129 s** in the
+         `loadavg < 10` gate + **32 s** server load out of ~357 s held. The eviction it was sent to
+         optimise cost **0.2 s**.
+      4. **A second agent starves meanwhile** — HARNESS-1 sat in the queue from 19:30Z to 21:20Z+ (2 h)
+         behind SYNC-19/20. The fair queue working correctly, but a whole agent's work parked.
+      **The `loadavg` gate is the worst line: it is the single largest setup cost AND proven ineffective**
+      — it passed at load 11.61 and the arm then ran through 23.9 → 32.0 → 55.7. Only in-window sampling
+      catches a burst; a lagging 1-minute average cannot. Post-hoc screening on `foreign_cpu_max` took
+      HARNESS-1's pair p95 from **19.89% → 6.25%** by dropping one arm, free and instantaneous.
+      **Do NOT change the recipe or the reservation mid-flight** — `-t 48` is comparability-critical and
+      arms are running. This is a design input for OP-40, which it approaches from the other side: MEAS-1
+      asks who else may use the bench cores; MEAS-4 asks why we hold 96 to use 48. Candidate answers, none
+      costed yet: reserve only the regions actually used; drop the `loadavg` gate for post-hoc screening
+      (recovers ~36% of arm wall-time AND gives a better instrument); or run a second arm concurrently on
+      the unused half, which is a *different measurement condition* and would need its own floor.
+      **Cross-reference: autokernel's unified design (U4) makes the loop the single owner of build slots,
+      GPU arms and CPU arms precisely so this is schedulable rather than first-come.** Their north star —
+      "own both GPU and CPU and maximally use them" — is the same observation from the other direction.
+
 - [ ] **SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a
       profiled A/B on a NON-prof build in one window. If the nodes shrink while the token does not,
       the lever is dead for good. Also tests the wider risk SYNC-16 raised: **the per-node census may
