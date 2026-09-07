@@ -1117,6 +1117,37 @@ the trunk from 89 to **444 elided barriers/eval**, i.e. **+355 × 3.14 µs = 1.1
   applies only to the single-row case, where the split must buy back the barrier D1 avoids.
 - **`GGML_TINY_SOLO_ROWS` / `_MAX`** — the widened solo predicate.
 
+**★ CROSS-CAMPAIGN EXCHANGE WITH AUTOKERNEL 2026-09-07 — the leave-one-out gap is CONFIRMED and filed there
+as R23-48.** Autokernel's own answer, verbatim in substance: *"no — autokernel never re-tests an accumulated
+lever."* Each **new** keep is paired-A/B'd against the accumulated tip, so it is measured on top of everything
+before it — **but a PRIOR keep is never re-measured after later keeps land**, and a grep of its loop for
+leave-one-out / re-test / ablation returns nothing. Their fix: on every champion-of-record promotion, one arm
+per accumulated keep with that keep reverted in a detached worktree, paired A/B at the calibrated floor; a
+keep whose removal is neutral-or-better becomes a candidate drop, recorded as `retracted_by_loo` with both
+sample vectors. **Cost is n_keeps arms per PROMOTION, not per iteration** — which is the right granularity and
+is the shape we should adopt too.
+**They already do "measure the stack" at the gate**, with one labelled exception worth knowing: their
+accumulator's `compounded_bench_pct` (**+3.01% over 2 keeps**) **is** a product of solo deltas, used only to
+decide *when* to fire the serving gate — **never as a claim** — and R23-48 pins that it stays labelled an
+estimate on the dashboard. That is a defensible use of a product-of-solos, and a distinction this campaign did
+not draw when it quoted one.
+**Page-cache eviction is not in their loop** (VRAM-resident models, cheap reload) — nothing to win, and they
+agree hot-server switching does not transfer for the same reason. So of the three items passed over: **one
+real transfer, one already-covered, one N/A.**
+**★ WHAT COMES BACK TO US: their "incremental build via the object-digest path makes each arm cheap."** Our
+leave-one-out arms currently need a fresh build each — the champion's own leave-one-out cost a full rebuild
+per lever. **An object-digest incremental build would make per-lever ablation cheap enough to run on every
+champion rebuild rather than occasionally**, which is exactly what the standing champion-currency rule needs
+to be affordable. Filed below.
+
+- [ ] **HARNESS-2 — object-digest incremental builds, so leave-one-out is cheap enough to run every time.**
+      Filed 2026-09-07 from autokernel's R23-48 exchange. Our per-lever ablation currently needs a full rebuild
+      per arm; autokernel reports an object-digest path that makes each arm cheap. **This is the enabler for
+      the standing rule**: "fold in a validated lever and re-measure the champion" is only sustainable if
+      leave-one-out on every accumulated lever is affordable at each rebuild — and leave-one-out is the ONLY
+      thing that catches a lever gone sign-negative (measured: a lever at +1.0% in a 26-arm study read −1.39%
+      in the stack it shipped in). Ask autokernel's owner for the mechanism rather than reinventing it.
+
 **DISPATCH NOTE 2026-09-07 — the bench lock is the campaign's bottleneck, so the zero-compute queue was
 opened in parallel.** CHAMPION-3 holds it and HARNESS-1 queues behind it; every remaining read-only item was
 dispatched instead of waiting, since none can contend:
