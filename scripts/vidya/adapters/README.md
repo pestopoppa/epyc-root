@@ -30,18 +30,84 @@ The carrier is shared. The grading rule is **not**, and pretending otherwise is 
 |---|---|---|---|
 | `measurement` | the claim rule: protocol / n / date / attestation | `Witnessed` | `claim_tuple.py` |
 | `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `research_intake.py` |
+| `verifier` | **projection precondition, not a ladder** — see below | (graded by `claim_tuple.grade()`) | *none, deliberately* |
 
 The literature ceiling is **structural, not a limitation to lift**. An intake entry records what
 someone else reported; no amount of careful reading turns it into a protocol-admissible measurement.
 
-Dependency evidence is not a third carrier class yet. A producer may write an integrity-bound
+Dependency evidence is **not a carrier class at all**. A producer may write an integrity-bound
 dependency record and an adapter may classify it, but until a shared dependency warrant rule is
 declared it MUST NOT register a `ClaimTuple` projection or emit `evidence_supports_claim`. In
 particular, verification legs from one rehearsal retain their native identities but share one
 run-level support key; they are not independent corroborating witnesses.
 
-Each class has **exactly one** ladder. `register_ladder()` refuses a second. A genuinely new kind of
-warrant is a new class — declare it deliberately, never by accident.
+Each class that grades has **exactly one** ladder. `register_ladder()` refuses a second. A genuinely
+new kind of warrant is a new class — declare it deliberately, never by accident. `verifier` is the
+one class that adds a **projection** precondition without adding a ladder, which is why its row
+above names no module.
+
+### The `verifier` class — record what the check ASSERTED, not that it passed (SC57)
+
+A verifier — a prover, a property checker, a schema validator, a contract test — answers a question,
+and the answer is a boolean. **The boolean is not the finding.** A machine-checked verdict certifies
+*the proposition the checker decided*, and nothing binds that proposition to the claim someone later
+cites it for. `intake-1307#05`: such a certificate "does not certify individual mathematical truth".
+`intake-1307#00` is the existence proof that the resulting gap is large — an automated check labelled
+73.6% of proved artifacts non-trivial-and-correct where a manual audit put faithfulness far lower.
+(That number is a reweighted projection from a 45-example single-annotator audit: cite it as an
+existence proof that the gap exists, **never as a rate**.)
+
+So a verifier-class adapter MUST project `ClaimTuple.decided_proposition`, and the registry refuses
+one that emits pass/fail alone:
+
+```python
+@claim_tuple.register("my-prover", source_class="verifier",
+                      decided_proposition_field="theorem_statement")
+def project(native):
+    return ClaimTuple(..., decided_proposition=native["theorem_statement"])
+```
+
+Two refusals, because there are two ways to emit pass/fail alone:
+
+| what you did | refused | when |
+|---|---|---|
+| registered as `verifier` without `decided_proposition_field` | at **import** | the adapter never reaches the registry |
+| declared the field, projected it empty (or as `"pass"` / `"true"` / `"ok"` / any bare verdict) | at **projection** | before the tuple can be graded |
+
+**This is a projection rule, never a grading rule.** No verifier ladder is registered and none may
+be added: `claim_tuple.grade()` still decides (§4.7), and `test_verifier_decided_proposition.py`
+fails if a second ladder appears. What the recorded proposition should *license* — the
+statement-binding precondition that would cap an unbound verifier tuple at `Judged` — is **SC56**,
+which changes grading semantics and is not implemented. Until it lands, a verifier tuple is graded
+exactly like a measurement one; recording the proposition now is what makes SC56 possible later,
+because a proposition invented on read claims warrant the original check never captured.
+
+### Producing a judgment frame — pin the DIGEST, not the name (SC58)
+
+If your producer writes `judgment_recorded` frames, `provenance.replay_key.read_set` must be a
+non-empty list of **named, digest-pinned artifacts**, `tool_output_hash` must be a real sha256, and
+`assertion.claim_id` must say whose belief was judged:
+
+```python
+"replay_key": {"read_set": [{"name": "wiki/page.md", "digest": {"sha256": "<64 hex>"}}],
+               "prompt": ..., "seed": ..., "model_version": ..., "temperature": ...,
+               "tool_output_hash": "sha256:<64 hex>"}
+```
+
+Until 2026-09-07 the fold checked only that those fields were *present*, so `read_set: ["a"]` folded
+cleanly — a contract on the name of a field, not on its content. `intake-1308#03`: "a read-back of an
+older version of the code is worse than none, because it testifies about the wrong artifact." A
+belief now goes **`dirty`** (spec §7.2, mapping to `aging` in THE ONE CLASSIFIER, §8.1) when a judged
+artifact's digest moves and no judgment has yet seen the current one; re-judging clears it. Any frame
+may report an artifact's current digest through the in-toto `subjects` slot.
+
+### Superseding or retracting a frame — say why (SC59)
+
+Optional and free-text, and it carries **no grade**: `pubinfo.supersedes_reason` beside
+`pubinfo.supersedes`, or `assertion.reason` on a retraction frame. It is surfaced verbatim on the
+belief's review path so a citer learns *why* a frame was superseded instead of re-walking the
+rejected reasoning at full price. Same rule as corrections, for the same reason — we know the ground
+shifted, not by how much, so the text is carried and never weighed.
 
 ## Writing one
 

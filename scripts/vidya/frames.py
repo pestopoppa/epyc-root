@@ -13,6 +13,13 @@ collapsing into each other:
 The second rule is the reason ``triggered_by`` lives in ``pubinfo``: "why this frame was emitted"
 is a statement about the frame. It carries no grade, no authority and no freshness, and
 `validate_frame` enforces that a caller has not tried to attach one.
+
+``supersedes_reason`` (SC59) lives there for exactly the same reason and under exactly the same
+prohibition: "this frame replaced that one because the recipe changed" is a statement about the
+frame, it is free text for a human, and it moves no lattice value. A retraction states its own
+reason in its ``assertion`` instead, because a retraction is a first-class claim frame whose
+assertion IS the retraction (spec §3.5) -- so the reason is part of what it asserts, not a note
+about it.
 """
 
 from __future__ import annotations
@@ -103,6 +110,20 @@ def validate_frame(frame: dict) -> None:
         trig = pubinfo["triggered_by"]
         if not isinstance(trig, str):
             _fail("pubinfo.triggered_by must be a frame_id string")
+    if "supersedes" in pubinfo and not isinstance(pubinfo["supersedes"], str):
+        _fail("pubinfo.supersedes must be a frame_id string")
+    # SC59: WHY the ground moved. "This frame replaced that one, because ..." is a statement about
+    # the frame, so it belongs in pubinfo beside `supersedes` -- and it carries no grade, for the
+    # same reason a correction carries none: we know the ground shifted, not by how much. A reason
+    # with nothing to be the reason FOR is refused, because a dangling explanation reads as an
+    # explanation of the whole frame.
+    if "supersedes_reason" in pubinfo:
+        reason = pubinfo["supersedes_reason"]
+        if not isinstance(reason, str) or not reason.strip():
+            _fail("pubinfo.supersedes_reason must be a non-empty string")
+        if "supersedes" not in pubinfo:
+            _fail("pubinfo.supersedes_reason without pubinfo.supersedes: a reason must say what "
+                  "it is the reason for")
     for key in _GRADE_BEARING:
         if key in pubinfo:
             _fail(
@@ -150,6 +171,7 @@ def make_frame(
     subjects: list[dict] | None = None,
     triggered_by: str | None = None,
     supersedes: str | None = None,
+    supersedes_reason: str | None = None,
     extra_pubinfo: dict[str, Any] | None = None,
 ) -> dict:
     """Build a validated, content-addressed frame.
@@ -166,6 +188,8 @@ def make_frame(
         pubinfo["triggered_by"] = triggered_by
     if supersedes is not None:
         pubinfo["supersedes"] = supersedes
+    if supersedes_reason is not None:
+        pubinfo["supersedes_reason"] = supersedes_reason
     if extra_pubinfo:
         overlap = set(extra_pubinfo) & set(pubinfo)
         if overlap:

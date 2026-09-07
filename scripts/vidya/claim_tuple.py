@@ -83,6 +83,17 @@ class ClaimTuple:
     # explicitly. Without this the ladder silently downgraded every sealed run to Anchored.
     attestation_present: bool | None = None
     source_kind: str = "measurement"
+    # SC57 — the verifier-class element. WHAT THE CHECK ASSERTED, in the checker's own terms: the
+    # theorem statement a prover discharged, the property a validator decided, the postcondition a
+    # test pinned. A boolean records that SOMETHING passed; only this records WHAT. A machine-checked
+    # verdict certifies the proposition the checker decided and binds it to nothing else — the
+    # certificate "does not certify individual mathematical truth" (`intake-1307#05`), and in one
+    # real pipeline an automated check labelled 73.6% of proved artifacts non-trivial-and-correct
+    # while a manual audit put faithfulness far lower (`intake-1307#00`, admissible as an existence
+    # proof that the gap is large, never as a rate). Empty on non-verifier classes, and NEVER
+    # inferred on read: a proposition invented after the fact claims warrant the original check
+    # never captured.
+    decided_proposition: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -108,6 +119,10 @@ class ClaimTuple:
                                   "a measurement")
         if self.attestation_sha256 and len(self.attestation_sha256) != 64:
             raise ProjectionError("attestation_sha256 must be a 64-character hex digest")
+        if not isinstance(self.decided_proposition, str):
+            raise ProjectionError(
+                "decided_proposition must be a string — the proposition the check actually "
+                "decided, in the checker's own terms")
 
 
 def artifact_present(tup: ClaimTuple) -> bool:
@@ -213,28 +228,149 @@ def ladders() -> dict[str, tuple[str, Ladder]]:
 register_ladder("measurement", "scripts/vidya/claim_tuple.py")(grade)
 
 
+# --- the verifier class: what the check ASSERTED, never just whether it passed (SC57) ---------
+#
+# A third adapter class, and the only one with a projection precondition of its own. A verifier --
+# a prover, a property checker, a schema validator, a contract test -- answers a question, and the
+# answer is a boolean. The boolean is not the finding. `intake-1307#05`: a machine-checked
+# certificate "does not certify individual mathematical truth"; it certifies THE PROPOSITION THE
+# CHECKER DECIDED, which is a different sentence and is the one nobody records. `intake-1307#00` is
+# the existence proof that the resulting gap is large -- an automated check labelled 73.6% of proved
+# artifacts non-trivial-and-correct where a manual audit put faithfulness far lower (a reweighted
+# projection from a 45-example single-annotator audit: admissible that the gap exists, never as a
+# rate).
+#
+# So a verifier-class adapter MUST project `decided_proposition`, and the registry refuses one that
+# emits pass/fail alone. This is a PROJECTION rule, not a grading rule: no verifier ladder is
+# registered and none may be added here, because `claim_tuple.grade()` still decides (spec §4.7).
+# What the recorded proposition licenses -- specifically, the statement-binding precondition that
+# would cap an unbound verifier tuple at `Judged` -- is SC56 and is deliberately NOT implemented
+# here; it changes grading semantics and is operator-reviewed.
+
+MEASUREMENT_CLASS = "measurement"
+LITERATURE_CLASS = "literature"
+VERIFIER_CLASS = "verifier"
+SOURCE_CLASSES = frozenset({MEASUREMENT_CLASS, LITERATURE_CLASS, VERIFIER_CLASS})
+
+# What a check ANSWERS, as opposed to what it ASSERTS. Named explicitly so the refusal is
+# mechanical rather than a comment somebody has to remember -- the same reason `frames.py` names
+# its grade-bearing keys instead of describing them.
+_BARE_VERDICT_TOKENS = frozenset({
+    "0", "1", "accept", "accepted", "error", "fail", "failed", "failure", "false", "green",
+    "invalid", "no", "not ok", "ok", "pass", "passed", "proved", "red", "reject", "rejected",
+    "sat", "success", "true", "unknown", "unsat", "unverified", "valid", "verified", "yes",
+})
+
+
+def check_decided_proposition(value: object, *, where: str) -> str:
+    """Refuse a verifier projection that records a verdict instead of a proposition.
+
+    Two failures, one rule. An empty field says the adapter never captured what was decided, and
+    that can never be recovered later: a proposition invented on read claims warrant the original
+    check never captured. A bare verdict token is the same hole with a value in it -- "pass" is the
+    answer, not the statement, and it is exactly what a downstream citer would have to guess at.
+    """
+    if not isinstance(value, str) or not value.strip():
+        raise ProjectionError(
+            f"{where}: a verifier-class projection must carry `decided_proposition` -- the "
+            "proposition the checker actually decided. A boolean records that something passed; "
+            "only the proposition records WHAT was decided, and it cannot be recovered on read "
+            "(docs/design/vidya-pilot-spec.md §4.7)")
+    normalized = value.strip().lower().rstrip(".")
+    if normalized in _BARE_VERDICT_TOKENS:
+        raise ProjectionError(
+            f"{where}: `decided_proposition` is the bare verdict {value!r} -- that is what the "
+            "check ANSWERED, not what it ASSERTED. Record the statement the checker discharged, "
+            "in the checker's own terms")
+    return value.strip()
+
+
 # --- the projection registry ----------------------------------------------------------------
 
 Projection = Callable[[Any], ClaimTuple]
 _REGISTRY: dict[str, Projection] = {}
+# The UNWRAPPED function per name. Duplicate detection must compare what the adapter wrote, not
+# what the registry wrapped it in, or re-importing a verifier adapter would refuse itself.
+_ORIGINALS: dict[str, Projection] = {}
+_SOURCE_CLASS: dict[str, str] = {}
 
 
-def register(name: str) -> Callable[[Projection], Projection]:
+def _verifier_guard(name: str, fn: Projection, native_field: str) -> Projection:
+    """Post-condition on a verifier projection: every tuple it emits names what was decided."""
+    import functools
+
+    @functools.wraps(fn)
+    def guarded(*args, **kwargs):
+        out = fn(*args, **kwargs)
+        where = f"projection {name!r} (verifier class, native field {native_field!r})"
+        candidates = out if isinstance(out, (list, tuple)) else [out]
+        for item in candidates:
+            if isinstance(item, ClaimTuple):
+                check_decided_proposition(item.decided_proposition, where=where)
+        return out
+
+    guarded.__vidya_source_class__ = VERIFIER_CLASS
+    guarded.__vidya_decided_proposition_field__ = native_field
+    return guarded
+
+
+def register(
+    name: str,
+    *,
+    source_class: str = MEASUREMENT_CLASS,
+    decided_proposition_field: str | None = None,
+) -> Callable[[Projection], Projection]:
     """Register a source's projection. The registry is what makes the contract checkable: a
     conformance test can enumerate every source and assert each one produces a valid tuple,
-    which is impossible when each adapter grades privately."""
+    which is impossible when each adapter grades privately.
+
+    `source_class="verifier"` (SC57) is REFUSED unless the adapter also names the native field its
+    decided proposition is read from. The declaration is refused at import time, so an adapter that
+    emits pass/fail alone never reaches the registry; the guard it installs is the backstop, so a
+    field that is declared but left empty is refused at projection time instead of grading a
+    boolean as though it were a finding.
+
+    The class does NOT change grading. `claim_tuple.grade()` still decides, and no verifier ladder
+    exists -- project, never grade (spec §4.7).
+    """
+    if source_class not in SOURCE_CLASSES:
+        raise ProjectionError(
+            f"projection {name!r}: unknown source_class {source_class!r}; declare one of "
+            f"{sorted(SOURCE_CLASSES)} deliberately -- a new class of warrant is never an accident")
+    if source_class == VERIFIER_CLASS and not (decided_proposition_field or "").strip():
+        raise ProjectionError(
+            f"projection {name!r} registers as verifier-class without naming the native field its "
+            "decided proposition comes from: a verifier adapter that emits pass/fail alone is "
+            "refused. Pass decided_proposition_field=<field on the native record> and project it "
+            "into ClaimTuple.decided_proposition")
+    if source_class != VERIFIER_CLASS and decided_proposition_field:
+        raise ProjectionError(
+            f"projection {name!r}: decided_proposition_field belongs to the verifier class only; "
+            f"{source_class!r} records a measurement, not a decided proposition")
 
     def deco(fn: Projection) -> Projection:
-        if name in _REGISTRY and _REGISTRY[name] is not fn:
+        existing = _ORIGINALS.get(name)
+        if existing is not None and existing is not fn:
             raise ProjectionError(f"projection {name!r} is already registered")
-        _REGISTRY[name] = fn
-        return fn
+        _ORIGINALS[name] = fn
+        _SOURCE_CLASS[name] = source_class
+        _REGISTRY[name] = (
+            _verifier_guard(name, fn, decided_proposition_field or "")
+            if source_class == VERIFIER_CLASS
+            else fn
+        )
+        return _REGISTRY[name]
 
     return deco
 
 
 def registered() -> dict[str, Projection]:
     return dict(_REGISTRY)
+
+
+def source_classes() -> dict[str, str]:
+    """Projection name -> declared adapter class. Reported, so the contract is observable."""
+    return dict(_SOURCE_CLASS)
 
 
 def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
@@ -250,6 +386,13 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
     q, t, reasons = grade(tup)
     ident = tup.measurement_id
     source_id, claim_id = f"src_{ident}", f"clm_{ident}"
+    # SC57: the decided proposition rides in the CLAIM frame, next to the claim text it is meant to
+    # be read against -- that adjacency is the whole point, and it is what SC56 would later bind.
+    # Added only when the projection carried one, so a measurement-class tuple emits the identical
+    # frame (and therefore the identical frame_id) it emitted before this field existed.
+    claim_assertion = {"claim_id": claim_id, "display_text": tup.claim, "source_id": source_id}
+    if tup.decided_proposition:
+        claim_assertion["decided_proposition"] = tup.decided_proposition
     return [
         make_frame(
             frame_type="epyc.vidya/frame/source_observed/v1",
@@ -261,7 +404,7 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
             actor=adapter_id, authority_scope=authority, created_at=as_of),
         make_frame(
             frame_type="epyc.vidya/frame/claim_proposed/v1",
-            assertion={"claim_id": claim_id, "display_text": tup.claim, "source_id": source_id},
+            assertion=claim_assertion,
             provenance={"method": adapter_id, "derived_from": source_id, "about": ident},
             actor=adapter_id, authority_scope=authority, created_at=as_of),
         make_frame(
