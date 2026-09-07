@@ -1367,7 +1367,7 @@ commercial incentive to accrue reputation arrived independently at this program'
       sparse hand-authored annotation. Copying the metric without the density copies the ceremony,
       not the signal. File it; do not start it.
 
-- [ ] **SC62 — wire FM-5 fan-out outcome accounting into the belief kernel.** FM-5 landed
+- [x] **SC62 — wire FM-5 fan-out outcome accounting into the belief kernel.** ✅ 2026-09-07 — `scripts/vidya/adapters/fanout_outcome.py`, 5 tuples, all **`Judged/Located`**: no protocol id exists for transcript forensics and none was invented, so the ladder caps it as an OBSERVATION. The bounds are structurally non-optional — `value` is a `Bound` whose `.point`/`float()`/`int()` RAISE, and because `to_frames` emits only the generated claim TEXT and never `value`, the guard is on the text (a guard on `value` alone would be inert exactly where it matters). **86.5% is the LOW end of a band whose high end is 99.7%**, the two ends resting on different evidence, not different confidence. FM-5 landed
       2026-09-07 (`5f1c4ba4`) and **produces measurements**: per-subagent outcome buckets with token
       totals over a committed, non-reproducible corpus. Filed here the same day per CLAUDE.md —
       wiring the WRITE side is cheap and permanent, retrofitting the READ side is impossible, and
