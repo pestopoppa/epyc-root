@@ -72,9 +72,9 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 56 | 549 | 13 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
-| research-evaluation | 45 | 362 | 11 | 2026-07-29 |
+| research-evaluation | 45 | 363 | 11 | 2026-07-29 |
 | reviewer-control-plane | 7 | 37 | 11 | 2026-07-29 |
-| routing-and-optimization | 50 | 410 | 18 | 2026-07-29 |
+| routing-and-optimization | 50 | 408 | 18 | 2026-07-29 |
 | user-facing-harness | 7 | 43 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

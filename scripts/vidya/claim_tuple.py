@@ -35,6 +35,11 @@ WHAT GRADING MEANS. Straight from the constitution's own words, one ladder for e
 The last row is load-bearing. An observation is worth recording — it is what hypotheses are made of
 — and grading it honestly at `Judged` is what stops it being cited later as though it had gated a
 decision.
+
+One post-step sits after that ladder, for verifier-class tuples only (SC56): a verifier result
+whose decided proposition is not bound to the claim it is cited for is an observation about
+something else, and caps at `Judged`; a bound one caps at `Verified`, per §4.5. T is never touched
+— traceability is a different axis, and an unbound receipt can still be perfectly located.
 """
 
 from __future__ import annotations
@@ -51,9 +56,64 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CATEGORIES = frozenset({"OPTIMUM", "BASELINE", "CANDIDATE"})
 METRIC_DIRECTIONS = frozenset({"higher_better", "lower_better"})
 
+# The source classes. Declared HERE rather than beside their prose (below, with the SC57 verifier
+# contract) only because `ClaimTuple.source_class` defaults to one of them and a dataclass default
+# is evaluated at class-creation time. The rationale for each class lives where it is argued.
+MEASUREMENT_CLASS = "measurement"
+LITERATURE_CLASS = "literature"
+VERIFIER_CLASS = "verifier"
+SOURCE_CLASSES = frozenset({MEASUREMENT_CLASS, LITERATURE_CLASS, VERIFIER_CLASS})
+
+# SC56 -- how a verifier's decided proposition is bound to the claim it is cited for.
+#
+#   ""          no binding recorded. The honest default, and the one that grades down.
+#   "identity"  the proposition and the claim are the SAME statement, machine-checkable by
+#               normalized string equality (`propositions_are_identical` below).
+#   "attested"  a person judged that the claim follows from the proposition, and `binding_ref`
+#               points at that judgment.
+#
+# `attested` has NO PRODUCER yet: SC61 (`claim_statement_binding/v1` -- the frame type, the review
+# worksheet and the fold pass) owns it, and until that lands the kind is accepted and validated
+# here but unreachable in practice. Deliberately filed apart: letting the producer ride inside SC56
+# would have turned a one-function cap into a new frame type under one checkbox.
+BINDING_NONE = ""
+BINDING_IDENTITY = "identity"
+BINDING_ATTESTED = "attested"
+BINDING_KINDS = frozenset({BINDING_NONE, BINDING_IDENTITY, BINDING_ATTESTED})
+
 
 class ProjectionError(ValueError):
     """An adapter produced something that is not a claim tuple."""
+
+
+def normalize_proposition(text: str) -> str:
+    """The ONLY normalization an `identity` binding is allowed to survive.
+
+    Three operations, and this list is exhaustive on purpose:
+
+      1. collapse all internal whitespace runs to one space (and strip the ends);
+      2. casefold;
+      3. strip trailing sentence punctuation.
+
+    That is it. NO stemming, NO synonym or lemma handling, NO fuzzy ratio, NO token-set overlap,
+    NO stopword removal. Every one of those would let two DIFFERENT statements normalize to the
+    same string, and the whole load-bearing property of `identity` is that a machine can decide it
+    with no judgment involved. The moment a similarity threshold appears here, "the checker decided
+    this claim" becomes an opinion held by a string metric -- which is precisely the gap SC56
+    exists to close (`intake-1307#00`: an automated check labelled 73.6% of proved artifacts
+    non-trivial-and-correct where a manual audit put faithfulness far lower).
+
+    A claim that genuinely follows from the proposition without being the same sentence is a real
+    and common case. It is `binding_kind='attested'` -- a human judgment, with a reference -- and
+    never a looser rule here.
+    """
+    return " ".join(str(text or "").split()).casefold().rstrip(".,;:!?")
+
+
+def propositions_are_identical(decided: str, claim: str) -> bool:
+    """True iff the decided proposition and the claim are the same statement (see above)."""
+    left, right = normalize_proposition(decided), normalize_proposition(claim)
+    return bool(left) and left == right
 
 
 @dataclass(frozen=True)
@@ -94,6 +154,15 @@ class ClaimTuple:
     # inferred on read: a proposition invented after the fact claims warrant the original check
     # never captured.
     decided_proposition: str = ""
+    # SC56 -- which ladder this tuple is graded against, and whether its decided proposition is
+    # bound to the claim. `source_class` is the ONLY thing the SC56 cap keys on: a tuple that
+    # merely carries a `decided_proposition` is not thereby a verifier result, and scoping the cap
+    # on the field rather than the class would have re-graded every adapter that ever records one.
+    source_class: str = MEASUREMENT_CLASS
+    binding_kind: str = BINDING_NONE
+    # Where the `attested` judgment lives (SC61's `claim_statement_binding/v1` frame id, once that
+    # exists). Required when, and only when, `binding_kind == "attested"`.
+    binding_ref: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -123,6 +192,45 @@ class ClaimTuple:
             raise ProjectionError(
                 "decided_proposition must be a string — the proposition the check actually "
                 "decided, in the checker's own terms")
+        if self.source_class not in SOURCE_CLASSES:
+            raise ProjectionError(
+                f"source_class must be one of {sorted(SOURCE_CLASSES)} (got "
+                f"{self.source_class!r}) — a new class of warrant is never an accident")
+        # SC56. The rest of this method distinguishes a MISSING element from a FALSE one, and the
+        # distinction is the whole point:
+        #
+        #   missing binding  -> represented, reported in `reasons`, and GRADED DOWN. "we do not
+        #                       know that this check decided the claim" is a true statement about
+        #                       the measurement, and §4.7 requires it to be representable.
+        #   false binding    -> REFUSED here, like `category`. Asserting `identity` between two
+        #                       different statements is not a gap in the record, it is a lie about
+        #                       a structural fact, and letting it decay into a downgrade would let
+        #                       a wrong claim be recorded at a defensible-looking grade.
+        #
+        # Different failures, different answers.
+        if self.binding_kind not in BINDING_KINDS:
+            raise ProjectionError(
+                f"binding_kind must be one of {sorted(BINDING_KINDS)} (got "
+                f"{self.binding_kind!r}) — how the decided proposition reaches the claim is "
+                "recorded, never assumed (SC56)")
+        if self.binding_kind and not str(self.decided_proposition or "").strip():
+            raise ProjectionError(
+                f"binding_kind={self.binding_kind!r} with no `decided_proposition` — a binding "
+                "with nothing on the other end of it. Record what the check decided, or record "
+                "no binding and take the grade that describes what is actually known")
+        if self.binding_kind == BINDING_ATTESTED and not str(self.binding_ref or "").strip():
+            raise ProjectionError(
+                "binding_kind='attested' requires `binding_ref` — an attested binding IS a human "
+                "judgment, and a judgment nobody can point at is indistinguishable from none "
+                "(SC61 owns the producer that mints these references)")
+        if self.binding_kind == BINDING_IDENTITY and not propositions_are_identical(
+                self.decided_proposition, self.claim):
+            raise ProjectionError(
+                "binding_kind='identity' asserts the checker decided THIS claim, but the two "
+                f"statements differ: decided {self.decided_proposition!r} vs claim {self.claim!r}. "
+                "Identity is string equality under a deliberately strict normalization; anything "
+                "looser is paraphrase detection, which is a judgment and belongs in "
+                "binding_kind='attested'")
 
 
 def artifact_present(tup: ClaimTuple) -> bool:
@@ -146,12 +254,81 @@ def artifact_present(tup: ClaimTuple) -> bool:
     return (REPO_ROOT / rel).is_file()
 
 
+def _q_min(a: str, b: str) -> str:
+    """The lower of two Q levels, on the lattice's own ordering.
+
+    Local import for the same reason `to_frames` imports `frames` locally: it keeps this module
+    importable by a projector that has no ledger on its path. `lattice` is the authority on the Q
+    chain -- restating the order here would be a second copy of a vocabulary, which is the exact
+    defect class this file was written to stop.
+    """
+    from lattice import Q_LEVELS
+
+    return a if Q_LEVELS.index(a) <= Q_LEVELS.index(b) else b
+
+
+def _apply_statement_binding_cap(
+        tup: ClaimTuple, q: str, t: str, reasons: list[str]) -> tuple[str, str, list[str]]:
+    """SC56 — cap a verifier-class grade by what its decided proposition is actually bound to.
+
+    A POST-STEP on the ladder above, never a second ladder: `register_ladder` gains no entry, each
+    source class still has exactly one rule, and `grade()` remains the single door (§4.7).
+
+    Being a post-step is also what protects the T axis. The obvious implementation -- an early
+    return inside the ladder, copying the shape of the `no protocol` branch -- returns
+    `Judged, Located|T0` and so silently destroys traceability. Traceability is a DIFFERENT AXIS:
+    an unbound verifier receipt can be perfectly located, hashed and present on disk, and all of
+    that stays true when nobody recorded which claim the check decided. So T is computed normally
+    and passed through untouched; only Q moves.
+
+    Two caps, one line apart:
+
+      * unbound  -> `Judged`. Not lower: the check really ran and really decided something, which
+        is exactly an observation -- worth recording, never decision-gating.
+      * bound    -> `Verified`. Already ratified doctrine, merely unenforced until now: spec §4.5
+        caps a deterministic verifier result at `Q3` because "a verifier confirms, it does not
+        measure", and names protocol-admissible measurement as the ONLY route to `Q4`. Without
+        this line a full-tuple verifier record reaches `Witnessed` through the measurement ladder.
+    """
+    if tup.source_class != VERIFIER_CLASS:
+        return q, t, reasons
+
+    reasons = list(reasons)
+    if not tup.binding_kind:
+        decided = tup.decided_proposition.strip()
+        # Name the proposition VERBATIM. A reader who is told "the binding is missing" learns
+        # nothing actionable; a reader shown the sentence the checker actually decided can see
+        # for themselves how far it is from the claim it was cited for.
+        what = (f'the check decided: "{decided}"' if decided
+                else "the projection recorded no decided proposition at all")
+        reasons.append(
+            f"verifier result is not bound to the claim it supports — {what}, and nothing binds "
+            f'that to the claim "{tup.claim}". A machine-checked verdict certifies the proposition '
+            "the checker decided and binds it to nothing else (intake-1307#05), so this is an "
+            "OBSERVATION: capped at Judged until a binding is recorded (SC56)")
+        return _q_min(q, "Judged"), t, reasons
+
+    reasons.append(
+        f"verifier class (binding_kind={tup.binding_kind!r}): a verifier confirms, it does not "
+        "measure — the Q ceiling is Verified, and protocol-admissible measurement is the only "
+        "route to Witnessed (docs/design/vidya-pilot-spec.md §4.5)")
+    return _q_min(q, "Verified"), t, reasons
+
+
 def grade(tup: ClaimTuple) -> tuple[str, str, list[str]]:
     """THE grading ladder. One implementation, every source.
 
     `reasons` names every missing element, so a low grade is self-explaining and nobody has to
     reverse-engineer why their measurement failed to reach Witnessed.
+
+    SC56 adds one post-step, `_apply_statement_binding_cap`, which touches verifier-class tuples
+    only. Everything below it is the ladder as it has always been.
     """
+    return _apply_statement_binding_cap(tup, *_measurement_ladder(tup))
+
+
+def _measurement_ladder(tup: ClaimTuple) -> tuple[str, str, list[str]]:
+    """The ladder body, unchanged."""
     reasons: list[str] = []
     has_protocol = bool(tup.protocol_id.strip())
     has_ref = bool(tup.attestation_path or tup.attestation_locator)
@@ -243,14 +420,14 @@ register_ladder("measurement", "scripts/vidya/claim_tuple.py")(grade)
 # So a verifier-class adapter MUST project `decided_proposition`, and the registry refuses one that
 # emits pass/fail alone. This is a PROJECTION rule, not a grading rule: no verifier ladder is
 # registered and none may be added here, because `claim_tuple.grade()` still decides (spec §4.7).
-# What the recorded proposition licenses -- specifically, the statement-binding precondition that
-# would cap an unbound verifier tuple at `Judged` -- is SC56 and is deliberately NOT implemented
-# here; it changes grading semantics and is operator-reviewed.
+#
+# What the recorded proposition LICENSES is SC56, landed 2026-09-07 as
+# `_apply_statement_binding_cap` -- a post-step on the one ladder, not a second one. An unbound
+# verifier tuple caps at `Judged`; a bound one caps at `Verified`, which is spec §4.5's already
+# ratified "a verifier confirms, it does not measure" finally enforced in code.
 
-MEASUREMENT_CLASS = "measurement"
-LITERATURE_CLASS = "literature"
-VERIFIER_CLASS = "verifier"
-SOURCE_CLASSES = frozenset({MEASUREMENT_CLASS, LITERATURE_CLASS, VERIFIER_CLASS})
+# (`MEASUREMENT_CLASS` / `LITERATURE_CLASS` / `VERIFIER_CLASS` / `SOURCE_CLASSES` are declared at
+# the top of the module, because `ClaimTuple.source_class` defaults to one of them.)
 
 # What a check ANSWERS, as opposed to what it ASSERTS. Named explicitly so the refusal is
 # mechanical rather than a comment somebody has to remember -- the same reason `frames.py` names
@@ -296,18 +473,42 @@ _SOURCE_CLASS: dict[str, str] = {}
 
 
 def _verifier_guard(name: str, fn: Projection, native_field: str) -> Projection:
-    """Post-condition on a verifier projection: every tuple it emits names what was decided."""
+    """Post-condition on a verifier projection: every tuple it emits names what was decided, AND
+    is graded as the class the adapter registered under.
+
+    The second half is SC56's. `source_class` is what the statement-binding cap keys on, so a
+    verifier adapter whose tuples went out carrying the default `measurement` class would be
+    graded by the uncapped ladder -- the cap would be present, tested, and inert, which is worse
+    than absent because it reads as enforced.
+
+    The class is STAMPED rather than refused, deliberately. The declared class is a fact about the
+    REGISTRATION, not about the record: an adapter that left the field at its default has asserted
+    nothing contrary, so refusing it would only push a re-declaration onto every verifier adapter
+    and make the guarantee depend on each of them remembering. Stamping makes the registration
+    authoritative and closes the route for every present and future verifier adapter at once. (A
+    FALSE binding is a different matter and is refused outright in `__post_init__` -- there the
+    record does assert something, and it is wrong.)
+    """
     import functools
+    from dataclasses import replace
+
+    def pin(item):
+        if not isinstance(item, ClaimTuple):
+            return item
+        where = f"projection {name!r} (verifier class, native field {native_field!r})"
+        check_decided_proposition(item.decided_proposition, where=where)
+        if item.source_class == VERIFIER_CLASS:
+            return item
+        return replace(item, source_class=VERIFIER_CLASS)
 
     @functools.wraps(fn)
     def guarded(*args, **kwargs):
         out = fn(*args, **kwargs)
-        where = f"projection {name!r} (verifier class, native field {native_field!r})"
-        candidates = out if isinstance(out, (list, tuple)) else [out]
-        for item in candidates:
-            if isinstance(item, ClaimTuple):
-                check_decided_proposition(item.decided_proposition, where=where)
-        return out
+        if isinstance(out, list):
+            return [pin(item) for item in out]
+        if isinstance(out, tuple):
+            return tuple(pin(item) for item in out)
+        return pin(out)
 
     guarded.__vidya_source_class__ = VERIFIER_CLASS
     guarded.__vidya_decided_proposition_field__ = native_field
@@ -387,12 +588,17 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
     ident = tup.measurement_id
     source_id, claim_id = f"src_{ident}", f"clm_{ident}"
     # SC57: the decided proposition rides in the CLAIM frame, next to the claim text it is meant to
-    # be read against -- that adjacency is the whole point, and it is what SC56 would later bind.
-    # Added only when the projection carried one, so a measurement-class tuple emits the identical
-    # frame (and therefore the identical frame_id) it emitted before this field existed.
+    # be read against -- that adjacency is the whole point. SC56's binding rides beside it, in the
+    # same frame, for the same reason: a reader sees both what the check decided and what licenses
+    # reading it as this claim. All three keys are conditional, so a tuple carrying none of them
+    # emits the byte-identical assertion -- and therefore the identical frame_id -- it always did.
     claim_assertion = {"claim_id": claim_id, "display_text": tup.claim, "source_id": source_id}
     if tup.decided_proposition:
         claim_assertion["decided_proposition"] = tup.decided_proposition
+    if tup.binding_kind:
+        claim_assertion["binding_kind"] = tup.binding_kind
+    if tup.binding_ref:
+        claim_assertion["binding_ref"] = tup.binding_ref
     return [
         make_frame(
             frame_type="epyc.vidya/frame/source_observed/v1",

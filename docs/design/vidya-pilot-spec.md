@@ -391,10 +391,26 @@ be its own category error:
 |---|---|---|---|
 | `measurement` | the constitution's claim rule (protocol / n / date / attestation) | `Witnessed` | `claim_tuple.py` |
 | `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `adapters/research_intake.py` |
+| `verifier` | the measurement ladder, capped by statement binding (SC56) | `Verified` (`Judged` when unbound) | `claim_tuple.py` — post-step, no ladder entry |
 
 The literature ceiling is structural, not a limitation to be lifted: an intake entry records what
 someone else reported, and no amount of careful reading turns it into a protocol-admissible
 measurement.
+
+**A third class, `verifier`, added 2026-09-07 (SC57).** It adds a projection precondition **without
+adding a ladder**: a verifier-class adapter MUST record `decided_proposition` — what the check
+actually asserted — and the registry refuses one that emits pass/fail alone. It is graded by the
+measurement ladder, so `register_ladder` gains no entry and *each class has exactly one ladder*
+still holds. The reason it is a class at all rather than a field: a verifier result and a
+measurement fail differently, and the failure this guards is the one §4.5 already names when it caps
+verifiers at `Q3` — *a verifier confirms, it does not measure*. What that decided proposition
+licenses about the claim it is cited for is **SC56, landed 2026-09-07** as
+`_apply_statement_binding_cap` — a post-step on the measurement ladder, not a second ladder. A
+verifier tuple whose `binding_kind` is empty caps at `Judged`; a bound one caps at `Verified`,
+which is §4.5's already-ratified verifier ceiling finally enforced in code rather than merely
+written down. **Both caps move Q only:** T is computed by the ladder and passed through, because an
+unbound receipt can still be perfectly located and hashed — "we cannot find it" and "it does not say
+what you think it says" are different failures on different axes.
 
 **Dependency-evidence boundary.** Dependency evidence is deliberately not forced through this
 carrier. The current tuple structurally requires a metric, direction and measurement category, and

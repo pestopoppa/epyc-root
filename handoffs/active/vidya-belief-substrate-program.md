@@ -1367,6 +1367,16 @@ commercial incentive to accrue reputation arrived independently at this program'
       sparse hand-authored annotation. Copying the metric without the density copies the ceremony,
       not the signal. File it; do not start it.
 
+- [ ] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
+      (below/adjacent) accepts two binding kinds: `identity`, machine-checkable by normalized string
+      equality, and `attested`, a human judgment that a claim follows from a proposition the checker
+      decided. **`attested` has no producer**, so only `identity` is reachable in practice and the
+      more useful half is inert. Build the frame type parallel to `claim_alias/v1` — human-authored,
+      with the fold only *applying* it, never deriving it — plus the review worksheet and the fold
+      pass. Filed separately on purpose: this is a **build**, and letting it ride inside SC56 would
+      have turned a one-function cap into a new frame type, a worksheet and a fold pass under one
+      checkbox. Surfaced by the SC56 design pass, 2026-09-07.
+
 **Declined from this wave, recorded so they are not re-derived.** A dead-end/negative-evidence
 ledger (real problem, but a coordination artifact rather than a claim-level belief — it would widen
 this program past its ratified three gaps); a guard against deleting retraction records (already
