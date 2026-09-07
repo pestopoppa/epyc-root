@@ -907,6 +907,57 @@ a code defect, and the second time this session that **instrumentation rather th
 failure. The fix is now applied ahead of the re-run: **dry-run the invocation against a nonexistent model**,
 which parses through to model load or reports an invalid argument, and costs about a second.
 
+**★★★ B4 — GO, BUT AS AN ARTIFACT CHANGE, NOT A CHAMPION KERNEL LEVER. 2026-09-07.** Branch `inf70/b4r2` @
+`a0907a8bc` = champion `6f032c48d` + B4's quantizer patch `49a1255` (**still required**:
+`tensor_allows_quantization()` hard-excludes `ffn_gate_inp`, so stock `llama-quantize` **accepts the override
+and silently ignores it**). Build 10236, committed, not pushed. Artifact `IQ4_XS-uniform-r16`,
+98,267,083,136 B, SHA `f9aa401f…`. Disk 389 → 291 GB.
+
+**★ WHY IT IS NOT A CHAMPION LEVER, and this is the right call**: **every champion lever is bit-identical;
+this one is not.** Folding it in would **silently retire that property** — the thing that makes the champion
+promotable on a digest match. The champion **kernel** stays bit-identical; the **artifact** is a separate
+axis (see PROD-3).
+
+**Both brief premises were pre-champion and both moved:**
+- Re-census: the 48 `ffn_moe_logits` nodes cost **1,685 µs wall / 1,315 µs compute — ratio 1.28, not 2.00**;
+  worst node **41 µs, not 1,118 µs**. **The champion already fixed the straggler.** The router is **6.04% of
+  the bytes but only 3.88% of the wall** — *not bandwidth-bound.*
+- **The coordinator's "~62.9 MB after quantising" was an arithmetic slip.** F16 saves **125,829,120 B/token =
+  3.02%**, confirmed exactly in the artifact.
+
+**Bytes vs wall, measured separately — and they diverge:** bytes −3.02%; wall **MTP +1.69% (−0.513
+ms/token)**, **plain +0.63% (−0.315 ms, paired 95% CI [+0.22%, +1.01%], 15/20 wins, sign p = 0.021)**.
+**A pure-bandwidth model predicts −1.53 ms; the machine returns ~20% of the byte saving**, and the node-level
+census (−0.678 ms) predicts it far better. **MTP's paired CI straddles zero** — `P_A_r3` came in +3% over its
+sibling arms, a real mid-window drift the agent **could not discard on hygiene grounds, so it stays in and
+costs MTP its significance.**
+**Quality gate — a null WITH a stated floor**: `Mean ln(PPL(Q)/PPL(base)) = +0.003763 ± 0.003697`, **t =
+1.02σ, MDE 1.041% PPL**, resolved against a **37.5σ** mean KLD (0.046951 ± 0.001252) and **93.078 ± 0.251%
+same-top-1**. **The stream changes; the quality does not.** **α RISES 0.8209 → 0.8227** (identical to 4 dp
+across all 3 rounds of each arm) — **B9's α-collapse does not recur.**
+**Tie-breaking is NOT the risk** (the coordinator's main worry): `ggml_argsort_top_k` → `std::sort` with a
+strict `>` and no index tie-break *is* implementation-defined on a tie, but there were **0 exact F32 ties in
+40.9 M adjacent-pair comparisons** and 0 at the k=8 boundary in 80,000 rows; the top-8/top-9 gap is
+**200–370× the perturbation**, and F16 does not make ties likelier since logits stay F32 dot products over
+2560 terms.
+**★ THE FINDING WORTH KEEPING: the F32 router is 100.0000% exactly-BF16** — the converter upcast a BF16
+tensor, so the container stores **16 bits of zero per weight**, and the F16 *weight* cast is **bit-exact for
+99.97%**. The real precision cost is elsewhere: **ggml gives `GGML_TYPE_F16` `vec_dot_type = F16`, so the
+lever also rounds the HIDDEN STATE to F16** — and *that*, not the weight, causes the 6.9% top-1 flips. It
+also **kills Q8_0 on mechanism** (worse on both terms for +58.7 MB ≈ 0.06 ms); that probe was queued, sat 70
+min behind a sibling, and was **cancelled cleanly** (own PID, verified dead), with `chain2.sh` left ready.
+
+**⚠ B4's ABSOLUTE NUMBERS DO NOT REPRODUCE THE CHAMPION BASELINE — ratios usable, absolutes not.** Its A arm
+reads **32.292 t/s MTP / 19.750 plain** against the champion's measured **35.407 / 21.638** — ~9% low on
+both. Cross-day host drift is the likely cause, but it is unexplained. **Do not update the champion headline
+from B4's arms**, and treat this as a live instance of the campaign's standing rule that absolute numbers are
+only comparable within a harness and window.
+
+- [ ] **B4-b — sweep EVERY artifact's F32 tensors for the same BF16-padding test.** Filed 2026-09-07. If the
+      router was silently upcast from BF16, others may be too — **including the MTP head's untouched
+      `blk.48.ffn_gate_inp`.** Each such tensor stores 16 bits of zero per weight and is a free F16 cast.
+      Cheap, read-only, and it generalises past this model.
+
 **★★★ SYNC-14 CLOSED 2026-09-07 — IMBALANCE ON A MEMORY-BOUND MATMUL IS NOT RECOVERABLE CAPACITY. Axis
 closed at ~0.** Branch `inf70/sync14` @ `f91c49a9e`, committed, not merged. Production untouched.
 
