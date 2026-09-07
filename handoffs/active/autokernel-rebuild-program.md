@@ -1722,6 +1722,10 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         second stack sub-additive). Not applicable: page-cache eviction (models are VRAM-resident) and
         hot-server arm switching (reload is cheap on GPU). Evidence: `handoffs/active/cpu-decode-roofline-
         program.md` (CHAMP-2, SYNC-15), `wiki/benchmark-methodology.md` → *Measure the stack, not the parts*.
+      - [x] **Run 30 launched** ✅ 2026-09-07 16:31Z — run 29 stopped (opencode `event` change-feed grew the
+        actor DB to 236 GB); defaults switched to codex planner + Fable@medium critic (`e371788d`), no
+        opencode actor; same measurement config; accumulator restarts at 0 keeps (run 29's 2 keeps are on
+        the champion branch). Next launch: `python3 -u` (stdout block-buffered → empty run30.log).
       - [x] **Headline freeze (R23-44 defect) fixed** ✅ 2026-09-07: moving `publish_headline()` to the
         serving-PROMOTE branch froze the champion-vs-production headline for the whole accumulation phase
         (operator saw a 3.8-day-old SUPERSEDED number, 2 champion gens back, on the OLD dec-b4 surface).
