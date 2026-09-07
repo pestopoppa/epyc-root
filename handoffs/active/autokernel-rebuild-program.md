@@ -1720,13 +1720,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Tasks: pin `llama-server` in `serving.py` (ours to fix, no decision needed); take the orchestrator
         `region-lock` role `bench` around bench AND build, or publish a schedule. Blocked on the operator
         decision below because serializing builds against CPU arms costs autokernel throughput directly.
-        → **operator decision queued as OP-39**; INF-70 files the same tradeoff as MEAS-1.
+        → **operator decision queued as OP-41**; INF-70 files the same tradeoff as MEAS-1.
         - [x] `llama-server` is now PINNABLE ✅ 2026-09-07 (research `da3b0368` → main `7996467f`):
           `Recipe.cpu_list`, default `None` = unchanged behaviour because setting it invalidates the
           3.536% serving floor until re-calibrated; `describe()` records the condition; +3 tests (419).
         - [ ] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate
           the serving floor under the pin, in the SAME window. Blocked on GPU time (run 30 holds the claim)
-          and on OP-39, which may mandate the region lock instead.
+          and on OP-41, which may mandate the region lock instead.
         - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
           resolves foreign processes via `/proc/*/exe` and compares `cpus_allowed` against the
           SIBLING-EXPANDED bench set (the literal-range compare is what made `184-191` read as disjoint).
@@ -1734,7 +1734,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         - [ ] **Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those
           arms acquire the region and ask us to hold at the next task boundary. Their levers measure 1-3%
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
-          a loop hold is a run-lifecycle action.** Folded into OP-39 as the bounded form of option (A).
+          a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
           Default if unruled: INF-70 measures contended and labels the result non-claim.
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
