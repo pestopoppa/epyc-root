@@ -197,6 +197,14 @@ VERDICT_FAIL = "fail"
 #: apart.
 VERDICT_OUT_OF_COVERAGE = "out-of-coverage"
 
+#: WIRE SPELLING, ratified 2026-09-07 (scripts/operator/ratify_three_valued_verdict_naming_20260907.sh).
+#: `inconclusive` -- the spelling already ratified in epyc-orchestrator's
+#: orchestration/verification_report.schema.json -- is CANONICAL for anything that crosses a
+#: repo or plane boundary or lands in a stored artifact. `out-of-coverage` stays as this
+#: module's IN-CODE vocabulary, because at the gate plane the useful thing to say is which
+#: items the checker never reached; `to_verification_outcome()` is the MANDATORY translator at
+#: the boundary and is not optional politeness. Two spellings for one state is only safe while
+#: exactly one of them is on the wire.
 VERDICTS = (VERDICT_PASS, VERDICT_FAIL, VERDICT_OUT_OF_COVERAGE)
 #: The verdicts that constitute a DECISION. The resolved-coverage numerator.
 DECIDED_VERDICTS = frozenset({VERDICT_PASS, VERDICT_FAIL})
