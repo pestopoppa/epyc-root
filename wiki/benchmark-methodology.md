@@ -3589,3 +3589,82 @@ promise about magnitude.
   keying and the `model` provenance field).
 - [`2026-09-02-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-02-ak-rebuild-20260828.md) —
   the session record: how the rung was identified and the correction.
+
+## Compiled Update — 2026-09-07 (incremental): name the unit, control the instrument, place the caveat — three ratified measurement amendments (`fb755192`)
+
+**Confidence: verified** (operator-ratified 2026-09-07 as commit `fb755192`; each amendment carries
+a worked counterexample from a producer's own published artifacts, dived at primary source the same
+day).
+
+Three rules were added to [`MEASUREMENT_POLICY.md`](../agents/shared/MEASUREMENT_POLICY.md) with one
+origin: an intake wave in which a single producer's material supplied the counterexample to each.
+
+**1. A speed claim must name its unit of work.** A per-unit speed-up that inflates the whole
+artifact is reported as **both numbers or neither**. The two are not in tension and can be causally
+linked. In the worked example, per-unit compilation was genuinely faster — each proof unit compiles
+against only its children's *statements*, never the parent (`intake-1298#03`) — while the whole
+artifact builds in 5 h 32 min at 96 jobs against about 13 minutes for the reference library, a ratio
+of roughly **25×** in the other direction. "Compilation was sped up" and "it compiles 20× slower"
+were both true, differing only in the unit measured; the third-party critique quoting the slower
+figure was, if anything, charitable. And the two are the *same* mechanism: per-unit isolation
+requires generated preambles amounting to **31% of the artifact's bytes**. This extends the existing
+gate-scope rule from *which subset* to *which unit* — and note that the speed-up itself carries no
+number anywhere in the producer's post, PDF or repository, which makes it unfalsifiable as phrased
+(`intake-1298#02`).
+
+**2. An instrument modified by the party making the claim requires a control run.** The claim must
+either cite a run on the **unmodified** instrument, or state which direction the modification's
+failure mode runs and why that direction cannot manufacture the result. **A bare assertion that the
+modification is behaviour-preserving is not evidence.** Worked example: the "second independent
+kernel" check that anchors an artifact's trust chain was run only on a build carrying four
+producer-authored patches — one of them memoizing *negative* definitional-equality answers, a real
+change to the decision procedure — with soundness asserted in a single sentence ("None of the
+patches adds, removes or weakens a typing rule"), no argument, no differential test, no unpatched
+control, and the comparator's own built-in second-kernel pass disabled in config
+(`intake-1310#01`). The check that the modification was safe was never run; only the claim that it
+was.
+
+**3. Caveat placement must not be inversely correlated with caveat severity.** A self-limiting
+statement belongs in the artifact's **primary** document, not only in a generated view of it.
+Worked example: the sharpest limitations of that artifact live in generated HTML inside a large
+folder while the README carries the headline, and the producers' own `limitations.md` was
+**written, fed to the doc generator, and withheld** — the generator's README names it as an input
+and no `docs/` directory exists in the published repository (`intake-1310#03`, `intake-1310#record`).
+
+Three corroborating disciplines from the same dive, each already covered by standing policy but
+newly worked:
+
+- **Attribute a figure to the document that carries it.** Two figures our records had attributed to
+  a released repository are not in it (a self-limiting "not refereed as mathematics" sentence and a
+  citation-scope sentence), and a third is *contradicted* by it: the narrative PDF says 5 h 52 min
+  on 96 cores with 512 GiB, the repository says 5 h 32 min at 96 jobs with a 153 GB peak, and the
+  strings "512" and "96 core" occur nowhere in the repository (`intake-1310#record`,
+  `intake-1298#record`).
+- **A cross-tool size metric is not a unit.** Lines of proof are not comparable across proof
+  assistants: the same source material formalized in a system with a stronger base library is
+  "roughly half the length", a ~2× factor that forbids any like-for-like line-count comparison
+  (`intake-1306#record`). The same applies to a subscription seat price quoted beside a metered
+  cost — the author's own hourly instrumentation put three days at roughly 25–30× the fourteen-day
+  seat allocation.
+- **A case-study table is not a result table.** The table that carried this wave's cost comparison
+  is disclaimed by its own authors three times — "costs are not on a common basis", "case studies,
+  not a controlled experiment", and a named confound left to future work. No cost-per-line
+  arithmetic across its rows is defensible, and its rows differ in cost denominator, unit, model
+  generation and normalization all at once (`intake-1297#record`).
+
+**Sources**
+- `fb755192` — the ratification commit (operator-run
+  `scripts/operator/ratify_prove2me_doctrine_20260907.sh`): three clauses into
+  [`MEASUREMENT_POLICY.md`](../agents/shared/MEASUREMENT_POLICY.md), one into
+  [`OPERATING_CONSTRAINTS.md`](../agents/shared/OPERATING_CONSTRAINTS.md).
+- [intake-1298#record](https://www.anthropic.com/research/formalizing-fermats-last-theorem) — the
+  per-unit-versus-whole-artifact worked example; four of its figures are single-sourced to the post
+  and must each be cited per-claim (the `#NN` form), never entry-wide.
+- [intake-1310#record](https://github.com/anthropics/fermats-last-theorem) — the released artifact,
+  credibility 5/6: the patched-comparator trust gap, the withheld limitations document, and the
+  contradicted build figures. Its transferable *positive* pattern is claim-as-failing-build-target —
+  an axiom-list guard pinned in the default build target, so degradation breaks the build.
+- [intake-1306#record](https://arxiv.org/abs/2601.03298) — cross-prover line counts and seat-price-versus-
+  metered cost.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
+  record.
