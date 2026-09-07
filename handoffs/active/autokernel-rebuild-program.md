@@ -1704,6 +1704,24 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
         **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
         edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
+      - [ ] **R23-48 — LEAVE-ONE-OUT ARM PER ACCUMULATED LEVER, run whenever the champion changes**
+        (INF-70 finding relayed 2026-09-07 while run 29 was down). Verified: the loop A/Bs each NEW keep
+        against the accumulated tip but never re-measures a PRIOR keep (`grep -rn "leave.one.out|re-?test|
+        ablat" loop/` → nothing). INF-70 measured the failure this design hides: a lever that passed a
+        26-arm study at +1.0% turned **−1.39%, sign-stable over 3 rounds**, after two later levers removed
+        the stall it was paying for — *levers interact through what they remove*. GPU interaction classes
+        differ (occupancy / bandwidth / launch overhead) but the shape is identical. Design: on each
+        PROMOTE (champion-of-record advance) build one arm per accumulated keep with that keep reverted
+        (`git revert --no-commit <keep>` in a detached worktree, incremental build via the object-digest
+        path), paired A/B vs the champion at the calibrated floor; a keep whose removal is neutral-or-
+        better is a candidate DROP (dropped keeps go to `experiments.md` as `retracted_by_loo` with the
+        two sample vectors, never silently). Cost bound: n_keeps arms per promotion, not per iteration.
+        Corollary already true here and to keep true: the headline is the assembled-stack A/B, never the
+        product of solo deltas — the accumulator's `compounded_bench_pct` is a product ESTIMATE and must
+        stay labelled as such on the dashboard (INF-70: product-of-solos predicted 1.50, measured 1.69;
+        second stack sub-additive). Not applicable: page-cache eviction (models are VRAM-resident) and
+        hot-server arm switching (reload is cheap on GPU). Evidence: `handoffs/active/cpu-decode-roofline-
+        program.md` (CHAMP-2, SYNC-15), `wiki/benchmark-methodology.md` → *Measure the stack, not the parts*.
       - [x] **Headline freeze (R23-44 defect) fixed** ✅ 2026-09-07: moving `publish_headline()` to the
         serving-PROMOTE branch froze the champion-vs-production headline for the whole accumulation phase
         (operator saw a 3.8-day-old SUPERSEDED number, 2 champion gens back, on the OLD dec-b4 surface).
