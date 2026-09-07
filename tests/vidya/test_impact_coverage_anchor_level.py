@@ -63,7 +63,9 @@ def test_attested_counts_as_anchored_or_better():
 def test_all_machine_located_is_NOT_claim_complete():
     """THE REGRESSION. Under the old `g.t >= 2` this returned CLAIM_COMPLETE, so a belief
     supported only by spans no person ever read could license an UNAFFECTED assertion."""
-    assert coverage_of(_belief(MACHINE_LOCATED, MACHINE_LOCATED)) is not Coverage.CLAIM_COMPLETE
+    # Pins the ACTUAL value, not a negation. `is not CLAIM_COMPLETE` was satisfied by any of
+    # four values, so it could not tell a correct downgrade from a wrong one (Q.1 audit).
+    assert coverage_of(_belief(MACHINE_LOCATED, MACHINE_LOCATED)) is Coverage.SOURCE_COMPLETE
 
 
 def test_a_single_machine_located_path_downgrades_the_whole_belief():
@@ -74,9 +76,11 @@ def test_a_single_machine_located_path_downgrades_the_whole_belief():
 
 def test_machine_located_still_reaches_PARTIAL_not_UNMAPPED():
     """The fix tightens CLAIM_COMPLETE; it must not erase the difference between a
-    machine-located span and no registered edge at all. Located is below the bar too, so
-    PARTIAL is reached via the anchored path, not via the machine-located one."""
-    assert coverage_of(_belief(ANCHORED, MACHINE_LOCATED)) is Coverage.PARTIAL
+    machine-located span and no registered edge at all.
+
+    Rewritten 2026-09-07 after the Q.1 audit found its assertion was character-identical to
+    the preceding test's -- two tests, one fact. This one now pins the OTHER end: no edges at
+    all is UNMAPPED, which is the distinction the fix must not collapse."""
     assert coverage_of(_belief()) is Coverage.UNMAPPED
 
 
@@ -92,4 +96,7 @@ def test_the_bar_is_read_from_the_named_level_not_a_literal():
         line.split("#", 1)[0] for line in src.splitlines() if not line.lstrip().startswith("#")
     )
     assert 'T_LEVELS.index("Anchored")' in code
-    assert "g.t >= 2" not in code, "the literal ordinal comparison is back in executable code"
+    # Whitespace-insensitive: the first version grepped the literal string "g.t >= 2" and was
+    # defeated by "g.t>=2" (Q.1 audit). Compare with all whitespace stripped.
+    squeezed = "".join(code.split())
+    assert "g.t>=2" not in squeezed, "the literal ordinal comparison is back in executable code"

@@ -47,7 +47,8 @@ class Freshness:
     CURRENT = "current"    # -> fresh
     STALE = "stale"        # -> stale: a rendered belief version moved
     INVALID = "invalid"    # -> missing: the artifact no longer matches its manifest hash
-    REVIEW = "review"      # -> aging: a rendered belief carries an unreviewed correction
+    REVIEW = "review"      # -> aging: a rendered belief is review_required (correction, withdrawn
+                           #    dependency, or dirty judged input -- see `_review_cause`)
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,32 @@ class SelectionPolicy:
                 "allow_review_required": self.allow_review_required,
             }
         )
+
+
+def _review_cause(belief: Belief) -> str:
+    """Name the cause(s) that actually made `review_required` true.
+
+    `Belief.review_required` is the OR of three conditions fold keeps deliberately apart --
+    "its own source was corrected", "something it rests on was withdrawn", and "a judgment it
+    rests on read an artifact that has since moved". They are cleared by different people, by
+    different actions. Reporting all three as "unreviewed correction" names a cause the belief
+    may not have and a remedy that does not apply; that exact collapse was fixed in the gate
+    (6491eccf) and left standing here, on the omissions lane whose whole purpose is legibility.
+    """
+    causes: list[str] = []
+    if belief.corrections:
+        causes.append(f"{len(belief.corrections)} unreviewed correction(s) recorded against it")
+    if belief.dependency_alerts:
+        causes.append(
+            f"{len(belief.dependency_alerts)} declared dependenc(y/ies) have lost all support: "
+            f"{', '.join(sorted(belief.dependency_alerts))}")
+    if belief.dirty_inputs:
+        causes.append(
+            f"dirty: {len(belief.dirty_inputs)} judged input(s) have moved since the judgment "
+            f"that read them")
+    # `review_required` is the only caller's guard, so this is unreachable unless a FOURTH cause
+    # is added to it without being named here -- in which case say so rather than omit silently.
+    return "; ".join(causes) or "review required for a cause this projection cannot name"
 
 
 @dataclass
@@ -95,7 +122,7 @@ def select_beliefs(
             sel.omitted.append((cid, "conflicted and policy rejects conflict"))
             continue
         if b.review_required and not policy.allow_review_required:
-            sel.omitted.append((cid, "unreviewed correction recorded against it"))
+            sel.omitted.append((cid, _review_cause(b)))
             continue
         if verdict not in ("Supported", "Conflicted"):
             reading = "conjunctive" if policy.conjunctive else "join"
@@ -286,6 +313,8 @@ def freshness_of(
         if (b := fold_result.beliefs.get(cid)) and b.review_required
     )
     if review:
-        return Freshness.REVIEW, [f"{cid}: unreviewed correction recorded" for cid in review]
+        return Freshness.REVIEW, [
+            f"{cid}: {_review_cause(fold_result.beliefs[cid])}" for cid in review
+        ]
 
     return Freshness.CURRENT, []

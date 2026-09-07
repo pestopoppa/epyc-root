@@ -406,7 +406,13 @@ def fold(
                 frame_claim.setdefault(fid, cid)
         if frame.get("frame_type") == FT_RETRACT:
             target = frame.get("assertion", {}).get("retracts")
-            if isinstance(target, str):
+            # The non-emptiness test is load-bearing, not defensive. `fid` below defaults to ""
+            # for a frame carrying no frame_id (legal per frames.validate_frame, which only binds
+            # frame_id to content when the key is present), so an empty `retracts` matched EVERY
+            # such frame: one retraction naming "" silently dropped every id-less support in the
+            # ledger and reported it as retracted_support [""]. A retraction must name exactly one
+            # frame; naming nothing retracts nothing.
+            if isinstance(target, str) and target:
                 retracted.add(target)
 
     # Corrections are collected with retractions, before interpretation, so a correction that was

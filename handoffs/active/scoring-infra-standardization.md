@@ -366,3 +366,38 @@ quarantine entries and its issue #124.
 ## 2026-08-23 — follow-up from the NIB2-57a reader audit (tier-1 pass)
 
 - [ ] **Loader projects non-live records into the live scorer's quality map.** `_baseline_quality_by_role()` (q_scorer.py:205) iterates ALL priors records, not just `live_stack` — `qwen35_122b_q4km` and `qwen36_q8_0` (benchmark_or_candidate) appear in `cfg.baseline_quality_by_role` with source `degraded_fallback`. Whether virtual candidates should project into the live scorer at all is a loader-design question; pinned by the rewritten `test_config_has_quality_baselines` (data-driven projection-contract test, 2026-08-23), which encodes current behavior — decide and change deliberately, not by accident.
+
+## 2026-09-07 — laguna's provenance pins are stale in committed history (found during CJ-11)
+
+- [ ] **Two of laguna's three pinned-file digests do not match the files on disk, and have not
+      since committed history.** `laguna_q4_cpu_bench_runner.py` pins three sibling files and
+      validates them through `file_identity()`, which **raises `RuntimeError` on mismatch** —
+      so this is not a warning, it blocks the path that builds the provenance block.
+
+      | pinned constant | file | last touched | state |
+      |---|---|---|---|
+      | `EXPECTED_ANSWER_SCORING_SHA256` | `answer_scoring.py` | 2026-09-07 | **matches** (re-pinned by CJ-11) |
+      | `EXPECTED_RAW_EVALUATOR_SHA256` | `v7_quality_gate_runner.py` | 2026-08-26 `da06b371` | **STALE** |
+      | `EXPECTED_CODE_EXEC_SCORER_SHA256` | `code_exec_scorer.py` | 2026-07-29 `2f30da8a` | **STALE** |
+
+      Both stale files are **clean in the working tree**, so the drift is committed, not local —
+      the pins were left behind when those files legitimately changed, one of them ~6 weeks ago.
+
+      **Do not simply re-pin.** Re-pinning is how a provenance check becomes a formality: it makes
+      the error go away without anyone establishing that the current bytes are the bytes that were
+      meant to be there. Establish first, per file, whether the change that moved it was intended
+      and reviewed (`git log -p` from the pin's introduction), THEN re-pin with that commit named
+      in the comment. If the check has been blocking laguna since July, also record what has been
+      running instead and whether any result was produced by an unvalidated path.
+
+      **The general defect is the same one CJ-12 found in the DTAP judges**: a digest written once
+      at authoring time with nothing that recomputes it on a schedule will silently fall out of
+      date, and the failure surfaces at the worst moment — when someone finally runs the thing.
+      DTAP's answer was `python3 -m harness attest`; this pin set has no equivalent.
+
+- [ ] **Generalize a pin-staleness checker across the benchmark tree.** One script walks every
+      `EXPECTED_*_SHA256` / `file_identity()`-style declared pin under `scripts/benchmark/` and
+      reports staleness as its OWN reportable condition (like `python3 -m harness attest`),
+      instead of each call site discovering it as a `RuntimeError` at execution time. LOW
+      priority — the row above is the one instance known to be actively blocking; this is the
+      preventive generalization, not itself urgent.
