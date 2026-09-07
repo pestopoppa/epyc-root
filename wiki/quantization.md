@@ -33,7 +33,7 @@ Only **12 of 48 layers have a KV cache** — the other 36 are Gated-DeltaNet and
 
 - [`exl3-trellis-cpu-kernel.md`](../handoffs/active/exl3-trellis-cpu-kernel.md) — INF-71: what exists on disk, the measured reference-kernel numbers, the bytes/token ledger, and the phased port plan with gates.
 - [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the X0 format spec: tile bit-layout, the `mul1` decode identity validated against `pack.cu`, the forward contract, and the proposed ggml type.
-- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70 lever B7 (bytes lever parked behind the dispatch floor) and B9 (hybrid KV-quant analysis).
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70's EXL3 trellis lever, now INF-71 (bytes lever parked behind the dispatch floor) and B9 (hybrid KV-quant analysis).
 - [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the drafter/EXL3 research sweep and the X0/X1 measurement wave.
 - [`2026-09-03-inf70-audit.md`](../progress/2026-09/2026-09-03-inf70-audit.md) — the IQ4_XS iqk large-Ny mis-routing root-cause and fix.
 

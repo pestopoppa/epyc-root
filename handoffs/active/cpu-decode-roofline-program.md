@@ -1,5 +1,14 @@
 # CPU Decode Roofline Program — Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling
 
+**CURRENT STATE (2026-09-07) — read this before the 2026-09-02 framing below.**
+**CHAMPION: `inf70/champion3` @ `9c4f73e29`, build 10241** (full record at *CHAMPION-3*, and the standing
+rule *the champion is always current*). **+4.27% over champion-1 (117/120 paired per-prompt wins),
+1.4993× over pristine (120/120), 1.7151× plain, bit-identical in 16 arm-pairs.** Quote the **ratios**: the
+in-window absolute is 33.370 t/s / 29.967 ms and the ≈36.9 t/s / ≈27.1 ms anchor-referred figure is a
+**projection, not a measurement** (WRAP-7). Production untouched at `0db32c06e`. **The 98.6 ms / ~95 ms
+token, the "27% of roofline" fraction and the Sept-2 ordering below are the AUDIT-DAY baseline, retained
+because every ledger row is sourced — they are not the current state.** In flight: SYNC-16, HARNESS-1.
+
 **Status**: AUDITED 2026-09-02 — implementation-ready. Directed by the operator 2026-09-02: the **hard,
 non-speculative gains FIRST**; the MTP head that the conversion dropped is restored **LAST** (Axis E),
 because that multiplier is easy to tack on and multiplies whatever token cost the hard work leaves.
@@ -571,7 +580,34 @@ argument, and it costs about a second.
       constants instead of remembering them — the standing rule is *use codified recipes, not memory*.
       **Dependency**: B12 may change the head artifact (IQ4_XS requant); do not freeze the recipe's head
       choice until B12 reports.
-- [ ] **PROD-2 — DEFERRED BY THE OPERATOR 2026-09-06: "we're not folding into autokernel champion just yet."**
+      **★ THE RECIPE MUST CARRY G2-CONC.** Any canonical recipe for Qwen3.8-Flash-Next that admits concurrent
+      requests inherits the `nrc_y >= 32` row-count trigger. Codify: (a) the `-np` value the recipe is validated
+      at, (b) that G2-CONC was run **on the binary the recipe names**, never inherited from an ancestor commit,
+      and (c) the reproducibility policy chosen under OP-39 — the recipe is where "which routes are row-exact"
+      becomes importable constants rather than a remembered convention. A recipe that pins flags but not the
+      concurrency gate reproduces the failure PROD-1 exists to prevent.
+- [ ] **PROD-2 — ⚠ THE 09-06 DEFERRAL WAS REVERSED BY THE OPERATOR ON 2026-09-07. Read the FOLD block
+      below before acting on the deferral text that follows.**
+
+      **★ REVERSAL, recorded here 2026-09-07 at the wrap-up sweep (this handoff did not know about it).**
+      `handoffs/active/autokernel-champion-aggregate.md` → **FOLD** carries operator decision **FOLD-OP
+      2026-09-07**: *the fold IS wanted*, no reversal ceremony needed, and **the trigger is the run-29 /
+      reboot boundary** — the operator will stop run 29 to reboot, and that boundary is when the fold
+      happens. Plan: [`../../docs/design/inf70-cpu-fold-into-champion-20260907.md`]
+      (../../docs/design/inf70-cpu-fold-into-champion-20260907.md). Same lineage (fork `270b48ed6`),
+      merge-tree **0 conflicts**, two default-ON blockers on the CPU side to fix first.
+      **`FOLD-0` is assigned to `inf70-audit` — this session — but is deliberately NOT handed over yet**
+      ("surface FOLD-0 to `inf70-audit` when the run-29 / reboot boundary approaches"). Do not start it;
+      **do watch for that boundary.**
+      **⚠ FOLD-0 is written against `6f032c48d` (champion-1). The champion is now `9c4f73e29`
+      (champion-3).** Under the standing rule *the champion is always current*, the fold-ready commit must
+      be re-based on the current champion or the fold ships a two-generations-old kernel. **Surface this to
+      the champion owner before the boundary, not at it.**
+      **⚠ `inf70/champion` is still a private clone — FOLD-0's own text says "push".** Ten INF-70 branches
+      exist locally only; a devcontainer rebuild already happened once this week and missed them by luck.
+
+      **Superseded deferral text, retained for the record:** *"we're not folding into autokernel champion
+      just yet."*
       **Do not start it, and do not let a later session infer that it is ready** because the levers are
       merged. The merge into `exp/cpu-fusion-qwen4exp-20260829` is EXPERIMENTAL integration; the champion fold
       is a separate operator-gated step. Original scope retained below for when it is called.
@@ -587,10 +623,20 @@ argument, and it costs about a second.
       regressions (GPU + CPU) → deploy as a NEW production version, with the full candidate benched as a
       whole, never reconciled by cherry-pick at promotion time.
 - [ ] **PROD-3 — promote a CHAMPION artifact and retire the anchor** (this is what remains of OP-37).
-      `-gateup-r16` is the best measured (12.73 vs 12.61). Once a champion exists the comparison basis is
+      `-gateup-r16` is the best measured (12.73 vs 12.61).
+      **⚠ RECONCILE BEFORE ANSWERING OP-37 (flagged 2026-09-07):** B4 measured **`IQ4_XS-uniform-r16` with
+      the F16 router** at +1.69% MTP / +0.63% plain, PPL null with a stated MDE of 1.041%, α up 0.8209 →
+      0.8227 — an **artifact-axis** GO that is deliberately *not* folded into the champion kernel (it is the
+      only non-bit-identical lever, and folding it would silently retire the property that makes the champion
+      promotable on a digest match). **So "the champion artifact" and "the champion kernel" are now two
+      different objects, and this row names only the older of the two candidates.** Decide which artifact
+      OP-37 is about before the 92 GB deletion is authorised. Once a champion exists the comparison basis is
       transitive — future deltas bench against the champion, exactly as autokernel already operates — and
       `IQ4_XS-uniform` (92 GB) becomes deletable. Precondition: confirm unsloth still publishes it (~2.8 h
       re-download, recoverable, not a one-way door).
+      **★ G2-CONC gates this too.** A champion *artifact* promotion ships the same serving path as a kernel
+      promotion; the coherence evidence must be on the candidate pair (kernel + artifact) actually being
+      promoted. Do not close it by citing champion-3's own G2-CONC run if the artifact changes.
 
 **★ SEQUENCING SETTLED BY THE OPERATOR 2026-09-05: "I'm not promoting to production any time soon —
 certainly not before we finish this optimization study thoroughly."** So there is **no promotion window to
@@ -677,7 +723,7 @@ every seam is ~10–15% realistically, ~23% at the theoretical limit — **not**
 DGX Spark GB10 running the same model. That gap is ~1.78× memory bandwidth (273 vs 153 GB/s) and the rest is
 a GPU paying no per-node barrier at all. Tuning does not close it; a coarser graph might (SYNC-5).
 
-- [ ] **SYNC-1 — authoritative census + outlier diagnosis + barrier-cost baseline.** Dispatched 2026-09-05.
+- [x] **SYNC-1 — COMPLETE ✅ 2026-09-07 (ranked envelope + per-(node,thread) census; see the tip-census block). authoritative census + outlier diagnosis + barrier-cost baseline.** Dispatched 2026-09-05.
       Re-census on current tip `10221`/`c51e4dabf` in BOTH plain and **the MTP config, which has never been
       profiled** (the draft graph is ~144 nodes and may look nothing like this). Discriminate the
       `ffn_moe_logits-11` outlier: same node every run (real defect) or whichever node is first after an idle
@@ -1049,10 +1095,31 @@ both. Cross-day host drift is the likely cause, but it is unexplained. **Do not 
 from B4's arms**, and treat this as a live instance of the campaign's standing rule that absolute numbers are
 only comparable within a harness and window.
 
-- [ ] **B4-b — sweep EVERY artifact's F32 tensors for the same BF16-padding test.** Filed 2026-09-07. If the
+- [x] **B4-b — CLOSED/REFUTED ✅ 2026-09-07 (there is no second B4; see the B4-b close block below). sweep EVERY artifact's F32 tensors for the same BF16-padding test.** Filed 2026-09-07. If the
       router was silently upcast from BF16, others may be too — **including the MTP head's untouched
       `blk.48.ffn_gate_inp`.** Each such tensor stores 16 bits of zero per weight and is a free F16 cast.
       Cheap, read-only, and it generalises past this model.
+
+**★★★ B4-b CLOSED 2026-09-07 — THERE IS NO SECOND B4.** Scanned **1,869 F32 tensors across six GGUFs
+(396 GB) in 2.2 s**: *every* one is BF16-derived — the converter upcast everything — with a single
+exception, `ssm_a`, which is `-exp(A_log)` and therefore computed rather than converted. **The
+confirmation is what kills the lever: B4 already took the only tensor large enough to matter.** Everything
+else is blocked hard — `ssm_conv1d` trips `GGML_ASSERT(src1->nb[0] == sizeof(float))`, and the remainder are
+1-D, which **B4's patch cannot reach by design** (its override loop sits below the `ggml_n_dims < 2` check).
+
+**The MTP head's `blk.48.ffn_gate_inp` is 100.0000% padded exactly as predicted — and still does not pay.**
+It saves **2.622 MB/token = 0.0625% end-to-end**, predicting **+0.035%**. The agent caught that the
+flattering 1.702% figure uses the MTP head's *own* tensors as denominator while ignoring that the draft pass
+must also drive the shared 675 MB output projection, and verified the shared file is the served one before
+making the correction.
+
+**★ ONE MECHANISM WORTH KEEPING FOR ANY FUTURE PADDING AUDIT: norms are stored as `1.0f + bf16_residual`.**
+`hc_attn_norm` reads **26.6% BF16-exact in `v` but 100.0000% in `v − 1.0`**. Naively they look like
+mixed-precision tensors and invite the wrong conclusion. **Any future padding audit must test `v − 1.0`
+alongside `v`.**
+
+Detector validated before use (injected 37.5% recovered as 37.5097%; random control 0.014%) and B4's
+published 125.8 MB/token reproduced to the digit before its model was trusted.
 
 **★★★ SYNC-14 CLOSED 2026-09-07 — IMBALANCE ON A MEMORY-BOUND MATMUL IS NOT RECOVERABLE CAPACITY. Axis
 closed at ~0.** Branch `inf70/sync14` @ `f91c49a9e`, committed, not merged. Production untouched.
@@ -1458,6 +1525,66 @@ replacing it"* **binds the whole family**, so no successor needs them. Recipe ve
 yet re-measured on the champion**), `-r16` (B4's GO), `UD-IQ4_XS` (the served file), `MTP/` (in the serving
 config). None of these is a closed NO-GO.
 
+# WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
+
+Each of these was **stated as a conclusion in this session's own output and never converted to a task**.
+They are filed here rather than described in prose so the dashboard can see them.
+
+- [ ] **WRAP-1 — purge the two retracted framings from this handoff, the sibling reports and the wiki.**
+      (a) **"the 2 MB THP boundary" does not exist** — D6-PLACE's 37-point sweep shows a smooth monotone
+      ramp; the mechanism is THP raising `--interleave=all` granularity to 2 MiB. The phrase still stands in
+      the D6-PLACE-ORIGINAL brief, in SYNC-2 §8 and in SYNC-10's backlog note. (b) **the ÷3 / ÷2.71
+      plain→served haircut is not universal** — it is a property of *barrier-class* levers only; a bandwidth
+      lever has nothing to amortise away (D6-PLACE measured served **above** plain). Seven occurrences
+      remain in this file. The handoff already records both corrections in situ (`⚠ LANGUAGE CORRECTION
+      REQUIRED ELSEWHERE`, `★ COROLLARY THAT SUPERSEDES THE ÷3 RULE`) — **this is the task that acts on
+      them.** Anyone inheriting either phrasing hunts a step that is not there, or mis-scales a lever by ~2.7×.
+- [ ] **WRAP-2 — re-price SYNC-5's fusion ceiling at 3.1 µs/barrier.** SYNC-5 closed "don't pursue the
+      megakernel" on a barrier model **SYNC-2 later reversed**: `TINY_SOLO` elided 915 graph barriers while
+      removing zero nodes and zero arithmetic, recovering **3.14 µs/barrier**, and `EMPTY_SKIP` recovered
+      3.09 µs over a disjoint population. The session's own text says *"SYNC-5's fusion pricing should be
+      redone at 3.1 µs/barrier rather than written off"* and it never became a task. Zero compute — an
+      arithmetic re-price of an existing report against the champion's node/barrier census.
+- [ ] **WRAP-3 — classify every node compute-bound vs memory-bound before any imbalance figure is treated as
+      a lever pool.** SYNC-14's closing finding: `max − mean` on a *memory-bound* matmul is not recoverable
+      capacity, so **SYNC-1's 10.66 ms MTP "imbalance" column cannot be read as available** until each node
+      is classified. Until this exists, the ranked envelope's second-largest line is uninterpretable. Zero
+      compute (the per-(node,thread) census already carries the inputs).
+- [ ] **WRAP-4 — fix the co-residency sampler's "disjoint-from-0-95" label AND re-open every conclusion that
+      rested on it.** Cores **184-191 are the SMT siblings of physical cores 88-95**, which are inside the
+      0-95 bench region. The label is inherited from `champion1/arm.sh` and is wrong in **every report that
+      used it** — including a contention escalation retracted on its authority. The relabel was routed to
+      HARNESS-1; **the re-examination half has no owner.**
+- [ ] **WRAP-5 — report the llama.cpp GGUF C reader segfault upstream (fold into UP-2).** B12 found
+      llama.cpp's own C reader segfaults dumping these files — **on the pristine source too**, established
+      only because it ran the control. A reproducible upstream crash with a control arm, filed nowhere.
+- [ ] **WRAP-6 — give two cross-campaign rules a durable home outside this handoff.** (a) *"digest the
+      OBJECTS, never the linked `.so`"* — the compiler is byte-reproducible on this host (0 of 379 objects
+      differed) and **the linker is not** (one commit, four `libggml-hip.so` digests). The session calls this
+      **binding** and it lives only in this handoff and a progress log. (b) *"queue, never poll"* for the
+      bench region — `region-lock run` already blocks in a fair queue; a poller can starve **forever** behind
+      a holder that releases and immediately re-takes under a new tag (observed, not hypothetical). Candidate
+      homes: `agents/shared/MEASUREMENT_POLICY.md` (a), the region-lock/bus protocol docs (b).
+- [ ] **WRAP-7 — re-measure the champion-3 headline in a GPU-quiet window.** In-window champion-3 reads
+      **33.370 t/s / 29.967 ms**; the **≈36.9 t/s / ≈27.1 ms** figure referred to the 35.407 anchor is
+      **labelled a projection, not a measurement**, and the GPU lane was live on 184-191 throughout its
+      windows (see WRAP-4). The campaign's public headline should be a measurement. Ratios (+4.27% over
+      champion-1, 1.4993× pristine) are unaffected and are what to quote until this lands.
+- [ ] **WRAP-8 — `GGML_STATIC_CHUNKS`: the one separable arm SYNC-13 left on the table.** Two lines at
+      `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
+      the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
+      SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
+
+**Explicitly declined at this sweep (decisions, not drops):**
+
+- **SYNC-11** (48-value per-thread dump on `result_output`) — **not re-filed as new work; recommend closing
+  it.** It existed to test the per-CCX residency hypothesis, and **SYNC-14 answered that question with a
+  better instrument**: 88–96% of per-thread variance is *between NUMA nodes*, only 3–11% between the three
+  L3 CCXs inside a node. The dump would now confirm a refuted hypothesis.
+- **The `-fa` recipe sweep** — no action. The correction self-corrected the same day: only the *long* form
+  `--fa 1` is invalid; `-fa 1` and `-fa on` are both valid, so `MEASUREMENT_POLICY.md` was correct and was
+  not changed.
+
 # ★ STANDING RULE — THE CHAMPION IS ALWAYS CURRENT (operator, 2026-09-07)
 
 **Operator, verbatim:** *"always build on top of the latest champion and rebuild the champion when new
@@ -1544,7 +1671,7 @@ A lever's value is not portable across kernels; re-measure, never re-scale.
       the production tip**, so the four-step kernel workflow **starts over from fresh production**: pull fresh
       production → build → validate no regressions (GPU + CPU) → deploy as a NEW production version, full
       candidate benched as a whole. **Operator-gated** (PROD-2 is deferred).
-- [ ] **CHAMP-2 — extend `MADV_NOHUGEPAGE` past `ggml_aligned_malloc` to KV/compute buffers.** d6place's
+- [x] **CHAMP-2 — RESOLVED ✅ 2026-09-07: measured GO (+1.0%) solo, then DID NOT SURVIVE in the champion-3 stack (pooled +0.16%, 73/120); shim shipped opt-in as `GGML_NOHUGEPAGE_PROCESS=1`. extend `MADV_NOHUGEPAGE` past `ggml_aligned_malloc` to KV/compute buffers.** d6place's
       whole-process shim still beats the knob by **+0.90 pp served**, and this is **the same lever class that
       just paid 86% of the result** — the highest-confidence remaining item on the board.
 
@@ -1665,7 +1792,7 @@ SYNC-2 §8 and SYNC-10's backlog note both assert a boundary at 2 MB, as did thi
 **There is no threshold. There is a smooth ramp, and a granularity effect that makes sub-2 MiB tensors
 single-controller.** Anyone inheriting the old phrasing will hunt a step that does not exist.
 
-- [ ] **D6-PLACE-ORIGINAL (superseded, retained for the record) — the largest remaining lever: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
+- [x] ✅ **D6-PLACE-ORIGINAL (superseded, retained for the record) — the largest remaining lever: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,
       **placement hypothesis CONFIRMED by SYNC-2 on its own nodes**: the 194 hc rank-320 gemvs run at
       **29.0 GB/s against 109.1 GB/s for ≥2 MB weights**, and the rate **steps exactly at the 2 MB THP
       boundary** — `iq4_xs` at 1.741 MB → 28.0 GB/s, `q5_K` at 2.253 MB → 41.6. **Larger than all three
@@ -1673,7 +1800,7 @@ single-controller.** Anyone inheriting the old phrasing will hunt a step that do
       penalty-free for streaming. Interacts with **SYNC-13** (`ggml_is_numa()` is false, so iqk's static
       partition — not ggml's chunker — is what makes residency possible; do not disturb it blindly).
 
-- [ ] **SYNC-15 — `hc_inject` `MUL_MAT [10240,4]` moves 21,760 bytes in 19.0 µs = 1.1 GB/s, 1.83 ms/token**,
+- [x] **SYNC-15 — COMPLETE ✅ 2026-09-07: premise refuted; `GGML_VEC_Q8K` + `GGML_QSPLIT` GO (+5.24% served as a stack), `TINY_SOLO_ROWS` NO-GO. `hc_inject` `MUL_MAT [10240,4]` moves 21,760 bytes in 19.0 µs = 1.1 GB/s, 1.83 ms/token**,
       because **only 4 of 48 threads get a row**. Filed 2026-09-05 from SYNC-2, unclaimed. Same defect family
       as the row-split (degenerate row partition at batch 1) but a different shape — 4 rows, not 1 — so
       `ELEM_COLSPLIT` does not cover it.
@@ -1725,7 +1852,7 @@ single-controller.** Anyone inheriting the old phrasing will hunt a step that do
       **Amdahl: this subsystem is CLOSED.** Perfect elimination of every copy leaves ~3.2% of the token, and
       the traffic is cache-served, so even that is optimistic.
 
-- [ ] **SYNC-9 — 72 zero-sized `build_rs` nodes cost 0.173 ms/token for ZERO work** (98.8% dead, pure
+- [x] **SYNC-9 — DONE ✅ 2026-09-07: implemented by SYNC-12 (nine lines, bit-identical, `skip_barrier` load-bearing), shipped as `GGML_EMPTY_SKIP` in the champion. 72 zero-sized `build_rs` nodes cost 0.173 ms/token for ZERO work** (98.8% dead, pure
       barrier). `ggml_nelements(dst) == 0`, so a skip in the node loop removes them; a node producing no
       elements cannot affect output, so there is no correctness surface. Same magnitude as the entire
       write-side state copy SYNC-3 eliminated, for a one-line guard. **Routed to SYNC-2** — it is the purest
@@ -2039,7 +2166,7 @@ untouched — guarded prefixes, ack mechanism and refusal text are unchanged.
 /mnt/raid0/llm/tmp/inf70/operator/test_d9_hook_probes_target_repo.py tests/` then commit with a
 `D9-ack:` line. **Note the patch tightens the control more than it loosens it.**
 
-- [ ] **SYNC-14 — diagnose matmul imbalance (4.83 MTP ms/token, the LARGEST single item, and nobody knows
+- [x] **SYNC-14 — CLOSED ✅ 2026-09-07: measured null (`GGML_IQK_EVENSPLIT` −0.24%); imbalance on a memory-bound matmul is not recoverable capacity. diagnose matmul imbalance (4.83 MTP ms/token, the LARGEST single item, and nobody knows
       why).** Filed 2026-09-05 from SYNC-1's envelope. It is ranked second only because its confidence is LOW:
       **there is no named mechanism.** Candidates to discriminate, not assume: per-CCX residency straddling
       (SYNC-11's 48-value dump on `result_output` bears directly — that node has the graph's largest absolute
@@ -2219,7 +2346,7 @@ so a task-manager kill cannot take it down again, with the PID recorded so it ca
       `src[6]` **cannot ship** (silent write-back skip on three backends) and this can, and that the next lever
       writes a matcher and adds a row instead of another `GGML_*` flag.
 
-- [ ] **SYNC-12-ORIGINAL (superseded, retained for the record)** — port the CUDA GDN fusion. Dispatched
+- [x] ✅ **SYNC-12-ORIGINAL (superseded, retained for the record)** — port the CUDA GDN fusion. Dispatched
       2026-09-05 from an operator question ("can't we reverse engineer it and adapt it to our hardware?").
       **Framed deliberately as INFRASTRUCTURE, not a speed lever** — SYNC-3 already achieved the functional
       outcome and measured it honestly at −0.307 ms plain / **~0.1 ms per token in serving** (the copy is in
@@ -2244,7 +2371,7 @@ chunks**, under which **no thread sees the same rows twice** and nothing can sta
 GDN state — is contingent on `GGML_IQK=1` giving a stable partition.** All three candidate head types are
 iqk-supported, so B12's arms are not confounded by scheduling; but the finding generalises well beyond B12.
 
-- [ ] **SYNC-13 — what does `ggml_is_numa()` gate, and is `false` the right value for us?** Filed 2026-09-05
+- [x] **SYNC-13 — COMPLETE ✅ 2026-09-07: premise was inverted; keep `ggml_is_numa()` false, never pass `--numa` (affinity, not chunking, is the disqualifier). what does `ggml_is_numa()` gate, and is `false` the right value for us?** Filed 2026-09-05
       from B12. We run `numactl --interleave=all` externally but never pass llama.cpp's `--numa`, so ggml
       believes it is on a non-NUMA box and takes the work-stealing chunker. That is currently **load-bearing
       in our favour by accident** — static iqk partitioning is what makes L3 residency possible. Enumerate
@@ -2299,16 +2426,23 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       refused. Cost three attempts in this session; worked around with `-F <file>`. Same family as OP-38 —
       a hook whose parser is wrong about which text is a command. Low severity, trivially reproducible.
 
-- [ ] **SYNC-11 — full 48-value per-thread dump on `result_output`** (one line in the summariser, one arm;
-      the instrument already collects it). **Three order statistics cannot show a GAP, and bimodality is a
-      claim about a gap** — so the per-CCX residency hypothesis is currently unconfirmable. What is known:
-      `result_output` (the q6_K head, the one tensor the per-CCX arithmetic puts over the 32 MiB threshold)
-      has **the largest absolute imbalance in the graph** — 359 µs, `thr_max` 2653 / `thr_min` 1789, 1.48×.
-      **But 18 MB q5_K nodes at 1.5 MB per CCX — far under threshold — reach 3.5×, so spread alone does NOT
-      require a residency explanation**, a caution that applies to the coordinator's per-CCX arithmetic as
-      much as to anyone's. Decision-relevant because **B12 is testing a per-CCX step change on that exact
-      tensor**: a real 48-value distribution would corroborate or kill its mechanism independently of its own
-      before/after.
+- [x] **SYNC-11 — CLOSED ✅ 2026-09-07: ANSWERED, not run. Both of its justifications are gone.** Its
+      question — is `result_output`'s 1.48× spread a per-CCX residency effect? — was answered by a better
+      instrument. **SYNC-15's per-(node,thread) census refutes the per-CCX residency hypothesis: 88–96% of
+      per-thread variance is BETWEEN NUMA NODES, only 3–11% between the three 32 MiB L3 CCXs inside a
+      node**; it reproduces across process restarts at Pearson **r = 0.79**, its direction varies per graph
+      node, and it **survives 4 KiB interleaving with placement uniform to 0.1%**. That refutation is
+      written at the *RATE SKEW* block above; this row was simply never updated to match, and was left
+      reading as an open unconfirmable hypothesis. Its second justification — corroborating B12's per-CCX
+      step-change mechanism on `result_output` — died with B12 (closed NO-GO; the shared head was already
+      optimal). **The 48-value dump remains one line in the summariser and one arm if a PMU-class question
+      ever needs it** (SYNC-14 named a PMU as the only way to attribute the residual skew); it is not
+      outstanding work. **Original row retained below for the record.**
+      *Original:* full 48-value per-thread dump on `result_output` — three order statistics cannot show a
+      GAP, and bimodality is a claim about a gap, so the per-CCX hypothesis is unconfirmable from
+      `thr_min`/`thr_mean`/`thr_max` alone. Known: `result_output` has the graph's largest absolute
+      imbalance (359 µs, 2653/1789, 1.48×), **but 18 MB q5_K nodes at 1.5 MB per CCX — far under threshold
+      — reach 3.5×, so spread alone does NOT require a residency explanation.**
 
 **★★ HYG-1 ESCALATED 2026-09-05 — EVERY BUILD DIR IN THE SHARED TREE IS STALE, NOT JUST ONE.**
 B12 reports that **none** of them contain `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or `GGML_IQK_DEQUANT`, and
@@ -2359,7 +2493,7 @@ the kernel, not the planner** — so the advisory-`n_tasks` finding does not inv
 test, one run of SYNC-1's per-(node,thread) instrument: residual ≈2.2 µs on tiny/single-task nodes and a few
 hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
 
-- [ ] **SYNC-8 — two latent HEAP OVERFLOWS in the `n_tasks`-is-advisory class (not on our critical path).**
+- [x] **SYNC-8 — COMPLETE ✅ 2026-09-07: swept as a shape; both bugs written up in UP-2. two latent HEAP OVERFLOWS in the `n_tasks`-is-advisory class (not on our critical path).**
       Filed 2026-09-05 from SYNC-1. Neither is hit by qwen4exp decode; both are real for other graphs and
       probably upstream, so they want reporting as well as fixing.
       1. **`SET_ROWS`** — the planner sizes wdata as `ne0 * n_tasks` with `n_tasks = 1` (the "NOT parallelised"
@@ -2375,14 +2509,14 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       **General rule this yields: every `n_tasks = 1` case that ALSO sizes wdata by `n_tasks` is a candidate.**
       Sweep for the pattern rather than fixing these two in isolation.
 
-- [ ] **SYNC-7 — audit every `n_tasks`-based assumption in the campaign.** Filed 2026-09-05 from SYNC-4.
+- [x] **SYNC-7 — COMPLETE ✅ 2026-09-07: kernel-vs-planner classification done; invalidated D8's +0.97% (filed SYNC-18). audit every `n_tasks`-based assumption in the campaign.** Filed 2026-09-05 from SYNC-4.
       `ggml_get_n_tasks()` is advisory; `params.nth` is overwritten per node. Sweep the tree for ops whose
       source implies serialisation (`SET_ROWS`, `SCALE`, `ROPE`, `DIAG`, and any others) and record what they
       ACTUALLY do at runtime, then re-check every INF-70 conclusion that rested on a `n_tasks` reading —
       including D8's own +0.97% and any null a sibling reports from a thread-count knob. Same failure shape as
       C9's stale binary: **a knob that does not reach the code produces a null that looks like evidence.**
 
-- [ ] **SYNC-4-ORIGINAL (superseded, retained for the record) — GET_ROWS serialization.** Dispatched 2026-09-05.
+- [x] ✅ **SYNC-4-ORIGINAL (superseded, retained for the record) — GET_ROWS serialization.** Dispatched 2026-09-05.
       Verify the single-task claim against the CURRENT tip before optimising — the tree has moved, and
       upstream may have fixed it already (adopting beats writing). Break the 9.0 ms down across the 175 nodes
       first: one hot node or a long tail changes the fix entirely.
@@ -2439,7 +2573,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       systematic stragglers `ffn_moe_logits-11` at 1,087 µs dead and `node_872` at 13× its siblings are
       1.4 ms/token on their own) and on placement.** Routed to SYNC-1, which owns the barrier-cost baseline.
 
-- [ ] **SYNC-5-ORIGINAL (superseded, retained for the record) — is there a COARSER graph?** Dispatched 2026-09-05.
+- [x] ✅ **SYNC-5-ORIGINAL (superseded, retained for the record) — is there a COARSER graph?** Dispatched 2026-09-05.
       The structural question the four seams above cannot answer. **Must start from INF-67, which already
       tried a fused decoder block and FAILED — control arm graph-1T 350 ms vs fused-1T 1350 ms, ~4× slower,
       with "scratch churn" the named liability.** The deliverable is a correct diagnosis of WHY it failed and
@@ -2501,7 +2635,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md`. No code changed, worktree clean, no commits,
       both servers verified dead.
 
-- [ ] **B10-ORIGINAL (superseded, retained for the record) — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
+- [x] ✅ **B10-ORIGINAL (superseded, retained for the record) — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question
       ("how are people getting 2× this on a single DGX Spark?"). Source: `MiaAI-Lab/Qwen3.8-Flash-Next-Single-
       DGX-Spark`, which reports 46.3 tok/s single-stream on GB10 using vLLM + **MTP-3 with the draft head
       projecting over a REDUCED VOCABULARY of 65,536** instead of the model's full 248,320.
@@ -2554,7 +2688,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       under `perf stat` on the DF/UMC read counters; predicted delta 6% vs the 1.1% in-window repeat.
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b11/` (`REPORT.md`, `gguf_inv.py`, `inv.json`).
 
-- [ ] **B11-ORIGINAL (superseded, retained for the record) — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
+- [x] ✅ **B11-ORIGINAL (superseded, retained for the record) — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a
       model with ~6B active parameters at ~4 bits (~3 GB). That is ~38% more traffic per token than the active
       weights account for. Candidates: expert-gather read amplification (we touch whole slabs, not just used
       rows), the PLE table gather, or a scope error in the bandwidth accounting itself. **Rule out the
@@ -2563,7 +2697,7 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       remaining on Axis B: a 38% traffic reduction on the plain path is worth more than every merged kernel
       change in this campaign combined.
 
-- [ ] **B7 — EXL3 `mul1` trellis experts (filed as INF-71).** turboderp published EXL3 weights for this
+- [ ] **INF-71 — EXL3 `mul1` trellis experts.** ⚠ **RENAMED 2026-09-07 from "B7" — that label COLLIDED with the CLOSED PLE-precision B7** (ANSWERED NO 2026-09-04: higher PLE precision buys no quality; BF16 would cost **+25.6 GB resident for nothing**). Two different items carried one ID and the closed one could shadow the live one. **This is the live item, and the operator has just prioritized it; every "B7" elsewhere in this file resolves to the CLOSED PLE item.** turboderp published EXL3 weights for this
       model on 2026-08-31 (`turboderp/Qwen3.8-Flash-Next-exl3`, 2.05–6.05 bpw, MTP head at 4 bits,
       `mul1` codebook), and exllamav3 ships an AVX-512/VNNI CPU GEMV for exactly that codebook whose decode
       fuses into the `vpdpbusd` the gemv already needs (~4 vector uops per 16 weights — IQ4_XS-class, unlike
@@ -3181,48 +3315,21 @@ named. MTP is not a serving option until that gate passes.
       (4 simultaneous prefills coherent ≡ single-stream), G3 n=1 path byte-identical to the unpatched tip,
       G4 single-stream speed within noise of 12.55 t/s. One kernel task turns MTP into a lossless
       1.4–1.7× serving option and unblocks concurrent serving.** Successor to E2a; supersedes the "MTP driver fix" framing.
-- [ ] **B8 — the head-to-head the campaign never did: qwen4exp (125B/A6B) vs the LIVE 122B/A10B, and where its
-      2.12x MTP multiplier comes from.** Filed 2026-09-03 on an operator challenge ("I'm surprised we're still
-      getting such low tok/s on a model with only 6B active weights ... the older 122B-10B Q4 ran 20+ t/s").
-      **First correction: that 20+ is a SPECULATIVE number.** The live `architect_critic` role
-      (Qwen3.5-122B-A10B UD-Q4_K_M, `orchestration/derived/stack_priors.yaml`) records `baseline_tps: 11.3`,
-      `optimized_tps: 24.0`, `speedup: 2.12x` under `spec_type: draft-mtp`, **`draft_max: 4`, `k: 4`**,
-      `optimized_tps_long_context: 15.76`, measured 2026-07-31, category OPTIMUM. **Plain vs plain, qwen4exp is
-      already ~12% AHEAD: 12.61 vs 11.3 t/s.** The honest counterpart to 24.0 is our MTP number (~18.1), not our
-      plain one.
-      **Two real gaps remain.** (a) **The MTP multiplier: 2.12x vs our 1.44x** — the largest unexplained lever in
-      the program. Production runs `draft_max: 4`; every qwen4exp MTP measurement so far used n-max 2. Relayed to
-      `e3-run` 2026-09-03 to sweep n-max 4 (and 5-6 if acceptance holds) — we may simply have been sampling below
-      the operating point a comparable model already uses in production. (b) **Bandwidth efficiency: ~64 vs
-      52.4 GB/s.** From the registry's 69 GB / 122B params (~4.5 bpw) the 122B streams ~5.65 GB/token and converts
-      it at ~64 GB/s; qwen4exp streams a MEASURED 4.16 GB/token at 52.4 GB/s. **At the 122B's efficiency qwen4exp
-      would run ~15.3 t/s, so ~20% is on the floor.** (The 122B's bytes/token is DERIVED, not measured like ours —
-      treat (b) as indicative until a like-for-like measurement is taken; that measurement is task (i) below.)
-      **The likely cause is the architecture itself, and this is the finding worth having.** Fewer active
-      parameters spread over MORE and SMALLER ops is worse on a bandwidth-bound CPU. Already measured here: 33.4 ms
-      of a 97.3 ms token in **3,468 nodes that move no weights**, out of ~7,000 nodes/token; small gemvs at 40% of
-      read bandwidth against 94% for the one big `lm_head`. Every layer pays GDN recurrence + QSA indexing + a PLE
-      gather + 4-stream hyper-connection mixing + a 10-of-512 expert gather. The 122B has 64 conventional attention
-      layers and a plainer MoE: 10B active in fewer, bigger GEMMs. It streams 36% more bytes and converts them far
-      better. **qwen4exp trades arithmetic efficiency for parameter efficiency, and on this machine that trade is
-      currently winning by only 12% on plain decode while costing most of a speculative multiplier** — a model-choice
-      finding, not merely an optimization gap.
-      Tasks: **(i)** measure the 122B's ACTUAL bytes/token and plain decode under our canonical recipe + coherence
-      gate, so the efficiency comparison is like-for-like instead of derived; **(ii)** ✅ RESOLVED 2026-09-03 — **the gap is ARCHITECTURAL, not a tuning gap.** Confirmed from source
-      (`e3-run` Addendum A): `draft-mtp` and `draft-tree` are separate impl classes selected from an ordered
-      priority list and **do not compose**; the tree drafter's contract requires a STANDALONE draft model (vocab
-      check, own sampler on `ctx_dft`, drafts via `llama_decode(ctx_dft, batch)`), while the MTP head is a single
-      block with no independent forward and **no `k` parameter exists on the MTP path**. So the production 122B's
-      2.12× (`k: 4` tree) is **not a target our MTP path can be tuned toward**. Against the LINEAR ceiling, our
-      1.967× on coding is near the practical maximum. Original wording retained: **the comparison was NOT
-      like-for-like: `architect_critic`'s 2.12x uses `k: 4`
-      TREE drafting, while every qwen4exp MTP arm run so far is LINEAR (`e3-run`, 2026-09-03). Establish FIRST
-      whether our runtime supports tree drafting for `draft-mtp` at all; if it does not, the 1.44x-vs-2.12x gap is
-      STRUCTURAL rather than a tuning gap — a materially different conclusion.** Then n-max, then acceptance per
-      position vs the 122B's, then whether native-MTP vs our ported path differs; **(iii)** decide whether the dispatch floor is reducible enough to make the
-      architecture pay, or whether the honest conclusion is that this model class needs bigger fused ops (Axis A /
-      INF-67) before it beats a plainer MoE on CPU. Feeds the operator's model-choice decision; do not treat
-      qwen4exp's suitability as settled.
+**✖ B8 — DECLINED BY THE OPERATOR 2026-09-07: *"this is unnecessary."*** The qwen4exp (125B/A6B) vs live
+122B/A10B head-to-head is **not being run**, and its checkbox row is deleted rather than struck through, per
+the handoff/index contract. Recorded as a decline rather than dropped silently, per the derived-actionables
+gate: it was a filed task with three sub-tasks, and a reader must be able to see that it ended in a decision
+and not in neglect.
+
+**What survives the decline, because it was already measured and is cited elsewhere in this file:** plain vs
+plain, qwen4exp was already ~12% ahead (12.61 vs the registry's 11.3 t/s); **B8(ii) had already RESOLVED the
+MTP-multiplier gap as ARCHITECTURAL, not a tuning gap** — `draft-mtp` and `draft-tree` are separate impl
+classes that do not compose, and no `k` parameter exists on the MTP path, so the production 122B's 2.12×
+`k: 4` *tree* number is not a target our *linear* MTP path can be tuned toward; and ~20% of the bandwidth gap
+is architectural — fewer active parameters spread over more and smaller ops is worse on a bandwidth-bound
+CPU. **Un-run and now declined: (i) the like-for-like bytes/token + plain-decode measurement of the 122B, and
+(iii) the model-choice conclusion.** Cross-references to "B8" elsewhere in this file resolve to findings
+delivered *before* the decline, not to outstanding work.
 
 - [x] **C9 — SOLVED 2026-09-04 (`b7-ple`). `llama-perplexity` returned `nan` on qwen4exp because the Q6_K output
       head hit iqk's broken large-Ny repack — and perplexity is the ONLY caller that reaches it.**
@@ -3474,7 +3581,7 @@ named. MTP is not a serving option until that gate passes.
       distributional change at 38σ in the very same run, so the null is a real bound, not a failure to measure.
       Pairing bought 18× tighter resolution than raw PPLs (Cor 98.06%).
       **BF16 is not worth a second pass**: Q8_0 nearly doubled PLE precision for zero gain against a 1.235% floor;
-      BF16 would cost **+25.6 GB resident** for nothing. B7 closes without an INF-71-style successor.
+      BF16 would cost **+25.6 GB resident** for nothing. **The PLE-precision B7 closes with no successor of its own** — unrelated to **INF-71**, the EXL3 trellis item that formerly shared the `B7` label and was renamed 2026-09-07.
       **★ This CORRECTS the structural argument used to pre-judge B7 (mine, twice).** I argued the PLE row is
       diluted (input to two GEMVs averaged over 2560 terms, `ple.layers=[1]`, projections themselves IQ4_XS).
       But **~8% of top-1 tokens flip**: the `key` branch collapses to a SCALAR through a sigmoid gate that
@@ -3648,16 +3755,73 @@ coherence-checked every round):
 - **Concurrency scales ~1.76× at C=4** (off, staggered) — the box is not one indivisible resource.
 - **NEW DEFECT (below) — concurrent prefill corrupts output.**
 
-- [ ] **X-CONC — qwen4exp multi-sequence prefill corruption (filed 2026-09-03, serving blocker).**
-      With `-np 4` and 4 requests that prefill in one batch (simultaneous starts), greedy output is
-      deterministic garbage (0/4 coherent; an 18-token early stop on prompt 3); staggering the starts by
-      ~0.7 s gives 4/4 coherent. **Reproduced on the plain merged binary (build 10202, no MTP/spec)**, so it
-      is the qwen4exp multi-sequence prefill path corrupting shared state when >1 full sequence shares a
-      prefill batch — the same non-row-exact batched forward E2c localized, here escalated from a logit
-      drift to garbage. Repro and evidence: `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`. Interim
-      mitigation: a staggered-admission scheduler (one prefill in flight at a time). Real fix: the SAME kernel fix as E2a/E2c — make `build_delta_net_chunking` (delta-net-base.cpp:435) row-exact vs `_autoregressive` for small n; mtp-exact confirmed 2026-09-03 this one site is the common cause. **Blocks concurrent serving with
-      simultaneous admission.** The coherence-check lesson: a concurrency t/s number without an output
-      check is inflated (the degenerate rounds ran faster per slot while producing garbage).
+**★★ X-CONC RE-SCOPED UPWARD 2026-09-07 — IT IS A BLOCKING PROMOTION GATE, NOT A DEMOTED ITEM.**
+The 2026-09-03 row below was wrong in both directions and is replaced. It called this a *multi-sequence*
+bug (it is not) and prescribed a staggered-admission scheduler (which treats a symptom), while the
+2026-09-04 update above it already carried the resolution and the row was never updated to match. But the
+opposite error — filing it at "much lower severity" because blast radius is zero today — is the one that
+matters more: **blast-radius-is-zero is a statement about today's exposure, not about whether the defect is
+closed, and qwen4exp is a promotion candidate.** Operator, 2026-09-07: *"we may want to promote this
+qwen4exp model to production. We can't have it dumping garbage if we do."*
+
+**What is established.** It is **NOT** a multi-sequence bug — `gdn-rowexact` proved packing 4 sequences in
+one ubatch is **bit-exact, 0/5450 nodes differ**. It is the **same iqk `nrc_y >= 32` IQ4_XS repack defect as
+LONG-PROMPT-GARBAGE**: four simultaneous ~12-token prompts make a **48-row ubatch** and cross the threshold.
+Staggering merely kept the ubatch under the threshold, so the original mitigation was treating a symptom.
+On `10acba0ab` simultaneous admission is **COHERENT 4/4** — the garbage is gone.
+
+**Ancestry (verified by the coordinator, 2026-09-07): both `99425578d` and the `10acba0ab` merge ARE
+ancestors of `inf70/champion3` @ `9c4f73e29`.** So the champion carries the fix and a promotion would not
+ship the corruption.
+
+**⚠ THE GAP THAT MUST NOT BE BURIED: the COHERENT 4/4 re-test ran on `10acba0ab`, NOT on the champion.**
+Champion-3 stacks levers on top of that merge — `GGML_ROWCOL_SPLIT`, `GGML_TINY_SOLO`, the dequant knobs —
+**several of which change row counts and which kernel path a node takes, and the entire defect class is
+ROW-COUNT-TRIGGERED.** *"The fix is in the tree"* and *"the champion is coherent under simultaneous
+admission"* are **different claims, and only the first is proven.** HYG-1b has just found every build dir in
+the shared tree stale, which is exactly why the stronger claim must not be assumed.
+
+- [ ] **G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an ancestor.**
+      **This gate is NOT satisfiable by inheritance: citing `10acba0ab`'s COHERENT 4/4 does not close it**,
+      and neither does the ancestry check above — the ancestry proves the fix is present, not that the
+      stacked champion still clears the trigger. Arms:
+      (a) **`-np 4` simultaneous admission**, coherence classified **by REASON** — `COHERENT` / `SALAD` /
+      `EARLY-EOS` / `SHORT` / `EMPTY` / `HTTP-ERROR` — never a pass/fail count, because the degenerate
+      rounds ran *faster* per slot while producing garbage and a t/s number without an output check is
+      inflated.
+      (b) **A direct probe of the `>= 32`-row trigger**: the 48-row ubatch shape that originally broke it
+      (4 simultaneous ~12-token prompts) **and** a long-prompt arm — both cross the same threshold by
+      different routes, and the champion's row-count-changing levers could move either one independently.
+      Record the ubatch row counts actually observed, not the ones predicted from prompt length.
+      Prove the binary with `strings` before believing any pass (HYG-1b). Repro and prior evidence:
+      `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`.
+      **Cross-links: PROD-1 (the canonical recipe must carry this gate) and PROD-3 / any champion-artifact
+      promotion. Both cross-references are drafted and handed to the coordinator — do not add them here
+      while the PROD-1 agent is running.**
+
+- [ ] **G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**
+      **Even when coherent, 3 of 4 concurrent streams DIFFER from the same prompt served alone**, and
+      **ROW COUNT — not admission pattern — decides it**, so a staggered-admission scheduler does not fix
+      it. The row-exact forward makes the streams **identical 4/4 at ~5–8% per-slot decode cost.**
+      Concurrent serving today therefore returns **valid-but-different output per slot**.
+      **Options:** (A) ship as-is — full throughput, per-slot output depends on how many rows shared the
+      ubatch; eval determinism and prompt-cache behaviour become concurrency-dependent, and any A/B run
+      through a concurrent server inherits an uncontrolled variable. (B) row-exact forward always —
+      identical 4/4, costs ~5–8% per-slot decode. (C) row-exact forward as a per-route policy — pay the
+      5–8% only on routes that need reproducibility (evals, cached prompts, anything whose output is
+      compared across runs) and take full throughput elsewhere; costs a policy surface and a way to prove
+      which route a request took.
+      **Recommendation: (C).** The defect is not correctness — every stream is valid — so paying 5–8%
+      fleet-wide buys reproducibility for routes that mostly do not need it, while (A) silently makes
+      concurrency a hidden variable in every measurement taken through the server, which this campaign has
+      already been bitten by in other forms. **Not decided here.** Operator-queue row drafted and handed to
+      the coordinator.
+
+**Superseded row, retained for the record (filed 2026-09-03, wrong on both the mechanism and the fix):**
+*"X-CONC — qwen4exp multi-sequence prefill corruption, serving blocker … the qwen4exp multi-sequence prefill
+path corrupting shared state when >1 full sequence shares a prefill batch … Interim mitigation: a staggered-
+admission scheduler (one prefill in flight at a time)."* Both the "multi-sequence" diagnosis and the
+staggered-admission mitigation are refuted above.
 
 ## Disk: the artifact rule costs 92 GB per experiment on this model (measured 2026-09-04)
 
@@ -3718,6 +3882,12 @@ unnecessary ones."* Correct, and here is the concrete plan so it happens deliber
   plain-equivalent 96.3 GB/s (62.9%) is not what it moves: the verify batch carries **3.79 tokens per forward**,
   so actual traffic is **1.096 GB/token = 25.4 GB/s (16.6%)**. The roofline argument for CPU decode changes shape
   under speculation — amortising the weight read across accepted tokens is the lever, not raising GB/s.
+**⚠ STALE AS WRITTEN (flagged 2026-09-07): the "B7 in flight" sequencing below is spent.** The PLE-precision
+B7 **reported NO on 2026-09-04** and RECLAIM-1 **executed the same day** (123 GB → 421 GB free). Read the
+paragraphs that follow as the record of how that decision was reached, not as an outstanding trigger. The
+live artifact question is now the OP-37 / PROD-3 reconciliation flagged above (`-gateup-r16` vs B4's
+`IQ4_XS-uniform-r16` + F16 router), and **"B7" here means the CLOSED PLE item, never INF-71.**
+
 - **Artifact — NOT yet**: `-gateup-r16` is the best measured (12.73 vs 12.61 plain), but **B7 is in flight** and may
   produce a better one (PLE at Q8_0). **The artifact question closes when B7 reports**, and only then.
 
