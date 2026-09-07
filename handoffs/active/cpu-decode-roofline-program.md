@@ -3811,7 +3811,11 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
       5–8% only on routes that need reproducibility (evals, cached prompts, anything whose output is
       compared across runs) and take full throughput elsewhere; costs a policy surface and a way to prove
       which route a request took.
-      **Recommendation: (C).** The defect is not correctness — every stream is valid — so paying 5–8%
+      **✅ RESOLVED 2026-09-07 — THE OPERATOR CHOSE (C), per-route row-exact.** Reproducibility-sensitive
+      routes (evals, cached prompts, anything compared across runs) run row-exact; everything else takes full
+      throughput. The open work is the policy surface and a way to prove which route a request took. PROD-1
+      is where "which routes are row-exact" becomes importable constants.
+      **Original recommendation, retained: (C).** The defect is not correctness — every stream is valid — so paying 5–8%
       fleet-wide buys reproducibility for routes that mostly do not need it, while (A) silently makes
       concurrency a hidden variable in every measurement taken through the server, which this campaign has
       already been bitten by in other forms. **Not decided here.** Operator-queue row drafted and handed to
