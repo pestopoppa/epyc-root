@@ -242,7 +242,11 @@ sequencing: measurement first, authoring later).
 ### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
 - [ ] Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
 - [ ] CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
-- [ ] **P4-0 precondition**: promote `sync19-20/foreign.py` out of scratch into `epyc-inference-research` with a test
+- [x] **P4-0 precondition** ✅ 2026-09-07 (INF-70 took it): `scripts/utils/foreign_load.py` + `test_foreign_load.py` on
+      research `main` `de51899c` (branch `inf70/foreign-load-sampler` `e441de78`, merged by `ak-rebuild-20260828`: merge-tree 0
+      conflicts, 7 tests green). Importable `sample_once()` / `bench_logical_cpus()`; `--out`/`--bench-cpus`; fails CLOSED on
+      unreadable sysfs; foreignness by `cpus_allowed` intersection (permissive by design, `on_bench_core` per row for the strict
+      reading); the sibling test is mutation-isolated. Scratch copy stays until SYNC-19/20 + HARNESS-1 finish in-flight arms.
 - [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
 - [ ] LOO + re-baseline receipts are REQUIRED fields of the promotion record; promote refuses without them
 - [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
