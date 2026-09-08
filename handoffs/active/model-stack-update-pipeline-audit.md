@@ -647,3 +647,9 @@ Use focused extra tests for each W2 consumer pass. Do not run AutoPilot or llama
   path stays silent and a pin that the cycle stays fixed.
   **Left open deliberately:** the literal ask is "untangle the import cycle", which I did not do — I
   found it already untangled. Owner closes on the evidence, not on my say-so.
+  ✅ Closed 2026-09-07 on independently re-run evidence: `stack_manifest`, `stack_paths`,
+  `runtime_facts_manifest` and `orchestrator_stack` all import cleanly from a fresh interpreter
+  (cycle confirmed gone, matching the 2026-08-12 re-derivation); the residue — both degraded paths
+  now warn, naming the substitution and the cause — landed in `48a685f0` with 6 tests including the
+  negative control. Row's literal ask (untangle) satisfied by prior state; fail-open retained
+  deliberately because dropping the panel is worse than over-reporting.
